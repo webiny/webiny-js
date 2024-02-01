@@ -17971,7 +17971,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     archy: 1.0.0
     chalk: 4.1.2
-    execa: 5.0.0
+    execa: ^5.0.0
     graphlib: 2.1.8
     multimatch: 5.0.0
     p-map: ^4.0.0
@@ -27459,23 +27459,6 @@ __metadata:
     signal-exit: ^3.0.2
     strip-final-newline: ^2.0.0
   checksum: e30d298934d9c52f90f3847704fd8224e849a081ab2b517bbc02f5f7732c24e56a21f14cb96a08256deffeb2d12b2b7cb7e2b014a12fb36f8d3357e06417ed55
-  languageName: node
-  linkType: hard
-
-"execa@npm:5.0.0":
-  version: 5.0.0
-  resolution: "execa@npm:5.0.0"
-  dependencies:
-    cross-spawn: ^7.0.3
-    get-stream: ^6.0.0
-    human-signals: ^2.1.0
-    is-stream: ^2.0.0
-    merge-stream: ^2.0.0
-    npm-run-path: ^4.0.1
-    onetime: ^5.1.2
-    signal-exit: ^3.0.3
-    strip-final-newline: ^2.0.0
-  checksum: a044367ebdcc68ca019810cb134510fc77bbc55c799122258ee0e00e289c132941ab48c2a331a036699c42bc8d479d451ae67c105fce5ce5cc813e7dd92d642b
   languageName: node
   linkType: hard
 
