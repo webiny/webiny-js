@@ -85,11 +85,6 @@ export class AppPermissions<TPermission extends SecurityPermission = SecurityPer
         throw new NotAuthorizedError();
     }
 
-    async hasFullAccess() {
-        const permissions = await this.getPermissions();
-        return permissions.some(p => this.fullAccessPermissions.filter(Boolean).includes(p.name));
-    }
-
     async canAccessNonOwnedRecords() {
         // First pass - check if we have full access.
         if (await this.hasFullAccess()) {
@@ -112,6 +107,12 @@ export class AppPermissions<TPermission extends SecurityPermission = SecurityPer
         // prevent us from accessing non-owned records, then we grant access.
         const permissions = await this.getPermissions();
         return !permissions.some(p => !p.own);
+    }
+
+
+    async hasFullAccess() {
+        const permissions = await this.getPermissions();
+        return permissions.some(p => this.fullAccessPermissions.filter(Boolean).includes(p.name));
     }
 
     private hasRwd(permission: TPermission, rwd: string) {
