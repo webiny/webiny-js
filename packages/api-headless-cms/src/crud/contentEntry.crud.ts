@@ -1318,7 +1318,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * Possibly only get records which are owned by current user.
          * Or if searching for the owner set that value - in the case that user can see other entries than their own.
          */
-        if (await entriesPermissions.canAccessOnlyOwnRecordsWithModel({model})) {
+        if (await entriesPermissions.canAccessOnlyOwnRecordsWithModel({ model })) {
             where.createdBy = getSecurityIdentity().id;
         }
 

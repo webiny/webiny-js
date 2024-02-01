@@ -32,7 +32,7 @@ export class ModelsPermissions extends AppPermissions<CmsModelPermission> {
     }
 
     public async canAccessModel({ model }: CanAccessModelParams) {
-        if (model.isPrivate || await this.hasFullAccess()) {
+        if (model.isPrivate || (await this.hasFullAccess())) {
             return true;
         }
 

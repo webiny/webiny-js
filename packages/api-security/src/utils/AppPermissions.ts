@@ -109,7 +109,6 @@ export class AppPermissions<TPermission extends SecurityPermission = SecurityPer
         return !permissions.some(p => !p.own);
     }
 
-
     async hasFullAccess() {
         const permissions = await this.getPermissions();
         return permissions.some(p => this.fullAccessPermissions.filter(Boolean).includes(p.name));
