@@ -34,6 +34,8 @@ class MyTask implements ITaskDefinition<Context, MyInput> {
 
     public maxIterations = 10;
 
+    public maxIterations = 10;
+
     public fields = [
         {
             ...taskField
