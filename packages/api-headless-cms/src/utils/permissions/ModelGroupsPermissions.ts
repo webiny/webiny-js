@@ -38,8 +38,8 @@ export class ModelGroupsPermissions extends AppPermissions<CmsGroupPermission> {
     }
 
     async ensureCanAccessGroup(params: CanAccessGroupParams) {
-        const canAccessModel = await this.canAccessGroup(params);
-        if (canAccessModel) {
+        const canAccessGroup = await this.canAccessGroup(params);
+        if (canAccessGroup) {
             return;
         }
 
