@@ -605,6 +605,119 @@ describe("CRUD Test", () => {
         );
         expect(updatePageResponse.data.pageBuilder.updatePage.data).toBeNull();
     });
+    
+    
+    it("should list all pages via pid_in condition", async () => {
+        const [categoryResponse] = await createCategory({
+            data: {
+                slug: `category`,
+                name: `Category`,
+                url: `/category-url/`,
+                layout: `layout`
+            }
+        });
+        const category = categoryResponse.data.pageBuilder.createCategory.data;
+        
+        const page1 = await createPage({ category: category.slug }).then(([res]) => {
+            return res.data.pageBuilder.createPage.data;
+        });
+        const page2 = await createPage({ category: category.slug }).then(([res]) => {
+            return res.data.pageBuilder.createPage.data;
+        });
+        const page3 = await createPage({ category: category.slug }).then(([res]) => {
+            return res.data.pageBuilder.createPage.data;
+        });
+        const page4 = await createPage({ category: category.slug }).then(([res]) => {
+            return res.data.pageBuilder.createPage.data;
+        });
+        const page5 = await createPage({ category: category.slug }).then(([res]) => {
+            return res.data.pageBuilder.createPage.data;
+        });
+        
+        const [result1] = await listPages({
+            where: {
+                pid_in: [page3.pid, page5.pid]
+            }
+        });
+        expect(result1).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            {
+                                pid: page5.pid
+                            },
+                            {
+                                pid: page3.pid
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            totalCount: 2
+                        }
+                    }
+                }
+            }
+        });
+        
+        const [result2] = await listPages({
+            where: {
+                pid_in: [page2.pid]
+            }
+        });
+        expect(result2).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            {
+                                pid: page2.pid
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            totalCount: 1
+                        }
+                    }
+                }
+            }
+        });
+        
+        const [result3] = await listPages({
+            where: {
+                pid_in: [page1.pid, page2.pid, page3.pid, page4.pid, page5.pid]
+            }
+        });
+        expect(result3).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            {
+                                pid: page5.pid
+                            },
+                            {
+                                pid: page4.pid
+                            },
+                            {
+                                pid: page3.pid
+                            },
+                            {
+                                pid: page2.pid
+                            },
+                            {
+                                pid: page1.pid
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            totalCount: 5
+                        }
+                    }
+                }
+            }
+        });
+    });
 
     it("should duplicate a page", async () => {
         // Let's create a page and update it with some data

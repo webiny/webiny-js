@@ -9,9 +9,13 @@ export class ResponseContinueResult<T = ITaskDataInput> implements IResponseCont
     public readonly locale: string;
     public readonly status: TaskResponseStatus.CONTINUE = TaskResponseStatus.CONTINUE;
     public readonly input: T;
+    /**
+     * We need this to make sure that the task will not use the delay from the previous iteration.
+     */
+    public readonly delay = -1;
     public readonly wait?: number;
 
-    public constructor(params: Omit<IResponseContinueResult<T>, "status">) {
+    public constructor(params: Omit<IResponseContinueResult<T>, "delay" | "status">) {
         this.message = params.message;
         this.webinyTaskId = params.webinyTaskId;
         this.webinyTaskDefinitionId = params.webinyTaskDefinitionId;

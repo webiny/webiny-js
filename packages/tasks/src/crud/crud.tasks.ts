@@ -24,9 +24,11 @@ import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
 import { remapWhere } from "./where";
+import { parseIdentifier } from "@webiny/utils";
 
 const createRevisionId = (id: string) => {
-    return `${id}#0001`;
+    const { id: entryId } = parseIdentifier(id);
+    return `${entryId}#0001`;
 };
 
 const convertToTask = <
@@ -92,7 +94,12 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         throw new WebinyError(`There is no model "${WEBINY_TASK_LOG_MODEL_ID}".`);
     };
 
-    const getTask = async (id: string) => {
+    const getTask = async <
+        T = any,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(
+        id: string
+    ) => {
         let entry: CmsEntry;
         try {
             const model = await getTaskModel();
@@ -108,7 +115,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             return null;
         }
 
-        return convertToTask(entry as unknown as CmsEntry<ITask>);
+        return convertToTask(entry as unknown as CmsEntry<ITask<T, O>>);
     };
 
     const listTasks = async <

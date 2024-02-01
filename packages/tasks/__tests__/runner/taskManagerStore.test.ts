@@ -39,7 +39,7 @@ describe("task manager store", () => {
             ...mockTask,
             definitionId: "myCustomTaskNumber1"
         });
-
+        
         const log = await context.tasks.createLog(task, {
             executionName: task.executionName,
             iteration: 1

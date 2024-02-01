@@ -1,5 +1,5 @@
 import { Topic } from "@webiny/pubsub/types";
-import { PbContext } from "@webiny/api-page-builder/types";
+import { CreatedBy, ListPagesParams, PbContext } from "@webiny/api-page-builder/types";
 import { FormBuilderContext } from "@webiny/api-form-builder/types";
 import {
     ExportRevisionType,
@@ -8,18 +8,11 @@ import {
     ImportExportTaskStorageOperations,
     ImportExportTaskStorageOperationsListParams
 } from "~/types";
+import { Context as TasksContext, IResponseError } from "@webiny/tasks/types";
 
-export interface ExportPagesParams {
-    ids?: string[];
+export interface ExportPagesParams extends Pick<ListPagesParams, "where" | "sort" | "search"> {
+    limit?: number;
     revisionType: ExportRevisionType;
-    where?: {
-        category?: string;
-        status?: string;
-        tags?: { query: string[]; rule?: "any" | "all" };
-        [key: string]: any;
-    };
-    search?: { query?: string };
-    sort?: string[];
 }
 
 export interface ImportPagesParams {
@@ -56,15 +49,37 @@ export interface OnPagesAfterImportTopicParams {
     params: ImportPagesParams;
 }
 
-export type PagesImportExportCrud = {
-    exportPages(params: ExportPagesParams): Promise<{ task: ImportExportTask }>;
+export interface PbImportExportTaskData {
+    url?: string;
+    error?: IResponseError;
+}
+
+export interface PbImportExportTask {
+    id: string;
+    createdOn: string;
+    createdBy: CreatedBy;
+    status: string;
+    data: PbImportExportTaskData;
+    stats: {
+        total: number;
+        completed: number;
+        failed: number;
+    };
+}
+
+export interface ExportPagesResponse {
+    task: PbImportExportTask;
+}
+
+export interface PagesImportExportCrud {
+    exportPages(params: ExportPagesParams): Promise<ExportPagesResponse>;
     importPages(params: ImportPagesParams): Promise<{ task: ImportExportTask }>;
 
     onPagesBeforeExport: Topic<OnPagesBeforeExportTopicParams>;
     onPagesAfterExport: Topic<OnPagesAfterExportTopicParams>;
     onPagesBeforeImport: Topic<OnPagesBeforeImportTopicParams>;
     onPagesAfterImport: Topic<OnPagesAfterImportTopicParams>;
-};
+}
 
 export interface ExportBlocksParams {
     ids?: string[];
@@ -249,9 +264,14 @@ export type ImportExportTaskCrud = {
         subTaskId: string,
         data: Partial<ImportExportTaskCreateData>
     ): Promise<ImportExportTask>;
+
+    /**
+     * Background tasks implementation.
+     */
+    getExportTask: (id: string) => Promise<PbImportExportTask | null>;
 };
 
-export interface PbImportExportContext extends PbContext {
+export interface PbImportExportContext extends TasksContext, PbContext {
     pageBuilder: PbContext["pageBuilder"] & {
         pages: PagesImportExportCrud;
         blocks: BlocksImportExportCrud;

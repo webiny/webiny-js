@@ -115,25 +115,30 @@ export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
 
         try {
             const input = structuredClone(this.store.getInput());
-            result = await definition.run({
-                input,
-                context: this.context,
-                response: this.taskResponse,
-                isCloseToTimeout: (seconds?: number) => {
-                    return this.runner.isCloseToTimeout(seconds);
-                },
-                isAborted: () => {
-                    return this.store.getStatus() === TaskDataStatus.ABORTED;
-                },
-                store: this.store,
-                trigger: async <I = ITaskDataInput>(
-                    params: Omit<ITaskTriggerParams<I>, "parent">
-                ): Promise<ITask<I>> => {
-                    return this.context.tasks.trigger({
-                        ...params,
-                        parent: this.store.getTask()
-                    });
-                }
+            /**
+             * We always run the task without authorization because we are running a task without a user - nothing to authorize against.
+             */
+            result = await this.context.security.withoutAuthorization(async () => {
+                return await definition.run({
+                    input,
+                    context: this.context,
+                    response: this.taskResponse,
+                    isCloseToTimeout: (seconds?: number) => {
+                        return this.runner.isCloseToTimeout(seconds);
+                    },
+                    isAborted: () => {
+                        return this.store.getStatus() === TaskDataStatus.ABORTED;
+                    },
+                    store: this.store,
+                    trigger: async <I = ITaskDataInput>(
+                        params: Omit<ITaskTriggerParams<I>, "parent">
+                    ): Promise<ITask<I>> => {
+                        return this.context.tasks.trigger({
+                            ...params,
+                            parent: this.store.getTask()
+                        });
+                    }
+                });
             });
         } catch (ex) {
             return this.response.error({

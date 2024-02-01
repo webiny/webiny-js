@@ -11,7 +11,15 @@ export type ITaskResponseResult<
     | ITaskResponseAbortedResult;
 
 export interface ITaskResponseDoneResultOutput {
-    [key: string]: string | string[] | number | boolean | Record<string, string | number>;
+    error?: IResponseError;
+    [key: string]:
+        | string
+        | string[]
+        | number
+        | boolean
+        | undefined
+        | Record<string, string | number>
+        | IResponseError;
 }
 export interface ITaskResponseDoneResult<
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput

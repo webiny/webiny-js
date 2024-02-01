@@ -1,4 +1,6 @@
-export type ICacheKeyKeys = Record<string, string | undefined> | string | number;
+import { ICacheKeyKeys } from "@webiny/utils";
+
+export { ICacheKeyKeys };
 
 export interface ICacheKey {
     get(): string;

@@ -120,7 +120,10 @@ export class DatabaseResponse implements IResponseAsync {
         try {
             await this.store.updateTask({
                 taskStatus: TaskDataStatus.FAILED,
-                finishedOn: new Date().toISOString()
+                finishedOn: new Date().toISOString(),
+                output: {
+                    error
+                }
             });
             await this.store.addErrorLog({
                 message: params.error.message,
