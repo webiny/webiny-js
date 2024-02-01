@@ -114,7 +114,8 @@ describe("reindexing task runner", () => {
                 webinyTaskId: "mockEventId",
                 webinyTaskDefinitionId: "mockDefinitionId",
                 tenant: "root",
-                locale: "en-US"
+                locale: "en-US",
+                output: {}
             })
         );
     });
