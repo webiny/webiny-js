@@ -1,6 +1,7 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { PbImportExportContext } from "../types";
+import { ExportPagesParams, ExportPagesResponse, PbImportExportContext } from "../types";
 import resolve from "./utils/resolve";
+import { Response, ErrorResponse } from "@webiny/handler-graphql";
 
 const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
     type: "graphql-schema",
@@ -32,21 +33,30 @@ const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
             extend type PbMutation {
                 # Export pages
                 exportPages(
-                    ids: [ID!]
-                    revisionType: PbExportPageRevisionType!
                     where: PbListPagesWhereInput
                     sort: [PbListPagesSort!]
                     search: PbListPagesSearchInput
-                ): PbExportPageResponse
+                    revisionType: PbExportPageRevisionType!
+                ): PbExportPageResponse!
 
                 # Import pages
-                importPages(category: String!, zipFileUrl: String, meta: JSON): PbImportPageResponse
+                importPages(
+                    category: String!
+                    zipFileUrl: String
+                    meta: JSON
+                ): PbImportPageResponse!
             }
         `,
         resolvers: {
             PbMutation: {
-                exportPages: async (_, args: any, context) => {
-                    return resolve(() => context.pageBuilder.pages.exportPages(args));
+                exportPages: async (
+                    _,
+                    args,
+                    context
+                ): Promise<Response<ExportPagesResponse> | ErrorResponse> => {
+                    return resolve(() =>
+                        context.pageBuilder.pages.exportPages(args as ExportPagesParams)
+                    );
                 },
 
                 importPages: async (_, args: any, context) => {

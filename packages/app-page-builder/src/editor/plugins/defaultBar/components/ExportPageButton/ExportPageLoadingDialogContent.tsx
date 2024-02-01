@@ -1,14 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useQuery } from "@apollo/react-hooks";
-import { GET_PAGE_IMPORT_EXPORT_TASK } from "~/admin/graphql/pageImportExport.gql";
-import get from "lodash/get";
+import {
+    GET_PAGE_EXPORT_TASK,
+    GetPageExportTaskResponse,
+    GetPageExportTaskVariables
+} from "~/admin/graphql/pageImportExport.gql";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
 import { LoadingDialog } from "../ImportButton/styledComponents";
 import ProgressBar from "../ImportButton/ProgressBar";
 import useExportPageDialog from "./useExportPageDialog";
-import { ImportExportTaskStatus } from "~/types";
+import { ImportExportTaskStatus, PbErrorResponse } from "~/types";
+import { PbTaskStatus } from "~/admin/graphql/types";
 
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/importPage");
 
@@ -17,7 +21,7 @@ const errorMessage = t`Failed to import pages`;
 const pendingMessage = t`Waiting for operation status`;
 const processingMessage = t`Exporting pages`;
 
-const INTERVAL = 0.5 * 1000;
+const INTERVAL = 1000;
 
 const MESSAGES: Record<string, string> = {
     [ImportExportTaskStatus.COMPLETED]: completionMessage,
@@ -31,37 +35,44 @@ interface ExportPageLoadingDialogContent {
 
 const ExportPageLoadingDialogContent = ({ taskId }: ExportPageLoadingDialogContent) => {
     const [completed, setCompleted] = useState<boolean>(false);
-    const [error, setError] = useState<Error | null>(null);
+    const [error, setError] = useState<PbErrorResponse | undefined | null>(null);
     const { showSnackbar } = useSnackbar();
     const { showExportPageContentDialog } = useExportPageDialog();
 
-    const { data } = useQuery(GET_PAGE_IMPORT_EXPORT_TASK, {
-        variables: {
-            id: taskId
-        },
-        skip: taskId === null,
-        fetchPolicy: "network-only",
-        pollInterval: completed ? 0 : INTERVAL,
-        notifyOnNetworkStatusChange: true
-    });
+    const { data } = useQuery<GetPageExportTaskResponse, GetPageExportTaskVariables>(
+        GET_PAGE_EXPORT_TASK,
+        {
+            variables: {
+                id: taskId
+            },
+            skip: !taskId,
+            fetchPolicy: "network-only",
+            pollInterval: completed ? 0 : INTERVAL,
+            notifyOnNetworkStatusChange: true
+        }
+    );
 
-    const pollExportPageTaskStatus = useCallback(response => {
-        const { error, data } = get(response, "pageBuilder.getImportExportTask", {});
+    const pollExportPageTaskStatus = useCallback((response: GetPageExportTaskResponse) => {
+        const { error, data } = response.pageBuilder.getExportTask;
         if (error) {
             showSnackbar(error.message);
             return;
         }
 
         // Handler failed task
-        if (data && data.status === "failed") {
+        if (data && data.status === PbTaskStatus.failed) {
             setCompleted(true);
             showSnackbar("Error: Failed to export pages!");
-            setError(data.error);
+            setError(data.data?.error);
         }
 
-        if (data && data.status === "completed") {
+        if (data && data.status === PbTaskStatus.success) {
             setCompleted(true);
-            // getSubTasks();
+
+            if (!data.data?.url) {
+                showSnackbar("Missing exported files URL! Please check task logs.");
+                return;
+            }
             showExportPageContentDialog({ exportUrl: data.data.url });
         }
     }, []);
@@ -74,10 +85,8 @@ const ExportPageLoadingDialogContent = ({ taskId }: ExportPageLoadingDialogConte
         pollExportPageTaskStatus(data);
     }, [data]);
 
-    const { status, stats } = get(data, "pageBuilder.getImportExportTask.data", {
-        status: ImportExportTaskStatus.PENDING,
-        stats: null
-    });
+    const { status = ImportExportTaskStatus.PENDING, stats } =
+        data?.pageBuilder.getExportTask.data || {};
 
     return (
         <LoadingDialog.Wrapper>
@@ -90,7 +99,7 @@ const ExportPageLoadingDialogContent = ({ taskId }: ExportPageLoadingDialogConte
                         <LoadingDialog.CancelIcon />
                         <Typography use={"subtitle1"}>{errorMessage}</Typography>
                     </LoadingDialog.TitleContainer>
-                ) : status === ImportExportTaskStatus.COMPLETED ? (
+                ) : status === PbTaskStatus.success ? (
                     <LoadingDialog.TitleContainer>
                         <LoadingDialog.CheckMarkIcon />
                         <Typography use={"subtitle1"}>{MESSAGES[status]}</Typography>

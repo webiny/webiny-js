@@ -16,12 +16,20 @@ import {
     ImportExportPluginsParams,
     ImportExportTask,
     ImportExportTaskStatus,
-    ImportExportTaskStorageOperationsListSubTaskParams
+    ImportExportTaskStorageOperationsListSubTaskParams,
+    PbImportExportTaskData
 } from "~/types";
 import { PbImportExportContext } from "~/graphql/types";
 import WebinyError from "@webiny/error";
 import { PageElementStorageOperationsListParams } from "@webiny/api-page-builder/types";
 import { PagesPermissions } from "@webiny/api-page-builder/graphql/crud/permissions/PagesPermissions";
+import {
+    IExportPagesControllerInput,
+    IExportPagesControllerOutput,
+    IExportPagesZipPagesInput,
+    IExportPagesZipPagesOutput,
+    PageExportTask
+} from "~/export/pages/types";
 
 const validStatus = `${ImportExportTaskStatus.PENDING}:${ImportExportTaskStatus.PROCESSING}:${ImportExportTaskStatus.COMPLETED}:${ImportExportTaskStatus.FAILED}`;
 
@@ -444,6 +452,67 @@ export default ({ storageOperations }: ImportExportPluginsParams) =>
                         }
                     );
                 }
+            },
+            /**
+             * Background task implementation.
+             */
+            getExportTask: async id => {
+                const task = await context.tasks.getTask<
+                    IExportPagesControllerInput,
+                    IExportPagesControllerOutput
+                >(id);
+
+                if (!task || task.definitionId !== PageExportTask.Controller) {
+                    return null;
+                }
+
+                const data: PbImportExportTaskData = {
+                    url: task.output?.url || undefined,
+                    error: task.output?.error || undefined
+                };
+
+                const { items: subTasks } = await context.tasks.listTasks<
+                    IExportPagesZipPagesInput,
+                    IExportPagesZipPagesOutput
+                >({
+                    where: {
+                        parentId: task.id,
+                        definitionId: PageExportTask.ZipPages
+                    },
+                    limit: 10000
+                });
+
+                const stats = {
+                    queued: [] as string[],
+                    completed: [] as string[],
+                    failed: [] as string[]
+                };
+
+                for (const subTask of subTasks) {
+                    if (!subTask.output) {
+                        continue;
+                    }
+                    const queued = subTask.input.queue || [];
+                    const completed = Object.keys(subTask.output.done || []);
+                    const failed = subTask.output.failed || [];
+
+                    stats.queued.push(...queued, ...completed, ...failed);
+                    stats.completed.push(...completed);
+                    stats.failed.push(...failed);
+                }
+
+                return {
+                    ...task,
+                    status: task.taskStatus,
+                    data,
+                    stats: {
+                        total:
+                            new Set([...stats.queued, ...stats.completed, ...stats.failed]).size ||
+                            task.input.totalPages,
+                        completed: stats.completed.length,
+                        failed: stats.failed.length
+                    }
+                };
             }
         };
     });

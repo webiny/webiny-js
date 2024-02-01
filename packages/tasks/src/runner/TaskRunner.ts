@@ -1,6 +1,5 @@
 import { Context as LambdaContext } from "aws-lambda/handler";
-import { Reply, Request } from "@webiny/handler/types";
-import { ITaskEvent } from "~/handler/types";
+import { ITaskEvent, ITaskRawEvent } from "~/handler/types";
 import { ITaskRunner } from "./abstractions";
 import { Context } from "~/types";
 import { Response } from "~/response";
@@ -24,8 +23,6 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
      *
      * Follow the same example for the rest of the properties.
      */
-    public readonly request: Request;
-    public readonly reply: Reply;
     public readonly context: C;
     public readonly lambdaContext: Pick<LambdaContext, "getRemainingTimeInMillis">;
     private readonly validation: TaskEventValidation;
@@ -35,13 +32,9 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
      */
     public constructor(
         lambdaContext: Pick<LambdaContext, "getRemainingTimeInMillis">,
-        request: Request,
-        reply: Reply,
         context: C,
         validation: TaskEventValidation = new TaskEventValidation()
     ) {
-        this.request = request;
-        this.reply = reply;
         this.context = context;
         this.lambdaContext = lambdaContext;
         this.validation = validation;
@@ -58,15 +51,27 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         return this.lambdaContext.getRemainingTimeInMillis();
     }
 
-    public async run(input: ITaskEvent): Promise<IResponseResult> {
-        const response = new Response(input);
+    public async run(rawEvent: ITaskRawEvent): Promise<IResponseResult> {
+        const response = new Response({
+            ...rawEvent
+        });
 
         let event: ITaskEvent;
         try {
-            event = this.validation.validate(input);
+            event = this.validation.validate(rawEvent);
         } catch (ex) {
             return response.error({
                 error: getErrorProperties(ex)
+            });
+        }
+        response.setEvent(event);
+        /**
+         * If we received a delay when initiating the task, we need to send the continue response immediately.
+         */
+        if (rawEvent.delay && rawEvent.delay > 0) {
+            return response.continue({
+                input: {},
+                wait: rawEvent.delay
             });
         }
 

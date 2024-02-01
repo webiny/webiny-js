@@ -52,7 +52,7 @@ export class TaskResponse implements ITaskResponse {
     ): ITaskResponseDoneResult<O> {
         return this.response.done<O>({
             message,
-            output
+            output: output || ({} as O)
         });
     }
 

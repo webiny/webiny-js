@@ -12,11 +12,32 @@ import {
     ITaskTriggerParams,
     TaskDataStatus
 } from "~/types";
-import {
-    createEventBridgeEventFactory,
-    PutEventsCommandOutput
-} from "~/crud/createEventBridgeEvent";
 import { NotFoundError } from "@webiny/handler-graphql";
+import { EventBridgeEventTransport, PutEventsCommandOutput } from "./EventBridgeEventTransport";
+
+const MAX_DELAY_DAYS = 355;
+const MAX_DELAY_SECONDS = MAX_DELAY_DAYS * 24 * 60 * 60;
+
+interface ValidateDelayParams {
+    input: ITaskCreateData;
+    delay?: number;
+}
+
+const validateDelay = ({ input, delay }: ValidateDelayParams): void => {
+    if (!delay || delay < 0 || typeof delay !== "number" || Number.isInteger(delay) === false) {
+        return;
+    } else if (delay < MAX_DELAY_SECONDS) {
+        return;
+    }
+    throw new WebinyError(
+        `The maximum delay for a task is ${MAX_DELAY_DAYS} days.`,
+        "MAX_DELAY_ERROR",
+        {
+            ...input,
+            delay
+        }
+    );
+};
 
 export const createTriggerTasksCrud = (
     context: Context,
@@ -28,7 +49,7 @@ export const createTriggerTasksCrud = (
     const getLocale = (): string => {
         return context.cms.getLocale().code;
     };
-    const createEventBridgeEvent = createEventBridgeEventFactory({
+    const eventBridgeEventTransport = new EventBridgeEventTransport({
         config,
         getTenant,
         getLocale
@@ -36,7 +57,7 @@ export const createTriggerTasksCrud = (
 
     return {
         trigger: async <T = ITaskDataInput>(params: ITaskTriggerParams<T>): Promise<ITask<T>> => {
-            const { definition: id, input: inputValues, name, parent } = params;
+            const { definition: id, input: inputValues, name, parent, delay = 0 } = params;
             const definition = context.tasks.getDefinition(id);
             if (!definition) {
                 throw new WebinyError(`Task definition was not found!`, "TASK_DEFINITION_ERROR", {
@@ -52,15 +73,19 @@ export const createTriggerTasksCrud = (
             if (definition.onBeforeTrigger) {
                 await definition.onBeforeTrigger<T>({
                     context,
-                    input: input.input
+                    data: input
                 });
             }
+            validateDelay({
+                input,
+                delay
+            });
 
             const task = await context.tasks.createTask<T>(input);
 
             let event: PutEventsCommandOutput | null = null;
             try {
-                event = await createEventBridgeEvent(task);
+                event = await eventBridgeEventTransport.send(task, delay);
 
                 if (!event) {
                     throw new WebinyError(

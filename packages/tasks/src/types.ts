@@ -1,6 +1,7 @@
 import {
     CmsContext as BaseContext,
     CmsEntryListParams,
+    CmsEntryListWhere,
     CmsEntryMeta,
     CmsModel,
     CmsModelField
@@ -95,7 +96,7 @@ export interface ITask<
     definitionId: string;
     executionName: string;
     input: T;
-    output?: O;
+    output: O;
     createdOn: string;
     savedOn: string;
     createdBy: ITaskIdentity;
@@ -106,7 +107,10 @@ export interface ITask<
     parentId?: string;
 }
 
-export type IGetTaskResponse<T = any> = ITask<T> | null;
+export type IGetTaskResponse<
+    T = any,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> = ITask<T, O> | null;
 
 export interface IListTasksResponse<
     T = any,
@@ -125,7 +129,22 @@ export type ICreateTaskResponse<T = any> = ITask<T>;
 export type IUpdateTaskResponse<T = any> = ITask<T>;
 export type IDeleteTaskResponse = boolean;
 
-export type IListTaskParams = Omit<CmsEntryListParams, "fields" | "search">;
+export interface IListTaskParams extends Omit<CmsEntryListParams, "fields" | "search"> {
+    where?: CmsEntryListWhere & {
+        parentId?: string;
+        parentId_not?: string;
+        parentId_in?: string[];
+        parentId_not_in?: string[];
+        definitionId?: string;
+        definitionId_not?: string;
+        definitionId_in?: string[];
+        definitionId_not_in?: string[];
+        taskStatus?: string;
+        taskStatus_not?: string;
+        taskStatus_in?: string[];
+        taskStatus_not_in?: string[];
+    };
+}
 export type IListTaskLogParams = Omit<CmsEntryListParams, "fields" | "search">;
 
 export interface ITaskCreateData<T = ITaskDataInput> {
@@ -195,7 +214,9 @@ export interface ITasksContextCrudObject {
     /**
      * Tasks
      */
-    getTask: <T = any>(id: string) => Promise<IGetTaskResponse<T> | null>;
+    getTask: <T = any, O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
+        id: string
+    ) => Promise<IGetTaskResponse<T, O> | null>;
     listTasks: <T = any, O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
         params?: IListTaskParams
     ) => Promise<IListTasksResponse<T, O>>;
@@ -233,14 +254,12 @@ export interface ITasksContextDefinitionObject {
     listDefinitions: () => ITaskDefinition[];
 }
 
-/**
- * TODO: implement delayed trigger
- */
 export interface ITaskTriggerParams<I = ITaskDataInput> {
     parent?: ITask;
     definition: string;
     name?: string;
     input?: I;
+    delay?: number;
 }
 
 export interface ITaskAbortParams {
@@ -323,7 +342,7 @@ export type ITaskDefinitionField = Pick<
 
 export interface ITaskBeforeTriggerParams<C extends Context = Context, I = ITaskDataInput> {
     context: C;
-    input: I;
+    data: ITaskCreateData<I>;
 }
 
 export interface ITaskDefinition<

@@ -18,5 +18,6 @@ export interface IResponseContinueResult<T = ITaskDataInput> extends IResponseBa
     message?: string;
     input: T;
     wait?: number;
+    delay: -1;
     status: TaskResponseStatus.CONTINUE;
 }
