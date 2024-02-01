@@ -6,7 +6,7 @@ import { MoveBlockActionArgsType } from "~/editor/recoil/actions/moveBlock/types
 import { MoveBlockActionEvent } from "~/editor/recoil/actions";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { DraggableItem } from "~/editor/components/Draggable";
-import { PbEditorElement, CollectedProps } from "~/types";
+import { PbEditorElement, CollectedProps, DragObjectWithType } from "~/types";
 
 export const BLOCK = "block";
 
@@ -58,7 +58,7 @@ interface UseSortableListArgs {
     id: string;
     type: string;
     move: (current: number, next: number) => void;
-    beginDrag?: (monitor: DragSourceMonitor) => void;
+    beginDrag?: (monitor: DragSourceMonitor) => DragItem;
     endDrag?: (item: DraggableItem | undefined, monitor: DragSourceMonitor) => void;
 }
 
@@ -140,17 +140,18 @@ export const useSortableList = ({ index, move, type, beginDrag, endDrag }: UseSo
         }
     });
 
-    const [{ isDragging }, drag, preview] = useDrag({
+    const [{ isDragging }, drag, preview] = useDrag<DragObjectWithType, unknown, { isDragging: boolean }>({
         type,
         item(monitor) {
             if (typeof beginDrag === "function") {
                 return beginDrag(monitor);
             }
+            return null;
         },
         collect: monitor => ({
             isDragging: monitor.isDragging()
         }),
-        end(item: any, monitor) {
+        end(item, monitor) {
             if (typeof endDrag === "function") {
                 return endDrag(item, monitor);
             }

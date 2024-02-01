@@ -10939,6 +10939,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rmwc/touch-target@npm:14.0.4":
+  version: 14.0.4
+  resolution: "@rmwc/touch-target@npm:14.0.4"
+  dependencies:
+    "@rmwc/base": 14.0.4
+  peerDependencies:
+    "@material/touch-target": ^14.0.0
+    react: ">=16.8.x"
+    react-dom: ">=16.8.x"
+  checksum: 5db9b2f41a97a1f60829fe5491e2a525990398a5c9d1d55441fb92a18b5ea373ccc0d8566dc899f6291975834cc6af86ab4cb76a5b03320f0643087e227b0bee
+  languageName: node
+  linkType: hard
+
 "@rmwc/types@npm:14.0.4":
   version: 14.0.4
   resolution: "@rmwc/types@npm:14.0.4"
@@ -19091,6 +19104,7 @@ __metadata:
     "@rmwc/tabs": 14.0.4
     "@rmwc/textfield": 14.0.4
     "@rmwc/top-app-bar": 14.0.4
+    "@rmwc/touch-target": 14.0.4
     "@rmwc/typography": 14.0.4
     "@storybook/addon-info": ^5.2.8
     "@storybook/addon-knobs": ^5.0.5

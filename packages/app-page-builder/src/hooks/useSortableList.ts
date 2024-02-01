@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { useDrag, useDrop, DropTargetMonitor, DragSourceMonitor } from "react-dnd";
+import { useDrag, useDrop, DropTargetMonitor, DragSourceMonitor, DragObjectFactory } from "react-dnd";
 import { DraggableItem } from "~/editor/components/Draggable";
 import { CollectedProps } from "~/types";
 
@@ -25,7 +25,7 @@ interface UseSortableListArgs {
     id: string;
     type: string;
     move: (current: number, next: number) => void;
-    beginDrag?: (monitor: DragSourceMonitor) => void;
+    beginDrag?: (monitor: DragSourceMonitor) => DragItem;
     endDrag?: (item: DraggableItem | undefined, monitor: DragSourceMonitor) => void;
 }
 
@@ -104,17 +104,18 @@ export const useSortableList = ({ index, move, type, beginDrag, endDrag }: UseSo
         }
     });
 
-    const [{ isDragging }, drag, preview] = useDrag({
+    const [{ isDragging }, drag, preview] = useDrag<DragItem, unknown, { isDragging: boolean }>({
         type,
         item(monitor) {
             if (typeof beginDrag === "function") {
                 return beginDrag(monitor);
             }
+            return null;
         },
         collect: monitor => ({
             isDragging: monitor.isDragging()
         }),
-        end(item: any, monitor) {
+        end(item, monitor) {
             if (typeof endDrag === "function") {
                 return endDrag(item, monitor);
             }

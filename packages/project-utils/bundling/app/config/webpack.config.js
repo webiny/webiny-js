@@ -219,7 +219,7 @@ module.exports = function (webpackEnv, { paths, options }) {
                 // Support React Native Web
                 // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
                 "react-native": require.resolve("react-native-web"),
-                "react/jsx-runtime": require.resolve("react/jsx-runtime.js"),
+                'react/jsx-runtime': require.resolve('react/jsx-runtime'),
                 react: require.resolve("react"),
                 // Allows for better profiling with ReactDevTools
                 ...(isEnvProductionProfile && {
