@@ -9,7 +9,7 @@
   "description": "Security layer for the Webiny GraphQL API.",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "7.23.9",
+    "@babel/runtime": "^7.23.9",
     "@commodo/fields": "1.1.2-beta.20",
     "@webiny/api": "0.0.0",
     "@webiny/api-authentication": "0.0.0",
@@ -28,10 +28,10 @@
     "minimatch": "^5.1.0"
   },
   "devDependencies": {
-    "@babel/cli": "7.23.9",
-    "@babel/core": "7.23.9",
-    "@babel/preset-env": "7.23.9",
-    "@babel/preset-typescript": "7.23.3",
+    "@babel/cli": "^7.23.9",
+    "@babel/core": "^7.23.9",
+    "@babel/preset-env": "^7.23.9",
+    "@babel/preset-typescript": "^7.23.3",
     "@types/jsonwebtoken": "^9.0.2",
     "@webiny/api-wcp": "0.0.0",
     "@webiny/cli": "0.0.0",
@@ -40,7 +40,7 @@
     "@webiny/handler-db": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "rimraf": "^3.0.2",
+    "rimraf": "^5.0.5",
     "ttypescript": "^1.5.12",
     "typescript": "4.7.4"
   },
