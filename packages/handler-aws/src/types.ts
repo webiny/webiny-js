@@ -8,6 +8,7 @@ import {
     SQSEvent,
     SNSEvent
 } from "aws-lambda";
+
 import "fastify";
 import { CreateHandlerParams as BaseCreateHandlerParams } from "@webiny/handler";
 import { LambdaFastifyOptions as LambdaOptions } from "@fastify/aws-lambda";
