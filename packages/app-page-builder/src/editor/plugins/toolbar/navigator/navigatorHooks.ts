@@ -140,7 +140,11 @@ export const useSortableList = ({ index, move, type, beginDrag, endDrag }: UseSo
         }
     });
 
-    const [{ isDragging }, drag, preview] = useDrag<DragObjectWithType, unknown, { isDragging: boolean }>({
+    const [{ isDragging }, drag, preview] = useDrag<
+        DragObjectWithType,
+        unknown,
+        { isDragging: boolean }
+    >({
         type,
         item(monitor) {
             if (typeof beginDrag === "function") {
