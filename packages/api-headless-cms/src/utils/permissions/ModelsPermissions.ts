@@ -195,7 +195,11 @@ export class ModelsPermissions {
     async ensureCanAccess(params: EnsureParams) {
         const canAccessFolderContent = await this.canAccess(params);
         if (!canAccessFolderContent) {
-            throw new NotAuthorizedError();
+            throw new NotAuthorizedError({
+                data: {
+                    reason: `Not allowed to access model "${params.model.modelId}".`
+                }
+            });
         }
     }
 
