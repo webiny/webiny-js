@@ -103,6 +103,7 @@ export const createSearchModelDefinition = (params?: CreateSearchModelDefinition
         name: "ACO - Search Record",
         modelId: SEARCH_RECORD_MODEL_ID,
         titleFieldId: "title",
+        authorization: false,
         fields: [
             typeField(),
             titleField(),

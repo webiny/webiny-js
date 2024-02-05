@@ -313,7 +313,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
         model.tags = ensureTypeTag(model);
 
-        await modelsPermissions.ensureCanAccess({ model, rwd: "c" });
+        await modelsPermissions.ensureCanAccess({ model, rwd: "w" });
 
         try {
             await onModelBeforeCreate.publish({

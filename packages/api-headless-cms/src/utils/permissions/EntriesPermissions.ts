@@ -14,10 +14,18 @@ interface HasFullAccessParams {
     model: CmsModel;
 }
 
+interface CanAccessNonOwnedRecordsParams {
+    model: CmsModel;
+}
+
 export interface EntriesPermissionsParams {
     getIdentity: () => SecurityIdentity | Promise<SecurityIdentity>;
     getPermissions: () => CmsEntryPermission[] | Promise<CmsEntryPermission[]>;
     modelsPermissions: ModelsPermissions;
+}
+
+export interface CanAccessOnlyOwnRecordsParams {
+    model: CmsModel;
 }
 
 export class EntriesPermissions {
@@ -45,7 +53,7 @@ export class EntriesPermissions {
         }
 
         if (params.owns) {
-            if (await this.canAccessNonOwnedRecords()) {
+            if (await this.canAccessNonOwnedRecords(params)) {
                 return true;
             }
 
@@ -86,19 +94,23 @@ export class EntriesPermissions {
         }
     }
 
-    /**
-     * Before using this method, make sure to check base permissions via `ensure` method.
-     */
-    async canAccessNonOwnedRecords() {
+    async canAccessNonOwnedRecords(params: CanAccessNonOwnedRecordsParams) {
+        const hasFullAccess = await this.hasFullAccess(params);
+        if (hasFullAccess) {
+            return true;
+        }
+
         const permissions = await this.getPermissions();
         return permissions.some(p => !p.own);
     }
 
-    /**
-     * Before using this method, make sure to check base permissions via `ensure` method.
-     */
-    async canAccessOnlyOwnRecords() {
-        const canAccessNonOwnedRecords = await this.canAccessNonOwnedRecords();
+    async canAccessOnlyOwnRecords(params: CanAccessOnlyOwnRecordsParams) {
+        const hasFullAccess = await this.hasFullAccess(params);
+        if (hasFullAccess) {
+            return false;
+        }
+
+        const canAccessNonOwnedRecords = await this.canAccessNonOwnedRecords(params);
         return !canAccessNonOwnedRecords;
     }
 

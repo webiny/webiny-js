@@ -7,7 +7,7 @@ import { SecurityPermission } from "~/types";
 // permissions grouped by security groups and locale. Once we flatten the permissions,
 // we lose the information about the locale.
 export const getPermissionsFromSecurityGroupsForLocale = (
-    securityGroups: Array<{ permissions: SecurityPermission[] }>,
+    securityGroups: Array<{ permissions: SecurityPermission[]; id: string }>,
     locale: string
 ) => {
     return securityGroups
@@ -35,6 +35,14 @@ export const getPermissionsFromSecurityGroupsForLocale = (
 
             return true;
         })
-        .map(securityGroup => securityGroup.permissions)
+        .map(securityGroup =>
+            securityGroup.permissions.map(sg => {
+                return {
+                    ...sg,
+                    _src: securityGroup.id
+                };
+            })
+        )
+
         .flat();
 };

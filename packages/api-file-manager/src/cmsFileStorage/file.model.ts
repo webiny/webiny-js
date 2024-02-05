@@ -180,6 +180,7 @@ export const createFileModelDefinition = (params: CreateFileModelDefinitionParam
         name: "FmFile",
         modelId: FILE_MODEL_ID,
         titleFieldId: "name",
+        authorization: false,
         fields
     });
 };
