@@ -27,12 +27,22 @@
   },
   "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae",
   "dependencies": {
-    "aws-lambda": "^1.0.7",
+    "@types/aws-lambda": "^8.10.131",
     "cheerio": "^1.0.0-rc.10",
     "srcset": "^4.0.0"
   },
   "devDependencies": {
     "@webiny/project-utils": "0.0.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "adio": {
+    "ignore": {
+      "src": [
+        "aws-lambda"
+      ],
+      "dependencies": [
+        "@types/aws-lambda"
+      ]
+    }
+  }
 }
