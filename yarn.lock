@@ -15545,7 +15545,6 @@ __metadata:
     "@babel/preset-env": ^7.23.9
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
-    "@commodo/fields": 1.1.2-beta.20
     "@types/got": ^9.6.12
     "@types/json2csv": ^4.5.1
     "@types/node-fetch": ^2.6.1
@@ -15568,7 +15567,6 @@ __metadata:
     "@webiny/pubsub": 0.0.0
     "@webiny/utils": 0.0.0
     "@webiny/validation": 0.0.0
-    commodo-fields-object: ^1.0.6
     csvtojson: ^2.0.10
     date-fns: ^2.22.1
     fs-extra: ^9.1.0
