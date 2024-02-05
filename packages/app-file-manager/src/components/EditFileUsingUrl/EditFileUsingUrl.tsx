@@ -1,7 +1,8 @@
 import { useApolloClient } from "@apollo/react-hooks";
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { useSnackbar } from "@webiny/app-admin";
+import { FileItem } from "@webiny/app-admin/types";
 import { FileManagerProvider } from "~/modules/FileManagerRenderer/FileManagerView";
 import { FileDetails } from "~/components/FileDetails";
 import { EditFileUsingUrlPresenter } from "./EditFileUsingUrlPresenter";
@@ -17,50 +18,65 @@ interface EditFileRenderProp {
 }
 
 interface EditFileUsingUrlProps {
+    onUpdate?: (file: FileItem) => void;
     actions?: Partial<FileDetailsActions>;
     children: (params: EditFileRenderProp) => React.ReactNode;
 }
 
-export const EditFileUsingUrl = observer(({ actions, children }: EditFileUsingUrlProps) => {
-    const client = useApolloClient();
-    const { showSnackbar } = useSnackbar();
-    const fileManagerApi = useFileManagerApi();
-    const fileModel = useFileModel();
-    const repository = useMemo(
-        () =>
-            new EditFileUsingUrlRepository(
-                new GetFileByUrl(client, fileModel),
-                new UpdateFile(fileManagerApi)
-            ),
-        []
-    );
-    const presenter = useMemo(() => new EditFileUsingUrlPresenter(repository), []);
+const voidOnUpdate = () => {
+    // Do nothing.
+};
 
-    const vm = presenter.vm;
+export const EditFileUsingUrl = observer(
+    ({ actions, children, onUpdate = voidOnUpdate }: EditFileUsingUrlProps) => {
+        const client = useApolloClient();
+        const { showSnackbar } = useSnackbar();
+        const fileManagerApi = useFileManagerApi();
+        const fileModel = useFileModel();
+        const repository = useMemo(
+            () =>
+                new EditFileUsingUrlRepository(
+                    new GetFileByUrl(client, fileModel),
+                    new UpdateFile(fileManagerApi)
+                ),
+            []
+        );
+        const presenter = useMemo(() => new EditFileUsingUrlPresenter(repository), []);
 
-    const renderPropParams = useMemo(() => {
-        return { editFile: presenter.loadFileFromUrl };
-    }, [presenter]);
+        const vm = presenter.vm;
 
-    useEffect(() => {
-        if (vm.errorMessage) {
-            showSnackbar(vm.errorMessage);
-        }
-    }, [vm.errorMessage]);
+        const renderPropParams = useMemo(() => {
+            return { editFile: presenter.loadFileFromUrl };
+        }, [presenter]);
 
-    return (
-        <FileManagerProvider>
-            <FileDetails
-                loading={vm.loadingMessage}
-                file={vm.file}
-                onClose={presenter.closeDrawer}
-                open={vm.isOpened}
-                onSave={presenter.updateFile}
-                actions={{ delete: false, ...actions }}
-            />
-            {children(renderPropParams)}
-        </FileManagerProvider>
-    );
-});
+        const onSave = useCallback(
+            async (file: FileItem) => {
+                await presenter.updateFile(file);
+                onUpdate(file);
+            },
+            [onUpdate]
+        );
+
+        useEffect(() => {
+            if (vm.errorMessage) {
+                showSnackbar(vm.errorMessage);
+            }
+        }, [vm.errorMessage]);
+
+        return (
+            <FileManagerProvider>
+                <FileDetails
+                    loading={vm.loadingMessage}
+                    file={vm.file}
+                    onClose={presenter.closeDrawer}
+                    open={vm.isOpened}
+                    onSave={onSave}
+                    actions={{ delete: false, ...actions }}
+                />
+                {children(renderPropParams)}
+            </FileManagerProvider>
+        );
+    }
+);
 
 EditFileUsingUrl.displayName = "EditFileUsingUrl";

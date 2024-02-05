@@ -119,7 +119,7 @@ const createCypressJobs = (dbSetup: string) => {
             },
             {
                 name: "Create verdaccio-files artifact",
-                uses: "actions/upload-artifact@v3",
+                uses: "actions/upload-artifact@v4",
                 with: {
                     name: `verdaccio-files-${dbSetup}`,
                     "retention-days": 1,
@@ -147,7 +147,7 @@ const createCypressJobs = (dbSetup: string) => {
             },
             {
                 name: "Create project-files artifact",
-                uses: "actions/upload-artifact@v3",
+                uses: "actions/upload-artifact@v4",
                 with: {
                     name: `project-files-${dbSetup}`,
                     "retention-days": 1,
@@ -238,7 +238,7 @@ const createPushWorkflow = (branchName: string) => {
     const ucFirstBranchName = branchName.charAt(0).toUpperCase() + branchName.slice(1);
 
     const workflow = createWorkflow({
-        name: `${ucFirstBranchName} Branch - Push 2`,
+        name: `${ucFirstBranchName} Branch - Push`,
         on: { push: { branches: [branchName] } },
         jobs: {
             validateWorkflows: createValidateWorkflowsJob(),
@@ -430,5 +430,5 @@ const createPushWorkflow = (branchName: string) => {
     return workflow;
 };
 
-export const pushDev2 = createPushWorkflow("dev");
-export const pushNext2 = createPushWorkflow("next");
+export const pushDev = createPushWorkflow("dev");
+export const pushNext = createPushWorkflow("next");

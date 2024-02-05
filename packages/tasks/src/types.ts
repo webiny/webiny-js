@@ -293,6 +293,11 @@ export interface ITaskOnAbortParams<C extends Context> {
     task: ITask;
 }
 
+export interface ITaskOnMaxIterationsParams<C extends Context> {
+    context: C;
+    task: ITask;
+}
+
 export enum TaskResponseStatus {
     DONE = "done",
     ERROR = "error",
@@ -342,6 +347,10 @@ export interface ITaskDefinition<
      */
     description?: string;
     /**
+     * Maximum number a step function can call the Lambda.
+     */
+    maxIterations: number;
+    /**
      * Task run method.
      */
     run: (params: ITaskRunParams<C, I, O>) => Promise<ITaskResponseResult>;
@@ -365,6 +374,11 @@ export interface ITaskDefinition<
      * This method will be called when user aborts the task.
      */
     onAbort?: (params: ITaskOnAbortParams<C>) => Promise<void>;
+    /**
+     * When task hits max iterations, this method will be called.
+     * This will be called during the run time of the task.
+     */
+    onMaxIterations?: (params: ITaskOnMaxIterationsParams<C>) => Promise<void>;
     /**
      * Custom input fields and layout for the task input.
      */

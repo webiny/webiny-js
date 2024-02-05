@@ -32,7 +32,7 @@ export default new GraphQLSchemaPlugin<Context>({
                         await context.security.onLogin.publish({ identity });
                         await context.security.onAfterLogin.publish({ identity });
                     } catch (err) {
-                        return new ErrorResponse({ code: err.code, message: err.message });
+                        return new ErrorResponse(err);
                     }
                 }
                 return new Response(identity);

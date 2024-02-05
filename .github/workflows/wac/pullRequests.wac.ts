@@ -10,7 +10,7 @@ export const pullRequests = createWorkflow({
         validateCommits: createJob({
             name: "Validate commit messages",
             if: "github.base_ref != 'dev'",
-            steps: [{ uses: "webiny/action-conventional-commits@v1.2.0" }]
+            steps: [{ uses: "webiny/action-conventional-commits@v1.3.0" }]
         }),
         // Don't allow "feat" commits to be merged into "dev" branch.
         validateCommitsDev: createJob({
@@ -18,7 +18,7 @@ export const pullRequests = createWorkflow({
             if: "github.base_ref == 'dev'",
             steps: [
                 {
-                    uses: "webiny/action-conventional-commits@v1.2.0",
+                    uses: "webiny/action-conventional-commits@v1.3.0",
                     with: {
                         // If dev, use "dev" commit types, otherwise use "next" commit types.
                         "allowed-commit-types":
@@ -206,7 +206,7 @@ export const pullRequests = createWorkflow({
                 },
                 {
                     name: "Upload verdaccio files",
-                    uses: "actions/upload-artifact@v3",
+                    uses: "actions/upload-artifact@v4",
                     with: {
                         name: "verdaccio-files",
                         "retention-days": 1,
@@ -232,7 +232,7 @@ export const pullRequests = createWorkflow({
             },
             steps: [
                 {
-                    uses: "actions/download-artifact@v3",
+                    uses: "actions/download-artifact@v4",
                     with: {
                         name: "verdaccio-files",
                         path: "verdaccio-files"

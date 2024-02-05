@@ -16,8 +16,8 @@ const CreateUserDataModel = withFields({
     // In the future, we might want to rename this field to `idpId` or similar.
     email: string({ validation: validation.create("required") }),
 
-    firstName: string({ validation: validation.create("required") }),
-    lastName: string({ validation: validation.create("required") }),
+    firstName: string({ validation: validation.create("minLength:1") }),
+    lastName: string({ validation: validation.create("minLength:1") }),
     avatar: object()
 })();
 

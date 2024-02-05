@@ -8,6 +8,13 @@ import {
     ITaskResponseDoneResultOutput
 } from "~/types";
 
+/**
+ * By default, we will stop iterating through the task after DEFAULT_MAX_ITERATIONS.
+ *
+ * This mechanism will prevent infinite loops in case of a bug in the task code.
+ */
+const DEFAULT_MAX_ITERATIONS = 500;
+
 export interface ITaskPluginSetFieldsCallback {
     (fields: ITaskDefinitionField[]): ITaskDefinitionField[] | undefined;
 }
@@ -16,8 +23,9 @@ export interface ITaskDefinitionParams<
     C extends Context = Context,
     I = any,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
-> extends Omit<ITaskDefinition<C, I, O>, "fields"> {
+> extends Omit<ITaskDefinition<C, I, O>, "fields" | "maxIterations"> {
     config?: (task: Pick<TaskDefinitionPlugin<C, I, O>, "addField" | "setFields">) => void;
+    maxIterations?: number;
 }
 
 export class TaskDefinitionPlugin<
@@ -62,11 +70,20 @@ export class TaskDefinitionPlugin<
         return this.task.onError;
     }
 
+    public get onMaxIterations() {
+        return this.task.onMaxIterations;
+    }
+
+    public get maxIterations(): number {
+        return this.task.maxIterations || DEFAULT_MAX_ITERATIONS;
+    }
+
     public constructor(task: ITaskDefinitionParams<C, I, O>) {
         super();
         this.isPrivate = task.isPrivate || false;
         this.task = {
             ...task,
+            maxIterations: task.maxIterations || DEFAULT_MAX_ITERATIONS,
             fields: []
         };
         if (typeof task.config === "function") {

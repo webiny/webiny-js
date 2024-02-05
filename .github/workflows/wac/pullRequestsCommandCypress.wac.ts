@@ -130,7 +130,7 @@ const createJobs = (dbSetup: string) => {
             },
             {
                 name: "Create verdaccio-files artifact",
-                uses: "actions/upload-artifact@v3",
+                uses: "actions/upload-artifact@v4",
                 with: {
                     name: `verdaccio-files-${dbSetup}`,
                     "retention-days": 1,
@@ -158,7 +158,7 @@ const createJobs = (dbSetup: string) => {
             },
             {
                 name: "Create project-files artifact",
-                uses: "actions/upload-artifact@v3",
+                uses: "actions/upload-artifact@v4",
                 with: {
                     name: `project-files-${dbSetup}`,
                     "retention-days": 1,

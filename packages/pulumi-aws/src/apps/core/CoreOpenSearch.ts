@@ -12,6 +12,7 @@ import {
 
 import { getAwsAccountId } from "../awsUtils";
 import { CoreVpc } from "./CoreVpc";
+import { LAMBDA_RUNTIME } from "~/constants";
 
 export interface OpenSearchParams {
     protect: boolean;
@@ -221,7 +222,7 @@ export const OpenSearch = createAppModule({
             name: "dynamo-to-elastic",
             config: {
                 role: role.output.arn,
-                runtime: "nodejs14.x",
+                runtime: LAMBDA_RUNTIME,
                 handler: "handler.handler",
                 timeout: 600,
                 memorySize: 512,
