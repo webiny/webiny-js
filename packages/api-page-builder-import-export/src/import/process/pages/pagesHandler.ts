@@ -47,7 +47,7 @@ export const pagesHandler = async (
 
         log(`Fetched sub task => ${subTask.id}`);
 
-        const { pageKey, category, zipFileKey, input, meta } = subTask.data;
+        const { pageKey, category, input, meta } = subTask.data;
         const { fileUploadsData } = input;
 
         log(`Processing page key "${pageKey}"`);
@@ -67,7 +67,6 @@ export const pagesHandler = async (
         const page = await importPage({
             context,
             pageKey,
-            key: zipFileKey,
             fileUploadsData
         });
 

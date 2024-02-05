@@ -71,9 +71,13 @@ export interface ExportPagesResponse {
     task: PbImportExportTask;
 }
 
+export interface ImportPagesResponse {
+    task: PbImportExportTask;
+}
+
 export interface PagesImportExportCrud {
     exportPages(params: ExportPagesParams): Promise<ExportPagesResponse>;
-    importPages(params: ImportPagesParams): Promise<{ task: ImportExportTask }>;
+    importPages(params: ImportPagesParams): Promise<ImportPagesResponse>;
 
     onPagesBeforeExport: Topic<OnPagesBeforeExportTopicParams>;
     onPagesAfterExport: Topic<OnPagesAfterExportTopicParams>;

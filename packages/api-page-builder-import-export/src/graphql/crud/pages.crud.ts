@@ -4,20 +4,15 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { ContextPlugin } from "@webiny/api";
 import {
     ExportPagesParams,
-    ImportExportTaskStatus,
     OnPagesAfterExportTopicParams,
     OnPagesAfterImportTopicParams,
     OnPagesBeforeExportTopicParams,
     OnPagesBeforeImportTopicParams,
-    PagesImportExportCrud,
     PbImportExportContext
 } from "~/types";
-import { invokeHandlerClient } from "~/client";
-import { Payload as CreateHandlerPayload } from "~/import/create";
 import { PagesPermissions } from "@webiny/api-page-builder/graphql/crud/permissions/PagesPermissions";
 import { IExportPagesControllerInput, PageExportTask } from "~/export/pages/types";
-
-const IMPORT_PAGES_CREATE_HANDLER = process.env.IMPORT_CREATE_HANDLER as string;
+import { IImportPagesControllerInput, PageImportTask } from "~/import/pages/types";
 
 export default new ContextPlugin<PbImportExportContext>(context => {
     const pagesPermissions = new PagesPermissions({
@@ -42,7 +37,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
         "PageBuilder.onPagesAfterImport"
     );
 
-    const importExportCrud: PagesImportExportCrud = {
+    context.pageBuilder.pages = {
         onPagesBeforeExport,
         onPagesAfterExport,
         onPagesBeforeImport,
@@ -57,38 +52,42 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 throw new NotFoundError(`Category with slug "${categorySlug}" not found.`);
             }
 
-            // Create a task for import page
-            const task = await context.pageBuilder.importExportTask.createTask({
-                status: ImportExportTaskStatus.PENDING,
-                input: {
-                    category: categorySlug,
-                    zipFileUrl
-                }
-            });
-            /**
-             * Import Pages
-             * ImportPages
-             * importPages
-             */
-            await onPagesBeforeImport.publish({ params });
-            await invokeHandlerClient<CreateHandlerPayload>({
-                context,
-                name: IMPORT_PAGES_CREATE_HANDLER,
-                payload: {
-                    category: categorySlug,
-                    zipFileUrl,
-                    task,
-                    type: "page",
-                    identity: context.security.getIdentity(),
-                    meta
-                },
-                description: "Import Pages - create"
-            });
-            await onPagesAfterImport.publish({ params });
+            const identity = context.security.getIdentity();
 
-            return {
-                task
-            };
+            try {
+                await onPagesBeforeImport.publish({ params });
+                const task = await context.tasks.trigger<IImportPagesControllerInput>({
+                    definition: PageImportTask.Controller,
+                    input: {
+                        category: categorySlug,
+                        zipFileUrl,
+                        meta,
+                        identity: {
+                            id: identity.id,
+                            displayName: identity.displayName || "unknown",
+                            type: identity.type
+                        }
+                    }
+                });
+                await onPagesAfterImport.publish({ params });
+                return {
+                    task: {
+                        id: task.id,
+                        status: task.taskStatus,
+                        data: {},
+                        createdOn: task.createdOn,
+                        createdBy: task.createdBy,
+                        stats: {
+                            total: 0,
+                            completed: 0,
+                            failed: 0
+                        }
+                    }
+                };
+            } catch (ex) {
+                console.log(ex);
+                throw ex;
+            }
         },
 
         async exportPages(params) {
@@ -148,6 +147,4 @@ export default new ContextPlugin<PbImportExportContext>(context => {
             }
         }
     };
-    // Modify context
-    context.pageBuilder.pages = importExportCrud;
 });

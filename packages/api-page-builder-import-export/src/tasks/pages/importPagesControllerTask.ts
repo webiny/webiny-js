@@ -1,11 +1,19 @@
 import { createPrivateTaskDefinition } from "@webiny/tasks";
 import { PbImportExportContext } from "~/graphql/types";
-import { IImportPagesInput } from "~/import/pages/types";
+import {
+    IImportPagesControllerInput,
+    IImportPagesControllerOutput,
+    PageImportTask
+} from "~/import/pages/types";
 
 export const createImportPagesControllerTask = () => {
-    return createPrivateTaskDefinition<PbImportExportContext, IImportPagesInput>({
-        id: "pageBuilderImportPages",
-        title: "Page Builder - Import Pages",
+    return createPrivateTaskDefinition<
+        PbImportExportContext,
+        IImportPagesControllerInput,
+        IImportPagesControllerOutput
+    >({
+        id: PageImportTask.Controller,
+        title: "Page Builder - Import Pages Controlelr",
         description: "Import pages from the Page Builder.",
         /**
          * We want to have a lot of executions because we need to pool the subtasks all the time.

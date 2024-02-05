@@ -13,7 +13,6 @@ import { deleteS3Folder, updateFilesInData, uploadAssets } from "~/import/utils"
 import { ExportedPageData } from "~/export/process/exporters/PageExporter";
 
 interface ImportPageParams {
-    key: string;
     pageKey: string;
     context: PbImportExportContext;
     fileUploadsData: FileUploadsData;

@@ -4,7 +4,6 @@ import { PbImportExportContext } from "~/types";
 export enum PageExportTask {
     Controller = "pageBuilderExportPagesController",
     ZipPages = "pageBuilderExportPagesZipPages",
-    CombineZippedPages = "pageBuilderExportPagesCombineZippedPages",
     Cleanup = "pageBuilderExportPagesCleanup"
 }
 

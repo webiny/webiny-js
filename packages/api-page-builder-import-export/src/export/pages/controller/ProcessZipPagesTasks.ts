@@ -22,7 +22,7 @@ export class ProcessZipPagesTasks {
             where: {
                 parentId: store.getTask().id,
                 definitionId: PageExportTask.ZipPages,
-                taskStatus: TaskDataStatus.RUNNING
+                taskStatus_in: [TaskDataStatus.RUNNING, TaskDataStatus.PENDING]
             },
             limit: 1
         });

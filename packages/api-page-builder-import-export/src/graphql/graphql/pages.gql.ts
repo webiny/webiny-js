@@ -1,5 +1,10 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { ExportPagesParams, ExportPagesResponse, PbImportExportContext } from "../types";
+import {
+    ExportPagesParams,
+    ExportPagesResponse,
+    ImportPagesParams,
+    PbImportExportContext
+} from "../types";
 import resolve from "./utils/resolve";
 import { Response, ErrorResponse } from "@webiny/handler-graphql";
 
@@ -54,13 +59,15 @@ const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
                     args,
                     context
                 ): Promise<Response<ExportPagesResponse> | ErrorResponse> => {
-                    return resolve(() =>
-                        context.pageBuilder.pages.exportPages(args as ExportPagesParams)
-                    );
+                    return resolve(() => {
+                        return context.pageBuilder.pages.exportPages(args as ExportPagesParams);
+                    });
                 },
 
-                importPages: async (_, args: any, context) => {
-                    return resolve(() => context.pageBuilder.pages.importPages(args));
+                importPages: async (_, args, context) => {
+                    return resolve(() => {
+                        return context.pageBuilder.pages.importPages(args as ImportPagesParams);
+                    });
                 }
             }
         }
