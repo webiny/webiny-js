@@ -202,6 +202,19 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             }
         ];
     },
+    tasks: () => {
+        return [
+            { cmd: "packages/tasks --storage=ddb", storage: "ddb" },
+            {
+                cmd: "packages/tasks --storage=ddb-es,ddb",
+                storage: "ddb-es"
+            },
+            {
+                cmd: "packages/tasks --storage=ddb-os,ddb",
+                storage: "ddb-os"
+            }
+        ];
+    },
     "api-elasticsearch-tasks": () => {
         return [
             {

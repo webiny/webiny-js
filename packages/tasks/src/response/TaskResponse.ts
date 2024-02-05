@@ -33,7 +33,7 @@ const getWaitingTime = (options?: ITaskResponseContinueOptions): number | undefi
         const now = new Date();
         waitingTime = (options.date.getTime() - now.getTime()) / 1000;
     }
-    if (!waitingTime) {
+    if (!waitingTime || waitingTime < 0) {
         return undefined;
     }
     return waitingTime > MAX_WAITING_TIME ? waitingTime : MAX_WAITING_TIME;
@@ -72,13 +72,22 @@ export class TaskResponse implements ITaskResponse {
         });
     }
 
-    public error(error: IResponseError | Error): ITaskResponseErrorResult {
+    public error(error: IResponseError | Error | string): ITaskResponseErrorResult {
         return this.response.error({
-            error: error instanceof Error ? getErrorProperties(error) : error
+            error: this.getError(error)
         });
     }
 
     public aborted(): ITaskResponseAbortedResult {
         return this.response.aborted();
+    }
+
+    private getError(error: IResponseError | Error | string): IResponseError | Error {
+        if (error instanceof Error) {
+            return getErrorProperties(error);
+        } else if (typeof error === "string") {
+            return new Error(error);
+        }
+        return error;
     }
 }

@@ -24,7 +24,7 @@
     "fast-glob": "^3.2.7",
     "handlebars": "4.7.7",
     "localtunnel": "2.0.2",
-    "lodash": "^4.17.20",
+    "lodash": "4.17.21",
     "log-update": "^4.0.0",
     "mime": "2.6.0",
     "minimatch": "^5.1.0",

@@ -24,7 +24,7 @@ jobs:
           aws-region: eu-central-1
 
       # We need this step because of the `aws-nuke.yml` config which is stored in our repo.
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Run AWS Nuke
         run: >
@@ -45,11 +45,11 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: yarn --immutable
