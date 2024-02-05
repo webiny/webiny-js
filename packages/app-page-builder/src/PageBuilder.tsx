@@ -100,7 +100,10 @@ const PageBuilderMenu = () => {
 };
 
 const EditorLoader = React.lazy(() =>
-    import("./editor/Editor").then(m => ({
+    import(
+        /* webpackChunkName: "PageBuilderEditor" */
+        "./editor/Editor"
+    ).then(m => ({
         default: m.Editor
     }))
 );

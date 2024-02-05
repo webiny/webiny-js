@@ -6,9 +6,18 @@ export const createElasticsearchReindexingTask = (params?: IElasticsearchTaskCon
         id: "elasticsearchReindexing",
         title: "Elasticsearch reindexing",
         run: async ({ context, isCloseToTimeout, response, input, isAborted, store }) => {
-            const { Manager } = await import("../Manager");
-            const { IndexManager } = await import("~/settings");
-            const { ReindexingTaskRunner } = await import("./ReindexingTaskRunner");
+            const { Manager } = await import(
+                /* webpackChunkName: "ApiElasticsearchTasksReindexingManager" */
+                "../Manager"
+            );
+            const { IndexManager } = await import(
+                /* webpackChunkName: "ApiElasticsearchTasksReindexingSettings" */
+                "~/settings"
+            );
+            const { ReindexingTaskRunner } = await import(
+                /* webpackChunkName: "ApiElasticsearchTasksReindexingTaskRunner" */
+                "./ReindexingTaskRunner"
+            );
 
             const manager = new Manager({
                 elasticsearchClient: params?.elasticsearchClient,
