@@ -125,8 +125,8 @@ export interface IListTaskLogsResponse {
     meta: CmsEntryMeta;
 }
 
-export type ICreateTaskResponse<T = any> = ITask<T>;
-export type IUpdateTaskResponse<T = any> = ITask<T>;
+export type ICreateTaskResponse<T = ITaskDataInput> = ITask<T>;
+export type IUpdateTaskResponse<T = ITaskDataInput> = ITask<T>;
 export type IDeleteTaskResponse = boolean;
 
 export interface IListTaskParams extends Omit<CmsEntryListParams, "fields" | "search"> {

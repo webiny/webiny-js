@@ -3,6 +3,7 @@ import {
     ITask,
     ITaskDataInput,
     ITaskLogItemData,
+    ITaskResponseDoneResultOutput,
     ITaskUpdateData,
     TaskDataStatus
 } from "~/types";
@@ -39,22 +40,45 @@ export interface ITaskManagerStoreErrorLog {
     error: IResponseError | Error;
 }
 
-export interface ITaskManagerStore<T extends ITaskDataInput = ITaskDataInput> {
-    setTask: (task: ITask<T>) => void;
-    getTask: () => ITask<T>;
+export interface ITaskManagerStoreSetOutputOptions {
+    /**
+     * Default is true.
+     */
+    save?: boolean;
+}
+
+export interface ITaskManagerStore<
+    T extends ITaskDataInput = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
+    setTask: (task: ITask<T, O>) => void;
+    getTask: () => ITask<T, O>;
     getStatus: () => TaskDataStatus;
     /**
      * @throws {Error} If task not found or something goes wrong during the database update.
      */
     updateTask: (params: ITaskManagerStoreUpdateTaskParam) => Promise<void>;
     /**
-     * Update task input, which are used to store custom user data.
-     * You can send partial input, and they will be merged with the existing input.
+     * Update the task input, which are used to store custom user data.
+     * You can send partial input, and it will be merged with the existing input.
      *
      * @throws {Error} If task not found or something goes wrong during the database update.
      */
     updateInput: (params: ITaskManagerStoreUpdateTaskInputParam<T>) => Promise<void>;
     getInput: () => T;
+    /**
+     * Update the task output, which are used to store the output data.
+     * You can send partial output, and it will be merged with the existing output.
+     *
+     * Second parameter is optional options, and it contains a possibility not to store the task immediately.
+     *
+     * @throws {Error} If task not found or something goes wrong during the database update.
+     */
+    updateOutput: (
+        values: Partial<O>,
+        options?: ITaskManagerStoreSetOutputOptions
+    ) => Promise<void>;
+    getOutput: () => O;
     /**
      * @throws {Error} If task not found or something goes wrong during the database update.
      */

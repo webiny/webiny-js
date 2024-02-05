@@ -4,6 +4,8 @@ import {
     ITaskLog,
     ITaskLogItemType,
     ITaskManagerStoreInfoLog,
+    ITaskManagerStoreSetOutputOptions,
+    ITaskResponseDoneResultOutput,
     ITasksContextObject,
     TaskDataStatus
 } from "~/types";
@@ -37,7 +39,11 @@ export interface TaskManagerStoreContext {
     tasks: Pick<ITasksContextObject, "updateTask" | "updateLog">;
 }
 
-export class TaskManagerStore implements ITaskManagerStore {
+export class TaskManagerStore<
+    T extends ITaskDataInput = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> implements ITaskManagerStore<T, O>
+{
     private readonly context: TaskManagerStoreContext;
     private task: ITask;
     private taskLog: ITaskLog;
@@ -56,8 +62,8 @@ export class TaskManagerStore implements ITaskManagerStore {
         this.task = task;
     }
 
-    public getTask<T extends ITaskDataInput = ITaskDataInput>(): ITask<T> {
-        return this.task as ITask<T>;
+    public getTask(): ITask<T, O> {
+        return this.task as ITask<T, O>;
     }
 
     public async updateTask(param: ITaskManagerStoreUpdateTaskParam): Promise<void> {
@@ -69,8 +75,8 @@ export class TaskManagerStore implements ITaskManagerStore {
             return;
         }
         this.task = await this.context.tasks.updateTask(this.task.id, {
-            ...this.task,
-            ...data
+            ...data,
+            output: data.output || this.task.output
         });
     }
 
@@ -92,6 +98,27 @@ export class TaskManagerStore implements ITaskManagerStore {
 
     public getInput<T extends ITaskDataInput = ITaskDataInput>(): T {
         return this.task.input as T;
+    }
+
+    public async updateOutput(
+        values: Partial<O>,
+        options: ITaskManagerStoreSetOutputOptions = {}
+    ): Promise<void> {
+        const output = {
+            ...this.task.output,
+            ...values
+        };
+        if (options.save === false) {
+            this.task.output = output;
+            return;
+        }
+        await this.context.tasks.updateTask(this.task.id, {
+            output
+        });
+    }
+
+    public getOutput(): O {
+        return this.task.output as O;
     }
     /**
      * Currently the methods throws an error if something goes wrong during the database update.
