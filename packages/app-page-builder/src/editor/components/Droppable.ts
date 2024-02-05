@@ -1,7 +1,8 @@
 import React from "react";
 import { uiAtom } from "../recoil/modules";
-import { ConnectDropTarget, DragObjectWithType, useDrop } from "react-dnd";
+import { ConnectDropTarget, useDrop } from "react-dnd";
 import { useRecoilValue } from "recoil";
+import { DragObjectWithType } from "~/types";
 
 interface DefaultVisibilityPropType {
     type: string;

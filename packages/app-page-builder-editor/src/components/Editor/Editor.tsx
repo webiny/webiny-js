@@ -69,11 +69,6 @@ export const Editor: React.FunctionComponent<EditorPropsType> = (/*{ revisions }
     };
 
     return (
-        /**
-         * react-dnd users old version of React which has children defined by default.
-         * This will break build when react-dnd is upgraded, so then we can remove ts-expect-error
-         */
-        // @ts-expect-error
         <DndProvider backend={HTML5Backend}>
             <div className={classSet(classes)}>
                 <pre>{JSON.stringify(editor.getPage(), null, 4)}</pre>

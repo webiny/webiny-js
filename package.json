@@ -221,7 +221,12 @@
     "@types/eslint": "8.2.1",
     "yargs": "^17.3.1",
     "@lerna/version@3.22.1": "patch:@lerna/version@npm:3.22.1#.yarn/patches/@lerna-version-npm-3.22.1-97f4c3a7dd",
-    "@lerna/publish@3.22.1": "patch:@lerna/publish@npm:3.22.1#.yarn/patches/@lerna-publish-npm-3.22.1-469707df67"
+    "@lerna/publish@3.22.1": "patch:@lerna/publish@npm:3.22.1#.yarn/patches/@lerna-publish-npm-3.22.1-469707df67",
+    "react-dnd": "^16.0.0",
+    "react-dnd-html5-backend": "^16.0.0"
   },
-  "packageManager": "yarn@3.6.4"
+  "packageManager": "yarn@3.6.4",
+  "dependencies": {
+    "@types/hoist-non-react-statics": "^3.3.5"
+  }
 }
