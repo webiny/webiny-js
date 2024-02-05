@@ -16,7 +16,11 @@ import {
 } from "./validation";
 import { CmsModel, CmsModelField } from "./model";
 import { CmsIdentity } from "~/types/shared";
-import { DragObjectWithType } from "react-dnd";
+import type { SourceType } from "dnd-core";
+
+export type DragObjectWithType = {
+    type: SourceType;
+};
 
 export * from "./validation";
 export * from "./model";

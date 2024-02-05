@@ -1,8 +1,6 @@
 import React, { ReactElement } from "react";
-import { Container } from "~/types";
-import { useDrag, DragPreviewImage, ConnectDragSource } from "react-dnd";
-import { DragSourceMonitor } from "react-dnd/lib/interfaces/monitors";
-import { DragObjectWithType } from "react-dnd/lib/interfaces/hooksApi";
+import { Container, DragObjectWithType } from "~/types";
+import { useDrag, DragPreviewImage, ConnectDragSource, DragSourceMonitor } from "react-dnd";
 
 const emptyImage = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
@@ -34,22 +32,19 @@ export interface DraggableProps extends BeginDragProps {
 }
 
 const Draggable = (props: DraggableProps) => {
-    const { children, beginDrag, endDrag, target } = props;
+    const { children, beginDrag, endDrag } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({
-        item: {
-            type: "element",
-            target
-        },
-        collect: monitor => ({
-            isDragging: monitor.isDragging()
-        }),
-        begin(monitor) {
+        type: "element",
+        item(monitor) {
             if (typeof beginDrag !== "function") {
                 return beginDrag as undefined;
             }
             return beginDrag(props, monitor);
         },
+        collect: monitor => ({
+            isDragging: monitor.isDragging()
+        }),
         end(item, monitor) {
             if (typeof endDrag !== "function") {
                 return endDrag as undefined;

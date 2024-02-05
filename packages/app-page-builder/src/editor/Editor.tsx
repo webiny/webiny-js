@@ -42,8 +42,6 @@ export const Editor = ({ stateInitializerFactory }: EditorProps) => {
     );
 
     return (
-        // 'children' prop missing from DndProvider types before react-dnd v14.0.5.
-        // @ts-expect-error
         <DndProvider backend={HTML5Backend}>
             <RecoilRoot initializeState={initializeState}>
                 <EditorProvider>

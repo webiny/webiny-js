@@ -13,6 +13,11 @@ import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/
 import { Theme } from "@webiny/app-theme/types";
 import { Renderer } from "@webiny/app-page-builder-elements/types";
 import { FolderTableItem, RecordTableItem, SearchRecordItem } from "@webiny/app-aco/table.types";
+import type { SourceType } from "dnd-core";
+
+export type DragObjectWithType = {
+    type: SourceType;
+};
 
 export enum PageStatus {
     PUBLISHED = "published",
@@ -218,6 +223,11 @@ export type PbElementDataType = {
     width?: number;
     [key: string]: any;
 };
+
+export interface CollectedProps {
+    handlerId: string | symbol | null;
+    isOver: boolean;
+}
 
 export interface PbEditorElement {
     id: string;
