@@ -20,11 +20,6 @@ const ContentModelEditorView = () => {
     return (
         <ContentModelEditorProvider key={modelId} apolloClient={apolloClient} modelId={modelId}>
             {
-                /**
-                 * react-dnd users old version of React which has children defined by default.
-                 * This will break build when react-dnd is upgraded, so then we can remove ts-expect-error
-                 */
-                // @ts-expect-error
                 <DndProvider backend={HTML5Backend}>
                     <Editor />
                 </DndProvider>
