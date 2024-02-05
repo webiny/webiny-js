@@ -138,7 +138,8 @@ export class EntriesPermissions {
 
     // Has publishing workflow permissions?
     private hasPw(permission: CmsEntryPermission, pw: string) {
-        const isCustom = Object.keys(permission).length > 1; // "name" key is always present
+        // `name` and `_src` properties are always present.
+        const isCustom = Object.keys(permission).length > 2;
 
         if (!isCustom) {
             // Means it's a "full-access" permission.

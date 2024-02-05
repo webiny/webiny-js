@@ -39,7 +39,7 @@ export const getPermissionsFromSecurityGroupsForLocale = (
             securityGroup.permissions.map(sg => {
                 return {
                     ...sg,
-                    _src: securityGroup.id
+                    _src: "role:" + securityGroup.id
                 };
             })
         )

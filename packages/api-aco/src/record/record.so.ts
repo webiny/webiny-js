@@ -11,7 +11,7 @@ import { ENTRY_META_FIELDS } from "@webiny/api-headless-cms/constants";
 export const createSearchRecordOperations = (
     params: CreateAcoStorageOperationsParams
 ): AcoSearchRecordStorageOperations => {
-    const { cms, security } = params;
+    const { cms } = params;
 
     const getRecord = async (model: CmsModel, id: string) => {
         /**
