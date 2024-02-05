@@ -71,14 +71,13 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             const modelsPermissions = new ModelsPermissions({
                 getIdentity: context.security.getIdentity,
                 getPermissions: () => context.security.getPermissions("cms.contentModel"),
-                fullAccessPermissionName: "cms.*",
                 modelGroupsPermissions
             });
 
             const entriesPermissions = new EntriesPermissions({
                 getIdentity: context.security.getIdentity,
                 getPermissions: () => context.security.getPermissions("cms.contentEntry"),
-                fullAccessPermissionName: "cms.*"
+                modelsPermissions
             });
 
             context.cms = {
@@ -123,8 +122,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                     getTenant,
                     getLocale,
                     storageOperations,
-                    entriesPermissions,
-                    modelsPermissions
+                    entriesPermissions
                 }),
                 export: {
                     ...createExportCrud(context)

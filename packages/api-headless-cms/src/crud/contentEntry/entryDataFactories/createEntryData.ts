@@ -80,10 +80,10 @@ export const createEntryData = async ({
     const status = rawInput.status || STATUS_DRAFT;
     if (status !== STATUS_DRAFT) {
         if (status === STATUS_PUBLISHED) {
-            await entriesPermissions.ensure({ pw: "p" });
+            await entriesPermissions.ensureCanAccess({ model, pw: "p" });
         } else if (status === STATUS_UNPUBLISHED) {
             // If setting the status other than draft, we have to check if the user has permissions to publish.
-            await entriesPermissions.ensure({ pw: "u" });
+            await entriesPermissions.ensureCanAccess({ model, pw: "u" });
         }
     }
 

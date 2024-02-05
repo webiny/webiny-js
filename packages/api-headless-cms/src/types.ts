@@ -558,6 +558,13 @@ export interface CmsModel {
      * Only available for the plugin constructed models.
      */
     isPrivate?: boolean;
+
+    /**
+     * Does this model require authorization to be performed?
+     * Only available for models created via plugins.
+     */
+    authorization?: boolean;
+
     /**
      * Is this model created via plugin?
      */
@@ -2618,7 +2625,7 @@ export type CmsEntryResolverFactory<TSource = any, TArgs = any, TContext = CmsCo
  */
 export interface BaseCmsSecurityPermission extends SecurityPermission {
     own?: boolean;
-    rwd: string | number;
+    rwd: string | number; // TODO: a number?
 }
 
 /**
@@ -2665,18 +2672,6 @@ export interface CmsGroupPermission extends BaseCmsSecurityPermission {
  */
 export interface CmsEntryPermission extends BaseCmsSecurityPermission {
     pw?: string;
-    /**
-     * An object representing `key: model.modelId` values where key is locale code.
-     */
-    models?: {
-        [key: string]: string[];
-    };
-    /**
-     * {locale: groupId[]} map, where key is a locale code.
-     */
-    groups?: {
-        [key: string]: string[];
-    };
 }
 
 export interface CmsGroupStorageOperationsGetParams {

@@ -1,54 +1,142 @@
 import { CmsEntryPermission, CmsModel } from "~/types";
-import { AppPermissions, EnsureParams, Options } from "@webiny/api-security";
+import { NotAuthorizedError } from "@webiny/api-security";
+import { CreatedBy, SecurityIdentity } from "@webiny/api-security/types";
+import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 
-type PickedCmsModel = Pick<CmsModel, "isPrivate">;
-
-interface EnsureWithModelParams extends EnsureParams {
-    model: PickedCmsModel;
+interface EnsureParams {
+    model: CmsModel;
+    rwd?: string;
+    pw?: string;
+    owns?: CreatedBy;
 }
 
-interface CanAccessNonOwnedRecordsWithModelParams {
-    model: PickedCmsModel;
+interface HasFullAccessParams {
+    model: CmsModel;
 }
 
-interface CanAccessOnlyOwnRecordsWithModelParams {
-    model: PickedCmsModel;
+export interface EntriesPermissionsParams {
+    getIdentity: () => SecurityIdentity | Promise<SecurityIdentity>;
+    getPermissions: () => CmsEntryPermission[] | Promise<CmsEntryPermission[]>;
+    modelsPermissions: ModelsPermissions;
 }
 
-interface HasFullAccessWithModelParams {
-    model: PickedCmsModel;
-}
+export class EntriesPermissions {
+    getIdentity: () => SecurityIdentity | Promise<SecurityIdentity>;
+    getPermissions: () => CmsEntryPermission[] | Promise<CmsEntryPermission[]>;
+    private fullAccessPermissions: string[];
+    private modelsPermissions: ModelsPermissions;
 
-export class EntriesPermissions extends AppPermissions<CmsEntryPermission> {
-    async ensureWithModel(params: EnsureWithModelParams, options: Options = {}): Promise<boolean> {
-        if (await this.hasFullAccessWithModel(params)) {
+    constructor({ getIdentity, getPermissions, modelsPermissions }: EntriesPermissionsParams) {
+        this.getIdentity = getIdentity;
+        this.getPermissions = getPermissions;
+        this.fullAccessPermissions = ["*", "cms.*"];
+        this.modelsPermissions = modelsPermissions;
+    }
+
+    async canAccess(params: EnsureParams): Promise<boolean> {
+        const hasFullAccess = await this.hasFullAccess(params);
+        if (hasFullAccess) {
             return true;
         }
 
-        return this.ensure(params, options);
-    }
-
-    async canAccessNonOwnedRecordsWithModel(params: CanAccessNonOwnedRecordsWithModelParams) {
-        if (await this.hasFullAccessWithModel(params)) {
+        const canReadModel = await this.canReadModel(params.model);
+        if (!canReadModel) {
             return false;
         }
 
-        return this.canAccessNonOwnedRecords();
-    }
+        if (params.owns) {
+            if (await this.canAccessNonOwnedRecords()) {
+                return true;
+            }
 
-    async canAccessOnlyOwnRecordsWithModel(params: CanAccessOnlyOwnRecordsWithModelParams) {
-        if (await this.hasFullAccessWithModel(params)) {
+            // If we got here, that means we didn't encounter a permission object
+            // that gives us the ability to access non-owned records.
+            const identity = await this.getIdentity();
+            if (identity.id === params.owns.id) {
+                return true;
+            }
+
             return false;
         }
 
-        return this.canAccessOnlyOwnRecords();
-    }
+        const permissions = await this.getPermissions();
+        const hasPermission = permissions.some(current => {
+            if (params.rwd) {
+                return this.hasRwd(current, params.rwd);
+            }
 
-    async hasFullAccessWithModel(params: HasFullAccessWithModelParams) {
-        if (params.model.isPrivate) {
+            if (params.pw) {
+                return this.hasPw(current, params.pw);
+            }
+
+            return true;
+        });
+
+        if (hasPermission) {
             return true;
         }
 
-        return this.hasFullAccess();
+        return false;
+    }
+
+    async ensureCanAccess(params: EnsureParams) {
+        const canAccessFolderContent = await this.canAccess(params);
+        if (!canAccessFolderContent) {
+            throw new NotAuthorizedError();
+        }
+    }
+
+    /**
+     * Before using this method, make sure to check base permissions via `ensure` method.
+     */
+    async canAccessNonOwnedRecords() {
+        const permissions = await this.getPermissions();
+        return permissions.some(p => !p.own);
+    }
+
+    /**
+     * Before using this method, make sure to check base permissions via `ensure` method.
+     */
+    async canAccessOnlyOwnRecords() {
+        const canAccessNonOwnedRecords = await this.canAccessNonOwnedRecords();
+        return !canAccessNonOwnedRecords;
+    }
+
+    async hasFullAccess(params: HasFullAccessParams) {
+        if (params.model.authorization === false) {
+            return true;
+        }
+
+        const permissions = await this.getPermissions();
+        return permissions.some(p => this.fullAccessPermissions.filter(Boolean).includes(p.name));
+    }
+
+    /**
+     * In order to do any operation with an entry, we must first check if
+     * the identity has at least read permission on the content model.
+     * @private
+     */
+    private canReadModel(model: CmsModel) {
+        return this.modelsPermissions.canAccess({ model, rwd: "r" });
+    }
+
+    private hasRwd(permission: CmsEntryPermission, rwd: string) {
+        return typeof permission.rwd !== "string" || permission.rwd.includes(rwd);
+    }
+
+    // Has publishing workflow permissions?
+    private hasPw(permission: CmsEntryPermission, pw: string) {
+        const isCustom = Object.keys(permission).length > 1; // "name" key is always present
+
+        if (!isCustom) {
+            // Means it's a "full-access" permission.
+            return true;
+        }
+
+        if (typeof permission["pw"] !== "string") {
+            return false;
+        }
+
+        return permission["pw"].includes(pw);
     }
 }
