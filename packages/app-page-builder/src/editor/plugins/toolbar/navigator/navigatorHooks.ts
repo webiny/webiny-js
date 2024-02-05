@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { useDrag, useDrop, DropTargetMonitor, DragSourceMonitor } from "react-dnd";
+import { useDrag, useDrop, DragSourceMonitor } from "react-dnd";
 import { elementByIdSelector, rootElementAtom } from "~/editor/recoil/modules";
 import { MoveBlockActionArgsType } from "~/editor/recoil/actions/moveBlock/types";
 import { MoveBlockActionEvent } from "~/editor/recoil/actions";
@@ -67,7 +67,7 @@ export const useSortableList = ({ index, move, type, beginDrag, endDrag }: UseSo
     const [dropItemAbove, setDropItemAbove] = useState(false);
     const isDraggingDownwardsRef = useRef<boolean>(false);
 
-    const [dropData, drop] = useDrop<DragItem, unknown, CollectedProps>({
+    const [dropData, drop] = useDrop<DragItem, void, CollectedProps>({
         accept: BLOCK,
         collect(monitor) {
             return {
@@ -75,7 +75,7 @@ export const useSortableList = ({ index, move, type, beginDrag, endDrag }: UseSo
                 isOver: monitor.isOver() && monitor.isOver({ shallow: true })
             };
         },
-        drop(item: DragItem) {
+        drop(item) {
             if (!ref.current) {
                 return;
             }
@@ -104,7 +104,7 @@ export const useSortableList = ({ index, move, type, beginDrag, endDrag }: UseSo
             // to avoid expensive index searches.
             item.index = dropIndex;
         },
-        hover(item: DragItem, monitor: DropTargetMonitor) {
+        hover(item, monitor) {
             if (!ref.current) {
                 return;
             }
@@ -142,7 +142,7 @@ export const useSortableList = ({ index, move, type, beginDrag, endDrag }: UseSo
 
     const [{ isDragging }, drag, preview] = useDrag<
         DragObjectWithType,
-        unknown,
+        void,
         { isDragging: boolean }
     >({
         type,

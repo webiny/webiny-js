@@ -16,6 +16,7 @@ import { FieldEditorProps } from "./FieldEditor";
 import { DragSourceMonitor } from "react-dnd";
 import { useModelFieldEditor } from "~/admin/components/FieldEditor/useModelFieldEditor";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
+import { DragObject } from "../Droppable";
 
 interface DropTarget {
     row: number;
@@ -235,7 +236,7 @@ export const FieldEditorProvider = ({
         return null;
     }, []);
 
-    const onEndDrag: OnEndDragCallable<unknown, DropResult> = (
+    const onEndDrag: OnEndDragCallable<DragObject, DropResult> = (
         { type, field, fields },
         monitor
     ) => {

@@ -15,7 +15,7 @@ export interface DroppableChildrenFunction {
 
 interface IsVisibleParams {
     type: "row" | "field" | "newField";
-    item: any;
+    item: DragSource;
     isDragging: boolean;
 }
 export interface IsVisibleCallable {
@@ -28,20 +28,20 @@ export interface DroppableProps {
     type?: string;
     children: DroppableChildrenFunction;
     isDragging?: boolean;
-    isDroppable?: (item: any) => boolean;
+    isDroppable?: (item: DragSource) => boolean;
     isVisible?: IsVisibleCallable;
     onDrop?: OnDropCallable;
 }
 
-type DragObject = {
-    item: any;
+export type DragObject = {
+    item: IsVisibleParams;
     isOver: boolean;
 };
 
 const DroppableComponent = (props: DroppableProps) => {
     const { children, onDrop, isVisible = () => true } = props;
 
-    const [{ item, isOver }, drop] = useDrop<unknown, unknown, DragObject>({
+    const [{ item, isOver }, drop] = useDrop<DragSource, void, DragObject>({
         accept: "element",
         collect: monitor => ({
             isOver: monitor.isOver() && monitor.isOver({ shallow: true }),

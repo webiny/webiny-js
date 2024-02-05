@@ -221,7 +221,7 @@ export type PbElementDataType = {
 
 export interface CollectedProps {
     handlerId: string | symbol | null;
-    isOver: any;
+    isOver: boolean;
 }
 
 export interface PbEditorElement {
