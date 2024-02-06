@@ -114,7 +114,7 @@ export class FormBuilder_5_40_0_001_FormPublished implements DataMigration<Migra
                     return true;
                 }
 
-                // Fetch published HCMS form record from DDB using latest form "id"
+                // Fetch HCMS form published record from DDB using latest form "id"
                 const cmsEntry = await queryOne<CmsEntryWithMeta>({
                     entity: this.ddbCmsEntity,
                     partitionKey: `T#${tenantId}#L#${localeCode}#CMS#CME#${latestForm.formId}`,
@@ -147,7 +147,7 @@ export class FormBuilder_5_40_0_001_FormPublished implements DataMigration<Migra
             table: this.table,
             logger,
             callback: async ({ tenantId, localeCode }) => {
-                logger.info(`Checking form published entries for ${tenantId} - ${localeCode}.`);
+                logger.info(`Migrating form published entries for ${tenantId} - ${localeCode}.`);
 
                 const formBuilderIndexNameParams = {
                     tenant: tenantId,

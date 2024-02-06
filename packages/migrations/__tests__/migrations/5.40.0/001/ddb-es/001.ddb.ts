@@ -51,8 +51,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-1-65c0a07038a36e00082095ea",
             stats: {
-                submissions: 0,
-                views: 0
+                submissions: 1000,
+                views: 10000
             },
             status: "published",
             steps: [
@@ -114,8 +114,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-1-65c0a07038a36e00082095ea",
             stats: {
-                submissions: 0,
-                views: 0
+                submissions: 1000,
+                views: 10000
             },
             status: "published",
             steps: [
@@ -177,8 +177,8 @@ export const createFormsData = () => {
             },
             slug: "demo-form-1-65c0a07038a36e00082095ea",
             stats: {
-                submissions: 0,
-                views: 0
+                submissions: 1000,
+                views: 10000
             },
             status: "published",
             steps: [

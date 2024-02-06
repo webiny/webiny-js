@@ -12,6 +12,7 @@ import { makeInjectable, inject } from "@webiny/ioc";
 import { FormBuilder_5_40_0_001_FormLatest } from "./FormLatestMigration";
 import { FormBuilder_5_40_0_001_FormPublished } from "~/migrations/5.40.0/001/ddb-es/FormPublishedMigration";
 import { FormBuilder_5_40_0_001_FormRevisions } from "~/migrations/5.40.0/001/ddb-es/FormRevisionsMigration";
+import { FormBuilder_5_40_0_001_FormStats } from "~/migrations/5.40.0/001/ddb-es/FormStatsMigration";
 export * from "../types";
 
 export class FormBuilder_5_40_0_001 implements DataMigration {
@@ -25,7 +26,8 @@ export class FormBuilder_5_40_0_001 implements DataMigration {
         this.migrations = [
             new FormBuilder_5_40_0_001_FormLatest(table, esTable, elasticsearchClient),
             new FormBuilder_5_40_0_001_FormPublished(table, esTable, elasticsearchClient),
-            new FormBuilder_5_40_0_001_FormRevisions(table, esTable, elasticsearchClient)
+            new FormBuilder_5_40_0_001_FormRevisions(table, esTable, elasticsearchClient),
+            new FormBuilder_5_40_0_001_FormStats(table, esTable, elasticsearchClient)
         ];
     }
 

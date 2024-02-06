@@ -1,6 +1,8 @@
 // Note that the data is decompressed.
 
-export const migratedDdbEsFormData = [
+import { user } from "~tests/migrations/5.40.0/001/ddb-es/001.ddb";
+
+export const migratedDdbEsData = [
     {
         PK: "T#root#L#en-US#CMS#CME#65c0a07038a36e00082095ea",
         SK: "L",
@@ -8,23 +10,11 @@ export const migratedDdbEsFormData = [
             modelId: "fbForm",
             revisionCreatedOn: "2024-02-05T08:46:40.354Z",
             status: "published",
-            revisionCreatedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
-            createdBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
+            revisionCreatedBy: user,
+            createdBy: user,
             entryId: "65c0a07038a36e00082095ea",
             id: "65c0a07038a36e00082095ea#0001",
-            savedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
+            savedBy: user,
             version: 1,
             location: { folderId: "root" },
             revisionSavedOn: "2024-02-05T08:47:01.134Z",
@@ -58,11 +48,7 @@ export const migratedDdbEsFormData = [
                 },
                 "text@slug": "demo-form-1-65c0a07038a36e00082095ea"
             },
-            revisionSavedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
+            revisionSavedBy: user,
             tenant: "root",
             createdOn: "2024-02-05T08:46:40.354Z",
             locked: true,
@@ -70,39 +56,15 @@ export const migratedDdbEsFormData = [
             revisionModifiedOn: "2024-02-05T08:47:01.134Z",
             revisionFirstPublishedOn: "2024-02-05T08:47:01.134Z",
             revisionLastPublishedOn: "2024-02-05T08:47:01.134Z",
-            revisionModifiedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
-            revisionFirstPublishedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
-            revisionLastPublishedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
+            revisionModifiedBy: user,
+            revisionFirstPublishedBy: user,
+            revisionLastPublishedBy: user,
             modifiedOn: "2024-02-05T08:47:01.134Z",
             firstPublishedOn: "2024-02-05T08:47:01.134Z",
             lastPublishedOn: "2024-02-05T08:47:01.134Z",
-            modifiedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
-            firstPublishedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
-            lastPublishedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
+            modifiedBy: user,
+            firstPublishedBy: user,
+            lastPublishedBy: user,
             meta: {},
             rawValues: {
                 "object@fields": [{ "json@settings": { defaultValue: null } }],
@@ -127,28 +89,12 @@ export const migratedDdbEsFormData = [
             revisionCreatedOn: "2024-02-05T08:46:40.354Z",
             status: "published",
             meta: {},
-            revisionCreatedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
-            revisionModifiedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
-            createdBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
+            revisionCreatedBy: user,
+            revisionModifiedBy: user,
+            createdBy: user,
             entryId: "65c0a07038a36e00082095ea",
             id: "65c0a07038a36e00082095ea#0001",
-            savedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
+            savedBy: user,
             version: 1,
             location: { folderId: "root" },
             revisionSavedOn: "2024-02-05T08:47:01.134Z",
@@ -182,46 +128,22 @@ export const migratedDdbEsFormData = [
                 },
                 "text@slug": "demo-form-1-65c0a07038a36e00082095ea"
             },
-            revisionSavedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
+            revisionSavedBy: user,
             tenant: "root",
             revisionModifiedOn: "2024-02-05T08:47:01.134Z",
             createdOn: "2024-02-05T08:46:40.354Z",
             modifiedOn: "2024-02-05T08:47:01.134Z",
             locked: true,
             webinyVersion: "0.0.0",
-            modifiedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
+            modifiedBy: user,
             firstPublishedOn: "2024-02-05T08:47:01.134Z",
             lastPublishedOn: "2024-02-05T08:47:01.134Z",
-            firstPublishedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
-            lastPublishedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
+            firstPublishedBy: user,
+            lastPublishedBy: user,
             revisionFirstPublishedOn: "2024-02-05T08:47:01.134Z",
             revisionLastPublishedOn: "2024-02-05T08:47:01.134Z",
-            revisionFirstPublishedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
-            revisionLastPublishedBy: {
-                id: "admin",
-                type: "admin",
-                displayName: "Admin"
-            },
+            revisionFirstPublishedBy: user,
+            revisionLastPublishedBy: user,
             rawValues: {
                 "object@fields": [{ "json@settings": { defaultValue: null } }],
                 "object@steps": [{ "json@layout": [["fi0rrnUHdl"]] }],
@@ -235,6 +157,40 @@ export const migratedDdbEsFormData = [
             published: true,
             TYPE: "cms.entry.p",
             __type: "cms.entry.p"
+        }
+    },
+    {
+        PK: "T#root#L#en-US#CMS#CME#65c0a07038a36e00082095ea-0001-stats",
+        SK: "L",
+        data: {
+            webinyVersion: "0.0.0",
+            tenant: "root",
+            entryId: "65c0a07038a36e00082095ea-0001-stats",
+            id: "65c0a07038a36e00082095ea-0001-stats#0001",
+            modelId: "fbFormStat",
+            locale: "en-US",
+            createdOn: "2024-02-05T08:46:40.354Z",
+            savedOn: "2024-02-05T08:47:01.134Z",
+            createdBy: user,
+            savedBy: user,
+            revisionCreatedOn: "2024-02-05T08:46:40.354Z",
+            revisionSavedOn: "2024-02-05T08:47:01.134Z",
+            revisionCreatedBy: user,
+            revisionSavedBy: user,
+            version: 1,
+            status: "draft",
+            locked: false,
+            values: {
+                "text@formId": "65c0a07038a36e00082095ea",
+                "number@formVersion": 1,
+                "number@views": 10000,
+                "number@submissions": 1000
+            },
+            location: { folderId: "root" },
+            rawValues: {},
+            latest: true,
+            TYPE: "cms.entry.l",
+            __type: "cms.entry.l"
         }
     }
 ];

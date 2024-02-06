@@ -147,7 +147,7 @@ export class FormBuilder_5_40_0_001_FormLatest implements DataMigration<Migratio
             table: this.table,
             logger,
             callback: async ({ tenantId, localeCode }) => {
-                logger.info(`Checking form latest entries for ${tenantId} - ${localeCode}.`);
+                logger.info(`Migrating form latest entries for ${tenantId} - ${localeCode}.`);
 
                 const formBuilderIndexNameParams = {
                     tenant: tenantId,

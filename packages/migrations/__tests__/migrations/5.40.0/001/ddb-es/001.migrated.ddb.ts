@@ -239,3 +239,68 @@ export const migratedDdbFormData = [
         webinyVersion: "0.0.0"
     }
 ];
+
+export const migratedFormStatsData = [
+    {
+        PK: "T#root#L#en-US#CMS#CME#65c0a07038a36e00082095ea-0001-stats",
+        SK: "L",
+        createdBy: user,
+        createdOn: "2024-02-05T08:46:40.354Z",
+        entryId: "65c0a07038a36e00082095ea-0001-stats",
+        id: "65c0a07038a36e00082095ea-0001-stats#0001",
+        locale: "en-US",
+        location: {
+            folderId: "root"
+        },
+        locked: false,
+        modelId: "fbFormStat",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-02-05T08:46:40.354Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-02-05T08:47:01.134Z",
+        savedBy: user,
+        savedOn: "2024-02-05T08:47:01.134Z",
+        status: "draft",
+        tenant: "root",
+        TYPE: "cms.entry.l",
+        values: {
+            "number@formVersion": 1,
+            "number@submissions": 1000,
+            "number@views": 10000,
+            "text@formId": "65c0a07038a36e00082095ea"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    },
+    {
+        PK: "T#root#L#en-US#CMS#CME#65c0a07038a36e00082095ea-0001-stats",
+        SK: "REV#0001",
+        createdBy: user,
+        createdOn: "2024-02-05T08:46:40.354Z",
+        entryId: "65c0a07038a36e00082095ea-0001-stats",
+        id: "65c0a07038a36e00082095ea-0001-stats#0001",
+        locale: "en-US",
+        location: {
+            folderId: "root"
+        },
+        locked: false,
+        modelId: "fbFormStat",
+        revisionCreatedBy: user,
+        revisionCreatedOn: "2024-02-05T08:46:40.354Z",
+        revisionSavedBy: user,
+        revisionSavedOn: "2024-02-05T08:47:01.134Z",
+        savedBy: user,
+        savedOn: "2024-02-05T08:47:01.134Z",
+        status: "draft",
+        tenant: "root",
+        TYPE: "cms.entry",
+        values: {
+            "number@formVersion": 1,
+            "number@submissions": 1000,
+            "number@views": 10000,
+            "text@formId": "65c0a07038a36e00082095ea"
+        },
+        version: 1,
+        webinyVersion: "0.0.0"
+    }
+];

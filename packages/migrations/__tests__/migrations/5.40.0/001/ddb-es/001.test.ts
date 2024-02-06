@@ -19,8 +19,11 @@ import {
     createFormsData
 } from "~tests/migrations/5.40.0/001/ddb-es/001.ddb";
 import { createEsFormsData } from "~tests/migrations/5.40.0/001/ddb-es/001.es";
-import { migratedDdbFormData } from "~tests/migrations/5.40.0/001/ddb-es/001.migrated.ddb";
-import { migratedDdbEsFormData } from "~tests/migrations/5.40.0/001/ddb-es/001.migrated.ddbEs";
+import {
+    migratedDdbFormData,
+    migratedFormStatsData
+} from "~tests/migrations/5.40.0/001/ddb-es/001.migrated.ddb";
+import { migratedDdbEsData } from "~tests/migrations/5.40.0/001/ddb-es/001.migrated.ddbEs";
 import { getDecompressedData } from "~tests/migrations/5.40.0/001/ddb-es/helpers";
 
 jest.retryTimes(0);
@@ -137,7 +140,7 @@ describe("5.40.0-001", () => {
         expect(grouped.notApplicable.length).toBe(0);
 
         // Check DDB Form entries
-        const ddbEntries = await scanTable(primaryTable, {
+        const ddbFormEntries = await scanTable(primaryTable, {
             filters: [
                 {
                     attr: "modelId",
@@ -146,7 +149,7 @@ describe("5.40.0-001", () => {
             ]
         });
 
-        expect(sortBy(ddbEntries, ["PK", "SK"])).toEqual(
+        expect(sortBy(ddbFormEntries, ["PK", "SK"])).toEqual(
             sortBy(migratedDdbFormData, ["PK", "SK"]).map(data => {
                 return {
                     ...data,
@@ -157,27 +160,43 @@ describe("5.40.0-001", () => {
             })
         );
 
-        // Check DDB + ES Form entries
-        const ddbEsTableRecordsCompressed = await scanTable(dynamoToEsTable, {
-            limit: 1_000_000
+        // Check DDB Stats entries
+        const ddbStatsEntries = await scanTable(primaryTable, {
+            filters: [
+                {
+                    attr: "modelId",
+                    eq: "fbFormStat"
+                }
+            ]
         });
 
-        const ddbEsTableRecordsDecompressed = await Promise.all(
-            ddbEsTableRecordsCompressed.map(async item => {
-                if (!item.PK.includes("#CMS#CME#")) {
-                    return item;
-                }
-
-                const decompressed = await getDecompressedData(item.data);
+        expect(sortBy(ddbStatsEntries, ["PK", "SK"])).toEqual(
+            sortBy(migratedFormStatsData, ["PK", "SK"]).map(data => {
                 return {
-                    ...item,
-                    data: decompressed
+                    ...data,
+                    entity: "CmsEntries",
+                    created: expect.any(String),
+                    modified: expect.any(String)
                 };
             })
         );
 
-        expect(ddbEsTableRecordsDecompressed).toEqual(
-            sortBy(migratedDdbEsFormData, ["PK", "SK"]).map(data => {
+        // Check DDB + ES Form entries
+        const ddbEsFormEntries = await scanTable(dynamoToEsTable, {
+            limit: 1_000_000
+        });
+
+        const ddbEsFormEntriesDecompressed = await Promise.all(
+            ddbEsFormEntries.map(async item => {
+                return {
+                    ...item,
+                    data: await getDecompressedData(item.data)
+                };
+            })
+        );
+
+        expect(ddbEsFormEntriesDecompressed).toEqual(
+            sortBy(migratedDdbEsData, ["PK", "SK"]).map(data => {
                 return {
                     ...data,
                     entity: "CmsEntriesElasticsearch",

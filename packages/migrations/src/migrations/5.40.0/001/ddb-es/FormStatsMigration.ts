@@ -12,20 +12,22 @@ import {
     queryOne
 } from "~/utils";
 import { CmsEntryWithMeta, FbForm, MigrationCheckpoint } from "~/migrations/5.40.0/001/types";
-import { createDdbCmsEntity } from "~/migrations/5.40.0/001/entities/createCmsEntity";
 import {
-    getDdbEsFirstLastPublishedOnBy,
-    getDdbEsOldestRevisionCreatedOn,
-    getDdbEsRevisionStatus,
-    getFormCommonFields,
-    getMetaFields
+    createDdbCmsEntity,
+    createDdbEsCmsEntity
+} from "~/migrations/5.40.0/001/entities/createCmsEntity";
+import {
+    getCompressedData,
+    getFormStatsMetaFields,
+    getStatsCommonFields
 } from "~/migrations/5.40.0/001/utils";
 import { executeWithRetry } from "@webiny/utils";
 
-export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<MigrationCheckpoint> {
+export class FormBuilder_5_40_0_001_FormStats implements DataMigration<MigrationCheckpoint> {
     private readonly table: Table<string, string, string>;
     private readonly esClient: Client;
     private readonly ddbCmsEntity: ReturnType<typeof createDdbCmsEntity>;
+    private readonly ddbEsCmsEntity: ReturnType<typeof createDdbEsCmsEntity>;
     private ddbFormEntity: ReturnType<typeof createFormEntity>;
 
     constructor(
@@ -36,11 +38,12 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
         this.table = table;
         this.esClient = esClient;
         this.ddbCmsEntity = createDdbCmsEntity(table);
+        this.ddbEsCmsEntity = createDdbEsCmsEntity(esTable);
         this.ddbFormEntity = createFormEntity(table);
     }
 
     getId(): string {
-        return "Form Revision Entries";
+        return "Form Stats Entries";
     }
 
     getDescription(): string {
@@ -54,7 +57,7 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
             table: this.table,
             logger,
             callback: async ({ tenantId, localeCode }) => {
-                logger.info(`Checking form revisions entries for ${tenantId} - ${localeCode}.`);
+                logger.info(`Checking form stats entries for ${tenantId} - ${localeCode}.`);
 
                 const indexNameParams = {
                     tenant: tenantId,
@@ -106,12 +109,14 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
                     return true;
                 }
 
-                // Fetch HCMS form revision record from DDB using latest form "id"
+                const [formId, revisionId] = latestForm.id.split("#");
+
+                // Fetch HCMS form stats records from DDB using latest form "id"
                 const cmsEntry = await queryOne<CmsEntryWithMeta>({
                     entity: this.ddbCmsEntity,
-                    partitionKey: `T#${tenantId}#L#${localeCode}#CMS#CME#${latestForm.formId}`,
+                    partitionKey: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${formId}-${revisionId}-stats`,
                     options: {
-                        beginsWith: "REV#"
+                        eq: "L"
                     }
                 });
 
@@ -139,13 +144,20 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
             table: this.table,
             logger,
             callback: async ({ tenantId, localeCode }) => {
-                logger.info(`Migrating form revisions entries for ${tenantId} - ${localeCode}.`);
+                logger.info(`Migrating form stats entries for ${tenantId} - ${localeCode}.`);
 
                 const formBuilderIndexNameParams = {
                     tenant: tenantId,
                     locale: localeCode,
                     type: "form-builder",
                     isHeadlessCmsModel: false
+                };
+
+                const fbFormStatsHcmsIndexNameParams = {
+                    tenant: tenantId,
+                    locale: localeCode,
+                    type: "fbformstat",
+                    isHeadlessCmsModel: true
                 };
 
                 const indexExists = await esGetIndexExist({
@@ -182,6 +194,10 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
                 const ddbItems: ReturnType<ReturnType<typeof createDdbCmsEntity>["putBatch"]>[] =
                     [];
 
+                const ddbEsItems: ReturnType<
+                    ReturnType<typeof createDdbEsCmsEntity>["putBatch"]
+                >[] = [];
+
                 for (const id of uniqueIds) {
                     const [formId, revisionId] = id.split("#");
 
@@ -197,43 +213,47 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
                         continue;
                     }
 
-                    // Get the status field, based on the revision and the published entry
-                    const status = await getDdbEsRevisionStatus({
-                        form,
-                        formEntity: this.ddbFormEntity
-                    });
+                    // Get common fields
+                    const commonFields = getStatsCommonFields(form);
 
-                    // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
-                    const createdOn = await getDdbEsOldestRevisionCreatedOn({
-                        form,
-                        formEntity: this.ddbFormEntity
-                    });
+                    // Get the new meta fields
+                    const entryMetaFields = getFormStatsMetaFields(form);
 
-                    // Get first/last published meta fields
-                    const firstLastPublishedOnByFields = await getDdbEsFirstLastPublishedOnBy({
-                        form,
-                        formEntity: this.ddbFormEntity
-                    });
-
-                    // Create the new meta fields
-                    const entryMetaFields = getMetaFields(form, {
-                        createdOn,
-                        ...firstLastPublishedOnByFields
-                    });
-
-                    // Get DDB common fields
-                    const ddbEntryCommonFields = getFormCommonFields(form);
-
-                    const ddbItem = {
-                        PK: `T#${tenantId}#L#${localeCode}#CMS#CME#${formId}`,
+                    const ddbRevisionItem = {
+                        PK: `T#${tenantId}#L#${localeCode}#CMS#CME#${formId}-${revisionId}-stats`,
                         SK: `REV#${revisionId}`,
                         TYPE: "cms.entry",
-                        ...ddbEntryCommonFields,
-                        ...entryMetaFields,
-                        status
+                        ...commonFields,
+                        ...entryMetaFields
                     };
 
-                    ddbItems.push(this.ddbCmsEntity.putBatch(ddbItem));
+                    ddbItems.push(this.ddbCmsEntity.putBatch(ddbRevisionItem));
+
+                    const ddbLatestItem = {
+                        PK: `T#${tenantId}#L#${localeCode}#CMS#CME#${formId}-${revisionId}-stats`,
+                        SK: "L",
+                        TYPE: "cms.entry.l",
+                        ...commonFields,
+                        ...entryMetaFields
+                    };
+
+                    ddbItems.push(this.ddbCmsEntity.putBatch(ddbLatestItem));
+
+                    const ddbEsItem = {
+                        PK: `T#${tenantId}#L#${localeCode}#CMS#CME#${formId}-${revisionId}-stats`,
+                        SK: "L",
+                        index: esGetIndexName(fbFormStatsHcmsIndexNameParams),
+                        data: await getCompressedData({
+                            ...commonFields,
+                            ...entryMetaFields,
+                            rawValues: {},
+                            latest: true,
+                            TYPE: "cms.entry.l",
+                            __type: "cms.entry.l"
+                        })
+                    };
+
+                    ddbEsItems.push(this.ddbEsCmsEntity.putBatch(ddbEsItem));
                 }
 
                 const executeDdb = () => {
@@ -243,9 +263,25 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
                     });
                 };
 
+                const executeDdbEs = () => {
+                    return batchWriteAll({
+                        table: this.ddbEsCmsEntity.table,
+                        items: ddbEsItems
+                    });
+                };
+
                 await executeWithRetry(executeDdb, {
                     onFailedAttempt: error => {
                         logger.error(`"batchWriteAll ddb" attempt #${error.attemptNumber} failed.`);
+                        logger.error(error.message);
+                    }
+                });
+
+                await executeWithRetry(executeDdbEs, {
+                    onFailedAttempt: error => {
+                        logger.error(
+                            `"batchWriteAll ddb + es" attempt #${error.attemptNumber} failed.`
+                        );
                         logger.error(error.message);
                     }
                 });
