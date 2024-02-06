@@ -37,7 +37,7 @@
     "@types/fs-extra": "^8.0.1",
     "@types/jest": "^29.5.11",
     "@types/node": "^18.0.0",
-    "@types/react": "18.2.45",
+    "@types/react": "18.2.54",
     "@types/react-dom": "18.2.17",
     "@typescript-eslint/eslint-plugin": "^5.5.0",
     "@typescript-eslint/parser": "^5.5.0",
@@ -209,7 +209,7 @@
   },
   "resolutions": {
     "@emotion/react": "11.10.8",
-    "@types/react": "18.2.45",
+    "@types/react": "18.2.54",
     "@types/jsdom": "link:./typings/void",
     "@types/webpack": "^5.28.0",
     "react": "18.2.0",
