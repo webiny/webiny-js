@@ -158,8 +158,11 @@ export interface FbSubmission {
 }
 
 // CMS Entries / Forms - 5.40.0
-
 export interface CmsEntryValues {
+    [key: string]: any;
+}
+
+export interface CmsEntryRawValues {
     [key: string]: any;
 }
 
@@ -238,6 +241,10 @@ export interface FormEntryCommonSteps {
 
 export interface CmsEntryWithMeta<T = CmsEntryValues> extends CmsEntry<T>, MetaFields {}
 
+export interface CmsEntryDdbEs<T = CmsEntryValues, R = CmsEntryRawValues> extends CmsEntry<T> {
+    rawValues: R;
+}
+
 export interface FormEntryValues {
     "json@triggers": Record<string, any> | null;
     "object@fields": FormEntryCommonField[];
@@ -262,6 +269,43 @@ export interface FormEntryValues {
     "text@formId": string;
     "text@name": string;
     "text@slug": string;
+}
+
+export interface FormEntryDdbEsValues {
+    "text@formId": string;
+    "text@name": string;
+    "text@slug": string;
+    "object@fields": Omit<FormEntryCommonField, "json@settings">[];
+    "object@steps": Omit<FormEntryCommonSteps, "json@layout">[];
+    "object@settings": {
+        "object@layout": {
+            "text@renderer": string | null;
+        } | null;
+        "text@submitButtonLabel": string | null;
+        "boolean@fullWidthSubmitButton": boolean | null;
+        "object@termsOfServiceMessage"?: {
+            "boolean@enabled": boolean | null;
+            "text@errorMessage": string | null;
+        };
+        "object@reCaptcha": {
+            "boolean@enabled": boolean | null;
+            "text@errorMessage": string | null;
+        };
+    };
+}
+
+export interface FormEntryDdbEsRawValues {
+    "object@fields": Pick<FormEntryCommonField, "json@settings">[];
+    "object@steps": Pick<FormEntryCommonSteps, "json@layout">[];
+    "object@settings": {
+        "object@layout": Record<string, any>;
+        "object@reCaptcha": Record<string, any>;
+        "json@successMessage": JSON[] | null;
+        "object@termsOfServiceMessage"?: {
+            "json@message": JSON[] | null;
+        };
+    };
+    "json@triggers": Record<string, any> | null;
 }
 
 export interface FormStatsValues {

@@ -1,3 +1,5 @@
+export * from "./getCompressedData";
+export * from "./getDdbEsFormCommonFields";
 export * from "./getMetaFields";
 export * from "./getFormCommonFields";
 export * from "./getEntryStatus";
