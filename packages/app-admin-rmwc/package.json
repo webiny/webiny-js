@@ -14,7 +14,7 @@
     "@material-design-icons/svg": "^0.14.2",
     "@rmwc/base": "14.0.4",
     "@rmwc/provider": "14.0.4",
-    "@types/react": "18.2.45",
+    "@types/react": "18.2.54",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-plugin-admin-welcome-screen": "0.0.0",
