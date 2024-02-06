@@ -114,7 +114,7 @@ export class FormBuilder_5_40_0_001_FormStats implements DataMigration<Migration
                 // Fetch HCMS form stats records from DDB using latest form "id"
                 const cmsEntry = await queryOne<CmsEntryWithMeta>({
                     entity: this.ddbCmsEntity,
-                    partitionKey: `T#${tenantId}#L#${localeCode}#CMS#CME#CME#${formId}-${revisionId}-stats`,
+                    partitionKey: `T#${tenantId}#L#${localeCode}#CMS#CME#${formId}-${revisionId}-stats`,
                     options: {
                         eq: "L"
                     }
