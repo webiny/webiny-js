@@ -129,7 +129,7 @@ export class EntriesPermissions {
      * @private
      */
     private canReadModel(model: CmsModel) {
-        return this.modelsPermissions.canAccess({ model, rwd: "r" });
+        return this.modelsPermissions.canAccessModel({ model, rwd: "r" });
     }
 
     private hasRwd(permission: CmsEntryPermission, rwd: string) {
