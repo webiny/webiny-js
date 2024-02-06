@@ -13,7 +13,7 @@
     "@babel/runtime": "^7.23.9",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
-    "@types/react": "18.2.45",
+    "@types/react": "18.2.54",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-page-builder": "0.0.0",
