@@ -88,8 +88,8 @@ export class EntriesPermissions {
     }
 
     async ensureCanAccess(params: EnsureParams) {
-        const canAccessFolderContent = await this.canAccess(params);
-        if (!canAccessFolderContent) {
+        const canAccess = await this.canAccess(params);
+        if (!canAccess) {
             throw new NotAuthorizedError();
         }
     }
