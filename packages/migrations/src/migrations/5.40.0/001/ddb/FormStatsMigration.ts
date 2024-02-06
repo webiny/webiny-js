@@ -43,7 +43,7 @@ export class FormBuilder_5_40_0_001_FormStats implements DataMigration<Migration
 
                 if (!formRevision) {
                     logger.info(
-                        `No form stats found for ${tenantId} - ${localeCode}: skipping migration.`
+                        `No form revisions found for ${tenantId} - ${localeCode}: skipping migration.`
                     );
                     shouldExecute = false;
                     return true;
