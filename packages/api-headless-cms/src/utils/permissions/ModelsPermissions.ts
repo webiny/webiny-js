@@ -1,5 +1,5 @@
 import { AppPermissionsParams, NotAuthorizedError } from "@webiny/api-security";
-import { CmsGroupPermission, CmsModel, CmsModelPermission } from "~/types";
+import { CmsGroupPermission, CmsModel, CmsGroup, CmsModelPermission } from "~/types";
 import { ModelGroupsPermissions } from "~/utils/permissions/ModelGroupsPermissions";
 import { CreatedBy, SecurityIdentity } from "@webiny/api-security/types";
 
@@ -17,6 +17,7 @@ export interface ModelsPermissionsParams extends AppPermissionsParams<CmsGroupPe
 export interface ModelsPermissionsParams {
     getIdentity: () => SecurityIdentity | Promise<SecurityIdentity>;
     getPermissions: () => CmsModelPermission[] | Promise<CmsModelPermission[]>;
+    getModelGroup: (id: string) => Promise<CmsGroup>;
     fullAccessPermissionName?: string;
     modelGroupsPermissions: ModelGroupsPermissions;
 }
@@ -25,32 +26,87 @@ interface HasFullAccessParams {
     model: CmsModel;
 }
 
+interface AccessControlEntry {
+    rwd: string;
+    canAccessNonOwnedModels: boolean;
+    canAccessOnlyOwnedModels: boolean;
+}
+
+type AccessControlList = AccessControlEntry[];
+
 export class ModelsPermissions {
     getIdentity: () => SecurityIdentity | Promise<SecurityIdentity>;
     getPermissions: () => CmsModelPermission[] | Promise<CmsModelPermission[]>;
+    getModelGroup: (id: string) => Promise<CmsGroup>;
     private fullAccessPermissions: string[];
     private readonly modelGroupsPermissions: ModelGroupsPermissions;
 
-    constructor({ getIdentity, getPermissions, modelGroupsPermissions }: ModelsPermissionsParams) {
+    constructor({
+        getIdentity,
+        getPermissions,
+        modelGroupsPermissions,
+        getModelGroup
+    }: ModelsPermissionsParams) {
         this.getIdentity = getIdentity;
         this.getPermissions = getPermissions;
+        this.getModelGroup = getModelGroup;
         this.fullAccessPermissions = ["*", "cms.*"];
         this.modelGroupsPermissions = modelGroupsPermissions;
     }
 
-    async canAccess(params: EnsureParams): Promise<boolean> {
-        const hasFullAccess = await this.hasFullAccess(params);
-        if (hasFullAccess) {
-            return true;
+    async canAccessModel(params: EnsureParams): Promise<boolean> {
+        const acl = await this.getAccessControlList(params);
+
+        // If we don't even have read access, we can't proceed. This is the first check
+        // we need to make, because it will prevent us from proceeding with other checks.
+        const canReadModel = acl.find(entry => entry.rwd.includes("r"));
+        if (!canReadModel) {
+            return false;
         }
 
+        if (params.rwd) {
+            const hasRwd = acl.find(({ rwd }) => rwd.includes("r"));
+            if (!hasRwd) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    async ensureCanAccessModel(params: EnsureParams) {
+        const canAccess = await this.canAccessModel(params);
+        if (!canAccess) {
+            throw new NotAuthorizedError({
+                data: {
+                    reason: `Not allowed to access model "${params.model.modelId}".`
+                }
+            });
+        }
+    }
+
+    private async getAccessControlList(params: EnsureParams): Promise<AccessControlList> {
+        const hasFullAccess = await this.hasFullAccess(params);
+        if (hasFullAccess) {
+            return [{ rwd: "rwd", canAccessNonOwnedModels: true, canAccessOnlyOwnedModels: false }];
+        }
+
+        // Check if user can access model group.
         const modelGroupsPermissionsList = await this.modelGroupsPermissions.getPermissions();
         const modelsPermissionsList = await this.getPermissions();
 
         const { model } = params;
         const { locale } = model;
 
-        let finalModelPermissions = { rwd: "", onlyOwn: false };
+        let modelGroup: CmsGroup;
+        const getModelGroup = async () => {
+            if (!modelGroup) {
+                modelGroup = await this.getModelGroup(model.group.id);
+            }
+            return modelGroup;
+        };
+
+        const acl: AccessControlList = [];
 
         for (let i = 0; i < modelGroupsPermissionsList.length; i++) {
             const modelGroupPermission = modelGroupsPermissionsList[i];
@@ -61,17 +117,27 @@ export class ModelsPermissions {
             // within those groups. The only exception are the publish / unpublish actions
             // on content entries, which still need to be set on content entries permission.
             if (modelGroupPermission.own) {
-                const modelGroupCreatedBy = { id: "LOAD-THIS?" };
-
-                if (modelGroupCreatedBy) {
-                    const identity = await this.getIdentity();
-                    if (modelGroupCreatedBy.id === identity.id) {
-                        finalModelPermissions = { rwd: "rwd", onlyOwn: true };
-                        break;
-                    }
+                const currentModelGroup = await getModelGroup();
+                if (!currentModelGroup) {
+                    continue;
                 }
 
-                // Continue examining the next group.
+                const modelGroupCreatedBy = currentModelGroup.createdBy;
+                if (!modelGroupCreatedBy) {
+                    continue;
+                }
+
+                const identity = await this.getIdentity();
+                if (modelGroupCreatedBy.id !== identity.id) {
+                    continue;
+                }
+
+                acl.push({
+                    rwd: "rwd",
+                    canAccessNonOwnedModels: false,
+                    canAccessOnlyOwnedModels: true
+                });
+
                 continue;
             }
 
@@ -84,12 +150,10 @@ export class ModelsPermissions {
                 const { groups } = modelGroupPermission;
 
                 if (!Array.isArray(groups[locale])) {
-                    // Continue examining the next group.
                     continue;
                 }
 
                 if (!groups[locale].includes(model.group.id)) {
-                    // Continue examining the next group.
                     continue;
                 }
             }
@@ -105,26 +169,35 @@ export class ModelsPermissions {
             // We're only checking one model permissions object!
             // This is because model permissions are always related to group permissions.
             // We don't care about potentially other model permissions that might exist,
-            // because they are not related to current group permissions. At the moment,
-            // we're retrieving the relevant model permissions object based on the index
-            // of the current group permissions object. This is because the order of group
-            // permissions and model permissions is the same. In the future, we may need
-            // to improve this, but for now, this is the way it works.
+            // because they are not related to current group permissions. We're using the
+            // `_src` property to link the model permissions to the group permissions.
             // ---
-            const relatedModelPermissions = modelsPermissionsList[i];
+            const relatedModelPermissions = modelsPermissionsList.find(
+                permissions => permissions._src === modelGroupPermission._src
+            );
+
+            if (!relatedModelPermissions) {
+                continue;
+            }
 
             // 1. Model permissions granting access to all models the user created?
             if (relatedModelPermissions.own) {
                 const modelCreatedBy = model.createdBy;
-                if (modelCreatedBy) {
-                    const identity = await this.getIdentity();
-                    if (modelCreatedBy.id === identity.id) {
-                        finalModelPermissions = { rwd: "rwd", onlyOwn: true };
-                        break;
-                    }
+                if (!modelCreatedBy) {
+                    continue;
                 }
 
-                // Continue examining the next group.
+                const identity = await this.getIdentity();
+                if (modelCreatedBy.id !== identity.id) {
+                    continue;
+                }
+
+                acl.push({
+                    rwd: "rwd",
+                    canAccessNonOwnedModels: false,
+                    canAccessOnlyOwnedModels: true
+                });
+
                 continue;
             }
 
@@ -133,74 +206,24 @@ export class ModelsPermissions {
                 const { models } = relatedModelPermissions;
 
                 if (!Array.isArray(models[locale])) {
-                    // Continue examining the next group.
                     continue;
                 }
 
                 if (!models[locale].includes(params.model.modelId)) {
-                    // Continue examining the next group.
                     continue;
                 }
             }
 
             // If we got here, that means the model either belongs to a group the user
             // has access to, or, the user has access to all groups.
-            finalModelPermissions = {
+            acl.push({
                 rwd: relatedModelPermissions.rwd as string,
-                onlyOwn: false
-            };
-
-            // If we don't even have read access, we can't proceed. This is the first check
-            // we need to make, because it will prevent us from proceeding with other checks.
-            if (!finalModelPermissions.rwd.includes("r")) {
-                // Continue examining the next group.
-                continue;
-            }
-
-            if (params.owns) {
-                if (finalModelPermissions.onlyOwn) {
-                    const identity = await this.getIdentity();
-                    if (identity.id !== params.owns.id) {
-                        // Continue examining the next group.
-                        continue;
-                    }
-                }
-            }
-
-            if (params.rwd) {
-                if (params.rwd === "c") {
-                    // 'c' is a special case, because it's not a part of the `rwd` string.
-                    // It's used to examine whether the user can create new models.
-                    // This is not the case if a user can only access their own models.
-                    if (finalModelPermissions.onlyOwn) {
-                        // Continue examining the next group.
-                        continue;
-                    }
-                } else {
-                    if (!finalModelPermissions.rwd.includes(params.rwd)) {
-                        // Continue examining the next group.
-                        continue;
-                    }
-                }
-            }
-
-            // If we made it here, that means the current group permissions and model permissions
-            // allow the user to access the requested model and perform the requested action.
-            return true;
-        }
-
-        return false;
-    }
-
-    async ensureCanAccess(params: EnsureParams) {
-        const canAccessFolderContent = await this.canAccess(params);
-        if (!canAccessFolderContent) {
-            throw new NotAuthorizedError({
-                data: {
-                    reason: `Not allowed to access model "${params.model.modelId}".`
-                }
+                canAccessNonOwnedModels: true,
+                canAccessOnlyOwnedModels: false
             });
         }
+
+        return acl;
     }
 
     private async hasFullAccess(params: HasFullAccessParams) {

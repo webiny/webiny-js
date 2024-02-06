@@ -115,7 +115,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 }) as unknown as CmsModel[];
 
             return filterAsync(models, model => {
-                return modelsPermissions.canAccess({ model, rwd: "r", owns: model.createdBy });
+                return modelsPermissions.canAccessModel({ model });
             });
         });
     };
@@ -167,12 +167,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const filteredModels = await listFilteredModelsCache.getOrSet(
                 filteredCacheKey,
                 async () => {
-                    return filterAsync(databaseModels, model => {
-                        return modelsPermissions.canAccess({
-                            model,
-                            rwd: "r",
-                            owns: model.createdBy
-                        });
+                    return filterAsync(databaseModels, async model => {
+                        return modelsPermissions.canAccessModel({ model });
                     });
                 }
             );
@@ -193,7 +189,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
             // We cannot do any checks before the model is being loaded because
             // we don't know if the returned model has authorization enabled or not.
-            await modelsPermissions.ensureCanAccess({ model, rwd: "r", owns: model.createdBy });
+            await modelsPermissions.ensureCanAccessModel({ model });
 
             return model;
         });
@@ -313,7 +309,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
         model.tags = ensureTypeTag(model);
 
-        await modelsPermissions.ensureCanAccess({ model, rwd: "w" });
+        await modelsPermissions.ensureCanAccessModel({ model, rwd: "w" });
 
         try {
             await onModelBeforeCreate.publish({
@@ -348,7 +344,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         // Get a model record; this will also perform ownership validation.
         const original = await getModel(modelId);
 
-        await modelsPermissions.ensureCanAccess({ model: original, rwd: "w" });
+        await modelsPermissions.ensureCanAccessModel({ model: original, rwd: "w" });
 
         const result = await createModelUpdateValidation().safeParseAsync(input);
         if (!result.success) {
@@ -528,7 +524,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             webinyVersion: context.WEBINY_VERSION
         };
 
-        await modelsPermissions.ensureCanAccess({ model, rwd: "c" });
+        await modelsPermissions.ensureCanAccessModel({ model, rwd: "w" });
 
         try {
             await onModelBeforeCreateFrom.publish({
@@ -565,7 +561,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
     const deleteModel: CmsModelContext["deleteModel"] = async modelId => {
         const model = await getModel(modelId);
 
-        await modelsPermissions.ensureCanAccess({ model, rwd: "d" });
+        await modelsPermissions.ensureCanAccessModel({ model, rwd: "d" });
 
         try {
             await onModelBeforeDelete.publish({
@@ -609,7 +605,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
          */
         const model = await getModel(modelId);
 
-        await modelsPermissions.ensureCanAccess({ model, rwd: "w" });
+        await modelsPermissions.ensureCanAccessModel({ model, rwd: "w" });
 
         await onModelInitialize.publish({ model, data });
 

@@ -71,7 +71,12 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             const modelsPermissions = new ModelsPermissions({
                 getIdentity: context.security.getIdentity,
                 getPermissions: () => context.security.getPermissions("cms.contentModel"),
-                modelGroupsPermissions
+                modelGroupsPermissions,
+                getModelGroup: (id: string) => {
+                    return context.security.withoutAuthorization(() => {
+                        return context.cms.getGroup(id);
+                    });
+                }
             });
 
             const entriesPermissions = new EntriesPermissions({
