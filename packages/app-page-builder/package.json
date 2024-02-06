@@ -24,7 +24,7 @@
     "@material-design-icons/svg": "^0.14.2",
     "@svgr/webpack": "^6.1.1",
     "@types/medium-editor": "^5.0.3",
-    "@types/react": "18.2.45",
+    "@types/react": "18.2.54",
     "@webiny/app": "0.0.0",
     "@webiny/app-aco": "0.0.0",
     "@webiny/app-admin": "0.0.0",

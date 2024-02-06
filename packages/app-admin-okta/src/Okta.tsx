@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useCallback, useEffect, useRef, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { OktaAuth } from "@okta/okta-auth-js";
 import OktaSignIn from "@okta/okta-signin-widget";
 import get from "lodash/get";
