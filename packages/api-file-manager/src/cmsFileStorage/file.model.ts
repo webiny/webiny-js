@@ -182,7 +182,7 @@ export const createFileModelDefinition = (params: CreateFileModelDefinitionParam
         titleFieldId: "name",
         authorization: {
             // Disables base permission checks, but leaves FLP checks enabled.
-            permissions: false,
+            permissions: false
 
             // No need to add this as this is the default value.
             // flp: true
