@@ -180,7 +180,13 @@ export const createFileModelDefinition = (params: CreateFileModelDefinitionParam
         name: "FmFile",
         modelId: FILE_MODEL_ID,
         titleFieldId: "name",
-        authorization: false,
+        authorization: {
+            // Disables base permission checks, but leaves FLP checks enabled.
+            permissions: false,
+
+            // No need to add this as this is the default value.
+            // flp: true
+        },
         fields
     });
 };

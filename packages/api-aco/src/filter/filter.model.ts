@@ -150,6 +150,10 @@ export const createFilterModelDefinition = () => {
         name: "ACO - Filter",
         modelId: FILTER_MODEL_ID,
         titleFieldId: "name",
+
+        // We fully disable authorization checks for this model (both base and FLP).
+        authorization: false,
+
         fields: [
             name(),
             description(),

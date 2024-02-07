@@ -115,8 +115,14 @@ export class EntriesPermissions {
     }
 
     async hasFullAccess(params: HasFullAccessParams) {
-        if (params.model.authorization === false) {
-            return true;
+        // Authorization disabled on model level?
+        if ("authorization" in params.model) {
+            const { authorization } = params.model;
+            if (typeof authorization === "boolean") {
+                return authorization === false;
+            }
+
+            return authorization?.permissions === false;
         }
 
         const permissions = await this.getPermissions();

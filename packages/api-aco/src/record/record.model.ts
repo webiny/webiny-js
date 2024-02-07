@@ -103,7 +103,13 @@ export const createSearchModelDefinition = (params?: CreateSearchModelDefinition
         name: "ACO - Search Record",
         modelId: SEARCH_RECORD_MODEL_ID,
         titleFieldId: "title",
-        authorization: false,
+        authorization: {
+            // Disables base permission checks, but leaves FLP checks enabled.
+            permissions: false,
+
+            // No need to add this as this is the default value.
+            // flp: true
+        },
         fields: [
             typeField(),
             titleField(),
