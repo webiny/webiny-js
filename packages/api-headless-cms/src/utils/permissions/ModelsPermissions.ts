@@ -59,7 +59,7 @@ export class ModelsPermissions {
 
         // If we don't even have read access, we can't proceed. This is the first check
         // we need to make, because it will prevent us from proceeding with other checks.
-        const canReadModel = acl.find(entry => entry.rwd.includes("r"));
+        const canReadModel = acl.find(entry => entry.rwd?.includes("r"));
         if (!canReadModel) {
             return false;
         }
@@ -177,6 +177,18 @@ export class ModelsPermissions {
             );
 
             if (!relatedModelPermissions) {
+                continue;
+            }
+
+            // Check if the permissions object grants full access to all models (doesn't set any restrictions).
+            const fullAccess = !relatedModelPermissions.rwd && !relatedModelPermissions.own && !relatedModelPermissions.models;
+            if (fullAccess) {
+                acl.push({
+                    rwd: "rwd",
+                    canAccessNonOwnedModels: true,
+                    canAccessOnlyOwnedModels: false
+                });
+
                 continue;
             }
 
