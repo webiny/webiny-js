@@ -46,8 +46,6 @@ export class PrivateFilesAssetProcessor implements AssetProcessor {
             return asset;
         }
 
-        console.log("file", file);
-
         try {
             await this.assetAuthorizer.authorize(file);
         } catch (error) {
@@ -65,16 +63,8 @@ export class PrivateFilesAssetProcessor implements AssetProcessor {
         return processedAsset;
     }
 
-    /**
-     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     * This method performs a very awkward data loading and type cast which should be removed as soon as we resolve the FLP issue!
-     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     */
     private async getFileById(id: string): Promise<File> {
-        const model = await this.context.security.withoutAuthorization(() => {
-            return this.context.cms.getModel("fmFile");
-        });
-
+        const model = await this.context.cms.getModel("fmFile");
         if (!model) {
             throw new NotFoundError("File model not found!");
         }
