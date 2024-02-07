@@ -181,7 +181,10 @@ export class ModelsPermissions {
             }
 
             // Check if the permissions object grants full access to all models (doesn't set any restrictions).
-            const fullAccess = !relatedModelPermissions.rwd && !relatedModelPermissions.own && !relatedModelPermissions.models;
+            const fullAccess =
+                !relatedModelPermissions.rwd &&
+                !relatedModelPermissions.own &&
+                !relatedModelPermissions.models;
             if (fullAccess) {
                 acl.push({
                     rwd: "rwd",
