@@ -10,7 +10,11 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { usePermission } from "~/hooks/usePermission";
 
 const ContentReviewEditor = lazy(
-    () => import("~/views/contentReviewDashboard/ContentReviewEditor")
+    () =>
+        import(
+            /* webpackChunkName: "ApwViewsContentReviewDashboardContentReviewEditor" */
+            "~/views/contentReviewDashboard/ContentReviewEditor"
+        )
 );
 
 interface LoaderProps {
