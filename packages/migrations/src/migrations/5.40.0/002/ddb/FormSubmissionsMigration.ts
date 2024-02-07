@@ -6,9 +6,7 @@ import {
     DataMigrationContext,
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
-import { createDdbCmsEntity } from "../entities/createCmsEntity";
-import { createFormSubmissionEntity } from "../entities/createFormSubmissionEntity";
-import { createFormEntity } from "../entities/createFormEntity";
+import { createDdbCmsEntity, createFormEntity, createFormSubmissionEntity } from "../entities";
 import {
     batchWriteAll,
     BatchWriteItem,
@@ -17,10 +15,7 @@ import {
     forEachTenantLocale,
     queryOne
 } from "~/utils";
-import {
-    getFormSubmissionCommonFields,
-    getFormSubmissionMetaFields
-} from "~/migrations/5.40.0/001/utils";
+import { getFormSubmissionCommonFields, getFormSubmissionMetaFields } from "../utils";
 import { CmsEntryWithMeta, FbForm, FbSubmission } from "../types";
 
 interface LastEvaluatedKey {
@@ -32,7 +27,7 @@ interface FormSubmissionsDataMigrationCheckpoint {
     lastEvaluatedKey?: LastEvaluatedKey | boolean;
 }
 
-export class FormBuilder_5_40_0_001_FormSubmissions implements DataMigration {
+export class FormBuilder_5_40_0_002_FormSubmissions implements DataMigration {
     private readonly formEntity: ReturnType<typeof createFormEntity>;
     private readonly formSubmissionEntity: ReturnType<typeof createFormSubmissionEntity>;
     private readonly cmsEntity: ReturnType<typeof createDdbCmsEntity>;
@@ -53,7 +48,11 @@ export class FormBuilder_5_40_0_001_FormSubmissions implements DataMigration {
         return "";
     }
 
-    async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
+    async shouldExecute({ logger, checkpoint }: DataMigrationContext): Promise<boolean> {
+        if (checkpoint) {
+            return true;
+        }
+
         let shouldExecute = false;
 
         await forEachTenantLocale({
@@ -232,4 +231,4 @@ export class FormBuilder_5_40_0_001_FormSubmissions implements DataMigration {
     }
 }
 
-makeInjectable(FormBuilder_5_40_0_001_FormSubmissions, [inject(PrimaryDynamoTableSymbol)]);
+makeInjectable(FormBuilder_5_40_0_002_FormSubmissions, [inject(PrimaryDynamoTableSymbol)]);

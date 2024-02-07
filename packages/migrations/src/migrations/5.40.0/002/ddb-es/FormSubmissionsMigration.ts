@@ -1,3 +1,4 @@
+import chunk from "lodash/chunk";
 import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
 import { Client } from "@elastic/elasticsearch";
 import { Table } from "@webiny/db-dynamodb/toolbox";
@@ -13,16 +14,15 @@ import {
     forEachTenantLocale,
     queryOne
 } from "~/utils";
-import { CmsEntryWithMeta, FbForm, FbSubmission } from "~/migrations/5.40.0/001/types";
+import { CmsEntryWithMeta, FbForm, FbSubmission } from "../types";
+import { createDdbCmsEntity, createDdbEsCmsEntity } from "../entities";
 import {
-    createDdbCmsEntity,
-    createDdbEsCmsEntity
-} from "~/migrations/5.40.0/001/entities/createCmsEntity";
-import { getCompressedData, getFormSubmissionMetaFields } from "~/migrations/5.40.0/001/utils";
+    getCompressedData,
+    getFormSubmissionMetaFields,
+    getDdbEsFormSubmissionCommonFields
+} from "../utils";
 import { executeWithRetry } from "@webiny/utils";
 import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
-import chunk from "lodash/chunk";
-import { getDdbEsFormSubmissionCommonFields } from "~/migrations/5.40.0/001/utils/getDdbEsFormSubmissionCommonFields";
 
 const isGroupMigrationCompleted = (
     status: PrimitiveValue[] | boolean | undefined
@@ -35,7 +35,7 @@ type FormSubmissionsDataMigrationCheckpoint = Record<
     PrimitiveValue[] | boolean | undefined
 >;
 
-export class FormBuilder_5_40_0_001_FormSubmissions
+export class FormBuilder_5_40_0_002_FormSubmissions
     implements DataMigration<FormSubmissionsDataMigrationCheckpoint>
 {
     private readonly table: Table<string, string, string>;

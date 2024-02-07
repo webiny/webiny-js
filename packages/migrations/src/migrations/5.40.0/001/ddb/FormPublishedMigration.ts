@@ -32,7 +32,11 @@ export class FormBuilder_5_40_0_001_FormPublished implements DataMigration<Migra
         return "";
     }
 
-    async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
+    async shouldExecute({ logger, checkpoint }: DataMigrationContext): Promise<boolean> {
+        if (checkpoint) {
+            return true;
+        }
+
         let shouldExecute = false;
 
         await forEachTenantLocale({

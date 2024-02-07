@@ -6,29 +6,21 @@ import {
     PrimaryDynamoTableSymbol
 } from "@webiny/data-migration";
 import { makeInjectable, inject } from "@webiny/ioc";
-import { FormBuilder_5_40_0_001_FormLatest } from "./FormLatestMigration";
-import { FormBuilder_5_40_0_001_FormPublished } from "./FormPublishedMigration";
-import { FormBuilder_5_40_0_001_FormRevisions } from "./FormRevisionsMigration";
-import { FormBuilder_5_40_0_001_FormStats } from "./FormStatsMigration";
+import { FormBuilder_5_40_0_002_FormSubmissions } from "~/migrations/5.40.0/002/ddb/FormSubmissionsMigration";
 
-export class FormBuilder_5_40_0_001 implements DataMigration {
+export class FormBuilder_5_40_0_002 implements DataMigration {
     private migrations: DataMigration[];
 
     constructor(table: Table<string, string, string>) {
-        this.migrations = [
-            new FormBuilder_5_40_0_001_FormRevisions(table),
-            new FormBuilder_5_40_0_001_FormPublished(table),
-            new FormBuilder_5_40_0_001_FormLatest(table),
-            new FormBuilder_5_40_0_001_FormStats(table)
-        ];
+        this.migrations = [new FormBuilder_5_40_0_002_FormSubmissions(table)];
     }
 
     getId(): string {
-        return "5.40.0-001";
+        return "5.40.0-002";
     }
 
     getDescription(): string {
-        return "Upgrade Form Builder (forms) to use HCMS storage operations.";
+        return "Upgrade Form Builder (submissions) to use HCMS storage operations.";
     }
 
     async shouldExecute(context: DataMigrationContext): Promise<boolean> {
@@ -53,4 +45,4 @@ export class FormBuilder_5_40_0_001 implements DataMigration {
     }
 }
 
-makeInjectable(FormBuilder_5_40_0_001, [inject(PrimaryDynamoTableSymbol)]);
+makeInjectable(FormBuilder_5_40_0_002, [inject(PrimaryDynamoTableSymbol)]);

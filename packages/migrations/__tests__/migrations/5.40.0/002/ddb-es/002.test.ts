@@ -9,27 +9,28 @@ import {
     logTestNameBeforeEachTest,
     scanTable
 } from "~tests/utils";
-import { FormBuilder_5_40_0_001 } from "~/migrations/5.40.0/001/ddb-es";
+import { FormBuilder_5_40_0_002 } from "~/migrations/5.40.0/002/ddb-es";
 import { insertElasticsearchTestData } from "~tests/utils/insertElasticsearchTestData";
 import { esGetIndexName } from "~/utils";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import {
     createLocalesData,
     createTenantsData,
-    createFormsData
-} from "~tests/migrations/5.40.0/001/ddb-es/001.ddb";
-import { createEsFormsData } from "~tests/migrations/5.40.0/001/ddb-es/001.es";
+    createFormsData,
+    createFormSubmissionsData
+} from "~tests/migrations/5.40.0/002/ddb-es/002.ddb";
 import {
-    migratedDdbFormData,
-    migratedFormStatsData
-} from "~tests/migrations/5.40.0/001/ddb-es/001.migrated.ddb";
-import { createMigratedDdbEsData } from "~tests/migrations/5.40.0/001/ddb-es/001.migrated.ddbEs";
-import { getDecompressedData } from "~tests/migrations/5.40.0/001/ddb-es/helpers";
+    createEsFormsData,
+    createEsFormSubmissionsData
+} from "~tests/migrations/5.40.0/002/ddb-es/002.es";
+import { createMigratedFormSubmissionsData } from "~tests/migrations/5.40.0/002/ddb-es/002.migrated.ddb";
+import { createMigratedDdbEsFormSubmissionsData } from "./002.migrated.ddbEs";
+import { getDecompressedData } from "~tests/migrations/5.40.0/002/ddb-es/helpers";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
 
-describe("5.40.0-001", () => {
+describe("5.40.0-002", () => {
     const primaryTable = getPrimaryDynamoDbTable();
     const dynamoToEsTable = getDynamoToEsTable();
     const elasticsearchClient = createElasticsearchClient();
@@ -52,7 +53,7 @@ describe("5.40.0-001", () => {
             primaryTable,
             dynamoToEsTable,
             elasticsearchClient,
-            migrations: [FormBuilder_5_40_0_001]
+            migrations: [FormBuilder_5_40_0_002]
         });
 
         const { data, error } = await handler();
@@ -72,7 +73,7 @@ describe("5.40.0-001", () => {
             primaryTable,
             dynamoToEsTable,
             elasticsearchClient,
-            migrations: [FormBuilder_5_40_0_001]
+            migrations: [FormBuilder_5_40_0_002]
         });
 
         const { data, error } = await handler();
@@ -92,7 +93,7 @@ describe("5.40.0-001", () => {
             primaryTable,
             dynamoToEsTable,
             elasticsearchClient,
-            migrations: [FormBuilder_5_40_0_001]
+            migrations: [FormBuilder_5_40_0_002]
         });
 
         const { data, error } = await handler();
@@ -108,18 +109,23 @@ describe("5.40.0-001", () => {
     it("should execute migration", async () => {
         await insertTestData(primaryTable, [
             ...createFormsData(),
+            ...createFormSubmissionsData(),
             ...createTenantsData(),
             ...createLocalesData()
         ]);
 
-        await insertElasticsearchTestData(elasticsearchClient, createEsFormsData(), item => {
-            return esGetIndexName({
-                tenant: item.tenant,
-                locale: item.locale,
-                isHeadlessCmsModel: false,
-                type: "form-builder"
-            });
-        });
+        await insertElasticsearchTestData(
+            elasticsearchClient,
+            [...createEsFormsData(), ...createEsFormSubmissionsData()],
+            item => {
+                return esGetIndexName({
+                    tenant: item.tenant,
+                    locale: item.locale,
+                    isHeadlessCmsModel: false,
+                    type: "form-builder"
+                });
+            }
+        );
 
         await elasticsearchClient.indices.refreshAll();
 
@@ -127,7 +133,7 @@ describe("5.40.0-001", () => {
             primaryTable,
             dynamoToEsTable,
             elasticsearchClient,
-            migrations: [FormBuilder_5_40_0_001]
+            migrations: [FormBuilder_5_40_0_002]
         });
 
         const { data, error } = await handler();
@@ -139,18 +145,18 @@ describe("5.40.0-001", () => {
         expect(grouped.skipped.length).toBe(0);
         expect(grouped.notApplicable.length).toBe(0);
 
-        // Check DDB Form entries
-        const ddbFormEntries = await scanTable(primaryTable, {
+        // Check DDB Submissions entries
+        const ddbSubmissionEntries = await scanTable(primaryTable, {
             filters: [
                 {
                     attr: "modelId",
-                    eq: "fbForm"
+                    eq: "fbSubmission"
                 }
             ]
         });
 
-        expect(sortBy(ddbFormEntries, ["PK", "SK"])).toEqual(
-            sortBy(migratedDdbFormData, ["PK", "SK"]).map(data => {
+        expect(sortBy(ddbSubmissionEntries, ["PK", "SK"])).toEqual(
+            sortBy(createMigratedFormSubmissionsData(), ["PK", "SK"]).map(data => {
                 return {
                     ...data,
                     entity: "CmsEntries",
@@ -160,28 +166,7 @@ describe("5.40.0-001", () => {
             })
         );
 
-        // Check DDB Stats entries
-        const ddbStatsEntries = await scanTable(primaryTable, {
-            filters: [
-                {
-                    attr: "modelId",
-                    eq: "fbFormStat"
-                }
-            ]
-        });
-
-        expect(sortBy(ddbStatsEntries, ["PK", "SK"])).toEqual(
-            sortBy(migratedFormStatsData, ["PK", "SK"]).map(data => {
-                return {
-                    ...data,
-                    entity: "CmsEntries",
-                    created: expect.any(String),
-                    modified: expect.any(String)
-                };
-            })
-        );
-
-        // Check DDB + ES Form / Form Stats entries
+        // Check DDB + ES Submissions entries
         const ddbEsFormEntries = await scanTable(dynamoToEsTable, {
             limit: 1_000_000
         });
@@ -195,7 +180,7 @@ describe("5.40.0-001", () => {
             })
         );
 
-        const migratedDdbEsData = createMigratedDdbEsData();
+        const migratedDdbEsData = createMigratedDdbEsFormSubmissionsData();
 
         expect(sortBy(ddbEsFormEntriesDecompressed, ["PK", "SK"])).toEqual(
             sortBy(migratedDdbEsData, ["PK", "SK"]).map(data => {
@@ -213,18 +198,23 @@ describe("5.40.0-001", () => {
     it("should not run migration if data is already in the expected shape", async () => {
         await insertTestData(primaryTable, [
             ...createFormsData(),
+            ...createFormSubmissionsData(),
             ...createTenantsData(),
             ...createLocalesData()
         ]);
 
-        await insertElasticsearchTestData(elasticsearchClient, createEsFormsData(), item => {
-            return esGetIndexName({
-                tenant: item.tenant,
-                locale: item.locale,
-                isHeadlessCmsModel: false,
-                type: "form-builder"
-            });
-        });
+        await insertElasticsearchTestData(
+            elasticsearchClient,
+            [...createEsFormsData(), ...createEsFormSubmissionsData()],
+            item => {
+                return esGetIndexName({
+                    tenant: item.tenant,
+                    locale: item.locale,
+                    isHeadlessCmsModel: false,
+                    type: "form-builder"
+                });
+            }
+        );
 
         await elasticsearchClient.indices.refreshAll();
 
@@ -232,7 +222,7 @@ describe("5.40.0-001", () => {
             primaryTable,
             dynamoToEsTable,
             elasticsearchClient,
-            migrations: [FormBuilder_5_40_0_001]
+            migrations: [FormBuilder_5_40_0_002]
         });
 
         // Should run the migration

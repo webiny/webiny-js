@@ -1,9 +1,4 @@
-import {
-    CmsEntry,
-    FbSubmission,
-    FormSubmissionValues,
-    Status
-} from "~/migrations/5.40.0/001/types";
+import { CmsEntry, FbSubmission, FormSubmissionValues, Status } from "../types";
 
 export const getDdbEsFormSubmissionCommonFields = (
     submission: FbSubmission

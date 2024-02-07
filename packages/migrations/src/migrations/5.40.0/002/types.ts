@@ -1,19 +1,4 @@
 // General
-interface LastEvaluatedKey {
-    PK: string;
-    SK: string;
-    GSI1_PK: string;
-    GSI1_SK: string;
-}
-
-export interface MigrationCheckpoint {
-    lastEvaluatedKey?: LastEvaluatedKey | boolean;
-}
-
-export interface I18NLocale {
-    code: string;
-}
-
 export interface Identity {
     id: string;
     displayName: string | null;
@@ -121,12 +106,37 @@ export interface FbForm {
     webinyVersion: string;
 }
 
-// CMS Entries / Forms - 5.40.0
-export interface CmsEntryValues {
-    [key: string]: any;
+export interface FbSubmission {
+    id: string;
+    locale: string;
+    ownedBy: Identity;
+    data: Record<string, any>;
+    meta: {
+        ip: string;
+        submittedOn: string;
+        url: {
+            location: string;
+            query: JSON;
+        };
+    };
+    form: {
+        id: string;
+        parent: string;
+        name: string;
+        version: number;
+        fields: FbFormField[];
+        layout: string[][];
+        steps: FbFormStep[];
+    };
+    logs: Record<string, any>[];
+    createdOn: string;
+    savedOn: string;
+    webinyVersion: string;
+    tenant: string;
 }
 
-export interface CmsEntryRawValues {
+// CMS Entries / Forms - 5.40.0
+export interface CmsEntryValues {
     [key: string]: any;
 }
 
@@ -178,6 +188,8 @@ export interface CmsEntry<T = CmsEntryValues> {
     };
 }
 
+export interface CmsEntryWithMeta<T = CmsEntryValues> extends CmsEntry<T>, MetaFields {}
+
 export interface FormEntryCommonField {
     "json@settings": JSON | null;
     "object@options": Array<{
@@ -203,78 +215,23 @@ export interface FormEntryCommonSteps {
     "text@title": string;
 }
 
-export interface CmsEntryWithMeta<T = CmsEntryValues> extends CmsEntry<T>, MetaFields {}
-
-export interface CmsEntryDdbEs<T = CmsEntryValues, R = CmsEntryRawValues> extends CmsEntry<T> {
-    rawValues: R;
-}
-
-export interface FormEntryValues {
-    "json@triggers": Record<string, any> | null;
-    "object@fields": FormEntryCommonField[];
-    "object@settings": {
-        "boolean@fullWidthSubmitButton": boolean | null;
-        "json@successMessage": JSON[] | null;
-        "text@submitButtonLabel": string | null;
-        "object@layout": {
-            "text@renderer": string | null;
-        } | null;
-        "object@reCaptcha": {
-            "boolean@enabled": boolean | null;
-            "text@errorMessage": string | null;
-        };
-        "object@termsOfServiceMessage"?: {
-            "boolean@enabled": boolean | null;
-            "json@message": JSON[] | null;
-            "text@errorMessage": string | null;
-        };
+export interface FormSubmissionValues {
+    "json@data": Record<string, any>;
+    "json@logs": Record<string, any>[];
+    "object@form": {
+        "object@fields": FormEntryCommonField[];
+        "object@steps": FormEntryCommonSteps[];
+        "text@id": string;
+        "text@name": string;
+        "text@parent": string;
+        "text@version": number;
     };
-    "object@steps": FormEntryCommonSteps[];
-    "text@formId": string;
-    "text@name": string;
-    "text@slug": string;
-}
-
-export interface FormEntryDdbEsValues {
-    "text@formId": string;
-    "text@name": string;
-    "text@slug": string;
-    "object@fields": Omit<FormEntryCommonField, "json@settings">[];
-    "object@steps": Omit<FormEntryCommonSteps, "json@layout">[];
-    "object@settings": {
-        "object@layout": {
-            "text@renderer": string | null;
-        } | null;
-        "text@submitButtonLabel": string | null;
-        "boolean@fullWidthSubmitButton": boolean | null;
-        "object@termsOfServiceMessage"?: {
-            "boolean@enabled": boolean | null;
-            "text@errorMessage": string | null;
+    "object@meta": {
+        "datetime@submittedOn": string;
+        "object@url": {
+            "json@query": JSON;
+            "text@location": string;
         };
-        "object@reCaptcha": {
-            "boolean@enabled": boolean | null;
-            "text@errorMessage": string | null;
-        };
+        "text@ip": string;
     };
-}
-
-export interface FormEntryDdbEsRawValues {
-    "object@fields": Pick<FormEntryCommonField, "json@settings">[];
-    "object@steps": Pick<FormEntryCommonSteps, "json@layout">[];
-    "object@settings": {
-        "object@layout": Record<string, any>;
-        "object@reCaptcha": Record<string, any>;
-        "json@successMessage": JSON[] | null;
-        "object@termsOfServiceMessage"?: {
-            "json@message": JSON[] | null;
-        };
-    };
-    "json@triggers": Record<string, any> | null;
-}
-
-export interface FormStatsValues {
-    "number@formVersion": number;
-    "number@submissions": number;
-    "number@views": number;
-    "text@formId": string;
 }
