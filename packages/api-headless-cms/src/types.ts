@@ -444,6 +444,11 @@ export interface CmsModelGroup {
     name: string;
 }
 
+export interface CmsModelAuthorization {
+    permissions: boolean;
+    [key: string]: any;
+}
+
 /**
  * Base CMS Model. Should not be exported and used outside of this package.
  *
@@ -563,7 +568,7 @@ export interface CmsModel {
      * Does this model require authorization to be performed?
      * Only available for models created via plugins.
      */
-    authorization?: boolean;
+    authorization?: boolean | CmsModelAuthorization;
 
     /**
      * Is this model created via plugin?
