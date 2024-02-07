@@ -8,6 +8,7 @@ const taskLogModelPlugin = createCmsModel(
     createPrivateModelDefinition({
         name: "Webiny Task Log",
         modelId: WEBINY_TASK_LOG_MODEL_ID,
+        authorization: false,
         fields: [
             {
                 id: "executionName",
@@ -140,6 +141,7 @@ const taskModelPlugin = createCmsModel(
     createPrivateModelDefinition({
         name: "Webiny Task",
         modelId: WEBINY_TASK_MODEL_ID,
+        authorization: false,
         fields: [
             {
                 id: "name",
