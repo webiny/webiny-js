@@ -53,6 +53,7 @@ export const createCommentModelDefinition = ({ modelId }: CreateCommentModelDefi
         name: "APW - Comment",
         modelId: COMMENT_MODEL_ID,
         titleFieldId: "step",
+        authorization: false,
         fields: [commentBody(), changeRequestRef(modelId), stepField(), mediaField()]
     });
 };

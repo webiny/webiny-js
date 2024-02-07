@@ -49,6 +49,7 @@ export const createSettingsModel = () => {
         createPrivateModelDefinition({
             name: "Mailer Settings",
             modelId: SETTINGS_MODEL_ID,
+            authorization: false,
             fields: [
                 createTextField({
                     label: "Host",

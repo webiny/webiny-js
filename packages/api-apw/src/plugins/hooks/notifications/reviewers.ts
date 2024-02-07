@@ -34,21 +34,19 @@ export const fetchReviewers = async (
 
     const idList = getReviewerIdList(workflow);
 
-    return context.security.withoutAuthorization(async () => {
-        const [reviewers] = await context.apw.reviewer.list({
-            where: {
-                id_in: idList
-            },
-            limit: 10000
-        });
-        return reviewers.filter((item): item is ApwReviewerWithEmail => {
-            if (!item.email) {
-                return false;
-            } else if (exclude.includes(item.identityId)) {
-                return false;
-            }
+    const [reviewers] = await context.apw.reviewer.list({
+        where: {
+            id_in: idList
+        },
+        limit: 10000
+    });
+    return reviewers.filter((item): item is ApwReviewerWithEmail => {
+        if (!item.email) {
+            return false;
+        } else if (exclude.includes(item.identityId)) {
+            return false;
+        }
 
-            return true;
-        });
+        return true;
     });
 };

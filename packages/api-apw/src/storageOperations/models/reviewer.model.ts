@@ -66,6 +66,7 @@ export const createReviewerModelDefinition = () => {
         name: "APW - Reviewer",
         titleFieldId: "displayName",
         modelId: REVIEWER_MODEL_ID,
+        authorization: false,
         fields: [idField(), displayNameField(), typeField(), emailField()]
     });
 };

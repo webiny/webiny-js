@@ -286,6 +286,7 @@ export const createContentReviewModelDefinition = ({
         name: "APW - Content Review",
         modelId: CONTENT_REVIEW_MODEL_ID,
         titleFieldId: "content",
+        authorization: false,
         fields: [
             titleField(),
             contentField([

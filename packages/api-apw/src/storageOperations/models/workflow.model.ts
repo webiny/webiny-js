@@ -218,6 +218,7 @@ export const createWorkflowModelDefinition = ({
          */
         modelId: WORKFLOW_MODEL_ID,
         titleFieldId: "title",
+        authorization: false,
         fields: [
             titleField(),
             stepsField([

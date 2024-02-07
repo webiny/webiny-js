@@ -49,6 +49,7 @@ export const createChangeRequestModelDefinition = () => {
         name: "APW - Change Request",
         modelId: CHANGE_REQUEST_MODEL_ID,
         titleFieldId: "title",
+        authorization: false,
         fields: [bodyField(), titleField(), resolvedField(), mediaField(), stepField()]
     });
 };
