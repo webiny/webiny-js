@@ -18,9 +18,15 @@ export = async () => {
     const environment = String(process.env.WEBINY_ENV);
     if (PROD_STACK_ENVIRONMENTS.includes(environment)) {
         // Import "prod" resources config and initialize resources.
-        return await import("./prod").then(module => module.default());
+        return await import(
+            /* webpackChunkName: "pulumiResourcesProd" */
+            "./prod"
+        ).then(module => module.default());
     }
 
     // Import "dev" resources config and initialize resources.
-    return await import("./dev").then(module => module.default());
+    return await import(
+        /* webpackChunkName: "pulumiResourcesDev" */
+        "./dev"
+    ).then(module => module.default());
 };
