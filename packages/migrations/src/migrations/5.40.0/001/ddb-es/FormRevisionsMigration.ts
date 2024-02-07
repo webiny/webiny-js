@@ -47,7 +47,11 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
         return "";
     }
 
-    async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
+    async shouldExecute({ logger, checkpoint }: DataMigrationContext): Promise<boolean> {
+        if (checkpoint) {
+            return true;
+        }
+
         let shouldExecute = false;
 
         await forEachTenantLocale({
@@ -139,8 +143,6 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
             table: this.table,
             logger,
             callback: async ({ tenantId, localeCode }) => {
-                logger.info(`Migrating form revisions entries for ${tenantId} - ${localeCode}.`);
-
                 const formBuilderIndexNameParams = {
                     tenant: tenantId,
                     locale: localeCode,
@@ -154,7 +156,9 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
                 });
 
                 if (!indexExists) {
-                    // Continue with next locale.
+                    logger.info(
+                        `No form-builder index found for ${tenantId} - ${localeCode}: skipping migration.`
+                    );
                     return true;
                 }
 
@@ -172,9 +176,13 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
                 });
 
                 if (!esRecords.length) {
-                    // Continue with next locale.
+                    logger.info(
+                        `No forms found for ${tenantId} - ${localeCode}: skipping migration.`
+                    );
                     return true;
                 }
+
+                logger.info(`Migrating form revisions entries for ${tenantId} - ${localeCode}.`);
 
                 const ids = esRecords.map(item => item.id).filter(Boolean);
                 const uniqueIds = [...new Set(ids)];
@@ -254,6 +262,6 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
             }
         });
 
-        logger.info("Updated all latest forms.");
+        logger.info("Updated all revision forms.");
     }
 }

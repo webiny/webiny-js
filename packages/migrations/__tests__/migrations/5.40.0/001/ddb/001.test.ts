@@ -141,7 +141,7 @@ describe("5.40.0-001", () => {
             })
         );
 
-        // Check FormSubmissions entries
+        // Check Form submissions entries
         const formSubmissionEntries = await scanTable(table, {
             filters: [
                 {

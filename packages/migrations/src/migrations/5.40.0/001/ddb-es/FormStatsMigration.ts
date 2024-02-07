@@ -50,7 +50,11 @@ export class FormBuilder_5_40_0_001_FormStats implements DataMigration<Migration
         return "";
     }
 
-    async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
+    async shouldExecute({ logger, checkpoint }: DataMigrationContext): Promise<boolean> {
+        if (checkpoint) {
+            return true;
+        }
+
         let shouldExecute = false;
 
         await forEachTenantLocale({
@@ -290,6 +294,6 @@ export class FormBuilder_5_40_0_001_FormStats implements DataMigration<Migration
             }
         });
 
-        logger.info("Updated all latest forms.");
+        logger.info("Updated all stats forms.");
     }
 }

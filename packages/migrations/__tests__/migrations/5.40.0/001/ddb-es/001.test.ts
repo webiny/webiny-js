@@ -16,14 +16,19 @@ import { createElasticsearchClient } from "@webiny/project-utils/testing/elastic
 import {
     createLocalesData,
     createTenantsData,
-    createFormsData
+    createFormsData,
+    createFormSubmissionsData
 } from "~tests/migrations/5.40.0/001/ddb-es/001.ddb";
-import { createEsFormsData } from "~tests/migrations/5.40.0/001/ddb-es/001.es";
 import {
+    createEsFormsData,
+    createEsFormSubmissionsData
+} from "~tests/migrations/5.40.0/001/ddb-es/001.es";
+import {
+    createMigratedFormSubmissionsData,
     migratedDdbFormData,
     migratedFormStatsData
 } from "~tests/migrations/5.40.0/001/ddb-es/001.migrated.ddb";
-import { migratedDdbEsData } from "~tests/migrations/5.40.0/001/ddb-es/001.migrated.ddbEs";
+import { createMigratedDdbEsData } from "~tests/migrations/5.40.0/001/ddb-es/001.migrated.ddbEs";
 import { getDecompressedData } from "~tests/migrations/5.40.0/001/ddb-es/helpers";
 
 jest.retryTimes(0);
@@ -108,18 +113,23 @@ describe("5.40.0-001", () => {
     it("should execute migration", async () => {
         await insertTestData(primaryTable, [
             ...createFormsData(),
+            ...createFormSubmissionsData(),
             ...createTenantsData(),
             ...createLocalesData()
         ]);
 
-        await insertElasticsearchTestData(elasticsearchClient, createEsFormsData(), item => {
-            return esGetIndexName({
-                tenant: item.tenant,
-                locale: item.locale,
-                isHeadlessCmsModel: false,
-                type: "form-builder"
-            });
-        });
+        await insertElasticsearchTestData(
+            elasticsearchClient,
+            [...createEsFormsData(), ...createEsFormSubmissionsData()],
+            item => {
+                return esGetIndexName({
+                    tenant: item.tenant,
+                    locale: item.locale,
+                    isHeadlessCmsModel: false,
+                    type: "form-builder"
+                });
+            }
+        );
 
         await elasticsearchClient.indices.refreshAll();
 
@@ -181,21 +191,49 @@ describe("5.40.0-001", () => {
             })
         );
 
-        // Check DDB + ES Form entries
+        // Check DDB Submissions entries
+        const ddbSubmissionEntries = await scanTable(primaryTable, {
+            filters: [
+                {
+                    attr: "modelId",
+                    eq: "fbSubmission"
+                }
+            ]
+        });
+
+        expect(sortBy(ddbSubmissionEntries, ["PK", "SK"])).toEqual(
+            sortBy(createMigratedFormSubmissionsData(), ["PK", "SK"]).map(data => {
+                return {
+                    ...data,
+                    entity: "CmsEntries",
+                    created: expect.any(String),
+                    modified: expect.any(String)
+                };
+            })
+        );
+
+        // Check DDB + ES Form / Form Stats / Form Submission entries
         const ddbEsFormEntries = await scanTable(dynamoToEsTable, {
             limit: 1_000_000
         });
 
         const ddbEsFormEntriesDecompressed = await Promise.all(
             ddbEsFormEntries.map(async item => {
-                return {
-                    ...item,
-                    data: await getDecompressedData(item.data)
-                };
+                try {
+                    return {
+                        ...item,
+                        data: await getDecompressedData(item.data)
+                    };
+                } catch (error) {
+                    console.error(`Error processing item: ${error.message}`);
+                    throw error; // Rethrow the error to propagate it further
+                }
             })
         );
 
-        expect(ddbEsFormEntriesDecompressed).toEqual(
+        const migratedDdbEsData = createMigratedDdbEsData();
+
+        expect(sortBy(ddbEsFormEntriesDecompressed, ["PK", "SK"])).toEqual(
             sortBy(migratedDdbEsData, ["PK", "SK"]).map(data => {
                 return {
                     ...data,
@@ -211,18 +249,23 @@ describe("5.40.0-001", () => {
     it("should not run migration if data is already in the expected shape", async () => {
         await insertTestData(primaryTable, [
             ...createFormsData(),
+            ...createFormSubmissionsData(),
             ...createTenantsData(),
             ...createLocalesData()
         ]);
 
-        await insertElasticsearchTestData(elasticsearchClient, createEsFormsData(), item => {
-            return esGetIndexName({
-                tenant: item.tenant,
-                locale: item.locale,
-                isHeadlessCmsModel: false,
-                type: "form-builder"
-            });
-        });
+        await insertElasticsearchTestData(
+            elasticsearchClient,
+            [...createEsFormsData(), ...createEsFormSubmissionsData()],
+            item => {
+                return esGetIndexName({
+                    tenant: item.tenant,
+                    locale: item.locale,
+                    isHeadlessCmsModel: false,
+                    type: "form-builder"
+                });
+            }
+        );
 
         await elasticsearchClient.indices.refreshAll();
 

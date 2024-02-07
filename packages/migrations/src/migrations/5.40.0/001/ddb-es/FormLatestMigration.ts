@@ -55,7 +55,11 @@ export class FormBuilder_5_40_0_001_FormLatest implements DataMigration<Migratio
         return "";
     }
 
-    async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
+    async shouldExecute({ logger, checkpoint }: DataMigrationContext): Promise<boolean> {
+        if (checkpoint) {
+            return true;
+        }
+
         let shouldExecute = false;
 
         await forEachTenantLocale({
@@ -147,8 +151,6 @@ export class FormBuilder_5_40_0_001_FormLatest implements DataMigration<Migratio
             table: this.table,
             logger,
             callback: async ({ tenantId, localeCode }) => {
-                logger.info(`Migrating form latest entries for ${tenantId} - ${localeCode}.`);
-
                 const formBuilderIndexNameParams = {
                     tenant: tenantId,
                     locale: localeCode,
@@ -169,7 +171,9 @@ export class FormBuilder_5_40_0_001_FormLatest implements DataMigration<Migratio
                 });
 
                 if (!indexExists) {
-                    // Continue with next locale.
+                    logger.info(
+                        `No form-builder index found for ${tenantId} - ${localeCode}: skipping migration.`
+                    );
                     return true;
                 }
 
@@ -187,9 +191,13 @@ export class FormBuilder_5_40_0_001_FormLatest implements DataMigration<Migratio
                 });
 
                 if (!esRecords.length) {
-                    // Continue with next locale.
+                    logger.info(
+                        `No forms found for ${tenantId} - ${localeCode}: skipping migration.`
+                    );
                     return true;
                 }
+
+                logger.info(`Migrating form latest entries for ${tenantId} - ${localeCode}.`);
 
                 // Since it's the first time we add a HCMS form record, we also need to create the index
                 await esCreateIndex({

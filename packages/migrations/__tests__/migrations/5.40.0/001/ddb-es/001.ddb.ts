@@ -51,7 +51,7 @@ export const createFormsData = () => {
             },
             slug: "demo-form-1-65c0a07038a36e00082095ea",
             stats: {
-                submissions: 1000,
+                submissions: 5000,
                 views: 10000
             },
             status: "published",
@@ -114,7 +114,7 @@ export const createFormsData = () => {
             },
             slug: "demo-form-1-65c0a07038a36e00082095ea",
             stats: {
-                submissions: 1000,
+                submissions: 5000,
                 views: 10000
             },
             status: "published",
@@ -177,7 +177,7 @@ export const createFormsData = () => {
             },
             slug: "demo-form-1-65c0a07038a36e00082095ea",
             stats: {
-                submissions: 1000,
+                submissions: 5000,
                 views: 10000
             },
             status: "published",
@@ -196,6 +196,71 @@ export const createFormsData = () => {
             _md: "2024-02-05T08:47:01.152Z"
         }
     ];
+};
+
+export const createFormSubmissionsData = () => {
+    const forms = createFormsData().filter(
+        form => form.TYPE === "fb.form" && form.stats.submissions > 0
+    );
+
+    const submissions = [];
+
+    for (const form of forms) {
+        for (let i = 0; i < form.stats.submissions; i++) {
+            const item = {
+                PK: `T#${form.tenant}#L#${form.locale}#FB#F#${form.formId}`,
+                SK: `FS#${form.id}-submission-${i}`,
+                createdOn: form.createdOn,
+                data: form.fields.map(field => ({
+                    [field.fieldId]: `${field.label} submission ${i}`
+                })),
+                logs: [
+                    {
+                        type: "info",
+                        message: "Form submission created."
+                    },
+                    {
+                        type: "success",
+                        message: "Form submitted successfully."
+                    }
+                ],
+                form: {
+                    fields: form.fields,
+                    steps: form.steps,
+                    id: form.id,
+                    name: form.name,
+                    parent: form.formId,
+                    version: form.version
+                },
+                id: `${form.id}-submission-${i}`,
+                locale: form.locale,
+                meta: {
+                    ip: "0.0.0.0",
+                    submittedOn: form.createdOn,
+                    url: {
+                        location: `https://${form.formId}.website.com/any`,
+                        query: {
+                            formId: form.formId,
+                            tenant: form.tenant,
+                            locale: form.locale
+                        }
+                    }
+                },
+                ownedBy: user,
+                savedOn: form.savedOn,
+                tenant: form.tenant,
+                TYPE: "fb.formSubmission",
+                webinyVersion: form.webinyVersion,
+                _ct: form.createdOn,
+                _et: "FormBuilderSubmission",
+                _md: form.savedOn
+            };
+
+            submissions.push(item);
+        }
+    }
+
+    return submissions;
 };
 
 export const createTenantsData = () => {
