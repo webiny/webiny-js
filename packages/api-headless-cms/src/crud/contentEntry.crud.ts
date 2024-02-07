@@ -276,7 +276,15 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
      */
     const getEntriesByIds: CmsEntryContext["getEntriesByIds"] = async (model, ids) => {
         return context.benchmark.measure("headlessCms.crud.entries.getEntriesByIds", async () => {
-            await entriesPermissions.ensureCanAccess({ rwd: "r", model });
+            try {
+                await entriesPermissions.ensureCanAccess({ model, rwd: "r" });
+            } catch {
+                throw new NotAuthorizedError({
+                    data: {
+                        reason: 'Not allowed to perform "read" on "cms.contentEntry".'
+                    }
+                });
+            }
 
             const entries = await storageOperations.entries.getByIds(model, {
                 ids

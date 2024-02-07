@@ -342,7 +342,7 @@ describe("READ - Resolvers", () => {
                     error: {
                         code: "SECURITY_NOT_AUTHORIZED",
                         data: {
-                            reason: 'Not allowed to access model "category".'
+                            reason: 'Not allowed to perform "read" on "cms.contentEntry".'
                         },
                         message: "Not authorized!"
                     }
@@ -380,7 +380,7 @@ describe("READ - Resolvers", () => {
                     error: {
                         code: "SECURITY_NOT_AUTHORIZED",
                         data: {
-                            reason: 'Not allowed to access model "category".'
+                            reason: 'Not allowed to perform "read" on "cms.contentEntry".'
                         },
                         message: "Not authorized!"
                     }

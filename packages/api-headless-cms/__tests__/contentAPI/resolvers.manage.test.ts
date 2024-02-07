@@ -194,7 +194,7 @@ describe("MANAGE - Resolvers", () => {
         expect(response.data.getCategory.error).toEqual({
             code: "SECURITY_NOT_AUTHORIZED",
             data: {
-                reason: 'Not allowed to access model "category".'
+                reason: 'Not allowed to perform "read" on "cms.contentEntry".'
             },
             message: "Not authorized!"
         });
