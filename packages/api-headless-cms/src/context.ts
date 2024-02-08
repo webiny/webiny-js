@@ -8,11 +8,9 @@ import { createModelsCrud } from "~/crud/contentModel.crud";
 import { createContentEntryCrud } from "~/crud/contentEntry.crud";
 import { StorageOperationsCmsModelPlugin } from "~/plugins";
 import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
-import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
-import { ModelGroupsPermissions } from "./utils/permissions/ModelGroupsPermissions";
-import { EntriesPermissions } from "./utils/permissions/EntriesPermissions";
 import { createExportCrud } from "~/export";
 import { createImportCrud } from "~/export/crud/importing";
+import { AccessControl } from "./utils/permissions/AccessControl";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -62,27 +60,16 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         await context.benchmark.measure("headlessCms.createContext", async () => {
             await storageOperations.beforeInit(context);
 
-            const modelGroupsPermissions = new ModelGroupsPermissions({
+            const accessControl = new AccessControl({
                 getIdentity: context.security.getIdentity,
-                getPermissions: () => context.security.getPermissions("cms.contentModelGroup"),
-                fullAccessPermissionName: "cms.*"
-            });
-
-            const modelsPermissions = new ModelsPermissions({
-                getIdentity: context.security.getIdentity,
-                getPermissions: () => context.security.getPermissions("cms.contentModel"),
-                modelGroupsPermissions,
-                getModelGroup: (id: string) => {
+                getGroupsPermissions: () => context.security.getPermissions("cms.contentModelGroup"),
+                getModelsPermissions: () => context.security.getPermissions("cms.contentModel"),
+                getEntriesPermissions: () => context.security.getPermissions("cms.contentEntry"),
+                listAllGroups: () => {
                     return context.security.withoutAuthorization(() => {
-                        return context.cms.getGroup(id);
-                    });
+                        return context.cms.listGroups();
+                    })
                 }
-            });
-
-            const entriesPermissions = new EntriesPermissions({
-                getIdentity: context.security.getIdentity,
-                getPermissions: () => context.security.getPermissions("cms.contentEntry"),
-                modelsPermissions
             });
 
             context.cms = {
@@ -93,11 +80,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 PREVIEW: type === "preview",
                 MANAGE: type === "manage",
                 storageOperations,
-                permissions: {
-                    groups: modelGroupsPermissions,
-                    models: modelsPermissions,
-                    entries: entriesPermissions
-                },
+                accessControl,
                 ...createSystemCrud({
                     context,
                     getTenant,
@@ -111,7 +94,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                     getLocale,
                     getIdentity,
                     storageOperations,
-                    modelGroupsPermissions
+                    accessControl,
                 }),
                 ...createModelsCrud({
                     context,
@@ -119,7 +102,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                     getTenant,
                     getIdentity,
                     storageOperations,
-                    modelsPermissions
+                    accessControl,
                 }),
                 ...createContentEntryCrud({
                     context,
@@ -127,7 +110,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                     getTenant,
                     getLocale,
                     storageOperations,
-                    entriesPermissions
+                    accessControl,
                 }),
                 export: {
                     ...createExportCrud(context)

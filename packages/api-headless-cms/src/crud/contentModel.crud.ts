@@ -38,24 +38,23 @@ import {
 } from "~/crud/contentModel/validation";
 import { createZodError, removeUndefinedValues } from "@webiny/utils";
 import { assignModelDefaultFields } from "~/crud/contentModel/defaultFields";
-import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { createCacheKey, createMemoryCache } from "~/utils";
 import { ensureTypeTag } from "./contentModel/ensureTypeTag";
 import { listModelsFromDatabase } from "~/crud/contentModel/listModelsFromDatabase";
 import { filterAsync } from "~/utils/filterAsync";
+import { AccessControl } from "~/utils/permissions/AccessControl";
 
 export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     storageOperations: HeadlessCmsStorageOperations;
-    modelsPermissions: ModelsPermissions;
+    accessControl: AccessControl;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
 
 export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContext => {
-    const { getTenant, getIdentity, getLocale, storageOperations, modelsPermissions, context } =
-        params;
+    const { getTenant, getIdentity, getLocale, storageOperations, accessControl, context } = params;
 
     const listPluginModelsCache = createMemoryCache<Promise<CmsModel[]>>();
     const listFilteredModelsCache = createMemoryCache<Promise<CmsModel[]>>();
@@ -114,8 +113,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                     };
                 }) as unknown as CmsModel[];
 
-            return filterAsync(models, model => {
-                return modelsPermissions.canAccessModel({ model });
+            return filterAsync(models, async model => {
+                return accessControl.canAccessModel({ model });
             });
         });
     };
@@ -168,7 +167,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 filteredCacheKey,
                 async () => {
                     return filterAsync(databaseModels, async model => {
-                        return modelsPermissions.canAccessModel({ model });
+                        return accessControl.canAccessModel({ model });
                     });
                 }
             );
@@ -186,10 +185,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             if (!model) {
                 throw new NotFoundError(`Content model "${modelId}" was not found!`);
             }
-
-            // We cannot do any checks before the model is being loaded because
-            // we don't know if the returned model has authorization enabled or not.
-            await modelsPermissions.ensureCanAccessModel({ model });
 
             return model;
         });
@@ -309,7 +304,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
         model.tags = ensureTypeTag(model);
 
-        await modelsPermissions.ensureCanAccessModel({ model, rwd: "w" });
+        await accessControl.ensureCanAccessModel({ model, rwd: "w" });
 
         try {
             await onModelBeforeCreate.publish({
@@ -344,8 +339,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         // Get a model record; this will also perform ownership validation.
         const original = await getModel(modelId);
 
-        await modelsPermissions.ensureCanAccessModel({ model: original, rwd: "w" });
-
         const result = await createModelUpdateValidation().safeParseAsync(input);
         if (!result.success) {
             throw createZodError(result.error);
@@ -371,6 +364,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 name: groupData.name
             };
         }
+
         const model: CmsModel = {
             ...original,
             ...data,
@@ -393,6 +387,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         };
 
         model.tags = ensureTypeTag(model);
+
+        await accessControl.ensureCanAccessModel({ model, rwd: "w" });
 
         try {
             await onModelBeforeUpdate.publish({
@@ -524,7 +520,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             webinyVersion: context.WEBINY_VERSION
         };
 
-        await modelsPermissions.ensureCanAccessModel({ model, rwd: "w" });
+        await accessControl.ensureCanAccessModel({ model, rwd: "w" });
 
         try {
             await onModelBeforeCreateFrom.publish({
@@ -561,7 +557,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
     const deleteModel: CmsModelContext["deleteModel"] = async modelId => {
         const model = await getModel(modelId);
 
-        await modelsPermissions.ensureCanAccessModel({ model, rwd: "d" });
+        await accessControl.ensureCanAccessModel({ model, rwd: "d" });
 
         try {
             await onModelBeforeDelete.publish({
@@ -604,8 +600,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
          * Maybe introduce another permission for it?
          */
         const model = await getModel(modelId);
-
-        await modelsPermissions.ensureCanAccessModel({ model, rwd: "w" });
+        await accessControl.ensureCanAccessModel({ model, rwd: "w" });
 
         await onModelInitialize.publish({ model, data });
 

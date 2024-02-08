@@ -58,7 +58,6 @@ import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entr
 import { getSearchableFields } from "./contentEntry/searchableFields";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { filterAsync } from "~/utils/filterAsync";
-import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { isEntryLevelEntryMetaField, pickEntryMetaFields } from "~/constants";
 import {
@@ -70,6 +69,7 @@ import {
     createUpdateEntryData,
     mapAndCleanUpdatedInputData
 } from "./contentEntry/entryDataFactories";
+import { AccessControl } from "~/utils/permissions/AccessControl";
 
 interface DeleteEntryParams {
     model: CmsModel;
@@ -86,7 +86,7 @@ const createSort = (sort?: CmsEntryListSort): CmsEntryListSort => {
 
 interface CreateContentEntryCrudParams {
     storageOperations: HeadlessCmsStorageOperations;
-    entriesPermissions: EntriesPermissions;
+    accessControl: AccessControl;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
     getTenant: () => Tenant;
@@ -96,7 +96,7 @@ interface CreateContentEntryCrudParams {
 export const createContentEntryCrud = (params: CreateContentEntryCrudParams): CmsEntryContext => {
     const {
         storageOperations,
-        entriesPermissions,
+        accessControl,
         context,
         getIdentity: getSecurityIdentity,
         getTenant,
@@ -277,7 +277,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const getEntriesByIds: CmsEntryContext["getEntriesByIds"] = async (model, ids) => {
         return context.benchmark.measure("headlessCms.crud.entries.getEntriesByIds", async () => {
             try {
-                await entriesPermissions.ensureCanAccess({ model, rwd: "r" });
+                await accessControl.ensureCanAccessEntry({ model, rwd: "r" });
             } catch {
                 throw new NotAuthorizedError({
                     data: {
@@ -291,7 +291,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
 
             return filterAsync(entries, async entry => {
-                return entriesPermissions.canAccess({ owns: entry.revisionCreatedBy, model });
+                return accessControl.canAccess({ owns: entry.revisionCreatedBy, model });
             });
         });
     };
@@ -313,29 +313,29 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         model,
         ids
     ) => {
-        await entriesPermissions.ensureCanAccess({ rwd: "r", model });
+        await accessControl.ensureCanAccess({ rwd: "r", model });
 
         const entries = await storageOperations.entries.getPublishedByIds(model, {
             ids
         });
 
         return filterAsync(entries, async entry => {
-            return entriesPermissions.canAccess({ owns: entry.revisionCreatedBy, model });
+            return accessControl.canAccess({ owns: entry.revisionCreatedBy, model });
         });
     };
     const getLatestEntriesByIds: CmsEntryContext["getLatestEntriesByIds"] = async (model, ids) => {
-        await entriesPermissions.ensureCanAccess({ rwd: "r", model });
+        await accessControl.ensureCanAccess({ rwd: "r", model });
 
         const entries = await storageOperations.entries.getLatestByIds(model, {
             ids
         });
 
         return filterAsync(entries, async entry => {
-            return entriesPermissions.canAccess({ owns: entry.revisionCreatedBy, model });
+            return accessControl.canAccess({ owns: entry.revisionCreatedBy, model });
         });
     };
     const getEntry: CmsEntryContext["getEntry"] = async (model, params) => {
-        await entriesPermissions.ensureCanAccess({ model, rwd: "r" });
+        await accessControl.ensureCanAccess({ model, rwd: "r" });
 
         const { where, sort } = params;
 
@@ -355,7 +355,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             throw new NotFoundError(`Entry not found!`);
         }
 
-        await entriesPermissions.ensureCanAccess({ model, owns: item.createdBy });
+        await accessControl.ensureCanAccess({ model, owns: item.createdBy });
 
         return item;
     };
@@ -371,7 +371,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         params: CmsEntryListParams
     ): Promise<[CmsEntry<T>[], CmsEntryMeta]> => {
         try {
-            await entriesPermissions.ensureCanAccess({ model, rwd: "r" });
+            await accessControl.ensureCanAccess({ model, rwd: "r" });
         } catch {
             throw new NotAuthorizedError({
                 data: {
@@ -391,7 +391,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * Possibly only get records which are owned by current user.
          * Or if searching for the owner set that value - in the case that user can see other entries than their own.
          */
-        if (await entriesPermissions.canAccessOnlyOwnRecords({ model })) {
+        if (await accessControl.canAccessOnlyOwnRecords({ model })) {
             where.createdBy = getSecurityIdentity().id;
         }
 
@@ -468,7 +468,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
     const createEntry: CmsEntryContext["createEntry"] = async (model, rawInput, options) => {
         // This ensures that the user actually has access to create an entry in the given model.
-        await entriesPermissions.ensureCanAccess({ model, rwd: "w" });
+        await accessControl.ensureCanAccess({ model, rwd: "w" });
 
         const { entry, input } = await createEntryData({
             context,
@@ -478,7 +478,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             getLocale,
             getTenant,
             getIdentity: getSecurityIdentity,
-            entriesPermissions
+            accessControl
         });
 
         let storageEntry: CmsStorageEntry | null = null;
@@ -529,7 +529,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         rawInput,
         options
     ) => {
-        await entriesPermissions.ensureCanAccess({ model, rwd: "w" });
+        await accessControl.ensureCanAccess({ model, rwd: "w" });
 
         /**
          * Entries are identified by a common parent ID + Revision number.
@@ -563,7 +563,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          */
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
-        await entriesPermissions.ensureCanAccess({ model, owns: originalEntry.createdBy });
+        await accessControl.ensureCanAccess({ model, owns: originalEntry.createdBy });
 
         const { entry, input } = await createEntryRevisionFromData({
             sourceId,
@@ -631,7 +631,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         metaInput,
         options
     ) => {
-        await entriesPermissions.ensureCanAccess({ model, rwd: "w" });
+        await accessControl.ensureCanAccess({ model, rwd: "w" });
 
         /**
          * The entry we are going to update.
@@ -653,7 +653,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
-        await entriesPermissions.ensureCanAccess({ model, owns: originalEntry.revisionCreatedBy });
+        await accessControl.ensureCanAccess({ model, owns: originalEntry.revisionCreatedBy });
 
         const { entry, input } = await createUpdateEntryData({
             model,
@@ -715,7 +715,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
 
     const validateEntry: CmsEntryContext["validateEntry"] = async (model, id, inputData) => {
-        await entriesPermissions.ensureCanAccess({ model, rwd: "w" });
+        await accessControl.ensureCanAccess({ model, rwd: "w" });
 
         const input = mapAndCleanUpdatedInputData(model, inputData || {});
         let originalEntry: CmsEntry | undefined;
@@ -742,7 +742,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
 
     const moveEntry: CmsEntryContext["moveEntry"] = async (model, id, folderId) => {
-        await entriesPermissions.ensureCanAccess({ model, rwd: "w" });
+        await accessControl.ensureCanAccess({ model, rwd: "w" });
 
         /**
          * The entry we are going to move to another folder.
@@ -791,7 +791,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
 
     const republishEntry: CmsEntryContext["republishEntry"] = async (model, id) => {
-        await entriesPermissions.ensureCanAccess({ model, pw: "p" });
+        await accessControl.ensureCanAccess({ model, pw: "p" });
 
         /**
          * Fetch the entry from the storage.
@@ -805,7 +805,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
 
-        await entriesPermissions.ensureCanAccess({
+        await accessControl.ensureCanAccess({
             owns: originalStorageEntry.createdBy,
             model
         });
@@ -874,7 +874,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         model,
         revisionId
     ) => {
-        await entriesPermissions.ensureCanAccess({ model, rwd: "d" });
+        await accessControl.ensureCanAccess({ model, rwd: "d" });
 
         const { id: entryId, version } = parseIdentifier(revisionId);
 
@@ -896,7 +896,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             throw new NotFoundError(`Entry "${revisionId}" was not found!`);
         }
 
-        await entriesPermissions.ensureCanAccess({
+        await accessControl.ensureCanAccess({
             owns: storageEntryToDelete.revisionCreatedBy,
             model
         });
@@ -1008,7 +1008,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         }
 
-        await entriesPermissions.ensureCanAccess({ model, rwd: "d" });
+        await accessControl.ensureCanAccess({ model, rwd: "d" });
 
         const { items: entries } = await storageOperations.entries.list(model, {
             where: {
@@ -1022,7 +1022,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          */
         const items = (
             await filterAsync(entries, async entry => {
-                return entriesPermissions.canAccess({ owns: entry.createdBy, model });
+                return accessControl.canAccess({ owns: entry.createdBy, model });
             })
         ).map(entry => entry.id);
 
@@ -1060,7 +1060,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
 
     const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, id, options) => {
-        await entriesPermissions.ensureCanAccess({ model, rwd: "d" });
+        await accessControl.ensureCanAccess({ model, rwd: "d" });
 
         const { force } = options || {};
 
@@ -1091,7 +1091,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         }
 
-        await entriesPermissions.ensureCanAccess({ owns: storageEntry.createdBy, model });
+        await accessControl.ensureCanAccess({ owns: storageEntry.createdBy, model });
 
         const entry = await entryFromStorageTransform(context, model, storageEntry);
 
@@ -1101,7 +1101,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         });
     };
     const publishEntry: CmsEntryContext["publishEntry"] = async (model, id) => {
-        await entriesPermissions.ensureCanAccess({ model, pw: "p" });
+        await accessControl.ensureCanAccess({ model, pw: "p" });
 
         const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
             id
@@ -1111,7 +1111,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             throw new NotFoundError(`Entry "${id}" in the model "${model.modelId}" was not found.`);
         }
 
-        await entriesPermissions.ensureCanAccess({
+        await accessControl.ensureCanAccess({
             owns: originalStorageEntry.createdBy,
             model
         });
@@ -1183,7 +1183,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
     };
     const unpublishEntry: CmsEntryContext["unpublishEntry"] = async (model, id) => {
-        await entriesPermissions.ensureCanAccess({ model, pw: "u" });
+        await accessControl.ensureCanAccess({ model, pw: "u" });
 
         const { id: entryId } = parseIdentifier(id);
 
@@ -1204,7 +1204,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         }
 
-        await entriesPermissions.ensureCanAccess({
+        await accessControl.ensureCanAccess({
             owns: originalStorageEntry.createdBy,
             model
         });
@@ -1260,7 +1260,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
 
     const getUniqueFieldValues: CmsEntryContext["getUniqueFieldValues"] = async (model, params) => {
-        await entriesPermissions.ensureCanAccess({ model, rwd: "w" });
+        await accessControl.ensureCanAccess({ model, rwd: "w" });
 
         const { where: initialWhere, fieldId } = params;
 
@@ -1270,7 +1270,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          * Possibly only get records which are owned by current user.
          * Or if searching for the owner set that value - in the case that user can see other entries than their own.
          */
-        if (await entriesPermissions.canAccessOnlyOwnRecords({ model })) {
+        if (await accessControl.canAccessOnlyOwnRecords({ model })) {
             where.createdBy = getSecurityIdentity().id;
         }
 

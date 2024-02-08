@@ -27,47 +27,30 @@ import {
     createGroupUpdateValidation
 } from "~/crud/contentModelGroup/validation";
 import { createZodError, mdbid } from "@webiny/utils";
-import { ModelGroupsPermissions } from "~/utils/permissions/ModelGroupsPermissions";
 import { filterAsync } from "~/utils/filterAsync";
 import { createCacheKey, createMemoryCache } from "~/utils";
 import { listGroupsFromDatabase } from "~/crud/contentModelGroup/listGroupsFromDatabase";
 import { NotFoundError } from "@webiny/handler-graphql";
+import { AccessControl } from "~/utils/permissions/AccessControl";
 
 export interface CreateModelGroupsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     storageOperations: HeadlessCmsStorageOperations;
-    modelGroupsPermissions: ModelGroupsPermissions;
+    accessControl: AccessControl;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
 
 export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsGroupContext => {
-    const {
-        getTenant,
-        getIdentity,
-        getLocale,
-        storageOperations,
-        modelGroupsPermissions,
-        context
-    } = params;
+    const { getTenant, getIdentity, getLocale, storageOperations, accessControl, context } = params;
 
     const filterGroup = async (group?: CmsGroup) => {
         if (!group) {
             return false;
         }
-        const ownsGroup = await modelGroupsPermissions.ensure(
-            { owns: group.createdBy },
-            { throw: false }
-        );
 
-        if (!ownsGroup) {
-            return false;
-        }
-
-        return await modelGroupsPermissions.canAccessGroup({
-            group
-        });
+        return accessControl.canAccessGroup({ group });
     };
 
     const listDatabaseGroupsCache = createMemoryCache<Promise<CmsGroup[]>>();
@@ -196,36 +179,32 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
      * CRUD Methods
      */
     const getGroup: CmsGroupContext["getGroup"] = async id => {
-        await modelGroupsPermissions.ensure({ rwd: "r" });
-
         const groups = await context.security.withoutAuthorization(async () => {
             return fetchGroups(getTenant().id, getLocale().code);
         });
+
         const group = groups.find(group => group.id === id);
         if (!group) {
             throw new NotFoundError(`Cms Group "${id}" was not found!`);
         }
 
-        await modelGroupsPermissions.ensure({ owns: group.createdBy });
-        await modelGroupsPermissions.ensureCanAccessGroup({
-            group
-        });
+        await accessControl.canAccessGroup({ group });
 
         return group;
     };
 
     const listGroups: CmsGroupContext["listGroups"] = async params => {
+        // await accessControl.canAccessGroups();
+
         const { where } = params || {};
 
         const { tenant, locale } = where || {};
-
-        await modelGroupsPermissions.ensure({ rwd: "r" });
 
         return fetchGroups(tenant || getTenant().id, locale || getLocale().code);
     };
 
     const createGroup: CmsGroupContext["createGroup"] = async input => {
-        await modelGroupsPermissions.ensure({ rwd: "w" });
+        // await accessControl.canAccessGroups({ rwd: "w" });
 
         const result = await createGroupCreateValidation().safeParseAsync(input);
 
@@ -285,11 +264,11 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         }
     };
     const updateGroup: CmsGroupContext["updateGroup"] = async (id, input) => {
-        await modelGroupsPermissions.ensure({ rwd: "w" });
+        // await accessControl.canAccessGroups({ rwd: "w" });
 
         const original = await getGroup(id);
 
-        await modelGroupsPermissions.ensure({ owns: original.createdBy });
+        await accessControl.canAccessGroup({ group: original, rwd: "w" });
 
         const result = await createGroupUpdateValidation().safeParseAsync(input);
 
@@ -346,11 +325,11 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         }
     };
     const deleteGroup: CmsGroupContext["deleteGroup"] = async id => {
-        await modelGroupsPermissions.ensure({ rwd: "d" });
+        // await accessControl.canAccessGroups({ rwd: "d" });
 
         const group = await getGroup(id);
 
-        await modelGroupsPermissions.ensure({ owns: group.createdBy });
+        await accessControl.canAccessGroup({ group, rwd: "d" });
 
         try {
             await onGroupBeforeDelete.publish({
