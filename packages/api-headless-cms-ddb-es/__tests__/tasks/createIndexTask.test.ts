@@ -10,6 +10,15 @@ import { Context as TasksContext } from "@webiny/tasks/types";
 import { CmsContext } from "~/types";
 import { createRunner } from "@webiny/project-utils/testing/tasks";
 import { IElasticsearchCreateIndexesTaskInput } from "@webiny/api-elasticsearch-tasks/tasks/createIndexes/types";
+import { configurations } from "~/configurations";
+import { CmsModel } from "@webiny/api-headless-cms/types";
+
+const createIndexName = (model: Pick<CmsModel, "tenant" | "locale" | "modelId">): string => {
+    const { index } = configurations.es({
+        model
+    });
+    return index;
+};
 
 interface Context extends TasksContext, CmsContext {}
 
@@ -46,31 +55,59 @@ describe("create index task", () => {
 
         expect(enUsIndexes).toEqual([
             {
-                index: "api-headless-cms-env-root-headless-cms-en-us-webinytask",
+                index: createIndexName({
+                    tenant: "root",
+                    locale: "en-US",
+                    modelId: "webinyTask"
+                }),
                 settings: expect.any(Object)
             },
             {
-                index: "api-headless-cms-env-root-headless-cms-en-us-webinytasklog",
+                index: createIndexName({
+                    tenant: "root",
+                    locale: "en-US",
+                    modelId: "webinyTaskLog"
+                }),
                 settings: expect.any(Object)
             },
             {
-                index: "api-headless-cms-env-root-headless-cms-en-us-car",
+                index: createIndexName({
+                    tenant: "root",
+                    locale: "en-US",
+                    modelId: "car"
+                }),
                 settings: expect.any(Object)
             },
             {
-                index: "api-headless-cms-env-root-headless-cms-en-us-author",
+                index: createIndexName({
+                    tenant: "root",
+                    locale: "en-US",
+                    modelId: "author"
+                }),
                 settings: expect.any(Object)
             },
             {
-                index: "api-headless-cms-env-root-headless-cms-en-us-book",
+                index: createIndexName({
+                    tenant: "root",
+                    locale: "en-US",
+                    modelId: "book"
+                }),
                 settings: expect.any(Object)
             },
             {
-                index: "api-headless-cms-env-root-headless-cms-en-us-category",
+                index: createIndexName({
+                    tenant: "root",
+                    locale: "en-US",
+                    modelId: "category"
+                }),
                 settings: expect.any(Object)
             },
             {
-                index: "api-headless-cms-env-root-headless-cms-en-us-tag",
+                index: createIndexName({
+                    tenant: "root",
+                    locale: "en-US",
+                    modelId: "tag"
+                }),
                 settings: expect.any(Object)
             }
         ]);
@@ -85,31 +122,59 @@ describe("create index task", () => {
 
         expect(deIndexes).toEqual([
             {
-                index: "api-headless-cms-env-dev-headless-cms-de-de-webinytask",
+                index: createIndexName({
+                    tenant: "dev",
+                    locale: "de-DE",
+                    modelId: "webinyTask"
+                }),
                 settings: expect.any(Object)
             },
             {
-                index: "api-headless-cms-env-dev-headless-cms-de-de-webinytasklog",
+                index: createIndexName({
+                    tenant: "dev",
+                    locale: "de-DE",
+                    modelId: "webinyTaskLog"
+                }),
                 settings: expect.any(Object)
             },
             {
-                index: "api-headless-cms-env-dev-headless-cms-de-de-car",
+                index: createIndexName({
+                    tenant: "dev",
+                    locale: "de-DE",
+                    modelId: "car"
+                }),
                 settings: expect.any(Object)
             },
             {
-                index: "api-headless-cms-env-dev-headless-cms-de-de-author",
+                index: createIndexName({
+                    tenant: "dev",
+                    locale: "de-DE",
+                    modelId: "author"
+                }),
                 settings: expect.any(Object)
             },
             {
-                index: "api-headless-cms-env-dev-headless-cms-de-de-book",
+                index: createIndexName({
+                    tenant: "dev",
+                    locale: "de-DE",
+                    modelId: "book"
+                }),
                 settings: expect.any(Object)
             },
             {
-                index: "api-headless-cms-env-dev-headless-cms-de-de-category",
+                index: createIndexName({
+                    tenant: "dev",
+                    locale: "de-DE",
+                    modelId: "category"
+                }),
                 settings: expect.any(Object)
             },
             {
-                index: "api-headless-cms-env-dev-headless-cms-de-de-tag",
+                index: createIndexName({
+                    tenant: "dev",
+                    locale: "de-DE",
+                    modelId: "tag"
+                }),
                 settings: expect.any(Object)
             }
         ]);
@@ -152,10 +217,26 @@ describe("create index task", () => {
         const doneTask = await context.tasks.getTask(task.id);
 
         const done: string[] = [
-            "api-headless-cms-env-root-headless-cms-en-us-car",
-            "api-headless-cms-env-webiny-headless-cms-en-us-car",
-            "api-headless-cms-env-dev-headless-cms-en-us-car",
-            "api-headless-cms-env-sales-headless-cms-en-us-car"
+            createIndexName({
+                tenant: "root",
+                locale: "en-US",
+                modelId: "car"
+            }),
+            createIndexName({
+                tenant: "webiny",
+                locale: "en-US",
+                modelId: "car"
+            }),
+            createIndexName({
+                tenant: "dev",
+                locale: "en-US",
+                modelId: "car"
+            }),
+            createIndexName({
+                tenant: "sales",
+                locale: "en-US",
+                modelId: "car"
+            })
         ];
         expect(doneTask?.output).toEqual({
             done

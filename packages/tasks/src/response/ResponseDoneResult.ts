@@ -10,7 +10,7 @@ export class ResponseDoneResult<
     public readonly webinyTaskDefinitionId: string;
     public readonly tenant: string;
     public readonly locale: string;
-    public readonly output: O;
+    public readonly output?: O;
     public readonly status: TaskResponseStatus.DONE = TaskResponseStatus.DONE;
 
     public constructor(params: Omit<IResponseDoneResult<O>, "status">) {

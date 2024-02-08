@@ -57,7 +57,7 @@ export class Response implements IResponse {
             tenant: params?.tenant || this.event.tenant,
             locale: params?.locale || this.event.locale,
             message: params?.message,
-            output: params?.output || ({} as O)
+            output: params?.output
         });
     }
 
