@@ -18,10 +18,11 @@ export type IResponseResult =
 
 export interface IResponse {
     readonly event: ITaskEvent;
+
     from: (params: IResponseFromParams) => IResponseResult;
     done: <O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
         params?: IResponseDoneParams<O>
-    ) => IResponseDoneResult;
+    ) => IResponseDoneResult<O>;
     aborted: () => IResponseAbortedResult;
     continue: (params: IResponseContinueParams) => IResponseContinueResult;
     error: (params: IResponseErrorParams) => IResponseErrorResult;

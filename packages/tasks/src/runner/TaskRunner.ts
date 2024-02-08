@@ -27,14 +27,14 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
     public readonly request: Request;
     public readonly reply: Reply;
     public readonly context: C;
-    public readonly lambdaContext: LambdaContext;
+    public readonly lambdaContext: Pick<LambdaContext, "getRemainingTimeInMillis">;
     private readonly validation: TaskEventValidation;
 
     /**
      * We take all required variables separately because they will get injected via DI - so less refactoring is required in the future.
      */
     public constructor(
-        lambdaContext: LambdaContext,
+        lambdaContext: Pick<LambdaContext, "getRemainingTimeInMillis">,
         request: Request,
         reply: Reply,
         context: C,

@@ -62,7 +62,28 @@ export class TaskControl implements ITaskControl {
         if (task.taskStatus === TaskDataStatus.ABORTED) {
             return this.response.aborted();
         }
-
+        /**
+         * Do not run if already a success (done).
+         */
+        //
+        else if (task.taskStatus === TaskDataStatus.SUCCESS) {
+            return this.response.error({
+                error: {
+                    message: "Task is already done, cannot run it again."
+                }
+            });
+        }
+        /**
+         * Do not run if already failed.
+         */
+        //
+        else if (task.taskStatus === TaskDataStatus.FAILED) {
+            return this.response.error({
+                error: {
+                    message: "Task has failed, cannot run it again."
+                }
+            });
+        }
         const taskResponse = new TaskResponse(this.response);
         const store = new TaskManagerStore(this.context, task, taskLog);
 

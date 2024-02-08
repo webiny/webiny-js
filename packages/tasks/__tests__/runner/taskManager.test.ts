@@ -119,7 +119,8 @@ describe("task manager", () => {
             tenant: "root",
             message: undefined,
             webinyTaskId: task.id,
-            webinyTaskDefinitionId: taskDefinition.id
+            webinyTaskDefinitionId: taskDefinition.id,
+            output: {}
         });
     });
 
