@@ -4,11 +4,18 @@ import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { renderPlugins } from "@webiny/app/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { GET_PAGE } from "../../graphql/pages";
+import {
+    GET_PAGE,
+    GetPageQueryResponse,
+    GetPageQueryVariables,
+    PageResponseData
+} from "../../graphql/pages";
 import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { createUsePageHook, PageProvider } from "~/admin/contexts/Page";
+import { PbPageData } from "~/types";
 
 const t = i18n.ns("app-page-builder/admin/views/pages/page-details");
 
@@ -57,21 +64,25 @@ const EmptyPageDetails = ({ onCreatePage, canCreate }: EmptyPageDetailsProps) =>
     );
 };
 
+function isValidPageData(data: PageResponseData | unknown): data is PageResponseData {
+    return data !== null;
+}
+
 interface PageDetailsProps {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     canCreate: boolean;
     onDelete: () => void;
 }
 
-const PageDetails = ({ onCreatePage, canCreate, onDelete }: PageDetailsProps) => {
+export const PageDetails = ({ onCreatePage, canCreate, onDelete }: PageDetailsProps) => {
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
 
     const query = new URLSearchParams(location.search);
     const pageId = query.get("id");
 
-    const getPageQuery = useQuery(GET_PAGE, {
-        variables: { id: pageId },
+    const getPageQuery = useQuery<GetPageQueryResponse, GetPageQueryVariables>(GET_PAGE, {
+        variables: { id: String(pageId) },
         skip: !pageId,
         onCompleted: data => {
             const error = data?.pageBuilder?.getPage?.error;
@@ -82,23 +93,25 @@ const PageDetails = ({ onCreatePage, canCreate, onDelete }: PageDetailsProps) =>
         }
     });
 
-    if (!pageId) {
+    const page = getPageQuery.data?.pageBuilder.getPage.data || {};
+
+    if (!pageId || !isValidPageData(page)) {
         return <EmptyPageDetails canCreate={canCreate} onCreatePage={onCreatePage} />;
     }
 
-    const page = getPageQuery.data?.pageBuilder?.getPage?.data || {};
-
     return (
         <DetailsContainer>
-            <test-id data-testid="pb-page-details">
-                {renderPlugins("pb-page-details", {
-                    page,
-                    getPageQuery,
-                    onDelete
-                })}
-            </test-id>
+            <PageProvider<PageResponseData> page={page}>
+                <test-id data-testid="pb-page-details">
+                    {renderPlugins("pb-page-details", {
+                        page,
+                        getPageQuery,
+                        onDelete
+                    })}
+                </test-id>
+            </PageProvider>
         </DetailsContainer>
     );
 };
 
-export default PageDetails;
+export const usePage = createUsePageHook<PbPageData>();
