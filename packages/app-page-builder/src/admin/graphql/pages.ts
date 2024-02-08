@@ -17,6 +17,15 @@ export interface PageResponseData {
     locked: boolean;
     status: string;
     revisions: PbPageRevision[];
+    createdBy: {
+        id: string;
+        displayName: string;
+    };
+    savedOn: string;
+    category: {
+        name: string;
+    };
+    content: Record<string, any>;
 }
 
 export const DATA_FIELDS = `
@@ -143,10 +152,10 @@ export const LIST_PAGES = gql`
  * ##############################
  * Get Page Query Response
  */
-export interface GetPageQueryResponse {
+export interface GetPageQueryResponse<T extends PageResponseData = PageResponseData> {
     pageBuilder: {
         getPage: {
-            data: PageResponseData | null;
+            data: T | null;
             error: PbErrorResponse | null;
         };
     };
@@ -163,7 +172,7 @@ export const GET_PAGE = gql`
                 data {
                     ${DATA_FIELDS}
                     createdBy {
-                        id,
+                        id
                         displayName
                     }
                     savedOn
