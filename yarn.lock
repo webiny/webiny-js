@@ -18451,8 +18451,6 @@ __metadata:
     "@webiny/aws-sdk": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/global-config": 0.0.0
-    "@webiny/handler": 0.0.0
-    "@webiny/tasks": 0.0.0
     "@webiny/telemetry": 0.0.0
     assert-browserify: ^2.0.0
     babel-loader: 9.1.2
