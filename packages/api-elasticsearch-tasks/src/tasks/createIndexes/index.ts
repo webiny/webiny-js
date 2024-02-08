@@ -3,11 +3,15 @@ import { Context, IElasticsearchTaskConfig } from "~/types";
 import { IElasticsearchCreateIndexesTaskInput } from "~/tasks/createIndexes/types";
 import { CreateIndexesTaskRunner } from "./CreateIndexesTaskRunner";
 
-export const createIndexesTask = (params?: IElasticsearchTaskConfig) => {
+export const createIndexesTaskDefinition = (params?: IElasticsearchTaskConfig) => {
     return createTaskDefinition<Context, IElasticsearchCreateIndexesTaskInput>({
         id: "elasticsearchCreateIndexes",
         title: "Create Missing Elasticsearch Indexes",
-        maxIterations: 1,
+        /**
+         * Maximum number of iterations before the task goes into the error state.
+         * No point in having more than 2 runs, as the create index operations should not even take 1 full run, no matter how much indeexs is there to create.
+         */
+        maxIterations: 2,
         run: async ({ response, context, isCloseToTimeout, isAborted, store, input }) => {
             const { Manager } = await import(
                 /* webpackChunkName: "ElasticsearchTaskManager" */

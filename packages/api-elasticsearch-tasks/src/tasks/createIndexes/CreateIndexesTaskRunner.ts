@@ -89,6 +89,8 @@ export class CreateIndexesTaskRunner {
             }
         }
 
-        return this.manager.response.done();
+        return this.manager.response.done("Indexes created.", {
+            done
+        });
     }
 }

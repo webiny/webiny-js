@@ -1,7 +1,7 @@
 import {
     createElasticsearchReindexingTask,
     createEnableIndexingTask,
-    createIndexesTask
+    createIndexesTaskDefinition
 } from "~/tasks";
 import { Plugin } from "@webiny/plugins/types";
 import { IElasticsearchTaskConfig } from "~/types";
@@ -14,7 +14,7 @@ export const createElasticsearchBackgroundTasks = (
     return [
         createElasticsearchReindexingTask(params),
         createEnableIndexingTask(params),
-        createIndexesTask(params)
+        createIndexesTaskDefinition(params)
     ];
 };
 

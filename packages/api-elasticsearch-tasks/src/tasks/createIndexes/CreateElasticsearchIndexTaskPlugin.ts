@@ -1,9 +1,10 @@
 import { Plugin } from "@webiny/plugins";
 import { Context } from "@webiny/api/types";
+import { ElasticsearchIndexRequestBody } from "@webiny/api-elasticsearch/types";
 
 export interface CreateElasticsearchIndexTaskPluginIndex {
     index: string;
-    settings?: Record<string, any>;
+    settings?: Partial<ElasticsearchIndexRequestBody>;
 }
 
 export interface CreateElasticsearchIndexTaskPluginConfigParams<C extends Context> {
