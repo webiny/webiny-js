@@ -204,6 +204,7 @@ export class FormBuilder_5_40_0_002_FormSubmissions
                     return true;
                 }
 
+                // Since it might be the first time we add a HCMS form submission record, we also need to create the index
                 const fbFormSubmissionsHcmsIndex = await esCreateIndex({
                     elasticsearchClient: this.esClient,
                     ...fbFormSubmissionsHcmsIndexNameParams
@@ -215,6 +216,12 @@ export class FormBuilder_5_40_0_002_FormSubmissions
                     index: fbFormSubmissionsHcmsIndex,
                     fields: ["number_of_replicas", "refresh_interval"]
                 });
+
+                logger.trace(
+                    `Replacing existing settings with default from "${fbFormSubmissionsHcmsIndex}": ${JSON.stringify(
+                        settings
+                    )}`
+                );
 
                 await esPutIndexSettings({
                     elasticsearchClient: this.esClient,
@@ -312,7 +319,7 @@ export class FormBuilder_5_40_0_002_FormSubmissions
 
                             const executeDdb = () => {
                                 return Promise.all(
-                                    chunk(ddbItems, 200).map(ddbItemsChunk => {
+                                    chunk(ddbItems, 500).map(ddbItemsChunk => {
                                         return batchWriteAll({
                                             table: this.ddbCmsEntity.table,
                                             items: ddbItemsChunk
@@ -323,7 +330,7 @@ export class FormBuilder_5_40_0_002_FormSubmissions
 
                             const executeDdbEs = () => {
                                 return Promise.all(
-                                    chunk(ddbEsItems, 200).map(ddbEsItemsChunk => {
+                                    chunk(ddbEsItems, 500).map(ddbEsItemsChunk => {
                                         return batchWriteAll({
                                             table: this.ddbEsCmsEntity.table,
                                             items: ddbEsItemsChunk
@@ -364,6 +371,10 @@ export class FormBuilder_5_40_0_002_FormSubmissions
 
                     migrationStatus[groupId] = true;
                     await context.createCheckpoint(migrationStatus);
+
+                    logger.info(
+                        `Migrated form submission entries for ${tenantId} - ${localeCode}.`
+                    );
                 } finally {
                     // Saving back HCMS forms submissions index settings
                     await esPutIndexSettings({
@@ -374,6 +385,12 @@ export class FormBuilder_5_40_0_002_FormSubmissions
                             refresh_interval: settings.refresh_interval || null
                         }
                     });
+
+                    logger.trace(
+                        `Successfully set back the previously found settings from "${fbFormSubmissionsHcmsIndex}": ${JSON.stringify(
+                            settings
+                        )}`
+                    );
                 }
 
                 return true;

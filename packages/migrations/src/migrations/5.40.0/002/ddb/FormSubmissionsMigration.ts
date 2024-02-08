@@ -160,7 +160,7 @@ export class FormBuilder_5_40_0_002_FormSubmissions implements DataMigration {
                 }
             },
             async result => {
-                logger.debug(`Processing ${result.items.length} items...`);
+                logger.info(`Migrating form submissions: processing ${result.items.length} items.`);
                 const items: BatchWriteItem[] = [];
 
                 for (const item of result.items) {
@@ -201,14 +201,12 @@ export class FormBuilder_5_40_0_002_FormSubmissions implements DataMigration {
                     return batchWriteAll({ table: this.cmsEntity.table, items });
                 };
 
-                logger.trace("Storing the DynamoDB records...");
                 await executeWithRetry(execute, {
                     onFailedAttempt: error => {
                         logger.error(`"batchWriteAll" attempt #${error.attemptNumber} failed.`);
                         logger.error(error.message);
                     }
                 });
-                logger.trace("...stored.");
 
                 // Update checkpoint after every batch
                 migrationStatus.lastEvaluatedKey = result.lastEvaluatedKey?.PK

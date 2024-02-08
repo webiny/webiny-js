@@ -26,10 +26,9 @@ export const getDdbEsFormCommonFields = (
                     "text@label": option.label,
                     "text@value": option.value
                 })),
-                "object@validation": field.validation.map(v => ({
-                    "text@message": v.message,
-                    "text@name": v.name,
-                    "json@settings": v.settings
+                "object@validation": field.validation.map(validation => ({
+                    "text@message": validation.message,
+                    "text@name": validation.name
                 })),
                 "text@_id": field._id,
                 "text@fieldId": field.fieldId,
@@ -62,7 +61,10 @@ export const getDdbEsFormCommonFields = (
         },
         rawValues: {
             "object@fields": form.fields.map(field => ({
-                "json@settings": field.settings
+                "json@settings": field.settings,
+                "object@validation": field.validation.map(validation => ({
+                    "json@settings": validation.settings
+                }))
             })),
             "object@steps": form.steps.map(step => ({
                 "json@layout": step.layout

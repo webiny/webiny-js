@@ -4,11 +4,15 @@ import { Table } from "@webiny/db-dynamodb/toolbox";
 import { createFormEntity } from "~/migrations/5.40.0/001/entities/createFormEntity";
 import {
     batchWriteAll,
+    esCreateIndex,
     esFindOne,
     esGetIndexExist,
     esGetIndexName,
+    esGetIndexSettings,
+    esPutIndexSettings,
     esQueryAll,
     forEachTenantLocale,
+    queryAll,
     queryOne
 } from "~/utils";
 import { CmsEntryWithMeta, FbForm, MigrationCheckpoint } from "~/migrations/5.40.0/001/types";
@@ -113,9 +117,8 @@ export class FormBuilder_5_40_0_001_FormStats implements DataMigration<Migration
                     return true;
                 }
 
-                const [formId, revisionId] = latestForm.id.split("#");
-
                 // Fetch HCMS form stats records from DDB using latest form "id"
+                const [formId, revisionId] = latestForm.id.split("#");
                 const cmsEntry = await queryOne<CmsEntryWithMeta>({
                     entity: this.ddbCmsEntity,
                     partitionKey: `T#${tenantId}#L#${localeCode}#CMS#CME#${formId}-${revisionId}-stats`,
@@ -192,103 +195,157 @@ export class FormBuilder_5_40_0_001_FormStats implements DataMigration<Migration
                     return true;
                 }
 
-                const ids = esRecords.map(item => item.id).filter(Boolean);
-                const uniqueIds = [...new Set(ids)];
+                // Since it might be the first time we add a HCMS formStats record, we also need to create the index
+                const fbFormStatsHcmsIndex = await esCreateIndex({
+                    elasticsearchClient: this.esClient,
+                    ...fbFormStatsHcmsIndexNameParams
+                });
 
-                const ddbItems: ReturnType<ReturnType<typeof createDdbCmsEntity>["putBatch"]>[] =
-                    [];
+                // Saving HCMS formStats index settings, we are going to reset them and save the original ones later
+                const settings = await esGetIndexSettings({
+                    elasticsearchClient: this.esClient,
+                    index: fbFormStatsHcmsIndex,
+                    fields: ["number_of_replicas", "refresh_interval"]
+                });
 
-                const ddbEsItems: ReturnType<
-                    ReturnType<typeof createDdbEsCmsEntity>["putBatch"]
-                >[] = [];
+                logger.trace(
+                    `Replacing existing settings with default from "${fbFormStatsHcmsIndex}": ${JSON.stringify(
+                        settings
+                    )}`
+                );
 
-                for (const id of uniqueIds) {
-                    const [formId, revisionId] = id.split("#");
+                await esPutIndexSettings({
+                    elasticsearchClient: this.esClient,
+                    index: fbFormStatsHcmsIndex,
+                    settings: {
+                        number_of_replicas: 0,
+                        refresh_interval: -1
+                    }
+                });
 
-                    const form = await queryOne<FbForm>({
-                        entity: this.ddbFormEntity,
-                        partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#${formId}`,
-                        options: {
-                            eq: `REV#${revisionId}`
+                try {
+                    const formIds = esRecords.map(item => item.formId).filter(Boolean);
+                    const uniqueFormIds = [...new Set(formIds)];
+
+                    const ddbItems: ReturnType<
+                        ReturnType<typeof createDdbCmsEntity>["putBatch"]
+                    >[] = [];
+
+                    const ddbEsItems: ReturnType<
+                        ReturnType<typeof createDdbEsCmsEntity>["putBatch"]
+                    >[] = [];
+
+                    for (const formId of uniqueFormIds) {
+                        const forms = await queryAll<FbForm>({
+                            entity: this.ddbFormEntity,
+                            partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#${formId}`,
+                            options: {
+                                beginsWith: "REV#"
+                            }
+                        });
+
+                        // No form revision entry found: we don't need to create an HCMS entry for it
+                        if (!forms.length) {
+                            continue;
+                        }
+
+                        for (const form of forms) {
+                            const [formId, revisionId] = form.id.split("#");
+
+                            // Get common fields
+                            const commonFields = getStatsCommonFields(form);
+
+                            // Get the new meta fields
+                            const entryMetaFields = getFormStatsMetaFields(form);
+
+                            const ddbRevisionItem = {
+                                PK: `T#${tenantId}#L#${localeCode}#CMS#CME#${formId}-${revisionId}-stats`,
+                                SK: `REV#0001`,
+                                TYPE: "cms.entry",
+                                ...commonFields,
+                                ...entryMetaFields
+                            };
+
+                            ddbItems.push(this.ddbCmsEntity.putBatch(ddbRevisionItem));
+
+                            const ddbLatestItem = {
+                                PK: `T#${tenantId}#L#${localeCode}#CMS#CME#${formId}-${revisionId}-stats`,
+                                SK: "L",
+                                TYPE: "cms.entry.l",
+                                ...commonFields,
+                                ...entryMetaFields
+                            };
+
+                            ddbItems.push(this.ddbCmsEntity.putBatch(ddbLatestItem));
+
+                            const ddbEsItem = {
+                                PK: `T#${tenantId}#L#${localeCode}#CMS#CME#${formId}-${revisionId}-stats`,
+                                SK: "L",
+                                index: fbFormStatsHcmsIndex,
+                                data: await getCompressedData({
+                                    ...commonFields,
+                                    ...entryMetaFields,
+                                    rawValues: {},
+                                    latest: true,
+                                    TYPE: "cms.entry.l",
+                                    __type: "cms.entry.l"
+                                })
+                            };
+
+                            ddbEsItems.push(this.ddbEsCmsEntity.putBatch(ddbEsItem));
+                        }
+                    }
+
+                    const executeDdb = () => {
+                        return batchWriteAll({
+                            table: this.ddbCmsEntity.table,
+                            items: ddbItems
+                        });
+                    };
+
+                    const executeDdbEs = () => {
+                        return batchWriteAll({
+                            table: this.ddbEsCmsEntity.table,
+                            items: ddbEsItems
+                        });
+                    };
+
+                    await executeWithRetry(executeDdb, {
+                        onFailedAttempt: error => {
+                            logger.error(
+                                `"batchWriteAll ddb" attempt #${error.attemptNumber} failed.`
+                            );
+                            logger.error(error.message);
                         }
                     });
 
-                    if (!form) {
-                        continue;
-                    }
+                    await executeWithRetry(executeDdbEs, {
+                        onFailedAttempt: error => {
+                            logger.error(
+                                `"batchWriteAll ddb + es" attempt #${error.attemptNumber} failed.`
+                            );
+                            logger.error(error.message);
+                        }
+                    });
 
-                    // Get common fields
-                    const commonFields = getStatsCommonFields(form);
+                    logger.info(`Migrated form stats entries for ${tenantId} - ${localeCode}.`);
+                } finally {
+                    // Saving back HCMS formStats index settings
+                    await esPutIndexSettings({
+                        elasticsearchClient: this.esClient,
+                        index: fbFormStatsHcmsIndex,
+                        settings: {
+                            number_of_replicas: settings.number_of_replicas || null,
+                            refresh_interval: settings.refresh_interval || null
+                        }
+                    });
 
-                    // Get the new meta fields
-                    const entryMetaFields = getFormStatsMetaFields(form);
-
-                    const ddbRevisionItem = {
-                        PK: `T#${tenantId}#L#${localeCode}#CMS#CME#${formId}-${revisionId}-stats`,
-                        SK: `REV#${revisionId}`,
-                        TYPE: "cms.entry",
-                        ...commonFields,
-                        ...entryMetaFields
-                    };
-
-                    ddbItems.push(this.ddbCmsEntity.putBatch(ddbRevisionItem));
-
-                    const ddbLatestItem = {
-                        PK: `T#${tenantId}#L#${localeCode}#CMS#CME#${formId}-${revisionId}-stats`,
-                        SK: "L",
-                        TYPE: "cms.entry.l",
-                        ...commonFields,
-                        ...entryMetaFields
-                    };
-
-                    ddbItems.push(this.ddbCmsEntity.putBatch(ddbLatestItem));
-
-                    const ddbEsItem = {
-                        PK: `T#${tenantId}#L#${localeCode}#CMS#CME#${formId}-${revisionId}-stats`,
-                        SK: "L",
-                        index: esGetIndexName(fbFormStatsHcmsIndexNameParams),
-                        data: await getCompressedData({
-                            ...commonFields,
-                            ...entryMetaFields,
-                            rawValues: {},
-                            latest: true,
-                            TYPE: "cms.entry.l",
-                            __type: "cms.entry.l"
-                        })
-                    };
-
-                    ddbEsItems.push(this.ddbEsCmsEntity.putBatch(ddbEsItem));
+                    logger.trace(
+                        `Successfully set back the previously found settings from "${fbFormStatsHcmsIndex}": ${JSON.stringify(
+                            settings
+                        )}`
+                    );
                 }
-
-                const executeDdb = () => {
-                    return batchWriteAll({
-                        table: this.ddbCmsEntity.table,
-                        items: ddbItems
-                    });
-                };
-
-                const executeDdbEs = () => {
-                    return batchWriteAll({
-                        table: this.ddbEsCmsEntity.table,
-                        items: ddbEsItems
-                    });
-                };
-
-                await executeWithRetry(executeDdb, {
-                    onFailedAttempt: error => {
-                        logger.error(`"batchWriteAll ddb" attempt #${error.attemptNumber} failed.`);
-                        logger.error(error.message);
-                    }
-                });
-
-                await executeWithRetry(executeDdbEs, {
-                    onFailedAttempt: error => {
-                        logger.error(
-                            `"batchWriteAll ddb + es" attempt #${error.attemptNumber} failed.`
-                        );
-                        logger.error(error.message);
-                    }
-                });
 
                 return true;
             }

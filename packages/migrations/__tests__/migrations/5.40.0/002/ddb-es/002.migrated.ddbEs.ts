@@ -45,13 +45,13 @@ export const createMigratedDdbEsFormSubmissionsData = () => {
                             "object@fields": form.fields.map(field => ({
                                 "json@settings": field.settings,
                                 "object@options": field.options.map(option => ({
-                                    "text@label": "", //option.label,
-                                    "text@value": "" //option.value
+                                    "text@label": option.label,
+                                    "text@value": option.value
                                 })),
                                 "object@validation": field.validation.map(v => ({
-                                    "text@message": "", // v.message,
-                                    "text@name": "", //v.name,
-                                    "json@settings": "" //v.settings
+                                    "text@message": v.message,
+                                    "text@name": v.name,
+                                    "json@settings": v.settings
                                 })),
                                 "text@fieldId": field.fieldId,
                                 "text@helpText": field.helpText,

@@ -98,6 +98,17 @@ export class FormBuilder_5_40_0_001_FormPublished implements DataMigration<Migra
                         partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#LP`
                     },
                     async forms => {
+                        if (!forms.length) {
+                            logger.info(
+                                `No forms found for ${tenantId} - ${localeCode}: skipping migration.`
+                            );
+                            return;
+                        }
+
+                        logger.info(
+                            `Migrating form published entries for ${tenantId} - ${localeCode}.`
+                        );
+
                         const items: ReturnType<
                             ReturnType<typeof createDdbCmsEntity>["putBatch"]
                         >[] = [];
@@ -143,7 +154,6 @@ export class FormBuilder_5_40_0_001_FormPublished implements DataMigration<Migra
                             return batchWriteAll({ table: this.cmsEntity.table, items });
                         };
 
-                        // logger.trace("Storing the CMS records...");
                         await executeWithRetry(execute, {
                             onFailedAttempt: error => {
                                 logger.error(
@@ -152,6 +162,10 @@ export class FormBuilder_5_40_0_001_FormPublished implements DataMigration<Migra
                                 logger.error(error.message);
                             }
                         });
+
+                        logger.info(
+                            `Migrated form published entries for ${tenantId} - ${localeCode}.`
+                        );
                     }
                 );
 

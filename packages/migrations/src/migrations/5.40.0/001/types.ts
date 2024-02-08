@@ -239,7 +239,7 @@ export interface FormEntryDdbEsValues {
     "text@formId": string;
     "text@name": string;
     "text@slug": string;
-    "object@fields": Omit<FormEntryCommonField, "json@settings">[];
+    "object@fields": Omit<FormEntryCommonField, "json@settings" | "object@validation">[];
     "object@steps": Omit<FormEntryCommonSteps, "json@layout">[];
     "object@settings": {
         "object@layout": {

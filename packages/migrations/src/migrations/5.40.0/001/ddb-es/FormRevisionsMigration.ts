@@ -9,6 +9,7 @@ import {
     esGetIndexName,
     esQueryAll,
     forEachTenantLocale,
+    queryAll,
     queryOne
 } from "~/utils";
 import { CmsEntryWithMeta, FbForm, MigrationCheckpoint } from "~/migrations/5.40.0/001/types";
@@ -110,7 +111,7 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
                     return true;
                 }
 
-                // Fetch HCMS form revision record from DDB using latest form "id"
+                // Fetch revision HCMS form record from DDB using latest form "formId"
                 const cmsEntry = await queryOne<CmsEntryWithMeta>({
                     entity: this.ddbCmsEntity,
                     partitionKey: `T#${tenantId}#L#${localeCode}#CMS#CME#${latestForm.formId}`,
@@ -184,64 +185,66 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
 
                 logger.info(`Migrating form revisions entries for ${tenantId} - ${localeCode}.`);
 
-                const ids = esRecords.map(item => item.id).filter(Boolean);
-                const uniqueIds = [...new Set(ids)];
+                const formIds = esRecords.map(item => item.formId).filter(Boolean);
+                const uniqueFormIds = [...new Set(formIds)];
 
                 const ddbItems: ReturnType<ReturnType<typeof createDdbCmsEntity>["putBatch"]>[] =
                     [];
 
-                for (const id of uniqueIds) {
-                    const [formId, revisionId] = id.split("#");
-
-                    const form = await queryOne<FbForm>({
+                for (const formId of uniqueFormIds) {
+                    const forms = await queryAll<FbForm>({
                         entity: this.ddbFormEntity,
                         partitionKey: `T#${tenantId}#L#${localeCode}#FB#F#${formId}`,
                         options: {
-                            eq: `REV#${revisionId}`
+                            beginsWith: "REV#"
                         }
                     });
 
-                    if (!form) {
+                    if (!forms.length) {
                         continue;
                     }
 
-                    // Get the status field, based on the revision and the published entry
-                    const status = await getDdbEsRevisionStatus({
-                        form,
-                        formEntity: this.ddbFormEntity
-                    });
+                    for (const form of forms) {
+                        const [formId, revisionId] = form.id.split("#");
 
-                    // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
-                    const createdOn = await getDdbEsOldestRevisionCreatedOn({
-                        form,
-                        formEntity: this.ddbFormEntity
-                    });
+                        // Get the status field, based on the revision and the published entry
+                        const status = await getDdbEsRevisionStatus({
+                            form,
+                            formEntity: this.ddbFormEntity
+                        });
 
-                    // Get first/last published meta fields
-                    const firstLastPublishedOnByFields = await getDdbEsFirstLastPublishedOnBy({
-                        form,
-                        formEntity: this.ddbFormEntity
-                    });
+                        // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
+                        const createdOn = await getDdbEsOldestRevisionCreatedOn({
+                            form,
+                            formEntity: this.ddbFormEntity
+                        });
 
-                    // Create the new meta fields
-                    const entryMetaFields = getMetaFields(form, {
-                        createdOn,
-                        ...firstLastPublishedOnByFields
-                    });
+                        // Get first/last published meta fields
+                        const firstLastPublishedOnByFields = await getDdbEsFirstLastPublishedOnBy({
+                            form,
+                            formEntity: this.ddbFormEntity
+                        });
 
-                    // Get DDB common fields
-                    const ddbEntryCommonFields = getFormCommonFields(form);
+                        // Create the new meta fields
+                        const entryMetaFields = getMetaFields(form, {
+                            createdOn,
+                            ...firstLastPublishedOnByFields
+                        });
 
-                    const ddbItem = {
-                        PK: `T#${tenantId}#L#${localeCode}#CMS#CME#${formId}`,
-                        SK: `REV#${revisionId}`,
-                        TYPE: "cms.entry",
-                        ...ddbEntryCommonFields,
-                        ...entryMetaFields,
-                        status
-                    };
+                        // Get DDB common fields
+                        const ddbEntryCommonFields = getFormCommonFields(form);
 
-                    ddbItems.push(this.ddbCmsEntity.putBatch(ddbItem));
+                        const ddbItem = {
+                            PK: `T#${tenantId}#L#${localeCode}#CMS#CME#${formId}`,
+                            SK: `REV#${revisionId}`,
+                            TYPE: "cms.entry",
+                            ...ddbEntryCommonFields,
+                            ...entryMetaFields,
+                            status
+                        };
+
+                        ddbItems.push(this.ddbCmsEntity.putBatch(ddbItem));
+                    }
                 }
 
                 const executeDdb = () => {
@@ -257,6 +260,8 @@ export class FormBuilder_5_40_0_001_FormRevisions implements DataMigration<Migra
                         logger.error(error.message);
                     }
                 });
+
+                logger.info(`Migrated form revision entries for ${tenantId} - ${localeCode}.`);
 
                 return true;
             }
