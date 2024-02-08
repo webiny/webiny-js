@@ -27,7 +27,7 @@ export const checkOsServiceRole = {
             if (err.code !== NO_SUCH_ENTITY_IAM_ERROR) {
                 spinner.fail(
                     "Tried retrieving Amazon OpenSearch service role but failed with the following error: " +
-                    err.message
+                        err.message
                 );
                 context.debug(err);
                 process.exit(1);
