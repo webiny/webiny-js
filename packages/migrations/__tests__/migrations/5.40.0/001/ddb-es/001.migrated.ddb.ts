@@ -1,4 +1,4 @@
-import { user } from "./001.ddb";
+import { createFormsData, user } from "./001.ddb";
 
 export const migratedDdbFormData = [
     {
@@ -236,67 +236,61 @@ export const migratedDdbFormData = [
     }
 ];
 
-export const migratedFormStatsData = [
-    {
-        PK: "T#root#L#en-US#CMS#CME#65c0a07038a36e00082095ea-0001-stats",
-        SK: "L",
-        createdBy: user,
-        createdOn: "2024-02-05T08:46:40.354Z",
-        entryId: "65c0a07038a36e00082095ea-0001-stats",
-        id: "65c0a07038a36e00082095ea-0001-stats#0001",
-        locale: "en-US",
-        location: {
-            folderId: "root"
-        },
-        locked: false,
-        modelId: "fbFormStat",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-02-05T08:46:40.354Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-02-05T08:47:01.134Z",
-        savedBy: user,
-        savedOn: "2024-02-05T08:47:01.134Z",
-        status: "draft",
-        tenant: "root",
-        TYPE: "cms.entry.l",
-        values: {
-            "number@formVersion": 1,
-            "number@submissions": 5000,
-            "number@views": 10000,
-            "text@formId": "65c0a07038a36e00082095ea"
-        },
-        version: 1,
-        webinyVersion: "0.0.0"
-    },
-    {
-        PK: "T#root#L#en-US#CMS#CME#65c0a07038a36e00082095ea-0001-stats",
-        SK: "REV#0001",
-        createdBy: user,
-        createdOn: "2024-02-05T08:46:40.354Z",
-        entryId: "65c0a07038a36e00082095ea-0001-stats",
-        id: "65c0a07038a36e00082095ea-0001-stats#0001",
-        locale: "en-US",
-        location: {
-            folderId: "root"
-        },
-        locked: false,
-        modelId: "fbFormStat",
-        revisionCreatedBy: user,
-        revisionCreatedOn: "2024-02-05T08:46:40.354Z",
-        revisionSavedBy: user,
-        revisionSavedOn: "2024-02-05T08:47:01.134Z",
-        savedBy: user,
-        savedOn: "2024-02-05T08:47:01.134Z",
-        status: "draft",
-        tenant: "root",
-        TYPE: "cms.entry",
-        values: {
-            "number@formVersion": 1,
-            "number@submissions": 5000,
-            "number@views": 10000,
-            "text@formId": "65c0a07038a36e00082095ea"
-        },
-        version: 1,
-        webinyVersion: "0.0.0"
+export const getMigratedFormStatsData = () => {
+    const forms = createFormsData().filter(form => form.TYPE === "fb.form");
+
+    const stats = [];
+
+    for (const form of forms) {
+        const [formId, revisionId] = form.id.split("#");
+
+        const commonFields = {
+            createdBy: user,
+            createdOn: form.createdOn,
+            entryId: `${formId}-${revisionId}-stats`,
+            id: `${formId}-${revisionId}-stats#0001`,
+            locale: form.locale,
+            location: {
+                folderId: "root"
+            },
+            locked: false,
+            modelId: "fbFormStat",
+            revisionCreatedBy: user,
+            revisionCreatedOn: form.createdOn,
+            revisionSavedBy: user,
+            revisionSavedOn: form.savedOn,
+            savedOn: form.savedOn,
+            savedBy: user,
+            status: "draft",
+            tenant: form.tenant,
+            values: {
+                "text@formId": form.formId,
+                "number@formVersion": form.version,
+                "number@views": form.stats.views,
+                "number@submissions": form.stats.submissions
+            },
+            version: form.version,
+            webinyVersion: form.webinyVersion
+        };
+
+        const revision = {
+            PK: `T#${form.tenant}#L#${form.locale}#CMS#CME#${form.formId}-0001-stats`,
+            SK: "REV#0001",
+            TYPE: "cms.entry",
+            ...commonFields
+        };
+
+        stats.push(revision);
+
+        const latest = {
+            PK: `T#${form.tenant}#L#${form.locale}#CMS#CME#${form.formId}-0001-stats`,
+            SK: "L",
+            TYPE: "cms.entry.l",
+            ...commonFields
+        };
+
+        stats.push(latest);
     }
-];
+
+    return stats;
+};

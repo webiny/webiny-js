@@ -20,8 +20,8 @@ import {
 } from "~tests/migrations/5.40.0/001/ddb-es/001.ddb";
 import { createEsFormsData } from "~tests/migrations/5.40.0/001/ddb-es/001.es";
 import {
-    migratedDdbFormData,
-    migratedFormStatsData
+    getMigratedFormStatsData,
+    migratedDdbFormData
 } from "~tests/migrations/5.40.0/001/ddb-es/001.migrated.ddb";
 import { createMigratedDdbEsData } from "~tests/migrations/5.40.0/001/ddb-es/001.migrated.ddbEs";
 import { getDecompressedData } from "~tests/migrations/5.40.0/001/ddb-es/helpers";
@@ -169,6 +169,8 @@ describe("5.40.0-001", () => {
                 }
             ]
         });
+
+        const migratedFormStatsData = getMigratedFormStatsData();
 
         expect(sortBy(ddbStatsEntries, ["PK", "SK"])).toEqual(
             sortBy(migratedFormStatsData, ["PK", "SK"]).map(data => {
