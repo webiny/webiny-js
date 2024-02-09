@@ -17575,6 +17575,9 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
+    "@dnd-kit/core": ^6.1.0
+    "@dnd-kit/sortable": ^8.0.0
+    "@dnd-kit/utilities": ^3.2.2
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@fortawesome/fontawesome-common-types": ^0.3.0
@@ -17624,6 +17627,7 @@ __metadata:
     babel-plugin-emotion: ^9.2.8
     classnames: ^2.2.6
     dnd-core: ^16.0.1
+    dnd-kit-sortable-tree: ^0.1.73
     dot-prop-immutable: ^2.1.0
     emotion: ^10.0.17
     execa: ^5.0.0
@@ -23541,7 +23545,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:^1.0.4, clsx@npm:^1.1.1":
+"clsx@npm:^1.0.4, clsx@npm:^1.1.1, clsx@npm:^1.2.1":
   version: 1.2.1
   resolution: "clsx@npm:1.2.1"
   checksum: 30befca8019b2eb7dbad38cff6266cf543091dae2825c856a62a8ccf2c3ab9c2907c4d12b288b73101196767f66812365400a227581484a05f968b0307cfaf12
@@ -26125,6 +26129,22 @@ __metadata:
     "@react-dnd/invariant": ^4.0.1
     redux: ^4.2.0
   checksum: b7d3ef4664f433af796f440ddd27ad9d7fef0205f26c4b7c0af6ebf612ffa9b33e64d095d3e79190c4baaed34aa36570f321ebe0d2cc8ff1031ff158a0907b3f
+  languageName: node
+  linkType: hard
+
+"dnd-kit-sortable-tree@npm:^0.1.73":
+  version: 0.1.73
+  resolution: "dnd-kit-sortable-tree@npm:0.1.73"
+  dependencies:
+    clsx: ^1.2.1
+    react-merge-refs: ^2.0.1
+  peerDependencies:
+    "@dnd-kit/core": ">=6.0.5"
+    "@dnd-kit/sortable": ">=7.0.1"
+    "@dnd-kit/utilities": ">=3.2.0"
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: 86bec921ebb4484f03848fccac21654b9a98ef590978815c45b908a297d28faf88094093545e74387315a70a8f661c497d32987f34573e6cd2bd44aed0314cad
   languageName: node
   linkType: hard
 
@@ -40941,6 +40961,13 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0"
   checksum: 53d257c88e442e979fb9148ae826fc998a5a54c08a01e894395cf1ebb1e1c83e426f9c4884800e5564ba3308cf33e32d3abc75e07589ae0b48e4a2ed544fda2a
+  languageName: node
+  linkType: hard
+
+"react-merge-refs@npm:^2.0.1":
+  version: 2.1.1
+  resolution: "react-merge-refs@npm:2.1.1"
+  checksum: 40564bc4c16520ef830d4fe7a2bd298c23a42d644a8fcb2353cdc6cf16aa82eac681c554df4c849397b25af9dbe728086566e1a01f65f95d2301dc8fc8f6809f
   languageName: node
   linkType: hard
 
