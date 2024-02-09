@@ -13,6 +13,7 @@ const TreeWrapper = styled("div")({
             backgroundColor: "var(--mdc-theme-on-surface)"
         }
 });
+
 const EmptyTree = styled("div")({
     width: "100%",
     height: "100%",
@@ -29,6 +30,7 @@ export interface MenuItemsListProps {
     deleteItem: (item: MenuTreeItem) => void;
     canSave: boolean;
 }
+
 const canHaveChildren = (node: MenuTreeItem) => {
     node.canHaveChildren = node.type === "folder";
     if (node.children) {
@@ -37,10 +39,12 @@ const canHaveChildren = (node: MenuTreeItem) => {
         });
     }
 };
+
 const traverseItems = (tree: MenuTreeItem[]) => {
     tree.forEach(node => canHaveChildren(node));
     return tree;
 };
+
 const MenuItemsList = (props: MenuItemsListProps) => {
     const { items, onChange, editItem, deleteItem } = props;
     const data = Array.isArray(items) ? [...items] : [];
