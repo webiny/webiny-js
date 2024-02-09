@@ -49,17 +49,17 @@ export interface OnPagesAfterImportTopicParams {
     params: ImportPagesParams;
 }
 
-export interface PbImportExportTaskData {
+export interface PbExportPagesTaskData {
     url?: string;
     error?: IResponseError;
 }
 
-export interface PbImportExportTask {
+export interface PbExportPagesTask {
     id: string;
     createdOn: string;
     createdBy: CreatedBy;
     status: string;
-    data: PbImportExportTaskData;
+    data: PbExportPagesTaskData;
     stats: {
         total: number;
         completed: number;
@@ -67,17 +67,39 @@ export interface PbImportExportTask {
     };
 }
 
-export interface ExportPagesResponse {
-    task: PbImportExportTask;
+export interface PbExportPagesResponse {
+    task: PbExportPagesTask;
 }
 
-export interface ImportPagesResponse {
-    task: PbImportExportTask;
+export interface PbImportPagesTaskData {
+    error?: IResponseError;
+}
+
+export interface PbImportPagesTask {
+    id: string;
+    createdOn: string;
+    createdBy: CreatedBy;
+    status: string;
+    data: PbImportPagesTaskData;
+    stats: {
+        total: number;
+        completed: number;
+        failed: number;
+    };
+}
+
+export interface PbImportPagesResponse {
+    task: PbImportPagesTask;
 }
 
 export interface PagesImportExportCrud {
-    exportPages(params: ExportPagesParams): Promise<ExportPagesResponse>;
-    importPages(params: ImportPagesParams): Promise<ImportPagesResponse>;
+    exportPages(params: ExportPagesParams): Promise<PbExportPagesResponse>;
+    importPages(params: ImportPagesParams): Promise<PbImportPagesResponse>;
+    /**
+     * Background tasks implementation.
+     */
+    getExportTask: (id: string) => Promise<PbExportPagesTask | null>;
+    getImportTask: (id: string) => Promise<PbImportPagesTask | null>;
 
     onPagesBeforeExport: Topic<OnPagesBeforeExportTopicParams>;
     onPagesAfterExport: Topic<OnPagesAfterExportTopicParams>;
@@ -268,11 +290,6 @@ export type ImportExportTaskCrud = {
         subTaskId: string,
         data: Partial<ImportExportTaskCreateData>
     ): Promise<ImportExportTask>;
-
-    /**
-     * Background tasks implementation.
-     */
-    getExportTask: (id: string) => Promise<PbImportExportTask | null>;
 };
 
 export interface PbImportExportContext extends TasksContext, PbContext {
