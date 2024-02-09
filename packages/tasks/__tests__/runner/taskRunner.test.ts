@@ -1,5 +1,4 @@
 import { TaskRunner } from "~/runner";
-import { Reply, Request } from "@webiny/handler/types";
 import { useHandler } from "~tests/helpers/useHandler";
 import { createMockEvent } from "~tests/mocks";
 import { ResponseDoneResult, ResponseErrorResult } from "~/response";
@@ -22,9 +21,6 @@ describe("task runner", () => {
         plugins: [taskDefinition]
     });
 
-    const request = {} as Request;
-    const reply = {} as Reply;
-
     it("should create a task runner", async () => {
         const context = await handle();
 
@@ -34,8 +30,6 @@ describe("task runner", () => {
                     return 100000;
                 }
             },
-            request,
-            reply,
             context
         );
         expect(runner).toBeInstanceOf(TaskRunner);
@@ -50,8 +44,6 @@ describe("task runner", () => {
                     return 100000;
                 }
             },
-            request,
-            reply,
             context
         );
 
@@ -90,8 +82,6 @@ describe("task runner", () => {
                     return 100000;
                 }
             },
-            request,
-            reply,
             context
         );
 
@@ -132,8 +122,6 @@ describe("task runner", () => {
                     return 100000;
                 }
             },
-            request,
-            reply,
             context
         );
 
@@ -174,8 +162,6 @@ describe("task runner", () => {
                     return 100000;
                 }
             },
-            request,
-            reply,
             context
         );
 
