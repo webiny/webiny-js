@@ -30,7 +30,7 @@ const revisionsMenu = css({
     left: "auto !important"
 });
 
-const Revision = () => {
+export const Revision = () => {
     const { page } = usePage();
     const { revision } = useRevision();
 
@@ -42,7 +42,7 @@ const Revision = () => {
 
     return (
         <ListItem>
-            <PageRevisionListItemGraphic revision={revision} />
+            <PageRevisionListItemGraphic />
             <ListItemText>
                 <ListItemTextPrimary>{revision.title}</ListItemTextPrimary>
                 <ListItemTextSecondary>
@@ -71,5 +71,3 @@ const Revision = () => {
         </ListItem>
     );
 };
-
-export default Revision;
