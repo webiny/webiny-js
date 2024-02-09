@@ -36,7 +36,9 @@ export const checkOsServiceRole = {
             spinner.text = "Creating Amazon OpenSearch service role...";
 
             try {
-                await iam.createServiceLinkedRole({ AWSServiceName: "es.amazonaws.com" });
+                await iam.createServiceLinkedRole({
+                    AWSServiceName: "opensearchservice.amazonaws.com"
+                });
 
                 spinner.stop();
             } catch (err) {
