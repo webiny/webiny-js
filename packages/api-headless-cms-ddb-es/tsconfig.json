@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-elasticsearch" },
+    { "path": "../api-elasticsearch-tasks" },
     { "path": "../api-headless-cms" },
     { "path": "../aws-sdk" },
     { "path": "../db-dynamodb" },
@@ -15,8 +16,11 @@
     { "path": "../api-i18n" },
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
+    { "path": "../api-wcp" },
     { "path": "../handler" },
-    { "path": "../handler-aws" }
+    { "path": "../handler-aws" },
+    { "path": "../handler-graphql" },
+    { "path": "../tasks" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -29,6 +33,8 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
       "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
+      "@webiny/api-elasticsearch-tasks/*": ["../api-elasticsearch-tasks/src/*"],
+      "@webiny/api-elasticsearch-tasks": ["../api-elasticsearch-tasks/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
@@ -51,10 +57,16 @@
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"]
+      "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/tasks/*": ["../tasks/src/*"],
+      "@webiny/tasks": ["../tasks/src"]
     },
     "baseUrl": "."
   }

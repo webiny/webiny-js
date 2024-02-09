@@ -97,6 +97,8 @@
         "!!raw-loader!",
         "@material/base",
         "@webiny/api",
+        "@webiny/tasks",
+        "@webiny/handler",
         "@webiny/api-dynamodb-to-elasticsearch",
         "@webiny/api-elasticsearch",
         "@webiny/handler-aws",

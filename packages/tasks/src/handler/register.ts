@@ -13,4 +13,6 @@ const handler = createSourceHandler<IIncomingEvent<ITaskEvent>, HandlerParams>({
     }
 });
 
-registry.register(handler);
+registry.register(handler, {
+    silent: true
+});
