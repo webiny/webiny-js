@@ -150,6 +150,7 @@ export class Pulumi {
         );
 
         if (installed) {
+            console.log("ensuring aws plugs");
             this.ensureAwsPluginIsInstalled();
         }
 

@@ -89,7 +89,17 @@ async function setupLinux(downloadFolder: string) {
     const filename = `pulumi-v${version}-linux-x64.tar.gz`;
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
 
-    await download(downloadUrl, downloadFolder);
+    console.log("downloading linux", downloadUrl);
+    try {
+        await download(downloadUrl, downloadFolder);
+    } catch (e) {
+        console.log(e.message);
+        console.log(e.stack);
+        console.log(e);
+        throw e;
+    }
+
+    console.log("download done");
 
     await tar.extract({
         cwd: downloadFolder,
@@ -97,4 +107,6 @@ async function setupLinux(downloadFolder: string) {
     });
 
     fs.unlinkSync(path.join(downloadFolder, filename));
+
+    console.log("extarccing done");
 }
