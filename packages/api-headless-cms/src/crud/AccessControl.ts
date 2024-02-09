@@ -18,7 +18,7 @@ export interface AccessControlParams {
 }
 
 interface GetGroupsAccessControlListParams {
-    group: CmsGroup;
+    group?: CmsGroup;
 }
 
 interface CanAccessGroupParams extends GetGroupsAccessControlListParams {
@@ -26,7 +26,7 @@ interface CanAccessGroupParams extends GetGroupsAccessControlListParams {
 }
 
 interface GetModelsAccessControlListParams {
-    model: CmsModel;
+    model?: CmsModel;
 }
 
 interface CanAccessModelParams extends GetModelsAccessControlListParams {
@@ -96,11 +96,9 @@ export class AccessControl {
      * - hasFullAccessToGroups
      */
 
-    async canAccessGroup(params: CanAccessGroupParams) {
+    async canAccessGroup(params: CanAccessGroupParams = {}) {
         const acl = await this.getGroupsAccessControlList(params);
 
-        // If we don't even have read access, we can't proceed. This is the first check
-        // we need to make, because it will prevent us from proceeding with other checks.
         const canRead = acl.find(ace => ace.rwd?.includes("r"));
         if (!canRead) {
             return false;
@@ -116,15 +114,30 @@ export class AccessControl {
         return true;
     }
 
-    async ensureCanAccessGroup(params: CanAccessGroupParams) {
+    async ensureCanAccessGroup(params: CanAccessGroupParams = {}) {
         const canAccess = await this.canAccessGroup(params);
-        if (!canAccess) {
+        if (canAccess) {
+            return;
+        }
+
+        if ("group" in params) {
+            let groupName = "(could not determine name)";
+            if (params.group?.name) {
+                groupName = `"${params.group.name}"`;
+            }
+
             throw new NotAuthorizedError({
                 data: {
-                    reason: `Not allowed to access group "${params.group.id}".`
+                    reason: `Not allowed to access content model group ${groupName}.`
                 }
             });
         }
+
+        throw new NotAuthorizedError({
+            data: {
+                reason: `Not allowed to access content model groups.`
+            }
+        });
     }
 
     async canAccessNonOwnedGroups(params: GetGroupsAccessControlListParams) {
@@ -146,30 +159,38 @@ export class AccessControl {
 
         const groupsPermissionsList = await this.getGroupsPermissions();
         const acl: AccessControlList = [];
-        const { group } = params;
 
         for (const groupsPermissions of groupsPermissionsList) {
             if (groupsPermissions.own) {
-                const modelGroupCreatedBy = group.createdBy;
-                if (!modelGroupCreatedBy) {
-                    continue;
+                if ("group" in params) {
+                    const modelGroupCreatedBy = params.group?.createdBy;
+                    if (!modelGroupCreatedBy) {
+                        continue;
+                    }
+
+                    const identity = await this.getIdentity();
+                    if (modelGroupCreatedBy.id !== identity.id) {
+                        continue;
+                    }
                 }
 
-                const identity = await this.getIdentity();
-                if (modelGroupCreatedBy.id === identity.id) {
-                    acl.push({ rwd: "rwd", canAccessNonOwned: false, canAccessOnlyOwned: true });
-                    continue;
-                }
+                acl.push({
+                    rwd: "rwd",
+                    canAccessNonOwned: false,
+                    canAccessOnlyOwned: true
+                });
             }
 
             if (groupsPermissions.groups) {
-                const { groups } = groupsPermissions;
-                if (!Array.isArray(groups)) {
-                    continue;
-                }
+                if ("group" in params) {
+                    const { groups } = groupsPermissions;
+                    if (!Array.isArray(groups)) {
+                        continue;
+                    }
 
-                if (!groups.includes(group.id)) {
-                    continue;
+                    if (!groups.includes(params.group?.id)) {
+                        continue;
+                    }
                 }
             }
 
@@ -201,8 +222,6 @@ export class AccessControl {
     async canAccessModel(params: CanAccessModelParams) {
         const acl = await this.getModelsAccessControlList(params);
 
-        // If we don't even have read access, we can't proceed. This is the first check
-        // we need to make, because it will prevent us from proceeding with other checks.
         const canRead = acl.find(ace => ace.rwd?.includes("r"));
         if (!canRead) {
             return false;
@@ -218,15 +237,30 @@ export class AccessControl {
         return true;
     }
 
-    async ensureCanAccessModel(params: CanAccessModelParams) {
+    async ensureCanAccessModel(params: CanAccessModelParams = {}) {
         const canAccess = await this.canAccessModel(params);
-        if (!canAccess) {
+        if (canAccess) {
+            return;
+        }
+
+        if ("model" in params) {
+            let modelName = "(could not determine name)";
+            if (params.model?.name) {
+                modelName = `"${params.model.name}"`;
+            }
+
             throw new NotAuthorizedError({
                 data: {
-                    reason: `Not allowed to access model "${params.model.modelId}".`
+                    reason: `Not allowed to access content model ${modelName}.`
                 }
             });
         }
+
+        throw new NotAuthorizedError({
+            data: {
+                reason: `Not allowed to access content models.`
+            }
+        });
     }
 
     async canAccessNonOwnedModels(params: GetModelsAccessControlListParams) {
@@ -247,12 +281,6 @@ export class AccessControl {
         }
 
         const groupsPermissionsList = await this.getGroupsPermissions();
-
-        const { model } = params;
-        const { locale } = model;
-
-        const group = await this.getGroup(model.group.id);
-
         const acl: AccessControlList = [];
 
         for (let i = 0; i < groupsPermissionsList.length; i++) {
@@ -267,24 +295,27 @@ export class AccessControl {
                 continue;
             }
 
-            // 1. Group permissions granting access to all groups the user created?
-            // When selected, that means the user can perform all actions on not only
-            // the groups they created, but also on all models and all content entries
-            // within those groups. The only exception are the publish / unpublish actions
-            // on content entries, which still need to be set on content entries permission.
             if (groupPermissions.own) {
-                if (!group) {
-                    continue;
-                }
+                if ("model" in params) {
+                    const { model } = params;
+                    if (!model) {
+                        continue;
+                    }
 
-                const modelGroupCreatedBy = group.createdBy;
-                if (!modelGroupCreatedBy) {
-                    continue;
-                }
+                    const group = await this.getGroup(model.group.id);
+                    if (!group) {
+                        continue;
+                    }
 
-                const identity = await this.getIdentity();
-                if (modelGroupCreatedBy.id !== identity.id) {
-                    continue;
+                    const modelGroupCreatedBy = group.createdBy;
+                    if (!modelGroupCreatedBy) {
+                        continue;
+                    }
+
+                    const identity = await this.getIdentity();
+                    if (modelGroupCreatedBy.id !== identity.id) {
+                        continue;
+                    }
                 }
 
                 acl.push({
@@ -297,14 +328,19 @@ export class AccessControl {
             }
 
             if (groupPermissions.groups) {
-                const { groups } = groupPermissions;
+                if ("model" in params) {
+                    const { model } = params;
+                    if (!model) {
+                        continue;
+                    }
 
-                if (!Array.isArray(groups[locale])) {
-                    continue;
-                }
+                    if (!Array.isArray(groupPermissions.groups[model.locale])) {
+                        continue;
+                    }
 
-                if (!groups[locale].includes(model.group.id)) {
-                    continue;
+                    if (!groupPermissions.groups[model.locale].includes(model.group.id)) {
+                        continue;
+                    }
                 }
             }
 
@@ -324,14 +360,20 @@ export class AccessControl {
             }
 
             if (relatedModelPermissions.own) {
-                const modelCreatedBy = model.createdBy;
-                if (!modelCreatedBy) {
-                    continue;
-                }
+                if ("model" in params) {
+                    if (!params.model) {
+                        continue;
+                    }
 
-                const identity = await this.getIdentity();
-                if (modelCreatedBy.id !== identity.id) {
-                    continue;
+                    const modelCreatedBy = params.model.createdBy;
+                    if (!modelCreatedBy) {
+                        continue;
+                    }
+
+                    const identity = await this.getIdentity();
+                    if (modelCreatedBy.id !== identity.id) {
+                        continue;
+                    }
                 }
 
                 acl.push({
@@ -345,13 +387,18 @@ export class AccessControl {
 
             if (relatedModelPermissions.models) {
                 const { models } = relatedModelPermissions;
+                if ("model" in params) {
+                    if (!params.model) {
+                        continue;
+                    }
 
-                if (!Array.isArray(models[locale])) {
-                    continue;
-                }
+                    if (!Array.isArray(models[params.model.locale])) {
+                        continue;
+                    }
 
-                if (!models[locale].includes(params.model.modelId)) {
-                    continue;
+                    if (!models[params.model.locale].includes(params.model.modelId)) {
+                        continue;
+                    }
                 }
             }
 
@@ -366,8 +413,11 @@ export class AccessControl {
     }
 
     async hasFullAccessToModels(params: GetModelsAccessControlListParams) {
-        if (this.modelAuthorizationDisabled(params)) {
-            return true;
+        const { model } = params;
+        if (model) {
+            if (this.modelAuthorizationDisabled({ model })) {
+                return true;
+            }
         }
 
         const permissions = await this.getModelsPermissions();
@@ -387,8 +437,6 @@ export class AccessControl {
     async canAccessEntry(params: CanAccessEntryParams) {
         const acl = await this.getEntriesAccessControlList(params);
 
-        // If we don't even have read access, we can't proceed. This is the first check
-        // we need to make, because it will prevent us from proceeding with other checks.
         const canRead = acl.find(ace => ace.rwd?.includes("r"));
         if (!canRead) {
             return false;
@@ -440,7 +488,7 @@ export class AccessControl {
             return [{ rwd: "rwd", pw: "pu", canAccessNonOwned: true, canAccessOnlyOwned: false }];
         }
 
-        const { model, entry } = params;
+        const { model } = params;
         const groupsPermissionsList = await this.getGroupsPermissions();
         const acl: EntriesAccessControlList = [];
 
@@ -592,7 +640,6 @@ export class AccessControl {
     }
 
     private modelAuthorizationDisabled(params: { model: CmsModel }) {
-        // Authorization disabled on model level?
         if ("authorization" in params.model) {
             const { authorization } = params.model;
             if (typeof authorization === "boolean") {
