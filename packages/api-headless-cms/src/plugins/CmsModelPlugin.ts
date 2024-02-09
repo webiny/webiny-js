@@ -344,6 +344,7 @@ export const createPrivateModelDefinition = (
     input: Omit<CmsPrivateModelFull, "group" | "isPrivate" | "noValidate">
 ): CmsPrivateModelFull => {
     return {
+        authorization: false,
         ...input,
         isPrivate: true,
         noValidate: true,

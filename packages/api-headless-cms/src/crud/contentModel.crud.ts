@@ -177,8 +177,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
     const getModel = async (modelId: string): Promise<CmsModel> => {
         return context.benchmark.measure("headlessCms.crud.models.getModel", async () => {
-            await accessControl.ensureCanAccessModel();
-
             const model = await context.security.withoutAuthorization(async () => {
                 return await getModelFromCache(modelId);
             });
@@ -608,8 +606,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
          * We require that users have write permissions to initialize models.
          * Maybe introduce another permission for it?
          */
-        await accessControl.ensureCanAccessModel({ rwd: "w" });
-
         const model = await getModel(modelId);
 
         await accessControl.ensureCanAccessModel({ model, rwd: "w" });
