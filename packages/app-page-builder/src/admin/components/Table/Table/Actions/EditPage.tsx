@@ -4,21 +4,15 @@ import { PageListConfig } from "~/admin/config/pages";
 import { usePage } from "~/admin/views/Pages/hooks/usePage";
 import { useCreatePageFrom } from "~/admin/views/Pages/hooks/useCreatePageFrom";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
-import { usePagesPermissions } from "~/hooks/permissions";
 
 export const EditPage = () => {
     const { page } = usePage();
-    const { canUpdate } = usePagesPermissions();
     const { OptionsMenuItem, OptionsMenuLink } = PageListConfig.Browser.PageAction;
     const { getPageEditorUrl, navigateToPageEditor } = useNavigatePage();
     const { createPageForm, loading } = useCreatePageFrom({
         page,
         onSuccess: () => navigateToPageEditor(page.data.pid)
     });
-
-    if (!canUpdate(page.data.createdBy.id)) {
-        return null;
-    }
 
     if (page.data.locked) {
         return (

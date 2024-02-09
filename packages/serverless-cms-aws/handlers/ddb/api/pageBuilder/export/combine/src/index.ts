@@ -3,6 +3,8 @@ import { createHandler } from "@webiny/handler-aws/raw";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
+import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
+import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
 import {
@@ -37,6 +39,18 @@ export const handler = createHandler({
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
+        new CmsParametersPlugin(async context => {
+            const locale = context.i18n.getCurrentLocale("content")?.code || "en-US";
+            return {
+                type: "manage",
+                locale
+            };
+        }),
+        createHeadlessCmsContext({
+            storageOperations: createHeadlessCmsStorageOperations({
+                documentClient
+            })
+        }),
         createPageBuilderContext({
             storageOperations: createPageBuilderStorageOperations({
                 documentClient

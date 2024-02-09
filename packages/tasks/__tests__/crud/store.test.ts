@@ -1,6 +1,6 @@
 import { useHandler } from "~tests/helpers/useHandler";
 import { createTaskDefinition } from "~/task";
-import { ITaskData, TaskDataStatus } from "~/types";
+import { ITask, TaskDataStatus } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
 import { createMockIdentity } from "~tests/mocks/identity";
@@ -91,7 +91,7 @@ describe("store crud", () => {
                 someOtherValue: 123
             }
         });
-        const expectedCreatedTask: ITaskData = {
+        const expectedCreatedTask: ITask = {
             id: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             savedOn: expect.stringMatching(/^20/),
@@ -131,7 +131,7 @@ describe("store crud", () => {
                 addedNewValue: "yes!"
             }
         });
-        const expectedUpdatedTask: ITaskData = {
+        const expectedUpdatedTask: ITask = {
             id: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             savedOn: expect.stringMatching(/^20/),

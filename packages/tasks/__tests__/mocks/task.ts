@@ -1,4 +1,4 @@
-import { ITaskData, TaskDataStatus } from "~/types";
+import { ITask, TaskDataStatus } from "~/types";
 import { createMockIdentity } from "./identity";
 import { EventBridgeClientSendResponse } from "@webiny/aws-sdk/client-eventbridge";
 import { MOCK_TASK_DEFINITION_ID } from "~tests/mocks/definition";
@@ -20,7 +20,7 @@ export const createMockTaskEventResponse = (): EventBridgeClientSendResponse => 
     };
 };
 
-export const createMockTask = (task?: Partial<ITaskData>): ITaskData => {
+export const createMockTask = (task?: Partial<ITask>): ITask => {
     return {
         id: "myCustomTaskDataId",
         definitionId: MOCK_TASK_DEFINITION_ID,

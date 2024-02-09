@@ -640,10 +640,11 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     input
                 });
 
+                const compressedPage = await compressPage(page);
                 await storageOperations.pages.update({
                     input,
                     original: rawOriginal,
-                    page: await compressPage(page)
+                    page: compressedPage
                 });
 
                 await onPageAfterUpdate.publish({

@@ -30,6 +30,7 @@ import {
     UNPUBLISH_REVISION,
     UPDATE_REVISION
 } from "./graphql/forms";
+import { GET_FORM_STATS, GET_FORM_OVERALL_STATS } from "./graphql/formStats";
 import {
     CREATE_FROM_SUBMISSION,
     EXPORT_FORM_SUBMISSIONS,
@@ -45,6 +46,7 @@ import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headl
 import { FormBuilderStorageOperations } from "~/types";
 import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { createPageBuilderContext } from "@webiny/api-page-builder";
+import { PageBuilderStorageOperations } from "@webiny/api-page-builder/types";
 
 export interface UseGqlHandlerParams {
     permissions?: SecurityPermission[];
@@ -65,7 +67,7 @@ export default (params: UseGqlHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
     const i18nStorage = getStorageOps<any>("i18n");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
-    const pageBuilderStorage = getStorageOps<FileManagerStorageOperations>("pageBuilder");
+    const pageBuilderStorage = getStorageOps<PageBuilderStorageOperations>("pageBuilder");
     const formBuilderStorage = getStorageOps<FormBuilderStorageOperations>("formBuilder");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
@@ -212,6 +214,13 @@ export default (params: UseGqlHandlerParams = {}) => {
         },
         async listForms(variables: Record<string, any> = {}) {
             return invoke({ body: { query: LIST_FORMS, variables } });
+        },
+        // Form Stats
+        async getFormStats(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_FORM_STATS, variables } });
+        },
+        async getFormOverallStats(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_FORM_OVERALL_STATS, variables } });
         },
         // Form Submission
         async createFormSubmission(variables: Record<string, any>) {

@@ -45,7 +45,7 @@ import { ExportFormsButton } from "~/admin/plugins/formsDataList/ExportButton";
 import { OptionsMenu } from "~/admin/components/OptionsMenu";
 import { useForms } from "./useForms";
 import { deserializeSorters } from "../utils";
-import { FbFormModel, FbRevisionModel } from "~/types";
+import { FORM_STATUS, FbFormModel, FbRevisionModel } from "~/types";
 
 const t = i18n.namespace("FormsApp.FormsDataList");
 const rightAlign = css({
@@ -138,7 +138,7 @@ const FormsDataList = (props: FormsDataListProps) => {
         const handlerKey = form.id + form.status;
         if (!editHandlers.current[handlerKey]) {
             editHandlers.current[handlerKey] = async () => {
-                if (!form.published) {
+                if (form.status !== FORM_STATUS.PUBLISHED) {
                     history.push(`/form-builder/forms/${encodeURIComponent(form.id)}`);
                 }
 

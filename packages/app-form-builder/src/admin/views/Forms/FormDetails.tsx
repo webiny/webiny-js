@@ -6,10 +6,13 @@ import styled from "@emotion/styled";
 import {
     GET_FORM,
     GET_FORM_REVISIONS,
+    GET_FORM_OVERALL_STATS,
     GetFormRevisionQueryResponse,
     GetFormRevisionQueryVariables,
     GetFormRevisionsQueryResponse,
-    GetFormRevisionsQueryVariables
+    GetFormRevisionsQueryVariables,
+    GetFormOverallStatsQueryResponse,
+    GetFormOverallStatsQueryVariables
 } from "../../graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Tabs } from "@webiny/ui/Tabs";
@@ -105,6 +108,16 @@ const FormDetails = ({ onCreateForm }: FormDetailsProps) => {
         }
     );
 
+    const getFormOverallStats = useQuery<
+        GetFormOverallStatsQueryResponse,
+        GetFormOverallStatsQueryVariables
+    >(GET_FORM_OVERALL_STATS, {
+        variables: {
+            id: formId || ""
+        },
+        skip: !formId
+    });
+
     if (!formId) {
         return <EmptyFormDetails canCreate={canCreate} onCreateForm={onCreateForm} />;
     }
@@ -114,6 +127,10 @@ const FormDetails = ({ onCreateForm }: FormDetailsProps) => {
         getRevisions.loading || !getRevisions.data
             ? []
             : getRevisions.data.formBuilder.revisions.data;
+    const stats =
+        getFormOverallStats.loading || !getFormOverallStats.data
+            ? {}
+            : getFormOverallStats.data.formBuilder.getFormOverallStats.data;
 
     return (
         <DetailsContainer>
@@ -122,7 +139,14 @@ const FormDetails = ({ onCreateForm }: FormDetailsProps) => {
                 <Tabs>
                     {renderPlugins(
                         "forms-form-details-revision-content",
-                        { security, refreshForms, form, revisions, loading: getForm.loading },
+                        {
+                            security,
+                            refreshForms,
+                            form,
+                            revisions,
+                            stats,
+                            loading: getForm.loading
+                        },
                         { wrapper: false }
                     )}
                 </Tabs>

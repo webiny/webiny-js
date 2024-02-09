@@ -37,7 +37,7 @@ export default /* GraphQL */ `
         color: String
         availableSizes: [String]
         image: String
-        richText: JSON
+        richText(format: String): JSON
         variant: ProductApiSingular_Variant
         fieldsObject: ProductApiSingular_FieldsObject
     }

@@ -24,7 +24,7 @@ import { ReactComponent as MoreVerticalIcon } from "../../../icons/more_vert.svg
 import { ReactComponent as PublishIcon } from "../../../icons/publish.svg";
 import { ReactComponent as UnpublishIcon } from "../../../icons/unpublish.svg";
 import { useRevision } from "./useRevision";
-import { FbFormModel, FbRevisionModel } from "~/types";
+import { FORM_STATUS, FbFormModel, FbRevisionModel } from "~/types";
 import { usePermission } from "~/hooks/usePermission";
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
@@ -37,12 +37,12 @@ const revisionsMenu = css({
 
 const getIcon = (revision: Pick<FbFormModel, "status">) => {
     switch (revision.status) {
-        case "locked":
+        case FORM_STATUS.UNPUBLISHED:
             return {
                 icon: <Icon icon={<LockIcon />} />,
                 text: "This revision is locked (it has already been published)"
             };
-        case "published":
+        case FORM_STATUS.PUBLISHED:
             return {
                 icon: <Icon icon={<BeenHereIcon />} className={primaryColor} />,
                 text: "This revision is currently published!"
@@ -104,7 +104,7 @@ const Revision = (props: RevisionProps) => {
                                 New from current
                             </MenuItem>
                         )}
-                        {revision.status === "draft" && canUpdate(form) && (
+                        {revision.status === FORM_STATUS.DRAFT && canUpdate(form) && (
                             <MenuItem
                                 onClick={() => editRevision(revision.id)}
                                 data-testid={"fb.form-revisions.action-menu.edit"}
@@ -116,7 +116,7 @@ const Revision = (props: RevisionProps) => {
                             </MenuItem>
                         )}
 
-                        {revision.status !== "published" && canPublish() && (
+                        {revision.status !== FORM_STATUS.PUBLISHED && canPublish() && (
                             <MenuItem
                                 onClick={() => publishRevision(revision.id)}
                                 data-testid={"fb.form-revisions.action-menu.publish"}
@@ -128,7 +128,7 @@ const Revision = (props: RevisionProps) => {
                             </MenuItem>
                         )}
 
-                        {revision.status === "published" && canUnpublish() && (
+                        {revision.status === FORM_STATUS.PUBLISHED && canUnpublish() && (
                             <ConfirmationDialog
                                 title="Confirmation required!"
                                 message={

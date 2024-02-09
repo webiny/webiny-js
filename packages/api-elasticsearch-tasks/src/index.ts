@@ -1,10 +1,11 @@
-import { CreateElasticsearchIndexTaskConfig, createElasticsearchReindexingTask } from "~/tasks";
+import { createElasticsearchReindexingTask, createEnableIndexingTask } from "~/tasks";
 import { Plugin } from "@webiny/plugins/types";
+import { IElasticsearchTaskConfig } from "~/types";
 
-export type CreateElasticsearchBackgroundTasksParams = CreateElasticsearchIndexTaskConfig;
+export type CreateElasticsearchBackgroundTasksParams = IElasticsearchTaskConfig;
 
 export const createElasticsearchBackgroundTasks = (
     params?: CreateElasticsearchBackgroundTasksParams
 ): Plugin[] => {
-    return [createElasticsearchReindexingTask(params)];
+    return [createElasticsearchReindexingTask(params), createEnableIndexingTask(params)];
 };

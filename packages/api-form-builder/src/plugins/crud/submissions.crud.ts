@@ -1,7 +1,6 @@
 import fetch from "node-fetch";
 import pick from "lodash/pick";
 import WebinyError from "@webiny/error";
-import * as models from "~/plugins/crud/forms.models";
 import {
     FbForm,
     FbFormTriggerHandlerPlugin,
@@ -24,7 +23,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { createTopic } from "@webiny/pubsub";
 import { sanitizeFormSubmissionData } from "~/plugins/crud/utils/sanitizeFormSubmissionData";
-import { mdbid } from "@webiny/utils";
+import { mdbid, parseIdentifier } from "@webiny/utils";
 import { FormsPermissions } from "~/plugins/crud/permissions/FormsPermissions";
 
 interface CreateSubmissionsCrudParams {
@@ -99,7 +98,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             };
 
             try {
-                const { items } = await this.storageOperations.listSubmissions(
+                const { items } = await this.storageOperations.submissions.listSubmissions(
                     listSubmissionsParams
                 );
 
@@ -156,7 +155,9 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             };
 
             try {
-                const result = await this.storageOperations.listSubmissions(listSubmissionsParams);
+                const result = await this.storageOperations.submissions.listSubmissions(
+                    listSubmissionsParams
+                );
 
                 return [result.items, result.meta];
             } catch (ex) {
@@ -269,11 +270,9 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                 };
             }
 
-            /**
-             * Use model for data validation and default values.
-             */
-            const formFormId = form.formId || form.id.split("#").pop();
-            const submissionModel = new models.FormSubmissionCreateDataModel().populate({
+            const { id: formFormId } = parseIdentifier(form.id);
+
+            const submissionModel = {
                 data,
                 meta,
                 form: {
@@ -284,12 +283,9 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     fields: form.fields,
                     steps: form.steps
                 }
-            });
+            };
 
-            await submissionModel.validate();
-
-            const modelData: Pick<FbSubmission, "data" | "meta" | "form"> =
-                await submissionModel.toJSON();
+            const modelData: Pick<FbSubmission, "data" | "meta" | "form"> = submissionModel;
 
             const submission: FbSubmission = {
                 ...modelData,
@@ -297,7 +293,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                 savedOn: new Date().toISOString(),
                 id: mdbid(),
                 locale: form.locale,
-                ownedBy: form.ownedBy,
+                createdBy: form.createdBy,
                 tenant: form.tenant,
                 logs: [],
                 webinyVersion: context.WEBINY_VERSION
@@ -308,7 +304,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     form,
                     submission
                 });
-                await this.storageOperations.createSubmission({
+                await this.storageOperations.submissions.createSubmission({
                     input: modelData,
                     form,
                     submission
@@ -379,11 +375,6 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             return submission;
         },
         async updateSubmission(this: FormBuilder, formId, input) {
-            const data = await new models.FormSubmissionUpdateDataModel().populate(input);
-            data.validate();
-
-            const updatedData = data.toJSON();
-
             const submissionId = input.id;
 
             const form = await this.getForm(formId, {
@@ -401,7 +392,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             const submission: FbSubmission = {
                 ...original,
                 tenant: form.tenant,
-                logs: updatedData.logs,
+                logs: input.logs,
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -411,8 +402,8 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     original,
                     submission
                 });
-                await this.storageOperations.updateSubmission({
-                    input: updatedData,
+                await this.storageOperations.submissions.updateSubmission({
+                    input,
                     form,
                     original,
                     submission
@@ -428,7 +419,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     ex.message || "Could not update form submission.",
                     ex.code || "UPDATE_SUBMISSION_ERROR",
                     {
-                        input: updatedData,
+                        input,
                         original,
                         submission,
                         form: formId
@@ -448,7 +439,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     form,
                     submission
                 });
-                await this.storageOperations.deleteSubmission({
+                await this.storageOperations.submissions.deleteSubmission({
                     form,
                     submission
                 });

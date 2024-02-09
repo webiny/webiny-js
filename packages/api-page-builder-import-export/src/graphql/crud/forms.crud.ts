@@ -96,7 +96,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 ) {
                     formIds = [];
 
-                    const forms = await context.formBuilder.listForms();
+                    const [forms] = await context.formBuilder.listForms();
 
                     // Save form ids
                     forms.forEach(form => formIds.push(form.id));

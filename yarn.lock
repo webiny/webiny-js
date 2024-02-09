@@ -15027,6 +15027,7 @@ __metadata:
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/tasks": 0.0.0
+    "@webiny/utils": 0.0.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
     type-fest: ^2.19.0
@@ -15175,7 +15176,6 @@ __metadata:
     "@webiny/handler-db": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
-    "@webiny/utils": 0.0.0
     csvtojson: ^2.0.10
     elastic-ts: ^0.8.0
     jest: ^29.5.0
@@ -15201,9 +15201,7 @@ __metadata:
     "@webiny/db-dynamodb": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/handler-db": 0.0.0
-    "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
-    "@webiny/utils": 0.0.0
     csvtojson: ^2.0.10
     jest: ^29.5.0
     jest-dynalite: ^3.2.0
@@ -15222,7 +15220,6 @@ __metadata:
     "@babel/preset-env": ^7.22.7
     "@babel/preset-typescript": ^7.22.5
     "@babel/runtime": ^7.22.6
-    "@commodo/fields": 1.1.2-beta.20
     "@types/got": ^9.6.12
     "@types/json2csv": ^4.5.1
     "@types/node-fetch": ^2.6.1
@@ -15245,7 +15242,6 @@ __metadata:
     "@webiny/pubsub": 0.0.0
     "@webiny/utils": 0.0.0
     "@webiny/validation": 0.0.0
-    commodo-fields-object: ^1.0.6
     csvtojson: ^2.0.10
     date-fns: ^2.22.1
     fs-extra: ^9.1.0
@@ -15259,6 +15255,7 @@ __metadata:
     slugify: ^1.2.9
     ttypescript: ^1.5.12
     typescript: 4.7.4
+    zod: ^3.21.4
   languageName: unknown
   linkType: soft
 
@@ -15351,6 +15348,7 @@ __metadata:
     "@webiny/handler-aws": 0.0.0
     "@webiny/handler-db": 0.0.0
     "@webiny/handler-graphql": 0.0.0
+    "@webiny/lexical-converter": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/pubsub": 0.0.0
@@ -15363,13 +15361,14 @@ __metadata:
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
     jest: ^29.5.0
+    jsdom: 21.1.2
     lodash: ^4.5.0
     p-map: ^4.0.0
     p-reduce: ^2.1.0
     pluralize: ^8.0.0
     prettier: ^2.8.3
     rimraf: ^3.0.2
-    semver: ^6.3.0
+    semver: ^7.3.5
     sinon: ^9.0.2
     slugify: ^1.4.0
     ttypescript: ^1.5.12
@@ -15725,6 +15724,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/pubsub": 0.0.0
     "@webiny/utils": 0.0.0
+    bytes: ^3.1.0
     dataloader: ^2.0.0
     extract-zip: ^1.6.7
     fs-extra: ^9.1.0
@@ -17554,6 +17554,7 @@ __metadata:
     "@babel/core": ^7.22.8
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/utils": 0.0.0
     rimraf: ^3.0.2
     typescript: 4.7.4
   languageName: unknown
@@ -17848,7 +17849,7 @@ __metadata:
     ncp: 2.0.0
     open: ^8.0.6
     pirates: ^4.0.1
-    semver: ^7.3.4
+    semver: ^7.3.5
     ts-morph: ^11.0.0
     typescript: 4.7.4
     uniqid: 5.4.0
@@ -17929,7 +17930,7 @@ __metadata:
     minimatch: ^5.1.6
     pino-pretty: ^9.4.0
     rimraf: ^3.0.2
-    semver: ^6.3.0
+    semver: ^7.3.5
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
@@ -17952,7 +17953,7 @@ __metadata:
     date-fns: ^2.22.1
     dot-prop: ^6.0.1
     dynamodb-toolbox: ^0.9.2
-    fuse.js: ^6.4.6
+    fuse.js: 7.0.0
     is-number: ^7.0.0
     jest: ^29.5.0
     jest-dynalite: ^3.2.0
@@ -18240,7 +18241,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/lexical-converter@workspace:packages/lexical-converter":
+"@webiny/lexical-converter@0.0.0, @webiny/lexical-converter@workspace:packages/lexical-converter":
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-converter@workspace:packages/lexical-converter"
   dependencies:
@@ -19929,6 +19930,8 @@ __metadata:
   dependencies:
     "@webiny/api-form-builder": 0.0.0
     "@webiny/api-form-builder-so-ddb": 0.0.0
+    "@webiny/api-headless-cms": 0.0.0
+    "@webiny/api-headless-cms-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-content": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
@@ -19988,6 +19991,8 @@ __metadata:
   dependencies:
     "@webiny/api-form-builder": 0.0.0
     "@webiny/api-form-builder-so-ddb": 0.0.0
+    "@webiny/api-headless-cms": 0.0.0
+    "@webiny/api-headless-cms-ddb": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-content": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
@@ -24084,7 +24089,7 @@ __metadata:
     os: 0.1.1
     p-retry: ^4.6.0
     rimraf: 3.0.2
-    semver: ^7.3.4
+    semver: ^7.3.5
     uuid: 8.3.2
     validate-npm-package-name: 3.0.0
     write-json-file: 4.3.0
@@ -28926,17 +28931,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fuse.js@npm:7.0.0":
+  version: 7.0.0
+  resolution: "fuse.js@npm:7.0.0"
+  checksum: d15750efec1808370c0cae92ec9473aa7261c59bca1f15f1cf60039ba6f804b8f95340b5cabd83a4ef55839c1034764856e0128e443921f072aa0d8a20e4cacf
+  languageName: node
+  linkType: hard
+
 "fuse.js@npm:^3.4.6":
   version: 3.6.1
   resolution: "fuse.js@npm:3.6.1"
   checksum: 958aa877ace65dc900df776becd39a03df68d7eebc7890b5fd2fc8c5d88e2fff238f60c37f80013ce70e9d9e7ac8efa9f503695fdd23d1eca3cc983797b50191
-  languageName: node
-  linkType: hard
-
-"fuse.js@npm:^6.4.6":
-  version: 6.6.2
-  resolution: "fuse.js@npm:6.6.2"
-  checksum: 17ae758ce205276ebd88bd9c9f088a100be0b4896abac9f6b09847151269d1690f41d7f98ff5813d4a58973162dbd99d0072ce807020fee6f9de60170f6b08eb
   languageName: node
   linkType: hard
 

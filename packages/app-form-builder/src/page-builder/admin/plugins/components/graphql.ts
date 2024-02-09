@@ -8,7 +8,7 @@ import { FbErrorResponse, FbFormModel, FbRevisionModel } from "~/types";
 export interface ListFormsQueryResponse {
     formBuilder: {
         listForms: {
-            data: Pick<FbFormModel, "id" | "name">[];
+            data: Pick<FbFormModel, "formId" | "name">[];
             error: FbErrorResponse | null;
         };
     };
@@ -18,7 +18,7 @@ export const LIST_FORMS = gql`
         formBuilder {
             listForms {
                 data {
-                    id
+                    formId
                     name
                 }
                 error {
@@ -52,7 +52,6 @@ export const GET_FORM_REVISIONS = gql`
                 data {
                     id
                     name
-                    published
                     version
                 }
                 error {

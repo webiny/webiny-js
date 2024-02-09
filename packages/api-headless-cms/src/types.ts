@@ -171,6 +171,7 @@ export type CmsModelFieldType =
     | "rich-text"
     | "text"
     | "dynamicZone"
+    | "json"
     | string;
 
 /**

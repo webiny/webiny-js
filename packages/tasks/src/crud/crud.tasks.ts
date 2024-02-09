@@ -3,11 +3,12 @@ import {
     Context,
     IListTaskLogParams,
     IListTaskParams,
+    ITask,
     ITaskCreateData,
-    ITaskData,
     ITaskLog,
     ITaskLogCreateInput,
     ITaskLogUpdateInput,
+    ITaskResponseDoneResultOutput,
     ITasksContextCrudObject,
     ITaskUpdateData,
     OnTaskAfterCreateTopicParams,
@@ -28,7 +29,12 @@ const createRevisionId = (id: string) => {
     return `${id}#0001`;
 };
 
-const convertToTask = (entry: CmsEntry<ITaskData>): ITaskData => {
+const convertToTask = <
+    T = any,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+>(
+    entry: CmsEntry<ITask<T, O>>
+): ITask<T, O> => {
     return {
         id: entry.entryId,
         createdOn: entry.createdOn,
@@ -37,12 +43,14 @@ const convertToTask = (entry: CmsEntry<ITaskData>): ITaskData => {
         name: entry.values.name,
         definitionId: entry.values.definitionId,
         input: entry.values.input,
+        output: entry.values.output,
         taskStatus: entry.values.taskStatus,
         executionName: entry.values.executionName || "",
         eventResponse: entry.values.eventResponse,
         startedOn: entry.values.startedOn,
         finishedOn: entry.values.finishedOn,
-        iterations: entry.values.iterations
+        iterations: entry.values.iterations,
+        parentId: entry.values.parentId
     };
 };
 
@@ -103,20 +111,25 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             return null;
         }
 
-        return convertToTask(entry as unknown as CmsEntry<ITaskData>);
+        return convertToTask(entry as unknown as CmsEntry<ITask>);
     };
 
-    const listTasks = async (params?: IListTaskParams) => {
+    const listTasks = async <
+        T = any,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(
+        params?: IListTaskParams
+    ) => {
         const [items, meta] = await context.security.withoutAuthorization(async () => {
             const model = await getTaskModel();
-            return await context.cms.listLatestEntries<ITaskData>(model, {
+            return await context.cms.listLatestEntries<ITask<T, O>>(model, {
                 ...params,
                 where: remapWhere(params?.where)
             });
         });
 
         return {
-            items: items.map(item => convertToTask(item)),
+            items: items.map(item => convertToTask<T, O>(item)),
             meta
         };
     };
@@ -137,7 +150,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
                 taskStatus: TaskDataStatus.PENDING
             });
         });
-        return convertToTask(entry as unknown as CmsEntry<ITaskData>);
+        return convertToTask(entry as unknown as CmsEntry<ITask>);
     };
 
     const updateTask = async (id: string, data: ITaskUpdateData) => {
@@ -148,7 +161,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
                 savedOn: new Date().toISOString()
             });
         });
-        return convertToTask(entry as unknown as CmsEntry<ITaskData>);
+        return convertToTask(entry as unknown as CmsEntry<ITask>);
     };
 
     const deleteTask = (id: string) => {
@@ -159,7 +172,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         });
     };
 
-    const createLog = async (task: Pick<ITaskData, "id">, data: ITaskLogCreateInput) => {
+    const createLog = async (task: Pick<ITask, "id">, data: ITaskLogCreateInput) => {
         const entry = await context.security.withoutAuthorization(async () => {
             const model = await getLogModel();
 

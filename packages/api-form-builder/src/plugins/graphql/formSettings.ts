@@ -1,10 +1,9 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { FormBuilderContext } from "~/types";
 
-const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
-    type: "graphql-schema",
-    schema: {
+export const createFormBuilderSettingsSchema = () => {
+    const formBuilderSettingGraphQL = new GraphQLSchemaPlugin<FormBuilderContext>({
         typeDefs: /* GraphQL */ `
             type FbReCaptchaSettings {
                 enabled: Boolean
@@ -65,7 +64,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 }
             }
         }
-    }
-};
+    });
 
-export default plugin;
+    return formBuilderSettingGraphQL;
+};

@@ -26,24 +26,8 @@ export const FORM_DATA_FIELD = /* GraphQL */ `
             }
         }
         triggers
-        published
-        locked
         status
-        stats {
-            views
-            submissions
-        }
-        overallStats {
-            views
-            submissions
-            conversionRate
-        }
         createdBy {
-            id
-            displayName
-            type
-        }
-        ownedBy {
             id
             displayName
             type
@@ -58,10 +42,8 @@ export const FORMS_DATA_FIELD = /* GraphQL */ `
         savedOn
         name
         slug
-        published
         publishedOn
         version
-        locked
         status
         createdBy {
             id
@@ -190,9 +172,9 @@ export const GET_FORM_REVISIONS = /* GraphQL */ `
 `;
 
 export const GET_PUBLISHED_FORM = /* GraphQL */ `
-    query GetPublishedForm($revision: ID, $parent: ID) {
+    query GetPublishedForm($formId: ID) {
         formBuilder {
-            getPublishedForm(revision: $revision, parent: $parent) {
+            getPublishedForm(formId: $formId) {
                 data ${FORM_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
