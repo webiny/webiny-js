@@ -8,6 +8,7 @@ import { ReactComponent as BeenHereIcon } from "~/admin/assets/beenhere.svg";
 import { ReactComponent as GestureIcon } from "~/admin/assets/gesture.svg";
 import { PbPageRevision } from "~/types";
 import { makeComposable } from "@webiny/app-admin";
+import { useRevision } from "~/admin/plugins/pageDetails/pageRevisions/RevisionsList";
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
 
@@ -32,12 +33,9 @@ const getIcon = (rev: PbPageRevision) => {
     }
 };
 
-export interface PageRevisionListItemGraphicProps {
-    revision: PbPageRevision;
-}
-
-const RevisionListItemGraphic = (props: PageRevisionListItemGraphicProps) => {
-    const { icon, text } = getIcon(props.revision);
+const RevisionListItemGraphic = () => {
+    const { revision } = useRevision();
+    const { icon, text } = getIcon(revision);
     return (
         <ListItemGraphic>
             <Tooltip content={text} placement={"bottom"}>
