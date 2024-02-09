@@ -1,17 +1,11 @@
 import React from "react";
 import { Compose, MenuItemRenderer, Plugins, useWcp } from "@webiny/app-admin";
-import { Components } from "@webiny/app-page-builder";
 /**
  * Plugins for "page builder"
  */
 import { ApwOnPublish } from "./plugins/pageBuilder/ApwOnPublish";
 import { ApwOnPageDelete } from "./plugins/pageBuilder/ApwOnDelete";
-import {
-    PublishPageButtonHoc,
-    PublishRevisionHoc,
-    PublishPageMenuOptionHoc,
-    PageRevisionListItemGraphicHoc
-} from "./plugins/pageBuilder/PublishPageHocs";
+import { DecoratePublishActions } from "./plugins/pageBuilder/DecoratePublishActions";
 
 import { ApwPageBuilderWorkflowScope } from "~/views/publishingWorkflows/components/pageBuilder/ApwPageBuilderWorkflowScope";
 /**
@@ -42,22 +36,7 @@ export const AdvancedPublishingWorkflow = () => {
     }
     return (
         <>
-            <Compose
-                with={PublishRevisionHoc}
-                component={Components.PageDetails.PublishPageRevision}
-            />
-            <Compose
-                with={PublishPageMenuOptionHoc}
-                component={Components.PageDetails.PublishPageMenuOption}
-            />
-            <Compose
-                with={PublishPageButtonHoc}
-                component={Components.PageEditor.PublishPageButton}
-            />
-            <Compose
-                with={PageRevisionListItemGraphicHoc}
-                component={Components.PageDetails.PageRevisionListItemGraphic}
-            />
+            <DecoratePublishActions />
             <Compose
                 with={[ApwPageBuilderWorkflowScope, ApwHeadlessCmsWorkflowScope]}
                 component={WorkflowScope}
