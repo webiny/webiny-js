@@ -3,7 +3,7 @@ import {
     FbSubmission,
     FormSubmissionValues,
     Status
-} from "~/migrations/5.40.0/001/types";
+} from "~/migrations/5.40.0/002/types";
 
 export const getFormSubmissionCommonFields = (
     submission: FbSubmission
