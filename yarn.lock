@@ -5573,6 +5573,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.14.0":
+  version: 7.23.9
+  resolution: "@babel/runtime@npm:7.23.9"
+  dependencies:
+    regenerator-runtime: ^0.14.0
+  checksum: 6bbebe8d27c0c2dd275d1ac197fc1a6c00e18dab68cc7aaff0adc3195b45862bae9c4cc58975629004b0213955b2ed91e99eccb3d9b39cabea246c657323d667
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:^7.18.3":
   version: 7.21.0
   resolution: "@babel/runtime@npm:7.21.0"
@@ -18833,6 +18842,7 @@ __metadata:
     aws-lambda: ^1.0.7
     deep-equal: ^2.2.3
     lodash: ^4.17.21
+    object-merge-advanced: ^12.1.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.13
     type-fest: ^2.19.0
@@ -20416,6 +20426,16 @@ __metadata:
   version: 1.0.0
   resolution: "array-ify@npm:1.0.0"
   checksum: c0502015b319c93dd4484f18036bcc4b654eb76a4aa1f04afbcef11ac918859bb1f5d71ba1f0f1141770db9eef1a4f40f1761753650873068010bbf7bcdae4a4
+  languageName: node
+  linkType: hard
+
+"array-includes-with-glob@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "array-includes-with-glob@npm:3.1.0"
+  dependencies:
+    "@babel/runtime": ^7.14.0
+    matcher: ^4.0.0
+  checksum: 8cb47d3780a4962deb823f6a7ad4728ade626261857a5254cf9ef1d7e486d5da91a8cc9e44ebde2e75c714949c82e9d4d1ec140852bacbc5f02a1009c728319a
   languageName: node
   linkType: hard
 
@@ -34097,6 +34117,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.isdate@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "lodash.isdate@npm:4.0.1"
+  checksum: 5712b8f35956026eef32dca7f7f8f0af59a586c8dcfa8e570e5acd50537e1d93b76b2978ea69c1570b2d1cc1e33759babd7e6b1b49a53291f3c1dd6311d3a947
+  languageName: node
+  linkType: hard
+
 "lodash.isequal@npm:^4.5.0":
   version: 4.5.0
   resolution: "lodash.isequal@npm:4.5.0"
@@ -34695,6 +34722,15 @@ __metadata:
     he: ^1.2.0
     marked: ^0.3.12
   checksum: ae9889866b2d134055f964bff333b20299442d88e483304b9667089ef4c25b5f860a24c7fb423c8a88de6c98d64da0303ed48cedfcd7e744ac83c0cbcba5b209
+  languageName: node
+  linkType: hard
+
+"matcher@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "matcher@npm:4.0.0"
+  dependencies:
+    escape-string-regexp: ^4.0.0
+  checksum: d338aff31d8dfd3626873e43777f46b123579734d53bb8d18d64b08a822ba5e8d39f5fe2e23403258e6143aa0cbe20a15662720d825cd0d3af961d5a44230328
   languageName: node
   linkType: hard
 
@@ -36539,6 +36575,22 @@ __metadata:
   version: 1.1.1
   resolution: "object-keys@npm:1.1.1"
   checksum: b363c5e7644b1e1b04aa507e88dcb8e3a2f52b6ffd0ea801e4c7a62d5aa559affe21c55a07fd4b1fd55fc03a33c610d73426664b20032405d7b92a1414c34d6a
+  languageName: node
+  linkType: hard
+
+"object-merge-advanced@npm:^12.1.0":
+  version: 12.1.0
+  resolution: "object-merge-advanced@npm:12.1.0"
+  dependencies:
+    "@babel/runtime": ^7.14.0
+    array-includes-with-glob: ^3.1.0
+    lodash.clonedeep: ^4.5.0
+    lodash.includes: ^4.3.0
+    lodash.isdate: ^4.0.1
+    lodash.isplainobject: ^4.0.6
+    lodash.uniq: ^4.5.0
+    util-nonempty: ^3.1.0
+  checksum: 8b99c6aac6c5fdf4857f62067550a5236c1f7793a2c182b11eabaeaf315c0e68faf862c1516181c9b8b8d32d327faa01989c8496c51d3f36c93bb79fc3233fd8
   languageName: node
   linkType: hard
 
@@ -45821,6 +45873,16 @@ __metadata:
   version: 1.0.2
   resolution: "util-deprecate@npm:1.0.2"
   checksum: 474acf1146cb2701fe3b074892217553dfcf9a031280919ba1b8d651a068c9b15d863b7303cb15bd00a862b498e6cf4ad7b4a08fb134edd5a6f7641681cb54a2
+  languageName: node
+  linkType: hard
+
+"util-nonempty@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "util-nonempty@npm:3.1.0"
+  dependencies:
+    "@babel/runtime": ^7.14.0
+    lodash.isplainobject: ^4.0.6
+  checksum: ce9862f5f7b537348295d3fe42996bcf536997f5cb2d75613f1b35d17f3e0aaab386f5fe5935d52fc87a9a5da70f38c33a451f8e11e78bc854f5e821e37c87b5
   languageName: node
   linkType: hard
 

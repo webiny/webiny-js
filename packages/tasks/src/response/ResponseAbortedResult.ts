@@ -10,7 +10,7 @@ export class ResponseAbortedResult implements IResponseAbortedResult {
 
     public constructor(params: Omit<IResponseAbortedResult, "status">) {
         this.webinyTaskId = params.webinyTaskId;
-        this.webinyTaskDefinitionId = params.webinyTaskId;
+        this.webinyTaskDefinitionId = params.webinyTaskDefinitionId;
         this.tenant = params.tenant;
         this.locale = params.locale;
     }

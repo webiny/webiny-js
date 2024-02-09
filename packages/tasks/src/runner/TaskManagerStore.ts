@@ -4,16 +4,18 @@ import {
     ITaskLog,
     ITaskLogItemType,
     ITaskManagerStoreInfoLog,
+    ITaskManagerStorePrivate,
     ITaskManagerStoreSetOutputOptions,
+    ITaskManagerStoreUpdateTaskInputOptions,
+    ITaskManagerStoreUpdateTaskOptions,
     ITaskResponseDoneResultOutput,
     ITasksContextObject,
     TaskDataStatus
 } from "~/types";
 import {
-    ITaskManagerStore,
     ITaskManagerStoreErrorLog,
     ITaskManagerStoreUpdateTaskInputParam,
-    ITaskManagerStoreUpdateTaskParam
+    ITaskManagerStoreUpdateTaskParams
 } from "./abstractions";
 /**
  * Package deep-equal does not have types.
@@ -21,11 +23,12 @@ import {
 // @ts-expect-error
 import deepEqual from "deep-equal";
 import { getObjectProperties } from "~/utils/getObjectProperties";
+import { ObjectUpdater } from "~/utils/ObjectUpdater";
 
 const getInput = <T extends ITaskDataInput = ITaskDataInput>(
     originalInput: T,
     input: ITaskManagerStoreUpdateTaskInputParam<T>
-) => {
+): T => {
     if (typeof input === "function") {
         return input(originalInput);
     }
@@ -42,15 +45,18 @@ export interface TaskManagerStoreContext {
 export class TaskManagerStore<
     T extends ITaskDataInput = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
-> implements ITaskManagerStore<T, O>
+> implements ITaskManagerStorePrivate<T, O>
 {
     private readonly context: TaskManagerStoreContext;
-    private task: ITask;
+    private task: ITask<T, O>;
     private taskLog: ITaskLog;
+
+    private readonly taskUpdater = new ObjectUpdater<ITask<T, O>>();
+    private readonly taskLogUpdater = new ObjectUpdater<ITaskLog>();
 
     public constructor(context: TaskManagerStoreContext, task: ITask, log: ITaskLog) {
         this.context = context;
-        this.task = task;
+        this.task = task as ITask<T, O>;
         this.taskLog = log;
     }
 
@@ -58,30 +64,34 @@ export class TaskManagerStore<
         return this.task.taskStatus;
     }
 
-    public setTask(task: ITask): void {
-        this.task = task;
-    }
-
     public getTask(): ITask<T, O> {
         return this.task as ITask<T, O>;
     }
 
-    public async updateTask(param: ITaskManagerStoreUpdateTaskParam): Promise<void> {
+    public async updateTask(
+        param: ITaskManagerStoreUpdateTaskParams<T, O>,
+        options?: ITaskManagerStoreUpdateTaskOptions
+    ): Promise<void> {
         const data = typeof param === "function" ? param(this.task) : param;
+
         /**
          * No need to update if nothing changed.
          */
         if (deepEqual(data, this.task)) {
             return;
         }
-        this.task = await this.context.tasks.updateTask(this.task.id, {
-            ...data,
-            output: data.output || this.task.output
-        });
+
+        this.taskUpdater.update(data);
+
+        if (!options?.save) {
+            return;
+        }
+        await this.save();
     }
 
-    public async updateInput<T extends ITaskDataInput = ITaskDataInput>(
-        param: ITaskManagerStoreUpdateTaskInputParam<T>
+    public async updateInput(
+        param: ITaskManagerStoreUpdateTaskInputParam<T>,
+        options?: ITaskManagerStoreUpdateTaskInputOptions
     ): Promise<void> {
         const input = getInput<T>(this.task.input, param);
 
@@ -91,12 +101,16 @@ export class TaskManagerStore<
         if (deepEqual(input, this.task.input)) {
             return;
         }
-        this.task = await this.context.tasks.updateTask(this.task.id, {
-            input
+        this.taskUpdater.update({
+            input: input as T
         });
+        if (!options?.save) {
+            return;
+        }
+        await this.save();
     }
 
-    public getInput<T extends ITaskDataInput = ITaskDataInput>(): T {
+    public getInput(): T {
         return this.task.input as T;
     }
 
@@ -104,17 +118,13 @@ export class TaskManagerStore<
         values: Partial<O>,
         options: ITaskManagerStoreSetOutputOptions = {}
     ): Promise<void> {
-        const output = {
-            ...this.task.output,
-            ...values
-        };
+        this.taskUpdater.update({
+            output: values as O
+        });
         if (options.save === false) {
-            this.task.output = output;
             return;
         }
-        await this.context.tasks.updateTask(this.task.id, {
-            output
-        });
+        await this.save();
     }
 
     public getOutput(): O {
@@ -151,5 +161,23 @@ export class TaskManagerStore<
                 }
             ])
         });
+    }
+
+    public async save(): Promise<void> {
+        /**
+         * Update both task and the log, if anything to update.
+         */
+        if (this.taskUpdater.isDirty()) {
+            this.task = await this.context.tasks.updateTask<T, O>(
+                this.task.id,
+                this.taskUpdater.fetch()
+            );
+        }
+        if (this.taskLogUpdater.isDirty()) {
+            this.taskLog = await this.context.tasks.updateLog(
+                this.taskLog.id,
+                this.taskLogUpdater.fetch()
+            );
+        }
     }
 }

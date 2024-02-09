@@ -5,6 +5,7 @@ import {
     IListTaskParams,
     ITask,
     ITaskCreateData,
+    ITaskDataInput,
     ITaskLog,
     ITaskLogCreateInput,
     ITaskLogUpdateInput,
@@ -160,7 +161,13 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         return convertToTask(entry as unknown as CmsEntry<ITask>);
     };
 
-    const updateTask = async (id: string, data: ITaskUpdateData) => {
+    const updateTask = async <
+        T = ITaskDataInput,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(
+        id: string,
+        data: ITaskUpdateData<T, O>
+    ) => {
         const entry = await context.security.withoutAuthorization(async () => {
             const model = await getTaskModel();
             return await context.cms.updateEntry(model, createRevisionId(id), {
@@ -168,7 +175,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
                 savedOn: new Date().toISOString()
             });
         });
-        return convertToTask(entry as unknown as CmsEntry<ITask>);
+        return convertToTask<T, O>(entry as unknown as CmsEntry<ITask<T, O>>);
     };
 
     const deleteTask = (id: string) => {
