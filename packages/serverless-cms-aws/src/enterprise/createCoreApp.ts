@@ -1,8 +1,8 @@
 import { createCorePulumiApp, CreateCorePulumiAppParams } from "@webiny/pulumi-aws/enterprise";
 import { PluginCollection } from "@webiny/plugins/types";
-import { generateDdbToEsHandler, checkEsServiceRole } from "~/core/plugins";
+import { generateDdbToEsHandler, checkEsServiceRole, checkOsServiceRole } from "~/core/plugins";
 
-export { CoreOutput } from "@webiny/pulumi-aws";
+export { CoreOutput, configureAdminCognitoFederation } from "@webiny/pulumi-aws";
 
 export interface CreateCoreAppParams extends CreateCorePulumiAppParams {
     plugins?: PluginCollection;
@@ -11,7 +11,12 @@ export interface CreateCoreAppParams extends CreateCorePulumiAppParams {
 export function createCoreApp(projectAppParams: CreateCoreAppParams = {}) {
     const builtInPlugins = [];
     if (projectAppParams.elasticSearch || projectAppParams.openSearch) {
-        builtInPlugins.push(generateDdbToEsHandler, checkEsServiceRole);
+        builtInPlugins.push(generateDdbToEsHandler);
+        if (projectAppParams.elasticSearch) {
+            builtInPlugins.push(checkEsServiceRole);
+        } else {
+            builtInPlugins.push(checkOsServiceRole);
+        }
     }
 
     const customPlugins = projectAppParams.plugins ? [...projectAppParams.plugins] : [];
