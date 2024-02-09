@@ -8,7 +8,7 @@ export interface ITaskRunner<C extends Context = Context> {
     request: Request;
     reply: Reply;
     context: C;
-    lambdaContext: LambdaContext;
+    lambdaContext: Pick<LambdaContext, "getRemainingTimeInMillis">;
     isCloseToTimeout: (seconds?: number) => boolean;
     getRemainingTime: () => number;
 

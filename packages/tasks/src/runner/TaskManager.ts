@@ -154,7 +154,8 @@ export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
             return this.response.aborted();
         }
         return this.response.done({
-            message: result.message
+            message: result.message,
+            output: result.output
         });
     }
 }

@@ -107,6 +107,11 @@ export class FolderLevelPermissions {
         }
     }
 
+    updateCache(folderType: string, modifier: (folders: Folder[]) => Folder[]) {
+        const foldersClone = structuredClone(this.allFolders[folderType]) || [];
+        this.allFolders[folderType] = modifier(foldersClone);
+    }
+
     async listFoldersPermissions(
         params: ListFolderPermissionsParams
     ): Promise<FolderPermissionsList> {

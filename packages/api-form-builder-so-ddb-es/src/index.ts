@@ -2,7 +2,7 @@ import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters";
 import formElasticsearchFields from "./operations/form/elasticsearchFields";
 import submissionElasticsearchFields from "./operations/submission/elasticsearchFields";
 import WebinyError from "@webiny/error";
-import { FormBuilderStorageOperationsFactory, ENTITIES } from "~/types";
+import { ENTITIES, FormBuilderStorageOperationsFactory } from "~/types";
 import { createTable } from "~/definitions/table";
 import { createFormEntity } from "~/definitions/form";
 import { createSubmissionEntity } from "~/definitions/submission";
@@ -34,6 +34,7 @@ import {
     SubmissionElasticsearchQueryModifierPlugin,
     SubmissionElasticsearchSortModifierPlugin
 } from "~/plugins";
+import { createIndexTaskPlugin } from "~/tasks/createIndexTaskPlugin";
 
 const reservedFields = ["PK", "SK", "index", "data", "TYPE", "__type", "GSI1_PK", "GSI1_SK"];
 
@@ -157,6 +158,7 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
             for (const type of types) {
                 plugins.mergeByType(context.plugins, type);
             }
+            context.plugins.register([createIndexTaskPlugin(), elasticsearchIndexPlugins()]);
         },
         init: async (context: FormBuilderContext) => {
             context.i18n.locales.onLocaleBeforeCreate.subscribe(async ({ locale, tenant }) => {

@@ -14,6 +14,7 @@ import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/s
 import { emptyResolver, resolve, resolveList } from "./utils";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields";
 import { checkPermissions } from "./checkPermissions";
+import { Plugin } from "@webiny/plugins/types";
 
 interface IGetTaskQueryParams {
     id: string;
@@ -46,7 +47,7 @@ const createWebinyBackgroundTaskDefinitionEnum = (items: ITaskDefinition[]): str
         .join("\n");
 };
 
-export const createGraphQL = () => {
+const createGraphQL = () => {
     const plugin = new ContextPlugin<Context>(async context => {
         if (!context.tenancy.getCurrentTenant()) {
             return;
@@ -382,4 +383,8 @@ export const createGraphQL = () => {
     plugin.name = "tasks.graphql";
 
     return plugin;
+};
+
+export const createBackgroundTaskGraphQL = (): Plugin[] => {
+    return [createGraphQL()];
 };

@@ -67,6 +67,7 @@ import {
     SearchPagesPlugin,
     SearchPublishedPagesPlugin
 } from "./plugins";
+import { createIndexTaskPlugin } from "~/tasks/createIndexTaskPlugin";
 
 export * from "./plugins";
 
@@ -235,6 +236,8 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             pageBlocks.dataLoader.clear();
             blockCategories.dataLoader.clear();
             categories.dataLoader.clear();
+
+            context.plugins.register([createIndexTaskPlugin(), elasticsearchIndexPlugins()]);
         },
         init: async (context: PbContext) => {
             context.i18n.locales.onLocaleBeforeCreate.subscribe(async ({ locale, tenant }) => {

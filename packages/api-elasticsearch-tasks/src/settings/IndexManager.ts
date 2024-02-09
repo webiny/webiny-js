@@ -82,4 +82,23 @@ export class IndexManager implements IIndexManager {
         const settings = this._settings[index] || this.defaults;
         await this.enable.exec(index, settings);
     }
+
+    public async createIndex(index: string, settings?: Record<string, any>): Promise<void> {
+        await this.client.indices.create({
+            index,
+            body: settings
+        });
+    }
+
+    public async indexExists(index: string): Promise<boolean> {
+        const response = await this.client.indices.exists({
+            index,
+            ignore_unavailable: false,
+            allow_no_indices: true,
+            include_defaults: true,
+            flat_settings: false,
+            local: false
+        });
+        return !!response.body;
+    }
 }
