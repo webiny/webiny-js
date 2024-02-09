@@ -434,6 +434,12 @@ export interface CmsModelGroup {
      * Name of the group
      */
     name: string;
+
+    createdBy: {
+        id: string;
+        displayName: string;
+        type: string;
+    }
 }
 
 export interface CmsModelAuthorization {
@@ -2623,7 +2629,7 @@ export type CmsEntryResolverFactory<TSource = any, TArgs = any, TContext = CmsCo
  */
 export interface BaseCmsSecurityPermission extends SecurityPermission {
     own?: boolean;
-    rwd: string | number; // TODO: a number?
+    rwd: string;
 }
 
 /**

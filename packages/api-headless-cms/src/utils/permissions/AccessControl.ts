@@ -35,11 +35,12 @@ interface CanAccessModelParams extends GetModelsAccessControlListParams {
 
 interface GetEntriesAccessControlListParams {
     model: CmsModel;
-    entry: CmsEntry;
+    entry?: CmsEntry;
 }
 
 interface CanAccessEntryParams extends GetEntriesAccessControlListParams {
     rwd?: string;
+    pw?: string;
 }
 
 interface AccessControlEntry {
@@ -49,6 +50,12 @@ interface AccessControlEntry {
 }
 
 type AccessControlList = AccessControlEntry[];
+
+interface EntriesAccessControlEntry extends AccessControlEntry {
+    pw?: string;
+}
+
+type EntriesAccessControlList = EntriesAccessControlEntry[];
 
 export class AccessControl {
     getIdentity: AccessControlParams["getIdentity"];
@@ -61,7 +68,7 @@ export class AccessControl {
     private allGroups: {
         loaded: boolean;
         groups: CmsGroup[];
-    }
+    };
 
     constructor({
         getIdentity,
@@ -251,6 +258,15 @@ export class AccessControl {
         for (let i = 0; i < groupsPermissionsList.length; i++) {
             const groupPermissions = groupsPermissionsList[i];
 
+            const modelsPermissionsList = await this.getModelsPermissions();
+            const relatedModelPermissions = modelsPermissionsList.find(
+                permissions => permissions._src === groupPermissions._src
+            );
+
+            if (!relatedModelPermissions) {
+                continue;
+            }
+
             // 1. Group permissions granting access to all groups the user created?
             // When selected, that means the user can perform all actions on not only
             // the groups they created, but also on all models and all content entries
@@ -280,11 +296,6 @@ export class AccessControl {
                 continue;
             }
 
-            // 2. Group permissions granting access specific groups?
-            // When selected, that means the user can perform all actions on all models
-            // and all entries within the selected groups. But, unlike the previous permission,
-            // this one doesn't give full access to all models and content entries. The user
-            // must define what permissions they have on models and entries.
             if (groupPermissions.groups) {
                 const { groups } = groupPermissions;
 
@@ -297,30 +308,6 @@ export class AccessControl {
                 }
             }
 
-            // If we got here, that means the model either belongs to a group the user
-            // has access to, or, the user has access to all groups. In both cases, we
-            // need to check the related model permissions.
-
-            // The following note is important for when the Teams feature is enabled,
-            // and where users can be linked to multiple roles, some of which contain
-            // their own CMS permissions.
-            // ---
-            // We're only checking one model permissions object!
-            // This is because model permissions are always related to group permissions.
-            // We don't care about potentially other model permissions that might exist,
-            // because they are not related to current group permissions. We're using the
-            // `_src` property to link the model permissions to the group permissions.
-            // ---
-            const modelsPermissionsList = await this.getModelsPermissions();
-            const relatedModelPermissions = modelsPermissionsList.find(
-                permissions => permissions._src === groupPermissions._src
-            );
-
-            if (!relatedModelPermissions) {
-                continue;
-            }
-
-            // Check if the permissions object grants full access to all models (doesn't set any restrictions).
             const fullAccess =
                 !relatedModelPermissions.rwd &&
                 !relatedModelPermissions.own &&
@@ -336,7 +323,6 @@ export class AccessControl {
                 continue;
             }
 
-            // 1. Model permissions granting access to all models the user created?
             if (relatedModelPermissions.own) {
                 const modelCreatedBy = model.createdBy;
                 if (!modelCreatedBy) {
@@ -357,7 +343,6 @@ export class AccessControl {
                 continue;
             }
 
-            // 2. Model permission granting access to specific models?
             if (relatedModelPermissions.models) {
                 const { models } = relatedModelPermissions;
 
@@ -370,8 +355,6 @@ export class AccessControl {
                 }
             }
 
-            // If we got here, that means the model either belongs to a group the user
-            // has access to, or, the user has access to all groups.
             acl.push({
                 rwd: relatedModelPermissions.rwd as string,
                 canAccessNonOwned: true,
@@ -424,9 +407,17 @@ export class AccessControl {
     async ensureCanAccessEntry(params: CanAccessEntryParams) {
         const canAccess = await this.canAccessEntry(params);
         if (!canAccess) {
+            if (params.entry) {
+                throw new NotAuthorizedError({
+                    data: {
+                        reason: `Not allowed to access entry "${params.entry.entryId}".`
+                    }
+                });
+            }
+
             throw new NotAuthorizedError({
                 data: {
-                    reason: `Not allowed to access entry "${params.entry.entryId}".`
+                    reason: `Not allowed to access "${params.model.modelId}" entries.`
                 }
             });
         }
@@ -444,88 +435,24 @@ export class AccessControl {
 
     async getEntriesAccessControlList(
         params: GetEntriesAccessControlListParams
-    ): Promise<AccessControlList> {
+    ): Promise<EntriesAccessControlList> {
         if (await this.hasFullAccessToEntries(params)) {
-            return [{ rwd: "rwd", canAccessNonOwned: true, canAccessOnlyOwned: false }];
+            return [{ rwd: "rwd", pw: "pu", canAccessNonOwned: true, canAccessOnlyOwned: false }];
         }
 
-        const groupsPermissionsList = await this.getGroupsPermissions();
-
         const { model, entry } = params;
-        const { locale } = entry;
-
-        const acl: AccessControlList = [];
+        const groupsPermissionsList = await this.getGroupsPermissions();
+        const acl: EntriesAccessControlList = [];
 
         for (let i = 0; i < groupsPermissionsList.length; i++) {
             const groupPermissions = groupsPermissionsList[i];
 
-            // 1. Group permissions granting access to all groups the user created?
-            // When selected, that means the user can perform all actions on not only
-            // the groups they created, but also on all entries and all content entries
-            // within those groups. The only exception are the publish / unpublish actions
-            // on content entries, which still need to be set on content entries permission.
-            if (groupPermissions.own) {
-                const group = await this.getGroup(model.group.id);
-                if (!group) {
-                    continue;
-                }
-
-                const entryGroupCreatedBy = group.createdBy;
-                if (!entryGroupCreatedBy) {
-                    continue;
-                }
-
-                const identity = await this.getIdentity();
-                if (entryGroupCreatedBy.id !== identity.id) {
-                    continue;
-                }
-
-                acl.push({
-                    rwd: "rwd",
-                    canAccessNonOwned: false,
-                    canAccessOnlyOwned: true
-                });
-
-                continue;
-            }
-
-            // 2. Group permissions granting access specific groups?
-            // When selected, that means the user can perform all actions on all entries
-            // and all entries within the selected groups. But, unlike the previous permission,
-            // this one doesn't give full access to all entries and content entries. The user
-            // must define what permissions they have on entries and entries.
-            if (groupPermissions.groups) {
-                const { groups } = groupPermissions;
-
-                if (!Array.isArray(groups[locale])) {
-                    continue;
-                }
-
-                if (!groups[locale].includes(model.group.id)) {
-                    continue;
-                }
-            }
-
-            // If we got here, that means the entry either belongs to a group the user
-            // has access to, or, the user has access to all groups. In both cases, we
-            // need to check the related entry permissions.
-
-            // The following note is important for when the Teams feature is enabled,
-            // and where users can be linked to multiple roles, some of which contain
-            // their own CMS permissions.
-            // ---
-            // We're only checking one entry permissions object!
-            // This is because entry permissions are always related to group permissions.
-            // We don't care about potentially other entry permissions that might exist,
-            // because they are not related to current group permissions. We're using the
-            // `_src` property to link the entry permissions to the group permissions.
-            // ---
             const modelsPermissionsList = await this.getModelsPermissions();
-            const relatedModelPermissions = modelsPermissionsList.find(
+            const relatedModelsPermissions = modelsPermissionsList.find(
                 permissions => permissions._src === groupPermissions._src
             );
 
-            if (!relatedModelPermissions) {
+            if (!relatedModelsPermissions) {
                 continue;
             }
 
@@ -538,62 +465,117 @@ export class AccessControl {
                 continue;
             }
 
-            // Check if the permissions object grants full access to all model (doesn't set any restrictions).
-            const fullAccess =
-                !relatedModelPermissions.rwd &&
-                !relatedModelPermissions.own &&
-                !relatedModelPermissions.entries;
+            if (groupPermissions.own) {
+                const group = await this.getGroup(model.group.id);
+                if (!group) {
+                    continue;
+                }
 
-            if (fullAccess) {
-                acl.push({
-                    rwd: "rwd",
-                    canAccessNonOwned: true,
-                    canAccessOnlyOwned: false
-                });
-
-                continue;
-            }
-
-            // 1. Entry permissions granting access to all entries the user created?
-            if (relatedModelPermissions.own) {
-                const entryCreatedBy = entry.createdBy;
-                if (!entryCreatedBy) {
+                const groupCreatedBy = group.createdBy;
+                if (!groupCreatedBy) {
                     continue;
                 }
 
                 const identity = await this.getIdentity();
-                if (entryCreatedBy.id !== identity.id) {
+                if (groupCreatedBy.id !== identity.id) {
                     continue;
                 }
 
                 acl.push({
                     rwd: "rwd",
                     canAccessNonOwned: false,
-                    canAccessOnlyOwned: true
+                    canAccessOnlyOwned: true,
+                    pw: relatedEntriesPermissions.pw
                 });
 
                 continue;
             }
 
-            // 2. Entry permission granting access to specific entries?
-            if (relatedModelPermissions.entries) {
-                const { entries } = relatedModelPermissions;
+            if (groupPermissions.groups) {
+                const { groups } = groupPermissions;
 
-                if (!Array.isArray(entries[locale])) {
+                if (!Array.isArray(groups[model.locale])) {
                     continue;
                 }
 
-                if (!entries[locale].includes(params.entry.entryId)) {
+                if (!groups[model.locale].includes(model.group.id)) {
                     continue;
                 }
             }
 
-            // If we got here, that means the entry either belongs to a group the user
-            // has access to, or, the user has access to all groups.
+            if (relatedModelsPermissions.own) {
+                const modelCreatedBy = model.createdBy;
+                if (!modelCreatedBy) {
+                    continue;
+                }
+
+                const identity = await this.getIdentity();
+                if (modelCreatedBy.id !== identity.id) {
+                    continue;
+                }
+
+                acl.push({
+                    rwd: "rwd",
+                    canAccessNonOwned: false,
+                    canAccessOnlyOwned: true,
+                    pw: relatedEntriesPermissions.pw
+                });
+            }
+
+            if (relatedModelsPermissions.models) {
+                if (!Array.isArray(relatedModelsPermissions[model.locale])) {
+                    continue;
+                }
+
+                if (!relatedModelsPermissions[model.locale].includes(model.group.id)) {
+                    continue;
+                }
+            }
+
+            const fullAccess =
+                !relatedEntriesPermissions.rwd &&
+                !relatedEntriesPermissions.own &&
+                !relatedEntriesPermissions.models;
+
+            if (fullAccess) {
+                acl.push({
+                    rwd: "rwd",
+                    canAccessNonOwned: false,
+                    canAccessOnlyOwned: true,
+                    pw: "pu"
+                });
+
+                continue;
+            }
+
+            if (relatedEntriesPermissions.own) {
+                if ("entry" in params) {
+                    const entryCreatedBy = params.entry?.createdBy;
+                    if (!entryCreatedBy) {
+                        continue;
+                    }
+
+                    const identity = await this.getIdentity();
+                    if (entryCreatedBy.id !== identity.id) {
+                        continue;
+                    }
+                }
+
+                acl.push({
+                    rwd: relatedEntriesPermissions.rwd,
+                    canAccessNonOwned: false,
+                    canAccessOnlyOwned: true,
+                    pw: relatedEntriesPermissions.pw
+                });
+
+                continue;
+            }
+
             acl.push({
-                rwd: relatedModelPermissions.rwd as string,
+                rwd: relatedModelsPermissions.rwd,
                 canAccessNonOwned: true,
-                canAccessOnlyOwned: false
+                canAccessOnlyOwned: false,
+                pw: relatedEntriesPermissions.pw
             });
         }
 
@@ -601,7 +583,7 @@ export class AccessControl {
     }
 
     async hasFullAccessToEntries(params: GetEntriesAccessControlListParams) {
-        if (this.entryAuthorizationDisabled(params)) {
+        if (this.modelAuthorizationDisabled(params)) {
             return true;
         }
 
