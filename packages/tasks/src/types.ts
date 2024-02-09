@@ -96,7 +96,7 @@ export interface ITask<
     definitionId: string;
     executionName: string;
     input: T;
-    output: O;
+    output?: O;
     createdOn: string;
     savedOn: string;
     createdBy: ITaskIdentity;
