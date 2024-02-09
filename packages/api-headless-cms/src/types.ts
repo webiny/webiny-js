@@ -434,12 +434,6 @@ export interface CmsModelGroup {
      * Name of the group
      */
     name: string;
-
-    createdBy: {
-        id: string;
-        displayName: string;
-        type: string;
-    }
 }
 
 export interface CmsModelAuthorization {

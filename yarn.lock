@@ -2521,7 +2521,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/cli@npm:^7.23.9":
+"@babel/cli@npm:^7.22.6, @babel/cli@npm:^7.23.9":
   version: 7.23.9
   resolution: "@babel/cli@npm:7.23.9"
   dependencies:
@@ -2668,7 +2668,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:^7.23.9":
+"@babel/core@npm:^7.22.8, @babel/core@npm:^7.23.9":
   version: 7.23.9
   resolution: "@babel/core@npm:7.23.9"
   dependencies:
@@ -5317,7 +5317,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:^7.23.9":
+"@babel/preset-env@npm:^7.22.7, @babel/preset-env@npm:^7.23.9":
   version: 7.23.9
   resolution: "@babel/preset-env@npm:7.23.9"
   dependencies:
@@ -5493,7 +5493,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-typescript@npm:^7.23.3":
+"@babel/preset-typescript@npm:^7.22.5, @babel/preset-typescript@npm:^7.23.3":
   version: 7.23.3
   resolution: "@babel/preset-typescript@npm:7.23.3"
   dependencies:
@@ -5558,7 +5558,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.23.9":
+"@babel/runtime@npm:^7.22.6, @babel/runtime@npm:^7.23.9":
   version: 7.23.9
   resolution: "@babel/runtime@npm:7.23.9"
   dependencies:
@@ -15329,11 +15329,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-elasticsearch-tasks@workspace:packages/api-elasticsearch-tasks"
   dependencies:
-    "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
-    "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/cli": ^7.22.6
+    "@babel/core": ^7.22.8
+    "@babel/preset-env": ^7.22.7
+    "@babel/preset-typescript": ^7.22.5
+    "@babel/runtime": ^7.22.6
     "@webiny/api": 0.0.0
     "@webiny/api-elasticsearch": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
@@ -15353,7 +15353,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/tasks": 0.0.0
     "@webiny/utils": 0.0.0
-    rimraf: ^5.0.5
+    rimraf: ^3.0.2
     ttypescript: ^1.5.13
     type-fest: ^2.19.0
     typescript: 4.7.4
@@ -15593,10 +15593,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es"
   dependencies:
-    "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
-    "@babel/runtime": ^7.23.9
+    "@babel/cli": ^7.22.6
+    "@babel/core": ^7.22.8
+    "@babel/preset-env": ^7.22.7
+    "@babel/runtime": ^7.22.6
     "@elastic/elasticsearch": 7.12.0
     "@types/jsonpack": ^1.1.0
     "@webiny/api": 0.0.0
@@ -15621,12 +15621,12 @@ __metadata:
     "@webiny/tasks": 0.0.0
     "@webiny/utils": 0.0.0
     dataloader: ^2.0.0
-    jest: ^29.7.0
+    jest: ^29.5.0
     jest-dynalite: ^3.2.0
     jsonpack: ^1.1.5
-    lodash: 4.17.21
+    lodash: ^4.17.21
     prettier: ^2.8.3
-    rimraf: ^5.0.5
+    rimraf: ^3.0.2
     sinon: ^9.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -33095,7 +33095,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:^29.7.0":
+"jest@npm:^29.5.0, jest@npm:^29.7.0":
   version: 29.7.0
   resolution: "jest@npm:29.7.0"
   dependencies:
