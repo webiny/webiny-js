@@ -7,7 +7,7 @@ import { PbPageData } from "~/types";
 import { useDeletePage } from "~/admin/views/Pages/hooks/useDeletePage";
 import { useFolders } from "@webiny/app-aco";
 
-interface DeletePageProps {
+export interface DeletePageProps {
     page: PbPageData;
     onDelete?: () => void;
 }

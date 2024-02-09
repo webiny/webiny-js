@@ -5,9 +5,12 @@ import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { usePage } from "~/pageEditor/hooks/usePage";
 import { createComponentPlugin } from "@webiny/react-composition";
-import { PageOptionsMenu, PageOptionsMenuItem } from "~/pageEditor";
+import { PageOptionsMenu } from "~/pageEditor";
 import { useConfirmationDialog } from "@webiny/app-admin";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
+import { MenuItem } from "@webiny/ui/Menu";
+import { ListItemGraphic } from "@webiny/ui/List";
+import { Icon } from "@webiny/ui/Icon";
 
 export const SetAsHomepageButtonPlugin = createComponentPlugin(PageOptionsMenu, Original => {
     return function SetAsHomepageButton({ items, ...props }) {
@@ -67,12 +70,17 @@ export const SetAsHomepageButtonPlugin = createComponentPlugin(PageOptionsMenu, 
             setTimeout(() => showSnackbar("New homepage set successfully!"), 500);
         }, [page.id]);
 
-        const setAsHomepageItem: PageOptionsMenuItem = {
-            label: "Set as homepage",
-            icon: <HomeIcon />,
-            onClick: () => showConfirmation(setPageAsHomepage),
-            disabled: isSpecialPage(page.pid!, "home")
-        };
+        const setAsHomepageItem = (
+            <MenuItem
+                onClick={() => showConfirmation(setPageAsHomepage)}
+                disabled={isSpecialPage(page.pid!, "home")}
+            >
+                <ListItemGraphic>
+                    <Icon icon={<HomeIcon />} />
+                </ListItemGraphic>
+                Set as homepage
+            </MenuItem>
+        );
 
         return <Original {...props} items={[setAsHomepageItem, ...items]} />;
     };
