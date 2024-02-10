@@ -58,7 +58,6 @@ import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entr
 import { getSearchableFields } from "./contentEntry/searchableFields";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { filterAsync } from "~/utils/filterAsync";
-import { NotAuthorizedError } from "@webiny/api-security";
 import { isEntryLevelEntryMetaField, pickEntryMetaFields } from "~/constants";
 import {
     createEntryData,

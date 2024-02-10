@@ -14,7 +14,7 @@ export interface AccessControlParams {
     getGroupsPermissions: () => CmsGroupPermission[] | Promise<CmsGroupPermission[]>;
     getModelsPermissions: () => CmsModelPermission[] | Promise<CmsModelPermission[]>;
     getEntriesPermissions: () => CmsEntryPermission[] | Promise<CmsEntryPermission[]>;
-    listAllGroups: () => CmsGroup[] | Promise<CmsGroup[]>;
+    listAllGroups: () => Promise<CmsGroup[]>;
 }
 
 interface GetGroupsAccessControlListParams {
@@ -65,10 +65,7 @@ export class AccessControl {
     listAllGroupsCallback: AccessControlParams["listAllGroups"];
 
     private fullAccessPermissions: string[];
-    private allGroups: {
-        loaded: boolean;
-        groups: CmsGroup[];
-    };
+    private allGroups: null | CmsGroup[] | Promise<CmsGroup[]>;
 
     constructor({
         getIdentity,
@@ -83,7 +80,7 @@ export class AccessControl {
         this.getEntriesPermissions = getEntriesPermissions;
         this.fullAccessPermissions = ["*", "cms.*"];
         this.listAllGroupsCallback = listAllGroups;
-        this.allGroups = { loaded: false, groups: [] };
+        this.allGroups = null;
     }
 
     /**
@@ -169,6 +166,7 @@ export class AccessControl {
                     }
 
                     const identity = await this.getIdentity();
+
                     if (modelGroupCreatedBy.id !== identity.id) {
                         continue;
                     }
@@ -659,13 +657,11 @@ export class AccessControl {
     }
 
     async listAllGroups(): Promise<CmsGroup[]> {
-        if (this.allGroups.loaded) {
-            return this.allGroups.groups;
+        if (this.allGroups === null) {
+            this.allGroups = this.listAllGroupsCallback();
         }
 
-        this.allGroups.loaded = true;
-        this.allGroups.groups = await this.listAllGroupsCallback();
-        return this.allGroups.groups;
+        return this.allGroups;
     }
 
     async getGroup(id: string): Promise<CmsGroup | undefined> {
