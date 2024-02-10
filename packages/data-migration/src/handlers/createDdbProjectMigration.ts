@@ -38,6 +38,7 @@ export const createDdbProjectMigration = ({
     return createRawEventHandler<MigrationEventPayload, any, MigrationEventHandlerResponse>(
         async ({ payload, lambdaContext }) => {
             const projectVersion = String(payload?.version || process.env.WEBINY_VERSION);
+            const forceExecute = payload.force === true;
 
             const version = semverCoerce(projectVersion);
             if (version?.version === "0.0.0") {
@@ -78,7 +79,11 @@ export const createDdbProjectMigration = ({
                 });
 
                 if (payload.command === "execute") {
-                    await runner.execute(projectVersion, patternMatcher || isMigrationApplicable);
+                    await runner.execute(
+                        projectVersion,
+                        patternMatcher || isMigrationApplicable,
+                        forceExecute
+                    );
                     return;
                 }
 

@@ -1,32 +1,38 @@
 import React from "react";
-import { MenuItem } from "@webiny/ui/Menu";
-import { ListItemGraphic } from "@webiny/ui/List";
-import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as PreviewIcon } from "~/admin/assets/visibility.svg";
-import { PbPageRevision } from "~/types";
 import { makeComposable } from "@webiny/app-admin";
+import { useRevision } from "~/admin/plugins/pageDetails/pageRevisions/RevisionsList";
+import { DefaultPreviewRevision } from "./PreviewRevision/DefaultPreviewRevision";
+import { PreviewRevisionMenuItem } from "./PreviewRevision/PreviewRevisionMenuItem";
 
-export interface PreviewRevisionMenuOptionProps {
-    revision: PbPageRevision;
-    previewRevision: () => void;
+export interface PreviewRevisionProps {
+    icon?: React.ReactElement;
+    label?: React.ReactNode;
+    onClick?: () => void;
 }
-
-export const PageRevisionPreviewRevisionMenuOption = (props: PreviewRevisionMenuOptionProps) => {
-    const { revision, previewRevision } = props;
-
-    const previewButtonLabel = revision.status === "published" ? "View" : "Preview";
-
-    return (
-        <MenuItem onClick={previewRevision}>
-            <ListItemGraphic>
-                <Icon icon={<PreviewIcon />} />
-            </ListItemGraphic>
-            {previewButtonLabel}
-        </MenuItem>
-    );
-};
 
 export const PreviewRevisionMenuOption = makeComposable(
     "PreviewRevisionMenuOption",
-    PageRevisionPreviewRevisionMenuOption
+    (props: PreviewRevisionProps) => {
+        const { revision } = useRevision();
+
+        const previewButtonLabel = revision.status === "published" ? "View" : "Preview";
+
+        if (!props.onClick) {
+            return (
+                <DefaultPreviewRevision
+                    label={props.label ?? previewButtonLabel}
+                    icon={props.icon ?? <PreviewIcon />}
+                />
+            );
+        }
+
+        return (
+            <PreviewRevisionMenuItem
+                icon={props.icon ?? <PreviewIcon />}
+                onClick={props.onClick}
+                label={props.label ?? previewButtonLabel}
+            />
+        );
+    }
 );

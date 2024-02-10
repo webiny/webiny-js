@@ -3,33 +3,30 @@ import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as PublishIcon } from "~/admin/assets/round-publish-24px.svg";
-import { PbPageData, PbPageRevision } from "~/types";
+import { PbPageRevision } from "~/types";
 import { makeComposable } from "@webiny/app-admin";
+import { useRevision } from "../RevisionsList";
 
 export interface PublishPageMenuOptionProps {
-    revision: PbPageRevision;
-    page: PbPageData;
-    publishRevision: (revision: PbPageRevision) => void;
+    onClick: (revision: PbPageRevision) => void;
 }
-
-export const PageRevisionPublishPageMenuOption = (props: PublishPageMenuOptionProps) => {
-    const { revision, publishRevision } = props;
-
-    if (revision.status === "published") {
-        return null;
-    }
-
-    return (
-        <MenuItem onClick={() => publishRevision(revision)}>
-            <ListItemGraphic>
-                <Icon icon={<PublishIcon />} />
-            </ListItemGraphic>
-            Publish
-        </MenuItem>
-    );
-};
 
 export const PublishPageMenuOption = makeComposable(
     "PublishPageMenuOption",
-    PageRevisionPublishPageMenuOption
+    (props: PublishPageMenuOptionProps) => {
+        const { revision } = useRevision();
+
+        if (revision.status === "published") {
+            return null;
+        }
+
+        return (
+            <MenuItem onClick={() => props.onClick(revision)}>
+                <ListItemGraphic>
+                    <Icon icon={<PublishIcon />} />
+                </ListItemGraphic>
+                Publish
+            </MenuItem>
+        );
+    }
 );

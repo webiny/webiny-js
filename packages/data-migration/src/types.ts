@@ -71,6 +71,7 @@ export interface MigrationEventPayload {
     command: "status" | "execute";
     version?: string;
     pattern?: string;
+    force?: boolean;
 }
 
 export type MigrationEventHandlerResponse =

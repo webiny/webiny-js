@@ -3,9 +3,10 @@ import { usePagesPermissions } from "~/hooks/permissions";
 import { useFolders } from "@webiny/app-aco";
 
 import { PublishPageMenuOptionProps, PublishPageMenuOption } from "./PublishPageMenuOption";
+import { usePage } from "~/admin/views/Pages/PageDetails";
 
 export const SecurePublishPageMenuOption = (props: PublishPageMenuOptionProps) => {
-    const { page } = props;
+    const { page } = usePage();
     const { canPublish: pagesCanPublish } = usePagesPermissions();
     const { folderLevelPermissions: flp } = useFolders();
 

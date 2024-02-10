@@ -5,3 +5,4 @@ export * from "./useKeyHandler";
 export * from "./useShiftKey";
 export * from "./useModKey";
 export * from "./useIsMounted";
+export * from "./createGenericContext";
