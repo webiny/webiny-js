@@ -54,8 +54,12 @@ export class FormBuilder_5_40_0_001_FormStats implements DataMigration<Migration
         return "";
     }
 
-    async shouldExecute({ logger, checkpoint }: DataMigrationContext): Promise<boolean> {
-        if (checkpoint) {
+    async shouldExecute({
+        logger,
+        checkpoint,
+        forceExecute
+    }: DataMigrationContext): Promise<boolean> {
+        if (checkpoint || forceExecute) {
             return true;
         }
 
