@@ -1,26 +1,29 @@
 import { Configuration as WebpackConfig } from "webpack";
 
+export { WebpackConfig };
+
 // Build commands.
 export type BuildCommand<TOptions = Record<string, any>> = (options: TOptions) => Promise<void>;
 
-interface BabelConfig {
+export interface BabelConfig {
     [key: string]: any;
 }
 
-interface DefinePluginOptions {
+export interface DefinePluginOptions {
     [key: string]: any;
 }
 
+export interface BuildAppConfigOverrides {
+    entry?: string;
+    openBrowser?: boolean;
+    webpack?: (config: WebpackConfig) => WebpackConfig;
+    babel?: (config: BabelConfig) => BabelConfig;
+}
 // Build commands - apps.
-interface BuildAppConfig {
+export interface BuildAppConfig {
     cwd: string;
     openBrowser?: boolean;
-    overrides?: {
-        entry?: string;
-        openBrowser?: boolean;
-        webpack?: (config: WebpackConfig) => WebpackConfig;
-        babel?: (config: BabelConfig) => BabelConfig;
-    };
+    overrides?: BuildAppConfigOverrides;
 }
 
 export function createBuildApp(options: BuildAppConfig): BuildCommand;

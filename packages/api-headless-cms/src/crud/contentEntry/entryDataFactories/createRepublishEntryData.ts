@@ -2,6 +2,8 @@ import { CmsContext, CmsEntry, CmsModel } from "~/types";
 import { referenceFieldsMapping } from "~/crud/contentEntry/referenceFieldsMapping";
 import { STATUS_PUBLISHED } from "./statuses";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import { getIdentity } from "~/utils/identity";
+import { getDate } from "~/utils/date";
 
 type CreateRepublishEntryDataParams = {
     model: CmsModel;
@@ -35,26 +37,29 @@ export const createRepublishEntryData = async ({
         /**
          * Entry-level meta fields. 👇
          */
-        savedOn: currentDateTime,
-        modifiedOn: currentDateTime,
-        savedBy: currentIdentity,
-        modifiedBy: currentIdentity,
-        firstPublishedOn: originalEntry.firstPublishedOn || currentDateTime,
-        firstPublishedBy: originalEntry.firstPublishedBy || currentIdentity,
-        lastPublishedOn: currentDateTime,
-        lastPublishedBy: currentIdentity,
+        savedOn: getDate(currentDateTime),
+        modifiedOn: getDate(currentDateTime),
+        savedBy: getIdentity(currentIdentity),
+        modifiedBy: getIdentity(currentIdentity),
+        firstPublishedOn: getDate(originalEntry.firstPublishedOn, currentDateTime),
+        firstPublishedBy: getIdentity(originalEntry.firstPublishedBy, currentIdentity),
+        lastPublishedOn: getDate(currentDateTime),
+        lastPublishedBy: getIdentity(currentIdentity),
 
         /**
          * Revision-level meta fields. 👇
          */
-        revisionSavedOn: currentDateTime,
-        revisionModifiedOn: currentDateTime,
-        revisionSavedBy: currentIdentity,
-        revisionModifiedBy: currentIdentity,
-        revisionFirstPublishedOn: originalEntry.revisionFirstPublishedOn || currentDateTime,
-        revisionFirstPublishedBy: originalEntry.revisionFirstPublishedBy || currentIdentity,
-        revisionLastPublishedOn: currentDateTime,
-        revisionLastPublishedBy: currentIdentity,
+        revisionSavedOn: getDate(currentDateTime),
+        revisionModifiedOn: getDate(currentDateTime),
+        revisionSavedBy: getIdentity(currentIdentity),
+        revisionModifiedBy: getIdentity(currentIdentity),
+        revisionFirstPublishedOn: getDate(originalEntry.revisionFirstPublishedOn, currentDateTime),
+        revisionFirstPublishedBy: getIdentity(
+            originalEntry.revisionFirstPublishedBy,
+            currentIdentity
+        ),
+        revisionLastPublishedOn: getDate(currentDateTime),
+        revisionLastPublishedBy: getIdentity(currentIdentity),
 
         webinyVersion: context.WEBINY_VERSION,
         values

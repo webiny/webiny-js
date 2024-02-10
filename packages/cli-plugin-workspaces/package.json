@@ -13,7 +13,7 @@
     "@webiny/project-utils": "0.0.0",
     "archy": "1.0.0",
     "chalk": "4.1.2",
-    "execa": "5.0.0",
+    "execa": "^5.0.0",
     "graphlib": "2.1.8",
     "multimatch": "5.0.0",
     "p-map": "^4.0.0",

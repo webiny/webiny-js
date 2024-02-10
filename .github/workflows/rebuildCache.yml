@@ -25,19 +25,19 @@ jobs:
     runs-on: ubuntu-latest
     needs: cache-keys
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: cached-packages
         with:
           path: .webiny/cached-packages
@@ -54,21 +54,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: cache-keys
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: next
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('next/**/yarn.lock') }}
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: cached-packages
         with:
           path: next/.webiny/cached-packages

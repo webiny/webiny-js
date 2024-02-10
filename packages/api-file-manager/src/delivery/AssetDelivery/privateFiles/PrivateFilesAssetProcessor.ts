@@ -1,12 +1,13 @@
+import { NotFoundError } from "@webiny/handler-graphql";
 import { File, FileManagerContext } from "~/types";
 import { Asset, AssetProcessor, AssetRequest } from "~/delivery";
 import { AssetAuthorizer } from "./AssetAuthorizer";
 import { NotAuthorizedOutputStrategy } from "./NotAuthorizedOutputStrategy";
-import { internalIdentity } from "./internalIdentity";
 import { RedirectToPublicUrlOutputStrategy } from "./RedirectToPublicUrlOutputStrategy";
 import { RedirectToPrivateUrlOutputStrategy } from "./RedirectToPrivateUrlOutputStrategy";
 import { PrivateCache } from "./PrivateCache";
 import { PublicCache } from "./PublicCache";
+import { entryFromStorageTransform } from "@webiny/api-headless-cms";
 
 interface MaybePrivate {
     private?: boolean;
@@ -29,12 +30,9 @@ export class PrivateFilesAssetProcessor implements AssetProcessor {
 
     async process(assetRequest: AssetRequest, asset: Asset): Promise<Asset> {
         const id = asset.getId();
-        const { security } = this.context;
 
         // Get file from File Manager by `id`.
-        const file = await security.withIdentity(internalIdentity, () => {
-            return security.withoutAuthorization(() => this.context.fileManager.getFile(id));
-        });
+        const file = await this.getFileById(id);
 
         const isPrivateFile = this.isPrivate(file);
 
@@ -47,6 +45,8 @@ export class PrivateFilesAssetProcessor implements AssetProcessor {
             asset.setOutputStrategy(new RedirectToPrivateUrlOutputStrategy(assetRequest));
             return asset;
         }
+
+        console.log("file", file);
 
         try {
             await this.assetAuthorizer.authorize(file);
@@ -63,6 +63,35 @@ export class PrivateFilesAssetProcessor implements AssetProcessor {
         });
 
         return processedAsset;
+    }
+
+    /**
+     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     * This method performs a very awkward data loading and type cast which should be removed as soon as we resolve the FLP issue!
+     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     */
+    private async getFileById(id: string): Promise<File> {
+        const model = await this.context.security.withoutAuthorization(() => {
+            return this.context.cms.getModel("fmFile");
+        });
+
+        if (!model) {
+            throw new NotFoundError("File model not found!");
+        }
+
+        const entries = this.context.cms.storageOperations.entries;
+
+        const storageEntry = await entries.getLatestRevisionByEntryId(model, {
+            id
+        });
+
+        if (!storageEntry) {
+            throw new NotFoundError("File not found!");
+        }
+
+        const file = await entryFromStorageTransform(this.context, model, storageEntry);
+
+        return file.values as unknown as File;
     }
 
     private isPrivate(file: File) {

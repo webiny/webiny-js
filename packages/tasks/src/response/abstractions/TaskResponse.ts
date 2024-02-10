@@ -53,6 +53,6 @@ export interface ITaskResponse<
 > {
     done: (message?: string, output?: O) => ITaskResponseDoneResult<O>;
     continue: (data: T, options?: ITaskResponseContinueOptions) => ITaskResponseContinueResult<T>;
-    error: (error: IResponseError | Error) => ITaskResponseErrorResult;
+    error: (error: IResponseError | Error | string) => ITaskResponseErrorResult;
     aborted: () => ITaskResponseAbortedResult;
 }
