@@ -193,7 +193,6 @@ export class AccessControl {
                         continue;
                     }
 
-
                     // TREBA OVO ISTGO DOLJE ?!?!?!
                     if (!groups[group.locale].includes(group.id)) {
                         continue;
@@ -463,7 +462,6 @@ export class AccessControl {
         const canAccess = await this.canAccessEntry(params);
         if (!canAccess) {
             if (params.entry) {
-
                 throw new NotAuthorizedError({
                     data: {
                         reason: `Not allowed to access entry "${params.entry.entryId}".`

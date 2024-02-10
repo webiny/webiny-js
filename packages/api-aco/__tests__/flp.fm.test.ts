@@ -10,7 +10,7 @@ const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" }
 const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" };
 const identityC: SecurityIdentity = { id: "3", type: "admin", displayName: "C" };
 
-const expectNotAuthorized = async (promise: Promise<any>, data: Record<string,any> = null) => {
+const expectNotAuthorized = async (promise: Promise<any>, data: Record<string, any> = null) => {
     await expect(promise).resolves.toEqual({
         data: null,
         error: {

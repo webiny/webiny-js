@@ -62,13 +62,14 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
 
             const accessControl = new AccessControl({
                 getIdentity: context.security.getIdentity,
-                getGroupsPermissions: () => context.security.getPermissions("cms.contentModelGroup"),
+                getGroupsPermissions: () =>
+                    context.security.getPermissions("cms.contentModelGroup"),
                 getModelsPermissions: () => context.security.getPermissions("cms.contentModel"),
                 getEntriesPermissions: () => context.security.getPermissions("cms.contentEntry"),
                 listAllGroups: () => {
                     return context.security.withoutAuthorization(() => {
                         return context.cms.listGroups();
-                    })
+                    });
                 }
             });
 
@@ -94,7 +95,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                     getLocale,
                     getIdentity,
                     storageOperations,
-                    accessControl,
+                    accessControl
                 }),
                 ...createModelsCrud({
                     context,
@@ -102,7 +103,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                     getTenant,
                     getIdentity,
                     storageOperations,
-                    accessControl,
+                    accessControl
                 }),
                 ...createContentEntryCrud({
                     context,
@@ -110,7 +111,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                     getTenant,
                     getLocale,
                     storageOperations,
-                    accessControl,
+                    accessControl
                 }),
                 export: {
                     ...createExportCrud(context)
