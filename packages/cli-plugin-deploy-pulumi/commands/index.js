@@ -314,6 +314,12 @@ module.exports = [
                         type: "string",
                         required: true
                     });
+
+                    yargs.option("force", {
+                        describe: `!!USE WITH CAUTION!! Force execution of the migrations.`,
+                        type: "boolean",
+                        default: false
+                    });
                 },
                 async argv => {
                     await require("./executeMigrations")(argv, context);

@@ -24,7 +24,7 @@ export const checkEsServiceRole = {
             // We've seen cases where the `iam.getRole` call fails because of an issue
             // other than not being able to retrieve the service role. Let's print
             // additional info if that's the case. Will make debugging a bit easier.
-            if (err.code !== NO_SUCH_ENTITY_IAM_ERROR) {
+            if (err.Error.Code !== NO_SUCH_ENTITY_IAM_ERROR) {
                 spinner.fail(
                     "Tried retrieving Amazon Elasticsearch service role but failed with the following error: " +
                         err.message

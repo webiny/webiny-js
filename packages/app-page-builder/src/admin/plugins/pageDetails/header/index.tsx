@@ -32,8 +32,8 @@ const plugins: PbPageDetailsPlugin[] = [
     {
         name: "pb-page-details-header-publish",
         type: "pb-page-details-header-right",
-        render(props) {
-            return <PublishRevision {...props} />;
+        render() {
+            return <PublishRevision />;
         }
     },
     {

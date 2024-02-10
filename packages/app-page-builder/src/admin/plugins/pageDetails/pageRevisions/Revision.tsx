@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { css } from "emotion";
 import { TimeAgo } from "@webiny/ui/TimeAgo";
 import {
@@ -12,24 +12,17 @@ import { IconButton } from "@webiny/ui/Button";
 import { Menu } from "@webiny/ui/Menu";
 import { ReactComponent as MoreVerticalIcon } from "~/admin/assets/more_vert.svg";
 import { useRevisionHandlers } from "./useRevisionHandlers";
-import { useConfigureWebsiteUrlDialog } from "~/admin/hooks/useConfigureWebsiteUrl";
-import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
-import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
-import { PbPageData, PbPageRevision } from "~/types";
 import {
+    PreviewRevisionMenuOption,
     SecureDeleteRevisionMenuOption,
     SecureEditRevisionMenuOption,
     SecureNewRevisionFromCurrent,
-    PreviewRevisionMenuOption,
     SecurePublishPageMenuOption,
     SecureUnpublishPageMenuOption
 } from "./MenuOptions";
 import { PageRevisionListItemGraphic } from "./PageRevisionListItemGraphic";
-
-type RevisionProps = {
-    revision: PbPageRevision;
-    page: PbPageData;
-};
+import { usePage } from "~/admin/views/Pages/PageDetails";
+import { useRevision } from "./RevisionsList";
 
 const revisionsMenu = css({
     width: 250,
@@ -37,9 +30,9 @@ const revisionsMenu = css({
     left: "auto !important"
 });
 
-const Revision = ({ revision, page }: RevisionProps) => {
-    const { getWebsiteUrl, getPageUrl } = usePageBuilderSettings();
-    const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
+export const Revision = () => {
+    const { page } = usePage();
+    const { revision } = useRevision();
 
     const { deleteRevision, createRevision, publishRevision, unpublishRevision, editRevision } =
         useRevisionHandlers({
@@ -47,26 +40,9 @@ const Revision = ({ revision, page }: RevisionProps) => {
             page
         });
 
-    const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(
-        getWebsiteUrl(),
-        refreshSiteStatus
-    );
-
-    // We must prevent opening in new tab - Cypress doesn't work with new tabs.
-    const target = "Cypress" in window ? "_self" : "_blank";
-    const url = getPageUrl({ id: revision.id, status: revision.status, path: page.path });
-
-    const handlePreviewClick = useCallback(() => {
-        if (isSiteRunning) {
-            window.open(url, target, "noopener");
-        } else {
-            showConfigureWebsiteUrlDialog();
-        }
-    }, [url, isSiteRunning]);
-
     return (
         <ListItem>
-            <PageRevisionListItemGraphic revision={revision} />
+            <PageRevisionListItemGraphic />
             <ListItemText>
                 <ListItemTextPrimary>{revision.title}</ListItemTextPrimary>
                 <ListItemTextSecondary>
@@ -82,25 +58,16 @@ const Revision = ({ revision, page }: RevisionProps) => {
                         revision={revision}
                         editRevision={editRevision}
                     />
-                    <SecurePublishPageMenuOption
-                        page={page}
-                        revision={revision}
-                        publishRevision={publishRevision}
-                    />
+                    <SecurePublishPageMenuOption onClick={publishRevision} />
                     <SecureUnpublishPageMenuOption
                         page={page}
                         revision={revision}
                         unpublishRevision={unpublishRevision}
                     />
-                    <PreviewRevisionMenuOption
-                        revision={revision}
-                        previewRevision={handlePreviewClick}
-                    />
+                    <PreviewRevisionMenuOption />
                     <SecureDeleteRevisionMenuOption page={page} deleteRevision={deleteRevision} />
                 </Menu>
             </ListItemMeta>
         </ListItem>
     );
 };
-
-export default Revision;

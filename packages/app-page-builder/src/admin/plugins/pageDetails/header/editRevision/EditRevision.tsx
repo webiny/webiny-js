@@ -14,7 +14,7 @@ import { useFolders } from "@webiny/app-aco";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/edit");
 
-interface EditRevisionProps {
+export interface EditRevisionProps {
     page: PbPageData;
 }
 

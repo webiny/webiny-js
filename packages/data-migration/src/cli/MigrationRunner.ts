@@ -18,6 +18,7 @@ interface MigrationRunnerConfig {
 interface MigrationPayload {
     version: string;
     pattern?: string;
+    force?: boolean;
 }
 
 interface SuccessResultHandler {
