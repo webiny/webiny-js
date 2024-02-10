@@ -5,9 +5,12 @@ import { CmsContext } from "~/types";
 export interface PermissionsArg {
     name: string;
     locales?: string[];
+    models?: Record<string, any>;
+    groups?: Record<string, any>;
     rwd?: string;
     pw?: string;
     own?: boolean;
+    _src?: string;
 }
 
 export const identity = {

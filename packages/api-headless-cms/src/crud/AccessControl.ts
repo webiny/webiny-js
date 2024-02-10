@@ -183,12 +183,19 @@ export class AccessControl {
 
             if (groupsPermissions.groups) {
                 if ("group" in params) {
-                    const { groups } = groupsPermissions;
-                    if (!Array.isArray(groups)) {
+                    const { group } = params;
+                    if (!group) {
                         continue;
                     }
 
-                    if (!groups.includes(params.group?.id)) {
+                    const { groups } = groupsPermissions;
+                    if (!Array.isArray(groups[group.locale])) {
+                        continue;
+                    }
+
+
+                    // TREBA OVO ISTGO DOLJE ?!?!?!
+                    if (!groups[group.locale].includes(group.id)) {
                         continue;
                     }
                 }
@@ -456,6 +463,7 @@ export class AccessControl {
         const canAccess = await this.canAccessEntry(params);
         if (!canAccess) {
             if (params.entry) {
+
                 throw new NotAuthorizedError({
                     data: {
                         reason: `Not allowed to access entry "${params.entry.entryId}".`
@@ -571,11 +579,11 @@ export class AccessControl {
             }
 
             if (relatedModelsPermissions.models) {
-                if (!Array.isArray(relatedModelsPermissions[model.locale])) {
+                if (!Array.isArray(relatedModelsPermissions.models[model.locale])) {
                     continue;
                 }
 
-                if (!relatedModelsPermissions[model.locale].includes(model.group.id)) {
+                if (!relatedModelsPermissions.models[model.locale].includes(model.modelId)) {
                     continue;
                 }
             }
@@ -620,7 +628,7 @@ export class AccessControl {
             }
 
             acl.push({
-                rwd: relatedModelsPermissions.rwd,
+                rwd: relatedEntriesPermissions.rwd,
                 canAccessNonOwned: true,
                 canAccessOnlyOwned: false,
                 pw: relatedEntriesPermissions.pw

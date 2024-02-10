@@ -71,9 +71,7 @@ export class PrivateFilesAssetProcessor implements AssetProcessor {
      * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      */
     private async getFileById(id: string): Promise<File> {
-        const model = await this.context.security.withoutAuthorization(() => {
-            return this.context.cms.getModel("fmFile");
-        });
+        const model = await this.context.cms.getModel("fmFile");
 
         if (!model) {
             throw new NotFoundError("File model not found!");

@@ -112,6 +112,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                         webinyVersion: context.WEBINY_VERSION
                     };
                 }) as unknown as CmsModel[];
+
             return filterAsync(models, async model => {
                 return accessControl.canAccessModel({ model });
             });
