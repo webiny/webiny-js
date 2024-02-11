@@ -1,8 +1,13 @@
 import * as React from "react";
-import { Compose, HigherOrderComponent, makeComposable } from "@webiny/react-composition";
+import {
+    Compose,
+    GenericComponent,
+    GenericDecorator,
+    makeDecoratable
+} from "@webiny/react-composition";
 
 const createHOC =
-    (newChildren: React.ReactNode): HigherOrderComponent =>
+    (newChildren: React.ReactNode): GenericDecorator<GenericComponent> =>
     BaseComponent => {
         return function ConfigHOC({ children }) {
             return (
@@ -18,7 +23,7 @@ export function createConfigPortal(name: string) {
     /**
      * This component is used when we want to mount all composed configs.
      */
-    const ConfigApply = makeComposable(`${name}ConfigApply`, ({ children }) => {
+    const ConfigApply = makeDecoratable(`${name}ConfigApply`, ({ children }) => {
         return <>{children}</>;
     });
 

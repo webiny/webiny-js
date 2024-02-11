@@ -1,5 +1,5 @@
 import React from "react";
-import { createComponentPlugin, makeComposable } from "@webiny/react-composition";
+import { createComponentPlugin, makeDecoratable } from "@webiny/react-composition";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";
@@ -8,7 +8,7 @@ import { usePage } from "~/pageEditor/hooks/usePage";
 import { PageOptionsMenu } from "~/pageEditor";
 import { usePreviewPage } from "~/admin/hooks/usePreviewPage";
 
-export const PreviewPage = makeComposable("PreviewPage", () => {
+export const PreviewPage = makeDecoratable("PreviewPage", () => {
     const [page] = usePage();
     const { previewPage } = usePreviewPage({
         id: page.id,

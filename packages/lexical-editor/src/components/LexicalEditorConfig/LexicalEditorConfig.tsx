@@ -1,16 +1,21 @@
 import React, { useContext, useMemo, useState } from "react";
-import { makeComposable, Compose, HigherOrderComponent } from "@webiny/react-composition";
+import {
+    makeDecoratable,
+    Compose,
+    GenericDecorator,
+    GenericComponent
+} from "@webiny/react-composition";
 import { Property, Properties, toObject } from "@webiny/react-properties";
 import { ToolbarElement, ToolbarElementConfig } from "./components/ToolbarElement";
 import { Plugin, PluginConfig } from "./components/Plugin";
 import { Node, NodeConfig } from "./components/Node";
 
-const LexicalEditorConfigApply = makeComposable("LexicalEditorConfigApply", ({ children }) => {
+const LexicalEditorConfigApply = makeDecoratable("LexicalEditorConfigApply", ({ children }) => {
     return <>{children}</>;
 });
 
 const createHOC =
-    (newChildren: React.ReactNode): HigherOrderComponent =>
+    (newChildren: React.ReactNode): GenericDecorator<GenericComponent> =>
     BaseComponent => {
         return function ConfigHOC({ children }) {
             return (

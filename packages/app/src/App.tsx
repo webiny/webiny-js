@@ -8,7 +8,12 @@ import React, {
     ReactElement
 } from "react";
 import { BrowserRouter, RouteProps, Route } from "@webiny/react-router";
-import { compose, HigherOrderComponent, CompositionProvider } from "@webiny/react-composition";
+import {
+    CompositionProvider,
+    GenericComponent,
+    compose,
+    GenericDecorator
+} from "@webiny/react-composition";
 import { Routes as SortRoutes } from "./core/Routes";
 import { DebounceRender } from "./core/DebounceRender";
 import { PluginsProvider } from "./core/Plugins";
@@ -20,12 +25,12 @@ type RoutesByPath = {
 interface State {
     routes: RoutesByPath;
     plugins: JSX.Element[];
-    providers: HigherOrderComponent[];
+    providers: GenericDecorator<GenericComponent<ProviderProps>>[];
 }
 
 interface AppContext extends State {
     addRoute(route: JSX.Element): void;
-    addProvider(hoc: HigherOrderComponent): void;
+    addProvider(hoc: GenericDecorator<GenericComponent<ProviderProps>>): void;
     addPlugin(plugin: React.ReactNode): void;
 }
 
@@ -46,8 +51,12 @@ export const useApp = () => {
 export interface AppProps {
     debounceRender?: number;
     routes?: Array<RouteProps>;
-    providers?: Array<HigherOrderComponent>;
+    providers?: Array<GenericDecorator<GenericComponent<ProviderProps>>>;
     children?: React.ReactNode | React.ReactNode[];
+}
+
+interface ProviderProps {
+    children: React.ReactNode;
 }
 
 export const App = ({ debounceRender = 50, routes = [], providers = [], children }: AppProps) => {
@@ -108,9 +117,9 @@ export const App = ({ debounceRender = 50, routes = [], providers = [], children
     }, [state.routes]);
 
     const Providers = useMemo(() => {
-        return compose(...(state.providers || []))(({ children }: any) => (
-            <DebounceRender wait={debounceRender}>{children}</DebounceRender>
-        ));
+        return compose(...(state.providers || []))(({ children }: ProviderProps) => {
+            return <DebounceRender wait={debounceRender}>{children}</DebounceRender>;
+        });
     }, [state.providers.length]);
 
     Providers.displayName = "Providers";

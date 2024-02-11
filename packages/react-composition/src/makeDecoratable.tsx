@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo } from "react";
-import { BaseFunction } from "./Compose";
 import { useComponent } from "./Context";
+import { DecoratableComponent, DecoratableHook, GenericComponent, GenericHook } from "~/types";
 
 const ComposableContext = createContext<string[]>([]);
 ComposableContext.displayName = "ComposableContext";
@@ -16,15 +16,9 @@ function useComposableParents() {
 
 const nullRenderer = () => null;
 
-export type DecoratableComponent<T = (props: any) => React.ReactNode> = T & {
-    displayName?: string;
-    original: T;
-    originalName: string;
-};
-
-function makeDecoratableComponent<T extends BaseFunction>(
+function makeDecoratableComponent<T extends GenericComponent>(
     name: string,
-    Component: T = nullRenderer as T
+    Component: T = nullRenderer as unknown as T
 ) {
     const Decoratable = (props: Parameters<T>[0]) => {
         const parents = useComposableParents();
@@ -46,7 +40,7 @@ function makeDecoratableComponent<T extends BaseFunction>(
     return Decoratable as DecoratableComponent<T>;
 }
 
-function makeDecoratableHook<T extends BaseFunction>(hook: T) {
+function makeDecoratableHook<T extends GenericHook>(hook: T) {
     const decoratableHook = (params: Parameters<T>) => {
         const composedHook = useComponent(hook);
 
@@ -58,12 +52,15 @@ function makeDecoratableHook<T extends BaseFunction>(hook: T) {
     return decoratableHook as DecoratableHook<T>;
 }
 
-export type DecoratableHook<T> = T & {
-    original: T;
-};
+export function createVoidComponent<T>() {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return (props: T): JSX.Element | null => {
+        return null;
+    };
+}
 
-export function makeDecoratable<T extends BaseFunction>(hook: T): DecoratableHook<T>;
-export function makeDecoratable<T extends BaseFunction>(
+export function makeDecoratable<T extends GenericHook>(hook: T): DecoratableHook<T>;
+export function makeDecoratable<T extends GenericHook>(
     name: string,
     Component: T
 ): DecoratableComponent<T>;

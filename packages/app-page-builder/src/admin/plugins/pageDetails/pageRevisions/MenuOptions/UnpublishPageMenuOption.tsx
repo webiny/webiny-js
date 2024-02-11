@@ -4,7 +4,7 @@ import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as UnpublishIcon } from "~/admin/assets/unpublish.svg";
 import { PbPageData, PbPageRevision } from "~/types";
-import { makeComposable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 
 export interface UnpublishPageMenuOptionProps {
     page: PbPageData;
@@ -29,7 +29,7 @@ export const PageRevisionUnpublishPageMenuOption = (props: UnpublishPageMenuOpti
     );
 };
 
-export const UnpublishPageMenuOption = makeComposable(
+export const UnpublishPageMenuOption = makeDecoratable(
     "UnpublishPageMenuOption",
     PageRevisionUnpublishPageMenuOption
 );

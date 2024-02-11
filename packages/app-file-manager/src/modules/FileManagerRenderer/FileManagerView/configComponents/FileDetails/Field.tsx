@@ -1,6 +1,6 @@
 import React from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
-import { makeComposable, createDecoratorFactory } from "@webiny/app-admin";
+import { makeDecoratable, createDecoratorFactory } from "@webiny/app-admin";
 
 export interface FieldConfig {
     name: string;
@@ -15,9 +15,9 @@ export interface FieldProps {
     after?: string;
 }
 
-const BaseField = makeComposable<FieldProps>(
+const BaseField = makeDecoratable(
     "Field",
-    ({ name, element, after = undefined, before = undefined, remove = false }) => {
+    ({ name, element, after = undefined, before = undefined, remove = false }: FieldProps) => {
         const getId = useIdGenerator("field");
         const placeAfter = after !== undefined ? getId(after) : undefined;
         const placeBefore = before !== undefined ? getId(before) : undefined;

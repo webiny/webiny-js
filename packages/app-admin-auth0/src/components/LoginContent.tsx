@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { makeComposable } from "@webiny/app-serverless-cms";
+import { makeDecoratable } from "@webiny/app-serverless-cms";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { alignCenter, Title } from "~/components/StyledComponents";
 import { Typography } from "@webiny/ui/Typography";
@@ -7,7 +7,7 @@ import { ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 import { ReactComponent as Auth0Icon } from "~/assets/icons/auth0-icon.svg";
 import { useAuth0 } from "@auth0/auth0-react";
 
-export const LoginContent = makeComposable("LoginContent", () => {
+export const LoginContent = makeDecoratable("LoginContent", () => {
     const { isAuthenticated, loginWithRedirect } = useAuth0();
 
     const login = useCallback(() => {

@@ -1,26 +1,22 @@
 import React from "react";
-import {
-    BaseFunction,
-    ComposableFC,
-    Compose,
-    DecoratableComponent,
-    DecoratableHook,
-    Decorator
-} from "./index";
+import { Compose, Decoratable, GenericDecorator } from "./index";
+import { DecoratableComponent, DecoratableHook } from "~/types";
 
-type GetBaseFunction<T> = T extends ComposableFC<infer F> ? F : never;
+type GetBaseFunction<T> = T extends DecoratableComponent<infer F> ? F : never;
 
 /**
  * Creates a component which, when mounted, registers a Higher Order Component for the given base component.
  * This is particularly useful for decorating (wrapping) existing composable components.
  * For more information, visit https://www.webiny.com/docs/admin-area/basics/framework.
  */
-export function createComponentPlugin<T extends ComposableFC<BaseFunction>>(
+export function createComponentPlugin<T extends Decoratable>(
     Base: T,
-    hoc: Decorator<GetBaseFunction<T>>
+    hoc: GenericDecorator<GetBaseFunction<T>>
 ) {
     const ComponentPlugin = () => <Compose component={Base} with={hoc as any} />;
-    ComponentPlugin.displayName = Base.displayName;
+    if ("displayName" in Base) {
+        ComponentPlugin.displayName = Base.displayName;
+    }
     return ComponentPlugin;
 }
 
@@ -33,14 +29,14 @@ export type GetDecoratee<T> = T extends DecoratableHook<infer F>
     : never;
 
 const isDecoratableComponent = (
-    decoratable: DecoratableComponent<unknown> | DecoratableHook<unknown>
-): decoratable is DecoratableComponent<unknown> => {
+    decoratable: DecoratableComponent | DecoratableHook
+): decoratable is DecoratableComponent => {
     return "displayName" in decoratable;
 };
 
-export function createDecorator<T extends DecoratableHook<unknown> | DecoratableComponent<unknown>>(
+export function createDecorator<T extends DecoratableHook | DecoratableComponent>(
     Base: T,
-    hoc: Decorator<GetDecoratee<T>>
+    hoc: GenericDecorator<GetDecoratee<T>>
 ) {
     const DecoratorPlugin = () => <Compose component={Base} with={hoc as any} />;
     if (isDecoratableComponent(Base)) {

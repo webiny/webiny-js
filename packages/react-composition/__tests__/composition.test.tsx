@@ -114,11 +114,12 @@ describe("Decoration of Hooks and Components", () => {
         }
     });
 
-    it("should apply conditional decorator", async () => {
+    it("should apply conditional component decorator", async () => {
         interface CreateDecoratorProps {
             name: string;
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const BaseComponent = makeDecoratable("BaseComponent", (_: BaseComponentProps) => {
             return <span>BaseComponent</span>;
         });
@@ -159,8 +160,8 @@ describe("Decoration of Hooks and Components", () => {
         {
             const view = (
                 <CompositionProvider>
-                    <DecorateBaseComponent name={"*"}/>
-                    <BaseComponent name="test"/>
+                    <DecorateBaseComponent name={"*"} />
+                    <BaseComponent name="test" />
                 </CompositionProvider>
             );
 
@@ -175,8 +176,8 @@ describe("Decoration of Hooks and Components", () => {
         {
             const view = (
                 <CompositionProvider>
-                    <DecorateBaseComponent name={"test"}/>
-                    <BaseComponent name={"test"}/>
+                    <DecorateBaseComponent name={"test"} />
+                    <BaseComponent name={"test"} />
                 </CompositionProvider>
             );
 
@@ -191,16 +192,14 @@ describe("Decoration of Hooks and Components", () => {
         {
             const view = (
                 <CompositionProvider>
-                    <DecorateBaseComponent name={"mismatch"}/>
-                    <BaseComponent name={"test"}/>
+                    <DecorateBaseComponent name={"mismatch"} />
+                    <BaseComponent name={"test"} />
                 </CompositionProvider>
             );
 
             const { container } = render(view);
 
-            await waitFor(() =>
-                expect(container.innerHTML).toEqual("<span>BaseComponent</span>")
-            );
+            await waitFor(() => expect(container.innerHTML).toEqual("<span>BaseComponent</span>"));
         }
     });
 });

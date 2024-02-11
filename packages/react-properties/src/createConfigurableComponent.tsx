@@ -1,9 +1,12 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { Compose, HigherOrderComponent, makeComposable } from "@webiny/react-composition";
+import { Compose, GenericDecorator, makeDecoratable } from "@webiny/react-composition";
 import { Property, Properties, toObject } from "~/index";
+import { GenericComponent } from "@webiny/react-composition/types";
 
 const createHOC =
-    (newChildren: React.ReactNode): HigherOrderComponent =>
+    (
+        newChildren: React.ReactNode
+    ): GenericDecorator<GenericComponent<{ children?: React.ReactNode }>> =>
     BaseComponent => {
         return function ConfigHOC({ children }) {
             return (
@@ -20,11 +23,15 @@ export interface WithConfigProps {
     onProperties?(properties: Property[]): void;
 }
 
+interface ConfigApplyProps {
+    children?: React.ReactNode;
+}
+
 export function createConfigurableComponent<TConfig>(name: string) {
     /**
      * This component is used when we want to mount all composed configs.
      */
-    const ConfigApply = makeComposable(`${name}ConfigApply`, ({ children }) => {
+    const ConfigApply = makeDecoratable(`${name}ConfigApply`, ({ children }: ConfigApplyProps) => {
         return <>{children}</>;
     });
 

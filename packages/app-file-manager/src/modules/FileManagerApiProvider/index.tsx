@@ -1,9 +1,11 @@
 import React from "react";
-import { Plugin, Decorator } from "@webiny/app-admin";
+import { Plugin, GenericDecorator, GenericComponent } from "@webiny/app-admin";
 import { FileManagerApiProvider } from "./FileManagerApiContext";
 import { FileModelProvider } from "~/modules/FileManagerApiProvider/FileManagerApiContext/FileModelContext";
 
-const fileManagerApiProvider: Decorator<{ children: React.ReactNode }> = Original => {
+const fileManagerApiProvider: GenericDecorator<
+    GenericComponent<{ children: React.ReactNode }>
+> = Original => {
     return function FileManager({ children }) {
         return (
             <FileModelProvider>

@@ -7,12 +7,19 @@ import React, {
     useMemo
 } from "react";
 import { useCompositionScope } from "~/CompositionScope";
-import { BaseFunction, ComposedFunction } from "~/Compose";
-import { DecoratableComponent, DecoratableHook } from "~/makeDecoratable";
+import {
+    ComposedFunction,
+    ComposeWith,
+    DecoratableComponent,
+    DecoratableHook,
+    Enumerable,
+    GenericComponent,
+    GenericHook
+} from "~/types";
 
-export function compose(...fns: Decorator[]) {
-    return function ComposedComponent(baseFunction: BaseFunction): ComposedFunction {
-        return fns.reduceRight((Component, hoc) => hoc(Component), baseFunction);
+export function compose<T>(...fns: GenericDecorator<T>[]) {
+    return (decoratee: T): T => {
+        return fns.reduceRight((decoratee, decorator) => decorator(decoratee), decoratee);
     };
 }
 
@@ -20,23 +27,25 @@ interface ComposedComponent {
     /**
      * Ready to use React component.
      */
-    component: ComposedFunction;
+    component: GenericHook | GenericComponent;
     /**
      * HOCs used to compose the original component.
      */
-    hocs: Decorator[];
+    hocs: GenericDecorator<GenericComponent | GenericHook>[];
     /**
      * Component composition can be scoped.
      */
     scope?: string;
 }
 
+export type GenericDecorator<T> = (decoratee: T) => T;
+
 /**
  * IMPORTANT: TProps default type is `any` because this interface is use as a prop type in the `Compose` component.
  * You can pass any Decorator as a prop, regardless of its TProps type. The only way to allow that is
  * to let it be `any` in this interface.
  */
-export interface Decorator<T = BaseFunction> {
+export interface Decorator<T extends DecoratableHook | DecoratableComponent> {
     (decoratee: T): T;
 }
 
@@ -44,18 +53,22 @@ export interface Decorator<T = BaseFunction> {
  * @deprecated Use `Decorator` instead.
  */
 export interface HigherOrderComponent<TProps = any, TOutput = TProps> {
-    (Component: ComponentType<TProps>): ComponentType<TOutput>;
+    (Component: GenericComponent<TProps>): GenericComponent<TOutput>;
 }
 
 type ComposedComponents = Map<ComponentType<unknown>, ComposedComponent>;
 type ComponentScopes = Map<string, ComposedComponents>;
 
-export type DecorateeTypes = DecoratableComponent | DecoratableHook<any>;
+export type DecoratableTypes = DecoratableComponent | DecoratableHook;
 
 interface CompositionContext {
     components: ComponentScopes;
     getComponent(component: ComponentType<unknown>, scope?: string): ComposedFunction | undefined;
-    composeComponent(component: ComponentType<unknown>, hocs: Decorator<DecorateeTypes>[], scope?: string): void;
+    composeComponent(
+        component: ComponentType<unknown>,
+        hocs: Enumerable<ComposeWith>,
+        scope?: string
+    ): void;
 }
 
 const CompositionContext = createContext<CompositionContext | undefined>(undefined);
@@ -74,7 +87,9 @@ export const CompositionProvider = ({ children }: CompositionProviderProps) => {
                 const scopeMap: ComposedComponents = components.get(scope) || new Map();
                 const recipe = scopeMap.get(component) || { component: null, hocs: [] };
 
-                const newHocs = [...(recipe.hocs || []), ...hocs];
+                const newHocs = [...(recipe.hocs || []), ...hocs] as GenericDecorator<
+                    GenericHook | GenericComponent
+                >[];
 
                 scopeMap.set(component, {
                     component: compose(...[...newHocs].reverse())(component),

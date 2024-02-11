@@ -17,13 +17,13 @@ const t = i18n.ns("app-apw/page-builder/publish-page");
 const PublishRevisionDecorator = createComponentPlugin(
     Components.PageDetails.Toolbar.PublishRevision,
     OriginalRenderer => {
-        return function PageReview(props) {
+        return function PageReview() {
             const { page } = Components.PageDetails.usePage();
             const contentReviewId = useContentReviewId(page.id);
             const navigate = useNavigate();
 
             if (!contentReviewId) {
-                return <OriginalRenderer {...props} />;
+                return <OriginalRenderer />;
             }
 
             return (

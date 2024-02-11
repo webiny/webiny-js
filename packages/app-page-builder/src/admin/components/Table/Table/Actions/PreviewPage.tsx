@@ -1,11 +1,11 @@
 import React from "react";
 import { ReactComponent as Visibility } from "@material-design-icons/svg/outlined/visibility.svg";
-import { makeComposable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 import { PageListConfig } from "~/admin/config/pages";
 import { usePage } from "~/admin/views/Pages/hooks/usePage";
 import { usePreviewPage } from "~/admin/hooks/usePreviewPage";
 
-export const PreviewPage = makeComposable("PreviewPage", () => {
+export const PreviewPage = makeDecoratable("PreviewPage", () => {
     const { page } = usePage();
     const { previewPage } = usePreviewPage({
         id: page.id,

@@ -4,9 +4,9 @@ import { ReactComponent as Unpublish } from "@material-design-icons/svg/outlined
 import { PageListConfig } from "~/admin/config/pages";
 import { usePage } from "~/admin/views/Pages/hooks/usePage";
 import { useChangePageStatus } from "~/admin/views/Pages/hooks/useChangePageStatus";
-import { makeComposable } from "@webiny/react-composition";
+import { makeDecoratable } from "@webiny/react-composition";
 
-export const ChangePageStatus = makeComposable("ChangePageStatus", () => {
+export const ChangePageStatus = makeDecoratable("ChangePageStatus", () => {
     const { page } = usePage();
     const { openDialogUnpublishPage, openDialogPublishPage } = useChangePageStatus({ page });
     const { OptionsMenuItem } = PageListConfig.Browser.PageAction;

@@ -1,6 +1,6 @@
 import React from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
-import { createDecoratorFactory, makeComposable } from "@webiny/react-composition";
+import { createDecoratorFactory, makeDecoratable } from "@webiny/react-composition";
 import { useModel } from "~/admin/hooks";
 
 export interface FilterConfig {
@@ -22,9 +22,16 @@ export interface CreateDecoratorParams {
     modelIds?: string[];
 }
 
-const BaseFilter = makeComposable(
+const BaseFilter = makeDecoratable(
     "Filter",
-    ({ name, element, modelIds = [], after = undefined, before = undefined, remove = false }) => {
+    ({
+        name,
+        element,
+        modelIds = [],
+        after = undefined,
+        before = undefined,
+        remove = false
+    }: FilterProps) => {
         const { model } = useModel();
         const getId = useIdGenerator("filter");
 

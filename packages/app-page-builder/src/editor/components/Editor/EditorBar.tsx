@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { TopAppBar, TopAppBarSection } from "@webiny/ui/TopAppBar";
-import { ComposableFC, makeComposable } from "@webiny/app-admin";
+import { createVoidComponent, DecoratableComponent, makeDecoratable } from "@webiny/app-admin";
 
 const topBar = css({
     boxShadow: "1px 0px 5px 0px rgba(128,128,128,1)"
@@ -22,7 +22,7 @@ const StyledDivider = styled("div")({
     backgroundColor: "var(--mdc-theme-on-background)"
 });
 
-const LeftSection = makeComposable("LeftSection", ({ children }) => {
+const LeftSection = makeDecoratable("LeftSection", ({ children }) => {
     return (
         <TopAppBarSection style={{ width: "33%" }} alignStart>
             <BackButton />
@@ -32,11 +32,11 @@ const LeftSection = makeComposable("LeftSection", ({ children }) => {
     );
 });
 
-const CenterSection = makeComposable("CenterSection", ({ children }) => {
+const CenterSection = makeDecoratable("CenterSection", ({ children }) => {
     return <TopAppBarSection className={centerTopBar}>{children}</TopAppBarSection>;
 });
 
-const RightSection = makeComposable("RightSection", ({ children }) => {
+const RightSection = makeDecoratable("RightSection", ({ children }) => {
     return (
         <TopAppBarSection style={{ width: "33%" }} alignEnd>
             {children}
@@ -48,32 +48,32 @@ const RightSection = makeComposable("RightSection", ({ children }) => {
  * This component serves as a placeholder for other editors to implement how they see fit.
  * A Page editor will redirect back to the pages list; a Block editor will redirect back to blocks list, etc.
  */
-const BackButton = makeComposable("BackButton");
+const BackButton = makeDecoratable("BackButton", createVoidComponent());
 
 /**
  * A generic divider for UI elements in the EditorBar.
  */
-const Divider = makeComposable("Divider", () => {
+const Divider = makeDecoratable("Divider", () => {
     return <DividerRenderer />;
 });
 
-const DividerRenderer = makeComposable("DividerRenderer", () => {
+const DividerRenderer = makeDecoratable("DividerRenderer", () => {
     return <StyledDivider />;
 });
 
-type EditorBar = ComposableFC & {
-    LeftSection: ComposableFC;
-    CenterSection: ComposableFC;
-    RightSection: ComposableFC;
-    BackButton: ComposableFC;
-    Divider: ComposableFC;
+type EditorBar = DecoratableComponent & {
+    LeftSection: DecoratableComponent;
+    CenterSection: DecoratableComponent;
+    RightSection: DecoratableComponent;
+    BackButton: DecoratableComponent;
+    Divider: DecoratableComponent;
 };
 
-const ComposableEditorBar = makeComposable("EditorBar", () => {
+const ComposableEditorBar = makeDecoratable("EditorBar", () => {
     return <EditorBarRenderer />;
 });
 
-export const EditorBarRenderer = makeComposable("EditorBarRenderer", () => {
+export const EditorBarRenderer = makeDecoratable("EditorBarRenderer", () => {
     return (
         <TopAppBar className={topBar} fixed>
             <LeftSection />

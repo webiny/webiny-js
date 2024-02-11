@@ -3,7 +3,8 @@ import {
     Compose,
     createConditionalDecorator,
     CompositionScope,
-    Decorator
+    GenericComponent,
+    GenericDecorator
 } from "@webiny/app-admin";
 import { RenderFieldElement } from "@webiny/app-headless-cms";
 
@@ -25,7 +26,7 @@ export type FieldDecoratorProps = {
 
 export const createScopedFieldDecorator =
     (scope = "*") =>
-    (decorator: Decorator<FieldProps>) => {
+    (decorator: GenericDecorator<GenericComponent<FieldProps>>) => {
         return function FieldDecorator(props: FieldDecoratorProps) {
             const conditionalDecorator = createConditionalDecorator(
                 shouldDecorate,
