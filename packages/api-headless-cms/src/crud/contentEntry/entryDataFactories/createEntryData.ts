@@ -17,7 +17,7 @@ import { I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { getIdentity } from "~/utils/identity";
-import { AccessControl } from "~/crud/AccessControl";
+import { AccessControl } from "~/crud/AccessControl/AccessControl";
 
 type DefaultValue = boolean | number | string | null;
 

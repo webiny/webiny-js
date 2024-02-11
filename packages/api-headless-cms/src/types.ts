@@ -11,7 +11,7 @@ import { DbContext } from "@webiny/handler-db/types";
 import { Topic } from "@webiny/pubsub/types";
 import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection";
 import { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types";
-import { AccessControl } from "~/crud/AccessControl";
+import { AccessControl } from "~/crud/AccessControl/AccessControl";
 
 export type ApiEndpoint = "manage" | "preview" | "read";
 

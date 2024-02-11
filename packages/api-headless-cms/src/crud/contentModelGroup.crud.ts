@@ -31,7 +31,7 @@ import { createZodError, mdbid } from "@webiny/utils";
 import { filterAsync } from "~/utils/filterAsync";
 import { createCacheKey, createMemoryCache } from "~/utils";
 import { listGroupsFromDatabase } from "~/crud/contentModelGroup/listGroupsFromDatabase";
-import { AccessControl } from "./AccessControl";
+import { AccessControl } from "./AccessControl/AccessControl";
 
 export interface CreateModelGroupsCrudParams {
     getTenant: () => Tenant;

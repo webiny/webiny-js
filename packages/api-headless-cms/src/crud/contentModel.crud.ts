@@ -42,7 +42,7 @@ import { createCacheKey, createMemoryCache } from "~/utils";
 import { ensureTypeTag } from "./contentModel/ensureTypeTag";
 import { listModelsFromDatabase } from "~/crud/contentModel/listModelsFromDatabase";
 import { filterAsync } from "~/utils/filterAsync";
-import { AccessControl } from "./AccessControl";
+import { AccessControl } from "./AccessControl/AccessControl";
 
 export interface CreateModelsCrudParams {
     getTenant: () => Tenant;

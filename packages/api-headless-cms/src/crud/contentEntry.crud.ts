@@ -68,7 +68,7 @@ import {
     createUpdateEntryData,
     mapAndCleanUpdatedInputData
 } from "./contentEntry/entryDataFactories";
-import { AccessControl } from "./AccessControl";
+import { AccessControl } from "./AccessControl/AccessControl";
 
 interface DeleteEntryParams {
     model: CmsModel;
