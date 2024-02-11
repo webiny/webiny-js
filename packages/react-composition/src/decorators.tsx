@@ -1,8 +1,7 @@
 import React from "react";
-import { GenericDecorator } from "~/Context";
 import { Compose } from "~/Compose";
 import { GetDecoratee, GetDecorateeParams } from "~/createComponentPlugin";
-import { DecoratableComponent, GenericComponent, GenericHook } from "~/types";
+import { DecoratableComponent, GenericComponent, GenericHook, Decorator } from "~/types";
 
 interface ShouldDecorate<TDecorator = any, TComponent = any> {
     (decoratorProps: TDecorator, componentProps: TComponent): boolean;
@@ -10,9 +9,9 @@ interface ShouldDecorate<TDecorator = any, TComponent = any> {
 
 export function createConditionalDecorator<TDecoratee extends GenericComponent>(
     shouldDecorate: ShouldDecorate,
-    decorator: GenericDecorator<TDecoratee>,
+    decorator: Decorator<TDecoratee>,
     decoratorProps: unknown
-): GenericDecorator<TDecoratee> {
+): Decorator<TDecoratee> {
     return (Original => {
         return function ShouldDecorate(props: unknown) {
             if (shouldDecorate(decoratorProps, props)) {
@@ -24,7 +23,7 @@ export function createConditionalDecorator<TDecoratee extends GenericComponent>(
             // @ts-expect-error
             return <Original {...props} />;
         };
-    }) as GenericDecorator<TDecoratee>;
+    }) as Decorator<TDecoratee>;
 }
 
 export function createDecoratorFactory<TDecorator>() {
@@ -32,12 +31,12 @@ export function createDecoratorFactory<TDecorator>() {
         decoratable: TDecoratable,
         shouldDecorate?: ShouldDecorate<TDecorator, GetDecorateeParams<GetDecoratee<TDecoratable>>>
     ) {
-        return function createDecorator(decorator: GenericDecorator<GetDecoratee<TDecoratable>>) {
+        return function createDecorator(decorator: Decorator<GetDecoratee<TDecoratable>>) {
             return function DecoratorPlugin(props: TDecorator) {
                 if (shouldDecorate) {
                     const componentDecorator = createConditionalDecorator<GenericComponent>(
                         shouldDecorate,
-                        decorator as unknown as GenericDecorator<GenericComponent>,
+                        decorator as unknown as Decorator<GenericComponent>,
                         props
                     );
 
@@ -47,7 +46,7 @@ export function createDecoratorFactory<TDecorator>() {
                 return (
                     <Compose
                         function={decoratable}
-                        with={decorator as unknown as GenericDecorator<GenericHook>}
+                        with={decorator as unknown as Decorator<GenericHook>}
                     />
                 );
             };

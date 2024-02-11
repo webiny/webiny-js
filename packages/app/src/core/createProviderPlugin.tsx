@@ -1,5 +1,5 @@
 import React from "react";
-import { GenericComponent, GenericDecorator } from "@webiny/react-composition";
+import { GenericComponent, Decorator } from "@webiny/react-composition";
 import { Provider } from "./Provider";
 
 /**
@@ -7,7 +7,7 @@ import { Provider } from "./Provider";
  * This is particularly useful for wrapping the entire app with custom React Context providers.
  * For more information, visit https://www.webiny.com/docs/admin-area/basics/framework.
  */
-export function createProviderPlugin(decorator: GenericDecorator<GenericComponent>) {
+export function createProviderPlugin(decorator: Decorator<GenericComponent>) {
     return function ProviderPlugin() {
         return <Provider hoc={decorator} />;
     };

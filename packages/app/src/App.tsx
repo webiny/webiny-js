@@ -12,7 +12,7 @@ import {
     CompositionProvider,
     GenericComponent,
     compose,
-    GenericDecorator
+    Decorator
 } from "@webiny/react-composition";
 import { Routes as SortRoutes } from "./core/Routes";
 import { DebounceRender } from "./core/DebounceRender";
@@ -25,12 +25,12 @@ type RoutesByPath = {
 interface State {
     routes: RoutesByPath;
     plugins: JSX.Element[];
-    providers: GenericDecorator<GenericComponent<ProviderProps>>[];
+    providers: Decorator<GenericComponent<ProviderProps>>[];
 }
 
 interface AppContext extends State {
     addRoute(route: JSX.Element): void;
-    addProvider(hoc: GenericDecorator<GenericComponent<ProviderProps>>): void;
+    addProvider(hoc: Decorator<GenericComponent<ProviderProps>>): void;
     addPlugin(plugin: React.ReactNode): void;
 }
 
@@ -51,7 +51,7 @@ export const useApp = () => {
 export interface AppProps {
     debounceRender?: number;
     routes?: Array<RouteProps>;
-    providers?: Array<GenericDecorator<GenericComponent<ProviderProps>>>;
+    providers?: Array<Decorator<GenericComponent<ProviderProps>>>;
     children?: React.ReactNode | React.ReactNode[];
 }
 

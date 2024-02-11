@@ -1,5 +1,5 @@
 import React from "react";
-import { Compose, Decoratable, GenericDecorator } from "./index";
+import { Compose, Decoratable, Decorator } from "./index";
 import { DecoratableComponent, DecoratableHook } from "~/types";
 
 type GetBaseFunction<T> = T extends DecoratableComponent<infer F> ? F : never;
@@ -11,7 +11,7 @@ type GetBaseFunction<T> = T extends DecoratableComponent<infer F> ? F : never;
  */
 export function createComponentPlugin<T extends Decoratable>(
     Base: T,
-    hoc: GenericDecorator<GetBaseFunction<T>>
+    hoc: Decorator<GetBaseFunction<T>>
 ) {
     const ComponentPlugin = () => <Compose component={Base} with={hoc as any} />;
     if ("displayName" in Base) {
@@ -36,7 +36,7 @@ const isDecoratableComponent = (
 
 export function createDecorator<T extends DecoratableHook | DecoratableComponent>(
     Base: T,
-    hoc: GenericDecorator<GetDecoratee<T>>
+    hoc: Decorator<GetDecoratee<T>>
 ) {
     const DecoratorPlugin = () => <Compose component={Base} with={hoc as any} />;
     if (isDecoratableComponent(Base)) {

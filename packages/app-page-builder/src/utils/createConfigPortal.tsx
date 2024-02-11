@@ -1,13 +1,8 @@
 import * as React from "react";
-import {
-    Compose,
-    GenericComponent,
-    GenericDecorator,
-    makeDecoratable
-} from "@webiny/react-composition";
+import { Compose, GenericComponent, Decorator, makeDecoratable } from "@webiny/react-composition";
 
 const createHOC =
-    (newChildren: React.ReactNode): GenericDecorator<GenericComponent> =>
+    (newChildren: React.ReactNode): Decorator<GenericComponent> =>
     BaseComponent => {
         return function ConfigHOC({ children }) {
             return (

@@ -1,12 +1,10 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { Compose, GenericDecorator, makeDecoratable } from "@webiny/react-composition";
+import { Compose, Decorator, makeDecoratable } from "@webiny/react-composition";
 import { Property, Properties, toObject } from "~/index";
 import { GenericComponent } from "@webiny/react-composition/types";
 
 const createHOC =
-    (
-        newChildren: React.ReactNode
-    ): GenericDecorator<GenericComponent<{ children?: React.ReactNode }>> =>
+    (newChildren: React.ReactNode): Decorator<GenericComponent<{ children?: React.ReactNode }>> =>
     BaseComponent => {
         return function ConfigHOC({ children }) {
             return (

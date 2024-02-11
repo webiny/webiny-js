@@ -14,10 +14,11 @@ import {
     DecoratableHook,
     Enumerable,
     GenericComponent,
+    Decorator,
     GenericHook
 } from "~/types";
 
-export function compose<T>(...fns: GenericDecorator<T>[]) {
+export function compose<T>(...fns: Decorator<T>[]) {
     return (decoratee: T): T => {
         return fns.reduceRight((decoratee, decorator) => decorator(decoratee), decoratee);
     };
@@ -31,22 +32,11 @@ interface ComposedComponent {
     /**
      * HOCs used to compose the original component.
      */
-    hocs: GenericDecorator<GenericComponent | GenericHook>[];
+    hocs: Decorator<GenericComponent | GenericHook>[];
     /**
      * Component composition can be scoped.
      */
     scope?: string;
-}
-
-export type GenericDecorator<T> = (decoratee: T) => T;
-
-/**
- * IMPORTANT: TProps default type is `any` because this interface is use as a prop type in the `Compose` component.
- * You can pass any Decorator as a prop, regardless of its TProps type. The only way to allow that is
- * to let it be `any` in this interface.
- */
-export interface Decorator<T extends DecoratableHook | DecoratableComponent> {
-    (decoratee: T): T;
 }
 
 /**
@@ -87,7 +77,7 @@ export const CompositionProvider = ({ children }: CompositionProviderProps) => {
                 const scopeMap: ComposedComponents = components.get(scope) || new Map();
                 const recipe = scopeMap.get(component) || { component: null, hocs: [] };
 
-                const newHocs = [...(recipe.hocs || []), ...hocs] as GenericDecorator<
+                const newHocs = [...(recipe.hocs || []), ...hocs] as Decorator<
                     GenericHook | GenericComponent
                 >[];
 
