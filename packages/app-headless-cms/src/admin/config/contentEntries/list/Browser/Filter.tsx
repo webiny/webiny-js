@@ -22,7 +22,7 @@ export interface CreateDecoratorParams {
     modelIds?: string[];
 }
 
-const BaseFilter = makeComposable<FilterProps>(
+const BaseFilter = makeComposable(
     "Filter",
     ({ name, element, modelIds = [], after = undefined, before = undefined, remove = false }) => {
         const { model } = useModel();

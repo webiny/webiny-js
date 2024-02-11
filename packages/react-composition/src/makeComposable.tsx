@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useEffect, useMemo } from "react";
-import debounce from "lodash/debounce";
-import { ComposableFC } from "./Compose";
+import React, { createContext, useContext, useMemo } from "react";
+import { BaseFunction, ComposableFC } from "./Compose";
 import { useComponent } from "./Context";
 
 const ComposableContext = createContext<string[]>([]);
@@ -15,36 +14,18 @@ function useComposableParents() {
     return context;
 }
 
-const createEmptyRenderer = (name: string) => {
-    return {
-        [name]: function () {
-            useEffect(() => {
-                // We need to debounce the log, as it sometimes only requires a single tick to get the new
-                // composed component to render, and we don't want to scare developers for no reason.
-                const debounced = debounce(() => {
-                    console.info(
-                        `<${name}/> is not implemented! To provide an implementation, use the <Compose/> component.`
-                    );
-                }, 100);
+const nullRenderer = () => null;
 
-                return () => {
-                    debounced.cancel();
-                };
-            }, []);
-
-            return null;
-        }
-    }[name];
-};
-
-export function makeComposable<TProps>(name: string, Component?: React.ComponentType<TProps>) {
-    if (!Component) {
-        Component = createEmptyRenderer(name);
-    }
-
-    const Composable: ComposableFC<TProps> = props => {
+/**
+ * @deprecated Use `makeDecoratable` instead.
+ */
+export function makeComposable<T extends BaseFunction>(
+    name: string,
+    Component: T = nullRenderer as T
+) {
+    const Composable = (props: Parameters<T>[0]) => {
         const parents = useComposableParents();
-        const ComposedComponent = useComponent(Component as React.ComponentType<TProps>);
+        const ComposedComponent = useComponent(Component);
 
         const context = useMemo(() => [...parents, name], [parents, name]);
 
@@ -55,11 +36,9 @@ export function makeComposable<TProps>(name: string, Component?: React.Component
         );
     };
 
-    Component.displayName = name;
-
     Composable.original = Component;
     Composable.originalName = name;
     Composable.displayName = `Composable<${name}>`;
 
-    return Composable;
+    return Composable as ComposableFC<T>;
 }

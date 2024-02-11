@@ -1,36 +1,43 @@
-import React, { useEffect } from "react";
-import { HigherOrderComponent, useComposition } from "./Context";
+import { useEffect } from "react";
+import { DecorateeTypes, Decorator, useComposition } from "./Context";
 import { useCompositionScope } from "~/CompositionScope";
 
-export type ComposableFC<TProps = unknown> = React.ComponentType<TProps> & {
-    original: React.ComponentType<TProps>;
+export type BaseFunction = (...args: any) => any;
+
+export type ComposedFunction = BaseFunction;
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type ComposableFC<T> = T & {
+    displayName?: string;
+    original: T;
     originalName: string;
 };
 
 export interface ComposeProps {
-    /**
-     * Component to compose.
-     * NOTE: ComposableFC<TProps> use `any` because the type of the component props is irrelevant.
-     */
-    component: ComposableFC<any>;
-    with: HigherOrderComponent | HigherOrderComponent[];
+    function?: DecorateeTypes;
+    component?: DecorateeTypes;
+    with: Decorator<DecorateeTypes> | Decorator<DecorateeTypes>[];
 }
 
 export const Compose = (props: ComposeProps) => {
     const { composeComponent } = useComposition();
     const scope = useCompositionScope();
 
+    const targetFn = (props.function ?? props.component) as ComposableFC<BaseFunction>;
+
     useEffect(() => {
-        if (typeof props.component.original === "undefined") {
+        if (typeof targetFn.original === "undefined") {
             console.warn(
-                `You must make your component "<${props.component.displayName}>" composable, by using the makeComposable() function!`
+                `You must make your function "${
+                    targetFn.displayName ?? targetFn.name
+                }" composable, by using the makeComposable() function!`
             );
 
             return;
         }
 
-        const hocs = Array.isArray(props.with) ? props.with : [props.with];
-        return composeComponent(props.component.original, hocs, scope);
+        const decorators = Array.isArray(props.with) ? props.with : [props.with];
+        return composeComponent(targetFn.original, decorators, scope);
     }, [props.with]);
 
     return null;

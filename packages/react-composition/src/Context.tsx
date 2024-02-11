@@ -7,10 +7,12 @@ import React, {
     useMemo
 } from "react";
 import { useCompositionScope } from "~/CompositionScope";
+import { BaseFunction, ComposedFunction } from "~/Compose";
+import { DecoratableComponent, DecoratableHook } from "~/makeDecoratable";
 
 export function compose(...fns: Decorator[]) {
-    return function ComposedComponent(Base: ComponentType<unknown>): ComponentType<unknown> {
-        return fns.reduceRight((Component, hoc) => hoc(Component), Base);
+    return function ComposedComponent(baseFunction: BaseFunction): ComposedFunction {
+        return fns.reduceRight((Component, hoc) => hoc(Component), baseFunction);
     };
 }
 
@@ -18,7 +20,7 @@ interface ComposedComponent {
     /**
      * Ready to use React component.
      */
-    component: ComponentType<unknown>;
+    component: ComposedFunction;
     /**
      * HOCs used to compose the original component.
      */
@@ -34,8 +36,8 @@ interface ComposedComponent {
  * You can pass any Decorator as a prop, regardless of its TProps type. The only way to allow that is
  * to let it be `any` in this interface.
  */
-export interface Decorator<TProps = any> {
-    (Component: ComponentType<TProps>): ComponentType<TProps>;
+export interface Decorator<T = BaseFunction> {
+    (decoratee: T): T;
 }
 
 /**
@@ -48,17 +50,12 @@ export interface HigherOrderComponent<TProps = any, TOutput = TProps> {
 type ComposedComponents = Map<ComponentType<unknown>, ComposedComponent>;
 type ComponentScopes = Map<string, ComposedComponents>;
 
+export type DecorateeTypes = DecoratableComponent | DecoratableHook<any>;
+
 interface CompositionContext {
     components: ComponentScopes;
-    getComponent(
-        component: ComponentType<unknown>,
-        scope?: string
-    ): ComponentType<unknown> | undefined;
-    composeComponent(
-        component: ComponentType<unknown>,
-        hocs: HigherOrderComponent[],
-        scope?: string
-    ): void;
+    getComponent(component: ComponentType<unknown>, scope?: string): ComposedFunction | undefined;
+    composeComponent(component: ComponentType<unknown>, hocs: Decorator<DecorateeTypes>[], scope?: string): void;
 }
 
 const CompositionContext = createContext<CompositionContext | undefined>(undefined);
@@ -141,15 +138,15 @@ export const CompositionProvider = ({ children }: CompositionProviderProps) => {
     return <CompositionContext.Provider value={context}>{children}</CompositionContext.Provider>;
 };
 
-export function useComponent(Component: ComponentType<any>) {
+export function useComponent<T>(baseFunction: T) {
     const context = useOptionalComposition();
     const scope = useCompositionScope();
 
     if (!context) {
-        return Component;
+        return baseFunction;
     }
 
-    return context.getComponent(Component, scope) || Component;
+    return (context.getComponent(baseFunction as any, scope) || baseFunction) as T;
 }
 
 /**
