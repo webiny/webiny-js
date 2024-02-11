@@ -101,8 +101,9 @@ export class AccessControl {
             return false;
         }
 
-        if (params.rwd) {
-            const hasRwd = acl.find(({ rwd }) => rwd.includes("r"));
+        const { rwd } = params;
+        if (rwd) {
+            const hasRwd = acl.find(ace => ace.rwd.includes(rwd));
             if (!hasRwd) {
                 return false;
             }
@@ -191,7 +192,6 @@ export class AccessControl {
                         continue;
                     }
 
-                    // TREBA OVO ISTGO DOLJE ?!?!?!
                     if (!groups[group.locale].includes(group.id)) {
                         continue;
                     }
@@ -226,13 +226,14 @@ export class AccessControl {
     async canAccessModel(params: CanAccessModelParams) {
         const acl = await this.getModelsAccessControlList(params);
 
-        const canRead = acl.find(ace => ace.rwd?.includes("r"));
+        const canRead = acl.find(ace => ace.rwd.includes("r"));
         if (!canRead) {
             return false;
         }
 
-        if (params.rwd) {
-            const hasRwd = acl.find(({ rwd }) => rwd.includes("r"));
+        const { rwd } = params;
+        if (rwd) {
+            const hasRwd = acl.find(ace => ace.rwd.includes(rwd));
             if (!hasRwd) {
                 return false;
             }
@@ -288,18 +289,18 @@ export class AccessControl {
         const acl: AccessControlList = [];
 
         for (let i = 0; i < groupsPermissionsList.length; i++) {
-            const groupPermissions = groupsPermissionsList[i];
+            const groupsPermissions = groupsPermissionsList[i];
 
             const modelsPermissionsList = await this.getModelsPermissions();
             const relatedModelPermissions = modelsPermissionsList.find(
-                permissions => permissions._src === groupPermissions._src
+                permissions => permissions._src === groupsPermissions._src
             );
 
             if (!relatedModelPermissions) {
                 continue;
             }
 
-            if (groupPermissions.own) {
+            if (groupsPermissions.own) {
                 if ("model" in params) {
                     const { model } = params;
                     if (!model) {
@@ -331,18 +332,18 @@ export class AccessControl {
                 continue;
             }
 
-            if (groupPermissions.groups) {
+            if (groupsPermissions.groups) {
                 if ("model" in params) {
                     const { model } = params;
                     if (!model) {
                         continue;
                     }
 
-                    if (!Array.isArray(groupPermissions.groups[model.locale])) {
+                    if (!Array.isArray(groupsPermissions.groups[model.locale])) {
                         continue;
                     }
 
-                    if (!groupPermissions.groups[model.locale].includes(model.group.id)) {
+                    if (!groupsPermissions.groups[model.locale].includes(model.group.id)) {
                         continue;
                     }
                 }
@@ -441,14 +442,23 @@ export class AccessControl {
     async canAccessEntry(params: CanAccessEntryParams) {
         const acl = await this.getEntriesAccessControlList(params);
 
-        const canRead = acl.find(ace => ace.rwd?.includes("r"));
+        const canRead = acl.find(ace => ace.rwd.includes("r"));
         if (!canRead) {
             return false;
         }
 
-        if (params.rwd) {
-            const hasRwd = acl.find(({ rwd }) => rwd.includes("r"));
+        const { rwd } = params;
+        if (rwd) {
+            const hasRwd = acl.find(ace => ace.rwd.includes(rwd));
             if (!hasRwd) {
+                return false;
+            }
+        }
+
+        const { pw } = params;
+        if (pw) {
+            const hasPw = acl.find(ace => ace.pw?.includes(pw));
+            if (!hasPw) {
                 return false;
             }
         }
