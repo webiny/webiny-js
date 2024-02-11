@@ -1,5 +1,5 @@
 import React from "react";
-import { Compose, Decoratable, Decorator } from "./index";
+import { CanReturnNull, Compose, Decoratable, Decorator } from "./index";
 import { DecoratableComponent, DecoratableHook } from "~/types";
 
 type GetBaseFunction<T> = T extends DecoratableComponent<infer F> ? F : never;
@@ -36,7 +36,7 @@ const isDecoratableComponent = (
 
 export function createDecorator<T extends DecoratableHook | DecoratableComponent>(
     Base: T,
-    hoc: Decorator<GetDecoratee<T>>
+    hoc: Decorator<CanReturnNull<GetDecoratee<T>>>
 ) {
     const DecoratorPlugin = () => <Compose component={Base} with={hoc as any} />;
     if (isDecoratableComponent(Base)) {

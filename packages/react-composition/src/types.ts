@@ -30,10 +30,16 @@ export type DecoratableHook<T extends GenericHook = GenericHook> = T & {
     originalName: string;
 };
 
-export type DecoratableComponent<T extends GenericComponent = GenericComponent> = T & {
-    displayName?: string;
+export type DecoratableComponent<T = GenericComponent> = T & {
     original: T;
     originalName: string;
 };
 
 export type Decoratable = DecoratableComponent | DecoratableHook;
+
+/**
+ * @internal Add `null` to the ReturnType of the given function.
+ */
+export type CanReturnNull<T> = T extends (...args: any) => any
+    ? (...args: Parameters<T>) => ReturnType<T> | null
+    : never;
