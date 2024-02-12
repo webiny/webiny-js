@@ -53,7 +53,7 @@ const ExportPageLoadingDialogContent = ({ taskId }: ExportPageLoadingDialogConte
     );
 
     const pollExportPageTaskStatus = useCallback((response: GetPageExportTaskResponse) => {
-        const { error, data } = response.pageBuilder.getExportTask;
+        const { error, data } = response.pageBuilder.getExportPagesTask;
         if (error) {
             showSnackbar(error.message);
             return;
@@ -86,7 +86,7 @@ const ExportPageLoadingDialogContent = ({ taskId }: ExportPageLoadingDialogConte
     }, [data]);
 
     const { status = ImportExportTaskStatus.PENDING, stats } =
-        data?.pageBuilder.getExportTask.data || {};
+        data?.pageBuilder.getExportPagesTask.data || {};
 
     return (
         <LoadingDialog.Wrapper>
