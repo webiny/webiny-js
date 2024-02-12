@@ -1,12 +1,12 @@
 import React from "react";
-import { makeComposable } from "@webiny/app-serverless-cms";
+import { makeDecoratable } from "@webiny/app-serverless-cms";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as LogoutIcon } from "~/assets/icons/logout_black_24dp.svg";
 import { useSecurity } from "@webiny/app-security";
 import { useTenancy } from "@webiny/app-tenancy";
 
-export const ExitTenant = makeComposable("ExitTenant", () => {
+export const ExitTenant = makeDecoratable("ExitTenant", () => {
     const security = useSecurity();
     const tenancy = useTenancy();
 

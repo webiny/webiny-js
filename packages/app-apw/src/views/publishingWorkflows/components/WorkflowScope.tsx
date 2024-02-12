@@ -1,14 +1,14 @@
 import React from "react";
 import { BindComponent } from "@webiny/form";
+import { makeDecoratable } from "@webiny/app-admin";
 import { ApwWorkflow } from "~/types";
-import { makeComposable } from "@webiny/app-admin";
 
 export interface WorkflowScopeProps {
     Bind: BindComponent;
     workflow: ApwWorkflow;
 }
 
-export const WorkflowScope = makeComposable<WorkflowScopeProps>("WorkflowScope", props => {
+export const WorkflowScope = makeDecoratable("WorkflowScope", (props: WorkflowScopeProps) => {
     const { workflow } = props;
     return (
         <div>

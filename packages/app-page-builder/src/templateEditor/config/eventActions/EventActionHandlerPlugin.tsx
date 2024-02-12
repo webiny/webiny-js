@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import { ComposableFC, createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator, DecoratableComponent, GenericComponent } from "@webiny/app-admin";
 import {
     EventActionHandlerProvider,
     EventActionHandlerProviderProps,
@@ -12,8 +12,8 @@ import { PbElement, PbEditorElement } from "~/types";
 
 type ProviderProps = EventActionHandlerProviderProps<TemplateEditorEventActionCallableState>;
 
-export const EventActionHandlerPlugin = createComponentPlugin(
-    EventActionHandlerProvider as ComposableFC<ProviderProps>,
+export const EventActionHandlerPlugin = createDecorator(
+    EventActionHandlerProvider as DecoratableComponent<GenericComponent<ProviderProps>>,
     Component => {
         return function PbEventActionHandlerProvider(props) {
             const templateAtomValueRef = useRef<PageTemplate>();

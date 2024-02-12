@@ -1,6 +1,6 @@
 import React from "react";
 import {
-    createComponentPlugin,
+    createDecorator,
     FileManagerFileItem,
     FileManagerOnChange,
     FileManagerRenderer as BaseFileManagerRenderer
@@ -78,7 +78,7 @@ export function FileManagerProvider({
     );
 }
 
-export const FileManagerRenderer = createComponentPlugin(BaseFileManagerRenderer, () => {
+export const FileManagerRenderer = createDecorator(BaseFileManagerRenderer, () => {
     return function FileManagerRenderer(props) {
         const { onChange, ...forwardProps } = props;
 

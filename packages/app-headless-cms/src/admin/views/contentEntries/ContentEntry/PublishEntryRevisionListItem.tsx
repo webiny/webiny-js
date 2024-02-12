@@ -1,4 +1,4 @@
-import { makeComposable } from "@webiny/react-composition";
+import { makeDecoratable } from "@webiny/react-composition";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as PublishIcon } from "~/admin/icons/publish.svg";
@@ -18,7 +18,7 @@ const PublishEntryRevisionListItemComponent = () => {
     );
 };
 
-export const PublishEntryRevisionListItem = makeComposable(
+export const PublishEntryRevisionListItem = makeDecoratable(
     "PublishEntryRevisionListItem",
     PublishEntryRevisionListItemComponent
 );

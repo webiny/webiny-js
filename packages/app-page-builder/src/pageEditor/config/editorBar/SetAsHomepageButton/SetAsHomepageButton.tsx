@@ -4,7 +4,7 @@ import { ReactComponent as HomeIcon } from "~/admin/assets/round-home-24px.svg";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { usePage } from "~/pageEditor/hooks/usePage";
-import { createComponentPlugin } from "@webiny/react-composition";
+import { createDecorator } from "@webiny/react-composition";
 import { PageOptionsMenu } from "~/pageEditor";
 import { useConfirmationDialog } from "@webiny/app-admin";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
@@ -12,7 +12,7 @@ import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 
-export const SetAsHomepageButtonPlugin = createComponentPlugin(PageOptionsMenu, Original => {
+export const SetAsHomepageButtonPlugin = createDecorator(PageOptionsMenu, Original => {
     return function SetAsHomepageButton({ items, ...props }) {
         const [page] = usePage();
         const { navigateToLatestFolder } = useNavigatePage();

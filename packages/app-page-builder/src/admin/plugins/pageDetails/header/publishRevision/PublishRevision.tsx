@@ -5,7 +5,7 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDi
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as PublishIcon } from "@material-design-icons/svg/round/publish.svg";
 import { ReactComponent as UnpublishIcon } from "@material-design-icons/svg/round/settings_backup_restore.svg";
-import { makeComposable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 import { usePagesPermissions } from "~/hooks/permissions";
 import { useFolders } from "@webiny/app-aco";
 import { usePage } from "~/admin/views/Pages/PageDetails";
@@ -82,4 +82,4 @@ const PublishRevision = () => {
     return null;
 };
 
-export default makeComposable("PublishRevision", PublishRevision);
+export default makeDecoratable("PublishRevision", PublishRevision);

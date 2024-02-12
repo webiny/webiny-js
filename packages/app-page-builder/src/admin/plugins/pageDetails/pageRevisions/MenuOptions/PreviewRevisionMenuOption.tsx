@@ -1,6 +1,6 @@
 import React from "react";
 import { ReactComponent as PreviewIcon } from "~/admin/assets/visibility.svg";
-import { makeComposable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 import { useRevision } from "~/admin/plugins/pageDetails/pageRevisions/RevisionsList";
 import { DefaultPreviewRevision } from "./PreviewRevision/DefaultPreviewRevision";
 import { PreviewRevisionMenuItem } from "./PreviewRevision/PreviewRevisionMenuItem";
@@ -11,7 +11,7 @@ export interface PreviewRevisionProps {
     onClick?: () => void;
 }
 
-export const PreviewRevisionMenuOption = makeComposable(
+export const PreviewRevisionMenuOption = makeDecoratable(
     "PreviewRevisionMenuOption",
     (props: PreviewRevisionProps) => {
         const { revision } = useRevision();

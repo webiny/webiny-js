@@ -1,11 +1,11 @@
 import React from "react";
 import { ReactComponent as Move } from "@material-design-icons/svg/outlined/drive_file_move.svg";
-import { makeComposable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 import { PageListConfig } from "~/admin/config/pages";
 import { usePage } from "~/admin/views/Pages/hooks/usePage";
 import { useMovePageToFolder } from "~/admin/views/Pages/hooks/useMovePageToFolder";
 
-export const MovePage = makeComposable("MovePage", () => {
+export const MovePage = makeDecoratable("MovePage", () => {
     const { page } = usePage();
     const movePageToFolder = useMovePageToFolder({ record: page });
     const { OptionsMenuItem } = PageListConfig.Browser.PageAction;
