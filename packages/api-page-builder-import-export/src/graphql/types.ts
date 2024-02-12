@@ -75,17 +75,19 @@ export interface PbImportPagesTaskData {
     error?: IResponseError;
 }
 
+export interface PbImportPagesTaskStats {
+    total: number;
+    completed: number;
+    failed: number;
+}
+
 export interface PbImportPagesTask {
     id: string;
     createdOn: string;
     createdBy: CreatedBy;
     status: string;
     data: PbImportPagesTaskData;
-    stats: {
-        total: number;
-        completed: number;
-        failed: number;
-    };
+    stats: PbImportPagesTaskStats;
 }
 
 export interface PbImportPagesResponse {

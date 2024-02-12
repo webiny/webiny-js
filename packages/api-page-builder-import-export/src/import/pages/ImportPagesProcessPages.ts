@@ -19,8 +19,8 @@ export class ImportPagesProcessPages {
 
         const { identity, items, meta, category } = input;
 
-        const done = Array.from(input.done);
-        const failed = Array.from(input.failed);
+        const done = Array.from(input.done || []);
+        const failed = Array.from(input.failed || []);
 
         for (const item of items) {
             /**

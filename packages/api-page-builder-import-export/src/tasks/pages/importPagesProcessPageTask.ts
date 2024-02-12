@@ -18,7 +18,7 @@ export const createImportPagesProcessPagesTask = () => {
         /**
          * We do not want to have a large number of iterations because we are splitting page processing into multiple tasks.
          */
-        maxIterations: 10,
+        maxIterations: 20,
         run: async params => {
             const { response, isAborted } = params;
             /**

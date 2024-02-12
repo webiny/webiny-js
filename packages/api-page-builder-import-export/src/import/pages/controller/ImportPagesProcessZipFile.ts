@@ -46,9 +46,7 @@ export class ImportPagesProcessZipFile {
         }
         await store.updateOutput(
             {
-                total: items.length,
-                completed: 0,
-                failed: 0
+                total: items.length
             },
             {
                 save: false

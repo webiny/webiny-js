@@ -8,11 +8,26 @@ import {
     OnPagesAfterImportTopicParams,
     OnPagesBeforeExportTopicParams,
     OnPagesBeforeImportTopicParams,
-    PbImportExportContext
+    PbExportPagesTaskData,
+    PbImportExportContext,
+    PbImportPagesTaskData,
+    PbImportPagesTaskStats
 } from "~/types";
 import { PagesPermissions } from "@webiny/api-page-builder/graphql/crud/permissions/PagesPermissions";
-import { IExportPagesControllerInput, PageExportTask } from "~/export/pages/types";
-import { IImportPagesControllerInput, PageImportTask } from "~/import/pages/types";
+import {
+    IExportPagesControllerInput,
+    IExportPagesControllerOutput,
+    IExportPagesZipPagesInput,
+    IExportPagesZipPagesOutput,
+    PageExportTask
+} from "~/export/pages/types";
+import {
+    IImportPagesControllerInput,
+    IImportPagesControllerOutput,
+    IImportPagesProcessPagesInput,
+    IImportPagesProcessPagesOutput,
+    PageImportTask
+} from "~/import/pages/types";
 
 export default new ContextPlugin<PbImportExportContext>(context => {
     const pagesPermissions = new PagesPermissions({
@@ -42,6 +57,117 @@ export default new ContextPlugin<PbImportExportContext>(context => {
         onPagesAfterExport,
         onPagesBeforeImport,
         onPagesAfterImport,
+        /**
+         * Background task implementation.
+         */
+        getExportTask: async id => {
+            const task = await context.tasks.getTask<
+                IExportPagesControllerInput,
+                IExportPagesControllerOutput
+            >(id);
+
+            if (!task || task.definitionId !== PageExportTask.Controller) {
+                return null;
+            }
+
+            const data: PbExportPagesTaskData = {
+                url: task.output?.url,
+                error: task.output?.error
+            };
+
+            const { items: subTasks } = await context.tasks.listTasks<
+                IExportPagesZipPagesInput,
+                IExportPagesZipPagesOutput
+            >({
+                where: {
+                    parentId: task.id,
+                    definitionId: PageExportTask.ZipPages
+                },
+                limit: 10000
+            });
+
+            const stats = {
+                queued: [] as string[],
+                completed: [] as string[],
+                failed: [] as string[]
+            };
+
+            for (const subTask of subTasks) {
+                if (!subTask.output) {
+                    continue;
+                }
+                const queued = subTask.input.queue || [];
+                const completed = Object.keys(subTask.output.done || []);
+                const failed = subTask.output.failed || [];
+
+                stats.queued.push(...queued, ...completed, ...failed);
+                stats.completed.push(...completed);
+                stats.failed.push(...failed);
+            }
+
+            return {
+                ...task,
+                status: task.taskStatus,
+                data,
+                stats: {
+                    total:
+                        new Set([...stats.queued, ...stats.completed, ...stats.failed]).size ||
+                        task.input.totalPages,
+                    completed: stats.completed.length,
+                    failed: stats.failed.length
+                }
+            };
+        },
+        async getImportTask(id) {
+            const task = await context.tasks.getTask<
+                IImportPagesControllerInput,
+                IImportPagesControllerOutput
+            >(id);
+
+            if (!task || task.definitionId !== PageImportTask.Controller) {
+                return null;
+            }
+
+            const data: PbImportPagesTaskData = {
+                error: task.output?.error
+            };
+
+            const { items: subTasks } = await context.tasks.listTasks<
+                IImportPagesProcessPagesInput,
+                IImportPagesProcessPagesOutput
+            >({
+                where: {
+                    parentId: task.id,
+                    definitionId: PageImportTask.Process
+                },
+                limit: 10000
+            });
+
+            const stats = subTasks.reduce<PbImportPagesTaskStats>(
+                (result, item) => {
+                    if (!item.output) {
+                        return result;
+                    }
+                    return {
+                        ...result,
+                        completed: result.completed + (item.output.done || []).length,
+                        failed: result.failed + (item.output.failed || []).length
+                    };
+                },
+                {
+                    total: 0,
+                    completed: 0,
+                    failed: 0
+                }
+            );
+
+            return {
+                ...task,
+                status: task.taskStatus,
+                data,
+                stats
+            };
+        },
         async importPages(params) {
             const { category: categorySlug, zipFileUrl, meta } = params;
             await pagesPermissions.ensure({ rwd: "w" });
