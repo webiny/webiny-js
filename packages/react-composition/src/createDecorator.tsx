@@ -11,7 +11,9 @@ type GetBaseFunction<T> = T extends DecoratableComponent<infer F> ? F : never;
  */
 export function createComponentPlugin<T extends Decoratable>(
     Base: T,
-    hoc: Decorator<CanReturnNull<GetBaseFunction<T>>>
+    hoc: T extends DecoratableComponent
+        ? Decorator<CanReturnNull<GetBaseFunction<T>>>
+        : Decorator<GetBaseFunction<T>>
 ) {
     return createDecorator(Base, hoc);
 }
@@ -32,7 +34,9 @@ const isDecoratableComponent = (
 
 export function createDecorator<T extends Decoratable>(
     Base: T,
-    hoc: Decorator<CanReturnNull<GetDecoratee<T>>>
+    hoc: T extends DecoratableComponent
+        ? Decorator<CanReturnNull<GetBaseFunction<T>>>
+        : Decorator<GetBaseFunction<T>>
 ) {
     const DecoratorPlugin = () => <Compose component={Base} with={hoc as any} />;
     if (isDecoratableComponent(Base)) {
