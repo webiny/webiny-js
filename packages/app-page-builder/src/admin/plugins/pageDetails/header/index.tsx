@@ -18,8 +18,8 @@ const plugins: PbPageDetailsPlugin[] = [
     {
         name: "pb-page-details-revision-selector",
         type: "pb-page-details-header-left",
-        render(props) {
-            return <RevisionSelector {...props} />;
+        render() {
+            return <RevisionSelector />;
         }
     },
     {
@@ -39,8 +39,8 @@ const plugins: PbPageDetailsPlugin[] = [
     {
         name: "pb-page-details-header-delete",
         type: "pb-page-details-header-right",
-        render(props) {
-            return <DeletePage {...props} />;
+        render() {
+            return <DeletePage />;
         }
     },
     {

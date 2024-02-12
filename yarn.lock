@@ -41916,7 +41916,7 @@ __metadata:
     ts-expect: ^1.3.0
     ts-jest: ^29.1.0
     typescript: 4.7.4
-    typescript-transform-paths: ^2.2.3
+    typescript-transform-paths: ^3.4.6
     utf-8-validate: ^5.0.2
     verdaccio: ^4.10.0
     write-json-file: ^4.2.0
@@ -45301,14 +45301,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript-transform-paths@npm:^2.2.3":
-  version: 2.2.4
-  resolution: "typescript-transform-paths@npm:2.2.4"
+"typescript-transform-paths@npm:^3.4.6":
+  version: 3.4.6
+  resolution: "typescript-transform-paths@npm:3.4.6"
   dependencies:
     minimatch: ^3.0.4
   peerDependencies:
     typescript: ">=3.6.5"
-  checksum: ccab907151c4fec812be95731c7e2f0aa8643ae796205342cb562a929c5ce2cf7eb0c27f8228b4b0931d7f79422ac60faeb5ac0dfaba0c2b76722043554841d9
+  checksum: 963d57f17b1be6717d8fbccf7740674b7c2919c39f1796886a4a425265b8679093b6dfc6662a64a3260ce57b6718563420deb290ab65df681641039ba6d89ab3
   languageName: node
   linkType: hard
 
