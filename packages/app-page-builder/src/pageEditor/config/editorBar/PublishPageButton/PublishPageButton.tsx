@@ -67,16 +67,13 @@ const DefaultPublishPageButton = () => {
 
 export const PublishPageButton = makeDecoratable("PublishPageButton", DefaultPublishPageButton);
 
-export const PublishPageButtonPlugin = createDecorator(
-    EditorBar.RightSection,
-    RightSection => {
-        return function AddPublishPageButton(props) {
-            return (
-                <RightSection>
-                    <PublishPageButton />
-                    {props.children}
-                </RightSection>
-            );
-        };
-    }
-);
+export const PublishPageButtonPlugin = createDecorator(EditorBar.RightSection, RightSection => {
+    return function AddPublishPageButton(props) {
+        return (
+            <RightSection>
+                <PublishPageButton />
+                {props.children}
+            </RightSection>
+        );
+    };
+});

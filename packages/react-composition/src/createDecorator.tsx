@@ -9,7 +9,7 @@ type GetBaseFunction<T> = T extends DecoratableComponent<infer F> ? F : never;
  * This is particularly useful for decorating (wrapping) existing composable components.
  * For more information, visit https://www.webiny.com/docs/admin-area/basics/framework.
  */
-export function createDecorator<T extends Decoratable>(
+export function createComponentPlugin<T extends Decoratable>(
     Base: T,
     hoc: Decorator<CanReturnNull<GetBaseFunction<T>>>
 ) {

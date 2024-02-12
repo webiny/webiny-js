@@ -15,16 +15,13 @@ const TemplateSettingsButton = () => {
     return <IconButton onClick={onClickHandler} icon={<SettingsIcon />} />;
 };
 
-export const AddTemplateSettingsButton = createDecorator(
-    EditorBar.RightSection,
-    RightSection => {
-        return function ComposeRightSection(props) {
-            return (
-                <RightSection>
-                    <TemplateSettingsButton />
-                    {props.children}
-                </RightSection>
-            );
-        };
-    }
-);
+export const AddTemplateSettingsButton = createDecorator(EditorBar.RightSection, RightSection => {
+    return function ComposeRightSection(props) {
+        return (
+            <RightSection>
+                <TemplateSettingsButton />
+                {props.children}
+            </RightSection>
+        );
+    };
+});

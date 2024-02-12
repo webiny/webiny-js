@@ -15,16 +15,13 @@ const BlockSettingsButton = () => {
     return <IconButton onClick={onClickHandler} icon={<SettingsIcon />} />;
 };
 
-export const AddBlockSettingsButton = createDecorator(
-    EditorBar.RightSection,
-    RightSection => {
-        return function ComposeRightSection(props) {
-            return (
-                <RightSection>
-                    <BlockSettingsButton />
-                    {props.children}
-                </RightSection>
-            );
-        };
-    }
-);
+export const AddBlockSettingsButton = createDecorator(EditorBar.RightSection, RightSection => {
+    return function ComposeRightSection(props) {
+        return (
+            <RightSection>
+                <BlockSettingsButton />
+                {props.children}
+            </RightSection>
+        );
+    };
+});

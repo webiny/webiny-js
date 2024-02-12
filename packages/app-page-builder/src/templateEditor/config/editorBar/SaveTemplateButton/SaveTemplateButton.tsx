@@ -59,16 +59,13 @@ const DefaultSaveTemplateButton = () => {
 
 export const SaveTemplateButton = makeDecoratable("SaveTemplateButton", DefaultSaveTemplateButton);
 
-export const SaveTemplateButtonPlugin = createDecorator(
-    EditorBar.RightSection,
-    RightSection => {
-        return function AddSaveTemplateButton(props) {
-            return (
-                <RightSection>
-                    <SaveTemplateButton />
-                    {props.children}
-                </RightSection>
-            );
-        };
-    }
-);
+export const SaveTemplateButtonPlugin = createDecorator(EditorBar.RightSection, RightSection => {
+    return function AddSaveTemplateButton(props) {
+        return (
+            <RightSection>
+                <SaveTemplateButton />
+                {props.children}
+            </RightSection>
+        );
+    };
+});
