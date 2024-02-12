@@ -10483,6 +10483,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rmwc/base@npm:14.0.10":
+  version: 14.0.10
+  resolution: "@rmwc/base@npm:14.0.10"
+  dependencies:
+    "@material/dom": ^14.0.0
+    "@rmwc/types": 14.0.10
+    classnames: ^2.3.1
+    hyperform: ^0.11.0
+    mutation-observer: ^1.0.3
+    tslib: ^2.4.0
+  peerDependencies:
+    react: ">=16.8.x"
+    react-dom: ">=16.8.x"
+  checksum: 465da62df097c47243744d14a4cef8cbe8c38bd32eba9b8014728bfaf508aaae12bcdd10ccf2720d0b344c1c612caaabdfe242f8a378d55f46e245a895c89292
+  languageName: node
+  linkType: hard
+
 "@rmwc/base@npm:14.0.4":
   version: 14.0.4
   resolution: "@rmwc/base@npm:14.0.4"
@@ -10960,6 +10977,26 @@ __metadata:
     react: ">=16.8.x"
     react-dom: ">=16.8.x"
   checksum: 2111555af575106c7b14f75927dfb4e60833f5b03d3957a4d16149687577923238386cc35db900769e09da6dec8b52bd64a897b4bf99203991428b4059a887d5
+  languageName: node
+  linkType: hard
+
+"@rmwc/touch-target@npm:^14.0.10":
+  version: 14.0.10
+  resolution: "@rmwc/touch-target@npm:14.0.10"
+  dependencies:
+    "@material/touch-target": ^14.0.0
+    "@rmwc/base": 14.0.10
+  peerDependencies:
+    react: ">=16.8.x"
+    react-dom: ">=16.8.x"
+  checksum: 11f51caa2853592c30355c0a8ecb3edbc4bf8f261cb460f33896505eae37a5b6345ac0a3754bb4c1cde30e7fb66f8c73ffb775ab3a54ad848d75bc6eac86ab07
+  languageName: node
+  linkType: hard
+
+"@rmwc/types@npm:14.0.10":
+  version: 14.0.10
+  resolution: "@rmwc/types@npm:14.0.10"
+  checksum: dd2df55f36b7b434e713a37f9370a3d9e759d37f01fb2e003a33bcdcbcf92e15068a759c01a411ad14eed286809ac7317434020844346daa847d6295548ffbff
   languageName: node
   linkType: hard
 
@@ -19452,6 +19489,7 @@ __metadata:
     "@rmwc/tabs": 14.0.4
     "@rmwc/textfield": 14.0.4
     "@rmwc/top-app-bar": 14.0.4
+    "@rmwc/touch-target": ^14.0.10
     "@rmwc/typography": 14.0.4
     "@storybook/addon-info": ^5.2.8
     "@storybook/addon-knobs": ^5.0.5
