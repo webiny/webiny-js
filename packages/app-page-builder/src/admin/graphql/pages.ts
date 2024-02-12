@@ -95,9 +95,9 @@ export const CREATE_PAGE_FROM_TEMPLATE = gql`
 `;
 
 export const DUPLICATE_PAGE = gql`
-    mutation PbDuplicatePage($id: ID!) {
+    mutation PbDuplicatePage($id: ID!, $meta: JSON) {
         pageBuilder {
-            duplicatePage(id: $id) {
+            duplicatePage(id: $id, meta: $meta) {
                 data {
                     ${LIST_PAGES_DATA_FIELDS}
                 }

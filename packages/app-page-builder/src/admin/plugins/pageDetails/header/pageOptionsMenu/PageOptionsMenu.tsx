@@ -70,7 +70,10 @@ const PageOptionsMenu = (props: PageOptionsMenuProps) => {
         try {
             await client.mutate({
                 mutation: DUPLICATE_PAGE,
-                variables: { id: page.id },
+                variables: {
+                    id: page.id,
+                    meta: { location: { folderId: page.wbyAco_location.folderId } }
+                },
                 async update(cache, { data }) {
                     if (data.pageBuilder.duplicatePage.error) {
                         return;
