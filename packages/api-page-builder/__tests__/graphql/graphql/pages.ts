@@ -215,6 +215,21 @@ export const createPageUpdateGraphQl = (params: CreateDataFieldsParams = {}) => 
 
 export const UPDATE_PAGE = createPageUpdateGraphQl();
 
+export const createPageDuplicateGraphQl = (params: CreateDataFieldsParams = {}) => {
+    return /* GraphQL */ `
+        mutation DuplicatePage($id: ID!, $meta: JSON) {
+            pageBuilder {
+                duplicatePage(id: $id, meta: $meta) {
+                    data ${createDataFields(params)}
+                    error ${ERROR_FIELD}
+                }
+            }
+        }
+    `;
+};
+
+export const DUPLICATE_PAGE = createPageDuplicateGraphQl();
+
 export const PUBLISH_PAGE = /* GraphQL */ `
     mutation PublishPage($id: ID!) {
         pageBuilder {

@@ -10,8 +10,15 @@ describe("Page Lifecycle Events", () => {
         plugins: [assignPageLifecycleEvents()]
     });
 
-    const { createCategory, createPage, deletePage, updatePage, publishPage, unpublishPage } =
-        handler;
+    const {
+        createCategory,
+        createPage,
+        deletePage,
+        duplicatePage,
+        updatePage,
+        publishPage,
+        unpublishPage
+    } = handler;
 
     const createDummyPage = async (): Promise<PageData> => {
         const [response] = await createPage({
@@ -128,6 +135,31 @@ describe("Page Lifecycle Events", () => {
         expect(tracker.isExecutedOnce("page:afterCreateFrom")).toEqual(true);
         expect(tracker.isExecutedOnce("page:beforeUpdate")).toEqual(false);
         expect(tracker.isExecutedOnce("page:afterUpdate")).toEqual(false);
+        expect(tracker.isExecutedOnce("page:beforeDelete")).toEqual(false);
+        expect(tracker.isExecutedOnce("page:afterDelete")).toEqual(false);
+        expect(tracker.isExecutedOnce("page:beforePublish")).toEqual(false);
+        expect(tracker.isExecutedOnce("page:afterPublish")).toEqual(false);
+        expect(tracker.isExecutedOnce("page:beforeUnpublish")).toEqual(false);
+        expect(tracker.isExecutedOnce("page:afterUnpublish")).toEqual(false);
+    });
+
+    it("should trigger duplicate lifecycle events", async () => {
+        const [response] = await duplicatePage({
+            id: dummyPage.id,
+            meta: {
+                folderId: "any-folder-id"
+            }
+        });
+
+        expect(response.data.pageBuilder.duplicatePage.data.title).toContain(" (Copy)");
+        expect(response.data.pageBuilder.duplicatePage.data.path).toContain("-copy");
+
+        expect(tracker.isExecutedOnce("page:beforeCreate")).toEqual(true);
+        expect(tracker.isExecutedOnce("page:afterCreate")).toEqual(true);
+        expect(tracker.isExecutedOnce("page:beforeCreateFrom")).toEqual(false);
+        expect(tracker.isExecutedOnce("page:afterCreateFrom")).toEqual(false);
+        expect(tracker.isExecutedOnce("page:beforeUpdate")).toEqual(true);
+        expect(tracker.isExecutedOnce("page:afterUpdate")).toEqual(true);
         expect(tracker.isExecutedOnce("page:beforeDelete")).toEqual(false);
         expect(tracker.isExecutedOnce("page:afterDelete")).toEqual(false);
         expect(tracker.isExecutedOnce("page:beforePublish")).toEqual(false);
