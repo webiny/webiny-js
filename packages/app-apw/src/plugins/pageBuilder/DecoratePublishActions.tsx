@@ -1,7 +1,7 @@
 import React from "react";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useNavigate } from "@webiny/react-router";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { ButtonIcon, ButtonPrimary, IconButton } from "@webiny/ui/Button";
 import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
@@ -14,7 +14,7 @@ import { routePaths } from "~/utils";
 
 const t = i18n.ns("app-apw/page-builder/publish-page");
 
-const PublishRevisionDecorator = createComponentPlugin(
+const PublishRevisionDecorator = createDecorator(
     Components.PageDetails.Toolbar.PublishRevision,
     OriginalRenderer => {
         return function PageReview() {
@@ -44,7 +44,7 @@ const PublishRevisionDecorator = createComponentPlugin(
     }
 );
 
-const PublishPageMenuOptionDecorator = createComponentPlugin(
+const PublishPageMenuOptionDecorator = createDecorator(
     Components.PageDetails.Toolbar.PublishRevision,
     OriginalRenderer => {
         return function PageReview() {
@@ -78,7 +78,7 @@ const PublishPageMenuOptionDecorator = createComponentPlugin(
     }
 );
 
-const PublishPageFromEditorDecorator = createComponentPlugin(
+const PublishPageFromEditorDecorator = createDecorator(
     Components.PageEditor.Toolbar.PublishPage,
     OriginalRenderer => {
         return function PageReview() {
@@ -105,7 +105,7 @@ const PublishPageFromEditorDecorator = createComponentPlugin(
         };
     }
 );
-const PageRevisionListItemGraphicDecorator = createComponentPlugin(
+const PageRevisionListItemGraphicDecorator = createDecorator(
     Components.PageDetails.Revisions.ListItemGraphic,
     OriginalRenderer => {
         return function PageReview() {

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import { createComponentPlugin, DecoratableComponent, GenericComponent } from "@webiny/app-admin";
+import { createDecorator, DecoratableComponent, GenericComponent } from "@webiny/app-admin";
 import {
     EventActionHandlerProvider,
     EventActionHandlerProviderProps,
@@ -12,7 +12,7 @@ import { PbElement, PbEditorElement } from "~/types";
 
 type ProviderProps = EventActionHandlerProviderProps<TemplateEditorEventActionCallableState>;
 
-export const EventActionHandlerPlugin = createComponentPlugin(
+export const EventActionHandlerPlugin = createDecorator(
     EventActionHandlerProvider as DecoratableComponent<GenericComponent<ProviderProps>>,
     Component => {
         return function PbEventActionHandlerProvider(props) {

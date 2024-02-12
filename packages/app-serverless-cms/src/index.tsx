@@ -29,7 +29,7 @@ export {
     Plugin,
     makeComposable,
     makeDecoratable,
-    createComponentPlugin,
+    createDecorator,
     createProviderPlugin,
     createDecorator,
     createProvider,

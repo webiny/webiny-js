@@ -1,6 +1,6 @@
 import React from "react";
 import { Compose } from "~/Compose";
-import { GetDecoratee, GetDecorateeParams } from "~/createComponentPlugin";
+import { GetDecoratee, GetDecorateeParams } from "~/createDecorator";
 import { DecoratableComponent, GenericComponent, GenericHook, Decorator } from "~/types";
 
 interface ShouldDecorate<TDecorator = any, TComponent = any> {

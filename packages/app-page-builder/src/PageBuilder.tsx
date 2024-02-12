@@ -4,7 +4,7 @@ import {
     Plugins,
     AddMenu as Menu,
     createProviderPlugin,
-    createComponentPlugin
+    createDecorator
 } from "@webiny/app-admin";
 import { PageBuilderProvider as ContextProvider } from "./contexts/PageBuilder";
 import { ReactComponent as PagesIcon } from "./admin/assets/table_chart-24px.svg";
@@ -108,7 +108,7 @@ const EditorLoader = React.lazy(() =>
     }))
 );
 
-const EditorRendererPlugin = createComponentPlugin(EditorRenderer, () => {
+const EditorRendererPlugin = createDecorator(EditorRenderer, () => {
     return function Editor(props) {
         return <EditorLoader {...props} />;
     };

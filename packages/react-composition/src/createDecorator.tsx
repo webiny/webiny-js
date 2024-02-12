@@ -9,15 +9,11 @@ type GetBaseFunction<T> = T extends DecoratableComponent<infer F> ? F : never;
  * This is particularly useful for decorating (wrapping) existing composable components.
  * For more information, visit https://www.webiny.com/docs/admin-area/basics/framework.
  */
-export function createComponentPlugin<T extends Decoratable>(
+export function createDecorator<T extends Decoratable>(
     Base: T,
-    hoc: Decorator<GetBaseFunction<T>>
+    hoc: Decorator<CanReturnNull<GetBaseFunction<T>>>
 ) {
-    const ComponentPlugin = () => <Compose component={Base} with={hoc as any} />;
-    if ("displayName" in Base) {
-        ComponentPlugin.displayName = Base.displayName;
-    }
-    return ComponentPlugin;
+    return createDecorator(Base, hoc);
 }
 
 export type GetDecorateeParams<T> = T extends (params: infer P) => any ? P : never;
@@ -34,7 +30,7 @@ const isDecoratableComponent = (
     return "displayName" in decoratable;
 };
 
-export function createDecorator<T extends DecoratableHook | DecoratableComponent>(
+export function createDecorator<T extends Decoratable>(
     Base: T,
     hoc: Decorator<CanReturnNull<GetDecoratee<T>>>
 ) {

@@ -1,5 +1,5 @@
 import React from "react";
-import { createComponentPlugin, makeDecoratable } from "@webiny/react-composition";
+import { createDecorator, makeDecoratable } from "@webiny/react-composition";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { MenuItem } from "@webiny/ui/Menu";
@@ -26,7 +26,7 @@ export const PreviewPage = makeDecoratable("PreviewPage", () => {
     );
 });
 
-export const PreviewPageButtonPlugin = createComponentPlugin(PageOptionsMenu, Original => {
+export const PreviewPageButtonPlugin = createDecorator(PageOptionsMenu, Original => {
     return function PreviewPageButton({ items, ...props }) {
         return <Original {...props} items={[<PreviewPage key={"preview"} />, ...items]} />;
     };

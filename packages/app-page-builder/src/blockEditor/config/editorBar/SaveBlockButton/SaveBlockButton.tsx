@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import styled from "@emotion/styled";
 import { useLocation, useNavigate } from "@webiny/react-router";
-import { createComponentPlugin, makeDecoratable } from "@webiny/app-admin";
+import { createDecorator, makeDecoratable } from "@webiny/app-admin";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -84,7 +84,7 @@ const DefaultSaveBlockButton = () => {
 
 export const SaveBlockButton = makeDecoratable("SaveBlockButton", DefaultSaveBlockButton);
 
-export const SaveBlockButtonPlugin = createComponentPlugin(EditorBar.RightSection, RightSection => {
+export const SaveBlockButtonPlugin = createDecorator(EditorBar.RightSection, RightSection => {
     return function AddSaveBlockButton(props) {
         return (
             <RightSection>
