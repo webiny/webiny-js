@@ -17624,6 +17624,7 @@ __metadata:
     babel-plugin-emotion: ^9.2.8
     classnames: ^2.2.6
     dnd-core: ^16.0.1
+    dnd-kit-sortable-tree: ^0.1.73
     dot-prop-immutable: ^2.1.0
     emotion: ^10.0.17
     execa: ^5.0.0
@@ -17649,7 +17650,6 @@ __metadata:
     react-images: ^0.5.19
     react-in-viewport: ^1.0.0-alpha.30
     react-sortable: ^2.0.0
-    react-sortable-tree: ^2.6.0
     react-transition-group: ^4.3.0
     react-virtualized: ^9.21.0
     recoil: ^0.7.7
@@ -23541,7 +23541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:^1.0.4, clsx@npm:^1.1.1":
+"clsx@npm:^1.0.4, clsx@npm:^1.1.1, clsx@npm:^1.2.1":
   version: 1.2.1
   resolution: "clsx@npm:1.2.1"
   checksum: 30befca8019b2eb7dbad38cff6266cf543091dae2825c856a62a8ccf2c3ab9c2907c4d12b288b73101196767f66812365400a227581484a05f968b0307cfaf12
@@ -26125,6 +26125,22 @@ __metadata:
     "@react-dnd/invariant": ^4.0.1
     redux: ^4.2.0
   checksum: b7d3ef4664f433af796f440ddd27ad9d7fef0205f26c4b7c0af6ebf612ffa9b33e64d095d3e79190c4baaed34aa36570f321ebe0d2cc8ff1031ff158a0907b3f
+  languageName: node
+  linkType: hard
+
+"dnd-kit-sortable-tree@npm:^0.1.73":
+  version: 0.1.73
+  resolution: "dnd-kit-sortable-tree@npm:0.1.73"
+  dependencies:
+    clsx: ^1.2.1
+    react-merge-refs: ^2.0.1
+  peerDependencies:
+    "@dnd-kit/core": ">=6.0.5"
+    "@dnd-kit/sortable": ">=7.0.1"
+    "@dnd-kit/utilities": ">=3.2.0"
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: 86bec921ebb4484f03848fccac21654b9a98ef590978815c45b908a297d28faf88094093545e74387315a70a8f661c497d32987f34573e6cd2bd44aed0314cad
   languageName: node
   linkType: hard
 
@@ -29176,23 +29192,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"frontend-collective-react-dnd-scrollzone@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "frontend-collective-react-dnd-scrollzone@npm:1.0.2"
-  dependencies:
-    hoist-non-react-statics: ^3.1.0
-    lodash.throttle: ^4.0.1
-    prop-types: ^15.5.9
-    raf: ^3.2.0
-    react: ^16.3.0
-    react-display-name: ^0.2.0
-    react-dom: ^16.3.0
-  peerDependencies:
-    react-dnd: ^7.3.0
-  checksum: 045c9995a26c13d850a672a9c5db69519ccfcb10c33a7ea7ba05ad541230c1e6d671570328810cf18a08a47a667fbe0d2fb5f7e88a1eea270c8980d3452b9c2a
-  languageName: node
-  linkType: hard
-
 "fs-constants@npm:^1.0.0":
   version: 1.0.0
   resolution: "fs-constants@npm:1.0.0"
@@ -30561,7 +30560,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hoist-non-react-statics@npm:^3.0.0, hoist-non-react-statics@npm:^3.1.0, hoist-non-react-statics@npm:^3.3.0, hoist-non-react-statics@npm:^3.3.1, hoist-non-react-statics@npm:^3.3.2":
+"hoist-non-react-statics@npm:^3.0.0, hoist-non-react-statics@npm:^3.3.0, hoist-non-react-statics@npm:^3.3.1, hoist-non-react-statics@npm:^3.3.2":
   version: 3.3.2
   resolution: "hoist-non-react-statics@npm:3.3.2"
   dependencies:
@@ -39787,7 +39786,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:15.x, prop-types@npm:^15.5.0, prop-types@npm:^15.5.10, prop-types@npm:^15.5.8, prop-types@npm:^15.5.9, prop-types@npm:^15.6.0, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:15.x, prop-types@npm:^15.5.0, prop-types@npm:^15.5.10, prop-types@npm:^15.5.8, prop-types@npm:^15.6.0, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -40198,7 +40197,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"raf@npm:^3.1.0, raf@npm:^3.2.0, raf@npm:^3.4.0":
+"raf@npm:^3.1.0, raf@npm:^3.4.0":
   version: 3.4.1
   resolution: "raf@npm:3.4.1"
   dependencies:
@@ -40589,13 +40588,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-display-name@npm:^0.2.0":
-  version: 0.2.5
-  resolution: "react-display-name@npm:0.2.5"
-  checksum: ba27778c975e09afea2bfb58c4052b9e12121329a5115391564085ec64293f2b54d3408b841ad04600142c37d40493442676bf1124d0cc0e68f2f1e02762812b
-  languageName: node
-  linkType: hard
-
 "react-dnd-html5-backend@npm:^16.0.0":
   version: 16.0.1
   resolution: "react-dnd-html5-backend@npm:16.0.1"
@@ -40944,6 +40936,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-merge-refs@npm:^2.0.1":
+  version: 2.1.1
+  resolution: "react-merge-refs@npm:2.1.1"
+  checksum: 40564bc4c16520ef830d4fe7a2bd298c23a42d644a8fcb2353cdc6cf16aa82eac681c554df4c849397b25af9dbe728086566e1a01f65f95d2301dc8fc8f6809f
+  languageName: node
+  linkType: hard
+
 "react-move@npm:^6.1.0":
   version: 6.5.0
   resolution: "react-move@npm:6.5.0"
@@ -41128,25 +41127,6 @@ __metadata:
   peerDependencies:
     react: ^15.0.0 || ^16.0.0 || ^17.x || ^18.x
   checksum: 6d0f199cd916b0ebda8057f150fa8441753729132ad61ead111b31415b09f2d8134f6feda61244ecfa413448c0ce3748fb9611d6dbe96fa2e8c60461e18c3ac2
-  languageName: node
-  linkType: hard
-
-"react-sortable-tree@npm:^2.6.0":
-  version: 2.8.0
-  resolution: "react-sortable-tree@npm:2.8.0"
-  dependencies:
-    frontend-collective-react-dnd-scrollzone: ^1.0.2
-    lodash.isequal: ^4.5.0
-    prop-types: ^15.6.1
-    react-dnd: ^11.1.3
-    react-dnd-html5-backend: ^11.1.3
-    react-lifecycles-compat: ^3.0.4
-    react-virtualized: ^9.21.2
-  peerDependencies:
-    react: ^16.3.0
-    react-dnd: ^7.3.0
-    react-dom: ^16.3.0
-  checksum: 74bc9f7a159d9512a02be55bacacf4101fa0af9cd2c1e9b04cd480fa05cd459f9b512d6cc0ba39a1dfcdb9c47812d8c26b52a2c558926bb0e0a976a020de3387
   languageName: node
   linkType: hard
 
