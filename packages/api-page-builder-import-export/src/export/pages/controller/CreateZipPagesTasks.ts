@@ -27,16 +27,9 @@ export class CreateZipPagesTasks {
             limit: input.limit && input.limit > 0 ? input.limit : PAGES_IN_BATCH
         };
 
-        const listPages = async (params: ListPagesParams) => {
-            if (input.type === "published") {
-                return context.pageBuilder.listPublishedPages(params);
-            }
-            return context.pageBuilder.listLatestPages(params);
-        };
-
         let currentBatch = input.currentBatch || 1;
         let result: [Page[], ListMeta];
-        while ((result = await listPages(listPagesParams))) {
+        while ((result = await context.pageBuilder.listLatestPages(listPagesParams))) {
             if (isAborted()) {
                 return response.aborted();
             } else if (isCloseToTimeout()) {
@@ -79,7 +72,8 @@ export class CreateZipPagesTasks {
                 parent: store.getTask(),
                 definition: PageExportTask.ZipPages,
                 input: {
-                    queue
+                    queue,
+                    type: input.type
                 }
             });
             /**
