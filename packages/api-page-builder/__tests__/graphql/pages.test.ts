@@ -605,8 +605,7 @@ describe("CRUD Test", () => {
         );
         expect(updatePageResponse.data.pageBuilder.updatePage.data).toBeNull();
     });
-    
-    
+
     it("should list all pages via pid_in condition", async () => {
         const [categoryResponse] = await createCategory({
             data: {
@@ -617,7 +616,7 @@ describe("CRUD Test", () => {
             }
         });
         const category = categoryResponse.data.pageBuilder.createCategory.data;
-        
+
         const page1 = await createPage({ category: category.slug }).then(([res]) => {
             return res.data.pageBuilder.createPage.data;
         });
@@ -633,7 +632,7 @@ describe("CRUD Test", () => {
         const page5 = await createPage({ category: category.slug }).then(([res]) => {
             return res.data.pageBuilder.createPage.data;
         });
-        
+
         const [result1] = await listPages({
             where: {
                 pid_in: [page3.pid, page5.pid]
@@ -659,7 +658,7 @@ describe("CRUD Test", () => {
                 }
             }
         });
-        
+
         const [result2] = await listPages({
             where: {
                 pid_in: [page2.pid]
@@ -682,7 +681,7 @@ describe("CRUD Test", () => {
                 }
             }
         });
-        
+
         const [result3] = await listPages({
             where: {
                 pid_in: [page1.pid, page2.pid, page3.pid, page4.pid, page5.pid]
