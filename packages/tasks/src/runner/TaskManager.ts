@@ -56,9 +56,6 @@ export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
                     executionName: this.response.event.executionName,
                     iterations: 1
                 });
-                await this.store.addInfoLog({
-                    message: "Task started."
-                });
                 await this.store.save();
             } catch (error) {
                 return this.response.error({

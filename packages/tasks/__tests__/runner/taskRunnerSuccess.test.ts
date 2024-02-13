@@ -59,8 +59,19 @@ describe("task runner trigger and end successfully", () => {
                 task: task.id
             }
         });
+        expect(items).toMatchObject([
+            {
+                items: [
+                    {
+                        message: "Task is done!",
+                        createdOn: expect.toBeDateString(),
+                        type: "info"
+                    }
+                ]
+            }
+        ]);
         expect(items).toHaveLength(1);
-        expect(items[0].items[1].message).toBe("Task is done!");
+        expect(items[0].items).toHaveLength(1);
         expect(meta.totalCount).toBe(1);
     });
 
