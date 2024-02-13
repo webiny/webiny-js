@@ -41,7 +41,7 @@ const FormElementAdvancedSettings = ({ Bind, submit, data }: FormElementAdvanced
     );
 
     const selectedOption = useMemo(() => {
-        const formId = get(data, "settings.formId");
+        const formId = get(data, "settings.form.parent");
 
         return publishedFormsOptions.find(option => option.id === formId);
     }, [data, publishedFormsOptions]);
@@ -54,13 +54,19 @@ const FormElementAdvancedSettings = ({ Bind, submit, data }: FormElementAdvanced
             <FormOptionsWrapper>
                 <Grid className={classes.simpleGrid}>
                     <Cell span={12}>
-                        <Bind name={"settings.formId"} validators={validation.create("required")}>
+                        <Bind name={"settings.form"} validators={validation.create("required")}>
                             {({ onChange }) => (
                                 <AutoComplete
                                     options={publishedFormsOptions}
                                     label={"Form"}
                                     value={selectedOption}
-                                    onChange={onChange}
+                                    onChange={value => {
+                                        // For backward compatibility we always set revision "latest" and parent the actual formId
+                                        onChange({
+                                            parent: value,
+                                            revision: "latest"
+                                        });
+                                    }}
                                 />
                             )}
                         </Bind>

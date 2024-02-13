@@ -9,7 +9,8 @@ export interface CreateGetFormDataLoaderParams {
 }
 
 export interface GetFormDataLoaderVariables {
-    formId?: string;
+    revision?: string;
+    parent?: string;
 }
 
 export type GetFormDataLoaderResult = FormData;
