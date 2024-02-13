@@ -207,7 +207,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 form = await this.storageOperations.forms.getForm({
                     where: {
                         formId,
-                        version: Number(version),
                         published: true,
                         tenant: getTenant().id,
                         locale: getLocale().code
