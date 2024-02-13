@@ -217,6 +217,7 @@ export interface FormsCRUD {
     incrementFormViews(id: string): Promise<boolean>;
     incrementFormSubmissions(id: string): Promise<boolean>;
     getFormRevisions(id: string): Promise<FbForm[]>;
+    getPublishedFormRevisionById(revisionId: string): Promise<FbForm>;
     getLatestPublishedFormRevision(formId: string): Promise<FbForm>;
     deleteFormRevision(id: string): Promise<boolean>;
     /**
