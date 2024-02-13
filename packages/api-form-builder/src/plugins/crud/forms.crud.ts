@@ -226,6 +226,40 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 );
             }
         },
+        async getPublishedFormRevisionById(this: FormBuilder, revisionId) {
+            const { id: formId, version } = parseIdentifier(revisionId);
+
+            if (!version) {
+                throw new WebinyError("There is no version in given ID value.", "VERSION_ERROR", {
+                    revisionId
+                });
+            }
+
+            let form: FbForm | null = null;
+            try {
+                form = await this.storageOperations.forms.getForm({
+                    where: {
+                        formId,
+                        version: Number(version),
+                        published: true,
+                        tenant: getTenant().id,
+                        locale: getLocale().code
+                    }
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not load published form revision by ID.",
+                    ex.code || "GET_PUBLISHED_FORM_BY_ID_ERROR",
+                    {
+                        revisionId
+                    }
+                );
+            }
+            if (!form) {
+                throw new NotFoundError(`Form "${revisionId}" was not found!`);
+            }
+            return form;
+        },
         async getLatestPublishedFormRevision(this: FormBuilder, formId) {
             let form: FbForm | null = null;
             try {

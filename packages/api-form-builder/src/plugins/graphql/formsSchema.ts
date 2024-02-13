@@ -71,11 +71,23 @@ export const createFormsSchema = (params: CreateFormsTypeDefsParams) => {
                     }
                 },
                 getPublishedForm: async (_, args: any, { formBuilder }) => {
-                    if (!args.formId) {
-                        return new NotFoundResponse("Form ID missing.");
+                    if (!args.revision && !args.parent) {
+                        return new NotFoundResponse("Revision ID or Form ID missing.");
                     }
 
-                    const form = await formBuilder.getLatestPublishedFormRevision(args.formId);
+                    let form;
+
+                    if (args.revision) {
+                        /**
+                         * This fetches the latest published revision for given revision id
+                         */
+                        form = await formBuilder.getPublishedFormRevisionById(args.revision);
+                    } else if (args.parent) {
+                        /**
+                         * This fetches the latest published revision for given parent form
+                         */
+                        form = await formBuilder.getLatestPublishedFormRevision(args.parent);
+                    }
 
                     if (!form) {
                         return new NotFoundResponse("The requested form was not found.");
