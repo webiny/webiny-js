@@ -10,7 +10,7 @@ export const Menu = styled(DefaultMenu)`
     width: 150px;
     right: 0;
 
-    .mdc-list-item {
+    .mdc-deprecated-list-item {
         flex-direction: column;
         justify-content: center;
         align-items: baseline;

@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 
 export const listStyle = css({
-    "&.mdc-list": {
+    "&.mdc-deprecated-list": {
         height: "100%",
         padding: 0,
         backgroundColor: "var(--mdc-theme-surface)"
@@ -27,7 +27,7 @@ export const listItem = css({
     "&:last-child": {
         borderBottom: "none"
     },
-    ".mdc-list-item__graphic": {
+    ".mdc-deprecated-list-item__graphic": {
         marginRight: 20
     }
 });

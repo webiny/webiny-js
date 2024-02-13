@@ -18,7 +18,7 @@ const classes = {
         }
     }),
     icon: css({
-        "& .mdc-list-item__graphic > svg": {
+        "& .mdc-deprecated-list-item__graphic > svg": {
             transform: "rotate(90deg)"
         }
     }),

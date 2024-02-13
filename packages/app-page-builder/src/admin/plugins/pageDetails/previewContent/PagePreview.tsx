@@ -8,14 +8,6 @@ import { Zoom } from "./Zoom";
 import { PbPageData, PbPageTemplate } from "~/types";
 import { QueryResult } from "@apollo/react-common";
 
-const webinyZoomStyles = css`
-    &.mdc-select--no-label:not(.mdc-select--outlined)
-        .mdc-select__anchor
-        .mdc-select__selected-text {
-        padding-top: 0;
-    }
-`;
-
 const pageInnerWrapper = css`
     overflow-y: scroll;
     overflow-x: hidden;
@@ -48,10 +40,6 @@ const PagePreviewToolbar = styled("div")`
         background: transparent !important;
         width: 120px !important;
 
-        .mdc-select__dropdown-icon {
-            display: none;
-        }
-
         select {
             font-size: 14px;
             border: none;
@@ -72,7 +60,7 @@ const SelectPageZoom: React.ComponentType<PagePreviewInnerProps> = ({ zoom, setZ
         <span>
             <Typography use={"overline"}>Zoom:&nbsp;</Typography>
         </span>
-        <Select value={zoom.toString()} onChange={setZoom} className={webinyZoomStyles}>
+        <Select value={zoom.toString()} onChange={setZoom}>
             <option value={"1"}>100%</option>
             <option value={"0.75"}>75%</option>
             <option value={"0.5"}>50%</option>

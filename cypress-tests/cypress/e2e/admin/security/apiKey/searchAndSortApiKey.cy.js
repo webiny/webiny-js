@@ -81,7 +81,7 @@ context("Search and Sort Security API Key", () => {
         });
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => {
                     cy.findByText(apiKeys[0].name).should("exist");
@@ -96,7 +96,7 @@ context("Search and Sort Security API Key", () => {
         });
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => cy.findByText(apiKeys[total - 1].name))
                 .should("exist");
@@ -110,7 +110,7 @@ context("Search and Sort Security API Key", () => {
         });
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => {
                     cy.findByText(apiKeys[0].name).should("exist");
@@ -125,7 +125,7 @@ context("Search and Sort Security API Key", () => {
         });
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => {
                     cy.findByText(apiKeys[total - 1].name).should("exist");

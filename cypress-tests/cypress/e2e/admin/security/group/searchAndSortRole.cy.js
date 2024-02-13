@@ -90,7 +90,7 @@ context("Search and Sort Security Roles", () => {
         });
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => {
                     cy.findByText(groups[0].name).should("exist");
@@ -105,7 +105,7 @@ context("Search and Sort Security Roles", () => {
         });
         // We're testing it against the third item because the first two will be system roles
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .next()
                 .next()
@@ -122,7 +122,7 @@ context("Search and Sort Security Roles", () => {
         });
         // We're testing it against the third item because the first two will be system roles
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .next()
                 .next()
@@ -139,7 +139,7 @@ context("Search and Sort Security Roles", () => {
         });
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => {
                     cy.findByText(groups[total - 1].name).should("exist");

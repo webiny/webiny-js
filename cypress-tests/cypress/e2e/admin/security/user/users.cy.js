@@ -52,7 +52,7 @@ context("Security -> Users", () => {
         // Delete user
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => {
                     cy.findByTestId("default-data-list.delete").click({ force: true });

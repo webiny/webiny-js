@@ -97,7 +97,7 @@ context("Search and sort security users", () => {
         });
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => {
                     cy.findByText(users[0].email).should("exist");
@@ -112,7 +112,7 @@ context("Search and sort security users", () => {
         });
         // We're testing it against the second element because the first one will be "Admin" user
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .next()
                 .within(() => {
@@ -128,7 +128,7 @@ context("Search and sort security users", () => {
         });
         // We're testing it against the second element because the first one will be "Admin" user
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .next()
                 .within(() => {
@@ -144,7 +144,7 @@ context("Search and sort security users", () => {
         });
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => {
                     cy.findByText(users[total - 1].email).should("exist");

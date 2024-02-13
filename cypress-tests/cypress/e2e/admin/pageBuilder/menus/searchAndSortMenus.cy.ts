@@ -91,7 +91,7 @@ context("Page Builder -  Menu Search&Sort", () => {
             cy.findByTestId("default-data-list.filter").click();
         });
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => {
                     cy.contains(menuData1.data.title).should("exist");
@@ -105,7 +105,7 @@ context("Page Builder -  Menu Search&Sort", () => {
             cy.findByTestId("default-data-list.filter").click();
         });
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .next()
                 .within(() => {
@@ -120,7 +120,7 @@ context("Page Builder -  Menu Search&Sort", () => {
             cy.findByTestId("default-data-list.filter").click();
         });
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => {
                     cy.contains(menuData4.data.title).should("exist");
@@ -134,7 +134,7 @@ context("Page Builder -  Menu Search&Sort", () => {
             cy.findByTestId("default-data-list.filter").click();
         });
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .next()
                 .within(() => {
