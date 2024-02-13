@@ -40,6 +40,7 @@
     "@rmwc/tabs": "14.0.4",
     "@rmwc/textfield": "14.0.4",
     "@rmwc/top-app-bar": "14.0.4",
+    "@rmwc/touch-target": "^14.0.10",
     "@rmwc/typography": "14.0.4",
     "@svgr/webpack": "^6.1.1",
     "@tanstack/react-table": "^8.5.22",
@@ -118,7 +119,8 @@
       "dependencies": [
         "@svgr/webpack",
         "material-components-web",
-        "@emotion/react"
+        "@emotion/react",
+        "@rmwc/touch-target"
       ]
     }
   },
