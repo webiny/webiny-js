@@ -1,11 +1,5 @@
 import { useRef, useState } from "react";
-import {
-    useDrag,
-    useDrop,
-    DropTargetMonitor,
-    DragSourceMonitor,
-    DragObjectFactory
-} from "react-dnd";
+import { useDrag, useDrop, DropTargetMonitor, DragSourceMonitor } from "react-dnd";
 import { DraggableItem } from "~/editor/components/Draggable";
 import { CollectedProps } from "~/types";
 
