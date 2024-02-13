@@ -12958,6 +12958,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/prettier@npm:^2.7.3":
+  version: 2.7.3
+  resolution: "@types/prettier@npm:2.7.3"
+  checksum: 705384209cea6d1433ff6c187c80dcc0b95d99d5c5ce21a46a9a58060c527973506822e428789d842761e0280d25e3359300f017fbe77b9755bc772ab3dc2f83
+  languageName: node
+  linkType: hard
+
 "@types/prop-types@npm:*":
   version: 15.7.5
   resolution: "@types/prop-types@npm:15.7.5"
@@ -13006,12 +13013,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-color@npm:2.14.1":
-  version: 2.14.1
-  resolution: "@types/react-color@npm:2.14.1"
+"@types/react-color@npm:^2.17.11":
+  version: 2.17.11
+  resolution: "@types/react-color@npm:2.17.11"
   dependencies:
     "@types/react": "*"
-  checksum: 89aa16335adf22cbcc7967d4cd52f3e4b9cb0e7ad9844df6ed5960b8a76d93fae56ebdc598a1bfd99e9433d38034ef2c533eaba69ddb99104b5b2e49d598874d
+    "@types/reactcss": "*"
+  checksum: c9cab9f6e7f25a0a92c768ea5db59279296fc161df62e7331ee42027484a026256af48f492fea03790a7fac7829a77a63e915fcece341e27f3f7e469f0145549
   languageName: node
   linkType: hard
 
@@ -13105,6 +13113,15 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: bf04d3c2894559012710d595553e12b422d3b91cd8f4f7e122d8cb044ba9c2ba17f6e8a4e09581359cc5509ddc59cd8c8fabd6774f3505a40a45393f074d6e6e
+  languageName: node
+  linkType: hard
+
+"@types/reactcss@npm:*":
+  version: 1.2.11
+  resolution: "@types/reactcss@npm:1.2.11"
+  dependencies:
+    "@types/react": "*"
+  checksum: 5ca3fbc61eae33f4d668edca70be27ed07577f3bc6518826b3d013dc56bf2c91eae357109b37b2ee5aa0d6116bad3b65f5cafdfaae4a41920b0df00ce2cc05b9
   languageName: node
   linkType: hard
 
@@ -16260,7 +16277,7 @@ __metadata:
     platform: ^1.3.5
     prop-types: ^15.7.2
     react: 17.0.2
-    react-color: ^2.14.1
+    react-color: ^2.19.3
     react-dnd: ^11.1.3
     react-dnd-html5-backend: ^11.1.3
     react-dom: 17.0.2
@@ -17416,6 +17433,7 @@ __metadata:
   dependencies:
     "@emotion/styled": ^11.10.6
     "@lexical/selection": ^0.12.2
+    "@types/react-color": ^2.17.11
     "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/lexical-editor": 0.0.0
@@ -17423,7 +17441,7 @@ __metadata:
     classnames: ^2.3.1
     emotion: ^10.0.27
     react: ^17.0.2
-    react-color: ^2.14.1
+    react-color: ^2.19.3
     react-dom: ^17.0.2
   languageName: unknown
   linkType: soft
@@ -18045,7 +18063,7 @@ __metadata:
     "@testing-library/react": ^12.1.2
     "@types/nprogress": ^0.2.0
     "@types/rc-tooltip": ^3.7.2
-    "@types/react-color": 2.14.1
+    "@types/react-color": ^2.17.11
     "@types/react-custom-scrollbars": ^4.0.10
     "@types/react-transition-group": ^4.4.4
     "@types/shortid": ^0.0.29
@@ -18074,7 +18092,7 @@ __metadata:
     rc-tooltip: ^3.7.2
     react-ace: ^6.1.4
     react-butterfiles: ^1.3.0
-    react-color: ^2.14.1
+    react-color: ^2.19.3
     react-columned: ^1.0.0
     react-custom-scrollbars: ^4.2.1
     react-loading-skeleton: ^3.1.0
@@ -36856,7 +36874,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-color@npm:^2.14.1":
+"react-color@npm:^2.19.3":
   version: 2.19.3
   resolution: "react-color@npm:2.19.3"
   dependencies:
@@ -38437,6 +38455,7 @@ __metadata:
     "@types/fs-extra": ^8.0.1
     "@types/jest": ^29.5.11
     "@types/node": ^18.0.0
+    "@types/prettier": ^2.7.3
     "@types/react": 17.0.39
     "@types/react-dom": 17.0.11
     "@typescript-eslint/eslint-plugin": ^5.5.0
