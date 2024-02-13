@@ -3,7 +3,8 @@ import {
     CategoryStorageOperations as BaseCategoryStorageOperations,
     PageBlockStorageOperations as BasePageBlockStorageOperations,
     PageBuilderStorageOperations as BasePageBuilderStorageOperations,
-    PageTemplateStorageOperations as BasePageTemplateStorageOperations
+    PageTemplateStorageOperations as BasePageTemplateStorageOperations,
+    PbContext
 } from "@webiny/api-page-builder/types";
 import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
@@ -11,6 +12,8 @@ import { Client } from "@elastic/elasticsearch";
 import { PluginCollection } from "@webiny/plugins/types";
 import { TableConstructor } from "@webiny/db-dynamodb/toolbox";
 import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
+
+export { PbContext };
 
 export type Attributes = Record<string, AttributeDefinition>;
 

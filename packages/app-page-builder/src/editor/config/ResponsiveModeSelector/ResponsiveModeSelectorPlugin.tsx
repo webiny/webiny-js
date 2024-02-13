@@ -1,9 +1,9 @@
 import React from "react";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { EditorBar } from "~/editor";
 import { ResponsiveModeSelector } from "./ResponsiveModeSelector";
 
-export const ResponsiveModeSelectorPlugin = createComponentPlugin(
+export const ResponsiveModeSelectorPlugin = createDecorator(
     EditorBar.CenterSection,
     CenterSection => {
         return function AddResponsiveModeSelector(props) {

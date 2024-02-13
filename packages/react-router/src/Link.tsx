@@ -1,11 +1,11 @@
 import React, { useContext, useEffect } from "react";
 import { Link as RouterLink, LinkProps as RouterLinkProps } from "react-router-dom";
-import { makeComposable } from "@webiny/react-composition";
+import { makeDecoratable } from "@webiny/react-composition";
 import { RouterContext } from "./context/RouterContext";
 
 export type LinkProps = RouterLinkProps;
 
-const Link = makeComposable<LinkProps>("Link", ({ children, ...props }) => {
+const Link = makeDecoratable("Link", ({ children, ...props }: LinkProps) => {
     const { onLink } = useContext(RouterContext);
 
     let { to } = props;

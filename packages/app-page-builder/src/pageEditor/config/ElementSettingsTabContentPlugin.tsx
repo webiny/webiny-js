@@ -2,7 +2,7 @@ import React from "react";
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/round/edit.svg";
 import { ReactComponent as RefreshIcon } from "@material-design-icons/svg/round/refresh.svg";
 import { SidebarActions } from "~/editor";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import Action from "~/editor/plugins/elementSettings/components/Action";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import useElementSettings from "~/editor/plugins/elementSettings/hooks/useElementSettings";
@@ -11,7 +11,7 @@ import VariableSettings from "~/editor/plugins/elementSettings/variable/Variable
 import { useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";
 import { PbEditorElement } from "~/types";
 
-export const ElementSettingsTabContentPlugin = createComponentPlugin(
+export const ElementSettingsTabContentPlugin = createDecorator(
     SidebarActions,
     SidebarActionsWrapper => {
         return function SettingsTabContent({ children, ...props }) {

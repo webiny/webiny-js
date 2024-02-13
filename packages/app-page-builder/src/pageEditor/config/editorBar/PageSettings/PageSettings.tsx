@@ -1,5 +1,5 @@
 import React from "react";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { UIViewComponent } from "@webiny/app-admin/ui/UIView";
 import { pageSettingsStateAtom } from "./state";
 import { useRecoilValue } from "recoil";
@@ -8,7 +8,7 @@ import { useRecoilValue } from "recoil";
 import { PageSettingsView } from "~/editor/ui/views/PageSettingsView";
 import { EditorBar } from "~/editor";
 
-export const PageSettingsOverlay = createComponentPlugin(EditorBar, EditorBar => {
+export const PageSettingsOverlay = createDecorator(EditorBar, EditorBar => {
     return function PageSettingsOverlay() {
         const isActive = useRecoilValue(pageSettingsStateAtom);
 

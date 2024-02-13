@@ -5,6 +5,7 @@ import { createTaskModel } from "./crud/model";
 import { createDefinitionCrud } from "./crud/definition.tasks";
 import { createTriggerTasksCrud } from "~/crud/trigger.tasks";
 import { createTaskCrud } from "./crud/crud.tasks";
+import { createTestingRunTask } from "~/tasks/testingRunTask";
 
 const createConfig = (config?: ITaskConfig): ITasksContextConfigObject => {
     return {
@@ -30,6 +31,10 @@ const createTasksCrud = (input?: ITaskConfig) => {
     return plugin;
 };
 
-export const createTasksContext = (input?: ITaskConfig): Plugin[] => {
+const createTasksContext = (input?: ITaskConfig): Plugin[] => {
     return [...createTaskModel(), createTasksCrud(input)];
+};
+
+export const createBackgroundTaskContext = (config?: ITaskConfig): Plugin[] => {
+    return [createTestingRunTask(), ...createTasksContext(config)];
 };

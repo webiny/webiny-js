@@ -1,6 +1,6 @@
 import React from "react";
 import { DrawerContent, DrawerRight } from "@webiny/ui/Drawer";
-import PageDetails from "~/admin/views/Pages/PageDetails";
+import { PageDetails } from "~/admin/views/Pages/PageDetails";
 
 interface PreviewProps {
     open: boolean;

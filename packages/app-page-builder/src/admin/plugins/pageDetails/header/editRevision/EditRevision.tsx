@@ -8,24 +8,21 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import { useMutation } from "@apollo/react-hooks";
 import { usePagesPermissions } from "~/hooks/permissions";
-import { PbPageData } from "~/types";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 import { useFolders } from "@webiny/app-aco";
+import { usePage } from "~/admin/views/Pages/PageDetails";
+import { makeDecoratable } from "@webiny/react-composition";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/edit");
 
-interface EditRevisionProps {
-    page: PbPageData;
-}
-
-const EditRevision = (props: EditRevisionProps) => {
-    const { page } = props;
+const EditRevision = makeDecoratable("EditRevision", () => {
     const { canUpdate: pagesCanUpdate } = usePagesPermissions();
     const { folderLevelPermissions: flp } = useFolders();
     const [inProgress, setInProgress] = useState<boolean>();
     const { showSnackbar } = useSnackbar();
     const [createPageFrom] = useMutation(CREATE_PAGE);
     const { navigateToPageEditor } = useNavigatePage();
+    const { page } = usePage();
 
     const createFromAndEdit = useCallback(async () => {
         setInProgress(true);
@@ -81,6 +78,6 @@ const EditRevision = (props: EditRevisionProps) => {
             />
         </Tooltip>
     );
-};
+});
 
 export default EditRevision;

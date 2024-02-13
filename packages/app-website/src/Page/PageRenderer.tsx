@@ -6,7 +6,7 @@ import {
     PbPageDataSettingsSeo,
     PbPageDataSettingsSocial
 } from "@webiny/app-page-builder/types";
-import { makeComposable } from "@webiny/app";
+import { makeDecoratable } from "@webiny/app";
 import { SettingsQueryResponseData } from "./graphql";
 import { ErrorPage } from "./ErrorPage";
 import { WebsiteScripts } from "./WebsiteScripts";
@@ -33,9 +33,9 @@ interface PageRendererProps {
     settings: SettingsQueryResponseData;
 }
 
-export const PageRenderer = makeComposable<PageRendererProps>(
+export const PageRenderer = makeDecoratable(
     "PageRenderer",
-    ({ page, error, settings }) => {
+    ({ page, error, settings }: PageRendererProps) => {
         if (error) {
             return <ErrorPage error={error} />;
         }

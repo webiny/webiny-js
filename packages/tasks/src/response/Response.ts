@@ -10,7 +10,8 @@ import {
     IResponseErrorParams,
     IResponseErrorResult,
     IResponseFromParams,
-    IResponseResult
+    IResponseResult,
+    ITaskResponseDoneResultOutput
 } from "./abstractions";
 import { ResponseContinueResult } from "~/response/ResponseContinueResult";
 import { ResponseDoneResult } from "~/response/ResponseDoneResult";
@@ -47,13 +48,16 @@ export class Response implements IResponse {
         });
     }
 
-    public done(params?: IResponseDoneParams): IResponseDoneResult {
-        return new ResponseDoneResult({
+    public done<O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
+        params?: IResponseDoneParams<O>
+    ): IResponseDoneResult<O> {
+        return new ResponseDoneResult<O>({
             webinyTaskId: params?.webinyTaskId || this.event.webinyTaskId,
             webinyTaskDefinitionId: this.event.webinyTaskDefinitionId,
             tenant: params?.tenant || this.event.tenant,
             locale: params?.locale || this.event.locale,
-            message: params?.message
+            message: params?.message,
+            output: params?.output
         });
     }
 

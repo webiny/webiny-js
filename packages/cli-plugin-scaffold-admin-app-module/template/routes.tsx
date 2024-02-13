@@ -20,7 +20,13 @@ const Loader = ({ children, ...props }: LoaderProps) => (
     </Suspense>
 );
 
-const TargetDataModels = lazy(() => import("./views"));
+const TargetDataModels = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "TargetDataModelsRoutes" */
+            "./views"
+        )
+);
 
 export default new RoutePlugin({
     route: (

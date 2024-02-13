@@ -7,10 +7,20 @@ import React, {
     useMemo
 } from "react";
 import { useCompositionScope } from "~/CompositionScope";
+import {
+    ComposedFunction,
+    ComposeWith,
+    DecoratableComponent,
+    DecoratableHook,
+    Enumerable,
+    GenericComponent,
+    Decorator,
+    GenericHook
+} from "~/types";
 
-export function compose(...fns: Decorator[]) {
-    return function ComposedComponent(Base: ComponentType<unknown>): ComponentType<unknown> {
-        return fns.reduceRight((Component, hoc) => hoc(Component), Base);
+export function compose<T>(...fns: Decorator<T>[]) {
+    return (decoratee: T): T => {
+        return fns.reduceRight((decoratee, decorator) => decorator(decoratee), decoratee);
     };
 }
 
@@ -18,11 +28,11 @@ interface ComposedComponent {
     /**
      * Ready to use React component.
      */
-    component: ComponentType<unknown>;
+    component: GenericHook | GenericComponent;
     /**
      * HOCs used to compose the original component.
      */
-    hocs: Decorator[];
+    hocs: Decorator<GenericComponent | GenericHook>[];
     /**
      * Component composition can be scoped.
      */
@@ -30,33 +40,23 @@ interface ComposedComponent {
 }
 
 /**
- * IMPORTANT: TProps default type is `any` because this interface is use as a prop type in the `Compose` component.
- * You can pass any Decorator as a prop, regardless of its TProps type. The only way to allow that is
- * to let it be `any` in this interface.
- */
-export interface Decorator<TProps = any> {
-    (Component: ComponentType<TProps>): ComponentType<TProps>;
-}
-
-/**
  * @deprecated Use `Decorator` instead.
  */
 export interface HigherOrderComponent<TProps = any, TOutput = TProps> {
-    (Component: ComponentType<TProps>): ComponentType<TOutput>;
+    (Component: GenericComponent<TProps>): GenericComponent<TOutput>;
 }
 
 type ComposedComponents = Map<ComponentType<unknown>, ComposedComponent>;
 type ComponentScopes = Map<string, ComposedComponents>;
 
+export type DecoratableTypes = DecoratableComponent | DecoratableHook;
+
 interface CompositionContext {
     components: ComponentScopes;
-    getComponent(
-        component: ComponentType<unknown>,
-        scope?: string
-    ): ComponentType<unknown> | undefined;
+    getComponent(component: ComponentType<unknown>, scope?: string): ComposedFunction | undefined;
     composeComponent(
         component: ComponentType<unknown>,
-        hocs: HigherOrderComponent[],
+        hocs: Enumerable<ComposeWith>,
         scope?: string
     ): void;
 }
@@ -77,7 +77,9 @@ export const CompositionProvider = ({ children }: CompositionProviderProps) => {
                 const scopeMap: ComposedComponents = components.get(scope) || new Map();
                 const recipe = scopeMap.get(component) || { component: null, hocs: [] };
 
-                const newHocs = [...(recipe.hocs || []), ...hocs];
+                const newHocs = [...(recipe.hocs || []), ...hocs] as Decorator<
+                    GenericHook | GenericComponent
+                >[];
 
                 scopeMap.set(component, {
                     component: compose(...[...newHocs].reverse())(component),
@@ -141,15 +143,15 @@ export const CompositionProvider = ({ children }: CompositionProviderProps) => {
     return <CompositionContext.Provider value={context}>{children}</CompositionContext.Provider>;
 };
 
-export function useComponent(Component: ComponentType<any>) {
+export function useComponent<T>(baseFunction: T) {
     const context = useOptionalComposition();
     const scope = useCompositionScope();
 
     if (!context) {
-        return Component;
+        return baseFunction;
     }
 
-    return context.getComponent(Component, scope) || Component;
+    return (context.getComponent(baseFunction as any, scope) || baseFunction) as T;
 }
 
 /**

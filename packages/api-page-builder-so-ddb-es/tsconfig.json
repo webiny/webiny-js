@@ -3,6 +3,7 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-elasticsearch" },
+    { "path": "../api-elasticsearch-tasks" },
     { "path": "../api-page-builder" },
     { "path": "../aws-sdk" },
     { "path": "../db-dynamodb" },
@@ -37,6 +38,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
       "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
+      "@webiny/api-elasticsearch-tasks/*": ["../api-elasticsearch-tasks/src/*"],
+      "@webiny/api-elasticsearch-tasks": ["../api-elasticsearch-tasks/src"],
       "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],
       "@webiny/api-page-builder": ["../api-page-builder/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],

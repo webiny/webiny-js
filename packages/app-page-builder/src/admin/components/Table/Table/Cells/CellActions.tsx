@@ -2,7 +2,8 @@ import React from "react";
 import { FolderProvider, useAcoConfig } from "@webiny/app-aco";
 import { OptionsMenu } from "@webiny/app-admin";
 import { PageListConfig } from "~/admin/config/pages";
-import { PageProvider } from "~/admin/views/Pages/hooks/usePage";
+import { PageProvider } from "~/admin/contexts/Page";
+import { PbPageTableItem } from "~/types";
 
 export const CellActions = () => {
     const { useTableRow, isFolderRow } = PageListConfig.Browser.Table.Column;
@@ -26,7 +27,7 @@ export const CellActions = () => {
     }
 
     return (
-        <PageProvider page={row}>
+        <PageProvider<PbPageTableItem> page={row}>
             <OptionsMenu
                 actions={recordConfig.actions}
                 data-testid={"table.row.pb.page.menu-action"}

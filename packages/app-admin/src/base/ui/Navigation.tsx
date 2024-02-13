@@ -8,7 +8,7 @@ import React, {
     useState
 } from "react";
 import { generateId } from "@webiny/utils";
-import { makeComposable, Plugins } from "@webiny/app";
+import { createVoidComponent, makeDecoratable, Plugins } from "@webiny/app";
 import { AddMenu as Menu, createEmptyMenu, MenuData, MenuProps, MenuUpdater, Tags } from "~/index";
 import { plugins } from "@webiny/plugins";
 import { AdminMenuPlugin } from "~/types";
@@ -150,7 +150,7 @@ export const Navigation = () => {
     );
 };
 
-export const NavigationRenderer = makeComposable("NavigationRenderer");
+export const NavigationRenderer = makeDecoratable("NavigationRenderer", createVoidComponent());
 
 interface MenuItemContext {
     menuItem?: MenuData;
@@ -171,7 +171,7 @@ export interface MenuItemsProps {
     menuItems: MenuData[];
 }
 
-export const MenuItems = makeComposable<MenuItemsProps>("MenuItems", ({ menuItems }) => {
+export const MenuItems = makeDecoratable("MenuItems", ({ menuItems }: MenuItemsProps) => {
     const menuItem = useMenuItem();
 
     const depth = menuItem ? menuItem.depth : -1;
@@ -194,4 +194,4 @@ export const MenuItem = () => {
     return <MenuItemRenderer />;
 };
 
-export const MenuItemRenderer = makeComposable("MenuItemRenderer");
+export const MenuItemRenderer = makeDecoratable("MenuItemRenderer", createVoidComponent());

@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useRecoilState } from "recoil";
 import { IconButton } from "@webiny/ui/Button";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/round/settings.svg";
 import { templateSettingsStateAtom } from "./state";
 import { EditorBar } from "~/editor";
@@ -15,16 +15,13 @@ const TemplateSettingsButton = () => {
     return <IconButton onClick={onClickHandler} icon={<SettingsIcon />} />;
 };
 
-export const AddTemplateSettingsButton = createComponentPlugin(
-    EditorBar.RightSection,
-    RightSection => {
-        return function ComposeRightSection(props) {
-            return (
-                <RightSection>
-                    <TemplateSettingsButton />
-                    {props.children}
-                </RightSection>
-            );
-        };
-    }
-);
+export const AddTemplateSettingsButton = createDecorator(EditorBar.RightSection, RightSection => {
+    return function ComposeRightSection(props) {
+        return (
+            <RightSection>
+                <TemplateSettingsButton />
+                {props.children}
+            </RightSection>
+        );
+    };
+});
