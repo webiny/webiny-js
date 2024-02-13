@@ -20,13 +20,16 @@ const completionMessage = t`All pages have been exported`;
 const errorMessage = t`Failed to import pages`;
 const pendingMessage = t`Waiting for operation status`;
 const processingMessage = t`Exporting pages`;
+const abortedMessage = t`Importing pages aborted`;
 
 const INTERVAL = 1000;
 
-const MESSAGES: Record<string, string> = {
-    [ImportExportTaskStatus.COMPLETED]: completionMessage,
-    [ImportExportTaskStatus.PROCESSING]: processingMessage,
-    [ImportExportTaskStatus.PENDING]: pendingMessage
+const MESSAGES: Record<PbTaskStatus, string> = {
+    [PbTaskStatus.success]: completionMessage,
+    [PbTaskStatus.running]: processingMessage,
+    [PbTaskStatus.pending]: pendingMessage,
+    [PbTaskStatus.failed]: errorMessage,
+    [PbTaskStatus.aborted]: abortedMessage
 };
 
 interface ExportPageLoadingDialogContent {

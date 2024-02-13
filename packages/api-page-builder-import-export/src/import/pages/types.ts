@@ -47,11 +47,13 @@ export interface IImportPagesProcessPagesInput {
     items: ImportData[];
     done: string[];
     failed: string[];
+    pageIdList: string[];
 }
 
 export interface IImportPagesProcessPagesOutput extends ITaskResponseDoneResultOutput {
     done: string[];
     failed: string[];
+    pageIdList: string[];
 }
 
 export type IImportPagesProcessPagesTaskParams = ITaskRunParams<

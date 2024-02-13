@@ -58,7 +58,17 @@ export interface ITaskManagerStoreSetOutputOptions {
 }
 
 export interface ITaskManagerStoreUpdateTaskOptions {
-    save: boolean;
+    /**
+     * Default is true.
+     */
+    save?: boolean;
+}
+
+export interface ITaskManagerStoreAddLogOptions {
+    /**
+     * Default is true.
+     */
+    save?: boolean;
 }
 
 /**

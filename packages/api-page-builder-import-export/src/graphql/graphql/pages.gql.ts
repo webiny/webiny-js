@@ -1,12 +1,12 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import {
     ExportPagesParams,
-    PbExportPagesResponse,
     ImportPagesParams,
+    PbExportPagesResponse,
     PbImportExportContext
 } from "../types";
-import resolve from "./utils/resolve";
-import { Response, ErrorResponse } from "@webiny/handler-graphql";
+import { resolve } from "./utils/resolve";
+import { ErrorResponse, Response } from "@webiny/handler-graphql";
 
 const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
     type: "graphql-schema",
@@ -48,12 +48,16 @@ const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
                 error: PbError
             }
 
+            type PbImportExportPagesTaskData {
+                error: PbError
+            }
             type PbImportPagesTask {
                 id: ID!
                 createdOn: DateTime!
                 createdBy: PbCreatedBy!
                 status: PbImportExportPagesTaskStatus!
                 stats: PbImportExportPagesTaskStats!
+                data: PbImportExportPagesTaskData!
             }
 
             type PbImportPageData {
@@ -80,9 +84,20 @@ const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
                 error: PbError
             }
 
+            type PbListImportedPagesData {
+                id: ID!
+                title: String!
+                version: Int!
+            }
+            type PbListImportedPagesResponse {
+                data: [PbListImportedPagesData!]
+                error: PbError
+            }
+
             extend type PbQuery {
                 getExportPagesTask(id: ID!): PbExportPagesTaskResponse!
                 getImportPagesTask(id: ID!): PbImportPagesTaskResponse!
+                listImportedPages(taskId: ID!): PbListImportedPagesResponse!
             }
 
             extend type PbMutation {
@@ -106,12 +121,17 @@ const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
             PbQuery: {
                 async getExportPagesTask(_, args, context) {
                     return resolve(() => {
-                        return context.pageBuilder.pages.getExportTask(args.id);
+                        return context.pageBuilder.pages.getExportPagesTask(args.id);
                     });
                 },
                 async getImportPagesTask(_, args, context) {
                     return resolve(() => {
-                        return context.pageBuilder.pages.getImportTask(args.id);
+                        return context.pageBuilder.pages.getImportPagesTask(args.id);
+                    });
+                },
+                async listImportedPages(_, args, context) {
+                    return resolve(() => {
+                        return context.pageBuilder.pages.listImportedPages(args.taskId);
                     });
                 }
             },

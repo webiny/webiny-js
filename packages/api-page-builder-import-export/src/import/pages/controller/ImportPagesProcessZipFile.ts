@@ -40,7 +40,8 @@ export class ImportPagesProcessZipFile {
                     identity: input.identity,
                     items: pages,
                     done: [],
-                    failed: []
+                    failed: [],
+                    pageIdList: []
                 }
             });
         }

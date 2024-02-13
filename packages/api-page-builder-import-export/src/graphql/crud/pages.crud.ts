@@ -60,7 +60,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
         /**
          * Background task implementation.
          */
-        getExportTask: async id => {
+        getExportPagesTask: async id => {
             const task = await context.tasks.getTask<
                 IExportPagesControllerInput,
                 IExportPagesControllerOutput
@@ -118,7 +118,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 }
             };
         },
-        async getImportTask(id) {
+        async getImportPagesTask(id) {
             const task = await context.tasks.getTask<
                 IImportPagesControllerInput,
                 IImportPagesControllerOutput
@@ -155,7 +155,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                     };
                 },
                 {
-                    total: 0,
+                    total: task.output?.total || 0,
                     completed: 0,
                     failed: 0
                 }
@@ -271,6 +271,49 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 console.log(ex);
                 throw ex;
             }
+        },
+        listImportedPages: async taskId => {
+            const task = await context.tasks.getTask<
+                IImportPagesControllerInput,
+                IImportPagesControllerOutput
+            >(taskId);
+
+            if (!task || task.definitionId !== PageImportTask.Controller) {
+                throw new NotFoundError(`Task with id "${taskId}" not found.`);
+            }
+            const { items: subTasks } = await context.tasks.listTasks<
+                IImportPagesProcessPagesInput,
+                IImportPagesProcessPagesOutput
+            >({
+                where: {
+                    parentId: task.id,
+                    definitionId: PageImportTask.Process
+                },
+                limit: 10000
+            });
+            const pageIdList = subTasks.reduce<string[]>((collection, subTask) => {
+                if (!subTask.output?.pageIdList) {
+                    return collection;
+                }
+                collection.push(...subTask.output.pageIdList);
+                return collection;
+            }, []);
+
+            const result = await context.pageBuilder.listLatestPages({
+                where: {
+                    pid_in: pageIdList
+                },
+                limit: 10000
+            });
+
+            const [pages] = result;
+            return pages.map(page => {
+                return {
+                    id: page.id,
+                    title: page.title,
+                    version: page.version
+                };
+            });
         }
     };
 });

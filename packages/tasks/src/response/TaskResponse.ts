@@ -47,12 +47,17 @@ export class TaskResponse implements ITaskResponse {
     }
 
     public done<O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
-        message?: string,
+        message?: string | O,
         output?: O
     ): ITaskResponseDoneResult<O> {
+        if (typeof message === "object" && !output) {
+            return this.response.done({
+                output: message
+            });
+        }
         return this.response.done<O>({
-            message,
-            output: output || ({} as O)
+            message: message as string,
+            output
         });
     }
 

@@ -1,5 +1,5 @@
 import { Topic } from "@webiny/pubsub/types";
-import { CreatedBy, ListPagesParams, PbContext } from "@webiny/api-page-builder/types";
+import { CreatedBy, ListPagesParams, Page, PbContext } from "@webiny/api-page-builder/types";
 import { FormBuilderContext } from "@webiny/api-form-builder/types";
 import {
     ExportRevisionType,
@@ -100,8 +100,9 @@ export interface PagesImportExportCrud {
     /**
      * Background tasks implementation.
      */
-    getExportTask: (id: string) => Promise<PbExportPagesTask | null>;
-    getImportTask: (id: string) => Promise<PbImportPagesTask | null>;
+    getExportPagesTask: (id: string) => Promise<PbExportPagesTask | null>;
+    getImportPagesTask: (id: string) => Promise<PbImportPagesTask | null>;
+    listImportedPages: (taskId: string) => Promise<Pick<Page, "id" | "title" | "version">[]>;
 
     onPagesBeforeExport: Topic<OnPagesBeforeExportTopicParams>;
     onPagesAfterExport: Topic<OnPagesAfterExportTopicParams>;

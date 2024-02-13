@@ -1,6 +1,6 @@
 import { ITaskResponseResult } from "@webiny/tasks";
 import { IImportPagesControllerInputMeta, IImportPagesProcessPagesTaskParams } from "./types";
-import { importPage } from "~/import/process/pages/importPage";
+import { importPage } from "./process/importPage";
 import { mockSecurity } from "~/mockSecurity";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { ImportData } from "~/types";
@@ -19,6 +19,7 @@ export class ImportPagesProcessPages {
 
         const { identity, items, meta, category } = input;
 
+        const pageIdList = Array.from(input.pageIdList || []);
         const done = Array.from(input.done || []);
         const failed = Array.from(input.failed || []);
 
@@ -33,6 +34,7 @@ export class ImportPagesProcessPages {
             } else if (isCloseToTimeout()) {
                 return response.continue({
                     ...input,
+                    pageIdList,
                     done,
                     failed
                 });
@@ -47,6 +49,7 @@ export class ImportPagesProcessPages {
                     meta,
                     category
                 });
+                pageIdList.push(page.pid);
                 done.push(item.key);
             } catch (ex) {
                 await store.addErrorLog({
@@ -70,7 +73,11 @@ export class ImportPagesProcessPages {
             });
         }
 
-        return response.done();
+        return response.done({
+            done,
+            failed,
+            pageIdList
+        });
     }
 
     private async importPage(params: ImportPageParams) {

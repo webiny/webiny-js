@@ -13,6 +13,7 @@ import {
     TaskDataStatus
 } from "~/types";
 import {
+    ITaskManagerStoreAddLogOptions,
     ITaskManagerStoreErrorLog,
     ITaskManagerStoreUpdateTaskInputParam,
     ITaskManagerStoreUpdateTaskParams
@@ -83,7 +84,7 @@ export class TaskManagerStore<
 
         this.taskUpdater.update(data);
 
-        if (!options?.save) {
+        if (options?.save === false) {
             return;
         }
         await this.save();
@@ -104,7 +105,7 @@ export class TaskManagerStore<
         this.taskUpdater.update({
             input: input as T
         });
-        if (!options?.save) {
+        if (options?.save === false) {
             return;
         }
         await this.save();
@@ -121,7 +122,7 @@ export class TaskManagerStore<
         this.taskUpdater.update({
             output: values as O
         });
-        if (options.save === false) {
+        if (options?.save === false) {
             return;
         }
         await this.save();
@@ -134,33 +135,68 @@ export class TaskManagerStore<
      * Currently the methods throws an error if something goes wrong during the database update.
      * TODO: Maybe we should wrap it into try/catch and return error if any?
      */
-    public async addInfoLog(log: ITaskManagerStoreInfoLog): Promise<void> {
-        this.taskLog = await this.context.tasks.updateLog(this.taskLog.id, {
-            items: this.taskLog.items.concat([
+    public async addInfoLog(
+        log: ITaskManagerStoreInfoLog,
+        options?: ITaskManagerStoreAddLogOptions
+    ): Promise<void> {
+        this.taskLogUpdater.update({
+            items: [
                 {
                     message: log.message,
                     data: log.data,
                     type: ITaskLogItemType.INFO,
                     createdOn: new Date().toISOString()
                 }
-            ])
+            ]
         });
+        if (options?.save === false) {
+            return;
+        }
+        // this.taskLog = await this.context.tasks.updateLog(this.taskLog.id, {
+        //     items: this.taskLog.items.concat([
+        //         {
+        //             message: log.message,
+        //             data: log.data,
+        //             type: ITaskLogItemType.INFO,
+        //             createdOn: new Date().toISOString()
+        //         }
+        //     ])
+        // });
+        await this.save();
     }
     /**
      * Currently the methods throws an error if something goes wrong during the database update.
      * TODO: Maybe we should wrap it into try/catch and return error if any?
      */
-    public async addErrorLog(log: ITaskManagerStoreErrorLog): Promise<void> {
-        this.taskLog = await this.context.tasks.updateLog(this.taskLog.id, {
-            items: this.taskLog.items.concat([
+    public async addErrorLog(
+        log: ITaskManagerStoreErrorLog,
+        options?: ITaskManagerStoreAddLogOptions
+    ): Promise<void> {
+        this.taskLogUpdater.update({
+            items: [
                 {
                     message: log.message,
                     error: log.error instanceof Error ? getObjectProperties(log.error) : log.error,
                     type: ITaskLogItemType.ERROR,
                     createdOn: new Date().toISOString()
                 }
-            ])
+            ]
         });
+        if (options?.save === false) {
+            return;
+        }
+        await this.save();
+
+        // this.taskLog = await this.context.tasks.updateLog(this.taskLog.id, {
+        //     items: this.taskLog.items.concat([
+        //         {
+        //             message: log.message,
+        //             error: log.error instanceof Error ? getObjectProperties(log.error) : log.error,
+        //             type: ITaskLogItemType.ERROR,
+        //             createdOn: new Date().toISOString()
+        //         }
+        //     ])
+        // });
     }
 
     public async save(): Promise<void> {

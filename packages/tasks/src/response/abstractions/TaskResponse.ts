@@ -55,11 +55,18 @@ export type ITaskResponseContinueOptions =
     | ITaskResponseContinueOptionsUntil
     | ITaskResponseContinueOptionsSeconds;
 
+export interface ITaskResponseDoneCallable<
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
+    (output?: O): ITaskResponseDoneResult<O>;
+    (message?: string, output?: O): ITaskResponseDoneResult<O>;
+}
+
 export interface ITaskResponse<
     T = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 > {
-    done: (message?: string, output?: O) => ITaskResponseDoneResult<O>;
+    done: ITaskResponseDoneCallable<O>;
     continue: (data: T, options?: ITaskResponseContinueOptions) => ITaskResponseContinueResult<T>;
     error: (error: IResponseError | Error | string) => ITaskResponseErrorResult;
     aborted: () => ITaskResponseAbortedResult;
