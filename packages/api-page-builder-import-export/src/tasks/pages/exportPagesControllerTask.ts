@@ -40,9 +40,8 @@ export const createExportPagesControllerTask = () => {
             await context.tasks.trigger({
                 definition: PageExportTask.Cleanup,
                 parent: task,
-                delay: 2 * 60
                 // delay cleanup for 25hrs
-                // delay: 25 * 60 * 60
+                delay: 25 * 60 * 60
             });
         },
         onError: async ({ context, task }) => {
