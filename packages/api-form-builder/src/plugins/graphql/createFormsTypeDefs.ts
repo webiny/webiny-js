@@ -138,8 +138,8 @@ export const createFormsTypeDefs = (params: CreateFormsTypeDefsParams): string =
             # Get form revisions
             getFormRevisions(id: ID!): FbFormRevisionsResponse
 
-            # Get published form form ID (public access)
-            getPublishedForm(formId: ID): FbFormResponse
+            # Get published form by revision ID, or parent form ID (public access)
+            getPublishedForm(revision: ID, parent: ID): FbFormResponse
         }
 
         extend type FbMutation {

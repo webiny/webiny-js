@@ -9,7 +9,10 @@ export type FormRenderer = ReturnType<typeof createForm>;
 
 export interface FormElementData {
     settings: {
-        formId?: string;
+        form?: {
+            parent?: string;
+            revision?: string;
+        };
     };
 }
 
@@ -21,8 +24,15 @@ export const createForm = (params: CreateFormParams) => {
 
         const element = getElement<FormElementData>();
 
-        const formId = element.data.settings?.formId;
-        const variables: GetFormDataLoaderVariables = { formId };
+        const form = element.data.settings?.form;
+        const variables: GetFormDataLoaderVariables = {};
+        if (form) {
+            if (form.revision === "latest") {
+                variables.parent = form.parent;
+            } else {
+                variables.revision = form.revision;
+            }
+        }
 
         const variablesHash = JSON.stringify({ variables, headers });
 
@@ -46,10 +56,11 @@ export const createForm = (params: CreateFormParams) => {
 
         useEffect(() => {
             if (preloadedFormData) {
-                setFormData(preloadedFormData);
+                return;
             }
 
-            if (!variables.formId) {
+            const hasRequiredVariables = variables.parent || variables.revision;
+            if (!hasRequiredVariables) {
                 return;
             }
 
@@ -68,7 +79,7 @@ export const createForm = (params: CreateFormParams) => {
             }
         }, [variablesHash]);
 
-        if (!variables.formId) {
+        if (!(variables.parent || variables.revision)) {
             if (params.renderFormNotSelected) {
                 return params.renderFormNotSelected({});
             }

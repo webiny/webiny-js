@@ -1,7 +1,7 @@
 export const GET_PUBLISHED_FORM = /* GraphQL */ `
-    query FbGetPublishedForm($formId: ID) @ps(cache: true) {
+    query FbGetPublishedForm($revision: ID, $parent: ID) @ps(cache: true) {
         formBuilder {
-            getPublishedForm(formId: $formId) {
+            getPublishedForm(revision: $revision, parent: $parent) {
                 data {
                     id
                     formId
