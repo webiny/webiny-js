@@ -34,7 +34,7 @@ const FormElementAdvancedSettings = ({ Bind, submit, data }: FormElementAdvanced
     const publishedFormsOptions = useMemo(
         () =>
             publishedForms.map(publishedForm => ({
-                id: publishedForm.formId,
+                id: publishedForm.id,
                 name: publishedForm.name
             })),
         [publishedForms]
