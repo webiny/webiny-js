@@ -4,14 +4,19 @@ import {
     ITaskLog,
     ITaskLogItemType,
     ITaskManagerStoreInfoLog,
+    ITaskManagerStorePrivate,
+    ITaskManagerStoreSetOutputOptions,
+    ITaskManagerStoreUpdateTaskInputOptions,
+    ITaskManagerStoreUpdateTaskOptions,
+    ITaskResponseDoneResultOutput,
     ITasksContextObject,
     TaskDataStatus
 } from "~/types";
 import {
-    ITaskManagerStore,
+    ITaskManagerStoreAddLogOptions,
     ITaskManagerStoreErrorLog,
     ITaskManagerStoreUpdateTaskInputParam,
-    ITaskManagerStoreUpdateTaskParam
+    ITaskManagerStoreUpdateTaskParams
 } from "./abstractions";
 /**
  * Package deep-equal does not have types.
@@ -19,11 +24,12 @@ import {
 // @ts-expect-error
 import deepEqual from "deep-equal";
 import { getObjectProperties } from "~/utils/getObjectProperties";
+import { ObjectUpdater } from "~/utils/ObjectUpdater";
 
 const getInput = <T extends ITaskDataInput = ITaskDataInput>(
     originalInput: T,
     input: ITaskManagerStoreUpdateTaskInputParam<T>
-) => {
+): T => {
     if (typeof input === "function") {
         return input(originalInput);
     }
@@ -37,14 +43,21 @@ export interface TaskManagerStoreContext {
     tasks: Pick<ITasksContextObject, "updateTask" | "updateLog">;
 }
 
-export class TaskManagerStore implements ITaskManagerStore {
+export class TaskManagerStore<
+    T extends ITaskDataInput = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> implements ITaskManagerStorePrivate<T, O>
+{
     private readonly context: TaskManagerStoreContext;
-    private task: ITask;
+    private task: ITask<T, O>;
     private taskLog: ITaskLog;
+
+    private readonly taskUpdater = new ObjectUpdater<ITask<T, O>>();
+    private readonly taskLogUpdater = new ObjectUpdater<ITaskLog>();
 
     public constructor(context: TaskManagerStoreContext, task: ITask, log: ITaskLog) {
         this.context = context;
-        this.task = task;
+        this.task = task as ITask<T, O>;
         this.taskLog = log;
     }
 
@@ -52,30 +65,34 @@ export class TaskManagerStore implements ITaskManagerStore {
         return this.task.taskStatus;
     }
 
-    public setTask(task: ITask): void {
-        this.task = task;
+    public getTask(): ITask<T, O> {
+        return this.task as ITask<T, O>;
     }
 
-    public getTask<T extends ITaskDataInput = ITaskDataInput>(): ITask<T> {
-        return this.task as ITask<T>;
-    }
-
-    public async updateTask(param: ITaskManagerStoreUpdateTaskParam): Promise<void> {
+    public async updateTask(
+        param: ITaskManagerStoreUpdateTaskParams<T, O>,
+        options?: ITaskManagerStoreUpdateTaskOptions
+    ): Promise<void> {
         const data = typeof param === "function" ? param(this.task) : param;
+
         /**
          * No need to update if nothing changed.
          */
         if (deepEqual(data, this.task)) {
             return;
         }
-        this.task = await this.context.tasks.updateTask(this.task.id, {
-            ...this.task,
-            ...data
-        });
+
+        this.taskUpdater.update(data);
+
+        if (options?.save === false) {
+            return;
+        }
+        await this.save();
     }
 
-    public async updateInput<T extends ITaskDataInput = ITaskDataInput>(
-        param: ITaskManagerStoreUpdateTaskInputParam<T>
+    public async updateInput(
+        param: ITaskManagerStoreUpdateTaskInputParam<T>,
+        options?: ITaskManagerStoreUpdateTaskInputOptions
     ): Promise<void> {
         const input = getInput<T>(this.task.input, param);
 
@@ -85,44 +102,118 @@ export class TaskManagerStore implements ITaskManagerStore {
         if (deepEqual(input, this.task.input)) {
             return;
         }
-        this.task = await this.context.tasks.updateTask(this.task.id, {
-            input
+        this.taskUpdater.update({
+            input: input as T
         });
+        if (options?.save === false) {
+            return;
+        }
+        await this.save();
     }
 
-    public getInput<T extends ITaskDataInput = ITaskDataInput>(): T {
+    public getInput(): T {
         return this.task.input as T;
+    }
+
+    public async updateOutput(
+        values: Partial<O>,
+        options: ITaskManagerStoreSetOutputOptions = {}
+    ): Promise<void> {
+        this.taskUpdater.update({
+            output: values as O
+        });
+        if (options?.save === false) {
+            return;
+        }
+        await this.save();
+    }
+
+    public getOutput(): O {
+        return this.task.output as O;
     }
     /**
      * Currently the methods throws an error if something goes wrong during the database update.
      * TODO: Maybe we should wrap it into try/catch and return error if any?
      */
-    public async addInfoLog(log: ITaskManagerStoreInfoLog): Promise<void> {
-        this.taskLog = await this.context.tasks.updateLog(this.taskLog.id, {
-            items: this.taskLog.items.concat([
+    public async addInfoLog(
+        log: ITaskManagerStoreInfoLog,
+        options?: ITaskManagerStoreAddLogOptions
+    ): Promise<void> {
+        this.taskLogUpdater.update({
+            items: [
                 {
                     message: log.message,
                     data: log.data,
                     type: ITaskLogItemType.INFO,
                     createdOn: new Date().toISOString()
                 }
-            ])
+            ]
         });
+        if (options?.save === false) {
+            return;
+        }
+        // this.taskLog = await this.context.tasks.updateLog(this.taskLog.id, {
+        //     items: this.taskLog.items.concat([
+        //         {
+        //             message: log.message,
+        //             data: log.data,
+        //             type: ITaskLogItemType.INFO,
+        //             createdOn: new Date().toISOString()
+        //         }
+        //     ])
+        // });
+        await this.save();
     }
     /**
      * Currently the methods throws an error if something goes wrong during the database update.
      * TODO: Maybe we should wrap it into try/catch and return error if any?
      */
-    public async addErrorLog(log: ITaskManagerStoreErrorLog): Promise<void> {
-        this.taskLog = await this.context.tasks.updateLog(this.taskLog.id, {
-            items: this.taskLog.items.concat([
+    public async addErrorLog(
+        log: ITaskManagerStoreErrorLog,
+        options?: ITaskManagerStoreAddLogOptions
+    ): Promise<void> {
+        this.taskLogUpdater.update({
+            items: [
                 {
                     message: log.message,
                     error: log.error instanceof Error ? getObjectProperties(log.error) : log.error,
                     type: ITaskLogItemType.ERROR,
                     createdOn: new Date().toISOString()
                 }
-            ])
+            ]
         });
+        if (options?.save === false) {
+            return;
+        }
+        await this.save();
+
+        // this.taskLog = await this.context.tasks.updateLog(this.taskLog.id, {
+        //     items: this.taskLog.items.concat([
+        //         {
+        //             message: log.message,
+        //             error: log.error instanceof Error ? getObjectProperties(log.error) : log.error,
+        //             type: ITaskLogItemType.ERROR,
+        //             createdOn: new Date().toISOString()
+        //         }
+        //     ])
+        // });
+    }
+
+    public async save(): Promise<void> {
+        /**
+         * Update both task and the log, if anything to update.
+         */
+        if (this.taskUpdater.isDirty()) {
+            this.task = await this.context.tasks.updateTask<T, O>(
+                this.task.id,
+                this.taskUpdater.fetch()
+            );
+        }
+        if (this.taskLogUpdater.isDirty()) {
+            this.taskLog = await this.context.tasks.updateLog(
+                this.taskLog.id,
+                this.taskLogUpdater.fetch()
+            );
+        }
     }
 }

@@ -1,4 +1,4 @@
-import { ITaskManager, ITaskRunner } from "./abstractions";
+import { ITaskManager, ITaskManagerStorePrivate, ITaskRunner } from "./abstractions";
 import {
     Context,
     ITask,
@@ -14,7 +14,6 @@ import {
     ITaskResponse,
     ITaskResponseResult
 } from "~/response/abstractions";
-import { ITaskManagerStore } from "~/runner/abstractions";
 import { getErrorProperties } from "~/utils/getErrorProperties";
 
 export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
@@ -22,14 +21,14 @@ export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
     private readonly context: Context;
     private readonly response: IResponse;
     private readonly taskResponse: ITaskResponse;
-    private readonly store: ITaskManagerStore;
+    private readonly store: ITaskManagerStorePrivate;
 
     public constructor(
         runner: Pick<ITaskRunner, "isCloseToTimeout">,
         context: Context,
         response: IResponse,
         taskResponse: ITaskResponse,
-        store: ITaskManagerStore
+        store: ITaskManagerStorePrivate
     ) {
         this.runner = runner;
         this.context = context;
@@ -57,9 +56,7 @@ export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
                     executionName: this.response.event.executionName,
                     iterations: 1
                 });
-                await this.store.addInfoLog({
-                    message: "Task started."
-                });
+                await this.store.save();
             } catch (error) {
                 return this.response.error({
                     error

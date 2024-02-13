@@ -30,7 +30,7 @@ export class ZipPages {
             });
         }
 
-        const getPage = getPageFactory(context, store);
+        const getPage = getPageFactory(context, store, input.type === "published");
         /**
          * We will go page by page and zip them.
          * We are using the input.queue here because we are removing page from the ZipPagesDataManager queue as it is processed.

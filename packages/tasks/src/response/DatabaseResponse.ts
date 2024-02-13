@@ -11,15 +11,15 @@ import {
     IResponseErrorResult,
     IResponseResult
 } from "./abstractions";
-import { ITaskManagerStore } from "~/runner/abstractions";
+import { ITaskManagerStorePrivate } from "~/runner/abstractions";
 import { getErrorProperties } from "~/utils/getErrorProperties";
 
 export class DatabaseResponse implements IResponseAsync {
     public readonly response: IResponse;
 
-    private readonly store: ITaskManagerStore;
+    private readonly store: ITaskManagerStorePrivate;
 
-    public constructor(response: IResponse, store: ITaskManagerStore) {
+    public constructor(response: IResponse, store: ITaskManagerStorePrivate) {
         this.response = response;
         this.store = store;
     }
@@ -49,6 +49,7 @@ export class DatabaseResponse implements IResponseAsync {
             await this.store.addInfoLog({
                 message: message || "Task done."
             });
+            await this.store.save();
         } catch (ex) {
             message = `Task done, but failed to update task log. (${ex.message || "unknown"})`;
         }
@@ -82,6 +83,7 @@ export class DatabaseResponse implements IResponseAsync {
                 message: "Task continuing.",
                 data: params.input
             });
+            await this.store.save();
         } catch (ex) {
             /**
              * If task was not found, we just return the error.
@@ -130,6 +132,7 @@ export class DatabaseResponse implements IResponseAsync {
                 data: this.store.getInput(),
                 error
             });
+            await this.store.save();
         } catch (ex) {
             return this.response.error({
                 ...params,

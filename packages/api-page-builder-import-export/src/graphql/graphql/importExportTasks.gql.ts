@@ -1,5 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import resolve from "./utils/resolve";
+import { resolve } from "./utils/resolve";
 import { PbImportExportContext } from "../types";
 
 const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
@@ -8,31 +8,27 @@ const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
         typeDefs: /* GraphQL */ `
             enum PbImportExportTaskStatus {
                 pending
-                success
-                aborted
+                processing
+                completed
                 failed
-                running
             }
 
             type PbImportExportTaskStats {
+                pending: Int
+                processing: Int
                 completed: Int
                 failed: Int
                 total: Int
             }
 
-            type PbImportExportTaskData {
-                url: String
-                error: PbError
-            }
-
-            # REMOVE when import is implemented
             type PbImportExportTask {
-                id: ID!
-                createdOn: DateTime!
-                createdBy: PbCreatedBy!
-                status: PbImportExportTaskStatus!
-                data: PbImportExportTaskData!
-                stats: PbImportExportTaskStats!
+                id: ID
+                createdOn: DateTime
+                createdBy: PbCreatedBy
+                status: PbImportExportTaskStatus
+                data: JSON
+                stats: PbImportExportTaskStats
+                error: JSON
             }
 
             # Response types
@@ -42,15 +38,12 @@ const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
             }
 
             type PbImportExportTaskListResponse {
-                data: [PbImportExportTask!]
+                data: [PbImportExportTask]
                 error: PbError
             }
 
             extend type PbQuery {
-                getExportTask(id: ID!): PbImportExportTaskResponse!
-                # remove when implemented import
                 getImportExportTask(id: ID!): PbImportExportTaskResponse
-                # remove when implemented import
                 listImportExportSubTask(
                     id: ID!
                     status: PbImportExportTaskStatus
@@ -60,11 +53,6 @@ const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
         `,
         resolvers: {
             PbQuery: {
-                async getExportTask(_, args, context) {
-                    return resolve(() => {
-                        return context.pageBuilder.importExportTask.getExportTask(args.id);
-                    });
-                },
                 getImportExportTask: async (_, args: any, context) => {
                     return resolve(() => {
                         return context.pageBuilder.importExportTask.getTask(args.id);

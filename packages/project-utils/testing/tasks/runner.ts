@@ -1,4 +1,3 @@
-import { Reply, Request } from "@webiny/handler/types";
 import {
     Context,
     ITaskDataInput,
@@ -34,11 +33,6 @@ export const createRunner = <
                 return params.getRemainingTimeInMills();
             }
         },
-        {} as Request,
-        {} as Reply,
-        /**
-         * We can safely cast because we know that the context is of type tasks/Context
-         */
         params.context
     );
 

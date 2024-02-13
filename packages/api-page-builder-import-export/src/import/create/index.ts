@@ -3,7 +3,6 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 import { createRawEventHandler } from "@webiny/handler-aws";
 import { blocksHandler } from "~/import/create/blocksHandler";
 import { formsHandler } from "~/import/create/formsHandler";
-import { pagesHandler } from "~/import/create/pagesHandler";
 import { templatesHandler } from "~/import/create/templatesHandler";
 
 export interface Configuration {
@@ -43,7 +42,8 @@ export default (configuration: Configuration) => {
                         return templatesHandler(configuration, payload, context);
                     }
                     default: {
-                        return pagesHandler(configuration, payload, context);
+                        console.log("Import PB", JSON.stringify(payload));
+                        throw new Error("Invalid type provided: pb page.");
                     }
                 }
             });

@@ -14,8 +14,10 @@ import {
     ITaskResponseResult
 } from "~/response/abstractions";
 import { ITaskManagerStore } from "./runner/abstractions";
-import { EventBridgeClientSendResponse } from "@webiny/aws-sdk/client-eventbridge";
+import { PutEventsCommandOutput } from "@webiny/aws-sdk/client-eventbridge";
 import { SecurityPermission } from "@webiny/api-security/types";
+
+export { PutEventsCommandOutput };
 
 export * from "./handler/types";
 export * from "./response/abstractions";
@@ -102,7 +104,7 @@ export interface ITask<
     createdBy: ITaskIdentity;
     startedOn?: string;
     finishedOn?: string;
-    eventResponse: EventBridgeClientSendResponse | undefined;
+    eventResponse: PutEventsCommandOutput | undefined;
     iterations: number;
     parentId?: string;
 }
@@ -125,8 +127,14 @@ export interface IListTaskLogsResponse {
     meta: CmsEntryMeta;
 }
 
-export type ICreateTaskResponse<T = any> = ITask<T>;
-export type IUpdateTaskResponse<T = any> = ITask<T>;
+export type ICreateTaskResponse<
+    T = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> = ITask<T, O>;
+export type IUpdateTaskResponse<
+    T = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> = ITask<T, O>;
 export type IDeleteTaskResponse = boolean;
 
 export interface IListTaskParams extends Omit<CmsEntryListParams, "fields" | "search"> {
@@ -165,7 +173,7 @@ export interface ITaskUpdateData<
     executionName?: string;
     startedOn?: string;
     finishedOn?: string;
-    eventResponse?: Record<string, any>;
+    eventResponse?: PutEventsCommandOutput;
     iterations?: number;
 }
 
@@ -202,7 +210,7 @@ export interface ITaskLogCreateInput {
 }
 
 export interface ITaskLogUpdateInput {
-    items: ITaskLogItem[];
+    items?: ITaskLogItem[];
 }
 
 export interface ITasksContextCrudObject {
@@ -221,10 +229,13 @@ export interface ITasksContextCrudObject {
         params?: IListTaskParams
     ) => Promise<IListTasksResponse<T, O>>;
     createTask: <T = any>(task: ITaskCreateData<T>) => Promise<ICreateTaskResponse<T>>;
-    updateTask: <T = any>(
+    updateTask: <
+        T = ITaskDataInput,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(
         id: string,
-        data: Partial<ITaskUpdateData<T>>
-    ) => Promise<IUpdateTaskResponse<T>>;
+        data: Partial<ITaskUpdateData<T, O>>
+    ) => Promise<IUpdateTaskResponse<T, O>>;
     deleteTask: (id: string) => Promise<IDeleteTaskResponse>;
     /**
      * Logs

@@ -44,6 +44,16 @@ const spinnerWrapper = css`
     height: 180px;
 `;
 
+const createWhere = (where?: PbListPagesWhereInput, ids?: string[]) => {
+    if (!ids?.length) {
+        return where;
+    }
+    return {
+        ...(where || {}),
+        pid_in: ids
+    };
+};
+
 export interface ExportPagesDialogProps {
     ids?: string[];
     where?: PbListPagesWhereInput;
@@ -63,10 +73,7 @@ const ExportPageLoadingDialogMessage = (props: ExportPagesDialogProps) => {
         exportPage({
             variables: {
                 ...variables,
-                where: {
-                    ...variables.where,
-                    pid_in: ids ? ids : undefined
-                },
+                where: createWhere(variables.where, ids),
                 revisionType,
                 sort: sort ? [sort] : undefined
             }

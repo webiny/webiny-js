@@ -5,6 +5,7 @@ import {
     IListTaskParams,
     ITask,
     ITaskCreateData,
+    ITaskDataInput,
     ITaskLog,
     ITaskLogCreateInput,
     ITaskLogUpdateInput,
@@ -77,21 +78,23 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     const onTaskAfterDelete = createTopic<OnTaskAfterDeleteTopicParams>("tasks.onAfterDelete");
 
     const getTaskModel = async (): Promise<CmsModel> => {
-        const model = await context.cms.getModel(WEBINY_TASK_MODEL_ID);
-        if (model) {
-            return model;
-        }
-
-        throw new WebinyError(`There is no model "${WEBINY_TASK_MODEL_ID}".`);
+        return await context.security.withoutAuthorization(async () => {
+            const model = await context.cms.getModel(WEBINY_TASK_MODEL_ID);
+            if (model) {
+                return model;
+            }
+            throw new WebinyError(`There is no model "${WEBINY_TASK_MODEL_ID}".`);
+        });
     };
 
     const getLogModel = async (): Promise<CmsModel> => {
-        const model = await context.cms.getModel(WEBINY_TASK_LOG_MODEL_ID);
-        if (model) {
-            return model;
-        }
-
-        throw new WebinyError(`There is no model "${WEBINY_TASK_LOG_MODEL_ID}".`);
+        return await context.security.withoutAuthorization(async () => {
+            const model = await context.cms.getModel(WEBINY_TASK_LOG_MODEL_ID);
+            if (model) {
+                return model;
+            }
+            throw new WebinyError(`There is no model "${WEBINY_TASK_LOG_MODEL_ID}".`);
+        });
     };
 
     const getTask = async <
@@ -102,8 +105,10 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     ) => {
         let entry: CmsEntry;
         try {
-            const model = await getTaskModel();
-            entry = await context.cms.getEntryById(model, createRevisionId(id));
+            entry = await context.security.withoutAuthorization(async () => {
+                const model = await getTaskModel();
+                return await context.cms.getEntryById(model, createRevisionId(id));
+            });
         } catch (ex) {
             if (ex instanceof NotFoundError) {
                 return null;
@@ -124,10 +129,12 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     >(
         params?: IListTaskParams
     ) => {
-        const model = await getTaskModel();
-        const [items, meta] = await context.cms.listLatestEntries<ITask<T, O>>(model, {
-            ...params,
-            where: remapWhere(params?.where)
+        const [items, meta] = await context.security.withoutAuthorization(async () => {
+            const model = await getTaskModel();
+            return await context.cms.listLatestEntries<ITask<T, O>>(model, {
+                ...params,
+                where: remapWhere(params?.where)
+            });
         });
 
         return {
@@ -144,52 +151,72 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             });
         }
 
-        const model = await getTaskModel();
-        const entry = await context.cms.createEntry(model, {
-            ...data,
-            iterations: 0,
-            taskStatus: TaskDataStatus.PENDING
+        const entry = await context.security.withoutAuthorization(async () => {
+            const model = await getTaskModel();
+            return await context.cms.createEntry(model, {
+                ...data,
+                iterations: 0,
+                taskStatus: TaskDataStatus.PENDING
+            });
         });
 
         return convertToTask(entry as unknown as CmsEntry<ITask>);
     };
 
-    const updateTask = async (id: string, data: ITaskUpdateData) => {
-        const model = await getTaskModel();
-        const entry = await context.cms.updateEntry(model, createRevisionId(id), {
-            ...data,
-            savedOn: new Date().toISOString()
+    const updateTask = async <
+        T = ITaskDataInput,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(
+        id: string,
+        data: ITaskUpdateData<T, O>
+    ) => {
+        const entry = await context.security.withoutAuthorization(async () => {
+            const model = await getTaskModel();
+            return await context.cms.updateEntry(model, createRevisionId(id), {
+                ...data,
+                savedOn: new Date().toISOString()
+            });
         });
-
-        return convertToTask(entry as unknown as CmsEntry<ITask>);
+        return convertToTask<T, O>(entry as unknown as CmsEntry<ITask<T, O>>);
     };
 
-    const deleteTask = async (id: string) => {
-        const model = await getTaskModel();
-        await context.cms.deleteEntry(model, createRevisionId(id));
-        return true;
+    const deleteTask = async(id: string) => {
+        return context.security.withoutAuthorization(async () => {
+            const model = await getTaskModel();
+            await context.cms.deleteEntry(model, createRevisionId(id));
+            return true;
+        });
     };
 
     const createLog = async (task: Pick<ITask, "id">, data: ITaskLogCreateInput) => {
-        const model = await getLogModel();
-        const entry = await context.cms.createEntry(model, {
-            ...data,
-            task: task.id
+        const entry = await context.security.withoutAuthorization(async () => {
+            const model = await getLogModel();
+
+            return await context.cms.createEntry(model, {
+                ...data,
+                task: task.id
+            });
         });
 
         return convertToLog(entry as unknown as CmsEntry<ITaskLog>);
     };
 
     const updateLog = async (id: string, data: ITaskLogUpdateInput) => {
-        const model = await getLogModel();
-        const entry = await context.cms.updateEntry(model, createRevisionId(id), data);
+        const entry = await context.security.withoutAuthorization(async () => {
+            const model = await getLogModel();
+
+            return await context.cms.updateEntry(model, createRevisionId(id), data);
+        });
         return convertToLog(entry as unknown as CmsEntry<ITaskLog>);
     };
 
     const getLog = async (id: string): Promise<ITaskLog | null> => {
         try {
-            const model = await getLogModel();
-            const entry = await context.cms.getEntryById(model, id);
+            const entry = await context.security.withoutAuthorization(async () => {
+                const model = await getLogModel();
+                return await context.cms.getEntryById(model, id);
+            });
+
             return convertToLog(entry as unknown as CmsEntry<ITaskLog>);
         } catch (ex) {
             if (ex instanceof NotFoundError) {
@@ -200,28 +227,32 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     };
 
     const getLatestLog = async (taskId: string): Promise<ITaskLog> => {
-        const model = await getLogModel();
-        const [items] = await context.cms.listLatestEntries<ITaskLog>(model, {
-            where: {
-                task: taskId
-            },
-            sort: ["createdOn_DESC"],
-            limit: 1
+        const entry = await context.security.withoutAuthorization(async () => {
+            const model = await getLogModel();
+            const [items] = await context.cms.listLatestEntries<ITaskLog>(model, {
+                where: {
+                    task: taskId
+                },
+                sort: ["createdOn_DESC"],
+                limit: 1
+            });
+            const [item] = items;
+            if (!item) {
+                throw new NotFoundError(`No existing latest log found for task "${taskId}".`);
+            }
+            return item;
         });
-
-        const [entry] = items;
-        if (!entry) {
-            throw new NotFoundError(`No existing latest log found for task "${taskId}".`);
-        }
 
         return convertToLog(entry as unknown as CmsEntry<ITaskLog>);
     };
 
     const listLogs = async (params: IListTaskLogParams) => {
-        const model = await getLogModel();
-        const [items, meta] = await context.cms.listLatestEntries<ITaskLog>(model, {
-            ...params,
-            where: remapWhere(params.where)
+        const [items, meta] = await context.security.withoutAuthorization(async () => {
+            const model = await getLogModel();
+            return await context.cms.listLatestEntries<ITaskLog>(model, {
+                ...params,
+                where: remapWhere(params.where)
+            });
         });
 
         return {

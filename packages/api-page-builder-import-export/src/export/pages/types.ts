@@ -4,7 +4,6 @@ import { PbImportExportContext } from "~/types";
 export enum PageExportTask {
     Controller = "pageBuilderExportPagesController",
     ZipPages = "pageBuilderExportPagesZipPages",
-    CombineZippedPages = "pageBuilderExportPagesCombineZippedPages",
     Cleanup = "pageBuilderExportPagesCleanup"
 }
 
@@ -39,6 +38,7 @@ export interface IExportPagesZipPagesDone {
     [pageId: string]: string;
 }
 export interface IExportPagesZipPagesInput {
+    type: "published" | "latest";
     queue: string[];
     done?: IExportPagesZipPagesDone;
     failed?: string[];

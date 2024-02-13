@@ -17,12 +17,12 @@ export interface UseHandlerParams {
     plugins?: PluginCollection;
 }
 
-export const useHandler = (params?: UseHandlerParams) => {
+export const useHandler = <C extends Context = Context>(params?: UseHandlerParams) => {
     const { plugins = [] } = params || {};
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const i18nStorage = getStorageOps<any[]>("i18n");
 
-    const handler = createRawHandler<any, Context>({
+    const handler = createRawHandler<any, C>({
         plugins: [
             createWcpContext(),
             ...cmsStorage.plugins,
