@@ -27,7 +27,7 @@
     "lodash": "4.17.21",
     "log-update": "^4.0.0",
     "mime": "2.6.0",
-    "minimatch": "^5.1.0",
+    "minimatch": "^6.0.0",
     "ncp": "2.0.0",
     "node-notifier": "7.0.2",
     "open": "^8.4.0",

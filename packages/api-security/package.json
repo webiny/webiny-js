@@ -24,8 +24,8 @@
     "@webiny/validation": "0.0.0",
     "commodo-fields-object": "^1.0.6",
     "deep-equal": "^2.2.3",
-    "jsonwebtoken": "^9.0.1",
-    "minimatch": "^5.1.0"
+    "jsonwebtoken": "^9.0.2",
+    "minimatch": "^6.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",

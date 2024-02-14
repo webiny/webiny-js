@@ -12,7 +12,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "jsonwebtoken": "^9.0.1",
+    "jsonwebtoken": "^9.0.2",
     "jwk-to-pem": "^2.0.1",
     "node-fetch": "^2.6.1"
   },
