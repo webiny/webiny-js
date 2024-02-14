@@ -2,6 +2,7 @@ import { FormBuilderStorageOperations, FormBuilderContext } from "~/types";
 import { createSystemCrud } from "~/plugins/crud/system.crud";
 import { createSettingsCrud } from "~/plugins/crud/settings.crud";
 import { createFormsCrud } from "~/plugins/crud/forms.crud";
+import { createFormStatsCrud } from "~/plugins/crud/formStats.crud";
 import { createSubmissionsCrud } from "~/plugins/crud/submissions.crud";
 import WebinyError from "@webiny/error";
 import { FormsPermissions } from "./permissions/FormsPermissions";
@@ -68,6 +69,10 @@ export const setupFormBuilderContext = async (params: CreateFormBuilderCrudParam
             getLocale,
             formsPermissions,
             context
+        }),
+        ...createFormStatsCrud({
+            getTenant,
+            getLocale
         }),
         ...createSubmissionsCrud({
             context,

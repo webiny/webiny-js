@@ -7,6 +7,7 @@ import { createSystemStorageOperations } from "~/operations/system";
 import { createSubmissionStorageOperations } from "~/operations/submission";
 import { createSettingsStorageOperations } from "~/operations/settings";
 import { createFormStorageOperations } from "~/operations/form";
+import { createFormStatsStorageOperations } from "~/operations/formStats";
 import { createElasticsearchTable } from "~/definitions/tableElasticsearch";
 
 const reservedFields = ["PK", "SK", "index", "data", "TYPE", "__type", "GSI1_PK", "GSI1_SK"];
@@ -70,6 +71,7 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
             entity: entities.settings
         }),
         forms: createFormStorageOperations(),
+        formStats: createFormStatsStorageOperations(),
         submissions: createSubmissionStorageOperations()
     };
 };

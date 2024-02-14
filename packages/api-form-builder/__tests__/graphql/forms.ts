@@ -27,15 +27,6 @@ export const FORM_DATA_FIELD = /* GraphQL */ `
         }
         triggers
         status
-        stats {
-            views
-            submissions
-        }
-        overallStats {
-            views
-            submissions
-            conversionRate
-        }
         createdBy {
             id
             displayName

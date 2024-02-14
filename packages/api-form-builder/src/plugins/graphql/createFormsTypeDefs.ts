@@ -44,15 +44,7 @@ export const createFormsTypeDefs = (params: CreateFormsTypeDefsParams): string =
         fieldTypePlugins
     });
 
-    const excludeFormFields = [
-        "formId",
-        "stats",
-        "overallStats",
-        "fields",
-        "steps",
-        "settings",
-        "triggers"
-    ];
+    const excludeFormFields = ["formId", "fields", "steps", "settings", "triggers"];
 
     const inputCreateFields = renderInputFields({
         models,
@@ -61,7 +53,7 @@ export const createFormsTypeDefs = (params: CreateFormsTypeDefsParams): string =
         fieldTypePlugins
     });
 
-    const excludeUpdateFormFields = ["formId", "stats", "overallStats"];
+    const excludeUpdateFormFields = ["formId"];
 
     const inputUpdateFields = renderInputFields({
         models,

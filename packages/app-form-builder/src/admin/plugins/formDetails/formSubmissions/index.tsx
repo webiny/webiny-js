@@ -18,7 +18,7 @@ export default [
     {
         name: "forms-form-details-revision-content-submissions",
         type: "forms-form-details-revision-content",
-        render({ form, loading, security }) {
+        render({ form, stats, loading, security }) {
             const { getPermissions } = security;
 
             const fbFormPermissions = getPermissions("fb.form");
@@ -49,8 +49,10 @@ export default [
                         <div style={{ position: "relative" }}>
                             {loading && <CircularProgress />}
                             {form &&
+                                stats &&
                                 renderPlugins("forms-form-details-submissions", {
-                                    form
+                                    form,
+                                    stats
                                 })}
                         </div>
                     </RenderBlock>
@@ -61,8 +63,8 @@ export default [
     {
         name: "forms-form-details-submissions-overview",
         type: "forms-form-details-submissions",
-        render({ form }) {
-            return <FormSubmissionsOverview form={form} />;
+        render({ stats }) {
+            return <FormSubmissionsOverview stats={stats} />;
         }
     } as FbFormDetailsSubmissionsPlugin,
     {

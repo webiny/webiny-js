@@ -927,79 +927,48 @@ export const createEntriesStorageOperations = (
         const { entries } = params;
         const model = getStorageOperationsModel(initialModel);
         /**
-         * First we need all the revisions of the entries we want to delete.
-         */
-        const revisions = await dataLoaders.getAllEntryRevisions({
-            model,
-            ids: entries
-        });
-        /**
-         * Then we need to construct the queries for all the revisions and entries.
+         * We need to construct the queries for all the revisions and entries.
          */
         const items: Record<string, WriteRequest>[] = [];
         const esItems: Record<string, WriteRequest>[] = [];
         for (const id of entries) {
-            /**
-             * Latest item.
-             */
+            const partitionKey = createPartitionKey({
+                id,
+                locale: model.locale,
+                tenant: model.tenant
+            });
+
+            const entryItems = await queryAll<CmsEntry>({
+                entity,
+                partitionKey,
+                options: {
+                    gte: " "
+                }
+            });
+
+            const esEntryItems = await queryAll<CmsEntry>({
+                entity: esEntity,
+                partitionKey,
+                options: {
+                    gte: " "
+                }
+            });
+
             items.push(
-                entity.deleteBatch({
-                    PK: createPartitionKey({
-                        id,
-                        locale: model.locale,
-                        tenant: model.tenant
-                    }),
-                    SK: "L"
+                ...entryItems.map(item => {
+                    return entity.deleteBatch({
+                        PK: item.PK,
+                        SK: item.SK
+                    });
                 })
             );
+
             esItems.push(
-                esEntity.deleteBatch({
-                    PK: createPartitionKey({
-                        id,
-                        locale: model.locale,
-                        tenant: model.tenant
-                    }),
-                    SK: "L"
-                })
-            );
-            /**
-             * Published item.
-             */
-            items.push(
-                entity.deleteBatch({
-                    PK: createPartitionKey({
-                        id,
-                        locale: model.locale,
-                        tenant: model.tenant
-                    }),
-                    SK: "P"
-                })
-            );
-            esItems.push(
-                esEntity.deleteBatch({
-                    PK: createPartitionKey({
-                        id,
-                        locale: model.locale,
-                        tenant: model.tenant
-                    }),
-                    SK: "P"
-                })
-            );
-        }
-        /**
-         * Exact revisions of all the entries
-         */
-        for (const revision of revisions) {
-            items.push(
-                entity.deleteBatch({
-                    PK: createPartitionKey({
-                        id: revision.id,
-                        locale: model.locale,
-                        tenant: model.tenant
-                    }),
-                    SK: createRevisionSortKey({
-                        version: revision.version
-                    })
+                ...esEntryItems.map(item => {
+                    return esEntity.deleteBatch({
+                        PK: item.PK,
+                        SK: item.SK
+                    });
                 })
             );
         }

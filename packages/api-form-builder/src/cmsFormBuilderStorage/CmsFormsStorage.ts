@@ -104,12 +104,7 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
         const model = this.modelWithContext(form);
 
         const entry = await this.security.withoutAuthorization(async () => {
-            return await this.cms.createEntryRevisionFrom(model, form.id, {
-                stats: {
-                    submissions: 0,
-                    views: 0
-                }
-            });
+            return await this.cms.createEntryRevisionFrom(model, form.id, {});
         });
 
         return this.getFormFieldValues(entry);
@@ -131,9 +126,7 @@ export class CmsFormsStorage implements FormBuilderFormStorageOperations {
         const model = this.modelWithContext(form);
 
         await this.security.withoutAuthorization(async () => {
-            return await this.cms.deleteEntry(model, form.id, {
-                force: true
-            });
+            return await this.cms.deleteEntry(model, form.id);
         });
     }
 

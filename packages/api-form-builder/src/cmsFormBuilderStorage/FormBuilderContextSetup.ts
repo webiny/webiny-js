@@ -5,6 +5,7 @@ import WebinyError from "@webiny/error";
 import { createFormBuilderBasicContext } from "./createFormBuilderBasicContext";
 import { createFormBuilderPlugins } from "./createFormBuilderPlugins";
 import { CmsFormsStorage } from "./CmsFormsStorage";
+import { CmsFormStatsStorage } from "./CmsFormStatsStorage";
 import { isInstallationPending } from "./isInstallationPending";
 import { CmsSubmissionsStorage } from "./CmsSubmissionsStorage";
 import { FormBuilderContext, FbFormPermission, FormBuilderStorageOperations } from "~/types";
@@ -20,13 +21,18 @@ export class FormBuilderContextSetup {
 
     async setupContext(storageOperations: FormBuilderStorageOperations) {
         // This registers code plugins (model group, models)
-        const { groupPlugin, formModelDefinition, submissionModelDefinition } =
-            createFormBuilderPlugins();
+        const {
+            groupPlugin,
+            formModelDefinition,
+            formStatModelDefinition,
+            submissionModelDefinition
+        } = createFormBuilderPlugins();
 
         // Finally, register all plugins
         this.context.plugins.register([
             groupPlugin,
             new CmsModelPlugin(formModelDefinition),
+            new CmsModelPlugin(formStatModelDefinition),
             new CmsModelPlugin(submissionModelDefinition)
         ]);
 
@@ -36,6 +42,14 @@ export class FormBuilderContextSetup {
 
         if (formsStorageOps) {
             storageOperations.forms = formsStorageOps;
+        }
+
+        const formsStatsStorageOps = await this.context.security.withoutAuthorization(() => {
+            return this.setupFormStatsCmsStorageOperations();
+        });
+
+        if (formsStatsStorageOps) {
+            storageOperations.formStats = formsStatsStorageOps;
         }
 
         const submissionsStorageOps = await this.context.security.withoutAuthorization(() => {
@@ -71,6 +85,20 @@ export class FormBuilderContextSetup {
         const model = await this.getModel("fbForm");
 
         return await CmsFormsStorage.create({
+            model,
+            cms: this.context.cms,
+            security: this.context.security
+        });
+    }
+
+    private async setupFormStatsCmsStorageOperations() {
+        if (isInstallationPending({ tenancy: this.context.tenancy, i18n: this.context.i18n })) {
+            return;
+        }
+
+        const model = await this.getModel("fbFormStat");
+
+        return await CmsFormStatsStorage.create({
             model,
             cms: this.context.cms,
             security: this.context.security

@@ -2,7 +2,6 @@ import slugify from "slugify";
 import { NotFoundError } from "@webiny/handler-graphql";
 import {
     FbForm,
-    FbFormStats,
     FormBuilder,
     FormBuilderContext,
     FormBuilderStorageOperationsListFormsParams,
@@ -140,38 +139,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             }
 
             return form;
-        },
-        async getFormStats(this: FormBuilder, id) {
-            /**
-             * We don't need to check permissions here, as this method is only called
-             * as a resolver to an `FbForm` GraphQL type, and we already check permissions
-             * and ownership when resolving the form in `getForm`.
-             */
-            const revisions = await this.getFormRevisions(id);
-
-            /**
-             * Then calculate the stats
-             */
-            const stats: FbFormStats = {
-                submissions: 0,
-                views: 0,
-                conversionRate: 0
-            };
-
-            for (const form of revisions) {
-                stats.views += form.stats.views;
-                stats.submissions += form.stats.submissions;
-            }
-
-            let conversionRate = 0;
-            if (stats.views > 0) {
-                conversionRate = parseFloat(((stats.submissions / stats.views) * 100).toFixed(2));
-            }
-
-            return {
-                ...stats,
-                conversionRate
-            };
         },
         async listForms(this: FormBuilder) {
             await formsPermissions.ensure({ rwd: "r" });
@@ -312,10 +279,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 slug,
                 version,
                 status: FORM_STATUS.DRAFT,
-                stats: {
-                    views: 0,
-                    submissions: 0
-                },
                 /**
                  * Will be added via a "update"
                  */
@@ -333,15 +296,16 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 webinyVersion: context.WEBINY_VERSION
             };
 
+            let result: FbForm;
+
             try {
                 await onFormBeforeCreate.publish({
                     form
                 });
-                const result = await this.storageOperations.forms.createForm({ form });
+                result = await this.storageOperations.forms.createForm({ form });
                 await onFormAfterCreate.publish({
                     form: result
                 });
-                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create form.",
@@ -351,6 +315,18 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     }
                 );
             }
+
+            try {
+                await this.createFormStats(result);
+            } catch (ex) {
+                // If `formStats` creation fails, delete the form and rethrow the error.
+                // TODO: Consider adding a unit test to cover this scenario.
+                await this.deleteForm(result.id);
+
+                throw ex;
+            }
+
+            return result;
         },
         async updateForm(this: FormBuilder, id, input) {
             await formsPermissions.ensure({ rwd: "w" });
@@ -430,7 +406,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 await onFormAfterDelete.publish({
                     form
                 });
-                return true;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete form.",
@@ -440,6 +415,10 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     }
                 );
             }
+
+            await this.deleteFormStats(form.formId);
+
+            return true;
         },
         async deleteFormRevision(this: FormBuilder, id) {
             await formsPermissions.ensure({ rwd: "d" });
@@ -571,17 +550,18 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 auth: false
             });
 
+            let result: FbForm;
+
             try {
                 await onFormRevisionBeforeCreate.publish({
                     form
                 });
-                const result = await this.storageOperations.forms.createFormFrom({
+                result = await this.storageOperations.forms.createFormFrom({
                     form
                 });
                 await onFormRevisionAfterCreate.publish({
                     form: result
                 });
-                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create form from given one.",
@@ -592,25 +572,31 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     }
                 );
             }
-        },
-        async incrementFormViews(this: FormBuilder, id) {
-            const original = await this.getForm(id, {
-                auth: false
-            });
-
-            const form: FbForm = {
-                ...original,
-                stats: {
-                    ...original.stats,
-                    views: original.stats.views + 1
-                },
-                tenant: getTenant().id,
-                webinyVersion: context.WEBINY_VERSION
-            };
 
             try {
-                await this.storageOperations.forms.updateForm({
-                    form
+                await this.createFormStats(result);
+            } catch (ex) {
+                // If `formStats` creation fails, delete the form revision and rethrow the error.
+                // TODO: Consider adding a unit test to cover this scenario.
+                await this.deleteFormRevision(result.id);
+
+                throw ex;
+            }
+
+            return result;
+        },
+        async incrementFormViews(this: FormBuilder, id) {
+            const original = await this.getFormStats(id);
+
+            if (!original) {
+                throw new NotFoundError(`Form stats for form "${id}" were not found!`);
+            }
+
+            const views = original.views + 1;
+
+            try {
+                await this.updateFormStats(id, {
+                    views
                 });
             } catch (ex) {
                 throw new WebinyError(
@@ -618,7 +604,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     ex.code || "UPDATE_FORM_STATS_VIEWS_ERROR",
                     {
                         original,
-                        form
+                        views
                     }
                 );
             }
@@ -626,31 +612,23 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             return true;
         },
         async incrementFormSubmissions(this: FormBuilder, id) {
-            const original = await this.getForm(id, {
-                auth: false
-            });
+            const original = await this.getFormStats(id);
 
-            const form: FbForm = {
-                ...original,
-                stats: {
-                    ...original.stats,
-                    submissions: original.stats.submissions + 1
-                },
-                tenant: getTenant().id,
-                webinyVersion: context.WEBINY_VERSION
-            };
+            if (!original) {
+                throw new NotFoundError(`Form stats for form "${id}" were not found!`);
+            }
+
+            const submissions = original.submissions + 1;
 
             try {
-                await this.storageOperations.forms.updateForm({
-                    form
-                });
+                await this.updateFormStats(id, { submissions });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not update form stats submissions stats.",
                     ex.code || "UPDATE_FORM_STATS_SUBMISSIONS_ERROR",
                     {
                         original,
-                        form
+                        submissions
                     }
                 );
             }

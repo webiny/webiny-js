@@ -27,49 +27,6 @@ const nameField = () => {
     });
 };
 
-const statsViewsField = () => {
-    return createModelField({
-        label: "Views",
-        type: "number"
-    });
-};
-
-const statsSubmissionsField = () => {
-    return createModelField({
-        label: "Submissions",
-        type: "number"
-    });
-};
-
-const conversionRateStatsSubmissionsField = () => {
-    return createModelField({
-        label: "Conversion Rate",
-        fieldId: "conversionRate",
-        type: "number"
-    });
-};
-
-const statsField = (fields: CmsModelField[]) => {
-    return createModelField({
-        label: "Stats",
-        type: "object",
-        settings: {
-            fields
-        }
-    });
-};
-
-const overallStatsField = (fields: CmsModelField[]) => {
-    return createModelField({
-        label: "Overall Stats",
-        fieldId: "overallStats",
-        type: "object",
-        settings: {
-            fields
-        }
-    });
-};
-
 const field_IdField = () => {
     return createModelField({
         label: "ID",
@@ -392,16 +349,6 @@ export const createFormDataModelDefinition = (group: CmsModelGroup): CmsPrivateM
         fields: [
             formIdField(),
             nameField(),
-            statsField([
-                statsViewsField(),
-                statsSubmissionsField(),
-                conversionRateStatsSubmissionsField()
-            ]),
-            overallStatsField([
-                statsViewsField(),
-                statsSubmissionsField(),
-                conversionRateStatsSubmissionsField()
-            ]),
             fieldsField(FIELD_FIELDS),
             stepsField(STEP_FIELDS),
             settingsField(SETTINGS_FIELDS),
