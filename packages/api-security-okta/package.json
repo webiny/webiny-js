@@ -18,7 +18,7 @@
     "@webiny/api-tenant-manager": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
-    "jsonwebtoken": "^9.0.1",
+    "jsonwebtoken": "^9.0.2",
     "jwk-to-pem": "^2.0.1",
     "node-fetch": "^2.6.1"
   },
