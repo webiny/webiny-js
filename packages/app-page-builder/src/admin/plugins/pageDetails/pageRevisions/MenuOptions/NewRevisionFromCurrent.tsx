@@ -1,6 +1,6 @@
 import React from "react";
 import { PbPageData } from "~/types";
-import { makeComposable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
@@ -24,7 +24,7 @@ export const PageRevisionNewRevisionFromCurrent = (props: NewRevisionFromCurrent
     );
 };
 
-export const NewRevisionFromCurrent = makeComposable(
+export const NewRevisionFromCurrent = makeDecoratable(
     "NewRevisionFromCurrent",
     PageRevisionNewRevisionFromCurrent
 );

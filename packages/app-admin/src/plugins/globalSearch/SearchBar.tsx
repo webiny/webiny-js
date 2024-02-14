@@ -28,7 +28,7 @@ import {
     SearchShortcut,
     searchWrapper
 } from "./styled";
-import { makeComposable } from "~/index";
+import { makeDecoratable } from "~/index";
 
 type SearchBarProps = UseRouter;
 
@@ -253,4 +253,4 @@ const SearchBarContainer = () => {
     return <SearchBar {...routerProps} />;
 };
 
-export default makeComposable("SearchBarContainer", SearchBarContainer);
+export default makeDecoratable("SearchBarContainer", SearchBarContainer);

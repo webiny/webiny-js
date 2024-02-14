@@ -28,8 +28,10 @@ export {
     Plugins,
     Plugin,
     makeComposable,
+    makeDecoratable,
     createComponentPlugin,
     createProviderPlugin,
+    createDecorator,
     createProvider,
     MenuItem,
     MenuItemRenderer,
@@ -48,6 +50,7 @@ export {
 export type {
     ComposeProps,
     HigherOrderComponent,
+    Decorator,
     ProviderProps,
     LayoutProps,
     LoginScreenProps,

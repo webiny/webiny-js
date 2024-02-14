@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { makeComposable } from "@webiny/app";
+import { createVoidComponent, makeDecoratable } from "@webiny/app";
 
 export interface SearchOptionData {
     route: string;
@@ -54,11 +54,11 @@ export const SearchProvider = (Component: React.ComponentType) => {
     };
 };
 
-export const Search = makeComposable("Search", () => {
+export const Search = makeDecoratable("Search", () => {
     return <SearchRenderer />;
 });
 
-export const SearchRenderer = makeComposable("SearchRenderer");
+export const SearchRenderer = makeDecoratable("SearchRenderer", createVoidComponent());
 
 export type SearchOptionProps = SearchOptionData;
 

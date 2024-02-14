@@ -5,7 +5,7 @@ import styled from "@emotion/styled";
 import { css } from "emotion";
 import { DrawerLeft, DrawerContent } from "@webiny/ui/Drawer";
 import { plugins } from "@webiny/plugins";
-import { makeComposable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 import { PbEditorToolbarBottomPlugin, PbEditorToolbarTopPlugin } from "~/types";
 import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
@@ -140,6 +140,13 @@ const Toolbar = () => {
 };
 export default React.memo(Toolbar);
 
-export const ToolbarActions = makeComposable("ToolbarActions", ({ children }) => {
-    return <ToolbarActionsWrapper>{children}</ToolbarActionsWrapper>;
-});
+export interface ToolbarActionsProps {
+    children: React.ReactNode;
+}
+
+export const ToolbarActions = makeDecoratable(
+    "ToolbarActions",
+    ({ children }: ToolbarActionsProps) => {
+        return <ToolbarActionsWrapper>{children}</ToolbarActionsWrapper>;
+    }
+);

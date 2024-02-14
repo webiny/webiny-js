@@ -30,6 +30,7 @@ interface MyInput {
 class MyTask implements ITaskDefinition<Context, MyInput> {
     public readonly id = "myCustomTask";
     public readonly title = "A custom task defined via class";
+    public readonly maxIterations = 1;
 
     public fields = [
         {
@@ -53,6 +54,7 @@ describe("task plugin", () => {
         const task: ITaskDefinition<Context, MyInput> = {
             id: "myCustomTask",
             title: "A custom task defined via object",
+            maxIterations: 1,
             run: async ({ response, isCloseToTimeout, input }) => {
                 try {
                     if (isCloseToTimeout()) {

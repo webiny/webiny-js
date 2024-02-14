@@ -1,21 +1,21 @@
 import React from "react";
+import { makeDecoratable } from "@webiny/app-admin";
 import { Center } from "./DropZone/Center";
 import { Horizontal, HorizontalPropsType } from "./DropZone/Horizontal";
 import { Vertical, VerticalPropsType } from "./DropZone/Vertical";
-import { makeComposable } from "@webiny/react-composition";
 
 export default {
-    Above: makeComposable("Dropzone.Above", (props: HorizontalPropsType) => {
+    Above: makeDecoratable("Dropzone.Above", (props: HorizontalPropsType) => {
         return <Horizontal {...props} />;
     }),
-    Below: makeComposable("Dropzone.Below", (props: HorizontalPropsType) => {
+    Below: makeDecoratable("Dropzone.Below", (props: HorizontalPropsType) => {
         return <Horizontal {...props} below />;
     }),
-    Left: makeComposable("Dropzone.Left", (props: VerticalPropsType) => {
+    Left: makeDecoratable("Dropzone.Left", (props: VerticalPropsType) => {
         return <Vertical {...props} />;
     }),
-    Right: makeComposable("Dropzone.Right", (props: VerticalPropsType) => {
+    Right: makeDecoratable("Dropzone.Right", (props: VerticalPropsType) => {
         return <Vertical {...props} last />;
     }),
-    Center: makeComposable("Dropzone.Center", Center)
+    Center: makeDecoratable("Dropzone.Center", Center)
 };

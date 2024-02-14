@@ -1,6 +1,6 @@
 import React, { useMemo, createElement } from "react";
 import { plugins } from "@webiny/plugins";
-import { makeComposable } from "@webiny/app";
+import { makeDecoratable } from "@webiny/app";
 import { PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
 import { usePage } from "@webiny/app-page-builder-elements";
 
@@ -8,7 +8,7 @@ export interface LayoutProps {
     children: React.ReactNode;
 }
 
-export const Layout = makeComposable<LayoutProps>("Layout", ({ children }) => {
+export const Layout = makeDecoratable("Layout", ({ children }: LayoutProps) => {
     const layouts = useMemo(() => {
         const layoutPlugins = plugins.byType<PbPageLayoutPlugin>("pb-page-layout");
         return layoutPlugins.map(pl => pl.layout);

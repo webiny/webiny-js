@@ -58,7 +58,7 @@
     "rc-tooltip": "^3.7.2",
     "react-ace": "^6.1.4",
     "react-butterfiles": "^1.3.0",
-    "react-color": "^2.14.1",
+    "react-color": "^2.19.3",
     "react-columned": "^1.0.0",
     "react-custom-scrollbars": "^4.2.1",
     "react-loading-skeleton": "^3.1.0",
@@ -73,20 +73,16 @@
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/preset-env": "^7.23.9",
     "@babel/preset-typescript": "^7.23.3",
-    "@storybook/addon-info": "^5.2.8",
-    "@storybook/addon-knobs": "^5.0.5",
-    "@storybook/addon-links": "^5.0.5",
-    "@storybook/react": "^5.2.8",
     "@testing-library/react": "^12.1.2",
     "@types/nprogress": "^0.2.0",
     "@types/rc-tooltip": "^3.7.2",
+    "@types/react-color": "^2.17.11",
     "@types/react-custom-scrollbars": "^4.0.10",
     "@types/react-transition-group": "^4.4.4",
     "@types/shortid": "^0.0.29",
     "@webiny/cli": "0.0.0",
     "@webiny/form": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "@webiny/storybook-utils": "0.0.0",
     "@webiny/validation": "0.0.0",
     "babel-loader": "9.1.2",
     "babel-plugin-emotion": "^9.2.8",
@@ -94,15 +90,9 @@
     "jest-dom": "^3.0.0",
     "ncp": "^2.0.0",
     "raw-loader": "^0.5.1",
-    "react-docgen": "^5.0.0",
-    "react-docgen-typescript-loader": "^3.6.0",
-    "regenerator-runtime": "^0.13.2",
     "rimraf": "^5.0.5",
-    "sass": "^1.38.0",
-    "sass-loader": "^12.1.0",
     "ttypescript": "^1.5.13",
-    "typescript": "4.7.4",
-    "webpack": "^4.46.0"
+    "typescript": "4.7.4"
   },
   "peerDependencies": {
     "minimatch": "^5.1.0",
@@ -115,9 +105,7 @@
   },
   "scripts": {
     "build": "yarn webiny run build",
-    "watch": "yarn webiny run watch",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook -c .storybook -o ${OUT:-.out}"
+    "watch": "yarn webiny run watch"
   },
   "jest": {
     "transform": {

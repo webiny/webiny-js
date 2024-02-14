@@ -1,12 +1,24 @@
-import React, { Suspense, lazy } from "react";
-import { Plugin, Layout, AddMenu, AddRoute } from "@webiny/app-admin";
+import React, { lazy, Suspense } from "react";
+import { AddMenu, AddRoute, Layout, Plugin } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-security";
 import { ReactComponent as FormsIcon } from "~/admin/icons/round-ballot-24px.svg";
 import { CircularProgress } from "@webiny/ui/Progress";
 import FormsSettings from "./admin/views/Settings/FormsSettings";
 
-const FormEditor = lazy(() => import("./admin/views/Editor"));
-const Forms = lazy(() => import("./admin/views/Forms/Forms"));
+const FormEditor = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "FormBuilderAdminViewsEditor" */
+            "./admin/views/Editor"
+        )
+);
+const Forms = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "FormBuilderAdminViewsForms" */
+            "./admin/views/Forms/Forms"
+        )
+);
 
 interface LoaderProps {
     label: string;

@@ -23,7 +23,7 @@
     "@webiny/pubsub": "0.0.0",
     "crypto-js": "4.2.0",
     "lodash": "4.17.21",
-    "nodemailer": "^6.7.6",
+    "nodemailer": "^6.9.9",
     "zod": "^3.22.4"
   },
   "devDependencies": {

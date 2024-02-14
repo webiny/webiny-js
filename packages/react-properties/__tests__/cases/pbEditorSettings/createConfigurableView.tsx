@@ -1,10 +1,10 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { Compose, HigherOrderComponent, makeComposable } from "@webiny/react-composition";
+import { Compose, GenericComponent, Decorator, makeDecoratable } from "@webiny/react-composition";
 import { Property, Properties } from "~/index";
 
 const createHOC =
-    (newChildren: React.ReactNode): HigherOrderComponent =>
+    (newChildren: React.ReactNode): Decorator<GenericComponent> =>
     BaseComponent => {
         return function ConfigHOC({ children }) {
             return (
@@ -28,7 +28,7 @@ export function createConfigurableView(name: string) {
     /**
      * This component is used when we want to mount all composed configs.
      */
-    const ConfigApply = makeComposable(`${name}ConfigApply`, ({ children }) => {
+    const ConfigApply = makeDecoratable(`${name}ConfigApply`, ({ children }) => {
         return <>{children}</>;
     });
 
@@ -39,7 +39,7 @@ export function createConfigurableView(name: string) {
         return <Compose component={ConfigApply} with={createHOC(children)} />;
     };
 
-    const Renderer = makeComposable(`${name}Renderer`, () => {
+    const Renderer = makeDecoratable(`${name}Renderer`, () => {
         return <div>{name}Renderer is not implemented!</div>;
     });
 

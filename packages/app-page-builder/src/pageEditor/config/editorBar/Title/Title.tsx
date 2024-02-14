@@ -3,7 +3,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import {
     PageMeta,
     PageTitle,
@@ -141,7 +141,7 @@ const Title = () => {
     );
 };
 
-export const TitlePlugin = createComponentPlugin(EditorBar.LeftSection, LeftSection => {
+export const TitlePlugin = createDecorator(EditorBar.LeftSection, LeftSection => {
     return function AddTitle(props) {
         return (
             <LeftSection>

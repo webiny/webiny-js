@@ -22,10 +22,20 @@ export default [
     {
         type: "pb-plugins-loader",
         async loadEditorPlugins() {
-            return (await import("./pageBuilder/editorPlugins")).default;
+            return (
+                await import(
+                    /* webpackChunkName: "appsAdminPluginsPageBuilderEditorPlugins" */
+                    "./pageBuilder/editorPlugins"
+                )
+            ).default;
         },
         async loadRenderPlugins() {
-            return (await import("./pageBuilder/renderPlugins")).default;
+            return (
+                await import(
+                    /* webpackChunkName: "appsAdminPluginsPageBuilderRenderPlugins" */
+                    "./pageBuilder/renderPlugins"
+                )
+            ).default;
         }
     }
 ];

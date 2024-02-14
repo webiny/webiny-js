@@ -16,7 +16,6 @@
   "dependencies": {
     "@babel/runtime": "^7.23.9",
     "@types/react": "17.0.39",
-    "lodash": "4.17.21",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   },
@@ -25,6 +24,7 @@
     "@babel/core": "^7.23.9",
     "@babel/preset-env": "^7.23.9",
     "@babel/preset-typescript": "^7.23.3",
+    "@testing-library/react": "^12.1.5",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "ttypescript": "^1.5.13",

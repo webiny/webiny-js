@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useRecoilCallback, useRecoilSnapshot } from "recoil";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { PbEditorElement } from "~/types";
 import { breadcrumbs } from "./styles";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
@@ -121,7 +121,7 @@ const Breadcrumbs = () => {
     );
 };
 
-export const BreadcrumbsPlugin = createComponentPlugin(EditorContent, PrevContent => {
+export const BreadcrumbsPlugin = createDecorator(EditorContent, PrevContent => {
     return function AddBreadcrumbs() {
         return (
             <>

@@ -1,8 +1,11 @@
 import React from "react";
-import { makeComposable } from "@webiny/app";
+import { createVoidComponent, makeDecoratable } from "@webiny/app";
 
-export const LocaleSelector = makeComposable("LocaleSelector", () => {
+export const LocaleSelector = makeDecoratable("LocaleSelector", () => {
     return <LocaleSelectorRenderer />;
 });
 
-export const LocaleSelectorRenderer = makeComposable("LocaleSelectorRenderer");
+export const LocaleSelectorRenderer = makeDecoratable(
+    "LocaleSelectorRenderer",
+    createVoidComponent()
+);

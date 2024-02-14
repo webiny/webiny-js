@@ -5,7 +5,7 @@ import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { usePagesPermissions } from "~/hooks/permissions";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
-import { createComponentPlugin, makeComposable } from "@webiny/app-admin";
+import { createDecorator, makeDecoratable } from "@webiny/app-admin";
 import { EditorBar } from "~/editor";
 import { usePage } from "~/pageEditor/hooks/usePage";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
@@ -65,18 +65,15 @@ const DefaultPublishPageButton = () => {
     );
 };
 
-export const PublishPageButton = makeComposable("PublishPageButton", DefaultPublishPageButton);
+export const PublishPageButton = makeDecoratable("PublishPageButton", DefaultPublishPageButton);
 
-export const PublishPageButtonPlugin = createComponentPlugin(
-    EditorBar.RightSection,
-    RightSection => {
-        return function AddPublishPageButton(props) {
-            return (
-                <RightSection>
-                    <PublishPageButton />
-                    {props.children}
-                </RightSection>
-            );
-        };
-    }
-);
+export const PublishPageButtonPlugin = createDecorator(EditorBar.RightSection, RightSection => {
+    return function AddPublishPageButton(props) {
+        return (
+            <RightSection>
+                <PublishPageButton />
+                {props.children}
+            </RightSection>
+        );
+    };
+});

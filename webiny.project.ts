@@ -11,16 +11,30 @@ export default {
              */
             try {
                 const modules = await Promise.allSettled([
-                    // @ts-expect-error
-                    import("@webiny/cli-plugin-workspaces"),
-                    // @ts-expect-error
-                    import("@webiny/cli-plugin-deploy-pulumi"),
-                    // @ts-expect-error
-                    import("@webiny/cwp-template-aws/cli"),
-                    import("@webiny/cli-plugin-scaffold"),
-                    import("@webiny/cli-plugin-scaffold-graphql-service"),
-                    import("@webiny/cli-plugin-scaffold-admin-app-module"),
-                    import("@webiny/cli-plugin-scaffold-ci")
+                    import(
+                        /* webpackChunkName: "webinyCliPluginWorkspaces" */
+                        "@webiny/cli-plugin-workspaces"
+                    ),
+                    import(
+                        /* webpackChunkName: "webinyCliPluginDeployPulumi" */
+                        "@webiny/cli-plugin-deploy-pulumi"
+                    ),
+                    import(
+                        /* webpackChunkName: "webinyCwpTemplateAwsCli" */
+                        "@webiny/cwp-template-aws/cli"
+                    ),
+                    import(
+                        /* webpackChunkName: "webinyCliPluginScaffold" */ "@webiny/cli-plugin-scaffold"
+                    ),
+                    import(
+                        /* webpackChunkName: "webinyCliPluginScaffoldGraphQlService" */ "@webiny/cli-plugin-scaffold-graphql-service"
+                    ),
+                    import(
+                        /* webpackChunkName: "webinyCliPluginScaffoldAdminAppModule" */ "@webiny/cli-plugin-scaffold-admin-app-module"
+                    ),
+                    import(
+                        /* webpackChunkName: "webinyCliPluginScaffoldCi" */ "@webiny/cli-plugin-scaffold-ci"
+                    )
                 ]);
 
                 return modules
