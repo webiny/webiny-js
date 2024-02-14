@@ -20,32 +20,27 @@ const noBottomPadding = css`
     }
 `;
 
-export interface DynamicZoneContentItemProps {
+export type DynamicZoneContentItemProps = {
     field: CmsModelField;
     getBind: (index?: number, key?: string) => BindComponent;
     contentModel: CmsModel;
-    Component: React.ComponentType<any>;
     bind: BindComponentRenderProp;
     isMultipleValues: boolean;
+    children: React.ReactNode;
     title?: string;
-}
+};
 
 export const DynamicZoneContentItem = makeComposable<DynamicZoneContentItemProps>(
     "DynamicZoneContentItem",
     props => {
-        const { field, title, isMultipleValues, getBind, contentModel, Component, bind } = props;
+        const { field, title, isMultipleValues, children } = props;
         return (
             <AccordionItem
                 title={title || field.label}
                 description={field.helpText}
                 className={isMultipleValues ? noBottomPadding : undefined}
             >
-                <Component
-                    bind={bind}
-                    field={field}
-                    getBind={getBind}
-                    contentModel={contentModel}
-                />
+                {children}
             </AccordionItem>
         );
     }
@@ -81,9 +76,15 @@ const DynamicZoneContent = ({
                                 bind={bind}
                                 getBind={getBind}
                                 contentModel={contentModel}
-                                Component={Component}
                                 isMultipleValues={isMultipleValues}
-                            />
+                            >
+                                <Component
+                                    bind={bind}
+                                    field={field}
+                                    getBind={getBind}
+                                    contentModel={contentModel}
+                                />
+                            </DynamicZoneContentItem>
                         </Accordion>
                         {isValid === false && (
                             <FormElementMessage error={true}>{message}</FormElementMessage>
