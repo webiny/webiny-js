@@ -3,7 +3,7 @@ import classnames from "classnames";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import isEqual from "lodash/isEqual";
-import { ChromePicker, ColorResult, RGBColor } from "react-color";
+import { ChromePicker, ColorState, RGBColor } from "react-color";
 import { Menu } from "@webiny/ui/Menu";
 import { usePageBuilder } from "../../../hooks/usePageBuilder";
 import { ReactComponent as IconPalette } from "../../assets/icons/round-color_lens-24px.svg";
@@ -132,14 +132,14 @@ const ColorPicker = ({
     }, []);
 
     const onColorChange = useCallback(
-        (color: ColorResult) => {
+        (color: ColorState) => {
             onChange(getColorValue(color.rgb));
         },
         [onChange]
     );
 
     const onColorChangeComplete = useCallback(
-        ({ rgb }: ColorResult) => {
+        ({ rgb }: ColorState) => {
             onChangeComplete(getColorValue(rgb));
         },
         [onChangeComplete]

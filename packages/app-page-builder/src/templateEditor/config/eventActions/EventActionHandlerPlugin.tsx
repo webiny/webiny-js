@@ -13,7 +13,7 @@ import { PbElement, PbEditorElement } from "~/types";
 type ProviderProps = EventActionHandlerProviderProps<TemplateEditorEventActionCallableState>;
 
 export const EventActionHandlerPlugin = createDecorator(
-    EventActionHandlerProvider as DecoratableComponent<GenericComponent<ProviderProps>>,
+    EventActionHandlerProvider as unknown as DecoratableComponent<GenericComponent<ProviderProps>>,
     Component => {
         return function PbEventActionHandlerProvider(props) {
             const templateAtomValueRef = useRef<PageTemplate>();

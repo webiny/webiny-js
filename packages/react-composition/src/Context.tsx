@@ -1,10 +1,10 @@
 import React, {
     ComponentType,
-    useState,
-    useCallback,
     createContext,
+    useCallback,
     useContext,
-    useMemo
+    useMemo,
+    useState
 } from "react";
 import { useCompositionScope } from "~/CompositionScope";
 import {
@@ -12,9 +12,9 @@ import {
     ComposeWith,
     DecoratableComponent,
     DecoratableHook,
+    Decorator,
     Enumerable,
     GenericComponent,
-    Decorator,
     GenericHook
 } from "~/types";
 
@@ -51,9 +51,16 @@ type ComponentScopes = Map<string, ComposedComponents>;
 
 export type DecoratableTypes = DecoratableComponent | DecoratableHook;
 
+interface CompositionContextGetComponentCallable {
+    (component: ComponentType<unknown>, scope?: string):
+        | ComposedFunction
+        | GenericComponent
+        | undefined;
+}
+
 interface CompositionContext {
     components: ComponentScopes;
-    getComponent(component: ComponentType<unknown>, scope?: string): ComposedFunction | undefined;
+    getComponent: CompositionContextGetComponentCallable;
     composeComponent(
         component: ComponentType<unknown>,
         hocs: Enumerable<ComposeWith>,
@@ -72,7 +79,7 @@ export const CompositionProvider = ({ children }: CompositionProviderProps) => {
 
     const composeComponent = useCallback(
         (
-            component: ComponentType<unknown>,
+            component: GenericHook | GenericComponent,
             hocs: HigherOrderComponent<any, any>[],
             scope: string | undefined = "*"
         ) => {
@@ -120,7 +127,7 @@ export const CompositionProvider = ({ children }: CompositionProviderProps) => {
         [setComponents]
     );
 
-    const getComponent: CompositionContext["getComponent"] = useCallback(
+    const getComponent = useCallback<CompositionContextGetComponentCallable>(
         (Component, scope = "*") => {
             const scopeMap: ComposedComponents = components.get(scope) || new Map();
             const composedComponent = scopeMap.get(Component);
