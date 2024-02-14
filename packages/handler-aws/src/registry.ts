@@ -1,5 +1,12 @@
+/**
+ * TODO: refactor this to use a proper DI container
+ */
 import { HandlerEvent, SourceHandler } from "~/types";
 import { Context as LambdaContext } from "aws-lambda/handler";
+
+interface RegisterOptions {
+    silent?: boolean;
+}
 
 class HandlerRegistry {
     private readonly handlers = new Map<string, SourceHandler>();
@@ -14,8 +21,11 @@ class HandlerRegistry {
         return new HandlerRegistry();
     }
 
-    public register(handler: SourceHandler<any>) {
+    public register(handler: SourceHandler<any>, options?: RegisterOptions) {
         if (this.handlers.has(handler.name)) {
+            if (options?.silent) {
+                return;
+            }
             /**
              * This should only happen during the development phase.
              */

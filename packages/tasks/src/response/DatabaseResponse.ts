@@ -57,7 +57,8 @@ export class DatabaseResponse implements IResponseAsync {
          */
         return this.response.done({
             ...rest,
-            message
+            message,
+            output
         });
     }
 

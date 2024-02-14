@@ -296,7 +296,7 @@ describe('Form Builder "Form" Test', () => {
         await publishRevision({ revision: id });
 
         // Get the published form
-        const [{ data: get }] = await getPublishedForm({ formId });
+        const [{ data: get }] = await getPublishedForm({ parent: formId });
         expect(get.formBuilder.getPublishedForm.data.id).toEqual(id);
 
         // Create a new revision
@@ -304,7 +304,7 @@ describe('Form Builder "Form" Test', () => {
         const { id: id2 } = create2.data.formBuilder.createRevisionFrom.data;
 
         // Published form should still be #1
-        const [published] = await getPublishedForm({ formId });
+        const [published] = await getPublishedForm({ parent: formId });
         expect(published.data.formBuilder.getPublishedForm.data.id).toEqual(id);
 
         // Latest revision should be #2
@@ -326,7 +326,7 @@ describe('Form Builder "Form" Test', () => {
         await publishRevision({ revision: id2 });
 
         // Published form should now be #2
-        const [published2] = await getPublishedForm({ formId });
+        const [published2] = await getPublishedForm({ parent: formId });
         expect(published2.data.formBuilder.getPublishedForm.data.id).toEqual(id2);
 
         // Increment views for #2
@@ -345,18 +345,11 @@ describe('Form Builder "Form" Test', () => {
         await unpublishRevision({ revision: id2 });
 
         // There should be no published forms
-        const [published3] = await getPublishedForm({ formId });
-        expect(published3).toEqual({
+        const [published3] = await getPublishedForm({ parent: formId });
+        expect(published3).toMatchObject({
             data: {
                 formBuilder: {
-                    getPublishedForm: {
-                        data: null,
-                        error: {
-                            message: `Form "${formId}" was not found!`,
-                            code: "NOT_FOUND",
-                            data: null
-                        }
-                    }
+                    getPublishedForm: null
                 }
             }
         });

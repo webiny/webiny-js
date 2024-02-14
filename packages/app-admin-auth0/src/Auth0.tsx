@@ -5,7 +5,7 @@ import get from "lodash/get";
 import {
     LoginScreenRenderer,
     useTenancy,
-    createComponentPlugin,
+    createDecorator,
     useTags
 } from "@webiny/app-serverless-cms";
 import {
@@ -89,7 +89,7 @@ const AppClientIdLoader = ({
 };
 
 const createLoginScreenPlugin = (params: Auth0Props) => {
-    return createComponentPlugin(LoginScreenRenderer, () => {
+    return createDecorator(LoginScreenRenderer, () => {
         return function Auth0LoginScreen({ children }) {
             const { installer } = useTags();
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { Form } from "@webiny/form";
 import { Validator } from "@webiny/validation/types";
-import { makeComposable } from "@webiny/react-composition";
+import { makeDecoratable } from "@webiny/react-composition";
 import InputField from "~/editor/plugins/elementSettings/components/InputField";
 import { Typography } from "@webiny/ui/Typography";
 import { SimpleButton } from "~/editor/plugins/elementSettings/components/StyledComponents";
@@ -29,9 +29,9 @@ interface LinkVariableInputProps {
     description?: string;
 }
 
-const LinkVariableInput = makeComposable<LinkVariableInputProps>(
+const LinkVariableInput = makeDecoratable(
     "LinkVariableInput",
-    ({ variableId, placeholder, description }) => {
+    ({ variableId, placeholder, description }: LinkVariableInputProps) => {
         const { value, onChange } = useVariable(variableId);
         const [localValue, setLocalValue] = useState(value);
 

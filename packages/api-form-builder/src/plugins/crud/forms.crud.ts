@@ -155,7 +155,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             if (await formsPermissions.canAccessOnlyOwnRecords()) {
                 const identity = context.security.getIdentity();
-                listFormParams.where.ownedBy = identity.id;
+                listFormParams.where.createdBy = identity.id;
             }
 
             try {

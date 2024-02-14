@@ -1,11 +1,12 @@
 import React from "react";
 import { ReactComponent as Edit } from "@material-design-icons/svg/outlined/edit.svg";
+import { makeDecoratable } from "@webiny/app-admin";
 import { PageListConfig } from "~/admin/config/pages";
 import { usePage } from "~/admin/views/Pages/hooks/usePage";
 import { useCreatePageFrom } from "~/admin/views/Pages/hooks/useCreatePageFrom";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
-export const EditPage = () => {
+export const EditPage = makeDecoratable("EditPage", () => {
     const { page } = usePage();
     const { OptionsMenuItem, OptionsMenuLink } = PageListConfig.Browser.PageAction;
     const { getPageEditorUrl, navigateToPageEditor } = useNavigatePage();
@@ -34,4 +35,4 @@ export const EditPage = () => {
             data-testid={"aco.actions.pb.page.edit"}
         />
     );
-};
+});

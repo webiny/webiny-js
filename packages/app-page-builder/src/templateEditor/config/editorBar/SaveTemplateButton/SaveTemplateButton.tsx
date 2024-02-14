@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import styled from "@emotion/styled";
-import { createComponentPlugin, makeComposable } from "@webiny/app-admin";
+import { createDecorator, makeDecoratable } from "@webiny/app-admin";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
 import { ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
@@ -57,18 +57,15 @@ const DefaultSaveTemplateButton = () => {
     );
 };
 
-export const SaveTemplateButton = makeComposable("SaveTemplateButton", DefaultSaveTemplateButton);
+export const SaveTemplateButton = makeDecoratable("SaveTemplateButton", DefaultSaveTemplateButton);
 
-export const SaveTemplateButtonPlugin = createComponentPlugin(
-    EditorBar.RightSection,
-    RightSection => {
-        return function AddSaveTemplateButton(props) {
-            return (
-                <RightSection>
-                    <SaveTemplateButton />
-                    {props.children}
-                </RightSection>
-            );
-        };
-    }
-);
+export const SaveTemplateButtonPlugin = createDecorator(EditorBar.RightSection, RightSection => {
+    return function AddSaveTemplateButton(props) {
+        return (
+            <RightSection>
+                <SaveTemplateButton />
+                {props.children}
+            </RightSection>
+        );
+    };
+});

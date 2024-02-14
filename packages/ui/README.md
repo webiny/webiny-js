@@ -11,8 +11,6 @@ A large amount of components are basically thin wrappers around the
 already well-known [RMWC](https://rmwc.io/) library. With that, 
 there are a few additional components that weren't included in it.
 
-Please visit the official [storybook](https://storybook.webiny.com/) page 
-for details and examples of each component.
   
 ## Install
 ```

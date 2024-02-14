@@ -1,11 +1,6 @@
 import React, { Fragment } from "react";
 import { HasPermission } from "@webiny/app-security";
-import {
-    Plugins,
-    AddMenu as Menu,
-    createProviderPlugin,
-    createComponentPlugin
-} from "@webiny/app-admin";
+import { Plugins, AddMenu as Menu, createProviderPlugin, createDecorator } from "@webiny/app-admin";
 import { PageBuilderProvider as ContextProvider } from "./contexts/PageBuilder";
 import { ReactComponent as PagesIcon } from "./admin/assets/table_chart-24px.svg";
 import { WebsiteSettings } from "./modules/WebsiteSettings/WebsiteSettings";
@@ -100,12 +95,15 @@ const PageBuilderMenu = () => {
 };
 
 const EditorLoader = React.lazy(() =>
-    import("./editor/Editor").then(m => ({
+    import(
+        /* webpackChunkName: "PageBuilderEditor" */
+        "./editor/Editor"
+    ).then(m => ({
         default: m.Editor
     }))
 );
 
-const EditorRendererPlugin = createComponentPlugin(EditorRenderer, () => {
+const EditorRendererPlugin = createDecorator(EditorRenderer, () => {
     return function Editor(props) {
         return <EditorLoader {...props} />;
     };

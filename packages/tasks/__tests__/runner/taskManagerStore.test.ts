@@ -17,7 +17,12 @@ describe("task manager store", () => {
             definitionId: "myCustomTaskNumber1"
         });
 
-        const store = new TaskManagerStore(context, task);
+        const log = await context.tasks.createLog(task, {
+            executionName: task.executionName,
+            iteration: 1
+        });
+
+        const store = new TaskManagerStore(context, task, log);
 
         expect(store.getTask()).toEqual(task);
     });
@@ -35,7 +40,12 @@ describe("task manager store", () => {
             definitionId: "myCustomTaskNumber1"
         });
 
-        const store = new TaskManagerStore(context, task);
+        const log = await context.tasks.createLog(task, {
+            executionName: task.executionName,
+            iteration: 1
+        });
+
+        const store = new TaskManagerStore(context, task, log);
         const input = {
             test: "test"
         };
@@ -85,7 +95,13 @@ describe("task manager store", () => {
             ...mockTask,
             definitionId: "myCustomTaskNumber1"
         });
-        const store = new TaskManagerStore(context, task);
+
+        const log = await context.tasks.createLog(task, {
+            executionName: task.executionName,
+            iteration: 1
+        });
+
+        const store = new TaskManagerStore(context, task, log);
 
         await store.updateInput({ ...task.input });
         expect(store.getInput()).toEqual(task.input);
@@ -111,7 +127,12 @@ describe("task manager store", () => {
             ...mockTask,
             definitionId: "myCustomTaskNumber1"
         });
-        const store = new TaskManagerStore(context, task);
+        const log = await context.tasks.createLog(task, {
+            executionName: task.executionName,
+            iteration: 1
+        });
+
+        const store = new TaskManagerStore(context, task, log);
         expect(store.getTask()).toEqual(task);
 
         await store.updateTask(() => {

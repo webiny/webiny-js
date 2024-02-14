@@ -1,16 +1,15 @@
 import React from "react";
+import { makeDecoratable } from "@webiny/app-admin";
+import { Element } from "@webiny/app-page-builder-elements/types";
 import { MediumEditorOptions, PbEditorElement } from "~/types";
 import PeHeading from "./PeHeading";
-
-import { Element } from "@webiny/app-page-builder-elements/types";
-import { makeComposable } from "@webiny/react-composition";
 
 interface HeadingProps {
     element: PbEditorElement;
     mediumEditorOptions?: MediumEditorOptions;
 }
 
-const Heading = makeComposable<HeadingProps>("Heading", props => {
+const Heading = makeDecoratable("Heading", (props: HeadingProps) => {
     const { element, ...rest } = props;
     return <PeHeading element={element as Element} {...rest} />;
 });

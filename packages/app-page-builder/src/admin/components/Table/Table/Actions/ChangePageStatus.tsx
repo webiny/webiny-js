@@ -4,8 +4,9 @@ import { ReactComponent as Unpublish } from "@material-design-icons/svg/outlined
 import { PageListConfig } from "~/admin/config/pages";
 import { usePage } from "~/admin/views/Pages/hooks/usePage";
 import { useChangePageStatus } from "~/admin/views/Pages/hooks/useChangePageStatus";
+import { makeDecoratable } from "@webiny/react-composition";
 
-export const ChangePageStatus = () => {
+export const ChangePageStatus = makeDecoratable("ChangePageStatus", () => {
     const { page } = usePage();
     const { openDialogUnpublishPage, openDialogPublishPage } = useChangePageStatus({ page });
     const { OptionsMenuItem } = PageListConfig.Browser.PageAction;
@@ -29,4 +30,4 @@ export const ChangePageStatus = () => {
             data-testid={"aco.actions.pb.page.publish"}
         />
     );
-};
+});

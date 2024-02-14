@@ -22,9 +22,27 @@ const Loader = ({ children, ...props }: LoaderProps) => (
     </Suspense>
 );
 
-const ContentModelEditor = lazy(() => import("../views/contentModels/ContentModelEditor"));
-const ContentModelsView = lazy(() => import("../views/contentModels/ContentModels"));
-const ContentModelGroupsView = lazy(() => import("../views/contentModelGroups/ContentModelGroups"));
+const ContentModelEditor = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "ViewsContentModelsContentModelEditor" */
+            "../views/contentModels/ContentModelEditor"
+        )
+);
+const ContentModelsView = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "ViewsContentModelsContentModels" */
+            "../views/contentModels/ContentModels"
+        )
+);
+const ContentModelGroupsView = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "ViewsContentModelsContentModelGroups" */
+            "../views/contentModelGroups/ContentModelGroups"
+        )
+);
 
 const plugins: RoutePlugin[] = [
     {

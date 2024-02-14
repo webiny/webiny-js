@@ -1,6 +1,6 @@
 import React from "react";
 
-import { makeComposable } from "@webiny/react-composition";
+import { makeDecoratable } from "@webiny/react-composition";
 import { ContentEntryEditorConfig } from "~/admin/config/contentEntries";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import usePermission from "~/admin/hooks/usePermission";
@@ -28,7 +28,7 @@ const SaveAndPublishButtonComponent = () => {
     );
 };
 
-export const SaveAndPublishButton = makeComposable(
+export const SaveAndPublishButton = makeDecoratable(
     "SaveAndPublishButton",
     SaveAndPublishButtonComponent
 );

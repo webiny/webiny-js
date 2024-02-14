@@ -6,7 +6,13 @@ import Helmet from "react-helmet";
 import { usePermission } from "~/hooks/usePermission";
 import { CircularProgress } from "@webiny/ui/Progress";
 
-const Settings = lazy(() => import("~/views/settings"));
+const Settings = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "MailerModuleSettings" */
+            "~/views/settings"
+        )
+);
 
 interface LoaderProps {
     children: React.ReactElement;

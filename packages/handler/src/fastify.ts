@@ -1,10 +1,18 @@
 import { PluginCollection, PluginsContainer } from "@webiny/plugins/types";
 import fastify, {
+    FastifyInstance,
     FastifyServerOptions as ServerOptions,
     preSerializationAsyncHookHandler
 } from "fastify";
 import { getWebinyVersionHeaders } from "@webiny/utils";
-import { ContextRoutes, DefinedContextRoutes, HTTPMethods, RouteMethodOptions } from "~/types";
+import {
+    ContextRoutes,
+    DefinedContextRoutes,
+    HTTPMethods,
+    Request,
+    Reply,
+    RouteMethodOptions
+} from "~/types";
 import { Context } from "~/Context";
 import WebinyError from "@webiny/error";
 import { RoutePlugin } from "./plugins/RoutePlugin";
@@ -84,6 +92,20 @@ const stringifyError = (error: CustomError) => {
     });
 };
 
+const modifyResponseHeaders = (app: FastifyInstance, request: Request, reply: Reply) => {
+    const modifyHeaders = app.webiny.plugins.byType<ModifyResponseHeadersPlugin>(
+        ModifyResponseHeadersPlugin.type
+    );
+
+    const headers = ResponseHeaders.create(reply.getHeaders());
+
+    modifyHeaders.forEach(plugin => {
+        plugin.modify(request, headers);
+    });
+
+    reply.headers(headers.getHeaders());
+};
+
 export interface CreateHandlerParams {
     plugins: PluginCollection | PluginsContainer;
     options?: ServerOptions;
@@ -159,6 +181,7 @@ export const createHandler = (params: CreateHandlerParams) => {
         }
         definedRoutes[type].push(path);
     };
+
     /**
      * We must attach the server to our internal context if we want to have it accessible.
      */
@@ -166,6 +189,7 @@ export const createHandler = (params: CreateHandlerParams) => {
         bodyLimit: 10485760, // 10MB
         ...(params.options || {})
     });
+
     /**
      * We need to register routes in our system so we can output headers later on and dissallow overriding routes.
      */
@@ -338,6 +362,8 @@ export const createHandler = (params: CreateHandlerParams) => {
             return;
         }
 
+        modifyResponseHeaders(app, request, reply);
+
         reply.code(204).send("").hijack();
     });
 
@@ -466,17 +492,7 @@ export const createHandler = (params: CreateHandlerParams) => {
      * Apply response headers modifier plugins.
      */
     app.addHook("onSend", async (request, reply, payload) => {
-        const modifyHeaders = app.webiny.plugins.byType<ModifyResponseHeadersPlugin>(
-            ModifyResponseHeadersPlugin.type
-        );
-
-        const headers = ResponseHeaders.create(reply.getHeaders());
-
-        modifyHeaders.forEach(plugin => {
-            plugin.modify(request, headers);
-        });
-
-        reply.headers(headers.getHeaders());
+        modifyResponseHeaders(app, request, reply);
 
         return payload;
     });

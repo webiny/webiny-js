@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { FormBuilderStorageOperationsFactory, ENTITIES } from "~/types";
+import { FormBuilderStorageOperationsFactory, ENTITIES, FormBuilderContext } from "~/types";
 import { createTable } from "~/definitions/table";
 import { createSystemEntity } from "~/definitions/system";
 import { createSettingsEntity } from "~/definitions/settings";
@@ -9,6 +9,8 @@ import { createSettingsStorageOperations } from "~/operations/settings";
 import { createFormStorageOperations } from "~/operations/form";
 import { createFormStatsStorageOperations } from "~/operations/formStats";
 import { createElasticsearchTable } from "~/definitions/tableElasticsearch";
+import { createIndexTaskPlugin } from "~/tasks/createIndexTaskPlugin";
+import { elasticsearchIndexPlugins } from "~/elasticsearch/indices";
 
 const reservedFields = ["PK", "SK", "index", "data", "TYPE", "__type", "GSI1_PK", "GSI1_SK"];
 
@@ -59,6 +61,9 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
     };
 
     return {
+        beforeInit: async (context: FormBuilderContext) => {
+            context.plugins.register([createIndexTaskPlugin(), elasticsearchIndexPlugins()]);
+        },
         getTable: () => table,
         getEsTable: () => esTable,
         getEntities: () => entities,

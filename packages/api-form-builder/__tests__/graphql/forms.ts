@@ -172,9 +172,9 @@ export const GET_FORM_REVISIONS = /* GraphQL */ `
 `;
 
 export const GET_PUBLISHED_FORM = /* GraphQL */ `
-    query GetPublishedForm($formId: ID) {
+    query GetPublishedForm($revision: ID, $parent: ID) {
         formBuilder {
-            getPublishedForm(formId: $formId) {
+            getPublishedForm(revision: $revision, parent: $parent) {
                 data ${FORM_DATA_FIELD}
                 error ${ERROR_FIELD}
             }

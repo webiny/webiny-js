@@ -8,7 +8,7 @@ import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
-import { makeComposable } from "@webiny/react-composition";
+import { makeDecoratable } from "@webiny/react-composition";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
@@ -188,7 +188,7 @@ const BaseRichTextEditor = ({
 /**
  * @description Main editor container
  */
-export const RichTextEditor = makeComposable<RichTextEditorProps>("RichTextEditor", props => {
+export const RichTextEditor = makeDecoratable("RichTextEditor", (props: RichTextEditorProps) => {
     return (
         <LexicalEditorWithConfig>
             <RichTextEditorProvider>

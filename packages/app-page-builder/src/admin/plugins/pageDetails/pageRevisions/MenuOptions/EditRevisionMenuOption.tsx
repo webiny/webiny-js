@@ -4,7 +4,7 @@ import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as EditIcon } from "~/admin/assets/edit.svg";
 import { PbPageData, PbPageRevision } from "~/types";
-import { makeComposable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 
 export interface EditRevisionMenuOptionProps {
     page: PbPageData;
@@ -29,7 +29,7 @@ export const PageRevisionEditRevisionMenuOption = (props: EditRevisionMenuOption
     );
 };
 
-export const EditRevisionMenuOption = makeComposable(
+export const EditRevisionMenuOption = makeDecoratable(
     "EditRevisionMenuOption",
     PageRevisionEditRevisionMenuOption
 );

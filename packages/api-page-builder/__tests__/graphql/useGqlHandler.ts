@@ -27,6 +27,7 @@ import {
 import {
     CREATE_PAGE,
     DELETE_PAGE,
+    DUPLICATE_PAGE,
     GET_PAGE,
     GET_PUBLISHED_PAGE,
     LIST_PAGE_TAGS,
@@ -239,6 +240,9 @@ export default ({ permissions, identity, plugins }: Params = {}) => {
         // Pages.
         async createPage(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_PAGE, variables } });
+        },
+        async duplicatePage(variables: Record<string, any>) {
+            return invoke({ body: { query: DUPLICATE_PAGE, variables } });
         },
         async updatePage(variables: Record<string, any>) {
             return invoke({ body: { query: UPDATE_PAGE, variables } });
