@@ -12,7 +12,7 @@ import { useBlock } from "~/blockEditor/hooks/useBlock";
 type ProviderProps = EventActionHandlerProviderProps<BlockEditorEventActionCallableState>;
 
 export const EventActionHandlerPlugin = createDecorator(
-    EventActionHandlerProvider as DecoratableComponent<GenericComponent<ProviderProps>>,
+    EventActionHandlerProvider as unknown as DecoratableComponent<GenericComponent<ProviderProps>>,
     Component => {
         return function PbEventActionHandlerProvider(props) {
             const blockAtomValueRef = useRef<BlockAtomType>();
