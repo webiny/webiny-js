@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import { css } from "emotion";
 import classNames from "classnames";
 import isEqual from "lodash/isEqual";
-import { ChromePicker, ColorResult, RGBColor } from "react-color";
+import { ChromePicker, ColorState, RGBColor } from "react-color";
 import { Menu } from "@webiny/ui/Menu";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 
@@ -185,14 +185,14 @@ const ColorPicker = ({ value, onChange, onChangeComplete, compact = false }: Col
     }, []);
 
     const onColorChange = useCallback(
-        (color: ColorResult) => {
+        (color: ColorState) => {
             onChange(getColorValue(color.rgb));
         },
         [onChange]
     );
 
     const onColorChangeComplete = useCallback(
-        ({ rgb }: ColorResult) => {
+        ({ rgb }: ColorState) => {
             onChangeComplete(getColorValue(rgb));
         },
         [onChangeComplete]
