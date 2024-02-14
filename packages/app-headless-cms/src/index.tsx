@@ -1,11 +1,11 @@
 import React from "react";
+import { ContentEntryEditorConfig, ContentEntryListConfig } from "./admin/config/contentEntries";
 
 export * from "./HeadlessCMS";
 export * from "./admin/hooks";
 export { LexicalEditorConfig } from "~/admin/lexicalConfig/LexicalEditorConfig";
 export { RenderFieldElement } from "~/admin/components/ContentEntryForm/RenderFieldElement";
 export { ModelProvider } from "~/admin/components/ModelProvider";
-import { ContentEntryEditorConfig, ContentEntryListConfig } from "./admin/config/contentEntries";
 export { ContentEntryEditorConfig, ContentEntryListConfig };
 
 /**
@@ -30,3 +30,5 @@ export const ContentEntriesViewConfig = Object.assign(LegacyContentEntriesViewCo
     Filter: ContentEntryListConfig.Browser.Filter,
     Sorter: LegacySorter
 });
+
+export * from "./components";
