@@ -48,7 +48,7 @@
     "babel-plugin-macros": "3.1.0",
     "babel-plugin-module-resolver": "^4.1.0",
     "chalk": "^4.1.0",
-    "commitizen": "^2.10.1",
+    "commitizen": "^4.3.0",
     "cross-env": "^5.2.0",
     "cz-customizable": "^5.2.0",
     "env-ci": "2.0.1",
