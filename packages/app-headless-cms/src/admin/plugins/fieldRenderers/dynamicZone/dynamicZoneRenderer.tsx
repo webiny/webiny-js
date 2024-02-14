@@ -20,28 +20,48 @@ const noBottomPadding = css`
     }
 `;
 
-export type DynamicZoneContentItemProps = {
+export type DynamicZoneContainerProps = {
     field: CmsModelField;
     getBind: (index?: number, key?: string) => BindComponent;
     contentModel: CmsModel;
     bind: BindComponentRenderProp;
-    isMultipleValues: boolean;
     children: React.ReactNode;
     title?: string;
+    description?: string;
+    className?: string;
 };
 
-export const DynamicZoneContentItem = makeComposable<DynamicZoneContentItemProps>(
-    "DynamicZoneContentItem",
+export const DynamicZoneContainer = makeComposable<DynamicZoneContainerProps>(
+    "DynamicZoneContainer",
     props => {
-        const { field, title, isMultipleValues, children } = props;
+        const {
+            field,
+            bind: {
+                validation: { isValid, message }
+            },
+            title = field.label,
+            description = field.helpText,
+            className,
+            children
+        } = props;
+
+        const defaultClassName = field.multipleValues ? noBottomPadding : undefined;
+
         return (
-            <AccordionItem
-                title={title || field.label}
-                description={field.helpText}
-                className={isMultipleValues ? noBottomPadding : undefined}
-            >
-                {children}
-            </AccordionItem>
+            <>
+                <Accordion>
+                    <AccordionItem
+                        title={title}
+                        description={description}
+                        className={className || defaultClassName}
+                    >
+                        {children}
+                    </AccordionItem>
+                </Accordion>
+                {isValid === false && (
+                    <FormElementMessage error={true}>{message}</FormElementMessage>
+                )}
+            </>
         );
     }
 );
@@ -59,37 +79,27 @@ const DynamicZoneContent: React.VFC<CmsModelFieldRendererProps> = ({
         return null;
     }
 
-    const isMultipleValues = field.multipleValues === true;
     const Bind = getBind();
 
-    const Component = isMultipleValues ? MultiValueDynamicZone : SingleValueDynamicZone;
+    const Component = field.multipleValues ? MultiValueDynamicZone : SingleValueDynamicZone;
 
     return (
         <Bind>
             {bind => {
-                const { isValid, message } = bind.validation;
                 return (
-                    <>
-                        <Accordion>
-                            <DynamicZoneContentItem
-                                field={field}
-                                bind={bind}
-                                getBind={getBind}
-                                contentModel={contentModel}
-                                isMultipleValues={isMultipleValues}
-                            >
-                                <Component
-                                    bind={bind}
-                                    field={field}
-                                    getBind={getBind}
-                                    contentModel={contentModel}
-                                />
-                            </DynamicZoneContentItem>
-                        </Accordion>
-                        {isValid === false && (
-                            <FormElementMessage error={true}>{message}</FormElementMessage>
-                        )}
-                    </>
+                    <DynamicZoneContainer
+                        field={field}
+                        bind={bind}
+                        getBind={getBind}
+                        contentModel={contentModel}
+                    >
+                        <Component
+                            bind={bind}
+                            field={field}
+                            getBind={getBind}
+                            contentModel={contentModel}
+                        />
+                    </DynamicZoneContainer>
                 );
             }}
         </Bind>

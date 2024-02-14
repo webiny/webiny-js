@@ -1,1 +1,6 @@
-export { DynamicZoneContentItemProps, DynamicZoneContentItem } from "./dynamicZoneRenderer";
+export { DynamicZoneContainerProps, DynamicZoneContainer } from "./dynamicZoneRenderer";
+export {
+    MultiValueItemContainer,
+    MultiValueContainer,
+    MultiValueItem
+} from "./MultiValueDynamicZone";
