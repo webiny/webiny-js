@@ -18137,7 +18137,7 @@ __metadata:
     cropperjs: ^1.4.3
     dot-prop-immutable: ^2.1.0
     downshift: ^2.1.5
-    emotion: 10.0.17
+    emotion: 10.0.27
     execa: ^5.0.0
     jest-dom: ^3.0.0
     keycode: ^2.2.0
@@ -19895,7 +19895,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-emotion@npm:^10.0.17, babel-plugin-emotion@npm:^10.0.27":
+"babel-plugin-emotion@npm:^10.0.27":
   version: 10.2.2
   resolution: "babel-plugin-emotion@npm:10.2.2"
   dependencies:
@@ -22358,7 +22358,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"create-emotion@npm:^10.0.14, create-emotion@npm:^10.0.27":
+"create-emotion@npm:^10.0.27":
   version: 10.0.27
   resolution: "create-emotion@npm:10.0.27"
   dependencies:
@@ -24445,17 +24445,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"emotion@npm:10.0.17":
-  version: 10.0.17
-  resolution: "emotion@npm:10.0.17"
-  dependencies:
-    babel-plugin-emotion: ^10.0.17
-    create-emotion: ^10.0.14
-  checksum: 57dd4d3b653b14fb5465877197f31d8b5d3e53f65871d41248246af3b1e05efdff26e809d7aec48712638ccc914db89360e7015caccee12b3cfb1c791b38e6d3
-  languageName: node
-  linkType: hard
-
-"emotion@npm:^10.0.17, emotion@npm:^10.0.27":
+"emotion@npm:10.0.27, emotion@npm:^10.0.17, emotion@npm:^10.0.27":
   version: 10.0.27
   resolution: "emotion@npm:10.0.27"
   dependencies:
