@@ -1,14 +1,24 @@
 import {
-    DynamicZoneContentItem,
-    DynamicZoneContentItemProps
+    DynamicZoneContainer,
+    MultiValueContainer,
+    MultiValueItemContainer,
+    MultiValueItem
 } from "~/admin/plugins/fieldRenderers/dynamicZone";
-
-export type { DynamicZoneContentItemProps };
 
 export const Components = {
     FieldRenderers: {
         DynamicZone: {
-            ContentItem: DynamicZoneContentItem
+            Container: DynamicZoneContainer,
+            // SingleValue: {
+            //     Container: null,
+            //     ItemContainer: null,
+            //     Item: null
+            // },
+            MultiValue: {
+                Container: MultiValueContainer,
+                ItemContainer: MultiValueItemContainer,
+                Item: MultiValueItem
+            }
         }
     }
 };
