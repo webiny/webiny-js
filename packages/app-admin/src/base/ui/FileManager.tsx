@@ -102,11 +102,6 @@ type ShowFileManagerProps =
     | FileManagerOnChange<FileManagerFileItem[]>
     | undefined;
 
-type ShowFileManagerProps =
-    | FileManagerOnChange<FileManagerFileItem>
-    | FileManagerOnChange<FileManagerFileItem[]>
-    | undefined;
-
 export const FileManager = ({ children, render, onChange, ...rest }: FileManagerProps) => {
     const containerRef = useRef<HTMLElement>(getPortalTarget());
     const [show, setShow] = useState(rest.show ?? false);
