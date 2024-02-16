@@ -48,8 +48,8 @@ export const PagesModule = () => {
                 <Browser.FolderAction name={"delete"} element={<DeleteFolder />} />
                 <Browser.PageAction name={"edit"} element={<SecureEditPage />} />
                 <Browser.PageAction name={"preview"} element={<PreviewPage />} />
-                <Browser.PageAction name={"duplicate"} element={<DuplicatePage />} />
                 <Browser.PageAction name={"status"} element={<SecureChangePageStatus />} />
+                <Browser.PageAction name={"duplicate"} element={<DuplicatePage />} />
                 <Browser.PageAction name={"move"} element={<SecureMovePage />} />
                 <Browser.PageAction name={"delete"} element={<SecureDeletePage />} />
                 <Browser.Table.Column
