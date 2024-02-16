@@ -107,7 +107,9 @@ const createDynaliteTables = (options = {}) => {
                     { AttributeName: "PK", AttributeType: "S" },
                     { AttributeName: "SK", AttributeType: "S" },
                     { AttributeName: "GSI1_PK", AttributeType: "S" },
-                    { AttributeName: "GSI1_SK", AttributeType: "S" }
+                    { AttributeName: "GSI1_SK", AttributeType: "S" },
+                    { AttributeName: "GSI2_PK", AttributeType: "S" },
+                    { AttributeName: "GSI2_SK", AttributeType: "S" }
                 ],
                 ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 },
                 GlobalSecondaryIndexes: [
@@ -115,7 +117,9 @@ const createDynaliteTables = (options = {}) => {
                         IndexName: "GSI1",
                         KeySchema: [
                             { AttributeName: "GSI1_PK", KeyType: "HASH" },
-                            { AttributeName: "GSI1_SK", KeyType: "RANGE" }
+                            { AttributeName: "GSI1_SK", KeyType: "RANGE" },
+                            { AttributeName: "GSI2_PK", KeyType: "HASH" },
+                            { AttributeName: "GSI2_SK", KeyType: "RANGE" }
                         ],
                         Projection: {
                             ProjectionType: "ALL"
