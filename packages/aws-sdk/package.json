@@ -6,6 +6,7 @@
   "license": "MIT",
   "author": "Webiny Ltd.",
   "dependencies": {
+    "@aws-sdk/client-apigatewaymanagementapi": "^3.425.0",
     "@aws-sdk/client-cloudfront": "^3.425.0",
     "@aws-sdk/client-cloudwatch-events": "^3.425.0",
     "@aws-sdk/client-cloudwatch-logs": "^3.425.0",
