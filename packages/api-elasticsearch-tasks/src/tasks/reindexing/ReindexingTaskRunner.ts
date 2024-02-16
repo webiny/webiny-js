@@ -39,7 +39,7 @@ export class ReindexingTaskRunner {
      */
     public async exec(
         keys: IElasticsearchIndexingTaskValuesKeys | undefined = undefined,
-        limit = 200
+        limit: number
     ): Promise<ITaskResponseResult> {
         this.keys = keys;
 
