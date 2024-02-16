@@ -42,7 +42,6 @@
     "@babel/preset-env": "^7.23.9",
     "@babel/preset-typescript": "^7.23.3",
     "@babel/runtime": "^7.23.9",
-    "@types/ungap__structured-clone": "^0.3.0",
     "@webiny/api-admin-users": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-i18n-ddb": "0.0.0",
