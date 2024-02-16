@@ -6,8 +6,6 @@
     { "path": "../aws-sdk" },
     { "path": "../db-dynamodb" },
     { "path": "../error" },
-    { "path": "../plugins" },
-    { "path": "../utils" },
     { "path": "../handler-db" }
   ],
   "compilerOptions": {
@@ -25,10 +23,6 @@
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"]
     },

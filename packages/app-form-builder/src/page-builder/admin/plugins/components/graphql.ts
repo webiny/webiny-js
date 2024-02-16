@@ -52,7 +52,6 @@ export const GET_FORM_REVISIONS = gql`
                 data {
                     id
                     name
-                    published
                     version
                 }
                 error {

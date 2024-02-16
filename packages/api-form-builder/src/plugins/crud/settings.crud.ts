@@ -17,6 +17,8 @@ import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
 import { SettingsPermissions } from "./permissions/SettingsPermissions";
+import { removeUndefinedValues } from "@webiny/utils/removeUndefinedValues";
+import { createZodError } from "@webiny/utils/createZodError";
 
 export interface CreateSettingsCrudParams {
     getTenant: () => Tenant;
@@ -84,10 +86,13 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
             return settings;
         },
         async createSettings(this: FormBuilder, input) {
-            const formBuilderSettings = new models.CreateDataModel().populate(input);
-            await formBuilderSettings.validate();
+            const result = await models.CreateDataModel().safeParseAsync(input);
 
-            const data = await formBuilderSettings.toJSON();
+            if (!result.success) {
+                throw createZodError(result.error);
+            }
+
+            const data = removeUndefinedValues(result.data);
 
             const original = await this.getSettings({ auth: false });
             if (original) {
@@ -133,10 +138,14 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
         async updateSettings(this: FormBuilder, data) {
             await settingsPermissions.ensure();
 
-            const updatedData = new models.UpdateDataModel().populate(data);
-            await updatedData.validate();
+            const result = await models.UpdateDataModel().safeParseAsync(data);
 
-            const newSettings = await updatedData.toJSON({ onlyDirty: true });
+            if (!result.success) {
+                throw createZodError(result.error);
+            }
+
+            const updatedData: any = removeUndefinedValues(result.data);
+
             const original = await this.getSettings();
             if (!original) {
                 throw new NotFoundError(`"Form Builder" settings not found!`);
@@ -145,12 +154,12 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
             /**
              * Assign specific properties, just to be sure nothing else gets in the record.
              */
-            const settings = Object.keys(newSettings).reduce(
-                (collection, key) => {
-                    if (newSettings[key] === undefined) {
+            const settings = Object.keys(updatedData).reduce(
+                (collection, key: string) => {
+                    if (updatedData[key as keyof Settings] === undefined) {
                         return collection;
                     }
-                    collection[key as keyof Settings] = newSettings[key];
+                    collection[key as keyof Settings] = updatedData[key];
                     return collection;
                 },
                 {

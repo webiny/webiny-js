@@ -17,6 +17,8 @@ import {
     NameWrapper
 } from "./NameStyled";
 import { i18n } from "@webiny/app/i18n";
+import { FORM_STATUS } from "~/types";
+
 const t = i18n.namespace("FormEditor.Name");
 
 declare global {
@@ -92,7 +94,7 @@ export const Name = () => {
         <NameWrapper>
             <FormMeta>
                 <Typography use={"overline"}>{`status: ${
-                    state.data.published ? t`published` : t`draft`
+                    state.data.status === FORM_STATUS.PUBLISHED ? t`published` : t`draft`
                 }`}</Typography>
             </FormMeta>
             <div style={{ width: "100%", display: "flex" }}>

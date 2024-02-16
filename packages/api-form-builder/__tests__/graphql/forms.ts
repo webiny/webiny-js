@@ -26,24 +26,8 @@ export const FORM_DATA_FIELD = /* GraphQL */ `
             }
         }
         triggers
-        published
-        locked
         status
-        stats {
-            views
-            submissions
-        }
-        overallStats {
-            views
-            submissions
-            conversionRate
-        }
         createdBy {
-            id
-            displayName
-            type
-        }
-        ownedBy {
             id
             displayName
             type
@@ -58,10 +42,8 @@ export const FORMS_DATA_FIELD = /* GraphQL */ `
         savedOn
         name
         slug
-        published
         publishedOn
         version
-        locked
         status
         createdBy {
             id

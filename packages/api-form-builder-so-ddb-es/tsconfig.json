@@ -9,7 +9,6 @@
     { "path": "../db-dynamodb" },
     { "path": "../error" },
     { "path": "../plugins" },
-    { "path": "../utils" },
     { "path": "../api-dynamodb-to-elasticsearch" },
     { "path": "../handler-aws" },
     { "path": "../handler-db" }
@@ -35,8 +34,6 @@
       "@webiny/error": ["../error/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
       "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
       "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],

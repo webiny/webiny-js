@@ -93,19 +93,8 @@ describe("Forms Submission Security Test", () => {
                             createdOn: expect.stringMatching(/^20/),
                             savedOn: expect.stringMatching(/^20/),
                             fields: [],
-                            locked: false,
-                            published: false,
                             publishedOn: null,
                             name: "A1-name",
-                            overallStats: {
-                                conversionRate: 0,
-                                submissions: 0,
-                                views: 0
-                            },
-                            stats: {
-                                submissions: 0,
-                                views: 0
-                            },
                             status: "draft",
                             steps: [
                                 {
@@ -122,11 +111,6 @@ describe("Forms Submission Security Test", () => {
                                         siteKey: null
                                     }
                                 }
-                            },
-                            ownedBy: {
-                                id: identityA.id,
-                                displayName: identityA.displayName,
-                                type: identityA.type
                             },
                             createdBy: {
                                 id: identityA.id,
@@ -194,9 +178,7 @@ describe("Forms Submission Security Test", () => {
                                 }
                             ],
                             status: "published",
-                            published: true,
-                            publishedOn: expect.stringMatching(/^20/),
-                            locked: true
+                            publishedOn: expect.stringMatching(/^20/)
                         },
                         error: null
                     }

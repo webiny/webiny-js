@@ -5,6 +5,7 @@ import {
     FbFormSubmissionData,
     FbMetaResponse,
     FbRevisionModel,
+    FbFormOverallStats,
     FormBuilderImportExportSubTask
 } from "~/types";
 
@@ -18,7 +19,6 @@ const BASE_FORM_FIELDS = `
     id
     name
     version
-    published
     status
     savedOn
     createdBy {
@@ -116,11 +116,6 @@ export const GET_FORM = gql`
             form: getForm(revision: $revision) {
                 data {
                     ${BASE_FORM_FIELDS}
-                    overallStats {
-                        views
-                        submissions
-                        conversionRate
-                    }
                 }
                 error {
                     ${ERROR_FIELDS}
@@ -151,6 +146,37 @@ export const GET_FORM_REVISIONS = gql`
             revisions: getFormRevisions(id: $id) {
                 data {
                     ${BASE_FORM_FIELDS}
+                }
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
+/**
+ * ####################
+ * Get Form Overall Stats Query
+ */
+export interface GetFormOverallStatsQueryResponse {
+    formBuilder: {
+        getFormOverallStats: {
+            data: FbFormOverallStats;
+            error: FbErrorResponse | null;
+        };
+    };
+}
+export interface GetFormOverallStatsQueryVariables {
+    id: string;
+}
+export const GET_FORM_OVERALL_STATS = gql`
+    query FbGetFormOverallStats($id: ID!) {
+        formBuilder {
+            getFormOverallStats(formId: $id) {
+                data {
+                    views
+                    submissions
                 }
                 error {
                     ${ERROR_FIELDS}

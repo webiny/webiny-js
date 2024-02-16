@@ -1,9 +1,7 @@
 import slugify from "slugify";
 import { NotFoundError } from "@webiny/handler-graphql";
-import * as models from "./forms.models";
 import {
     FbForm,
-    FbFormStats,
     FormBuilder,
     FormBuilderContext,
     FormBuilderStorageOperationsListFormsParams,
@@ -21,14 +19,15 @@ import {
     OnFormRevisionBeforeCreateTopicParams,
     OnFormRevisionBeforeDeleteTopicParams,
     OnFormBeforeUnpublishTopicParams,
-    OnFormBeforeUpdateTopicParams
+    OnFormBeforeUpdateTopicParams,
+    FORM_STATUS
 } from "~/types";
 import WebinyError from "@webiny/error";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
-import { createIdentifier, mdbid } from "@webiny/utils";
+import { createIdentifier, mdbid, parseIdentifier } from "@webiny/utils";
 import { createTopic } from "@webiny/pubsub";
-import { getStatus } from "./utils";
+import { createFormSettings } from "./utils";
 import { FormsPermissions } from "~/plugins/crud/permissions/FormsPermissions";
 
 export interface CreateFormsCrudParams {
@@ -114,7 +113,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             let form: FbForm | null = null;
             try {
-                form = await this.storageOperations.getForm({
+                form = await this.storageOperations.forms.getForm({
                     where: {
                         id,
                         tenant: getTenant().id,
@@ -136,44 +135,10 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             }
 
             if (options?.auth !== false) {
-                await formsPermissions.ensure({ owns: form.ownedBy });
+                await formsPermissions.ensure({ owns: form.createdBy });
             }
 
             return form;
-        },
-        async getFormStats(this: FormBuilder, id) {
-            /**
-             * We don't need to check permissions here, as this method is only called
-             * as a resolver to an `FbForm` GraphQL type, and we already check permissions
-             * and ownership when resolving the form in `getForm`.
-             */
-            const revisions = await this.getFormRevisions(id, {
-                auth: false
-            });
-
-            /**
-             * Then calculate the stats
-             */
-            const stats: FbFormStats = {
-                submissions: 0,
-                views: 0,
-                conversionRate: 0
-            };
-
-            for (const form of revisions) {
-                stats.views += form.stats.views;
-                stats.submissions += form.stats.submissions;
-            }
-
-            let conversionRate = 0;
-            if (stats.views > 0) {
-                conversionRate = parseFloat(((stats.submissions / stats.views) * 100).toFixed(2));
-            }
-
-            return {
-                ...stats,
-                conversionRate
-            };
         },
         async listForms(this: FormBuilder) {
             await formsPermissions.ensure({ rwd: "r" });
@@ -190,13 +155,11 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             if (await formsPermissions.canAccessOnlyOwnRecords()) {
                 const identity = context.security.getIdentity();
-                listFormParams.where.ownedBy = identity.id;
+                listFormParams.where.createdBy = identity.id;
             }
 
             try {
-                const { items } = await this.storageOperations.listForms(listFormParams);
-
-                return items;
+                return await this.storageOperations.forms.listForms(listFormParams);
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list all forms by given params",
@@ -208,20 +171,18 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 );
             }
         },
-        async getFormRevisions(this: FormBuilder, id, options) {
-            // Just get the form first, to check if it exists and if user has access to it.
-            const [pid, revisionNumber = "0001"] = id.split("#");
-            await this.getForm(`${pid}#${revisionNumber}`, options);
-
+        async getFormRevisions(this: FormBuilder, id) {
             try {
-                return await this.storageOperations.listFormRevisions({
+                const result = await this.storageOperations.forms.listFormRevisions({
                     where: {
-                        id,
+                        formId: id,
                         tenant: getTenant().id,
                         locale: getLocale().code
                     },
                     sort: ["version_ASC"]
                 });
+
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list form revisions.",
@@ -232,20 +193,20 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 );
             }
         },
-        async getPublishedFormRevisionById(this: FormBuilder, id) {
-            const [formId, version] = id.split("#");
+        async getPublishedFormRevisionById(this: FormBuilder, revisionId) {
+            const { id: formId, version } = parseIdentifier(revisionId);
+
             if (!version) {
                 throw new WebinyError("There is no version in given ID value.", "VERSION_ERROR", {
-                    id
+                    revisionId
                 });
             }
 
             let form: FbForm | null = null;
             try {
-                form = await this.storageOperations.getForm({
+                form = await this.storageOperations.forms.getForm({
                     where: {
                         formId,
-                        version: Number(version),
                         published: true,
                         tenant: getTenant().id,
                         locale: getLocale().code
@@ -256,24 +217,19 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     ex.message || "Could not load published form revision by ID.",
                     ex.code || "GET_PUBLISHED_FORM_BY_ID_ERROR",
                     {
-                        id
+                        revisionId
                     }
                 );
             }
             if (!form) {
-                throw new NotFoundError(`Form "${id}" was not found!`);
+                throw new NotFoundError(`Form "${revisionId}" was not found!`);
             }
             return form;
         },
-        async getLatestPublishedFormRevision(this: FormBuilder, id) {
-            /**
-             * Make sure we have a unique form ID, and not a revision ID
-             */
-            const [formId] = id.split("#");
-
+        async getLatestPublishedFormRevision(this: FormBuilder, formId) {
             let form: FbForm | null = null;
             try {
-                form = await this.storageOperations.getForm({
+                form = await this.storageOperations.forms.getForm({
                     where: {
                         formId,
                         published: true,
@@ -286,37 +242,29 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     ex.message || "Could not load published form revision by ID.",
                     ex.code || "GET_PUBLISHED_FORM_BY_ID_ERROR",
                     {
-                        id
+                        formId
                     }
                 );
             }
             if (!form) {
-                throw new NotFoundError(`Form "${id}" was not found!`);
+                throw new NotFoundError(`Form "${formId}" was not found!`);
             }
             return form;
         },
         async createForm(this: FormBuilder, input) {
             await formsPermissions.ensure({ rwd: "w" });
             const identity = context.security.getIdentity();
-            const dataModel = new models.FormCreateDataModel().populate(input);
-            await dataModel.validate();
-
-            const data = await dataModel.toJSON();
 
             /**
              * Forms are identified by a common parent ID + Revision number
              */
             const formId = mdbid();
             const version = 1;
-            const id = createIdentifier({
-                id: formId,
-                version
-            });
 
-            const slug = `${slugify(data.name)}-${formId}`.toLowerCase();
+            const slug = `${slugify(input.name)}-${formId}`.toLowerCase();
 
             const form: FbForm = {
-                id,
+                id: formId,
                 formId,
                 locale: getLocale().code,
                 tenant: getTenant().id,
@@ -327,25 +275,10 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     displayName: identity.displayName,
                     type: identity.type
                 },
-                ownedBy: {
-                    id: identity.id,
-                    displayName: identity.displayName,
-                    type: identity.type
-                },
-                name: data.name,
+                name: input.name,
                 slug,
                 version,
-                locked: false,
-                published: false,
-                publishedOn: null,
-                status: getStatus({
-                    published: false,
-                    locked: false
-                }),
-                stats: {
-                    views: 0,
-                    submissions: 0
-                },
+                status: FORM_STATUS.DRAFT,
                 /**
                  * Will be added via a "update"
                  */
@@ -358,23 +291,21 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                         layout: []
                     }
                 ],
-                settings: await new models.FormSettingsModel().toJSON(),
+                settings: createFormSettings(),
                 triggers: null,
                 webinyVersion: context.WEBINY_VERSION
             };
+
+            let result: FbForm;
 
             try {
                 await onFormBeforeCreate.publish({
                     form
                 });
-                const result = await this.storageOperations.createForm({
-                    input,
-                    form
-                });
+                result = await this.storageOperations.forms.createForm({ form });
                 await onFormAfterCreate.publish({
                     form: result
                 });
-                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create form.",
@@ -384,14 +315,23 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     }
                 );
             }
+
+            try {
+                await this.createFormStats(result);
+            } catch (ex) {
+                // If `formStats` creation fails, delete the form and rethrow the error.
+                // TODO: Consider adding a unit test to cover this scenario.
+                await this.deleteForm(result.id);
+
+                throw ex;
+            }
+
+            return result;
         },
         async updateForm(this: FormBuilder, id, input) {
             await formsPermissions.ensure({ rwd: "w" });
-            const updateData = new models.FormUpdateDataModel().populate(input);
-            await updateData.validate();
-            const data = await updateData.toJSON({ onlyDirty: true });
 
-            const original = await this.storageOperations.getForm({
+            const original = await this.storageOperations.forms.getForm({
                 where: {
                     id,
                     tenant: getTenant().id,
@@ -401,20 +341,17 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
 
             if (!original) {
                 throw new NotFoundError(`Form "${id}" was not found!`);
-            } else if (original.locked) {
+            } else if (original.status === FORM_STATUS.UNPUBLISHED) {
                 throw new WebinyError("Not allowed to modify locked form.", "FORM_LOCKED_ERROR", {
                     form: original
                 });
             }
 
-            await formsPermissions.ensure({ owns: original.ownedBy });
+            await formsPermissions.ensure({ owns: original.createdBy });
 
             const form: FbForm = {
                 ...original,
-                ...data,
-                savedOn: new Date().toISOString(),
-                tenant: getTenant().id,
-                webinyVersion: context.WEBINY_VERSION
+                ...input
             };
 
             try {
@@ -422,10 +359,8 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     form,
                     original
                 });
-                const result = await this.storageOperations.updateForm({
-                    input: data,
-                    form,
-                    original
+                const result = await this.storageOperations.forms.updateForm({
+                    form
                 });
                 await onFormAfterUpdate.publish({
                     form,
@@ -437,7 +372,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     ex.message || "Could not update form.",
                     ex.code || "UPDATE_FORM_ERROR",
                     {
-                        input: data,
+                        input,
                         form,
                         original
                     }
@@ -447,7 +382,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         async deleteForm(this: FormBuilder, id) {
             await formsPermissions.ensure({ rwd: "d" });
 
-            const form = await this.storageOperations.getForm({
+            const form = await this.storageOperations.forms.getForm({
                 where: {
                     id,
                     tenant: getTenant().id,
@@ -459,19 +394,18 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 throw new NotFoundError(`Form ${id} was not found!`);
             }
 
-            await formsPermissions.ensure({ owns: form.ownedBy });
+            await formsPermissions.ensure({ owns: form.createdBy });
 
             try {
                 await onFormBeforeDelete.publish({
                     form
                 });
-                await this.storageOperations.deleteForm({
+                await this.storageOperations.forms.deleteForm({
                     form
                 });
                 await onFormAfterDelete.publish({
                     form
                 });
-                return true;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete form.",
@@ -481,6 +415,10 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     }
                 );
             }
+
+            await this.deleteFormStats(form.formId);
+
+            return true;
         },
         async deleteFormRevision(this: FormBuilder, id) {
             await formsPermissions.ensure({ rwd: "d" });
@@ -489,13 +427,13 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 auth: false
             });
 
-            await formsPermissions.ensure({ owns: form.ownedBy });
+            await formsPermissions.ensure({ owns: form.createdBy });
 
-            const formFormId = form.formId || form.id.split("#").pop();
+            const { id: formId } = parseIdentifier(form.id);
 
-            const revisions = await this.storageOperations.listFormRevisions({
+            const revisions = await this.storageOperations.forms.listFormRevisions({
                 where: {
-                    formId: formFormId,
+                    formId,
                     tenant: form.tenant,
                     locale: form.locale
                 },
@@ -503,7 +441,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             });
 
             const previous = revisions.find(rev => rev.version < form.version) || null;
-            if (!previous && revisions.length === 1) {
+            if (revisions.length === 1) {
                 /**
                  * Means we're deleting the last revision, so we need to delete the whole form.
                  */
@@ -516,11 +454,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     previous,
                     revisions
                 });
-                await this.storageOperations.deleteFormRevision({
-                    form,
-                    previous,
-                    revisions
-                });
+                await this.storageOperations.forms.deleteFormRevision({ form });
                 await onFormRevisionAfterDelete.publish({
                     form,
                     previous,
@@ -541,36 +475,30 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         async publishForm(this: FormBuilder, id) {
             await formsPermissions.ensure({ rwd: "r", pw: "p" });
 
+            const { id: pid, version } = parseIdentifier(id);
+            const formId = createIdentifier({
+                id: pid,
+                version: version || 1
+            });
+
             /**
              * getForm checks for existence of the form.
              */
-            const original = await this.getForm(id, {
+            const form = await this.getForm(formId, {
                 auth: false
             });
 
-            await formsPermissions.ensure({ owns: original.ownedBy });
-
-            const form: FbForm = {
-                ...original,
-                published: true,
-                publishedOn: new Date().toISOString(),
-                locked: true,
-                savedOn: new Date().toISOString(),
-                status: getStatus({ published: true, locked: true }),
-                tenant: getTenant().id,
-                webinyVersion: context.WEBINY_VERSION
-            };
+            await formsPermissions.ensure({ owns: form.createdBy });
 
             try {
                 await onFormBeforePublish.publish({
                     form
                 });
-                const result = await this.storageOperations.publishForm({
-                    original,
+                const result = await this.storageOperations.forms.publishForm({
                     form
                 });
                 await onFormAfterPublish.publish({
-                    form
+                    form: result
                 });
                 return result;
             } catch (ex) {
@@ -579,7 +507,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     ex.code || "PUBLISH_FORM_ERROR",
                     {
                         ...(ex.data || {}),
-                        original,
                         form
                     }
                 );
@@ -588,27 +515,17 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         async unpublishForm(this: FormBuilder, id) {
             await formsPermissions.ensure({ rwd: "r", pw: "u" });
 
-            const original = await this.getForm(id, {
+            const form = await this.getForm(id, {
                 auth: false
             });
 
-            await formsPermissions.ensure({ owns: original.ownedBy });
-
-            const form: FbForm = {
-                ...original,
-                published: false,
-                savedOn: new Date().toISOString(),
-                status: getStatus({ published: false, locked: true }),
-                tenant: getTenant().id,
-                webinyVersion: context.WEBINY_VERSION
-            };
+            await formsPermissions.ensure({ owns: form.createdBy });
 
             try {
                 await onFormBeforeUnpublish.publish({
                     form
                 });
-                const result = await this.storageOperations.unpublishForm({
-                    original,
+                const result = await this.storageOperations.forms.unpublishForm({
                     form
                 });
                 await onFormAfterUnpublish.publish({
@@ -621,7 +538,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     ex.code || "UNPUBLISH_FORM_ERROR",
                     {
                         ...(ex.data || {}),
-                        original,
                         form
                     }
                 );
@@ -630,109 +546,57 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         async createFormRevision(this: FormBuilder, id) {
             await formsPermissions.ensure({ rwd: "w" });
 
-            const original = await this.getForm(id, {
+            const form = await this.getForm(id, {
                 auth: false
             });
 
-            const originalFormFormId = original.formId || (original.id.split("#").pop() as string);
-
-            const latest = await this.storageOperations.getForm({
-                where: {
-                    formId: originalFormFormId,
-                    latest: true,
-                    tenant: original.tenant,
-                    locale: original.locale
-                }
-            });
-            if (!latest) {
-                throw new WebinyError(
-                    "Could not fetch latest form revision.",
-                    "LATEST_FORM_REVISION_ERROR",
-                    {
-                        formId: originalFormFormId,
-                        tenant: original.tenant,
-                        locale: original.locale
-                    }
-                );
-            }
-
-            const identity = context.security.getIdentity();
-            const version = (latest ? latest.version : original.version) + 1;
-
-            const form: FbForm = {
-                ...original,
-                id: createIdentifier({
-                    id: originalFormFormId,
-                    version
-                }),
-                version,
-                stats: {
-                    submissions: 0,
-                    views: 0
-                },
-                savedOn: new Date().toISOString(),
-                createdOn: new Date().toISOString(),
-                createdBy: {
-                    id: identity.id,
-                    displayName: identity.displayName,
-                    type: identity.type
-                },
-                locked: false,
-                published: false,
-                publishedOn: null,
-                status: getStatus({ published: false, locked: false }),
-                tenant: getTenant().id,
-                webinyVersion: context.WEBINY_VERSION
-            };
+            let result: FbForm;
 
             try {
                 await onFormRevisionBeforeCreate.publish({
-                    original,
-                    latest,
                     form
                 });
-                const result = await this.storageOperations.createFormFrom({
-                    original,
-                    latest,
+                result = await this.storageOperations.forms.createFormFrom({
                     form
                 });
                 await onFormRevisionAfterCreate.publish({
-                    original,
-                    latest,
                     form: result
                 });
-                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create form from given one.",
                     ex.code || "CREATE_FORM_FROM_ERROR",
                     {
                         ...(ex.data || {}),
-                        original,
                         form
                     }
                 );
             }
-        },
-        async incrementFormViews(this: FormBuilder, id) {
-            const original = await this.getForm(id, {
-                auth: false
-            });
-
-            const form: FbForm = {
-                ...original,
-                stats: {
-                    ...original.stats,
-                    views: original.stats.views + 1
-                },
-                tenant: getTenant().id,
-                webinyVersion: context.WEBINY_VERSION
-            };
 
             try {
-                await this.storageOperations.updateForm({
-                    original,
-                    form
+                await this.createFormStats(result);
+            } catch (ex) {
+                // If `formStats` creation fails, delete the form revision and rethrow the error.
+                // TODO: Consider adding a unit test to cover this scenario.
+                await this.deleteFormRevision(result.id);
+
+                throw ex;
+            }
+
+            return result;
+        },
+        async incrementFormViews(this: FormBuilder, id) {
+            const original = await this.getFormStats(id);
+
+            if (!original) {
+                throw new NotFoundError(`Form stats for form "${id}" were not found!`);
+            }
+
+            const views = original.views + 1;
+
+            try {
+                await this.updateFormStats(id, {
+                    views
                 });
             } catch (ex) {
                 throw new WebinyError(
@@ -740,7 +604,7 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                     ex.code || "UPDATE_FORM_STATS_VIEWS_ERROR",
                     {
                         original,
-                        form
+                        views
                     }
                 );
             }
@@ -748,32 +612,23 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
             return true;
         },
         async incrementFormSubmissions(this: FormBuilder, id) {
-            const original = await this.getForm(id, {
-                auth: false
-            });
+            const original = await this.getFormStats(id);
 
-            const form: FbForm = {
-                ...original,
-                stats: {
-                    ...original.stats,
-                    submissions: original.stats.submissions + 1
-                },
-                tenant: getTenant().id,
-                webinyVersion: context.WEBINY_VERSION
-            };
+            if (!original) {
+                throw new NotFoundError(`Form stats for form "${id}" were not found!`);
+            }
+
+            const submissions = original.submissions + 1;
 
             try {
-                await this.storageOperations.updateForm({
-                    original,
-                    form
-                });
+                await this.updateFormStats(id, { submissions });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not update form stats submissions stats.",
                     ex.code || "UPDATE_FORM_STATS_SUBMISSIONS_ERROR",
                     {
                         original,
-                        form
+                        submissions
                     }
                 );
             }

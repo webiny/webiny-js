@@ -85,8 +85,6 @@ export const GET_FORM = gql`
                     }
                     settings ${SETTINGS_FIELDS}
                     triggers
-                    published
-                    locked
                     status
                 }
                 error ${ERROR_FIELDS}

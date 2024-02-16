@@ -25,6 +25,8 @@ describe('Form Builder "Form" Test', () => {
         createFormSubmission,
         listFormSubmissions,
         exportFormSubmissions,
+        getFormStats,
+        getFormOverallStats,
         defaultIdentity
     } = useGqlHandler();
 
@@ -55,8 +57,7 @@ describe('Form Builder "Form" Test', () => {
                             createdOn: /^20/,
                             savedOn: /^20/,
                             status: "draft",
-                            createdBy: defaultIdentity,
-                            ownedBy: defaultIdentity
+                            createdBy: defaultIdentity
                         },
                         error: null
                     }
@@ -246,24 +247,65 @@ describe('Form Builder "Form" Test', () => {
         expect(list.data.formBuilder.listForms.data.length).toBe(0);
     });
 
+    test("should create revision from specified revision", async () => {
+        // Create revision #1
+        const [create1] = await createForm({ data: { name: "first" } });
+        const data1 = create1.data.formBuilder.createForm.data;
+
+        // Create revision #2 from revision #1
+        const [create2] = await createRevisionFrom({ revision: data1.id });
+        const data2 = create2.data.formBuilder.createRevisionFrom.data;
+
+        // Update revision #2 name
+        const [update2] = await updateRevision({
+            revision: data2.id,
+            data: { name: "second" }
+        });
+        const data2updated = update2.data.formBuilder.updateRevision.data;
+
+        // Create revision #3 from revision #1
+        const [create3] = await createRevisionFrom({ revision: data1.id });
+
+        // Revision #3 data should match revision #1
+        expect(create3.data.formBuilder.createRevisionFrom.data).toMatchObject({
+            ...data1,
+            id: expect.any(String),
+            createdOn: /^20/,
+            savedOn: /^20/,
+            version: 3
+        });
+
+        // Create revision #4 from revision #2
+        const [create4] = await createRevisionFrom({ revision: data2.id });
+
+        // Revision #4 data should match revision #2
+        expect(create4.data.formBuilder.createRevisionFrom.data).toMatchObject({
+            ...data2updated,
+            id: expect.any(String),
+            createdOn: /^20/,
+            savedOn: /^20/,
+            version: 4
+        });
+    });
+
     test("should publish, add views and unpublish", async () => {
         const [create] = await createForm({ data: { name: "contact-us" } });
-        const { id } = create.data.formBuilder.createForm.data;
+        const { id, formId } = create.data.formBuilder.createForm.data;
 
         // Publish revision #1
         await publishRevision({ revision: id });
 
         // Get the published form
-        const [{ data: get }] = await getPublishedForm({ revision: id });
+        const [{ data: get }] = await getPublishedForm({ parent: formId });
         expect(get.formBuilder.getPublishedForm.data.id).toEqual(id);
 
         // Create a new revision
         const [create2] = await createRevisionFrom({ revision: id });
         const { id: id2 } = create2.data.formBuilder.createRevisionFrom.data;
 
-        // Latest published form should still be #1
-        const [latestPublished] = await getPublishedForm({ parent: id.split("#")[0] });
-        expect(latestPublished.data.formBuilder.getPublishedForm.data.id).toEqual(id);
+        // Published form should still be #1
+        const [published] = await getPublishedForm({ parent: formId });
+        expect(published.data.formBuilder.getPublishedForm.data.id).toEqual(id);
 
         // Latest revision should be #2
         const [list] = await listForms();
@@ -277,33 +319,40 @@ describe('Form Builder "Form" Test', () => {
         await saveFormView({ revision: id });
 
         // Verify stats for #1
-        const [{ data: get2 }] = await getForm({ revision: id });
-        expect(get2.formBuilder.getForm.data.stats.views).toEqual(3);
+        const [{ data: get2 }] = await getFormStats({ id });
+        expect(get2.formBuilder.getFormStats.data.views).toEqual(3);
 
         // Publish revision #2
         await publishRevision({ revision: id2 });
 
-        // Latest published form should now be #2
-        const [latestPublished2] = await getPublishedForm({ parent: id.split("#")[0] });
-        expect(latestPublished2.data.formBuilder.getPublishedForm.data.id).toEqual(id2);
+        // Published form should now be #2
+        const [published2] = await getPublishedForm({ parent: formId });
+        expect(published2.data.formBuilder.getPublishedForm.data.id).toEqual(id2);
 
         // Increment views for #2
         await saveFormView({ revision: id2 });
         await saveFormView({ revision: id2 });
 
         // Verify stats for #2
-        const [{ data: get3 }] = await getForm({ revision: id2 });
-        expect(get3.formBuilder.getForm.data.stats.views).toEqual(2);
+        const [{ data: get3 }] = await getFormStats({ id: id2 });
+        expect(get3.formBuilder.getFormStats.data.views).toEqual(2);
 
         // Verify overall stats
-        expect(get3.formBuilder.getForm.data.overallStats.views).toEqual(5);
+        const [{ data: get3overall }] = await getFormOverallStats({ id: id2 });
+        expect(get3overall.formBuilder.getFormOverallStats.data.views).toEqual(5);
 
         // Unpublish #2
         await unpublishRevision({ revision: id2 });
 
-        // Latest published form should now again be #1
-        const [latestPublished3] = await getPublishedForm({ parent: id.split("#")[0] });
-        expect(latestPublished3.data.formBuilder.getPublishedForm.data.id).toEqual(id);
+        // There should be no published forms
+        const [published3] = await getPublishedForm({ parent: formId });
+        expect(published3).toMatchObject({
+            data: {
+                formBuilder: {
+                    getPublishedForm: null
+                }
+            }
+        });
     });
 
     test("should create, list and export submissions to file", async () => {
@@ -470,11 +519,6 @@ describe('Form Builder "Form" Test', () => {
                     publishRevision: {
                         data: {
                             name: "form 2",
-                            published: true,
-                            stats: {
-                                submissions: 0,
-                                views: 0
-                            },
                             status: "published",
                             version: 1
                         },
@@ -496,7 +540,6 @@ describe('Form Builder "Form" Test', () => {
                         data: {
                             id: `${form2.formId}#0002`,
                             version: 2,
-                            published: false,
                             status: "draft"
                         },
                         error: null
@@ -530,11 +573,6 @@ describe('Form Builder "Form" Test', () => {
                     publishRevision: {
                         data: {
                             name: "form 1",
-                            published: true,
-                            stats: {
-                                submissions: 0,
-                                views: 0
-                            },
                             status: "published",
                             version: 1
                         },
@@ -556,7 +594,6 @@ describe('Form Builder "Form" Test', () => {
                         data: {
                             id: `${form1.formId}#0002`,
                             version: 2,
-                            published: false,
                             status: "draft"
                         },
                         error: null
@@ -576,11 +613,6 @@ describe('Form Builder "Form" Test', () => {
                     publishRevision: {
                         data: {
                             name: "form 1",
-                            published: true,
-                            stats: {
-                                submissions: 0,
-                                views: 0
-                            },
                             status: "published",
                             version: 2
                         },
@@ -599,7 +631,6 @@ describe('Form Builder "Form" Test', () => {
                         data: {
                             id: `${form1.formId}#0003`,
                             version: 3,
-                            published: false,
                             status: "draft"
                         },
                         error: null

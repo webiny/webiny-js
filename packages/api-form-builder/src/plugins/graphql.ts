@@ -1,13 +1,11 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import { FormBuilderContext } from "~/types";
 
 const emptyResolver = () => ({});
 
-const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
-    type: "graphql-schema",
-    name: "graphql-schema-formBuilder",
-    schema: {
+export const createBaseSchema = () => {
+    const baseSchema = new GraphQLSchemaPlugin<FormBuilderContext>({
         typeDefs: /* GraphQL */ `
             type FbBooleanResponse {
                 data: Boolean
@@ -86,7 +84,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 }
             }
         }
-    }
-};
+    });
 
-export default plugin;
+    return baseSchema;
+};

@@ -187,7 +187,6 @@ export interface FbRevisionModel {
     id: string;
     name: string;
     version: number;
-    published: boolean;
     status: string;
     savedOn: string;
     createdBy: FbCreatedBy;
@@ -198,6 +197,7 @@ export interface FbFormDetailsPluginRenderParams {
     security: Record<string, any>;
     refreshForms: () => Promise<void>;
     form: FbFormModel;
+    stats: FbFormOverallStats;
     revisions: FbRevisionModel[];
     loading: boolean;
 }
@@ -209,7 +209,7 @@ export type FbFormDetailsPluginType = Plugin & {
 
 export type FbFormDetailsSubmissionsPlugin = Plugin & {
     type: "forms-form-details-submissions";
-    render: (props: { form: FbFormModel }) => React.ReactNode;
+    render: (props: { form: FbFormModel; stats: FbFormOverallStats }) => React.ReactNode;
 };
 
 export interface FbFormModel {
@@ -218,19 +218,18 @@ export interface FbFormModel {
     version: number;
     fields: FbFormModelField[];
     steps: FbFormStep[];
-    published: boolean;
     name: string;
     settings: any;
     status: string;
     savedOn: string;
     revisions: FbRevisionModel[];
-    overallStats: {
-        submissions: number;
-        views: number;
-        conversionRate: number;
-    };
     createdBy: FbCreatedBy;
     triggers: Record<string, any>;
+}
+
+export interface FbFormOverallStats {
+    views: number;
+    submissions: number;
 }
 
 export interface FbFormRenderModel extends Omit<FbFormModel, "fields"> {
@@ -519,4 +518,10 @@ export interface FormBuilderImportExportSubTask {
         total: number;
     };
     error: Record<string, string>;
+}
+
+export enum FORM_STATUS {
+    DRAFT = "draft",
+    PUBLISHED = "published",
+    UNPUBLISHED = "unpublished"
 }
