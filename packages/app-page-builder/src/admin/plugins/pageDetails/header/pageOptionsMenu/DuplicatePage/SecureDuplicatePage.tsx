@@ -11,11 +11,17 @@ export const SecureDuplicatePage = createDecorator(DuplicatePage, Original => {
         const { folderLevelPermissions: flp } = useFolders();
         const { canWrite: pagesCanWrite } = usePagesPermissions();
 
-        const { folderId } = page.wbyAco_location;
-
         const canDuplicate = useMemo(() => {
-            return pagesCanWrite(page.createdBy.id) && flp.canManageContent(folderId);
-        }, [flp, folderId]);
+            if (!page || Object.keys(page).length === 0) {
+                // Page data is not available yet
+                return false;
+            }
+
+            return (
+                pagesCanWrite(page.createdBy.id) &&
+                flp.canManageContent(page.wbyAco_location.folderId)
+            );
+        }, [flp, page]);
 
         if (!canDuplicate) {
             return null;
