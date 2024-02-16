@@ -45,6 +45,7 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/handler-logs": "0.0.0",
     "@webiny/project-utils": "0.0.0",
+    "@webiny/sockets": "0.0.0",
     "@webiny/tasks": "0.0.0"
   },
   "devDependencies": {
