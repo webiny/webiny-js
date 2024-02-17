@@ -132,8 +132,15 @@ class Release {
 
             // Changelog and Github release.
             const changelog = await this.__getChangelog(lernaJSON.version);
-            const { data: release } = await this.__createGithubRelease(versionTag, changelog);
-            this.logger.info("Created Github release: %s", release.html_url);
+            this.logger.log("Changelog:\n\n%s\n\n", changelog);
+
+            try {
+                const { data: release } = await this.__createGithubRelease(versionTag, changelog);
+                this.logger.info("Created Github release: %s", release.html_url);
+            } catch (err) {
+                this.logger.warning("Failed to create a Github release: %s", err.message);
+                this.logger.log(err);
+            }
         }
 
         // Reset all changes made during versioning.
