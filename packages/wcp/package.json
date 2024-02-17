@@ -12,7 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.23.9",
-    "node-fetch": "^2.6.13"
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",

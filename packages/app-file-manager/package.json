@@ -45,7 +45,7 @@
     "invariant": "^2.2.4",
     "lodash": "4.17.21",
     "mime": "^2.4.2",
-    "minimatch": "^5.1.0",
+    "minimatch": "^9.0.3",
     "mobx": "^6.9.0",
     "mobx-react-lite": "^3.4.3",
     "prop-types": "^15.7.2",

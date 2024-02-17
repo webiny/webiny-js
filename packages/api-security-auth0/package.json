@@ -19,14 +19,14 @@
     "@webiny/error": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
-    "jsonwebtoken": "^9.0.1",
+    "jsonwebtoken": "^9.0.2",
     "jwk-to-pem": "^2.0.1",
-    "node-fetch": "^2.6.13"
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
     "@babel/core": "^7.23.9",
-    "@types/jsonwebtoken": "^9.0.2",
+    "@types/jsonwebtoken": "^9.0.5",
     "@types/jwk-to-pem": "^2.0.1",
     "@types/node-fetch": "^2.6.1",
     "@webiny/cli": "0.0.0",
