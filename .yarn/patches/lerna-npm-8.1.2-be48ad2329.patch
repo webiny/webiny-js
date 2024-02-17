@@ -23,3 +23,17 @@ index b8eb504f990cc6f7bcf0fac6f557be5179ac3ed9..05fef9a21ef3d43faaf8f5a16b1287ee
        }
        async detectFromGit() {
          const matchingPattern = this.project.isIndependent() ? "*@*" : `${this.tagPrefix}*.*.*`;
+diff --git a/dist/index.js b/dist/index.js
+index b8eb504f990cc6f7bcf0fac6f557be5179ac3ed9..40837f65e1bad75b6b621381423ecc41c7054e33 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -7516,7 +7516,8 @@ var init_src10 = __esm({
+           this.result?.count,
+           this.result?.count === 1 ? "package" : "packages"
+         );
+-        process.exit(0);
++        // Don't kill the process, to allow stdout to be fully flushed!
++        // process.exit(0);
+       }
+     };
+   }
