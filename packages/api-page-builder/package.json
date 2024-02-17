@@ -36,7 +36,7 @@
     "jsonpack": "^1.1.5",
     "load-json-file": "^6.2.0",
     "lodash": "4.17.21",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "rimraf": "^5.0.5",
     "stream": "^0.0.2",
     "uniqid": "^5.2.0",
