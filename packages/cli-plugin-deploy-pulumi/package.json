@@ -29,7 +29,7 @@
     "mime": "2.6.0",
     "minimatch": "^5.1.0",
     "ncp": "2.0.0",
-    "node-notifier": "7.0.2",
+    "node-notifier": "8.0.1",
     "open": "^8.4.0",
     "ora": "4.1.1",
     "replace-in-path": "^1.1.0",
