@@ -1,0 +1,25 @@
+diff --git a/dist/index.js b/dist/index.js
+index b8eb504f990cc6f7bcf0fac6f557be5179ac3ed9..05fef9a21ef3d43faaf8f5a16b1287eeba30eed5 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -8431,6 +8431,10 @@ var require_src2 = __commonJS({
+         if (!this.hasRootedLeaf) {
+           await this.runRootLifecycle("version");
+         }
++
++        // We don't want to update yarn.lock, as it's irrelevant, and in our case, breaks the process.
++        return;
++
+         if (this.options.npmClient === "pnpm") {
+           this.logger.verbose("version", "Updating root pnpm-lock.yaml");
+           await execPackageManager(
+@@ -9539,7 +9543,8 @@ var require_src3 = __commonJS({
+         }
+       }
+       verifyWorkingTreeClean() {
+-        return describeRef(this.execOpts).then(throwIfUncommitted);
++        return Promise.resolve();
++        // return describeRef(this.execOpts).then(throwIfUncommitted);
+       }
+       async detectFromGit() {
+         const matchingPattern = this.project.isIndependent() ? "*@*" : `${this.tagPrefix}*.*.*`;
