@@ -23,7 +23,7 @@
     "@webiny/validation": "0.0.0",
     "form-data": "^4.0.0",
     "mime": "^3.0.0",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "object-hash": "^3.0.0",
     "p-map": "4.0.0",
     "p-reduce": "2.1.0",
