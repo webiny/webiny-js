@@ -60,7 +60,7 @@
     "fast-glob": "^3.2.7",
     "find-up": "^5.0.0",
     "invariant": "^2.2.4",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "ora": "^4.1.1",
     "webpack": "^5.90.0"
   },

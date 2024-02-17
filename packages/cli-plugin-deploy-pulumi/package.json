@@ -27,14 +27,14 @@
     "lodash": "4.17.21",
     "log-update": "^4.0.0",
     "mime": "2.6.0",
-    "minimatch": "^5.1.0",
+    "minimatch": "^9.0.3",
     "ncp": "2.0.0",
-    "node-notifier": "7.0.2",
+    "node-notifier": "8.0.1",
     "open": "^8.4.0",
     "ora": "4.1.1",
     "replace-in-path": "^1.1.0",
     "strip-ansi": "^6.0.1",
-    "ws": "7.5.5"
+    "ws": "8.16.0"
   },
   "license": "MIT",
   "publishConfig": {

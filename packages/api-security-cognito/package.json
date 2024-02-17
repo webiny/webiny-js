@@ -25,7 +25,7 @@
   "devDependencies": {
     "@babel/cli": "^7.23.9",
     "@babel/core": "^7.23.9",
-    "@types/jsonwebtoken": "^9.0.2",
+    "@types/jsonwebtoken": "^9.0.5",
     "@webiny/api-wcp": "0.0.0",
     "@webiny/cli": "0.0.0",
     "@webiny/handler": "0.0.0",
