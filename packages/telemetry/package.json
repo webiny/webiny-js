@@ -5,7 +5,7 @@
   "dependencies": {
     "@webiny/global-config": "0.0.0",
     "form-data": "3.0.0",
-    "node-fetch": "^2.6.13"
+    "node-fetch": "^3.3.2"
   },
   "publishConfig": {
     "access": "public",
