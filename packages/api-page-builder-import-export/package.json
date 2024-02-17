@@ -35,7 +35,7 @@
     "fs-extra": "^9.1.0",
     "load-json-file": "^6.2.0",
     "lodash": "4.17.21",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.13",
     "stream": "^0.0.2",
     "uniqid": "^5.2.0",
     "yauzl": "^2.10.0"

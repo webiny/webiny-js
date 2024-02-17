@@ -39,7 +39,7 @@
     "got": "^9.6.0",
     "json2csv": "^4.5.2",
     "lodash": "4.17.21",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.13",
     "slugify": "^1.2.9"
   },
   "devDependencies": {

@@ -20,7 +20,7 @@
     "@webiny/cli-plugin-deploy-pulumi": "0.0.0",
     "@webiny/pulumi": "0.0.0",
     "form-data": "^4.0.0",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.6.13"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
