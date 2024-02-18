@@ -1,65 +1,15 @@
-import React, { createContext, useContext, useEffect, useMemo } from "react";
-import debounce from "lodash/debounce";
-import { ComposableFC } from "./Compose";
-import { useComponent } from "./Context";
+import { createContext } from "react";
+import { GenericComponent } from "~/types";
+import { makeDecoratable } from "~/makeDecoratable";
 
 const ComposableContext = createContext<string[]>([]);
 ComposableContext.displayName = "ComposableContext";
 
-function useComposableParents() {
-    const context = useContext(ComposableContext);
-    if (!context) {
-        return [];
-    }
+const nullRenderer = () => null;
 
-    return context;
-}
-
-const createEmptyRenderer = (name: string) => {
-    return {
-        [name]: function () {
-            useEffect(() => {
-                // We need to debounce the log, as it sometimes only requires a single tick to get the new
-                // composed component to render, and we don't want to scare developers for no reason.
-                const debounced = debounce(() => {
-                    console.info(
-                        `<${name}/> is not implemented! To provide an implementation, use the <Compose/> component.`
-                    );
-                }, 100);
-
-                return () => {
-                    debounced.cancel();
-                };
-            }, []);
-
-            return null;
-        }
-    }[name];
-};
-
-export function makeComposable<TProps>(name: string, Component?: React.ComponentType<TProps>) {
-    if (!Component) {
-        Component = createEmptyRenderer(name);
-    }
-
-    const Composable: ComposableFC<TProps> = props => {
-        const parents = useComposableParents();
-        const ComposedComponent = useComponent(Component as React.ComponentType<TProps>);
-
-        const context = useMemo(() => [...parents, name], [parents, name]);
-
-        return (
-            <ComposableContext.Provider value={context}>
-                <ComposedComponent {...props}>{props.children}</ComposedComponent>
-            </ComposableContext.Provider>
-        );
-    };
-
-    Component.displayName = name;
-
-    Composable.original = Component;
-    Composable.originalName = name;
-    Composable.displayName = `Composable<${name}>`;
-
-    return Composable;
+/**
+ * @deprecated Use `makeDecoratable` instead.
+ */
+export function makeComposable<T extends GenericComponent>(name: string, Component?: T) {
+    return makeDecoratable(name, Component ?? nullRenderer);
 }

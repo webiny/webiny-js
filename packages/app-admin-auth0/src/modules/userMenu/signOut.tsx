@@ -1,11 +1,11 @@
 import React from "react";
-import { makeComposable } from "@webiny/app-serverless-cms";
+import { makeDecoratable } from "@webiny/app-serverless-cms";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 import { ReactComponent as SignOutIcon } from "~/assets/icons/round-lock_open-24px.svg";
 
-export const SignOut = makeComposable("SignOut", () => {
+export const SignOut = makeDecoratable("SignOut", () => {
     const { identity } = useSecurity();
 
     if (!identity) {

@@ -1,7 +1,7 @@
 import React from "react";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useNavigate } from "@webiny/react-router";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { ButtonIcon, ButtonPrimary, IconButton } from "@webiny/ui/Button";
 import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
@@ -14,16 +14,16 @@ import { routePaths } from "~/utils";
 
 const t = i18n.ns("app-apw/page-builder/publish-page");
 
-const PublishRevisionDecorator = createComponentPlugin(
+const PublishRevisionDecorator = createDecorator(
     Components.PageDetails.Toolbar.PublishRevision,
     OriginalRenderer => {
-        return function PageReview(props) {
+        return function PageReview() {
             const { page } = Components.PageDetails.usePage();
             const contentReviewId = useContentReviewId(page.id);
             const navigate = useNavigate();
 
             if (!contentReviewId) {
-                return <OriginalRenderer {...props} />;
+                return <OriginalRenderer />;
             }
 
             return (
@@ -44,10 +44,10 @@ const PublishRevisionDecorator = createComponentPlugin(
     }
 );
 
-const PublishPageMenuOptionDecorator = createComponentPlugin(
-    Components.PageDetails.Toolbar.PublishRevision,
+const PublishPageMenuOptionDecorator = createDecorator(
+    Components.PageDetails.Revisions.Actions.PublishRevision,
     OriginalRenderer => {
-        return function PageReview() {
+        return function PageReview(props) {
             const { revision } = Components.PageDetails.Revisions.useRevision();
             const contentReviewId = useContentReviewId(revision.id);
             const navigate = useNavigate();
@@ -57,7 +57,7 @@ const PublishPageMenuOptionDecorator = createComponentPlugin(
             }
 
             if (!contentReviewId) {
-                return <OriginalRenderer />;
+                return <OriginalRenderer {...props} />;
             }
 
             return (
@@ -78,7 +78,7 @@ const PublishPageMenuOptionDecorator = createComponentPlugin(
     }
 );
 
-const PublishPageFromEditorDecorator = createComponentPlugin(
+const PublishPageFromEditorDecorator = createDecorator(
     Components.PageEditor.Toolbar.PublishPage,
     OriginalRenderer => {
         return function PageReview() {
@@ -105,7 +105,7 @@ const PublishPageFromEditorDecorator = createComponentPlugin(
         };
     }
 );
-const PageRevisionListItemGraphicDecorator = createComponentPlugin(
+const PageRevisionListItemGraphicDecorator = createDecorator(
     Components.PageDetails.Revisions.ListItemGraphic,
     OriginalRenderer => {
         return function PageReview() {

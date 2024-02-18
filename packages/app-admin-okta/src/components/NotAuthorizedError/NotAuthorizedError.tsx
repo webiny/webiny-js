@@ -5,7 +5,7 @@ import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import { useTenancy } from "@webiny/app-tenancy/hooks/useTenancy";
 import { useSecurity } from "@webiny/app-security";
-import { makeComposable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 import authErrorImg from "./SecureRouteError.svg";
 
 const ContentWrapper = styled("div")({
@@ -42,7 +42,7 @@ const Image = ({ className = styles.authErrorImgStyle, alt = "Not Authorized" }:
     return <img className={className} src={authErrorImg} alt={alt} />;
 };
 
-const NotAuthorizedComponent = makeComposable("NotAuthorizedError", () => {
+const NotAuthorizedComponent = makeDecoratable("NotAuthorizedError", () => {
     const { setTenant } = useTenancy();
     const { identity } = useSecurity();
 

@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { css } from "emotion";
-import { makeComposable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 import { Menu } from "@webiny/ui/Menu";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as MoreVerticalIcon } from "~/admin/assets/more_vert.svg";
@@ -16,9 +16,9 @@ export interface PageOptionsMenuProps {
     items: JSX.Element[];
 }
 
-export const PageOptionsMenu = makeComposable<PageOptionsMenuProps>(
+export const PageOptionsMenu = makeDecoratable(
     "PageOptionsMenu",
-    ({ items }) => {
+    ({ items }: PageOptionsMenuProps) => {
         if (!items.length) {
             return null;
         }

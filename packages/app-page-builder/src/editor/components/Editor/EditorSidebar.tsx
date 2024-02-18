@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import store from "store";
-import { makeComposable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Tabs, Tab, TabProps } from "@webiny/ui/Tabs";
 import {
@@ -87,9 +87,9 @@ EditorSidebar.displayName = "EditorSidebar";
 
 export type EditorSidebarTabProps = TabProps;
 
-export const EditorSidebarTab = makeComposable<EditorSidebarTabProps>(
+export const EditorSidebarTab = makeDecoratable(
     "EditorSidebarTab",
-    ({ children, ...props }) => {
+    ({ children, ...props }: EditorSidebarTabProps): JSX.Element | null => {
         return <Tab {...props}>{children}</Tab>;
     }
 );

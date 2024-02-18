@@ -1,8 +1,9 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { makeComposable } from "~/index";
+import { makeDecoratable } from "~/index";
 
 export interface CenteredViewProps {
+    children: React.ReactNode;
     maxWidth?: number | string;
 }
 
@@ -20,9 +21,9 @@ const Width = styled.div((props: Props) => ({
     width: "100%"
 }));
 
-export const CenteredView = makeComposable<CenteredViewProps>(
+export const CenteredView = makeDecoratable(
     "CenteredView",
-    ({ maxWidth = 700, children }) => {
+    ({ maxWidth = 700, children }: CenteredViewProps) => {
         return (
             <Container>
                 <Width maxWidth={maxWidth}>{children}</Width>

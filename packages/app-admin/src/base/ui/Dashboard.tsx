@@ -1,8 +1,8 @@
 import React from "react";
-import { makeComposable } from "@webiny/app";
+import { createVoidComponent, makeDecoratable } from "@webiny/app";
 
-export const Dashboard = makeComposable("Dashboard", () => {
+export const Dashboard = makeDecoratable("Dashboard", () => {
     return <DashboardRenderer />;
 });
 
-export const DashboardRenderer = makeComposable("DashboardRenderer");
+export const DashboardRenderer = makeDecoratable("DashboardRenderer", createVoidComponent());

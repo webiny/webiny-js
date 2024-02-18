@@ -2,7 +2,7 @@ import React, { useState, useCallback, SyntheticEvent, useEffect } from "react";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { TemplateTitle, templateTitleWrapper, TitleInputWrapper, TitleWrapper } from "./Styled";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { PageTemplate } from "~/templateEditor/state";
@@ -112,7 +112,7 @@ const Title = () => {
     );
 };
 
-export const TitlePlugin = createComponentPlugin(EditorBar.LeftSection, LeftSection => {
+export const TitlePlugin = createDecorator(EditorBar.LeftSection, LeftSection => {
     return function AddTitle(props) {
         return (
             <LeftSection>

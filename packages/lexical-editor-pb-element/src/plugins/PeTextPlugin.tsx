@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import PeText from "@webiny/app-page-builder/editor/components/Text/PeText";
-import { createComponentPlugin } from "@webiny/react-composition";
+import { createDecorator } from "@webiny/react-composition";
 import get from "lodash/get";
 import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
 import { useElementById } from "@webiny/app-page-builder/editor/hooks/useElementById";
@@ -10,7 +10,7 @@ import { useElementVariableValue } from "@webiny/app-page-builder/editor/hooks/u
 import { LexicalText } from "~/components/LexicalText";
 
 const DATA_NAMESPACE = "data.text";
-export const PeTextPlugin = createComponentPlugin(PeText, Original => {
+export const PeTextPlugin = createDecorator(PeText, Original => {
     return function PbTextPlugin({ elementId, tag: customTag, mediumEditorOptions }): JSX.Element {
         const [element] = useElementById(elementId);
         const variableValue = useElementVariableValue(element);

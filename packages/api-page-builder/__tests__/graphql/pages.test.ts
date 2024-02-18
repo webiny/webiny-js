@@ -18,6 +18,7 @@ describe("CRUD Test", () => {
         createPageBlock,
         createPageElement,
         deletePage,
+        duplicatePage,
         listPages,
         getPage,
         updatePage,
@@ -603,5 +604,51 @@ describe("CRUD Test", () => {
             "Item size has exceeded the maximum allowed size"
         );
         expect(updatePageResponse.data.pageBuilder.updatePage.data).toBeNull();
+    });
+
+    it("should duplicate a page", async () => {
+        // Let's create a page and update it with some data
+        await createCategory({
+            data: {
+                slug: `slug`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const [createPageResponse] = await createPage({
+            category: "slug"
+        });
+
+        const id = createPageResponse.data.pageBuilder.createPage.data.id;
+        const content = createPageContent("1MB");
+        const settings = {
+            general: {
+                snippet: "any-snippet"
+            }
+        };
+
+        await updatePage({
+            id,
+            data: {
+                content,
+                settings
+            }
+        });
+
+        // Let's duplicate the page
+        const [duplicatePageResponse] = await duplicatePage({
+            id
+        });
+
+        expect(duplicatePageResponse.data.pageBuilder.duplicatePage.data.title).toContain(
+            " (Copy)"
+        );
+        expect(duplicatePageResponse.data.pageBuilder.duplicatePage.data.path).toContain("-copy");
+        expect(duplicatePageResponse.data.pageBuilder.duplicatePage.data.content).toEqual(content);
+        expect(
+            duplicatePageResponse.data.pageBuilder.duplicatePage.data.settings.general.snippet
+        ).toEqual(settings.general.snippet);
     });
 });

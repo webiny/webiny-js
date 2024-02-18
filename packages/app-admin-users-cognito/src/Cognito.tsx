@@ -7,7 +7,8 @@ import {
     AddUserMenuItem,
     AddRoute,
     Layout,
-    Decorator
+    Decorator,
+    GenericComponent
 } from "@webiny/app-admin";
 import { plugins } from "@webiny/plugins";
 import { HasPermission } from "@webiny/app-security";
@@ -23,7 +24,9 @@ import installation from "./plugins/installation";
 import permissionRenderer from "./plugins/permissionRenderer";
 import cognito from "./plugins/cognito";
 
-const createLoginScreenDecorator = (config?: CreateAuthenticationConfig): Decorator => {
+const createLoginScreenDecorator = (
+    config?: CreateAuthenticationConfig
+): Decorator<GenericComponent> => {
     return () => createAuthentication(config);
 };
 
