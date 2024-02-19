@@ -1,28 +1,29 @@
 import { Plugin } from "@webiny/plugins";
 import { ISocketsEvent, SocketsEventRoute } from "~/handler/types";
 import { Context } from "~/types";
-import { ISockets, ISocketsResponse } from "~/sockets";
+import { ISocketsRunnerResponse } from "~/runner";
+import { ISocketsConnectionRegistry } from "~/registry";
 
 export interface ISocketsRoutePluginCallableParams<
     C extends Context = Context,
-    R extends ISocketsResponse = ISocketsResponse
+    R extends ISocketsRunnerResponse = ISocketsRunnerResponse
 > {
     event: ISocketsEvent;
-    sockets: ISockets;
+    registry: ISocketsConnectionRegistry;
     context: C;
     next: () => Promise<R>;
 }
 
 export interface ISocketsRoutePluginCallable<
     C extends Context = Context,
-    R extends ISocketsResponse = ISocketsResponse
+    R extends ISocketsRunnerResponse = ISocketsRunnerResponse
 > {
     (params: ISocketsRoutePluginCallableParams<C>): Promise<R>;
 }
 
 export class SocketsRoutePlugin<
     C extends Context = Context,
-    R extends ISocketsResponse = ISocketsResponse
+    R extends ISocketsRunnerResponse = ISocketsRunnerResponse
 > extends Plugin {
     public static override readonly type: string = "sockets.route.action";
 
@@ -39,3 +40,13 @@ export class SocketsRoutePlugin<
         return this.cb(params);
     }
 }
+
+export const createSocketsRoutePlugin = <
+    C extends Context = Context,
+    R extends ISocketsRunnerResponse = ISocketsRunnerResponse
+>(
+    route: SocketsEventRoute | string,
+    cb: ISocketsRoutePluginCallable<C, R>
+) => {
+    return new SocketsRoutePlugin<C, R>(route, cb);
+};

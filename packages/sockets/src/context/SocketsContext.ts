@@ -1,27 +1,18 @@
-import { Context } from "~/types";
 import { SocketsConnectionRegistry } from "~/registry";
 import {
     ISocketsContext,
     ISocketsContextListConnectionsResponse,
     ISocketsIdentity
 } from "./abstractions/ISocketsContext";
-import {
-    ISocketsTransporter,
-    ISocketsTransporterSendData,
-    SocketsTransporter
-} from "~/transporter";
+import { ISocketsTransporter, ISocketsTransporterSendData } from "~/transporter";
 
 export class SocketsContext implements ISocketsContext {
-    private readonly context: Context;
-    private readonly registry: SocketsConnectionRegistry;
+    public readonly registry: SocketsConnectionRegistry;
     private readonly transporter: ISocketsTransporter;
 
-    constructor(context: Context) {
-        this.context = context;
-        // @ts-expect-error
-        const documentClient = this.context.db?.driver?.documentClient;
-        this.registry = new SocketsConnectionRegistry(documentClient);
-        this.transporter = new SocketsTransporter();
+    constructor(registry: SocketsConnectionRegistry, transporter: ISocketsTransporter) {
+        this.registry = registry;
+        this.transporter = transporter;
     }
 
     public async send<T extends ISocketsTransporterSendData = ISocketsTransporterSendData>(

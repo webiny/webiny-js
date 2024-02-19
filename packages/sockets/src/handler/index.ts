@@ -7,11 +7,10 @@ import { HandlerFactoryParams } from "@webiny/handler-aws/types";
 import { APIGatewayProxyResult } from "aws-lambda";
 import { Context as LambdaContext } from "aws-lambda/handler";
 import { ISocketsEvent } from "./types";
-import { createSocketsRoutePlugins } from "~/sockets/actions";
-import { SocketsConnectionRegistry } from "~/registry";
-import { SocketsEventValidator } from "~/sockets/SocketsEventValidator";
+import { createSocketsRoutePlugins } from "~/runner/actions";
+import { SocketsEventValidator } from "~/validator/SocketsEventValidator";
 import { Context } from "~/types";
-import { Sockets } from "~/sockets";
+import { SocketsRunner } from "~/runner";
 import { PluginCollection } from "@webiny/plugins/types";
 
 export interface HandlerCallable {
@@ -47,13 +46,6 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
 
         registerDefaultPlugins(app.webiny);
 
-        app.addHook("preSerialization", async (_, __, payload: Record<string, any>) => {
-            if (!payload.body) {
-                return payload;
-            }
-            return payload.body;
-        });
-
         app.setErrorHandler<WebinyError>(async (error, _, reply) => {
             app.__webiny_raw_result = {
                 error: {
@@ -63,18 +55,13 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
                 },
                 statusCode: 200
             };
-            return reply.send();
+            return reply.send({});
         });
 
         app.post(url, async (_, reply) => {
-            /**
-             * TODO: find another way of passing the documentClient to the registry.
-             */
-            // @ts-expect-error
-            const documentClient = app.webiny.db.driver.documentClient;
-            const registry = new SocketsConnectionRegistry(documentClient);
+            const context = app.webiny as Context;
             const validator = new SocketsEventValidator();
-            const handler = new Sockets(app.webiny as Context, registry, validator);
+            const handler = new SocketsRunner(context, context.sockets.registry, validator);
 
             app.__webiny_raw_result = await handler.run(event);
             return reply.send({});

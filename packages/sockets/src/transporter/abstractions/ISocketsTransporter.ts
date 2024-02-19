@@ -1,15 +1,16 @@
+import { GenericRecord } from "@webiny/api/types";
 import { ISocketsConnectionRegistryData } from "~/registry";
 
-export interface ISocketsTransporterSendData {
-    [key: string]: any;
-}
+export type ISocketsTransporterSendData = GenericRecord<string>;
+
+export type ISocketsTransporterSendConnection = Pick<
+    ISocketsConnectionRegistryData,
+    "connectionId" | "domainName" | "stage"
+>;
 
 export interface ISocketsTransporter {
     send<T extends ISocketsTransporterSendData = ISocketsTransporterSendData>(
-        connections: Pick<
-            ISocketsConnectionRegistryData,
-            "connectionId" | "domainName" | "stage"
-        >[],
+        connections: ISocketsTransporterSendConnection[],
         data: T
     ): Promise<void>;
 }

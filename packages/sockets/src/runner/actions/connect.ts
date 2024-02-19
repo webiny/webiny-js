@@ -1,11 +1,12 @@
 import { SocketsEventRoute } from "~/handler/types";
-import { SocketsRoutePlugin } from "~/plugins/SocketsRoutePlugin";
+import { createSocketsRoutePlugin } from "~/plugins/SocketsRoutePlugin";
 
 export const createSocketsRouteConnectPlugin = () => {
-    return new SocketsRoutePlugin(SocketsEventRoute.connect, async params => {
-        const { sockets, event } = params;
-        await sockets.registry.register({
-            identity: event.data.identity.id,
+    return createSocketsRoutePlugin(SocketsEventRoute.connect, async params => {
+        const { registry, event, next } = params;
+        const results = await next();
+        await registry.register({
+            identity: event.data.identity,
             connectionId: event.requestContext.connectionId,
             tenant: event.data.tenant,
             locale: event.data.locale,
@@ -14,6 +15,7 @@ export const createSocketsRouteConnectPlugin = () => {
         });
 
         return {
+            ...results,
             statusCode: 200
         };
     });

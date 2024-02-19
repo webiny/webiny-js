@@ -1,14 +1,27 @@
+import WebinyError from "@webiny/error";
 import { ISocketsEvent, SocketsEventRoute } from "~/handler/types";
-import { ISocketsConnectionRegistry } from "~/registry";
 import { Context } from "~/types";
-import { ISocketsEventValidator } from "./abstractions/ISocketsEventValidator";
-import { ISockets, ISocketsResponse } from "./abstractions/ISockets";
-import { SocketsRoutePlugin } from "~/plugins/SocketsRoutePlugin";
-import { middleware } from "@webiny/handler/middleware";
+import { ISocketsEventValidator } from "~/validator/abstractions/ISocketsEventValidator";
+import {
+    ISocketsRunner,
+    ISocketsRunnerResponse,
+    ISocketsRunnerRunParams
+} from "./abstractions/ISocketsRunner";
+import {
+    ISocketsRoutePluginCallableParams,
+    SocketsRoutePlugin
+} from "~/plugins/SocketsRoutePlugin";
+import { middleware } from "@webiny/utils";
+import { ISocketsConnectionRegistry } from "~/registry";
 
-export class Sockets implements ISockets {
-    public readonly context: Context;
-    public readonly registry: ISocketsConnectionRegistry;
+type MiddlewareParams<C extends Context = Context> = Pick<
+    ISocketsRoutePluginCallableParams<C>,
+    "context" | "event" | "registry"
+>;
+
+export class SocketsRunner implements ISocketsRunner {
+    private readonly context: Context;
+    private readonly registry: ISocketsConnectionRegistry;
     private readonly validator: ISocketsEventValidator;
 
     public constructor(
@@ -21,7 +34,7 @@ export class Sockets implements ISockets {
         this.validator = validator;
     }
 
-    public async run(input: Partial<ISocketsEvent>): Promise<ISocketsResponse> {
+    public async run(input: ISocketsRunnerRunParams): Promise<ISocketsRunnerResponse> {
         let event: ISocketsEvent | undefined;
         try {
             event = await this.validator.validate(input);
@@ -61,23 +74,50 @@ export class Sockets implements ISockets {
                 return plugin.route === action;
             });
         if (plugins.length === 0) {
-            throw new Error(`There are no action plugins for "${action}"`);
+            throw new WebinyError(
+                `There are no action plugins for "${action}"`,
+                "NO_ACTION_PLUGINS",
+                {
+                    action
+                }
+            );
         }
         return plugins;
     }
 
-    public runRouteAction(event: ISocketsEvent): Promise<ISocketsResponse> {
+    private async runRouteAction(event: ISocketsEvent): Promise<ISocketsRunnerResponse> {
         /**
          * We will always fetch plugins in reverse order, so that users can override our default ones if necessary.
          */
         const plugins = this.getRoutePlugins(event.requestContext.routeKey).reverse();
 
-        const action = middleware(plugins.map(plugin => plugin.run));
+        const action = middleware<MiddlewareParams, ISocketsRunnerResponse>(
+            plugins.map(plugin => {
+                return async (params, next) => {
+                    return plugin.run({
+                        registry: params.registry,
+                        event: params.event,
+                        context: params.context,
+                        next
+                    });
+                };
+            })
+        );
 
-        return action({
+        const result = await action({
             event,
-            sockets: this,
+            registry: this.registry,
             context: this.context
         });
+        if (result) {
+            return result;
+        }
+        return {
+            error: {
+                message: "No response from the route action.",
+                code: "NO_RESPONSE"
+            },
+            statusCode: 404
+        };
     }
 }
