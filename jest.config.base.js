@@ -113,7 +113,19 @@ const createDynaliteTables = (options = {}) => {
                         IndexName: "GSI1",
                         KeySchema: [
                             { AttributeName: "GSI1_PK", KeyType: "HASH" },
-                            { AttributeName: "GSI1_SK", KeyType: "RANGE" },
+                            { AttributeName: "GSI1_SK", KeyType: "RANGE" }
+                        ],
+                        Projection: {
+                            ProjectionType: "ALL"
+                        },
+                        ProvisionedThroughput: {
+                            ReadCapacityUnits: 1,
+                            WriteCapacityUnits: 1
+                        }
+                    },
+                    {
+                        IndexName: "GSI2",
+                        KeySchema: [
                             { AttributeName: "GSI2_PK", KeyType: "HASH" },
                             { AttributeName: "GSI2_SK", KeyType: "RANGE" }
                         ],

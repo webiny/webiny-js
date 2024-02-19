@@ -1,8 +1,10 @@
 import { PluginsContainer } from "@webiny/plugins";
 
-export interface BenchmarkRuns {
-    [key: string]: number;
-}
+export type GenericRecordKey = string | number | symbol;
+
+export type GenericRecord<K extends GenericRecordKey = GenericRecordKey, V = any> = Record<K, V>;
+
+export type BenchmarkRuns = GenericRecord<string, number>;
 
 export interface BenchmarkMeasurement {
     name: string;
