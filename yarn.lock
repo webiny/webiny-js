@@ -16373,11 +16373,11 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     archy: 1.0.0
     chalk: 4.1.2
+    color: ^4.2.3
     execa: ^5.0.0
     graphlib: 2.1.8
     multimatch: 5.0.0
     p-map: ^4.0.0
-    random-color: 1.0.1
   languageName: unknown
   linkType: soft
 
@@ -20621,7 +20621,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"color-convert@npm:^1.3.0, color-convert@npm:^1.9.0":
+"color-convert@npm:^1.9.0":
   version: 1.9.3
   resolution: "color-convert@npm:1.9.3"
   dependencies:
@@ -20653,15 +20653,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"color-string@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "color-string@npm:0.3.0"
-  dependencies:
-    color-name: ^1.0.0
-  checksum: cc65013a94d399ddcb81b3b4b6e0d2166cbaa77311260ff6271f215a286d3db58ab3a217bdb175f8b9dd95f9ea7ac94f71a595af6bcd3b6a02fea6e75ddaf5fb
-  languageName: node
-  linkType: hard
-
 "color-string@npm:^1.9.0":
   version: 1.9.1
   resolution: "color-string@npm:1.9.1"
@@ -20678,17 +20669,6 @@ __metadata:
   bin:
     color-support: bin.js
   checksum: 9b7356817670b9a13a26ca5af1c21615463b500783b739b7634a0c2047c16cef4b2865d7576875c31c3cddf9dd621fa19285e628f20198b233a5cfdda6d0793b
-  languageName: node
-  linkType: hard
-
-"color@npm:^0.11.1":
-  version: 0.11.4
-  resolution: "color@npm:0.11.4"
-  dependencies:
-    clone: ^1.0.2
-    color-convert: ^1.3.0
-    color-string: ^0.3.0
-  checksum: a6f624fd159e9311a6c1c86ac05b5b550c98e2d1e5646e032b8481e5e113127c06a84678b91c89c96b11b58c1c723dd9766b1b02cb2d441c6212a0f7cb3dad73
   languageName: node
   linkType: hard
 
@@ -34368,15 +34348,6 @@ __metadata:
   version: 0.26.1
   resolution: "ramda@npm:0.26.1"
   checksum: 19c2730e44c129538151ae034c89be9b2c6a4ccc7c65cff57497418bc532ce09282f98cd927c39b0b03c6bc3f1d1a12d822b7b07f96a1634f4958a6c05b7b384
-  languageName: node
-  linkType: hard
-
-"random-color@npm:1.0.1":
-  version: 1.0.1
-  resolution: "random-color@npm:1.0.1"
-  dependencies:
-    color: ^0.11.1
-  checksum: 6f4c6aac55c06fddf34f7d09e468eb3e580ecc67675e4c171d08aae4eda69c000a17776adf81d3555519eef33cf33f9c0544129ab77067192892dba49a619ae7
   languageName: node
   linkType: hard
 
