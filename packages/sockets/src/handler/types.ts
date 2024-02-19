@@ -6,7 +6,7 @@ export interface IIncomingEvent<TEvent> {
 export enum SocketsEventRoute {
     "connect" = "$connect",
     "disconnect" = "$disconnect",
-    "message" = "$message"
+    "default" = "$default"
 }
 
 export interface ISocketsEventDataIdentity {

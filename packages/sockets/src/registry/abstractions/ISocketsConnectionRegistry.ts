@@ -1,6 +1,8 @@
+import { ISocketsIdentity } from "~/context/abstractions/ISocketsContext";
+
 export interface ISocketsConnectionRegistryData {
     connectionId: string;
-    identity: string;
+    identity: ISocketsIdentity;
     tenant: string;
     locale: string;
     connectedOn: string;
@@ -12,7 +14,7 @@ export interface ISocketsConnectionRegistryRegisterParams {
     connectionId: string;
     tenant: string;
     locale: string;
-    identity: string;
+    identity: ISocketsIdentity;
     domainName: string;
     stage: string;
 }

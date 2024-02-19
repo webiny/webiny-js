@@ -2,20 +2,17 @@ import {
     ApiGatewayManagementApiClient,
     PostToConnectionCommand
 } from "@webiny/aws-sdk/client-apigatewaymanagementapi";
-import { ISocketsConnectionRegistryData } from "~/registry";
 import {
-    ISocketsTransporterSendData,
-    ISocketsTransporter
+    ISocketsTransporter,
+    ISocketsTransporterSendConnection,
+    ISocketsTransporterSendData
 } from "./abstractions/ISocketsTransporter";
 
 export class SocketsTransporter implements ISocketsTransporter {
     private readonly clients = new Map<string, ApiGatewayManagementApiClient>();
 
     public async send<T extends ISocketsTransporterSendData = ISocketsTransporterSendData>(
-        connections: Pick<
-            ISocketsConnectionRegistryData,
-            "connectionId" | "domainName" | "stage"
-        >[],
+        connections: ISocketsTransporterSendConnection[],
         data: T
     ): Promise<void> {
         if (connections.length === 0) {
@@ -40,7 +37,7 @@ export class SocketsTransporter implements ISocketsTransporter {
     }
 
     private getClient(
-        connection: Pick<ISocketsConnectionRegistryData, "connectionId" | "domainName" | "stage">
+        connection: ISocketsTransporterSendConnection
     ): ApiGatewayManagementApiClient {
         const endpoint = `https://${connection.domainName}/${connection.stage}`;
         const client = this.clients.get(endpoint);

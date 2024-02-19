@@ -130,7 +130,7 @@ export class SocketsConnectionRegistry implements ISocketsConnectionRegistry {
             SK: connectionId,
             // to find all connections related to given identity
             GSI1_PK,
-            GSI1_SK: identity,
+            GSI1_SK: identity.id,
             // to find all connections related to given tenant/locale combination
             GSI2_PK,
             GSI2_SK: `T#${tenant}#L#${locale}`,
