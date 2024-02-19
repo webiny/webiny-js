@@ -45,7 +45,7 @@ describe("Delete Permissions Checks", () => {
         permissions.setPermissions({
             groups: { rwd: "rwd" },
             models: { rwd: "rwd" }
-        })
+        });
 
         const { manage: manageApiB } = useTestModelHandler({
             identity: identityB,
