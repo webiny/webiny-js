@@ -581,4 +581,96 @@ describe("Folder Level Permissions - Security Checks", () => {
             canManageContent: true
         });
     });
+
+    it("owner access inherited from a full access role should not be overridable", async () => {
+        const folderA = await acoIdentityA
+            .createFolder({
+                data: {
+                    title: "Folder A",
+                    slug: "folder-a",
+                    type: FOLDER_TYPE
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        // Full-access user A gives "owner" access to user B.
+        await acoIdentityA.updateFolder({
+            id: folderA.id,
+            data: { permissions: [{ level: "owner", target: `admin:${identityB.id}` }] }
+        });
+
+        // User B assigns full-access user A as a viewer.
+        await acoIdentityB.updateFolder({
+            id: folderA.id,
+            data: {
+                permissions: [
+                    { level: "owner", target: `admin:${identityB.id}` },
+                    {
+                        level: "viewer",
+                        target: `admin:${identityA.id}`
+                    }
+                ]
+            }
+        });
+
+        const [postFlpChangeFolderAIdentityB] = await acoIdentityB.getFolder({ id: folderA.id });
+        expect(postFlpChangeFolderAIdentityB).toMatchObject({
+            data: {
+                aco: {
+                    getFolder: {
+                        data: {
+                            permissions: [
+                                {
+                                    target: "admin:2",
+                                    level: "owner",
+                                    inheritedFrom: null
+                                },
+                                {
+                                    target: "admin:1",
+                                    level: "viewer",
+                                    inheritedFrom: null
+                                }
+                            ],
+                            hasNonInheritedPermissions: true,
+                            canManagePermissions: true,
+                            canManageStructure: true,
+                            canManageContent: true
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [postFlpChangeFolderAIdentityA] = await acoIdentityA.getFolder({ id: folderA.id });
+        expect(postFlpChangeFolderAIdentityA).toMatchObject({
+            data: {
+                aco: {
+                    getFolder: {
+                        data: {
+                            permissions: [
+                                {
+                                    target: "admin:1",
+                                    level: "owner",
+                                    inheritedFrom: "role:full-access"
+                                },
+                                {
+                                    target: "admin:2",
+                                    level: "owner",
+                                    inheritedFrom: null
+                                }
+                            ],
+                            hasNonInheritedPermissions: true,
+                            canManagePermissions: true,
+                            canManageStructure: true,
+                            canManageContent: true
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
 });

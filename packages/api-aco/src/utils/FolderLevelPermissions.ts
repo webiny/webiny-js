@@ -198,8 +198,10 @@ export class FolderLevelPermissions {
                 p => p.target === `admin:${identity.id}`
             );
 
+            const hasFullAccess = permissions.some(p => p.name === "*");
+
             if (currentIdentityIncludedInPermissions) {
-                // Ensure existing identity permission is always the first one in the array.
+                // 1. Ensure existing identity permission is always the first one in the array.
                 const currentIdentityPermissionIndex =
                     currentFolderPermissions.permissions.findIndex(
                         p => p.target === `admin:${identity.id}`
@@ -212,12 +214,27 @@ export class FolderLevelPermissions {
                     );
                     currentFolderPermissions.permissions.unshift(currentIdentityPermission);
                 }
+
+                // 2. We must ensure current identity has the "owner" level if they possess full access based
+                // on security permissions. This protects us from non-full-access users restricting
+                // access to full-access users. This should not happen. Full-access users should always
+                // be in control of the permissions for a folder.
+
+                const restrictedFullAccess =
+                    currentFolderPermissions.permissions[0].inheritedFrom !== "role:full-access";
+
+                if (restrictedFullAccess && hasFullAccess) {
+                    currentFolderPermissions.permissions[0] = {
+                        target: `admin:${identity.id}`,
+                        level: "owner",
+                        inheritedFrom: "role:full-access"
+                    };
+                }
             } else {
                 // Current identity not included in permissions? Let's add it.
                 let currentIdentityPermission: FolderPermission | null = null;
 
                 // 1. Check if the user has full access.
-                const hasFullAccess = permissions.some(p => p.name === "*");
                 if (hasFullAccess) {
                     currentIdentityPermission = {
                         target: `admin:${identity.id}`,
@@ -288,6 +305,27 @@ export class FolderLevelPermissions {
         }
 
         const { folder } = params;
+
+        // We check for parent folder access first because the passed folder should be
+        // inaccessible if the parent folder is inaccessible.
+        if (folder.parentId) {
+            let foldersList = params.foldersList;
+            if (!foldersList) {
+                foldersList = await this.listAllFolders(folder.type);
+            }
+
+            const parentFolder = foldersList.find(f => f.id === folder.parentId);
+            if (parentFolder) {
+                const canAccessParentFolder = await this.canAccessFolder({
+                    ...params,
+                    folder: parentFolder
+                });
+
+                if (!canAccessParentFolder) {
+                    return false;
+                }
+            }
+        }
 
         const folderPermissions = await this.getFolderPermissions({
             folder,
