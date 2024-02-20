@@ -11,7 +11,7 @@ const gqlApiTypesPermissions = [
     { _src: "x", name: "cms.endpoint.preview" }
 ];
 
-describe("Content Groups / Models / Entries - Permissions Checks", () => {
+describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
     test("group access scope: only groups created by the user", async () => {
         const permissions = [
             ...gqlApiTypesPermissions,
