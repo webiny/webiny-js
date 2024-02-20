@@ -311,27 +311,6 @@ export class FolderLevelPermissions {
 
         const { folder } = params;
 
-        // We check for parent folder access first because the passed folder should be
-        // inaccessible if the parent folder is inaccessible.
-        if (folder.parentId) {
-            let foldersList = params.foldersList;
-            if (!foldersList) {
-                foldersList = await this.listAllFolders(folder.type);
-            }
-
-            const parentFolder = foldersList.find(f => f.id === folder.parentId);
-            if (parentFolder) {
-                const canAccessParentFolder = await this.canAccessFolder({
-                    ...params,
-                    folder: parentFolder
-                });
-
-                if (!canAccessParentFolder) {
-                    return false;
-                }
-            }
-        }
-
         const folderPermissions = await this.getFolderPermissions({
             folder,
             foldersList: params.foldersList
