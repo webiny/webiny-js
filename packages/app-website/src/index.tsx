@@ -1,6 +1,6 @@
 export {
     makeComposable,
-    createComponentPlugin,
+    createDecorator,
     createProviderPlugin,
     createProvider,
     Plugin,

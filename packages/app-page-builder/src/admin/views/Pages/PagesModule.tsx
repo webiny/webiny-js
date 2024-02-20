@@ -2,19 +2,26 @@ import React from "react";
 import { PageListConfig } from "~/admin/config/pages";
 
 import {
-    ActionDelete,
+    SecureActionDelete,
     ActionExport,
-    ActionMove,
-    ActionPublish,
-    ActionUnpublish
+    SecureActionMove,
+    SecureActionPublish,
+    SecureActionUnpublish
 } from "~/admin/components/BulkActions";
+
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 import {
     CellActions,
     CellAuthor,
+    CellCreated,
     CellModified,
     CellName,
-    CellStatus
+    CellStatus,
+    SecureChangePageStatus,
+    SecureDeletePage,
+    SecureEditPage,
+    SecureMovePage,
+    PreviewPage
 } from "~/admin/components/Table/Table";
 
 const { Browser } = PageListConfig;
@@ -23,22 +30,33 @@ export const PagesModule = () => {
     return (
         <PageListConfig>
             <Browser.BulkAction name={"export"} element={<ActionExport />} />
-            <Browser.BulkAction name={"publish"} element={<ActionPublish />} />
-            <Browser.BulkAction name={"unpublish"} element={<ActionUnpublish />} />
-            <Browser.BulkAction name={"move"} element={<ActionMove />} />
-            <Browser.BulkAction name={"delete"} element={<ActionDelete />} />
+            <Browser.BulkAction name={"publish"} element={<SecureActionPublish />} />
+            <Browser.BulkAction name={"unpublish"} element={<SecureActionUnpublish />} />
+            <Browser.BulkAction name={"move"} element={<SecureActionMove />} />
+            <Browser.BulkAction name={"delete"} element={<SecureActionDelete />} />
             <Browser.FolderAction name={"edit"} element={<EditFolder />} />
             <Browser.FolderAction name={"permissions"} element={<SetFolderPermissions />} />
             <Browser.FolderAction name={"delete"} element={<DeleteFolder />} />
+            <Browser.PageAction name={"edit"} element={<SecureEditPage />} />
+            <Browser.PageAction name={"preview"} element={<PreviewPage />} />
+            <Browser.PageAction name={"status"} element={<SecureChangePageStatus />} />
+            <Browser.PageAction name={"move"} element={<SecureMovePage />} />
+            <Browser.PageAction name={"delete"} element={<SecureDeletePage />} />
             <Browser.Table.Column
                 name={"title"}
                 header={"Name"}
                 cell={<CellName />}
                 hideable={false}
-                size={300}
+                size={200}
                 sortable={true}
             />
-            <Browser.Table.Column name={"author"} header={"Author"} cell={<CellAuthor />} />
+            <Browser.Table.Column name={"createdBy"} header={"Author"} cell={<CellAuthor />} />
+            <Browser.Table.Column
+                name={"createdOn"}
+                header={"Created"}
+                cell={<CellCreated />}
+                sortable={true}
+            />
             <Browser.Table.Column
                 name={"savedOn"}
                 header={"Modified"}

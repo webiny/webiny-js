@@ -1,5 +1,6 @@
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import { until } from "@webiny/project-utils/testing/helpers/until";
 
 const FOLDER_TYPE = "PbPage";
 
@@ -54,6 +55,10 @@ describe("Folder Level Permissions - Page Manager GraphQL API", () => {
             );
         }
 
+        await until(gqlIdentityA.pageBuilder.listPages, ([response]) => {
+            return response.data.pageBuilder.listPages.data.length === 4;
+        });
+
         await expect(
             gqlIdentityA.pageBuilder.listPages().then(([response]) => {
                 return response.data.pageBuilder.listPages.data;
@@ -75,12 +80,16 @@ describe("Folder Level Permissions - Page Manager GraphQL API", () => {
         for (let i = 1; i <= 4; i++) {
             createdPages.push(
                 await gqlIdentityB.pageBuilder
-                    .createPage({ category: "static" })
+                    .createPage({ category: "static", meta: { location: "root" } })
                     .then(([response]) => {
                         return response.data.pageBuilder.createPage.data;
                     })
             );
         }
+
+        await until(gqlIdentityB.pageBuilder.listPages, ([response]) => {
+            return response.data.pageBuilder.listPages.data.length === 4;
+        });
 
         await expect(
             gqlIdentityB.pageBuilder.listPages().then(([response]) => {
@@ -135,6 +144,31 @@ describe("Folder Level Permissions - Page Manager GraphQL API", () => {
                         level: "owner"
                     }
                 ]
+            }
+        });
+
+        // Listing ACO records in the folder should be forbidden for identity C.
+        const [emptySearchRecordsList] = await gqlIdentityC.search.listRecords({
+            where: {
+                location: {
+                    folderId: folder.id
+                }
+            }
+        });
+
+        expect(emptySearchRecordsList).toEqual({
+            data: {
+                search: {
+                    listRecords: {
+                        data: [],
+                        error: null,
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 0,
+                            cursor: null
+                        }
+                    }
+                }
             }
         });
 
@@ -295,6 +329,10 @@ describe("Folder Level Permissions - Page Manager GraphQL API", () => {
         }
 
         // Listing pages in the folder should be now allowed for identity C.
+        await until(gqlIdentityC.pageBuilder.listPages, ([response]) => {
+            return response.data.pageBuilder.listPages.meta.totalCount === 1;
+        });
+
         await expect(
             gqlIdentityC.pageBuilder.listPages().then(([response]) => {
                 return response.data.pageBuilder.listPages;

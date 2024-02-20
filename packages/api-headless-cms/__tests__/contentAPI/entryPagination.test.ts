@@ -22,13 +22,9 @@ const createFruitData = (counter: number): CmsEntry => {
             displayName: "Admin"
         },
         tenant: "root",
-        publishedOn: new Date().toISOString(),
+        firstPublishedOn: new Date().toISOString(),
+        lastPublishedOn: new Date().toISOString(),
         locale: "en-US",
-        ownedBy: {
-            id: "admin",
-            displayName: "Admin",
-            type: "admin"
-        },
         values: {
             name: `Fruit ${counter}`,
             isSomething: false,

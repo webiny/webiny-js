@@ -80,7 +80,6 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 createdBy: utilsGetIdentity(input.createdBy, currentIdentity),
                 modifiedBy: utilsGetIdentity(input.modifiedBy, null),
                 savedBy: utilsGetIdentity(input.savedBy, currentIdentity),
-                ownedBy: utilsGetIdentity(input.createdBy, currentIdentity),
 
                 tenant: getTenantId(),
                 locale: getLocaleCode(),

@@ -1,6 +1,5 @@
-import { CmsPrivateModelFull } from "@webiny/api-headless-cms";
+import { createPrivateModelDefinition } from "@webiny/api-headless-cms";
 import { createModelField } from "./createModelField";
-import { CmsModelGroup } from "@webiny/api-headless-cms/types";
 
 const required = () => {
     return {
@@ -84,10 +83,43 @@ const metaField = () => {
     });
 };
 
+const accessControlTypeField = () => {
+    return createModelField({
+        label: "Type",
+        type: "text",
+        predefinedValues: {
+            enabled: true,
+            values: [
+                {
+                    label: "Public",
+                    value: "public",
+                    selected: true
+                },
+                {
+                    label: "Private",
+                    value: "private-authenticated"
+                }
+            ]
+        }
+    });
+};
+
+const accessControlField = () => {
+    return createModelField({
+        label: "Access Control",
+        type: "object",
+        tags: ["$bulk-edit"],
+        settings: {
+            fields: [accessControlTypeField()]
+        }
+    });
+};
+
 const tagsField = () => {
     return createModelField({
         label: "Tags",
         type: "text",
+        tags: ["$bulk-edit"],
         multipleValues: true,
         validation: [required()]
     });
@@ -102,56 +134,52 @@ const aliasesField = () => {
     });
 };
 
+const locationField = () => {
+    return createModelField({
+        type: "object",
+        label: "Location",
+        fieldId: "location",
+        settings: {
+            fields: [
+                createModelField({
+                    type: "text",
+                    fieldId: "folderId",
+                    label: "Folder ID",
+                    settings: {
+                        path: "location.folderId"
+                    }
+                })
+            ]
+        }
+    });
+};
+
 export const FILE_MODEL_ID = "fmFile";
 
-export const createFileModelDefinition = (group: CmsModelGroup): CmsPrivateModelFull => {
-    return {
+interface CreateFileModelDefinitionParams {
+    withPrivateFiles: boolean;
+}
+
+export const createFileModelDefinition = (params: CreateFileModelDefinitionParams) => {
+    const fields = [
+        locationField(),
+        nameField(),
+        keyField(),
+        typeField(),
+        sizeField(),
+        metaField(),
+        tagsField(),
+        aliasesField()
+    ];
+
+    if (params.withPrivateFiles) {
+        fields.push(accessControlField());
+    }
+
+    return createPrivateModelDefinition({
         name: "FmFile",
         modelId: FILE_MODEL_ID,
         titleFieldId: "name",
-        layout: [
-            ["location"],
-            ["name"],
-            ["key"],
-            ["type"],
-            ["size"],
-            ["meta"],
-            ["tags"],
-            ["aliases"]
-        ],
-        fields: [
-            {
-                id: "location",
-                type: "object",
-                storageId: "object@location",
-                label: "Location",
-                fieldId: "location",
-                settings: {
-                    fields: [
-                        {
-                            id: "folderId",
-                            type: "text",
-                            fieldId: "folderId",
-                            label: "Folder ID",
-                            storageId: "text@folderId",
-                            settings: {
-                                path: "location.folderId"
-                            }
-                        }
-                    ]
-                }
-            },
-            nameField(),
-            keyField(),
-            typeField(),
-            sizeField(),
-            metaField(),
-            tagsField(),
-            aliasesField()
-        ],
-        description: "File Manager - File content model",
-        isPrivate: true,
-        group,
-        noValidate: true
-    };
+        fields
+    });
 };

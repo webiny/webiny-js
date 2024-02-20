@@ -10,30 +10,30 @@ export const checkEsServiceRole = {
     name: "hook-before-deploy-es-service-role",
     async hook(params: Record<string, any>, context: CliContext) {
         const spinner = ora();
-        spinner.start(`Checking Elastic Search service role...`);
+        spinner.start(`Checking Amazon Elasticsearch service role...`);
         const iam = new IAM();
         try {
             await iam.getRole({ RoleName: "AWSServiceRoleForAmazonElasticsearchService" });
 
             spinner.stopAndPersist({
                 symbol: green("✔"),
-                text: `Found Elastic Search service role!`
+                text: `Found Amazon Elasticsearch service role!`
             });
-            context.success(`Found Elastic Search service role!`);
+            context.success(`Found Amazon Elasticsearch service role!`);
         } catch (err) {
             // We've seen cases where the `iam.getRole` call fails because of an issue
             // other than not being able to retrieve the service role. Let's print
             // additional info if that's the case. Will make debugging a bit easier.
-            if (err.code !== NO_SUCH_ENTITY_IAM_ERROR) {
+            if (err.Error.Code !== NO_SUCH_ENTITY_IAM_ERROR) {
                 spinner.fail(
-                    "Tried retrieving Elastic Search service role but failed with the following error: " +
+                    "Tried retrieving Amazon Elasticsearch service role but failed with the following error: " +
                         err.message
                 );
                 context.debug(err);
                 process.exit(1);
             }
 
-            spinner.text = "Creating Elastic Search service role...";
+            spinner.text = "Creating Amazon Elasticsearch service role...";
 
             try {
                 await iam.createServiceLinkedRole({ AWSServiceName: "es.amazonaws.com" });

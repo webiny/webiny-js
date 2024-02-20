@@ -20,7 +20,7 @@ const OverlaysHOC = (Component: React.ComponentType) => {
         return (
             <Component>
                 {children}
-                <div style={{ zIndex: 30, position: "absolute" }}>
+                <div style={{ zIndex: 1000, position: "absolute" }}>
                     <Snackbar />
                 </div>
                 <Portal />

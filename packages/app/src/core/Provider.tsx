@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { HigherOrderComponent, useApp } from "~/index";
+import { GenericComponent, Decorator, useApp } from "~/index";
 
 export interface ProviderProps {
-    hoc: HigherOrderComponent;
+    hoc: Decorator<GenericComponent>;
 }
 
 /**

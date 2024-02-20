@@ -14,17 +14,18 @@ const categoryFields = `
     id
     entryId
     createdOn
+    modifiedOn
+    savedOn
+    firstPublishedOn
+    lastPublishedOn
     createdBy ${identityFields}
     modifiedBy ${identityFields}
-    ownedBy ${identityFields}
-    savedOn
-   
+    savedBy ${identityFields}
     meta {
         title
         modelId
         version
         locked
-        publishedOn
         status
        
         revisions {
@@ -184,8 +185,8 @@ const deleteCategoriesMutation = (model: CmsModel) => {
 
 const publishCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
-        mutation PublishCategory($revision: ID!, $options: CmsPublishEntryOptionsInput) {
-            publishCategory: publish${model.singularApiName}(revision: $revision, options: $options) {
+        mutation PublishCategory($revision: ID!) {
+            publishCategory: publish${model.singularApiName}(revision: $revision) {
             data {
                 ${categoryFields}
             }

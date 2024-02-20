@@ -7,7 +7,7 @@ interface OutputError {
     message: string;
 }
 
-interface OutputErrors {
+export interface OutputErrors {
     [key: string]: OutputError;
 }
 

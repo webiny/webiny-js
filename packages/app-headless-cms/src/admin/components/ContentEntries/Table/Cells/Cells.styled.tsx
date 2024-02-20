@@ -1,11 +1,15 @@
 import styled from "@emotion/styled";
-import { css } from "emotion";
+import { Link } from "@webiny/react-router";
 import { Typography } from "@webiny/ui/Typography";
 
 export const RowTitle = styled("div")`
     display: flex;
     align-items: center;
     cursor: pointer;
+`;
+
+export const LinkTitle = styled(Link)`
+    color: var(--mdc-theme-text-primary-on-background);
 `;
 
 export const RowIcon = styled("div")`
@@ -18,7 +22,3 @@ export const RowText = styled(Typography)`
     overflow: hidden;
     text-overflow: ellipsis;
 `;
-
-export const menuStyles = css(`
-    width: 200px;
-`);

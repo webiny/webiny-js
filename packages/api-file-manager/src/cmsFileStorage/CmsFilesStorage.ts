@@ -72,16 +72,7 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
         const entry = await this.security.withoutAuthorization(() => {
             return this.cms.createEntry(model, {
                 ...file,
-                wbyAco_location: file.location,
-
-                // We're mapping on/by meta fields onto entry-level meta
-                // fields because we don't use revisions with files.
-                entryCreatedOn: file.createdOn,
-                entryModifiedOn: file.modifiedOn,
-                entrySavedOn: file.savedOn,
-                entryCreatedBy: file.createdBy,
-                entryModifiedBy: file.modifiedBy,
-                entrySavedBy: file.savedBy
+                wbyAco_location: file.location
             });
         });
 
@@ -180,16 +171,7 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
 
             const updatedEntry = await this.cms.updateEntry(model, entry.id, {
                 ...values,
-                wbyAco_location: values.location ?? entry.location,
-
-                // We're mapping on/by meta fields onto entry-level meta
-                // fields because we don't use revisions with files.
-                entryCreatedOn: file.createdOn,
-                entryModifiedOn: file.modifiedOn,
-                entrySavedOn: file.savedOn,
-                entryCreatedBy: file.createdBy,
-                entryModifiedBy: file.modifiedBy,
-                entrySavedBy: file.savedBy
+                wbyAco_location: values.location ?? entry.location
             });
 
             await this.aliases.storeAliases(file);
@@ -203,12 +185,12 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
             id: entry.entryId,
 
             // We're safe to use entry-level meta fields because we don't use revisions with files.
-            createdBy: entry.entryCreatedBy,
-            modifiedBy: entry.entryModifiedBy || null,
-            savedBy: entry.entrySavedBy,
-            createdOn: entry.entryCreatedOn,
-            modifiedOn: entry.entryModifiedOn || null,
-            savedOn: entry.entrySavedOn,
+            createdBy: entry.createdBy,
+            modifiedBy: entry.modifiedBy || null,
+            savedBy: entry.savedBy,
+            createdOn: entry.createdOn,
+            modifiedOn: entry.modifiedOn || null,
+            savedOn: entry.savedOn,
 
             locale: entry.locale,
             tenant: entry.tenant,

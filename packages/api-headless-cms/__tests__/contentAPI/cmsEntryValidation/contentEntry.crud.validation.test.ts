@@ -343,7 +343,7 @@ describe("content entry validation", () => {
                 ],
                 releaseDate: "2021-01-01",
                 runningTime: "22:45",
-                lastPublishedOn: "2023-01-01T00:00:00.000+00:00",
+                xyzPublishedOn: "2023-01-01T00:00:00.000+00:00",
                 image: "https://webiny.com/image.png",
                 category: {
                     id: "category-1",
@@ -362,7 +362,7 @@ describe("content entry validation", () => {
                     ],
                     nestedReleaseDate: "2022-01-01",
                     nestedRunningTime: "23:55",
-                    nestedLastPublishedOn: "2022-01-01T00:00:00.000+02:00",
+                    nestedXyzPublishedOn: "2022-01-01T00:00:00.000+02:00",
                     nestedImage: "https://webiny.com/image2.png",
                     nestedCategory: {
                         id: "category-2",
@@ -383,7 +383,7 @@ describe("content entry validation", () => {
                         ],
                         dzReleaseDate: "2021-01-01",
                         dzRunningTime: "21:55",
-                        dzLastPublishedOn: "2021-01-01T00:00:00.000+02:00",
+                        dzXyzPublishedOn: "2021-01-01T00:00:00.000+02:00",
                         dzImage: "https://webiny.com/image2.png",
                         dzCategory: {
                             id: "category-3",
@@ -402,7 +402,7 @@ describe("content entry validation", () => {
                             ],
                             dzNestedReleaseDate: "2021-01-01",
                             dzNestedRunningTime: "21:55",
-                            dzNestedLastPublishedOn: "2021-01-01T00:00:00.000+02:00",
+                            dzNestedXyzPublishedOn: "2021-01-01T00:00:00.000+02:00",
                             dzNestedImage: "https://webiny.com/image2.png",
                             dzNestedCategory: {
                                 id: "category-4",
@@ -424,7 +424,7 @@ describe("content entry validation", () => {
                 ],
                 multiValueReleaseDate: "2021-01-01",
                 multiValueRunningTime: "21:55",
-                multiValueLastPublishedOn: "2021-01-01T00:00:00.000+02:00",
+                multiValueXyzPublishedOn: "2021-01-01T00:00:00.000+02:00",
                 multiValueImage: "https://webiny.com/image2.png",
                 multiValueCategory: {
                     id: "category-11",

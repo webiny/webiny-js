@@ -4,12 +4,12 @@ import styled from "@emotion/styled";
 import { useRouter } from "@webiny/react-router";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
-import { ReactComponent as DownButton } from "../../../../assets/round-arrow_drop_down-24px.svg";
 import { MenuItem } from "@webiny/ui/Menu";
 import { Typography } from "@webiny/ui/Typography";
 import { Menu } from "@webiny/ui/Menu";
 import { statuses as statusesLabels } from "~/admin/constants";
-import { PbPageData } from "~/types";
+import { usePage } from "~/admin/views/Pages/PageDetails";
+import { ReactComponent as DownButton } from "~/admin/assets/round-arrow_drop_down-24px.svg";
 
 const buttonStyle = css`
     padding-left: 12px !important;
@@ -68,11 +68,8 @@ const StatusIndicator = styled.div<{ status: string }>`
         "var(--mdc-theme-text-icon-on-background)"};
 `;
 
-interface RevisionSelectorProps {
-    page: PbPageData;
-}
-const RevisionSelector = (props: RevisionSelectorProps) => {
-    const { page } = props;
+const RevisionSelector = () => {
+    const { page } = usePage();
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);
 

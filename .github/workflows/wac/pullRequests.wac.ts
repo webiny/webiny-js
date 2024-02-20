@@ -1,80 +1,6 @@
-import { createWorkflow, NormalJob } from "github-actions-wac";
-import { createValidateWorkflowsJob, createJob } from "./jobs";
-import { NODE_VERSION, listPackagesWithJestTests } from "./utils";
-
-const createJestTestsJob = (storage: string | null) => {
-    const env: Record<string, string> = {};
-
-    if (storage) {
-        if (storage === "ddb-es") {
-            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
-            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
-            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
-        } else if (storage === "ddb-os") {
-            // We still use the same environment variables as for "ddb-es" setup, it's
-            // just that the values are read from different secrets.
-            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
-            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
-            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
-        }
-    }
-
-    const packages = listPackagesWithJestTests({
-        storage
-    });
-
-    const job: NormalJob = createJob({
-        needs: "init",
-        name: "${{ matrix.package.cmd }}",
-        strategy: {
-            "fail-fast": false,
-            matrix: {
-                os: ["ubuntu-latest"],
-                node: [NODE_VERSION],
-                package: "${{ fromJson('" + JSON.stringify(packages) + "') }}"
-            }
-        },
-        "runs-on": "${{ matrix.os }}",
-        env,
-        awsAuth: storage === "ddb-es" || storage === "ddb-os",
-        steps: [
-            {
-                uses: "actions/cache@v3",
-                with: {
-                    path: ".yarn/cache",
-                    key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-                }
-            },
-            {
-                uses: "actions/cache@v3",
-                with: {
-                    path: ".webiny/cached-packages",
-                    key: "packages-cache-${{ needs.init.outputs.ts }}"
-                }
-            },
-            {
-                name: "Install dependencies",
-                run: "yarn --immutable"
-            },
-            {
-                name: "Build packages",
-                run: "yarn build:quick"
-            },
-            {
-                name: "Run tests",
-                run: "yarn test ${{ matrix.package.cmd }}"
-            }
-        ]
-    });
-
-    // We prevent running of Jest tests if a PR was created from a fork.
-    // This is because we don't want to expose our AWS credentials to forks.
-    if (storage === "ddb-es" || storage === "ddb-os") {
-        job.if = "needs.init.outputs.is-fork-pr != 'true'";
-    }
-
-    return job;
-};
+import { createWorkflow } from "github-actions-wac";
+import { createValidateWorkflowsJob, createJestTestsJob, createJob } from "./jobs";
+import { NODE_VERSION } from "./utils";
 
 export const pullRequests = createWorkflow({
     name: "Pull Requests",
@@ -84,7 +10,7 @@ export const pullRequests = createWorkflow({
         validateCommits: createJob({
             name: "Validate commit messages",
             if: "github.base_ref != 'dev'",
-            steps: [{ uses: "webiny/action-conventional-commits@v1.2.0" }]
+            steps: [{ uses: "webiny/action-conventional-commits@v1.3.0" }]
         }),
         // Don't allow "feat" commits to be merged into "dev" branch.
         validateCommitsDev: createJob({
@@ -92,7 +18,7 @@ export const pullRequests = createWorkflow({
             if: "github.base_ref == 'dev'",
             steps: [
                 {
-                    uses: "webiny/action-conventional-commits@v1.2.0",
+                    uses: "webiny/action-conventional-commits@v1.3.0",
                     with: {
                         // If dev, use "dev" commit types, otherwise use "next" commit types.
                         "allowed-commit-types":
@@ -120,7 +46,7 @@ export const pullRequests = createWorkflow({
                     run: 'echo "is-fork-pr=${{ github.event.pull_request.head.repo.fork }}" >> $GITHUB_OUTPUT'
                 },
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     id: "yarn-cache",
                     with: {
                         path: ".yarn/cache",
@@ -128,7 +54,7 @@ export const pullRequests = createWorkflow({
                     }
                 },
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     id: "cached-packages",
                     with: {
                         path: ".webiny/cached-packages",
@@ -144,7 +70,7 @@ export const pullRequests = createWorkflow({
                     run: "yarn build:quick"
                 },
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     id: "packages-cache",
                     with: {
                         path: ".webiny/cached-packages",
@@ -158,14 +84,14 @@ export const pullRequests = createWorkflow({
             name: "Static code analysis",
             steps: [
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     with: {
                         path: ".yarn/cache",
                         key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
                     }
                 },
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     with: {
                         path: ".webiny/cached-packages",
                         key: "packages-cache-${{ needs.init.outputs.ts }}"
@@ -198,7 +124,7 @@ export const pullRequests = createWorkflow({
             "runs-on": "webiny-build-packages",
             steps: [
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     with: {
                         path: ".yarn/cache",
                         key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
@@ -211,6 +137,10 @@ export const pullRequests = createWorkflow({
                 {
                     name: "Build packages (full)",
                     run: "yarn build"
+                },
+                {
+                    name: "Check types for Cypress tests",
+                    run: "yarn cy:ts"
                 }
             ]
         }),
@@ -229,14 +159,14 @@ export const pullRequests = createWorkflow({
             },
             steps: [
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     with: {
                         path: ".yarn/cache",
                         key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
                     }
                 },
                 {
-                    uses: "actions/cache@v3",
+                    uses: "actions/cache@v4",
                     with: {
                         path: ".webiny/cached-packages",
                         key: "packages-cache-${{ needs.init.outputs.ts }}"
@@ -276,7 +206,7 @@ export const pullRequests = createWorkflow({
                 },
                 {
                     name: "Upload verdaccio files",
-                    uses: "actions/upload-artifact@v3",
+                    uses: "actions/upload-artifact@v4",
                     with: {
                         name: "verdaccio-files",
                         "retention-days": 1,
@@ -297,15 +227,12 @@ export const pullRequests = createWorkflow({
             },
             "runs-on": "${{ matrix.os }}",
             checkout: false,
+            setupNode: {
+                "node-version": "${{ matrix.node }}"
+            },
             steps: [
                 {
-                    uses: "actions/setup-node@v3",
-                    with: {
-                        "node-version": "${{ matrix.node }}"
-                    }
-                },
-                {
-                    uses: "actions/download-artifact@v3",
+                    uses: "actions/download-artifact@v4",
                     with: {
                         name: "verdaccio-files",
                         path: "verdaccio-files"

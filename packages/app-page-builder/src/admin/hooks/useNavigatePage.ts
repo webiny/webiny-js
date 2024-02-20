@@ -6,6 +6,7 @@ import { PAGE_BUILDER_EDITOR_LINK, PAGE_BUILDER_LIST_LINK } from "~/admin/consta
 interface UseNavigatePageResponse {
     navigateToLatestFolder: () => void;
     navigateToListHome: () => void;
+    getPageEditorUrl: (id: string) => string;
     navigateToPageEditor: (id: string) => void;
 }
 
@@ -21,15 +22,17 @@ export const useNavigatePage = () => {
     }, [folderId]);
 
     return useMemo<UseNavigatePageResponse>(() => {
+        const getPageEditorUrl = (id: string) => {
+            return `${PAGE_BUILDER_EDITOR_LINK}/${encodeURIComponent(id)}${folderUrl}`;
+        };
         const navigateToPageEditor = (id: string) => {
-            return history.push(
-                `${PAGE_BUILDER_EDITOR_LINK}/${encodeURIComponent(id)}${folderUrl}`
-            );
+            return history.push(getPageEditorUrl(id));
         };
         if (navigateFolder) {
             return {
                 navigateToLatestFolder: navigateFolder.navigateToLatestFolder,
                 navigateToListHome: navigateFolder.navigateToListHome,
+                getPageEditorUrl,
                 navigateToPageEditor
             };
         }
@@ -40,6 +43,7 @@ export const useNavigatePage = () => {
             navigateToListHome: () => {
                 return history.push(PAGE_BUILDER_LIST_LINK);
             },
+            getPageEditorUrl,
             navigateToPageEditor
         };
     }, [navigateFolder, params]);

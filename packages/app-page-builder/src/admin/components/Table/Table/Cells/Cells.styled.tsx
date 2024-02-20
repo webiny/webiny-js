@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 
 export const RowTitle = styled("div")`
@@ -18,7 +17,3 @@ export const RowText = styled(Typography)`
     overflow: hidden;
     text-overflow: ellipsis;
 `;
-
-export const menuStyles = css(`
-    width: 200px;
-`);

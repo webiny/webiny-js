@@ -298,8 +298,9 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
         const formData = pick(data, [...fieldsIds]);
 
         const gqlData = prepareFormData(formData, model.fields);
+
         if (!entry.id) {
-            return createContent(gqlData, form);
+            return createContent(gqlData as CmsContentEntry, form);
         }
 
         const { meta } = entry;

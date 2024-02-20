@@ -1,11 +1,9 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { css } from "emotion";
-import { makeComposable } from "@webiny/app-admin";
-import { Menu, MenuItem } from "@webiny/ui/Menu";
+import { makeDecoratable } from "@webiny/app-admin";
+import { Menu } from "@webiny/ui/Menu";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as MoreVerticalIcon } from "~/admin/assets/more_vert.svg";
-import { ListItemGraphic } from "@webiny/ui/List";
-import { Icon } from "@webiny/ui/Icon";
 
 const menuStyles = css({
     ".disabled": {
@@ -14,21 +12,13 @@ const menuStyles = css({
     }
 });
 
-export interface PageOptionsMenuItem {
-    label: string;
-    icon: React.ReactElement;
-    onClick: () => void;
-    disabled?: boolean;
-    "data-testid"?: string;
-}
-
 export interface PageOptionsMenuProps {
-    items: PageOptionsMenuItem[];
+    items: JSX.Element[];
 }
 
-export const PageOptionsMenu = makeComposable<PageOptionsMenuProps>(
+export const PageOptionsMenu = makeDecoratable(
     "PageOptionsMenu",
-    ({ items }) => {
+    ({ items }: PageOptionsMenuProps) => {
         if (!items.length) {
             return null;
         }
@@ -39,18 +29,8 @@ export const PageOptionsMenu = makeComposable<PageOptionsMenuProps>(
                 className={menuStyles}
                 handle={<IconButton icon={<MoreVerticalIcon />} />}
             >
-                {items.map(item => (
-                    <MenuItem
-                        key={item.label}
-                        disabled={item.disabled ?? false}
-                        onClick={item.onClick}
-                        data-testid={item["data-testid"]}
-                    >
-                        <ListItemGraphic>
-                            <Icon icon={item.icon} />
-                        </ListItemGraphic>
-                        {item.label}
-                    </MenuItem>
+                {items.map((item, index) => (
+                    <Fragment key={index}>{item}</Fragment>
                 ))}
             </Menu>
         );

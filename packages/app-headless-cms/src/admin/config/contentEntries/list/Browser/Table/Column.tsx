@@ -12,7 +12,7 @@ export interface ColumnProps extends React.ComponentProps<typeof AcoConfig.Table
     modelIds?: string[];
 }
 
-const BaseColumn: React.FC<ColumnProps> = ({ modelIds = [], ...props }) => {
+const BaseColumn = ({ modelIds = [], ...props }: ColumnProps) => {
     const { model } = useModel();
 
     if (modelIds.length > 0 && !modelIds.includes(model.modelId)) {

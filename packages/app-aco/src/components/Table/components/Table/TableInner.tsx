@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { Columns, DataTable, DefaultData, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
-import { ColumnsPresenter, ColumnMapper } from "./Columns";
+import { ColumnMapper, ColumnsPresenter } from "./Columns";
 import { ColumnsVisibilityPresenter, ColumnsVisibilityUpdater } from "./ColumnVisibility";
 import { TablePresenter } from "./TablePresenter";
 import { TableRowProvider } from "~/components";
@@ -36,9 +36,11 @@ export const TableInner = observer(
 
         const columns = useMemo(() => {
             return props.columnsPresenter.vm.columns.reduce((result, column) => {
+                const { nameColumnId = "name" } = props;
                 const { name: defaultName } = column;
 
-                const name = defaultName === "name" ? props.nameColumnId : defaultName;
+                // Determine the column name, using the provided `nameColumnId` if the default is 'name'
+                const name = defaultName === "name" ? nameColumnId : defaultName;
 
                 result[name as keyof Columns<T>] = ColumnMapper.toDataTable(column, cellRenderer);
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { ReactComponent as BackIcon } from "./round-arrow_back-24px.svg";
 import { css } from "emotion";
 import { IconButton } from "@webiny/ui/Button";
@@ -10,7 +10,7 @@ const backStyles = css({
     marginLeft: -10
 });
 
-export const BackButtonPlugin = createComponentPlugin(EditorBar.BackButton, () => {
+export const BackButtonPlugin = createDecorator(EditorBar.BackButton, () => {
     return function BackButton() {
         const navigate = useNavigatePage();
 

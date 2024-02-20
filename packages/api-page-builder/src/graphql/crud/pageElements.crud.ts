@@ -108,6 +108,7 @@ export const createPageElementsCrud = (params: CreatePageElementsCrudParams): Pa
                     tenant: getTenantId(),
                     locale: getLocaleCode()
                 },
+                limit: 1000,
                 sort: Array.isArray(sort) && sort.length > 0 ? sort : ["createdOn_ASC"]
             };
 

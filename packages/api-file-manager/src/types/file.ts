@@ -1,3 +1,11 @@
+type PublicAccess = {
+    type: "public";
+};
+
+type PrivateAuthenticatedAccess = {
+    type: "private-authenticated";
+};
+
 export interface File {
     id: string;
     key: string;
@@ -5,6 +13,7 @@ export interface File {
     type: string;
     name: string;
     meta: Record<string, any>;
+    accessControl?: PublicAccess | PrivateAuthenticatedAccess;
     location: {
         folderId: string;
     };

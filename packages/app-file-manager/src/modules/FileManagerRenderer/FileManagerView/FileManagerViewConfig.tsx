@@ -23,6 +23,7 @@ export function useFileManagerViewConfig() {
             browser: {
                 ...browser,
                 bulkActions: [...(browser.bulkActions || [])],
+                bulkEditFields: [...(browser.bulkEditFields || [])],
                 filterByTags: browser.filterByTags ?? false,
                 filters: [...(browser.filters || [])],
                 filtersToWhere: [...(browser.filtersToWhere || [])]

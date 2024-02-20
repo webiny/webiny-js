@@ -1,24 +1,14 @@
 import React from "react";
-
 import { FolderProvider, useAcoConfig } from "@webiny/app-aco";
 import { OptionsMenu } from "@webiny/app-admin";
-import { IconButton } from "@webiny/ui/Button";
-import { ReactComponent as MoreIcon } from "@material-design-icons/svg/filled/more_vert.svg";
-import { Menu } from "@webiny/ui/Menu";
-
 import { PageListConfig } from "~/admin/config/pages";
-import { RecordActionPreview } from "~/admin/components/Table/Table/Row/Record/RecordActionPreview";
-import { RecordActionPublish } from "~/admin/components/Table/Table/Row/Record/RecordActionPublish";
-import { RecordActionEdit } from "~/admin/components/Table/Table/Row/Record/RecordActionEdit";
-import { RecordActionMove } from "~/admin/components/Table/Table/Row/Record/RecordActionMove";
-import { RecordActionDelete } from "~/admin/components/Table/Table/Row/Record/RecordActionDelete";
-
-import { menuStyles } from "./Cells.styled";
+import { PageProvider } from "~/admin/contexts/Page";
+import { PbPageTableItem } from "~/types";
 
 export const CellActions = () => {
     const { useTableRow, isFolderRow } = PageListConfig.Browser.Table.Column;
     const { row } = useTableRow();
-    const { folder: folderConfig } = useAcoConfig();
+    const { folder: folderConfig, record: recordConfig } = useAcoConfig();
 
     if (isFolderRow(row)) {
         // If the user cannot manage folder structure, no need to show the menu.
@@ -37,12 +27,11 @@ export const CellActions = () => {
     }
 
     return (
-        <Menu className={menuStyles} handle={<IconButton icon={<MoreIcon />} />}>
-            <RecordActionEdit record={row} />
-            <RecordActionPreview record={row} />
-            <RecordActionPublish record={row} />
-            <RecordActionMove record={row} />
-            <RecordActionDelete record={row} />
-        </Menu>
+        <PageProvider<PbPageTableItem> page={row}>
+            <OptionsMenu
+                actions={recordConfig.actions}
+                data-testid={"table.row.pb.page.menu-action"}
+            />
+        </PageProvider>
     );
 };

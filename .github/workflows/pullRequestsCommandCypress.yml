@@ -10,17 +10,24 @@ env:
 jobs:
   validateWorkflows:
     name: Validate workflows
-    runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - uses: actions/checkout@v4
       - name: Install dependencies
         run: yarn --immutable
       - name: Validate
         run: npx github-actions-wac validate
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   checkComment:
     name: Check comment for /cypress
     if: ${{ github.event.issue.pull_request }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Check for Command
@@ -53,10 +60,10 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -99,7 +106,7 @@ jobs:
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
         needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Configure AWS Credentials
@@ -107,7 +114,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: dev
       - name: Install Hub Utility
@@ -117,12 +124,12 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: cached-packages
         with:
           path: dev/.webiny/cached-packages
@@ -135,7 +142,7 @@ jobs:
       - name: Build packages
         working-directory: dev
         run: yarn build:quick
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: packages-cache
         with:
           path: dev/.webiny/cached-packages
@@ -158,7 +165,7 @@ jobs:
         working-directory: dev
         run: yarn release --type=verdaccio
       - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb
           retention-days: 1
@@ -183,7 +190,7 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny --version
       - name: Create project-files artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: project-files-ddb
           retention-days: 1
@@ -247,10 +254,10 @@ jobs:
         ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
         needs.e2e-wby-cms-ddb-init.outputs.ts }}_ddb
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: dev
       - name: Install Hub Utility
@@ -260,11 +267,11 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-init.outputs.ts }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
@@ -294,10 +301,10 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -343,7 +350,7 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Configure AWS Credentials
@@ -351,7 +358,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: dev
       - name: Install Hub Utility
@@ -361,12 +368,12 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: cached-packages
         with:
           path: dev/.webiny/cached-packages
@@ -379,7 +386,7 @@ jobs:
       - name: Build packages
         working-directory: dev
         run: yarn build:quick
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: packages-cache
         with:
           path: dev/.webiny/cached-packages
@@ -402,7 +409,7 @@ jobs:
         working-directory: dev
         run: yarn release --type=verdaccio
       - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb-es
           retention-days: 1
@@ -427,7 +434,7 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny --version
       - name: Create project-files artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: project-files-ddb-es
           retention-days: 1
@@ -494,10 +501,10 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}_
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: dev
       - name: Install Hub Utility
@@ -507,11 +514,11 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-es-init.outputs.ts }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
@@ -542,10 +549,10 @@ jobs:
       ts: ${{ steps.get-timestamp.outputs.ts }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -591,7 +598,7 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Configure AWS Credentials
@@ -599,7 +606,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: dev
       - name: Install Hub Utility
@@ -609,12 +616,12 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: cached-packages
         with:
           path: dev/.webiny/cached-packages
@@ -627,7 +634,7 @@ jobs:
       - name: Build packages
         working-directory: dev
         run: yarn build:quick
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: packages-cache
         with:
           path: dev/.webiny/cached-packages
@@ -650,7 +657,7 @@ jobs:
         working-directory: dev
         run: yarn release --type=verdaccio
       - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb-os
           retention-days: 1
@@ -675,7 +682,7 @@ jobs:
         working-directory: xyz/test-project
         run: yarn webiny --version
       - name: Create project-files artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: project-files-ddb-os
           retention-days: 1
@@ -742,10 +749,10 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}_
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: dev
       - name: Install Hub Utility
@@ -755,11 +762,11 @@ jobs:
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.webiny/cached-packages
           key: packages-cache-${{ needs.e2e-wby-cms-ddb-os-init.outputs.ts }}
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}

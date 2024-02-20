@@ -1,6 +1,8 @@
 import { CmsContext, CmsEntry, CmsModel } from "~/types";
 import { STATUS_UNPUBLISHED } from "./statuses";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import { getIdentity } from "~/utils/identity";
+import { getDate } from "~/utils/date";
 
 type CreateRepublishEntryDataParams = {
     model: CmsModel;
@@ -23,26 +25,20 @@ export const createUnpublishEntryData = async ({
         status: STATUS_UNPUBLISHED,
 
         /**
-         * 🆕 New meta fields below.
-         * Users are encouraged to use these instead of the deprecated ones above.
-         * We want to update savedX and modifiedX fields on both revision and entry levels.
+         * Entry-level meta fields. 👇
          */
+        savedOn: getDate(currentDateTime),
+        modifiedOn: getDate(currentDateTime),
+        savedBy: getIdentity(currentIdentity),
+        modifiedBy: getIdentity(currentIdentity),
 
         /**
          * Revision-level meta fields. 👇
          */
-        revisionSavedOn: currentDateTime,
-        revisionModifiedOn: currentDateTime,
-        revisionSavedBy: currentIdentity,
-        revisionModifiedBy: currentIdentity,
-
-        /**
-         * Entry-level meta fields. 👇
-         */
-        entrySavedOn: currentDateTime,
-        entryModifiedOn: currentDateTime,
-        entrySavedBy: currentIdentity,
-        entryModifiedBy: currentIdentity
+        revisionSavedOn: getDate(currentDateTime),
+        revisionModifiedOn: getDate(currentDateTime),
+        revisionSavedBy: getIdentity(currentIdentity),
+        revisionModifiedBy: getIdentity(currentIdentity)
     };
 
     return { entry };

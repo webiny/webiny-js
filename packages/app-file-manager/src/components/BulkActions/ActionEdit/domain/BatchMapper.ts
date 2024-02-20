@@ -6,7 +6,7 @@ export class BatchMapper {
             operations: input.operations.map(operation => ({
                 operator: operation.operator || "",
                 field: operation.field || "",
-                value: operation.value || {}
+                value: operation.value || undefined
             }))
         };
     }

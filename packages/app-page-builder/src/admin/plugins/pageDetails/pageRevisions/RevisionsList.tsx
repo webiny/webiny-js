@@ -2,10 +2,11 @@ import React from "react";
 import { List } from "@webiny/ui/List";
 import { Elevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
-import Revision from "./Revision";
-import { PbPageData } from "~/types";
+import { Revision } from "./Revision";
+import { PbPageData, PbPageRevision } from "~/types";
 import { QueryResult } from "@apollo/react-common";
 import styled from "@emotion/styled";
+import { createGenericContext } from "@webiny/app-admin";
 
 const Container = styled("div")`
     background: var(--mdc-theme-background);
@@ -28,6 +29,12 @@ const Wrapper = styled(Elevation)`
     }
 `;
 
+export interface RevisionContext {
+    revision: PbPageRevision;
+}
+
+const { Provider, useHook } = createGenericContext<RevisionContext>("RevisionContext");
+
 interface RevisionsListProps {
     page: PbPageData;
     getPageQuery: QueryResult;
@@ -43,7 +50,9 @@ const RevisionsList = (props: RevisionsListProps) => {
                     {getPageQuery.loading && <CircularProgress />}
                     <List nonInteractive twoLine>
                         {revisions.map(revision => (
-                            <Revision {...props} revision={revision} key={revision.id} />
+                            <Provider revision={revision} key={revision.id}>
+                                <Revision />
+                            </Provider>
                         ))}
                     </List>
                 </div>
@@ -51,5 +60,7 @@ const RevisionsList = (props: RevisionsListProps) => {
         </Container>
     );
 };
+
+export const useRevision = useHook;
 
 export default RevisionsList;

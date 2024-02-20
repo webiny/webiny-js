@@ -1,10 +1,18 @@
 import { PluginCollection, PluginsContainer } from "@webiny/plugins/types";
 import fastify, {
+    FastifyInstance,
     FastifyServerOptions as ServerOptions,
     preSerializationAsyncHookHandler
 } from "fastify";
 import { getWebinyVersionHeaders } from "@webiny/utils";
-import { ContextRoutes, DefinedContextRoutes, HTTPMethods, RouteMethodOptions } from "~/types";
+import {
+    ContextRoutes,
+    DefinedContextRoutes,
+    HTTPMethods,
+    Request,
+    Reply,
+    RouteMethodOptions
+} from "~/types";
 import { Context } from "~/Context";
 import WebinyError from "@webiny/error";
 import { RoutePlugin } from "./plugins/RoutePlugin";
@@ -18,40 +26,52 @@ import { HandlerResultPlugin } from "./plugins/HandlerResultPlugin";
 import { HandlerErrorPlugin } from "./plugins/HandlerErrorPlugin";
 import { ModifyFastifyPlugin } from "~/plugins/ModifyFastifyPlugin";
 import { HandlerOnRequestPlugin } from "~/plugins/HandlerOnRequestPlugin";
+import { ResponseHeaders } from "~/ResponseHeaders";
+import { ModifyResponseHeadersPlugin } from "~/plugins/ModifyResponseHeadersPlugin";
 
-const DEFAULT_HEADERS: Record<string, string> = {
-    "Cache-Control": "no-store",
-    "Content-Type": "application/json; charset=utf-8",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET,DELETE,PUT,PATCH",
-    ...getWebinyVersionHeaders()
+function createDefaultHeaders() {
+    return ResponseHeaders.create({
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "no-store",
+        "access-control-allow-origin": "*",
+        "access-control-allow-headers": "*",
+        "access-control-allow-methods": "OPTIONS,POST,GET,DELETE,PUT,PATCH",
+        ...getWebinyVersionHeaders()
+    });
+}
+
+const getDefaultOptionsHeaders = () => {
+    return ResponseHeaders.create({
+        "access-control-max-age": "86400",
+        "cache-control": "public, max-age=86400"
+    });
 };
 
-const getDefaultHeaders = (routes: DefinedContextRoutes): Record<string, string> => {
+const getDefaultHeaders = (routes: DefinedContextRoutes): ResponseHeaders => {
+    const headers = createDefaultHeaders();
+
     /**
      * If we are accepting all headers, just output that one.
      */
     const keys = Object.keys(routes) as HTTPMethods[];
     const all = keys.every(key => routes[key].length > 0);
     if (all) {
-        return {
-            ...DEFAULT_HEADERS,
-            "Access-Control-Allow-Methods": "*"
-        };
-    }
-    return {
-        ...DEFAULT_HEADERS,
-        "Access-Control-Allow-Methods": keys
+        headers.set("access-control-allow-methods", "*");
+    } else {
+        const allowedMethods = keys
             .filter(type => {
-                if (!routes[type] || Array.isArray(routes[type]) === false) {
+                if (!routes[type] || !Array.isArray(routes[type])) {
                     return false;
                 }
                 return routes[type].length > 0;
             })
             .sort()
-            .join(",")
-    };
+            .join(",");
+
+        headers.set("access-control-allow-methods", allowedMethods);
+    }
+
+    return headers;
 };
 
 interface CustomError extends Error {
@@ -72,9 +92,18 @@ const stringifyError = (error: CustomError) => {
     });
 };
 
-const OPTIONS_HEADERS: Record<string, string> = {
-    "Access-Control-Max-Age": "86400",
-    "Cache-Control": "public, max-age=86400"
+const modifyResponseHeaders = (app: FastifyInstance, request: Request, reply: Reply) => {
+    const modifyHeaders = app.webiny.plugins.byType<ModifyResponseHeadersPlugin>(
+        ModifyResponseHeadersPlugin.type
+    );
+
+    const headers = ResponseHeaders.create(reply.getHeaders());
+
+    modifyHeaders.forEach(plugin => {
+        plugin.modify(request, headers);
+    });
+
+    reply.headers(headers.getHeaders());
 };
 
 export interface CreateHandlerParams {
@@ -152,12 +181,15 @@ export const createHandler = (params: CreateHandlerParams) => {
         }
         definedRoutes[type].push(path);
     };
+
     /**
      * We must attach the server to our internal context if we want to have it accessible.
      */
     const app = fastify({
+        bodyLimit: 10485760, // 10MB
         ...(params.options || {})
     });
+
     /**
      * We need to register routes in our system so we can output headers later on and dissallow overriding routes.
      */
@@ -267,46 +299,21 @@ export const createHandler = (params: CreateHandlerParams) => {
     app.decorate("webiny", context);
 
     /**
-     * We have few types of triggers:
-     *  * Events - EventPlugin
-     *  * Routes - RoutePlugin
-     *
-     * Routes are registered in fastify but events must be handled in package which implements cloud specific methods.
-     */
-    const routePlugins = app.webiny.plugins.byType<RoutePlugin>(RoutePlugin.type);
-
-    /**
-     * Add routes to the system.
-     */
-    let routePluginName: string | undefined;
-    try {
-        for (const plugin of routePlugins) {
-            routePluginName = plugin.name;
-            plugin.cb({
-                ...app.webiny.routes,
-                context: app.webiny
-            });
-        }
-    } catch (ex) {
-        console.error(
-            `Error while running the "RoutePlugin" ${
-                routePluginName ? `(${routePluginName})` : ""
-            } plugin in the beginning of the "createHandler" callable.`
-        );
-        console.error(stringifyError(ex));
-        throw ex;
-    }
-
-    /**
      * On every request we add default headers, which can be changed later.
      * Also, if it is an options request, we skip everything after this hook and output options headers.
      */
     app.addHook("onRequest", async (request, reply) => {
+        const isOptionsRequest = request.method === "OPTIONS";
         /**
          * Our default headers are always set. Users can override them.
          */
         const defaultHeaders = getDefaultHeaders(definedRoutes);
-        reply.headers(defaultHeaders);
+
+        const initialHeaders = isOptionsRequest
+            ? defaultHeaders.merge(getDefaultOptionsHeaders())
+            : defaultHeaders;
+
+        reply.headers(initialHeaders.getHeaders());
         /**
          * Users can define their own custom handlers for the onRequest event - so let's run them first.
          */
@@ -337,7 +344,7 @@ export const createHandler = (params: CreateHandlerParams) => {
          *
          * Users can prevent this by creating their own HandlerOnRequestPlugin and returning false as the result of the callable.
          */
-        if (request.method !== "OPTIONS") {
+        if (!isOptionsRequest) {
             return;
         }
 
@@ -355,11 +362,9 @@ export const createHandler = (params: CreateHandlerParams) => {
             return;
         }
 
-        reply
-            .headers({ ...defaultHeaders, ...OPTIONS_HEADERS })
-            .code(204)
-            .send("")
-            .hijack();
+        modifyResponseHeaders(app, request, reply);
+
+        reply.code(204).send("").hijack();
     });
 
     app.addHook("preParsing", async (request, reply) => {
@@ -482,12 +487,23 @@ export const createHandler = (params: CreateHandlerParams) => {
 
         return reply;
     });
+
+    /**
+     * Apply response headers modifier plugins.
+     */
+    app.addHook("onSend", async (request, reply, payload) => {
+        modifyResponseHeaders(app, request, reply);
+
+        return payload;
+    });
+
     /**
      * We need to output the benchmark results at the end of the request in both response and timeout cases
      */
     app.addHook("onResponse", async () => {
         await context.benchmark.output();
     });
+
     app.addHook("onTimeout", async () => {
         await context.benchmark.output();
     });
@@ -508,6 +524,37 @@ export const createHandler = (params: CreateHandlerParams) => {
             `Error while running the "ModifyFastifyPlugin" ${
                 modifyFastifyPluginName ? `(${modifyFastifyPluginName})` : ""
             } plugin in the end of the "createHandler" callable.`
+        );
+        console.error(stringifyError(ex));
+        throw ex;
+    }
+
+    /**
+     * We have few types of triggers:
+     *  * Events - EventPlugin
+     *  * Routes - RoutePlugin
+     *
+     * Routes are registered in fastify but events must be handled in package which implements cloud specific methods.
+     */
+    const routePlugins = app.webiny.plugins.byType<RoutePlugin>(RoutePlugin.type);
+
+    /**
+     * Add routes to the system.
+     */
+    let routePluginName: string | undefined;
+    try {
+        for (const plugin of routePlugins) {
+            routePluginName = plugin.name;
+            plugin.cb({
+                ...app.webiny.routes,
+                context: app.webiny
+            });
+        }
+    } catch (ex) {
+        console.error(
+            `Error while running the "RoutePlugin" ${
+                routePluginName ? `(${routePluginName})` : ""
+            } plugin in the beginning of the "createHandler" callable.`
         );
         console.error(stringifyError(ex));
         throw ex;

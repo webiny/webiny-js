@@ -1,7 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import styled from "@emotion/styled";
-import { makeComposable } from "@webiny/app";
+import { makeDecoratable } from "@webiny/app";
 import { errorMessages } from "./ErrorPage/errorMessages";
 
 const Wrapper = styled.div`
@@ -28,7 +28,7 @@ interface ErrorPageProps {
     error?: any;
 }
 
-export const ErrorPage = makeComposable<ErrorPageProps>("ErrorPage", props => {
+export const ErrorPage = makeDecoratable("ErrorPage", (props: ErrorPageProps) => {
     // Try retrieving the error code from standard `{ data, error }` Webiny GraphQL response.
     let errorCode: keyof typeof errorMessages = props?.error?.code;
     if (!errorCode) {

@@ -1,12 +1,13 @@
 import {
+    CmsIdentity,
     CmsModel,
     CmsModelField,
     CmsModelFieldSettings
 } from "@webiny/app-headless-cms-common/types";
 
+export { CmsIdentity } from "@webiny/app-headless-cms-common/types";
 export * from "~/graphql/records/types";
 export * from "~/table.types";
-
 export type FolderAccessLevel = "owner" | "viewer" | "editor" | "public";
 
 export interface FolderPermission {
@@ -34,12 +35,12 @@ export interface FolderItem {
     canManageContent: boolean;
     type: string;
     parentId: string | null;
+    createdBy: CmsIdentity;
     createdOn: string;
-    createdBy: {
-        id: string;
-        displayName: string;
-    };
+    savedBy: CmsIdentity;
     savedOn: string;
+    modifiedBy: CmsIdentity | null;
+    modifiedOn: string | null;
 }
 
 export type GenericSearchData = {
@@ -121,7 +122,12 @@ export interface UpdateFolderResponse {
 
 export interface UpdateFolderVariables {
     id: string;
-    data: Partial<Omit<FolderItem, "id" | "createdOn" | "createdBy" | "savedOn">>;
+    data: Partial<
+        Omit<
+            FolderItem,
+            "id" | "createdOn" | "createdBy" | "savedOn" | "savedBy" | "modifiedOn" | "modifiedBy"
+        >
+    >;
 }
 
 export interface CreateFolderResponse {
@@ -134,7 +140,10 @@ export interface CreateFolderResponse {
 }
 
 export interface CreateFolderVariables {
-    data: Omit<FolderItem, "id" | "createdOn" | "createdBy" | "savedOn">;
+    data: Omit<
+        FolderItem,
+        "id" | "createdOn" | "createdBy" | "savedOn" | "savedBy" | "modifiedOn" | "modifiedBy"
+    >;
 }
 
 export interface DeleteFolderVariables {

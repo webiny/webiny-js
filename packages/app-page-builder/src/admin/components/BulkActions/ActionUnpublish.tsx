@@ -4,11 +4,9 @@ import { observer } from "mobx-react-lite";
 import { useRecords } from "@webiny/app-aco";
 import { PageListConfig } from "~/admin/config/pages";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
-import { usePagesPermissions } from "~/hooks/permissions";
 import { getPagesLabel } from "~/admin/components/BulkActions/BulkActions";
 
 export const ActionUnpublish = observer(() => {
-    const { canUnpublish } = usePagesPermissions();
     const { unpublishPage, client } = useAdminPageBuilder();
     const { getRecord } = useRecords();
 
@@ -67,11 +65,6 @@ export const ActionUnpublish = observer(() => {
                 });
             }
         });
-
-    if (!canUnpublish()) {
-        console.log("You don't have permissions to unpublish pages.");
-        return null;
-    }
 
     return (
         <IconButton

@@ -46,7 +46,10 @@ import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
 import { batchReadAll, BatchReadItem, put } from "@webiny/db-dynamodb";
 import { createTransformer } from "./transformations";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys";
-import { pickEntryMetaFields } from "@webiny/api-headless-cms/constants";
+import {
+    isEntryLevelEntryMetaField,
+    pickEntryMetaFields
+} from "@webiny/api-headless-cms/constants";
 
 interface ElasticsearchDbRecord {
     index: string;
@@ -434,9 +437,10 @@ export const createEntriesStorageOperations = (
                  * If not updating latest revision, we still want to update the latest revision's
                  * entry-level meta fields to match the current revision's entry-level meta fields.
                  */
-                const updatedEntryLevelMetaFields = pickEntryMetaFields(entry, field => {
-                    return field.startsWith("entry");
-                });
+                const updatedEntryLevelMetaFields = pickEntryMetaFields(
+                    entry,
+                    isEntryLevelEntryMetaField
+                );
 
                 const updatedLatestStorageEntry = {
                     ...latestStorageEntry,
@@ -1018,29 +1022,6 @@ export const createEntriesStorageOperations = (
             model
         });
 
-        try {
-            const result = await elasticsearch.indices.exists({
-                index
-            });
-            if (!result?.body) {
-                return {
-                    hasMoreItems: false,
-                    totalCount: 0,
-                    cursor: null,
-                    items: []
-                };
-            }
-        } catch (ex) {
-            throw new WebinyError(
-                "Could not determine if Elasticsearch index exists.",
-                "ELASTICSEARCH_INDEX_CHECK_ERROR",
-                {
-                    error: ex,
-                    index
-                }
-            );
-        }
-
         const body = createElasticsearchBody({
             model,
             params: {
@@ -1058,6 +1039,18 @@ export const createEntriesStorageOperations = (
                 body
             });
         } catch (ex) {
+            /**
+             * We will silently ignore the `index_not_found_exception` error and return an empty result set.
+             * This is because the index might not exist yet, and we don't want to throw an error.
+             */
+            if (ex.message === "index_not_found_exception") {
+                return {
+                    hasMoreItems: false,
+                    totalCount: 0,
+                    cursor: null,
+                    items: []
+                };
+            }
             throw new WebinyError(ex.message, ex.code || "ELASTICSEARCH_ERROR", {
                 error: ex,
                 index,
@@ -1205,7 +1198,6 @@ export const createEntriesStorageOperations = (
                 entity.putBatch({
                     ...previouslyPublishedEntry,
                     status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
-                    savedOn: entry.savedOn,
                     TYPE: createRecordType(),
                     PK: createPartitionKey(publishedStorageEntry),
                     SK: createRevisionSortKey(publishedStorageEntry)
@@ -1264,17 +1256,6 @@ export const createEntriesStorageOperations = (
                         ...latestEsEntryDataDecompressed,
                         status: CONTENT_ENTRY_STATUS.PUBLISHED,
                         locked: true,
-                        /**
-                         * 🚫 Deprecated meta fields below.
-                         * Will be fully removed in one of the next releases.
-                         */
-                        savedOn: entry.savedOn,
-                        publishedOn: entry.publishedOn,
-
-                        /**
-                         * 🆕 New meta fields below.
-                         * Users are encouraged to use these instead of the deprecated ones above.
-                         */
                         ...updatedMetaFields
                     }
                 });
@@ -1288,9 +1269,10 @@ export const createEntriesStorageOperations = (
                     })
                 );
             } else {
-                const updatedEntryLevelMetaFields = pickEntryMetaFields(entry, field => {
-                    return field.startsWith("entry");
-                });
+                const updatedEntryLevelMetaFields = pickEntryMetaFields(
+                    entry,
+                    isEntryLevelEntryMetaField
+                );
 
                 const updatedLatestStorageEntry = {
                     ...latestStorageEntry,
@@ -1715,24 +1697,6 @@ export const createEntriesStorageOperations = (
             model
         });
 
-        try {
-            const result = await elasticsearch.indices.exists({
-                index
-            });
-            if (!result?.body) {
-                return [];
-            }
-        } catch (ex) {
-            throw new WebinyError(
-                "Could not determine if Elasticsearch index exists.",
-                "ELASTICSEARCH_INDEX_CHECK_ERROR",
-                {
-                    error: ex,
-                    index
-                }
-            );
-        }
-
         const initialBody = createElasticsearchBody({
             model,
             params: {
@@ -1777,6 +1741,9 @@ export const createEntriesStorageOperations = (
                 body
             });
         } catch (ex) {
+            if (ex.message === "index_not_found_exception") {
+                return [];
+            }
             throw new WebinyError(
                 ex.message || "Error in the Elasticsearch query.",
                 ex.code || "ELASTICSEARCH_ERROR",

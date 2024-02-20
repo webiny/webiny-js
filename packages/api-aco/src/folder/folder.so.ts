@@ -1,3 +1,4 @@
+import omit from "lodash/omit";
 import WebinyError from "@webiny/error";
 import { FOLDER_MODEL_ID } from "./folder.model";
 import { CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
@@ -5,6 +6,7 @@ import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
 import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues";
 import { AcoFolderStorageOperations, Folder } from "./folder.types";
+import { ENTRY_META_FIELDS } from "@webiny/api-headless-cms/constants";
 
 interface AcoCheckExistingFolderParams {
     params: {
@@ -135,7 +137,11 @@ export const createFolderOperations = (
                 });
 
                 const input = {
-                    ...original,
+                    /**
+                     *  We are omitting the standard entry meta fields:
+                     *  we don't want to override them with the ones coming from the `original` entry.
+                     */
+                    ...omit(original, ENTRY_META_FIELDS),
                     ...data
                 };
 

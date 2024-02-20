@@ -1,4 +1,4 @@
-import got from "got";
+import fetch from "node-fetch";
 import { format } from "date-fns";
 import { FbFormTriggerHandlerPlugin } from "~/types";
 
@@ -18,10 +18,9 @@ const plugin: FbFormTriggerHandlerPlugin = {
              * logs accordingly.
              */
             try {
-                const response = await got(url, {
-                    method: "post",
-                    json: true,
-                    body: {
+                const response = await fetch(url, {
+                    method: "POST",
+                    body: JSON.stringify({
                         ...data,
                         meta: {
                             submittedOn: format(new Date(meta.submittedOn), "yyyy-MM-dd HH:mm:ss"),
@@ -29,7 +28,7 @@ const plugin: FbFormTriggerHandlerPlugin = {
                             // doesn't end up being included (at the moment, that's IP address).
                             url: meta.url
                         }
-                    }
+                    })
                 });
 
                 addLog({

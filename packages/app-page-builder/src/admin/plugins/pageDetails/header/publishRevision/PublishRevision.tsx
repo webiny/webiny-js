@@ -3,22 +3,20 @@ import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { i18n } from "@webiny/app/i18n";
-import { ReactComponent as PublishIcon } from "../../../../assets/round-publish-24px.svg";
-import { ReactComponent as UnpublishIcon } from "../../../../assets/unpublish.svg";
-import { usePublishRevisionHandler } from "../../pageRevisions/usePublishRevisionHandler";
-import { PbPageData } from "~/types";
-import { makeComposable } from "@webiny/app-admin";
+import { ReactComponent as PublishIcon } from "@material-design-icons/svg/round/publish.svg";
+import { ReactComponent as UnpublishIcon } from "@material-design-icons/svg/round/settings_backup_restore.svg";
+import { makeDecoratable } from "@webiny/app-admin";
 import { usePagesPermissions } from "~/hooks/permissions";
+import { useFolders } from "@webiny/app-aco";
+import { usePage } from "~/admin/views/Pages/PageDetails";
+import { usePublishRevisionHandler } from "../../pageRevisions/usePublishRevisionHandler";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/publish");
 
-export interface PublishRevisionProps {
-    page: PbPageData;
-}
-
-const PublishRevision = (props: PublishRevisionProps) => {
+const PublishRevision = () => {
     const { canPublish, canUnpublish, hasPermissions } = usePagesPermissions();
-    const { page } = props;
+    const { folderLevelPermissions: flp } = useFolders();
+    const { page } = usePage();
 
     const { publishRevision, unpublishRevision } = usePublishRevisionHandler();
 
@@ -46,7 +44,8 @@ const PublishRevision = (props: PublishRevisionProps) => {
         )
     });
 
-    if (!hasPermissions()) {
+    const folderId = page.wbyAco_location?.folderId;
+    if (!hasPermissions() || !flp.canManageContent(folderId)) {
         return null;
     }
 
@@ -83,4 +82,4 @@ const PublishRevision = (props: PublishRevisionProps) => {
     return null;
 };
 
-export default makeComposable("PublishRevision", PublishRevision);
+export default makeDecoratable("PublishRevision", PublishRevision);

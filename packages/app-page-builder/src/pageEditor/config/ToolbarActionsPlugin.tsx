@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
 
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { plugins } from "@webiny/plugins";
 import { IconButton, ButtonPrimary } from "@webiny/ui/Button";
 import { Dialog, DialogCancel, DialogTitle, DialogActions, DialogContent } from "@webiny/ui/Dialog";
@@ -41,7 +41,7 @@ const unlinkTemplateDialog = css`
     }
 `;
 
-export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, ToolbarActionsWrapper => {
+export const ToolbarActionsPlugin = createDecorator(ToolbarActions, ToolbarActionsWrapper => {
     return function BlockEditorToolbarActions() {
         const actionsTop = plugins.byType<PbEditorToolbarTopPlugin>("pb-editor-toolbar-top");
         const actionsBottom = plugins.byType<PbEditorToolbarBottomPlugin>(

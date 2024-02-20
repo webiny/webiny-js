@@ -216,9 +216,6 @@ module.exports = function (webpackEnv, { paths, options }) {
                 .filter(ext => useTypeScript || !ext.includes("ts")),
             alias: {
                 os: require.resolve("os-browserify/browser"),
-                // Support React Native Web
-                // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
-                "react-native": require.resolve("react-native-web"),
                 "react/jsx-runtime": require.resolve("react/jsx-runtime.js"),
                 react: require.resolve("react"),
                 // Allows for better profiling with ReactDevTools

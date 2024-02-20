@@ -69,17 +69,6 @@ export const createManageSDL: CreateManageSDL = ({
         return `${field}: ${fieldType}`;
     }).join("\n");
 
-    /**
-     * TODO check for 5.38.0
-     */
-    const deprecatedOnByMetaGqlFields = [
-        `createdOn: DateTime! @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn''.")`,
-        `savedOn: DateTime! @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")`,
-        `createdBy: CmsIdentity! @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")`,
-        `ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedBy.")`,
-        `modifiedBy: CmsIdentity @deprecated(reason: "Use 'revisionModifiedBy' or 'entryModifiedBy'.")`
-    ].join("\n");
-
     const onByMetaGqlFields = ENTRY_META_FIELDS.map(field => {
         const isNullable = isNullableEntryMetaField(field) ? "" : "!";
         const fieldType = isDateTimeEntryMetaField(field) ? "DateTime" : "CmsIdentity";
@@ -94,7 +83,6 @@ export const createManageSDL: CreateManageSDL = ({
             id: ID!
             entryId: String!
             
-            ${deprecatedOnByMetaGqlFields}
             ${onByMetaGqlFields}
             
             meta: ${singularName}Meta
@@ -107,7 +95,6 @@ export const createManageSDL: CreateManageSDL = ({
             modelId: String
             version: Int
             locked: Boolean
-            publishedOn: DateTime
             
             status: String
             """
@@ -133,24 +120,6 @@ export const createManageSDL: CreateManageSDL = ({
             
             # Set status of the entry.
             status: String
-            
-            # Set a different date/time as the creation date/time of the entry. 
-            createdOn: DateTime @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
-            
-            # Set a different date/time as the last modification date/time of the entry.
-            savedOn: DateTime @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
-            
-            # Set a different date/time as the publication date/time of the entry.
-            publishedOn: DateTime @deprecated(reason: "Use 'revisionPublishedOn' or 'entryPublishedOn'.")
-            
-            # Set a different identity as the creator of the entry. 
-            createdBy: CmsIdentityInput @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
-            
-            # Set a different identity as the last editor of the entry. 
-            modifiedBy: CmsIdentityInput @deprecated(reason: "Use 'revisionModifiedBy' or 'entryModifiedBy'.")
-            
-            # Set a different identity as the owner of the entry.
-            ownedBy: CmsIdentityInput @deprecated(reason: "Use 'revisionOwnedBy' or 'entryOwnedBy'.")
             
             ${onByMetaInputGqlFields}
             
@@ -229,7 +198,7 @@ export const createManageSDL: CreateManageSDL = ({
 
             deleteMultiple${pluralName}(entries: [ID!]!): CmsDeleteMultipleResponse!
     
-            publish${singularName}(revision: ID!, options: CmsPublishEntryOptionsInput): ${singularName}Response
+            publish${singularName}(revision: ID!): ${singularName}Response
     
             republish${singularName}(revision: ID!): ${singularName}Response
     

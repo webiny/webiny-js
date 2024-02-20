@@ -4,7 +4,7 @@ import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";
 import { Avatar } from "@webiny/ui/Avatar";
-import { makeComposable } from "@webiny/app-serverless-cms";
+import { makeDecoratable } from "@webiny/app-serverless-cms";
 
 const avatarImage = css({
     height: "40px !important",
@@ -58,7 +58,7 @@ const linkStyles = css({
     }
 });
 
-export const UserInfo = makeComposable("UserInfo", () => {
+export const UserInfo = makeDecoratable("UserInfo", () => {
     const security = useSecurity();
 
     if (!security || !security.identity) {

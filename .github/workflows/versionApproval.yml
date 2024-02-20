@@ -19,11 +19,11 @@ jobs:
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Get day of the month
         id: get-day
@@ -39,19 +39,19 @@ jobs:
     outputs:
       version: ${{ steps.determine-release-version.outputs.version }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: global-daily-packages-cache
         with:
           path: .webiny/cached-packages
@@ -63,7 +63,7 @@ jobs:
       - name: Build packages
         run: yarn build:quick
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -85,6 +85,6 @@ jobs:
     runs-on: webiny-build-packages
     environment: release
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18

@@ -13,7 +13,7 @@ export default defineConfig({
         WEBSITE_NAME: "Cypress Test Website",
         WEBSITE_URL: "{WEBSITE_URL}",
         WEBSITE_PREVIEW_URL: "{WEBSITE_PREVIEW_URL}",
-        ADMIN_URL: "{ADMIN_URL}/admin",
+        ADMIN_URL: "{ADMIN_URL}",
         API_URL: "{API_URL}",
         GRAPHQL_API_URL: "{API_URL}/graphql",
         CMS_MANAGE_GRAPHQL_API_URL: "{API_URL}/cms/manage",

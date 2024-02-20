@@ -6,32 +6,26 @@ export default /* GraphQL */ `
         id: ID!
         entryId: String!
 
-        createdOn: DateTime! @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn''.")
-        savedOn: DateTime! @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
-        createdBy: CmsIdentity! @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
-        ownedBy: CmsIdentity! @deprecated(reason: "Use 'entryCreatedBy.")
+        createdOn: DateTime!
+        modifiedOn: DateTime
+        savedOn: DateTime!
+        firstPublishedOn: DateTime
+        lastPublishedOn: DateTime
+        createdBy: CmsIdentity!
         modifiedBy: CmsIdentity
-            @deprecated(reason: "Use 'revisionModifiedBy' or 'entryModifiedBy'.")
+        savedBy: CmsIdentity!
+        firstPublishedBy: CmsIdentity
+        lastPublishedBy: CmsIdentity
         revisionCreatedOn: DateTime!
-        revisionSavedOn: DateTime!
         revisionModifiedOn: DateTime
+        revisionSavedOn: DateTime!
         revisionFirstPublishedOn: DateTime
         revisionLastPublishedOn: DateTime
         revisionCreatedBy: CmsIdentity!
-        revisionSavedBy: CmsIdentity!
         revisionModifiedBy: CmsIdentity
+        revisionSavedBy: CmsIdentity!
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
-        entryCreatedOn: DateTime!
-        entrySavedOn: DateTime!
-        entryModifiedOn: DateTime
-        entryFirstPublishedOn: DateTime
-        entryLastPublishedOn: DateTime
-        entryCreatedBy: CmsIdentity!
-        entrySavedBy: CmsIdentity!
-        entryModifiedBy: CmsIdentity
-        entryFirstPublishedBy: CmsIdentity
-        entryLastPublishedBy: CmsIdentity
 
         meta: CategoryApiNameWhichIsABitDifferentThanModelIdMeta
         title: String
@@ -44,7 +38,6 @@ export default /* GraphQL */ `
         modelId: String
         version: Int
         locked: Boolean
-        publishedOn: DateTime
 
         status: String
         """
@@ -67,47 +60,26 @@ export default /* GraphQL */ `
         # Set status of the entry.
         status: String
 
-        # Set a different date/time as the creation date/time of the entry.
-        createdOn: DateTime @deprecated(reason: "Use 'revisionCreatedOn' or 'entryCreatedOn'.")
-
-        # Set a different date/time as the last modification date/time of the entry.
-        savedOn: DateTime @deprecated(reason: "Use 'revisionSavedOn' or 'entrySavedOn'.")
-
-        # Set a different date/time as the publication date/time of the entry.
-        publishedOn: DateTime
-            @deprecated(reason: "Use 'revisionPublishedOn' or 'entryPublishedOn'.")
-
-        # Set a different identity as the creator of the entry.
+        createdOn: DateTime
+        modifiedOn: DateTime
+        savedOn: DateTime
+        firstPublishedOn: DateTime
+        lastPublishedOn: DateTime
         createdBy: CmsIdentityInput
-            @deprecated(reason: "Use 'revisionCreatedBy' or 'entryCreatedBy'.")
-
-        # Set a different identity as the last editor of the entry.
         modifiedBy: CmsIdentityInput
-            @deprecated(reason: "Use 'revisionModifiedBy' or 'entryModifiedBy'.")
-
-        # Set a different identity as the owner of the entry.
-        ownedBy: CmsIdentityInput @deprecated(reason: "Use 'revisionOwnedBy' or 'entryOwnedBy'.")
-
+        savedBy: CmsIdentityInput
+        firstPublishedBy: CmsIdentityInput
+        lastPublishedBy: CmsIdentityInput
         revisionCreatedOn: DateTime
-        revisionSavedOn: DateTime
         revisionModifiedOn: DateTime
+        revisionSavedOn: DateTime
         revisionFirstPublishedOn: DateTime
         revisionLastPublishedOn: DateTime
         revisionCreatedBy: CmsIdentityInput
-        revisionSavedBy: CmsIdentityInput
         revisionModifiedBy: CmsIdentityInput
+        revisionSavedBy: CmsIdentityInput
         revisionFirstPublishedBy: CmsIdentityInput
         revisionLastPublishedBy: CmsIdentityInput
-        entryCreatedOn: DateTime
-        entrySavedOn: DateTime
-        entryModifiedOn: DateTime
-        entryFirstPublishedOn: DateTime
-        entryLastPublishedOn: DateTime
-        entryCreatedBy: CmsIdentityInput
-        entrySavedBy: CmsIdentityInput
-        entryModifiedBy: CmsIdentityInput
-        entryFirstPublishedBy: CmsIdentityInput
-        entryLastPublishedBy: CmsIdentityInput
 
         wbyAco_location: WbyAcoLocationInput
 
@@ -139,6 +111,13 @@ export default /* GraphQL */ `
         createdOn_lte: DateTime
         createdOn_between: [DateTime!]
         createdOn_not_between: [DateTime!]
+        modifiedOn: DateTime
+        modifiedOn_gt: DateTime
+        modifiedOn_gte: DateTime
+        modifiedOn_lt: DateTime
+        modifiedOn_lte: DateTime
+        modifiedOn_between: [DateTime!]
+        modifiedOn_not_between: [DateTime!]
         savedOn: DateTime
         savedOn_gt: DateTime
         savedOn_gte: DateTime
@@ -146,21 +125,40 @@ export default /* GraphQL */ `
         savedOn_lte: DateTime
         savedOn_between: [DateTime!]
         savedOn_not_between: [DateTime!]
-        publishedOn: DateTime
-        publishedOn_gt: DateTime
-        publishedOn_gte: DateTime
-        publishedOn_lt: DateTime
-        publishedOn_lte: DateTime
-        publishedOn_between: [DateTime!]
-        publishedOn_not_between: [DateTime!]
-        createdBy: String
-        createdBy_not: String
-        createdBy_in: [String!]
-        createdBy_not_in: [String!]
-        ownedBy: String
-        ownedBy_not: String
-        ownedBy_in: [String!]
-        ownedBy_not_in: [String!]
+        firstPublishedOn: DateTime
+        firstPublishedOn_gt: DateTime
+        firstPublishedOn_gte: DateTime
+        firstPublishedOn_lt: DateTime
+        firstPublishedOn_lte: DateTime
+        firstPublishedOn_between: [DateTime!]
+        firstPublishedOn_not_between: [DateTime!]
+        lastPublishedOn: DateTime
+        lastPublishedOn_gt: DateTime
+        lastPublishedOn_gte: DateTime
+        lastPublishedOn_lt: DateTime
+        lastPublishedOn_lte: DateTime
+        lastPublishedOn_between: [DateTime!]
+        lastPublishedOn_not_between: [DateTime!]
+        createdBy: ID
+        createdBy_not: ID
+        createdBy_in: [ID!]
+        createdBy_not_in: [ID!]
+        modifiedBy: ID
+        modifiedBy_not: ID
+        modifiedBy_in: [ID!]
+        modifiedBy_not_in: [ID!]
+        savedBy: ID
+        savedBy_not: ID
+        savedBy_in: [ID!]
+        savedBy_not_in: [ID!]
+        firstPublishedBy: ID
+        firstPublishedBy_not: ID
+        firstPublishedBy_in: [ID!]
+        firstPublishedBy_not_in: [ID!]
+        lastPublishedBy: ID
+        lastPublishedBy_not: ID
+        lastPublishedBy_in: [ID!]
+        lastPublishedBy_not_in: [ID!]
         revisionCreatedOn: DateTime
         revisionCreatedOn_gt: DateTime
         revisionCreatedOn_gte: DateTime
@@ -168,13 +166,6 @@ export default /* GraphQL */ `
         revisionCreatedOn_lte: DateTime
         revisionCreatedOn_between: [DateTime!]
         revisionCreatedOn_not_between: [DateTime!]
-        revisionSavedOn: DateTime
-        revisionSavedOn_gt: DateTime
-        revisionSavedOn_gte: DateTime
-        revisionSavedOn_lt: DateTime
-        revisionSavedOn_lte: DateTime
-        revisionSavedOn_between: [DateTime!]
-        revisionSavedOn_not_between: [DateTime!]
         revisionModifiedOn: DateTime
         revisionModifiedOn_gt: DateTime
         revisionModifiedOn_gte: DateTime
@@ -182,6 +173,13 @@ export default /* GraphQL */ `
         revisionModifiedOn_lte: DateTime
         revisionModifiedOn_between: [DateTime!]
         revisionModifiedOn_not_between: [DateTime!]
+        revisionSavedOn: DateTime
+        revisionSavedOn_gt: DateTime
+        revisionSavedOn_gte: DateTime
+        revisionSavedOn_lt: DateTime
+        revisionSavedOn_lte: DateTime
+        revisionSavedOn_between: [DateTime!]
+        revisionSavedOn_not_between: [DateTime!]
         revisionFirstPublishedOn: DateTime
         revisionFirstPublishedOn_gt: DateTime
         revisionFirstPublishedOn_gte: DateTime
@@ -200,14 +198,14 @@ export default /* GraphQL */ `
         revisionCreatedBy_not: ID
         revisionCreatedBy_in: [ID!]
         revisionCreatedBy_not_in: [ID!]
-        revisionSavedBy: ID
-        revisionSavedBy_not: ID
-        revisionSavedBy_in: [ID!]
-        revisionSavedBy_not_in: [ID!]
         revisionModifiedBy: ID
         revisionModifiedBy_not: ID
         revisionModifiedBy_in: [ID!]
         revisionModifiedBy_not_in: [ID!]
+        revisionSavedBy: ID
+        revisionSavedBy_not: ID
+        revisionSavedBy_in: [ID!]
+        revisionSavedBy_not_in: [ID!]
         revisionFirstPublishedBy: ID
         revisionFirstPublishedBy_not: ID
         revisionFirstPublishedBy_in: [ID!]
@@ -216,61 +214,6 @@ export default /* GraphQL */ `
         revisionLastPublishedBy_not: ID
         revisionLastPublishedBy_in: [ID!]
         revisionLastPublishedBy_not_in: [ID!]
-        entryCreatedOn: DateTime
-        entryCreatedOn_gt: DateTime
-        entryCreatedOn_gte: DateTime
-        entryCreatedOn_lt: DateTime
-        entryCreatedOn_lte: DateTime
-        entryCreatedOn_between: [DateTime!]
-        entryCreatedOn_not_between: [DateTime!]
-        entrySavedOn: DateTime
-        entrySavedOn_gt: DateTime
-        entrySavedOn_gte: DateTime
-        entrySavedOn_lt: DateTime
-        entrySavedOn_lte: DateTime
-        entrySavedOn_between: [DateTime!]
-        entrySavedOn_not_between: [DateTime!]
-        entryModifiedOn: DateTime
-        entryModifiedOn_gt: DateTime
-        entryModifiedOn_gte: DateTime
-        entryModifiedOn_lt: DateTime
-        entryModifiedOn_lte: DateTime
-        entryModifiedOn_between: [DateTime!]
-        entryModifiedOn_not_between: [DateTime!]
-        entryFirstPublishedOn: DateTime
-        entryFirstPublishedOn_gt: DateTime
-        entryFirstPublishedOn_gte: DateTime
-        entryFirstPublishedOn_lt: DateTime
-        entryFirstPublishedOn_lte: DateTime
-        entryFirstPublishedOn_between: [DateTime!]
-        entryFirstPublishedOn_not_between: [DateTime!]
-        entryLastPublishedOn: DateTime
-        entryLastPublishedOn_gt: DateTime
-        entryLastPublishedOn_gte: DateTime
-        entryLastPublishedOn_lt: DateTime
-        entryLastPublishedOn_lte: DateTime
-        entryLastPublishedOn_between: [DateTime!]
-        entryLastPublishedOn_not_between: [DateTime!]
-        entryCreatedBy: ID
-        entryCreatedBy_not: ID
-        entryCreatedBy_in: [ID!]
-        entryCreatedBy_not_in: [ID!]
-        entrySavedBy: ID
-        entrySavedBy_not: ID
-        entrySavedBy_in: [ID!]
-        entrySavedBy_not_in: [ID!]
-        entryModifiedBy: ID
-        entryModifiedBy_not: ID
-        entryModifiedBy_in: [ID!]
-        entryModifiedBy_not_in: [ID!]
-        entryFirstPublishedBy: ID
-        entryFirstPublishedBy_not: ID
-        entryFirstPublishedBy_in: [ID!]
-        entryFirstPublishedBy_not_in: [ID!]
-        entryLastPublishedBy: ID
-        entryLastPublishedBy_not: ID
-        entryLastPublishedBy_in: [ID!]
-        entryLastPublishedBy_not_in: [ID!]
         status: String
         status_not: String
         status_in: [String!]
@@ -322,30 +265,26 @@ export default /* GraphQL */ `
     enum CategoryApiNameWhichIsABitDifferentThanModelIdListSorter {
         id_ASC
         id_DESC
-        savedOn_ASC
-        savedOn_DESC
         createdOn_ASC
         createdOn_DESC
+        modifiedOn_ASC
+        modifiedOn_DESC
+        savedOn_ASC
+        savedOn_DESC
+        firstPublishedOn_ASC
+        firstPublishedOn_DESC
+        lastPublishedOn_ASC
+        lastPublishedOn_DESC
         revisionCreatedOn_ASC
         revisionCreatedOn_DESC
-        revisionSavedOn_ASC
-        revisionSavedOn_DESC
         revisionModifiedOn_ASC
         revisionModifiedOn_DESC
+        revisionSavedOn_ASC
+        revisionSavedOn_DESC
         revisionFirstPublishedOn_ASC
         revisionFirstPublishedOn_DESC
         revisionLastPublishedOn_ASC
         revisionLastPublishedOn_DESC
-        entryCreatedOn_ASC
-        entryCreatedOn_DESC
-        entrySavedOn_ASC
-        entrySavedOn_DESC
-        entryModifiedOn_ASC
-        entryModifiedOn_DESC
-        entryFirstPublishedOn_ASC
-        entryFirstPublishedOn_DESC
-        entryLastPublishedOn_ASC
-        entryLastPublishedOn_DESC
         title_ASC
         title_DESC
         slug_ASC
@@ -413,7 +352,6 @@ export default /* GraphQL */ `
 
         publishCategoryApiNameWhichIsABitDifferentThanModelId(
             revision: ID!
-            options: CmsPublishEntryOptionsInput
         ): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
         republishCategoryApiNameWhichIsABitDifferentThanModelId(

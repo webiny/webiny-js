@@ -1,8 +1,9 @@
 import { CmsContext, CmsEntry, CmsModel } from "~/types";
-import { getDate } from "~/utils/date";
 import { referenceFieldsMapping } from "~/crud/contentEntry/referenceFieldsMapping";
 import { STATUS_PUBLISHED } from "./statuses";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import { getIdentity } from "~/utils/identity";
+import { getDate } from "~/utils/date";
 
 type CreateRepublishEntryDataParams = {
     model: CmsModel;
@@ -34,40 +35,31 @@ export const createRepublishEntryData = async ({
         status: STATUS_PUBLISHED,
 
         /**
-         * 🚫 Deprecated meta fields below.
-         * Will be fully removed in one of the next releases.
+         * Entry-level meta fields. 👇
          */
-        publishedOn: getDate(originalEntry.publishedOn, currentDateTime),
-        savedOn: getDate(originalEntry.savedOn, currentDateTime),
-
-        /**
-         * 🆕 New meta fields below.
-         * Users are encouraged to use these instead of the deprecated ones above.
-         */
+        savedOn: getDate(currentDateTime),
+        modifiedOn: getDate(currentDateTime),
+        savedBy: getIdentity(currentIdentity),
+        modifiedBy: getIdentity(currentIdentity),
+        firstPublishedOn: getDate(originalEntry.firstPublishedOn, currentDateTime),
+        firstPublishedBy: getIdentity(originalEntry.firstPublishedBy, currentIdentity),
+        lastPublishedOn: getDate(currentDateTime),
+        lastPublishedBy: getIdentity(currentIdentity),
 
         /**
          * Revision-level meta fields. 👇
          */
-        revisionSavedOn: currentDateTime,
-        revisionModifiedOn: currentDateTime,
-        revisionSavedBy: currentIdentity,
-        revisionModifiedBy: currentIdentity,
-        revisionFirstPublishedOn: originalEntry.revisionFirstPublishedOn || currentDateTime,
-        revisionFirstPublishedBy: originalEntry.revisionFirstPublishedBy || currentIdentity,
-        revisionLastPublishedOn: currentDateTime,
-        revisionLastPublishedBy: currentIdentity,
-
-        /**
-         * Entry-level meta fields. 👇
-         */
-        entrySavedOn: currentDateTime,
-        entryModifiedOn: currentDateTime,
-        entrySavedBy: currentIdentity,
-        entryModifiedBy: currentIdentity,
-        entryFirstPublishedOn: originalEntry.entryFirstPublishedOn || currentDateTime,
-        entryFirstPublishedBy: originalEntry.entryFirstPublishedBy || currentIdentity,
-        entryLastPublishedOn: currentDateTime,
-        entryLastPublishedBy: currentIdentity,
+        revisionSavedOn: getDate(currentDateTime),
+        revisionModifiedOn: getDate(currentDateTime),
+        revisionSavedBy: getIdentity(currentIdentity),
+        revisionModifiedBy: getIdentity(currentIdentity),
+        revisionFirstPublishedOn: getDate(originalEntry.revisionFirstPublishedOn, currentDateTime),
+        revisionFirstPublishedBy: getIdentity(
+            originalEntry.revisionFirstPublishedBy,
+            currentIdentity
+        ),
+        revisionLastPublishedOn: getDate(currentDateTime),
+        revisionLastPublishedBy: getIdentity(currentIdentity),
 
         webinyVersion: context.WEBINY_VERSION,
         values

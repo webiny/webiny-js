@@ -5,7 +5,7 @@ export const LOGIN_MT = gql`
         security {
             login {
                 data {
-                    ... on SecurityIdentity {
+                    ... on Auth0Identity {
                         id
                         displayName
                         type

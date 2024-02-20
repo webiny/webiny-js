@@ -152,17 +152,20 @@ describe("richTextField", () => {
                     data: {
                         id: expect.any(String),
                         entryId: expect.any(String),
-                        createdOn: expect.stringMatching(/^20/),
+                        createdOn: expect.toBeDateString(),
+                        modifiedOn: null,
+                        savedOn: expect.toBeDateString(),
+                        firstPublishedOn: null,
+                        lastPublishedOn: null,
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
-                        savedOn: expect.stringMatching(/^20/),
                         title: "Potato",
                         price: 100,
                         image: "file.jpg",
-                        availableOn: expect.stringMatching(/^20/),
+                        availableOn: expect.toBeDateString(),
                         color: "white",
                         availableSizes: ["s", "m"],
                         category: {
@@ -177,7 +180,6 @@ describe("richTextField", () => {
                         meta: {
                             locked: false,
                             modelId: "product",
-                            publishedOn: null,
                             revisions: [
                                 {
                                     id: expect.any(String),
@@ -212,12 +214,15 @@ describe("richTextField", () => {
                     data: {
                         id: expect.any(String),
                         entryId: expect.any(String),
-                        createdOn: expect.stringMatching(/^20/),
-                        savedOn: expect.stringMatching(/^20/),
+                        createdOn: expect.toBeDateString(),
+                        modifiedOn: expect.toBeDateString(),
+                        savedOn: expect.toBeDateString(),
+                        firstPublishedOn: expect.toBeDateString(),
+                        lastPublishedOn: expect.toBeDateString(),
                         title: "Potato",
                         image: "file.jpg",
                         price: 100,
-                        availableOn: expect.stringMatching(/^20/),
+                        availableOn: expect.toBeDateString(),
                         color: "white",
                         availableSizes: ["s", "m"],
                         category: {
@@ -267,17 +272,20 @@ describe("richTextField", () => {
         const expectedCreatedProduct = {
             id: expect.any(String),
             entryId: expect.any(String),
-            createdOn: expect.stringMatching(/^20/),
+            createdOn: expect.toBeDateString(),
+            modifiedOn: null,
+            savedOn: expect.toBeDateString(),
+            firstPublishedOn: null,
+            lastPublishedOn: null,
             createdBy: {
                 id: "id-12345678",
                 displayName: "John Doe",
                 type: "admin"
             },
-            savedOn: expect.stringMatching(/^20/),
             title: "Potato",
             price: 100,
             image: "file.jpg",
-            availableOn: expect.stringMatching(/^20/),
+            availableOn: expect.toBeDateString(),
             color: "white",
             availableSizes: ["s", "m"],
             category: {
@@ -292,7 +300,6 @@ describe("richTextField", () => {
             meta: {
                 locked: false,
                 modelId: "product",
-                publishedOn: null,
                 revisions: [
                     {
                         id: expect.any(String),
@@ -333,7 +340,8 @@ describe("richTextField", () => {
                 updateProduct: {
                     data: {
                         ...expectedCreatedProduct,
-                        richText: richTextMock
+                        richText: richTextMock,
+                        modifiedOn: expect.toBeDateString()
                     },
                     error: null
                 }

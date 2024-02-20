@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
-import { Compose, makeComposable } from "@webiny/app";
+import { Compose, createVoidComponent, makeDecoratable } from "@webiny/app";
 
-export const Logo = makeComposable("Logo", () => {
+export const Logo = makeDecoratable("Logo", () => {
     return <LogoRenderer />;
 });
 
-export const LogoRenderer = makeComposable("LogoRenderer");
+export const LogoRenderer = makeDecoratable("LogoRenderer", createVoidComponent());
 
 interface AddLogoProps {
     logo: JSX.Element;
