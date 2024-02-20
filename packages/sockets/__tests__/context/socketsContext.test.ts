@@ -26,7 +26,8 @@ describe("sockets context", () => {
                 id: "id-1"
             },
             domainName: "https://webiny.com",
-            stage: "dev"
+            stage: "dev",
+            connectedOn: new Date().toISOString()
         });
 
         const resultWithConnections = await context.listConnections({
@@ -62,7 +63,8 @@ describe("sockets context", () => {
                 id: "id-1"
             },
             domainName: "https://webiny.com",
-            stage: "dev"
+            stage: "dev",
+            connectedOn: new Date().toISOString()
         });
 
         await context.send(

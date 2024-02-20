@@ -1,3 +1,18 @@
+import { HandlerFactoryParams } from "@webiny/handler-aws/types";
+import { ISocketsEventValidator } from "~/validator";
+import { ISocketsResponse } from "~/response";
+import { PartialDeep } from "type-fest";
+import { APIGatewayProxyResult, Context as LambdaContext } from "aws-lambda";
+
+export interface HandlerCallable {
+    (event: PartialDeep<ISocketsEvent>, context: LambdaContext): Promise<APIGatewayProxyResult>;
+}
+
+export interface HandlerParams extends HandlerFactoryParams {
+    validator?: ISocketsEventValidator;
+    response?: ISocketsResponse;
+}
+
 export interface IIncomingEvent<TEvent> {
     name: string;
     payload: TEvent;

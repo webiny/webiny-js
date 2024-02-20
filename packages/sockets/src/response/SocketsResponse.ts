@@ -10,8 +10,7 @@ export class SocketsResponse implements ISocketsResponse {
     public ok(params?: ISocketsResponseOkParams): ISocketsResponseOkResult {
         return {
             statusCode: 200,
-            message: params?.message || "ok",
-            data: params?.data || {}
+            ...params
         };
     }
 

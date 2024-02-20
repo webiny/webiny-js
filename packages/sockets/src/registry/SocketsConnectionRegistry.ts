@@ -34,7 +34,7 @@ export class SocketsConnectionRegistry implements ISocketsConnectionRegistry {
     public async register(
         params: ISocketsConnectionRegistryRegisterParams
     ): Promise<ISocketsConnectionRegistryData> {
-        const { connectionId, tenant, locale, identity, domainName, stage } = params;
+        const { connectionId, tenant, locale, identity, domainName, stage, connectedOn } = params;
 
         const data: ISocketsConnectionRegistryData = {
             connectionId,
@@ -43,7 +43,7 @@ export class SocketsConnectionRegistry implements ISocketsConnectionRegistry {
             locale,
             domainName,
             stage,
-            connectedOn: new Date().toISOString()
+            connectedOn
         };
         await this.store(data);
         return data;
