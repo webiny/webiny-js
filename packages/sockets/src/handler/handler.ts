@@ -3,22 +3,13 @@ import { createHandler as createBaseHandler } from "@webiny/handler";
 import { registerDefaultPlugins } from "@webiny/handler-aws/plugins";
 import { execute } from "@webiny/handler-aws/execute";
 import { PluginsContainer } from "@webiny/plugins";
-import { HandlerFactoryParams } from "@webiny/handler-aws/types";
-import { APIGatewayProxyResult } from "aws-lambda";
-import { Context as LambdaContext } from "aws-lambda/handler";
-import { ISocketsEvent } from "./types";
 import { createSocketsRoutePlugins } from "~/runner/actions";
 import { SocketsEventValidator } from "~/validator";
 import { SocketsResponse } from "~/response";
 import { Context } from "~/types";
 import { SocketsRunner } from "~/runner";
 import { PluginCollection } from "@webiny/plugins/types";
-
-export interface HandlerCallable {
-    (event: ISocketsEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
-}
-
-export type HandlerParams = HandlerFactoryParams;
+import { HandlerCallable, HandlerParams } from "./types";
 
 const url = "/webiny-websockets";
 
@@ -60,14 +51,13 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
         });
 
         app.post(url, async (_, reply) => {
+            const { validator, response } = params;
             const context = app.webiny as Context;
-            const validator = new SocketsEventValidator();
-            const response = new SocketsResponse();
             const handler = new SocketsRunner(
                 context,
                 context.sockets.registry,
-                validator,
-                response
+                validator || new SocketsEventValidator(),
+                response || new SocketsResponse()
             );
 
             app.__webiny_raw_result = await handler.run(event);
@@ -79,9 +69,9 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
             payload: {
                 ...event,
                 headers: {
-                    ["x-tenant"]: event.data.tenant,
+                    ["x-tenant"]: event.data?.tenant,
                     ["x-webiny-cms-endpoint"]: "manage",
-                    ["x-webiny-cms-locale"]: event.data.locale
+                    ["x-webiny-cms-locale"]: event.data?.locale
                 }
             }
         });

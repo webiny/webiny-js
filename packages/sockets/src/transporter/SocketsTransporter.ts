@@ -15,9 +15,6 @@ export class SocketsTransporter implements ISocketsTransporter {
         connections: ISocketsTransporterSendConnection[],
         data: T
     ): Promise<void> {
-        if (connections.length === 0) {
-            return;
-        }
         for (const connection of connections) {
             try {
                 const client = this.getClient(connection);

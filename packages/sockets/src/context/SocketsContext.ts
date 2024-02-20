@@ -20,9 +20,6 @@ export class SocketsContext implements ISocketsContext {
         data: T
     ): Promise<void> {
         const connections = await this.listConnections(identity);
-        if (connections.length === 0) {
-            return;
-        }
         return this.transporter.send<T>(connections, data);
     }
 

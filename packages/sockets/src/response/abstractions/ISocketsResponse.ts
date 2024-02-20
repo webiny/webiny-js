@@ -7,7 +7,7 @@ export interface ISocketsResponseOkParams {
 
 export interface ISocketsResponseOkResult {
     statusCode: number;
-    data: GenericRecord<string>;
+    data?: GenericRecord<string>;
     message?: string;
 }
 

@@ -1,9 +1,5 @@
 import zod from "zod";
-import {
-    ISocketsEvent,
-    ISocketsEventData,
-    SocketsEventRequestContextEventType
-} from "~/handler/types";
+import { ISocketsEvent, ISocketsEventData } from "~/handler/types";
 import {
     ISocketsEventValidator,
     ISocketsEventValidatorValidateParams
@@ -15,11 +11,7 @@ const validation = zod.object({
         connectionId: zod.string(),
         connectedAt: zod.number(),
         domainName: zod.string(),
-        eventType: zod.enum([
-            SocketsEventRequestContextEventType.connect,
-            SocketsEventRequestContextEventType.disconnect,
-            SocketsEventRequestContextEventType.message
-        ]),
+        eventType: zod.string(),
         messageId: zod.string().optional(),
         routeKey: zod.string(),
         requestId: zod.string(),

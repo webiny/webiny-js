@@ -14,7 +14,8 @@ describe("sockets connection registry", () => {
                 id: "id-1"
             },
             domainName: "https://webiny.com",
-            stage: "dev"
+            stage: "dev",
+            connectedOn: new Date().toISOString()
         });
 
         expect(result).toEqual({
@@ -38,7 +39,8 @@ describe("sockets connection registry", () => {
                     id: `id-${i}`
                 },
                 domainName: "https://webiny.com",
-                stage: "dev"
+                stage: "dev",
+                connectedOn: new Date().toISOString()
             });
         }
 
@@ -91,7 +93,8 @@ describe("sockets connection registry", () => {
                 id: "id-1"
             },
             domainName: "https://webiny.com",
-            stage: "dev"
+            stage: "dev",
+            connectedOn: new Date().toISOString()
         });
 
         expect(result).toEqual({

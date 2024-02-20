@@ -17,6 +17,10 @@ export interface ISocketsConnectionRegistryRegisterParams {
     identity: ISocketsIdentity;
     domainName: string;
     stage: string;
+    /**
+     * A DateTime.toISOString() format.
+     */
+    connectedOn: string;
 }
 
 export interface ISocketsConnectionRegistryUnregisterParams {
