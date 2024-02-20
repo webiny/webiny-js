@@ -1,18 +1,16 @@
 import WebinyError from "@webiny/error";
-import { ISocketsEvent, SocketsEventRoute } from "~/handler/types";
+import { ISocketsEvent, ISocketsEventData, SocketsEventRoute } from "~/handler/types";
 import { Context } from "~/types";
-import { ISocketsEventValidator } from "~/validator/abstractions/ISocketsEventValidator";
+import { ISocketsEventValidator } from "~/validator";
 import {
     ISocketsRunner,
     ISocketsRunnerResponse,
     ISocketsRunnerRunParams
 } from "./abstractions/ISocketsRunner";
-import {
-    ISocketsRoutePluginCallableParams,
-    SocketsRoutePlugin
-} from "~/plugins/SocketsRoutePlugin";
+import { ISocketsRoutePluginCallableParams, SocketsRoutePlugin } from "~/plugins";
 import { middleware } from "@webiny/utils";
 import { ISocketsConnectionRegistry } from "~/registry";
+import { ISocketsResponse } from "~/response";
 
 type MiddlewareParams<C extends Context = Context> = Pick<
     ISocketsRoutePluginCallableParams<C>,
@@ -23,24 +21,28 @@ export class SocketsRunner implements ISocketsRunner {
     private readonly context: Context;
     private readonly registry: ISocketsConnectionRegistry;
     private readonly validator: ISocketsEventValidator;
+    private readonly response: ISocketsResponse;
 
     public constructor(
         context: Context,
         registry: ISocketsConnectionRegistry,
-        validator: ISocketsEventValidator
+        validator: ISocketsEventValidator,
+        response: ISocketsResponse
     ) {
         this.context = context;
         this.registry = registry;
         this.validator = validator;
+        this.response = response;
     }
 
-    public async run(input: ISocketsRunnerRunParams): Promise<ISocketsRunnerResponse> {
-        let event: ISocketsEvent | undefined;
+    public async run<T extends ISocketsEventData = ISocketsEventData>(
+        input: ISocketsRunnerRunParams<T>
+    ): Promise<ISocketsRunnerResponse> {
+        let event: ISocketsEvent<T> | undefined;
         try {
-            event = await this.validator.validate(input);
+            event = await this.validator.validate<T>(input);
         } catch (ex) {
-            return {
-                statusCode: 500,
+            return this.response.error({
                 message: "Validation failed.",
                 error: {
                     message: ex.message,
@@ -48,14 +50,13 @@ export class SocketsRunner implements ISocketsRunner {
                     data: ex.data,
                     stack: ex.stack
                 }
-            };
+            });
         }
 
         try {
             return await this.runRouteAction(event);
         } catch (ex) {
-            return {
-                statusCode: 500,
+            return this.response.error({
                 message: `Route "${event.requestContext.routeKey}" action failed.`,
                 error: {
                     message: ex.message,
@@ -63,7 +64,7 @@ export class SocketsRunner implements ISocketsRunner {
                     data: ex.data,
                     stack: ex.stack
                 }
-            };
+            });
         }
     }
 
@@ -98,6 +99,7 @@ export class SocketsRunner implements ISocketsRunner {
                         registry: params.registry,
                         event: params.event,
                         context: params.context,
+                        response: this.response,
                         next
                     });
                 };
@@ -112,12 +114,14 @@ export class SocketsRunner implements ISocketsRunner {
         if (result) {
             return result;
         }
-        return {
+        const message = "No response from the route action.";
+        return this.response.error({
+            message,
             error: {
-                message: "No response from the route action.",
+                message,
                 code: "NO_RESPONSE"
             },
             statusCode: 404
-        };
+        });
     }
 }

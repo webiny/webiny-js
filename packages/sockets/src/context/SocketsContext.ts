@@ -1,4 +1,4 @@
-import { SocketsConnectionRegistry } from "~/registry";
+import { ISocketsConnectionRegistry } from "~/registry";
 import {
     ISocketsContext,
     ISocketsContextListConnectionsResponse,
@@ -7,10 +7,10 @@ import {
 import { ISocketsTransporter, ISocketsTransporterSendData } from "~/transporter";
 
 export class SocketsContext implements ISocketsContext {
-    public readonly registry: SocketsConnectionRegistry;
+    public readonly registry: ISocketsConnectionRegistry;
     private readonly transporter: ISocketsTransporter;
 
-    constructor(registry: SocketsConnectionRegistry, transporter: ISocketsTransporter) {
+    constructor(registry: ISocketsConnectionRegistry, transporter: ISocketsTransporter) {
         this.registry = registry;
         this.transporter = transporter;
     }

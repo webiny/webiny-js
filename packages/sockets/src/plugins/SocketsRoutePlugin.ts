@@ -1,52 +1,61 @@
 import { Plugin } from "@webiny/plugins";
-import { ISocketsEvent, SocketsEventRoute } from "~/handler/types";
+import { ISocketsEvent, ISocketsEventData, SocketsEventRoute } from "~/handler/types";
 import { Context } from "~/types";
 import { ISocketsRunnerResponse } from "~/runner";
 import { ISocketsConnectionRegistry } from "~/registry";
+import { ISocketsResponse } from "~/response/abstractions/ISocketsResponse";
 
 export interface ISocketsRoutePluginCallableParams<
     C extends Context = Context,
-    R extends ISocketsRunnerResponse = ISocketsRunnerResponse
+    R extends ISocketsRunnerResponse = ISocketsRunnerResponse,
+    T extends ISocketsEventData = ISocketsEventData
 > {
-    event: ISocketsEvent;
+    event: ISocketsEvent<T>;
     registry: ISocketsConnectionRegistry;
     context: C;
+    response: ISocketsResponse;
     next: () => Promise<R>;
 }
 
 export interface ISocketsRoutePluginCallable<
     C extends Context = Context,
-    R extends ISocketsRunnerResponse = ISocketsRunnerResponse
+    R extends ISocketsRunnerResponse = ISocketsRunnerResponse,
+    T extends ISocketsEventData = ISocketsEventData
 > {
-    (params: ISocketsRoutePluginCallableParams<C>): Promise<R>;
+    (params: ISocketsRoutePluginCallableParams<C, R, T>): Promise<R>;
 }
 
 export class SocketsRoutePlugin<
     C extends Context = Context,
-    R extends ISocketsRunnerResponse = ISocketsRunnerResponse
+    R extends ISocketsRunnerResponse = ISocketsRunnerResponse,
+    T extends ISocketsEventData = ISocketsEventData
 > extends Plugin {
     public static override readonly type: string = "sockets.route.action";
 
     public readonly route: SocketsEventRoute | string;
-    private readonly cb: ISocketsRoutePluginCallable<C, R>;
+    private readonly cb: ISocketsRoutePluginCallable<C, R, T>;
 
-    public constructor(route: SocketsEventRoute | string, cb: ISocketsRoutePluginCallable<C, R>) {
+    public constructor(
+        route: SocketsEventRoute | string,
+        cb: ISocketsRoutePluginCallable<C, R, T>
+    ) {
         super();
         this.route = route;
         this.cb = cb;
     }
 
-    public async run(params: ISocketsRoutePluginCallableParams<C>): Promise<R> {
+    public async run(params: ISocketsRoutePluginCallableParams<C, R, T>): Promise<R> {
         return this.cb(params);
     }
 }
 
 export const createSocketsRoutePlugin = <
     C extends Context = Context,
-    R extends ISocketsRunnerResponse = ISocketsRunnerResponse
+    R extends ISocketsRunnerResponse = ISocketsRunnerResponse,
+    T extends ISocketsEventData = ISocketsEventData
 >(
     route: SocketsEventRoute | string,
-    cb: ISocketsRoutePluginCallable<C, R>
+    cb: ISocketsRoutePluginCallable<C, R, T>
 ) => {
-    return new SocketsRoutePlugin<C, R>(route, cb);
+    return new SocketsRoutePlugin<C, R, T>(route, cb);
 };

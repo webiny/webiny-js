@@ -12,6 +12,7 @@ import { LambdaContext } from "@webiny/handler-aws/types";
 import { Context } from "~tests/types";
 import { PluginCollection } from "@webiny/plugins/types";
 import { createSockets } from "~/index";
+import { createSocketsRoutePlugins } from "~/runner/actions";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -24,6 +25,7 @@ export const useHandler = (params?: UseHandlerParams) => {
 
     const handler = createRawHandler<any, Context>({
         plugins: [
+            createSocketsRoutePlugins(),
             createWcpContext(),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({

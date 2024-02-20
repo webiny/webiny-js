@@ -1,4 +1,4 @@
-import { ISocketsEvent } from "~/handler/types";
+import { ISocketsEvent, ISocketsEventData } from "~/handler/types";
 import { GenericRecord } from "@webiny/api/types";
 import { PartialDeep } from "type-fest";
 
@@ -14,8 +14,12 @@ export interface ISocketsRunnerResponse {
     error?: ISocketsResponseError;
 }
 
-export type ISocketsRunnerRunParams = PartialDeep<ISocketsEvent>;
+export type ISocketsRunnerRunParams<T extends ISocketsEventData = ISocketsEventData> = PartialDeep<
+    ISocketsEvent<T>
+>;
 
 export interface ISocketsRunner {
-    run(params: ISocketsRunnerRunParams): Promise<ISocketsRunnerResponse>;
+    run<T extends ISocketsEventData = ISocketsEventData>(
+        params: ISocketsRunnerRunParams<T>
+    ): Promise<ISocketsRunnerResponse>;
 }
