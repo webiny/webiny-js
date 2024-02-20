@@ -48,11 +48,9 @@
     "babel-plugin-macros": "3.1.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "chalk": "^4.1.0",
-    "commitizen": "^4.3.0",
     "cross-env": "^5.2.0",
-    "cz-customizable": "^5.2.0",
     "env-ci": "2.0.1",
-    "eslint": "^8.4.1",
+    "eslint": "^8.56.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-import-resolver-babel-module": "^5.3.1",
     "eslint-plugin-import": "^2.25.3",
@@ -121,9 +119,6 @@
     "watch:api": "yarn webiny ws run watch --scope='@webiny/api*'",
     "clear-dist": "yarn rimraf packages/*/dist",
     "delete-empty-package-folders": "node scripts/deleteEmptyPackageFolders.js",
-    "commit": "node ./scripts/commitizen.js",
-    "commit:no-verify": "yarn commit --no-verify",
-    "commit:verify": "yarn lint-staged",
     "cypress:open": "cd cypress-tests && yarn cypress open",
     "cy:open": "yarn cypress:open",
     "cypress:run": "cd cypress-tests && yarn cypress run",
@@ -169,12 +164,6 @@
   },
   "yargs": {
     "populate--": true
-  },
-  "config": {
-    "commitizen": {
-      "cliPath": "node_modules/commitizen",
-      "path": "./scripts/cz-adapter"
-    }
   },
   "commitlint": {
     "extends": [
