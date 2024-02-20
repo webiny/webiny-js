@@ -4,53 +4,57 @@ import { CmsTestPermissions, expectNotAuthorized } from "../utils";
 
 const identityA: SecurityIdentity = { id: "a", type: "admin", displayName: "A" };
 const identityB: SecurityIdentity = { id: "b", type: "admin", displayName: "B" };
+const identityC: SecurityIdentity = { id: "c", type: "admin", displayName: "C" };
 
 describe("Delete Permissions Checks", () => {
-    test("should allow deletion of groups only with sufficient permission", async () => {
+    test("should allow deletion of entries only with sufficient permission", async () => {
+        const { manage: manageApiA } = useTestModelHandler({
+            identity: identityA
+        });
+
+        await manageApiA.setup();
+
+        const testEntry = await manageApiA.createTestEntry();
+
         const permissions = new CmsTestPermissions({
-            groups: { rwd: "rw" }
+            groups: { rwd: "rwd" },
+            models: { rwd: "rwd" },
+            entries: { rwd: "rw" }
         });
 
         // Without the "d" permission, the deletion should not be allowed.
-        const { manage: manageApiA } = useTestModelHandler({
-            identity: identityA,
-            permissions: permissions.getPermissions()
-        });
-
-        const [modelGroup] = await manageApiA.createContentModelGroupMutation({
-            data: { name: "Group 1", icon: "x" }
-        });
-
-        const [modelGroupDeletion] = await manageApiA.deleteContentModelGroupMutation({
-            id: modelGroup.data.createContentModelGroup.data.id
-        });
-
-        expectNotAuthorized(modelGroupDeletion.data.deleteContentModelGroup, {
-            reason: "Not allowed to access content model groups."
-        });
-
-        // Adding the "d" permission to the identityB should allow the deletion of the group.
-
-        permissions.setPermissions({
-            groups: { rwd: "rwd" }
-        });
-
         const { manage: manageApiB } = useTestModelHandler({
             identity: identityB,
             permissions: permissions.getPermissions()
         });
 
-        const [modelGroupWithPermissions] = await manageApiB.deleteContentModelGroupMutation({
-            id: modelGroup.data.createContentModelGroup.data.id
+        const failedEntryDeletion = await manageApiB.deleteTestEntry({
+            revision: testEntry.data.id
         });
 
-        expect(modelGroupWithPermissions).toMatchObject({
-            data: {
-                deleteContentModelGroup: {
-                    data: true,
-                    error: null
-                }
-            }
+        expectNotAuthorized(failedEntryDeletion, {
+            reason: 'Not allowed to access "testModel" entries.'
+        });
+
+        // Adding the "d" permission to the identityC should allow the deletion of the group.
+        permissions.setPermissions({
+            groups: { rwd: "rwd" },
+            models: { rwd: "rwd" },
+            entries: { rwd: "rwd" }
+        });
+
+        const { manage: manageApiC } = useTestModelHandler({
+            identity: identityC,
+            permissions: permissions.getPermissions()
+        });
+
+        const entryDeletion = await manageApiC.deleteTestEntry({
+            revision: testEntry.data.id
+        });
+
+        expect(entryDeletion).toMatchObject({
+            data: true,
+            error: null
         });
     });
 });
