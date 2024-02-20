@@ -8,7 +8,7 @@ import { HandlerFactoryParams } from "~/types";
  */
 // @ts-expect-error
 import Reply from "fastify/lib/reply";
-import { APIGatewayProxyResult, S3Event } from "aws-lambda";
+import type { APIGatewayProxyResult, S3Event } from "aws-lambda";
 import { Context as LambdaContext } from "aws-lambda/handler";
 import { createComposedHandler } from "~/utils/composedHandler";
 

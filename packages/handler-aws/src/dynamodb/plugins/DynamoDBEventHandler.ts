@@ -1,6 +1,6 @@
 import { Plugin } from "@webiny/plugins/Plugin";
 import { Context, Reply, Request } from "@webiny/handler/types";
-import { Context as LambdaContext, DynamoDBStreamEvent } from "aws-lambda";
+import type { Context as LambdaContext, DynamoDBStreamEvent } from "aws-lambda";
 
 export interface DynamoDBEventHandlerCallableParams<Response = Reply> {
     request: Request;

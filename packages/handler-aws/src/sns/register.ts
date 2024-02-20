@@ -1,5 +1,5 @@
+import type { SNSEvent } from "aws-lambda";
 import { registry } from "~/registry";
-import { SNSEvent } from "aws-lambda";
 import { createHandler, HandlerParams } from "./index";
 import { createSourceHandler } from "~/sourceHandler";
 

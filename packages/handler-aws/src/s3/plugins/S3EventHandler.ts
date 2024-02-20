@@ -1,6 +1,6 @@
+import type { Context as LambdaContext, S3Event } from "aws-lambda";
 import { Plugin } from "@webiny/plugins/Plugin";
 import { Context, Reply, Request } from "@webiny/handler/types";
-import { Context as LambdaContext, S3Event } from "aws-lambda";
 
 export interface S3EventHandlerCallableParams<Response = Reply> {
     request: Request;

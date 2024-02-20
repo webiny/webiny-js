@@ -1,5 +1,5 @@
+import type { SQSEvent } from "aws-lambda";
 import { registry } from "~/registry";
-import { SQSEvent } from "aws-lambda";
 import { createHandler, HandlerParams } from "./index";
 import { createSourceHandler } from "~/sourceHandler";
 

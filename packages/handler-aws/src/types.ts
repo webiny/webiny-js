@@ -1,4 +1,4 @@
-import {
+import type {
     APIGatewayEvent,
     Context as LambdaContext,
     APIGatewayEventRequestContextWithAuthorizer,
