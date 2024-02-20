@@ -3,15 +3,11 @@ import { createSocketsRoutePlugin } from "~/plugins/SocketsRoutePlugin";
 
 export const createSocketsRouteDisconnectPlugin = () => {
     return createSocketsRoutePlugin(SocketsEventRoute.disconnect, async params => {
-        const { registry, event, next } = params;
-        const result = await next();
+        const { registry, event, response } = params;
         await registry.unregister({
             connectionId: event.requestContext.connectionId
         });
 
-        return {
-            ...result,
-            statusCode: 200
-        };
+        return response.ok();
     });
 };

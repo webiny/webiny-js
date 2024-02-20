@@ -3,8 +3,7 @@ import { createSocketsRoutePlugin } from "~/plugins/SocketsRoutePlugin";
 
 export const createSocketsRouteConnectPlugin = () => {
     return createSocketsRoutePlugin(SocketsEventRoute.connect, async params => {
-        const { registry, event, next } = params;
-        const results = await next();
+        const { registry, event, response } = params;
         await registry.register({
             identity: event.data.identity,
             connectionId: event.requestContext.connectionId,
@@ -14,9 +13,6 @@ export const createSocketsRouteConnectPlugin = () => {
             stage: event.requestContext.stage
         });
 
-        return {
-            ...results,
-            statusCode: 200
-        };
+        return response.ok();
     });
 };

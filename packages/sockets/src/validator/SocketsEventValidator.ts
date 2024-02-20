@@ -1,6 +1,13 @@
 import zod from "zod";
-import { ISocketsEvent, SocketsEventRequestContextEventType } from "~/handler/types";
-import { ISocketsEventValidator } from "./abstractions/ISocketsEventValidator";
+import {
+    ISocketsEvent,
+    ISocketsEventData,
+    SocketsEventRequestContextEventType
+} from "~/handler/types";
+import {
+    ISocketsEventValidator,
+    ISocketsEventValidatorValidateParams
+} from "./abstractions/ISocketsEventValidator";
 import { createZodError } from "@webiny/utils";
 
 const validation = zod.object({
@@ -44,20 +51,24 @@ const validation = zod.object({
         stage: zod.string(),
         status: zod.number()
     }),
-    data: zod.object({
-        identity: zod.object({
-            id: zod.string()
-        }),
-        tenant: zod.string(),
-        locale: zod.string()
-    })
+    data: zod
+        .object({
+            identity: zod.object({
+                id: zod.string()
+            }),
+            tenant: zod.string(),
+            locale: zod.string()
+        })
+        .passthrough()
 });
 
 export class SocketsEventValidator implements ISocketsEventValidator {
-    public async validate(event: Partial<ISocketsEvent>): Promise<ISocketsEvent> {
-        const result = await validation.safeParseAsync(event);
+    public async validate<T extends ISocketsEventData = ISocketsEventData>(
+        input: ISocketsEventValidatorValidateParams
+    ): Promise<ISocketsEvent<T>> {
+        const result = await validation.safeParseAsync(input);
         if (result.success) {
-            return result.data;
+            return result.data as unknown as ISocketsEvent<T>;
         }
         throw createZodError(result.error);
     }

@@ -8,7 +8,8 @@ import { APIGatewayProxyResult } from "aws-lambda";
 import { Context as LambdaContext } from "aws-lambda/handler";
 import { ISocketsEvent } from "./types";
 import { createSocketsRoutePlugins } from "~/runner/actions";
-import { SocketsEventValidator } from "~/validator/SocketsEventValidator";
+import { SocketsEventValidator } from "~/validator";
+import { SocketsResponse } from "~/response";
 import { Context } from "~/types";
 import { SocketsRunner } from "~/runner";
 import { PluginCollection } from "@webiny/plugins/types";
@@ -61,7 +62,13 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
         app.post(url, async (_, reply) => {
             const context = app.webiny as Context;
             const validator = new SocketsEventValidator();
-            const handler = new SocketsRunner(context, context.sockets.registry, validator);
+            const response = new SocketsResponse();
+            const handler = new SocketsRunner(
+                context,
+                context.sockets.registry,
+                validator,
+                response
+            );
 
             app.__webiny_raw_result = await handler.run(event);
             return reply.send({});
