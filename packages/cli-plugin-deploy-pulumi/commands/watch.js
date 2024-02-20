@@ -8,8 +8,6 @@ const bodyParser = require("body-parser");
 const { getProjectApplication, getProject } = require("@webiny/cli/utils");
 const get = require("lodash/get");
 const merge = require("lodash/merge");
-const browserOutput = require("./watch/output/browserOutput");
-const terminalOutput = require("./watch/output/terminalOutput");
 const simpleOutput = require("./watch/output/simpleOutput");
 const minimatch = require("minimatch");
 const glob = require("fast-glob");
@@ -144,19 +142,7 @@ module.exports = async (inputs, context) => {
         }
     }
 
-    let output;
-
-    // TODO: deprecate browser/terminal options with 5.40.0 release.
-    switch (inputs.output) {
-        case "browser":
-            output = browserOutput;
-            break;
-        case "terminal":
-            output = terminalOutput;
-            break;
-        default:
-            output = simpleOutput;
-    }
+    const output = simpleOutput;
 
     if (typeof output.initialize === "function") {
         await output.initialize(inputs);
