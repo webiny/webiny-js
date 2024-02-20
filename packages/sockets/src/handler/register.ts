@@ -5,16 +5,8 @@ import { HandlerParams, IIncomingEvent, ISocketsEvent } from "./types";
 const handler = createSourceHandler<IIncomingEvent<ISocketsEvent>, HandlerParams>({
     name: "handler-webiny-websockets",
     canUse: event => {
-        if (!event.payload) {
-            return false;
-        }
-        const requestContext = event.payload.requestContext;
-        if (!requestContext) {
-            return false;
-        } else if (!requestContext.routeKey || !requestContext.connectionId) {
-            return false;
-        }
-        return true;
+        const { routeKey, connectionId } = event.payload?.requestContext || {};
+        return !!routeKey && !!connectionId;
     },
     handle: async ({ params, event, context }) => {
         const { createHandler } = await import(
@@ -25,6 +17,4 @@ const handler = createSourceHandler<IIncomingEvent<ISocketsEvent>, HandlerParams
     }
 });
 
-registry.register(handler, {
-    silent: true
-});
+registry.register(handler);
