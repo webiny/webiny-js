@@ -105,7 +105,9 @@ export async function getBatches(options: GetBatchesOptions = {}) {
         "list",
         "--toposort",
         "--graph",
-        "--all"
+        "--all",
+        // We must ignore `project-utils`, because it's a dev dependency for all our packages.
+        "--ignore=@webiny/project-utils"
     ]).then(({ stdout }) => JSON.parse(stdout));
 
     const packagesList: Record<string, string[]> = {};

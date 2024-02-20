@@ -2,6 +2,7 @@ const { Graph, alg } = require("graphlib");
 const { join, resolve } = require("path");
 const multimatch = require("multimatch");
 const { allWorkspaces } = require("@webiny/project-utils/workspaces");
+const { randomColor } = require("./randomColor");
 
 const createGraph = (packages, options = {}) => {
     const graph = new Graph();
@@ -106,5 +107,6 @@ const normalizeArray = value => {
 module.exports = {
     createGraph,
     getPackages,
-    normalizeArray
+    normalizeArray,
+    randomColor
 };

@@ -36,11 +36,11 @@
     "jsonpack": "^1.1.5",
     "load-json-file": "^6.2.0",
     "lodash": "4.17.21",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.13",
     "rimraf": "^5.0.5",
     "stream": "^0.0.2",
     "uniqid": "^5.2.0",
-    "zip-local": "^0.3.4",
+    "zip-local": "^0.3.5",
     "zod": "^3.22.4"
   },
   "devDependencies": {

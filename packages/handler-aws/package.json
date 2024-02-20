@@ -20,6 +20,7 @@
     "@webiny/handler-client": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
+    "aws-lambda": "^1.0.7",
     "fastify": "4.11.0"
   },
   "devDependencies": {
@@ -44,9 +45,6 @@
   "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f",
   "adio": {
     "ignore": {
-      "src": [
-        "aws-lambda"
-      ],
       "dependencies": [
         "@types/aws-lambda"
       ]

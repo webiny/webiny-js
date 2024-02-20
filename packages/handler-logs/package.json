@@ -15,7 +15,7 @@
   "dependencies": {
     "@babel/runtime": "^7.23.9",
     "@webiny/handler": "0.0.0",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.13"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
