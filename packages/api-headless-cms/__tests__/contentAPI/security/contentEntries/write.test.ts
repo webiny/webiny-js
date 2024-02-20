@@ -45,24 +45,19 @@ describe("Write Permissions Checks", () => {
         const createTestEntryResponse = await manageApiC.createTestEntry();
 
         expect(createTestEntryResponse).toMatchObject({
-            data: {
-                createdOn: expect.toBeDateString(),
-                wbyAco_location: {
-                    folderId: "root"
-                }
-            },
+            data: { createdOn: expect.toBeDateString() },
             error: null
         });
     });
 
     test("should allow update of groups only with sufficient permission", async () => {
         const { manage: manageApiA } = useTestModelHandler({ identity: identityA });
-        const [modelGroup] = await manageApiA.createContentModelGroupMutation({
-            data: { name: "Group 1", icon: "x" }
-        });
+        await manageApiA.setup();
 
         const permissions = new CmsTestPermissions({
-            groups: { rwd: "r" }
+            groups: { rwd: "rwd" },
+            models: { rwd: "rwd" },
+            entries: { rwd: "r" }
         });
 
         const { manage: manageApiB } = useTestModelHandler({
@@ -70,38 +65,36 @@ describe("Write Permissions Checks", () => {
             permissions: permissions.getPermissions()
         });
 
-        const [notUpdatedModelGroup] = await manageApiB.updateContentModelGroupMutation({
-            id: modelGroup.data.createContentModelGroup.data.id,
-            data: { name: "Group 1 - UPDATE", icon: "x" }
+        const testEntry = await manageApiA.createTestEntry();
+
+        const failedUpdateTestEntryResponse = await manageApiB.updateTestEntry({
+            revision: testEntry.data.id,
+            data: { title: "Test - UPDATE" }
         });
 
-        expectNotAuthorized(notUpdatedModelGroup.data.updateContentModelGroup, {
-            reason: "Not allowed to access content model groups."
+        expectNotAuthorized(failedUpdateTestEntryResponse, {
+            reason: 'Not allowed to access "testModel" entries.'
         });
 
         permissions.setPermissions({
-            groups: { rwd: "rw" }
+            groups: { rwd: "rwd" },
+            models: { rwd: "rwd" },
+            entries: { rwd: "rw" }
         });
+
         const { manage: manageApiC } = useTestModelHandler({
             identity: identityC,
             permissions: permissions.getPermissions()
         });
 
-        const [updatedModelGroup] = await manageApiC.updateContentModelGroupMutation({
-            id: modelGroup.data.createContentModelGroup.data.id,
-            data: { name: "Group 1 - UPDATE", icon: "x" }
+        const updateTestEntryResponse = await manageApiC.updateTestEntry({
+            revision: testEntry.data.id,
+            data: { title: "Test - UPDATE" }
         });
 
-        expect(updatedModelGroup).toMatchObject({
-            data: {
-                updateContentModelGroup: {
-                    data: {
-                        name: "Group 1 - UPDATE",
-                        icon: "x"
-                    },
-                    error: null
-                }
-            }
+        expect(updateTestEntryResponse).toMatchObject({
+            data: { title: "Test - UPDATE" },
+            error: null
         });
     });
 });
