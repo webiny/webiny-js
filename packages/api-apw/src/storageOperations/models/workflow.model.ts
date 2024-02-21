@@ -1,4 +1,4 @@
-import { createPrivateModelDefinition } from "@webiny/api-headless-cms";
+import { createPrivateModel } from "@webiny/api-headless-cms";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
 import { createModelField } from "./utils";
 import { WorkflowScopeTypes } from "~/types";
@@ -208,10 +208,10 @@ interface CreateWorkflowModelDefinitionParams {
 
 export const WORKFLOW_MODEL_ID = "apwWorkflowModelDefinition";
 
-export const createWorkflowModelDefinition = ({
+export const createWorkflowModel = ({
     reviewerModelId
 }: CreateWorkflowModelDefinitionParams) => {
-    return createPrivateModelDefinition({
+    return createPrivateModel({
         name: "APW - Workflow",
         /**
          * Id of the model cannot be appWorkflow because it clashes with the GraphQL types for APW.

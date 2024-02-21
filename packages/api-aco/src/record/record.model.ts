@@ -1,6 +1,6 @@
 import { CmsModelField } from "@webiny/api-headless-cms/types";
 import { createModelField } from "~/utils/createModelField";
-import { createPrivateModelDefinition } from "@webiny/api-headless-cms";
+import { createPrivateModel } from "@webiny/api-headless-cms";
 
 const typeField = () =>
     createModelField({
@@ -92,14 +92,14 @@ const tagsField = () =>
 
 export const SEARCH_RECORD_MODEL_ID = "acoSearchRecord";
 
-interface CreateSearchModelDefinitionParams {
+interface CreateSearchModelParams {
     fields?: CmsModelField[];
 }
 
 export const DEFAULT_FIELDS = ["type", "title", "content", "location", "data", "tags"];
 
-export const createSearchModelDefinition = (params?: CreateSearchModelDefinitionParams) => {
-    return createPrivateModelDefinition({
+export const createSearchModel = (params?: CreateSearchModelParams) => {
+    return createPrivateModel({
         name: "ACO - Search Record",
         modelId: SEARCH_RECORD_MODEL_ID,
         titleFieldId: "title",
