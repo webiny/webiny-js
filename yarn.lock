@@ -6467,17 +6467,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/babel-utils@npm:^0.6.4":
-  version: 0.6.10
-  resolution: "@emotion/babel-utils@npm:0.6.10"
+"@emotion/babel-plugin@npm:^11.11.0":
+  version: 11.11.0
+  resolution: "@emotion/babel-plugin@npm:11.11.0"
   dependencies:
-    "@emotion/hash": ^0.6.6
-    "@emotion/memoize": ^0.6.6
-    "@emotion/serialize": ^0.9.1
-    convert-source-map: ^1.5.1
+    "@babel/helper-module-imports": ^7.16.7
+    "@babel/runtime": ^7.18.3
+    "@emotion/hash": ^0.9.1
+    "@emotion/memoize": ^0.8.1
+    "@emotion/serialize": ^1.1.2
+    babel-plugin-macros: ^3.1.0
+    convert-source-map: ^1.5.0
+    escape-string-regexp: ^4.0.0
     find-root: ^1.1.0
-    source-map: ^0.7.2
-  checksum: fbe4cf4e7674bf152af4478a613cea88af898e4f95136d54e2b4c8d3d88bcdc56b0827c42a9a67121658e5a27edeccc0fe927a7782e977bd38b25dcb54360885
+    source-map: ^0.5.7
+    stylis: 4.2.0
+  checksum: 6b363edccc10290f7a23242c06f88e451b5feb2ab94152b18bb8883033db5934fb0e421e2d67d09907c13837c21218a3ac28c51707778a54d6cd3706c0c2f3f9
   languageName: node
   linkType: hard
 
@@ -6526,17 +6531,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/hash@npm:^0.6.2, @emotion/hash@npm:^0.6.6":
-  version: 0.6.6
-  resolution: "@emotion/hash@npm:0.6.6"
-  checksum: c3e955971456913ab6d6082477e6a6a1df9c14d664028a38222ce1c576f4fb8a7c15af59946de2e4e1319a352453c85421c85aae55abb4089766a51094fa5532
-  languageName: node
-  linkType: hard
-
 "@emotion/hash@npm:^0.9.0":
   version: 0.9.0
   resolution: "@emotion/hash@npm:0.9.0"
   checksum: b63428f7c8186607acdca5d003700cecf0ded519d0b5c5cc3b3154eafcad6ff433f8361bd2bac8882715b557e6f06945694aeb6ba8b25c6095d7a88570e2e0bb
+  languageName: node
+  linkType: hard
+
+"@emotion/hash@npm:^0.9.1":
+  version: 0.9.1
+  resolution: "@emotion/hash@npm:0.9.1"
+  checksum: 716e17e48bf9047bf9383982c071de49f2615310fb4e986738931776f5a823bc1f29c84501abe0d3df91a3803c80122d24e28b57351bca9e01356ebb33d89876
   languageName: node
   linkType: hard
 
@@ -6556,17 +6561,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/memoize@npm:^0.6.1, @emotion/memoize@npm:^0.6.6":
-  version: 0.6.6
-  resolution: "@emotion/memoize@npm:0.6.6"
-  checksum: 4f0bb17dc5ee15ef74d2d618b107da08f013d24535e870e4595a110d850362fabedfe7491ab47148a4c5c7410125dee1bc8c85cea3a4a8218f97cb14b99995c2
-  languageName: node
-  linkType: hard
-
 "@emotion/memoize@npm:^0.8.0":
   version: 0.8.0
   resolution: "@emotion/memoize@npm:0.8.0"
   checksum: c87bb110b829edd8e1c13b90a6bc37cebc39af29c7599a1e66a48e06f9bec43e8e53495ba86278cc52e7589549492c8dfdc81d19f4fdec0cee6ba13d2ad2c928
+  languageName: node
+  linkType: hard
+
+"@emotion/memoize@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "@emotion/memoize@npm:0.8.1"
+  checksum: a19cc01a29fcc97514948eaab4dc34d8272e934466ed87c07f157887406bc318000c69ae6f813a9001c6a225364df04249842a50e692ef7a9873335fbcc141b0
   languageName: node
   linkType: hard
 
@@ -6604,18 +6609,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/serialize@npm:^0.9.1":
-  version: 0.9.1
-  resolution: "@emotion/serialize@npm:0.9.1"
-  dependencies:
-    "@emotion/hash": ^0.6.6
-    "@emotion/memoize": ^0.6.6
-    "@emotion/unitless": ^0.6.7
-    "@emotion/utils": ^0.8.2
-  checksum: 5d309f54b603044ef012f35b3f26e35097dfb9a30ad3d3f1bd85fba74b288bc04bcb63a1732805e2b88f422960bf43c0f30d45a057a8dffb45a89ab105c92eb3
-  languageName: node
-  linkType: hard
-
 "@emotion/serialize@npm:^1.1.1":
   version: 1.1.1
   resolution: "@emotion/serialize@npm:1.1.1"
@@ -6626,6 +6619,19 @@ __metadata:
     "@emotion/utils": ^1.2.0
     csstype: ^3.0.2
   checksum: 24cfd5b16e6f2335c032ca33804a876e0442aaf8f9c94d269d23735ebd194fb1ed142542dd92191a3e6ef8bad5bd560dfc5aaf363a1b70954726dbd4dd93085c
+  languageName: node
+  linkType: hard
+
+"@emotion/serialize@npm:^1.1.2":
+  version: 1.1.3
+  resolution: "@emotion/serialize@npm:1.1.3"
+  dependencies:
+    "@emotion/hash": ^0.9.1
+    "@emotion/memoize": ^0.8.1
+    "@emotion/unitless": ^0.8.1
+    "@emotion/utils": ^1.2.1
+    csstype: ^3.0.2
+  checksum: 5a756ce7e2692322683978d8ed2e84eadd60bd6f629618a82c5018c84d98684b117e57fad0174f68ec2ec0ac089bb2e0bcc8ea8c2798eb904b6d3236aa046063
   languageName: node
   linkType: hard
 
@@ -6670,13 +6676,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/stylis@npm:^0.7.0":
-  version: 0.7.1
-  resolution: "@emotion/stylis@npm:0.7.1"
-  checksum: 60328a89113c389b64fb085a7de2dd6a2cfa0aefe6204c41bfe7bfc35d63513fa1dd98136ffc0a9afb50fbe39c0533e6dc2ca0603c3a7281c649d7290a8fdfe1
-  languageName: node
-  linkType: hard
-
 "@emotion/unitless@npm:0.7.5":
   version: 0.7.5
   resolution: "@emotion/unitless@npm:0.7.5"
@@ -6684,17 +6683,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/unitless@npm:^0.6.7":
-  version: 0.6.7
-  resolution: "@emotion/unitless@npm:0.6.7"
-  checksum: 875caaa3c1f81a5447ee344a22110072eeac42daedb6d24ef4ac8aff0c20ea7b81089f6d7b917885c396898d86a34cc7f123b73c52cc1b10ef2e9e2e4fbc9130
-  languageName: node
-  linkType: hard
-
 "@emotion/unitless@npm:^0.8.0":
   version: 0.8.0
   resolution: "@emotion/unitless@npm:0.8.0"
   checksum: 176141117ed23c0eb6e53a054a69c63e17ae532ec4210907a20b2208f91771821835f1c63dd2ec63e30e22fcc984026d7f933773ee6526dd038e0850919fae7a
+  languageName: node
+  linkType: hard
+
+"@emotion/unitless@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "@emotion/unitless@npm:0.8.1"
+  checksum: 385e21d184d27853bb350999471f00e1429fa4e83182f46cd2c164985999d9b46d558dc8b9cc89975cb337831ce50c31ac2f33b15502e85c299892e67e7b4a88
   languageName: node
   linkType: hard
 
@@ -6714,17 +6713,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/utils@npm:^0.8.2":
-  version: 0.8.2
-  resolution: "@emotion/utils@npm:0.8.2"
-  checksum: e03cfaf807df75c0022639e4bc4cdea7f47163e8de3412f18ea42bf423838b676c1dcf533066bcf8b1b4a1e3e7dc12b87c4e639c660f5e1f604a371664158f9a
-  languageName: node
-  linkType: hard
-
 "@emotion/utils@npm:^1.2.0":
   version: 1.2.0
   resolution: "@emotion/utils@npm:1.2.0"
   checksum: 55457a49ddd4db6a014ea0454dc09eaa23eedfb837095c8ff90470cb26a303f7ceb5fcc1e2190ef64683e64cfd33d3ba3ca3109cd87d12bc9e379e4195c9a4dd
+  languageName: node
+  linkType: hard
+
+"@emotion/utils@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@emotion/utils@npm:1.2.1"
+  checksum: e0b44be0705b56b079c55faff93952150be69e79b660ae70ddd5b6e09fc40eb1319654315a9f34bb479d7f4ec94be6068c061abbb9e18b9778ae180ad5d97c73
   languageName: node
   linkType: hard
 
@@ -15241,6 +15240,7 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/styled": ^11.10.6
     "@material-design-icons/svg": ^0.12.1
     "@rmwc/base": 7.0.3
@@ -15257,7 +15257,6 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/react-router": 0.0.0
     "@webiny/ui": 0.0.0
-    babel-plugin-emotion: ^9.2.8
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     classnames: ^2.3.1
     emotion: ^10.0.27
@@ -15328,6 +15327,7 @@ __metadata:
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
     "@editorjs/editorjs": ^2.19.0
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@material-design-icons/svg": ^0.14.3
@@ -15358,7 +15358,6 @@ __metadata:
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
     apollo-utilities: ^1.3.4
-    babel-plugin-emotion: ^9.2.8
     classnames: ^2.2.6
     dot-prop-immutable: ^2.1.0
     downshift: ^3.1.2
@@ -15391,6 +15390,7 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/is-prop-valid": ^1.1.1
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
@@ -15413,7 +15413,6 @@ __metadata:
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
     apollo-utilities: ^1.3.4
-    babel-plugin-emotion: ^9.2.8
     dayjs: ^1.10.4
     dot-prop-immutable: ^2.1.1
     emotion: ^10.0.17
@@ -15589,6 +15588,7 @@ __metadata:
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
     "@editorjs/editorjs": ^2.20.1
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@material-design-icons/svg": ^0.14.2
@@ -15616,7 +15616,6 @@ __metadata:
     apollo-cache: ^1.3.5
     apollo-client: ^2.6.10
     apollo-utilities: ^1.3.4
-    babel-plugin-emotion: ^9.2.8
     dot-prop-immutable: ^2.1.0
     emotion: ^10.0.17
     graphql: ^15.7.2
@@ -15649,6 +15648,7 @@ __metadata:
     "@babel/preset-env": ^7.23.9
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@webiny/app": 0.0.0
@@ -15664,7 +15664,6 @@ __metadata:
     apollo-link: ^1.2.14
     apollo-link-context: ^1.0.20
     apollo-utilities: ^1.3.4
-    babel-plugin-emotion: ^9.2.8
     graphql: ^15.7.2
     load-script: ^1.0.0
     prop-types: ^15.7.2
@@ -15685,6 +15684,7 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
+    "@emotion/babel-plugin": ^11.11.0
     "@fortawesome/fontawesome-svg-core": ^1.3.0
     "@types/react": 17.0.39
     "@webiny/app-security": 0.0.0
@@ -15692,7 +15692,6 @@ __metadata:
     "@webiny/form": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
-    babel-plugin-emotion: ^9.2.8
     babel-plugin-module-resolver: ^5.0.0
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
@@ -15717,6 +15716,7 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@fortawesome/fontawesome-common-types": ^0.3.0
@@ -15757,7 +15757,6 @@ __metadata:
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
     apollo-utilities: ^1.3.4
-    babel-plugin-emotion: ^9.2.8
     babel-plugin-module-resolver: ^5.0.0
     classnames: ^2.2.6
     dot-prop-immutable: ^2.1.0
@@ -15794,6 +15793,7 @@ __metadata:
     "@babel/preset-env": ^7.23.9
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
+    "@emotion/babel-plugin": ^11.11.0
     "@webiny/app": 0.0.0
     "@webiny/app-admin": 0.0.0
     "@webiny/app-i18n": 0.0.0
@@ -15803,7 +15803,6 @@ __metadata:
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/ui": 0.0.0
-    babel-plugin-emotion: ^9.2.8
     emotion: ^10.0.17
     react: 17.0.2
     react-dom: 17.0.2
@@ -15823,6 +15822,7 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@types/react": 17.0.39
@@ -15841,7 +15841,6 @@ __metadata:
     apollo-link: ^1.2.14
     apollo-link-context: ^1.0.20
     apollo-utilities: ^1.3.4
-    babel-plugin-emotion: ^9.2.8
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
     lodash: 4.17.21
@@ -15865,6 +15864,7 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@types/react": 17.0.39
     "@webiny/app-admin": 0.0.0
@@ -15878,7 +15878,6 @@ __metadata:
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
     apollo-utilities: ^1.3.4
-    babel-plugin-emotion: ^9.2.8
     dot-prop-immutable: ^2.1.1
     graphql: ^15.7.2
     graphql-tag: ^2.10.1
@@ -15903,6 +15902,7 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@svgr/webpack": ^6.1.1
     "@types/medium-editor": ^5.0.3
@@ -15918,7 +15918,6 @@ __metadata:
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
     apollo-utilities: ^1.3.4
-    babel-plugin-emotion: ^9.2.8
     classnames: ^2.2.6
     dot-prop-immutable: ^2.1.0
     emotion: ^10.0.17
@@ -15998,6 +15997,7 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@fortawesome/fontawesome-common-types": ^0.3.0
@@ -16044,7 +16044,6 @@ __metadata:
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
     apollo-utilities: ^1.3.4
-    babel-plugin-emotion: ^9.2.8
     classnames: ^2.2.6
     dot-prop-immutable: ^2.1.0
     emotion: ^10.0.17
@@ -16115,6 +16114,7 @@ __metadata:
     "@babel/preset-env": ^7.23.9
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/styled": ^11.10.6
     "@material-design-icons/svg": ^0.12.1
     "@types/react-helmet": ^6.1.5
@@ -16129,7 +16129,6 @@ __metadata:
     "@webiny/react-router": 0.0.0
     "@webiny/ui": 0.0.0
     "@webiny/validation": 0.0.0
-    babel-plugin-emotion: ^9.2.8
     emotion: ^10.0.17
     graphql-tag: ^2.12.6
     lodash: 4.17.21
@@ -16152,11 +16151,11 @@ __metadata:
     "@babel/preset-env": ^7.23.9
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
+    "@emotion/babel-plugin": ^11.11.0
     "@webiny/app": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
-    babel-plugin-emotion: ^9.2.8
     minimatch: ^5.1.6
     react: 17.0.2
     react-dom: 17.0.2
@@ -16176,6 +16175,7 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@webiny/app": 0.0.0
     "@webiny/app-aco": 0.0.0
@@ -16206,7 +16206,6 @@ __metadata:
     apollo-link: ^1.2.14
     apollo-link-batch-http: ^1.2.14
     apollo-utilities: ^1.3.4
-    babel-plugin-emotion: ^9.2.8
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     react: 17.0.2
     react-dom: 17.0.2
@@ -16228,6 +16227,7 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/styled": ^11.10.6
     "@types/react": 17.0.39
     "@webiny/app": 0.0.0
@@ -16237,7 +16237,6 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/ui": 0.0.0
     apollo-client: ^2.6.10
-    babel-plugin-emotion: ^9.2.8
     graphql-tag: ^2.12.6
     react: 17.0.2
     react-dom: 17.0.2
@@ -16259,6 +16258,7 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@types/react": 17.0.39
@@ -16276,7 +16276,6 @@ __metadata:
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
     apollo-utilities: ^1.3.4
-    babel-plugin-emotion: ^9.2.8
     emotion: ^10.0.27
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
@@ -16301,6 +16300,7 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@types/react": 17.0.39
@@ -16319,7 +16319,6 @@ __metadata:
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
     apollo-utilities: ^1.3.4
-    babel-plugin-emotion: ^9.2.8
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
@@ -16343,12 +16342,12 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
+    "@emotion/babel-plugin": ^11.11.0
     "@types/react": 17.0.39
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/theme": 0.0.0
-    babel-plugin-emotion: ^9.2.8
     execa: ^5.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
@@ -17579,6 +17578,7 @@ __metadata:
   resolution: "@webiny/react-rich-text-lexical-renderer@workspace:packages/react-rich-text-lexical-renderer"
   dependencies:
     "@babel/runtime": ^7.23.9
+    "@emotion/react": ^11.10.6
     "@testing-library/react": ^12.1.5
     "@types/react": 17.0.39
     "@webiny/app-theme": 0.0.0
@@ -17766,11 +17766,11 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@types/react": 17.0.39
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
-    babel-plugin-emotion: ^9.2.8
     execa: ^5.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
@@ -17810,6 +17810,7 @@ __metadata:
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.23.9
     "@editorjs/editorjs": ^2.24.3
+    "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@material-design-icons/svg": ^0.14.2
@@ -17849,7 +17850,6 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/validation": 0.0.0
     babel-loader: 9.1.2
-    babel-plugin-emotion: ^9.2.8
     brace: ^0.11.1
     classnames: ^2.2.6
     cropperjs: ^1.4.3
@@ -18039,7 +18039,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"abbrev@npm:1, abbrev@npm:^1.0.0":
+"abbrev@npm:^1.0.0":
   version: 1.1.1
   resolution: "abbrev@npm:1.1.1"
   checksum: a4a97ec07d7ea112c517036882b2ac22f3109b7b19077dc656316d07d308438aac28e4d9746dc4d84bf6b1e75b4a7b0a5f3cb30592419f128ca9a8cee3bcfa17
@@ -19464,26 +19464,6 @@ __metadata:
     find-root: ^1.1.0
     source-map: ^0.5.7
   checksum: 763f38c67ffbe7d091691d68c74686ba478296cc24716699fb5b0feddce1b1b47878a20b0bbe2aa4dea17f41074ead4deae7935d2cf6823638766709812c5b40
-  languageName: node
-  linkType: hard
-
-"babel-plugin-emotion@npm:^9.2.8":
-  version: 9.2.11
-  resolution: "babel-plugin-emotion@npm:9.2.11"
-  dependencies:
-    "@babel/helper-module-imports": ^7.0.0
-    "@emotion/babel-utils": ^0.6.4
-    "@emotion/hash": ^0.6.2
-    "@emotion/memoize": ^0.6.1
-    "@emotion/stylis": ^0.7.0
-    babel-plugin-macros: ^2.0.0
-    babel-plugin-syntax-jsx: ^6.18.0
-    convert-source-map: ^1.5.0
-    find-root: ^1.1.0
-    mkdirp: ^0.5.1
-    source-map: ^0.5.7
-    touch: ^2.0.1
-  checksum: bdf8f22119286dfc7ff53371c2e49aa679316dd14946fe4829157a6facf0d582c193b7c55f98f4d787ac3db896ce300554564506259051f41ba7130d547ab304
   languageName: node
   linkType: hard
 
@@ -21448,7 +21428,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"convert-source-map@npm:^1.5.0, convert-source-map@npm:^1.5.1, convert-source-map@npm:^1.6.0, convert-source-map@npm:^1.7.0":
+"convert-source-map@npm:^1.5.0, convert-source-map@npm:^1.6.0, convert-source-map@npm:^1.7.0":
   version: 1.9.0
   resolution: "convert-source-map@npm:1.9.0"
   checksum: dc55a1f28ddd0e9485ef13565f8f756b342f9a46c4ae18b843fe3c30c675d058d6a4823eff86d472f187b176f0adf51ea7b69ea38be34be4a63cbbf91b0593c8
@@ -22647,6 +22627,13 @@ __metadata:
   version: 4.3.0
   resolution: "deepmerge@npm:4.3.0"
   checksum: c7980eb5c5be040b371f1df0d566473875cfabed9f672ccc177b81ba8eee5686ce2478de2f1d0076391621cbe729e5eacda397179a59ef0f68901849647db126
+  languageName: node
+  linkType: hard
+
+"deepmerge@npm:^4.3.1":
+  version: 4.3.1
+  resolution: "deepmerge@npm:4.3.1"
+  checksum: 2024c6a980a1b7128084170c4cf56b0fd58a63f2da1660dcfe977415f27b17dbe5888668b59d0b063753f3220719d5e400b7f113609489c90160bb9a5518d052
   languageName: node
   linkType: hard
 
@@ -31051,17 +31038,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nopt@npm:~1.0.10":
-  version: 1.0.10
-  resolution: "nopt@npm:1.0.10"
-  dependencies:
-    abbrev: 1
-  bin:
-    nopt: ./bin/nopt.js
-  checksum: f62575aceaa3be43f365bf37a596b89bbac2e796b001b6d2e2a85c2140a4e378ff919e2753ccba959c4fd344776fc88c29b393bc167fa939fb1513f126f4cd45
-  languageName: node
-  linkType: hard
-
 "normalize-package-data@npm:^2.0.0, normalize-package-data@npm:^2.3.2, normalize-package-data@npm:^2.4.0, normalize-package-data@npm:^2.5.0":
   version: 2.5.0
   resolution: "normalize-package-data@npm:2.5.0"
@@ -35726,6 +35702,7 @@ __metadata:
     babel-plugin-module-resolver: ^5.0.0
     chalk: ^4.1.0
     cross-env: ^5.2.0
+    deepmerge: ^4.3.1
     env-ci: 2.0.1
     eslint: ^8.56.0
     eslint-config-standard: ^16.0.3
@@ -36781,7 +36758,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map@npm:^0.7.2, source-map@npm:^0.7.3, source-map@npm:^0.7.4":
+"source-map@npm:^0.7.3, source-map@npm:^0.7.4":
   version: 0.7.4
   resolution: "source-map@npm:0.7.4"
   checksum: 01cc5a74b1f0e1d626a58d36ad6898ea820567e87f18dfc9d24a9843a351aaa2ec09b87422589906d6ff1deed29693e176194dc88bcae7c9a852dc74b311dbf5
@@ -37374,6 +37351,13 @@ __metadata:
   version: 4.1.4
   resolution: "stylis@npm:4.1.4"
   checksum: cd929bd89709def13b47e6c16b11317bf996a09b4e987fc45a235549c3adf49d41531e017d7df511daa095bc9468c923ae9094a934fe9c62440b7351874dafb7
+  languageName: node
+  linkType: hard
+
+"stylis@npm:4.2.0":
+  version: 4.2.0
+  resolution: "stylis@npm:4.2.0"
+  checksum: 0eb6cc1b866dc17a6037d0a82ac7fa877eba6a757443e79e7c4f35bacedbf6421fadcab4363b39667b43355cbaaa570a3cde850f776498e5450f32ed2f9b7584
   languageName: node
   linkType: hard
 
@@ -37972,17 +37956,6 @@ __metadata:
   version: 2.0.2
   resolution: "toposort@npm:2.0.2"
   checksum: d64c74b570391c9432873f48e231b439ee56bc49f7cb9780b505cfdf5cb832f808d0bae072515d93834dd6bceca5bb34448b5b4b408335e4d4716eaf68195dcb
-  languageName: node
-  linkType: hard
-
-"touch@npm:^2.0.1":
-  version: 2.0.2
-  resolution: "touch@npm:2.0.2"
-  dependencies:
-    nopt: ~1.0.10
-  bin:
-    nodetouch: ./bin/nodetouch.js
-  checksum: 1fbb292e54830807cd61cb0ee10b69e08f6cd1b9559eb6e3b6a27637b7db355650f2a3b6882f4eba20db70d0c31145efdcab2a4b13898c27e7c43c3762f920be
   languageName: node
   linkType: hard
 

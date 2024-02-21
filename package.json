@@ -49,6 +49,7 @@
     "babel-plugin-module-resolver": "^5.0.0",
     "chalk": "^4.1.0",
     "cross-env": "^5.2.0",
+    "deepmerge": "^4.3.1",
     "env-ci": "2.0.1",
     "eslint": "^8.56.0",
     "eslint-config-standard": "^16.0.3",
