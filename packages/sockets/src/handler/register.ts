@@ -1,19 +1,19 @@
 import { registry } from "@webiny/handler-aws/registry";
 import { createSourceHandler } from "@webiny/handler-aws";
-import { HandlerParams, IIncomingEvent, ISocketsEvent } from "./types";
+import { HandlerParams, ISocketsEvent } from "./types";
 
-const handler = createSourceHandler<IIncomingEvent<ISocketsEvent>, HandlerParams>({
+const handler = createSourceHandler<ISocketsEvent, HandlerParams>({
     name: "handler-webiny-websockets",
     canUse: event => {
-        const { routeKey, connectionId } = event.payload?.requestContext || {};
-        return !!routeKey && !!connectionId;
+        const { routeKey, connectionId, eventType } = event.requestContext || {};
+        return !!routeKey && !!connectionId && !!eventType;
     },
     handle: async ({ params, event, context }) => {
         const { createHandler } = await import(
             /* webpackChunkName: "SocketsHandler" */
             "./handler"
         );
-        return createHandler(params)(event.payload, context);
+        return createHandler(params)(event, context);
     }
 });
 

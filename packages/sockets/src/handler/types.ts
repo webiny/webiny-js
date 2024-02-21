@@ -13,11 +13,6 @@ export interface HandlerParams extends HandlerFactoryParams {
     response?: ISocketsResponse;
 }
 
-export interface IIncomingEvent<TEvent> {
-    name: string;
-    payload: TEvent;
-}
-
 export enum SocketsEventRoute {
     "connect" = "$connect",
     "disconnect" = "$disconnect",
