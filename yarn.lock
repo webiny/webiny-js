@@ -18264,7 +18264,7 @@ __metadata:
     "@webiny/lexical-nodes": 0.0.0
     "@webiny/project-utils": 0.0.0
     jsdom: 21.1.2
-    lexical: ^0.12.2
+    lexical: 0.12.2
   languageName: unknown
   linkType: soft
 
@@ -18328,7 +18328,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/react-composition": 0.0.0
     "@webiny/react-properties": 0.0.0
-    lexical: ^0.12.2
+    lexical: 0.12.2
     react: ^17.0.2
     react-dom: ^17.0.2
   languageName: unknown
@@ -18351,7 +18351,7 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/lexical-theme": 0.0.0
     "@webiny/project-utils": 0.0.0
-    lexical: ^0.12.2
+    lexical: 0.12.2
     react: ^17.0.2
   languageName: unknown
   linkType: soft
@@ -18363,7 +18363,7 @@ __metadata:
     "@emotion/react": ^11.10.6
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
-    lexical: ^0.12.2
+    lexical: 0.12.2
     react-style-object-to-css: ^1.1.2
   languageName: unknown
   linkType: soft
@@ -33664,7 +33664,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lexical@npm:^0.12.2":
+"lexical@npm:0.12.2":
   version: 0.12.2
   resolution: "lexical@npm:0.12.2"
   checksum: f02cd11aa015f1babb960d39a31ada30060c3af5446dcc4a6d26e300af8b889bc307633cf77604cf7538e776efdf6ca19d919b82ad24e29c451f58939e91621f
