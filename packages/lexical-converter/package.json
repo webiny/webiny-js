@@ -5,7 +5,7 @@
     "@lexical/headless": "^0.12.2",
     "@lexical/html": "^0.12.2",
     "@webiny/lexical-nodes": "0.0.0",
-    "lexical": "^0.12.2"
+    "lexical": "0.12.2"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.6",
