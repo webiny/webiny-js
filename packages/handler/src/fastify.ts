@@ -9,8 +9,8 @@ import {
     ContextRoutes,
     DefinedContextRoutes,
     HTTPMethods,
-    Request,
     Reply,
+    Request,
     RouteMethodOptions
 } from "~/types";
 import { Context } from "~/Context";
@@ -186,7 +186,7 @@ export const createHandler = (params: CreateHandlerParams) => {
      * We must attach the server to our internal context if we want to have it accessible.
      */
     const app = fastify({
-        bodyLimit: 10485760, // 10MB
+        bodyLimit: 536870912, // 512MB
         ...(params.options || {})
     });
 
