@@ -12,7 +12,7 @@ import {
 import { SingleValueDynamicZone } from "./SingleValueDynamicZone";
 import { MultiValueDynamicZone } from "./MultiValueDynamicZone";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
-import { makeComposable } from "@webiny/react-composition";
+import { makeDecoratable } from "@webiny/react-composition";
 
 const noBottomPadding = css`
     > .webiny-ui-accordion-item__content {
@@ -31,46 +31,39 @@ export type DynamicZoneContainerProps = {
     className?: string;
 };
 
-export const DynamicZoneContainer = makeComposable<DynamicZoneContainerProps>(
-    "DynamicZoneContainer",
-    props => {
-        const {
-            field,
-            bind: {
-                validation: { isValid, message }
-            },
-            title = field.label,
-            description = field.helpText,
-            className,
-            children
-        } = props;
+export const DynamicZoneContainer = makeDecoratable<
+    React.FunctionComponent<DynamicZoneContainerProps>
+>("DynamicZoneContainer", props => {
+    const {
+        field,
+        bind: {
+            validation: { isValid, message }
+        },
+        title = field.label,
+        description = field.helpText,
+        className,
+        children
+    } = props;
 
-        const defaultClassName = field.multipleValues ? noBottomPadding : undefined;
+    const defaultClassName = field.multipleValues ? noBottomPadding : undefined;
 
-        return (
-            <>
-                <Accordion>
-                    <AccordionItem
-                        title={title}
-                        description={description}
-                        className={className || defaultClassName}
-                    >
-                        {children}
-                    </AccordionItem>
-                </Accordion>
-                {isValid === false && (
-                    <FormElementMessage error={true}>{message}</FormElementMessage>
-                )}
-            </>
-        );
-    }
-);
+    return (
+        <>
+            <Accordion>
+                <AccordionItem
+                    title={title}
+                    description={description}
+                    className={className || defaultClassName}
+                >
+                    {children}
+                </AccordionItem>
+            </Accordion>
+            {isValid === false && <FormElementMessage error={true}>{message}</FormElementMessage>}
+        </>
+    );
+});
 
-const DynamicZoneContent = ({
-    field,
-    getBind,
-    contentModel
-}: CmsModelFieldRendererProps) => {
+const DynamicZoneContent = ({ field, getBind, contentModel }: CmsModelFieldRendererProps) => {
     const templates = field.settings?.templates || [];
     if (!templates.length) {
         console.info(

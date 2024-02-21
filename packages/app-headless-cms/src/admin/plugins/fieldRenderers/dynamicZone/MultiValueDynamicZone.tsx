@@ -18,7 +18,7 @@ import {
     CmsModel,
     CmsModelField
 } from "~/types";
-import { makeComposable } from "@webiny/react-composition";
+import { makeDecoratable } from "@webiny/react-composition";
 
 const BottomMargin = styled.div`
     margin-bottom: 20px;
@@ -43,7 +43,7 @@ export interface MultiValueItemContainerProps {
     children: React.ReactNode;
 }
 
-export const MultiValueItemContainer = makeComposable(
+export const MultiValueItemContainer = makeDecoratable(
     "MultiValueItemContainer",
     ({ title, description, icon, actions, children }: MultiValueItemContainerProps) => {
         return (
@@ -60,18 +60,21 @@ export interface MultiValueItemItemProps {
     Bind: BindComponent;
 }
 
-export const MultiValueItem = makeComposable("MultiValueItem", (props: MultiValueItemItemProps) => {
-    const { template, Bind, contentModel } = props;
+export const MultiValueItem = makeDecoratable(
+    "MultiValueItem",
+    (props: MultiValueItemItemProps) => {
+        const { template, Bind, contentModel } = props;
 
-    return (
-        <Fields
-            fields={template.fields}
-            layout={template.layout || []}
-            contentModel={contentModel}
-            Bind={Bind}
-        />
-    );
-});
+        return (
+            <Fields
+                fields={template.fields}
+                layout={template.layout || []}
+                contentModel={contentModel}
+                Bind={Bind}
+            />
+        );
+    }
+);
 
 interface TemplateValue {
     _templateId: string;
@@ -153,16 +156,15 @@ export interface MultiValueContainerProps extends MultiValueDynamicZoneProps {
     children: React.ReactNode;
 }
 
-export const MultiValueContainer = makeComposable<MultiValueContainerProps>(
-    "MultiValueContainer",
-    ({ children }) => {
-        return (
-            <Accordion>
-                <>{children}</>
-            </Accordion>
-        );
-    }
-);
+export const MultiValueContainer = makeDecoratable<
+    React.FunctionComponent<MultiValueContainerProps>
+>("MultiValueContainer", ({ children }) => {
+    return (
+        <Accordion>
+            <>{children}</>
+        </Accordion>
+    );
+});
 
 interface MultiValueDynamicZoneProps {
     // TODO: this prop might be useless, because we now have a `useModelField` hook.
