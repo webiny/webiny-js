@@ -208,9 +208,7 @@ interface CreateWorkflowModelDefinitionParams {
 
 export const WORKFLOW_MODEL_ID = "apwWorkflowModelDefinition";
 
-export const createWorkflowModel = ({
-    reviewerModelId
-}: CreateWorkflowModelDefinitionParams) => {
+export const createWorkflowModel = ({ reviewerModelId }: CreateWorkflowModelDefinitionParams) => {
     return createPrivateModel({
         name: "APW - Workflow",
         /**
