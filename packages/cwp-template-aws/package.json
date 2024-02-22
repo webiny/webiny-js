@@ -11,9 +11,9 @@
     "directory": "."
   },
   "dependencies": {
-    "@webiny/aws-sdk": "latest",
-    "@webiny/cli": "latest",
-    "@webiny/cli-plugin-deploy-pulumi": "latest",
+    "@webiny/aws-sdk": "0.0.0",
+    "@webiny/cli": "0.0.0",
+    "@webiny/cli-plugin-deploy-pulumi": "0.0.0",
     "chalk": "^4.1.0",
     "execa": "^5.0.0",
     "fast-glob": "^3.2.7",

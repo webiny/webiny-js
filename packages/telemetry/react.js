@@ -26,8 +26,10 @@ const sendEvent = (event, data = {}) => {
         event,
         properties,
         extraPayload,
-        user: process.env.REACT_APP_USER_ID,
-        version: process.env.REACT_APP_WEBINY_VERSION
+        user: process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID,
+        newUser: REACT_APP_WEBINY_TELEMETRY_NEW_USER === "true",
+        version: process.env.REACT_APP_WEBINY_VERSION,
+        ci: process.env.REACT_APP_IS_CI === "true",
     });
 
     return shouldSend ? sendTelemetry() : Promise.resolve();

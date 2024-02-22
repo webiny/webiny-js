@@ -2,7 +2,7 @@ export default {
     name: "webiny-js",
     cli: {
         // No need to track anything when developing Webiny.
-        telemetry: false,
+        telemetry: true,
 
         plugins: async () => {
             /**

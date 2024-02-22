@@ -7,7 +7,7 @@ const merge = require("lodash/merge");
 const writeJsonFile = require("write-json-file");
 const loadJsonFile = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
-const { green } = require("chalk");
+const { green, yellow } = require("chalk");
 
 const IS_TEST = process.env.NODE_ENV === "test";
 
@@ -78,8 +78,18 @@ const setup = async args => {
 
     if (!IS_TEST && isGitAvailable) {
         // Commit .gitignore.
-        execa.sync("git", ["add", ".gitignore"], { cwd: projectRoot });
-        execa.sync("git", ["commit", "-m", `chore: initialize .gitignore`], { cwd: projectRoot });
+        try {
+            execa.sync("git", ["add", ".gitignore"], { cwd: projectRoot });
+            execa.sync("git", ["commit", "-m", `chore: initialize .gitignore`], {
+                cwd: projectRoot
+            });
+        } catch (e) {
+            console.log(
+                yellow(
+                    "Failed to commit .gitignore. You will have to do it manually once the project is created."
+                )
+            );
+        }
     }
 
     const rootEnvFilePath = path.join(projectRoot, ".env");
@@ -127,7 +137,7 @@ const setup = async args => {
             await execa("yarn", [], options);
         } catch (e) {
             throw new Error(
-                "Failed while installing project dependencies. Please check the above logs for more information."
+                "Failed while installing project dependencies. Please check the above Yarn logs for more information."
             );
         }
     }

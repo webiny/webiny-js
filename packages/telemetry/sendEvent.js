@@ -8,7 +8,7 @@ const API_URL = "https://t.webiny.com";
  * The main `sendEvent` function.
  * NOTE: don't use this in your app directly. Instead, use the one from `cli.js` or `react.js` files accordingly.
  */
-module.exports = ({ event, user, version, properties, extraPayload } = {}) => {
+module.exports = ({ event, user, version, ci, newUser, properties, extraPayload } = {}) => {
     if (!event) {
         throw new Error(`Cannot send event - missing "event" name.`);
     }
@@ -19,6 +19,14 @@ module.exports = ({ event, user, version, properties, extraPayload } = {}) => {
 
     if (!version) {
         throw new Error(`Cannot send event - missing "version" property.`);
+    }
+
+    if (typeof ci === "undefined") {
+        throw new Error(`Cannot send event - missing "ci" boolean property.`);
+    }
+
+    if (typeof newUser === "undefined") {
+        throw new Error(`Cannot send event - missing "newUser" boolean property.`);
     }
 
     if (!properties) {
@@ -34,7 +42,9 @@ module.exports = ({ event, user, version, properties, extraPayload } = {}) => {
         event,
         properties: {
             ...properties,
-            version
+            newUser: newUser ? "yes" : "no",
+            version,
+            ci: ci ? 'yes' : 'no'
         },
         distinct_id: user,
         api_key: API_KEY,
@@ -46,6 +56,7 @@ module.exports = ({ event, user, version, properties, extraPayload } = {}) => {
 
     // Return a function which will send the prepared body when invoked.
     return () => {
+        console.log('sendingggg', payload);
         return fetch(API_URL + "/capture/", {
             body,
             method: "POST"

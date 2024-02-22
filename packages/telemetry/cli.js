@@ -1,5 +1,6 @@
 const createSendEvent = require("./sendEvent");
 const { globalConfig } = require("@webiny/global-config");
+const isCI = require('is-ci');
 
 const sendEvent = ({ event, user, version, properties, extraPayload }) => {
     const shouldSend = isEnabled();
@@ -8,7 +9,9 @@ const sendEvent = ({ event, user, version, properties, extraPayload }) => {
         const sendTelemetry = createSendEvent({
             event,
             user: user || globalConfig.get("id"),
+            newUser: Boolean(globalConfig.get("newUser")),
             version: version || require("./package.json").version,
+            ci: isCI,
             properties,
             extraPayload
         });

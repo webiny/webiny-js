@@ -18752,6 +18752,7 @@ __metadata:
     "@webiny/data-migration": 0.0.0
     "@webiny/db-dynamodb": 0.0.0
     "@webiny/feature-flags": 0.0.0
+    "@webiny/global-config": 0.0.0
     "@webiny/handler-aws": 0.0.0
     "@webiny/handler-db": 0.0.0
     "@webiny/handler-logs": 0.0.0
@@ -18846,6 +18847,7 @@ __metadata:
   dependencies:
     "@webiny/global-config": 0.0.0
     form-data: 3.0.0
+    is-ci: 3.0.0
     node-fetch: 2.6.1
   languageName: unknown
   linkType: soft
@@ -22786,6 +22788,13 @@ __metadata:
   version: 2.0.0
   resolution: "ci-info@npm:2.0.0"
   checksum: 3b374666a85ea3ca43fa49aa3a048d21c9b475c96eb13c133505d2324e7ae5efd6a454f41efe46a152269e9b6a00c9edbe63ec7fa1921957165aae16625acd67
+  languageName: node
+  linkType: hard
+
+"ci-info@npm:^3.1.1":
+  version: 3.9.0
+  resolution: "ci-info@npm:3.9.0"
+  checksum: 6b19dc9b2966d1f8c2041a838217299718f15d6c4b63ae36e4674edd2bee48f780e94761286a56aa59eb305a85fbea4ddffb7630ec063e7ec7e7e5ad42549a87
   languageName: node
   linkType: hard
 
@@ -31307,6 +31316,17 @@ __metadata:
   version: 1.2.7
   resolution: "is-callable@npm:1.2.7"
   checksum: 61fd57d03b0d984e2ed3720fb1c7a897827ea174bd44402878e059542ea8c4aeedee0ea0985998aa5cc2736b2fa6e271c08587addb5b3959ac52cf665173d1ac
+  languageName: node
+  linkType: hard
+
+"is-ci@npm:3.0.0":
+  version: 3.0.0
+  resolution: "is-ci@npm:3.0.0"
+  dependencies:
+    ci-info: ^3.1.1
+  bin:
+    is-ci: bin.js
+  checksum: 4b45aef32dd42dcb1f6fb3cd4b3a7ee7e18ea47516d2129005f46c3f36983506bb471382bac890973cf48a2f60d926a24461674ca2d9dc10744d82d4a876c26b
   languageName: node
   linkType: hard
 

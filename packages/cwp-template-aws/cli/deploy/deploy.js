@@ -71,6 +71,7 @@ module.exports = async (inputs, context) => {
     try {
         await sendEvent({ event: "project-deploy-start" });
 
+        process.exit('test');
         // Deploying `core` project application.
         if (hasCore) {
             isFirstDeployment && console.log();
