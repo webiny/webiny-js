@@ -1,4 +1,4 @@
-import { createPrivateModelDefinition } from "@webiny/api-headless-cms";
+import { createPrivateModel } from "@webiny/api-headless-cms";
 import { createModelField } from "./utils";
 
 const commentBody = () =>
@@ -48,8 +48,8 @@ interface CreateCommentModelDefinitionParams {
 
 export const COMMENT_MODEL_ID = "apwCommentModelDefinition";
 
-export const createCommentModelDefinition = ({ modelId }: CreateCommentModelDefinitionParams) => {
-    return createPrivateModelDefinition({
+export const createCommentModel = ({ modelId }: CreateCommentModelDefinitionParams) => {
+    return createPrivateModel({
         name: "APW - Comment",
         modelId: COMMENT_MODEL_ID,
         titleFieldId: "step",

@@ -1,5 +1,5 @@
 import { createModelField } from "~/utils/createModelField";
-import { createPrivateModelDefinition } from "@webiny/api-headless-cms";
+import { createPrivateModel } from "@webiny/api-headless-cms";
 
 const titleField = () =>
     createModelField({
@@ -115,8 +115,8 @@ const permissionsField = () =>
 
 export const FOLDER_MODEL_ID = "acoFolder";
 
-export const createFolderModelDefinition = () => {
-    return createPrivateModelDefinition({
+export const createFolderModel = () => {
+    return createPrivateModel({
         name: "ACO - Folder",
         modelId: FOLDER_MODEL_ID,
         titleFieldId: "title",
