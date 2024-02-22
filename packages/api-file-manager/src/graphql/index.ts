@@ -15,7 +15,7 @@ export const createGraphQLSchemaPlugin = () => {
         // Files schema is generated dynamically, based on a CMS model, so we need to
         // register it from a ContextPlugin, to perform additional bootstrap.
         new ContextPlugin<FileManagerContext>(async context => {
-            if (await isHeadlessCmsReady(context)) {
+            if (!(await isHeadlessCmsReady(context))) {
                 return;
             }
 

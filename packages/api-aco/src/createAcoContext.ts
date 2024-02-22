@@ -185,9 +185,10 @@ export const createAcoContext = (params: CreateAcoContextParams = {}) => {
         /**
          * We can skip the ACO initialization if the installation is pending.
          */
-        if (await isHeadlessCmsReady(context)) {
+        if (!(await isHeadlessCmsReady(context))) {
             return;
         }
+
         await context.benchmark.measure("aco.context.setup", async () => {
             await setupAcoContext(context, params);
         });

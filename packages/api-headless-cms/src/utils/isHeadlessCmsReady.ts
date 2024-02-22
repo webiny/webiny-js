@@ -6,8 +6,10 @@ export const isHeadlessCmsReady = async ({ tenancy, i18n }: CmsContext): Promise
      */
     const tenant = tenancy.getCurrentTenant();
     if (!tenant) {
-        return true;
+        return false;
     }
 
-    return !i18n.getContentLocale();
+    const locale = i18n.getContentLocale();
+
+    return locale !== undefined;
 };
