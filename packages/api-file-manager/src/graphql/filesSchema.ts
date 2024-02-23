@@ -32,11 +32,7 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
                         return new NotAuthorizedResponse();
                     }
 
-                    return resolve(() =>
-                        context.security.withoutAuthorization(() => {
-                            return context.cms.getModel("fmFile");
-                        })
-                    );
+                    return resolve(() => context.cms.getModel("fmFile"));
                 },
                 getFile(_, args: any, context) {
                     return resolve(() => context.fileManager.getFile(args.id));
