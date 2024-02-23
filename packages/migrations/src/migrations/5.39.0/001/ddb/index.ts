@@ -47,11 +47,10 @@ export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
         const result = await scan<CmsEntry>({
             entity: this.entryEntity,
             options: {
-                index: "GSI1",
                 filters: [
                     {
-                        attr: "TYPE",
-                        beginsWith: "cms.entry"
+                        attr: "_et",
+                        eq: "CmsEntries"
                     }
                 ],
                 limit: 100
@@ -99,12 +98,12 @@ export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
                 options: {
                     filters: [
                         {
-                            attr: "TYPE",
-                            beginsWith: "cms.entry"
+                            attr: "_et",
+                            eq: "CmsEntries"
                         }
                     ],
                     startKey: migrationStatus.lastEvaluatedKey || undefined,
-                    limit: 1000
+                    limit: 100
                 }
             },
             async result => {

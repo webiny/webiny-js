@@ -84,8 +84,8 @@ export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
             options: {
                 filters: [
                     {
-                        attr: "PK",
-                        contains: "#CMS#CME#"
+                        attr: "_et",
+                        eq: "CmsEntriesElasticsearch"
                     }
                 ],
                 limit: 100
@@ -143,12 +143,12 @@ export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
                 options: {
                     filters: [
                         {
-                            attr: "TYPE",
-                            beginsWith: "cms.entry"
+                            attr: "_et",
+                            eq: "CmsEntries"
                         }
                     ],
                     startKey: migrationStatus.lastEvaluatedKey || undefined,
-                    limit: 500
+                    limit: 100
                 }
             },
             async result => {
