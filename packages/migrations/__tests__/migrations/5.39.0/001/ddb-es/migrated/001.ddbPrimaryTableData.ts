@@ -42,7 +42,7 @@ export const ddbPrimaryTableDataMigrated = [
     {
         PK: "T#root#L#en-US#CMS#CME#wby-aco-658c1bd3c39bb10008431b5c",
         SK: "L",
-        TYPE: "L",
+        TYPE: "cms.entry.l",
         created: "2023-12-27T12:43:01.122Z",
         createdBy: {
             displayName: "ad min",
@@ -1292,6 +1292,7 @@ export const ddbPrimaryTableDataMigrated = [
     {
         PK: "T#root#L#en-US#CMS#CME#658c24996607be00087f1167",
         SK: "L",
+        TYPE: "cms.entry.l",
         created: "2023-12-27T13:20:25.735Z",
         createdBy: {
             displayName: "ad min",
@@ -1813,7 +1814,7 @@ export const ddbPrimaryTableDataMigrated = [
     {
         PK: "T#root#L#en-US#CMS#CME#wby-aco-658c1bd3c39bb10008431b5b",
         SK: "L",
-        TYPE: "L",
+        TYPE: "cms.entry.l",
         created: "2023-12-27T12:43:01.107Z",
         createdBy: {
             displayName: "ad min",
@@ -2686,6 +2687,7 @@ export const ddbPrimaryTableDataMigrated = [
     {
         PK: "T#root#L#en-US#CMS#CME#658c248b6607be00087f1166",
         SK: "L",
+        TYPE: "cms.entry.l",
         created: "2023-12-27T13:20:12.835Z",
         createdBy: {
             displayName: "ad min",
@@ -3580,6 +3582,7 @@ export const ddbPrimaryTableDataMigrated = [
     {
         PK: "T#root#L#en-US#CMS#CME#658c2524adbc1700090e1ad1",
         SK: "L",
+        TYPE: "cms.entry.l",
         created: "2023-12-27T13:22:46.130Z",
         createdBy: {
             displayName: "ad min",
@@ -4212,6 +4215,7 @@ export const ddbPrimaryTableDataMigrated = [
     {
         PK: "T#root#L#en-US#CMS#CME#658c24a16607be00087f1168",
         SK: "L",
+        TYPE: "cms.entry.l",
         created: "2023-12-27T13:20:34.204Z",
         createdBy: {
             displayName: "ad min",
@@ -4896,7 +4900,7 @@ export const ddbPrimaryTableDataMigrated = [
     {
         PK: "T#root#L#en-US#CMS#CME#658c2531adbc1700090e1ad2",
         SK: "L",
-        TYPE: "L",
+        TYPE: "cms.entry.l",
         created: "2023-12-27T13:23:15.570Z",
         createdBy: {
             displayName: "ad min",

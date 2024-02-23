@@ -71,6 +71,7 @@ export type ScanDbItem<T> = T & {
     SK: string;
     GSI1_PK: string;
     GSI1_SK: string;
+    TYPE: string;
 };
 
 export const scan = async <T>(params: ScanParams): Promise<ScanResponse<T>> => {
