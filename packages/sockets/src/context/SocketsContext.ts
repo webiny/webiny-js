@@ -4,7 +4,11 @@ import {
     ISocketsContextListConnectionsResponse,
     ISocketsIdentity
 } from "./abstractions/ISocketsContext";
-import { ISocketsTransporter, ISocketsTransporterSendData } from "~/transporter";
+import {
+    ISocketsTransporter,
+    ISocketsTransporterSendConnection,
+    ISocketsTransporterSendData
+} from "~/transporter";
 
 export class SocketsContext implements ISocketsContext {
     public readonly registry: ISocketsConnectionRegistry;
@@ -21,6 +25,12 @@ export class SocketsContext implements ISocketsContext {
     ): Promise<void> {
         const connections = await this.listConnections(identity);
         return this.transporter.send<T>(connections, data);
+    }
+
+    public async sendToConnection<
+        T extends ISocketsTransporterSendData = ISocketsTransporterSendData
+    >(connection: ISocketsTransporterSendConnection, data: T): Promise<void> {
+        return this.transporter.send<T>([connection], data);
     }
 
     public async listConnections(

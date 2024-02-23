@@ -10,7 +10,13 @@ import {
 import { ISocketsRoutePluginCallableParams, SocketsRoutePlugin } from "~/plugins";
 import { middleware } from "@webiny/utils";
 import { ISocketsConnectionRegistry } from "~/registry";
-import { ISocketsResponse } from "~/response";
+import {
+    ISocketsResponse,
+    ISocketsResponseErrorResult,
+    ISocketsResponseOkResult
+} from "~/response";
+import { SecurityIdentity } from "@webiny/api-security/types";
+import { ISocketsTransporterSendConnection } from "~/transporter";
 
 type MiddlewareParams<C extends Context = Context> = Pick<
     ISocketsRoutePluginCallableParams<C>,
@@ -53,15 +59,33 @@ export class SocketsRunner implements ISocketsRunner {
             });
         }
 
+        let result: ISocketsResponseOkResult | ISocketsResponseErrorResult;
         try {
-            return await this.runRouteAction(event);
+            result = await this.executeRoute(event);
         } catch (ex) {
-            return this.response.error({
+            result = this.response.error({
                 message: `Route "${event.requestContext.routeKey}" action failed.`,
                 error: {
                     message: ex.message,
                     code: ex.code,
                     data: ex.data,
+                    stack: ex.stack
+                }
+            });
+        }
+        try {
+            await this.respond(event, result);
+            return result;
+        } catch (ex) {
+            return this.response.error({
+                message: "Failed to respond to the request.",
+                error: {
+                    message: ex.message,
+                    code: ex.code,
+                    data: {
+                        ...ex.data,
+                        result
+                    },
                     stack: ex.stack
                 }
             });
@@ -86,11 +110,25 @@ export class SocketsRunner implements ISocketsRunner {
         return plugins;
     }
 
-    private async runRouteAction(event: ISocketsEvent): Promise<ISocketsRunnerResponse> {
+    private async executeRoute(event: ISocketsEvent): Promise<ISocketsRunnerResponse> {
         /**
          * We will always fetch plugins in reverse order, so that users can override our default ones if necessary.
          */
         const plugins = this.getRoutePlugins(event.requestContext.routeKey).reverse();
+
+        const getTenant = () => {
+            const tenant = this.context.tenancy.getCurrentTenant();
+            return tenant?.id || null;
+        };
+        const getLocale = (): string | null => {
+            const locale = this.context.i18n.getCurrentLocale("content");
+            return locale?.code || null;
+        };
+
+        const getIdentity = (): SecurityIdentity | null => {
+            const identity = this.context.security.getIdentity();
+            return identity || null;
+        };
 
         const action = middleware<MiddlewareParams, ISocketsRunnerResponse>(
             plugins.map(plugin => {
@@ -99,6 +137,9 @@ export class SocketsRunner implements ISocketsRunner {
                         registry: params.registry,
                         event: params.event,
                         context: params.context,
+                        getTenant,
+                        getLocale,
+                        getIdentity,
                         response: this.response,
                         next
                     });
@@ -123,5 +164,35 @@ export class SocketsRunner implements ISocketsRunner {
             },
             statusCode: 404
         });
+    }
+
+    private async respond(
+        event: ISocketsEvent,
+        result: ISocketsResponseOkResult | ISocketsResponseErrorResult
+    ): Promise<void> {
+        const { connectionId, domainName, stage } = event.requestContext;
+        if (!connectionId || !domainName || !stage) {
+            const message = "No connectionId, domainName or stage.";
+            const data = {
+                connectionId,
+                domainName,
+                stage
+            };
+            console.log(message, JSON.stringify(data));
+            throw new WebinyError(message, "GENERAL_ERROR", data);
+        }
+        const connection: ISocketsTransporterSendConnection = {
+            connectionId,
+            domainName,
+            stage
+        };
+        console.log(
+            "sending: " +
+                JSON.stringify({
+                    connection,
+                    result
+                })
+        );
+        await this.context.sockets.sendToConnection(connection, result);
     }
 }

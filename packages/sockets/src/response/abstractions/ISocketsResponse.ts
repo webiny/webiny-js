@@ -13,7 +13,7 @@ export interface ISocketsResponseOkResult {
 
 export interface ISocketsResponseErrorParams {
     statusCode?: number;
-    error: Omit<ISocketsResponseErrorResultError, "data"> &
+    error?: Omit<ISocketsResponseErrorResultError, "data"> &
         Partial<Pick<ISocketsResponseErrorResultError, "data">>;
     message: string;
 }
