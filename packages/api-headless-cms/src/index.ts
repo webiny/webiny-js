@@ -18,6 +18,8 @@ import { createFieldConverters } from "~/fieldConverters";
 import { createExportGraphQL } from "~/export";
 import { createStorageTransform } from "~/storage";
 import { createLexicalHTMLRenderer } from "./htmlRenderer/createLexicalHTMLRenderer";
+export * from "./utils/isHeadlessCmsReady";
+export * from "./utils/createModelField";
 
 export type CreateHeadlessCmsGraphQLParams = CreateGraphQLParams;
 export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams = {}) => {

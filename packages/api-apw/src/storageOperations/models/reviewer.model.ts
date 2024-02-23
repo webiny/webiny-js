@@ -1,5 +1,5 @@
 import { createModelField } from "./utils";
-import { createPrivateModelDefinition } from "@webiny/api-headless-cms";
+import { createPrivateModel } from "@webiny/api-headless-cms";
 
 const idField = () =>
     createModelField({
@@ -61,8 +61,8 @@ const emailField = () =>
 
 export const REVIEWER_MODEL_ID = "apwReviewerModelDefinition";
 
-export const createReviewerModelDefinition = () => {
-    return createPrivateModelDefinition({
+export const createReviewerModel = () => {
+    return createPrivateModel({
         name: "APW - Reviewer",
         titleFieldId: "displayName",
         modelId: REVIEWER_MODEL_ID,

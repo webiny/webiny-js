@@ -1,5 +1,4 @@
-import { createPrivateModelDefinition } from "@webiny/api-headless-cms";
-import { createModelField } from "./createModelField";
+import { createPrivateModel, createModelField } from "@webiny/api-headless-cms";
 
 const required = () => {
     return {
@@ -160,7 +159,7 @@ interface CreateFileModelDefinitionParams {
     withPrivateFiles: boolean;
 }
 
-export const createFileModelDefinition = (params: CreateFileModelDefinitionParams) => {
+export const createFileModel = (params: CreateFileModelDefinitionParams) => {
     const fields = [
         locationField(),
         nameField(),
@@ -176,7 +175,7 @@ export const createFileModelDefinition = (params: CreateFileModelDefinitionParam
         fields.push(accessControlField());
     }
 
-    return createPrivateModelDefinition({
+    return createPrivateModel({
         name: "FmFile",
         modelId: FILE_MODEL_ID,
         titleFieldId: "name",
