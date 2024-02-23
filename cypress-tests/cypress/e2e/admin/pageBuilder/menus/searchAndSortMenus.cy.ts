@@ -84,11 +84,15 @@ context("Page Builder -  Menu Search&Sort", () => {
         cy.findByPlaceholderText("Search menus").clear();
 
         // Using the sorting filter assert all the options are being correctly displayed.
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             // Sort by date created on, Descending.
             cy.get("select").select("createdOn_DESC");
-            cy.findByTestId("default-data-list.filter").click();
+            // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+            // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+            cy.get('button[data-testid="default-data-list.filter"]').click();
         });
         cy.findByTestId("default-data-list").within(() => {
             cy.get(".mdc-deprecated-list-item")
@@ -98,11 +102,15 @@ context("Page Builder -  Menu Search&Sort", () => {
                 });
         });
 
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             // Sort by date created on, Ascending.
             cy.get("select").select("createdOn_ASC");
-            cy.findByTestId("default-data-list.filter").click();
+            // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+            // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+            cy.get('button[data-testid="default-data-list.filter"]').click();
         });
         cy.findByTestId("default-data-list").within(() => {
             cy.get(".mdc-deprecated-list-item")
@@ -113,11 +121,15 @@ context("Page Builder -  Menu Search&Sort", () => {
                 });
         });
 
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             // Sort by title, Ascending.
             cy.get("select").select("title_ASC");
-            cy.findByTestId("default-data-list.filter").click();
+            // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+            // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+            cy.get('button[data-testid="default-data-list.filter"]').click();
         });
         cy.findByTestId("default-data-list").within(() => {
             cy.get(".mdc-deprecated-list-item")
@@ -127,11 +139,15 @@ context("Page Builder -  Menu Search&Sort", () => {
                 });
         });
 
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             // Sort by title, Descending.
             cy.get("select").select("title_DESC");
-            cy.findByTestId("default-data-list.filter").click();
+            // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+            // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+            cy.get('button[data-testid="default-data-list.filter"]').click();
         });
         cy.findByTestId("default-data-list").within(() => {
             cy.get(".mdc-deprecated-list-item")
