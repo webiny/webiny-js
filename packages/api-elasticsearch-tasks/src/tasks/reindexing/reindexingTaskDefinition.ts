@@ -33,7 +33,7 @@ export const createElasticsearchReindexingTask = (params?: IElasticsearchTaskCon
             const reindexing = new ReindexingTaskRunner(manager, indexManager);
 
             const keys = input.keys || undefined;
-            return reindexing.exec(keys, 200);
+            return reindexing.exec(keys, input.limit || 100);
         }
     });
 };
