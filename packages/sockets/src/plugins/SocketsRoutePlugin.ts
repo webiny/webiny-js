@@ -4,6 +4,7 @@ import { Context } from "~/types";
 import { ISocketsRunnerResponse } from "~/runner";
 import { ISocketsConnectionRegistry } from "~/registry";
 import { ISocketsResponse } from "~/response/abstractions/ISocketsResponse";
+import { SecurityIdentity } from "@webiny/api-security/types";
 
 export interface ISocketsRoutePluginCallableParams<
     C extends Context = Context,
@@ -14,6 +15,9 @@ export interface ISocketsRoutePluginCallableParams<
     registry: ISocketsConnectionRegistry;
     context: C;
     response: ISocketsResponse;
+    getTenant: () => string | null;
+    getLocale: () => string | null;
+    getIdentity: () => SecurityIdentity | null;
     next: () => Promise<R>;
 }
 

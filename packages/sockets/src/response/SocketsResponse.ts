@@ -17,11 +17,12 @@ export class SocketsResponse implements ISocketsResponse {
     public error(params: ISocketsResponseErrorParams): ISocketsResponseErrorResult {
         return {
             ...params,
-            statusCode: params.statusCode || 500,
+            statusCode: params.statusCode || 200,
             error: {
                 ...params.error,
-                code: params.error.code || "UNKNOWN_ERROR",
-                data: params.error.data || {}
+                message: params.error?.message || params.message,
+                code: params.error?.code || "UNKNOWN_ERROR",
+                data: params.error?.data || {}
             }
         };
     }

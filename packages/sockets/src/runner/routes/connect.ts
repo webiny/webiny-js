@@ -10,13 +10,30 @@ const getConnectedOn = (connectedAt?: number) => {
 
 export const createSocketsRouteConnectPlugin = () => {
     const plugin = createSocketsRoutePlugin(SocketsEventRoute.connect, async params => {
-        const { registry, event, response } = params;
+        const { registry, event, response, getTenant, getLocale, getIdentity } = params;
+
+        const tenant = getTenant();
+        const locale = getLocale();
+        const identity = getIdentity();
+        if (!tenant) {
+            return response.error({
+                message: "Missing tenant."
+            });
+        } else if (!locale) {
+            return response.error({
+                message: "Missing locale."
+            });
+        } else if (!identity) {
+            return response.error({
+                message: "Missing identity."
+            });
+        }
 
         await registry.register({
-            identity: event.data.identity,
+            identity,
             connectionId: event.requestContext.connectionId,
-            tenant: event.data.tenant,
-            locale: event.data.locale,
+            tenant,
+            locale,
             domainName: event.requestContext.domainName,
             stage: event.requestContext.stage,
             connectedOn: getConnectedOn(event.requestContext.connectedAt)

@@ -1,7 +1,6 @@
-import { ISocketsEvent, ISocketsEventData } from "~/handler/types";
-import { PartialDeep } from "type-fest";
+import { ISocketsEvent, ISocketsEventData, ISocketsEventPartial } from "~/handler/types";
 
-export type ISocketsEventValidatorValidateParams = PartialDeep<ISocketsEvent>;
+export type ISocketsEventValidatorValidateParams = ISocketsEventPartial;
 
 export interface ISocketsEventValidator {
     /**

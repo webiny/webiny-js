@@ -1,14 +1,19 @@
-import { PartialDeep } from "type-fest";
 import {
     ISocketsEvent,
+    ISocketsEventPartial,
     SocketsEventRequestContextEventType,
     SocketsEventRoute
 } from "~/handler/types";
 
-export const createMockEvent = (input: PartialDeep<ISocketsEvent> = {}): ISocketsEvent => {
+export const createMockEvent = (input: ISocketsEventPartial = {}): ISocketsEvent => {
     const { requestContext, data } = input || {};
     const { identity } = requestContext || {};
     return {
+        queryStringParameters: {
+            tenant: data?.tenant || "root",
+            locale: data?.locale || "en-US",
+            ...input.queryStringParameters
+        },
         requestContext: {
             connectedAt: new Date().getTime(),
             connectionId: "myConnectionId",
@@ -17,6 +22,7 @@ export const createMockEvent = (input: PartialDeep<ISocketsEvent> = {}): ISocket
             stage: "dev",
             apiId: "myApiId",
             requestId: "myRequestId",
+            messageDirection: "IN",
             requestTime: new Date().toISOString(),
             requestTimeEpoch: new Date().getTime(),
             status: 200,

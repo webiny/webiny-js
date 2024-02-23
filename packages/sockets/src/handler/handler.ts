@@ -3,13 +3,14 @@ import { createHandler as createBaseHandler } from "@webiny/handler";
 import { registerDefaultPlugins } from "@webiny/handler-aws/plugins";
 import { execute } from "@webiny/handler-aws/execute";
 import { PluginsContainer } from "@webiny/plugins";
-import { createSocketsRoutePlugins } from "~/runner/actions";
+import { createSocketsRoutePlugins } from "~/runner/routes";
 import { SocketsEventValidator } from "~/validator";
 import { SocketsResponse } from "~/response";
 import { Context } from "~/types";
 import { SocketsRunner } from "~/runner";
 import { PluginCollection } from "@webiny/plugins/types";
 import { HandlerCallable, HandlerParams } from "./types";
+import { getEventValues } from "./headers";
 
 const url = "/webiny-websockets";
 
@@ -59,20 +60,39 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
                 validator || new SocketsEventValidator(),
                 response || new SocketsResponse()
             );
+            console.log("EVENT:");
+            console.log(typeof event);
+            console.log(JSON.stringify(event));
 
-            app.__webiny_raw_result = await handler.run(event);
-            return reply.send({});
+            const result = await handler.run(event);
+
+            console.log("RESULT");
+            console.log(JSON.stringify(result));
+
+            return reply
+                .status(result.statusCode)
+                .headers({
+                    "Sec-WebSocket-Protocol": "webiny-ws-v1"
+                })
+                .send(result);
         });
+
+        const { tenant, locale, endpoint, token } = getEventValues(event);
+
+        const headers = {
+            Authorization: `Bearer ${token}`,
+            ["x-tenant"]: tenant,
+            ["x-webiny-cms-locale"]: locale,
+            ["x-webiny-cms-endpoint"]: endpoint,
+            ...event.headers
+        };
+        console.log("using headrs", JSON.stringify(headers));
         return execute({
             app,
             url,
             payload: {
                 ...event,
-                headers: {
-                    ["x-tenant"]: event.data?.tenant,
-                    ["x-webiny-cms-endpoint"]: "manage",
-                    ["x-webiny-cms-locale"]: event.data?.locale
-                }
+                headers
             }
         });
     };
