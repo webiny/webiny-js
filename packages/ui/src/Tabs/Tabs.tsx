@@ -1,13 +1,4 @@
-import React, {
-    createContext,
-    forwardRef,
-    PropsWithChildren,
-    useCallback,
-    useEffect,
-    useImperativeHandle,
-    useMemo,
-    useState
-} from "react";
+import React, { createContext, PropsWithChildren, useMemo, useState } from "react";
 import classNames from "classnames";
 import { TabBar, Tab as RmwcTab } from "@rmwc/tabs";
 import { TabProps } from "./Tab";
@@ -28,10 +19,6 @@ export type TabsProps = PropsWithChildren<{
      */
     value?: number;
 
-    /**
-     * Function to change active tab.
-     */
-    updateValue?: (index: number) => void;
     /**
      * Tab ID for the testing.
      */
@@ -54,45 +41,14 @@ interface TabsContext {
 
 export const TabsContext = createContext<TabsContext | undefined>(undefined);
 
-export interface TabsImperativeApi {
-    switchTab(index: number): void;
-    getActiveIndex(): number;
-}
 /**
  * Use Tabs component to display a list of choices, once the handler is triggered.
  */
-export const Tabs = forwardRef<TabsImperativeApi | undefined, TabsProps>((props, ref) => {
+export const Tabs = (props: TabsProps) => {
     const [activeTabIndex, setActiveIndex] = useState(0);
     const [tabs, setTabs] = useState<TabItem[]>([]);
 
     const activeIndex = props.value !== undefined ? props.value : activeTabIndex;
-
-    const activateTabIndex = useCallback((index: number) => {
-        if (typeof props.updateValue === "function") {
-            props.updateValue(index);
-            return;
-        }
-
-        setActiveIndex(index);
-    }, []);
-
-    useImperativeHandle(ref, () => ({
-        getActiveIndex() {
-            return activeIndex;
-        },
-        switchTab(tabIndex: number) {
-            activateTabIndex(tabIndex);
-        }
-    }));
-
-    /**
-     * This effect will make sure that disabled tabs automatically switch to the first tab.
-     */
-    useEffect(() => {
-        if (tabs[activeIndex]?.disabled) {
-            activateTabIndex(0);
-        }
-    });
 
     /* We need to generate a key like this to trigger a proper component re-render when child tabs change. */
     const tabBar = (
@@ -101,11 +57,7 @@ export const Tabs = forwardRef<TabsImperativeApi | undefined, TabsProps>((props,
             className="webiny-ui-tabs__tab-bar"
             activeTabIndex={activeIndex}
             onActivate={evt => {
-                if (typeof props.updateValue === "function") {
-                    props.updateValue(evt.detail.index);
-                } else {
-                    setActiveIndex(evt.detail.index);
-                }
+                setActiveIndex(evt.detail.index);
                 props.onActivate && props.onActivate(evt.detail.index);
             }}
         >
@@ -175,6 +127,6 @@ export const Tabs = forwardRef<TabsImperativeApi | undefined, TabsProps>((props,
             <TabsContext.Provider value={context}>{props.children}</TabsContext.Provider>
         </div>
     );
-});
+};
 
 Tabs.displayName = "Tabs";
