@@ -1,6 +1,7 @@
 import createCruds from "./plugins/crud";
 import graphql from "./plugins/graphql";
 import triggerHandlers from "./plugins/triggers";
+import settings from "./plugins/settings";
 import validators from "./plugins/validators";
 import formsGraphQL from "./plugins/graphql/form";
 import formSettingsGraphQL from "./plugins/graphql/formSettings";
@@ -19,6 +20,7 @@ export const createFormBuilder = (params: CreateFormBuilderParams) => {
         validators,
         formsGraphQL,
         formSettingsGraphQL,
-        formBuilderPrerenderingPlugins()
+        formBuilderPrerenderingPlugins(),
+        settings
     ];
 };

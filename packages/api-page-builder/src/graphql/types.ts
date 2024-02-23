@@ -397,7 +397,10 @@ export interface OnCategoryAfterDeleteTopicParams {
  * @category Categories
  */
 export interface CategoriesCrud {
-    getCategory(slug: string, options?: { auth: boolean }): Promise<Category | null>;
+    getCategory(
+        slug: string,
+        options?: { auth: boolean; locale?: string }
+    ): Promise<Category | null>;
     listCategories(): Promise<Category[]>;
     createCategory(data: PbCategoryInput): Promise<Category>;
     updateCategory(slug: string, data: PbCategoryInput): Promise<Category>;
@@ -550,8 +553,8 @@ export interface MenusCrud {
  * The options passed into the crud methods
  */
 export interface DefaultSettingsCrudOptions {
-    tenant: string | false | undefined;
-    locale: string | false;
+    tenant?: string | false;
+    locale?: string | false;
 }
 
 export interface SettingsUpdateTopicMetaParams {
@@ -575,6 +578,18 @@ export interface OnSettingsAfterUpdateTopicParams {
     settings: Settings;
     meta: SettingsUpdateTopicMetaParams;
 }
+/**
+ * @category Lifecycle events
+ */
+export interface OnSettingsBeforeDeleteTopicParams {
+    settings: Settings;
+}
+/**
+ * @category Lifecycle events
+ */
+export interface OnSettingsAfterDeleteTopicParams {
+    settings: Settings;
+}
 
 /**
  * @category Settings
@@ -589,6 +604,7 @@ export interface SettingsCrud {
         data: Record<string, any>,
         options?: { auth?: boolean } & DefaultSettingsCrudOptions
     ) => Promise<Settings>;
+    deleteSettings(params?: DefaultSettingsCrudOptions): Promise<void>;
     /**
      * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
      */
@@ -605,6 +621,8 @@ export interface SettingsCrud {
      */
     onSettingsBeforeUpdate: Topic<OnSettingsBeforeUpdateTopicParams>;
     onSettingsAfterUpdate: Topic<OnSettingsAfterUpdateTopicParams>;
+    onSettingsBeforeDelete: Topic<OnSettingsBeforeDeleteTopicParams>;
+    onSettingsAfterDelete: Topic<OnSettingsAfterDeleteTopicParams>;
 }
 
 /**
@@ -1025,6 +1043,7 @@ export interface PbCategoryInput {
     slug: string;
     url: string;
     layout: string;
+    locale?: string;
 }
 
 export interface PbUpdatePageInput {

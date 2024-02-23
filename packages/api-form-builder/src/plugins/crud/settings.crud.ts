@@ -60,7 +60,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
         onSettingsBeforeDelete,
         onSettingsAfterDelete,
         async getSettings(this: FormBuilder, params) {
-            const { auth, throwOnNotFound } = params || {};
+            const { auth, throwOnNotFound, locale } = params || {};
 
             if (auth !== false) {
                 await settingsPermissions.ensure();
@@ -70,7 +70,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
             try {
                 settings = await this.storageOperations.getSettings({
                     tenant: getTenant().id,
-                    locale: getLocale().code
+                    locale: locale || getLocale().code
                 });
             } catch (ex) {
                 throw new WebinyError(
@@ -89,7 +89,11 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
 
             const data = await formBuilderSettings.toJSON();
 
-            const original = await this.getSettings({ auth: false });
+            const original = await this.getSettings({
+                auth: false,
+                locale: input.locale
+            });
+
             if (original) {
                 throw new WebinyError(
                     `"Form Builder" settings already exist.`,
@@ -106,7 +110,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
                 domain: data.domain,
                 reCaptcha: data.reCaptcha,
                 tenant: getTenant().id,
-                locale: getLocale().code
+                locale: input.locale || getLocale().code
             };
             try {
                 await onSettingsBeforeCreate.publish({
@@ -186,10 +190,11 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCR
                 );
             }
         },
-        async deleteSettings(this: FormBuilder) {
+        async deleteSettings(this: FormBuilder, params) {
+            const { locale } = params || {};
             await settingsPermissions.ensure();
 
-            const settings = await this.getSettings();
+            const settings = await this.getSettings({ locale });
             if (!settings) {
                 return;
             }

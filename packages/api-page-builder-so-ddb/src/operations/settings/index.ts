@@ -5,7 +5,8 @@ import {
     SettingsStorageOperations,
     SettingsStorageOperationsCreateParams,
     SettingsStorageOperationsGetParams,
-    SettingsStorageOperationsUpdateParams
+    SettingsStorageOperationsUpdateParams,
+    SettingsStorageOperationsDeleteParams
 } from "@webiny/api-page-builder/types";
 import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { getClean } from "@webiny/db-dynamodb/utils/get";
@@ -17,8 +18,8 @@ import { put } from "@webiny/db-dynamodb";
  * it in consideration and create the partition key for the global settings.
  */
 interface PartitionKeyParams {
-    tenant: string | boolean | undefined;
-    locale: string | boolean | undefined;
+    tenant?: string | boolean;
+    locale?: string | boolean;
 }
 
 const createPartitionKey = (params: PartitionKeyParams): string => {
@@ -162,6 +163,25 @@ export const createSettingsStorageOperations = ({
             );
         }
     };
+
+    const deleteSettings = async (params: SettingsStorageOperationsDeleteParams) => {
+        const { settings } = params;
+        const keys = {
+            PK: createPartitionKey(settings),
+            SK: "A"
+        };
+        try {
+            await entity.delete(keys);
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not delete the settings record by given keys.",
+                ex.code || "DELETE_SETTINGS_ERROR",
+                {
+                    keys
+                }
+            );
+        }
+    };
     /**
      * We can simply return the partition key for this storage operations.
      */
@@ -174,6 +194,7 @@ export const createSettingsStorageOperations = ({
         getDefaults,
         create,
         update,
+        delete: deleteSettings,
         createCacheKey
     };
 };

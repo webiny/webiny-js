@@ -120,6 +120,12 @@ const setup = (params: CreateCrudParams) => {
             fullAccessPermissionName: "pb.*"
         });
 
+        const settingsPermissions = new PageTemplatesPermissions({
+            getIdentity: context.security.getIdentity,
+            getPermissions: () => context.security.getPermissions("pb.settings"),
+            fullAccessPermissionName: "pb.*"
+        });
+
         const system = await createSystemCrud({
             context,
             storageOperations,
@@ -129,6 +135,7 @@ const setup = (params: CreateCrudParams) => {
         const settings = createSettingsCrud({
             context,
             storageOperations,
+            settingsPermissions,
             getTenantId,
             getLocaleCode
         });

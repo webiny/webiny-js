@@ -1,6 +1,8 @@
 import {
     OnSettingsAfterUpdateTopicParams,
     OnSettingsBeforeUpdateTopicParams,
+    OnSettingsAfterDeleteTopicParams,
+    OnSettingsBeforeDeleteTopicParams,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
     PageSpecialType,
@@ -17,6 +19,7 @@ import lodashGet from "lodash/get";
 import DataLoader from "dataloader";
 import { createTopic } from "@webiny/pubsub";
 import { createSettingsCreateValidation } from "~/graphql/crud/settings/validation";
+import { PageTemplatesPermissions } from "~/graphql/crud/permissions/PageTemplatesPermissions";
 import { createZodError, removeUndefinedValues } from "@webiny/utils";
 
 interface SettingsParams {
@@ -35,12 +38,13 @@ enum SETTINGS_TYPE {
 export interface CreateSettingsCrudParams {
     context: PbContext;
     storageOperations: PageBuilderStorageOperations;
+    settingsPermissions: PageTemplatesPermissions;
     getTenantId: () => string;
     getLocaleCode: () => string;
 }
 
 export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCrud => {
-    const { storageOperations, getLocaleCode, getTenantId } = params;
+    const { storageOperations, settingsPermissions, getLocaleCode, getTenantId } = params;
 
     const settingsDataLoader = new DataLoader<SettingsParams, Settings | null, string>(
         async keys => {
@@ -57,11 +61,20 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
         }
     );
 
+    // create
     const onSettingsBeforeUpdate = createTopic<OnSettingsBeforeUpdateTopicParams>(
         "pageBuilder.onSettingsBeforeUpdate"
     );
     const onSettingsAfterUpdate = createTopic<OnSettingsAfterUpdateTopicParams>(
         "pageBuilder.onSettingsAfterUpdate"
+    );
+
+    // delete
+    const onSettingsBeforeDelete = createTopic<OnSettingsBeforeDeleteTopicParams>(
+        "pageBuilder.onSettingsBeforeDelete"
+    );
+    const onSettingsAfterDelete = createTopic<OnSettingsAfterDeleteTopicParams>(
+        "pageBuilder.onSettingsAfterDelete"
     );
 
     return {
@@ -75,6 +88,8 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
          */
         onSettingsBeforeUpdate,
         onSettingsAfterUpdate,
+        onSettingsBeforeDelete,
+        onSettingsAfterDelete,
         async getCurrentSettings(this: PageBuilderContextObject) {
             // With this line commented, we made this endpoint public.
             // We did this because of the public website pages which need to access the settings.
@@ -91,7 +106,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
                 }
             });
         },
-        async getSettings(this: PageBuilderContextObject) {
+        async getSettings(this: PageBuilderContextObject, options) {
             // With this line commented, we made this endpoint public.
             // We did this because of the public website pages which need to access the settings.
             // It's possible we'll create another GraphQL field, made for this exact purpose.
@@ -99,7 +114,7 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
 
             const key = {
                 tenant: getTenantId(),
-                locale: getLocaleCode()
+                locale: options?.locale || getLocaleCode()
             };
 
             try {
@@ -119,11 +134,11 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
         async updateSettings(this: PageBuilderContextObject, input) {
             const params = {
                 tenant: getTenantId(),
-                locale: getLocaleCode(),
+                locale: input.locale || getLocaleCode(),
                 type: SETTINGS_TYPE.DEFAULT
             };
 
-            let original = await this.getSettings();
+            let original = await this.getSettings({ locale: params.locale });
             if (!original) {
                 const data: SettingsStorageOperationsCreateParams = {
                     input: input,
@@ -245,6 +260,31 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
                         original,
                         settings
                     }
+                );
+            }
+        },
+        async deleteSettings(this: PageBuilderContextObject, params) {
+            const { locale } = params || {};
+            await settingsPermissions.ensure({ rwd: "d" });
+
+            const settings = await this.getSettings({ locale });
+            if (!settings) {
+                return;
+            }
+            try {
+                await onSettingsBeforeDelete.publish({
+                    settings
+                });
+
+                await storageOperations.settings.delete({ settings });
+
+                await onSettingsAfterDelete.publish({
+                    settings
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not delete settings.",
+                    ex.code || "DELETE_SETTINGS_ERROR"
                 );
             }
         }

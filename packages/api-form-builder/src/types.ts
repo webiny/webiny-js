@@ -385,6 +385,11 @@ export interface Settings {
 export interface SettingsCRUDGetParams {
     auth?: boolean;
     throwOnNotFound?: boolean;
+    locale?: string;
+}
+
+export interface SettingsCRUDDeleteParams {
+    locale?: string;
 }
 
 /**
@@ -415,7 +420,7 @@ export interface SettingsCRUD {
     getSettings(params?: SettingsCRUDGetParams): Promise<Settings | null>;
     createSettings(data: Partial<Settings>): Promise<Settings>;
     updateSettings(data: Partial<Settings>): Promise<Settings>;
-    deleteSettings(): Promise<void>;
+    deleteSettings(params?: SettingsCRUDDeleteParams): Promise<void>;
     /**
      * Lifecycle Events
      */
