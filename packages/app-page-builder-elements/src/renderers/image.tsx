@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "@emotion/styled";
 import { createRenderer, CreateRendererOptions } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
@@ -33,19 +33,53 @@ export const ImageRendererComponent = ({
 }: ImageRendererComponentProps) => {
     const LinkComponent = linkComponent || DefaultLinkComponent;
 
-    const { getElement } = useRenderer();
-
+    const { getElement, getElementStyles } = useRenderer();
     const element = getElement<ImageElementData>();
 
     let content;
+    /*
+        Border styles are being applied to pb-image instead of img itself,
+        so to fix that we need to remove border from pb-image and add it to the img.
+    */
+    useEffect(() => {
+        const pbImage = document.getElementById(element.id);
+        /*
+            Reseting border styles for <pb-image></pb-image>
+        */
+        if (pbImage) {
+            pbImage.style.border = "none";
+            pbImage.style.borderRadius = "0";
+        }
+    }, []);
+
+    const getBorderStyles = () => {
+        /*
+            Copied the element styles so we won't modify original styles.
+        */
+        const elementStyles = {
+            ...getElementStyles(element)
+        } as any;
+        /*
+            We are looping through element styles and we are removing styles that are not related to border.
+        */
+        Object.keys(elementStyles).forEach(cssContainerKey => {
+            Object.keys(elementStyles[cssContainerKey]).forEach(styleKey => {
+                if (!styleKey.includes("border")) {
+                    delete elementStyles[cssContainerKey][styleKey];
+                }
+            });
+        });
+        return elementStyles;
+    };
+
     if (element.data?.image?.file?.src) {
         // Image has its width / height set from its own settings.
         const PbImg = styled.img({
             width: element.data.image.width,
             height: element.data.image.height,
-            maxWidth: "100%"
+            maxWidth: "100%",
+            ...getBorderStyles()
         });
-
         const { title } = element.data.image;
         const { src } = value || element.data?.image?.file;
 
