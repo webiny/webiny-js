@@ -6,7 +6,7 @@ import {
 } from "~/eventBridge/plugins/EventBridgeEventHandler";
 import { execute } from "~/execute";
 import { HandlerFactoryParams } from "~/types";
-import { APIGatewayProxyResult, Context as LambdaContext, EventBridgeEvent } from "aws-lambda";
+import type { APIGatewayProxyResult, Context as LambdaContext, EventBridgeEvent } from "aws-lambda";
 /**
  * We need a class, not an interface exported from types.
  */
