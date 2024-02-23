@@ -18,13 +18,43 @@ export const ApiWebsocket = createAppModule({
             }
         });
 
-        app.addResource(aws.lambda.Permission, {
-            name: `websocket-api-permission`,
+        const websocketLambdaPermission = app.addResource(aws.lambda.Permission, {
+            name: `websocket-api-ws-to-lambda-permission`,
             config: {
                 action: "lambda:InvokeFunction",
                 function: graphql.functions.graphql.output.name,
                 principal: "apigateway.amazonaws.com",
-                sourceArn: websocketApi.output.executionArn.apply(arn => `${arn}/*/*`)
+                sourceArn: websocketApi.output.executionArn.apply(arn => `${arn}/*`)
+            }
+        });
+
+        const lambdaWebsocketPolicy = app.addResource(aws.iam.Policy, {
+            name: "websocket-api-lambda-policy",
+            config: {
+                policy: {
+                    Version: "2012-10-17",
+                    Statement: [
+                        {
+                            Effect: "Allow",
+                            Action: "execute-api:ManageConnections",
+                            Resource: [
+                                websocketApi.output.arn,
+                                websocketApi.output.executionArn,
+                                websocketApi.output.arn.apply(arn => `${arn}/*`),
+                                websocketApi.output.executionArn.apply(arn => `${arn}/*`)
+                            ],
+                            Sid: "PermissionForWebsocket"
+                        }
+                    ]
+                }
+            }
+        });
+
+        const lambdaWebsocketRolePolicyAttachment = app.addResource(aws.iam.RolePolicyAttachment, {
+            name: "websocket-api-lambda-role-policy-attachment",
+            config: {
+                policyArn: lambdaWebsocketPolicy.output.arn,
+                role: graphql.role.output
             }
         });
 
@@ -81,8 +111,8 @@ export const ApiWebsocket = createAppModule({
             }
         });
 
-        // Create an IAM role
-        // This role will be used by API Gateway to push logs to CloudWatch
+        // TODO remove logging when stopped developing
+
         const apiGatewayLoggingRole = app.addResource(aws.iam.Role, {
             name: "apiGatewayLoggingRole",
             config: {
@@ -160,6 +190,10 @@ export const ApiWebsocket = createAppModule({
             websocketApiConnectRoute,
             websocketApiDisconnectRoute,
             websocketApiDefaultRoute,
+            websocketLambdaPermission,
+            lambdaWebsocketPolicy,
+            lambdaWebsocketRolePolicyAttachment,
+            deployment,
             websocketApiUri: pulumi.interpolate`${websocketApi.output.apiEndpoint}/${websocketApiStage.output.name}`
         };
     }

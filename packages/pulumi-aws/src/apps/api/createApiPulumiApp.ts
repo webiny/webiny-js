@@ -267,7 +267,9 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 backgroundTaskLambdaArn: backgroundTask.backgroundTask.output.arn,
                 backgroundTaskStepFunctionArn: backgroundTask.stepFunction.output.arn,
                 websocketApiId: websocket.websocketApi.output.id,
-                websocketApiUri: websocket.websocketApiUri
+                websocketApiUri: websocket.websocketApiUri,
+                websocketApiArn: websocket.websocketApi.output.arn,
+                websocketApiExecutionArn: websocket.websocketApi.output.executionArn
             });
 
             app.addHandler(() => {
