@@ -119,6 +119,13 @@ export const createFolderModel = () => {
     return createPrivateModel({
         name: "ACO - Folder",
         modelId: FOLDER_MODEL_ID,
+        authorization: {
+            // Disables base permission checks, but leaves FLP checks enabled.
+            permissions: false
+
+            // We're leaving FLP enabled (no need to set `flp: true`).
+            // flp: true
+        },
         titleFieldId: "title",
         fields: [titleField(), slugField(), typeField(), parentIdField(), permissionsField()]
     });
