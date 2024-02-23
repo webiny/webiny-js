@@ -31,6 +31,7 @@ export interface IElasticsearchIndexingTaskValuesSettings {
 
 export interface IElasticsearchIndexingTaskValues {
     matching?: string;
+    limit?: number;
     keys?: IElasticsearchIndexingTaskValuesKeys;
     settings?: IElasticsearchIndexingTaskValuesSettings;
 }

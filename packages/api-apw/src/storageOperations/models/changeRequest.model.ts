@@ -1,4 +1,4 @@
-import { createPrivateModelDefinition } from "@webiny/api-headless-cms";
+import { createPrivateModel } from "@webiny/api-headless-cms";
 import { createModelField } from "./utils";
 
 const bodyField = () =>
@@ -44,8 +44,8 @@ const stepField = () =>
 
 export const CHANGE_REQUEST_MODEL_ID = "apwChangeRequestModelDefinition";
 
-export const createChangeRequestModelDefinition = () => {
-    return createPrivateModelDefinition({
+export const createChangeRequestModel = () => {
+    return createPrivateModel({
         name: "APW - Change Request",
         modelId: CHANGE_REQUEST_MODEL_ID,
         titleFieldId: "title",
