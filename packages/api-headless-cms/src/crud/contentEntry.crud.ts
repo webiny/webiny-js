@@ -553,7 +553,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             getTenant,
             getLocale,
             originalEntry,
-            latestStorageEntry
+            latestStorageEntry,
+            accessControl
         });
 
         await accessControl.ensureCanAccessEntry({ model, entry, rwd: "w" });
