@@ -222,11 +222,7 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
                                         categoryUrlValidator
                                     ]}
                                 >
-                                    <Input
-                                        disabled={Boolean(data.slug)}
-                                        label={t`URL`}
-                                        data-testid="pb.category.new.form.url"
-                                    />
+                                    <Input label={t`URL`} data-testid="pb.category.new.form.url" />
                                 </Bind>
                             </Cell>
                             <Cell span={6}>

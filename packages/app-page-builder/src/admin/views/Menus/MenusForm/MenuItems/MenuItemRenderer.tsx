@@ -25,7 +25,13 @@ const NodeRendererDefault = forwardRef<HTMLDivElement, TreeItemComponentProps>((
         </div>
     );
     return (
-        <FolderTreeItemWrapper {...props} ref={ref} depth={depth} collapsed={collapsed}>
+        <FolderTreeItemWrapper
+            {...props}
+            ref={ref}
+            depth={depth}
+            collapsed={collapsed}
+            data-testid={`pb-menu-item-render-${item.title}`}
+        >
             <RowContainer className={"rst__rowWrapper"}>
                 {handle}
                 <div>

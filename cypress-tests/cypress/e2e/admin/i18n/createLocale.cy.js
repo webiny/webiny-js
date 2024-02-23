@@ -101,7 +101,7 @@ context("I18N app", () => {
         cy.findByTestId("app-i18n-content.menu").click();
         cy.findByTestId(`app-i18n-content.menu-item.${newCode}`).should("exist");
         // Set it as "Default locale"
-        cy.findByLabelText("Default").check();
+        cy.findByLabelText("Default").click();
         cy.findByTestId("l18n.locale.save").click();
         // Wait for loading to complete
         cy.get(".react-spinner-material").should("not.exist");
@@ -131,7 +131,7 @@ context("I18N app", () => {
         // Wait for loading to complete
         cy.get(".react-spinner-material").should("not.exist");
         // Update it as "default"
-        cy.findByLabelText("Default").check();
+        cy.findByLabelText("Default").click();
         cy.findByTestId("l18n.locale.save").click();
         // Wait for loading to complete
         cy.get(".react-spinner-material").should("not.exist");
