@@ -121,7 +121,10 @@ export class AppPermissions<TPermission extends SecurityPermission = SecurityPer
     // Has publishing workflow permissions?
     private hasPw(permission: TPermission, pw: string) {
         // `name` and `_src` properties are always present.
-        const isCustom = Object.keys(permission).length > 2;
+        const permissionWithoutSystemProperties =
+            this.filterOutSystemPermissionsObjectProperties(permission);
+
+        const isCustom = Object.keys(permissionWithoutSystemProperties).length > 0;
 
         if (!isCustom) {
             // Means it's a "full-access" permission.
@@ -133,5 +136,17 @@ export class AppPermissions<TPermission extends SecurityPermission = SecurityPer
         }
 
         return permission["pw"].includes(pw);
+    }
+
+    /**
+     * Filters out base `name` and `_src` properties from the permission object.
+     */
+    private filterOutSystemPermissionsObjectProperties(permission: SecurityPermission) {
+        return Object.keys(permission).reduce((acc, key) => {
+            if (key !== "name" && key !== "_src") {
+                acc[key] = permission[key];
+            }
+            return acc;
+        }, {} as Record<string, any>);
     }
 }
