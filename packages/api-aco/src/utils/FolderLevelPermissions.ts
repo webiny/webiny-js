@@ -72,14 +72,6 @@ export class FolderLevelPermissions {
         this.canUseFolderLevelPermissions = params.canUseFolderLevelPermissions;
 
         this.isAuthorizationEnabled = params.isAuthorizationEnabled;
-
-        // TODO: resolve this issue.
-        // We immediately enable authorization, because, at the moment, the rest of the system
-        // requires us to have FLP always enabled. We must now disable it, even if the security's
-        // `isAuthorizationEnabled` is set to false. To resolve this, we'll need to refactor CMS-based
-        // CRUD files and have them use CMS storage operations instead of CMS CRUD methods.
-        // We'll be handling this in the near future.
-        this.isAuthorizationEnabled = () => true;
     }
 
     async listAllFolders(folderType: string): Promise<Folder[]> {
@@ -296,27 +288,6 @@ export class FolderLevelPermissions {
         }
 
         const { folder } = params;
-
-        // We check for parent folder access first because the passed folder should be
-        // inaccessible if the parent folder is inaccessible.
-        if (folder.parentId) {
-            let foldersList = params.foldersList;
-            if (!foldersList) {
-                foldersList = await this.listAllFolders(folder.type);
-            }
-
-            const parentFolder = foldersList.find(f => f.id === folder.parentId);
-            if (parentFolder) {
-                const canAccessParentFolder = await this.canAccessFolder({
-                    ...params,
-                    folder: parentFolder
-                });
-
-                if (!canAccessParentFolder) {
-                    return false;
-                }
-            }
-        }
 
         const folderPermissions = await this.getFolderPermissions({
             folder,

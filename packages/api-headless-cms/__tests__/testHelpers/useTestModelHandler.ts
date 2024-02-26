@@ -46,6 +46,7 @@ export const useTestModelHandler = (params: UseTestModelHandlerParams) => {
 
     return {
         read: {
+            ...readGqlHandler,
             async getTestEntry(variables?: Variables, headers?: Headers) {
                 return await readGqlHandler
                     .invoke({
@@ -64,6 +65,7 @@ export const useTestModelHandler = (params: UseTestModelHandlerParams) => {
             }
         },
         manage: {
+            ...manageGqlHandler,
             async setup() {
                 const groupId = generateAlphaLowerCaseId(10);
 
