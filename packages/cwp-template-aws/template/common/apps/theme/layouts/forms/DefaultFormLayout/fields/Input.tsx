@@ -30,7 +30,7 @@ export const StyledInput = styled.input`
     }
 `;
 
-export const InputField: React.FC<InputProps> = ({ field, type }) => {
+export const InputField = ({ field, type }: InputProps) => {
     const { validate, validation, value, onChange } = useBind({
         name: field.fieldId,
         validators: field.validators

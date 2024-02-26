@@ -13,15 +13,14 @@ jobs:
     name: Init
     runs-on: ubuntu-latest
     outputs:
-      jest-packages: ${{ steps.list-jest-packages.outputs.jest-packages }}
       day: ${{ steps.get-day.outputs.day }}
       ts: ${{ steps.get-timestamp.outputs.ts }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Get day of the month
         id: get-day
@@ -36,19 +35,19 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: global-daily-packages-cache
         with:
           path: .webiny/cached-packages
@@ -60,7 +59,7 @@ jobs:
       - name: Build packages
         run: yarn build:quick
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -75,20 +74,20 @@ jobs:
       BETA_VERSION: ${{ vars.BETA_VERSION }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}
@@ -122,21 +121,21 @@ jobs:
       LATEST_VERSION: ${{ vars.LATEST_VERSION }}
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
           key: packages-cache-${{ needs.init.outputs.ts }}

@@ -11,6 +11,44 @@ import {
 import { ApolloClient } from "apollo-client";
 import { SecurityPermission } from "@webiny/app-security/types";
 
+export type DropTargetType = "field" | "row" | "conditionGroup" | "step";
+
+export interface DropTarget {
+    // Contains info about the Element that we are dragging.
+    type: DropTargetType;
+    // Property "id" is optional because when we move row it does not have an id.
+    id?: string;
+    name: string;
+}
+
+export type DropPosition = {
+    row: number;
+    // Property "index" can be null in case we move row.
+    index: number | null;
+};
+
+export type ContainerType = "step" | "conditionGroup";
+
+export type Container = {
+    type: ContainerType;
+    id: string;
+};
+
+export interface DropSource {
+    // Contains info about the Container from which we are dragging an element or elements.
+    // containerId and containerType could be undefined in case we are creating a custom field.
+    containerId?: string;
+    containerType?: ContainerType;
+    position: DropPosition;
+}
+
+export interface DropDestination {
+    // Contains info about the Container in which we are dropping an element or elements.
+    containerId: string;
+    containerType: ContainerType;
+    position: DropPosition;
+}
+
 export interface FbErrorResponse {
     message: string;
     code?: string | null;
@@ -28,25 +66,26 @@ export interface FbBuilderFieldValidator {
     message: string;
     settings: any;
 }
-
+export interface FbBuilderFormFieldValidatorPluginValidator {
+    name: string;
+    label: string;
+    description: string;
+    defaultMessage: string;
+    defaultSettings?: Record<string, any>;
+    renderSettings?: (props: {
+        Bind: BindComponent;
+        setValue: (name: string, value: any) => void;
+        setMessage: (message: string) => void;
+        data: FbBuilderFieldValidator;
+        // We need to return this optional "field" property in the case where we want to render different fields based on it's type or format
+        formFieldData?: {
+            [key: string]: any;
+        };
+    }) => React.ReactElement;
+}
 export type FbBuilderFormFieldValidatorPlugin = Plugin & {
     type: "form-editor-field-validator";
-    validator: {
-        name: string;
-        label: string;
-        description: string;
-        defaultMessage: string;
-        renderSettings?: (props: {
-            Bind: BindComponent;
-            setValue: (name: string, value: any) => void;
-            setMessage: (message: string) => void;
-            data: FbBuilderFieldValidator;
-            // We need to return this optional "field" property in the case where we want to render different fields based on it's type or format
-            formFieldData?: {
-                [key: string]: any;
-            };
-        }) => React.ReactElement;
-    };
+    validator: FbBuilderFormFieldValidatorPluginValidator;
 };
 
 export type FbBuilderFormFieldPatternValidatorPlugin = Plugin & {
@@ -84,9 +123,38 @@ export type FbFormFieldValidatorPlugin = Plugin & {
 export type FieldIdType = string;
 export type FbFormModelFieldsLayout = FieldIdType[][];
 
+export interface MoveFieldParams {
+    field: FieldIdType | FbFormModelField;
+    position: FieldLayoutPositionType;
+    targetStepId: string;
+    sourceStepId: string;
+}
+
 export interface FieldLayoutPositionType {
     row: number;
     index: number | null;
+}
+export interface StepLayoutPositionType {
+    row: {
+        title: string;
+        id: string;
+        layout: string[][];
+    };
+    formStep: FbFormStep;
+    index: number | null;
+}
+
+export interface FbFormStep {
+    id: string;
+    title: string;
+    layout: FbFormModelFieldsLayout;
+}
+
+export interface MoveStepParams {
+    source: Omit<DropSource, "containerType">;
+    destination: {
+        containerId: string;
+    };
 }
 
 export type FbBuilderFieldPlugin = Plugin & {
@@ -148,8 +216,8 @@ export interface FbFormModel {
     id: FieldIdType;
     formId: string;
     version: number;
-    layout: FbFormModelFieldsLayout;
     fields: FbFormModelField[];
+    steps: FbFormStep[];
     published: boolean;
     name: string;
     settings: any;
@@ -170,7 +238,7 @@ export interface FbFormRenderModel extends Omit<FbFormModel, "fields"> {
 }
 
 export interface FbFormModelField {
-    _id?: string;
+    _id: string;
     type: string;
     name: string;
     fieldId: FieldIdType;
@@ -204,7 +272,7 @@ export interface FbFormSubmissionData {
         name: string;
         version: number;
         fields: FbFormModelField[];
-        layout: string[][];
+        steps: FbFormStep[];
     };
 }
 
@@ -271,10 +339,17 @@ export type FormRenderFbFormModelField = FbFormModelField & {
 };
 
 export type FormRenderPropsType<T = Record<string, any>> = {
-    getFieldById: Function;
-    getFieldByFieldId: Function;
-    getFields: () => FormRenderFbFormModelField[][];
+    getFieldById: (id: string) => FbFormModelField | null;
+    getFieldByFieldId: (id: string) => FbFormModelField | null;
+    getFields: (stepIndex?: number) => FormRenderFbFormModelField[][];
     getDefaultValues: () => { [key: string]: any };
+    goToNextStep: () => void;
+    goToPreviousStep: () => void;
+    isLastStep: boolean;
+    isFirstStep: boolean;
+    isMultiStepForm: boolean;
+    currentStepIndex: number;
+    currentStep: FbFormStep;
     ReCaptcha: ReCaptchaComponent;
     reCaptchaEnabled: boolean;
     TermsOfService: TermsOfServiceComponent;
@@ -394,7 +469,7 @@ export interface FbReCaptchaInput {
 }
 
 export interface FbFormSettingsInput {
-    layout: FbFormSettingsLayoutInput;
+    steps: FbFormStep[];
     submitButtonLabel: string;
     fullWidthSubmitButton: boolean;
     successMessage: Record<string, string>;
@@ -405,7 +480,7 @@ export interface FbFormSettingsInput {
 export interface FbUpdateFormInput {
     name?: string;
     fields?: FbFormFieldInput[];
-    layout?: FbFormModelFieldsLayout;
+    steps?: FbFormStep[];
     settings?: FbFormSettingsInput;
     triggers?: Record<string, string>;
 }

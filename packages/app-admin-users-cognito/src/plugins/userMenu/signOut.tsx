@@ -4,7 +4,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 import { ReactComponent as SignOutIcon } from "~/assets/icons/round-lock_open-24px.svg";
 
-export const SignOut: React.FC = () => {
+export const SignOut = () => {
     const { identity } = useSecurity();
 
     if (!identity) {

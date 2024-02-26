@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ReactComponent as ExpandIcon } from "@material-design-icons/svg/filled/fullscreen.svg";
 import { Dialog, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 import { ButtonPrimary, IconButton } from "@webiny/ui/Button";
@@ -44,14 +44,14 @@ const ButtonPrimaryStyled = styled(ButtonPrimary)`
     margin-left: 8px;
 `;
 
-interface LexicalVariableInputPlugin {
+interface LexicalVariableInputPluginProps {
     tag: string;
     variableId: string;
 }
-export const LexicalVariableInputPlugin: React.FC<LexicalVariableInputPlugin> = ({
+export const LexicalVariableInputPlugin = ({
     tag,
     variableId
-}): JSX.Element => {
+}: LexicalVariableInputPluginProps): JSX.Element => {
     const { value, onChange } = useVariable<LexicalValue>(variableId);
     const [initialValue, setInitialValue] = useState(value);
     // We need a separate piece of state for dialog input, to support "cancel edit" functionality
@@ -66,44 +66,40 @@ export const LexicalVariableInputPlugin: React.FC<LexicalVariableInputPlugin> = 
         }
     }, [value]);
 
-    const onInputChange = (data: LexicalValue) => {
+    const onInputChange = useCallback((data: LexicalValue) => {
         onChange(data, true);
-    };
+    }, []);
 
-    const onDialogOpenClick = () => {
+    const onDialogOpenClick = useCallback(() => {
         setDialogEditorValue(initialValue);
         setIsDialogOpen(true);
-    };
+    }, [initialValue]);
 
-    const onDialogOpenedEvent = () => {
+    const onDialogOpenedEvent = useCallback(() => {
         setDialogInputFocused(true);
-    };
+    }, []);
 
-    const onDialogClose = () => {
+    const onDialogClose = useCallback(() => {
         setIsDialogOpen(false);
         setDialogInputFocused(false);
-    };
+    }, []);
 
-    const onDialogSave = () => {
+    const onDialogSave = useCallback(() => {
         onChange(dialogEditorValue, true);
         setIsDialogOpen(false);
         setDialogInputFocused(false);
-    };
+    }, [dialogEditorValue]);
 
     return (
         <InputWrapper>
             <IconButton icon={<ExpandIcon />} onClick={onDialogOpenClick} />
             <EditorWrapper className="webiny-pb-page-element-text">
-                <LexicalEditor
-                    tag={tag}
-                    value={initialValue}
-                    onChange={data => onInputChange(data)}
-                />
+                <LexicalEditor tag={tag} value={initialValue} onChange={onInputChange} />
             </EditorWrapper>
             <Dialog
                 onOpened={onDialogOpenedEvent}
                 open={isDialogOpen}
-                onClose={() => onDialogClose()}
+                onClose={onDialogClose}
                 preventOutsideDismiss={false}
             >
                 <DialogContent>
@@ -111,7 +107,7 @@ export const LexicalVariableInputPlugin: React.FC<LexicalVariableInputPlugin> = 
                         <LexicalEditor
                             tag={tag}
                             value={initialValue}
-                            onChange={data => setDialogEditorValue(data)}
+                            onChange={setDialogEditorValue}
                             focus={dialogInputFocused}
                             height="100%"
                         />

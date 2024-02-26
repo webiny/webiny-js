@@ -13,22 +13,27 @@ interface Page {
     id: string;
 }
 
-export interface PublishPageOptions {
+interface MutationPageOptions {
     mutationOptions?: MutationHookOptions;
     client: ApolloClient<object>;
 }
 
-export type DeletePageOptions = PublishPageOptions;
+export type PublishPageOptions = MutationPageOptions;
+export type UnpublishPageOptions = MutationPageOptions;
+export type DeletePageOptions = MutationPageOptions;
 
 export interface AdminPageBuilderContext extends PageBuilderContext {
     publishPage: (page: Page, options: PublishPageOptions) => Promise<OnPagePublish>;
     onPagePublish: (fn: OnPagePublishSubscriber) => () => void;
+    unpublishPage: (page: Page, options: UnpublishPageOptions) => Promise<OnPageUnpublish>;
+    onPageUnpublish: (fn: OnPageUnpublishSubscriber) => () => void;
     deletePage: (page: Page, options: DeletePageOptions) => Promise<OnPageDelete>;
     onPageDelete: (fn: OnPageDeleteSubscriber) => () => void;
     client: ApolloClient<object>;
 }
 
 type OnPagePublishSubscriber = AsyncProcessor<OnPagePublish>;
+type OnPageUnpublishSubscriber = AsyncProcessor<OnPageUnpublish>;
 type OnPageDeleteSubscriber = AsyncProcessor<OnPageDelete>;
 
 interface PageError {
@@ -44,12 +49,20 @@ interface OnPagePublish {
     error?: PageError;
 }
 
+type OnPageUnpublish = OnPagePublish;
 type OnPageDelete = OnPagePublish;
 
-export const AdminPageBuilderContextProvider: React.FC = ({ children }) => {
+interface AdminPageBuilderContextProviderProps {
+    children: React.ReactNode;
+}
+
+export const AdminPageBuilderContextProvider = ({
+    children
+}: AdminPageBuilderContextProviderProps) => {
     const pageBuilder = usePageBuilder();
     const client = useApolloClient();
     const onPagePublish = useRef<OnPagePublishSubscriber[]>([]);
+    const onPageUnpublish = useRef<OnPageUnpublishSubscriber[]>([]);
     const onPageDelete = useRef<OnPageDeleteSubscriber[]>([]);
 
     const context: AdminPageBuilderContext = useMemo(() => {
@@ -66,6 +79,19 @@ export const AdminPageBuilderContextProvider: React.FC = ({ children }) => {
                 return () => {
                     const index = onPagePublish.current.length;
                     onPagePublish.current.splice(index, 1);
+                };
+            },
+            async unpublishPage(page, options) {
+                return await composeAsync([...onPageUnpublish.current].reverse())({
+                    page,
+                    options
+                });
+            },
+            onPageUnpublish: fn => {
+                onPageUnpublish.current.push(fn);
+                return () => {
+                    const index = onPageUnpublish.current.length;
+                    onPageUnpublish.current.splice(index, 1);
                 };
             },
             async deletePage(page, options) {

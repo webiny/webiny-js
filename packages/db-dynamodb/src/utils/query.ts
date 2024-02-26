@@ -1,15 +1,16 @@
-import { queryOptions as DynamoDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
 import WebinyError from "@webiny/error";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "~/toolbox";
+import { EntityQueryOptions } from "~/toolbox";
+import { cleanupItem, cleanupItems } from "~/utils/cleanup";
 
 export interface QueryAllParams {
     entity: Entity<any>;
     partitionKey: string;
-    options?: DynamoDBToolboxQueryOptions;
+    options?: EntityQueryOptions;
 }
 
 export interface QueryOneParams extends QueryAllParams {
-    options?: Omit<DynamoDBToolboxQueryOptions, "limit">;
+    options?: Omit<EntityQueryOptions, "limit">;
 }
 
 export interface QueryParams extends QueryAllParams {
@@ -99,6 +100,14 @@ export const queryOne = async <T>(params: QueryOneParams): Promise<DbItem<T> | n
     const item = items.shift();
     return item ? item : null;
 };
+
+export const queryOneClean = async <T>(params: QueryOneParams): Promise<T | null> => {
+    const result = await queryOne<T>(params);
+    if (!result) {
+        return null;
+    }
+    return cleanupItem(params.entity, result);
+};
 /**
  * Will run the query to fetch the results no matter how many iterations it needs to go through.
  */
@@ -114,6 +123,11 @@ export const queryAll = async <T>(params: QueryAllParams): Promise<DbItem<T>[]> 
         previousResult = results.result;
     }
     return items;
+};
+
+export const queryAllClean = async <T>(params: QueryAllParams): Promise<T[]> => {
+    const results = await queryAll<T>(params);
+    return cleanupItems(params.entity, results);
 };
 
 /**

@@ -6,7 +6,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { MenuItem } from "@webiny/ui/Menu";
 import { ReactComponent as DownButton } from "@material-design-icons/svg/round/arrow_drop_down.svg";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
-import { statuses as statusLabels } from "~/admin/constants/statusLabels";
+import { statuses as statusLabels } from "~/admin/constants";
 import { CmsContentEntryRevision } from "~/types";
 
 import { Button, Menu } from "./RevisionSelector.styles";
@@ -25,7 +25,7 @@ const defaultRevisions: CmsEntryRevision[] = [
     }
 ];
 
-export const RevisionSelector: React.FC = () => {
+export const RevisionSelector = () => {
     const { entry, revisions, loading } = useContentEntry();
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);

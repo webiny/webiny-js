@@ -20,11 +20,13 @@ interface GridProps {
     selected: FileItem[];
     multiple?: boolean;
     toggleSelected: (file: FileItem) => void;
-    onChange?: Function;
-    onClose?: Function;
+    deselectAll: () => void;
+    onChange?: (file: FileItem) => void;
+    onClose?: () => void;
+    hasOnSelectCallback: boolean;
 }
 
-export const Grid: React.FC<GridProps> = ({
+export const Grid = ({
     folders,
     records,
     loading,
@@ -34,8 +36,10 @@ export const Grid: React.FC<GridProps> = ({
     onChange,
     onClose,
     toggleSelected,
-    multiple
-}) => {
+    deselectAll,
+    multiple,
+    hasOnSelectCallback
+}: GridProps) => {
     if (loading) {
         return <CircularProgress label={t`Loading Files...`} style={{ opacity: 1 }} />;
     }
@@ -45,8 +49,12 @@ export const Grid: React.FC<GridProps> = ({
             return undefined;
         }
 
-        return (record: FileItem) => () => {
-            if (multiple) {
+        return (record: FileItem) => (event?: React.MouseEvent) => {
+            if (event) {
+                event.stopPropagation();
+            }
+
+            if (!hasOnSelectCallback || multiple) {
                 toggleSelected(record);
                 return;
             }
@@ -61,7 +69,7 @@ export const Grid: React.FC<GridProps> = ({
             <FolderList>
                 <FolderGrid folders={folders} onFolderClick={onFolderClick} />
             </FolderList>
-            <FileList>
+            <FileList onClick={deselectAll}>
                 {records.map(record => (
                     <FileProvider file={record} key={record.id}>
                         <FileThumbnail

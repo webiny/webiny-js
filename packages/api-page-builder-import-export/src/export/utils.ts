@@ -1,4 +1,4 @@
-import S3 from "aws-sdk/clients/s3";
+import { CompleteMultipartUploadOutput } from "@webiny/aws-sdk/client-s3";
 import { BlockCategory, Page, PageBlock, PageTemplate } from "@webiny/api-page-builder/types";
 import { FileManagerContext, File } from "@webiny/api-file-manager/types";
 import get from "lodash/get";
@@ -18,7 +18,7 @@ export async function exportPage(
     page: Page,
     exportPagesDataKey: string,
     fileManager: FileManagerContext["fileManager"]
-): Promise<S3.ManagedUpload.SendData> {
+): Promise<CompleteMultipartUploadOutput> {
     // Extract all files
     const files = extractFilesFromData(page.content || {});
     // Extract images from page settings
@@ -72,7 +72,7 @@ export async function exportBlock(
     blockCategory: BlockCategory,
     exportBlocksDataKey: string,
     fileManager: FileManagerContext["fileManager"]
-): Promise<S3.ManagedUpload.SendData> {
+): Promise<CompleteMultipartUploadOutput> {
     // Extract all files
     const files = extractFilesFromData(block.content || {});
     const fileIds = files.map(imageFile => imageFile.id);
@@ -123,7 +123,7 @@ export async function exportTemplate(
     template: PageTemplate,
     exportTemplatesDataKey: string,
     fileManager: FileManagerContext["fileManager"]
-): Promise<S3.ManagedUpload.SendData> {
+): Promise<CompleteMultipartUploadOutput> {
     // Extract all files
     const files = extractFilesFromData(template.content || {});
     const fileIds = files.map(imageFile => imageFile.id);

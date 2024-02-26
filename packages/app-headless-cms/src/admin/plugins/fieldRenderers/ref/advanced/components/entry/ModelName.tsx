@@ -10,9 +10,9 @@ const Content = styled("h4")({
     textTransform: "uppercase"
 });
 
-interface Props {
+interface ModelNameProps {
     name: string;
 }
-export const ModelName: React.VFC<Props> = ({ name }) => {
+export const ModelName = ({ name }: ModelNameProps) => {
     return <Content>{name}</Content>;
 };

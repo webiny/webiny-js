@@ -44,12 +44,7 @@ export interface SearchProps {
     onEnter?: () => any;
     inputPlaceholder?: string;
 }
-const Search: React.FC<SearchProps> = ({
-    value,
-    onChange,
-    onEnter,
-    inputPlaceholder = "Search..."
-}) => {
+const Search = ({ value, onChange, onEnter, inputPlaceholder = "Search..." }: SearchProps) => {
     const inputOnKeyDown = useCallback(
         e => {
             if (typeof onEnter === "function" && e.key === "Enter") {

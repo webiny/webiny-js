@@ -1,17 +1,17 @@
 import tenantLinkAuthorization from "~/plugins/tenantLinkAuthorization";
-import { createHandler } from "@webiny/handler-aws/gateway";
+import { createHandler } from "@webiny/handler-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import { PluginCollection } from "@webiny/plugins/types";
 import { authenticateUsingHttpHeader } from "~/plugins/authenticateUsingHttpHeader";
-import { createSecurityGraphQL, createSecurityContext } from "~/index";
+import { createSecurityContext, createSecurityGraphQL } from "~/index";
 
 // Graphql
 import {
-    UPDATE_SECURITY_GROUP,
     CREATE_SECURITY_GROUP,
     DELETE_SECURITY_GROUP,
     GET_SECURITY_GROUP,
-    LIST_SECURITY_GROUPS
+    LIST_SECURITY_GROUPS,
+    UPDATE_SECURITY_GROUP
 } from "./graphql/groups";
 
 import {
@@ -31,6 +31,7 @@ import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy"
 import { TenancyStorageOperations } from "@webiny/api-tenancy/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { SecurityStorageOperations } from "~/types";
+import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 
 type UseGqlHandlerParams = {
     plugins?: PluginCollection;
@@ -59,7 +60,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
             customGroupAuthorizer(),
             tenantLinkAuthorization({ identityType: "admin" }),
             opts.plugins
-        ].filter(Boolean) as any
+        ].filter(Boolean) as PluginCollection
     });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
@@ -75,8 +76,8 @@ export default (opts: UseGqlHandlerParams = {}) => {
                 },
                 body: JSON.stringify(body),
                 ...rest
-            } as any,
-            {} as any
+            } as unknown as APIGatewayEvent,
+            {} as LambdaContext
         );
 
         // The first element is the response body, and the second is the raw response.

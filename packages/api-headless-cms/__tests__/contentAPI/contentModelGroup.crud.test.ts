@@ -389,4 +389,24 @@ describe("Cms Group crud test", () => {
         expect(response.data.listContentModelGroups.data.length).toEqual(1);
         expect(response.data.listContentModelGroups.data[0].id).toEqual(groups[0]);
     });
+
+    it("should allow to create a group with custom ID", async () => {
+        const data = {
+            id: "a-custom-group-id",
+            name: "My Group With ID",
+            description: "A group with ID",
+            icon: "fa/fas"
+        };
+        const [response] = await createContentModelGroupMutation({
+            data
+        });
+        expect(response).toMatchObject({
+            data: {
+                createContentModelGroup: {
+                    data,
+                    error: null
+                }
+            }
+        });
+    });
 });

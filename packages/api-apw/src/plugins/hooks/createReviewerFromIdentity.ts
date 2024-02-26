@@ -18,7 +18,7 @@ export const createReviewerFromIdentity = ({ security, apw }: LifeCycleHookCallb
                 throw e;
             }
         }
-        const email = (identity as any).email || null;
+        const email = identity?.email || null;
         /**
          * Create a reviewer if it doesn't exist already.
          */

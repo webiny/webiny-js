@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import camelCase from "lodash/camelCase";
@@ -7,7 +7,7 @@ import { OptionsListItem, AddOptionInput, EditFieldOptionDialog } from "./Option
 /**
  * Package react-sortable-hoc is missing types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { sortableContainer, sortableElement, sortableHandle } from "react-sortable-hoc";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
@@ -76,11 +76,9 @@ interface SortableContainerProps {
     transitionDuration: number;
     onSortEnd: OnSortEndCallable;
 }
-const SortableContainer: React.FC<SortableContainerProps> = sortableContainer(
-    ({ children }: SortableContainerProps) => {
-        return <OptionList>{children}</OptionList>;
-    }
-);
+const SortableContainer = sortableContainer(({ children }: SortableContainerProps) => {
+    return <OptionList>{children}</OptionList>;
+});
 
 interface SetEditOptionParams {
     index: number | null;
@@ -96,7 +94,7 @@ interface SortableItemProps {
     Bind: BindComponent;
     index: number;
 }
-const SortableItem: React.FC<SortableItemProps> = sortableElement(
+const SortableItem = sortableElement(
     ({
         setOptionsValue,
         setEditOption,
@@ -135,7 +133,7 @@ interface OptionsListBindParams {
     onChange: (values: FieldOption[]) => void;
 }
 
-const OptionsList: React.FC<OptionsListProps> = ({ form, multiple, otherOption }) => {
+const OptionsList = ({ form, multiple, otherOption }: OptionsListProps) => {
     const { Bind } = form;
 
     const [editOption, setEditOption] = useState<SetEditOptionParams>({
@@ -156,15 +154,12 @@ const OptionsList: React.FC<OptionsListProps> = ({ form, multiple, otherOption }
                     value: optionsValue,
                     onChange: setOptionsValue
                 } = bind;
-                const onSubmit = useCallback(
-                    (data: FieldOption): void => {
-                        const newValue = [...optionsValue];
-                        newValue.splice(editOption.index as number, 1, data);
-                        setOptionsValue(newValue);
-                        clearEditOption();
-                    },
-                    [optionsValue, setOptionsValue]
-                );
+                const onSubmit = (data: FieldOption): void => {
+                    const newValue = [...optionsValue];
+                    newValue.splice(editOption.index as number, 1, data);
+                    setOptionsValue(newValue);
+                    clearEditOption();
+                };
                 return (
                     <>
                         <div>Options</div>

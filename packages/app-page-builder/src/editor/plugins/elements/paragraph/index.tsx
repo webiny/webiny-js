@@ -41,7 +41,7 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
          * TODO @ts-refactor @ashutosh
          * Completely different types between method result and variable
          */
-        // @ts-ignore
+        // @ts-expect-error
         toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
         settings:
             typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,

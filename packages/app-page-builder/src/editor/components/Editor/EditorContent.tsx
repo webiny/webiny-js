@@ -3,10 +3,10 @@
  * Previously, this was done via `pb-editor-content` plugins.
  */
 import React from "react";
-import { makeComposable } from "@webiny/app-admin";
+import { createVoidComponent, makeDecoratable } from "@webiny/app-admin";
 
-export const EditorContent = makeComposable("EditorContent", () => {
+export const EditorContent = makeDecoratable("EditorContent", () => {
     return <EditorContentRenderer />;
 });
 
-const EditorContentRenderer = makeComposable("EditorContentRenderer");
+const EditorContentRenderer = makeDecoratable("EditorContentRenderer", createVoidComponent());

@@ -141,7 +141,7 @@ const ListItem = ({
     );
 };
 
-const AccordionItemsList: React.FC = () => {
+const AccordionItemsList = () => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(
         elementWithChildrenByIdSelector(activeElementId)

@@ -18,17 +18,19 @@ import {
     LOGIN_MT,
     LOGIN_ST
 } from "./createGetIdentityData";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 const noop = () => {
     return void 0;
 };
 
 export interface Config {
-    getIdentityData?: GetIdentityDataCallable;
-    loginMutation?: DocumentNode;
     oktaAuth: OktaAuth;
     oktaSignIn: OktaSignIn;
     clientId: string;
+    getIdentityData?: GetIdentityDataCallable;
+    loginMutation?: DocumentNode;
+    onError?: (error: Error) => void;
 }
 
 export interface AuthenticationProps {
@@ -48,9 +50,26 @@ interface AuthState {
     };
 }
 
-export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, ...config }: Config) => {
-    const withGetIdentityData = (Component: React.FC<WithGetIdentityDataProps>): React.FC => {
-        return function WithGetIdentityData({ children }) {
+interface WithGetIdentityDataFunctionProps {
+    children?: React.ReactNode;
+}
+
+const validatePermissions = (permissions: SecurityPermission[]) => {
+    const appPermissions = permissions.filter(p => p.name !== "aacl");
+    if (appPermissions.length === 0) {
+        throw new Error("You have no permissions on this tenant!");
+    }
+};
+
+export const createAuthentication = ({
+    oktaAuth,
+    oktaSignIn,
+    clientId,
+    onError,
+    ...config
+}: Config) => {
+    const withGetIdentityData = (Component: React.ComponentType<WithGetIdentityDataProps>) => {
+        return function WithGetIdentityData({ children }: WithGetIdentityDataFunctionProps) {
             const { isMultiTenant } = useTenancy();
             const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
             const getIdentityData = config.getIdentityData || createGetIdentityData(loginMutation);
@@ -59,7 +78,7 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, ...config
         };
     };
 
-    const Authentication: React.FC<AuthenticationProps> = ({ getIdentityData, children }) => {
+    const Authentication = ({ getIdentityData, children }: AuthenticationProps) => {
         const timerRef = useRef<number | undefined>(undefined);
         const apolloClient = useApolloClient();
         const { identity, setIdentity } = useSecurity();
@@ -107,6 +126,13 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, ...config
             );
         }, []);
 
+        const logout = () => {
+            clearTimeout(timerRef.current);
+            oktaAuth.signOut();
+            setIdentity(null);
+            setIsAuthenticated(false);
+        };
+
         const authStateChanged = useCallback(async (authState: AuthState) => {
             setIsAuthenticated(!!authState.isAuthenticated);
             if (authState.isAuthenticated) {
@@ -137,15 +163,18 @@ export const createAuthentication = ({ oktaAuth, oktaSignIn, clientId, ...config
                         type,
                         permissions,
                         ...other,
-                        logout() {
-                            clearTimeout(timerRef.current);
-                            oktaAuth.signOut();
-                            setIdentity(null);
-                            setIsAuthenticated(false);
-                        }
+                        logout
                     });
+
+                    validatePermissions(permissions);
                 } catch (err) {
-                    console.log(err);
+                    console.log("ERROR", err);
+                    if (typeof onError === "function") {
+                        onError(err);
+                    } else {
+                        console.error(err);
+                        logout();
+                    }
                 }
             } else {
                 // Unset identity

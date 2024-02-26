@@ -1,5 +1,3 @@
-// TODO remove
-// @ts-nocheck
 import { css } from "emotion";
 import styled from "@emotion/styled";
 
@@ -104,6 +102,7 @@ export const searchWrapper = css({
         input: {
             color: "var(--mdc-theme-on-surface)"
         },
+        // @ts-expect-error
         [SearchShortcut]: {
             display: "none"
         }

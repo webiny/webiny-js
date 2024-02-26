@@ -4,7 +4,7 @@ import { AcoContext, IAcoApp } from "~/types";
 import { resolve, resolveList } from "~/utils/resolve";
 import { parseIdentifier } from "@webiny/utils";
 import { removeAcoRecordPrefix } from "~/utils/acoRecordId";
-import { checkPermissions } from "~/utils/checkPermissions";
+import { ensureAuthentication } from "~/utils/ensureAuthentication";
 
 interface Params {
     app: IAcoApp;
@@ -19,9 +19,9 @@ interface Resolvers {
 }
 
 export const createAppResolvers = (params: Params): Resolvers => {
-    const { app, models, plugins } = params;
+    const { app: targetApp, models, plugins } = params;
 
-    const model = app.model;
+    const model = targetApp.model;
     const apiName = model.singularApiName;
 
     const createFieldResolvers = createFieldResolversFactory({
@@ -33,8 +33,8 @@ export const createAppResolvers = (params: Params): Resolvers => {
 
     const fieldResolvers = createFieldResolvers({
         graphQLType: apiName,
-        fields: app.model.fields,
-        isRoot: true,
+        fields: targetApp.model.fields,
+        isRoot: false,
         extraResolvers: {
             id: (entry: CmsEntry) => {
                 const { id } = parseIdentifier(entry.id);
@@ -46,28 +46,32 @@ export const createAppResolvers = (params: Params): Resolvers => {
     const resolvers: Resolvers = {
         SearchQuery: {
             [`get${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
+                const app = context.aco.getApp(targetApp.name);
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     return app.search.get(args.id);
                 });
             },
             [`list${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
+                const app = context.aco.getApp(targetApp.name);
                 return resolveList(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     return app.search.list(args);
                 });
             },
             [`list${apiName}Tags`]: async (_: unknown, args: any, context: AcoContext) => {
+                const app = context.aco.getApp(targetApp.name);
                 return resolveList(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     return app.search.listTags(args);
                 });
             }
         },
         SearchMutation: {
             [`create${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
+                const app = context.aco.getApp(targetApp.name);
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     const { id } = parseIdentifier(args.data?.id);
                     return app.search.create({
                         ...args.data,
@@ -76,22 +80,25 @@ export const createAppResolvers = (params: Params): Resolvers => {
                 });
             },
             [`update${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
+                const app = context.aco.getApp(targetApp.name);
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     const { id } = parseIdentifier(args.id);
                     return app.search.update(id, args.data || {});
                 });
             },
             [`move${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
+                const app = context.aco.getApp(targetApp.name);
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     const { id } = parseIdentifier(args.id);
                     return app.search.move(id, args.folderId);
                 });
             },
             [`delete${apiName}`]: async (_: unknown, args: any, context: AcoContext) => {
+                const app = context.aco.getApp(targetApp.name);
                 return resolve(() => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     const { id } = parseIdentifier(args.id);
                     return app.search.delete(id);
                 });

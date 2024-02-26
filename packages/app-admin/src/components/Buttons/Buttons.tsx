@@ -7,6 +7,7 @@ import {
     ButtonProps as BaseButtonProps,
     IconButtonProps as BaseIconButtonProps
 } from "@webiny/ui/Button";
+import { Tooltip, TooltipProps } from "@webiny/ui/Tooltip";
 
 import { ButtonsProvider } from "./useButtons";
 import { ButtonContainer } from "./Buttons.styles";
@@ -17,6 +18,7 @@ interface ButtonProps extends Omit<BaseButtonProps, "onClick"> {
 
 interface IconButtonProps extends Omit<BaseIconButtonProps, "onClick"> {
     onAction: (ev?: any) => void;
+    tooltipPlacement?: TooltipProps["placement"];
 }
 
 export interface ButtonsProps {
@@ -26,7 +28,7 @@ export interface ButtonsProps {
     }[];
 }
 
-export const Buttons: React.VFC<ButtonsProps> = props => {
+export const Buttons = (props: ButtonsProps) => {
     if (!props.actions.length) {
         return null;
     }
@@ -42,18 +44,28 @@ export const Buttons: React.VFC<ButtonsProps> = props => {
     );
 };
 
-export const ButtonDefault: React.VFC<ButtonProps> = ({ onAction, ...other }) => {
+export { ButtonContainer };
+
+export const ButtonDefault = ({ onAction, ...other }: ButtonProps) => {
     return <BaseButtonDefault {...other} onClick={onAction} />;
 };
 
-export const ButtonPrimary: React.VFC<ButtonProps> = ({ onAction, ...other }) => {
+export const ButtonPrimary = ({ onAction, ...other }: ButtonProps) => {
     return <BaseButtonPrimary {...other} onClick={onAction} />;
 };
 
-export const ButtonSecondary: React.VFC<ButtonProps> = ({ onAction, ...other }) => {
+export const ButtonSecondary = ({ onAction, ...other }: ButtonProps) => {
     return <BaseButtonSecondary {...other} onClick={onAction} />;
 };
 
-export const IconButton: React.VFC<IconButtonProps> = ({ onAction, ...other }) => {
+export const IconButton = ({ label, onAction, tooltipPlacement, ...other }: IconButtonProps) => {
+    if (label) {
+        return (
+            <Tooltip content={label} placement={tooltipPlacement}>
+                <BaseIconButton {...other} onClick={onAction} />
+            </Tooltip>
+        );
+    }
+
     return <BaseIconButton {...other} onClick={onAction} />;
 };

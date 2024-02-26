@@ -77,9 +77,12 @@ export const createAppSchema = (params: Params): string => {
 
         type ${apiName} {
             id: ID!
-            savedOn: DateTime!
             createdOn: DateTime!
+            modifiedOn: DateTime
+            savedOn: DateTime!
             createdBy: AcoUser!
+            modifiedBy: AcoUser
+            savedBy: AcoUser!
             ${fieldTypes.map(f => f.fields).join("\n")}
         }
 

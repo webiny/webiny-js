@@ -2,7 +2,7 @@ import path from "path";
 /**
  * Package zip-local does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import zipper from "zip-local";
 import fs from "fs";
 

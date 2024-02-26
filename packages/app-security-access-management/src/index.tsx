@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { plugins } from "@webiny/plugins";
-import { Layout, Plugins, AddMenu, AddRoute, useWcp } from "@webiny/app-admin";
+import { AddMenu, AddRoute, Layout, Plugins, useWcp } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-security";
 import { Permission } from "~/plugins/constants";
 import { Groups } from "~/ui/views/Groups";
@@ -12,7 +12,6 @@ import accessManagementPlugins from "./plugins";
  * TODO @ts-refactor
  * Find out why is there empty default export
  */
-// @ts-ignore
 export default () => [];
 
 export const AccessManagementExtension = () => {

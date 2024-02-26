@@ -4,7 +4,7 @@ import { setContext } from "apollo-link-context";
 /**
  * Package load-script does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import loadScript from "load-script";
 import { Global } from "@emotion/react";
 import { plugins } from "@webiny/plugins";
@@ -34,7 +34,7 @@ const withHeaders = (link: ApolloLink, headers: Record<string, string>): ApolloL
 
 const initScripts = () => {
     return new Promise((resolve: any) => {
-        // @ts-ignore
+        // @ts-expect-error
         if (window.GraphQLPlayground) {
             return resolve();
         }
@@ -52,7 +52,7 @@ interface CreateApolloClientParams {
 interface PlaygroundProps {
     createApolloClient: (params: CreateApolloClientParams) => ApolloClient<any>;
 }
-const Playground: React.FC<PlaygroundProps> = ({ createApolloClient }) => {
+const Playground = ({ createApolloClient }: PlaygroundProps) => {
     const [loading, setLoading] = useState(true);
     const { getCurrentLocale } = useI18N();
     const { identity } = useSecurity();
@@ -95,7 +95,7 @@ const Playground: React.FC<PlaygroundProps> = ({ createApolloClient }) => {
 
     useEffect(() => {
         if (!loading) {
-            // @ts-ignore
+            // @ts-expect-error
             window.GraphQLPlayground.init(document.getElementById("graphql-playground"), {
                 tabs,
                 createApolloLink,

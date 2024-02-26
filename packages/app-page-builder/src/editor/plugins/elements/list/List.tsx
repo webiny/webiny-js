@@ -9,7 +9,7 @@ interface ListProps {
     mediumEditorOptions?: MediumEditorOptions;
 }
 
-const List: React.FC<ListProps> = props => {
+const List = (props: ListProps) => {
     const { element, ...rest } = props;
     return <PeList element={element as Element} {...rest} />;
 };

@@ -32,14 +32,7 @@ interface ActionPropsType {
      * */
     closeOtherInGroup?: boolean;
 }
-const Action: React.FC<ActionPropsType> = ({
-    id,
-    icon,
-    onClick,
-    tooltip,
-    plugin,
-    closeOtherInGroup
-}) => {
+const Action = ({ id, icon, onClick, tooltip, plugin, closeOtherInGroup }: ActionPropsType) => {
     const handler = useEventActionHandler();
     const isActive = useRecoilValue(isPluginActiveSelector(plugin as string));
 

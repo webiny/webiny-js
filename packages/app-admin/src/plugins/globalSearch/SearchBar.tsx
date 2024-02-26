@@ -8,7 +8,7 @@ import classnames from "classnames";
 /**
  * Package react-hotkeyz does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { Hotkeys } from "react-hotkeyz";
 
 // UI components
@@ -21,14 +21,14 @@ import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outline
 
 // Local components
 import {
-    SearchBarWrapper,
-    SearchBarInputWrapper,
-    SearchShortcut,
-    searchBarInput,
     icon,
+    searchBarInput,
+    SearchBarInputWrapper,
+    SearchBarWrapper,
+    SearchShortcut,
     searchWrapper
 } from "./styled";
-import { makeComposable } from "~/index";
+import { makeDecoratable } from "~/index";
 
 type SearchBarProps = UseRouter;
 
@@ -121,7 +121,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         this.setState(
             state => {
                 const newState = set(state, "searchTerm.previous", state.searchTerm.current);
-                return set(newState, "plugins.current", plugin) as any;
+                return set(newState, "plugins.current", plugin);
             },
             () => {
                 const query = new URLSearchParams();
@@ -169,7 +169,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                             <Hotkeys
                                 zIndex={10}
                                 keys={{
-                                    // @ts-ignore
+                                    // @ts-expect-error
                                     esc: () => document.activeElement.blur(),
                                     "/": this.handleOpenHotkey
                                 }}
@@ -212,7 +212,6 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
                                                     ),
                                                     ref: this.input,
                                                     value: this.state.searchTerm.current,
-                                                    // @ts-ignore
                                                     onClick: openMenu,
                                                     onBlur: () => {
                                                         this.cancelSearchTerm();
@@ -248,10 +247,10 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     }
 }
 
-const SearchBarContainer: React.FC = () => {
+const SearchBarContainer = () => {
     const routerProps = useRouter();
 
     return <SearchBar {...routerProps} />;
 };
 
-export default makeComposable("SearchBarContainer", SearchBarContainer);
+export default makeDecoratable("SearchBarContainer", SearchBarContainer);

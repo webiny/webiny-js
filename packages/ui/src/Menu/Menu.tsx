@@ -39,6 +39,9 @@ type MenuProps = RmwcMenuProps & {
     // Class that will be added to the Menu element.
     className?: string;
 
+    // If true, prevents menu from opening when clicked.
+    disabled?: boolean;
+
     onOpen?: () => void;
     onClose?: () => void;
 
@@ -63,7 +66,9 @@ class Menu extends React.Component<MenuProps, MenuState> {
     };
 
     private readonly openMenu = () => {
-        this.setState({ menuIsOpen: true }, () => this.props.onOpen && this.props.onOpen());
+        if (this.props.disabled !== true) {
+            this.setState({ menuIsOpen: true }, () => this.props.onOpen && this.props.onOpen());
+        }
     };
 
     private readonly closeMenu = () => {
@@ -79,7 +84,7 @@ class Menu extends React.Component<MenuProps, MenuState> {
                 onClose={this.closeMenu}
                 onSelect={this.props.onSelect}
                 renderToPortal={true}
-                style={{ zIndex: 99 }} // Fixes Menu in Drawers
+                style={{ zIndex: 101 }} // Fixes Menu in Drawers
             >
                 {this.props.children}
             </BaseMenu>
@@ -118,7 +123,7 @@ class Menu extends React.Component<MenuProps, MenuState> {
     }
 }
 
-const MenuDivider: React.FC = () => {
+const MenuDivider = () => {
     return <li className="mdc-list-divider" role="separator" />;
 };
 
@@ -129,7 +134,7 @@ interface MenuItemProps extends BaseMenuItemProps {
     "data-testid"?: string;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ disabled, className, ...rest }) => {
+const MenuItem = ({ disabled, className, ...rest }: MenuItemProps) => {
     return (
         <BaseMenuItem
             {...rest}

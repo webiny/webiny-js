@@ -4,7 +4,7 @@ import { useRouter } from "@webiny/react-router";
 import { FormEditorProvider } from "./Context";
 import FormEditor from "./FormEditor";
 
-const FormEditorApp: React.FC = () => {
+const FormEditorApp = () => {
     const { params } = useRouter();
     const client = useApolloClient();
 
@@ -14,8 +14,6 @@ const FormEditorApp: React.FC = () => {
         <FormEditorProvider
             key={id}
             apollo={client}
-            // TODO @ts-refactor can id be undefined?
-            // @ts-ignore
             id={id}
             defaultLayoutRenderer={"forms-form-layout-default"}
         >

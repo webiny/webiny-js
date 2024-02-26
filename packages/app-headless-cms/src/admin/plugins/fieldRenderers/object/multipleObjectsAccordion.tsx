@@ -5,7 +5,7 @@ import { Cell } from "@webiny/ui/Grid";
 import { Accordion as RootAccordion, AccordionItem } from "@webiny/ui/Accordion";
 import {
     BindComponentRenderProp,
-    CmsEditorFieldRendererPlugin,
+    CmsModelFieldRendererPlugin,
     CmsModelFieldRendererProps
 } from "~/types";
 import DynamicSection from "../DynamicSection";
@@ -22,6 +22,7 @@ import {
     ObjectItem
 } from "./StyledComponents";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
+import { FieldSettings } from "./FieldSettings";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -34,7 +35,7 @@ interface ActionsProps {
     };
 }
 
-const Actions: React.FC<ActionsProps> = ({ setHighlightIndex, bind, index }) => {
+const Actions = ({ setHighlightIndex, bind, index }: ActionsProps) => {
     const { moveValueDown, moveValueUp } = bind.field;
 
     const onDown = useCallback(
@@ -70,9 +71,18 @@ const Actions: React.FC<ActionsProps> = ({ setHighlightIndex, bind, index }) => 
     ) : null;
 };
 
-const ObjectsRenderer: React.FC<CmsModelFieldRendererProps> = props => {
+const ObjectsRenderer = (props: CmsModelFieldRendererProps) => {
     const [highlightMap, setHighlightIndex] = useState<{ [key: number]: string }>({});
     const { field, contentModel } = props;
+
+    const fieldSettings = FieldSettings.createFrom(field);
+
+    if (!fieldSettings.hasFields()) {
+        fieldSettings.logMissingFields();
+        return null;
+    }
+
+    const settings = fieldSettings.getSettings();
 
     return (
         <RootAccordion>
@@ -105,8 +115,8 @@ const ObjectsRenderer: React.FC<CmsModelFieldRendererProps> = props => {
                                         Bind={Bind}
                                         {...bind.index}
                                         contentModel={contentModel}
-                                        fields={(field.settings || {}).fields || []}
-                                        layout={(field.settings || {}).layout || []}
+                                        fields={settings.fields}
+                                        layout={settings.layout}
                                         gridClassName={fieldsGridStyle}
                                     />
                                 </Cell>
@@ -119,7 +129,7 @@ const ObjectsRenderer: React.FC<CmsModelFieldRendererProps> = props => {
     );
 };
 
-const plugin: CmsEditorFieldRendererPlugin = {
+const plugin: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-objects-accordion",
     renderer: {

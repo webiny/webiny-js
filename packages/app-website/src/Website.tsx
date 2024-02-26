@@ -21,12 +21,7 @@ const PageBuilderProviderHOC: HigherOrderComponent = PreviousProvider => {
     };
 };
 
-export const Website: React.FC<WebsiteProps> = ({
-    children,
-    routes = [],
-    providers = [],
-    ...props
-}) => {
+export const Website = ({ children, routes = [], providers = [], ...props }: WebsiteProps) => {
     const apolloClient = props.apolloClient || createApolloClient();
     const emotionCache = createEmotionCache();
 

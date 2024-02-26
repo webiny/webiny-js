@@ -2,7 +2,7 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { AcoContext } from "~/types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import lodashOmit from "lodash/omit";
-import { checkPermissions } from "~/utils/checkPermissions";
+import { ensureAuthentication } from "~/utils/ensureAuthentication";
 import { resolve } from "~/utils/resolve";
 
 const cleanModel = (model: CmsModel): Partial<CmsModel> => {
@@ -42,7 +42,7 @@ export const appGql = new GraphQLSchemaPlugin<AcoContext>({
         AcoQuery: {
             getApp: async (_, args, context) => {
                 return resolve(async () => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     const app = context.aco.getApp(args.id);
                     return {
                         id: args.id,
@@ -53,7 +53,7 @@ export const appGql = new GraphQLSchemaPlugin<AcoContext>({
             },
             getAppModel: async (_, args, context) => {
                 return resolve(async () => {
-                    checkPermissions(context);
+                    ensureAuthentication(context);
                     const app = context.aco.getApp(args.id);
                     return cleanModel(app.model);
                 });

@@ -1,6 +1,3 @@
-/**
- * There must be the "until" in this file because we are using storage operations directly.
- */
 import models from "./mocks/contentModels";
 import { CmsEntry, CmsGroup, CmsModel } from "~/types";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
@@ -43,8 +40,7 @@ describe("Content Entry Meta Field", () => {
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation,
-        storageOperations,
-        until
+        storageOperations
     } = useCategoryManageHandler(manageOpts);
 
     const setup = async () => {
@@ -103,7 +99,7 @@ describe("Content Entry Meta Field", () => {
                 type: "admin",
                 displayName: "admin"
             },
-            ownedBy: {
+            savedBy: {
                 id: "admin",
                 type: "admin",
                 displayName: "admin"
@@ -147,39 +143,6 @@ describe("Content Entry Meta Field", () => {
             ...publishedRecord
         });
 
-        await until(
-            () => {
-                return storageOperations.entries.list(model, {
-                    where: {
-                        latest: true
-                    },
-                    limit: 10000
-                });
-            },
-            (response: any) => {
-                return response.items.length === 1;
-            },
-            {
-                name: "list latest storage entries after create"
-            }
-        );
-
-        await until(
-            () => {
-                return storageOperations.entries.list(model, {
-                    where: {
-                        published: true
-                    },
-                    limit: 10000
-                });
-            },
-            (response: any) => {
-                return response.items.length === 1;
-            },
-            {
-                name: "list published storage entries after create"
-            }
-        );
         /**
          * Meta field data should be available when getting and listing directly from the storage.
          */

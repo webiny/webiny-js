@@ -19,7 +19,7 @@ interface I18NLocaleDataCreatedBy {
 
 export interface I18NLocaleData extends I18NLocale {
     createdOn: string;
-    createdBy: I18NLocaleDataCreatedBy;
+    createdBy: I18NLocaleDataCreatedBy | null;
     tenant: string;
     webinyVersion: string;
 }
@@ -35,6 +35,7 @@ export interface I18NContextObject {
     setContentLocale: (locale: I18NLocale) => void;
     getLocales: () => I18NLocale[];
     getLocale: (code: string) => I18NLocale | undefined;
+    reloadLocales: () => Promise<void>;
     locales: LocalesCRUD;
     system: SystemCRUD;
     hasI18NContentPermission: () => Promise<boolean>;
@@ -313,7 +314,7 @@ export interface I18NSystemStorageOperationsUpdate {
 }
 
 export interface I18NSystemStorageOperations {
-    get: () => Promise<I18NSystem>;
+    get: () => Promise<I18NSystem | null>;
     create: (input: I18NSystemStorageOperationsCreate) => Promise<I18NSystem>;
     update: (input: I18NSystemStorageOperationsUpdate) => Promise<I18NSystem>;
 }

@@ -3,6 +3,16 @@ import { dataLoader, loadingHandler } from "~/handlers";
 import { FolderItem, Loading, LoadingActions } from "~/types";
 import { AcoAppContext } from "~/contexts/app";
 import { useFoldersApi } from "~/hooks";
+import { ROOT_FOLDER } from "~/constants";
+import { useWcp } from "@webiny/app-wcp/hooks/useWcp";
+
+export interface FoldersContextFolderLevelPermissions {
+    canManageStructure(folderId: string): boolean;
+
+    canManagePermissions(folderId: string): boolean;
+
+    canManageContent(folderId: string): boolean;
+}
 
 interface FoldersContext {
     folders?: FolderItem[] | null;
@@ -10,9 +20,18 @@ interface FoldersContext {
     listFolders: () => Promise<FolderItem[]>;
     getFolder: (id: string) => Promise<FolderItem>;
     createFolder: (folder: Omit<FolderItem, "id" | "type">) => Promise<FolderItem>;
-    updateFolder: (folder: Omit<FolderItem, "type">) => Promise<FolderItem>;
+    updateFolder: (
+        folder: Omit<FolderItem, "type">,
+        options?: Partial<{
+            refetchFoldersList: boolean;
+        }>
+    ) => Promise<FolderItem>;
+
     deleteFolder(folder: Pick<FolderItem, "id">): Promise<true>;
+
     getDescendantFolders(id?: string): FolderItem[];
+
+    folderLevelPermissions: FoldersContextFolderLevelPermissions;
 }
 
 export const FoldersContext = React.createContext<FoldersContext | undefined>(undefined);
@@ -33,11 +52,12 @@ const defaultLoading: Record<LoadingActions, boolean> = {
     DELETE: false
 };
 
-export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
+export const FoldersProvider = ({ children, ...props }: Props) => {
     const appContext = useContext(AcoAppContext);
     const [folders, setFolders] = useState<FolderItem[] | null>(null);
     const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
     const foldersApi = useFoldersApi();
+    const { canUseFolderLevelPermissions } = useWcp();
 
     const app = appContext ? appContext.app : undefined;
 
@@ -51,6 +71,28 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
             setFolders(folders);
         });
     }, []);
+
+    const folderLevelPermissions: FoldersContextFolderLevelPermissions = useMemo(() => {
+        const createCanManage =
+            (callback: (folder: FolderItem) => boolean) => (folderId: string) => {
+                if (!canUseFolderLevelPermissions() || folderId === ROOT_FOLDER) {
+                    return true;
+                }
+
+                const folder = folders?.find(folder => folder.id === folderId);
+                if (!folder) {
+                    return false;
+                }
+
+                return callback(folder);
+            };
+
+        return {
+            canManageStructure: createCanManage(folder => folder.canManageStructure),
+            canManagePermissions: createCanManage(folder => folder.canManagePermissions),
+            canManageContent: createCanManage(folder => folder.canManageContent)
+        };
+    }, [folders]);
 
     const context = useMemo<FoldersContext>(() => {
         return {
@@ -89,17 +131,27 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
                 return newFolder;
             },
 
-            async updateFolder(folder) {
-                const { id, title, slug, parentId } = folder;
+            async updateFolder(folder, options) {
+                const { id, title, slug, permissions, parentId } = folder;
 
-                return await dataLoader(loadingHandler("UPDATE", setLoading), () =>
-                    foldersApi.updateFolder(type, {
+                // We must omit all inherited permissions.
+                const filteredPermissions = permissions.filter(p => !p.inheritedFrom);
+
+                return await dataLoader(loadingHandler("UPDATE", setLoading), async () => {
+                    const response = await foldersApi.updateFolder(type, {
                         id,
                         title,
                         slug,
+                        permissions: filteredPermissions,
                         parentId
-                    })
-                );
+                    });
+
+                    if (options?.refetchFoldersList) {
+                        foldersApi.listFolders(type, { invalidateCache: true }).then(setFolders);
+                    }
+
+                    return response;
+                });
             },
 
             async deleteFolder(folder) {
@@ -112,7 +164,9 @@ export const FoldersProvider: React.VFC<Props> = ({ children, ...props }) => {
 
             getDescendantFolders(id) {
                 return foldersApi.getDescendantFolders(type, id);
-            }
+            },
+
+            folderLevelPermissions
         };
     }, [folders, loading, setLoading, setFolders]);
 

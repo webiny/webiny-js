@@ -1,3 +1,11 @@
+type PublicAccess = {
+    type: "public";
+};
+
+type PrivateAuthenticatedAccess = {
+    type: "private-authenticated";
+};
+
 export interface File {
     id: string;
     key: string;
@@ -5,14 +13,20 @@ export interface File {
     type: string;
     name: string;
     meta: Record<string, any>;
+    accessControl?: PublicAccess | PrivateAuthenticatedAccess;
     location: {
         folderId: string;
     };
     tags: string[];
     aliases: string[];
+
     createdOn: string;
+    modifiedOn: string | null;
     savedOn: string;
     createdBy: CreatedBy;
+    modifiedBy: CreatedBy | null;
+    savedBy: CreatedBy;
+
     /**
      * Added with new storage operations refactoring.
      */
@@ -22,6 +36,7 @@ export interface File {
     /**
      * User can add new fields to the File object, so we must allow it in the types.
      */
+
     [key: string]: any;
 }
 

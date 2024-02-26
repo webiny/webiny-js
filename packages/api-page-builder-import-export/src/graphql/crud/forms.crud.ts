@@ -1,6 +1,15 @@
 import WebinyError from "@webiny/error";
+import { createTopic } from "@webiny/pubsub";
 import { ContextPlugin } from "@webiny/api";
-import { ImportExportTaskStatus, FormsImportExportCrud, PbImportExportContext } from "~/types";
+import {
+    ImportExportTaskStatus,
+    FormsImportExportCrud,
+    PbImportExportContext,
+    OnFormsBeforeExportTopicParams,
+    OnFormsAfterExportTopicParams,
+    OnFormsBeforeImportTopicParams,
+    OnFormsAfterImportTopicParams
+} from "~/types";
 import { invokeHandlerClient } from "~/client";
 import { Payload as CreateHandlerPayload } from "~/import/create";
 import { initialStats } from "~/import/utils";
@@ -19,9 +28,30 @@ export default new ContextPlugin<PbImportExportContext>(context => {
         fullAccessPermissionName: "pb.*"
     });
 
+    // Export
+    const onFormsBeforeExport = createTopic<OnFormsBeforeExportTopicParams>(
+        "PageBuilder.onFormsBeforeExport"
+    );
+    const onFormsAfterExport = createTopic<OnFormsAfterExportTopicParams>(
+        "PageBuilder.onFormsAfterExport"
+    );
+
+    // Import
+    const onFormsBeforeImport = createTopic<OnFormsBeforeImportTopicParams>(
+        "PageBuilder.onFormsBeforeImport"
+    );
+    const onFormsAfterImport = createTopic<OnFormsAfterImportTopicParams>(
+        "PageBuilder.onFormsAfterImport"
+    );
+
     context.waitFor("formBuilder", () => {
         const importExportCrud: FormsImportExportCrud = {
-            async importForms({ zipFileUrl }) {
+            onFormsBeforeExport,
+            onFormsAfterExport,
+            onFormsBeforeImport,
+            onFormsAfterImport,
+            async importForms(params) {
+                const { zipFileUrl } = params;
                 await formsPermissions.ensure({ rwd: "w" });
 
                 // Create a task for import form
@@ -36,6 +66,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                  * ImportForms
                  * importForms
                  */
+                await onFormsBeforeImport.publish({ params });
                 await invokeHandlerClient<CreateHandlerPayload>({
                     context,
                     name: IMPORT_FORMS_CREATE_HANDLER,
@@ -47,13 +78,15 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                     },
                     description: "Import Forms - create"
                 });
+                await onFormsAfterImport.publish({ params });
 
                 return {
                     task
                 };
             },
 
-            async exportForms({ ids: initialFormIds, revisionType }) {
+            async exportForms(params) {
+                const { ids: initialFormIds, revisionType } = params;
                 await formsPermissions.ensure({ rwd: "w" });
                 let formIds: string[] = initialFormIds || [];
                 // If no ids are provided then it means we want to export all forms
@@ -113,6 +146,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                  * ExportForms
                  * exportForms
                  */
+                await onFormsBeforeExport.publish({ params });
                 // Invoke handler.
                 await invokeHandlerClient<ExportFormsProcessHandlerPayload>({
                     context,
@@ -125,6 +159,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                     },
                     description: "Export forms - process"
                 });
+                await onFormsAfterExport.publish({ params });
 
                 return { task };
             }

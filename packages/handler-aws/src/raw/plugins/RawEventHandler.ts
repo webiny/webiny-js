@@ -1,5 +1,5 @@
-import { Reply, Context as BaseContext } from "@webiny/handler/types";
-import { Context as LambdaContext } from "aws-lambda";
+import type { Context as LambdaContext } from "aws-lambda";
+import { Context as BaseContext, Reply } from "@webiny/handler/types";
 import { EventPlugin, EventPluginCallableParams } from "@webiny/handler";
 
 export interface RawEventHandlerCallableParams<Event, Context extends BaseContext>
@@ -14,9 +14,13 @@ export class RawEventHandler<
     Event = any,
     Context extends BaseContext = BaseContext,
     Response = any
-> extends EventPlugin {
+> extends EventPlugin<Event, Context, Response> {
     public constructor(cb: RawEventHandlerCallable<Event, Context, Response>) {
-        super(cb as any);
+        /**
+         * Callable is correct, TS is just having problems with the override.
+         */
+        // @ts-expect-error
+        super(cb);
     }
 }
 

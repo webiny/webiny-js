@@ -1,4 +1,4 @@
-const STS = require("aws-sdk/clients/sts");
+const { STS } = require("@webiny/aws-sdk/client-sts");
 const { green } = require("chalk");
 
 module.exports = {
@@ -9,10 +9,9 @@ module.exports = {
 
         // Check if AWS credentials are configured
         const sts = new STS();
-        const config = sts.config;
 
         try {
-            await sts.getCallerIdentity({}).promise();
+            await sts.getCallerIdentity({});
         } catch (err) {
             console.log();
             context.error("Looks like your AWS credentials are not configured correctly!");
@@ -27,7 +26,10 @@ module.exports = {
             process.exit(1);
         }
 
-        if (!config.region) {
+        const config = sts.config;
+        const region = await config.region();
+
+        if (!region) {
             console.log();
             context.error("You must define an AWS Region to deploy to!");
             context.info(
@@ -41,10 +43,13 @@ module.exports = {
         }
 
         // We assign the region to the appropriate ENV variable for easier access in the stack definition files.
-        process.env.AWS_REGION = config.region;
+        process.env.AWS_REGION = region;
 
-        const { region } = config;
-        const { profile, accessKeyId } = config.credentials;
+        const { accessKeyId } = await config.credentials();
+
+        // With AWS-SDK v3, we can't no longer read the loaded profile.
+        // So, we try to read it from environment variables instead.
+        const profile = process.env.AWS_PROFILE || "default";
 
         if (profile) {
             context.info(`Using profile ${green(profile)} in ${green(region)} region.`);

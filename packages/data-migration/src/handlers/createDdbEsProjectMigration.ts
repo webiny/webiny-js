@@ -1,5 +1,5 @@
 import { Client as ElasticsearchClient } from "@elastic/elasticsearch";
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { createRawEventHandler } from "@webiny/handler-aws";
 import { Constructor, createContainer } from "@webiny/ioc";
 import {
@@ -25,8 +25,8 @@ import { coerce as semverCoerce } from "semver";
 
 interface CreateDdbEsDataMigrationConfig {
     elasticsearchClient: ElasticsearchClient;
-    primaryTable: Table;
-    dynamoToEsTable: Table;
+    primaryTable: Table<string, string, string>;
+    dynamoToEsTable: Table<string, string, string>;
     migrations: Constructor<DataMigration>[];
     isMigrationApplicable?: IsMigrationApplicable;
     repository?: MigrationRepository;
@@ -45,6 +45,7 @@ export const createDdbEsProjectMigration = ({
     return createRawEventHandler<MigrationEventPayload, any, MigrationEventHandlerResponse>(
         async ({ payload, lambdaContext }) => {
             const projectVersion = String(payload?.version || process.env.WEBINY_VERSION);
+            const forceExecute = payload.force === true;
 
             const version = semverCoerce(projectVersion);
             if (version?.version === "0.0.0") {
@@ -81,9 +82,17 @@ export const createDdbEsProjectMigration = ({
             // Inject dependencies and execute.
             try {
                 const runner = await container.resolve(MigrationRunner);
+                runner.setContext({
+                    logGroupName: process.env.AWS_LAMBDA_LOG_GROUP_NAME,
+                    logStreamName: process.env.AWS_LAMBDA_LOG_STREAM_NAME
+                });
 
                 if (payload.command === "execute") {
-                    await runner.execute(projectVersion, patternMatcher || isMigrationApplicable);
+                    await runner.execute(
+                        projectVersion,
+                        patternMatcher || isMigrationApplicable,
+                        forceExecute
+                    );
                     return;
                 }
 

@@ -1,8 +1,9 @@
 import path from "path";
 import invariant from "invariant";
-import { Configuration as WebpackConfig } from "webpack";
+
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
-import { createBuildApp, createWatchApp } from "@webiny/project-utils";
+import { BuildAppConfigOverrides, createBuildApp, createWatchApp } from "@webiny/project-utils";
+import { Configuration as WebpackConfig } from "webpack";
 import { PulumiAppModule } from "@webiny/pulumi";
 import { Unwrap } from "@pulumi/pulumi";
 
@@ -27,7 +28,7 @@ export interface ReactAppFactoryParams {
 }
 
 export interface ReactAppCommands {
-    [key: string]: Function;
+    [key: string]: () => Promise<any>;
 }
 
 export interface ReactAppCommandsModifier {
@@ -145,7 +146,7 @@ function createEmptyReactConfig(options: RunCommandOptions): ReactAppConfig {
         Object.assign(process.env, envVars);
     };
 
-    const createOverrides = (): Overrides => {
+    const createOverrides = (): BuildAppConfigOverrides => {
         const defaultEntry = path.join(options.cwd, "src", "index.tsx");
 
         return {

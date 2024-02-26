@@ -5,12 +5,12 @@ import { useRecoilValue } from "recoil";
 import get from "lodash/get";
 import set from "lodash/set";
 import merge from "lodash/merge";
-import { Grid, Cell } from "@webiny/ui/Grid";
+import { Cell, Grid } from "@webiny/ui/Grid";
 import {
     DisplayMode,
+    PbEditorElement,
     PbEditorGridPresetPluginType,
-    PbEditorPageElementSettingsRenderComponentProps,
-    PbEditorElement
+    PbEditorPageElementSettingsRenderComponentProps
 } from "../../../../types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { createElement } from "../../../helpers";
@@ -123,9 +123,9 @@ const updateCells = (
     return target.elements as PbEditorElement[];
 };
 
-export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+export const GridSize = ({
     defaultAccordionValue
-}) => {
+}: PbEditorPageElementSettingsRenderComponentProps) => {
     const handler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(
@@ -163,7 +163,7 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
                 element: {
                     ...newElement,
                     elements: updatedCells
-                } as any,
+                },
                 history: true
             })
         );
@@ -189,7 +189,7 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
                             }
                         }
                     },
-                    elements: updateChildrenWithPreset(element, pl, currentRowCount) as any
+                    elements: updateChildrenWithPreset(element, pl, currentRowCount)
                 },
                 history: true
             })
@@ -215,7 +215,7 @@ export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps>
             new UpdateElementActionEvent({
                 element: {
                     ...newElement,
-                    elements: updateCells(newElement, rowCount, columnsCount) as any
+                    elements: updateCells(newElement, rowCount, columnsCount)
                 },
                 history: true
             })

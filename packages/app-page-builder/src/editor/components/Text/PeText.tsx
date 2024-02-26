@@ -2,12 +2,12 @@ import React, { useCallback, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import get from "lodash/get";
 import { CoreOptions } from "medium-editor";
+import { makeDecoratable } from "@webiny/react-composition";
 import { PbEditorElement } from "~/types";
 import { elementWithChildrenByIdSelector, activeElementAtom, uiAtom } from "../../recoil/modules";
 import useUpdateHandlers from "../../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../../components/MediumEditor";
 import { applyFallbackDisplayMode } from "../../plugins/elementSettings/elementSettingsUtils";
-import { makeComposable } from "@webiny/react-composition";
 
 const DATA_NAMESPACE = "data.text";
 
@@ -17,9 +17,9 @@ interface TextElementProps {
     tag?: string | [string, Record<string, any>];
 }
 
-const PeText = makeComposable<TextElementProps>(
+const PeText = makeDecoratable(
     "PeText",
-    ({ elementId, mediumEditorOptions, tag: customTag }) => {
+    ({ elementId, mediumEditorOptions, tag: customTag }: TextElementProps) => {
         const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
         const [{ displayMode }] = useRecoilState(uiAtom);
         const [activeElementId, setActiveElementAtomValue] = useRecoilState(activeElementAtom);

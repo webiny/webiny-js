@@ -8,8 +8,8 @@ import { Entries } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/r
 import { Entry } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/advanced/components/Entry";
 import { Search } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/advanced/components/Search";
 import { AbsoluteLoader } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/advanced/components/Loader";
-import { Dialog } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/advanced/components/dialog/Dialog";
-import { DialogHeader } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/advanced/components/dialog/DialogHeader";
+import { Dialog } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/components/dialog/Dialog";
+import { DialogHeader } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/components/dialog/DialogHeader";
 import { useEntries } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref/advanced/hooks/useEntries";
 
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";

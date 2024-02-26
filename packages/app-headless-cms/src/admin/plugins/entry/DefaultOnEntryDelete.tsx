@@ -24,7 +24,7 @@ const createMutationKey = (params: CreateMutationKeyParams): string => {
     return `${model.modelId}_${locale}_${model.savedOn}`;
 };
 
-const OnEntryDelete: React.FC = () => {
+const OnEntryDelete = () => {
     const { onEntryDelete } = useCms();
 
     const mutations = useRef<Mutations>({});

@@ -1,6 +1,7 @@
 import { plugins } from "@webiny/plugins";
 import { CmsModelField, CmsModelFieldValidator, CmsModelFieldValidatorPlugin } from "~/types";
 import { Validator } from "@webiny/validation/types";
+import camelCase from "lodash/camelCase";
 
 export const createValidators = (
     field: CmsModelField,
@@ -10,7 +11,7 @@ export const createValidators = (
         "cms-model-field-validator"
     );
 
-    return validation.reduce((collection, item) => {
+    return validation.reduce<Validator[]>((collection, item) => {
         const validatorPlugin = validatorPlugins.find(
             plugin => plugin.validator.name === item.name
         );
@@ -52,6 +53,11 @@ export const createValidators = (
                 throw new Error(interpolated);
             }
         };
+        /**
+         * We need to set the validator name because it will be used as the reference to skip, if necessary.
+         */
+        validator.validatorName = camelCase(validatorPlugin.validator.name);
+
         collection.push(validator);
         return collection;
     }, [] as Validator[]);

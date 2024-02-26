@@ -36,7 +36,7 @@ export function useBind({ Bind: ParentBind, field }: UseBindProps) {
 
             const validators = createValidators(field, field.validation || []);
             const listValidators = createValidators(field, field.listValidation || []);
-            const defaultValue: string[] | undefined = field.multipleValues ? [] : undefined;
+            const defaultValue: string[] | undefined = undefined;
             const isMultipleValues = index === -1 && field.multipleValues;
             const inputValidators = isMultipleValues ? listValidators : validators;
 

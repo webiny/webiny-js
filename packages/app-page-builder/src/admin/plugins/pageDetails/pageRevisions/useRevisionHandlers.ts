@@ -8,6 +8,7 @@ import * as GQLCache from "~/admin/views/Pages/cache";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { PbPageData, PbPageRevision } from "~/types";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
+import { useRecords } from "@webiny/app-aco";
 
 interface UseRevisionHandlersProps {
     page: PbPageData;
@@ -21,6 +22,7 @@ export function useRevisionHandlers(props: UseRevisionHandlersProps) {
     const { publishRevision, unpublishRevision } = usePublishRevisionHandler();
     const pageBuilder = useAdminPageBuilder();
     const { navigateToPageEditor } = useNavigatePage();
+    const { getRecord } = useRecords();
 
     const createRevision = useCallback(async () => {
         const { data: res } = await client.mutate({
@@ -75,6 +77,10 @@ export function useRevisionHandlers(props: UseRevisionHandlersProps) {
                 }
             }
         });
+
+        // Sync ACO record - retrieve the most updated record and update table
+        await getRecord(page.pid);
+
         if (response) {
             const { error } = response;
             if (error) {

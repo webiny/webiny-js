@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import debounce from "lodash/debounce";
-import { FolderDialogCreate } from "@webiny/app-aco";
+import { useCreateDialog, useFolders } from "@webiny/app-aco";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Empty } from "~/admin/components/ContentEntries/Empty";
 import { Filters } from "~/admin/components/ContentEntries/Filters";
@@ -13,21 +13,30 @@ import { useContentEntriesList, useContentEntry } from "~/admin/views/contentEnt
 import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
 import { useRouter } from "@webiny/react-router";
 import { ROOT_FOLDER } from "~/admin/constants";
+import { BulkActions } from "~/admin/components/ContentEntries/BulkActions";
 
-interface Props {
+interface MainProps {
     folderId?: string;
 }
 
-export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
+export const Main = ({ folderId: initialFolderId }: MainProps) => {
     const folderId = initialFolderId === undefined ? ROOT_FOLDER : initialFolderId;
     const list = useContentEntriesList();
-
-    const [showFoldersDialog, setFoldersDialog] = useState(false);
-    const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
-    const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
+    const { showDialog: showCreateFolderDialog } = useCreateDialog();
 
     const { history } = useRouter();
+
+    // We check permissions on two layers - security and folder level permissions.
     const { canCreate, contentModel } = useContentEntry();
+    const { folderLevelPermissions: flp } = useFolders();
+
+    const canCreateFolder = useMemo(() => {
+        return flp.canManageStructure(folderId);
+    }, [flp, folderId]);
+
+    const canCreateContent = useMemo(() => {
+        return canCreate && flp.canManageContent(folderId);
+    }, [flp, folderId]);
 
     const createEntry = useCallback(() => {
         const folder = folderId ? `&folderId=${encodeURIComponent(folderId)}` : "";
@@ -52,6 +61,10 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
         }
     }, 200);
 
+    const onCreateFolder = useCallback(() => {
+        showCreateFolderDialog({ currentParentId: folderId });
+    }, [folderId]);
+
     const { showEmptyView } = useContentEntry();
 
     if (!showEmptyView) {
@@ -63,12 +76,14 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
             <MainContainer>
                 <Header
                     title={!list.isListLoading ? list.listTitle : undefined}
-                    canCreate={canCreate}
+                    canCreateFolder={canCreateFolder}
+                    canCreateContent={canCreateContent}
                     onCreateEntry={createEntry}
-                    onCreateFolder={openFoldersDialog}
+                    onCreateFolder={onCreateFolder}
                     searchValue={list.search}
                     onSearchChange={list.setSearch}
                 />
+                <BulkActions />
                 <Wrapper>
                     <Filters />
                     {list.records.length === 0 &&
@@ -76,9 +91,10 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     !list.isListLoading ? (
                         <Empty
                             isSearch={list.isSearch}
-                            canCreate={canCreate}
+                            canCreateFolder={canCreateFolder}
+                            canCreateContent={canCreateContent}
                             onCreateEntry={createEntry}
-                            onCreateFolder={openFoldersDialog}
+                            onCreateFolder={onCreateFolder}
                         />
                     ) : (
                         <>
@@ -86,14 +102,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                                 data-testid="default-data-list"
                                 onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
                             >
-                                <Table
-                                    ref={tableRef}
-                                    folders={list.folders}
-                                    records={list.records}
-                                    loading={list.isListLoading}
-                                    sorting={list.sorting}
-                                    onSortingChange={list.setSorting}
-                                />
+                                <Table ref={tableRef} />
                                 <LoadMoreButton
                                     show={!list.isListLoading && list.meta.hasMoreItems}
                                     disabled={list.isListLoadingMore}
@@ -102,16 +111,11 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                                     onClick={list.listMoreRecords}
                                 />
                             </Scrollbar>
-                            {list.isListLoadingMore && <LoadingMore />}
+                            <LoadingMore show={list.isListLoadingMore} />
                         </>
                     )}
                 </Wrapper>
             </MainContainer>
-            <FolderDialogCreate
-                open={showFoldersDialog}
-                onClose={closeFoldersDialog}
-                currentParentId={folderId || null}
-            />
         </>
     );
 };

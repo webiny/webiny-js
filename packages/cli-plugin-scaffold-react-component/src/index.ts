@@ -20,7 +20,7 @@ import validateNpmPackageName from "validate-npm-package-name";
 /**
  * TODO: rewrite cli into typescript
  */
-// @ts-ignore
+// @ts-expect-error
 import { getProject } from "@webiny/cli/utils";
 
 const ncp = util.promisify(ncpBase.ncp);

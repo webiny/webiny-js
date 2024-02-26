@@ -213,7 +213,7 @@ const ValidatorItem = ({ validator, value, onChange }: ValidatorItemProps) => {
     );
 };
 
-export const ValidatorsList: React.FC<ValidatorsTabProps> = props => {
+export const ValidatorsList = (props: ValidatorsTabProps) => {
     const { name, validators } = props;
 
     return (

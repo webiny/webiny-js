@@ -85,7 +85,7 @@ export interface SingleImageUploadProps extends FormComponentProps {
     onChangePick?: string[];
 }
 
-const SingleImageUpload: React.FC<SingleImageUploadProps> = props => {
+const SingleImageUpload = (props: SingleImageUploadProps) => {
     const {
         className,
         value,

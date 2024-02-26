@@ -1,6 +1,8 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { SecurityPermission } from "@webiny/app-security/types";
+import { FileItem } from "@webiny/app-admin/types";
+import { FolderTableItem, RecordTableItem } from "@webiny/app-aco/types";
 
 export { FileInput } from "./modules/FileManagerApiProvider/graphql";
 
@@ -34,3 +36,7 @@ export interface FileTag {
     tag: string;
     count: number;
 }
+
+export type FileTableItem = FileItem & RecordTableItem;
+
+export type TableItem = FolderTableItem | FileTableItem;

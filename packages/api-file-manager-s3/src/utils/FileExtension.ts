@@ -9,15 +9,12 @@ export class FileExtension {
     }
 
     getValue() {
-        const name = this.data.name.toLowerCase();
-        const maybeHasExtension = name.includes(".");
+        const name = (this.data.key || this.data.name).toLowerCase();
 
-        if (maybeHasExtension) {
-            const maybeExt = name.split(".").pop() as string;
-            const extensions = mimeTypes[this.data.type];
-            if (extensions && !extensions.includes(maybeExt)) {
-                return extensions[0];
-            }
+        const maybeExt = name.split(".").pop() as string;
+        const extensions = mimeTypes[this.data.type];
+        if (extensions && !extensions.includes(maybeExt)) {
+            return extensions[0];
         }
 
         return "";

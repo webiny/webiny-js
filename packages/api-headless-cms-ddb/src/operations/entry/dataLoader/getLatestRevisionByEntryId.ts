@@ -28,9 +28,6 @@ export const createGetLatestRevisionByEntryId = (params: DataLoaderParams) => {
                     SK: latestKey
                 });
                 return collection;
-                /**
-                 * We cast as any because there is no return type defined.
-                 */
             }, {});
 
             const records = await batchReadAll<CmsStorageEntry>({

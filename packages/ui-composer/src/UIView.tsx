@@ -3,7 +3,11 @@ import pWaitFor from "p-wait-for";
 import { Plugin, plugins } from "@webiny/plugins";
 import { UIElement, UIElementConfig } from "./UIElement";
 
-const UIViewID: React.FC = ({ children }) => {
+interface UIViewIDProps {
+    children: React.ReactNode;
+}
+
+const UIViewID = ({ children }: UIViewIDProps) => {
     return <>{children}</>;
 };
 
@@ -23,7 +27,7 @@ export interface UIViewProps {
 
 export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
     private _events = new Map();
-    private _hookDefinitions: Record<string, Function> = {};
+    private _hookDefinitions: Record<string, () => any> = {};
     private _hookValues: Record<string, any> = {};
     private _props?: UIViewProps;
     private _isRendered = false;
@@ -43,7 +47,7 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
         this._props = value;
     }
 
-    public addHookDefinition(key: string, hook: Function): void {
+    public addHookDefinition<T = any>(key: string, hook: () => T): void {
         this._hookDefinitions[key] = hook;
     }
 
@@ -65,7 +69,7 @@ export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
         return this.getElement<TElement>(id) as TElement;
     }
 
-    public getHookDefinitions(): Record<string, Function> {
+    public getHookDefinitions<T>(): Record<string, () => T> {
         return this._hookDefinitions;
     }
 
@@ -161,7 +165,7 @@ interface UIViewHooksProps {
     render: any;
 }
 
-const UIViewHooks: React.FC<UIViewHooksProps> = ({ view, props, render }) => {
+const UIViewHooks = ({ view, props, render }: UIViewHooksProps) => {
     const hooks = view.getHookDefinitions();
     if (hooks) {
         view.setHookValues(

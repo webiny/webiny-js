@@ -141,7 +141,7 @@ module.exports = [
                     });
                     yargs.option("output", {
                         describe: `Specify the output destination to which all of the logs will be forwarded`,
-                        default: "terminal",
+                        default: "simple",
                         type: "string"
                     });
                     yargs.option("logs", {
@@ -153,6 +153,11 @@ module.exports = [
                         alias: "r",
                         describe: `Forward logs from deployed application code to your terminal (optionally accepts a glob pattern for filtering purposes)`,
                         type: "string"
+                    });
+                    yargs.option("show-timestamps", {
+                        alias: "t",
+                        describe: `Includes timestamps in the logs`,
+                        type: "boolean"
                     });
                     yargs.option("debug", {
                         default: false,
@@ -309,27 +314,15 @@ module.exports = [
                         type: "string",
                         required: true
                     });
-                },
-                async argv => {
-                    await require("./executeMigrations")(argv, context);
-                    process.exit(0);
-                }
-            );
 
-            yargs.command(
-                "get-migration-status",
-                `Get data migrations Lambda status.`,
-                () => {
-                    yargs.example("$0 get-migration-status --env dev");
-
-                    yargs.option("env", {
-                        describe: `Environment`,
-                        type: "string",
-                        required: true
+                    yargs.option("force", {
+                        describe: `!!USE WITH CAUTION!! Force execution of the migrations.`,
+                        type: "boolean",
+                        default: false
                     });
                 },
                 async argv => {
-                    await require("./printMigrationStatus")(argv, context);
+                    await require("./executeMigrations")(argv, context);
                     process.exit(0);
                 }
             );

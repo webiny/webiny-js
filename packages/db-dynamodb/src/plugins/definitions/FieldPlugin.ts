@@ -1,5 +1,5 @@
 import { Plugin } from "@webiny/plugins";
-import { DynamoDBTypes } from "dynamodb-toolbox/dist/classes/Table";
+import { DynamoDBTypes } from "~/toolbox";
 
 export type FieldType = DynamoDBTypes & "date" & any;
 

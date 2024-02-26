@@ -1,8 +1,35 @@
-import { CmsContext } from "~/types";
+import { CmsContext, CmsModelFieldValidatorPlugin } from "~/types";
 import { CmsGraphQLSchemaPlugin } from "~/plugins";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { PluginsContainer } from "@webiny/plugins";
+import { ContextPlugin } from "@webiny/api";
+import camelCase from "lodash/camelCase";
 
-export const createBaseSchema = (): GraphQLSchemaPlugin<CmsContext>[] => {
+const createSkipValidatorEnum = (plugins: PluginsContainer) => {
+    const validators = plugins
+        .byType<CmsModelFieldValidatorPlugin>("cms-model-field-validator")
+        .reduce<string[]>((collection, validator) => {
+            const name = camelCase(validator.validator.name);
+            if (collection.includes(name)) {
+                return collection;
+            }
+            collection.push(name);
+            return collection;
+        }, []);
+
+    if (validators.length === 0) {
+        validators.push("_empty");
+    }
+    return /* GraphQL */ `
+        enum SkipValidatorEnum {
+        ${validators.join("\n")}
+        }
+    `;
+};
+
+const createSchema = (plugins: PluginsContainer): GraphQLSchemaPlugin<CmsContext>[] => {
+    const skipValidatorEnum = createSkipValidatorEnum(plugins);
+
     const cmsPlugin = new CmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsError {
@@ -63,6 +90,38 @@ export const createBaseSchema = (): GraphQLSchemaPlugin<CmsContext>[] => {
                 folderId_not: ID
                 folderId_not_in: [ID!]
             }
+
+            ${skipValidatorEnum}
+
+            input CreateCmsEntryOptionsInput {
+                skipValidators: [SkipValidatorEnum!]
+            }
+
+            input CreateRevisionCmsEntryOptionsInput {
+                skipValidators: [SkipValidatorEnum!]
+            }
+
+            input UpdateCmsEntryOptionsInput {
+                skipValidators: [SkipValidatorEnum!]
+            }
+
+            input CmsIdentityInput {
+                id: String!
+                displayName: String!
+                type: String!
+            }
+
+            type CmsEntryValidationResponseData {
+                error: String!
+                id: String!
+                fieldId: String!
+                parents: [String!]!
+            }
+
+            type CmsEntryValidationResponse {
+                data: [CmsEntryValidationResponseData!]
+                error: CmsError
+            }
         `,
         resolvers: {}
     });
@@ -76,4 +135,10 @@ export const createBaseSchema = (): GraphQLSchemaPlugin<CmsContext>[] => {
      * Due to splitting of CMS and Core schema plugins, we must have both defined for CMS to work.
      */
     return [cmsPlugin, corePlugin];
+};
+
+export const createBaseSchema = () => {
+    return new ContextPlugin(async context => {
+        context.plugins.register(...createSchema(context.plugins));
+    });
 };

@@ -98,12 +98,12 @@ export const createPersonModel = (): CmsModel => {
     };
 };
 
-const createdBy: CmsIdentity = {
+const revisionCreatedBy: CmsIdentity = {
     id: "admin",
     type: "admin",
     displayName: "admin"
 };
-const ownedBy: CmsIdentity = {
+const createdBy: CmsIdentity = {
     id: "admin",
     type: "admin",
     displayName: "admin"
@@ -141,8 +141,8 @@ export const createPersonEntries = async (
             id,
             entryId,
             version: 1,
+            revisionCreatedBy,
             createdBy,
-            ownedBy,
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString(),
             modelId: personModel.modelId,
@@ -177,8 +177,8 @@ export const createPersonEntries = async (
                 id,
                 entryId,
                 version: nextVersion,
+                revisionCreatedBy,
                 createdBy,
-                ownedBy,
                 createdOn: new Date().toISOString(),
                 savedOn: new Date().toISOString(),
                 modelId: personModel.modelId,
@@ -240,38 +240,4 @@ export const deletePersonModel = async (params: DeletePersonModelParams) => {
         console.log(ex.message);
         console.log(JSON.stringify(ex));
     }
-};
-
-interface WaitPersonRecordsParams {
-    records: PersonEntriesResult;
-    storageOperations: HeadlessCmsStorageOperations;
-    name: string;
-    until: Function;
-    model: CmsModel;
-}
-
-export const waitPersonRecords = async (params: WaitPersonRecordsParams): Promise<void> => {
-    const { records, storageOperations, until, model, name } = params;
-    await until(
-        () => {
-            return storageOperations.entries.list(model, {
-                where: {
-                    latest: true
-                },
-                sort: ["version_ASC"],
-                limit: 10000
-            });
-        },
-        ({ items }: any) => {
-            /**
-             * There must be item for each result last revision id.
-             */
-            return Object.values(records).every(record => {
-                return items.some((item: any) => item.id === record.last.id);
-            });
-        },
-        {
-            name
-        }
-    );
 };

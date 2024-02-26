@@ -21,14 +21,24 @@ export interface CreateCompressionResult {
 }
 
 const createCompressContent = (plugins: ContentCompressionPlugin[]): CompressContentCallable => {
-    const [plugin] = plugins;
-
     return async (page: Page) => {
         const value = page.content;
 
-        if (value && (value as any).compression) {
+        if (value?.compression) {
             return value as CompressedValue;
         }
+
+        const plugin = plugins.find(pl => pl.canCompress(value));
+        if (!plugin) {
+            throw new WebinyError(
+                "There is no compression plugin to compress the page content.",
+                "MISSING_COMPRESSION_PLUGIN",
+                {
+                    id: page.id
+                }
+            );
+        }
+
         try {
             return await plugin.compress(value);
         } catch (ex) {
@@ -46,7 +56,7 @@ const createDecompressContent = (
         /**
          * Possibly no compression on the content so lets return what ever is inside the content.
          */
-        if (!value || !value.compression) {
+        if (!value?.compression) {
             return value;
         }
         const plugin = plugins.find(pl => pl.canDecompress(value));

@@ -93,13 +93,13 @@ interface PMSettingsPropsType {
     sides?: Record<string, any>[];
 }
 
-const BoxInputs: React.FC<PMSettingsPropsType> = ({
+const BoxInputs = ({
     label,
     value,
     valueKey,
     getUpdateValue,
     sides = defaultCorners
-}) => {
+}: PMSettingsPropsType) => {
     const advanced = get(value, `${valueKey}.advanced`, false);
     const all = get(value, `${valueKey}.all`, 0);
     const [top, right, bottom, left] = sides.map(({ key, label }) => ({

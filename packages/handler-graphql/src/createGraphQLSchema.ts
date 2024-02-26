@@ -69,9 +69,9 @@ export const createGraphQLSchema = (context: Context) => {
          * TODO @ts-refactor
          * Figure out correct types on typeDefs and resolvers
          */
-        // @ts-ignore
+        // @ts-expect-error
         typeDefs.push(plugin.schema.typeDefs);
-        // @ts-ignore
+        // @ts-expect-error
         resolvers.push(plugin.schema.resolvers);
     }
 

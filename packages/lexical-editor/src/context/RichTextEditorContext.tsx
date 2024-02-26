@@ -1,15 +1,11 @@
 import React, { createContext, useState } from "react";
-import { TextBlockSelection, ThemeEmotionMap, ToolbarActionPlugin, ToolbarType } from "~/types";
-import { WebinyTheme } from "~/themes/webinyLexicalTheme";
 import { LexicalEditor } from "lexical";
+import type { ThemeEmotionMap, WebinyTheme } from "@webiny/lexical-theme";
+import { ToolbarActionPlugin, ToolbarType } from "~/types";
 
 export interface RichTextEditorContext {
-    nodeIsText: boolean;
-    setNodeIsText: (nodeIsText: boolean) => void;
     toolbarType?: ToolbarType;
     setToolbarType: (type: ToolbarType) => void;
-    textBlockSelection: TextBlockSelection | null;
-    setTextBlockSelection: (textBlockSelection: TextBlockSelection) => void;
     theme?: WebinyTheme;
     setTheme: (theme: WebinyTheme) => void;
     themeEmotionMap?: ThemeEmotionMap;
@@ -28,32 +24,19 @@ interface RichTextEditorProviderProps {
     children?: React.ReactNode | React.ReactNode[];
 }
 
-export const RichTextEditorProvider: React.FC<RichTextEditorProviderProps> = ({ children }) => {
-    const [nodeIsText, setIsText] = useState<boolean>(false);
+export const RichTextEditorProvider = ({ children }: RichTextEditorProviderProps) => {
     const [toolbarType, setToolbarType] = useState<ToolbarType | undefined>();
     const [theme, setTheme] = useState<WebinyTheme | undefined>(undefined);
     const [themeEmotionMap, setThemeEmotionMap] = useState<ThemeEmotionMap | undefined>(undefined);
     const [toolbarActionPlugins, setToolbarActionPlugins] = useState<ToolbarActionPlugin[]>([]);
     const [activeEditor, setActiveEditor] = useState<LexicalEditor>();
     const [isEditable, setIsEditable] = useState<boolean>(false);
-    /*
-     * @desc Keeps data from current user text selection like range selection, nodes, node key...
-     */
-    const [textBlockSelection, setTextBlockSelection] = useState<TextBlockSelection | null>(null);
-
-    const setNodeIsText = (nodeIsText: boolean) => {
-        setIsText(nodeIsText);
-    };
 
     return (
         <RichTextEditorContext.Provider
             value={{
-                nodeIsText,
-                setNodeIsText,
                 toolbarType,
                 setToolbarType,
-                textBlockSelection,
-                setTextBlockSelection,
                 theme,
                 setTheme,
                 themeEmotionMap,

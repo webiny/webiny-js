@@ -24,6 +24,7 @@ apps/**/build/
 .history
 *.tsbuildinfo
 cypress.json
+cypress.config.ts
 cypress/screenshots/*
 .pulumi
 Pulumi.*
@@ -43,6 +44,9 @@ schema.graphql
 !.yarn/versions
 .pnp.*
 lerna.json
+.stormTests
 
 # TODO remove after moving traffic splitting config to WPC
 gateway.*.json
+
+packages/tasks/tpl/*

@@ -33,7 +33,7 @@ interface WebhooksRequestsDynamicFieldsetProps {
     Bind: BindComponent;
 }
 
-const WebhooksRequestsDynamicFieldset: React.FC<WebhooksRequestsDynamicFieldsetProps> = props => {
+const WebhooksRequestsDynamicFieldset = (props: WebhooksRequestsDynamicFieldsetProps) => {
     const { onChange, value, Bind } = props;
 
     const addParam = (): void => {

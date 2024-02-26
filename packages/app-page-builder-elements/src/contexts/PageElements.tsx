@@ -2,26 +2,27 @@ import React, { createContext, useContext, useCallback, useEffect, useState } fr
 import get from "lodash/get";
 import { ThemeProvider } from "@emotion/react";
 import {
-    PageElementsContextValue,
-    PageElementsProviderProps,
+    AssignStylesCallback,
     ElementStylesCallback,
-    StylesCallback,
     GetElementAttributes,
     GetElementStyles,
+    GetRenderers,
     GetStyles,
-    AssignStylesCallback,
+    PageElementsContextValue,
+    PageElementsProviderProps,
+    SetAssignStylesCallback,
     SetElementStylesCallback,
     SetStylesCallback,
-    SetAssignStylesCallback,
-    GetRenderers
+    StylesCallback
 } from "~/types";
 import {
-    setUsingPageElements,
     defaultElementAttributesCallback,
     defaultElementStylesCallback,
-    defaultStylesCallback
+    defaultStylesCallback,
+    setUsingPageElements
 } from "~/utils";
 
+// TODO: @pavel fix all of this!
 export function useDynamicValue(dynamicSourceContext: React.Context<any>, path?: string) {
     const context = useContext(dynamicSourceContext || {});
 
@@ -32,16 +33,18 @@ export function useDynamicValue(dynamicSourceContext: React.Context<any>, path?:
     return get(context.data, path || "", null) || path;
 }
 
-export const PageElementsContext = createContext<PageElementsContextValue>(null as unknown as any);
+export const PageElementsContext = createContext<PageElementsContextValue>(
+    null as unknown as PageElementsContextValue
+);
 
-export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
+export const PageElementsProvider = ({
     children,
     theme,
     renderers = {},
     modifiers,
     beforeRenderer = null,
     afterRenderer = null
-}) => {
+}: PageElementsProviderProps) => {
     // Attributes-related callbacks.
     const getElementAttributes = useCallback<GetElementAttributes>(
         element => {
@@ -130,6 +133,7 @@ export const PageElementsProvider: React.FC<PageElementsProviderProps> = ({
         setAssignStylesCallback,
         setElementStylesCallback,
         setStylesCallback,
+        // TODO: @pavel this hook should not exist!
         useDynamicValue,
         beforeRenderer,
         afterRenderer

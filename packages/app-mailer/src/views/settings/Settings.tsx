@@ -15,14 +15,15 @@ import { validation } from "@webiny/validation";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import {
     GET_SETTINGS_QUERY,
-    SettingsQueryResponse,
     SAVE_SETTINGS_MUTATION,
+    SaveSettingsMutationResponse,
     SaveSettingsMutationVariables,
-    SaveSettingsMutationResponse
+    SettingsQueryResponse
 } from "./graphql";
 import { TransportSettings, ValidationError } from "~/types";
 import { Alert } from "@webiny/ui/Alert";
 import { Validator } from "@webiny/validation/types";
+import dotPropImmutable from "dot-prop-immutable";
 
 const displayErrors = (errors?: ValidationError[]) => {
     if (!errors) {
@@ -41,7 +42,7 @@ const displayErrors = (errors?: ValidationError[]) => {
     );
 };
 
-export const Settings: React.FC = () => {
+export const Settings = () => {
     const { showSnackbar } = useSnackbar();
 
     const password = useRef<HTMLInputElement>();
@@ -80,7 +81,9 @@ export const Settings: React.FC = () => {
                                 },
                                 update: (cache, result) => {
                                     const data = structuredClone(
-                                        cache.readQuery({ query: GET_SETTINGS_QUERY })
+                                        cache.readQuery<SettingsQueryResponse>({
+                                            query: GET_SETTINGS_QUERY
+                                        })
                                     );
 
                                     const { data: updateData, error: updateError } =
@@ -95,14 +98,12 @@ export const Settings: React.FC = () => {
                                         return;
                                     }
 
-                                    data.mailer.settings.data = {
-                                        ...settingsData,
-                                        ...updateData
-                                    };
-
                                     cache.writeQuery({
                                         query: GET_SETTINGS_QUERY,
-                                        data
+                                        data: dotPropImmutable.set(data, "mailer.settings.data", {
+                                            ...settingsData,
+                                            ...updateData
+                                        })
                                     });
                                     showSnackbar("Settings updated successfully.");
                                 }
@@ -192,7 +193,7 @@ export const Settings: React.FC = () => {
                                                                 type="password"
                                                                 autoComplete="new-password"
                                                                 value={""}
-                                                                // @ts-ignore
+                                                                // @ts-expect-error
                                                                 inputRef={password}
                                                             />
                                                         </Bind>

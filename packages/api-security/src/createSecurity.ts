@@ -1,28 +1,39 @@
+import { AsyncLocalStorage } from "async_hooks";
 import minimatch from "minimatch";
+import { createTopic } from "@webiny/pubsub";
+import { AaclPermission } from "@webiny/api-wcp/types";
+import { Identity } from "@webiny/api-authentication/types";
 import { createAuthentication } from "@webiny/api-authentication/createAuthentication";
-import { Authorizer, Security, SecurityPermission, SecurityConfig } from "./types";
+import {
+    Authorizer,
+    Security,
+    SecurityPermission,
+    SecurityConfig,
+    AuthenticationToken
+} from "./types";
 import { createApiKeysMethods } from "~/createSecurity/createApiKeysMethods";
 import { createGroupsMethods } from "~/createSecurity/createGroupsMethods";
 import { createTeamsMethods } from "~/createSecurity/createTeamsMethods";
 import { createSystemMethods } from "~/createSecurity/createSystemMethods";
 import { createTenantLinksMethods } from "~/createSecurity/createTenantLinksMethods";
 import { filterOutCustomWbyAppsPermissions } from "~/createSecurity/filterOutCustomWbyAppsPermissions";
-import { createTopic } from "@webiny/pubsub";
-import { AaclPermission } from "@webiny/api-wcp/types";
 
 export interface GetTenant {
     (): string | undefined;
 }
 
+const authorizationLocalStorage = new AsyncLocalStorage<boolean>();
+const identityLocalStorage = new AsyncLocalStorage<Identity | undefined>();
+
 export const createSecurity = async (config: SecurityConfig): Promise<Security> => {
     const authentication = createAuthentication();
     const authorizers: Authorizer[] = [];
-    let performAuthorization = true;
 
+    let authenticationToken: AuthenticationToken | undefined;
     let permissions: SecurityPermission[];
     let permissionsLoader: Promise<SecurityPermission[]>;
 
-    const loadPermissions = async (security: Security): Promise<SecurityPermission[]> => {
+    const loadPermissions = async (): Promise<SecurityPermission[]> => {
         if (permissions) {
             return permissions;
         }
@@ -31,13 +42,11 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             return permissionsLoader;
         }
 
-        const shouldEnableAuthorization = performAuthorization;
         permissionsLoader = new Promise<SecurityPermission[]>(async resolve => {
             // Authorizers often need to query business-related data, and since the identity is not yet
             // authorized, these operations can easily trigger a NOT_AUTHORIZED error.
             // To avoid this, we disable permission checks (assume `full-access` permissions) for
             // the duration of the authorization process.
-            security.disableAuthorization();
             for (const authorizer of authorizers) {
                 const result = await authorizer();
                 if (Array.isArray(result)) {
@@ -48,13 +57,6 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             // Set an empty array since no permissions were found.
             permissions = [];
             resolve(permissions);
-        }).then(permissions => {
-            // Re-enable authorization.
-            if (shouldEnableAuthorization) {
-                security.enableAuthorization();
-            }
-
-            return permissions;
         });
 
         return permissionsLoader;
@@ -63,6 +65,12 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
     return {
         ...authentication,
         config,
+        async authenticate(token: string): Promise<void> {
+            await authentication.authenticate(token);
+            if (authentication.getIdentity()) {
+                authenticationToken = token;
+            }
+        },
         onBeforeLogin: createTopic("security.onBeforeLogin"),
         onLogin: createTopic("security.onLogin"),
         onAfterLogin: createTopic("security.onAfterLogin"),
@@ -70,38 +78,42 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         getStorageOperations() {
             return config.storageOperations;
         },
-        enableAuthorization() {
-            performAuthorization = true;
-        },
-        disableAuthorization() {
-            performAuthorization = false;
-        },
         addAuthorizer(authorizer: Authorizer) {
             authorizers.push(authorizer);
         },
         getAuthorizers() {
             return authorizers;
         },
+        getIdentity<TIdentity extends Identity = Identity>(): TIdentity {
+            const localIdentity = identityLocalStorage.getStore();
+
+            if (localIdentity) {
+                return localIdentity as TIdentity;
+            }
+
+            return authentication.getIdentity();
+        },
         setIdentity(this: Security, identity) {
             authentication.setIdentity(identity);
             this.onIdentity.publish({ identity });
         },
-        async withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T> {
-            const isAuthorizationEnabled = performAuthorization;
-            performAuthorization = false;
-            try {
-                return await cb();
-            } finally {
-                if (isAuthorizationEnabled) {
-                    performAuthorization = true;
-                }
-            }
+        isAuthorizationEnabled: () => {
+            return authorizationLocalStorage.getStore() ?? true;
+        },
+        getToken(): AuthenticationToken | undefined {
+            return authenticationToken;
+        },
+        withoutAuthorization<T = any>(this: Security, cb: () => Promise<T>): Promise<T> {
+            return authorizationLocalStorage.run(false, cb);
+        },
+        withIdentity<T = any>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T> {
+            return identityLocalStorage.run(identity, cb);
         },
         async getPermission<TPermission extends SecurityPermission = SecurityPermission>(
             this: Security,
             permission: string
         ): Promise<TPermission | null> {
-            if (!performAuthorization) {
+            if (!this.isAuthorizationEnabled()) {
                 return { name: "*" } as TPermission;
             }
 
@@ -126,7 +138,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             this: Security,
             permission: string
         ): Promise<TPermission[]> {
-            if (!performAuthorization) {
+            if (!this.isAuthorizationEnabled()) {
                 return [{ name: "*" }] as TPermission[];
             }
 
@@ -143,7 +155,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         },
 
         async listPermissions(this: Security): Promise<SecurityPermission[]> {
-            const permissions = await loadPermissions(this);
+            const permissions = await this.withoutAuthorization(() => loadPermissions());
 
             // Now we start checking whether we want to return all permissions, or we
             // need to omit the custom ones because of the one of the following reasons.

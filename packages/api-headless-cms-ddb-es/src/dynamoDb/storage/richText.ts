@@ -22,7 +22,7 @@ const transformArray = (value: any) => {
     let isArray = Array.isArray(value);
     const shouldBeArray = value instanceof Array === false && isArray;
     if (shouldBeArray) {
-        value = Array.from(value as any);
+        value = Array.from(value);
         isArray = true;
     }
     if (typeof value === "object" || isArray) {
@@ -79,7 +79,7 @@ export const createRichTextStorageTransformPlugin = () => {
              * Introduced a bug with 5.8.0 storage operations, so just return the value to correct it.
              */
             if (!!value?.compression) {
-                return value as any;
+                return value;
             }
             value = transformArray(value);
 

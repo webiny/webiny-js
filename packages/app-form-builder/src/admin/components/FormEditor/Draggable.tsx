@@ -1,4 +1,5 @@
 import React, { ReactElement } from "react";
+import { Container } from "~/types";
 import { useDrag, DragPreviewImage, ConnectDragSource } from "react-dnd";
 import { DragSourceMonitor } from "react-dnd/lib/interfaces/monitors";
 import { DragObjectWithType } from "react-dnd/lib/interfaces/hooksApi";
@@ -10,17 +11,20 @@ export type DraggableChildrenFunction = (params: {
     drag: ConnectDragSource;
 }) => ReactElement;
 
-interface BeginDragProps {
-    ui?: "row" | "field";
+export interface BeginDragProps {
+    ui?: "row" | "field" | "step";
     pos?: {
         row: number;
         index?: number;
     };
     name?: string;
+    id?: string;
+    // "container" contains info about source element.
+    container?: Container;
 }
 
-type BeginDrag = (props: BeginDragProps, monitor: DragSourceMonitor) => void;
-type EndDrag = (item: DragObjectWithType, monitor: DragSourceMonitor) => void;
+export type BeginDrag = (props: BeginDragProps, monitor: DragSourceMonitor) => void;
+export type EndDrag = (item: DragObjectWithType, monitor: DragSourceMonitor) => void;
 
 export interface DraggableProps extends BeginDragProps {
     children: DraggableChildrenFunction;
@@ -29,17 +33,12 @@ export interface DraggableProps extends BeginDragProps {
     target?: string[];
 }
 
-const Draggable: React.FC<DraggableProps> = props => {
+const Draggable = (props: DraggableProps) => {
     const { children, beginDrag, endDrag, target } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({
         item: {
             type: "element",
-            /**
-             * TODO @ts-refactor
-             * There is no target on item in types.
-             */
-            // @ts-ignore
             target
         },
         collect: monitor => ({

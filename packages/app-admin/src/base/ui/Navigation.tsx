@@ -1,15 +1,15 @@
 import React, {
-    Fragment,
-    useEffect,
     createContext,
+    Fragment,
     useCallback,
+    useContext,
+    useEffect,
     useMemo,
-    useState,
-    useContext
+    useState
 } from "react";
-import { nanoid } from "nanoid";
-import { makeComposable, Plugins } from "@webiny/app";
-import { MenuData, MenuProps, AddMenu as Menu, Tags, MenuUpdater, createEmptyMenu } from "~/index";
+import { generateId } from "@webiny/utils";
+import { createVoidComponent, makeDecoratable, Plugins } from "@webiny/app";
+import { AddMenu as Menu, createEmptyMenu, MenuData, MenuProps, MenuUpdater, Tags } from "~/index";
 import { plugins } from "@webiny/plugins";
 import { AdminMenuPlugin } from "~/types";
 import { ItemProps, SectionProps } from "~/plugins/MenuPlugin";
@@ -35,18 +35,24 @@ export function useNavigation() {
     return useContext(NavigationContext);
 }
 
+type LegacyMenuProps = MenuProps | SectionProps | ItemProps;
+
 // IMPORTANT! The following component is for BACKWARDS COMPATIBILITY purposes only!
 // It is not a public component, and is not even exported from this file. We need it to take care of
 // scaffolded plugins in users' projects, as well as our own applications (Page Builder and Form Builder).
-const LegacyMenu: React.FC<MenuProps | SectionProps | ItemProps> = props => {
+const LegacyMenu = (props: LegacyMenuProps & { children: React.ReactNode }) => {
     return (
-        <Menu {...props} name={(props as MenuProps).name || nanoid()} label={props.label as string}>
+        <Menu
+            {...props}
+            name={(props as MenuProps).name || generateId()}
+            label={props.label as string}
+        >
             {props.children}
         </Menu>
     );
 };
 
-const LegacyMenuPlugins: React.FC = () => {
+const LegacyMenuPlugins = () => {
     // IMPORTANT! The following piece of code is for BACKWARDS COMPATIBILITY purposes only!
     const [menus, setMenus] = useState<JSX.Element | null>(null);
 
@@ -68,15 +74,22 @@ const LegacyMenuPlugins: React.FC = () => {
                 </Plugins>
             );
         });
-        // TODO @ts-refactor
-        setMenus(menuElements as any);
+        /**
+         * TODO Figure out correct types for the menus.
+         */
+        // @ts-expect-error
+        setMenus(menuElements);
     }, []);
 
     return menus;
 };
 
-export const NavigationProvider = (Component: React.ComponentType<unknown>): React.FC => {
-    return function NavigationProvider({ children }) {
+interface NavigationProviderProps {
+    children: React.ReactNode;
+}
+
+export const NavigationProvider = (Component: React.ComponentType<unknown>) => {
+    return function NavigationProvider({ children }: NavigationProviderProps) {
         const [menuItems, setState] = useState<MenuData[]>([]);
 
         const setMenu = (id: string, updater: MenuUpdater): void => {
@@ -129,7 +142,7 @@ export const NavigationProvider = (Component: React.ComponentType<unknown>): Rea
     };
 };
 
-export const Navigation: React.FC = () => {
+export const Navigation = () => {
     return (
         <Tags tags={{ location: "navigation" }}>
             <NavigationRenderer />
@@ -137,7 +150,7 @@ export const Navigation: React.FC = () => {
     );
 };
 
-export const NavigationRenderer = makeComposable("NavigationRenderer");
+export const NavigationRenderer = makeDecoratable("NavigationRenderer", createVoidComponent());
 
 interface MenuItemContext {
     menuItem?: MenuData;
@@ -158,7 +171,7 @@ export interface MenuItemsProps {
     menuItems: MenuData[];
 }
 
-export const MenuItems = makeComposable<MenuItemsProps>("MenuItems", ({ menuItems }) => {
+export const MenuItems = makeDecoratable("MenuItems", ({ menuItems }: MenuItemsProps) => {
     const menuItem = useMenuItem();
 
     const depth = menuItem ? menuItem.depth : -1;
@@ -177,8 +190,8 @@ export const MenuItems = makeComposable<MenuItemsProps>("MenuItems", ({ menuItem
     );
 });
 
-export const MenuItem: React.FC = () => {
+export const MenuItem = () => {
     return <MenuItemRenderer />;
 };
 
-export const MenuItemRenderer = makeComposable("MenuItemRenderer");
+export const MenuItemRenderer = makeDecoratable("MenuItemRenderer", createVoidComponent());

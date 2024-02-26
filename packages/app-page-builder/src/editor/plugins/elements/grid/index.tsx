@@ -70,7 +70,7 @@ export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin
         /**
          * TODO @ts-refactor @ashutosh
          */
-        // @ts-ignore
+        // @ts-expect-error
         toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
         settings:
             typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,

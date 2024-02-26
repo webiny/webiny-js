@@ -56,7 +56,7 @@ const AddBlockContent = styled.div<{ displayMode: string }>(({ displayMode }) =>
     alignItems: "center"
 }));
 
-const AddContent: React.FC = () => {
+const AddContent = () => {
     const { displayMode } = useDisplayMode();
     const totalElements = useRecoilValue(elementsInContentTotalSelector);
     const [, setBlocksBrowserState] = useRecoilState(blocksBrowserStateAtom);

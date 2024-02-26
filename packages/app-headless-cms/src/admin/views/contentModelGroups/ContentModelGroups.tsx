@@ -5,7 +5,7 @@ import ContentModelGroupsDataList from "./ContentModelGroupsDataList";
 import ContentModelGroupsForm from "./ContentModelGroupsForm";
 import { CmsSecurityPermission } from "~/types";
 
-const ContentModelGroups: React.FC = () => {
+const ContentModelGroups = () => {
     const { identity, getPermission } = useSecurity();
 
     const canCreate = useMemo((): boolean => {

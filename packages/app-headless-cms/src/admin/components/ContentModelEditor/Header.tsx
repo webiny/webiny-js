@@ -8,7 +8,7 @@ const topBar = css({
     boxShadow: "1px 0px 5px 0px rgba(128,128,128,1)"
 });
 
-const EditorBar: React.FC = () => {
+const EditorBar = () => {
     return (
         <TopAppBar className={topBar} fixed data-testid={"cms-editor-top-bar"}>
             <TopAppBarSection style={{ width: "50%" }} alignEnd>

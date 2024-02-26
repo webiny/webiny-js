@@ -1,6 +1,5 @@
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
 import WebinyError from "@webiny/error";
 import { createTable } from "~/definitions/table";
@@ -9,6 +8,7 @@ import { createSystemEntity } from "~/definitions/systemEntity";
 import { createDomainEntity } from "~/definitions/domainEntity";
 import { CreateTenancyStorageOperations, ENTITIES } from "~/types";
 import { ListTenantsParams, System, Tenant, TenantDomain } from "@webiny/api-tenancy/types";
+import { getClean, put } from "@webiny/db-dynamodb";
 
 interface TenantDomainRecord {
     PK: string;
@@ -91,9 +91,12 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         },
         async createSystemData(data: System) {
             try {
-                await entities.system.put({
-                    ...systemKeys,
-                    ...data
+                await put({
+                    entity: entities.system,
+                    item: {
+                        ...data,
+                        ...systemKeys
+                    }
                 });
                 return data;
             } catch (err) {
@@ -106,11 +109,10 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         },
         async getSystemData(): Promise<System | null> {
             try {
-                const result = await entities.system.get(systemKeys);
-                if (!result || !result.Item) {
-                    return null;
-                }
-                return cleanupItem(entities.system, result.Item);
+                return await getClean<System>({
+                    entity: entities.system,
+                    keys: systemKeys
+                });
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not load system record.",
@@ -121,9 +123,12 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         },
         async updateSystemData(data: System): Promise<System> {
             try {
-                await entities.system.put({
-                    ...systemKeys,
-                    ...data
+                await put({
+                    entity: entities.system,
+                    item: {
+                        ...data,
+                        ...systemKeys
+                    }
                 });
                 return data;
             } catch (err) {

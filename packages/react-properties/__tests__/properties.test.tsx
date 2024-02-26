@@ -10,9 +10,10 @@ import { Filter } from "./Filter";
 interface GroupProps {
     name: string;
     label?: string;
+    children: React.ReactNode;
 }
 
-const Group: React.FC<GroupProps> = ({ name, label, children }) => {
+const Group = ({ name, label, children }: GroupProps) => {
     return (
         <Property id={`group:${name}`} name={"settingsGroup"} array={true}>
             <Property id={`group:${name}:name`} name={"name"} value={name} />
@@ -31,7 +32,7 @@ interface FieldProps {
     replace?: string;
 }
 
-const Field: React.FC<FieldProps> = ({ name, label, replace, after, before, remove = false }) => {
+const Field = ({ name, label, replace, after, before, remove = false }: FieldProps) => {
     const parentProperty = useParentProperty();
 
     const id = parentProperty ? parentProperty.id : undefined;
@@ -218,9 +219,10 @@ describe("Test Properties", () => {
         interface GroupProps {
             name: string;
             label?: string;
+            children?: React.ReactNode;
         }
 
-        const Group: React.FC<GroupProps> = ({ name, label, children }) => {
+        const Group = ({ name, label, children }: GroupProps) => {
             return (
                 <Property name={"group"}>
                     <Property name={"name"} value={name} />
@@ -234,7 +236,7 @@ describe("Test Properties", () => {
             name: string;
         }
 
-        const Toolbar: React.FC<ToolbarProps> = ({ name }) => {
+        const Toolbar = ({ name }: ToolbarProps) => {
             return (
                 <Property name={"toolbar"}>
                     <Property name={"name"} value={name} />
@@ -335,7 +337,11 @@ describe("Test Properties", () => {
     it("should allow addition of custom properties to predefined components", async () => {
         const onChange = jest.fn();
 
-        const Tutorial: React.FC<{ label: string }> = ({ label }) => {
+        interface TutorialProps {
+            label: string;
+        }
+
+        const Tutorial = ({ label }: TutorialProps) => {
             return <Property name={"tutorial"} value={label} />;
         };
 

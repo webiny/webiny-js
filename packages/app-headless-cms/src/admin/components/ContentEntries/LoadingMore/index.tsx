@@ -6,7 +6,15 @@ import { Container, LoaderContainer } from "./styled";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-entries/loading-more");
 
-export const LoadingMore: React.VFC = () => {
+interface LoadingMoreProps {
+    show: boolean;
+}
+
+export const LoadingMore = ({ show }: LoadingMoreProps) => {
+    if (!show) {
+        return null;
+    }
+
     return (
         <Container>
             <LoaderContainer>

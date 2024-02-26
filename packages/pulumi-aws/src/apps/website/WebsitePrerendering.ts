@@ -1,15 +1,15 @@
 import * as path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import { Converter } from "aws-sdk/clients/dynamodb";
+import { marshall } from "@webiny/aws-sdk/client-dynamodb";
 
 import { PulumiApp } from "@webiny/pulumi";
-// @ts-ignore
 import { getLayerArn } from "@webiny/aws-layers";
 
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
 import { CoreOutput, VpcConfig } from "../common";
 import { getAwsAccountId } from "../awsUtils";
+import { LAMBDA_RUNTIME } from "~/constants";
 
 interface PreRenderingServiceParams {
     dbTableName: pulumi.Output<string>;
@@ -74,7 +74,7 @@ function createPrerenderingSettingsDbItem(
                 }
             }`
                 // We're using the native DynamoDB converter to avoid building those nested objects ourselves.
-                .apply(v => JSON.stringify(Converter.marshall(JSON.parse(v))))
+                .apply(v => JSON.stringify(marshall(JSON.parse(v))))
         }
     });
 
@@ -97,7 +97,7 @@ function createRenderSubscriber(
         name: "ps-render-subscriber-lambda",
         config: {
             role: role.output.arn,
-            runtime: "nodejs14.x",
+            runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 30,
             memorySize: 512,
@@ -178,7 +178,7 @@ function createRenderer(
         name: "ps-render-lambda",
         config: {
             role: role.output.arn,
-            runtime: "nodejs14.x",
+            runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 300,
             memorySize: 2048,
@@ -232,7 +232,7 @@ function createFlushService(
         name: "ps-flush-lambda",
         config: {
             role: role.output.arn,
-            runtime: "nodejs14.x",
+            runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 30,
             memorySize: 512,

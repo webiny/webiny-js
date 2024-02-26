@@ -25,6 +25,10 @@ const CUSTOM_HANDLERS = {
         return ["packages/api-security --storage=ddb"];
     },
 
+    "api-security-cognito": () => {
+        return ["packages/api-security-cognito --storage=ddb"];
+    },
+
     "api-i18n": () => {
         return ["packages/api-i18n --storage=ddb"];
     },
@@ -33,8 +37,11 @@ const CUSTOM_HANDLERS = {
         return ["packages/api-tenant-manager --storage=ddb"];
     },
 
-    "api-admin-users-cognito": () => {
-        return ["packages/api-admin-users-cognito --storage=ddb"];
+    "api-audit-logs": () => {
+        return [
+            "packages/api-audit-logs --storage=ddb",
+            "packages/api-audit-logs --storage=ddb-es,ddb"
+        ];
     },
 
     "api-file-manager": () => {
@@ -101,6 +108,18 @@ const CUSTOM_HANDLERS = {
             "packages/api-page-builder-aco --storage=ddb",
             "packages/api-page-builder-aco --storage=ddb-es,ddb"
         ];
+    },
+    "app-aco": () => {
+        return ["packages/app-aco"];
+    },
+    "app-file-manager": () => {
+        return ["packages/app-file-manager"];
+    },
+    tasks: () => {
+        return ["packages/tasks --storage=ddb", "packages/tasks --storage=ddb-es,ddb"];
+    },
+    "api-elasticsearch-tasks": () => {
+        return ["packages/api-elasticsearch-tasks --storage=ddb-es,ddb"];
     }
 };
 

@@ -55,16 +55,10 @@ const parseTime = (value?: string): Pick<State, "time" | "timezone"> => {
 
 export interface DateTimeWithTimezoneProps {
     bind: BindComponentRenderProp;
-    // TODO @ts-refactor figure out correct trailing icon type
-    // @ts-ignore
     trailingIcon?: any;
     field: CmsModelField;
 }
-export const DateTimeWithTimezone: React.FC<DateTimeWithTimezoneProps> = ({
-    bind,
-    trailingIcon,
-    field
-}) => {
+export const DateTimeWithTimezone = ({ bind, trailingIcon, field }: DateTimeWithTimezoneProps) => {
     const defaultTimeZone = getCurrentTimeZone() || DEFAULT_TIMEZONE;
 
     // "2020-05-18T09:00+10:00"

@@ -1,10 +1,13 @@
 import { PrerenderingServiceTenantStorageOperations } from "@webiny/api-prerendering-service/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { queryAll } from "@webiny/db-dynamodb/utils/query";
-import { cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
 
 export interface CreateTenantStorageOperationsParams {
     entity: Entity<any>;
+}
+
+interface Tenant {
+    data: { id: string };
 }
 
 export const createTenantStorageOperations = (
@@ -13,7 +16,7 @@ export const createTenantStorageOperations = (
     const { entity } = params;
 
     const getTenantIds = async (): Promise<string[]> => {
-        const tenants = await queryAll<{ id: string }>({
+        const tenants = await queryAll<Tenant>({
             entity,
             partitionKey: "TENANTS",
             options: {
@@ -22,10 +25,8 @@ export const createTenantStorageOperations = (
             }
         });
 
-        return cleanupItems(entity, tenants).map(tenant => tenant.id);
+        return tenants.map(tenant => tenant.data.id);
     };
 
-    return {
-        getTenantIds
-    };
+    return { getTenantIds };
 };

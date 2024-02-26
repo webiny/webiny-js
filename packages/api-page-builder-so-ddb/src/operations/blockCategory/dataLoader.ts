@@ -2,7 +2,7 @@ import DataLoader from "dataloader";
 import { batchReadAll } from "@webiny/db-dynamodb/utils/batchRead";
 import { BlockCategory } from "@webiny/api-page-builder/types";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { createPartitionKey, createSortKey } from "./keys";
 import { DataLoaderInterface } from "~/types";
 

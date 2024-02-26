@@ -5,7 +5,7 @@ export interface WidthProps {
     value: string;
 }
 
-export const Width: React.FC<WidthProps> = ({ value }) => {
+export const Width = ({ value }: WidthProps) => {
     return (
         <Property id="fileDetails" name={"fileDetails"}>
             <Property id={`drawer:width`} name={"width"} value={value} />

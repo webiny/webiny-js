@@ -35,7 +35,7 @@ const tabStyles = css`
 
 type PbCategoriesProps = PbScopeSettingsProps;
 
-const PbCategories: React.FC<PbCategoriesProps> = ({ Bind, runValidation }) => {
+const PbCategories = ({ Bind, runValidation }: PbCategoriesProps) => {
     const { categories, loading } = usePbCategories();
     return (
         <Stack space={3} padding={6}>
@@ -79,7 +79,7 @@ interface PbPagesListProps {
     runValidation: boolean;
 }
 
-const PbPagesList: React.FC<PbPagesListProps> = ({ bind }) => {
+const PbPagesList = ({ bind }: PbPagesListProps) => {
     const { loading, setQuery, options, value } = usePbPages({ bind });
     return (
         <Stack space={6} padding={6}>
@@ -111,7 +111,7 @@ interface PbScopeSettingsProps {
     runValidation: boolean;
 }
 
-export const PbScopeSettings: React.FC<PbScopeSettingsProps> = ({ Bind, runValidation }) => {
+export const PbScopeSettings = ({ Bind, runValidation }: PbScopeSettingsProps) => {
     return (
         <Elevation z={1}>
             <Tabs className={tabStyles}>

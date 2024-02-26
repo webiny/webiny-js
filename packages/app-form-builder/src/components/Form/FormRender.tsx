@@ -1,6 +1,6 @@
 import { plugins } from "@webiny/plugins";
 import cloneDeep from "lodash/cloneDeep";
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";
 import {
@@ -40,9 +40,15 @@ interface FieldValidator {
     (value: string): Promise<boolean>;
 }
 
-const FormRender: React.FC<FbFormRenderComponentProps> = props => {
+const FormRender = (props: FbFormRenderComponentProps) => {
     const client = useApolloClient();
     const data = props.data || ({} as FbFormModel);
+    const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
+
+    const [layoutRenderKey, setLayoutRenderKey] = useState<string>(new Date().getTime().toString());
+    const resetLayoutRenderKey = useCallback(() => {
+        setLayoutRenderKey(new Date().getTime().toString());
+    }, []);
 
     useEffect((): void => {
         if (!data.id) {
@@ -55,6 +61,13 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         });
     }, [data.id]);
 
+    // We need this useEffect in case when user has deleted a step and he was on that step on the preview tab,
+    // so it won't trigger an error when we trying to view the step that we have deleted,
+    // we will simpy change currentStep to the first step.
+    useEffect(() => {
+        setCurrentStepIndex(0);
+    }, [data.steps.length]);
+
     const reCaptchaResponseToken = useRef("");
     const termsOfServiceAccepted = useRef(false);
 
@@ -62,8 +75,28 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         return null;
     }
 
+    const goToNextStep = () => {
+        setCurrentStepIndex(prevStep => (prevStep += 1));
+    };
+
+    const goToPreviousStep = () => {
+        setCurrentStepIndex(prevStep => (prevStep -= 1));
+    };
+
     const formData: FbFormModel = cloneDeep(data);
-    const { layout, fields, settings } = formData;
+    const { fields, settings, steps } = formData;
+
+    // Check if the form is a multi step.
+    const isMultiStepForm = formData.steps.length > 1;
+
+    const isFirstStep = currentStepIndex === 0;
+    const isLastStep = currentStepIndex === steps.length - 1;
+
+    // We need this check in case we deleted last step and at the same time we were previewing it.
+    const currentStep =
+        steps[currentStepIndex] === undefined
+            ? steps[formData.steps.length - 1]
+            : steps[currentStepIndex];
 
     const getFieldById = (id: string): FbFormModelField | null => {
         return fields.find(field => field._id === id) || null;
@@ -73,8 +106,11 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         return fields.find(field => field.fieldId === id) || null;
     };
 
-    const getFields = (): FormRenderFbFormModelField[][] => {
-        const fieldLayout = cloneDeep(layout);
+    // We need to have "stepIndex" prop in order to get corresponding fields for the current step.
+    const getFields = (stepIndex = 0): FormRenderFbFormModelField[][] => {
+        const stepFields =
+            steps[stepIndex] === undefined ? steps[steps.length - 1] : steps[stepIndex];
+        const fieldLayout = cloneDeep(stepFields.layout.filter(Boolean));
         const validatorPlugins =
             plugins.byType<FbFormFieldValidatorPlugin>("fb-form-field-validator");
 
@@ -171,6 +207,14 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         });
 
         await handleFormTriggers({ props, data, formSubmission });
+
+        setTimeout(() => {
+            if (props.preview) {
+                setCurrentStepIndex(0);
+                resetLayoutRenderKey();
+            }
+        }, 2000);
+
         return formSubmission;
     };
 
@@ -205,6 +249,13 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
         getDefaultValues,
         getFields,
         submit,
+        goToNextStep,
+        goToPreviousStep,
+        isLastStep,
+        isFirstStep,
+        currentStepIndex,
+        currentStep,
+        isMultiStepForm,
         formData,
         ReCaptcha,
         reCaptchaEnabled: reCaptchaEnabled(formData),
@@ -215,7 +266,7 @@ const FormRender: React.FC<FbFormRenderComponentProps> = props => {
     return (
         <>
             <ps-tag data-key="fb-form" data-value={data.formId} />
-            <LayoutRenderComponent {...layoutProps} />
+            <LayoutRenderComponent {...layoutProps} key={layoutRenderKey} />
         </>
     );
 };

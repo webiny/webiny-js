@@ -3,7 +3,7 @@ import { ReactComponent as EditIcon } from "@material-design-icons/svg/round/edi
 import { ReactComponent as RefreshIcon } from "@material-design-icons/svg/round/refresh.svg";
 import { plugins } from "@webiny/plugins";
 import { SidebarActions } from "~/editor";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import Action from "~/editor/plugins/elementSettings/components/Action";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import ElementNotLinked from "~/blockEditor/components/elementSettingsTab/ElementNotLinked";
@@ -14,7 +14,7 @@ import useElementSettings from "~/editor/plugins/elementSettings/hooks/useElemen
 import { useRefreshBlock } from "~/editor/hooks/useRefreshBlock";
 import { PbBlockEditorCreateVariablePlugin, PbEditorElement } from "~/types";
 
-export const ElementSettingsTabContentPlugin = createComponentPlugin(
+export const ElementSettingsTabContentPlugin = createDecorator(
     SidebarActions,
     SidebarActionsWrapper => {
         const variablePlugins = plugins.byType<PbBlockEditorCreateVariablePlugin>(
@@ -25,7 +25,7 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
             const [element] = useActiveElement();
             const [parentElement] = useElementById(element?.parent || null);
             const elementSettings = useElementSettings();
-            const refreshBlock = useRefreshBlock(element as PbEditorElement);
+            const { refreshBlock, loading } = useRefreshBlock(element as PbEditorElement);
             const canHaveVariable =
                 element &&
                 variablePlugins.some(variablePlugin => variablePlugin.elementType === element.type);
@@ -66,7 +66,7 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
                                             }
                                         />
                                         <Action
-                                            tooltip={"Refresh block"}
+                                            tooltip={loading ? "Refreshing..." : "Refresh block"}
                                             onClick={refreshBlock}
                                             icon={<RefreshIcon />}
                                         />

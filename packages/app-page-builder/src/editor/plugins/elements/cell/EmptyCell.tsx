@@ -35,7 +35,7 @@ interface EmptyCellProps {
     element: PbEditorElement;
 }
 
-const EmptyCell: React.FC<EmptyCellProps> = ({ element }) => {
+const EmptyCell = ({ element }: EmptyCellProps) => {
     const [activeElementId] = useActiveElementId();
     const handler = useEventActionHandler();
     const isActive = activeElementId === element.id;

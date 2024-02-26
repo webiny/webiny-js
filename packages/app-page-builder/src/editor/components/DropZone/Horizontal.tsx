@@ -48,7 +48,7 @@ export interface HorizontalPropsType {
     isVisible?: DroppableIsVisiblePropType;
 }
 
-const HorizontalComponent: React.FC<HorizontalPropsType> = ({ below, onDrop, isVisible, type }) => {
+const HorizontalComponent = ({ below, onDrop, isVisible, type }: HorizontalPropsType) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver, drop }) => (

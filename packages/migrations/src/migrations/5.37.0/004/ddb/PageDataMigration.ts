@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
 import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
 import { executeWithRetry } from "@webiny/utils";
@@ -39,7 +39,7 @@ export class AcoRecords_5_37_0_004_PageData implements DataMigration<PageDataMig
     private readonly pageEntity: ReturnType<typeof createDdbPageEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.entryEntity = createDdbEntryEntity(table);
         this.localeEntity = createLocaleEntity(table);
         this.pageEntity = createDdbPageEntity(table);
@@ -213,8 +213,8 @@ export class AcoRecords_5_37_0_004_PageData implements DataMigration<PageDataMig
                             }
                         });
 
-                        // Update checkpoint after every batch
-                        migrationStatus[groupId] = pages[pages.length - 1].id;
+                        // Update checkpoint after every batch.
+                        migrationStatus[groupId] = pages[pages.length - 1]?.id ?? true;
 
                         // Check if we should store checkpoint and exit.
                         if (context.runningOutOfTime()) {

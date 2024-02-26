@@ -38,7 +38,7 @@ interface SingleImageUploadProps extends FormComponentProps {
     className?: string;
 
     // Define a list of accepted image types.
-    accept?: Array<string>;
+    accept?: string[];
 
     // Define file's max allowed size (default is "10mb").
     // Uses "bytes" (https://www.npmjs.com/package/bytes) library to convert string notation to actual number.
@@ -46,7 +46,9 @@ interface SingleImageUploadProps extends FormComponentProps {
 
     // Image editor options.
     // Please check the docs of ImageEditor component for the list of all available options.
-    imageEditor?: Object;
+    imageEditor?: {
+        [key: string]: any;
+    };
 
     // Custom image preview renderer. By default images are rendered via simple <img> element.
     renderImagePreview?: () => React.ReactElement<any>;

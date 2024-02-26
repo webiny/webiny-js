@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { css } from "emotion";
 import { plugins } from "@webiny/plugins";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
@@ -18,24 +18,44 @@ const labelStyle = css({
     }
 });
 
-const VariableSettings: React.FC = () => {
+const VariableSettings = () => {
     const [element] = useActiveElement();
 
-    const elementVariableRendererPlugins =
-        plugins.byType<PbEditorPageElementVariableRendererPlugin>(
+    const variableRenderers = useMemo(() => {
+        return plugins.byType<PbEditorPageElementVariableRendererPlugin>(
             "pb-editor-page-element-variable-renderer"
         );
+    }, []);
+
+    const renderVariableInput = useCallback(
+        (variable: PbBlockVariable) => {
+            const renderer = variableRenderers.find(plugin => plugin.elementType === variable.type);
+            if (!renderer) {
+                return null;
+            }
+            return renderer.renderVariableInput(variable.id);
+        },
+        [variableRenderers]
+    );
+
+    if (!element) {
+        return null;
+    }
+
+    const variables = element.data.variables;
+
+    if (!variables) {
+        return null;
+    }
 
     return (
         <div className={wrapperStyle}>
-            {element?.data?.variables?.map((variable: PbBlockVariable, index: number) => (
+            {variables.map((variable, index) => (
                 <div key={index}>
                     <div className={labelStyle}>
                         <Typography use={"body2"}>{variable.label}</Typography>
                     </div>
-                    {elementVariableRendererPlugins
-                        .find(plugin => plugin.elementType === variable?.type)
-                        ?.renderVariableInput(variable.id)}
+                    {renderVariableInput(variable)}
                 </div>
             ))}
         </div>

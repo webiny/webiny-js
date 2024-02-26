@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "baseUrl": ".",
+    "strict": true,
+    "target": "es5",
+    "lib": ["es5", "dom", "es2015"],
+    "types": ["cypress", "@testing-library/cypress"]
+  },
+  "include": ["**/*.ts"]
+}

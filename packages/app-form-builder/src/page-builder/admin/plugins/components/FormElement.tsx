@@ -9,7 +9,7 @@ interface FormProps {
     isActive: boolean;
 }
 
-const Form: React.FC<FormProps> = props => {
+const Form = (props: FormProps) => {
     const { tenant } = useTenancy();
 
     const { element, ...rest } = props;

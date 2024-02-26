@@ -35,7 +35,7 @@ export type DroppableIsVisiblePropType = (params: {
 export interface DragObjectWithTypeWithTarget extends DragObjectWithType {
     id?: string;
     type: string;
-    target: string[];
+    target: string[] | null | undefined;
 }
 export type DroppableOnDropPropType = (item: DragObjectWithTypeWithTarget) => void;
 export interface DroppableProps {
@@ -46,7 +46,7 @@ export interface DroppableProps {
     onDrop: DroppableOnDropPropType;
 }
 
-const Droppable: React.FC<DroppableProps> = props => {
+const Droppable = (props: DroppableProps) => {
     const { type, children, isDroppable = () => true, onDrop } = props;
     let { isVisible } = props;
 

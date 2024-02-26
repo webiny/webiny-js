@@ -14,7 +14,7 @@ interface TypographyProps extends RmwcTypographyProps {
 /**
  * Use Ripple component to display a list of choices, once the handler is triggered.
  */
-const Typography: React.FC<TypographyProps> = props => {
+const Typography = (props: TypographyProps) => {
     return <RwmcTypography {...props}>{props.children}</RwmcTypography>;
 };
 

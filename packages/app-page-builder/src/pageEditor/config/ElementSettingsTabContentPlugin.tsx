@@ -2,7 +2,7 @@ import React from "react";
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/round/edit.svg";
 import { ReactComponent as RefreshIcon } from "@material-design-icons/svg/round/refresh.svg";
 import { SidebarActions } from "~/editor";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import Action from "~/editor/plugins/elementSettings/components/Action";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { useElementById } from "~/editor/hooks/useElementById";
@@ -12,7 +12,7 @@ import VariableSettings from "~/editor/plugins/elementSettings/variable/Variable
 import { useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";
 import { PbEditorElement } from "~/types";
 
-export const ElementSettingsTabContentPlugin = createComponentPlugin(
+export const ElementSettingsTabContentPlugin = createDecorator(
     SidebarActions,
     SidebarActionsWrapper => {
         return function SettingsTabContent({ children, ...props }) {
@@ -20,7 +20,7 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
             const [parentElement] = useElementById(element?.parent || null);
             const elementSettings = useElementSettings();
             const [isTemplateMode] = useTemplateMode();
-            const refreshBlock = useRefreshBlock(element as PbEditorElement);
+            const { refreshBlock, loading } = useRefreshBlock(element as PbEditorElement);
 
             if (isTemplateMode) {
                 return <VariableSettings />;
@@ -61,7 +61,7 @@ export const ElementSettingsTabContentPlugin = createComponentPlugin(
                                             }
                                         />
                                         <Action
-                                            tooltip={"Refresh block"}
+                                            tooltip={loading ? "Refreshing..." : "Refresh block"}
                                             onClick={refreshBlock}
                                             icon={<RefreshIcon />}
                                         />

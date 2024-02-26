@@ -19,8 +19,8 @@ interface ChildrenRenderPropEmptyCallable {
 }
 interface ChildrenRenderProp {
     actions: {
-        add: Function;
-        remove: Function;
+        add: (index?: number) => () => void;
+        remove: (index: number) => () => void;
     };
     header: (cb: ChildrenRenderPropHeaderCallable) => React.ReactNode;
     row: (cb: ChildrenRenderPropRowCallable) => React.ReactNode;
@@ -31,7 +31,7 @@ interface FieldsetProps {
     value?: any[];
     description?: string;
     validation?: { isValid: null | boolean; message?: string };
-    onChange: Function;
+    onChange: (value: any) => void;
     children: (props: ChildrenRenderProp) => React.ReactNode;
 }
 

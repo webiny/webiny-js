@@ -85,7 +85,7 @@ export const assignWorkflowToPage = async ({ listWorkflow, page }: AssignWorkflo
     }
 };
 
-export const hasPages = (workflow: ApwWorkflow): Boolean => {
+export const hasPages = (workflow: ApwWorkflow): boolean => {
     const { app, scope } = workflow;
     return (
         app === ApwWorkflowApplications.PB &&
@@ -98,7 +98,7 @@ export const hasPages = (workflow: ApwWorkflow): Boolean => {
 export const shouldUpdatePages = (
     scope: ApwWorkflowScope,
     prevScope: ApwWorkflowScope
-): Boolean => {
+): boolean => {
     /**
      * Bail out early if the scope is not "CUSTOM" - at that point all pages should be updated.
      */

@@ -1,4 +1,4 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
@@ -9,13 +9,11 @@ import { BeforeHandlerPlugin } from "@webiny/handler";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 
 // IMPORTANT: This must be removed from here in favor of a dynamic SO setup.
-const documentClient = new DocumentClient({
-    convertEmptyValues: true,
+const documentClient = getDocumentClient({
     endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
-    sslEnabled: false,
+    tls: false,
     region: "local",
-    accessKeyId: "test",
-    secretAccessKey: "test"
+    credentials: { accessKeyId: "test", secretAccessKey: "test" }
 });
 
 interface Config {

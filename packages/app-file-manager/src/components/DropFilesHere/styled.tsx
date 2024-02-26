@@ -6,10 +6,11 @@ type DropFilesHereWrapperProps = {
 };
 
 export const DropFilesHereWrapper = styled("div")<DropFilesHereWrapperProps>`
+    pointer-events: ${({ empty }) => (empty ? "all" : "none")};
     margin: 0 auto;
     padding-top: 0;
     height: calc(100vh - 95px);
-    z-index: 3;
+    z-index: 100;
     width: 100%;
     position: absolute;
     background: ${({ empty }) => (empty ? "transparent" : "var(--mdc-theme-text-hint-on-light)")};

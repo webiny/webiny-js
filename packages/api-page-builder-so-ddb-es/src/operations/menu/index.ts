@@ -7,7 +7,7 @@ import {
     MenuStorageOperationsListParams,
     MenuStorageOperationsUpdateParams
 } from "@webiny/api-page-builder/types";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import WebinyError from "@webiny/error";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll, QueryAllParams } from "@webiny/db-dynamodb/utils/query";
@@ -16,6 +16,7 @@ import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { createListResponse } from "@webiny/db-dynamodb/utils/listResponse";
 import { MenuDynamoDbElasticFieldPlugin } from "~/plugins/definitions/MenuDynamoDbElasticFieldPlugin";
 import { PluginsContainer } from "@webiny/plugins";
+import { deleteItem, getClean, put } from "@webiny/db-dynamodb";
 
 interface PartitionKeyParams {
     tenant: string;
@@ -54,11 +55,10 @@ export const createMenuStorageOperations = ({
         };
 
         try {
-            const result = await entity.get(keys);
-            if (!result || !result.Item) {
-                return null;
-            }
-            return cleanupItem(entity, result.Item);
+            return await getClean<Menu>({
+                entity,
+                keys
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not load menu by given parameters.",
@@ -81,10 +81,13 @@ export const createMenuStorageOperations = ({
         };
 
         try {
-            await entity.put({
-                ...menu,
-                TYPE: createType(),
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...menu,
+                    TYPE: createType(),
+                    ...keys
+                }
             });
             return menu;
         } catch (ex) {
@@ -110,10 +113,13 @@ export const createMenuStorageOperations = ({
         };
 
         try {
-            await entity.put({
-                ...menu,
-                TYPE: createType(),
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...menu,
+                    TYPE: createType(),
+                    ...keys
+                }
             });
             return menu;
         } catch (ex) {
@@ -199,9 +205,9 @@ export const createMenuStorageOperations = ({
         };
 
         try {
-            await entity.delete({
-                ...menu,
-                ...keys
+            await deleteItem({
+                entity,
+                keys
             });
             return menu;
         } catch (ex) {

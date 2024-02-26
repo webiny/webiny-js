@@ -1,6 +1,4 @@
 const path = require("path");
-const loadJson = require("load-json-file");
-const writeJson = require("write-json-file");
 const fs = require("fs");
 const { green, red } = require("chalk");
 const { argv } = require("yargs");
@@ -14,9 +12,9 @@ const args = {
 };
 
 /**
- * Prepares cypress.json config by reading values from state files and populating necessary variables.
+ * Prepares cypress.config.ts config by reading values from state files and populating necessary variables.
  * Pass "--env" to specify from which environment in the ".webiny" folder you want to read.
- * Pass "--force" if you want to allow overwriting existing cypress.json config file.
+ * Pass "--force" if you want to allow overwriting existing cypress.config.ts config file.
  * Pass "--project-folder" to specify from which project you'd like to set up configuration against
  */
 (async () => {
@@ -27,21 +25,21 @@ const args = {
         }
     }
 
-    const cypressExampleConfigPath = path.resolve("example.cypress.json");
-    const cypressConfigPath = path.resolve("cypress.json");
+    const cypressExampleConfigPath = path.resolve("example.cypress.config.ts");
+    const cypressConfigPath = path.resolve("cypress-tests/cypress.config.ts");
     if (fs.existsSync(cypressConfigPath)) {
         if (args.force) {
             fs.unlinkSync(cypressConfigPath);
             fs.copyFileSync(cypressExampleConfigPath, cypressConfigPath);
         } else {
-            console.log(`⚠️  ${green("cypress.json")} already exists, exiting.`);
+            console.log(`⚠️  ${green("cypress.config.ts")} already exists, exiting.`);
             process.exit(0);
         }
     } else {
         fs.copyFileSync(cypressExampleConfigPath, cypressConfigPath);
     }
 
-    const cypressConfig = await loadJson.sync(cypressConfigPath);
+    let cypressConfig = fs.readFileSync(cypressConfigPath, "utf8");
 
     const apiOutput = getStackOutput({
         folder: "apps/api",
@@ -49,24 +47,25 @@ const args = {
         cwd: args.projectFolder
     });
 
-    cypressConfig.env.API_URL = apiOutput.apiUrl;
-    cypressConfig.env.GRAPHQL_API_URL = apiOutput.apiUrl + "/graphql";
-    cypressConfig.env.CMS_MANAGE_GRAPHQL_API_URL = apiOutput.apiUrl + "/cms/manage";
+    cypressConfig = cypressConfig.replaceAll("{API_URL}", apiOutput.apiUrl);
 
-    cypressConfig.env.AWS_COGNITO_USER_POOL_ID = apiOutput.cognitoUserPoolId;
-    cypressConfig.env.AWS_COGNITO_CLIENT_ID = apiOutput.cognitoAppClientId;
-    // Option for "cypress-image-snapshot" helper
-    cypressConfig.env.failOnSnapshotDiff = false;
+    cypressConfig = cypressConfig.replaceAll(
+        "{AWS_COGNITO_USER_POOL_ID}",
+        apiOutput.cognitoUserPoolId
+    );
+    cypressConfig = cypressConfig.replaceAll(
+        "{AWS_COGNITO_CLIENT_ID}",
+        apiOutput.cognitoAppClientId
+    );
 
     // If testing with "local" stack, use "localhost" for the app URLs, otherwise fetch from state files.
-
     if (args.localhost) {
         const adminUrl = "http://localhost:3001";
         const websiteUrl = "http://localhost:3000";
-        cypressConfig.baseUrl = adminUrl;
-        cypressConfig.env.ADMIN_URL = adminUrl;
-        cypressConfig.env.WEBSITE_URL = websiteUrl;
-        cypressConfig.env.WEBSITE_PREVIEW_URL = websiteUrl;
+
+        cypressConfig = cypressConfig.replaceAll("{ADMIN_URL}", adminUrl);
+        cypressConfig = cypressConfig.replaceAll("{WEBSITE_URL}", websiteUrl);
+        cypressConfig = cypressConfig.replaceAll("{WEBSITE_PREVIEW_URL}", websiteUrl);
     } else {
         const adminOutput = getStackOutput({
             folder: "apps/admin",
@@ -79,20 +78,19 @@ const args = {
             cwd: args.projectFolder
         });
 
-        cypressConfig.baseUrl = adminOutput.appUrl;
-        cypressConfig.env.ADMIN_URL = adminOutput.appUrl;
-        cypressConfig.env.WEBSITE_URL = websiteOutput.deliveryUrl;
-        cypressConfig.env.WEBSITE_PREVIEW_URL = websiteOutput.appUrl;
+        cypressConfig = cypressConfig.replaceAll("{ADMIN_URL}", adminOutput.appUrl);
+        cypressConfig = cypressConfig.replaceAll("{WEBSITE_URL}", websiteOutput.deliveryUrl);
+        cypressConfig = cypressConfig.replaceAll("{WEBSITE_PREVIEW_URL}", websiteOutput.appUrl);
     }
 
-    await writeJson(cypressConfigPath, cypressConfig);
+    fs.writeFileSync(cypressConfigPath, cypressConfig, "utf8");
 
     console.log(
         `${green("✔")} Created ${green(
-            "cypress.json"
+            "cypress.config.ts"
         )} config file! To open Cypress, just run ${green("cypress open")} in your terminal.`
     );
 
     console.log(`Created config:`);
-    console.log(JSON.stringify(cypressConfig, null, 4));
+    console.log(cypressConfig);
 })();

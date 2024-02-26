@@ -47,7 +47,7 @@ const LIST_PUBLISHED_PAGES = gql`
 interface PagesAutocompleteProps extends Partial<AutoCompleteProps> {
     trailingIcon?: React.ReactNode;
 }
-export const PagesAutocomplete: React.FC<PagesAutocompleteProps> = props => {
+export const PagesAutocomplete = (props: PagesAutocompleteProps) => {
     const [query, setQuery] = useState<string>();
     const listPublishedPagesQuery = useQuery(LIST_PUBLISHED_PAGES, {
         variables: {

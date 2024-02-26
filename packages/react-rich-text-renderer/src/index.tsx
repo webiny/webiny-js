@@ -1,6 +1,17 @@
 import React from "react";
 import classNames from "classnames";
 import { OutputBlockData as BaseOutputBlockData } from "@editorjs/editorjs";
+import sanitize from "sanitize-html";
+
+let sanitizeGlobalOptions: sanitize.IOptions | undefined = undefined;
+
+/*
+ * Set global sanitization configuration options.
+ * You can find more about sanitize configuration options here: https://github.com/apostrophecms/sanitize-html
+ * */
+export function configureSanitization(sanitizeOptions?: sanitize.IOptions) {
+    sanitizeGlobalOptions = sanitizeOptions;
+}
 
 interface OutputBlockData extends BaseOutputBlockData {
     data: {
@@ -21,7 +32,11 @@ interface RenderParagraphProps {
     };
     className: string;
 }
-const renderParagraph = (block: OutputBlockData): React.ReactElement => {
+
+const renderParagraph = (
+    block: OutputBlockData,
+    sanitizeOptions?: sanitize.IOptions
+): React.ReactElement => {
     const props: RenderParagraphProps = { style: {}, className: "" };
 
     if (block.data.textAlign) {
@@ -34,7 +49,9 @@ const renderParagraph = (block: OutputBlockData): React.ReactElement => {
         <p
             {...props}
             className={classNames("rte-block-paragraph", props.className)}
-            dangerouslySetInnerHTML={{ __html: block.data.text }}
+            dangerouslySetInnerHTML={{
+                __html: sanitize(block.data.text, { ...sanitizeGlobalOptions, ...sanitizeOptions })
+            }}
         />
     );
 };
@@ -50,7 +67,7 @@ interface RenderHeaderProps {
     className: string;
 }
 
-const renderHeader = (block: OutputBlockData) => {
+const renderHeader = (block: OutputBlockData, sanitizeOptions?: sanitize.IOptions) => {
     const props: RenderHeaderProps = { style: {}, className: "" };
 
     if (block.data.textAlign) {
@@ -69,7 +86,12 @@ const renderHeader = (block: OutputBlockData) => {
                         props.className,
                         "rte-block-heading rte-block-heading--h1"
                     )}
-                    dangerouslySetInnerHTML={{ __html: block.data.text }}
+                    dangerouslySetInnerHTML={{
+                        __html: sanitize(block.data.text, {
+                            ...sanitizeGlobalOptions,
+                            ...sanitizeOptions
+                        })
+                    }}
                 />
             );
 
@@ -81,7 +103,12 @@ const renderHeader = (block: OutputBlockData) => {
                         props.className,
                         "rte-block-heading rte-block-heading--h2"
                     )}
-                    dangerouslySetInnerHTML={{ __html: block.data.text }}
+                    dangerouslySetInnerHTML={{
+                        __html: sanitize(block.data.text, {
+                            ...sanitizeGlobalOptions,
+                            ...sanitizeOptions
+                        })
+                    }}
                 />
             );
 
@@ -93,7 +120,12 @@ const renderHeader = (block: OutputBlockData) => {
                         props.className,
                         "rte-block-heading rte-block-heading--h3"
                     )}
-                    dangerouslySetInnerHTML={{ __html: block.data.text }}
+                    dangerouslySetInnerHTML={{
+                        __html: sanitize(block.data.text, {
+                            ...sanitizeGlobalOptions,
+                            ...sanitizeOptions
+                        })
+                    }}
                 />
             );
 
@@ -105,7 +137,12 @@ const renderHeader = (block: OutputBlockData) => {
                         props.className,
                         "rte-block-heading rte-block-heading--h4"
                     )}
-                    dangerouslySetInnerHTML={{ __html: block.data.text }}
+                    dangerouslySetInnerHTML={{
+                        __html: sanitize(block.data.text, {
+                            ...sanitizeGlobalOptions,
+                            ...sanitizeOptions
+                        })
+                    }}
                 />
             );
 
@@ -117,7 +154,12 @@ const renderHeader = (block: OutputBlockData) => {
                         props.className,
                         "rte-block-heading rte-block-heading--h5"
                     )}
-                    dangerouslySetInnerHTML={{ __html: block.data.text }}
+                    dangerouslySetInnerHTML={{
+                        __html: sanitize(block.data.text, {
+                            ...sanitizeGlobalOptions,
+                            ...sanitizeOptions
+                        })
+                    }}
                 />
             );
 
@@ -129,7 +171,12 @@ const renderHeader = (block: OutputBlockData) => {
                         props.className,
                         "rte-block-heading rte-block-heading--h6"
                     )}
-                    dangerouslySetInnerHTML={{ __html: block.data.text }}
+                    dangerouslySetInnerHTML={{
+                        __html: sanitize(block.data.text, {
+                            ...sanitizeGlobalOptions,
+                            ...sanitizeOptions
+                        })
+                    }}
                 />
             );
         default:
@@ -137,8 +184,17 @@ const renderHeader = (block: OutputBlockData) => {
     }
 };
 
-function renderImage(block: OutputBlockData) {
-    return <img className={"rte-block-image"} alt={block.data.caption} src={block.data.file} />;
+function renderImage(block: OutputBlockData, sanitizeOptions?: sanitize.IOptions) {
+    return (
+        <img
+            className={"rte-block-image"}
+            alt={sanitize(block.data.caption || "", {
+                ...sanitizeGlobalOptions,
+                ...sanitizeOptions
+            })}
+            src={sanitize(block.data.file || "", { ...sanitizeGlobalOptions, ...sanitizeOptions })}
+        />
+    );
 }
 
 function renderList(block: OutputBlockData) {
@@ -183,15 +239,21 @@ const defaultRenderers: Record<string, RichTextBlockRenderer> = {
 };
 
 export interface RichTextBlockRenderer {
-    (block: OutputBlockData): React.ReactNode;
+    (block: OutputBlockData, sanitizeOptions?: sanitize.IOptions): React.ReactNode;
 }
 
 interface RichTextRendererProps {
     data: OutputBlockData[];
     renderers?: Record<string, RichTextBlockRenderer>;
+    /*
+     * Set sanitation configuration options for this component.
+     * Note: Global configuration options will be overridden if they exist.
+     * You can find more about sanitize configuration options here: https://github.com/apostrophecms/sanitize-html
+     * */
+    sanitizationConfig?: sanitize.IOptions;
 }
 
-export const RichTextRenderer: React.FC<RichTextRendererProps> = props => {
+export const RichTextRenderer = (props: RichTextRendererProps) => {
     // Combine default renderers with custom renderers
     const renderers = Object.assign({}, defaultRenderers, props.renderers);
 
@@ -203,7 +265,7 @@ export const RichTextRenderer: React.FC<RichTextRendererProps> = props => {
                     return null;
                 }
 
-                const node = renderer(block);
+                const node = renderer(block, props?.sanitizationConfig);
                 if (React.isValidElement(node)) {
                     return React.cloneElement(node, { key: index });
                 }

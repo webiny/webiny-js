@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { makeComposable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 import NoActiveElement from "./NoActiveElement";
 import { ReactComponent as TouchIcon } from "./icons/touch_app.svg";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
@@ -35,7 +35,7 @@ const SidebarActionsWrapper = styled("div")({
     justifyContent: "center"
 });
 
-const ElementSettingsTabContent: React.FC = () => {
+const ElementSettingsTabContent = () => {
     const [element] = useActiveElement();
     const elementSettings = useElementSettings();
 
@@ -64,7 +64,7 @@ const ElementSettingsTabContent: React.FC = () => {
     );
 };
 
-export const SidebarActions = makeComposable(
+export const SidebarActions = makeDecoratable(
     "ElementSettingsTabContent",
     ({ children, ...props }) => {
         return (

@@ -1,7 +1,6 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useEffect } from "react";
-import { ListNode } from "~/nodes/ListNode";
-import { ListItemNode } from "~/nodes/ListItemNode";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { ListNode, ListItemNode } from "@webiny/lexical-nodes";
 import { useList } from "~/hooks/useList";
 
 export function ListPlugin(): null {

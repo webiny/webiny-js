@@ -121,9 +121,30 @@ module.exports = async function createProject({
                 // Setup yarn
                 title: "Setup yarn",
                 task: async () => {
-                    await execa("yarn", ["set", "version", "berry"], { cwd: projectRoot });
+                    const yarnVersion = "3.6.4";
+                    const yarnFile = `yarn-${yarnVersion}.cjs`;
+                    const yarnPath = `.yarn`;
+                    const yarnReleasesPath = path.join(yarnPath, "releases");
+                    const yarnReleasesFilePath = path.join(yarnReleasesPath, yarnFile);
+
+                    /**
+                     * We do not want to do the recursive directory creating as it might do something in parent directories which we do not want.
+                     */
+                    const yarnReleaseFullPath = path.join(projectRoot, yarnReleasesPath);
+                    fs.ensureDirSync(yarnReleaseFullPath);
+
+                    const source = path.join(__dirname, path.join("binaries", yarnFile));
+                    if (!fs.existsSync(source)) {
+                        throw new Error(`No yarn binary source file: ${source}`);
+                    }
+                    const target = path.join(projectRoot, yarnReleasesFilePath);
+                    fs.copyFileSync(source, target);
 
                     const yamlPath = path.join(projectRoot, ".yarnrc.yml");
+                    if (!fs.existsSync(yamlPath)) {
+                        fs.writeFileSync(yamlPath, `yarnPath: ${yarnReleasesFilePath}`, "utf-8");
+                    }
+
                     const parsedYaml = yaml.load(fs.readFileSync(yamlPath, "utf-8"));
 
                     // Default settings are applied here. Currently we only apply the `nodeLinker` param.
@@ -247,6 +268,18 @@ module.exports = async function createProject({
         const node = process.versions.node;
         const os = process.platform;
 
+        let npm = NOT_APPLICABLE;
+        try {
+            const subprocess = await execa("npm", ["--version"], { cwd: projectRoot });
+            npm = subprocess.stdout;
+        } catch {}
+
+        let npx = NOT_APPLICABLE;
+        try {
+            const subprocess = await execa("npx", ["--version"], { cwd: projectRoot });
+            npx = subprocess.stdout;
+        } catch {}
+
         let yarn = NOT_APPLICABLE;
         try {
             const subprocess = await execa("yarn", ["--version"], { cwd: projectRoot });
@@ -287,6 +320,8 @@ module.exports = async function createProject({
                 `Operating System: ${os}`,
                 `Node: ${node}`,
                 `Yarn: ${yarn}`,
+                `Npm: ${npm}`,
+                `Npx: ${npx}`,
                 `create-webiny-project: ${cwp}`,
                 `Template: ${cwpTemplate}`,
                 `Template Options: ${templateOptionsJson}`,

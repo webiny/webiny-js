@@ -1,19 +1,19 @@
 import * as React from "react";
 import { Form } from "@webiny/form";
-import { Grid, Cell } from "@webiny/ui/Grid";
+import { Cell, Grid } from "@webiny/ui/Grid";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { Query, Mutation } from "@apollo/react-components";
+import { Mutation, Query } from "@apollo/react-components";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
-import graphql from "../graphql";
+import graphql, { GetSettingsResponse } from "../graphql";
 import { CircularProgress } from "@webiny/ui/Progress";
 import get from "lodash/get";
 import { validation } from "@webiny/validation";
 
 import {
     SimpleForm,
-    SimpleFormFooter,
     SimpleFormContent,
+    SimpleFormFooter,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { CenteredView } from "@webiny/app-admin";
@@ -26,7 +26,7 @@ function prefixValidator(value: string) {
     }
 }
 
-export const FileManagerSettings: React.FC = () => {
+export const FileManagerSettings = () => {
     const { showSnackbar } = useSnackbar();
 
     return (
@@ -49,8 +49,13 @@ export const FileManagerSettings: React.FC = () => {
                                 },
                                 update: (cache, result) => {
                                     const data = structuredClone(
-                                        cache.readQuery({ query: graphql.GET_SETTINGS })
+                                        cache.readQuery<GetSettingsResponse>({
+                                            query: graphql.GET_SETTINGS
+                                        })
                                     );
+                                    if (!data) {
+                                        return;
+                                    }
 
                                     data.fileManager.getSettings.data = {
                                         ...data.fileManager.getSettings.data,

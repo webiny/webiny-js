@@ -65,14 +65,4 @@ describe("where", () => {
             }).toThrow(`It is not possible to search by key "${key}"`);
         }
     );
-
-    /**
-     * Skipped because fields can contain numbers.
-     */
-    test.skip("should throw error when malformed field is parsed out", () => {
-        const key = "a0_in";
-        expect(() => {
-            parseWhereKey(key);
-        }).toThrow(`Cannot filter by "a0".`);
-    });
 });

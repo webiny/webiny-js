@@ -1,8 +1,8 @@
 import fs from "fs-extra";
 import extract from "extract-zip";
 import path from "path";
-import rimraf from "rimraf";
-import S3 from "aws-sdk/clients/s3";
+import { rimraf } from "rimraf";
+import { GetObjectCommand, getSignedUrl, S3 } from "@webiny/aws-sdk/client-s3";
 import download from "./download";
 
 const PAGE_BUILDER_S3_BUCKET = process.env.S3_BUCKET;
@@ -20,16 +20,8 @@ function extractZip(zipPath: string, dir: string): Promise<void> {
     });
 }
 
-export function deleteFile(path: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-        rimraf(path, err => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            resolve();
-        });
-    });
+export async function deleteFile(path: string): Promise<boolean> {
+    return await rimraf(path);
 }
 
 const INSTALL_DIR = "/tmp";
@@ -38,10 +30,13 @@ const INSTALL_EXTRACT_DIR = path.join(INSTALL_DIR, "apiPageBuilder");
 
 export default async () => {
     const s3 = new S3({ region: process.env.AWS_REGION });
-    const installationFilesUrl = await s3.getSignedUrlPromise("getObject", {
-        Bucket: PAGE_BUILDER_S3_BUCKET,
-        Key: PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY
-    });
+    const installationFilesUrl = await getSignedUrl(
+        s3,
+        new GetObjectCommand({
+            Bucket: PAGE_BUILDER_S3_BUCKET,
+            Key: PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY
+        })
+    );
 
     fs.ensureDirSync(INSTALL_DIR);
     await download(installationFilesUrl, INSTALL_ZIP_PATH);
@@ -71,10 +66,13 @@ export const downloadAndExtractZip = async ({
     if (zipFileUrl) {
         installationFilesUrl = zipFileUrl;
     } else {
-        installationFilesUrl = await s3.getSignedUrlPromise("getObject", {
-            Bucket: PAGE_BUILDER_S3_BUCKET,
-            Key: zipFileKey
-        });
+        installationFilesUrl = await getSignedUrl(
+            s3,
+            new GetObjectCommand({
+                Bucket: PAGE_BUILDER_S3_BUCKET,
+                Key: zipFileKey
+            })
+        );
     }
 
     fs.ensureDirSync(INSTALL_DIR);

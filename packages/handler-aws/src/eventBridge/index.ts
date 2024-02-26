@@ -1,33 +1,33 @@
-import {
-    createHandler as createBaseHandler,
-    CreateHandlerParams as BaseCreateHandlerParams
-} from "@webiny/handler";
-const Reply = require("fastify/lib/reply");
-import { EventBridgeEvent, Context as LambdaContext } from "aws-lambda";
+import { createHandler as createBaseHandler } from "@webiny/handler";
+import { registerDefaultPlugins } from "~/plugins";
 import {
     EventBridgeEventHandler,
     EventBridgeEventHandlerCallableParams
-} from "./plugins/EventBridgeEventHandler";
-import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
-import { registerDefaultPlugins } from "~/plugins";
+} from "~/eventBridge/plugins/EventBridgeEventHandler";
 import { execute } from "~/execute";
+import { HandlerFactoryParams } from "~/types";
+import type { APIGatewayProxyResult, Context as LambdaContext, EventBridgeEvent } from "aws-lambda";
+/**
+ * We need a class, not an interface exported from types.
+ */
+// @ts-expect-error
+import Reply from "fastify/lib/reply";
+import { createComposedHandler } from "~/utils/composedHandler";
 
-const url = "/webiny-sqs-event";
+export * from "./plugins/EventBridgeEventHandler";
 
-export interface HandlerCallable<DetailType extends string, Detail> {
+export type HandlerParams = HandlerFactoryParams;
+
+export interface HandlerCallable {
     (
-        event: EventBridgeEvent<DetailType, Detail>,
+        event: EventBridgeEvent<string, string>,
         context: LambdaContext
     ): Promise<APIGatewayProxyResult>;
 }
 
-export interface CreateHandlerParams extends BaseCreateHandlerParams {
-    debug?: boolean;
-}
+const url = "/webiny-eventBridge-event";
 
-export const createHandler = <DetailType extends string, Detail>(
-    params: CreateHandlerParams
-): HandlerCallable<DetailType, Detail> => {
+export const createHandler = (params: HandlerParams): HandlerCallable => {
     return (payload, context) => {
         const app = createBaseHandler({
             ...params,
@@ -43,31 +43,45 @@ export const createHandler = <DetailType extends string, Detail>(
         /**
          * There must be an event plugin for this handler to work.
          */
-        const plugins = app.webiny.plugins.byType<EventBridgeEventHandler<DetailType, Detail>>(
-            EventBridgeEventHandler.type
-        );
-        const handler = plugins.shift();
-        if (!handler) {
+        const plugins = app.webiny.plugins
+            .byType<EventBridgeEventHandler<string, string>>(EventBridgeEventHandler.type)
+            .reverse();
+        if (plugins.length === 0) {
             throw new Error(
                 `To run @webiny/handler-aws/eventBridge, you must have EventBridgeEventHandler set.`
             );
         }
 
+        const handler = createComposedHandler<
+            EventBridgeEventHandler<string, string>,
+            EventBridgeEventHandlerCallableParams<string, string, APIGatewayProxyResult>,
+            APIGatewayProxyResult
+        >(plugins);
+
         app.post(url, async (request, reply) => {
-            const params: EventBridgeEventHandlerCallableParams<DetailType, Detail> = {
+            const params: Omit<
+                EventBridgeEventHandlerCallableParams<string, string, APIGatewayProxyResult>,
+                "next"
+            > = {
                 request,
                 reply,
                 context: app.webiny,
                 payload,
                 lambdaContext: context
             };
-            const result = await handler.cb(params);
+            const result = await handler(
+                params as unknown as EventBridgeEventHandlerCallableParams<
+                    string,
+                    string,
+                    APIGatewayProxyResult
+                >
+            );
 
             if (result instanceof Reply) {
                 return result;
             }
 
-            (app as any).__webiny_raw_result = result;
+            app.__webiny_raw_result = result;
             return reply.send({});
         });
         return execute({
@@ -77,5 +91,3 @@ export const createHandler = <DetailType extends string, Detail>(
         });
     };
 };
-
-export * from "./plugins/EventBridgeEventHandler";

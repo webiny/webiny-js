@@ -59,13 +59,16 @@ function ownAndInheritedPropertyNames(obj: DataModel) {
 class DataModel {
     protected _data: Record<string, any> = {};
 
-    toDTO() {
+    toDTO(): Record<string, any> {
         const names = ownAndInheritedPropertyNames(this);
 
-        return names.reduce((acc, key) => {
-            let value = (this as any)[key];
+        return names.reduce<Record<string, any>>((acc, key) => {
+            const value = this[key as keyof this];
             if (value instanceof DataModel) {
-                value = value.toDTO();
+                return {
+                    ...acc,
+                    [key]: value.toDTO()
+                };
             }
             return { ...acc, [key]: value };
         }, {});
@@ -73,7 +76,7 @@ class DataModel {
 
     populate(data: RawData) {
         Object.keys(data).forEach(key => {
-            (this as any)[key] = data[key];
+            this[key as keyof this] = data[key];
         });
     }
 }

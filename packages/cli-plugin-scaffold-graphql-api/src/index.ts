@@ -42,7 +42,7 @@ export const deployGraphQLAPI = (stack: string, env: string, inputs: unknown) =>
              * * packages/cli-plugin-scaffold-full-stack-app/src/index.ts:239
              * * packages/cli-plugin-scaffold-graphql-api/src/index.ts:345
              */
-            // @ts-ignore
+            // @ts-expect-error
             Boolean(inputs.debug) ? "true" : "false"
         ],
         {

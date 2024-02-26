@@ -72,7 +72,7 @@ interface EmptyTemplateDetailsProps {
     canCreate: boolean;
 }
 
-const EmptyTemplateDetails: React.FC<EmptyTemplateDetailsProps> = ({ onCreate, canCreate }) => {
+const EmptyTemplateDetails = ({ onCreate, canCreate }: EmptyTemplateDetailsProps) => {
     return (
         <EmptyView
             title={t`Click on the left side list to display page details {message} `({
@@ -80,7 +80,10 @@ const EmptyTemplateDetails: React.FC<EmptyTemplateDetailsProps> = ({ onCreate, c
             })}
             action={
                 canCreate ? (
-                    <ButtonDefault data-testid="new-record-button" onClick={onCreate}>
+                    <ButtonDefault
+                        data-testid="pb-templates-form-new-template-btn"
+                        onClick={onCreate}
+                    >
                         <ButtonIcon icon={<AddIcon />} /> {t`New Template`}
                     </ButtonDefault>
                 ) : (
@@ -134,7 +137,7 @@ const PageTemplatesDetails = ({
         <DetailsContainer>
             <RenderBlock>
                 <Elevation z={2}>
-                    <div style={{ position: "relative" }}>
+                    <div style={{ position: "relative" }} data-testid={"pb-page-templates-form"}>
                         {getPageTemplateQuery.loading && <CircularProgress />}
                         <HeaderTitle>
                             <PageTemplateTitle>

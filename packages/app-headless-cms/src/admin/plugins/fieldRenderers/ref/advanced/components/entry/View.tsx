@@ -10,10 +10,10 @@ const createEntryUrl = (entry: CmsReferenceContentEntry) => {
     }&folderId=${encodeURIComponent(folderId)}`;
 };
 
-interface Props {
+interface ViewProps {
     entry: CmsReferenceContentEntry;
 }
-export const View: React.VFC<Props> = ({ entry }) => {
+export const View = ({ entry }: ViewProps) => {
     return (
         <ButtonLink href={createEntryUrl(entry)} target="_blank" maxWidth={"95px"}>
             <ViewIcon /> <span>View</span>

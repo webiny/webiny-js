@@ -1,0 +1,25 @@
+{
+  "name": "@webiny/lexical-converter",
+  "version": "0.0.0",
+  "dependencies": {
+    "@lexical/headless": "^0.12.2",
+    "@lexical/html": "^0.12.2",
+    "@webiny/lexical-nodes": "0.0.0",
+    "lexical": "0.12.2"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.6",
+    "@webiny/cli": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "jsdom": "^24.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "test": "jest --verbose --runInBand --detectOpenHandles --forceExit"
+}

@@ -5,7 +5,7 @@ import { NoResultsWrapper } from "./styled";
 
 const t = i18n.ns("app-admin/file-manager/components/no-results");
 
-export const NoResults: React.FC = () => {
+export const NoResults = () => {
     return (
         <NoResultsWrapper>
             <div>{t`No results found.`}</div>

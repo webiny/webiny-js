@@ -44,7 +44,7 @@ interface MenusFormProps {
     canCreate: boolean;
 }
 
-const MenusForm: React.FC<MenusFormProps> = ({ canCreate }) => {
+const MenusForm = ({ canCreate }: MenusFormProps) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
 

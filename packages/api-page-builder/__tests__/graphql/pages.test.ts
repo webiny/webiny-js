@@ -1,6 +1,10 @@
 import useGqlHandler from "./useGqlHandler";
-import { waitPage } from "./utils/waitPage";
+
 import { defaultIdentity } from "../tenancySecurity";
+import { expectCompressed } from "~tests/graphql/utils/expectCompressed";
+import { decompress } from "./utils/compression";
+import { calculateSize, createPageContent } from "~tests/graphql/mocks/pageContent";
+import bytes from "bytes";
 
 jest.setTimeout(100000);
 
@@ -14,6 +18,7 @@ describe("CRUD Test", () => {
         createPageBlock,
         createPageElement,
         deletePage,
+        duplicatePage,
         listPages,
         getPage,
         updatePage,
@@ -114,17 +119,17 @@ describe("CRUD Test", () => {
                             src: `https://someimages.com/image-${i}.png`
                         }
                     }
-                }
+                },
+                /**
+                 * This basically creates a page content of 1MB in size
+                 */
+                content: createPageContent("1MB")
             };
 
-            const [updatePageResponse] = await updatePage({
+            await updatePage({
                 id,
                 data
             });
-
-            const updatedPage = updatePageResponse.data.pageBuilder.updatePage.data;
-
-            await waitPage(handler, updatedPage);
         }
 
         const [listAfterUpdateResponse] = await until(
@@ -423,16 +428,17 @@ describe("CRUD Test", () => {
             data: {
                 name: "element-name",
                 type: "element",
-                category: "element-category",
                 content: { some: "element-content" }
             }
         });
 
         const pageElementData = createPageElementResponse.data.pageBuilder.createPageElement.data;
 
+        const uncompressedBlock = await decompress(blockData);
+
         const updatedContent = {
-            ...blockData.content,
-            elements: [...blockData.content.elements, pageElementData]
+            ...uncompressedBlock,
+            elements: [...uncompressedBlock.content.elements, pageElementData]
         };
         const [updatePageBlockResult] = await updatePageBlock({
             id: blockData.id,
@@ -446,7 +452,7 @@ describe("CRUD Test", () => {
                     updatePageBlock: {
                         data: {
                             id: blockData.id,
-                            content: updatedContent
+                            content: expectCompressed()
                         },
                         error: null
                     }
@@ -496,7 +502,6 @@ describe("CRUD Test", () => {
             elements: [
                 {
                     id: pageElementData.id,
-                    category: "element-category",
                     name: "element-name",
                     content: { some: "element-content" },
                     type: "element",
@@ -507,5 +512,143 @@ describe("CRUD Test", () => {
             path: [],
             type: "block"
         });
+    });
+
+    it("should create a page with large amount of content", async () => {
+        await createCategory({
+            data: {
+                slug: `slug`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const [createPageResponse] = await createPage({
+            category: "slug"
+        });
+        const id = createPageResponse.data.pageBuilder.createPage.data.id;
+        expect(id).toMatch("#0001");
+
+        const content = createPageContent("3.2MB");
+        const size = calculateSize(content);
+
+        expect(size).toBeGreaterThan(bytes("3.19MB"));
+
+        const [updatePageResponse] = await updatePage({
+            id,
+            data: {
+                content
+            }
+        });
+
+        expect(updatePageResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    updatePage: {
+                        data: {
+                            id
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        expect(updatePageResponse.data.pageBuilder.updatePage.data.content).toEqual(content);
+
+        const [getPageResponse] = await getPage({ id });
+        expect(getPageResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        expect(getPageResponse.data.pageBuilder.getPage.data.content).toEqual(content);
+    });
+
+    it("should fail to update a page with above the limit content size", async () => {
+        await createCategory({
+            data: {
+                slug: `slug`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const [createPageResponse] = await createPage({
+            category: "slug"
+        });
+        const id = createPageResponse.data.pageBuilder.createPage.data.id;
+        expect(id).toMatch("#0001");
+
+        const content = createPageContent("4MB");
+        const size = calculateSize(content);
+
+        expect(size).toBeGreaterThan(bytes("3.99MB"));
+
+        const [updatePageResponse] = await updatePage({
+            id,
+            data: {
+                content
+            }
+        });
+
+        expect(updatePageResponse.data.pageBuilder.updatePage.error?.message).toEqual(
+            "Item size has exceeded the maximum allowed size"
+        );
+        expect(updatePageResponse.data.pageBuilder.updatePage.data).toBeNull();
+    });
+
+    it("should duplicate a page", async () => {
+        // Let's create a page and update it with some data
+        await createCategory({
+            data: {
+                slug: `slug`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const [createPageResponse] = await createPage({
+            category: "slug"
+        });
+
+        const id = createPageResponse.data.pageBuilder.createPage.data.id;
+        const content = createPageContent("1MB");
+        const settings = {
+            general: {
+                snippet: "any-snippet"
+            }
+        };
+
+        await updatePage({
+            id,
+            data: {
+                content,
+                settings
+            }
+        });
+
+        // Let's duplicate the page
+        const [duplicatePageResponse] = await duplicatePage({
+            id
+        });
+
+        expect(duplicatePageResponse.data.pageBuilder.duplicatePage.data.title).toContain(
+            " (Copy)"
+        );
+        expect(duplicatePageResponse.data.pageBuilder.duplicatePage.data.path).toContain("-copy");
+        expect(duplicatePageResponse.data.pageBuilder.duplicatePage.data.content).toEqual(content);
+        expect(
+            duplicatePageResponse.data.pageBuilder.duplicatePage.data.settings.general.snippet
+        ).toEqual(settings.general.snippet);
     });
 });

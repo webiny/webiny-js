@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from "react";
 import { RecoilRoot } from "recoil";
 import { Compose, HigherOrderComponent } from "@webiny/app-admin";
@@ -13,6 +12,10 @@ import { PbEditorElement } from "~/types";
 import omit from "lodash/omit";
 
 const EditorHOC: HigherOrderComponent<EditorProps> = () => {
+    /**
+     * TODO @pavel fix types
+     */
+    // @ts-expect-error
     return function Editor({ page, revisions }) {
         return (
             <EditorProvider>
@@ -29,6 +32,7 @@ const EditorHOC: HigherOrderComponent<EditorProps> = () => {
 
                         // Unsetting the `content` object because content is reconstructed from a flat structure on each
                         // save; thus, we don't need to store this massive object into our state.
+                        // @ts-expect-error
                         const pageData: PageAtomType = omit(page, ["content"]);
                         set(pageAtom, pageData);
                     }}

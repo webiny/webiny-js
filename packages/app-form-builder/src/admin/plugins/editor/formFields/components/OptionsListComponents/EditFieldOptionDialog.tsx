@@ -7,7 +7,7 @@ import { i18n } from "@webiny/app/i18n";
 /**
  * Package react-hotkeys does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { Hotkeys } from "react-hotkeyz";
 import { validation } from "@webiny/validation";
 
@@ -30,9 +30,7 @@ interface EditFieldOptionDialogProps<T = any> {
     options: any[];
 }
 
-const EditFieldOptionDialog: React.FC<EditFieldOptionDialogProps> = (
-    props: EditFieldOptionDialogProps
-) => {
+const EditFieldOptionDialog = (props: EditFieldOptionDialogProps) => {
     const { onClose, options, open, onSubmit, option, optionIndex } = props;
 
     return (

@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "@webiny/react-router";
+import { Route, Routes } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { List } from "@webiny/ui/List";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
@@ -17,6 +17,7 @@ import { Box } from "../Layout";
 import { PanelBox } from "./Styled";
 import { RightPanel } from "./RightPanel";
 import { PlaceholderBox } from "./PlaceholderBox";
+import { useFetchInterval } from "~/hooks/useFetchInterval";
 
 const t = i18n.ns("app-apw/admin/content-reviews/editor");
 
@@ -41,7 +42,7 @@ interface CreateChangeRequestProps {
     disabled: boolean;
 }
 
-const CreateChangeRequest: React.FC<CreateChangeRequestProps> = ({ create, disabled }) => {
+const CreateChangeRequest = ({ create, disabled }: CreateChangeRequestProps) => {
     if (disabled) {
         return (
             <CreateChangeRequestBox paddingX={5} paddingY={5}>
@@ -65,14 +66,25 @@ const CreateChangeRequest: React.FC<CreateChangeRequestProps> = ({ create, disab
     );
 };
 
+const CHANGE_REQUESTS_REFRESH_INTERVAL = 10000; // 10s
+
 export const CenterPanel = () => {
     const { setOpen } = useChangeRequestDialog();
-    const { changeRequests, loading } = useChangeRequestsList({ sorters: [] });
+    const { changeRequests, loading, refetch } = useChangeRequestsList({
+        sorters: []
+    });
     const { currentStep, changeRequestsPending } = useCurrentStep();
+
+    useFetchInterval({
+        interval: CHANGE_REQUESTS_REFRESH_INTERVAL,
+        callback: refetch,
+        loading
+    });
 
     if (loading) {
         return <Typography use={"caption"}>Loading Change requests...</Typography>;
     }
+
     return (
         <>
             <PanelBox flex={"1 1 22%"}>

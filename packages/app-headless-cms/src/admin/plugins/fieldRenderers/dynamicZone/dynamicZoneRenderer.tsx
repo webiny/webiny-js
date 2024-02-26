@@ -1,7 +1,7 @@
 import React from "react";
 import { css } from "emotion";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
-import { CmsEditorFieldRendererPlugin, CmsModelFieldRendererProps } from "~/types";
+import { CmsModelFieldRendererPlugin, CmsModelFieldRendererProps } from "~/types";
 import { SingleValueDynamicZone } from "./SingleValueDynamicZone";
 import { MultiValueDynamicZone } from "./MultiValueDynamicZone";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
@@ -12,11 +12,15 @@ const noBottomPadding = css`
     }
 `;
 
-const DynamicZoneContent: React.VFC<CmsModelFieldRendererProps> = ({
-    field,
-    getBind,
-    contentModel
-}) => {
+const DynamicZoneContent = ({ field, getBind, contentModel }: CmsModelFieldRendererProps) => {
+    const templates = field.settings?.templates || [];
+    if (!templates.length) {
+        console.info(
+            `Skipping "${field.fieldId}" field. There are no templates defined for this dynamic zone.`
+        );
+        return null;
+    }
+
     const isMultipleValues = field.multipleValues === true;
     const Bind = getBind();
 
@@ -52,7 +56,7 @@ const DynamicZoneContent: React.VFC<CmsModelFieldRendererProps> = ({
     );
 };
 
-export const dynamicZoneFieldRenderer: CmsEditorFieldRendererPlugin = {
+export const dynamicZoneFieldRenderer: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-dynamic-zone",
     renderer: {

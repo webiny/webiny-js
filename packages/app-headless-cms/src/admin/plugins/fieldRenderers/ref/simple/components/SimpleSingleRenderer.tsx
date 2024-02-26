@@ -5,12 +5,12 @@ import { useContentModels } from "./useContentModels";
 import { useReferences } from "./useReferences";
 import { AddItemParams, SimpleItems } from "./SimpleItems";
 
-interface Props {
+interface SimpleSingleRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue | undefined | null>;
     field: CmsModelField;
 }
 
-export const SimpleSingleRenderer: React.VFC<Props> = props => {
+export const SimpleSingleRenderer = (props: SimpleSingleRendererProps) => {
     const { field, bind } = props;
 
     const value = useMemo(() => {

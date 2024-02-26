@@ -18,19 +18,9 @@ export interface DropFilesHereProps {
     onClick?: (event?: React.MouseEvent<HTMLElement>) => void;
 }
 
-export const DropFilesHere: React.FC<DropFilesHereProps> = ({
-    onDrop,
-    onDragLeave,
-    empty,
-    onClick
-}) => {
+export const DropFilesHere = ({ empty, onClick }: DropFilesHereProps) => {
     return (
-        <DropFilesHereWrapper
-            empty={empty}
-            onDrop={onDrop}
-            onClick={onClick}
-            onDragLeave={onDragLeave}
-        >
+        <DropFilesHereWrapper empty={empty} onClick={onClick}>
             <DropFilesHereInner empty={empty}>
                 <DropFilesHereIconWrapper>
                     <Icon icon={<DropFilesHereIcon />} />

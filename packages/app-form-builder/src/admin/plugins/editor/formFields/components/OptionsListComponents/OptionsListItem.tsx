@@ -38,12 +38,12 @@ interface DefaultValueSwitchProps {
     onChange: (value: string[] | string) => void;
 }
 
-const DefaultValueSwitch: React.FC<DefaultValueSwitchProps> = ({
+const DefaultValueSwitch = ({
     multiple,
     option,
     value: currentDefaultValue,
     onChange: setDefaultValue
-}) => {
+}: DefaultValueSwitchProps) => {
     if (multiple) {
         const selected =
             Array.isArray(currentDefaultValue) && currentDefaultValue.includes(option.value);

@@ -1,23 +1,36 @@
-import React, { Suspense, lazy } from "react";
-import { Plugin, Layout, AddMenu, AddRoute } from "@webiny/app-admin";
+import React, { lazy, Suspense } from "react";
+import { AddMenu, AddRoute, Layout, Plugin } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-security";
 import { ReactComponent as FormsIcon } from "~/admin/icons/round-ballot-24px.svg";
 import { CircularProgress } from "@webiny/ui/Progress";
 import FormsSettings from "./admin/views/Settings/FormsSettings";
 
-const FormEditor = lazy(() => import("./admin/views/Editor"));
-const Forms = lazy(() => import("./admin/views/Forms/Forms"));
+const FormEditor = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "FormBuilderAdminViewsEditor" */
+            "./admin/views/Editor"
+        )
+);
+const Forms = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "FormBuilderAdminViewsForms" */
+            "./admin/views/Forms/Forms"
+        )
+);
 
 interface LoaderProps {
     label: string;
+    children: React.ReactNode;
 }
-const Loader: React.FC<LoaderProps> = ({ children, label, ...props }) => (
+const Loader = ({ children, label, ...props }: LoaderProps) => (
     <Suspense fallback={<CircularProgress label={label} />}>
         {React.cloneElement(children as unknown as React.ReactElement, props)}
     </Suspense>
 );
 
-export const FormBuilder: React.FC = () => {
+export const FormBuilder = () => {
     return (
         <Plugin>
             <HasPermission name={"fb.form"}>

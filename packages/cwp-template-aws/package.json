@@ -11,6 +11,7 @@
     "directory": "."
   },
   "dependencies": {
+    "@webiny/aws-sdk": "0.0.0",
     "@webiny/cli": "0.0.0",
     "@webiny/cli-plugin-deploy-pulumi": "0.0.0",
     "chalk": "^4.1.0",
@@ -20,8 +21,8 @@
     "get-yarn-workspaces": "1.0.2",
     "inquirer": "7.3.3",
     "load-json-file": "6.2.0",
-    "lodash": "^4.17.20",
-    "ora": "4.1.1",
+    "lodash": "4.17.21",
+    "open": "^8.4.0",
     "write-json-file": "4.3.0"
   },
   "devDependencies": {

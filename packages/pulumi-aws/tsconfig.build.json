@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../pulumi/tsconfig.build.json" },
     { "path": "../api-page-builder/tsconfig.build.json" }
   ],

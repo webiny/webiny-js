@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useRichTextEditor } from "~/hooks/useRichTextEditor";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { FileManagerFileItem, fileToImagePayload } from "~/utils/files";
-import { ImagePayload, INSERT_IMAGE_COMMAND } from "~/commands/insertFiles";
 import { LexicalCommand } from "lexical";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useRichTextEditor } from "~/hooks/useRichTextEditor";
+import { FileManagerFileItem, fileToImagePayload } from "~/utils/files";
+import { ImagePayload, INSERT_IMAGE_COMMAND } from "~/commands";
 import { ToolbarActionPlugin } from "~/types";
 
 export const ImageAction = () => {
@@ -22,7 +22,7 @@ export const ImageAction = () => {
 
     const handleClick = () => {
         if (typeof imageActionPlugin?.plugin === "function") {
-            imageActionPlugin?.plugin((data: FileManagerFileItem) => {
+            const cb = (data: FileManagerFileItem) => {
                 const imagePayload = fileToImagePayload(data);
                 if (imagePayload) {
                     editor.dispatchCommand<LexicalCommand<ImagePayload>>(
@@ -30,7 +30,8 @@ export const ImageAction = () => {
                         imagePayload
                     );
                 }
-            });
+            };
+            imageActionPlugin.plugin(cb);
         }
     };
 

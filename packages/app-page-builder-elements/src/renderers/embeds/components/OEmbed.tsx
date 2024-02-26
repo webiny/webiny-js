@@ -18,7 +18,7 @@ export interface OEmbedProps {
 function appendSDK(props: OEmbedProps): Promise<void> {
     const { sdk, global, element } = props;
     const { url } = element?.data?.source || {};
-    // @ts-ignore Figure out better type for global.
+    // @ts-expect-error Figure out better type for global.
     if (!sdk || !url || window[global]) {
         return Promise.resolve();
     }
@@ -53,7 +53,7 @@ const CenterAlign = styled.div({
     }
 });
 
-export const OEmbed: React.FC<OEmbedProps> = props => {
+export const OEmbed = (props: OEmbedProps) => {
     const { element, renderEmbed } = props;
     const { url } = element?.data?.source || {};
 

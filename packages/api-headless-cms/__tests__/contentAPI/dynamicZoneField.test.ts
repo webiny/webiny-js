@@ -3,8 +3,16 @@ import { setupGroupAndModels } from "../testHelpers/setup";
 import { usePageManageHandler } from "../testHelpers/usePageManageHandler";
 import { usePageReadHandler } from "../testHelpers/usePageReadHandler";
 import { useAuthorManageHandler } from "~tests/testHelpers/useAuthorManageHandler";
+import { CmsModel } from "~tests/types";
 
 const singularPageApiName = pageModel.singularApiName;
+
+const withTemplateId = (data: Record<string, any>) => {
+    return {
+        ...data,
+        content: data.content.map((obj: any) => ({ ...obj, _templateId: expect.any(String) }))
+    };
+};
 
 const contentEntryQueryData = {
     content: [
@@ -23,16 +31,39 @@ const contentEntryQueryData = {
         {
             __typename: `${singularPageApiName}_Content_Objecting`,
             nestedObject: {
+                __typename: `${singularPageApiName}_Content_Objecting_NestedObject`,
                 objectNestedObject: [
                     {
-                        nestedObjectNestedTitle: "Objective nested title #1"
+                        nestedObjectNestedTitle: "Content Objecting nested title #1"
                     },
                     {
-                        nestedObjectNestedTitle: "Objective nested title #2"
+                        nestedObjectNestedTitle: "Content Objecting nested title #2"
                     }
                 ],
                 objectTitle: "Objective title #1"
+            },
+            dynamicZone: {
+                __typename: `${singularPageApiName}_Content_Objecting_DynamicZone_SuperNestedObject`,
+                authors: [
+                    {
+                        modelId: "author",
+                        id: "john-doe#0001"
+                    }
+                ]
             }
+        },
+        {
+            __typename: `${singularPageApiName}_Content_Author`,
+            author: {
+                modelId: "author",
+                id: "john-doe#0001"
+            },
+            authors: [
+                {
+                    modelId: "author",
+                    id: "john-doe#0001"
+                }
+            ]
         }
     ],
     header: {
@@ -77,14 +108,24 @@ const contentEntryQueryData = {
         },
         __typename: `${singularPageApiName}_Reference_Author`
     },
-    references: [
+    references1: {
+        authors: [
+            {
+                id: "john-doe#0001",
+                modelId: "author",
+                __typename: "RefField"
+            }
+        ],
+        __typename: `${singularPageApiName}_References1_Authors`
+    },
+    references2: [
         {
             author: {
                 id: "john-doe#0001",
                 modelId: "author",
                 __typename: "RefField"
             },
-            __typename: `${singularPageApiName}_References_Author`
+            __typename: `${singularPageApiName}_References2_Author`
         }
     ]
 };
@@ -106,13 +147,37 @@ const contentEntryMutationData = {
                     objectTitle: "Objective title #1",
                     objectNestedObject: [
                         {
-                            nestedObjectNestedTitle: "Objective nested title #1"
+                            nestedObjectNestedTitle: "Content Objecting nested title #1"
                         },
                         {
-                            nestedObjectNestedTitle: "Objective nested title #2"
+                            nestedObjectNestedTitle: "Content Objecting nested title #2"
                         }
                     ]
+                },
+                dynamicZone: {
+                    SuperNestedObject: {
+                        authors: [
+                            {
+                                modelId: "author",
+                                id: "john-doe#0001"
+                            }
+                        ]
+                    }
                 }
+            }
+        },
+        {
+            Author: {
+                author: {
+                    modelId: "author",
+                    id: "john-doe#0001"
+                },
+                authors: [
+                    {
+                        modelId: "author",
+                        id: "john-doe#0001"
+                    }
+                ]
             }
         }
     ],
@@ -160,7 +225,17 @@ const contentEntryMutationData = {
             }
         }
     },
-    references: [
+    references1: {
+        Authors: {
+            authors: [
+                {
+                    id: "john-doe#0001",
+                    modelId: "author"
+                }
+            ]
+        }
+    },
+    references2: [
         {
             Author: {
                 author: {
@@ -202,7 +277,10 @@ describe("dynamicZone field", () => {
     });
 
     beforeEach(async () => {
-        await setupGroupAndModels({ manager: manage, models: ["author", pageModel as any] });
+        await setupGroupAndModels({
+            manager: manage,
+            models: ["author", pageModel as unknown as CmsModel]
+        });
         await setupAuthor({
             manager: authorManager
         });
@@ -218,12 +296,30 @@ describe("dynamicZone field", () => {
                 createPage: {
                     data: {
                         id: expect.any(String),
-                        ...contentEntryQueryData
+                        ...withTemplateId(contentEntryQueryData)
                     },
                     error: null
                 }
             }
         });
+
+        const [updatePageResponse] = await manage.updatePage({
+            revision: createPageResponse.data.createPage.data.id,
+            data: contentEntryMutationData
+        });
+
+        expect(updatePageResponse).toEqual({
+            data: {
+                updatePage: {
+                    data: {
+                        id: expect.any(String),
+                        ...withTemplateId(contentEntryQueryData)
+                    },
+                    error: null
+                }
+            }
+        });
+
         const page = createPageResponse.data.createPage.data;
 
         const [manageList] = await manage.listPages();
@@ -234,7 +330,7 @@ describe("dynamicZone field", () => {
                     data: [
                         {
                             id: page.id,
-                            ...contentEntryQueryData
+                            ...withTemplateId(contentEntryQueryData)
                         }
                     ],
                     meta: {
@@ -257,7 +353,7 @@ describe("dynamicZone field", () => {
                 getPage: {
                     data: {
                         id: page.id,
-                        ...contentEntryQueryData
+                        ...withTemplateId(contentEntryQueryData)
                     },
                     error: null
                 }
@@ -281,21 +377,64 @@ describe("dynamicZone field", () => {
                     data: {
                         id: page.id,
                         ...contentEntryQueryData,
+                        content: [
+                            ...contentEntryQueryData.content.slice(0, 3),
+                            {
+                                ...contentEntryQueryData.content[3],
+                                dynamicZone: {
+                                    authors: [
+                                        {
+                                            entryId: "john-doe",
+                                            fullName: "John Doe",
+                                            id: "john-doe#0001",
+                                            modelId: "author"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                __typename: contentEntryQueryData.content[4].__typename,
+                                author: {
+                                    entryId: "john-doe",
+                                    fullName: "John Doe",
+                                    id: "john-doe#0001",
+                                    modelId: "author"
+                                },
+                                authors: [
+                                    {
+                                        entryId: "john-doe",
+                                        fullName: "John Doe",
+                                        id: "john-doe#0001",
+                                        modelId: "author"
+                                    }
+                                ]
+                            }
+                        ],
                         reference: {
                             author: {
                                 entryId: "john-doe",
                                 fullName: "John Doe",
-                                id: contentEntryQueryData.reference.author.id,
-                                modelId: contentEntryQueryData.reference.author.modelId
+                                id: "john-doe#0001",
+                                modelId: "author"
                             }
                         },
-                        references: [
+                        references1: {
+                            authors: [
+                                {
+                                    entryId: "john-doe",
+                                    fullName: "John Doe",
+                                    id: "john-doe#0001",
+                                    modelId: "author"
+                                }
+                            ]
+                        },
+                        references2: [
                             {
                                 author: {
                                     entryId: "john-doe",
                                     fullName: "John Doe",
-                                    id: contentEntryQueryData.references[0].author.id,
-                                    modelId: contentEntryQueryData.references[0].author.modelId
+                                    id: "john-doe#0001",
+                                    modelId: "author"
                                 }
                             }
                         ]

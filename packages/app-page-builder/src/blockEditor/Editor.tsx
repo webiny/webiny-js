@@ -10,21 +10,22 @@ import {
     ListPageElementsQueryResponse,
     ListPageElementsQueryResponseData
 } from "~/admin/graphql/pages";
-import { GET_PAGE_BLOCK, ListPageBlocksQueryResponse } from "~/admin/views/PageBlocks/graphql";
 import createElementPlugin from "~/admin/utils/createElementPlugin";
 import { createStateInitializer } from "./createStateInitializer";
 import { BlockEditorConfig } from "./config/BlockEditorConfig";
 import { BlockWithContent } from "~/blockEditor/state";
-import { createElement, addElementId } from "~/editor/helpers";
-import { PbPageBlock, PbEditorElement } from "~/types";
+import { createElement } from "~/editor/helpers";
+import { PbEditorElement } from "~/types";
 import elementVariablePlugins from "~/blockEditor/plugins/elementVariables";
+import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
 
-export const BlockEditor: React.FC = () => {
+export const BlockEditor = () => {
     plugins.register(elementVariablePlugins());
     const client = useApolloClient();
     const { params } = useRouter();
     const [block, setBlock] = useState<BlockWithContent>();
     const blockId = decodeURIComponent(params["id"]);
+    const { getBlockById } = usePageBlocks();
 
     const LoadData = useMemo(() => {
         // First, load saved page elements, because we can use these to build new blocks.
@@ -44,28 +45,18 @@ export const BlockEditor: React.FC = () => {
                 });
             });
 
-        const blockData = client
-            .query<ListPageBlocksQueryResponse>({
-                query: GET_PAGE_BLOCK,
-                variables: { id: blockId }
-            })
-            .then(({ data }) => {
-                const pageBlockData = get(
-                    data,
-                    "pageBuilder.getPageBlock.data"
-                ) as unknown as PbPageBlock;
+        const blockData = getBlockById(blockId).then(pageBlock => {
+            // We need to wrap all elements into a "document" element, it's a requirement for the editor to work.
+            const content: PbEditorElement = {
+                ...createElement("document"),
+                elements: [pageBlock.content]
+            };
 
-                // We need to wrap all elements into a "document" element, it's a requirement for the editor to work.
-                const content: PbEditorElement = {
-                    ...createElement("document"),
-                    elements: [addElementId(pageBlockData.content)]
-                };
-
-                setBlock({
-                    ...pageBlockData,
-                    content
-                });
+            setBlock({
+                ...pageBlock,
+                content
             });
+        });
 
         return React.lazy(() =>
             Promise.all([savedElements, blockData]).then(() => {

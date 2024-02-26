@@ -8,7 +8,7 @@ import {
 } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import { TenancyContext, TenancyStorageOperations } from "@webiny/api-tenancy/types";
+import { TenancyContext, TenancyStorageOperations, Tenant } from "@webiny/api-tenancy/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 
 interface Config {
@@ -26,7 +26,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
         createSecurityContext({ storageOperations: securityStorage.storageOperations }),
         createSecurityGraphQL(),
         new ContextPlugin<SecurityContext & TenancyContext>(context => {
-            context.tenancy.setCurrentTenant({ id: "root", name: "Root" } as any);
+            context.tenancy.setCurrentTenant({ id: "root", name: "Root" } as Tenant);
 
             context.security.addAuthenticator(async () => {
                 return (

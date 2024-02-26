@@ -1,4 +1,3 @@
-// @ts-nocheck
 import styled from "@emotion/styled";
 
 export const AddImageIconWrapper = styled("div")({
@@ -71,6 +70,7 @@ export const FilePreviewWrapper = styled("div")({
     backgroundColor: "var(--mdc-theme-on-background)",
     borderRadius: 0,
     borderBottom: "1px solid var(--mdc-theme-text-hint-on-background)",
+    // @ts-expect-error
     [AddImageWrapper]: {
         position: "absolute",
         display: "none",
@@ -78,6 +78,7 @@ export const FilePreviewWrapper = styled("div")({
         height: "100%",
         zIndex: 1,
         backgroundColor: "rgba(0,0,0, 0.75)",
+        // @ts-expect-error
         [AddImageIconWrapper]: {
             top: "50%",
             left: "50%",
@@ -87,9 +88,11 @@ export const FilePreviewWrapper = styled("div")({
         }
     },
     "&:hover": {
+        // @ts-expect-error
         [AddImageWrapper]: {
             display: "block"
         },
+        // @ts-expect-error
         [RemoveImage]: {
             display: "block",
             zIndex: 2

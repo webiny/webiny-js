@@ -13,12 +13,12 @@ interface IconProps {
     showingFilters?: boolean;
 }
 
-const Icon: React.VFC<IconProps> = ({ showingFilters }) => {
+const Icon = ({ showingFilters }: IconProps) => {
     return showingFilters ? <CloseFilterIcon /> : <FilterIcon />;
 };
 const IconComponent = React.memo(Icon);
 
-export const ButtonFilters: React.VFC = () => {
+export const ButtonFilters = () => {
     const list = useContentEntriesList();
 
     const toggleFilters = useCallback(() => {

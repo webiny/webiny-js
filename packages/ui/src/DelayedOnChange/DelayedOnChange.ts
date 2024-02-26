@@ -40,7 +40,7 @@ export interface DelayedOnChangeProps {
     onKeyDown?: OnKeyDownCallable;
     children: React.ReactNode | ChildrenCallable;
 }
-export const DelayedOnChange: React.FC<DelayedOnChangeProps> = ({ children, ...other }) => {
+export const DelayedOnChange = ({ children, ...other }: DelayedOnChangeProps) => {
     const { onChange, delay = 400, value: initialValue } = other;
     const [value, setValue] = useState<string | undefined>(initialValue);
     // Sync state and props

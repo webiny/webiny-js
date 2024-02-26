@@ -53,7 +53,7 @@ interface SettingsPropsType extends PbEditorPageElementSettingsRenderComponentPr
         [key: string]: any;
     };
 }
-const BackgroundSettings: React.FC<SettingsPropsType> = ({ options, defaultAccordionValue }) => {
+const BackgroundSettings = ({ options, defaultAccordionValue }: SettingsPropsType) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(
@@ -93,15 +93,15 @@ const BackgroundSettings: React.FC<SettingsPropsType> = ({ options, defaultAccor
         [getUpdateValue, displayMode]
     );
     const setPosition = useCallback(
-        value => getUpdateValue(`${displayMode}.image.position`)(value),
+        (value: string) => getUpdateValue(`${displayMode}.image.position`)(value),
         [getUpdateValue, displayMode]
     );
     const setColor = useCallback(
-        value => getUpdateValue(`${displayMode}.color`)(value),
+        (value: string) => getUpdateValue(`${displayMode}.color`)(value),
         [getUpdateValue, displayMode]
     );
     const onColorChange = useCallback(
-        value => getUpdatePreview(`${displayMode}.color`)(value),
+        (value: string) => getUpdatePreview(`${displayMode}.color`)(value),
         [getUpdatePreview, displayMode]
     );
 

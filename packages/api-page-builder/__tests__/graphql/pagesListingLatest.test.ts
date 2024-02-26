@@ -1,6 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
 import { Page } from "~/types";
-import { waitPage } from "./utils/waitPage";
 
 jest.setTimeout(100000);
 
@@ -40,7 +39,6 @@ describe("listing latest pages", () => {
                 throw new Error(response.data.pageBuilder.createPage.error.message);
             }
 
-            await waitPage(handler, page);
             const title = `page-${letter}`;
             const [updateResponse] = await updatePage({
                 id: page.id,
@@ -158,7 +156,6 @@ describe("listing latest pages", () => {
                 throw new Error(res.data.pageBuilder.createPage.error.message);
             }
             const page = res.data.pageBuilder.createPage.data;
-            await waitPage(handler, page);
             await updatePage({
                 id: page.id,
                 data: {
@@ -223,17 +220,12 @@ describe("listing latest pages", () => {
 
             const page = response.data.pageBuilder.createPage.data;
 
-            await waitPage(handler, page);
             const title = `page-${letter}`;
             await updatePage({
                 id: page.id,
                 data: {
                     title
                 }
-            });
-            await waitPage(handler, {
-                ...page,
-                title
             });
         }
 
@@ -821,14 +813,10 @@ describe("listing latest pages", () => {
             });
 
             const page = createPageResponse.data.pageBuilder.createPage.data;
-            await waitPage(handler, page);
+
             await updatePage({
                 id: page.id,
                 data
-            });
-            await waitPage(handler, {
-                ...page,
-                title: data.title
             });
         }
 
@@ -836,12 +824,13 @@ describe("listing latest pages", () => {
             () =>
                 listPages({
                     search: {
-                        query: "title for seo"
+                        query: "page title for seo"
                     }
                 }),
             ([res]: any) => res.data.pageBuilder.listPages.data[0].title === TITLE_SEO,
             {
-                name: "list pages title for seo search"
+                name: "list pages title for seo search",
+                debounce: 1000
             }
         );
 
@@ -878,19 +867,12 @@ describe("listing latest pages", () => {
             { title: "Serverless Side Rendering — The Ultimate Guide" }
         ]);
 
-        const [listPagesSearchServerlessWorthIt] = await until(
-            () =>
-                listPages({
-                    search: {
-                        query: "serverless worth it"
-                    },
-                    sort: ["createdOn_ASC"]
-                }),
-            ([res]: any) => res.data.pageBuilder.listPages.data.length === 3,
-            {
-                name: "list pages serverless worth it"
-            }
-        );
+        const [listPagesSearchServerlessWorthIt] = await listPages({
+            search: {
+                query: "serverless worth it"
+            },
+            sort: ["createdOn_ASC"]
+        });
 
         expect(listPagesSearchServerlessWorthIt.data.pageBuilder.listPages.data).toMatchObject([
             { title: "What is Serverless and is it worth it?" },

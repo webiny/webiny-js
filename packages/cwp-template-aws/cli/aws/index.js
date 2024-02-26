@@ -1,5 +1,1 @@
-module.exports = [
-    require("./checkCredentials"),
-    require("./checkEsServiceRole"),
-    require("./subscriptionRequiredException")
-];
+module.exports = [require("./checkCredentials"), require("./subscriptionRequiredException")];

@@ -16,11 +16,15 @@ describe("context", () => {
         }
 
         expect(context.wcp).toEqual({
+            canUseAacl: expect.any(Function),
             getProjectLicense: expect.any(Function),
             getProjectEnvironment: expect.any(Function),
             canUseFeature: expect.any(Function),
             ensureCanUseFeature: expect.any(Function),
             incrementSeats: expect.any(Function),
+            canUseFolderLevelPermissions: expect.any(Function),
+            canUsePrivateFiles: expect.any(Function),
+            canUseTeams: expect.any(Function),
             decrementSeats: expect.any(Function),
             incrementTenants: expect.any(Function),
             decrementTenants: expect.any(Function)

@@ -44,11 +44,10 @@ export const LongScalar = new GraphQLScalarType({
     },
     parseValue,
     parseLiteral: ast => {
-        const value = (ast as any).value;
         if (ast.kind === Kind.INT) {
-            return parseInt(value);
+            return parseInt(ast.value);
         }
 
-        throw new Error(`Expected type Long, found {${value}}`);
+        throw new Error(`Expected type Long, found {${ast.kind}}`);
     }
 });

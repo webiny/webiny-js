@@ -19,7 +19,11 @@ export const useScheduleActionDialog = (): ScheduleActionDialogContextValue => {
     return useContext(ScheduleActionDialogContext);
 };
 
-export const ScheduleActionDialogProvider: React.FC = ({ children }) => {
+interface ScheduleActionDialogProviderProps {
+    children: React.ReactNode;
+}
+
+export const ScheduleActionDialogProvider = ({ children }: ScheduleActionDialogProviderProps) => {
     const [action, setAction] = useState<ScheduleActionType>("publish");
     const [openPublishNowDialog, setOpenPublishNowDialog] = useState<boolean>(false);
     const [openPublishLaterDialog, setOpenPublishLaterDialog] = useState<boolean>(false);

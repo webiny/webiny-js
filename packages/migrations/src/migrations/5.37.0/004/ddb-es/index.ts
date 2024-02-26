@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { Client } from "@elastic/elasticsearch";
 import {
     DataMigration,
@@ -16,7 +16,11 @@ export * from "../types";
 export class AcoRecords_5_37_0_004 implements DataMigration {
     private readonly migrations: DataMigration[];
 
-    constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
+    constructor(
+        table: Table<string, string, string>,
+        esTable: Table<string, string, string>,
+        elasticsearchClient: Client
+    ) {
         this.migrations = [new AcoRecords_5_37_0_004_PageData(table, esTable, elasticsearchClient)];
     }
 

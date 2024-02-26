@@ -6,15 +6,34 @@ import { Row } from "./DefaultFormLayout/Row";
 import { Cell } from "./DefaultFormLayout/Cell";
 import { Field } from "./DefaultFormLayout/Field";
 import { SuccessMessage } from "./DefaultFormLayout/SuccessMessage";
-import { SubmitButton } from "./DefaultFormLayout/SubmitButton";
 import { TermsOfServiceSection } from "./DefaultFormLayout/TermsOfServiceSection";
 import { ReCaptchaSection } from "./DefaultFormLayout/ReCaptchaSection";
+import { Button } from "./DefaultFormLayout/buttons/Button";
 
 const Wrapper = styled.div`
     width: 100%;
     padding: 0 5px 5px 5px;
     box-sizing: border-box;
     background-color: ${props => props.theme.styles.colors["color6"]};
+`;
+
+const ButtonsWrapper = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    & button {
+        height: 45px;
+    }
+
+    & button:first-of-type {
+        margin-right: 15px;
+    }
+`;
+
+const StepTitle = styled.div`
+    font-size: 1.2em;
+    height: 1.2em;
 `;
 
 /**
@@ -27,6 +46,13 @@ const DefaultFormLayout: FormLayoutComponent = ({
     getFields,
     getDefaultValues,
     submit,
+    goToNextStep,
+    goToPreviousStep,
+    isLastStep,
+    isFirstStep,
+    isMultiStepForm,
+    currentStepIndex,
+    currentStep,
     formData,
     ReCaptcha,
     reCaptchaEnabled,
@@ -40,17 +66,19 @@ const DefaultFormLayout: FormLayoutComponent = ({
     const [formSuccess, setFormSuccess] = useState(false);
 
     // All form fields - an array of rows where each row is an array that contain fields.
-    const fields = getFields();
+    const fields = getFields(currentStepIndex);
 
-    /**
-     * Once the data is successfully submitted, we show a success message.
-     */
+    // Once the data is successfully submitted, we show a success message.
     const submitForm = async (data: Record<string, any>): Promise<void> => {
-        setLoading(true);
-        const result = await submit(data);
-        setLoading(false);
-        if (result.error === null) {
-            setFormSuccess(true);
+        if (isLastStep) {
+            setLoading(true);
+            const result = await submit(data);
+            setLoading(false);
+            if (result.error === null) {
+                setFormSuccess(true);
+            }
+        } else {
+            goToNextStep();
         }
     };
 
@@ -64,6 +92,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
         <Form onSubmit={submitForm} data={getDefaultValues()}>
             {({ submit }) => (
                 <Wrapper>
+                    {isMultiStepForm && <StepTitle>{currentStep?.title}</StepTitle>}
                     {fields.map((row, rowIndex) => (
                         <Row key={rowIndex}>
                             {row.map(field => (
@@ -73,17 +102,53 @@ const DefaultFormLayout: FormLayoutComponent = ({
                             ))}
                         </Row>
                     ))}
-
                     {termsOfServiceEnabled && <TermsOfServiceSection component={TermsOfService} />}
                     {reCaptchaEnabled && <ReCaptchaSection component={ReCaptcha} />}
-
-                    <SubmitButton
-                        onClick={submit}
-                        loading={loading}
-                        fullWidth={formData.settings.fullWidthSubmitButton}
-                    >
-                        {formData.settings.submitButtonLabel || "Submit"}
-                    </SubmitButton>
+                    {/*
+                        If the form has more than one step then the form will be recognized as a Multi Step Form,
+                        so it means that we need to render form step handlers to switch between steps.
+                    */}
+                    {isMultiStepForm && (
+                        <ButtonsWrapper>
+                            <Button
+                                fullWidth={false}
+                                onClick={goToPreviousStep}
+                                disabled={isFirstStep}
+                            >
+                                Previous Step
+                            </Button>
+                            {isLastStep ? (
+                                <Button
+                                    type="primary"
+                                    onClick={submit}
+                                    disabled={loading}
+                                    fullWidth={false}
+                                >
+                                    {formData.settings.submitButtonLabel || "Submit"}
+                                </Button>
+                            ) : (
+                                <Button
+                                    type="primary"
+                                    onClick={submit}
+                                    disabled={loading}
+                                    fullWidth={false}
+                                >
+                                    Next Step
+                                </Button>
+                            )}
+                        </ButtonsWrapper>
+                    )}
+                    {/* If form is single step then we just render submit button */}
+                    {!isMultiStepForm && (
+                        <Button
+                            type="primary"
+                            onClick={submit}
+                            disabled={loading}
+                            fullWidth={formData.settings.fullWidthSubmitButton}
+                        >
+                            {formData.settings.submitButtonLabel || "Submit"}
+                        </Button>
+                    )}
                 </Wrapper>
             )}
         </Form>

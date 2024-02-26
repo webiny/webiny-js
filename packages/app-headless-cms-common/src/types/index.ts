@@ -26,11 +26,16 @@ export * from "./shared";
 interface QueryFieldParams {
     model: CmsModel;
     field: CmsModelField;
+    graphQLTypePrefix: string;
 }
 
 interface Position {
     row: number;
     index: number;
+}
+
+interface Location {
+    folderId: string;
 }
 
 export interface DragSource extends DragObjectWithType {
@@ -208,7 +213,7 @@ export interface CmsModelFieldTypePlugin extends Plugin {
              * }
              * ```
              */
-            queryField?: string | ((params: QueryFieldParams) => string);
+            queryField?: string | ((params: QueryFieldParams) => string | null);
         };
         getChildFields?: (
             client: ApolloClient<any>,
@@ -229,8 +234,8 @@ export interface CmsModelFieldTypePlugin extends Plugin {
 
 export interface CmsModelFieldRendererProps {
     field: CmsModelField;
-    Label: React.FC;
-    getBind: (index?: number, key?: string) => BindComponent;
+    Label: React.ComponentType;
+    getBind: <T = any, F = any>(index?: number, key?: string) => BindComponent<T, F>;
     contentModel: CmsModel;
 }
 
@@ -347,14 +352,32 @@ export type CmsEditorContentEntry = CmsContentEntry;
 
 export interface CmsContentEntry {
     id: string;
-    savedOn: string;
     modelId: string;
+    createdOn: string;
     createdBy: CmsIdentity;
+    savedOn: string;
+    savedBy: CmsIdentity;
+    modifiedOn: string | null;
+    modifiedBy: CmsIdentity | null;
+    firstPublishedOn: string | null;
+    firstPublishedBy: CmsIdentity | null;
+    lastPublishedOn: string | null;
+    lastPublishedBy: CmsIdentity | null;
+    revisionCreatedOn: string;
+    revisionCreatedBy: CmsIdentity;
+    revisionSavedOn: string;
+    revisionSavedBy: CmsIdentity;
+    revisionModifiedOn: string | null;
+    revisionModifiedBy: CmsIdentity | null;
+    revisionFirstPublishedOn: string | null;
+    revisionFirstPublishedBy: CmsIdentity | null;
+    revisionLastPublishedOn: string | null;
+    revisionLastPublishedBy: CmsIdentity | null;
+    wbyAco_location: Location;
     meta: {
         title: string;
         description?: string;
         image?: string;
-        publishedOn: string;
         locked: boolean;
         status: CmsContentEntryStatusType;
         version: number;
@@ -364,19 +387,31 @@ export interface CmsContentEntry {
 
 export interface CmsContentEntryRevision {
     id: string;
-    savedOn: string;
     modelId: string;
+    savedOn: string;
+    firstPublishedOn: string | null;
+    lastPublishedOn: string | null;
     createdBy: CmsIdentity;
+    revisionCreatedOn: string;
+    revisionSavedOn: string;
+    revisionModifiedOn: string;
+    revisionFirstPublishedOn: string;
+    revisionLastPublishedOn: string;
+    revisionCreatedBy: CmsIdentity;
+    revisionSavedBy: CmsIdentity;
+    revisionModifiedBy: CmsIdentity;
+    revisionFirstPublishedBy: CmsIdentity;
+    revisionLastPublishedBy: CmsIdentity;
+    wbyAco_location: Location;
     meta: {
         title: string;
-        publishedOn: string;
         locked: boolean;
         status: CmsContentEntryStatusType;
         version: number;
     };
 }
 
-export type CmsEditorContentTab = React.FC<{ activeTab: boolean }>;
+export type CmsEditorContentTab = React.ComponentType<{ activeTab: boolean }>;
 
 // ------------------------------------------------------------------------------------------------------------
 export interface CmsEditorFieldOptionPlugin extends Plugin {
@@ -503,7 +538,7 @@ export interface CmsSecurityPermission extends SecurityPermission {
 export interface CmsErrorResponse {
     message: string;
     code: string;
-    data: Record<string, any> | Record<string, any>[];
+    data: Record<string, any>;
 }
 /**
  * @category GraphQL
@@ -529,12 +564,13 @@ export interface BindComponentRenderProp<T = any, F = Record<string, any>>
     moveValueDown: (index: number) => void;
 }
 
-interface BindComponentProps extends Omit<BaseBindComponentProps, "children" | "name"> {
+interface BindComponentProps<T = any, F = any>
+    extends Omit<BaseBindComponentProps, "children" | "name"> {
     name?: string;
-    children?: ((props: BindComponentRenderProp) => React.ReactElement) | React.ReactElement;
+    children?: ((props: BindComponentRenderProp<T, F>) => React.ReactElement) | React.ReactElement;
 }
 
-export type BindComponent = React.FC<BindComponentProps> & {
+export type BindComponent<T = any, F = any> = React.ComponentType<BindComponentProps<T, F>> & {
     parentName?: string;
 };
 

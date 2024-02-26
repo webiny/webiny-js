@@ -2,7 +2,7 @@ import DataLoader from "dataloader";
 import WebinyError from "@webiny/error";
 import { CmsModel, CmsStorageEntry } from "@webiny/api-headless-cms/types";
 import { CacheKeyParams, DataLoaderCache } from "~/operations/entry/dataLoader/DataLoaderCache";
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { DataLoaders, getDataLoaderFactory } from "~/operations/entry/dataLoader";
 import { parseIdentifier } from "@webiny/utils";
 import { DataLoadersHandlerInterface, DataLoadersHandlerInterfaceClearAllParams } from "~/types";

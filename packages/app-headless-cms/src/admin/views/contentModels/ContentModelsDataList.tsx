@@ -1,9 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { css } from "emotion";
 import { useRouter } from "@webiny/react-router";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
@@ -34,6 +30,10 @@ import usePermission from "~/admin/hooks/usePermission";
 import styled from "@emotion/styled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { OptionsMenu } from "./OptionsMenu";
+import { ReactComponent as DownloadFileIcon } from "@webiny/app-admin/assets/icons/file_download.svg";
+import { ReactComponent as UploadFileIcon } from "@webiny/app-admin/assets/icons/file_upload.svg";
+import { useModelExport } from "./exporting/useModelExport";
 
 const t = i18n.namespace("FormsApp.ContentModelsDataList");
 
@@ -61,6 +61,12 @@ const SORTERS: Sorter[] = [
     }
 ];
 
+const DataListActionsWrapper = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+`;
+
 const rightAlign = css({
     alignItems: "flex-end !important",
     justifyContent: "center !important"
@@ -74,6 +80,7 @@ interface ContentModelsDataListProps {
     canCreate: boolean;
     onCreate: () => void;
     onClone: (contentModel: CmsEditorContentModel) => void;
+    showImportModelModal: () => void;
 }
 
 const Icon = styled("div")({
@@ -94,18 +101,19 @@ interface IconProps {
     model: Pick<CmsModel, "icon">;
 }
 
-const DisplayIcon: React.VFC<IconProps> = ({ model }) => {
+const DisplayIcon = ({ model }: IconProps) => {
     if (!model.icon) {
         return null;
     }
     return <FontAwesomeIcon icon={(model.icon || "").split("/") as IconProp} />;
 };
 
-const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
+const ContentModelsDataList = ({
     canCreate,
     onCreate,
-    onClone
-}) => {
+    onClone,
+    showImportModelModal
+}: ContentModelsDataListProps) => {
     const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState<string>(SORTERS[0].sorters);
     const { history } = useRouter();
@@ -203,6 +211,8 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
     const filteredData = filter === "" ? models : models.filter(filterData);
     const contentModels = sortData(filteredData);
 
+    const { handleModelsExport, handleModelExport } = useModelExport();
+
     const onRefreshClick = useCallback(() => {
         refresh();
     }, []);
@@ -213,11 +223,28 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
             data={contentModels}
             title={t`Content Models`}
             actions={
-                canCreate ? (
-                    <ButtonSecondary data-testid="new-record-button" onClick={onCreate}>
-                        <ButtonIcon icon={<AddIcon />} /> {t`New Model`}
-                    </ButtonSecondary>
-                ) : null
+                <DataListActionsWrapper>
+                    {canCreate ? (
+                        <ButtonSecondary data-testid="new-record-button" onClick={onCreate}>
+                            <ButtonIcon icon={<AddIcon />} /> {t`New Model`}
+                        </ButtonSecondary>
+                    ) : null}
+                    <OptionsMenu
+                        data-testid="pb-blocks-list-options-menu"
+                        items={[
+                            {
+                                label: "Export all models",
+                                icon: <DownloadFileIcon />,
+                                onClick: handleModelsExport
+                            },
+                            {
+                                label: "Import models",
+                                icon: <UploadFileIcon />,
+                                onClick: showImportModelModal
+                            }
+                        ]}
+                    />
+                </DataListActionsWrapper>
             }
             search={
                 <SearchUI
@@ -261,22 +288,31 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                                 </UIL.ListItemText>
                                 <UIL.ListItemMeta className={rightAlign}>
                                     <UIL.ListActions>
+                                        <Tooltip
+                                            content={t`{message}`({ message })}
+                                            placement={"top"}
+                                        >
+                                            <IconButton
+                                                data-testid={"cms-view-content-model-button"}
+                                                icon={<ViewListIcon />}
+                                                label={t`View entries`}
+                                                onClick={viewContentEntries(contentModel)}
+                                                disabled={disableViewContent}
+                                            />
+                                        </Tooltip>
+                                        <Tooltip
+                                            content={t`Export content model`}
+                                            placement={"top"}
+                                        >
+                                            <IconButton
+                                                data-testid={"cms-export-content-model-button"}
+                                                icon={<DownloadFileIcon />}
+                                                label={t`Export content model`}
+                                                onClick={handleModelExport(contentModel)}
+                                            />
+                                        </Tooltip>
                                         {canEdit(contentModel, "cms.contentModel") && (
                                             <>
-                                                <Tooltip
-                                                    content={t`{message}`({ message })}
-                                                    placement={"top"}
-                                                >
-                                                    <IconButton
-                                                        data-testid={
-                                                            "cms-view-content-model-button"
-                                                        }
-                                                        icon={<ViewListIcon />}
-                                                        label={t`View entries`}
-                                                        onClick={viewContentEntries(contentModel)}
-                                                        disabled={disableViewContent}
-                                                    />
-                                                </Tooltip>
                                                 {contentModel.plugin ? (
                                                     <Tooltip
                                                         content={t`Content model is registered via a plugin.`}
@@ -302,17 +338,21 @@ const ContentModelsDataList: React.FC<ContentModelsDataListProps> = ({
                                                         />
                                                     </Tooltip>
                                                 )}
+                                                <Tooltip
+                                                    content={"Clone content model"}
+                                                    placement={"top"}
+                                                >
+                                                    <IconButton
+                                                        data-testid={
+                                                            "cms-clone-content-model-button"
+                                                        }
+                                                        icon={<CloneIcon />}
+                                                        label={t`Clone content model`}
+                                                        onClick={() => onClone(contentModel)}
+                                                    />
+                                                </Tooltip>
                                             </>
                                         )}
-
-                                        <Tooltip content={"Clone content model"} placement={"top"}>
-                                            <IconButton
-                                                data-testid={"cms-clone-content-model-button"}
-                                                icon={<CloneIcon />}
-                                                label={t`View entries`}
-                                                onClick={() => onClone(contentModel)}
-                                            />
-                                        </Tooltip>
 
                                         {canDelete(contentModel, "cms.contentModel") && (
                                             <>

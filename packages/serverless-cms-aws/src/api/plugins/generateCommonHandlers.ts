@@ -1,9 +1,5 @@
 import { generateHandlers } from "~/utils/generateHandlers";
 
-const COMMON_HANDLERS_PATHS = [
-    ["fileManager", "download"],
-    ["fileManager", "manage"],
-    ["fileManager", "transform"]
-];
+const COMMON_HANDLERS_PATHS = [["fileManager", "manage"]];
 
 export const generateCommonHandlers = generateHandlers("common", "api", COMMON_HANDLERS_PATHS);

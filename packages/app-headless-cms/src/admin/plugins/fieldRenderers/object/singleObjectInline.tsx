@@ -1,15 +1,16 @@
 import React from "react";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsModelFieldRendererPlugin } from "~/types";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
 import { SimpleFormHeader } from "@webiny/app-admin/components/SimpleForm";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { fieldsWrapperStyle } from "./StyledComponents";
+import { FieldSettings } from "./FieldSettings";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
-const plugin: CmsEditorFieldRendererPlugin = {
+const plugin: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-object",
     renderer: {
@@ -22,7 +23,14 @@ const plugin: CmsEditorFieldRendererPlugin = {
         render({ field, getBind, contentModel }) {
             const Bind = getBind();
 
-            const settings = field.settings || {};
+            const fieldSettings = FieldSettings.createFrom(field);
+
+            if (!fieldSettings.hasFields()) {
+                fieldSettings.logMissingFields();
+                return null;
+            }
+
+            const settings = fieldSettings.getSettings();
 
             return (
                 <Grid>
@@ -36,8 +44,8 @@ const plugin: CmsEditorFieldRendererPlugin = {
                         <Fields
                             Bind={Bind}
                             contentModel={contentModel}
-                            fields={settings.fields || []}
-                            layout={settings.layout || []}
+                            fields={settings.fields}
+                            layout={settings.layout}
                         />
                     </Cell>
                 </Grid>

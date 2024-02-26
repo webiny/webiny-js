@@ -297,7 +297,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         },
         async createForm(this: FormBuilder, input) {
             await formsPermissions.ensure({ rwd: "w" });
-
             const identity = context.security.getIdentity();
             const dataModel = new models.FormCreateDataModel().populate(input);
             await dataModel.validate();
@@ -351,7 +350,14 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                  * Will be added via a "update"
                  */
                 fields: [],
-                layout: [],
+                // Our form should always have at least 1 step.
+                // If we have more then 1 step then the Form will be recognized as a Multi Step Form.
+                steps: [
+                    {
+                        title: "Step 1",
+                        layout: []
+                    }
+                ],
                 settings: await new models.FormSettingsModel().toJSON(),
                 triggers: null,
                 webinyVersion: context.WEBINY_VERSION
@@ -381,7 +387,6 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
         },
         async updateForm(this: FormBuilder, id, input) {
             await formsPermissions.ensure({ rwd: "w" });
-
             const updateData = new models.FormUpdateDataModel().populate(input);
             await updateData.validate();
             const data = await updateData.toJSON({ onlyDirty: true });

@@ -22,18 +22,18 @@ import {
     ListPageElementsQueryResponse,
     ListPageElementsQueryResponseData
 } from "~/admin/graphql/pages";
-import { LIST_PAGE_BLOCKS, ListPageBlocksQueryResponse } from "~/admin/views/PageBlocks/graphql";
+import { ListPageBlocksQueryResponse } from "~/admin/views/PageBlocks/graphql";
 import { LIST_BLOCK_CATEGORIES } from "~/admin/views/BlockCategories/graphql";
 import createElementPlugin from "~/admin/utils/createElementPlugin";
-import createBlockPlugin from "~/admin/utils/createBlockPlugin";
 import dotProp from "dot-prop-immutable";
-import { PbErrorResponse, PbPageBlock, PbBlockCategory, PbEditorElement } from "~/types";
+import { PbErrorResponse, PbBlockCategory, PbEditorElement } from "~/types";
 import createBlockCategoryPlugin from "~/admin/utils/createBlockCategoryPlugin";
 import { PageWithContent, RevisionsAtomType } from "~/pageEditor/state";
 import { createStateInitializer } from "./createStateInitializer";
 import { PageEditorConfig } from "./config/PageEditorConfig";
 import elementVariableRendererPlugins from "~/editor/plugins/elementVariables";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
+import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
 
 interface PageDataAndRevisionsState {
     page: PageWithContent | null;
@@ -64,7 +64,7 @@ const getBlocksWithUniqueElementIds = (blocks: PbEditorElement[]): PbEditorEleme
     });
 };
 
-export const PageEditor: React.FC = () => {
+export const PageEditor = () => {
     plugins.register(elementVariableRendererPlugins());
     const client = useApolloClient();
     const { history, params } = useRouter();
@@ -79,6 +79,7 @@ export const PageEditor: React.FC = () => {
     >(CREATE_PAGE_FROM);
 
     const { navigateToPageEditor } = useNavigatePage();
+    const { listBlocks } = usePageBlocks();
 
     const pageId = decodeURIComponent(params["id"]);
 
@@ -100,16 +101,9 @@ export const PageEditor: React.FC = () => {
                     }
                 });
             });
-        const savedBLocks = client
-            .query<ListPageBlocksQueryResponse>({ query: LIST_PAGE_BLOCKS })
-            .then(({ data }) => {
-                const blocks: PbPageBlock[] = get(data, "pageBuilder.listPageBlocks.data") || [];
-                blocks.forEach(element => {
-                    createBlockPlugin({
-                        ...element
-                    });
-                });
-            });
+
+        const savedBLocks = listBlocks();
+
         const blockCategories = client
             .query<ListPageBlocksQueryResponse>({ query: LIST_BLOCK_CATEGORIES })
             .then(({ data }) => {

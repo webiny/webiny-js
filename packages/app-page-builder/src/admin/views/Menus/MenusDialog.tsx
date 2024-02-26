@@ -41,11 +41,11 @@ interface ListMenusResponse {
 export interface MenusDialogProps {
     open: boolean;
     onClose: DialogOnClose;
-    onSelect: Function;
+    onSelect: (item: PbMenu) => void;
     children: any;
 }
 
-const MenusDialog: React.FC<MenusDialogProps> = ({ open, onClose, onSelect, children }) => {
+const MenusDialog = ({ open, onClose, onSelect, children }: MenusDialogProps) => {
     const { history } = useRouter();
     return (
         <Dialog

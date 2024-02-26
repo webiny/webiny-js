@@ -36,11 +36,7 @@ interface LeftPanelProps {
     status: ApwContentReviewStatus;
 }
 
-export const LeftPanel: React.FC<LeftPanelProps> = ({
-    steps,
-    reviewRequestedBy,
-    reviewRequestedOn
-}) => {
+export const LeftPanel = ({ steps, reviewRequestedBy, reviewRequestedOn }: LeftPanelProps) => {
     return (
         <PanelBox flex={"1 1 26%"} display={"flex"} style={{ flexDirection: "column" }}>
             <ContentReviewStepList>

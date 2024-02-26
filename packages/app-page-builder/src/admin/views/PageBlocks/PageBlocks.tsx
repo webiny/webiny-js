@@ -10,20 +10,20 @@ export interface CreatableItem {
     };
 }
 
-const PageBlocks: React.FC = () => {
+const PageBlocks = () => {
     const [filter, setFilter] = useState<string>("");
     const { canCreate, canUpdate, canDelete } = useBlocksPermissions();
 
     return (
         <SplitView>
-            <LeftPanel>
+            <LeftPanel span={4}>
                 <BlocksByCategoriesDataList
                     filter={filter}
                     setFilter={setFilter}
                     canCreate={canCreate()}
                 />
             </LeftPanel>
-            <RightPanel>
+            <RightPanel span={8}>
                 <PageBlocksDataList
                     filter={filter}
                     canCreate={canCreate()}

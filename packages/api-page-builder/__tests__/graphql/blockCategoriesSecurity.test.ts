@@ -65,7 +65,7 @@ describe("Block Categories Security Test", () => {
             data: new Mock("list-block-categories-four-")
         });
 
-        const insufficientPermissions = [
+        const insufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
             [[], null],
             [[], identityA],
             [[{ name: "pb.blockCategory", rwd: "wd" }], identityA],
@@ -84,13 +84,13 @@ describe("Block Categories Security Test", () => {
             const [permissions, identity] = insufficientPermissions[i];
             const { listBlockCategories } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
             const [response] = await listBlockCategories();
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("listBlockCategories"));
         }
 
-        const sufficientPermissionsAll = [
+        const sufficientPermissionsAll: [SecurityPermission[], SecurityIdentity][] = [
             [
                 [{ name: "content.i18n" }, { name: "content.i18n" }, { name: "pb.blockCategory" }],
                 identityA
@@ -109,7 +109,7 @@ describe("Block Categories Security Test", () => {
             const [permissions, identity] = sufficientPermissionsAll[i];
             const { listBlockCategories } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
             const [response] = await listBlockCategories();
             expect(response).toMatchObject({
@@ -227,7 +227,7 @@ describe("Block Categories Security Test", () => {
     });
 
     test(`allow createBlockCategory if identity has sufficient permissions`, async () => {
-        const insufficientPermissions = [
+        const insufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
             [[], null],
             [[], identityA],
             [[{ name: "pb.blockCategory", own: false, rwd: "r" }], identityA],
@@ -245,14 +245,14 @@ describe("Block Categories Security Test", () => {
             const [permissions, identity] = insufficientPermissions[i];
             const { createBlockCategory } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
 
             const [response] = await createBlockCategory({ data: new Mock() });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("createBlockCategory"));
         }
 
-        const sufficientPermissions = [
+        const sufficientPermissions: [SecurityPermission[], SecurityIdentity][] = [
             [[{ name: "content.i18n" }, { name: "pb.blockCategory" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.blockCategory", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.blockCategory", rwd: "w" }], identityA],
@@ -268,7 +268,7 @@ describe("Block Categories Security Test", () => {
             const [permissions, identity] = sufficientPermissions[i];
             const { createBlockCategory } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
 
             const data = new Mock(`block-category-create-${intAsString[i]}-`);
@@ -291,7 +291,7 @@ describe("Block Categories Security Test", () => {
 
         await createBlockCategory({ data: mock });
 
-        const insufficientPermissions = [
+        const insufficientPermissions: [SecurityPermission[], SecurityIdentity | null][] = [
             [[], null],
             [[], identityA],
             [[{ name: "pb.blockCategory", rwd: "r" }], identityA],
@@ -311,13 +311,13 @@ describe("Block Categories Security Test", () => {
             const [permissions, identity] = insufficientPermissions[i];
             const { updateBlockCategory } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
             const [response] = await updateBlockCategory({ slug: mock.slug, data: mock });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("updateBlockCategory"));
         }
 
-        const sufficientPermissions = [
+        const sufficientPermissions: [SecurityPermission[], SecurityIdentity][] = [
             [[{ name: "content.i18n" }, { name: "pb.blockCategory" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.blockCategory", own: true }], identityA],
 
@@ -333,7 +333,7 @@ describe("Block Categories Security Test", () => {
             const [permissions, identity] = sufficientPermissions[i];
             const { updateBlockCategory } = useGqlHandler({
                 permissions,
-                identity: identity as any
+                identity
             });
             const [response] = await updateBlockCategory({ slug: mock.slug, data: mock });
             expect(response).toMatchObject({

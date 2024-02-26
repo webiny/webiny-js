@@ -14,7 +14,7 @@ type LayoutListItem = FbFormLayoutPlugin["layout"];
 interface GeneralSettingsProps {
     Bind: BindComponent;
 }
-const GeneralSettings: React.FC<GeneralSettingsProps> = ({ Bind }) => {
+const GeneralSettings = ({ Bind }: GeneralSettingsProps) => {
     const theme = useMemo(
         (): PbTheme =>
             Object.assign({}, ...plugins.byType<PbThemePlugin>("pb-theme").map(pl => pl.theme)),
@@ -36,11 +36,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ Bind }) => {
     }, []);
 
     const rteProps = useMemo(() => {
-        /**
-         * TODO @ts-refactor
-         * Missing plugin type for fb-rte-config
-         */
-        // @ts-ignore
         return createPropsFromConfig(plugins.byType("fb-rte-config").map(pl => pl.config));
     }, []);
 

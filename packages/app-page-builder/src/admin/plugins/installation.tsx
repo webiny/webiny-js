@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Alert } from "@webiny/ui/Alert";
-import { Grid, Cell } from "@webiny/ui/Grid";
+import { Cell, Grid } from "@webiny/ui/Grid";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Input } from "@webiny/ui/Input";
@@ -12,9 +12,9 @@ import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
 import {
     SimpleForm,
-    SimpleFormHeader,
+    SimpleFormContent,
     SimpleFormFooter,
-    SimpleFormContent
+    SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { AdminInstallationPlugin } from "@webiny/app-admin/types";
 
@@ -45,7 +45,7 @@ const INSTALL = gql`
 interface PbInstallerProps {
     onInstalled: () => void;
 }
-const PBInstaller: React.FC<PbInstallerProps> = ({ onInstalled }) => {
+const PBInstaller = ({ onInstalled }: PbInstallerProps) => {
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -53,22 +53,19 @@ const PBInstaller: React.FC<PbInstallerProps> = ({ onInstalled }) => {
     const onSubmit = useCallback(async form => {
         setLoading(true);
         setError(null);
-        setTimeout(async () => {
-            // Temporary fix for the ES index creation failure.
-            // Let's try waiting a bit before running the installation.
-            const { data: res } = await client.mutate({
-                mutation: INSTALL,
-                variables: { data: form }
-            });
-            setLoading(false);
-            const { error } = res.pageBuilder.install;
-            if (error) {
-                setError(error.message);
-                return;
-            }
 
-            onInstalled();
-        }, 10000);
+        const { data: res } = await client.mutate({
+            mutation: INSTALL,
+            variables: { data: form }
+        });
+        setLoading(false);
+        const { error } = res.pageBuilder.install;
+        if (error) {
+            setError(error.message);
+            return;
+        }
+
+        onInstalled();
     }, []);
 
     const label = error ? (

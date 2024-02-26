@@ -5,7 +5,7 @@ type ElementPreviewPropsType = {
     element: any;
 };
 
-const ElementPreview: React.FC<ElementPreviewPropsType> = ({ element }) => {
+const ElementPreview = ({ element }: ElementPreviewPropsType) => {
     return <Content content={element} />;
 };
 

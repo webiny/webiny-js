@@ -7,7 +7,7 @@ import React from "react";
  *
  * Package react-sortable-tree does not have types
  */
-// @ts-ignore
+// @ts-expect-error
 import { isDescendant } from "react-sortable-tree";
 import classnames from "classnames";
 import { plugins } from "@webiny/plugins";

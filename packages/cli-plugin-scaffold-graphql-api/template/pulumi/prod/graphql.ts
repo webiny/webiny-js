@@ -69,7 +69,7 @@ class Graphql {
 
         this.functions = {
             api: new aws.lambda.Function("project-application-name", {
-                runtime: "nodejs14.x",
+                runtime: "nodejs18.x",
                 handler: "handler.handler",
                 description: "Project application name - GraphQL API Lambda function.",
                 role: this.role.arn,

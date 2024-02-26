@@ -7,6 +7,8 @@
     { "path": "../app-page-builder/tsconfig.build.json" },
     { "path": "../app-page-builder-elements/tsconfig.build.json" },
     { "path": "../lexical-editor/tsconfig.build.json" },
+    { "path": "../lexical-nodes/tsconfig.build.json" },
+    { "path": "../lexical-theme/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" },
     { "path": "../theme/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" }

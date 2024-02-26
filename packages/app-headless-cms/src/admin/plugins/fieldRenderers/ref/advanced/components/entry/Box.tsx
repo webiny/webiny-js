@@ -33,13 +33,13 @@ const Text = styled("h5")({
     color: "#49454F"
 });
 
-interface Props {
+interface BoxProps {
     icon: React.ReactElement | null;
     name: string;
     children?: React.ReactNode;
 }
 
-export const Box: React.VFC<Props> = ({ icon, name, children }) => {
+export const Box = ({ icon, name, children }: BoxProps) => {
     if (!children) {
         return <Container />;
     }

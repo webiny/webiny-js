@@ -13,7 +13,7 @@ interface SliderPropsType {
     step?: number;
 }
 
-const Slider: React.FC<SliderPropsType> = ({
+const Slider = ({
     label,
     value,
     updatePreview,
@@ -21,7 +21,7 @@ const Slider: React.FC<SliderPropsType> = ({
     min = 0,
     max = 100,
     step = 1
-}) => {
+}: SliderPropsType) => {
     return (
         <Grid>
             <Cell span={4}>

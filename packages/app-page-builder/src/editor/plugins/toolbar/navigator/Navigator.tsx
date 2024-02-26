@@ -29,7 +29,7 @@ export const NavigatorContext = createContext<NavigatorContextValue>({
     }
 });
 
-const Navigator: React.FC = () => {
+const Navigator = () => {
     const [elementTree, setElementTree] = useState<PbEditorElement | null>(null);
     const [expandAll, setExpandAll] = useState<boolean>(false);
     const [activeElementPath, setActiveElementPath] = useState<string[]>([]);

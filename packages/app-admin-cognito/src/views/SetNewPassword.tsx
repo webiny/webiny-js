@@ -15,7 +15,7 @@ import {
     UseSetNewPasswordCallableParams
 } from "@webiny/app-cognito-authenticator/hooks/useSetNewPassword";
 
-const SetNewPassword: React.FC = () => {
+const SetNewPassword = () => {
     const { changeState } = useAuthenticator();
     const { shouldRender, setPassword, error, loading } = useSetNewPassword();
 

@@ -32,15 +32,36 @@ export interface OnCacheUpdate {
 }
 
 export interface FoldersApiContext {
-    listFolders: (type: string) => Promise<FolderItem[]>;
+    listFolders: (
+        type: string,
+        options?: Partial<{ invalidateCache: boolean }>
+    ) => Promise<FolderItem[]>;
     getFolder: (type: string, id: string) => Promise<FolderItem>;
     createFolder: (type: string, folder: Omit<FolderItem, "id" | "type">) => Promise<FolderItem>;
     updateFolder: (
         type: string,
-        folder: Omit<FolderItem, "type" | "createdOn" | "createdBy" | "savedOn">
+        folder: Omit<
+            FolderItem,
+            | "type"
+            | "canManagePermissions"
+            | "canManageStructure"
+            | "canManageContent"
+            | "hasNonInheritedPermissions"
+            | "createdOn"
+            | "createdBy"
+            | "savedOn"
+            | "savedBy"
+            | "modifiedOn"
+            | "modifiedBy"
+        >
     ) => Promise<FolderItem>;
+
     deleteFolder(type: string, id: string): Promise<true>;
+
+    invalidateCache(folderType: string): FoldersApiContext;
+
     getDescendantFolders(type: string, id?: string): FolderItem[];
+
     onFoldersChanged(type: string, cb: OnCacheUpdate): OffCacheUpdate;
 }
 
@@ -53,14 +74,27 @@ interface Props {
 const rootFolder: FolderItem = {
     id: ROOT_FOLDER,
     title: "Home",
+    permissions: [],
     parentId: "0",
     slug: "",
     createdOn: "",
     createdBy: {
         id: "",
-        displayName: ""
+        displayName: "",
+        type: ""
     },
+    hasNonInheritedPermissions: false,
+    canManagePermissions: true,
+    canManageStructure: true,
+    canManageContent: true,
     savedOn: "",
+    savedBy: {
+        id: "",
+        displayName: "",
+        type: ""
+    },
+    modifiedOn: null,
+    modifiedBy: null,
     type: "$ROOT"
 };
 
@@ -68,7 +102,7 @@ interface FoldersByType {
     [type: string]: FolderItem[];
 }
 
-export const FoldersApiProvider: React.VFC<Props> = ({ children }) => {
+export const FoldersApiProvider = ({ children }: Props) => {
     const client = useApolloClient();
     const folderObservers = useRef(new Map<string, Set<OnCacheUpdate>>());
     const [cache, setCache] = useState<FoldersByType>({});
@@ -96,8 +130,17 @@ export const FoldersApiProvider: React.VFC<Props> = ({ children }) => {
                 folderObservers.current.get(type)?.delete(cb);
             };
         },
-        async listFolders(type) {
-            if (cache[type]) {
+        invalidateCache: folderType => {
+            setCache(cache => {
+                const cacheClone = structuredClone(cache);
+                delete cacheClone[folderType];
+                return cacheClone;
+            });
+            return context;
+        },
+        async listFolders(type, options) {
+            const invalidateCache = options?.invalidateCache === true;
+            if (cache[type] && !invalidateCache) {
                 return cache[type];
             }
 
@@ -197,7 +240,7 @@ export const FoldersApiProvider: React.VFC<Props> = ({ children }) => {
         },
 
         async updateFolder(type, folder) {
-            const { id, title, slug, parentId } = folder;
+            const { id, title, slug, permissions, parentId } = folder;
 
             const { data: response } = await client.mutate<
                 UpdateFolderResponse,
@@ -209,6 +252,7 @@ export const FoldersApiProvider: React.VFC<Props> = ({ children }) => {
                     data: {
                         title,
                         slug,
+                        permissions,
                         parentId
                     }
                 }

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { makeComposable } from "@webiny/app";
+import { createVoidComponent, makeDecoratable } from "@webiny/app";
 
 export interface SearchOptionData {
     route: string;
@@ -27,8 +27,13 @@ export function useSearch() {
     return React.useContext(SearchContext);
 }
 
-export const SearchProvider = (Component: React.FC): React.FC => {
-    return function SearchProvider({ children, ...props }) {
+interface SearchProviderProps {
+    children: React.ReactNode;
+    [key: string]: any;
+}
+
+export const SearchProvider = (Component: React.ComponentType) => {
+    return function SearchProvider({ children, ...props }: SearchProviderProps) {
         const [options, setOptions] = useState<SearchOptionData[]>([]);
 
         const addOption = useCallback<SearchContext["addOption"]>(
@@ -49,15 +54,15 @@ export const SearchProvider = (Component: React.FC): React.FC => {
     };
 };
 
-export const Search = makeComposable("Search", () => {
+export const Search = makeDecoratable("Search", () => {
     return <SearchRenderer />;
 });
 
-export const SearchRenderer = makeComposable("SearchRenderer");
+export const SearchRenderer = makeDecoratable("SearchRenderer", createVoidComponent());
 
 export type SearchOptionProps = SearchOptionData;
 
-export const SearchOption: React.FC<SearchOptionProps> = props => {
+export const SearchOption = (props: SearchOptionProps) => {
     const { addOption } = useSearch();
 
     useEffect(() => {

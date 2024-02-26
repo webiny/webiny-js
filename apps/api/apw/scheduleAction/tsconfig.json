@@ -3,6 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../../../../packages/api-apw/tsconfig.build.json" },
+    { "path": "../../../../packages/aws-sdk/tsconfig.build.json" },
     { "path": "../../../../packages/handler-aws/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -10,6 +11,8 @@
       "~/*": ["./src/*"],
       "@webiny/api-apw/*": ["../../../../packages/api-apw/src/*"],
       "@webiny/api-apw": ["../../../../packages/api-apw/src"],
+      "@webiny/aws-sdk/*": ["../../../../packages/aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../../../../packages/aws-sdk/src"],
       "@webiny/handler-aws/*": ["../../../../packages/handler-aws/src/*"],
       "@webiny/handler-aws": ["../../../../packages/handler-aws/src"]
     },

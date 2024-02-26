@@ -11,6 +11,7 @@ import { useCurrentChangeRequestId } from "~/hooks/useCurrentChangeRequestId";
 interface UseCommentsListResult {
     loading: boolean;
     comments: Array<ApwComment>;
+    refetch: () => Promise<any>;
 }
 
 /**
@@ -40,17 +41,19 @@ export const useListCommentsVariables = () => {
 
 export const useCommentsList = (): UseCommentsListResult => {
     const variables = useListCommentsVariables();
-    const { data, loading } = useQuery<ListCommentsQueryResponse, ListCommentsQueryVariables>(
-        LIST_COMMENTS_QUERY,
-        {
-            variables
-        }
-    );
+
+    const { data, loading, refetch } = useQuery<
+        ListCommentsQueryResponse,
+        ListCommentsQueryVariables
+    >(LIST_COMMENTS_QUERY, {
+        variables
+    });
 
     const comments = dotPropImmutable.get(data, "apw.listComments.data", []);
 
     return {
         comments,
-        loading
+        loading,
+        refetch
     };
 };

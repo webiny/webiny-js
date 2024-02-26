@@ -9,7 +9,7 @@ import {
 } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import { TenancyContext, TenancyStorageOperations } from "@webiny/api-tenancy/types";
+import { TenancyContext, TenancyStorageOperations, Tenant } from "@webiny/api-tenancy/types";
 
 interface Config {
     permissions?: SecurityPermission[];
@@ -39,7 +39,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config = {})
             context.tenancy.setCurrentTenant({
                 id: "root",
                 name: "Root"
-            } as any);
+            } as Tenant);
 
             context.security.addAuthenticator(async () => {
                 // `undefined` results in the default identity being set; `null` means "anonymous request".

@@ -1,2 +1,2 @@
-export type DragStartActionArgsType = {};
-export type DragEndActionArgsType = {};
+export type DragStartActionArgsType = Record<string, any>;
+export type DragEndActionArgsType = Record<string, any>;

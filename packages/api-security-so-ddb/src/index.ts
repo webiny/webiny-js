@@ -2,11 +2,11 @@ import { ENTITIES, SecurityStorageParams } from "~/types";
 import {
     ApiKey,
     Group,
-    Team,
     ListTenantLinksByTypeParams,
     SecurityStorageOperations,
     StorageOperationsGetTenantLinkByIdentityParams,
     System,
+    Team,
     TenantLink
 } from "@webiny/api-security/types";
 import WebinyError from "@webiny/error";
@@ -14,14 +14,20 @@ import { createTable } from "~/definitions/table";
 import {
     createApiKeyEntity,
     createGroupEntity,
-    createTeamEntity,
     createSystemEntity,
+    createTeamEntity,
     createTenantLinkEntity
 } from "~/definitions/entities";
 import { cleanupItem, cleanupItems } from "@webiny/db-dynamodb/utils/cleanup";
-import { queryAll, queryOne, QueryOneParams } from "@webiny/db-dynamodb/utils/query";
+import {
+    queryAll,
+    queryAllClean,
+    queryOneClean,
+    QueryOneParams
+} from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { batchWriteAll } from "@webiny/db-dynamodb/utils/batchWrite";
+import { deleteItem, getClean, put } from "@webiny/db-dynamodb";
 
 const reservedFields: string[] = ["PK", "SK", "index", "data"];
 
@@ -96,10 +102,13 @@ export const createStorageOperations = (
             };
 
             try {
-                await entities.apiKeys.put({
-                    ...cleanupItem(entities.apiKeys, apiKey),
-                    TYPE: "security.apiKey",
-                    ...keys
+                await put({
+                    entity: entities.apiKeys,
+                    item: {
+                        ...cleanupItem(entities.apiKeys, apiKey),
+                        TYPE: "security.apiKey",
+                        ...keys
+                    }
                 });
                 return apiKey;
             } catch (err) {
@@ -117,10 +126,13 @@ export const createStorageOperations = (
             };
 
             try {
-                await entities.groups.put({
-                    ...cleanupItem(entities.groups, group),
-                    TYPE: "security.group",
-                    ...keys
+                await put({
+                    entity: entities.groups,
+                    item: {
+                        ...cleanupItem(entities.groups, group),
+                        TYPE: "security.group",
+                        ...keys
+                    }
                 });
                 return group;
             } catch (err) {
@@ -138,10 +150,13 @@ export const createStorageOperations = (
             };
 
             try {
-                await entities.teams.put({
-                    ...cleanupItem(entities.teams, team),
-                    TYPE: "security.team",
-                    ...keys
+                await put({
+                    entity: entities.teams,
+                    item: {
+                        ...cleanupItem(entities.teams, team),
+                        TYPE: "security.team",
+                        ...keys
+                    }
                 });
                 return team;
             } catch (err) {
@@ -155,9 +170,12 @@ export const createStorageOperations = (
         async createSystemData({ system }): Promise<System> {
             const keys = createSystemKeys(system.tenant);
             try {
-                await entities.system.put({
-                    ...keys,
-                    ...cleanupItem(entities.system, system)
+                await put({
+                    entity: entities.system,
+                    item: {
+                        ...keys,
+                        ...cleanupItem(entities.system, system)
+                    }
                 });
                 return system;
             } catch (err) {
@@ -185,7 +203,10 @@ export const createStorageOperations = (
             const keys = createApiKeyKeys(apiKey);
 
             try {
-                await entities.apiKeys.delete(keys);
+                await deleteItem({
+                    entity: entities.apiKeys,
+                    keys
+                });
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not update api key.",
@@ -198,7 +219,10 @@ export const createStorageOperations = (
             const keys = createGroupKeys(group);
 
             try {
-                await entities.groups.delete(keys);
+                await deleteItem({
+                    entity: entities.groups,
+                    keys
+                });
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not delete group.",
@@ -211,7 +235,10 @@ export const createStorageOperations = (
             const keys = createTeamKeys(team);
 
             try {
-                await entities.teams.delete(keys);
+                await deleteItem({
+                    entity: entities.teams,
+                    keys
+                });
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not delete team.",
@@ -234,11 +261,10 @@ export const createStorageOperations = (
             const keys = createApiKeyKeys({ id, tenant });
 
             try {
-                const result = await entities.apiKeys.get(keys);
-                if (!result || !result.Item) {
-                    return null;
-                }
-                return cleanupItem(entities.apiKeys, result.Item);
+                return await getClean<ApiKey>({
+                    entity: entities.apiKeys,
+                    keys
+                });
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not load api key.",
@@ -258,8 +284,7 @@ export const createStorageOperations = (
             };
 
             try {
-                const result = await queryOne<ApiKey>(queryParams);
-                return cleanupItem(entities.apiKeys, result);
+                return await queryOneClean<ApiKey>(queryParams);
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not load api key by token.",
@@ -268,26 +293,22 @@ export const createStorageOperations = (
                 });
             }
         },
-        async getGroup({ where: { tenant, id, slug } }): Promise<Group> {
+        async getGroup({ where: { tenant, id, slug } }) {
             try {
-                let result;
                 if (id) {
-                    const response = await entities.groups.get(createGroupKeys({ tenant, id }));
-                    if (response.Item) {
-                        result = response.Item;
-                    }
-                } else if (slug) {
-                    result = await queryOne({
+                    return await getClean<Group>({
                         entity: entities.groups,
-                        partitionKey: `T#${tenant}#GROUPS`,
-                        options: {
-                            index: "GSI1",
-                            eq: slug
-                        }
+                        keys: createGroupKeys({ tenant, id })
                     });
                 }
-
-                return cleanupItem(entities.groups, result);
+                return await queryOneClean<Group>({
+                    entity: entities.groups,
+                    partitionKey: `T#${tenant}#GROUPS`,
+                    options: {
+                        index: "GSI1",
+                        eq: slug
+                    }
+                });
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not load group.",
@@ -296,26 +317,22 @@ export const createStorageOperations = (
                 });
             }
         },
-        async getTeam({ where: { tenant, id, slug } }): Promise<Team> {
+        async getTeam({ where: { tenant, id, slug } }) {
             try {
-                let result;
                 if (id) {
-                    const response = await entities.teams.get(createTeamKeys({ tenant, id }));
-                    if (response.Item) {
-                        result = response.Item;
-                    }
-                } else if (slug) {
-                    result = await queryOne({
+                    return await getClean<Team>({
                         entity: entities.teams,
-                        partitionKey: `T#${tenant}#TEAMS`,
-                        options: {
-                            index: "GSI1",
-                            eq: slug
-                        }
+                        keys: createTeamKeys({ tenant, id })
                     });
                 }
-
-                return cleanupItem(entities.teams, result);
+                return await queryOneClean({
+                    entity: entities.teams,
+                    partitionKey: `T#${tenant}#TEAMS`,
+                    options: {
+                        index: "GSI1",
+                        eq: slug
+                    }
+                });
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not load team.",
@@ -327,11 +344,10 @@ export const createStorageOperations = (
         async getSystemData({ tenant }): Promise<System | null> {
             const keys = createSystemKeys(tenant);
             try {
-                const result = await entities.system.get(keys);
-                if (!result || !result.Item) {
-                    return null;
-                }
-                return cleanupItem(entities.system, result.Item);
+                return await getClean<System>({
+                    entity: entities.system,
+                    keys
+                });
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not load system.",
@@ -345,15 +361,13 @@ export const createStorageOperations = (
             identity
         }: StorageOperationsGetTenantLinkByIdentityParams): Promise<TLink | null> {
             try {
-                const result = await queryOne<TLink>({
+                return await queryOneClean<TLink>({
                     entity: entities.tenantLinks,
                     partitionKey: `IDENTITY#${identity}`,
                     options: {
                         eq: `LINK#T#${tenant}`
                     }
                 });
-
-                return cleanupItem(entities.tenantLinks, result);
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not get tenant link for identity.",
@@ -369,8 +383,7 @@ export const createStorageOperations = (
                     entity: entities.apiKeys,
                     partitionKey: `T#${tenant}#API_KEYS`,
                     options: {
-                        index: "GSI1",
-                        beginsWith: ""
+                        index: "GSI1"
                     }
                 });
             } catch (err) {
@@ -396,8 +409,7 @@ export const createStorageOperations = (
                     entity: entities.groups,
                     partitionKey: `T#${tenant}#GROUPS`,
                     options: {
-                        index: "GSI1",
-                        beginsWith: ""
+                        index: "GSI1"
                     }
                 });
             } catch (err) {
@@ -416,12 +428,10 @@ export const createStorageOperations = (
                 })
             );
 
-            // TODO: check with Bruno
-            if (Array.isArray(id_in)) {
-                return items.filter(item => id_in.includes(item.id));
+            if (!Array.isArray(id_in)) {
+                return items;
             }
-
-            return items;
+            return items.filter(item => id_in.includes(item.id));
         },
         async listTeams({ where: { tenant }, sort }): Promise<Team[]> {
             let items: Team[];
@@ -430,8 +440,7 @@ export const createStorageOperations = (
                     entity: entities.teams,
                     partitionKey: `T#${tenant}#TEAMS`,
                     options: {
-                        index: "GSI1",
-                        beginsWith: ""
+                        index: "GSI1"
                     }
                 });
             } catch (err) {
@@ -451,34 +460,30 @@ export const createStorageOperations = (
             );
         },
         async listTenantLinksByIdentity({ identity }): Promise<TenantLink[]> {
-            const links = await queryAll<TenantLink>({
+            return await queryAllClean<TenantLink>({
                 entity: entities.tenantLinks,
                 partitionKey: `IDENTITY#${identity}`,
-                options: { beginsWith: "LINK#" }
+                options: {
+                    beginsWith: "LINK#"
+                }
             });
-
-            return cleanupItems(entities.tenantLinks, links);
         },
         async listTenantLinksByTenant({ tenant }): Promise<TenantLink[]> {
-            const links = await queryAll<TenantLink>({
+            return await queryAllClean<TenantLink>({
                 entity: entities.tenantLinks,
                 partitionKey: `T#${tenant}`,
-                options: { index: "GSI1", beginsWith: "" }
+                options: { index: "GSI1" }
             });
-
-            return cleanupItems(entities.tenantLinks, links);
         },
         async listTenantLinksByType<TLink = TenantLink>({
             type,
             tenant
         }: ListTenantLinksByTypeParams): Promise<TLink[]> {
-            const links = await queryAll<TLink>({
+            return await queryAllClean<TLink>({
                 entity: entities.tenantLinks,
                 partitionKey: `T#${tenant}`,
                 options: { index: "GSI1", beginsWith: `TYPE#${type}#` }
             });
-
-            return cleanupItems(entities.tenantLinks, links);
         },
         async updateApiKey({ apiKey }): Promise<ApiKey> {
             const keys = {
@@ -488,10 +493,13 @@ export const createStorageOperations = (
             };
 
             try {
-                await entities.apiKeys.put({
-                    ...apiKey,
-                    TYPE: "security.apiKey",
-                    ...keys
+                await put({
+                    entity: entities.apiKeys,
+                    item: {
+                        ...apiKey,
+                        TYPE: "security.apiKey",
+                        ...keys
+                    }
                 });
                 return apiKey;
             } catch (err) {
@@ -506,10 +514,13 @@ export const createStorageOperations = (
             const keys = createGroupKeys(group);
 
             try {
-                await entities.groups.put({
-                    ...cleanupItem(entities.groups, group),
-                    ...keys,
-                    ...createGroupGsiKeys(group)
+                await put({
+                    entity: entities.groups,
+                    item: {
+                        ...cleanupItem(entities.groups, group),
+                        ...keys,
+                        ...createGroupGsiKeys(group)
+                    }
                 });
                 return group;
             } catch (err) {
@@ -524,10 +535,13 @@ export const createStorageOperations = (
             const keys = createTeamKeys(team);
 
             try {
-                await entities.teams.put({
-                    ...cleanupItem(entities.teams, team),
-                    ...keys,
-                    ...createTeamGsiKeys(team)
+                await put({
+                    entity: entities.teams,
+                    item: {
+                        ...cleanupItem(entities.teams, team),
+                        ...keys,
+                        ...createTeamGsiKeys(team)
+                    }
                 });
                 return team;
             } catch (err) {
@@ -541,9 +555,12 @@ export const createStorageOperations = (
         async updateSystemData({ system, original }): Promise<System> {
             const keys = createSystemKeys(system.tenant);
             try {
-                await entities.system.put({
-                    ...keys,
-                    ...cleanupItem(entities.system, system)
+                await put({
+                    entity: entities.system,
+                    item: {
+                        ...keys,
+                        ...cleanupItem(entities.system, system)
+                    }
                 });
                 return system;
             } catch (err) {

@@ -1,5 +1,5 @@
 import minimatch from "minimatch";
-import React, { useState, useMemo, Dispatch, SetStateAction, useCallback } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useMemo, useState } from "react";
 import { SecurityIdentity, SecurityPermission } from "~/types";
 
 export interface SecurityContext {
@@ -16,6 +16,10 @@ export interface SecurityContext {
     getPermissions<T extends SecurityPermission = SecurityPermission>(name: string): T[];
 }
 
+interface SecurityProviderProps {
+    children: React.ReactNode;
+}
+
 export const SecurityContext = React.createContext<SecurityContext>({
     identity: null,
     getIdentityId: () => null,
@@ -30,7 +34,7 @@ export const SecurityContext = React.createContext<SecurityContext>({
     }
 });
 
-export const SecurityProvider: React.FC = props => {
+export const SecurityProvider = (props: SecurityProviderProps) => {
     const [identity, setIdentity] = useState<SecurityIdentity | null>(null);
 
     const getPermission = useCallback(
@@ -42,7 +46,7 @@ export const SecurityProvider: React.FC = props => {
                 return null;
             }
 
-            const perms = identity.permissions || [];
+            const perms = (identity.permissions || []) as T[];
             const exactMatch = perms.find(p => p.name === name);
             if (exactMatch) {
                 return exactMatch as T;
@@ -51,7 +55,7 @@ export const SecurityProvider: React.FC = props => {
             }
 
             // Try matching using patterns
-            return perms.find(p => minimatch(name, p.name)) as any;
+            return perms.find(p => minimatch(name, p.name)) || null;
         },
         [identity]
     );

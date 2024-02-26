@@ -4,14 +4,15 @@ import { BaseEventAction, EventAction } from "./editor/recoil/eventActions";
 import { PbState } from "./editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form";
-import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
-import { GenericFormData, FormOnSubmit, FormSetValue, FormAPI } from "@webiny/form/types";
+import { IconName, IconPrefix, IconProp } from "@fortawesome/fontawesome-svg-core";
+import { FormAPI, FormOnSubmit, FormSetValue, GenericFormData } from "@webiny/form/types";
 import { CoreOptions } from "medium-editor";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList/types";
 import { Theme } from "@webiny/app-theme/types";
 import { Renderer } from "@webiny/app-page-builder-elements/types";
+import { FolderTableItem, RecordTableItem, SearchRecordItem } from "@webiny/app-aco/table.types";
 
 export enum PageStatus {
     PUBLISHED = "published",
@@ -116,17 +117,18 @@ export interface PbElementDataImageType {
     title?: string;
 }
 
-export type PbElementDataIconType = {
-    id?: [string, string];
+export interface PbElementDataIconType {
+    id?: IconProp;
     width?: number;
     color?: string;
     svg?: string;
     position?: string;
-};
-export type PbElementDataSettingsFormType = {
+}
+
+export interface PbElementDataSettingsFormType {
     parent?: string;
     revision?: string;
-};
+}
 
 export enum AlignmentTypesEnum {
     HORIZONTAL_LEFT = "horizontalLeft",
@@ -176,6 +178,8 @@ export interface PbElementDataTypeSource {
 }
 
 export type PbElementDataType = {
+    blockId?: string;
+    variables?: PbBlockVariable[];
     action?: {
         href: string;
         newTab: boolean;
@@ -356,6 +360,9 @@ export interface PbPageData {
     publishedOn: string;
     createdBy: PbIdentity;
     revisions: PbPageRevision[];
+    wbyAco_location: {
+        folderId: string;
+    };
 }
 
 export interface PbPageRevision {
@@ -370,7 +377,16 @@ export interface PbPageRevision {
 
 export type PbPageDataItem = Pick<
     PbPageData,
-    "id" | "pid" | "title" | "createdBy" | "savedOn" | "status" | "version" | "locked" | "path"
+    | "id"
+    | "pid"
+    | "title"
+    | "createdBy"
+    | "createdOn"
+    | "savedOn"
+    | "status"
+    | "version"
+    | "locked"
+    | "path"
 >;
 
 export interface PbRenderElementPluginRenderParams {
@@ -703,7 +719,7 @@ export type PbEditorGridPresetPluginType = Plugin & {
     name: string;
     type: "pb-editor-grid-preset";
     cellsType: string;
-    icon: React.FC;
+    icon: React.ComponentType;
 };
 // this will run when saving the element for later use
 export type PbEditorPageElementSaveActionPlugin = Plugin & {
@@ -1027,3 +1043,7 @@ declare global {
         }
     }
 }
+
+export type PbPageTableItem = SearchRecordItem<PbPageDataItem> & RecordTableItem;
+
+export type TableItem = FolderTableItem | PbPageTableItem;

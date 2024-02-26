@@ -31,14 +31,14 @@ const tracker: Record<string, boolean> = {};
 interface GenerateElementsProps {
     name: string;
 }
-const GenerateElementsComponent: React.FC<GenerateElementsProps> = ({ name }) => {
+const GenerateElementsComponent = ({ name }: GenerateElementsProps) => {
     if (tracker[name]) {
         return null;
     }
 
     tracker[name] = true;
 
-    const ElementsHOC = (Fields: React.FC): React.FC => {
+    const ElementsHOC = (Fields: React.ComponentType) => {
         return function Elements() {
             const { getViewElement } = useViewComposition();
             const element = getViewElement(VIEW_NAME, name);
@@ -67,7 +67,8 @@ const GenerateElementsComponent: React.FC<GenerateElementsProps> = ({ name }) =>
     return <Compose component={SettingsFields} with={ElementsHOC} />;
 };
 
-const GenerateElements: React.FC<GenerateElementsProps> = memo(GenerateElementsComponent);
+const GenerateElements: React.ComponentType<GenerateElementsProps> =
+    memo(GenerateElementsComponent);
 
 GenerateElements.displayName = "GenerateElements";
 
@@ -75,9 +76,10 @@ export interface GroupProps {
     name: string;
     querySelection?: DocumentNode;
     label?: string;
+    children: React.ReactNode;
 }
 
-const Group: FC<GroupProps> = ({ name, label, querySelection, children }) => {
+const Group: FC<GroupProps> = ({ name, label, querySelection, children }: GroupProps) => {
     const viewComposition = useViewComposition();
 
     const context = useMemo(
@@ -119,7 +121,11 @@ const Group: FC<GroupProps> = ({ name, label, querySelection, children }) => {
     );
 };
 
-const Element: React.FC = ({ children }) => {
+interface ElementProps {
+    children: React.ReactNode;
+}
+
+const Element = ({ children }: ElementProps) => {
     const { addElement } = useContext(GroupContext);
 
     useEffect(() => {

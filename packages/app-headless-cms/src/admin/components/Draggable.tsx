@@ -18,7 +18,7 @@ export interface DraggableProps {
     target?: string[];
 }
 
-const Draggable: React.FC<DraggableProps> = props => {
+const Draggable = (props: DraggableProps) => {
     const { children, beginDrag, endDrag, target } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({
@@ -48,5 +48,5 @@ const Draggable: React.FC<DraggableProps> = props => {
     );
 };
 
-const MemoizedDraggable: React.FC<DraggableProps> = React.memo(Draggable);
+const MemoizedDraggable: React.ComponentType<DraggableProps> = React.memo(Draggable);
 export default MemoizedDraggable;

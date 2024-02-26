@@ -1,18 +1,19 @@
 import React, { Fragment, memo } from "react";
 import {
     Compose,
-    Plugins,
+    Plugin,
     LoginScreenRenderer,
     AddMenu as Menu,
     AddUserMenuItem,
     AddRoute,
     Layout,
-    HigherOrderComponent
+    Decorator,
+    GenericComponent
 } from "@webiny/app-admin";
 import { plugins } from "@webiny/plugins";
 import { HasPermission } from "@webiny/app-security";
 import { Permission } from "~/plugins/constants";
-import { createAuthentication } from "~/createAuthentication";
+import { createAuthentication, CreateAuthenticationConfig } from "~/createAuthentication";
 import { UsersView } from "~/ui/views/Users/UsersView";
 import { Account } from "~/ui/views/Account";
 import { UserInfo } from "./plugins/userMenu/userInfo";
@@ -23,24 +24,26 @@ import installation from "./plugins/installation";
 import permissionRenderer from "./plugins/permissionRenderer";
 import cognito from "./plugins/cognito";
 
-/**
- * TODO @ts-refactor figure out correct LoginScreenTypes.
- */
-// @ts-ignore
-const LoginScreen: React.FC = createAuthentication();
+const createLoginScreenDecorator = (
+    config?: CreateAuthenticationConfig
+): Decorator<GenericComponent> => {
+    return () => createAuthentication(config);
+};
 
-const CognitoLoginScreen: HigherOrderComponent = () => LoginScreen;
-/**
- * TODO @ts-refactor @pavel
- * Compose.component
- */
-const CognitoIdP: React.FC = () => {
+export interface CognitoProps {
+    config?: CreateAuthenticationConfig;
+}
+
+const CognitoIdP = (props: CognitoProps) => {
     plugins.register([installation, permissionRenderer, cognito()]);
 
     return (
         <Fragment>
-            <Compose component={LoginScreenRenderer as any} with={CognitoLoginScreen} />
-            <Plugins>
+            <Compose
+                component={LoginScreenRenderer}
+                with={createLoginScreenDecorator(props.config)}
+            />
+            <Plugin>
                 <HasPermission name={Permission.Users}>
                     <AddRoute exact path={"/admin-users"}>
                         <Layout title={"Admin Users"}>
@@ -65,7 +68,7 @@ const CognitoIdP: React.FC = () => {
                 <AddUserMenuItem element={<UserInfo />} />
                 <AddUserMenuItem element={<AccountDetails />} />
                 <AddUserMenuItem element={<SignOut />} />
-            </Plugins>
+            </Plugin>
         </Fragment>
     );
 };

@@ -21,12 +21,12 @@ interface SingleValueDynamicZoneProps {
     getBind: GetBind;
 }
 
-export const SingleValueDynamicZone: React.VFC<SingleValueDynamicZoneProps> = ({
+export const SingleValueDynamicZone = ({
     field,
     bind,
     contentModel,
     getBind
-}) => {
+}: SingleValueDynamicZoneProps) => {
     const onTemplate = (template: CmsDynamicZoneTemplate) => {
         bind.onChange({ _templateId: template.id });
     };

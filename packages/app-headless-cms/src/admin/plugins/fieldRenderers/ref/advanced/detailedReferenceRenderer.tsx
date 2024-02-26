@@ -1,12 +1,11 @@
 import React from "react";
-import { CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsModelFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { AdvancedSingleReferenceField } from "./components/AdvancedSingleReferenceField";
-import { NewRefEntryDialogContextProvider } from "~/admin/plugins/fieldRenderers/ref/hooks/useNewRefEntryDialog";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
-export const createAdvancedSingleRenderer = (): CmsEditorFieldRendererPlugin => {
+export const createAdvancedSingleRenderer = (): CmsModelFieldRendererPlugin => {
     return {
         type: "cms-editor-field-renderer",
         name: "cms-editor-field-renderer-ref-single-advanced",
@@ -25,15 +24,13 @@ export const createAdvancedSingleRenderer = (): CmsEditorFieldRendererPlugin => 
                     <Bind>
                         {bind => {
                             return (
-                                <NewRefEntryDialogContextProvider>
-                                    <AdvancedSingleReferenceField
-                                        field={field}
-                                        getBind={getBind}
-                                        bind={bind}
-                                        Label={Label}
-                                        contentModel={contentModel}
-                                    />
-                                </NewRefEntryDialogContextProvider>
+                                <AdvancedSingleReferenceField
+                                    field={field}
+                                    getBind={getBind}
+                                    bind={bind}
+                                    Label={Label}
+                                    contentModel={contentModel}
+                                />
                             );
                         }}
                     </Bind>

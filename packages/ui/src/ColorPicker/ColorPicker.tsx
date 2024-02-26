@@ -1,5 +1,5 @@
 import React from "react";
-import { SketchPicker, ColorResult } from "react-color";
+import { SketchPicker, ColorState } from "react-color";
 import { css } from "emotion";
 import { FormComponentProps } from "~/types";
 import { FormElementMessage } from "~/FormElementMessage";
@@ -22,7 +22,7 @@ const classes = {
         display: "inline-block",
         cursor: "pointer"
     }),
-    // @ts-ignore
+    // @ts-expect-error
     popover: css({
         position: "absolute",
         zIndex: "2"
@@ -71,7 +71,7 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
         this.setState({ showColorPicker: false });
     };
 
-    handleChange = (color: ColorResult) => {
+    handleChange = (color: ColorState) => {
         const { onChange } = this.props;
         onChange && onChange(color.hex);
     };

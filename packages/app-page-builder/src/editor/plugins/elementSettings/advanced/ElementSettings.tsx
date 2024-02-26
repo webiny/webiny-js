@@ -6,9 +6,9 @@ import { Form, FormOnSubmit, FormRenderPropParams } from "@webiny/form";
 import { PbEditorPageElementAdvancedSettingsPlugin } from "~/types";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
-import { makeComposable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 
-export const ElementSettings: React.FC = () => {
+export const ElementSettings = () => {
     const [element] = useActiveElement();
     const updateElement = useUpdateElement();
 
@@ -44,7 +44,7 @@ export const ElementSettings: React.FC = () => {
     );
 };
 
-export const ElementSettingsRenderer = makeComposable(
+export const ElementSettingsRenderer = makeDecoratable(
     "ElementSettingsRenderer",
     // Settings this to `any`, because this API is now deprecated, and we don't want to have it visible.
     ({ formProps }: any) => {
@@ -56,7 +56,7 @@ interface LegacyPluginsProps {
     formProps: FormRenderPropParams;
 }
 
-const LegacyPlugins: React.FC<LegacyPluginsProps> = ({ formProps }) => {
+const LegacyPlugins = ({ formProps }: LegacyPluginsProps) => {
     const [element] = useActiveElement();
 
     if (!element) {

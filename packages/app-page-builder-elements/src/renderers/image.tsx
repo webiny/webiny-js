@@ -18,6 +18,7 @@ export interface ImageElementData {
         newTab: boolean;
         href: string;
     };
+    // TODO: @pavel find a better way to attach dynamic functionality
     dynamicSource?: {
         resolvedPath: string;
     };
@@ -51,19 +52,20 @@ const getImageDynamicValue = (element?: any, dynamicValue?: string) => {
     return newElement;
 };
 
-export const ImageRendererComponent: React.FC<ImageRendererComponentProps> = ({
+export const ImageRendererComponent = ({
     onClick,
     renderEmpty,
     value,
     link,
     linkComponent,
     dynamicSourceContext
-}) => {
+}: ImageRendererComponentProps) => {
     const LinkComponent = linkComponent || DefaultLinkComponent;
 
     const { getElement, useDynamicValue } = useRenderer();
 
     const element = getElement<ImageElementData>();
+    // TODO: find a better way to attach value to renderer
     const dynamicValue = useDynamicValue(
         dynamicSourceContext,
         element.data?.dynamicSource?.resolvedPath
@@ -79,6 +81,7 @@ export const ImageRendererComponent: React.FC<ImageRendererComponentProps> = ({
             onClick(params);
         }
     };
+    // TODO: end^
 
     let content;
 

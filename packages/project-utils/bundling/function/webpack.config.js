@@ -2,7 +2,6 @@ const path = require("path");
 const fs = require("fs");
 const webpack = require("webpack");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-
 const { version } = require("@webiny/project-utils/package.json");
 const { getOutput, getEntry } = require("./utils");
 
@@ -37,10 +36,11 @@ module.exports = options => {
         output: {
             libraryTarget: "commonjs",
             path: output.path,
-            filename: output.filename
+            filename: output.filename,
+            chunkFilename: `[name].[contenthash:8].chunk.js`
         },
         devtool: sourceMaps ? "source-map" : false,
-        externals: [/^aws-sdk/],
+        externals: [/^@aws-sdk/, /^sharp$/],
         mode: production ? "production" : "development",
         optimization: {
             minimize: production
@@ -54,6 +54,13 @@ module.exports = options => {
                 "process.env.WEBINY_IS_PRE_529": JSON.stringify(String(isPre529())),
                 "process.env.WEBINY_VERSION": JSON.stringify(process.env.WEBINY_VERSION || version),
                 ...definitions
+            }),
+            /**
+             * This is necessary to enable JSDOM usage in Lambda.
+             */
+            new webpack.IgnorePlugin({
+                resourceRegExp: /canvas/,
+                contextRegExp: /jsdom$/
             }),
             tsChecksEnabled &&
                 new ForkTsCheckerWebpackPlugin({
@@ -69,30 +76,42 @@ module.exports = options => {
         module: {
             exprContextCritical: false,
             rules: [
-                sourceMaps && {
-                    test: /\.js$/,
-                    enforce: "pre",
-                    use: [require.resolve("source-map-loader")]
-                },
                 {
-                    test: /\.mjs$/,
-                    include: /node_modules/,
-                    type: "javascript/auto",
-                    resolve: {
-                        fullySpecified: false
-                    }
+                    oneOf: [
+                        sourceMaps && {
+                            test: /\.js$/,
+                            enforce: "pre",
+                            use: [require.resolve("source-map-loader")]
+                        },
+                        {
+                            test: /\.mjs$/,
+                            include: /node_modules/,
+                            type: "javascript/auto",
+                            resolve: {
+                                fullySpecified: false
+                            }
+                        },
+                        {
+                            test: /\.(js|ts)$/,
+                            loader: require.resolve("babel-loader"),
+                            exclude: /node_modules/,
+                            options: babelOptions
+                        }
+                    ].filter(Boolean)
                 },
+                /**
+                 * Some NPM libraries import CSS automatically, and that breaks the build.
+                 * To eliminate the problem, we use the `null-loader` to ignore CSS.
+                 */
                 {
-                    test: /\.(js|ts)$/,
-                    loader: require.resolve("babel-loader"),
-                    exclude: /node_modules/,
-                    options: babelOptions
+                    test: /\.css$/,
+                    loader: require.resolve("null-loader")
                 }
-            ].filter(Boolean)
+            ]
         },
         resolve: {
             modules: [path.resolve(path.join(cwd, "node_modules")), "node_modules"],
-            extensions: [".ts", ".mjs", ".js", ".json"]
+            extensions: [".ts", ".mjs", ".js", ".json", ".css"]
         }
     };
 };

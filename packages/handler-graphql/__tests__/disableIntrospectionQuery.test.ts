@@ -1,10 +1,10 @@
 import useGqlHandler from "./useGqlHandler";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import { booksSchema, booksCrudPlugin } from "~tests/mocks/booksSchema";
+import { booksCrudPlugin, booksSchema } from "~tests/mocks/booksSchema";
 
 const disableIntrospectionPlugin = new BeforeHandlerPlugin(async context => {
     // Check in the context.request.body if there is an introspection query.
-    const body = context.request.body as any;
+    const body = context.request.body as unknown as Record<string, any>;
     if (!body?.query) {
         return;
     } else if ((body.query as string).includes("__schema") === false) {

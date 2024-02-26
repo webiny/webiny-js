@@ -35,7 +35,7 @@ const scaleableVideo = css({
     }
 });
 
-const VimeoEmbed: React.FC<OEmbedProps> = props => {
+const VimeoEmbed = (props: OEmbedProps) => {
     const { element, data } = props;
 
     if (data && data.loading) {

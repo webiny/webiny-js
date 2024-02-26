@@ -12,7 +12,7 @@ type TagProps = {
     onTagClick: (tagItem: TagItem) => void;
 };
 
-export const Tag: React.VFC<TagProps> = ({ tagItem, active, onTagClick }) => {
+export const Tag = ({ tagItem, active, onTagClick }: TagProps) => {
     return (
         <TagContainer onClick={() => onTagClick(tagItem)}>
             <Icon active={active}>{active ? <TagIconRound /> : <TagIconOutlined />}</Icon>

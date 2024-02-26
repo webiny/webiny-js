@@ -12,6 +12,7 @@ export interface ValueFilterPluginParamsMatches {
 
 export interface ValueFilterPluginParams {
     operation: string;
+    canUse?: (params: ValueFilterPluginParamsMatchesParams) => boolean;
     matches: ValueFilterPluginParamsMatches;
 }
 export class ValueFilterPlugin extends Plugin {
@@ -25,6 +26,13 @@ export class ValueFilterPlugin extends Plugin {
     public constructor(params: ValueFilterPluginParams) {
         super();
         this._params = params;
+    }
+
+    public canUse(params: ValueFilterPluginParamsMatchesParams): boolean {
+        if (!this._params.canUse) {
+            return true;
+        }
+        return this._params.canUse(params);
     }
 
     public matches(params: ValueFilterPluginParamsMatchesParams): boolean {

@@ -20,7 +20,6 @@ describe("PageElements Test", () => {
             const data = {
                 name: `${prefix}name`,
                 type: `element`,
-                category: `${prefix}category`,
                 content: { some: `${prefix}content` }
             };
 
@@ -56,7 +55,6 @@ describe("PageElements Test", () => {
 
             const updateData = {
                 name: `${prefix}name-UPDATED`,
-                category: `${prefix}category-UPDATED`,
                 content: { some: `${prefix}content-UPDATED` }
             };
 
@@ -88,7 +86,6 @@ describe("PageElements Test", () => {
                     listPageElements: {
                         data: [
                             {
-                                category: "pageElement-0-category-UPDATED",
                                 content: {
                                     some: "pageElement-0-content-UPDATED"
                                 },
@@ -99,7 +96,6 @@ describe("PageElements Test", () => {
                                 type: "element"
                             },
                             {
-                                category: "pageElement-1-category-UPDATED",
                                 content: {
                                     some: "pageElement-1-content-UPDATED"
                                 },
@@ -110,7 +106,6 @@ describe("PageElements Test", () => {
                                 type: "element"
                             },
                             {
-                                category: "pageElement-2-category-UPDATED",
                                 content: {
                                     some: "pageElement-2-content-UPDATED"
                                 },
@@ -134,9 +129,7 @@ describe("PageElements Test", () => {
                 data: {
                     pageBuilder: {
                         deletePageElement: {
-                            data: {
-                                id: ids[i]
-                            },
+                            data: true,
                             error: null
                         }
                     }

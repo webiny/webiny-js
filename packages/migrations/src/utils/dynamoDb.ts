@@ -7,6 +7,7 @@ import {
     BatchWriteParams,
     get,
     GetRecordParams,
+    count,
     queryAll,
     queryAllWithCallback as ddbQueryAllWithCallback,
     queryOne,
@@ -17,6 +18,7 @@ import {
 } from "@webiny/db-dynamodb/utils";
 
 export {
+    count,
     get,
     queryAll,
     ddbQueryAllWithCallback,

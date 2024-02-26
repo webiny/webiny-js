@@ -6,14 +6,16 @@ interface HeadingEditorProps extends RichTextEditorProps {
     tag?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 }
 
-export const HeadingEditor: React.FC<HeadingEditorProps> = ({ tag, placeholder, ...rest }) => {
+const styles = { padding: 5 };
+
+export const HeadingEditor = ({ tag, placeholder, ...rest }: HeadingEditorProps) => {
     return (
         <RichTextEditor
             toolbar={<Toolbar />}
             tag={tag ?? "h1"}
             placeholder={placeholder ?? "Enter your heading text here..."}
             {...rest}
-            styles={{ padding: 5 }}
+            styles={styles}
         >
             {rest?.children}
         </RichTextEditor>

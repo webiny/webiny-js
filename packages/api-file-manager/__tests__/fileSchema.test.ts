@@ -6,8 +6,6 @@ import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/s
 import fileSdlSnapshot from "./mocks/file.sdl";
 import { createFileModelModifier } from "~/modelModifier/CmsModelModifier";
 
-jest.retryTimes(0);
-
 describe("File Model Modifier test", () => {
     test("should generate GraphQL schema for File model", async () => {
         const { handler } = useHandler({
@@ -26,6 +24,22 @@ describe("File Model Modifier test", () => {
                         fieldId: "year",
                         label: "Year of manufacturing",
                         type: "number"
+                    });
+                    modifier.addField({
+                        id: "article",
+                        fieldId: "article",
+                        label: "Article",
+                        type: "ref",
+                        renderer: {
+                            name: "ref-advanced-single"
+                        },
+                        settings: {
+                            models: [
+                                {
+                                    modelId: "article"
+                                }
+                            ]
+                        }
                     });
                 })
             ]

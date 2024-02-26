@@ -7,7 +7,7 @@ import {
     Logo,
     AddLogo
 } from "@webiny/app-admin";
-import { Link } from "@webiny/react-router/";
+import { Link } from "@webiny/react-router";
 import { ReactComponent as LogoIcon } from "./webiny-logo.svg";
 import { useNavigation } from "../Navigation";
 
@@ -33,7 +33,7 @@ const BrandImpl: HigherOrderComponent = () => {
     };
 };
 
-const WebinyLogo: React.FC = () => {
+const WebinyLogo = () => {
     const { location } = useTags();
     const isLoginScreen = location === "loginScreen";
     const isAppBar = location === "appBar";
@@ -54,7 +54,7 @@ const WebinyLogo: React.FC = () => {
     );
 };
 
-export const Brand: React.FC = () => {
+export const Brand = () => {
     return (
         <Fragment>
             <Compose component={BrandRenderer} with={BrandImpl} />

@@ -1,47 +1,84 @@
+import "./gateway/register";
+import "./s3/register";
+import "./dynamodb/register";
+import "./sqs/register";
+import "./eventBridge/register";
+import "./sns/register";
+
+/**
+ * API Gateway
+ */
 export {
     createHandler as createApiGatewayHandler,
-    CreateHandlerParams as CreateApiGatewayHandlerParams,
+    HandlerParams as CreateApiGatewayHandlerParams,
+    HandlerCallable as ApiGatewayHandlerCallable,
     RoutePlugin,
     createRoute as createApiGatewayRoute
 } from "~/gateway";
 
+/**
+ * S3
+ */
+//
 export {
     createHandler as createS3Handler,
-    CreateHandlerParams as CreateS3HandlerParams,
+    HandlerParams as CreateS3HandlerParams,
     S3EventHandler,
     S3EventHandlerCallable,
     S3EventHandlerCallableParams,
     createEventHandler as createS3EventHandler
 } from "~/s3";
 
+/**
+ * DynamoDB Stream
+ */
+//
 export {
     createHandler as createDynamoDBHandler,
-    CreateHandlerParams as CreateDynamoDBHandlerParams,
+    HandlerParams as CreateDynamoDBHandlerParams,
     DynamoDBEventHandler,
     DynamoDBEventHandlerCallable,
     DynamoDBEventHandlerCallableParams,
-    createEventHandler as createDynamoDBEventHandler,
-    HandlerCallable as DynamoDBHandlerCallable
+    createEventHandler as createDynamoDBEventHandler
 } from "~/dynamodb";
 
+/**
+ * SQS
+ */
+//
 export {
     createHandler as createSQSHandler,
-    CreateHandlerParams as CreateSQSHandlerParams,
+    HandlerParams as CreateSQSHandlerParams,
     SQSEventHandler,
     SQSEventHandlerCallable,
     SQSEventHandlerCallableParams,
-    createEventHandler as createSQSEventHandler,
-    HandlerCallable as SQSHandlerCallable
+    createEventHandler as createSQSEventHandler
 } from "~/sqs";
 
+/**
+ * SNS
+ */
+//
+export {
+    createHandler as createSNSHandler,
+    HandlerParams as CreateSNSHandlerParams,
+    SNSEventHandler,
+    SNSEventHandlerCallable,
+    SNSEventHandlerCallableParams,
+    createEventHandler as createSNSEventHandler
+} from "~/sns";
+
+/**
+ * EventBridge
+ */
+//
 export {
     createHandler as createEventBridgeHandler,
-    CreateHandlerParams as CreateEventBridgeHandlerParams,
+    HandlerParams as CreateEventBridgeHandlerParams,
     EventBridgeEventHandler,
     EventBridgeEventHandlerCallable,
     EventBridgeEventHandlerCallableParams,
-    createEventHandler as createEventBridgeEventHandler,
-    HandlerCallable as EventBridgeHandlerCallable
+    createEventHandler as createEventBridgeEventHandler
 } from "~/eventBridge";
 
 export {
@@ -55,3 +92,6 @@ export {
 } from "~/raw";
 
 export { ContextPlugin, createContextPlugin, ContextPluginCallable } from "@webiny/handler";
+
+export * from "./createHandler";
+export * from "./sourceHandler";

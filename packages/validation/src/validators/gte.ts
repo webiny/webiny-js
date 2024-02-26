@@ -15,9 +15,10 @@ import ValidationError from "~/validationError";
  * });
  */
 export default (value: any, params?: string[]) => {
-    if (!value || !params) {
+    if (value === undefined || value === null || !params) {
         return;
     }
+    value = value + "";
 
     if (parseFloat(value) >= parseFloat(params[0])) {
         return;

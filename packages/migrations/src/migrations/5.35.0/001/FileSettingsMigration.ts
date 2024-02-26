@@ -1,19 +1,20 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { DataMigrationContext } from "@webiny/data-migration";
-import { createStandardEntity, queryOne, queryAll } from "~/utils";
+import { createStandardEntity, queryAll, queryOne } from "~/utils";
 import { createTenantEntity } from "./entities/createTenantEntity";
 import {
     createLegacySettingsEntity,
     createSettingsEntity,
     getSettingsData
 } from "./entities/createSettingsEntity";
+import { put } from "@webiny/db-dynamodb";
 
 export class FileManager_5_35_0_001_FileManagerSettings {
     private readonly newSettingsEntity: ReturnType<typeof createSettingsEntity>;
     private readonly legacySettingsEntity: ReturnType<typeof createLegacySettingsEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.newSettingsEntity = createStandardEntity(table, "FM.Settings");
         this.legacySettingsEntity = createLegacySettingsEntity(table);
         this.tenantEntity = createTenantEntity(table);
@@ -86,13 +87,16 @@ export class FileManager_5_35_0_001_FileManagerSettings {
             }
 
             logger.info(`Updating FM settings for tenant ${tenant.name} (${tenant.id}).`);
-            await this.newSettingsEntity.put({
-                PK: `T#${tenant.id}#FM#SETTINGS`,
-                SK: "A",
-                TYPE: "fm.settings",
-                data: {
-                    ...getSettingsData(settings),
-                    tenant: tenant.id
+            await put({
+                entity: this.newSettingsEntity,
+                item: {
+                    PK: `T#${tenant.id}#FM#SETTINGS`,
+                    SK: "A",
+                    TYPE: "fm.settings",
+                    data: {
+                        ...getSettingsData(settings),
+                        tenant: tenant.id
+                    }
                 }
             });
         }

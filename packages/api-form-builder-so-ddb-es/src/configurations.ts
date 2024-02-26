@@ -1,16 +1,32 @@
 import WebinyError from "@webiny/error";
+import { getLastAddedIndexPlugin } from "@webiny/api-elasticsearch";
+import { FormElasticsearchIndexPlugin } from "~/plugins";
+import { ElasticsearchIndexRequestBody } from "@webiny/api-elasticsearch/types";
+import { FormBuilderContext } from "@webiny/api-form-builder/types";
 
-export interface ElasticsearchConfigParams {
+export interface ConfigurationsElasticsearch {
+    index: string;
+}
+
+export interface ConfigurationsElasticsearchParams {
     tenant: string;
     locale: string;
 }
 
-interface ElasticsearchConfig {
-    index: string;
+export interface ConfigurationsIndexSettingsParams {
+    context: FormBuilderContext;
+    locale: string;
 }
 
-export const configurations = {
-    es(params: ElasticsearchConfigParams): ElasticsearchConfig {
+export interface Configurations {
+    es: (params: ConfigurationsElasticsearchParams) => ConfigurationsElasticsearch;
+    indexSettings: (
+        params: ConfigurationsIndexSettingsParams
+    ) => Partial<ElasticsearchIndexRequestBody>;
+}
+
+export const configurations: Configurations = {
+    es(params) {
         const { tenant, locale } = params;
         if (!tenant) {
             throw new WebinyError(
@@ -47,5 +63,14 @@ export const configurations = {
         return {
             index: prefix + index
         };
+    },
+    indexSettings: ({ context, locale }) => {
+        const plugin = getLastAddedIndexPlugin<FormElasticsearchIndexPlugin>({
+            container: context.plugins,
+            type: FormElasticsearchIndexPlugin.type,
+            locale
+        });
+
+        return plugin ? plugin.body : {};
     }
 };

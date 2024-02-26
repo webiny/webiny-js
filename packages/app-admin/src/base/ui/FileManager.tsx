@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import { makeComposable } from "@webiny/react-composition";
+import { createVoidComponent, makeDecoratable } from "@webiny/react-composition";
 
 export interface FileManagerOnChange<T> {
     (value: T): void;
@@ -58,7 +58,7 @@ export type MultipleProps =
       };
 
 export type FileManagerProps = {
-    accept?: Array<string>;
+    accept?: string[];
     images?: boolean;
     maxSize?: number | string;
     /**
@@ -69,7 +69,7 @@ export type FileManagerProps = {
     onUploadCompletion?: (files: FileManagerFileItem[]) => void;
     own?: boolean;
     scope?: string;
-    tags?: Array<string>;
+    tags?: string[];
     show?: boolean;
     /**
      * @deprecated This prop is no longer used. Use the `render` prop to get better TS autocomplete.
@@ -92,14 +92,12 @@ type DistributiveOmit<T, K extends keyof T> = T extends unknown ? Omit<T, K> : n
 
 export type FileManagerRendererProps = DistributiveOmit<FileManagerProps, "render" | "children">;
 
-export const FileManagerRenderer = makeComposable<FileManagerRendererProps>("FileManagerRenderer");
+export const FileManagerRenderer = makeDecoratable(
+    "FileManagerRenderer",
+    createVoidComponent<FileManagerRendererProps>()
+);
 
-export const FileManager: React.FC<FileManagerProps> = ({
-    children,
-    render,
-    onChange,
-    ...rest
-}) => {
+export const FileManager = ({ children, render, onChange, ...rest }: FileManagerProps) => {
     const containerRef = useRef<HTMLElement>(getPortalTarget());
     const [show, setShow] = useState(rest.show ?? false);
     const onChangeRef = useRef(onChange);
@@ -119,11 +117,15 @@ export const FileManager: React.FC<FileManagerProps> = ({
         <>
             {show &&
                 ReactDOM.createPortal(
+                    /**
+                     * TODO @pavel
+                     */
+                    // @ts-expect-error
                     <FileManagerRenderer
                         onClose={() => setShow(false)}
                         onChange={
                             /* TODO: figure out how to create a conditional type based on the value of `rest.multiple` */
-                            onChangeRef.current as any
+                            onChangeRef.current
                         }
                         {...rest}
                     />,

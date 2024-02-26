@@ -1,12 +1,12 @@
 import React, { useCallback } from "react";
 import { useRecoilState } from "recoil";
 import { IconButton } from "@webiny/ui/Button";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { ReactComponent as SettingsIcon } from "./settings.svg";
 import { blockSettingsStateAtom } from "./state";
 import { EditorBar } from "~/editor";
 
-const BlockSettingsButton: React.FC = () => {
+const BlockSettingsButton = () => {
     const [, setState] = useRecoilState(blockSettingsStateAtom);
     const onClickHandler = useCallback(() => {
         setState(true);
@@ -15,16 +15,13 @@ const BlockSettingsButton: React.FC = () => {
     return <IconButton onClick={onClickHandler} icon={<SettingsIcon />} />;
 };
 
-export const AddBlockSettingsButton = createComponentPlugin(
-    EditorBar.RightSection,
-    RightSection => {
-        return function ComposeRightSection(props) {
-            return (
-                <RightSection>
-                    <BlockSettingsButton />
-                    {props.children}
-                </RightSection>
-            );
-        };
-    }
-);
+export const AddBlockSettingsButton = createDecorator(EditorBar.RightSection, RightSection => {
+    return function ComposeRightSection(props) {
+        return (
+            <RightSection>
+                <BlockSettingsButton />
+                {props.children}
+            </RightSection>
+        );
+    };
+});

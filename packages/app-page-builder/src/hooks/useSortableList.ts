@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { useDrag, useDrop, DropTargetMonitor } from "react-dnd";
+import { useDrag, useDrop, DropTargetMonitor, DragSourceMonitor } from "react-dnd";
 import { DraggableItem } from "~/editor/components/Draggable";
 
 export const moveInPlace = (arr: any[], from: number, to: number): any[] => {
@@ -24,8 +24,8 @@ interface UseSortableListArgs {
     id: string;
     type: string;
     move: (current: number, next: number) => void;
-    beginDrag?: Function;
-    endDrag?: Function;
+    beginDrag?: (monitor: DragSourceMonitor) => void;
+    endDrag?: (item: DraggableItem | undefined, monitor: DragSourceMonitor) => void;
 }
 
 export const useSortableList = ({

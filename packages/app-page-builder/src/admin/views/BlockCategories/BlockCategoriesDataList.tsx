@@ -203,7 +203,12 @@ const PageBuilderBlockCategoriesDataList = ({
                             {canDelete(item?.createdBy?.id) && (
                                 <ListItemMeta>
                                     <ListActions>
-                                        <DeleteIcon onClick={() => deleteItem(item)} />
+                                        <DeleteIcon
+                                            onClick={() => deleteItem(item)}
+                                            data-testid={
+                                                "pb-block-categories-list-delete-block-category-btn"
+                                            }
+                                        />
                                     </ListActions>
                                 </ListItemMeta>
                             )}

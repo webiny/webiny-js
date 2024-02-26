@@ -1,8 +1,8 @@
 import React from "react";
 import { ReactComponent as ObjectIcon } from "@material-design-icons/svg/outlined/dynamic_form.svg";
 import { i18n } from "@webiny/app/i18n";
+import { createFieldsList } from "@webiny/app-headless-cms-common";
 import { DynamicZone } from "~/admin/plugins/fields/dynamicZone/DynamicZone";
-import { createFieldsList } from "~/admin/graphql/createFieldsList";
 import { createTypeName } from "~/utils/createTypeName";
 import { CmsModelFieldTypePlugin, CmsModelFieldValidatorsGroup } from "~/types";
 import { commonValidators } from "./dynamicZone/commonValidators";
@@ -37,9 +37,6 @@ export const dynamicZoneField: CmsModelFieldTypePlugin = {
             return ["required"];
         },
         listValidators,
-        canAccept(_, draggable) {
-            return draggable.fieldType !== "dynamicZone" && draggable.fieldType !== "ref";
-        },
         multipleValuesLabel: t`Use as a list of values`,
         createField() {
             return {
@@ -57,13 +54,22 @@ export const dynamicZoneField: CmsModelFieldTypePlugin = {
             return <DynamicZone />;
         },
         graphql: {
-            queryField({ model, field }) {
-                const prefix = `${model.singularApiName}_${createTypeName(field.fieldId)}`;
+            queryField({ model, field, graphQLTypePrefix }) {
+                const prefix = `${graphQLTypePrefix}_${createTypeName(field.fieldId)}`;
                 const templates = field.settings?.templates || [];
 
+                if (!templates.length) {
+                    return null;
+                }
+
                 const fragments = templates.map(template => {
-                    return `...on ${prefix}_${template.gqlTypeName} {
-                        ${createFieldsList({ model, fields: template.fields || [] })}
+                    const templateGraphQLType = `${prefix}_${template.gqlTypeName}`;
+                    return `...on ${templateGraphQLType} {
+                        ${createFieldsList({
+                            model,
+                            fields: template.fields || [],
+                            graphQLTypePrefix: templateGraphQLType
+                        })}
                         _templateId
                         __typename
                     }`;

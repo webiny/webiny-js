@@ -1,5 +1,5 @@
 import React from "react";
-import { createComponentPlugin } from "@webiny/react-composition";
+import { createDecorator } from "@webiny/react-composition";
 import { useActiveElementId } from "@webiny/app-page-builder/editor/hooks/useActiveElementId";
 import { Element } from "@webiny/app-page-builder-elements/types";
 import Paragraph from "@webiny/app-page-builder/editor/plugins/elements/paragraph/Paragraph";
@@ -8,7 +8,7 @@ import { isValidLexicalData } from "@webiny/lexical-editor";
 import { useElementVariableValue } from "@webiny/app-page-builder/editor/hooks/useElementVariableValue";
 import { useIsDynamicElement } from "@webiny/app-dynamic-pages/hooks/useIsDynamicElement";
 
-export const ParagraphPlugin = createComponentPlugin(Paragraph, Original => {
+export const ParagraphPlugin = createDecorator(Paragraph, Original => {
     return function ParagraphPlugin({ element, ...rest }): JSX.Element {
         const [activeElementId] = useActiveElementId();
         const variableValue = useElementVariableValue(element);

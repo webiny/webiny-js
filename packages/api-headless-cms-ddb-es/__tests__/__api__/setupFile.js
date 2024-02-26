@@ -36,12 +36,6 @@ module.exports = () => {
             return index;
         };
 
-        const refreshIndex = model => {
-            const index = createIndexName(model);
-            return elasticsearchClient.indices.refresh({
-                index
-            });
-        };
         /**
          * We need to create model index before entry create because of the direct storage operations tests.
          * When running direct storage ops tests, index is created on the fly otherwise and then it is not cleaned up afterwards.
@@ -65,40 +59,7 @@ module.exports = () => {
                                 ...baseIndexConfigurationPlugin.body
                             }
                         });
-                        await refreshIndex(model);
-                    } catch (ex) {
-                        // This is commented out to prevent noise in the console.
-                        // process.stdout.write(
-                        //     `\nCould not create index "${index}" on before entry create: ${ex.message}\n`
-                        // );
-                    }
-                });
-                context.cms.onEntryAfterCreate.subscribe(async ({ model }) => {
-                    await refreshIndex(model);
-                });
-                context.cms.onEntryAfterUpdate.subscribe(async ({ model }) => {
-                    await refreshIndex(model);
-                });
-                context.cms.onEntryAfterMove.subscribe(async ({ model }) => {
-                    await refreshIndex(model);
-                });
-                context.cms.onEntryRevisionAfterCreate.subscribe(async ({ model }) => {
-                    await refreshIndex(model);
-                });
-                context.cms.onEntryAfterPublish.subscribe(async ({ model }) => {
-                    await refreshIndex(model);
-                });
-                context.cms.onEntryAfterRepublish.subscribe(async ({ model }) => {
-                    await refreshIndex(model);
-                });
-                context.cms.onEntryAfterUnpublish.subscribe(async ({ model }) => {
-                    await refreshIndex(model);
-                });
-                context.cms.onEntryRevisionAfterDelete.subscribe(async ({ model }) => {
-                    await refreshIndex(model);
-                });
-                context.cms.onEntryAfterDelete.subscribe(async ({ model }) => {
-                    await refreshIndex(model);
+                    } catch (ex) {}
                 });
             });
         });

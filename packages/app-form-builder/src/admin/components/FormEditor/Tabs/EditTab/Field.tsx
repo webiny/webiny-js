@@ -52,7 +52,7 @@ interface FieldProps {
     onEdit: (field: FbFormModelField) => void;
     onDelete: (field: FbFormModelField) => void;
 }
-const Field: React.FC<FieldProps> = props => {
+const Field = (props: FieldProps) => {
     const { field, onEdit, onDelete } = props;
     const { getFieldPlugin, updateField } = useFormEditor();
     const fieldPlugin = getFieldPlugin({ name: field.name });

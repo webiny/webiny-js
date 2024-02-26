@@ -3,8 +3,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { plugins } from "@webiny/plugins";
 import { PbIcon, PbIconsPlugin } from "~/types";
 import { PostModifyElementArgs } from "../../elementSettings/useUpdateHandlers";
-// TODO: check is it possible to dynamically add icons?
-// if yes, this wont work
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+
 let icons: PbIcon[];
 const getIcons = (): PbIcon[] => {
     if (!icons) {
@@ -19,9 +19,13 @@ interface GetSvgProps {
     width?: number;
     color?: string;
 }
-const getSvg = (id: string[], props: GetSvgProps = {}): string | undefined => {
+
+const getSvg = (id: IconProp | undefined, props: GetSvgProps = {}): string | undefined => {
     if (!props.width) {
         props.width = 50;
+    }
+    if (!Array.isArray(id)) {
+        return undefined;
     }
     const icon = getIcons().find(ic => ic.id[0] === id[0] && ic.id[1] === id[1]);
     if (!icon) {
@@ -48,7 +52,7 @@ const updateButtonElementIcon = ({ name, newElement, element }: PostModifyElemen
         icon.width === width && icon.color === color && icon.position === position;
     let isSelectedIcon = false;
 
-    if (isSameIconProps && id && icon.id) {
+    if (isSameIconProps && Array.isArray(id) && icon.id) {
         isSelectedIcon = icon.id[0] === id[0] && icon.id[1] === id[1];
     }
 
@@ -67,7 +71,7 @@ const updateIconElement = ({ newElement }: PostModifyElementArgs): void => {
         console.log(`Missing data.icon on element "${newElement.id}".`);
         return;
     }
-    const { id = [], width, color } = newElement.data.icon;
+    const { id, width, color } = newElement.data.icon;
     // Modify the element directly.
     newElement.data.icon.svg = getSvg(id, { width, color });
 };

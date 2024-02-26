@@ -20,7 +20,7 @@ import { useTargetDataModelsForm } from "./hooks/useTargetDataModelsForm";
  * Includes two basic fields - title (required) and description.
  * The form submission-related functionality is located in the `useTargetDataModelsForm` React hook.
  */
-const TargetDataModelsForm: React.FC = () => {
+const TargetDataModelsForm = () => {
     const {
         loading,
         emptyViewIsShown,

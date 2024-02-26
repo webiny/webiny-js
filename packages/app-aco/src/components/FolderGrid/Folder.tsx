@@ -1,42 +1,41 @@
 import React from "react";
 
 import { ReactComponent as FolderIcon } from "@material-design-icons/svg/outlined/folder.svg";
-import { ReactComponent as MoreIcon } from "@material-design-icons/svg/filled/more_vert.svg";
-import { IconButton } from "@webiny/ui/Button";
+import { ReactComponent as FolderSharedIcon } from "@material-design-icons/svg/outlined/folder_shared.svg";
+import { OptionsMenu } from "@webiny/app-admin";
 
-import { ActionEdit } from "./ActionEdit";
-import { ActionDelete } from "./ActionDelete";
+import { useFolder } from "~/hooks";
+import { useAcoConfig } from "~/config";
 
-import { Actions, FolderContainer, FolderContent, Text } from "./styled";
-
-import { FolderItem } from "~/types";
+import { FolderContainer, FolderContent, Text } from "./styled";
 
 export interface FolderProps {
-    folder: FolderItem;
-    onFolderClick: (id: string) => void;
-    onMenuEditClick: (folder: FolderItem) => void;
-    onMenuDeleteClick: (folder: FolderItem) => void;
+    onClick: (id: string) => void;
 }
 
-export const Folder: React.VFC<FolderProps> = ({
-    folder,
-    onFolderClick,
-    onMenuEditClick,
-    onMenuDeleteClick
-}) => {
-    const { id, title } = folder;
+export const Folder = ({ onClick }: FolderProps) => {
+    const { folder } = useFolder();
+    const { folder: folderConfig } = useAcoConfig();
+    const { id, title, hasNonInheritedPermissions, canManagePermissions, canManageStructure } =
+        folder;
+
+    let icon = <FolderIcon />;
+    if (hasNonInheritedPermissions && canManagePermissions) {
+        icon = <FolderSharedIcon />;
+    }
+
     return (
         <FolderContainer>
-            <FolderContent onClick={() => onFolderClick(id)}>
-                <div>
-                    <FolderIcon />
-                </div>
+            <FolderContent onClick={() => onClick(id)}>
+                <div>{icon}</div>
                 <Text use={"subtitle2"}>{title}</Text>
             </FolderContent>
-            <Actions handle={<IconButton icon={<MoreIcon />} />}>
-                <ActionEdit onClick={() => onMenuEditClick(folder)} />
-                <ActionDelete onClick={() => onMenuDeleteClick(folder)} />
-            </Actions>
+            {canManageStructure && (
+                <OptionsMenu
+                    actions={folderConfig.actions}
+                    data-testid={"folder.grid.menu-action"}
+                />
+            )}
         </FolderContainer>
     );
 };

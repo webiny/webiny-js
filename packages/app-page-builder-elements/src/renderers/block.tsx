@@ -2,7 +2,7 @@ import React from "react";
 import { Elements } from "~/components/Elements";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
-import { Props as ElementProps } from "~/components/Element";
+import { ElementProps } from "~/components/Element";
 
 export const Block = createRenderer(
     () => {

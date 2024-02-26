@@ -1,11 +1,11 @@
 import { CmsContext, CmsEntry, CmsFieldTypePlugins, CmsModel } from "~/types";
-import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
 import { resolveGet } from "./resolvers/manage/resolveGet";
 import { resolveList } from "./resolvers/manage/resolveList";
 import { resolveGetRevisions } from "./resolvers/manage/resolveGetRevisions";
 import { resolveGetByIds } from "./resolvers/manage/resolveGetByIds";
 import { resolveCreate } from "./resolvers/manage/resolveCreate";
 import { resolveUpdate } from "./resolvers/manage/resolveUpdate";
+import { resolveValidate } from "./resolvers/manage/resolveValidate";
 import { resolveMove } from "./resolvers/manage/resolveMove";
 import { resolveDelete } from "./resolvers/manage/resolveDelete";
 import { resolveDeleteMultiple } from "./resolvers/manage/resolveDeleteMultiple";
@@ -55,7 +55,6 @@ export const createManageResolvers: CreateManageResolvers = ({
         isRoot: true,
         // These are extra fields we want to apply to field resolvers of "gqlType"
         extraResolvers: {
-            ...commonFieldResolvers(),
             /**
              * Advanced Content Entry
              */
@@ -78,6 +77,7 @@ export const createManageResolvers: CreateManageResolvers = ({
         Mutation: {
             [`create${model.singularApiName}`]: resolveCreate({ model }),
             [`update${model.singularApiName}`]: resolveUpdate({ model }),
+            [`validate${model.singularApiName}`]: resolveValidate({ model }),
             [`move${model.singularApiName}`]: resolveMove({ model }),
             [`delete${model.singularApiName}`]: resolveDelete({ model }),
             [`deleteMultiple${model.pluralApiName}`]: resolveDeleteMultiple({ model }),

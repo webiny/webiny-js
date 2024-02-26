@@ -4,7 +4,7 @@ import { ImagesListComponent } from "../types";
 /**
  * Package react-columned does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import Columned from "react-columned";
 import Lightbox from "react-images";
 import styled from "@emotion/styled";

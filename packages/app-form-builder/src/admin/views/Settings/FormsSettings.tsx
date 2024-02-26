@@ -21,7 +21,7 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { FbSettings } from "~/types";
 
-const FormsSettings: React.FC = () => {
+const FormsSettings = () => {
     const { showSnackbar } = useSnackbar();
 
     const getSettingsQuery = useQuery<GetFormSettingsQueryResponse>(graphql.query);
@@ -32,7 +32,7 @@ const FormsSettings: React.FC = () => {
     const [updateSettings, updateSettingsMutation] = useMutation<
         UpdateFormSettingsMutationResponse,
         UpdateFormSettingsMutationVariables
-    >(graphql.mutation);
+    >(graphql.mutation, { refetchQueries: [{ query: graphql.query }] });
     const mutationInProgress = updateSettingsMutation?.loading;
 
     return (

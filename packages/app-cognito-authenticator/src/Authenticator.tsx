@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useReducer } from "react";
 import { Auth } from "@aws-amplify/auth";
 import { AuthOptions } from "@aws-amplify/auth/lib-esm/types";
 import { CognitoIdToken } from "./types";
@@ -44,7 +44,7 @@ export interface AuthenticatorProps extends AuthOptions {
     children: React.ReactNode;
 }
 
-export const AuthenticatorContext = React.createContext<AuthContextValue>({} as any);
+export const AuthenticatorContext = React.createContext<AuthContextValue>({} as AuthContextValue);
 
 interface State {
     authState: AuthState;
@@ -61,7 +61,7 @@ interface QueryData {
     [key: string]: string | undefined;
 }
 
-export const Authenticator: React.FC<AuthenticatorProps> = ({ onToken, children }) => {
+export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
     const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
         authState: "signIn",
         authData: null,

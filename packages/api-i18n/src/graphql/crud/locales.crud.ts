@@ -15,6 +15,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { LocalesPermissions } from "./permissions/LocalesPermissions";
+import { IdentityValue } from "@webiny/api-security";
 
 export interface CreateLocalesCrudParams {
     context: I18NContext;
@@ -159,11 +160,7 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                 ...input,
                 default: input.default === true,
                 createdOn: new Date().toISOString(),
-                createdBy: {
-                    id: identity.id,
-                    displayName: identity.displayName,
-                    type: identity.type
-                },
+                createdBy: IdentityValue.create(identity).getValue(),
                 tenant: getTenantId(),
                 webinyVersion: context.WEBINY_VERSION
             };
@@ -183,6 +180,10 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                         locale: result
                     });
                 }
+
+                // We want to reload the internally cached locales after a new locale is created.
+                await context.i18n.reloadLocales();
+
                 await onLocaleAfterCreate.publish({
                     context,
                     locale: result,
@@ -251,6 +252,10 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                         locale
                     });
                 }
+
+                // We want to reload the internally cached locales after a locale is updated.
+                await context.i18n.reloadLocales();
+
                 await onLocaleAfterUpdate.publish({
                     context,
                     locale: result,
@@ -300,6 +305,10 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                 await storageOperations.delete({
                     locale
                 });
+
+                // We want to reload the internally cached locales after a locale is deleted.
+                await context.i18n.reloadLocales();
+
                 await onLocaleAfterDelete.publish({
                     context,
                     locale,

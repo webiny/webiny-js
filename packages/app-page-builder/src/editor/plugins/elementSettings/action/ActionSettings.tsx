@@ -33,10 +33,7 @@ interface ActionSettingsPropsType extends PbEditorPageElementSettingsRenderCompo
     element: PbEditorElement;
 }
 
-const ActionSettingsComponent: React.FC<ActionSettingsPropsType> = ({
-    element,
-    defaultAccordionValue
-}) => {
+const ActionSettingsComponent = ({ element, defaultAccordionValue }: ActionSettingsPropsType) => {
     const updateElement = useUpdateElement();
 
     const { actionType } = element.data?.action || { actionType: "link" };

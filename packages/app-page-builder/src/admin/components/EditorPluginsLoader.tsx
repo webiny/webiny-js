@@ -23,7 +23,7 @@ interface EditorPluginsLoaderProps {
     children: React.ReactNode;
 }
 
-export const EditorPluginsLoader: React.FC<EditorPluginsLoaderProps> = ({ children, location }) => {
+export const EditorPluginsLoader = ({ children, location }: EditorPluginsLoaderProps) => {
     const [loaded, setLoaded] = useReducer(
         (state: State, newState: Partial<State>) => ({ ...state, ...newState }),
         globalState

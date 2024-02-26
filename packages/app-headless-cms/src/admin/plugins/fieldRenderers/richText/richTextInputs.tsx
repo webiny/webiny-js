@@ -80,11 +80,6 @@ const plugin: CmsEditorFieldRendererPlugin = {
             const { field } = props;
 
             const rteProps = useMemo(() => {
-                /**
-                 * TODO @ts-refactor
-                 * Missing cms-rte-config plugin.
-                 */
-                // @ts-ignore
                 return createPropsFromConfig(plugins.byType("cms-rte-config").map(pl => pl.config));
             }, []);
 

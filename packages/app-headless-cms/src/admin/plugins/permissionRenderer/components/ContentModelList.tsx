@@ -25,7 +25,7 @@ interface ContentModelListProps {
     onChange: OnChangeCallable;
     getValue: GetValueCallable;
 }
-const ContentModelList: React.FC<ContentModelListProps> = ({ items, onChange, getValue }) => {
+const ContentModelList = ({ items, onChange, getValue }: ContentModelListProps) => {
     const list: [string, GroupItem[]][] = Object.entries(
         groupBy(
             items.map((item): GroupItem => {
@@ -46,7 +46,7 @@ const ContentModelList: React.FC<ContentModelListProps> = ({ items, onChange, ge
                         <Typography use={"caption"} className={labelStyles}>
                             {key}
                         </Typography>
-                        {(value as any[]).map(({ id, label }) => (
+                        {value.map(({ id, label }) => (
                             <div key={id}>
                                 <Checkbox
                                     key={id}

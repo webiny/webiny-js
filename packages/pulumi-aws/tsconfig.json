@@ -1,7 +1,11 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [{ "path": "../pulumi" }, { "path": "../api-page-builder" }],
+  "references": [
+    { "path": "../aws-sdk" },
+    { "path": "../pulumi" },
+    { "path": "../api-page-builder" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -9,6 +13,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/pulumi/*": ["../pulumi/src/*"],
       "@webiny/pulumi": ["../pulumi/src"],
       "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],

@@ -4,15 +4,23 @@ import { Typography } from "@webiny/ui/Typography";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Container, LoaderContainer } from "./styled";
 
-const t = i18n.ns("app-headless-cms/app-page-builder/pages-table/loading-more");
+const t = i18n.ns("app-page-builder/components/table/loading-more");
 
-export const LoadingMore = () => {
+interface LoadingMoreProps {
+    show: boolean;
+}
+
+export const LoadingMore = ({ show }: LoadingMoreProps) => {
+    if (!show) {
+        return null;
+    }
+
     return (
         <Container>
             <LoaderContainer>
                 <CircularProgress size={20} />
             </LoaderContainer>
-            <Typography use={"body2"}>{t`Loading more pages...`}</Typography>
+            <Typography use={"body2"}>{t`Loading more entries...`}</Typography>
         </Container>
     );
 };

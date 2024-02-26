@@ -24,7 +24,7 @@ interface ExportFormDialogMessageProps {
     selected: string[];
 }
 
-const ExportFormDialogMessage: React.FC<ExportFormDialogMessageProps> = ({ selected }) => {
+const ExportFormDialogMessage = ({ selected }: ExportFormDialogMessageProps) => {
     const { exportPageData } = usePageBuilder();
     const { revisionType: value, setRevisionType: setValue } = exportPageData;
 

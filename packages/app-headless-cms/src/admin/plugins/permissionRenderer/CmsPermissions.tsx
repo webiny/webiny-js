@@ -43,7 +43,7 @@ export interface CMSPermissionsProps {
     value: CmsSecurityPermission[];
     onChange: (value: CmsSecurityPermission[]) => void;
 }
-export const CMSPermissions: React.FC<CMSPermissionsProps> = ({ value, onChange }) => {
+export const CMSPermissions = ({ value, onChange }: CMSPermissionsProps) => {
     const { getPermission } = useSecurity();
 
     // We disable form elements for custom permissions if AACL cannot be used.

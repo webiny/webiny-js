@@ -1,10 +1,13 @@
 import { createBaseSchema } from "~/graphql/baseSchema";
 import { ContextPlugin } from "@webiny/api";
-import { FileManagerContext } from "~/types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords";
+import { createGraphQLSchemaPluginFromFieldPlugins } from "@webiny/api-headless-cms/utils/getSchemaFromFieldPlugins";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { createFilesSchema } from "~/graphql/filesSchema";
 import { isInstallationPending } from "~/cmsFileStorage/isInstallationPending";
+import { getFileByUrl } from "~/graphql/getFileByUrl";
+import { FileManagerContext } from "~/types";
 
 export const createGraphQLSchemaPlugin = () => {
     return [
@@ -20,6 +23,19 @@ export const createGraphQLSchemaPlugin = () => {
                 const fileModel = (await context.cms.getModel("fmFile")) as CmsModel;
                 const models = await context.cms.listModels();
                 const fieldPlugins = createFieldTypePluginRecords(context.plugins);
+                /**
+                 * We need to register all plugins for all the CMS fields.
+                 */
+                const plugins = createGraphQLSchemaPluginFromFieldPlugins({
+                    models,
+                    type: "manage",
+                    fieldTypePlugins: fieldPlugins,
+                    createPlugin: ({ schema, type, fieldType }) => {
+                        const plugin = new GraphQLSchemaPlugin(schema);
+                        plugin.name = `fm.graphql.schema.${type}.field.${fieldType}`;
+                        return plugin;
+                    }
+                });
 
                 const graphQlPlugin = createFilesSchema({
                     model: fileModel,
@@ -27,7 +43,7 @@ export const createGraphQLSchemaPlugin = () => {
                     plugins: fieldPlugins
                 });
 
-                context.plugins.register(graphQlPlugin);
+                context.plugins.register([...plugins, graphQlPlugin, getFileByUrl()]);
             });
         })
     ];

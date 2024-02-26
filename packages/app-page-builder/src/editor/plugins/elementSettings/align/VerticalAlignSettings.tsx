@@ -54,9 +54,9 @@ const iconDescriptions: Record<string, string> = {
 
 const DATA_NAMESPACE = "data.settings.verticalAlign";
 
-const VerticalAlignSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+const VerticalAlignSettings = ({
     defaultAccordionValue
-}) => {
+}: PbEditorPageElementSettingsRenderComponentProps) => {
     const { displayMode, config } = useDisplayMode();
     const propName = `${DATA_NAMESPACE}.${displayMode}`;
     const [element] = useActiveElement<PbEditorElement>();

@@ -23,14 +23,14 @@ export const createTopic = <TEvent extends Event = Event>(topicName?: string): T
             /**
              * TODO @ts-refactor figure out types for callback
              */
-            // @ts-ignore
+            // @ts-expect-error
             subscribers.push(cb);
         },
         subscribeOnce(cb) {
             /**
              * TODO @ts-refactor figure out types for callback
              */
-            // @ts-ignore
+            // @ts-expect-error
             subscribers.push(withUnsubscribe(cb));
         },
         getSubscribers(): Subscriber<TEvent>[] {

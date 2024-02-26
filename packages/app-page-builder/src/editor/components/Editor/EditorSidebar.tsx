@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { makeComposable } from "@webiny/app-admin";
+import store from "store";
+import { makeDecoratable } from "@webiny/app-admin";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Tabs, Tab, TabsProps, TabProps } from "@webiny/ui/Tabs";
 import {
@@ -12,6 +13,8 @@ import StyleSettingsTabContent from "./Sidebar/StyleSettingsTabContent";
 import ElementSettingsTabContent from "./Sidebar/ElementSettingsTabContent";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { useElementSidebar } from "~/editor/hooks/useElementSidebar";
+
+const LOCAL_STORAGE_KEY = "webiny_pb_editor_active_tab";
 
 const rightSideBar = css({
     boxShadow: "1px 0px 5px 0px rgba(128,128,128,1)",
@@ -42,12 +45,17 @@ const PanelHighLight = styled("div")({
     "@keyframes wf-blink-in": { "40%": { opacity: 1 } }
 });
 
-export const EditorSidebar: React.FC = React.memo(() => {
+export const EditorSidebar = React.memo(() => {
     const [element] = useActiveElement();
     const [sidebar, setSidebar] = useElementSidebar();
 
+    const getActiveTabIndex = useCallback(() => {
+        return store.get(LOCAL_STORAGE_KEY, sidebar.activeTabIndex);
+    }, []);
+
     const setActiveTabIndex = useCallback(index => {
         setSidebar(prev => updateSidebarActiveTabIndexMutation(prev, index));
+        store.set(LOCAL_STORAGE_KEY, index);
     }, []);
 
     const unhighlightElementTab = useCallback(() => {
@@ -62,7 +70,7 @@ export const EditorSidebar: React.FC = React.memo(() => {
 
     return (
         <Elevation z={1} className={rightSideBar}>
-            <EditorSidebarTabs value={sidebar.activeTabIndex} updateValue={setActiveTabIndex}>
+            <EditorSidebarTabs value={getActiveTabIndex()} updateValue={setActiveTabIndex}>
                 <EditorSidebarTab label={"Style"}>
                     <StyleSettingsTabContent />
                 </EditorSidebarTab>
@@ -79,18 +87,18 @@ EditorSidebar.displayName = "EditorSidebar";
 
 export type EditorSidebarTabProps = TabProps;
 
-export const EditorSidebarTab = makeComposable<EditorSidebarTabProps>(
+export const EditorSidebarTab = makeDecoratable(
     "EditorSidebarTab",
-    ({ children, ...props }) => {
+    ({ children, ...props }: EditorSidebarTabProps): JSX.Element | null => {
         return <Tab {...props}>{children}</Tab>;
     }
 );
 
 export type EditorSidebarTabsProps = TabsProps;
 
-export const EditorSidebarTabs = makeComposable<EditorSidebarTabsProps>(
+export const EditorSidebarTabs = makeDecoratable(
     "EditorSidebarTabs",
-    ({ children, ...props }) => {
+    ({ children, ...props }: EditorSidebarTabsProps) => {
         return <Tabs {...props}>{children}</Tabs>;
     }
 );

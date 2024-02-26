@@ -1,4 +1,4 @@
-import { Entity } from "dynamodb-toolbox";
+import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { get } from "@webiny/db-dynamodb/utils/get";
 import WebinyError from "@webiny/error";
 import { AdminSettings } from "~/types";

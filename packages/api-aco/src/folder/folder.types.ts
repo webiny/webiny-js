@@ -1,14 +1,19 @@
 import { ListMeta, ListSort, User } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
+import { FolderPermission } from "~/utils/FolderLevelPermissions";
 
 export interface Folder {
     id: string;
     entryId: string;
     createdOn: string;
-    createdBy: User;
+    modifiedOn: string | null;
     savedOn: string;
+    createdBy: User;
+    modifiedBy: User | null;
+    savedBy: User;
     title: string;
     slug: string;
+    permissions?: FolderPermission[];
     type: string;
     parentId?: string | null;
 }
@@ -25,16 +30,31 @@ export interface ListFoldersParams {
     after?: string | null;
 }
 
+export type ListAllFoldersParams = Omit<ListFoldersParams, "limit" | "after">;
+
 export type CreateFolderParams = Pick<Folder, "title" | "slug" | "type" | "parentId">;
 
 export interface UpdateFolderParams {
     title?: string;
     slug?: string;
+    permissions?: FolderPermission[];
     parentId?: string;
 }
 
 export interface DeleteFolderParams {
     id: string;
+}
+
+export interface FolderLevelPermissionsTarget<TMeta = Record<string, any>> {
+    id: string;
+    target: string;
+    name: string;
+    type: string;
+    meta: TMeta;
+}
+
+export interface FolderLevelPermissionsTargetListMeta {
+    totalCount: number;
 }
 
 export interface StorageOperationsGetFolderParams {
@@ -86,11 +106,28 @@ export interface OnFolderAfterDeleteTopicParams {
 
 export interface AcoFolderCrud {
     get(id: string): Promise<Folder>;
+
     list(params: ListFoldersParams): Promise<[Folder[], ListMeta]>;
+
+    listFolderLevelPermissionsTargets(): Promise<
+        [FolderLevelPermissionsTarget[], FolderLevelPermissionsTargetListMeta]
+    >;
+
+    listAll(params: ListAllFoldersParams): Promise<[Folder[], ListMeta]>;
+
     create(data: CreateFolderParams): Promise<Folder>;
+
     update(id: string, data: UpdateFolderParams): Promise<Folder>;
-    delete(id: string): Promise<Boolean>;
+
+    delete(id: string): Promise<boolean>;
+
+    getAncestors(folder: Folder): Promise<Folder[]>;
+
+    /**
+     * @deprecated use `getAncestors` instead
+     */
     getFolderWithAncestors(id: string): Promise<Folder[]>;
+
     onFolderBeforeCreate: Topic<OnFolderBeforeCreateTopicParams>;
     onFolderAfterCreate: Topic<OnFolderAfterCreateTopicParams>;
     onFolderBeforeUpdate: Topic<OnFolderBeforeUpdateTopicParams>;
@@ -101,8 +138,12 @@ export interface AcoFolderCrud {
 
 export interface AcoFolderStorageOperations {
     getFolder(params: StorageOperationsGetFolderParams): Promise<Folder>;
+
     listFolders(params: StorageOperationsListFoldersParams): Promise<[Folder[], ListMeta]>;
+
     createFolder(params: StorageOperationsCreateFolderParams): Promise<Folder>;
+
     updateFolder(params: StorageOperationsUpdateFolderParams): Promise<Folder>;
+
     deleteFolder(params: StorageOperationsDeleteFolderParams): Promise<boolean>;
 }

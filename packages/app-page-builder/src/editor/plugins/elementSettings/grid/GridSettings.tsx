@@ -22,9 +22,9 @@ import Accordion from "~/editor/plugins/elementSettings/components/Accordion";
 
 const DATA_NAMESPACE = "data.settings.gridSettings";
 
-export const GridSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+export const GridSettings = ({
     defaultAccordionValue
-}) => {
+}: PbEditorPageElementSettingsRenderComponentProps) => {
     const { displayMode, config } = useDisplayMode();
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(

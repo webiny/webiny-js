@@ -14,7 +14,7 @@ const linkStyles = css({
     }
 });
 
-export const AccountDetails: React.FC = () => {
+export const AccountDetails = () => {
     const security = useSecurity();
     const tenancy = useTenancy();
 
@@ -34,6 +34,10 @@ export const AccountDetails: React.FC = () => {
                 Exit tenant
             </ListItem>
         );
+    }
+
+    if (!security.identity.profile) {
+        return null;
     }
 
     return (

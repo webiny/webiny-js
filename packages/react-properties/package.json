@@ -10,16 +10,16 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.22.6",
+    "@babel/runtime": "^7.23.9",
     "@types/react": "17.0.39",
-    "nanoid": "^3.3.4",
+    "@webiny/react-composition": "0.0.0",
+    "nanoid": "^3.3.7",
     "react": "17.0.2"
   },
   "devDependencies": {
     "@testing-library/react": "^12.1.5",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "@webiny/react-composition": "0.0.0",
     "prettier": "^2.8.3"
   },
   "publishConfig": {

@@ -1,6 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
 import { Page } from "~/types";
-import { waitPage } from "./utils/waitPage";
 
 const sort: string[] = ["createdOn_DESC"];
 
@@ -282,7 +281,6 @@ describe("pages simple actions", () => {
             category: category.slug
         });
         const page = createResponse.data.pageBuilder.createPage.data;
-        await waitPage(handler, page);
 
         const title = "Page updated title";
 
@@ -291,10 +289,6 @@ describe("pages simple actions", () => {
             data: {
                 title
             }
-        });
-        await waitPage(handler, {
-            ...page,
-            title
         });
 
         await handler.publishPage({
@@ -377,7 +371,6 @@ describe("pages simple actions", () => {
             category: category.slug
         });
         const page = createResponse.data.pageBuilder.createPage.data;
-        await waitPage(handler, page);
 
         const title = "Page updated title";
 
@@ -387,18 +380,9 @@ describe("pages simple actions", () => {
                 title
             }
         });
-        await waitPage(handler, {
-            ...page,
-            title
-        });
 
         await handler.publishPage({
             id: page.id
-        });
-        await waitPage(handler, {
-            ...page,
-            title,
-            status: "published"
         });
 
         const [response] = await handler.unpublishPage({
@@ -446,7 +430,6 @@ describe("pages simple actions", () => {
             category: category.slug
         });
         const page = createResponse.data.pageBuilder.createPage.data;
-        await waitPage(handler, page);
 
         const title = "Page updated title";
 
@@ -456,18 +439,9 @@ describe("pages simple actions", () => {
                 title
             }
         });
-        await waitPage(handler, {
-            ...page,
-            title
-        });
 
         await handler.publishPage({
             id: page.id
-        });
-        await waitPage(handler, {
-            ...page,
-            title,
-            status: "published"
         });
 
         await handler.unpublishPage({

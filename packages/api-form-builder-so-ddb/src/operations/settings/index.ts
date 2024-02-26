@@ -5,18 +5,18 @@ import {
     FormBuilderStorageOperationsUpdateSettingsParams,
     Settings
 } from "@webiny/api-form-builder/types";
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import {
     FormBuilderSettingsStorageOperations,
     FormBuilderSettingsStorageOperationsCreatePartitionKeyParams
 } from "~/types";
 import WebinyError from "@webiny/error";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
-import { get } from "@webiny/db-dynamodb/utils/get";
+import { getClean } from "@webiny/db-dynamodb/utils/get";
+import { deleteItem, put } from "@webiny/db-dynamodb";
 
 export interface CreateSettingsStorageOperationsParams {
     entity: Entity<any>;
-    table: Table;
+    table: Table<string, string, string>;
 }
 
 export const createSettingsStorageOperations = (
@@ -49,9 +49,12 @@ export const createSettingsStorageOperations = (
         const keys = createKeys(settings);
 
         try {
-            await entity.put({
-                ...settings,
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...settings,
+                    ...keys
+                }
             });
             return settings;
         } catch (ex) {
@@ -72,8 +75,7 @@ export const createSettingsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            const item = await get<Settings>({ entity, keys });
-            return cleanupItem(entity, item);
+            return await getClean<Settings>({ entity, keys });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get the settings record by given keys.",
@@ -92,9 +94,12 @@ export const createSettingsStorageOperations = (
         const keys = createKeys(settings);
 
         try {
-            await entity.put({
-                ...settings,
-                ...keys
+            await put({
+                entity,
+                item: {
+                    ...settings,
+                    ...keys
+                }
             });
             return settings;
         } catch (ex) {
@@ -116,7 +121,10 @@ export const createSettingsStorageOperations = (
         const { settings } = params;
         const keys = createKeys(settings);
         try {
-            await entity.delete(keys);
+            await deleteItem({
+                entity,
+                keys
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete the settings record by given keys.",

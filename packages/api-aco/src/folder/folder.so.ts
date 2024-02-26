@@ -1,12 +1,12 @@
+import omit from "lodash/omit";
 import WebinyError from "@webiny/error";
-
 import { FOLDER_MODEL_ID } from "./folder.model";
-import { baseFields, CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
+import { CreateAcoStorageOperationsParams } from "~/createAcoStorageOperations";
 import { createListSort } from "~/utils/createListSort";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
-import { getFolderFieldValues } from "~/utils/getFieldValues";
-
-import { AcoFolderStorageOperations } from "./folder.types";
+import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues";
+import { AcoFolderStorageOperations, Folder } from "./folder.types";
+import { ENTRY_META_FIELDS } from "@webiny/api-headless-cms/constants";
 
 interface AcoCheckExistingFolderParams {
     params: {
@@ -48,7 +48,7 @@ export const createFolderOperations = (
                 });
             }
 
-            return getFolderFieldValues(entry, baseFields);
+            return pickEntryFieldValues(entry);
         });
     };
 
@@ -56,8 +56,13 @@ export const createFolderOperations = (
         return withModel(async model => {
             const { type, slug, parentId } = params;
 
-            const [existings] = await cms.listLatestEntries(model, {
+            // We don't need to perform any kind of authorization or checks here. We just need to check
+            // if the folder already exists in the database. Hence the direct storage operations access.
+            const listResult = await cms.storageOperations.entries.list(model, {
+                ...params,
                 where: {
+                    // Folders always work with latest entries. We never publish them.
+                    latest: true,
                     type,
                     slug,
                     parentId,
@@ -66,7 +71,7 @@ export const createFolderOperations = (
                 limit: 1
             });
 
-            if (existings.length > 0) {
+            if (listResult?.items?.length > 0) {
                 throw new WebinyError(
                     `Folder with slug "${slug}" already exists at this level.`,
                     "FOLDER_ALREADY_EXISTS",
@@ -95,7 +100,7 @@ export const createFolderOperations = (
                     }
                 });
 
-                return [entries.map(entry => getFolderFieldValues(entry, baseFields)), meta];
+                return [entries.map(pickEntryFieldValues<Folder>), meta];
             });
         },
         createFolder({ data }) {
@@ -113,7 +118,7 @@ export const createFolderOperations = (
                     parentId: data.parentId || null
                 });
 
-                return getFolderFieldValues(entry, baseFields);
+                return pickEntryFieldValues(entry);
             });
         },
         updateFolder({ id, data }) {
@@ -132,12 +137,16 @@ export const createFolderOperations = (
                 });
 
                 const input = {
-                    ...original,
+                    /**
+                     *  We are omitting the standard entry meta fields:
+                     *  we don't want to override them with the ones coming from the `original` entry.
+                     */
+                    ...omit(original, ENTRY_META_FIELDS),
                     ...data
                 };
 
                 const entry = await cms.updateEntry(model, id, input);
-                return getFolderFieldValues(entry, baseFields);
+                return pickEntryFieldValues(entry);
             });
         },
         deleteFolder({ id }) {

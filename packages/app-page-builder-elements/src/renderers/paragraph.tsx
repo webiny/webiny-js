@@ -68,7 +68,7 @@ export const createParagraph = (props: CreateParagraphProps) => {
         // were cases where the received text was not just one `p` tag, but an array of `p` tags.
         // In that case, we still need a separate wrapper element. So, we're leaving this solution.
         if (__html.startsWith("<p")) {
-            // @ts-ignore We don't need type-checking here.
+            // @ts-expect-error We don't need type-checking here.
             return <p-wrap dangerouslySetInnerHTML={{ __html }} />;
         }
 

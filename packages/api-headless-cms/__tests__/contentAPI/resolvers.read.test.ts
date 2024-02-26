@@ -38,7 +38,7 @@ const createPermissions = ({ groups, models }: { groups?: string[]; models?: str
 
 const categoryManagerHelper = async (manageOpts: GraphQLHandlerParams) => {
     // Use "manage" API to create and publish entries
-    const { createCategory, publishCategory, sleep } = useCategoryManageHandler(manageOpts);
+    const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
     const [fruitsResponse] = await createCategory({
         data: {
@@ -68,7 +68,6 @@ const categoryManagerHelper = async (manageOpts: GraphQLHandlerParams) => {
     const [publishedAnimalsResponse] = await publishCategory({ revision: animals.id });
 
     return {
-        sleep,
         fruits: publishedFruitsResponse.data.publishCategory.data,
         vegetables: publishedVegetablesResponse.data.publishCategory.data,
         animals: publishedAnimalsResponse.data.publishCategory.data,
@@ -222,7 +221,7 @@ describe("READ - Resolvers", () => {
 
     test(`list entries`, async () => {
         // Use "manage" API to create and publish entries
-        const { sleep, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
@@ -237,7 +236,6 @@ describe("READ - Resolvers", () => {
         // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        await sleep(2000);
         const [response] = await listCategories();
 
         expect(response).toEqual({
@@ -265,7 +263,7 @@ describe("READ - Resolvers", () => {
 
     test(`list entries with specific group and model permissions`, async () => {
         // Use "manage" API to create and publish entries
-        const { sleep, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
@@ -285,8 +283,6 @@ describe("READ - Resolvers", () => {
                 models: ["category"]
             })
         });
-
-        await sleep(2000);
 
         const [response] = await listCategories();
 

@@ -20,10 +20,10 @@ interface CircleProps {
     innerFillColor?: string;
 }
 
-const ConcentricCircle: React.FC<CircleProps> = ({
+const ConcentricCircle = ({
     innerFillColor = "var(--mdc-theme-surface)",
     outerFillColor
-}) => {
+}: CircleProps) => {
     return (
         <svg
             width="16"
@@ -48,7 +48,7 @@ const fillColor = {
     [ApwContentReviewStepStatus.INACTIVE]: "var(--mdc-theme-text-secondary-on-background)"
 };
 
-const StepStatusIcon: React.FC<StepStatusIconProps> = ({ status }) => {
+const StepStatusIcon = ({ status }: StepStatusIconProps) => {
     return <ConcentricCircle outerFillColor={fillColor[status]} />;
 };
 
@@ -61,7 +61,7 @@ interface ContentReviewStepProps {
     disabled?: boolean;
 }
 
-export const ContentReviewStep: React.FC<ContentReviewStepProps> = props => {
+export const ContentReviewStep = (props: ContentReviewStepProps) => {
     const { step, createdOn, createdBy, disabled } = props;
     const navigate = useNavigate();
     const activeStepId = useActiveStepId();

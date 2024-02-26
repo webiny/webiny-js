@@ -31,7 +31,7 @@ interface Props extends FormComponentProps {
  */
 class Checkbox extends React.Component<Props> {
     onChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
-        this.props.onChange && this.props.onChange((e.target as any).checked);
+        this.props.onChange && this.props.onChange((e.target as HTMLInputElement).checked);
     };
 
     public override render() {
@@ -48,7 +48,6 @@ class Checkbox extends React.Component<Props> {
                     checked={Boolean(value)}
                     onChange={this.onChange}
                     onClick={() => typeof onClick === "function" && onClick(Boolean(value))}
-                    // @ts-ignore Although the label is React.ReactNode internally, an error is still thrown.
                     label={label}
                     data-testid={this.props["data-testid"]}
                 />

@@ -30,7 +30,7 @@ export interface EmptyElementGroupViewProps {
     title: string;
     body: string;
 }
-const EmptyElementGroupView: React.FC<EmptyElementGroupViewProps> = ({ icon, title, body }) => {
+const EmptyElementGroupView = ({ icon, title, body }: EmptyElementGroupViewProps) => {
     return (
         <EmptyViewWrapper>
             <div className={"media"}>{icon}</div>

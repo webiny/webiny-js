@@ -1,55 +1,45 @@
-import get from "lodash/get";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useCallback, useState } from "react";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
-import { GET_PAGE_BLOCK } from "~/admin/views/PageBlocks/graphql";
-import { ListPageBlocksQueryResponse } from "~/admin/views/PageBlocks/graphql";
+import { PbEditorElement } from "~/types";
 import { addElementId } from "~/editor/helpers";
-import { PbPageBlock, PbEditorElement } from "~/types";
-import { useCallback } from "react";
+import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
 
 export const useRefreshBlock = (block: PbEditorElement) => {
     const updateElement = useUpdateElement();
-    const client = useApolloClient();
+    const { refetchBlock } = usePageBlocks();
+    const [loading, setLoading] = useState(false);
 
-    return useCallback(async () => {
-        if (!block?.id) {
+    const refreshBlock = useCallback(async () => {
+        if (!block?.id || !block.data.blockId) {
             return;
         }
 
-        await client
-            .query<ListPageBlocksQueryResponse>({
-                query: GET_PAGE_BLOCK,
-                variables: { id: block.data.blockId },
-                fetchPolicy: "network-only"
-            })
-            .then(({ data }) => {
-                const pageBlockData = get(
-                    data,
-                    "pageBuilder.getPageBlock.data"
-                ) as unknown as PbPageBlock;
+        setLoading(true);
+        const pageBlock = await refetchBlock(block.data.blockId);
 
-                const blockDataVariables = pageBlockData?.content?.data?.variables || [];
-                const variables = blockDataVariables.map((blockDataVariable: any) => {
-                    const value =
-                        block.data?.variables?.find(
-                            (variable: any) => variable.id === blockDataVariable.id
-                        )?.value || blockDataVariable.value;
+        const blockDataVariables = pageBlock.content.data.variables || [];
+        const variables = blockDataVariables.map((blockDataVariable: any) => {
+            const value =
+                block.data?.variables?.find((variable: any) => variable.id === blockDataVariable.id)
+                    ?.value || blockDataVariable.value;
 
-                    return {
-                        ...blockDataVariable,
-                        value
-                    };
-                });
+            return {
+                ...blockDataVariable,
+                value
+            };
+        });
 
-                updateElement({
-                    ...addElementId(pageBlockData.content),
-                    id: block.id,
-                    data: {
-                        ...block?.data,
-                        ...pageBlockData?.content?.data,
-                        variables
-                    }
-                });
-            });
-    }, [block, client, updateElement]);
+        updateElement({
+            ...addElementId(pageBlock.content),
+            id: block.id,
+            data: {
+                ...block?.data,
+                ...pageBlock?.content?.data,
+                variables
+            }
+        });
+        setLoading(false);
+    }, [block, updateElement]);
+
+    return { loading, refreshBlock };
 };

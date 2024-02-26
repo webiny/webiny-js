@@ -22,7 +22,7 @@ const ButtonWrapper = styled("div")({
     width: "100%"
 });
 
-const BlockSettingsModal: React.FC = () => {
+const BlockSettingsModal = () => {
     const handler = useEventActionHandler();
     const [block] = useBlock();
     const blockCategories = useBlockCategories();

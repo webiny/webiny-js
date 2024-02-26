@@ -3,6 +3,7 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-security" },
+    { "path": "../aws-sdk" },
     { "path": "../db-dynamodb" },
     { "path": "../error" }
   ],
@@ -15,6 +16,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],

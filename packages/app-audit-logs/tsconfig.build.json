@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api-audit-logs/tsconfig.build.json" },
+    { "path": "../app/tsconfig.build.json" },
+    { "path": "../app-aco/tsconfig.build.json" },
+    { "path": "../app-admin/tsconfig.build.json" },
+    { "path": "../app-security/tsconfig.build.json" },
+    { "path": "../form/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../react-properties/tsconfig.build.json" },
+    { "path": "../react-router/tsconfig.build.json" },
+    { "path": "../ui/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
+    "baseUrl": "."
+  }
+}

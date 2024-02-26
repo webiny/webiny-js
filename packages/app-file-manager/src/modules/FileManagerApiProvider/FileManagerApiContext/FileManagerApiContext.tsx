@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
+import omit from "lodash/omit";
 import { useApolloClient } from "@apollo/react-hooks";
 import WebinyError from "@webiny/error";
 import { useSecurity } from "@webiny/app-security";
@@ -28,9 +29,8 @@ import {
 import { FileItem, FileManagerSecurityPermission } from "@webiny/app-admin/types";
 import { getFileUploader } from "./getFileUploader";
 import { Settings } from "~/types";
-import { createFieldsList } from "@webiny/app-headless-cms/admin/graphql/createFieldsList";
 import { useFileModel } from "~/hooks/useFileModel";
-import omit from "lodash/omit";
+import { getFileGraphQLSelection } from "./getFileGraphQLSelection";
 
 export interface ListTagsResponseItem {
     tag: string;
@@ -78,29 +78,13 @@ interface ListTagsOptions {
     refetch?: boolean;
 }
 
-const getModelFields = (model: ReturnType<typeof useFileModel>) => {
-    const fields = createFieldsList({ model, fields: model.fields });
-    return /* GraphQL */ `{
-        __typename
-        id
-        createdOn
-        savedOn
-        createdBy {
-            id
-            displayName
-        }
-        src
-        ${fields}
-    }`;
-};
-
 const FM_FULL_ACCESS_PERMISSION_NAME = "fm.*";
 
 const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
     const { identity, getIdentityId, getPermissions, getPermission } = useSecurity();
     const client = useApolloClient();
     const fileModel = useFileModel();
-    const [modelFields] = useState(getModelFields(fileModel));
+    const [modelFields] = useState(getFileGraphQLSelection(fileModel));
 
     // Note for below permissions checks:
     // `own: true` defines full RWD access to files created by the user.
@@ -207,7 +191,15 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
             mutation: UPDATE_FILE(modelFields),
             variables: {
                 id,
-                data: omit(data, ["createdOn", "savedOn", "createdBy"])
+                data: omit(data, [
+                    "createdOn",
+                    "createdBy",
+                    "savedOn",
+                    "savedBy",
+                    "modifiedOn",
+                    "modifiedBy",
+                    "src"
+                ])
             }
         });
     };
@@ -226,7 +218,8 @@ const FileManagerApiProvider = ({ children }: FileManagerApiProviderProps) => {
             query: GET_FILE(modelFields),
             variables: {
                 id
-            }
+            },
+            fetchPolicy: "network-only"
         });
 
         const { data, error } = response.data?.fileManager.getFile;

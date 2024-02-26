@@ -3,7 +3,7 @@ import { css } from "emotion";
 /**
  * Package react-sortable does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { sortable } from "react-sortable";
 import { FileManager } from "@webiny/app-admin/components";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -45,7 +45,7 @@ const getName = (file: FileManagerFileItem): string | undefined => {
     return file.meta?.find(meta => meta.key === "name")?.value;
 };
 
-const ImagesListImagesSettings: React.FC<ImagesListImagesSettingsProps> = props => {
+const ImagesListImagesSettings = (props: ImagesListImagesSettingsProps) => {
     const { Bind, submit } = props;
     return (
         <Accordion title={"Images"} defaultValue={true}>

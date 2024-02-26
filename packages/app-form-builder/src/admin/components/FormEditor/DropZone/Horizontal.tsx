@@ -37,11 +37,11 @@ const OuterDiv = styled("div")(
     },
     (props: OuterDivProps) => ({
         [props.last ? "bottom" : "top"]: -15,
-        // @ts-ignore
+        // @ts-expect-error
         [InnerDiv]: {
             borderColor: props.isOver ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)",
             display: props.isDragging ? "block" : "none",
-            // @ts-ignore
+            // @ts-expect-error
             [BackgroundColorDiv]: {
                 opacity: 0.5,
                 backgroundColor: props.isOver
@@ -58,7 +58,7 @@ export interface HorizontalProps {
     isVisible?: IsVisibleCallable;
 }
 
-export const Horizontal: React.FC<HorizontalProps> = ({ last, onDrop, isVisible }) => {
+export const Horizontal = ({ last, onDrop, isVisible }: HorizontalProps) => {
     return (
         <Droppable onDrop={onDrop} isVisible={isVisible}>
             {({ isOver, isDragging, drop }) => (

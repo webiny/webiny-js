@@ -2,8 +2,12 @@ import React from "react";
 import { Plugin } from "@webiny/app-admin";
 import { FoldersApiProvider } from "~/contexts/FoldersApi";
 
-const FoldersApiProviderHOC = (Component: React.FC): React.FC => {
-    return function FoldersApiProviderHOC({ children }) {
+interface FoldersApiProviderHOCProps {
+    children: React.ReactNode;
+}
+
+const FoldersApiProviderHOC = (Component: React.ComponentType) => {
+    return function FoldersApiProviderHOC({ children }: FoldersApiProviderHOCProps) {
         return (
             <FoldersApiProvider>
                 <Component>{children}</Component>

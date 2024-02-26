@@ -66,12 +66,12 @@ const LinkExistingRecordButton = styled("button")({
     }
 });
 
-interface Props {
+interface OptionsProps {
     models: CmsModel[];
     onNewRecord: (modelId: string) => void;
     onLinkExistingRecord: (modelId: string) => void;
 }
-export const Options: React.VFC<Props> = ({ models, onNewRecord, onLinkExistingRecord }) => {
+export const Options = ({ models, onNewRecord, onLinkExistingRecord }: OptionsProps) => {
     const hasMultipleModels = models.length > 1;
     const onSingleNewRecord = useCallback(() => {
         if (models.length === 0 || hasMultipleModels) {

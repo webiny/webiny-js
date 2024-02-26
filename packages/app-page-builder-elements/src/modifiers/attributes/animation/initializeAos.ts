@@ -21,9 +21,19 @@ export const initializeAos = async () => {
 
     await pbDocumentCheck;
 
-    // @ts-ignore Complains about the `.css` format, but all works correctly.
-    await import("aos/dist/aos.css");
-    const aos = await import("aos");
+    /**
+     * Please, no questions.
+     */
+    // eslint-disable-next-line
+    await import(
+        /* webpackChunkName: "pageBuilderElementsModifiersAttributesAnimationInitializeAosCss" */
+        // @ts-expect-error
+        "aos/dist/aos.css"
+    );
+    const aos = await import(
+        /* webpackChunkName: "pageBuilderElementsModifiersAttributesAnimationInitializeAosJs" */
+        "aos"
+    );
 
     aos.init();
 };

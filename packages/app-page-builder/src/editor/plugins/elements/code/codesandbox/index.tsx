@@ -46,7 +46,7 @@ export default () => [
             }
         },
         render: params => {
-            // @ts-ignore No need to worry about different element.elements type.
+            // @ts-expect-error No need to worry about different element.elements type.
             return <PeCodesandbox {...params} />;
         }
     }),

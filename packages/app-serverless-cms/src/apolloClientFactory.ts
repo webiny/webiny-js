@@ -6,10 +6,11 @@ import { plugins } from "@webiny/plugins";
 import { ApolloDynamicLink } from "@webiny/app/plugins/ApolloDynamicLink";
 import { ApolloCacheObjectIdPlugin } from "@webiny/app/plugins/ApolloCacheObjectIdPlugin";
 
-interface CreateApolloClientParams {
+export interface CreateApolloClientParams {
     uri: string;
+    batching?: Pick<BatchHttpLink.Options, "batchMax" | "batchInterval" | "batchKey">;
 }
-export const createApolloClient = ({ uri }: CreateApolloClientParams) => {
+export const createApolloClient = ({ uri, batching }: CreateApolloClientParams) => {
     return new ApolloClient({
         link: ApolloLink.from([
             /**
@@ -18,8 +19,9 @@ export const createApolloClient = ({ uri }: CreateApolloClientParams) => {
             new ApolloDynamicLink(),
             /**
              * This batches requests made to the API to pack multiple requests into a single HTTP request.
+             * `credentials: "include"` is necessary to attach cookies to requests.
              */
-            new BatchHttpLink({ uri })
+            new BatchHttpLink({ uri, credentials: "include", ...batching })
         ]),
         cache: new InMemoryCache({
             addTypename: true,

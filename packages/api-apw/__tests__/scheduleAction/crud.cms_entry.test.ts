@@ -5,6 +5,7 @@ import {
     ApwScheduleActionCrud,
     ApwScheduleActionTypes
 } from "~/scheduler/types";
+import { LambdaContext } from "@webiny/handler-aws/types";
 
 const ONE_MINUTE = 1000 * 60;
 const TIME_SEPARATOR = ":";
@@ -17,7 +18,7 @@ const getIsoStringTillMinutes = (datetime: string): string => {
 const MODEL_ID = "testModelId";
 
 const EXPECTED_APW_SCHEDULED_ACTION_DATA = expect.objectContaining({
-    datetime: expect.stringMatching(/^20/),
+    datetime: expect.toBeDateString(),
     type: ApwContentTypes.CMS_ENTRY,
     action: ApwScheduleActionTypes.PUBLISH,
     entryId: expect.any(String),
@@ -34,7 +35,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
                     ["x-tenant"]: "root"
                 }
             },
-            {} as any
+            {} as LambdaContext
         );
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**
@@ -49,9 +50,12 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
         });
         expect(scheduledAction).toEqual({
             id: expect.any(String),
-            createdOn: expect.stringMatching(/^20/),
-            savedOn: expect.stringMatching(/^20/),
+            createdOn: expect.toBeDateString(),
+            modifiedOn: null,
+            savedOn: expect.toBeDateString(),
             createdBy: expect.any(Object),
+            modifiedBy: null,
+            savedBy: expect.any(Object),
             tenant: expect.any(String),
             locale: expect.any(String),
             data: EXPECTED_APW_SCHEDULED_ACTION_DATA
@@ -63,9 +67,10 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
         const getItemResult = await scheduleActionCrud.get(scheduledAction.id);
         expect(getItemResult).toEqual({
             id: expect.any(String),
-            createdOn: expect.stringMatching(/^20/),
-            savedOn: expect.stringMatching(/^20/),
+            createdOn: expect.toBeDateString(),
+            savedOn: expect.toBeDateString(),
             createdBy: expect.any(Object),
+            savedBy: expect.any(Object),
             tenant: expect.any(String),
             locale: expect.any(String),
             data: EXPECTED_APW_SCHEDULED_ACTION_DATA
@@ -78,9 +83,10 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
         expect(listItemResult).toEqual([
             {
                 id: expect.any(String),
-                createdOn: expect.stringMatching(/^20/),
-                savedOn: expect.stringMatching(/^20/),
+                createdOn: expect.toBeDateString(),
+                savedOn: expect.toBeDateString(),
                 createdBy: expect.any(Object),
+                savedBy: expect.any(Object),
                 tenant: expect.any(String),
                 locale: expect.any(String),
                 data: EXPECTED_APW_SCHEDULED_ACTION_DATA
@@ -97,7 +103,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
          */
         let updateItemResultWithError;
         try {
-            // @ts-ignore
+            // @ts-expect-error
             updateItemResultWithError = await scheduleActionCrud.update(scheduledAction.id, {
                 action: ApwScheduleActionTypes.UNPUBLISH
             });
@@ -118,9 +124,10 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
         });
         expect(updateItemResult).toEqual({
             id: expect.any(String),
-            createdOn: expect.stringMatching(/^20/),
-            savedOn: expect.stringMatching(/^20/),
+            createdOn: expect.toBeDateString(),
+            savedOn: expect.toBeDateString(),
             createdBy: expect.any(Object),
+            savedBy: expect.any(Object),
             tenant: expect.any(String),
             locale: expect.any(String),
             data: EXPECTED_APW_SCHEDULED_ACTION_DATA
@@ -159,7 +166,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
                     ["x-tenant"]: "root"
                 }
             },
-            {} as any
+            {} as LambdaContext
         );
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**
@@ -186,8 +193,8 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     id: expect.any(String),
-                    createdOn: expect.stringMatching(/^20/),
-                    savedOn: expect.stringMatching(/^20/),
+                    createdOn: expect.toBeDateString(),
+                    savedOn: expect.toBeDateString(),
                     createdBy: expect.any(Object),
                     tenant: expect.any(String),
                     locale: expect.any(String),
@@ -220,8 +227,8 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     id: expect.any(String),
-                    createdOn: expect.stringMatching(/^20/),
-                    savedOn: expect.stringMatching(/^20/),
+                    createdOn: expect.toBeDateString(),
+                    savedOn: expect.toBeDateString(),
                     createdBy: expect.any(Object),
                     tenant: expect.any(String),
                     locale: expect.any(String),
@@ -252,7 +259,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
                     ["x-tenant"]: "root"
                 }
             },
-            {} as any
+            {} as LambdaContext
         );
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**
@@ -288,8 +295,8 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     id: expect.any(String),
-                    createdOn: expect.stringMatching(/^20/),
-                    savedOn: expect.stringMatching(/^20/),
+                    createdOn: expect.toBeDateString(),
+                    savedOn: expect.toBeDateString(),
                     createdBy: expect.any(Object),
                     tenant: expect.any(String),
                     locale: expect.any(String),
@@ -309,8 +316,8 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     id: expect.any(String),
-                    createdOn: expect.stringMatching(/^20/),
-                    savedOn: expect.stringMatching(/^20/),
+                    createdOn: expect.toBeDateString(),
+                    savedOn: expect.toBeDateString(),
                     createdBy: expect.any(Object),
                     tenant: expect.any(String),
                     locale: expect.any(String),
@@ -328,7 +335,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
                     ["x-tenant"]: "root"
                 }
             },
-            {} as any
+            {} as LambdaContext
         );
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
         /**
@@ -361,8 +368,8 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     id: expect.any(String),
-                    createdOn: expect.stringMatching(/^20/),
-                    savedOn: expect.stringMatching(/^20/),
+                    createdOn: expect.toBeDateString(),
+                    savedOn: expect.toBeDateString(),
                     createdBy: expect.any(Object),
                     tenant: expect.any(String),
                     locale: expect.any(String),
@@ -426,7 +433,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
                     ["x-tenant"]: "root"
                 }
             },
-            {} as any
+            {} as LambdaContext
         );
         const scheduleActionCrud: ApwScheduleActionCrud = context.scheduleAction;
 

@@ -1,10 +1,10 @@
-import { createApiGatewayHandler, RoutePlugin } from "~/index";
+import { createHandler, RoutePlugin } from "~/index";
 import { createLambdaContext } from "./mocks/lambdaContext";
 import { createLambdaEvent } from "./mocks/lambdaEvent";
 
 describe("api gateway", () => {
     it("should create handler", async () => {
-        const handler = createApiGatewayHandler({
+        const handler = createHandler({
             plugins: []
         });
 
@@ -13,7 +13,7 @@ describe("api gateway", () => {
     });
 
     it("should call handler and get an error for non-existing route", async () => {
-        const handler = createApiGatewayHandler({
+        const handler = createHandler({
             plugins: []
         });
 
@@ -30,7 +30,7 @@ describe("api gateway", () => {
     });
 
     it("should call handler and trigger given route", async () => {
-        const handler = createApiGatewayHandler({
+        const handler = createHandler({
             plugins: [
                 new RoutePlugin(({ onPost }) => {
                     onPost("/webiny", async (_, reply) => {

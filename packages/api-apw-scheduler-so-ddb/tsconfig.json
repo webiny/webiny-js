@@ -3,6 +3,7 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-apw" },
+    { "path": "../aws-sdk" },
     { "path": "../db-dynamodb" },
     { "path": "../error" },
     { "path": "../plugins" },
@@ -21,6 +22,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-apw/*": ["../api-apw/src/*"],
       "@webiny/api-apw": ["../api-apw/src"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],

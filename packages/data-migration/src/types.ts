@@ -1,6 +1,6 @@
-import { Logger } from "pino";
+import { Logger } from "@webiny/logger";
 
-export { Logger };
+export type { Logger };
 
 export interface MigrationItem {
     id: string;
@@ -16,6 +16,7 @@ export interface MigrationRun {
     finishedOn: string;
     status: "init" | "running" | "pending" | "done" | "error";
     migrations: MigrationRunItem[];
+    context?: Record<string, any>;
     error?: {
         message: string;
         name?: string;
@@ -46,9 +47,10 @@ export interface DataMigrationContext<TCheckpoint = any> {
     projectVersion: string;
     logger: Logger;
     checkpoint?: TCheckpoint;
+    forceExecute: boolean;
     runningOutOfTime: () => boolean;
-    createCheckpoint: (data: TCheckpoint) => void;
-    createCheckpointAndExit: (data: TCheckpoint) => void;
+    createCheckpoint: (data: TCheckpoint) => Promise<void>;
+    createCheckpointAndExit: (data: TCheckpoint) => Promise<void>;
 }
 
 export interface DataMigration<TCheckpoint = any> {
@@ -69,6 +71,7 @@ export interface MigrationEventPayload {
     command: "status" | "execute";
     version?: string;
     pattern?: string;
+    force?: boolean;
 }
 
 export type MigrationEventHandlerResponse =

@@ -47,10 +47,11 @@ export const pageTitleWrapper = css({
     maxWidth: "calc(100% - 50px)"
 });
 
-const Title: React.FunctionComponent<{ value: string; onChange: Function }> = ({
-    value,
-    onChange
-}) => {
+interface TitleProps {
+    value: string;
+    onChange: (value: string) => void;
+}
+const Title: React.ComponentType<TitleProps> = ({ value, onChange }) => {
     const [editTitle, setEdit] = useState<boolean>(false);
     const [stateTitle, setTitle] = useState<string | null>(null);
     let title = stateTitle === null ? value : stateTitle;
@@ -68,7 +69,7 @@ const Title: React.FunctionComponent<{ value: string; onChange: Function }> = ({
 
     const onKeyDown = useCallback(
         (e: SyntheticEvent) => {
-            // @ts-ignore
+            // @ts-expect-error
             switch (e.key) {
                 case "Escape":
                     e.preventDefault();

@@ -1,6 +1,6 @@
 const { basename, join, dirname } = require("path");
 const fs = require("fs");
-const merge = require("merge");
+const merge = require("deepmerge");
 const findUp = require("find-up");
 const tsPreset = require("ts-jest/presets/js-with-babel/jest-preset");
 const { version } = require("@webiny/cli/package.json");
@@ -16,36 +16,40 @@ module.exports = function ({ path }, presets = []) {
 
     process.env.JEST_DYNALITE_CONFIG_DIRECTORY = path;
 
-    const merged = merge.recursive(true, { setupFilesAfterEnv: [] }, tsPreset, {
-        displayName: name,
-        modulePaths: [`${path}/src`],
-        testMatch: [`${path}/**/__tests__/**/*${type}.test.[jt]s?(x)`],
-        transform: {
-            "^.+\\.[jt]sx?$": [
-                "ts-jest",
-                {
-                    isolatedModules: true,
-                    babelConfig: `${path}/.babelrc.js`,
-                    diagnostics: false
-                }
-            ]
-        },
-        transformIgnorePatterns: ["/node_modules/(?!(nanoid)/)"],
-        moduleDirectories: ["node_modules"],
-        moduleNameMapper: {
-            "~tests/(.*)": `${path}/__tests__/$1`,
-            "~/(.*)": `${path}/src/$1`
-        },
-        modulePathIgnorePatterns: [
-            "<rootDir>/.verdaccio",
-            "<rootDir>/.webiny",
-            "<rootDir>/apps",
-            "<rootDir>/packages/.*/dist"
-        ],
-        globals: {
-            WEBINY_VERSION: version
+    const merged = merge.all([
+        { setupFilesAfterEnv: [] },
+        tsPreset,
+        {
+            displayName: name,
+            modulePaths: [`${path}/src`],
+            testMatch: [`${path}/**/*${type}.test.[jt]s?(x)`],
+            transform: {
+                "^.+\\.[jt]sx?$": [
+                    "ts-jest",
+                    {
+                        isolatedModules: true,
+                        babelConfig: `${path}/.babelrc.js`,
+                        diagnostics: false
+                    }
+                ]
+            },
+            transformIgnorePatterns: ["/node_modules/(?!(nanoid)/)"],
+            moduleDirectories: ["node_modules"],
+            moduleNameMapper: {
+                "~tests/(.*)": `${path}/__tests__/$1`,
+                "~/(.*)": `${path}/src/$1`
+            },
+            modulePathIgnorePatterns: [
+                "<rootDir>/.verdaccio",
+                "<rootDir>/.webiny",
+                "<rootDir>/apps",
+                "<rootDir>/packages/.*/dist"
+            ],
+            globals: {
+                WEBINY_VERSION: version
+            }
         }
-    });
+    ]);
 
     merged.setupFiles = [
         ...(merged.setupFiles || []),
@@ -59,6 +63,7 @@ module.exports = function ({ path }, presets = []) {
     const setupAfterEnvExists = fs.existsSync(setupAfterEnv);
 
     merged.setupFilesAfterEnv = [
+        "jest-extended/all",
         join(__dirname, "jest.config.base.setup.js"),
         setupAfterEnvExists ? setupAfterEnv : null,
         ...merged.setupFilesAfterEnv,

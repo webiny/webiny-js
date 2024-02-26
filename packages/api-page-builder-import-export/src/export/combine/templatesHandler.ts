@@ -62,7 +62,7 @@ export const templatesHandler = async (
             data: {
                 message: `Finish uploading template export.`,
                 key: templateExportUpload.Key,
-                url: s3Stream.getPresignedUrl(templateExportUpload.Key)
+                url: await s3Stream.getPresignedUrl(templateExportUpload.Key)
             }
         });
 

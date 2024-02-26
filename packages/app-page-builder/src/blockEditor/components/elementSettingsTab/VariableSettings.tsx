@@ -25,7 +25,7 @@ const VariableSettings = ({ element }: { element: PbEditorElement }) => {
             (variable: PbBlockVariable) => variable.id.split(".")[0] === element?.data?.variableId
         );
 
-        return variables;
+        return variables ?? [];
     }, [block, element]);
 
     const onChange = useCallback(
@@ -67,7 +67,8 @@ const VariableSettings = ({ element }: { element: PbEditorElement }) => {
         () =>
             showConfirmation(() => {
                 if (block && block.id) {
-                    const updatedVariables = block.data.variables.filter(
+                    const variables = block.data.variables ?? [];
+                    const updatedVariables = variables.filter(
                         (variable: PbBlockVariable) =>
                             variable.id.split(".")[0] !== element?.data?.variableId
                     );
@@ -99,7 +100,7 @@ const VariableSettings = ({ element }: { element: PbEditorElement }) => {
     return (
         <>
             <FormWrapper>
-                {elementVariables?.map((variable: PbBlockVariable, index: string) => (
+                {elementVariables.map((variable, index) => (
                     <TextInput
                         key={index}
                         label={`${capitalize(variable.type)} ${capitalize(

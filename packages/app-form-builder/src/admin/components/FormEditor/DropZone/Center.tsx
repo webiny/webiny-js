@@ -4,8 +4,9 @@ import { Droppable, OnDropCallable } from "./../Droppable";
 
 interface ContainerProps {
     isOver: boolean;
+    isDragging: boolean;
 }
-const Container = styled("div")(({ isOver }: ContainerProps) => ({
+const Container = styled("div")(({ isOver, isDragging }: ContainerProps) => ({
     backgroundColor: "transparent",
     boxSizing: "border-box",
     height: "100%",
@@ -13,9 +14,9 @@ const Container = styled("div")(({ isOver }: ContainerProps) => ({
     position: "relative",
     userSelect: "none",
     width: "100%",
-    border: isOver
-        ? "2px dashed var(--mdc-theme-primary)"
-        : "2px dashed var(--mdc-theme-secondary)",
+    borderWidth: isDragging ? "4px" : "2px",
+    borderStyle: "dashed",
+    borderColor: isOver ? "var(--mdc-theme-primary)" : "var(--mdc-theme-secondary)",
     opacity: 1
 }));
 
@@ -39,16 +40,16 @@ export interface CenterProps {
     highlight?: boolean;
 }
 
-export const Center: React.FC<CenterProps> = ({ onDrop, children }) => {
+export const Center = ({ onDrop, children }: CenterProps) => {
     return (
         <Droppable onDrop={onDrop}>
-            {({ isOver, drop }) => (
+            {({ isOver, isDragging, drop }) => (
                 <div
                     ref={drop}
                     style={{ width: "100%", height: "100%" }}
                     data-testid={"fb.editor.dropzone.center"}
                 >
-                    <Container isOver={isOver}>
+                    <Container isOver={isOver} isDragging={isDragging}>
                         <Add isOver={isOver}>{children}</Add>
                     </Container>
                 </div>

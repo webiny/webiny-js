@@ -13,7 +13,7 @@ const BottomRight = styled("div")({
     right: 20 + SIDEBAR_WIDTH
 });
 
-const AddBlock: React.FC = () => {
+const AddBlock = () => {
     const [, setBlocksBrowserState] = useRecoilState(blocksBrowserStateAtom);
 
     const onClickHandler = () => {

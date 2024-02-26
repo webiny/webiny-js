@@ -26,11 +26,11 @@ const ModelsContainer = styled(Elevation)({
     flexDirection: "column"
 });
 
-interface Props {
+interface OptionsModelListProps {
     models: CmsModel[];
     onClick: (modelId: string) => void;
 }
-export const OptionsModelList: React.VFC<Props> = ({ models, onClick }) => {
+export const OptionsModelList = ({ models, onClick }: OptionsModelListProps) => {
     if (models.length <= 1) {
         return null;
     }

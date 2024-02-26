@@ -1,6 +1,6 @@
 import React from "react";
 import get from "lodash/get";
-import { makeComposable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
 import { CmsModelField, CmsEditorContentModel, BindComponent } from "~/types";
 import Label from "./Label";
@@ -16,9 +16,9 @@ export interface RenderFieldElementProps {
     contentModel: CmsEditorContentModel;
 }
 
-export const RenderFieldElement = makeComposable<RenderFieldElementProps>(
+export const RenderFieldElement = makeDecoratable(
     "RenderFieldElement",
-    props => {
+    (props: RenderFieldElementProps) => {
         const renderPlugins = useRenderPlugins();
         const { field, Bind, contentModel } = props;
         const getBind = useBind({ Bind, field });

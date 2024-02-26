@@ -1,0 +1,31 @@
+{
+  "name": "cypress-tests",
+  "private": true,
+  "version": "0.0.0",
+  "description": "A package that contains Cypress tests for Webiny.",
+  "author": "Webiny Ltd.",
+  "devDependencies": {
+    "@4tw/cypress-drag-drop": "^1.4.0",
+    "@testing-library/cypress": "^10.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "@webiny/utils": "0.0.0",
+    "amazon-cognito-identity-js": "^4.5.3",
+    "cypress": "^13.0.0",
+    "cypress-image-snapshot": "^4.0.1",
+    "cypress-mailosaur": "^2.7.0",
+    "cypress-wait-until": "^1.7.1",
+    "del": "^6.0.0",
+    "graphql-request": "^3.3.0",
+    "lodash": "4.17.21",
+    "nanoid": "^3.3.7",
+    "node-fetch": "^2.6.1",
+    "typescript": "4.7.4",
+    "uniqid": "^5.2.0"
+  },
+  "scripts": {
+    "cypress:open": "yarn cypress open",
+    "cy:open": "yarn cypress:open",
+    "cypress:run": "yarn cypress run",
+    "cy:run": "yarn cypress:run"
+  }
+}

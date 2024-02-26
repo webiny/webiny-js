@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import styled from "@emotion/styled";
 import { EditorSidebarTab } from "~/editor";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import UnlinkBlockAction from "~/pageEditor/plugins/elementSettings/UnlinkBlockAction";
@@ -47,7 +47,7 @@ type UnlinkTabProps = {
     permission: boolean;
 };
 
-const UnlinkTab: React.FC<UnlinkTabProps> = ({ permission }) => {
+const UnlinkTab = ({ permission }: UnlinkTabProps) => {
     return (
         <RootElement>
             <UnlinkBlockWrapper permission={permission}>
@@ -70,7 +70,7 @@ const UnlinkTab: React.FC<UnlinkTabProps> = ({ permission }) => {
     );
 };
 
-export const BlockElementSidebarPlugin = createComponentPlugin(EditorSidebarTab, Tab => {
+export const BlockElementSidebarPlugin = createDecorator(EditorSidebarTab, Tab => {
     return function ElementTab({ children, ...props }) {
         const [element] = useActiveElement();
         const [sidebar, setSidebar] = useElementSidebar();

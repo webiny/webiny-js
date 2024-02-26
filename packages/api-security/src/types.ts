@@ -4,6 +4,7 @@ import { Authentication, Identity } from "@webiny/api-authentication/types";
 import { Topic } from "@webiny/pubsub/types";
 import { GetTenant } from "~/createSecurity";
 import { ProjectPackageFeatures } from "@webiny/wcp/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 
 // Backwards compatibility - START
 export type SecurityIdentity = Identity;
@@ -63,6 +64,8 @@ export interface GetTeamWhere {
     tenant?: string;
 }
 
+export type AuthenticationToken = string;
+
 export interface Security<TIdentity = SecurityIdentity> extends Authentication<TIdentity> {
     /**
      * @deprecated
@@ -81,27 +84,19 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     onAfterLogin: Topic<LoginEvent<TIdentity>>;
     onIdentity: Topic<IdentityEvent<TIdentity>>;
 
+    /**
+     * Returns the token which was used to authenticate (if authentication was successful).
+     */
+    getToken(): AuthenticationToken | undefined;
+
     config: SecurityConfig;
 
     getStorageOperations(): SecurityStorageOperations;
 
+    isAuthorizationEnabled(): boolean;
+
     withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T>;
-
-    /**
-     * Replace in favor of withoutAuthorization.
-     *
-     * If really required, should be used carefully.
-     * @deprecated
-     */
-    enableAuthorization(): void;
-
-    /**
-     * Replace in favor of withoutAuthorization.
-     *
-     * If really required, should be used carefully.
-     * @deprecated
-     */
-    disableAuthorization(): void;
+    withIdentity<T = any>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T>;
 
     addAuthorizer(authorizer: Authorizer): void;
 
@@ -135,6 +130,13 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
 
     deleteApiKey(id: string): Promise<boolean>;
 
+    onApiKeyBeforeCreate: Topic<{ apiKey: ApiKey }>;
+    onApiKeyAfterCreate: Topic<{ apiKey: ApiKey }>;
+    onApiKeyBeforeUpdate: Topic<{ original: ApiKey; apiKey: ApiKey }>;
+    onApiKeyAfterUpdate: Topic<{ original: ApiKey; apiKey: ApiKey }>;
+    onApiKeyBeforeDelete: Topic<{ apiKey: ApiKey }>;
+    onApiKeyAfterDelete: Topic<{ apiKey: ApiKey }>;
+
     // Groups
     getGroup(params: GetGroupParams): Promise<Group>;
 
@@ -146,6 +148,13 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
 
     deleteGroup(id: string): Promise<void>;
 
+    onGroupBeforeCreate: Topic<{ group: Group }>;
+    onGroupAfterCreate: Topic<{ group: Group }>;
+    onGroupBeforeUpdate: Topic<{ original: Group; group: Group }>;
+    onGroupAfterUpdate: Topic<{ original: Group; group: Group }>;
+    onGroupBeforeDelete: Topic<{ group: Group }>;
+    onGroupAfterDelete: Topic<{ group: Group }>;
+
     // Teams
     getTeam(params: GetTeamParams): Promise<Team>;
 
@@ -156,6 +165,13 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     updateTeam(id: string, input: Partial<TeamInput>): Promise<Team>;
 
     deleteTeam(id: string): Promise<void>;
+
+    onTeamBeforeCreate: Topic<{ team: Team }>;
+    onTeamAfterCreate: Topic<{ team: Team }>;
+    onTeamBeforeUpdate: Topic<{ original: Team; team: Team }>;
+    onTeamAfterUpdate: Topic<{ original: Team; team: Team }>;
+    onTeamBeforeDelete: Topic<{ team: Team }>;
+    onTeamAfterDelete: Topic<{ team: Team }>;
 
     // Links
     createTenantLinks(params: CreateTenantLinkParams[]): Promise<void>;
@@ -231,7 +247,7 @@ export interface SecurityStorageOperations {
         params: StorageOperationsGetTenantLinkByIdentityParams
     ): Promise<TLink | null>;
 
-    getApiKey(params: StorageOperationsGetApiKeyParams): Promise<ApiKey>;
+    getApiKey(params: StorageOperationsGetApiKeyParams): Promise<ApiKey | null>;
 
     getApiKeyByToken(params: StorageOperationsGetApiKeyByTokenParams): Promise<ApiKey | null>;
 
@@ -248,7 +264,7 @@ export type SecurityPermission<T = Record<string, any>> = T & {
     name: string;
 };
 
-export interface SecurityContext<TIdentity = SecurityIdentity> extends Context {
+export interface SecurityContext<TIdentity = SecurityIdentity> extends TenancyContext {
     security: Security<TIdentity>;
 }
 

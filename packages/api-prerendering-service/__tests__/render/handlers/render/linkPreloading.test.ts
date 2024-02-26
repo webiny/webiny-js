@@ -1,16 +1,17 @@
 import render from "~/render/renderUrl";
 import prettier from "prettier";
+import { Context } from "@webiny/handler/types";
 
 const BASE_HTML = `<html lang="en"><head><meta charset="utf-8" /></head><body><div id="root">A sample page.</div></body></html>`;
 
 describe(`"renderUrl" Function Test`, () => {
     it("should insert basic meta data into the received HTML", async () => {
         const [[html], meta] = await render("https://some-url.com", {
-            context: {} as any,
-            // @ts-ignore
+            context: {} as Context,
+            // @ts-expect-error
             args: {},
             configuration: {},
-            // @ts-ignore
+            // @ts-expect-error
             renderUrlFunction: async () => {
                 return {
                     content: BASE_HTML,
@@ -47,13 +48,13 @@ describe(`"renderUrl" Function Test`, () => {
 
     it("should insert tenant and locale data into the received HTML", async () => {
         const [[html], meta] = await render("https://some-url.com", {
-            context: {} as any,
+            context: {} as Context,
             args: {
                 path: "/",
                 tenant: "root",
                 locale: "en-US"
             },
-            // @ts-ignore
+            // @ts-expect-error
             renderUrlFunction: async () => {
                 return {
                     content: BASE_HTML,

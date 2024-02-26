@@ -1,5 +1,5 @@
 import { coerce } from "semver";
-import { Logger } from "pino";
+import { Logger } from "@webiny/logger";
 import { inject, makeInjectable } from "@webiny/ioc";
 import { executeWithRetry, mdbid } from "@webiny/utils";
 import {
@@ -33,6 +33,16 @@ const getRunItemDuration = (runItem: MigrationRunItem) => {
     return new Date(runItem.finishedOn).getTime() - new Date(runItem.startedOn).getTime();
 };
 
+/**
+ * This allows us to force-execute a migration, even if it's not in the list of the applicable migrations.
+ * Example: WEBINY_MIGRATION_FORCE_EXECUTE_5_35_0_006=true
+ */
+const shouldForceExecute = (mig: DataMigration) => {
+    const key = `WEBINY_MIGRATION_FORCE_EXECUTE_${mig.getId().replace(/[\.\-]/g, "_")}`;
+
+    return process.env[key] === "true";
+};
+
 class MigrationNotFinished extends Error {}
 class MigrationInProgress extends Error {}
 
@@ -41,6 +51,7 @@ export class MigrationRunner {
     private readonly migrations: DataMigration[];
     private readonly repository: MigrationRepository;
     private readonly timeLimiter: ExecutionTimeLimiter;
+    private context: Record<string, any> = {};
 
     constructor(
         repository: MigrationRepository,
@@ -58,7 +69,16 @@ export class MigrationRunner {
         this.logger = logger;
     }
 
-    async execute(projectVersion: string, isApplicable?: IsMigrationApplicable) {
+    setContext(context: Record<string, any>) {
+        this.context = context;
+    }
+
+    async execute(
+        projectVersion: string,
+        isApplicable?: IsMigrationApplicable,
+        // Force execute applicable migrations.
+        forceExecute = false
+    ) {
         const lastRun = await this.getOrCreateRun();
 
         try {
@@ -111,8 +131,20 @@ export class MigrationRunner {
 
         const isMigrationApplicable = isApplicable || defaultIsApplicable;
 
+        this.printForceExecuteEnvVars();
+
+        if (forceExecute) {
+            this.logger.info(
+                `ALL APPLICABLE MIGRATIONS WILL BE FORCE-EXECUTED! (via --force flag)`
+            );
+        }
+
         const executableMigrations = this.migrations
             .filter(mig => {
+                if (shouldForceExecute(mig)) {
+                    return true;
+                }
+
                 if (!isMigrationApplicable(mig)) {
                     this.setRunItem(lastRun, {
                         id: mig.getId(),
@@ -136,6 +168,7 @@ export class MigrationRunner {
             return this.timeLimiter() < 120000;
         };
 
+        //
         for (const migration of executableMigrations) {
             const runItem = this.getOrCreateRunItem(lastRun, migration);
             const checkpoint = await this.repository.getCheckpoint(migration.getId());
@@ -149,6 +182,7 @@ export class MigrationRunner {
                 projectVersion,
                 logger,
                 checkpoint,
+                forceExecute: forceExecute || shouldForceExecute(migration),
                 runningOutOfTime: shouldCreateCheckpoint,
                 createCheckpoint: async (data: unknown) => {
                     await this.createCheckpoint(migration, data);
@@ -160,7 +194,10 @@ export class MigrationRunner {
                 }
             };
             try {
-                const shouldExecute = checkpoint ? true : await migration.shouldExecute(context);
+                const shouldExecute =
+                    checkpoint || context.forceExecute
+                        ? true
+                        : await migration.shouldExecute(context);
 
                 if (!shouldExecute) {
                     this.logger.info(`Skipping migration %s.`, migration.getId());
@@ -301,7 +338,8 @@ export class MigrationRunner {
                 status: "init",
                 startedOn: getCurrentISOTime(),
                 finishedOn: "",
-                migrations: []
+                migrations: [],
+                context: this.context
             };
 
             await this.repository.saveRun(lastRun);
@@ -343,6 +381,25 @@ export class MigrationRunner {
     private async setRunItemAndSave(run: MigrationRun, item: MigrationRunItem) {
         this.setRunItem(run, item);
         await this.repository.saveRun(run);
+    }
+
+    private printForceExecuteEnvVars() {
+        const forceKeys = Object.keys(process.env).filter(key =>
+            key.startsWith("WEBINY_MIGRATION_FORCE_EXECUTE_")
+        );
+
+        if (!forceKeys.length) {
+            this.logger.info(
+                `No migrations are enforced via WEBINY_MIGRATION_FORCE_EXECUTE environment variable.`
+            );
+
+            return;
+        }
+
+        this.logger.info(`FORCED MIGRATIONS DETECTED!`);
+        for (const key of forceKeys) {
+            this.logger.info(`${key}=${process.env[key]}`);
+        }
     }
 }
 

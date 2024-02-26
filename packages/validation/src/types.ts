@@ -9,7 +9,10 @@ type ValidatorResult = boolean | ValidationError | void | Promise<boolean | Vali
  * @param {Array<string>} parameters (Optional) This represents an array validator parameters.
  * @throws {ValidationError}
  */
-export type Validator = (value: any, params?: string[]) => ValidatorResult;
+export interface Validator {
+    (value: any, params?: string[]): ValidatorResult;
+    validatorName?: string;
+}
 
 /**
  * @typedef ValidateOptions

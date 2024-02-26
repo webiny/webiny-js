@@ -216,9 +216,6 @@ module.exports = function (webpackEnv, { paths, options }) {
                 .filter(ext => useTypeScript || !ext.includes("ts")),
             alias: {
                 os: require.resolve("os-browserify/browser"),
-                // Support React Native Web
-                // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
-                "react-native": require.resolve("react-native-web"),
                 "react/jsx-runtime": require.resolve("react/jsx-runtime.js"),
                 react: require.resolve("react"),
                 // Allows for better profiling with ReactDevTools
@@ -394,7 +391,7 @@ module.exports = function (webpackEnv, { paths, options }) {
                             // its runtime that would otherwise be processed through "file" loader.
                             // Also exclude `html` and `json` extensions so they get processed
                             // by webpacks internal loaders.
-                            exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/, /^$/],
+                            exclude: [/\.(js|cjs|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/, /^$/],
                             options: {
                                 name: `${STATIC_FOLDER}/media/[name].[hash:8].[ext]`
                             }
@@ -402,9 +399,19 @@ module.exports = function (webpackEnv, { paths, options }) {
                         // ** STOP ** Are you adding a new loader?
                         // Make sure to add the new loader(s) before the "file" loader.
                     ]
-                }
-            ]
+                },
+                shouldUseSourceMap
+                    ? {
+                          enforce: "pre",
+                          exclude: /@babel(?:\/|\\{1,2})runtime/,
+                          include: [paths.appSrc, paths.appIndexJs, ...paths.allWorkspaces],
+                          test: /\.js/,
+                          loader: "source-map-loader"
+                      }
+                    : null
+            ].filter(Boolean)
         },
+        ignoreWarnings: [/Failed to parse source map/],
         plugins: [
             new webpack.ProvidePlugin({
                 Buffer: ["buffer", "Buffer"]

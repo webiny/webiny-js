@@ -13,11 +13,12 @@ import {
     ImagePreviewWrapper,
     RemoveImage
 } from "./styled";
+import { BrowseFilesParams } from "react-butterfiles";
 
 interface ImageProps {
     uploadImage: () => void;
     removeImage?: (value: string | null) => void;
-    editImage?: Function;
+    editImage?: (value: BrowseFilesParams | undefined) => void;
     value?: any;
     disabled?: boolean;
     loading?: boolean;

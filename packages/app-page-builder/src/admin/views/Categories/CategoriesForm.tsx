@@ -51,7 +51,7 @@ interface CategoriesFormProps {
     canCreate: boolean;
 }
 
-const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
+const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
@@ -191,7 +191,10 @@ const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
             {({ data, form, Bind }) => (
                 <SimpleForm>
                     {loading && <CircularProgress />}
-                    <SimpleFormHeader title={data.name || t`New category`} />
+                    <SimpleFormHeader
+                        title={data.name || t`New category`}
+                        data-testid={"pb-categories-form-title"}
+                    />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>

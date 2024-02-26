@@ -15,7 +15,7 @@ interface CollapsableListProps {
     highlightItem: HighlightItem;
 }
 
-const CollapsableList: React.FC<CollapsableListProps> = ({
+const CollapsableList = ({
     children,
     header,
     level,
@@ -25,7 +25,7 @@ const CollapsableList: React.FC<CollapsableListProps> = ({
     headerStyle,
     inActivePath,
     highlightItem
-}) => {
+}: CollapsableListProps) => {
     const [isOpen, setOpen] = useState(true);
     const { expandAll } = useContext(NavigatorContext);
     const list = Array.from(new Array(level)).map((_, i) => i);

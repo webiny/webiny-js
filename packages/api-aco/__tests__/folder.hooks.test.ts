@@ -1,15 +1,53 @@
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 
 import { assignFolderLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
+import { createMockAcoApp } from "~tests/mocks/app";
 
 const title = "Folder Lifecycle Events";
 const slug = "folder-lifecycle-events";
 const type = "demo-lifecycle-events";
-const parentId = "folderId-lifecycle-events";
 
 describe("Folder Lifecycle Events", () => {
-    const { aco } = useGraphQlHandler({
-        plugins: [assignFolderLifecycleEvents()]
+    let folder1: Record<string, any>;
+    let folder2: Record<string, any>;
+    let aco: ReturnType<typeof useGraphQlHandler>["aco"];
+
+    beforeEach(async () => {
+        const handler = useGraphQlHandler({
+            plugins: [
+                assignFolderLifecycleEvents(),
+                createMockAcoApp({
+                    name: "Webiny",
+                    apiName: "Webiny"
+                })
+            ]
+        });
+
+        aco = handler.aco;
+
+        folder1 = await aco
+            .createFolder({
+                data: {
+                    title: "Folder 1",
+                    slug: "folder-1",
+                    type: "cms:acoSearchRecord-webiny"
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        folder2 = await aco
+            .createFolder({
+                data: {
+                    title: "Folder 2",
+                    slug: "folder-2",
+                    type: "cms:acoSearchRecord-webiny"
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
     });
 
     beforeEach(async () => {
@@ -22,7 +60,7 @@ describe("Folder Lifecycle Events", () => {
                 title,
                 slug,
                 type,
-                parentId
+                parentId: folder1.id
             }
         });
 
@@ -34,7 +72,7 @@ describe("Folder Lifecycle Events", () => {
                             title,
                             slug,
                             type,
-                            parentId
+                            parentId: folder1.id
                         },
                         error: null
                     }
@@ -56,7 +94,7 @@ describe("Folder Lifecycle Events", () => {
                 title,
                 slug,
                 type,
-                parentId
+                parentId: folder1.id
             }
         });
 
@@ -67,7 +105,7 @@ describe("Folder Lifecycle Events", () => {
             data: {
                 title: `${title} updated`,
                 slug: `${slug}-updated`,
-                parentId: `${parentId}-updated`
+                parentId: folder2.id
             }
         });
 
@@ -78,7 +116,7 @@ describe("Folder Lifecycle Events", () => {
                         data: {
                             title: `${title} updated`,
                             slug: `${slug}-updated`,
-                            parentId: `${parentId}-updated`
+                            parentId: folder2.id
                         },
                         error: null
                     }
@@ -100,7 +138,7 @@ describe("Folder Lifecycle Events", () => {
                 title,
                 slug,
                 type,
-                parentId
+                parentId: folder1.id
             }
         });
 
@@ -109,6 +147,7 @@ describe("Folder Lifecycle Events", () => {
         const [deleteResponse] = await aco.deleteFolder({
             id: createResponse.data.aco.createFolder.data.id
         });
+
         expect(deleteResponse).toMatchObject({
             data: {
                 aco: {

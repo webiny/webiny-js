@@ -24,7 +24,7 @@ interface SelectorPropsType {
     value: Record<string, boolean>;
     updateValue: (value: any) => void;
 }
-const Selector: React.FC<SelectorPropsType> = ({ label, value, updateValue }) => {
+const Selector = ({ label, value, updateValue }: SelectorPropsType) => {
     const top = getValue(value, "top");
     const right = getValue(value, "right");
     const bottom = getValue(value, "bottom");

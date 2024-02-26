@@ -1,39 +1,42 @@
 import { Folder } from "~/folder/folder.types";
 
 interface GetFolderAndItsAncestorsParams {
-    id: string;
+    folder: Folder;
     folders: Folder[];
 }
 
 export const getFolderAndItsAncestors = ({
-    id,
+    folder,
     folders
 }: GetFolderAndItsAncestorsParams): Folder[] => {
     // Create a Map with folders, using folder.id as key
     const folderMap = new Map<string, Folder>();
     folders.forEach(folder => folderMap.set(folder.id, folder));
 
-    const findParents = (next: Folder[], id: string): Folder[] => {
-        const folder = folderMap.get(id);
-
+    const findParents = (next: Folder[], current: Folder): Folder[] => {
         // No folder found: return the result
-        if (!folder) {
+        if (!current) {
             return next;
         }
 
         // Push the current folder into the accumulator array
-        next.push(folder);
+        next.push(current);
 
         // No parentId found: return the result
-        if (!folder.parentId) {
+        if (!current.parentId) {
+            return next;
+        }
+
+        const parent = folderMap.get(current.parentId);
+
+        // No parent found: return the result
+        if (!parent) {
             return next;
         }
 
         // Go ahead and find parent for the current parent
-        return findParents(next, folder.parentId);
+        return findParents(next, parent);
     };
-
-    const folder = folderMap.get(id);
 
     // No folder found: return an empty array
     if (!folder) {
@@ -46,5 +49,5 @@ export const getFolderAndItsAncestors = ({
     }
 
     // Recursively find parents for a given folder id
-    return findParents([], id);
+    return findParents([], folder);
 };

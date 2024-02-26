@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import omit from "lodash/omit";
+import { useShiftKey } from "@webiny/app-admin";
 import { FileItem } from "@webiny/app-admin/types";
 import { FileTag } from "~/types";
 import { useFileManagerApi } from "~/index";
@@ -11,6 +12,7 @@ import { useFolders, useNavigateFolder } from "@webiny/app-aco";
 import { ListFilesQueryVariables } from "~/modules/FileManagerApiProvider/graphql";
 import { useListFiles } from "./useListFiles";
 import { useTags } from "./useTags";
+import { setSelection } from "./setSelection";
 import { ROOT_FOLDER } from "~/constants";
 
 type PublicState = Omit<State, "activeTags">;
@@ -27,14 +29,14 @@ export interface FileManagerViewContext<TFileItem extends FileItem = FileItem> e
     hideFilters: () => void;
     isListLoading: boolean;
     isListLoadingMore: boolean;
-    areFilesSelectable: boolean;
+    hasOnSelectCallback: boolean;
     listTitle: string;
     loadMoreFiles: () => void;
     meta: ListMeta | undefined;
     moveFileToFolder: (fileId: string, folderId: string) => Promise<void>;
     multiple: boolean;
     onClose: () => void;
-    onChange: Function;
+    onChange: (value: FileItem[] | FileItem) => void;
     onUploadCompletion: (files: FileItem[]) => void;
     own: boolean;
     scope?: string;
@@ -56,6 +58,7 @@ export interface FileManagerViewContext<TFileItem extends FileItem = FileItem> e
         loading: boolean;
     };
     toggleSelected: (file: TFileItem) => void;
+    deselectAll: () => void;
     updateFile: (id: string, data: Partial<TFileItem>) => Promise<void>;
     uploadFile: (file: File, options?: UploadFileOptions) => Promise<TFileItem | undefined>;
 }
@@ -80,14 +83,14 @@ const getCurrentFolderList = (
 };
 
 export interface FileManagerViewProviderProps {
-    onChange?: Function;
+    onChange?: (value: FileItem[] | FileItem) => void;
     onClose?: () => void;
     multiple?: boolean;
     accept: string[];
     maxSize?: number | string;
     multipleMaxCount?: number;
     multipleMaxSize?: number | string;
-    onUploadCompletion?: Function;
+    onUploadCompletion?: (files: FileItem[]) => void;
     tags?: string[];
     scope?: string;
     own?: boolean;
@@ -99,10 +102,8 @@ type UploadFileOptions = Pick<UploadOptions, "onProgress">;
 export type Loading<T extends string> = { [P in T]?: boolean };
 export type LoadingActions = "INIT" | "LIST" | "LIST_MORE";
 
-export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = ({
-    children,
-    ...props
-}) => {
+export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewProviderProps) => {
+    const shiftKeyPressed = useShiftKey();
     const modifiers = { scope: props.scope, own: props.own, accept: props.accept };
     const fileManager = useFileManagerApi();
     const { folders: originalFolders, loading: foldersLoading } = useFolders();
@@ -113,13 +114,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
     const { loading, files, meta, listFiles, setFiles, getListVariables } = useListFiles({
         folderId: currentFolderId,
         modifiers,
-        state,
-        onFirstLoad(meta) {
-            setState(state => ({
-                ...state,
-                hasPreviouslyUploadedFiles: meta.totalCount > 0
-            }));
-        }
+        state
     });
 
     useEffect(() => {
@@ -154,6 +149,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
 
         setState(state => ({
             ...state,
+            selection: {},
             filters: undefined,
             searchQuery: "",
             activeTags: [],
@@ -180,11 +176,6 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
             return fileInState;
         }
 
-        setState(state => ({
-            ...state,
-            loadingFileDetails: true
-        }));
-
         const file = await fileManager.getFile(id);
 
         if (!file) {
@@ -210,11 +201,6 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
                 ];
             });
         }
-
-        setState(state => ({
-            ...state,
-            loadingFileDetails: false
-        }));
 
         return file;
     };
@@ -364,7 +350,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
     const context: FileManagerViewContext = {
         ...omit(state, ["activeTags"]),
         accept: props.accept,
-        areFilesSelectable: Boolean(props.onChange),
+        hasOnSelectCallback: Boolean(props.onChange),
         createFile,
         deleteFile,
         files,
@@ -393,7 +379,7 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
         meta,
         moveFileToFolder,
         multiple: Boolean(props.multiple),
-        onChange(value: any[]) {
+        onChange(value: FileItem[] | FileItem) {
             if (typeof props.onChange === "function") {
                 props.onChange(value);
             }
@@ -428,7 +414,8 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
             setState(state => ({
                 ...state,
                 selected: [],
-                filters: data
+                filters: data,
+                selection: {}
             }));
         },
         setFolderId(folderId) {
@@ -490,21 +477,17 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
             }
         },
         toggleSelected(file: FileItem) {
-            setState(state => {
-                const existingIndex = state.selected.findIndex(item => item.id === file.id);
-                const selected = state.selected;
-
-                if (existingIndex < 0) {
-                    selected.push(file);
-                } else {
-                    selected.splice(existingIndex, 1);
-                }
-
-                return {
-                    ...state,
-                    selected
-                };
-            });
+            setState(state =>
+                setSelection({
+                    state,
+                    files,
+                    toggledFile: file,
+                    shiftKeyPressed
+                })
+            );
+        },
+        deselectAll() {
+            setState(state => ({ ...state, selected: [] }));
         },
         updateFile,
         uploadFile

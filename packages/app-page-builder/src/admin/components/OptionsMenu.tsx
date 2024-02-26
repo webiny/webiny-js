@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { makeComposable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as MoreVerticalIcon } from "@material-design-icons/svg/filled/more_vert.svg";
@@ -27,9 +27,9 @@ export interface OptionsMenuProps {
     "data-testid"?: string;
 }
 
-export const OptionsMenu = makeComposable<OptionsMenuProps>(
+export const OptionsMenu = makeDecoratable(
     "OptionsMenu",
-    ({ items, ...props }) => {
+    ({ items, ...props }: OptionsMenuProps) => {
         if (!items.length) {
             return null;
         }
@@ -37,9 +37,10 @@ export const OptionsMenu = makeComposable<OptionsMenuProps>(
         return (
             <Menu
                 className={menuStyles}
-                handle={<IconButton icon={<MoreVerticalIcon />} />}
+                handle={
+                    <IconButton icon={<MoreVerticalIcon />} data-testid={props["data-testid"]} />
+                }
                 anchor={"topLeft"}
-                {...props}
             >
                 {items.map(item => (
                     <MenuItem

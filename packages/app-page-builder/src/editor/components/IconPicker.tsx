@@ -1,8 +1,9 @@
-import React, { CSSProperties, useCallback, useMemo, useState, useRef, useEffect } from "react";
+import React, { CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { css } from "emotion";
 import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid } from "react-virtualized";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import { Menu } from "@webiny/ui/Menu";
@@ -152,21 +153,21 @@ const iconPickerWrapper = css({
 });
 
 interface IconPickerPropsType {
-    value?: [string, string];
+    value?: IconProp;
     onChange: (item: PbIcon) => void;
     removable?: boolean;
     handlerClassName?: string;
     useInSidebar?: boolean;
     removeIcon?: () => void;
 }
-const IconPicker: React.FC<IconPickerPropsType> = ({
+const IconPicker = ({
     value,
     onChange,
     removable = true,
     handlerClassName,
     useInSidebar,
     removeIcon = noop
-}) => {
+}: IconPickerPropsType) => {
     const [filter, setFilter] = useState<string>("");
     const [mustRenderGrid, setMustRenderGrid] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -193,7 +194,7 @@ const IconPicker: React.FC<IconPickerPropsType> = ({
     );
 
     const { prefix: selectedIconPrefix, name: selectedIconName } = useMemo(() => {
-        if (!value || Array.isArray(value) === false || !removable) {
+        if (!value || !Array.isArray(value) || !removable) {
             return {
                 prefix: undefined,
                 name: undefined
@@ -322,7 +323,7 @@ const IconPicker: React.FC<IconPickerPropsType> = ({
                     })}
                     onClick={removeIcon}
                 >
-                    <FontAwesomeIcon icon={(value as any) || ["far", "star"]} size={"2x"} />
+                    <FontAwesomeIcon icon={value || ["far", "star"]} size={"2x"} />
                 </div>
             </div>
         );
@@ -332,7 +333,7 @@ const IconPicker: React.FC<IconPickerPropsType> = ({
         <Menu
             handle={
                 <div className={classNames(pickIcon, handlerClassName)}>
-                    <FontAwesomeIcon icon={(value as any) || ["far", "star"]} size={"2x"} />
+                    <FontAwesomeIcon icon={value || ["far", "star"]} size={"2x"} />
                 </div>
             }
         >

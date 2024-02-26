@@ -91,15 +91,10 @@ interface AccordionProps {
     action?: ReactElement | null;
     icon?: ReactElement;
     defaultValue?: boolean;
+    children: React.ReactNode;
 }
 
-const Accordion: React.FC<AccordionProps> = ({
-    title,
-    children,
-    action,
-    icon,
-    defaultValue = false
-}) => {
+const Accordion = ({ title, children, action, icon, defaultValue = false }: AccordionProps) => {
     const [isOpen, setOpen] = useState(defaultValue);
     const toggleOpen = useCallback(() => setOpen(!isOpen), [isOpen]);
 
@@ -125,5 +120,5 @@ const Accordion: React.FC<AccordionProps> = ({
         </div>
     );
 };
-const MemoizedAccordion: React.FC<AccordionProps> = React.memo(Accordion);
+const MemoizedAccordion: React.ComponentType<AccordionProps> = React.memo(Accordion);
 export default MemoizedAccordion;

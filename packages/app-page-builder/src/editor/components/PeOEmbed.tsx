@@ -85,7 +85,7 @@ export interface OEmbedProps {
     init?: (params: OEmbedPropsInitParams) => void;
     url?: string;
 }
-const PeOEmbedComponent: React.FC<OEmbedProps> = props => {
+const PeOEmbedComponent = (props: OEmbedProps) => {
     const [errorMessage, setErrorMessage] = useState(null);
     const eventActionHandler = useEventActionHandler();
     const { showSnackbar } = useSnackbar();

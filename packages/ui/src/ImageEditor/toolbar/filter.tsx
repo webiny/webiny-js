@@ -1,5 +1,5 @@
 /**
- * When using Caman, we added @ts-ignore because it does not exist in packages, but it is loaded in packages/ui/src/ImageEditor/ImageEditor.tsx:38.
+ * When using Caman, we added @ts-expect-error because it does not exist in packages, but it is loaded in packages/ui/src/ImageEditor/ImageEditor.tsx:38.
  * TODO: use some other library to edit images
  */
 import React from "react";
@@ -18,7 +18,7 @@ interface RenderFormState {
 
 interface RenderFormProps {
     canvas: any;
-    renderApplyCancel?: Function;
+    renderApplyCancel?: () => void;
 }
 
 const Wrapper = styled("div")({
@@ -108,15 +108,15 @@ class RenderForm extends React.Component<RenderFormProps, RenderFormState> {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const component = this;
 
-        // @ts-ignore
+        // @ts-expect-error
         Caman(canvas.current, function () {
-            // @ts-ignore
+            // @ts-expect-error
             this.revert(false);
             Object.keys(values).forEach(
-                // @ts-ignore
+                // @ts-expect-error
                 key => values[key] !== 0 && this[key] && this[key](values[key])
             );
-            // @ts-ignore
+            // @ts-expect-error
             this.render();
             component.setState({ processing: false });
         });
@@ -193,11 +193,11 @@ const tool: ImageEditorTool = {
         return <RenderForm {...props} />;
     },
     cancel: ({ canvas }) => {
-        // @ts-ignore
+        // @ts-expect-error
         Caman(canvas.current, function () {
-            // @ts-ignore
+            // @ts-expect-error
             this.revert(false);
-            // @ts-ignore
+            // @ts-expect-error
             this.render();
         });
     }

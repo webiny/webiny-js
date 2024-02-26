@@ -1,8 +1,8 @@
-import { createHandler, createEventHandler } from "@webiny/handler-aws/raw";
+import { createEventHandler, createHandler } from "@webiny/handler-aws/raw";
 import graphqlHandler from "@webiny/handler-graphql";
 import { createScheduler } from "~/scheduler";
 import { ContextPlugin } from "@webiny/api";
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
+import { PageBuilderContextObject, PbContext } from "@webiny/api-page-builder/graphql/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { createPermissions } from "../utils/helpers";
@@ -47,7 +47,7 @@ export default (params: Params = {}) => {
                 }
             },
             new ContextPlugin<PbContext>(context => {
-                context.pageBuilder = {} as any;
+                context.pageBuilder = {} as unknown as PageBuilderContextObject;
             }),
             new ContextPlugin<any>(async context => {
                 context.scheduleAction = createScheduler({

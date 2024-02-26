@@ -31,7 +31,7 @@ const submenuList = css({
     }
 });
 
-export const NothingToShow: React.FC = () => {
+export const NothingToShow = () => {
     return (
         <List className={submenuList} style={{ opacity: 0.4 }}>
             <ListItem className={submenuItems} ripple={false} disabled>

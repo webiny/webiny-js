@@ -46,7 +46,7 @@ interface SplitViewProps {
     className?: string;
 }
 
-const SplitView: React.FC<SplitViewProps> = props => {
+const SplitView = (props: SplitViewProps) => {
     return (
         <Grid className={classSet(grid, props.className, "webiny-split-view")}>
             {props.children}
@@ -54,7 +54,7 @@ const SplitView: React.FC<SplitViewProps> = props => {
     );
 };
 
-const LeftPanel: React.FC<CellProps> = props => {
+const LeftPanel = (props: CellProps) => {
     const propList = clone(props);
     if (!propList.hasOwnProperty("span")) {
         propList.span = 5;
@@ -72,7 +72,7 @@ const LeftPanel: React.FC<CellProps> = props => {
     );
 };
 
-const RightPanel: React.FC<CellProps> = props => {
+const RightPanel = (props: CellProps) => {
     const propList = clone(props);
     if (!propList.hasOwnProperty("span")) {
         propList.span = 7;

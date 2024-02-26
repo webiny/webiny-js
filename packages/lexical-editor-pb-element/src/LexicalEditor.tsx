@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { HeadingEditor, ParagraphEditor } from "@webiny/lexical-editor";
 import { LexicalValue } from "@webiny/lexical-editor/types";
 import { isHeadingTag } from "~/utils/isHeadingTag";
-import { isParagraphTag } from "~/utils/isParagraphTag";
 import { usePageElements } from "@webiny/app-page-builder-elements";
 import { assignStyles } from "@webiny/app-page-builder-elements/utils";
 
@@ -16,38 +15,40 @@ interface LexicalEditorProps {
     width?: number | string;
 }
 
-export const LexicalEditor: React.FC<LexicalEditorProps> = ({ tag, value, onChange, ...rest }) => {
+export const LexicalEditor = ({ tag, value, onChange, ...rest }: LexicalEditorProps) => {
     const { theme } = usePageElements();
+
+    const isHeading = useMemo(() => isHeadingTag(tag), [tag]);
+
+    const themeStylesTransformer = useCallback(
+        styles => {
+            return assignStyles({
+                breakpoints: theme.breakpoints,
+                styles
+            });
+        },
+        [theme]
+    );
+
     return (
         <>
-            {isHeadingTag(tag) && (
+            {isHeading ? (
                 <HeadingEditor
                     theme={theme}
-                    themeStylesTransformer={styles => {
-                        return assignStyles({
-                            breakpoints: theme.breakpoints,
-                            styles
-                        });
-                    }}
+                    themeStylesTransformer={themeStylesTransformer}
+                    value={value}
+                    onChange={onChange}
+                    {...rest}
+                />
+            ) : (
+                <ParagraphEditor
+                    theme={theme}
+                    themeStylesTransformer={themeStylesTransformer}
                     value={value}
                     onChange={onChange}
                     {...rest}
                 />
             )}
-            {isParagraphTag(tag) ? (
-                <ParagraphEditor
-                    theme={theme}
-                    themeStylesTransformer={styles => {
-                        return assignStyles({
-                            breakpoints: theme.breakpoints,
-                            styles
-                        });
-                    }}
-                    value={value}
-                    onChange={onChange}
-                    {...rest}
-                />
-            ) : null}
         </>
     );
 };

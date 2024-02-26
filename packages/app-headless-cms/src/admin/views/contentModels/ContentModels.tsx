@@ -1,12 +1,12 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { CloneContentModelDialog } from "./CloneContentModelDialog";
 import NewContentModelDialog from "./NewContentModelDialog";
 import ContentModelsDataList from "./ContentModelsDataList";
 import { css } from "emotion";
 import { useSecurity } from "@webiny/app-security";
-import { Cell } from "@webiny/ui/Grid";
-import { Grid } from "@webiny/ui/Grid";
+import { Cell, Grid } from "@webiny/ui/Grid";
 import { CmsModel, CmsSecurityPermission } from "~/types";
+import { ImportContentModelsDialog } from "./importing/ImportContentModelsDialog";
 
 const grid = css({
     "&.mdc-layout-grid": {
@@ -36,7 +36,7 @@ const centeredContent = css({
     }
 });
 
-const ContentModels: React.FC = () => {
+const ContentModels = () => {
     const [newContentModelDialogOpened, openNewContentModelDialog] = React.useState(false);
 
     const [cloneContentModel, setCloneContentModel] = React.useState<CmsModel | null>(null);
@@ -56,7 +56,7 @@ const ContentModels: React.FC = () => {
         return permission.rwd.includes("w");
     }, [identity]);
 
-    const closeModal = useCallback(() => {
+    const closeCloneModal = useCallback(() => {
         setCloneContentModel(null);
     }, []);
 
@@ -68,6 +68,14 @@ const ContentModels: React.FC = () => {
     );
     const onCloneClose = useCallback((): void => setCloneContentModel(null), []);
 
+    const [importModels, setImportModels] = useState(false);
+    const showImportModelModal = useCallback(() => {
+        setImportModels(true);
+    }, []);
+    const closeImportModelModal = useCallback(() => {
+        setImportModels(false);
+    }, []);
+
     return (
         <>
             <NewContentModelDialog open={newContentModelDialogOpened} onClose={onClose} />
@@ -75,13 +83,15 @@ const ContentModels: React.FC = () => {
                 <CloneContentModelDialog
                     contentModel={cloneContentModel}
                     onClose={onCloneClose}
-                    closeModal={closeModal}
+                    closeModal={closeCloneModal}
                 />
             )}
+            {importModels && <ImportContentModelsDialog onClose={closeImportModelModal} />}
             <Grid className={grid}>
                 <Cell span={3} />
                 <Cell span={6} className={centeredContent}>
                     <ContentModelsDataList
+                        showImportModelModal={showImportModelModal}
                         canCreate={canCreate}
                         onCreate={onCreate}
                         onClone={onClone}

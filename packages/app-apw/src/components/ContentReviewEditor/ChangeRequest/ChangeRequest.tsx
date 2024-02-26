@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import React from "react";
-import { cx, css } from "emotion";
+import { css, cx } from "emotion";
 import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
 import { RichTextEditor } from "@webiny/ui/RichTextEditor";
 import { Box, Columns, Stack } from "~/components/Layout";
@@ -8,13 +8,14 @@ import { ReactComponent as EditIcon } from "~/assets/icons/edit_24dp.svg";
 import { ReactComponent as DeleteIcon } from "~/assets/icons/delete_24dp.svg";
 import { ReactComponent as MarkTaskIcon } from "~/assets/icons/task_alt_24dp.svg";
 import { useChangeRequest } from "~/hooks/useChangeRequest";
-import { useConfirmationDialog } from "@webiny/app-admin";
+import { useConfirmationDialog, useDialog } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n";
 import { DefaultRenderImagePreview } from "./ApwFile";
 import { useChangeRequestDialog } from "./useChangeRequestDialog";
 import { richTextWrapperStyles, TypographyBody, TypographyTitle } from "../Styled";
 import { FileWithOverlay, Media } from "./ChangeRequestMedia";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { useSecurity } from "@webiny/app-security";
 
 const t = i18n.ns("app-apw/content-reviews/editor/steps/changeRequest");
 
@@ -76,11 +77,13 @@ interface ChangeRequestProps {
     id: string;
 }
 
-export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
+export const ChangeRequest = (props: ChangeRequestProps) => {
     const { id } = props;
     const { deleteChangeRequest, changeRequest, markResolved, loading } = useChangeRequest({ id });
     const { setOpen, setChangeRequestId } = useChangeRequestDialog();
+    const { identity } = useSecurity();
 
+    const { showDialog } = useDialog();
     const { showConfirmation } = useConfirmationDialog({
         title: t`Delete change request`,
         message: (
@@ -97,6 +100,10 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
 
     const handleResolve = async (resolved: boolean) => {
         await markResolved(!resolved);
+    };
+
+    const canEditChangeRequest = (): boolean => {
+        return changeRequest.createdBy.id === identity?.id;
     };
 
     if (!changeRequest) {
@@ -134,6 +141,15 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                     <ButtonBox paddingY={1}>
                         <DefaultButton
                             onClick={() => {
+                                if (!canEditChangeRequest()) {
+                                    showDialog(
+                                        t`A change request can only be edited by its creator.`,
+                                        {
+                                            title: t`Edit change request`
+                                        }
+                                    );
+                                    return;
+                                }
                                 setOpen(true);
                                 setChangeRequestId(id);
                             }}
@@ -144,11 +160,20 @@ export const ChangeRequest: React.FC<ChangeRequestProps> = props => {
                     </ButtonBox>
                     <ButtonBox paddingY={1} border={true}>
                         <DefaultButton
-                            onClick={() =>
+                            onClick={() => {
+                                if (!canEditChangeRequest()) {
+                                    showDialog(
+                                        t`A change request can only be deleted by its creator.`,
+                                        {
+                                            title: t`Delete change request`
+                                        }
+                                    );
+                                    return;
+                                }
                                 showConfirmation(async () => {
                                     await deleteChangeRequest(id);
-                                })
-                            }
+                                });
+                            }}
                         >
                             <ButtonIcon icon={<DeleteIcon />} />
                             Delete

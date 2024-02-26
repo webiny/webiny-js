@@ -1,5 +1,5 @@
 import { FlushHookPlugin } from "@webiny/api-prerendering-service/flush/types";
-import CloudFront from "aws-sdk/clients/cloudfront";
+import { CloudFront } from "@webiny/aws-sdk/client-cloudfront";
 
 // This plugin will issue a cache invalidation request to CloudFront, every time a page has been deleted. This is
 // mostly important when a user unpublishes a new page, and we want to make the page immediately publicly available.
@@ -37,18 +37,16 @@ export default (): FlushHookPlugin => {
 
             const cloudfront = new CloudFront();
             try {
-                await cloudfront
-                    .createInvalidation({
-                        DistributionId: distributionId,
-                        InvalidationBatch: {
-                            CallerReference: `${new Date().getTime()}-api-prerender-service-aws-after-flush`,
-                            Paths: {
-                                Quantity: 1,
-                                Items: [path]
-                            }
+                await cloudfront.createInvalidation({
+                    DistributionId: distributionId,
+                    InvalidationBatch: {
+                        CallerReference: `${new Date().getTime()}-api-prerender-service-aws-after-flush`,
+                        Paths: {
+                            Quantity: 1,
+                            Items: [path]
                         }
-                    })
-                    .promise();
+                    }
+                });
             } catch (e) {
                 console.error(
                     `Failed to issue a cache invalidation request to CloudFront distribution "${distributionId}".`,

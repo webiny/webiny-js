@@ -8,7 +8,7 @@ const oembed: Partial<OEmbedProps> = {
     global: "twttr",
     sdk: "https://platform.twitter.com/widgets.js",
     init({ node }) {
-        // @ts-ignore
+        // @ts-expect-error
         window.twttr.widgets.load(node);
     }
 };

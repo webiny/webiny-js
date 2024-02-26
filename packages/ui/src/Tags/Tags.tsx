@@ -42,12 +42,12 @@ interface TagsProps extends FormComponentProps {
     /**
      * Callback that gets executed on change of input value.
      */
-    onInput?: Function;
+    onInput?: <T = unknown>(value: T) => void;
 
     /**
      * Callback that gets executed when the input is focused.
      */
-    onFocus?: Function;
+    onFocus?: (ev: Event) => void;
 
     /**
      * Automatically focus on the tags input.
@@ -82,7 +82,7 @@ const tagsStyle = css({
     }
 });
 
-export const Tags: React.FC<TagsProps> = props => {
+export const Tags = (props: TagsProps) => {
     const [inputValue, setInputValue] = useState("");
 
     const {

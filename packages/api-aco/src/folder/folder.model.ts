@@ -1,7 +1,5 @@
 import { createModelField } from "~/utils/createModelField";
-import { CmsPrivateModelFull } from "@webiny/api-headless-cms";
-
-export type FolderModelDefinition = Omit<CmsPrivateModelFull, "noValidate" | "group">;
+import { createPrivateModelDefinition } from "@webiny/api-headless-cms";
 
 const titleField = () =>
     createModelField({
@@ -54,16 +52,74 @@ const parentIdField = () =>
         type: "text"
     });
 
+const permissionsField = () =>
+    createModelField({
+        label: "Permissions",
+        fieldId: "permissions",
+        type: "object",
+        multipleValues: true,
+        listValidation: [],
+        settings: {
+            fields: [
+                {
+                    id: "target",
+                    type: "text",
+                    storageId: "text@target",
+                    fieldId: "target",
+                    label: "Target",
+                    validation: [
+                        {
+                            name: "required",
+                            message: "Value is required."
+                        }
+                    ]
+                },
+                {
+                    id: "level",
+                    type: "text",
+                    storageId: "text@level",
+                    fieldId: "level",
+                    label: "Level",
+                    validation: [
+                        {
+                            name: "required",
+                            message: "Value is required."
+                        }
+                    ],
+                    predefinedValues: {
+                        enabled: true,
+                        values: [
+                            {
+                                label: "Viewer",
+                                value: "viewer"
+                            },
+                            {
+                                label: "Editor",
+                                value: "editor"
+                            },
+                            {
+                                label: "Owner",
+                                value: "owner"
+                            },
+                            {
+                                label: "Public",
+                                value: "public"
+                            }
+                        ]
+                    }
+                }
+            ],
+            layout: [["target"], ["level"]]
+        }
+    });
+
 export const FOLDER_MODEL_ID = "acoFolder";
 
-export const createFolderModelDefinition = (): FolderModelDefinition => {
-    return {
+export const createFolderModelDefinition = () => {
+    return createPrivateModelDefinition({
         name: "ACO - Folder",
         modelId: FOLDER_MODEL_ID,
         titleFieldId: "title",
-        layout: [["title"], ["slug"], ["type"], ["parentId"]],
-        fields: [titleField(), slugField(), typeField(), parentIdField()],
-        description: "ACO - Folder content model",
-        isPrivate: true
-    };
+        fields: [titleField(), slugField(), typeField(), parentIdField(), permissionsField()]
+    });
 };

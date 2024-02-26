@@ -28,16 +28,20 @@ import {
     createRevisionsQuery
 } from "@webiny/app-headless-cms-common";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
+import { FormAPI, FormSubmitOptions } from "@webiny/form";
 
 interface ContentEntryContextForm {
-    submit: (ev: React.SyntheticEvent) => Promise<CmsContentEntry | null>;
+    submit: (
+        ev: React.SyntheticEvent,
+        options?: FormSubmitOptions
+    ) => Promise<CmsContentEntry | null>;
 }
 type ContentEntryContextFormRef = MutableRefObject<ContentEntryContextForm>;
 export interface ContentEntryContext extends ContentEntriesContext {
     createEntry: () => void;
     entry: CmsContentEntry;
     form: ContentEntryContextFormRef;
-    setFormRef: (form: { submit: Function }) => void;
+    setFormRef: (form: Pick<FormAPI, "submit">) => void;
     loading: boolean;
     setLoading: Dispatch<SetStateAction<boolean>>;
     revisions: CmsContentEntryRevision[];
@@ -75,11 +79,11 @@ export const useContentEntryProviderProps = (): UseContentEntryProviderProps => 
     };
 };
 
-export const ContentEntryProvider: React.FC<ContentEntryContextProviderProps> = ({
+export const ContentEntryProvider = ({
     children,
     isNewEntry,
     getContentId
-}) => {
+}: ContentEntryContextProviderProps) => {
     const { contentModel, canCreate } = useContentEntries();
 
     const { search } = useRouter();

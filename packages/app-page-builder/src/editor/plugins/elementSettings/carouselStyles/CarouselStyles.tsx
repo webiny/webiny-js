@@ -23,9 +23,9 @@ const CheckboxWrapper = styled.div`
     top: -8px;
 `;
 
-const CarouselStylesSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+const CarouselStylesSettings = ({
     defaultAccordionValue
-}) => {
+}: PbEditorPageElementSettingsRenderComponentProps) => {
     const [element] = useActiveElement<PbEditorElement>();
 
     const { getUpdateValue: getUpdateUniversal } = useUpdateHandlers({

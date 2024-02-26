@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { useDrag, useDrop, DropTargetMonitor } from "react-dnd";
+import { useDrag, useDrop, DropTargetMonitor, DragSourceMonitor } from "react-dnd";
 import { elementByIdSelector, rootElementAtom } from "~/editor/recoil/modules";
 import { MoveBlockActionArgsType } from "~/editor/recoil/actions/moveBlock/types";
 import { MoveBlockActionEvent } from "~/editor/recoil/actions";
@@ -58,8 +58,8 @@ interface UseSortableListArgs {
     id: string;
     type: string;
     move: (current: number, next: number) => void;
-    beginDrag?: Function;
-    endDrag?: Function;
+    beginDrag?: (monitor: DragSourceMonitor) => void;
+    endDrag?: (item: DraggableItem | undefined, monitor: DragSourceMonitor) => void;
 }
 
 export const useSortableList = ({

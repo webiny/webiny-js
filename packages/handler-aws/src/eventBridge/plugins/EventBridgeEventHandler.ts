@@ -1,16 +1,27 @@
+import type { Context as LambdaContext, EventBridgeEvent } from "aws-lambda";
 import { Plugin } from "@webiny/plugins/Plugin";
-import { Request, Reply, Context } from "@webiny/handler/types";
-import { EventBridgeEvent, Context as LambdaContext } from "aws-lambda";
+import { Context, Reply, Request } from "@webiny/handler/types";
 
-export interface EventBridgeEventHandlerCallableParams<DetailType extends string, Detail> {
+export interface EventBridgeEventHandlerCallableParams<
+    DetailType extends string,
+    Detail,
+    Response = Reply
+> {
     request: Request;
     reply: Reply;
     context: Context;
     payload: EventBridgeEvent<DetailType, Detail>;
     lambdaContext: LambdaContext;
+    next: () => Promise<Response>;
 }
-export interface EventBridgeEventHandlerCallable<DetailType extends string, Detail, Response> {
-    (params: EventBridgeEventHandlerCallableParams<DetailType, Detail>): Promise<Response | Reply>;
+export interface EventBridgeEventHandlerCallable<
+    DetailType extends string,
+    Detail,
+    Response = Reply
+> {
+    (
+        params: EventBridgeEventHandlerCallableParams<DetailType, Detail, Response>
+    ): Promise<Response>;
 }
 
 export class EventBridgeEventHandler<
@@ -18,7 +29,7 @@ export class EventBridgeEventHandler<
     Detail,
     Response = any
 > extends Plugin {
-    public static override type = "handler.fastify.aws.sqs.eventHandler";
+    public static override type = "handler.fastify.aws.eventBridge.eventHandler";
 
     public readonly cb: EventBridgeEventHandlerCallable<DetailType, Detail, Response>;
 

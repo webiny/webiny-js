@@ -7,7 +7,7 @@ export interface NavigationMenuElementConfig extends UIElementConfig {
     label: React.ReactNode;
     icon?: React.ReactElement;
     path?: string;
-    onClick?: Function;
+    onClick?: (value: any) => void;
     testId?: string;
     rel?: string;
     target?: string;

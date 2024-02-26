@@ -1,15 +1,13 @@
-import readline from "readline";
-import LambdaClient from "aws-sdk/clients/lambda";
+import { LambdaClient } from "@webiny/aws-sdk/client-lambda";
 import { CliContext } from "@webiny/cli/types";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
-import { printReport, runMigration, getDuration } from "@webiny/data-migration/cli";
-
-const clearLine = () => {
-    if (process.stdout.isTTY) {
-        readline.clearLine(process.stdout, 0);
-        readline.cursorTo(process.stdout, 0);
-    }
-};
+import {
+    LogReporter,
+    InteractiveCliStatusReporter,
+    NonInteractiveCliStatusReporter,
+    MigrationRunner,
+    CliMigrationRunReporter
+} from "@webiny/data-migration/cli";
 
 /**
  * On every deployment of the API project application, this plugin invokes the data migrations Lambda.
@@ -42,34 +40,28 @@ export const executeDataMigrations = {
                 region: apiOutput.region
             });
 
-            const response = await runMigration({
-                lambdaClient,
-                functionName: apiOutput["migrationLambdaArn"],
-                payload: {
-                    version: process.env.WEBINY_VERSION || context.version
-                },
-                statusCallback: ({ status, migrations }) => {
-                    clearLine();
-                    if (status === "running") {
-                        const currentMigration = migrations.find(mig => mig.status === "running");
-                        if (currentMigration) {
-                            const duration = getDuration(currentMigration.startedOn as string);
-                            process.stdout.write(
-                                `Running data migration ${currentMigration.id} (${duration})...`
-                            );
-                        }
-                        return;
-                    }
+            const functionName = apiOutput["migrationLambdaArn"];
 
-                    if (status === "init") {
-                        process.stdout.write(`Checking data migrations...`);
-                    }
-                }
+            const logReporter = new LogReporter(functionName);
+            const statusReporter =
+                !process.stdout.isTTY || "CI" in process.env
+                    ? new NonInteractiveCliStatusReporter(logReporter)
+                    : new InteractiveCliStatusReporter(logReporter);
+
+            const runner = MigrationRunner.create({
+                lambdaClient,
+                functionName,
+                statusReporter
             });
 
-            clearLine();
+            const result = await runner.runMigration({
+                version: process.env.WEBINY_VERSION || context.version
+            });
 
-            printReport({ response, context, migrationLambdaArn: apiOutput["migrationLambdaArn"] });
+            if (result) {
+                const reporter = new CliMigrationRunReporter(logReporter, context);
+                await reporter.report(result);
+            }
         } catch (e) {
             context.error(`An error occurred while executing data migrations Lambda function!`);
             console.log(e);

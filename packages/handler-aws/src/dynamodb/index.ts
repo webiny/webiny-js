@@ -1,28 +1,34 @@
-import {
-    createHandler as createBaseHandler,
-    CreateHandlerParams as BaseCreateHandlerParams
-} from "@webiny/handler";
-const Reply = require("fastify/lib/reply");
-import { DynamoDBStreamEvent, Context as LambdaContext } from "aws-lambda";
+import type {
+    APIGatewayProxyResult,
+    Context as LambdaContext,
+    DynamoDBStreamEvent
+} from "aws-lambda";
+import { HandlerFactoryParams } from "~/types";
+import { createHandler as createBaseHandler } from "@webiny/handler";
+import { registerDefaultPlugins } from "~/plugins";
 import {
     DynamoDBEventHandler,
     DynamoDBEventHandlerCallableParams
 } from "./plugins/DynamoDBEventHandler";
-import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
-import { registerDefaultPlugins } from "~/plugins";
+/**
+ * We need a class, not an interface exported from types.
+ */
+// @ts-expect-error
+import Reply from "fastify/lib/reply";
 import { execute } from "~/execute";
+import { createComposedHandler } from "~/utils/composedHandler";
+
+export * from "./plugins/DynamoDBEventHandler";
 
 const url = "/webiny-dynamodb-event";
+
+export type HandlerParams = HandlerFactoryParams;
 
 export interface HandlerCallable {
     (event: DynamoDBStreamEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
 }
 
-export interface CreateHandlerParams extends BaseCreateHandlerParams {
-    debug?: boolean;
-}
-
-export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
+export const createHandler = (params: HandlerParams): HandlerCallable => {
     return (payload, context) => {
         const app = createBaseHandler({
             ...params,
@@ -38,29 +44,41 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
         /**
          * There must be an event plugin for this handler to work.
          */
-        const plugins = app.webiny.plugins.byType<DynamoDBEventHandler>(DynamoDBEventHandler.type);
-        const handler = plugins.shift();
-        if (!handler) {
+        const plugins = app.webiny.plugins
+            .byType<DynamoDBEventHandler>(DynamoDBEventHandler.type)
+            .reverse();
+        if (plugins.length === 0) {
             throw new Error(
                 `To run @webiny/handler-aws/dynamodb, you must have DynamoDBHandler set.`
             );
         }
 
+        const handler = createComposedHandler<
+            DynamoDBEventHandler,
+            DynamoDBEventHandlerCallableParams<APIGatewayProxyResult>,
+            APIGatewayProxyResult
+        >(plugins);
+
         app.post(url, async (request, reply) => {
-            const params: DynamoDBEventHandlerCallableParams = {
+            const params: Omit<
+                DynamoDBEventHandlerCallableParams<APIGatewayProxyResult>,
+                "next"
+            > = {
                 request,
                 context: app.webiny,
                 event: payload,
                 lambdaContext: context,
                 reply
             };
-            const result = await handler.cb(params);
+            const result = await handler(
+                params as unknown as DynamoDBEventHandlerCallableParams<APIGatewayProxyResult>
+            );
 
             if (result instanceof Reply) {
                 return result;
             }
 
-            (app as any).__webiny_raw_result = result;
+            app.__webiny_raw_result = result;
             return reply.send({});
         });
         return execute({
@@ -70,5 +88,3 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
         });
     };
 };
-
-export * from "./plugins/DynamoDBEventHandler";

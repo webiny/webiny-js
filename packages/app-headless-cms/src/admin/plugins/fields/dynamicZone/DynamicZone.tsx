@@ -22,7 +22,7 @@ function updateOrCreateTemplate(
     return [...templates, template];
 }
 
-export const DynamicZone: React.VFC = () => {
+export const DynamicZone = () => {
     const { field } = useModelField();
     const { updateField } = useModelFieldEditor();
     const newTemplateId = useRef<string | undefined>(undefined);

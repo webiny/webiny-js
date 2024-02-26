@@ -3,14 +3,15 @@ import IconPickerComponent from "~/editor/components/IconPicker";
 import { PbIcon } from "~/types";
 import { Typography } from "@webiny/ui/Typography";
 import { Cell } from "@webiny/ui/Grid";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 interface IconPickerProps {
     label: string;
-    value: [string, string];
+    value: IconProp;
     updateValue: (item: PbIcon) => void;
 }
 
-const IconPicker: React.FC<IconPickerProps> = ({ label, value, updateValue }) => {
+const IconPicker = ({ label, value, updateValue }: IconPickerProps) => {
     return (
         <>
             <Cell span={4}>

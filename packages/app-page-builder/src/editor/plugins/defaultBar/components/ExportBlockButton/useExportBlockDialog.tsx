@@ -46,7 +46,7 @@ interface ExportBlockLoadingDialogProps {
     where?: Record<string, any>;
 }
 
-const ExportBlockLoadingDialogMessage: React.FC<ExportBlockLoadingDialogProps> = props => {
+const ExportBlockLoadingDialogMessage = (props: ExportBlockLoadingDialogProps) => {
     const { exportBlock } = useExportBlock();
 
     useEffect(() => {
@@ -66,7 +66,7 @@ interface ExportBlockDialogProps {
     exportUrl: string;
 }
 
-const ExportBlockDialogMessage: React.FC<ExportBlockDialogProps> = ({ exportUrl }) => {
+const ExportBlockDialogMessage = ({ exportUrl }: ExportBlockDialogProps) => {
     const { showSnackbar } = useSnackbar();
 
     return (
@@ -77,7 +77,11 @@ const ExportBlockDialogMessage: React.FC<ExportBlockDialogProps> = ({ exportUrl 
                 </Cell>
                 <Cell span={12}>
                     <div className={linkWrapper}>
-                        <Typography use={"body2"} className={"link-text"}>
+                        <Typography
+                            use={"body2"}
+                            className={"link-text"}
+                            data-testid={"pb-blocks-export-dialog-export-url"}
+                        >
                             {exportUrl}
                         </Typography>
                         <span>
@@ -116,6 +120,7 @@ interface UseExportBlockDialog {
     showExportBlockInitializeDialog: (props: ExportBlockLoadingDialogProps) => void;
     hideDialog: () => void;
 }
+
 const useExportBlockDialog = (): UseExportBlockDialog => {
     const { showDialog, hideDialog } = useDialog();
 

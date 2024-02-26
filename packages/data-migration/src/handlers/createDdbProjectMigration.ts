@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { createRawEventHandler } from "@webiny/handler-aws";
 import { Constructor, createContainer } from "@webiny/ioc";
 import { IsMigrationApplicable, MigrationRunner } from "~/MigrationRunner";
@@ -22,7 +22,7 @@ import { coerce as semverCoerce } from "semver";
 
 interface CreateDdbDataMigrationConfig {
     migrations: Constructor<DataMigration>[];
-    primaryTable: Table;
+    primaryTable: Table<string, string, string>;
     repository?: MigrationRepository;
     isMigrationApplicable?: IsMigrationApplicable;
     timeLimiter?: ExecutionTimeLimiter;
@@ -38,6 +38,7 @@ export const createDdbProjectMigration = ({
     return createRawEventHandler<MigrationEventPayload, any, MigrationEventHandlerResponse>(
         async ({ payload, lambdaContext }) => {
             const projectVersion = String(payload?.version || process.env.WEBINY_VERSION);
+            const forceExecute = payload.force === true;
 
             const version = semverCoerce(projectVersion);
             if (version?.version === "0.0.0") {
@@ -72,13 +73,23 @@ export const createDdbProjectMigration = ({
             // Inject dependencies and execute.
             try {
                 const runner = await container.resolve(MigrationRunner);
+                runner.setContext({
+                    logGroupName: process.env.AWS_LAMBDA_LOG_GROUP_NAME,
+                    logStreamName: process.env.AWS_LAMBDA_LOG_STREAM_NAME
+                });
 
                 if (payload.command === "execute") {
-                    await runner.execute(projectVersion, patternMatcher || isMigrationApplicable);
+                    await runner.execute(
+                        projectVersion,
+                        patternMatcher || isMigrationApplicable,
+                        forceExecute
+                    );
                     return;
                 }
 
-                return { data: await runner.getStatus() };
+                return {
+                    data: await runner.getStatus()
+                };
             } catch (err) {
                 return { error: { message: err.message } };
             }

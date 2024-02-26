@@ -8,7 +8,7 @@ interface AccordionProps {
     element: PbEditorElement;
 }
 
-const Accordion: React.FC<AccordionProps> = props => {
+const Accordion = (props: AccordionProps) => {
     const { element, ...rest } = props;
     return <PeAccordion element={element as Element} {...rest} />;
 };

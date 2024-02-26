@@ -23,12 +23,12 @@ export interface NavigateFolderProviderProps {
     createStorageKey: () => string;
 }
 
-export const NavigateFolderProvider: React.VFC<NavigateFolderProviderProps> = ({
+export const NavigateFolderProvider = ({
     folderId: currentFolderId,
     children,
     createStorageKey,
     ...props
-}) => {
+}: NavigateFolderProviderProps) => {
     /**
      * Helper function to set the current folderId to local storage:
      * we export this function to call it programmatically when we need it and

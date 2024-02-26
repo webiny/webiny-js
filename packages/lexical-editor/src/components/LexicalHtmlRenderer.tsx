@@ -1,48 +1,54 @@
-import React from "react";
-import { LexicalValue, ThemeEmotionMap } from "~/types";
-import { isValidLexicalData } from "~/utils/isValidLexicalData";
-import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
+import React, { useRef } from "react";
+import { Klass, LexicalNode } from "lexical";
+import { ClassNames, CSSObject } from "@emotion/react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
-import { LexicalUpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
-import { Klass, LexicalNode } from "lexical";
-import { WebinyNodes } from "~/nodes/webinyNodes";
-import { webinyEditorTheme, WebinyTheme } from "~/themes/webinyLexicalTheme";
-import { ClassNames, CSSObject } from "@emotion/react";
-import { toTypographyEmotionMap } from "~/utils/toTypographyEmotionMap";
+import { allNodes } from "@webiny/lexical-nodes";
+import {
+    createTheme,
+    WebinyTheme,
+    ThemeEmotionMap,
+    toTypographyEmotionMap
+} from "@webiny/lexical-theme";
+import { isValidLexicalData } from "~/utils/isValidLexicalData";
+import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
+import { LexicalValue } from "~/types";
+import { UpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 
 interface LexicalHtmlRendererProps {
     nodes?: Klass<LexicalNode>[];
     value: LexicalValue | null;
-    /*
-     * @description Theme to be injected into lexical editor
-     */
     theme: WebinyTheme;
     themeEmotionMap?: ThemeEmotionMap;
     themeStylesTransformer?: (cssObject: Record<string, any>) => CSSObject;
 }
 
-export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
+export const BaseLexicalHtmlRenderer = ({
     nodes,
     value,
     theme,
     themeEmotionMap
-}) => {
+}: LexicalHtmlRendererProps) => {
+    const editorTheme = useRef(createTheme());
+    const editorValue = isValidLexicalData(value) ? value : generateInitialLexicalValue();
+
     const initialConfig = {
-        editorState: isValidLexicalData(value) ? value : generateInitialLexicalValue(),
+        // We update the state via the `<LexicalUpdateStatePlugin/>`.
+        editorState: null,
         namespace: "webiny",
-        onError: (error: Error) => {
-            throw error;
+        onError: () => {
+            // Ignore errors. We don't want to break the app because of errors caused by config/value updates.
+            // These are usually resolved in the next component render cycle.
         },
         editable: false,
-        nodes: [...WebinyNodes, ...(nodes || [])],
-        theme: { ...webinyEditorTheme, emotionMap: themeEmotionMap, styles: theme.styles }
+        nodes: [...allNodes, ...(nodes || [])],
+        theme: { ...editorTheme.current, emotionMap: themeEmotionMap, styles: theme.styles }
     };
 
     return (
-        <LexicalComposer initialConfig={initialConfig}>
+        <LexicalComposer initialConfig={initialConfig} key={initialConfig.nodes.length}>
             <RichTextPlugin
                 contentEditable={
                     <div className="editor">
@@ -52,7 +58,7 @@ export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
                 ErrorBoundary={LexicalErrorBoundary}
                 placeholder={null}
             />
-            <LexicalUpdateStatePlugin value={value} />
+            <UpdateStatePlugin value={editorValue} />
         </LexicalComposer>
     );
 };
@@ -60,7 +66,7 @@ export const BaseLexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = ({
 /**
  * @description Main editor container
  */
-export const LexicalHtmlRenderer: React.FC<LexicalHtmlRendererProps> = props => {
+export const LexicalHtmlRenderer = (props: LexicalHtmlRendererProps) => {
     return (
         <ClassNames>
             {({ css }) => {

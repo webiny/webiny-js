@@ -22,7 +22,7 @@ export interface RenderItemProps {
     modelId: string;
     id: string;
 }
-export const renderItem: React.FC<RenderItemProps> = props => {
+export const renderItem = (props: RenderItemProps) => {
     return (
         <Typography use={"body2"}>
             <Link to={createEntryUrl(props)}>{props.name}</Link>

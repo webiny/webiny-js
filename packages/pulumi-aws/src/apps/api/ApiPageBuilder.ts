@@ -1,13 +1,12 @@
 import * as path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-
-//@ts-ignore
 import { createInstallationZip } from "@webiny/api-page-builder/installation";
 import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { CoreOutput } from "../common";
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils";
+import { LAMBDA_RUNTIME } from "~/constants";
 
 interface PageBuilderParams {
     env: Record<string, any>;
@@ -56,10 +55,10 @@ function createExportResources(app: PulumiApp, params: PageBuilderParams) {
         name: "pb-export-combine",
         config: {
             role: role.output.arn,
-            runtime: "nodejs14.x",
+            runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 60,
-            memorySize: 128,
+            memorySize: 512,
             description: "Handle export's combine workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
@@ -80,10 +79,10 @@ function createExportResources(app: PulumiApp, params: PageBuilderParams) {
         name: "pb-export-process",
         config: {
             role: role.output.arn,
-            runtime: "nodejs14.x",
+            runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 60,
-            memorySize: 128,
+            memorySize: 512,
             description: "Handle export's process workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
@@ -197,7 +196,7 @@ function createImportResources(app: PulumiApp, params: PageBuilderParams) {
         name: "pb-import-queue-process",
         config: {
             role: role.output.arn,
-            runtime: "nodejs14.x",
+            runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 60,
             memorySize: 512,
@@ -221,7 +220,7 @@ function createImportResources(app: PulumiApp, params: PageBuilderParams) {
         name: "pb-import-queue-create",
         config: {
             role: role.output.arn,
-            runtime: "nodejs14.x",
+            runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 60,
             memorySize: 512,

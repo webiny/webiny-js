@@ -7,7 +7,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as DownButton } from "./round-arrow_drop_down-24px.svg";
 import { useRevisions } from "~/pageEditor/hooks/useRevisions";
 import { RevisionItemAtomType } from "~/pageEditor/state";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { EditorBar } from "~/editor";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
@@ -40,7 +40,7 @@ const getStatus = (revision: RevisionItemAtomType): RevisionStatusEnum => {
     return RevisionStatusEnum.DRAFT;
 };
 
-const Revisions: React.FC = () => {
+const Revisions = () => {
     const [revisions] = useRevisions();
     const { navigateToPageEditor } = useNavigatePage();
 
@@ -69,7 +69,7 @@ const Revisions: React.FC = () => {
     );
 };
 
-const ComposeRevisionSelector = createComponentPlugin(EditorBar.RightSection, RightSection => {
+const ComposeRevisionSelector = createDecorator(EditorBar.RightSection, RightSection => {
     return function ComposeRightSection(props) {
         return (
             <RightSection>

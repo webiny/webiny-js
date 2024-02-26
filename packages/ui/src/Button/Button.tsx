@@ -58,7 +58,7 @@ export interface ButtonProps {
 /**
  * Shows a default button, used typically when action is not of high priority.
  */
-export const ButtonDefault: React.FC<ButtonProps> = props => {
+export const ButtonDefault = (props: ButtonProps) => {
     const { disabled, onClick, children, small, ripple, className = "", style } = props;
 
     return (
@@ -79,7 +79,7 @@ export const ButtonDefault: React.FC<ButtonProps> = props => {
 /**
  * Shows primary button, eg. for submitting forms.
  */
-export const ButtonPrimary: React.FC<ButtonProps> = props => {
+export const ButtonPrimary = (props: ButtonProps) => {
     const {
         disabled,
         onClick,
@@ -110,7 +110,7 @@ export const ButtonPrimary: React.FC<ButtonProps> = props => {
 /**
  * Shows a secondary button - eg. for doing a reset on a form.
  */
-export const ButtonSecondary: React.FC<ButtonProps> = props => {
+export const ButtonSecondary = (props: ButtonProps) => {
     const {
         disabled,
         onClick,
@@ -152,7 +152,7 @@ export type ButtonFloatingProps = ButtonProps &
 /**
  * A floating button, shown on the side of the screen, typically used for creating new content or accessing settings.
  */
-export const ButtonFloating: React.FC<ButtonFloatingProps> = props => {
+export const ButtonFloating = (props: ButtonFloatingProps) => {
     const {
         disabled,
         label,
@@ -181,4 +181,4 @@ export const ButtonFloating: React.FC<ButtonFloatingProps> = props => {
 /**
  * Shows an icon, suitable to be shown inside of a button.
  */
-export const ButtonIcon: React.FC<IconProps> = props => <Icon {...props} />;
+export const ButtonIcon = (props: IconProps) => <Icon {...props} />;

@@ -1,6 +1,8 @@
-import { BeforeHandlerPlugin } from "@webiny/handler";
-import { SecurityContext } from "~/types";
+import { createBeforeHandlerPlugin } from "@webiny/handler";
 import { Context as BaseContext } from "@webiny/handler/types";
+import { authenticateUsingCookie } from "./authenticateUsingCookie";
+import { SecurityContext } from "~/types";
+import { setupSecureHeaders } from "~/plugins/secureHeaders";
 
 type Context = BaseContext & SecurityContext;
 
@@ -15,13 +17,19 @@ const defaultGetHeader: GetHeader = context => {
 };
 
 export const authenticateUsingHttpHeader = (getHeader: GetHeader = defaultGetHeader) => {
-    return new BeforeHandlerPlugin<Context>(async context => {
-        const token = getHeader(context);
+    return [
+        createBeforeHandlerPlugin<Context>(async context => {
+            const token = getHeader(context);
 
-        if (!token) {
-            return;
-        }
+            if (!token) {
+                return;
+            }
 
-        await context.security.authenticate(token);
-    });
+            await context.security.authenticate(token);
+        }),
+        // Configure strict headers (this is also a requirement to use cookies).
+        setupSecureHeaders(),
+        // Finally, we add cookie-based authentication.
+        authenticateUsingCookie()
+    ];
 };

@@ -2,14 +2,18 @@ import React, { Fragment, memo } from "react";
 import { plugins } from "@webiny/plugins";
 import { Provider, Plugins, AddMenu } from "@webiny/app-admin";
 import { I18NProvider as ContextProvider } from "./contexts/I18N";
-import { HasPermission } from "@webiny/app-security/";
+import { HasPermission } from "@webiny/app-security";
 import { AddRoute } from "@webiny/app-admin";
 import { Layout } from "@webiny/app-admin";
 import { LocalesView } from "./admin/views/locales";
 import i18nPlugins from "./admin/plugins";
 
-const I18NProviderHOC = (Component: React.FC): React.FC => {
-    return function I18NProvider({ children }) {
+interface I18NProviderProps {
+    children: React.ReactNode;
+}
+
+const I18NProviderHOC = (Component: React.ComponentType) => {
+    return function I18NProvider({ children }: I18NProviderProps) {
         return (
             <ContextProvider>
                 <Component>{children}</Component>
@@ -18,7 +22,7 @@ const I18NProviderHOC = (Component: React.FC): React.FC => {
     };
 };
 
-const I18NExtension: React.FC = () => {
+const I18NExtension = () => {
     plugins.register(i18nPlugins());
 
     /**

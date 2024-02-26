@@ -64,22 +64,21 @@ export interface WithCommonLambdaEnvVariables {
 export function withCommonLambdaEnvVariables<T extends PulumiApp>(
     app: T
 ): T & WithCommonLambdaEnvVariables {
-    const originalProgram = app.program;
-    app.program = async app => {
-        // We must first execute the original program, and pass in the augmented app.
-        const resources = await originalProgram({
-            ...app,
-            // @ts-ignore because currently, we don't have a way of passing in a custom app type.
-            setCommonLambdaEnvVariables
-        });
+    app.decorateProgram<{ setCommonLambdaEnvVariables: typeof setCommonLambdaEnvVariables }>(
+        async (program, app) => {
+            const output = await program({
+                ...app,
+                setCommonLambdaEnvVariables
+            });
 
-        // Once the program is executed, we need to seal the variables (this will resolve the pulumi.output promise).
-        app.addHandler(() => {
-            sealEnvVariables();
-        });
+            // Once the program is executed, we need to seal the variables (this will resolve the pulumi.output promise).
+            app.addHandler(() => {
+                sealEnvVariables();
+            });
 
-        return resources;
-    };
+            return output;
+        }
+    );
 
     // Augment the original PulumiApp.
     return {

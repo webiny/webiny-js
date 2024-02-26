@@ -7,7 +7,7 @@ export async function uploadFilesFromS3(fileMap: UploadFileMap) {
     const promises = [];
     for (const [source, target] of Array.from(fileMap.entries())) {
         // Read file.
-        const readStream = s3Stream.readStream(source);
+        const readStream = await s3Stream.readStream(source);
 
         const ws = s3Stream.writeStream(target.key, target.type);
         readStream.pipe(ws.streamPassThrough);

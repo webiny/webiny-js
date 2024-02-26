@@ -43,8 +43,8 @@ interface ModifiedEntryValues {
 interface TransformerResult {
     transformEntryKeys: () => TransformedKeysEntry;
     transformToIndex: () => CmsIndexEntry;
-    getElasticsearchLatestEntryData: () => Promise<string>;
-    getElasticsearchPublishedEntryData: () => Promise<string>;
+    getElasticsearchLatestEntryData: () => Promise<Record<string, any>>;
+    getElasticsearchPublishedEntryData: () => Promise<Record<string, any>>;
 }
 
 export const createTransformer = (

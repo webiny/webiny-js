@@ -142,7 +142,7 @@ const CarouselItem = ({
     );
 };
 
-const CarouselItems: React.FC = () => {
+const CarouselItems = () => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(
         elementWithChildrenByIdSelector(activeElementId)

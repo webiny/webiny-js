@@ -25,11 +25,7 @@ interface LeftSidebarProps {
     children?: React.ReactNode;
 }
 
-export const LeftSidebar: React.FC<LeftSidebarProps> = ({
-    currentFolder,
-    onFolderClick,
-    children
-}) => {
+export const LeftSidebar = ({ currentFolder, onFolderClick, children }: LeftSidebarProps) => {
     return (
         <LeftSidebarContainer>
             <FolderTree
@@ -38,7 +34,7 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({
                 enableActions={true}
                 enableCreate={true}
             />
-            <Divider />
+            {children ? <Divider /> : null}
             {children}
         </LeftSidebarContainer>
     );

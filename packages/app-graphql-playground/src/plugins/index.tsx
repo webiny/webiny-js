@@ -1,5 +1,5 @@
 import { GraphQLPlaygroundTabPlugin } from "~/types";
-// @ts-ignore
+// @ts-expect-error
 import placeholder from "!!raw-loader!./placeholder.graphql";
 import { config as appConfig } from "@webiny/app/config";
 

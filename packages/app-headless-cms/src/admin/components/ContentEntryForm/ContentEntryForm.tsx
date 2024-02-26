@@ -5,7 +5,7 @@ import { Form } from "@webiny/form";
 import { FormAPI, FormRenderPropParams } from "@webiny/form/types";
 import { plugins } from "@webiny/plugins";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { CmsContentFormRendererPlugin } from "~/types";
+import { CmsContentEntry, CmsContentFormRendererPlugin } from "~/types";
 import { useContentEntryForm, UseContentEntryFormParams } from "./useContentEntryForm";
 import { Fields } from "./Fields";
 import { Prompt } from "@webiny/react-router";
@@ -36,7 +36,7 @@ const isDifferent = (value: any, compare: any): boolean => {
     return stringify(value) !== stringify(compare);
 };
 
-export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...props }) => {
+export const ContentEntryForm = ({ onForm, ...props }: ContentEntryFormProps) => {
     const formElementRef = useRef<HTMLDivElement>(null);
     const { model } = useModel();
     const {
@@ -84,14 +84,15 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
     const renderCustomLayout = useCallback(
         (formRenderProps: FormRenderPropParams) => {
             const fields = model.fields.reduce((acc, field) => {
-                /**
-                 * TODO @ts-refactor
-                 * Figure out type for Bind.
-                 */
                 acc[field.fieldId] = (
                     <RenderFieldElement
                         field={field}
-                        Bind={formRenderProps.Bind as any}
+                        /**
+                         * TODO @ts-refactor
+                         * Figure out type for Bind.
+                         */
+                        // @ts-expect-error
+                        Bind={formRenderProps.Bind}
                         contentModel={model}
                     />
                 );
@@ -109,14 +110,15 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
                  * TODO @ts-refactor
                  * Figure out type for Bind.
                  */
-                Bind: formRenderProps.Bind as any
+                // @ts-expect-error
+                Bind: formRenderProps.Bind
             });
         },
         [formRenderer]
     );
 
     return (
-        <Form
+        <Form<CmsContentEntry>
             onChange={(data, form) => {
                 const different = isDifferent(data, initialData);
                 if (isDirty !== different) {
@@ -155,7 +157,12 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
                                     fields={model.fields || []}
                                     layout={model.layout || []}
                                     {...formProps}
-                                    Bind={formProps.Bind as any}
+                                    /**
+                                     * TODO @ts-refactor
+                                     * Figure out type for Bind.
+                                     */
+                                    // @ts-expect-error
+                                    Bind={formProps.Bind}
                                 />
                             )}
                         </FormWrapper>

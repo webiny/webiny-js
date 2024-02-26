@@ -1,8 +1,8 @@
 import React from "react";
-import { makeComposable } from "@webiny/app";
+import { createVoidComponent, makeDecoratable } from "@webiny/app";
 
-export const Brand = makeComposable("Brand", () => {
+export const Brand = makeDecoratable("Brand", () => {
     return <BrandRenderer />;
 });
 
-export const BrandRenderer = makeComposable("BrandRenderer");
+export const BrandRenderer = makeDecoratable("BrandRenderer", createVoidComponent());

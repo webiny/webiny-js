@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useApolloClient } from "~/admin/hooks";
+import { useApolloClient, useModelFieldGraphqlContext } from "~/admin/hooks";
 import {
     SEARCH_CONTENT_ENTRIES,
     GET_CONTENT_ENTRY,
@@ -50,6 +50,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     const [entries, setEntries] = useState<OptionItemCollection>({});
     const [latestEntries, setLatestEntries] = useState<OptionItemCollection>({});
     const [valueEntry, setValueEntry] = useState<OptionItem | null>(null);
+    const requestContext = useModelFieldGraphqlContext();
 
     const models = (field.settings ? field.settings.models || [] : []) as Pick<
         CmsModel,
@@ -75,7 +76,8 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
                 modelIds: models.map(m => m.modelId),
                 query: search,
                 limit: 10
-            }
+            },
+            context: requestContext
         });
         setLoading(false);
 
@@ -110,7 +112,8 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
                  * We cannot update this query response in cache after a reference entry being created/deleted,
                  * which result in cached response being stale, therefore, we're setting the fetchPolicy to "network-only" to by passing cache.
                  */
-                fetchPolicy: "network-only"
+                fetchPolicy: "network-only",
+                context: requestContext
             })
             .then(({ data }) => {
                 const latestEntryData = convertReferenceEntriesToOptionCollection(
@@ -158,7 +161,8 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
                         modelId: value.modelId,
                         id: value.id
                     }
-                }
+                },
+                context: requestContext
             })
             .then(res => {
                 setLoading(false);
@@ -196,6 +200,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             setValueEntry(() => {
                 return entry;
             });
+
             bind.onChange({
                 modelId: entry.modelId,
                 id: entry.id

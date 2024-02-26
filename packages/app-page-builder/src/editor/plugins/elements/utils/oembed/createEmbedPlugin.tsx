@@ -44,8 +44,8 @@ export interface EmbedPluginConfig {
         renderEmbed?: (props: OEmbedProps) => React.ReactElement;
         init?: (params: { node: HTMLElement }) => void;
     };
-    settings?: Array<string | Array<string | any>> | Function;
-    create?: Function;
+    settings?: Array<string | Array<string | any>> | ((values: string[]) => string[]);
+    create?: (element: Partial<PbEditorElement>) => Partial<PbEditorElement>;
     target?: Array<string>;
     onCreate?: OnCreateActions;
     renderElementPreview?: EmbedPluginConfigRenderElementPreviewCallable;

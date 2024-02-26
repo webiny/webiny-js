@@ -1,0 +1,31 @@
+{
+  "name": "@webiny/lexical-nodes",
+  "version": "0.0.0",
+  "dependencies": {
+    "@lexical/code": "^0.12.2",
+    "@lexical/hashtag": "^0.12.2",
+    "@lexical/history": "^0.12.2",
+    "@lexical/list": "^0.12.2",
+    "@lexical/mark": "^0.12.2",
+    "@lexical/overflow": "^0.12.2",
+    "@lexical/react": "^0.12.2",
+    "@lexical/rich-text": "^0.12.2",
+    "@lexical/selection": "^0.12.2",
+    "@lexical/utils": "^0.12.2",
+    "@webiny/lexical-theme": "0.0.0",
+    "lexical": "0.12.2"
+  },
+  "devDependencies": {
+    "@webiny/cli": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "react": "^17.0.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  }
+}

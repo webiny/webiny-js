@@ -13,6 +13,10 @@ const PeGrid = createRenderer(
             elementWithChildrenByIdSelector(element.id)
         ) as Element;
 
+        if (!elementWithChildren) {
+            return null;
+        }
+
         return <Elements element={elementWithChildren} />;
     },
     {

@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { createLegacyEntity, createStandardEntity } from "~/utils";
 
 const ddbAttributes: Parameters<typeof createLegacyEntity>[2] = {
@@ -95,10 +95,10 @@ const ddbEsAttributes: Parameters<typeof createStandardEntity>[2] = {
     }
 };
 
-export const createDdbEntryEntity = (table: Table) => {
+export const createDdbEntryEntity = (table: Table<string, string, string>) => {
     return createLegacyEntity(table, "CmsEntries", ddbAttributes);
 };
 
-export const createDdbEsEntryEntity = (table: Table) => {
+export const createDdbEsEntryEntity = (table: Table<string, string, string>) => {
     return createStandardEntity(table, "CmsEntriesElasticsearch", ddbEsAttributes);
 };

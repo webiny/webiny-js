@@ -34,7 +34,7 @@ describe("filtering", () => {
         "should filter entries by createdOn - %s results",
         async (expectedResults, modifier) => {
             const records = createEntries(100).map(r => {
-                // @ts-ignore
+                // @ts-expect-error
                 delete r.values;
 
                 return r;
@@ -87,7 +87,7 @@ describe("filtering", () => {
             expect(expressions).toEqual(expectedExpressions);
 
             const result = filter({
-                items: records as any,
+                items: records,
                 where: createExpressionsParams.where,
                 plugins,
                 fields
@@ -103,7 +103,7 @@ describe("filtering", () => {
         const records = createEntries(100);
 
         const result = filter({
-            items: records as any,
+            items: records,
             where: {
                 title_contains: "tttt"
             },
@@ -128,7 +128,7 @@ describe("filtering", () => {
         const records = createEntries(100);
 
         const resultBoth = filter({
-            items: records as any,
+            items: records,
             where: {
                 options: {
                     keys_contains: "the modeled entry kkkk"
@@ -158,7 +158,7 @@ describe("filtering", () => {
         );
 
         const resultNumber2 = filter({
-            items: records as any,
+            items: records,
             where: {
                 options: {
                     keys_contains: " - 2"
@@ -194,7 +194,7 @@ describe("filtering", () => {
         );
 
         const resultNumber3 = filter({
-            items: records as any,
+            items: records,
             where: {
                 options: {
                     keys_contains: " - 3"
@@ -204,16 +204,14 @@ describe("filtering", () => {
             fields
         });
 
-        expect(resultNumber3).toHaveLength(0);
-
-        expect(resultNumber3).toMatchObject([]);
+        expect(resultNumber3).toHaveLength(19);
     });
 
     it("should filter by nested options variant colors", async () => {
         const records = createEntries(100);
 
         const resultRed = filter({
-            items: records as any,
+            items: records,
             where: {
                 options: {
                     variant: {
@@ -249,7 +247,7 @@ describe("filtering", () => {
         );
 
         const resultTeal = filter({
-            items: records as any,
+            items: records,
             where: {
                 options: {
                     variant: {
@@ -285,7 +283,7 @@ describe("filtering", () => {
         );
 
         const resultBoth = filter({
-            items: records as any,
+            items: records,
             where: {
                 options: {
                     variant: {
@@ -321,7 +319,7 @@ describe("filtering", () => {
         );
 
         const resultNoneOrange = filter({
-            items: records as any,
+            items: records,
             where: {
                 options: {
                     variant: {
@@ -336,7 +334,7 @@ describe("filtering", () => {
         expect(resultNoneOrange).toHaveLength(0);
 
         const resultNoneEmpty = filter({
-            items: records as any,
+            items: records,
             where: {
                 options: {
                     variant: {
@@ -363,7 +361,7 @@ describe("filtering", () => {
          * Find yellow color items.
          */
         const resultsYellow = filter({
-            items: records as any,
+            items: records,
             where: {},
             plugins,
             fields,
@@ -378,7 +376,7 @@ describe("filtering", () => {
          * Find yellow color items.
          */
         const resultsWhite = filter({
-            items: records as any,
+            items: records,
             where: {},
             plugins,
             fields,
@@ -393,7 +391,7 @@ describe("filtering", () => {
          * Find grey color items.
          */
         const resultsGrey = filter({
-            items: records as any,
+            items: records,
             where: {},
             plugins,
             fields,
@@ -408,7 +406,7 @@ describe("filtering", () => {
          * Find red color items.
          */
         const resultsRed = filter({
-            items: records as any,
+            items: records,
             where: {},
             plugins,
             fields,

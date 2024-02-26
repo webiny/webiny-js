@@ -1,12 +1,12 @@
 import React from "react";
-import { makeComposable } from "@webiny/app";
+import { createVoidComponent, makeDecoratable } from "@webiny/app";
 import { Tags } from "./Tags";
 
 export interface LoginScreenProps {
     children: React.ReactNode;
 }
 
-export const LoginScreen: React.FC<LoginScreenProps> = ({ children }) => {
+export const LoginScreen = ({ children }: LoginScreenProps) => {
     return (
         <Tags tags={{ location: "loginScreen" }}>
             <LoginScreenRenderer>{children}</LoginScreenRenderer>
@@ -14,4 +14,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ children }) => {
     );
 };
 
-export const LoginScreenRenderer = makeComposable<LoginScreenProps>("LoginScreenRenderer");
+export const LoginScreenRenderer = makeDecoratable(
+    "LoginScreenRenderer",
+    createVoidComponent<LoginScreenProps>()
+);

@@ -13,12 +13,16 @@ export interface BindComponentRenderPropOnChange<T = any> {
     (value: T): Promise<void> | void;
 }
 
+export interface FormSubmitOptions {
+    skipValidators?: string[];
+}
 export interface FormAPI<T extends GenericFormData = GenericFormData> {
     data: T;
-    submit: (event?: React.SyntheticEvent<any, any>) => Promise<void>;
+    submit: (event?: React.SyntheticEvent<any, any>, options?: FormSubmitOptions) => Promise<void>;
     setValue: FormSetValue;
     validate: () => Promise<boolean>;
     validateInput: (name: string) => Promise<boolean | any>;
+    options: FormSubmitOptions;
 }
 
 export interface UseBindHook<T = any> extends BindComponentRenderProp<T> {
@@ -41,10 +45,10 @@ export interface BindComponentProps<T = any> {
     defaultValue?: any;
     validators?: Validator | Validator[];
     children?: ((props: BindComponentRenderProp<T>) => React.ReactElement) | React.ReactElement;
-    validate?: Function;
+    validate?: Validator;
 }
 
-export type BindComponent = React.FC<BindComponentProps>;
+export type BindComponent = React.ComponentType<BindComponentProps>;
 
 export interface FormRenderPropParamsSubmit {
     (event?: React.SyntheticEvent<any, any>): Promise<void>;
@@ -60,6 +64,7 @@ export interface FormRenderPropParams<T extends GenericFormData = GenericFormDat
     data: T;
     submit: FormRenderPropParamsSubmit;
     setValue: FormSetValue;
+    options: FormSubmitOptions;
 }
 
 export type GenericFormData = {
@@ -76,10 +81,13 @@ export interface FormOnSubmit<T = GenericFormData> {
     (data: T, form: FormAPI<T>): void;
 }
 
+export interface FormPropsState<T extends GenericFormData = GenericFormData> {
+    data: T;
+}
 export interface FormProps<T extends GenericFormData = GenericFormData> {
     invalidFields?: { [key: string]: any };
     data?: Partial<T>;
-    disabled?: boolean | Function;
+    disabled?: boolean | ((state: FormPropsState<T>) => boolean);
     validateOnFirstSubmit?: boolean;
     submitOnEnter?: boolean;
     onSubmit?: FormOnSubmit<T>;

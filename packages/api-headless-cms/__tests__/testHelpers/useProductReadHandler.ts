@@ -6,7 +6,10 @@ const productFields = `
     id
     entryId
     createdOn
+    modifiedOn
     savedOn
+    lastPublishedOn
+    firstPublishedOn
     # user defined fields
     title
     category {
@@ -24,6 +27,7 @@ const productFields = `
     variant {
         name
         price
+        images
         category {
             id
             title
@@ -31,7 +35,13 @@ const productFields = `
         options {
             name
             price
+            image
+            longText
             category {
+                id
+                title
+            }
+            categories {
                 id
                 title
             }

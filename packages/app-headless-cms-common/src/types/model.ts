@@ -12,7 +12,7 @@ import { CmsIdentity } from "~/types/shared";
 export type CmsEditorField<T = unknown> = CmsModelField<T>;
 
 export interface CmsModelFieldSettings<T = unknown> {
-    defaultValue?: string | null | undefined;
+    defaultValue?: string | boolean | number | null | undefined;
     defaultSetValue?: string;
     type?: string;
     fields?: CmsModelField<T>[];
@@ -65,7 +65,7 @@ export interface CmsGroup {
     id: string;
     name: string;
     slug: string;
-    icon?: string;
+    icon: string;
     description?: string;
     contentModels: CmsModel[];
     createdBy: CmsIdentity;

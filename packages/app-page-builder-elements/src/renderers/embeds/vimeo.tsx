@@ -38,7 +38,11 @@ const ScalableVideo = styled.div({
     }
 });
 
-const VimeoEmbed: React.FC<{ element: Element }> = props => {
+interface VimeoEmbedProps {
+    element: Element;
+}
+
+const VimeoEmbed = (props: VimeoEmbedProps) => {
     const { element } = props;
 
     return (

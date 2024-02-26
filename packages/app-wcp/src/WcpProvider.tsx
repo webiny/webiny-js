@@ -26,6 +26,9 @@ export const GET_WCP_PROJECT = gql`
                                 enabled
                                 options
                             }
+                            auditLogs {
+                                enabled
+                            }
                         }
                     }
                 }
@@ -41,9 +44,10 @@ export const GET_WCP_PROJECT = gql`
 
 interface WcpProviderProps {
     loader?: React.ReactElement;
+    children: React.ReactNode;
 }
 
-export const WcpProvider: React.FC<WcpProviderProps> = ({ children, loader }) => {
+export const WcpProvider = ({ children, loader }: WcpProviderProps) => {
     // If `REACT_APP_WCP_PROJECT_ID` environment variable is missing, we can immediately exit.
     if (!process.env.REACT_APP_WCP_PROJECT_ID) {
         return <WcpProviderComponent project={null}>{children}</WcpProviderComponent>;

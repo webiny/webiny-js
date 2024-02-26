@@ -4,8 +4,13 @@ export * from "./HeadlessCMS";
 export * from "./admin/hooks";
 export { LexicalEditorConfig } from "~/admin/lexicalConfig/LexicalEditorConfig";
 export { RenderFieldElement } from "~/admin/components/ContentEntryForm/RenderFieldElement";
+export { ModelProvider } from "~/admin/components/ModelProvider";
 import { ContentEntryEditorConfig, ContentEntryListConfig } from "./admin/config/contentEntries";
 export { ContentEntryEditorConfig, ContentEntryListConfig };
+
+interface LegacyContentEntriesViewConfigProps {
+    children: React.ReactNode;
+}
 
 /**
  * DANGER!
@@ -15,7 +20,7 @@ export { ContentEntryEditorConfig, ContentEntryListConfig };
  *
  * Check out 5.37.0 changelog and discover the new `ContentEntryListConfig` API.
  */
-const LegacyContentEntriesViewConfig: React.FC = ({ children }) => {
+const LegacyContentEntriesViewConfig = ({ children }: LegacyContentEntriesViewConfigProps) => {
     return <ContentEntryListConfig>{children}</ContentEntryListConfig>;
 };
 

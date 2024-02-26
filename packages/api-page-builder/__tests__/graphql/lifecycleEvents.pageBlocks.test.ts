@@ -57,7 +57,13 @@ describe("Page Block Lifecycle Events", () => {
             data: {
                 pageBuilder: {
                     createPageBlock: {
-                        data: pageBlockData,
+                        data: {
+                            ...pageBlockData,
+                            content: {
+                                compression: "gzip",
+                                value: expect.any(String)
+                            }
+                        },
                         error: null
                     }
                 }
@@ -85,7 +91,11 @@ describe("Page Block Lifecycle Events", () => {
                     updatePageBlock: {
                         data: {
                             ...pageBlockData,
-                            name: `${pageBlockData.name} Updated`
+                            name: `${pageBlockData.name} Updated`,
+                            content: {
+                                compression: "gzip",
+                                value: expect.any(String)
+                            }
                         },
                         error: null
                     }
@@ -109,7 +119,7 @@ describe("Page Block Lifecycle Events", () => {
             data: {
                 pageBuilder: {
                     deletePageBlock: {
-                        data: pageBlockData,
+                        data: true,
                         error: null
                     }
                 }

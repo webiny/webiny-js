@@ -1,24 +1,25 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import * as GQL from "~/admin/viewsGraphql";
+import { ListCmsModelsQueryResponse } from "~/admin/viewsGraphql";
 import {
     BindComponentRenderProp,
     CmsContentEntry,
-    CmsModelFieldRendererProps,
-    CmsModel
+    CmsModel,
+    CmsModelFieldRendererProps
 } from "~/types";
 import { Options } from "./Options";
 import { useReferences } from "../hooks/useReferences";
 import { Entry } from "./Entry";
 import { ReferencesDialog } from "./ReferencesDialog";
-import { useQuery } from "~/admin/hooks";
-import { ListCmsModelsQueryResponse } from "~/admin/viewsGraphql";
+import { useModelFieldGraphqlContext, useQuery } from "~/admin/hooks";
 import { useSnackbar } from "@webiny/app-admin";
 import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { AbsoluteLoader as Loader } from "./Loader";
-import { NewReferencedEntryDialog } from "../components/NewReferencedEntryDialog";
 import { parseIdentifier } from "@webiny/utils";
 import { Entries } from "./Entries";
+import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/components/NewReferencedEntryDialog";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 const FieldLabel = styled("h3")({
     fontSize: 24,
@@ -38,7 +39,10 @@ const OptionsContainer: any = styled("div")({
     marginBottom: "-21px",
     marginRight: "-1px"
 });
-
+/**
+ * Error is on the `position: "relative !important"` style.
+ */
+// @ts-expect-error
 const Container = styled("div")({
     border: "1px solid var(--mdc-theme-on-background)",
     paddingLeft: "10px",
@@ -62,7 +66,7 @@ const Container = styled("div")({
         "> .entries": {
             height: "auto",
             " > div > div": {
-                position: "relative !important" as any
+                position: "relative !important"
             }
         }
     }
@@ -87,13 +91,14 @@ const getRecordCountMessage = (count: number) => {
     }
 };
 
-interface Props extends CmsModelFieldRendererProps {
+interface AdvancedMultipleReferenceFieldProps extends CmsModelFieldRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue[] | undefined | null>;
 }
 
-export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
+export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceFieldProps) => {
     const { bind, field } = props;
     const { showSnackbar } = useSnackbar();
+    const requestContext = useModelFieldGraphqlContext();
 
     const values = useMemo(() => {
         return bind.value || [];
@@ -105,7 +110,10 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
     const [loadedModels, setLoadedModels] = useState<CmsModel[]>([]);
 
     const { data, loading: loadingModels } = useQuery<ListCmsModelsQueryResponse>(
-        GQL.LIST_CONTENT_MODELS
+        GQL.LIST_CONTENT_MODELS,
+        {
+            context: requestContext
+        }
     );
 
     useEffect(() => {
@@ -157,7 +165,8 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
         loadMore
     } = useReferences({
         values,
-        perPage: 10
+        perPage: 10,
+        requestContext
     });
 
     const onRemove = useCallback(
@@ -166,12 +175,11 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
                 return;
             }
             const { id: entryId } = parseIdentifier(id);
-            bind.onChange(
-                values.filter(value => {
-                    const { id: valueEntryId } = parseIdentifier(value.id);
-                    return valueEntryId !== entryId;
-                })
-            );
+            const newValues = values.filter(value => {
+                const { id: valueEntryId } = parseIdentifier(value.id);
+                return valueEntryId !== entryId;
+            });
+            bind.onChange(newValues.length > 0 ? newValues : null);
         },
         [entries, values]
     );
@@ -194,7 +202,7 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
 
     const storeValues = useCallback(
         (values: CmsReferenceValue[]) => {
-            bind.onChange(values);
+            bind.onChange(values?.length ? values : null);
             return;
         },
         [values]
@@ -232,7 +240,7 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
 
     const onMoveUp = useCallback(
         (index: number, toTop?: boolean) => {
-            if (values.length === 0) {
+            if (!values?.length) {
                 return;
             } else if (toTop) {
                 const arr = values.splice(index, 1);
@@ -245,7 +253,7 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
     );
     const onMoveDown = useCallback(
         (index: number, toBottom?: boolean) => {
-            if (values.length === 0) {
+            if (!values?.length) {
                 return;
             } else if (toBottom === true) {
                 const arr = values.splice(index, 1);
@@ -261,12 +269,18 @@ export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
 
     const message = getRecordCountMessage(values.length);
 
+    const { validation } = bind;
+    const { isValid: validationIsValid, message: validationMessage } = validation || {};
+
     return (
         <>
             <FieldLabel>
                 <FieldName>{field.label}</FieldName>
                 <RecordCount>({message})</RecordCount>
             </FieldLabel>
+            {validationIsValid === false && (
+                <FormElementMessage error>{validationMessage}</FormElementMessage>
+            )}
             <Container
                 className={
                     (entries.length < 1 ? "no-entries" : "has-entries") +

@@ -32,7 +32,7 @@ const getRandomIndex = () => Math.round(Math.random() * 100) % 3;
 
 type ChangeRequestItemProps = ApwChangeRequest;
 
-export const ChangeRequestListItem: React.FC<ChangeRequestItemProps> = props => {
+export const ChangeRequestListItem = (props: ChangeRequestItemProps) => {
     const { createdOn, createdBy, title, id, body, resolved } = props;
     const location = useLocation();
     const navigate = useNavigate();

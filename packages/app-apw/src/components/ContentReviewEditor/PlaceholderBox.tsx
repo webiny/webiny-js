@@ -8,7 +8,11 @@ const EmptyBox = styled(Box)`
     background-color: var(--mdc-theme-on-background);
 `;
 
-export const PlaceholderBox: React.FC<{ text: string }> = ({ text }) => {
+interface PlaceholderBoxProps {
+    text: string;
+}
+
+export const PlaceholderBox = ({ text }: PlaceholderBoxProps) => {
     return (
         <EmptyBox>
             <EmptyView title={text} action={null} />

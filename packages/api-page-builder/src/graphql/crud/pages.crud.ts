@@ -42,9 +42,9 @@ import {
 } from "~/graphql/types";
 import { createTopic } from "@webiny/pubsub";
 import {
-    mdbid,
     createIdentifier,
     createZodError,
+    mdbid,
     parseIdentifier,
     removeNullValues,
     removeUndefinedValues,
@@ -640,10 +640,11 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     input
                 });
 
+                const compressedPage = await compressPage(page);
                 await storageOperations.pages.update({
                     input,
                     original: rawOriginal,
-                    page: await compressPage(page)
+                    page: compressedPage
                 });
 
                 await onPageAfterUpdate.publish({
@@ -671,7 +672,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 );
             }
         },
-
+        /**
+         * TODO: figure out correct way to pass the types
+         */
+        // @ts-expect-error
         async deletePage(this: PageBuilderContextObject, id) {
             await pagesPermissions.ensure({ rwd: "d" });
 
@@ -765,10 +769,26 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             const publishedPage = publishedPageRaw ? await decompressPage(publishedPageRaw) : null;
 
             /**
+             * Load page revisions, we'll need these to determinate if we are going to delete a single revision or multiple ones
+             */
+            const revisions = await storageOperations.pages.listRevisions({
+                where: {
+                    pid: pageId,
+                    tenant: getTenantId(),
+                    locale: getLocaleCode()
+                },
+                sort: ["version_DESC"],
+                limit: 2,
+                after: undefined
+            });
+
+            /**
              * We can either delete all the records connected to the given page, or a single revision.
              */
-            const deleteMethod: "deleteAll" | "delete" =
-                page.version === 1 ? "deleteAll" : "delete";
+            let deleteMethod: "delete" | "deleteAll" = "delete";
+            if (pageId === id || revisions.length === 1) {
+                deleteMethod = "deleteAll";
+            }
 
             if (typeof storageOperations.pages[deleteMethod] !== "function") {
                 throw new WebinyError(
@@ -784,7 +804,8 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 await onPageBeforeDelete.publish({
                     page: await decompressPage(page),
                     latestPage,
-                    publishedPage
+                    publishedPage,
+                    deleteMethod
                 });
 
                 const [resultPageRaw, resultLatestPageRaw] = await storageOperations.pages[
@@ -804,7 +825,8 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 await onPageAfterDelete.publish({
                     page: resultPage,
                     latestPage,
-                    publishedPage
+                    publishedPage,
+                    deleteMethod
                 });
 
                 /**
@@ -814,10 +836,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 /**
                  * 7. Done. We return both the deleted page, and the new latest one (if there is one).
                  */
-                if (page.version === 1) {
-                    return [resultPage, null] as any;
+                if (deleteMethod === "deleteAll") {
+                    return [resultPage, null];
                 }
-                return [resultPage, latestPage] as any;
+                return [resultPage, latestPage];
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete page.",
@@ -925,10 +947,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 });
 
                 const newPublishedPageRaw = await storageOperations.pages.publish({
-                    original,
-                    page,
-                    latestPage,
-                    publishedPage,
+                    original: await compressPage(original),
+                    page: await compressPage(page),
+                    latestPage: await compressPage(latestPage),
+                    publishedPage: publishedPage ? await compressPage(publishedPage) : null,
                     publishedPathPage
                 });
 
@@ -1170,7 +1192,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
 
             return decompressPage(page);
         },
-
+        /**
+         * TODO: figure out correct way to pass the types
+         */
+        // @ts-expect-error
         async listLatestPages(params, options = {}) {
             const { auth } = options;
             if (auth !== false) {
@@ -1218,7 +1243,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 const { items, meta } = await storageOperations.pages.list(listParams);
 
                 return [
-                    items as any[],
+                    items,
                     {
                         ...meta,
                         cursor: meta.hasMoreItems ? meta.cursor : null
@@ -1235,7 +1260,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 );
             }
         },
-
+        /**
+         * TODO: figure out correct way to pass the types
+         */
+        // @ts-expect-error
         async listPublishedPages(params) {
             const {
                 after = null,
@@ -1272,7 +1300,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 const { items, meta } = await storageOperations.pages.list(listParams);
 
                 return [
-                    items as any[],
+                    items,
                     {
                         ...meta,
                         cursor: meta.hasMoreItems ? meta.cursor : null
@@ -1289,7 +1317,10 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 );
             }
         },
-
+        /**
+         * TODO: figure out correct way to pass the types
+         */
+        // @ts-expect-error
         async listPageRevisions(pageId) {
             const { id: pid } = parseIdentifier(pageId);
 
@@ -1308,7 +1339,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     limit: 10000,
                     after: undefined
                 });
-                return pages as any[];
+                return pages;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load all the revisions from requested page.",

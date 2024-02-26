@@ -35,7 +35,7 @@ export const Editor: React.FunctionComponent<EditorPropsType> = (/*{ revisions }
     const firstRender = React.useRef<boolean>(true);
 
     useEffect(() => {
-        // @ts-ignore
+        // @ts-expect-error
         window["editor"] = editor;
         // addKeyHandler("mod+z", e => {
         //     e.preventDefault();

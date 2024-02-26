@@ -1,4 +1,5 @@
 import { createTimeSearchPlugin } from "~/elasticsearch/search/timeSearch";
+import { TransformCallableParams } from "~/plugins";
 
 const timeField = {
     settings: {
@@ -22,18 +23,18 @@ describe("timeSearch", () => {
     ];
     test.each(correctValues)("should transform value correctly", (value, expected) => {
         const result = plugin.transform({
-            field: timeField as any,
+            field: timeField,
             value
-        });
+        } as TransformCallableParams);
 
         expect(result).toEqual(expected);
     });
 
     it("should return passed value as it is not time field", () => {
         const result = plugin.transform({
-            field: notTimeField as any,
+            field: notTimeField,
             value: "someValue"
-        });
+        } as TransformCallableParams);
 
         expect(result).toEqual("someValue");
     });

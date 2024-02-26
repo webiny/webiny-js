@@ -10,7 +10,12 @@ describe("create zod error", () => {
 
     it("should properly create zod error", async () => {
         const input: zod.infer<typeof validation> = {
-            name: undefined as any,
+            /**
+             * The `undefined` cannot be sent to name, but we want to test that the error is properly created.
+             * Error is expected.
+             */
+            // @ts-expect-error
+            name: undefined,
             description: "",
             price: 101
         };

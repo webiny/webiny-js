@@ -10,7 +10,8 @@ export const convertReferenceEntryToOption = (entry: CmsReferenceContentEntry): 
         published: entry.published ? entry.published.id : null,
         latest: entry.id,
         status: entry.status,
-        name: entry.title
+        name: entry.title,
+        folderId: entry.wbyAco_location?.folderId
     };
 };
 

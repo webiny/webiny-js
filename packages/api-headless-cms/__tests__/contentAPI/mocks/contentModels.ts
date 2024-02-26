@@ -1,5 +1,6 @@
 import { createContentModelGroup } from "./contentModelGroup";
 import { CmsModel } from "~/types";
+import { CmsModelInput, createCmsGroup, createCmsModel } from "~/plugins";
 
 const { version: webinyVersion } = require("@webiny/cli/package.json");
 
@@ -84,10 +85,91 @@ const ids = {
     field701: "title",
     field702: "body",
     field703: "categories",
-    field704: "category"
+    field704: "category",
+    // wrapper
+    field_wrap_1: "title",
+    field_wrap_2: "references"
 };
 
 const models: CmsModel[] = [
+    // Test entry.
+    {
+        createdOn: new Date().toISOString(),
+        savedOn: new Date().toISOString(),
+        locale: "en-US",
+        titleFieldId: "title",
+        lockedFields: [],
+        name: "Test Entry",
+        description: "This is a test model with test entries.",
+        modelId: "testModel",
+        singularApiName: "TestEntry",
+        pluralApiName: "TestEntries",
+        group: {
+            id: contentModelGroup.id,
+            name: contentModelGroup.name
+        },
+        layout: [[ids.field11], [ids.field12]],
+        fields: [
+            {
+                id: ids.field11,
+                multipleValues: false,
+                helpText: "",
+                label: "Title",
+                type: "text",
+                storageId: "text@titleStorageId",
+                fieldId: "title",
+                validation: [
+                    {
+                        name: "required",
+                        message: "This field is required"
+                    },
+                    {
+                        name: "minLength",
+                        message: "Enter at least 3 characters",
+                        settings: {
+                            min: 3.0
+                        }
+                    }
+                ],
+                listValidation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field12,
+                multipleValues: false,
+                helpText: "",
+                label: "Slug",
+                type: "text",
+                storageId: "text@slugStorageId",
+                fieldId: "slug",
+                validation: [
+                    {
+                        name: "required",
+                        message: "This field is required"
+                    }
+                ],
+                listValidation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            }
+        ],
+        tenant: "root",
+        webinyVersion
+    },
+
     // category
     {
         createdOn: new Date().toISOString(),
@@ -228,12 +310,12 @@ const models: CmsModel[] = [
                 storageId: "ref@categoryStorageId",
                 fieldId: "category",
                 type: "ref",
-                validation: [
-                    {
-                        name: "required",
-                        message: "Please select a category"
-                    }
-                ],
+                // validation: [
+                //     {
+                //         name: "required",
+                //         message: "Please select a category"
+                //     }
+                // ],
                 listValidation: [],
                 settings: {
                     models: [{ modelId: "category" }]
@@ -543,12 +625,12 @@ const models: CmsModel[] = [
                             storageId: "ref@categoryStorageId",
                             fieldId: "category",
                             type: "ref",
-                            validation: [
-                                {
-                                    name: "required",
-                                    message: "Please select a category"
-                                }
-                            ],
+                            // validation: [
+                            //     {
+                            //         name: "required",
+                            //         message: "Please select a category"
+                            //     }
+                            // ],
                             listValidation: [],
                             settings: {
                                 models: [{ modelId: "category" }]
@@ -637,12 +719,12 @@ const models: CmsModel[] = [
                                         storageId: "ref@categoryStorageId",
                                         fieldId: "category",
                                         type: "ref",
-                                        validation: [
-                                            {
-                                                name: "required",
-                                                message: "Please select a category"
-                                            }
-                                        ],
+                                        // validation: [
+                                        //     {
+                                        //         name: "required",
+                                        //         message: "Please select a category"
+                                        //     }
+                                        // ],
                                         listValidation: [],
                                         settings: {
                                             models: [{ modelId: "category" }]
@@ -743,12 +825,6 @@ const models: CmsModel[] = [
                             type: "text",
                             storageId: "text@textStorageId",
                             fieldId: "text",
-                            validation: [
-                                {
-                                    name: "required",
-                                    message: "This field is required"
-                                }
-                            ],
                             listValidation: [],
                             placeholderText: "placeholder text",
                             predefinedValues: {
@@ -1579,6 +1655,7 @@ const models: CmsModel[] = [
         tenant: "root",
         webinyVersion
     },
+    // article
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
@@ -1681,6 +1758,70 @@ const models: CmsModel[] = [
         ],
         tenant: "root",
         webinyVersion
+    },
+    // Wrap
+    /**
+     * Used to test the ref field with multiple models.
+     */
+    {
+        name: "Wrap",
+        modelId: "wrap",
+        singularApiName: "Wrap",
+        pluralApiName: "Wraps",
+        group: {
+            id: contentModelGroup.id,
+            name: contentModelGroup.name
+        },
+        fields: [
+            {
+                id: ids.field_wrap_1,
+                label: "Title",
+                fieldId: "title",
+                type: "text",
+                storageId: "text@titleStorageId",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field_wrap_2,
+                label: "References",
+                fieldId: "references",
+                type: "ref",
+                storageId: "ref@references",
+                multipleValues: true,
+                settings: {
+                    models: [
+                        {
+                            modelId: "product"
+                        },
+                        {
+                            modelId: "category"
+                        },
+                        {
+                            modelId: "author"
+                        }
+                    ]
+                },
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            }
+        ],
+        layout: [],
+        tenant: "root",
+        locale: "en-US",
+        titleFieldId: "title",
+        description: "Wrapper model for ref field with multiple models",
+        webinyVersion
     }
 ];
 
@@ -1694,4 +1835,23 @@ export const getCmsModel = (modelId: string) => {
         throw new Error(message);
     }
     return model;
+};
+
+export const createModelPlugins = (targets: string[]) => {
+    return [
+        createCmsGroup({
+            ...contentModelGroup
+        }),
+        ...targets.map(modelId => {
+            const model = models.find(m => m.modelId === modelId);
+            if (!model) {
+                throw new Error(`There is no model ${modelId}.`);
+            }
+            const newModel: CmsModelInput = {
+                ...(model as Omit<CmsModel, "isPrivate">),
+                noValidate: true
+            };
+            return createCmsModel(newModel);
+        })
+    ];
 };

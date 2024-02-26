@@ -1,6 +1,6 @@
 import RevisionSelector from "./RevisionSelector";
 import PublishRevision from "./PublishRevision";
 import EditRevision from "./EditRevision";
-import DeleteRevision from "./DeleteRevision";
+import DeleteForm from "./DeleteForm";
 
-export { RevisionSelector, EditRevision, DeleteRevision, PublishRevision };
+export { RevisionSelector, EditRevision, PublishRevision, DeleteForm };

@@ -1,11 +1,38 @@
 import { GraphQLScalarType } from "graphql";
 
-const isMongoId = (value: any): string => {
-    if (/^[0-9a-fA-F]{24}$/.test(value)) {
-        return value;
+const tests = [
+    {
+        re: /^([0-9a-zA-Z_-]+)$/,
+        message: "Must be a string matching a-z, A-Z, 0-9, underscore (_) or dash(-)!"
+    },
+    {
+        re: /^-/,
+        message: "Must not start with a dash (-)!"
+    },
+    {
+        re: /-$/,
+        message: "Must not end with a dash (-)!"
+    },
+    {
+        re: /^_/,
+        message: "Must not start with an underscore (_)!"
+    },
+    {
+        re: /_$/,
+        message: "Must not end with an underscore (_)!"
     }
+];
 
-    throw new Error("Must be a valid Mongo ID!");
+const isValidId = (value: any): string => {
+    if (typeof value !== "string" || value.length < 1) {
+        throw new Error("Must be a string with at least 1 character!");
+    }
+    for (const test of tests) {
+        if (test.re.test(value) === null) {
+            throw new Error(test.message);
+        }
+    }
+    return value;
 };
 
 export const RefInputScalar = new GraphQLScalarType({
@@ -25,26 +52,26 @@ export const RefInputScalar = new GraphQLScalarType({
         }
 
         if (typeof value === "string") {
-            return isMongoId(value);
+            return isValidId(value);
         }
 
         if ("id" in value) {
-            return isMongoId(value.id);
+            return isValidId(value.id);
         }
 
         throw new Error("Invalid RefInput value!");
     },
     parseLiteral: ast => {
         if (ast.kind === "StringValue") {
-            return isMongoId(ast.value);
+            return isValidId(ast.value);
         }
 
         if (ast.kind === "ObjectValue") {
             for (let i = 0; i < ast.fields.length; i++) {
                 const { name, value } = ast.fields[i];
                 if (name.value === "id") {
-                    // @ts-ignore
-                    return isMongoId(value.value);
+                    // @ts-expect-error
+                    return isValidId(value.value);
                 }
             }
         }

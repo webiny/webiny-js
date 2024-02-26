@@ -1,0 +1,90 @@
+name: Version Approval
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [release-with-approval]
+
+env:
+  NODE_OPTIONS: --max_old_space_size=4096
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+jobs:
+  init:
+    name: Init
+    runs-on: ubuntu-latest
+    outputs:
+      day: ${{ steps.get-day.outputs.day }}
+      ts: ${{ steps.get-timestamp.outputs.ts }}
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - uses: actions/checkout@v4
+
+      - name: Get day of the month
+        id: get-day
+        run: echo "day=$(node --eval "console.log(new Date().getDate())")" >> $GITHUB_OUTPUT
+
+      - name: Get timestamp
+        id: get-timestamp
+        run: echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT
+  versioning:
+    needs: init
+    name: Determine Release Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.determine-release-version.outputs.version }}
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        id: yarn-cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v4
+        id: global-daily-packages-cache
+        with:
+          path: .webiny/cached-packages
+          key: ${{ runner.os }}-${{ needs.init.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages
+        run: yarn build:quick
+
+      - uses: actions/cache@v4
+        with:
+          path: .webiny/cached-packages
+          key: packages-cache-${{ needs.init.outputs.ts }}
+
+      - name: Version packages
+        id: determine-release-version
+        shell: bash
+        run: |
+          echo "Creating version.txt"
+          touch version.txt
+          echo "Versioning packages..."
+          yarn release --type=${{ github.event.client_payload.type }} --tag=${{ github.event.client_payload.tag }} --version=${{ github.event.client_payload.version }} --createGithubRelease=${{ github.event.client_payload.createGithubRelease }} --printVersion | tee version.txt
+          echo "Setting output version: $(tail -n 1 version.txt)"
+          echo "version=$(tail -n 1 version.txt)" >> $GITHUB_OUTPUT
+
+  npm-release:
+    needs: [init, versioning]
+    name: Release ${{ needs.versioning.outputs.version }} ("${{ github.event.client_payload.tag }}")
+    runs-on: webiny-build-packages
+    environment: release
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18

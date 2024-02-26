@@ -1,0 +1,21 @@
+{
+  "name": "@webiny/lexical-theme",
+  "version": "0.0.0",
+  "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "lexical": "0.12.2",
+    "react-style-object-to-css": "^1.1.2"
+  },
+  "devDependencies": {
+    "@webiny/cli": "0.0.0",
+    "@webiny/project-utils": "0.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  }
+}

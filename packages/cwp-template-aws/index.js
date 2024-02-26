@@ -6,9 +6,9 @@ const choices = {
         value: "ddb",
         name: "DynamoDB (for small and medium sized projects)"
     },
-    ddbEs: {
-        value: "ddb-es",
-        name: "DynamoDB + Elasticsearch (for larger projects)"
+    ddbOs: {
+        value: "ddb-os",
+        name: "Amazon DynamoDB + Amazon OpenSearch (for larger projects)"
     }
 };
 

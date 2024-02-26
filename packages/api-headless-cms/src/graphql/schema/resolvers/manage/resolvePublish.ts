@@ -1,4 +1,4 @@
-import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
+import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { CmsEntryResolverFactory as ResolverFactory } from "~/types";
 
 interface ResolvePublishArgs {

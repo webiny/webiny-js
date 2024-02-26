@@ -15,7 +15,7 @@ const listItemStyle = css`
     }
 `;
 
-export const MenuLinkRenderer = (PrevMenuItem: React.FC): React.FC => {
+export const MenuLinkRenderer = (PrevMenuItem: React.ComponentType) => {
     return function MenuLink() {
         const { setVisible } = useNavigation();
         const { menuItem, depth } = useMenuItem();

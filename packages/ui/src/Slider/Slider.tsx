@@ -30,7 +30,7 @@ type Props = FormComponentProps & {
     displayMarkers?: boolean;
 
     // Function that gets triggered on each input.
-    onInput?: Function;
+    onInput?: (value: any) => void;
 };
 
 // wrapper fixes a bug in slider where the slider handle is rendered outside the bounds of the slider box

@@ -4,7 +4,7 @@ import { Cognito } from "@webiny/app-admin-users-cognito";
 import { Editor } from "@webiny/app-page-builder-editor";
 import "./App.scss";
 
-export const App: React.FC = () => {
+export const App = () => {
     return (
         <Admin>
             <Cognito />

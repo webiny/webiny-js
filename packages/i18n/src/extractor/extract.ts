@@ -1,7 +1,7 @@
 /**
  * Package short-hash has no types.
  */
-// @ts-ignore
+// @ts-expect-error
 import hash from "short-hash";
 
 /**

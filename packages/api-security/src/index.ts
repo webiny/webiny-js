@@ -13,7 +13,6 @@ import { createSecurity } from "~/createSecurity";
 import { attachGroupInstaller } from "~/installation/groups";
 import {
     applyMultiTenancyGraphQLPlugins,
-    applyMultiTenancyPlugins,
     MultiTenancyAppConfig,
     MultiTenancyGraphQLConfig
 } from "~/enterprise/multiTenancy";
@@ -27,10 +26,11 @@ export interface SecurityConfig extends MultiTenancyAppConfig {
 
 export * from "./utils/AppPermissions";
 export * from "./utils/getPermissionsFromSecurityGroupsForLocale";
+export * from "./utils/IdentityValue";
 
 type Context = SecurityContext & TenancyContext & WcpContext;
 
-export const createSecurityContext = ({ storageOperations, ...config }: SecurityConfig) => {
+export const createSecurityContext = ({ storageOperations }: SecurityConfig) => {
     return new ContextPlugin<Context>(async context => {
         context.plugins.register(gqlInterfaces);
 
@@ -65,10 +65,6 @@ export const createSecurityContext = ({ storageOperations, ...config }: Security
             });
 
         // Backwards Compatibility - END
-
-        if (context.tenancy.isMultiTenant()) {
-            applyMultiTenancyPlugins(config, context);
-        }
     });
 };
 

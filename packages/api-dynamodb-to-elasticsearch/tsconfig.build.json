@@ -3,6 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../api-elasticsearch/tsconfig.build.json" },
+    { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" }

@@ -1,12 +1,10 @@
-import React, { useCallback } from "react";
+import React from "react";
 import styled from "@emotion/styled";
 import { renderPlugins } from "@webiny/app/plugins";
 import { Typography } from "@webiny/ui/Typography";
-import { useConfigureWebsiteUrlDialog } from "~/admin/hooks/useConfigureWebsiteUrl";
-import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
-import { useSiteStatus } from "~/admin/hooks/useSiteStatus";
 import { ReactComponent as OpenInNew } from "@material-design-icons/svg/round/open_in_new.svg";
 import { PbPageData } from "~/types";
+import { usePreviewPage } from "~/admin/hooks/usePreviewPage";
 
 const HeaderTitle = styled.div`
     display: flex;
@@ -75,26 +73,13 @@ const HeaderActions = styled.div`
 interface HeaderProps {
     page: PbPageData;
 }
-const Header: React.FC<HeaderProps> = props => {
+const Header = (props: HeaderProps) => {
     const { page } = props;
-    const { getPageUrl, getWebsiteUrl } = usePageBuilderSettings();
-    const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
-    const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(
-        getWebsiteUrl(),
-        refreshSiteStatus
-    );
-
-    // We must prevent opening in new tab - Cypress doesn't work with new tabs.
-    const target = "Cypress" in window ? "_self" : "_blank";
-    const url = getPageUrl(page);
-
-    const handlePreviewClick = useCallback(() => {
-        if (isSiteRunning) {
-            window.open(url, target, "noopener");
-        } else {
-            showConfigureWebsiteUrlDialog();
-        }
-    }, [url, isSiteRunning]);
+    const { previewPage, previewUrl } = usePreviewPage({
+        id: page.id,
+        status: page.status,
+        path: page.path
+    });
 
     return (
         <React.Fragment>
@@ -103,8 +88,8 @@ const Header: React.FC<HeaderProps> = props => {
                     <PageTitle>
                         <Typography use="headline6">{page.title}</Typography>
                     </PageTitle>
-                    <PageLink onClick={handlePreviewClick}>
-                        <Typography use="caption">{url}</Typography>
+                    <PageLink onClick={previewPage}>
+                        <Typography use="caption">{previewUrl}</Typography>
                         <OpenInNew />
                     </PageLink>
                 </PageInfo>

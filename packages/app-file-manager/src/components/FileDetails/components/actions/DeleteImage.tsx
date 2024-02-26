@@ -7,10 +7,6 @@ import { FileItem } from "@webiny/app-admin/types";
 import { useFile, useFileDetails, useFileManagerApi } from "~/index";
 import { useDeleteFile } from "~/hooks/useDeleteFile";
 
-interface DeleteImageProps {
-    onDelete?: () => void;
-}
-
 const isImage = (file: FileItem) => {
     const fileType = mime.getType(file && file.name);
 
@@ -21,7 +17,7 @@ const isImage = (file: FileItem) => {
     return false;
 };
 
-export const DeleteImage: React.VFC<DeleteImageProps> = () => {
+export const DeleteImage = () => {
     const { file } = useFile();
     const { canEdit } = useFileManagerApi();
     const { close } = useFileDetails();

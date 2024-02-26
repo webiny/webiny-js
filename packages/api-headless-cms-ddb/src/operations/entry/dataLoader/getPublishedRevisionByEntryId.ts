@@ -13,24 +13,24 @@ export const createGetPublishedRevisionByEntryId = (params: DataLoaderParams) =>
     const publishedKey = createPublishedSortKey();
     return new DataLoader<string, CmsStorageEntry[]>(
         async (ids: readonly string[]) => {
-            const queries = ids.reduce((collection, id) => {
-                const partitionKey = createPartitionKey({
-                    tenant,
-                    locale,
-                    id
-                });
-                if (collection[partitionKey]) {
+            const queries = ids.reduce<Record<string, ReturnType<typeof entity.getBatch>>>(
+                (collection, id) => {
+                    const partitionKey = createPartitionKey({
+                        tenant,
+                        locale,
+                        id
+                    });
+                    if (collection[partitionKey]) {
+                        return collection;
+                    }
+                    collection[partitionKey] = entity.getBatch({
+                        PK: partitionKey,
+                        SK: publishedKey
+                    });
                     return collection;
-                }
-                collection[partitionKey] = entity.getBatch({
-                    PK: partitionKey,
-                    SK: publishedKey
-                });
-                return collection;
-                /**
-                 * We cast as any because there is no return type defined.
-                 */
-            }, {} as Record<string, any>);
+                },
+                {}
+            );
 
             const records = await batchReadAll<CmsStorageEntry>({
                 table: entity.table,

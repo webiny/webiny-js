@@ -50,7 +50,7 @@ export interface ExportTemplatesDialogProps {
     search: { query: string };
 }
 
-const ExportTemplateLoadingDialogMessage: React.FC<ExportTemplatesDialogProps> = props => {
+const ExportTemplateLoadingDialogMessage = (props: ExportTemplatesDialogProps) => {
     const { exportTemplate } = useExportTemplate();
     const {
         exportPageData: { revisionType }
@@ -78,7 +78,7 @@ interface ExportTemplateDialogProps {
     exportUrl: string;
 }
 
-const ExportTemplateDialogMessage: React.FC<ExportTemplateDialogProps> = ({ exportUrl }) => {
+const ExportTemplateDialogMessage = ({ exportUrl }: ExportTemplateDialogProps) => {
     const { showSnackbar } = useSnackbar();
 
     return (
@@ -89,7 +89,11 @@ const ExportTemplateDialogMessage: React.FC<ExportTemplateDialogProps> = ({ expo
                 </Cell>
                 <Cell span={12}>
                     <div className={linkWrapper}>
-                        <Typography use={"body2"} className={"link-text"}>
+                        <Typography
+                            use={"body2"}
+                            className={"link-text"}
+                            data-testid={"pb-templates-export-dialog-export-url"}
+                        >
                             {exportUrl}
                         </Typography>
                         <span>
@@ -128,6 +132,7 @@ interface UseExportTemplateDialog {
     showExportTemplateInitializeDialog: (props: ExportTemplatesDialogProps) => void;
     hideDialog: () => void;
 }
+
 const useExportTemplateDialog = (): UseExportTemplateDialog => {
     const { showDialog, hideDialog } = useDialog();
 

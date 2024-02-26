@@ -1,11 +1,11 @@
 import React from "react";
 import { ToolbarActions } from "~/editor";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { plugins } from "@webiny/plugins";
 import { renderPlugin } from "~/editor/components/Editor/Toolbar";
 import { PbEditorToolbarBottomPlugin, PbEditorToolbarTopPlugin } from "~/types";
 
-export const ToolbarActionsPlugin = createComponentPlugin(ToolbarActions, ToolbarActionsWrapper => {
+export const ToolbarActionsPlugin = createDecorator(ToolbarActions, ToolbarActionsWrapper => {
     return function BlockEditorToolbarActions() {
         const actionsTop = plugins.byType<PbEditorToolbarTopPlugin>("pb-editor-toolbar-top");
         const actionsBottom = plugins

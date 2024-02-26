@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler-aws/dynamodb";
+import { createHandler } from "@webiny/handler-aws";
 import elasticsearchClientContextPlugin, { createGzipCompression } from "@webiny/api-elasticsearch";
 import { createEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 

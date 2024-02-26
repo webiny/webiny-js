@@ -59,7 +59,7 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
                  * Figure out the types.
                  * TODO @ts-refactor
                  */
-                // @ts-ignore
+                // @ts-expect-error
                 const token = (await verify(idToken, jwkToPem(jwk))) as VerifyResponse;
                 if (!token.jti || !token.jti.startsWith("ID.")) {
                     throw new WebinyError("idToken is invalid!", "SECURITY_OKTA_INVALID_TOKEN");

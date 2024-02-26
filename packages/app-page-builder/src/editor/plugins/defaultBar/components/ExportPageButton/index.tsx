@@ -5,7 +5,7 @@ import { i18n } from "@webiny/app/i18n";
 import useExportPageDialog, { ExportPagesDialogProps } from "./useExportPageDialog";
 import useExportPageRevisionSelectorDialog from "./useExportPageRevisionSelectorDialog";
 // assets
-import { ReactComponent as DownloadIcon } from "../icons/file_download.svg";
+import { ReactComponent as DownloadIcon } from "@webiny/app-admin/assets/icons/file_download.svg";
 
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/exportPageButton");
 
@@ -13,10 +13,7 @@ interface ExportPagesButtonProps extends ExportPagesDialogProps {
     getMultiSelected: any;
 }
 
-export const ExportPagesButton: React.FC<ExportPagesButtonProps> = ({
-    getMultiSelected,
-    ...restProps
-}) => {
+export const ExportPagesButton = ({ getMultiSelected, ...restProps }: ExportPagesButtonProps) => {
     const selected = getMultiSelected();
     const { showExportPageRevisionSelectorDialog } = useExportPageRevisionSelectorDialog();
     const { showExportPageInitializeDialog } = useExportPageDialog();

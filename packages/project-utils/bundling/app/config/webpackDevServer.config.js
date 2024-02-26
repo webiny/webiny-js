@@ -44,7 +44,6 @@ module.exports = function ({ host, port, https, allowedHost, proxy, paths }) {
         },
         // Enable HTTPS if the HTTPS environment variable is set to 'true'
         https,
-        host,
         client: {
             overlay: true,
             // Silence WebpackDevServer's own logs since they're generally not useful.
@@ -59,12 +58,17 @@ module.exports = function ({ host, port, https, allowedHost, proxy, paths }) {
         },
         allowedHosts: allowedHost ? [allowedHost] : undefined,
         proxy,
-        onBeforeSetupMiddleware(devServer) {
-            const { app } = devServer;
-            if (fs.existsSync(paths.proxySetup)) {
-                // This registers user provided middleware for proxy reasons
-                require(paths.proxySetup)(app);
-            }
+        setupMiddlewares: (middlewares, devServer) => {
+            return [
+                ...middlewares,
+                () => {
+                    const { app } = devServer;
+                    if (fs.existsSync(paths.proxySetup)) {
+                        // This registers user provided middleware for proxy reasons
+                        require(paths.proxySetup)(app);
+                    }
+                }
+            ];
         }
     };
 };

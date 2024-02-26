@@ -1,11 +1,12 @@
-// @ts-ignore `code-frame` has no types
+// @ts-expect-error `code-frame` has no types
 import codeFrame from "code-frame";
 import WebinyError from "@webiny/error";
 import { generateSchema } from "./generateSchema";
-import { ApiEndpoint, CmsContext } from "~/types";
+import { ApiEndpoint, CmsContext, CmsModel } from "~/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { GraphQLSchema } from "graphql";
+import crypto from "crypto";
 
 interface SchemaCache {
     key: string;
@@ -15,7 +16,6 @@ interface SchemaCache {
 interface GetSchemaParams {
     context: CmsContext;
     type: ApiEndpoint;
-    getLastModifiedTime: () => Promise<Date | null>;
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
 }
@@ -37,14 +37,28 @@ const generateCacheId = (params: GenerateCacheIdParams): string => {
  * Method generates cache key based on last model change time.
  * Or sets "unknown" - possible when no models in database.
  */
-type GenerateCacheKeyParams = Pick<GetSchemaParams, "getLastModifiedTime">;
+interface GenerateCacheKeyParams {
+    models: Pick<CmsModel, "modelId" | "singularApiName" | "pluralApiName" | "savedOn">[];
+}
 const generateCacheKey = async (params: GenerateCacheKeyParams): Promise<string> => {
-    const { getLastModifiedTime } = params;
-    const lastModelChange = await getLastModifiedTime();
-    if (!lastModelChange) {
-        return "unknown";
+    const { models } = params;
+
+    const keys: string[] = [];
+    for (const model of models) {
+        const savedOn = model.savedOn;
+        const value =
+            // @ts-expect-error
+            savedOn instanceof Date || savedOn?.toISOString
+                ? // @ts-expect-error
+                  savedOn.toISOString()
+                : savedOn || "unknown";
+        keys.push(model.modelId, model.singularApiName, model.pluralApiName, value);
     }
-    return lastModelChange.toISOString();
+    const key = keys.join("#");
+
+    const hash = crypto.createHash("sha1");
+    hash.update(key);
+    return hash.digest("hex");
 };
 
 /**
@@ -53,14 +67,6 @@ const generateCacheKey = async (params: GenerateCacheKeyParams): Promise<string>
  */
 export const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema> => {
     const { context } = params;
-
-    const cacheId = generateCacheId(params);
-
-    const cacheKey = await generateCacheKey(params);
-    const cachedSchema = schemaList.get(cacheId);
-    if (cachedSchema?.key === cacheKey) {
-        return cachedSchema.schema;
-    }
 
     /**
      * We need all the API models.
@@ -71,6 +77,15 @@ export const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema>
             return model.isPrivate !== true;
         });
     });
+
+    const cacheId = generateCacheId(params);
+
+    const cacheKey = await generateCacheKey({ ...params, models });
+    const cachedSchema = schemaList.get(cacheId);
+    if (cachedSchema?.key === cacheKey) {
+        return cachedSchema.schema;
+    }
+
     try {
         const schema = await generateSchema({
             ...params,

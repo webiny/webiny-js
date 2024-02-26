@@ -9,11 +9,9 @@ import { Typography } from "@webiny/ui/Typography";
 
 interface PermissionRendererWrapperProps {
     label: string;
+    children: React.ReactNode;
 }
-export const PermissionRendererWrapper: React.FC<PermissionRendererWrapperProps> = ({
-    label,
-    children
-}) => (
+export const PermissionRendererWrapper = ({ label, children }: PermissionRendererWrapperProps) => (
     <Elevation z={1} className={""}>
         <Grid className={""} style={{ marginTop: 36 }}>
             <Cell span={12}>

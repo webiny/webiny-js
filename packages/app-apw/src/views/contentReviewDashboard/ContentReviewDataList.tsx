@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import debounce from "lodash/debounce";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import styled from "@emotion/styled";
-import { DataList, List, DataListModalOverlayAction, ListItem } from "@webiny/ui/List";
+import { DataList, DataListModalOverlayAction, List, ListItem } from "@webiny/ui/List";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { ApwContentReviewListItem } from "~/types";
@@ -11,6 +11,7 @@ import { useContentReviewsList } from "~/hooks/useContentReviewsList";
 import { ContentReviewsFilterModal } from "./components/ContentReviewsFilterOverlay";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Typography } from "@webiny/ui/Typography";
+import { useFetchInterval } from "~/hooks/useFetchInterval";
 
 const t = i18n.ns("app-apw/admin/content-reviews/datalist");
 
@@ -51,7 +52,9 @@ const InlineLoaderWrapper = styled("div")({
     backgroundColor: "var(--mdc-theme-surface)"
 });
 
-export const ContentReviewDataList: React.FC = () => {
+const CONTENT_REVIEW_LIST_REFRESH_INTERVAL = 10000;
+
+export const ContentReviewDataList = () => {
     const {
         contentReviews,
         loading,
@@ -63,7 +66,8 @@ export const ContentReviewDataList: React.FC = () => {
         setStatus,
         setFilter,
         fetchMore,
-        filter
+        filter,
+        refetch
     } = useContentReviewsList({
         sorters: SORTERS
     });
@@ -77,6 +81,12 @@ export const ContentReviewDataList: React.FC = () => {
         }, 500),
         [loading, fetchMore]
     );
+
+    useFetchInterval({
+        callback: refetch,
+        interval: CONTENT_REVIEW_LIST_REFRESH_INTERVAL,
+        loading
+    });
 
     return (
         <DataList

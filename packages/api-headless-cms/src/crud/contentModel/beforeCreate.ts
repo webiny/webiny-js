@@ -1,17 +1,16 @@
 import WebinyError from "@webiny/error";
 import camelCase from "lodash/camelCase";
 import {
-    OnModelBeforeCreateFromTopicParams,
-    OnModelBeforeCreateTopicParams,
+    CmsContext,
     CmsModel,
     HeadlessCmsStorageOperations,
-    CmsContext
+    OnModelBeforeCreateFromTopicParams,
+    OnModelBeforeCreateTopicParams
 } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { validateModel } from "./validateModel";
-import { validateLayout } from "./validateLayout";
 import { validateExistingModelId, validateModelIdAllowed } from "./validate/modelId";
 import { validateSingularApiName } from "./validate/singularApiName";
 import { validatePluralApiName } from "./validate/pluralApiName";
@@ -19,8 +18,13 @@ import { validateEndingAllowed } from "~/crud/contentModel/validate/endingAllowe
 
 const getModelId = (model: CmsModel): string => {
     const { modelId, name } = model;
-    if (!!modelId) {
-        return camelCase(modelId.trim());
+    const value = modelId ? modelId.trim() : null;
+    if (value) {
+        const isModelIdValid = camelCase(value).toLowerCase() === value.toLowerCase();
+        if (isModelIdValid) {
+            return value;
+        }
+        return camelCase(value);
     } else if (name) {
         return camelCase(name.trim());
     }
@@ -115,11 +119,7 @@ export const assignModelBeforeCreate = (params: AssignBeforeModelCreateParams) =
 
     onModelBeforeCreate.subscribe(async ({ model, input }) => {
         /**
-         * First the layout...
-         */
-        validateLayout(model.layout, model.fields);
-        /**
-         * then we run the shared create/createFrom methods.
+         * Run the shared create/createFrom methods.
          */
         const cb = createOnModelBeforeCb({
             storageOperations,

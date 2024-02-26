@@ -1,4 +1,4 @@
-import S3 from "aws-sdk/clients/s3";
+import { S3 } from "@webiny/aws-sdk/client-s3";
 import pMap from "p-map";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
@@ -28,6 +28,8 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 name: String!
                 type: String!
                 size: Long!
+                key: String
+                keyPrefix: String
             }
 
             type GetPreSignedPostPayloadResponseDataFile {
@@ -119,7 +121,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                         }
 
                         const normalizer = createFileNormalizerFromContext(context);
-                        const presignedPayload = getPresignedPostPayload(
+                        const presignedPayload = await getPresignedPostPayload(
                             await normalizer.normalizeFile(data),
                             settings
                         );
@@ -172,8 +174,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     await checkPermissions(context, { rwd: "w" });
 
                     const s3Client = new S3({
-                        region: process.env.AWS_REGION,
-                        signatureVersion: "v4"
+                        region: process.env.AWS_REGION
                     });
 
                     try {
@@ -202,8 +203,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     await checkPermissions(context, { rwd: "w" });
 
                     const s3Client = new S3({
-                        region: process.env.AWS_REGION,
-                        signatureVersion: "v4"
+                        region: process.env.AWS_REGION
                     });
 
                     try {

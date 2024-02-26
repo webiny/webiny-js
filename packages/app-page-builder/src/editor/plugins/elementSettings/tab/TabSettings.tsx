@@ -13,9 +13,9 @@ import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps } from
 
 const DATA_NAMESPACE = "data.settings.tab";
 
-const TabSettings: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+const TabSettings = ({
     defaultAccordionValue
-}) => {
+}: PbEditorPageElementSettingsRenderComponentProps) => {
     const [element] = useActiveElement<PbEditorElement>();
     const { getUpdateValue } = useUpdateHandlers({
         element,

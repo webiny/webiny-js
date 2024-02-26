@@ -1,15 +1,18 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { CSSProperties, useCallback, useEffect, useState } from "react";
 import { ListItem, ListItemGraphic, ListItemMeta } from "~/List";
 import Transition from "react-transition-group/Transition";
 import { Icon } from "~/Icon";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import { Typography } from "~/Typography";
-
 import { ReactComponent as UpArrow } from "./icons/round-keyboard_arrow_up-24px.svg";
 import { ReactComponent as DownArrow } from "./icons/round-keyboard_arrow_down-24px.svg";
 import classNames from "classnames";
-import { AccordionItemAction, AccordionItemActions } from "~/Accordion/AccordionItemActions";
+import {
+    AccordionItemAction,
+    AccordionItemActions,
+    AccordionItemElement
+} from "~/Accordion/AccordionItemActions";
 
 const Content = styled.div`
     width: 100%;
@@ -56,38 +59,35 @@ const nonInteractive = css`
 `;
 
 const duration = 150;
-const defaultStyle = {
+const defaultStyle: CSSProperties = {
     transition: `all ${duration}ms ease-in-out`,
     opacity: 0,
     height: 0,
-    pointerEvents: "none",
+    pointerEvents: "auto",
     overflow: "hidden"
 };
 
 type TransitionStylesState = "entering" | "entered" | "exiting";
 
-/**
- * We are casting pointerEvents as any because csstype does not have PointerEvents exported. Or at least, that is the error.
- */
-const transitionStyles = {
+const transitionStyles: Record<string, CSSProperties> = {
     entering: {
         opacity: 0,
         height: 0,
         padding: "20px",
-        pointerEvents: "auto" as any,
+        pointerEvents: "auto",
         overflow: "initial"
     },
     entered: {
         opacity: 1,
         height: "auto",
         padding: "20px",
-        pointerEvents: "auto" as any,
+        pointerEvents: "auto",
         overflow: "initial"
     },
     exiting: {
         height: "auto",
         padding: "20px",
-        pointerEvents: "auto" as any,
+        pointerEvents: "auto",
         overflow: "initial"
     }
 };
@@ -146,9 +146,11 @@ export interface AccordionItemProps {
      * Append a class name to Icon
      */
     iconClassName?: string;
+
+    children: React.ReactNode;
 }
 
-const AccordionItemComponent: React.FC<AccordionItemProps> = props => {
+const AccordionItemComponent = (props: AccordionItemProps) => {
     const [open, setState] = useState<boolean>(props.open ? props.open : false);
     const { interactive = true, actions } = props;
 
@@ -211,14 +213,16 @@ const AccordionItemComponent: React.FC<AccordionItemProps> = props => {
     );
 };
 
-type AccordionItem = React.FC<AccordionItemProps> & {
+type AccordionItem = React.ComponentType<AccordionItemProps> & {
     Divider: typeof Divider;
     Actions: typeof AccordionItemActions;
     Action: typeof AccordionItemAction;
+    Element: typeof AccordionItemElement;
 };
 
 export const AccordionItem: AccordionItem = Object.assign(AccordionItemComponent, {
     Divider,
     Action: AccordionItemAction,
-    Actions: AccordionItemActions
+    Actions: AccordionItemActions,
+    Element: AccordionItemElement
 });

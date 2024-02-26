@@ -1,11 +1,15 @@
+import * as aws from "@pulumi/aws";
 import { createPulumiApp, PulumiAppParam } from "@webiny/pulumi";
 import { CoreCognito } from "./CoreCognito";
 import { CoreDynamo } from "./CoreDynamo";
 import { ElasticSearch } from "./CoreElasticSearch";
+import { OpenSearch } from "./CoreOpenSearch";
 import { CoreEventBus } from "./CoreEventBus";
 import { CoreFileManger } from "./CoreFileManager";
 import { CoreVpc } from "./CoreVpc";
 import { tagResources } from "~/utils";
+import { withServiceManifest } from "~/utils/withServiceManifest";
+import { addServiceManifestTableItem, TableDefinition } from "~/utils/addServiceManifestTableItem";
 
 export type CorePulumiApp = ReturnType<typeof createCorePulumiApp>;
 
@@ -21,6 +25,18 @@ export interface CreateCorePulumiAppParams {
      * Note that it requires also changes in application code.
      */
     elasticSearch?: PulumiAppParam<
+        | boolean
+        | Partial<{
+              domainName: string;
+              indexPrefix: string;
+          }>
+    >;
+
+    /**
+     * Enables OpenSearch infrastructure.
+     * Note that it requires also changes in application code.
+     */
+    openSearch?: PulumiAppParam<
         | boolean
         | Partial<{
               domainName: string;
@@ -68,9 +84,37 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
         path: "apps/core",
         config: projectAppParams,
         program: async app => {
+            let searchEngineType: "openSearch" | "elasticSearch" | null = null;
+            let searchEngineParams:
+                | CreateCorePulumiAppParams["openSearch"]
+                | CreateCorePulumiAppParams["elasticSearch"]
+                | null = null;
+
+            if (projectAppParams.openSearch) {
+                searchEngineParams = app.getParam(projectAppParams.openSearch);
+                searchEngineType = "openSearch";
+            } else if (projectAppParams.elasticSearch) {
+                searchEngineParams = app.getParam(projectAppParams.elasticSearch);
+                searchEngineType = "elasticSearch";
+            }
+
+            if (searchEngineParams) {
+                const params = app.getParam(searchEngineParams);
+                if (typeof params === "object") {
+                    if (params.domainName) {
+                        process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = params.domainName;
+                    }
+
+                    if (params.indexPrefix) {
+                        process.env.ELASTIC_SEARCH_INDEX_PREFIX = params.indexPrefix;
+                    }
+                }
+            }
+
             const pulumiResourceNamePrefix = app.getParam(
                 projectAppParams.pulumiResourceNamePrefix
             );
+
             if (pulumiResourceNamePrefix) {
                 app.onResource(resource => {
                     if (!resource.name.startsWith(pulumiResourceNamePrefix)) {
@@ -83,7 +127,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
             // By doing this, we're ensuring user's adjustments are not applied to late.
             if (projectAppParams.pulumi) {
                 app.addHandler(() => {
-                    return projectAppParams.pulumi!(app as CorePulumiApp);
+                    return projectAppParams.pulumi!(app as unknown as CorePulumiApp);
                 });
             }
 
@@ -112,11 +156,15 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
             // Setup file core bucket
             const { bucket: fileManagerBucket } = app.addModule(CoreFileManger, { protect });
 
-            const elasticSearch = app.getParam(projectAppParams?.elasticSearch)
-                ? app.addModule(ElasticSearch, { protect })
-                : null;
+            let elasticSearch;
+            if (searchEngineType === "openSearch") {
+                elasticSearch = app.addModule(OpenSearch, { protect });
+            } else if (searchEngineType === "elasticSearch") {
+                elasticSearch = app.addModule(ElasticSearch, { protect });
+            }
 
             app.addOutputs({
+                region: aws.config.region,
                 fileManagerBucketId: fileManagerBucket.output.id,
                 primaryDynamodbTableArn: dynamoDbTable.output.arn,
                 primaryDynamodbTableName: dynamoDbTable.output.name,
@@ -126,6 +174,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 cognitoUserPoolArn: cognito.userPool.output.arn,
                 cognitoUserPoolPasswordPolicy: cognito.userPool.output.passwordPolicy,
                 cognitoAppClientId: cognito.userPoolClient.output.id,
+                eventBusName: eventBus.output.name,
                 eventBusArn: eventBus.output.arn
             });
 
@@ -145,18 +194,15 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
         }
     });
 
-    if (projectAppParams.elasticSearch) {
-        const elasticSearch = app.getParam(projectAppParams.elasticSearch);
-        if (typeof elasticSearch === "object") {
-            if (elasticSearch.domainName) {
-                process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = elasticSearch.domainName;
-            }
+    return withServiceManifest(app, manifests => {
+        const dynamoTable = app.resources.dynamoDbTable;
 
-            if (elasticSearch.indexPrefix) {
-                process.env.ELASTIC_SEARCH_INDEX_PREFIX = elasticSearch.indexPrefix;
-            }
-        }
-    }
+        const table: TableDefinition = {
+            tableName: dynamoTable.output.name,
+            hashKey: dynamoTable.output.hashKey,
+            rangeKey: dynamoTable.output.rangeKey
+        };
 
-    return app;
+        manifests.forEach(manifest => addServiceManifestTableItem(app, table, manifest));
+    });
 }

@@ -31,8 +31,8 @@ const convertFromStorage = (
     }
 };
 
-const convertValueToStorage = (field: CmsModelField, value: any): any => {
-    if (value instanceof Date || (value as any).toISOString) {
+const convertValueToStorage = (field: CmsModelField, value: any): string => {
+    if (value instanceof Date || (value as Record<string, any>).toISOString) {
         return (value as Date).toISOString();
     } else if (typeof value === "string") {
         return value as string;

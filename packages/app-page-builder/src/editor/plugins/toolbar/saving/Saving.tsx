@@ -5,7 +5,7 @@ import { ReactComponent as SaveIcon } from "~/editor/assets/icons/baseline-cloud
 import { ReactComponent as SavedIcon } from "~/editor/assets/icons/baseline-cloud_done-24px.svg";
 import { useUI } from "~/editor/hooks/useUI";
 
-const Saving: React.FC = () => {
+const Saving = () => {
     const [{ isSaving }] = useUI();
     if (!isSaving) {
         return (

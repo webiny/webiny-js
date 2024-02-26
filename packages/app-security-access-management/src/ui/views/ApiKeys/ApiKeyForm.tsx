@@ -54,7 +54,7 @@ export interface ApiKeyFormProps {
     [key: string]: any;
 }
 
-export const ApiKeyForm: React.FC<ApiKeyFormProps> = () => {
+export const ApiKeyForm = () => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const newEntry = new URLSearchParams(location.search).get("new") === "true";

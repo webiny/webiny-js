@@ -11,7 +11,6 @@ describe("Elasticsearch sort modifier plugin", () => {
                 if (typeof sort !== "object") {
                     return;
                 }
-                // @ts-ignore
                 sort["newField"] = {
                     order: "asc"
                 };
@@ -47,10 +46,8 @@ describe("Elasticsearch sort modifier plugin", () => {
                 }
 
                 for (const key in sort) {
-                    // @ts-ignore
                     delete sort[key];
                 }
-                // @ts-ignore
                 sort["_script"] = {
                     type: "number",
                     script: {

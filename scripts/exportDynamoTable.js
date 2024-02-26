@@ -1,9 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 const yargs = require("yargs");
-const { DocumentClient } = require("aws-sdk/clients/dynamodb");
+const { getDocumentClient } = require("@webiny/aws-sdk/client-dynamodb");
 
-const documentClient = new DocumentClient({
+const documentClient = getDocumentClient({
     region: "eu-central-1"
 });
 

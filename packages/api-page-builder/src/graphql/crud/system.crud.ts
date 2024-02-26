@@ -167,7 +167,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                     /**
                      * Category is missing, but we cannot set it because it will override the created one.
                      */
-                    // @ts-ignore
+                    // @ts-expect-error
                     {
                         title: "Not Found",
                         path: "/not-found",
@@ -177,7 +177,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
                     /**
                      * Category is missing, but we cannot set it because it will override the created one.
                      */
-                    // @ts-ignore
+                    // @ts-expect-error
                     {
                         title: "Welcome to Webiny",
                         path: "/welcome-to-webiny",

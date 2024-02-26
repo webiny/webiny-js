@@ -3,7 +3,11 @@ import defaultIndexingPlugin from "~/elasticsearch/indexing/defaultFieldIndexing
 import objectIndexing from "~/elasticsearch/indexing/objectIndexing";
 import elasticsearchIndexingPlugins from "~/elasticsearch/indexing";
 import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
-import { CmsModelFieldToElasticsearchPlugin } from "~/types";
+import {
+    CmsModelFieldToElasticsearchFromParams,
+    CmsModelFieldToElasticsearchPlugin,
+    CmsModelFieldToElasticsearchToParams
+} from "~/types";
 
 const indexingPlugins = elasticsearchIndexingPlugins();
 const fieldTypePlugins = createGraphQLFields();
@@ -156,6 +160,7 @@ const expectedRawValue = {
         }
     ],
     settingsStorageId: {
+        optionsStorageId: [{}, {}],
         snippetStorageId: [
             {
                 tag: "p",
@@ -171,12 +176,12 @@ describe("objectIndexing", () => {
         const result = plugin.toIndex({
             value: input,
             rawValue: input,
-            field: objectField as any,
+            field: objectField,
             getFieldIndexPlugin,
             getFieldTypePlugin,
-            plugins: {} as any,
-            model: {} as any
-        });
+            plugins: {},
+            model: {}
+        } as CmsModelFieldToElasticsearchToParams);
 
         expect(result.value).toEqual(expectedValue);
         expect(result.rawValue).toEqual(expectedRawValue);
@@ -187,12 +192,12 @@ describe("objectIndexing", () => {
         const result = plugin.fromIndex({
             value: expectedValue,
             rawValue: expectedRawValue,
-            field: objectField as any,
+            field: objectField,
             getFieldIndexPlugin,
             getFieldTypePlugin,
-            plugins: {} as any,
-            model: {} as any
-        });
+            plugins: {},
+            model: {}
+        } as CmsModelFieldToElasticsearchFromParams);
 
         expect(result).toEqual(input);
     });

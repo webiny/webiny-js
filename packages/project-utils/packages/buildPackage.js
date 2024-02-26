@@ -95,7 +95,7 @@ const babelCompile = async ({ cwd }) => {
         }
     }
 
-    // At this point, just wait for compilations to be completed so we can proceed with writing the files ASAP.
+    // At this point, just wait for compilations to be completed, so we can proceed with writing the files ASAP.
     await Promise.all(compilations);
 
     const writes = [];
@@ -107,7 +107,7 @@ const babelCompile = async ({ cwd }) => {
         fs.mkdirSync(dirname(paths.code), { recursive: true });
 
         // Save the compiled JS file.
-        writes.push(fs.promises.writeFile(paths.code, code, "utf8"));
+        writes.push(fs.promises.writeFile(paths.code, withSourceMapUrl(file, code), "utf8"));
 
         // Save source maps file.
         const mapJson = JSON.stringify(map);
@@ -116,6 +116,11 @@ const babelCompile = async ({ cwd }) => {
 
     // Wait until all files have been written to disk.
     return Promise.all([...writes, ...copies]);
+};
+
+const withSourceMapUrl = (file, code) => {
+    const { name } = parse(file);
+    return [code, "", `//# sourceMappingURL=${name}.js.map`].join("\n");
 };
 
 const tsCompile = ({ cwd, overrides, debug }) => {

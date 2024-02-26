@@ -1,6 +1,7 @@
 import { createAuthenticator, AuthenticatorConfig } from "~/createAuthenticator";
 import { createGroupAuthorizer, GroupAuthorizerConfig } from "~/createGroupAuthorizer";
 import { createIdentityType } from "~/createIdentityType";
+import { createAdminUsersHooks } from "./createAdminUsersHooks";
 import { extendTenancy } from "./extendTenancy";
 
 export interface CreateAuth0Config extends AuthenticatorConfig, GroupAuthorizerConfig {
@@ -18,12 +19,14 @@ export const createAuth0 = (config: CreateAuth0Config) => {
         }),
         createGroupAuthorizer({
             identityType,
-            getGroupSlug: config.getGroupSlug
+            getGroupSlug: config.getGroupSlug,
+            inheritGroupsFromParentTenant: config.inheritGroupsFromParentTenant
         }),
         createIdentityType({
             identityType,
             name: graphQLIdentityType
         }),
-        extendTenancy()
+        extendTenancy(),
+        createAdminUsersHooks()
     ];
 };

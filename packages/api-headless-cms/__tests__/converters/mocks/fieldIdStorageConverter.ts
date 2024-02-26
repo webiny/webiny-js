@@ -583,6 +583,8 @@ export const createModel = (base?: Partial<Omit<CmsModel, "fields" | "layout">>)
     const fields = createModelFields();
     return {
         name: "Test model",
+        singularApiName: "TestModel",
+        pluralApiName: "TestModels",
         titleFieldId: fields[0].fieldId,
         group: {
             id: "group-id",
@@ -899,19 +901,20 @@ const createBaseEntry = (values: Record<string, any>): CmsEntry => {
     return {
         id: "someEntryId#0001",
         entryId: "someEntryId",
+        createdOn: "2022-09-01T12:00:00Z",
+        savedOn: "2022-09-01T12:00:00Z",
+        firstPublishedOn: null,
+        lastPublishedOn: null,
+        revisionCreatedBy: {
+            id: "id",
+            type: "admin",
+            displayName: "Admin User"
+        },
         createdBy: {
             id: "id",
             type: "admin",
             displayName: "Admin User"
         },
-        ownedBy: {
-            id: "id",
-            type: "admin",
-            displayName: "Admin User"
-        },
-        createdOn: "2022-09-01T12:00:00Z",
-        savedOn: "2022-09-01T12:00:00Z",
-        publishedOn: undefined,
         modelId: "test",
         locale: "en-US",
         tenant: "root",

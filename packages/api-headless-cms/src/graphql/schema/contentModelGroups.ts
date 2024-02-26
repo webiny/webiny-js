@@ -12,6 +12,7 @@ export const createGroupsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
     if (context.cms.MANAGE) {
         manageSchema = /* GraphQL */ `
             input CmsContentModelGroupInput {
+                id: ID
                 name: String!
                 slug: String
                 description: String

@@ -5,17 +5,28 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { RoutePlugin } from "@webiny/app/plugins/RoutePlugin";
 
+interface LoaderProps {
+    children: React.ReactNode;
+    [key: string]: any;
+}
+
 /**
  * Registers new "/target-data-models" route.
  */
 
-const Loader: React.FC = ({ children, ...props }) => (
+const Loader = ({ children, ...props }: LoaderProps) => (
     <Suspense fallback={<CircularProgress />}>
         {React.cloneElement(children as unknown as React.ReactElement, props)}
     </Suspense>
 );
 
-const TargetDataModels = lazy(() => import("./views"));
+const TargetDataModels = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "TargetDataModelsRoutes" */
+            "./views"
+        )
+);
 
 export default new RoutePlugin({
     route: (

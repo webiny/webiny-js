@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ConnectDropTarget, DragObjectWithType, useDrop } from "react-dnd";
-import { FieldLayoutPositionType } from "~/types";
+import { FieldLayoutPositionType, Container, DropTargetType } from "~/types";
 
 export type DroppableChildrenFunction = (params: {
     isDragging: boolean;
@@ -23,14 +23,26 @@ export interface DroppableCollectedProps {
 export interface IsVisibleCallableParams {
     type: string;
     isDragging: boolean;
-    ui: string;
-    pos?: Partial<FieldLayoutPositionType>;
+    ui: DropTargetType;
+    id?: string;
+    pos: FieldLayoutPositionType;
+    container?: Container;
 }
 export interface IsVisibleCallable {
     (params: IsVisibleCallableParams): boolean;
 }
+
+// We need to extend DragObjectWithType type because it does not support fields,
+// that we set through "beginDrag".
+export interface DragObjectWithFieldInfo extends DragObjectWithType {
+    ui: DropTargetType;
+    name: string;
+    id?: string;
+    pos: FieldLayoutPositionType;
+    container?: Container;
+}
 export interface OnDropCallable {
-    (item: DragObjectWithType): DroppableDropResult | undefined;
+    (item: DragObjectWithFieldInfo): DroppableDropResult | undefined;
 }
 export interface DroppableProps {
     type?: string;
@@ -41,7 +53,7 @@ export interface DroppableProps {
     onDrop?: OnDropCallable;
 }
 
-const DroppableComponent: React.FC<DroppableProps> = props => {
+const DroppableComponent = (props: DroppableProps) => {
     const { children, onDrop, isVisible = () => true } = props;
 
     const [{ item, isOver }, drop] = useDrop<
@@ -69,4 +81,4 @@ const DroppableComponent: React.FC<DroppableProps> = props => {
     return children({ isDragging: Boolean(item), isOver, item, drop });
 };
 
-export const Droppable: React.FC<DroppableProps> = React.memo(DroppableComponent);
+export const Droppable: React.ComponentType<DroppableProps> = React.memo(DroppableComponent);

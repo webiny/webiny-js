@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PrimitiveValue, SearchBody } from "@webiny/api-elasticsearch/types";
 import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
@@ -19,6 +19,7 @@ import {
 import { CmsEntryAcoFolder, I18NLocale, ListLocalesParams, Tenant } from "../types";
 import { ACO_FOLDER_MODEL_ID, ROOT_FOLDER, UPPERCASE_ROOT_FOLDER } from "../constants";
 import { getElasticsearchLatestEntryData } from "./latestElasticsearchData";
+import { getDecompressedData } from "~/migrations/5.37.0/003/utils/getDecompressedData";
 
 const isGroupMigrationCompleted = (
     status: PrimitiveValue[] | boolean | undefined
@@ -36,6 +37,13 @@ export type AcoFolderDataMigrationCheckpoint = Record<
     PrimitiveValue[] | boolean | undefined
 >;
 
+interface CmsEntryAcoFolderElasticsearchRecord {
+    PK: string;
+    SK: string;
+    index: string;
+    data: any;
+}
+
 export class AcoRecords_5_37_0_003_AcoFolder
     implements DataMigration<AcoFolderDataMigrationCheckpoint>
 {
@@ -45,7 +53,11 @@ export class AcoRecords_5_37_0_003_AcoFolder
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
+    constructor(
+        table: Table<string, string, string>,
+        esTable: Table<string, string, string>,
+        elasticsearchClient: Client
+    ) {
         this.elasticsearchClient = elasticsearchClient;
         this.ddbEntryEntity = createDdbEntryEntity(table);
         this.ddbEsEntryEntity = createDdbEsEntryEntity(esTable);
@@ -266,9 +278,35 @@ export class AcoRecords_5_37_0_003_AcoFolder
                                 TYPE: "cms.entry"
                             };
 
+                            ddbItems.push(
+                                this.ddbEntryEntity.putBatch(latestDdb),
+                                this.ddbEntryEntity.putBatch(revisionDdb)
+                            );
+
+                            const esLatestRecord = await get<CmsEntryAcoFolderElasticsearchRecord>({
+                                entity: this.ddbEsEntryEntity,
+                                keys: {
+                                    PK: folderPk,
+                                    SK: "L"
+                                }
+                            });
+                            if (!esLatestRecord) {
+                                continue;
+                            }
+
+                            const esRecord = await getDecompressedData<CmsEntryAcoFolder>(
+                                esLatestRecord.data
+                            );
+                            if (!esRecord) {
+                                continue;
+                            }
+
                             const esLatestData = await getElasticsearchLatestEntryData({
-                                ...ddbFolder,
-                                values
+                                ...esRecord,
+                                values: {
+                                    ...esRecord.values,
+                                    parentId: null
+                                }
                             });
 
                             const latestDdbEs = {
@@ -277,11 +315,6 @@ export class AcoRecords_5_37_0_003_AcoFolder
                                 data: esLatestData,
                                 index: foldersIndexName
                             };
-
-                            ddbItems.push(
-                                this.ddbEntryEntity.putBatch(latestDdb),
-                                this.ddbEntryEntity.putBatch(revisionDdb)
-                            );
 
                             ddbEsItems.push(this.ddbEsEntryEntity.putBatch(latestDdbEs));
                         }

@@ -3,7 +3,7 @@ import React from "react";
 import { DynamicSourceProvider } from "@webiny/app-dynamic-pages/contexts/DynamicSource";
 import { useBlockVariant } from "@webiny/app-dynamic-pages/hooks/useBlockVariant";
 import { Block } from "@webiny/app-page-builder-elements/renderers/block";
-import { Props as ElementProps } from "@webiny/app-page-builder-elements/components/Element";
+import { ElementProps } from "@webiny/app-page-builder-elements/components/Element";
 import { Element } from "@webiny/app-page-builder-elements/types";
 import { createBlock } from "@webiny/app-page-builder-elements/renderers/block";
 

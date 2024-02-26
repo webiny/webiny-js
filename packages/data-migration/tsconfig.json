@@ -2,9 +2,11 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
+    { "path": "../aws-sdk" },
     { "path": "../db-dynamodb" },
     { "path": "../handler-aws" },
     { "path": "../ioc" },
+    { "path": "../logger" },
     { "path": "../utils" }
   ],
   "compilerOptions": {
@@ -14,12 +16,16 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/ioc/*": ["../ioc/src/*"],
       "@webiny/ioc": ["../ioc/src"],
+      "@webiny/logger/*": ["../logger/src/*"],
+      "@webiny/logger": ["../logger/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     },

@@ -2,13 +2,9 @@ import React, { useCallback } from "react";
 /**
  * Package react-lazy-load has no types.
  */
-// @ts-ignore
+// @ts-expect-error
 import LazyLoad from "react-lazy-load";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/filled/settings.svg";
@@ -30,24 +26,29 @@ import {
 } from "./styled";
 import { useMoveFileToFolder } from "~/hooks/useMoveFileToFolder";
 
+export interface FileOptions {
+    label: string;
+    // TODO fix the type!
+    onClick: (file: boolean) => void;
+}
 export interface FileProps {
     file: FileItem;
     selected: boolean;
     onSelect?: (event?: React.MouseEvent) => void;
     onClick?: (event?: React.MouseEvent) => void;
-    options?: Array<{ label: string; onClick: (file: Object) => void }>;
+    options?: FileOptions[];
     multiple?: boolean;
     children: React.ReactNode;
     showFileDetails: (id: string) => void;
 }
 
-export const FileThumbnail: React.FC<FileProps> = ({
+export const FileThumbnail = ({
     file,
     selected,
     onSelect,
     children,
     showFileDetails
-}) => {
+}: FileProps) => {
     const showDetails = useCallback(() => {
         showFileDetails(file.id);
     }, [file.id]);

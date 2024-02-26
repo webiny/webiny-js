@@ -18,7 +18,7 @@ import {
 } from "@webiny/ui/List";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { LIST_CATEGORIES } from "./graphql";
-import { PageBuilderListCategoriesResponse } from "~/types";
+import { PageBuilderListCategoriesResponse, PbCategory } from "~/types";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -30,19 +30,14 @@ const narrowDialog = css({
 export type CategoriesDialogProps = {
     open: boolean;
     onClose: DialogOnClose;
-    onSelect: Function;
+    onSelect: (item: PbCategory) => void;
     children: any;
 };
 interface ListCategoriesQueryResponse {
     data: PageBuilderListCategoriesResponse;
     loading?: boolean;
 }
-const CategoriesDialog: React.FC<CategoriesDialogProps> = ({
-    open,
-    onClose,
-    onSelect,
-    children
-}) => {
+const CategoriesDialog = ({ open, onClose, onSelect, children }: CategoriesDialogProps) => {
     const { history } = useRouter();
     return (
         <Dialog
@@ -72,7 +67,7 @@ const CategoriesDialog: React.FC<CategoriesDialogProps> = ({
                                             key={item.slug}
                                             onClick={() => {
                                                 onSelect(item);
-                                                // @ts-ignore
+                                                // @ts-expect-error
                                                 onClose();
                                             }}
                                         >

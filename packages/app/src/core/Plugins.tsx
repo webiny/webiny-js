@@ -7,7 +7,7 @@ PluginsContext.displayName = "PluginsContext";
 interface PluginsProviderComponentProps {
     children: JSX.Element[];
 }
-const PluginsProviderComponent: React.FC<PluginsProviderComponentProps> = ({ children }) => {
+const PluginsProviderComponent = ({ children }: PluginsProviderComponentProps) => {
     /**
      * This context only serves as a safeguard. We need to warn users when they mount a plugin without using
      * the <Plugins> component. In that case, the context will not be available, and we can log warnings.
@@ -21,7 +21,10 @@ export const PluginsProvider = memo(PluginsProviderComponent);
  * @param children
  * @deprecated This component should not be used directly. Use the <Plugin> component to create plugins.
  */
-export const Plugins: React.FC = ({ children }) => {
+interface PluginsComponentsProps {
+    children: React.ReactNode;
+}
+export const Plugins = ({ children }: PluginsComponentsProps) => {
     const { addPlugin } = useApp();
     const hasParentPlugin = useContext(PluginsContext);
 

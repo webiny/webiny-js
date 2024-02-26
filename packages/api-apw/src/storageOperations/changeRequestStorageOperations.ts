@@ -1,5 +1,6 @@
 import { ApwChangeRequestStorageOperations } from "./types";
-import { baseFields, CreateApwStorageOperationsParams } from "~/storageOperations/index";
+import { CreateApwStorageOperationsParams } from "~/storageOperations/index";
+import { baseFields } from "~/utils/pickEntryFieldValues";
 import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
 import WebinyError from "@webiny/error";
 import { ApwChangeRequest } from "~/types";
@@ -80,16 +81,28 @@ export const createChangeRequestStorageOperations = (
         },
         async updateChangeRequest(params) {
             const model = await getChangeRequestModel();
+
             /**
              * We're fetching the existing entry here because we're not accepting "app" field as input,
              * but, we still need to retain its value after the "update" operation.
              */
             const existingEntry = await getChangeRequest({ id: params.id });
 
+            /**
+             * Only creator can update the change request
+             */
+            if (existingEntry.createdBy.id !== security.getIdentity().id) {
+                throw new WebinyError(
+                    "A change request can only be updated by its creator.",
+                    "ONLY_CREATOR_CAN_UPDATE_CHANGE_REQUEST"
+                );
+            }
+
             const entry = await security.withoutAuthorization(async () => {
                 return cms.updateEntry(model, params.id, {
                     ...existingEntry,
-                    ...params.data
+                    ...params.data,
+                    savedOn: new Date()
                 });
             });
             return getFieldValues({
@@ -102,9 +115,29 @@ export const createChangeRequestStorageOperations = (
         async deleteChangeRequest(params) {
             const model = await getChangeRequestModel();
 
+            if (!security.getIdentity()) {
+                return true;
+            }
+
+            /**
+             * We're fetching the existing entry
+             */
+            const existingEntry = await getChangeRequest({ id: params.id });
+
+            /**
+             * Only creator can delete the change request
+             */
+            if (existingEntry.createdBy.id !== security.getIdentity().id) {
+                throw new WebinyError(
+                    "A change request can only be deleted by its creator.",
+                    "ONLY_CREATOR_CAN_DELETE_CHANGE_REQUEST"
+                );
+            }
+
             await security.withoutAuthorization(async () => {
                 return cms.deleteEntry(model, params.id);
             });
+
             return true;
         }
     };

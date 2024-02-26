@@ -19,7 +19,7 @@ interface DialogProps {
     open: boolean;
 }
 
-export const Dialog: React.VFC<DialogProps> = ({
+export const Dialog = ({
     open,
     loading,
     title,
@@ -29,7 +29,7 @@ export const Dialog: React.VFC<DialogProps> = ({
     loadingLabel,
     closeDialog,
     onSubmit
-}) => {
+}: DialogProps) => {
     const handleSubmit: FormOnSubmit = data => {
         onSubmit(data);
     };

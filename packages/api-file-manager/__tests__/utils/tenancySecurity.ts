@@ -16,6 +16,12 @@ interface Config {
     identity?: SecurityIdentity | null;
 }
 
+export const defaultIdentity: SecurityIdentity = {
+    id: "12345678",
+    type: "admin",
+    displayName: "John Doe"
+};
+
 export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
     const securityStorage = getStorageOps<SecurityStorageOperations>("security");
     const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
@@ -41,13 +47,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
             });
 
             context.security.addAuthenticator(async () => {
-                return (
-                    identity || {
-                        id: "12345678",
-                        type: "admin",
-                        displayName: "John Doe"
-                    }
-                );
+                return identity || defaultIdentity;
             });
 
             context.security.addAuthorizer(async () => {

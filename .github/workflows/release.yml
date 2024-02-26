@@ -17,11 +17,11 @@ jobs:
     runs-on: webiny-build-packages
     environment: release
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 18
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.client_payload.branch }}
           fetch-depth: 0

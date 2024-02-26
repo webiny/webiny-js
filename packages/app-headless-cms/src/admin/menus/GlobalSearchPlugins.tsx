@@ -16,7 +16,7 @@ import { CmsGroup } from "~/types";
  * Even if we keep a dedicated `AdminGlobalSearchPlugin`, it needs to be converted to a proper class.
  * This can be a "good first issue" for community to solve.
  */
-const GlobalSearchPlugins: React.FC = () => {
+const GlobalSearchPlugins = () => {
     const { getCurrentLocale } = useI18N();
     const response = useQuery<ListMenuCmsGroupsQueryResponse>(LIST_MENU_CONTENT_GROUPS_MODELS);
 

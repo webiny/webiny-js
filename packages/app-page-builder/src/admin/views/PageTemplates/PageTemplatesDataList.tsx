@@ -3,24 +3,20 @@ import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import orderBy from "lodash/orderBy";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 
 import {
     DataList,
     DataListModalOverlay,
     DataListModalOverlayAction,
-    ScrollList,
-    ListItem,
     ListActions,
+    ListItem,
     ListItemMeta,
     ListItemText,
     ListItemTextSecondary,
+    ListSelectBox,
     ListTextOverline,
-    ListSelectBox
+    ScrollList
 } from "@webiny/ui/List";
 import { Checkbox } from "@webiny/ui/Checkbox";
 import { Cell, Grid } from "@webiny/ui/Grid";
@@ -35,7 +31,7 @@ import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/round/d
 import { CreatableItem } from "./PageTemplates";
 import { useMultiSelect } from "~/admin/views/Pages/hooks/useMultiSelect";
 import { ExportTemplatesButton } from "~/editor/plugins/defaultBar/components/ExportTemplateButton";
-import { ReactComponent as FileUploadIcon } from "~/editor/plugins/defaultBar/components/icons/file_upload.svg";
+import { ReactComponent as FileUploadIcon } from "@webiny/app-admin/assets/icons/file_upload.svg";
 import useImportTemplate from "~/admin/views/PageTemplates/hooks/useImportTemplate";
 import { OptionsMenu } from "~/admin/components/OptionsMenu";
 
@@ -48,10 +44,12 @@ const DataListActionsWrapper = styled.div`
     justify-content: flex-end;
     align-items: center;
 `;
+
 interface Sorter {
     label: string;
     sort: string;
 }
+
 const SORTERS: Sorter[] = [
     {
         label: t`Newest to oldest`,
@@ -154,16 +152,20 @@ const PageTemplatesDataList = ({
         }
         return (
             <DataListActionsWrapper>
-                <ButtonSecondary data-testid="new-record-button" onClick={onCreate}>
+                <ButtonSecondary
+                    data-testid="pb-templates-list-new-template-btn"
+                    onClick={onCreate}
+                >
                     <ButtonIcon icon={<AddIcon />} /> {t`New Template`}
                 </ButtonSecondary>
                 <OptionsMenu
+                    data-testid={"pb-templates-list-options-btn"}
                     items={[
                         {
                             label: "Import Templates",
                             icon: <FileUploadIcon />,
                             onClick: showImportDialog,
-                            "data-testid": "import-template-button"
+                            "data-testid": "pb-templates-list-options-import-template-btn"
                         }
                     ]}
                 />
@@ -257,6 +259,9 @@ const PageTemplatesDataList = ({
                                         <ListActions>
                                             {canEdit(template) && (
                                                 <IconButton
+                                                    data-testid={
+                                                        "pb-templates-list-edit-template-btn"
+                                                    }
                                                     icon={<EditIcon />}
                                                     onClick={() =>
                                                         history.push(
@@ -267,6 +272,9 @@ const PageTemplatesDataList = ({
                                             )}
                                             {canDelete(template) && (
                                                 <IconButton
+                                                    data-testid={
+                                                        "pb-templates-list-delete-template-btn"
+                                                    }
                                                     icon={<DeleteIcon />}
                                                     onClick={() => onDelete(template)}
                                                 />

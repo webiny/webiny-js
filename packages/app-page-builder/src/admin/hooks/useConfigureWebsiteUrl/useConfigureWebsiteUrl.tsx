@@ -19,9 +19,7 @@ export const configureWebsiteUrlTitle = t`Configure website URL`;
 interface ConfigureWebsiteUrlMessageProps {
     websiteUrl?: string;
 }
-export const ConfigureWebsiteUrlMessage: React.FC<ConfigureWebsiteUrlMessageProps> = ({
-    websiteUrl
-}) => {
+export const ConfigureWebsiteUrlMessage = ({ websiteUrl }: ConfigureWebsiteUrlMessageProps) => {
     if (typeof websiteUrl !== "string") {
         return (
             <span className={confirmationMessageStyles}>

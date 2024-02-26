@@ -7,7 +7,7 @@ import { validation } from "@webiny/validation";
 
 const { Group, Element } = AddPbWebsiteSettings;
 
-export const SocialMedia: React.FC = () => {
+export const SocialMedia = () => {
     return (
         <Group name={"socialMedia"} label={"Social Media"}>
             <Element>

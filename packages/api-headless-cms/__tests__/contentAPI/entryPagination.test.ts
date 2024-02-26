@@ -1,7 +1,4 @@
 import { mdbid } from "@webiny/utils";
-/**
- * We need the "until" because we are using storage operations directly.
- */
 import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 import { CmsEntry, CmsModel } from "~/types";
 import { setupContentModelGroup, setupContentModels } from "../testHelpers/setup";
@@ -25,13 +22,9 @@ const createFruitData = (counter: number): CmsEntry => {
             displayName: "Admin"
         },
         tenant: "root",
-        publishedOn: new Date().toISOString(),
+        firstPublishedOn: new Date().toISOString(),
+        lastPublishedOn: new Date().toISOString(),
         locale: "en-US",
-        ownedBy: {
-            id: "admin",
-            displayName: "Admin",
-            type: "admin"
-        },
         values: {
             name: `Fruit ${counter}`,
             isSomething: false,
@@ -59,7 +52,7 @@ describe("entry pagination", () => {
     const manageOpts = { path: "manage/en-US" };
 
     const manager = useFruitManageHandler(manageOpts);
-    const { storageOperations, until } = manager;
+    const { storageOperations } = manager;
     /**
      * We need to create N fruit entries
      */
@@ -78,23 +71,6 @@ describe("entry pagination", () => {
                 entry: fruit
             });
         }
-        await until(
-            () =>
-                manager
-                    .listFruits({
-                        limit: 1
-                    })
-                    .then(([data]) => data),
-            ({ data }: any) => {
-                return data.listFruits.meta.totalCount === NUMBER_OF_FRUITS;
-            },
-            {
-                name: "list all fruits",
-                tries: 20,
-                debounce: 2000,
-                wait: 2000
-            }
-        );
     });
 
     it("should paginate through entries", async () => {

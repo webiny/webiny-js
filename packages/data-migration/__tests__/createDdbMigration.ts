@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { makeInjectable, inject, Constructor } from "@webiny/ioc";
 import { DataMigration, DataMigrationContext, PrimaryDynamoTableSymbol } from "~/index";
 
@@ -7,9 +7,9 @@ export const createDdbMigration = (
     opts: { error?: boolean; skip?: boolean } = { error: false, skip: false }
 ): Constructor<DataMigration> => {
     class DynamoDbMigration implements DataMigration {
-        private readonly table: Table;
+        private readonly table: Table<string, string, string>;
 
-        constructor(table: Table) {
+        constructor(table: Table<string, string, string>) {
             this.table = table;
         }
 

@@ -1,47 +1,26 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
-import { $getSelection, $isRangeSelection } from "lexical";
-import { getSelectedNode } from "~/utils/getSelectedNode";
-import { useRichTextEditor } from "~/hooks/useRichTextEditor";
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@webiny/lexical-nodes";
+import { getNodeFromSelection } from "~/hooks/useCurrentElement";
+import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
 
 export const LinkAction = () => {
     const [editor] = useLexicalComposerContext();
-    const [isLink, setIsLink] = useState(false);
-    const { setNodeIsText } = useRichTextEditor();
+    const isLink = useDeriveValueFromSelection(({ rangeSelection }) => {
+        if (!rangeSelection) {
+            return false;
+        }
+        const node = getNodeFromSelection(rangeSelection);
+        return node ? $isLinkNode(node) || $isLinkNode(node.getParent()) : false;
+    });
 
     const insertLink = useCallback(() => {
         if (!isLink) {
-            editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
-            setNodeIsText(false);
+            editor.dispatchCommand(TOGGLE_LINK_COMMAND, { url: "https://" });
         } else {
             editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
         }
     }, [editor, isLink]);
-
-    const updatePopup = useCallback(() => {
-        editor.getEditorState().read(() => {
-            const selection = $getSelection();
-            if (!$isRangeSelection(selection)) {
-                return;
-            }
-            const node = getSelectedNode(selection);
-            // Update links
-            const parent = node.getParent();
-            if ($isLinkNode(parent) || $isLinkNode(node)) {
-                setIsLink(true);
-            } else {
-                setIsLink(false);
-            }
-        });
-    }, [editor]);
-
-    useEffect(() => {
-        document.addEventListener("selectionchange", updatePopup);
-        return () => {
-            document.removeEventListener("selectionchange", updatePopup);
-        };
-    }, [updatePopup]);
 
     return (
         <button

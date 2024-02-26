@@ -12,7 +12,7 @@ import { useUi } from "@webiny/app/hooks/useUi";
 import { validation } from "@webiny/validation";
 import { WrapperWithFileUpload } from "../index";
 // assets
-import { ReactComponent as UploadFileIcon } from "~/editor/plugins/defaultBar/components/icons/file_upload.svg";
+import { ReactComponent as UploadFileIcon } from "@webiny/app-admin/assets/icons/file_upload.svg";
 import { ReactComponent as LinkIcon } from "~/editor/assets/icons/link.svg";
 
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/importTemplate");
@@ -38,9 +38,7 @@ interface ImportTemplateDialogContentProps {
     onFileLink: (url: string) => void;
 }
 
-export const ImportTemplateDialogContent: React.FC<ImportTemplateDialogContentProps> = ({
-    onFileLink
-}) => {
+export const ImportTemplateDialogContent = ({ onFileLink }: ImportTemplateDialogContentProps) => {
     const ui = useUi();
     const [showLink, setShowLink] = useState<boolean>(false);
 

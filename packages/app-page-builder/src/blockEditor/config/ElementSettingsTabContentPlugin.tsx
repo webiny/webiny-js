@@ -1,14 +1,14 @@
 import React from "react";
 import { plugins } from "@webiny/plugins";
 import { SidebarActions } from "~/editor";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import ElementNotLinked from "~/blockEditor/components/elementSettingsTab/ElementNotLinked";
 import VariableSettings from "~/blockEditor/components/elementSettingsTab/VariableSettings";
 import VariablesList from "~/blockEditor/components/elementSettingsTab/VariablesList";
 import { PbBlockEditorCreateVariablePlugin } from "~/types";
 
-export const ElementSettingsTabContentPlugin = createComponentPlugin(
+export const ElementSettingsTabContentPlugin = createDecorator(
     SidebarActions,
     SidebarActionsWrapper => {
         const variablePlugins = plugins.byType<PbBlockEditorCreateVariablePlugin>(

@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler-aws/";
+import { ContextPlugin } from "@webiny/handler-aws";
 
 export const createBenchmarkEnablePlugin = () => {
     const plugin = new ContextPlugin(async context => {

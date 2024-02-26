@@ -7,7 +7,7 @@ import { ContentEntryEditorConfig } from "~/admin/config/contentEntries";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { useDeleteEntry } from "./useDeleteEntry";
 
-export const DeleteEntry: React.FC = () => {
+export const DeleteEntry = () => {
     const { history } = useRouter();
     const { entry, contentModel, loading } = useContentEntry();
     const { canDelete } = usePermission();

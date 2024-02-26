@@ -39,7 +39,7 @@ export interface DynamicSectionProps {
     gridClassName?: string;
 }
 
-const DynamicSection: React.FC<DynamicSectionProps> = ({
+const DynamicSection = ({
     field,
     getBind,
     Label,
@@ -48,7 +48,7 @@ const DynamicSection: React.FC<DynamicSectionProps> = ({
     emptyValue = "",
     renderTitle,
     gridClassName
-}) => {
+}: DynamicSectionProps) => {
     const Bind = getBind();
     const FirstFieldBind = getBind(0);
 

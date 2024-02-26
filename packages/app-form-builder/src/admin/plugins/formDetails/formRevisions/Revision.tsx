@@ -1,10 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-/**
- * Package timeago-react does not have types.
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import {
     ListItem,
     ListItemText,
@@ -64,7 +60,7 @@ interface RevisionProps {
     revision: FbRevisionModel;
 }
 
-const Revision: React.FC<RevisionProps> = props => {
+const Revision = (props: RevisionProps) => {
     const { revision, form } = props;
     const { icon, text: tooltipText } = getIcon(revision);
     const { publishRevision, createRevision, deleteRevision, editRevision, unpublishRevision } =

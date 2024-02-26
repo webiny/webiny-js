@@ -36,21 +36,21 @@ interface IconProps {
     icon: string | undefined;
 }
 
-interface Props {
+interface ImageProps {
     title: string;
     src?: string | null;
     width?: number;
     icon: string | undefined;
 }
 
-const DisplayIcon: React.VFC<IconProps> = ({ icon }) => {
+const DisplayIcon = ({ icon }: IconProps) => {
     if (!icon) {
         return null;
     }
     return <FontAwesomeIcon icon={(icon || "").split("/") as IconProp} />;
 };
 
-export const Image: React.VFC<Props> = ({ src, icon, width = 166 }) => {
+export const Image = ({ src, icon, width = 166 }: ImageProps) => {
     if (!src) {
         return (
             <Container>

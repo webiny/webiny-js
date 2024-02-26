@@ -7,6 +7,7 @@ import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
 import { CoreOutput, VpcConfig } from "~/apps";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils";
+import { LAMBDA_RUNTIME } from "~/constants";
 
 interface GraphqlParams {
     env: Record<string, any>;
@@ -39,7 +40,7 @@ export const ApiGraphql = createAppModule({
         const graphql = app.addResource(aws.lambda.Function, {
             name: "graphql",
             config: {
-                runtime: "nodejs14.x",
+                runtime: LAMBDA_RUNTIME,
                 handler: "handler.handler",
                 role: role.output.arn,
                 timeout: 30,
@@ -197,13 +198,17 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
                             Sid: "PermissionForS3",
                             Effect: "Allow",
                             Action: [
+                                "s3:ListBucket",
                                 "s3:GetObjectAcl",
                                 "s3:DeleteObject",
                                 "s3:PutObjectAcl",
                                 "s3:PutObject",
                                 "s3:GetObject"
                             ],
-                            Resource: `arn:aws:s3:::${core.fileManagerBucketId}/*`
+                            Resource: [
+                                pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}`,
+                                pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}/*`
+                            ]
                         },
                         {
                             Sid: "PermissionForLambda",
@@ -222,6 +227,12 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
                             Effect: "Allow",
                             Action: "events:PutEvents",
                             Resource: core.eventBusArn
+                        },
+                        {
+                            Sid: "PermissionForCloudfront",
+                            Effect: "Allow",
+                            Action: "cloudfront:CreateInvalidation",
+                            Resource: pulumi.interpolate`arn:aws:cloudfront::${awsAccountId}:distribution/*`
                         },
                         // Attach permissions for elastic search domain as well (if ES is enabled).
                         ...(core.elasticsearchDomainArn

@@ -37,7 +37,7 @@ export interface NewFormDialogProps {
     onClose: DialogOnClose;
 }
 
-const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
+const NewFormDialog = ({ open, onClose }: NewFormDialogProps) => {
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();

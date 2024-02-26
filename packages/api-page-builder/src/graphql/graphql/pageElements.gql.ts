@@ -12,7 +12,6 @@ export const createPageElementsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     createdOn: DateTime
                     createdBy: PbCreatedBy
                     name: String
-                    category: String
                     type: String
                     content: JSON
                 }
@@ -20,14 +19,12 @@ export const createPageElementsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                 input PbCreatePageElementInput {
                     name: String!
                     type: String!
-                    category: String!
                     content: JSON!
                 }
 
                 input PbUpdatePageElementInput {
                     name: String
                     type: String
-                    category: String
                     content: JSON
                 }
 
@@ -53,7 +50,7 @@ export const createPageElementsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         id: ID!
                         data: PbUpdatePageElementInput!
                     ): PbPageElementResponse
-                    deletePageElement(id: ID!): PbPageElementResponse
+                    deletePageElement(id: ID!): PbDeleteResponse
                 }
             `,
             resolvers: {
@@ -81,8 +78,9 @@ export const createPageElementsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         });
                     },
                     deletePageElement: async (_, args: any, context) => {
-                        return resolve(() => {
-                            return context.pageBuilder.deletePageElement(args.id);
+                        return resolve(async () => {
+                            await context.pageBuilder.deletePageElement(args.id);
+                            return true;
                         });
                     }
                 }

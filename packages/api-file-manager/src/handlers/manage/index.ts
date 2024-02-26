@@ -1,8 +1,10 @@
 import path from "path";
-import S3 from "aws-sdk/clients/s3";
+import { S3 } from "@webiny/aws-sdk/client-s3";
 import { getEnvironment } from "../utils";
-import managers from "../transform/managers";
+import { imageManager } from "./imageManager";
 import { S3EventHandler } from "@webiny/handler-aws";
+
+const managers = [imageManager];
 
 /**
  * This handler must be run through @webiny/handler-aws/s3

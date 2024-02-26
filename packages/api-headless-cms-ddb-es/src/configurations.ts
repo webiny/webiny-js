@@ -1,16 +1,28 @@
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
+import { CmsContext } from "~/types";
+import { getLastAddedIndexPlugin } from "@webiny/api-elasticsearch";
+import { ElasticsearchIndexRequestBody } from "@webiny/api-elasticsearch/types";
+import { CmsEntryElasticsearchIndexPlugin } from "~/plugins";
 
-interface ElasticsearchConfig {
+interface ConfigurationsElasticsearch {
     index: string;
 }
 
-interface CmsElasticsearchParams {
+export interface CmsElasticsearchParams {
     model: Pick<CmsModel, "tenant" | "locale" | "modelId">;
 }
 
-interface Configurations {
-    es: (params: CmsElasticsearchParams) => ElasticsearchConfig;
+export interface ConfigurationsIndexSettingsParams {
+    context: CmsContext;
+    model: Pick<CmsModel, "locale">;
+}
+
+export interface Configurations {
+    es: (params: CmsElasticsearchParams) => ConfigurationsElasticsearch;
+    indexSettings: (
+        params: ConfigurationsIndexSettingsParams
+    ) => Partial<ElasticsearchIndexRequestBody>;
 }
 
 export const configurations: Configurations = {
@@ -43,5 +55,14 @@ export const configurations: Configurations = {
         return {
             index: prefix + index
         };
+    },
+    indexSettings: ({ context, model }) => {
+        const plugin = getLastAddedIndexPlugin<CmsEntryElasticsearchIndexPlugin>({
+            container: context.plugins,
+            type: CmsEntryElasticsearchIndexPlugin.type,
+            locale: model.locale
+        });
+
+        return plugin ? plugin.body : {};
     }
 };

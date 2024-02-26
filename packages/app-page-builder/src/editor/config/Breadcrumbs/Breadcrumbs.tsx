@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useRecoilCallback, useRecoilSnapshot } from "recoil";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { PbEditorElement } from "~/types";
 import { breadcrumbs } from "./styles";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
@@ -11,7 +11,7 @@ import { EditorContent } from "~/editor";
 
 type ItemsState = Pick<ElementsAtomType, "id" | "type">;
 
-const Breadcrumbs: React.FC = () => {
+const Breadcrumbs = () => {
     const [items, setItems] = useState<ItemsState[]>([]);
     const [, setActiveElementId] = useActiveElementId();
     const [element] = useActiveElement();
@@ -121,7 +121,7 @@ const Breadcrumbs: React.FC = () => {
     );
 };
 
-export const BreadcrumbsPlugin = createComponentPlugin(EditorContent, PrevContent => {
+export const BreadcrumbsPlugin = createDecorator(EditorContent, PrevContent => {
     return function AddBreadcrumbs() {
         return (
             <>

@@ -1,9 +1,5 @@
 import React, { useRef, useCallback, useState, useMemo } from "react";
-/**
- * Package timeago-react does not have types
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import orderBy from "lodash/orderBy";
@@ -98,7 +94,7 @@ interface HandlerCallable {
     (): Promise<void>;
 }
 
-const FormsDataList: React.FC<FormsDataListProps> = props => {
+const FormsDataList = (props: FormsDataListProps) => {
     const editHandlers = useRef<Record<string, HandlerCallable>>({});
     const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState<string>(SORTERS[0].sorter);
@@ -290,7 +286,11 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                     {data.map(form => {
                         const name = form.createdBy.displayName;
                         return (
-                            <ListItem key={form.id} className={listItemMinHeight}>
+                            <ListItem
+                                key={form.id}
+                                className={listItemMinHeight}
+                                data-testid="default-data-list-element"
+                            >
                                 <ListSelectBox>
                                     <Checkbox
                                         onChange={() => multiSelectProps.multiSelect(form)}
@@ -319,13 +319,19 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                                         {upperFirst(form.status)} (v{form.version})
                                     </Typography>
                                     <ListActions>
-                                        {canUpdate(form) && <EditIcon onClick={editRecord(form)} />}
+                                        {canUpdate(form) && (
+                                            <EditIcon
+                                                onClick={editRecord(form)}
+                                                data-testid="edit-form-action"
+                                            />
+                                        )}
                                         {canDelete(form) && (
                                             <ConfirmationDialog
                                                 title={"Confirmation required!"}
                                                 message={
                                                     "This will delete the form and all of its revisions. Are you sure you want to continue?"
                                                 }
+                                                data-testid="form-deletion-confirmation-dialog"
                                             >
                                                 {({ showConfirmation }) => (
                                                     <DeleteIcon
@@ -335,6 +341,7 @@ const FormsDataList: React.FC<FormsDataListProps> = props => {
                                                                 history.push("/form-builder/forms");
                                                             })
                                                         }
+                                                        data-testid="delete-form-action"
                                                     />
                                                 )}
                                             </ConfirmationDialog>

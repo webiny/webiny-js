@@ -3,25 +3,26 @@ import { setContext } from "apollo-link-context";
 import ApolloClient from "apollo-client";
 import { DocumentNode } from "graphql";
 import { useApolloClient } from "@apollo/react-hooks";
+import { useAuth0, Auth0Provider, Auth0ProviderOptions } from "@auth0/auth0-react";
 import { plugins } from "@webiny/plugins";
 import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin";
 import { useSecurity } from "@webiny/app-serverless-cms";
 import { useTenancy, withTenant } from "@webiny/app-tenancy";
-import { useAuth0, Auth0Provider, Auth0ProviderOptions } from "@auth0/auth0-react";
+import { SecurityPermission } from "@webiny/app-security/types";
 import {
     createGetIdentityData,
     GetIdentityDataCallable,
     LOGIN_MT,
     LOGIN_ST
 } from "./createGetIdentityData";
-import { LoginLayout } from "./components/LoginLayout";
-import { LoginContent } from "~/components/LoginContent";
+import { LoginContent, LoginLayout } from "~/components";
 
 export type Auth0Options = Auth0ProviderOptions;
 
 export interface CreateAuthenticationConfig {
     getIdentityData?: GetIdentityDataCallable;
     loginMutation?: DocumentNode;
+    onError?(error: Error): void;
     auth0: Auth0Options;
 }
 
@@ -35,11 +36,21 @@ interface WithGetIdentityDataProps {
     children: React.ReactNode;
 }
 
-export const createAuthentication = ({
-    auth0,
-    ...config
-}: CreateAuthenticationConfig): React.FC => {
-    const withGetIdentityData = (Component: React.FC<WithGetIdentityDataProps>): React.FC => {
+interface PropsWithChildren {
+    children?: React.ReactNode;
+}
+
+const validatePermissions = (permissions: SecurityPermission[]) => {
+    const appPermissions = permissions.filter(p => p.name !== "aacl");
+    if (appPermissions.length === 0) {
+        throw new Error("You have no permissions on this tenant!");
+    }
+};
+
+export const createAuthentication = ({ auth0, onError, ...config }: CreateAuthenticationConfig) => {
+    const withGetIdentityData = (
+        Component: React.ComponentType<WithGetIdentityDataProps>
+    ): React.ComponentType<PropsWithChildren> => {
         return function WithGetIdentityData({ children }) {
             const { isMultiTenant } = useTenancy();
             const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
@@ -49,7 +60,7 @@ export const createAuthentication = ({
         };
     };
 
-    const Authentication: React.FC<AuthenticationProps> = ({ getIdentityData, children }) => {
+    const Authentication = ({ getIdentityData, children }: AuthenticationProps) => {
         const { isAuthenticated, isLoading, getIdTokenClaims, getAccessTokenSilently, logout } =
             useAuth0();
 
@@ -125,8 +136,16 @@ export const createAuthentication = ({
                         logout();
                     }
                 });
+
+                validatePermissions(permissions);
             } catch (err) {
-                console.log(err);
+                console.log("ERROR", err);
+                if (typeof onError === "function") {
+                    onError(err);
+                } else {
+                    console.error(err);
+                    logout();
+                }
             }
         };
 
@@ -158,7 +177,7 @@ export const createAuthentication = ({
     // Compose Login widget with GQL queries and multi-tenancy features.
     const LoginWidget = withGetIdentityData(withTenant(Authentication));
 
-    return function Authentication({ children }) {
+    return function Authentication({ children }: PropsWithChildren) {
         return (
             <Auth0Provider
                 redirectUri={window.location.origin}

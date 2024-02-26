@@ -19,7 +19,7 @@ import { Avatar } from "@webiny/ui/Avatar";
 import { Image } from "@webiny/app/components";
 import { TopAppBarActionItem } from "@webiny/ui/TopAppBar";
 
-const UserMenuRendererImpl = (): React.FC => {
+const UserMenuRendererImpl = () => {
     return function UserMenu() {
         const security = useSecurity();
         const { menuItems } = useUserMenu();
@@ -38,7 +38,7 @@ const UserMenuRendererImpl = (): React.FC => {
     };
 };
 
-const UserMenuHandleRendererImpl = (): React.FC => {
+const UserMenuHandleRendererImpl = () => {
     return function UserMenuHandle() {
         const { identity } = useSecurity();
 
@@ -46,7 +46,21 @@ const UserMenuHandleRendererImpl = (): React.FC => {
             return null;
         }
 
-        const { firstName, lastName, avatar, gravatar } = identity.profile || {};
+        const profile = identity.profile;
+
+        if (!profile) {
+            return (
+                <Avatar
+                    data-testid="logged-in-user-menu-avatar"
+                    src={undefined}
+                    alt={identity.displayName}
+                    fallbackText={identity.displayName}
+                    renderImage={props => <Image {...props} transform={{ width: 100 }} />}
+                />
+            );
+        }
+
+        const { firstName, lastName, avatar, gravatar } = profile;
         const fullName = `${firstName} ${lastName}`;
 
         return (
@@ -67,7 +81,7 @@ const linkStyles = css({
     }
 });
 
-const UserMenuItemRendererImpl = (): React.FC => {
+const UserMenuItemRendererImpl = () => {
     return function UserMenuItemRenderer() {
         const { label, path, icon, onClick, element } = useUserMenuItem();
 
@@ -95,7 +109,7 @@ const UserMenuItemRendererImpl = (): React.FC => {
     };
 };
 
-export const UserMenu: React.FC = () => {
+export const UserMenu = () => {
     return (
         <Fragment>
             <Compose component={UserMenuHandleRendererSpec} with={UserMenuHandleRendererImpl} />

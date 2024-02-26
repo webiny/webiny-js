@@ -143,7 +143,8 @@ const VariablesList = ({ block }: { block: PbEditorElement }) => {
             showConfirmation(async () => {
                 if (block && block.id) {
                     // remove variable from block
-                    const updatedVariables = block.data.variables.filter(
+                    const variables = block.data.variables ?? [];
+                    const updatedVariables = variables.filter(
                         (variable: PbBlockVariable) => variable.id !== variableId
                     );
                     updateElement({

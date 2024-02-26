@@ -54,7 +54,7 @@ const getHTML = (data: PbElementDataTypeSource): string => {
     />`;
 };
 
-const PinterestEmbed: React.FC<PinterestEmbedProps> = props => {
+const PinterestEmbed = (props: PinterestEmbedProps) => {
     const { element } = props;
     const variableValue = useElementVariableValue(element);
     const data: PbElementDataTypeSource = get(element, "data.source");

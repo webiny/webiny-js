@@ -23,15 +23,11 @@ module.exports = async ({ projectApplication, inputs, context }) => {
             context.info(`No packages to build...`);
             return;
         case 1:
-            context.info(
-                `Building ${context.info.hl(projectApplication.packages[0].name)} package...`
-            );
+            context.info(`Building %s package...`, projectApplication.packages[0].name);
             break;
         default:
             multipleBuilds = true;
-            context.info(
-                `Building ${context.info.hl(projectApplication.packages.length)} packages...`
-            );
+            context.info(`Building %s packages...`, projectApplication.packages.length);
             break;
     }
 
@@ -104,7 +100,7 @@ module.exports = async ({ projectApplication, inputs, context }) => {
                         if (multipleBuilds) {
                             stats.success++;
                             const duration = (new Date() - start) / 1000 + "s";
-                            context.success(`${current.name} (${context.success.hl(duration)})`);
+                            context.success(`${current.name} (%s)`, duration);
                         }
 
                         return resolve({
@@ -119,9 +115,8 @@ module.exports = async ({ projectApplication, inputs, context }) => {
                 worker.on("error", () => {
                     stats.error++;
                     context.error(
-                        `An unknown error occurred while building ${context.error.hl(
-                            current.name
-                        )} package.`
+                        `An unknown error occurred while building %s package.`,
+                        current.name
                     );
 
                     resolve({
@@ -138,11 +133,7 @@ module.exports = async ({ projectApplication, inputs, context }) => {
                     }
 
                     stats.error++;
-                    context.error(
-                        `An error occurred while building ${context.error.hl(
-                            current.name
-                        )} package.`
-                    );
+                    context.error(`An error occurred while building %s package.`, current.name);
 
                     resolve({
                         package: current,
@@ -171,15 +162,15 @@ module.exports = async ({ projectApplication, inputs, context }) => {
 
     if (multipleBuilds) {
         context.success(
-            `Successfully built ${context.success.hl(
-                projectApplication.packages.length
-            )} packages in ${context.success.hl(duration)}.`
+            `Successfully built %s packages in %s.`,
+            projectApplication.packages.length,
+            duration
         );
     } else {
         context.success(
-            `Successfully built ${context.success.hl(
-                projectApplication.packages[0].name
-            )} in ${context.success.hl(duration)}.`
+            `Successfully built %s in %s.`,
+            projectApplication.packages[0].name,
+            duration
         );
     }
 };

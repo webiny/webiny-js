@@ -60,3 +60,28 @@ export const assignRecordLifecycleEvents = () => {
         });
     });
 };
+
+export const assignFilterLifecycleEvents = () => {
+    return new ContextPlugin<AcoContext>(async context => {
+        context.aco.filter.onFilterBeforeCreate.subscribe(async params => {
+            tracker.track("filter:beforeCreate", params);
+        });
+        context.aco.filter.onFilterAfterCreate.subscribe(async params => {
+            tracker.track("filter:afterCreate", params);
+        });
+
+        context.aco.filter.onFilterBeforeUpdate.subscribe(async params => {
+            tracker.track("filter:beforeUpdate", params);
+        });
+        context.aco.filter.onFilterAfterUpdate.subscribe(async params => {
+            tracker.track("filter:afterUpdate", params);
+        });
+
+        context.aco.filter.onFilterBeforeDelete.subscribe(async params => {
+            tracker.track("filter:beforeDelete", params);
+        });
+        context.aco.filter.onFilterAfterDelete.subscribe(async params => {
+            tracker.track("filter:afterDelete", params);
+        });
+    });
+};

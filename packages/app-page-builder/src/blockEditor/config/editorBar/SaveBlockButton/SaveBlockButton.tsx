@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import styled from "@emotion/styled";
 import { useLocation, useNavigate } from "@webiny/react-router";
-import { createComponentPlugin, makeComposable } from "@webiny/app-admin";
+import { createDecorator, makeDecoratable } from "@webiny/app-admin";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -11,6 +11,8 @@ import { useBlock } from "~/blockEditor/hooks/useBlock";
 import { SaveBlockActionEvent } from "~/blockEditor/config/eventActions/saveBlock/event";
 import { useDisplayMode } from "~/editor/hooks/useDisplayMode";
 import { DisplayMode } from "~/types";
+import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
+import { UpdatePageBlockInput } from "~/admin/contexts/AdminPageBuilder/PageBlocks/BlockGatewayInterface";
 
 const SpinnerWrapper = styled.div`
     position: relative;
@@ -18,7 +20,7 @@ const SpinnerWrapper = styled.div`
     margin-left: -4px !important;
 `;
 
-const DefaultSaveBlockButton: React.FC = () => {
+const DefaultSaveBlockButton = () => {
     const [block] = useBlock();
     const eventActionHandler = useEventActionHandler();
     const { key } = useLocation();
@@ -26,6 +28,7 @@ const DefaultSaveBlockButton: React.FC = () => {
     const { showSnackbar } = useSnackbar();
     const [loading, setLoading] = useState(false);
     const { setDisplayMode } = useDisplayMode();
+    const { updateBlock } = usePageBlocks();
 
     const saveChanges = useCallback(() => {
         setLoading(true);
@@ -33,6 +36,12 @@ const DefaultSaveBlockButton: React.FC = () => {
         setTimeout(() => {
             eventActionHandler.trigger(
                 new SaveBlockActionEvent({
+                    execute({ blockCategory, ...data }: UpdatePageBlockInput) {
+                        return updateBlock({
+                            ...data,
+                            category: blockCategory
+                        });
+                    },
                     debounce: false,
                     onFinish: () => {
                         setLoading(false);
@@ -50,7 +59,11 @@ const DefaultSaveBlockButton: React.FC = () => {
     }, [block.name]);
 
     return (
-        <ButtonPrimary onClick={saveChanges} disabled={loading}>
+        <ButtonPrimary
+            onClick={saveChanges}
+            disabled={loading}
+            data-testid={"pb-blocks-editor-save-changes-btn"}
+        >
             {loading && (
                 <ButtonIcon
                     icon={
@@ -69,9 +82,9 @@ const DefaultSaveBlockButton: React.FC = () => {
     );
 };
 
-export const SaveBlockButton = makeComposable("SaveBlockButton", DefaultSaveBlockButton);
+export const SaveBlockButton = makeDecoratable("SaveBlockButton", DefaultSaveBlockButton);
 
-export const SaveBlockButtonPlugin = createComponentPlugin(EditorBar.RightSection, RightSection => {
+export const SaveBlockButtonPlugin = createDecorator(EditorBar.RightSection, RightSection => {
     return function AddSaveBlockButton(props) {
         return (
             <RightSection>

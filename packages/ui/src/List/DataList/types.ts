@@ -27,16 +27,16 @@ export type SortersProp = Array<{ label: string; value: any }>;
 
 export type Props = {
     // Pass a function to take full control of list render.
-    children?: Function;
+    children?: <T = Record<string, any>>(props: T) => React.ReactNode;
 
     // A title of paginated list.
     title?: React.ReactNode;
 
     // FormData that needs to be shown in the list.
-    data?: Object[];
+    data?: Record<string, any>[];
 
     // A callback that must refresh current view by repeating the previous query.
-    refresh?: Function;
+    refresh?: () => void;
 
     // If true, Loader component will be shown, disallowing any interaction.
     loading?: boolean;
@@ -48,13 +48,13 @@ export type Props = {
     pagination?: PaginationProp;
 
     // Triggered once the page has been selected.
-    setPage?: Function;
+    setPage?: (page: string) => void;
 
     // Triggered once a sorter has been selected.
-    setSorters?: Function;
+    setSorters?: (sorter: any) => void;
 
     // Triggered once selected filters are submitted.
-    setFilters?: Function;
+    setFilters?: (filters: any) => void;
 
     // Provide all sorters options and callbacks here.
     sorters?: SortersProp;

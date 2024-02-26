@@ -9,7 +9,7 @@ import { PbElement } from "~/types";
 interface UnlinkBlockActionPropsType {
     children: React.ReactElement;
 }
-const UnlinkBlockAction: React.FC<UnlinkBlockActionPropsType> = ({ children }) => {
+const UnlinkBlockAction = ({ children }: UnlinkBlockActionPropsType) => {
     const [element] = useActiveElement();
     const { getElementTree } = useEventActionHandler();
     const updateElement = useUpdateElement();
@@ -18,7 +18,7 @@ const UnlinkBlockAction: React.FC<UnlinkBlockActionPropsType> = ({ children }) =
         if (element) {
             // we need to drop blockId and variables properties when unlinking, so they are separated from all other element data
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { blockId, variables, ...newData } = element.data;
+            const { blockId, variables = [], ...newData } = element.data;
             const pbElement = (await getElementTree({
                 element: { ...element, data: newData }
             })) as PbElement;

@@ -2,11 +2,49 @@ import React from "react";
 import { ReactComponent as BooleanIcon } from "@material-design-icons/svg/outlined/toggle_on.svg";
 import { CmsModelFieldTypePlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { Select } from "@webiny/ui/Select";
+import { Cell, Grid } from "@webiny/ui/Grid";
 import { Bind } from "@webiny/form";
+import { Radio, RadioGroup } from "@webiny/ui/Radio";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
+
+interface OptionsProps {
+    onChange: (value: boolean) => void;
+    value?: boolean | "true" | "false";
+}
+
+const Options = ({ onChange, value: initialValue }: OptionsProps) => {
+    const value = initialValue === true || initialValue === "true";
+
+    return (
+        <RadioGroup label={"Default value"}>
+            {() => {
+                return (
+                    <>
+                        <div>
+                            <Radio
+                                label="True"
+                                value={value}
+                                onChange={() => {
+                                    onChange(true);
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <Radio
+                                label="False"
+                                value={!value}
+                                onChange={() => {
+                                    onChange(false);
+                                }}
+                            />
+                        </div>
+                    </>
+                );
+            }}
+        </RadioGroup>
+    );
+};
 
 const plugin: CmsModelFieldTypePlugin = {
     type: "cms-editor-field-type",
@@ -25,6 +63,9 @@ const plugin: CmsModelFieldTypePlugin = {
                 validation: [],
                 renderer: {
                     name: ""
+                },
+                settings: {
+                    defaultValue: false
                 }
             };
         },
@@ -33,13 +74,9 @@ const plugin: CmsModelFieldTypePlugin = {
                 <Grid>
                     <Cell span={12}>
                         <Bind name={"settings.defaultValue"}>
-                            <Select
-                                label={t`Default value`}
-                                description={"Default value for the field"}
-                            >
-                                <option value={"true"}>True</option>
-                                <option value={""}>False</option>
-                            </Select>
+                            {bind => {
+                                return <Options onChange={bind.onChange} value={bind.value} />;
+                            }}
                         </Bind>
                     </Cell>
                 </Grid>

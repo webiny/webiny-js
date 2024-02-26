@@ -9,22 +9,24 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.22.6",
+    "@babel/runtime": "^7.23.9",
     "@editorjs/editorjs": "^2.20.1",
     "@types/react": "17.0.39",
     "classnames": "^2.3.1",
-    "react": "17.0.2"
+    "react": "17.0.2",
+    "sanitize-html": "2.11.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.22.6",
-    "@babel/core": "^7.22.8",
-    "@babel/plugin-transform-modules-commonjs": "^7.16.8",
-    "@babel/preset-env": "^7.22.7",
-    "@babel/preset-react": "^7.22.5",
-    "@babel/preset-typescript": "^7.22.5",
+    "@babel/cli": "^7.23.9",
+    "@babel/core": "^7.23.9",
+    "@babel/plugin-transform-modules-commonjs": "^7.23.3",
+    "@babel/preset-env": "^7.23.9",
+    "@babel/preset-react": "^7.23.3",
+    "@babel/preset-typescript": "^7.23.3",
+    "@types/sanitize-html": "^2.9.0",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "rimraf": "^3.0.2",
+    "rimraf": "^5.0.5",
     "typescript": "4.7.4"
   },
   "publishConfig": {

@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
+import { AcoWithConfig } from "@webiny/app-aco";
 import { Sidebar } from "./Sidebar";
 import { Main } from "./Main";
 import {
@@ -10,8 +11,10 @@ import {
 import { AcoProvider, useNavigateFolder } from "@webiny/app-aco";
 import { useApolloClient } from "@apollo/react-hooks";
 import { usePagesPermissions } from "~/hooks/permissions";
+import { PagesListProvider } from "~/admin/views/Pages/hooks/usePagesList";
+import { PageListWithConfig } from "~/admin/config/pages";
 
-const View: React.VFC = () => {
+const View = () => {
     const { currentFolderId } = useNavigateFolder();
 
     return (
@@ -26,7 +29,7 @@ const View: React.VFC = () => {
     );
 };
 
-const Index: React.VFC = () => {
+const Index = () => {
     const client = useApolloClient();
     const { canAccessOnlyOwn } = usePagesPermissions();
 
@@ -45,7 +48,13 @@ const Index: React.VFC = () => {
             createNavigateFolderStorageKey={createNavigateFolderStorageKey}
             own={canAccessOnlyOwn()}
         >
-            <View />
+            <PageListWithConfig>
+                <AcoWithConfig>
+                    <PagesListProvider>
+                        <View />
+                    </PagesListProvider>
+                </AcoWithConfig>
+            </PageListWithConfig>
         </AcoProvider>
     );
 };

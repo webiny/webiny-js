@@ -1,4 +1,7 @@
-export const composeAsync = (functions: Array<Function> = []): Function => {
+export interface ComposeAsyncCallable {
+    (...args: any[]): Promise<any>;
+}
+export const composeAsync = (functions: ComposeAsyncCallable[] = []) => {
     return (input: unknown): Promise<any> => {
         if (!functions.length) {
             return Promise.resolve();
@@ -28,7 +31,10 @@ export const composeAsync = (functions: Array<Function> = []): Function => {
     };
 };
 
-export const composeSync = (functions: Array<Function> = []): Function => {
+export interface ComposeSyncCallable {
+    (...args: any[]): any;
+}
+export const composeSync = (functions: ComposeSyncCallable[] = []) => {
     return (input: unknown) => {
         if (!functions.length) {
             return input;

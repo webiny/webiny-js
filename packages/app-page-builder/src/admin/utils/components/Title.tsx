@@ -30,7 +30,7 @@ interface TitleProps {
     plugin: string;
     refresh: () => void;
 }
-const Title: React.FC<TitleProps> = props => {
+const Title = (props: TitleProps) => {
     const { plugin: pluginName, title } = props;
 
     const client = useApolloClient();

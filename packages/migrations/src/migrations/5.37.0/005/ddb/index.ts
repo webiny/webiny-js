@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import {
     DataMigration,
     DataMigrationContext,
@@ -36,7 +36,7 @@ export class FileManager_5_37_0_005 implements DataMigration<FileDataMigrationCh
     private readonly fileEntity: ReturnType<typeof createDdbFileEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.entryEntity = createDdbEntryEntity(table);
         this.localeEntity = createLocaleEntity(table);
         this.fileEntity = createDdbFileEntity(table);

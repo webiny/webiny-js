@@ -1,6 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
 import { Page } from "~/types";
-import { waitPage } from "./utils/waitPage";
 
 jest.setTimeout(100000);
 
@@ -34,7 +33,7 @@ describe("page full URL test", () => {
         for (let i = 0; i < 3; i++) {
             const [response] = await createPage({ category: "category" });
             const page = response.data.pageBuilder.createPage.data;
-            await waitPage(handler, page);
+
             const [updateResponse] = await updatePage({
                 id: page.id,
                 data: {
@@ -42,7 +41,7 @@ describe("page full URL test", () => {
                 }
             });
             const updatedPage = updateResponse.data.pageBuilder.updatePage.data;
-            await waitPage(handler, updatedPage);
+
             pages.push(updatedPage);
         }
 

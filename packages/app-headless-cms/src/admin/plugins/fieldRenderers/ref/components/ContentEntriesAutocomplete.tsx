@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import debounce from "lodash/debounce";
-import NewRefEntryFormDialog, { NewEntryButton } from "./NewRefEntryFormDialog";
+import { NewEntryButton } from "./NewEntryButton";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { i18n } from "@webiny/app/i18n";
 import { Link } from "@webiny/react-router";
@@ -13,6 +13,8 @@ import { BindComponentRenderProp } from "@webiny/form";
 import { OptionItem } from "./types";
 import { EntryStatus } from "./EntryStatus";
 import { parseIdentifier } from "@webiny/utils";
+import { useModels } from "~/admin/hooks";
+import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/components/NewReferencedEntryDialog";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -31,7 +33,9 @@ interface ContentEntriesAutocompleteProps {
     bind: BindComponentRenderProp;
     field: CmsModelField;
 }
-const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({ bind, field }) => {
+const ContentEntriesAutocomplete = ({ bind, field }: ContentEntriesAutocompleteProps) => {
+    const { models } = useModels();
+    const [showNewEntryModal, setShowNewEntryModal] = useState(false);
     const { options, setSearch, value, loading, onChange } = useReference({
         bind,
         field
@@ -48,24 +52,27 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
         });
     }
     const { renderNewEntryModal, refModelId, helpText } = useNewRefEntry({ field });
+    const model = models.find(model => model.modelId === refModelId);
 
     const item = getItemOption(options, bind.value ? bind.value.id : null);
+
     /*
      * Wrap AutoComplete input in NewRefEntry modal.
      */
     if (renderNewEntryModal) {
         return (
-            <NewRefEntryFormDialog
-                modelId={refModelId}
-                onChange={entry => {
-                    /**
-                     * TODO @ts-refactor @ashutosh
-                     * Need to figure out correct types.
-                     */
-                    // @ts-ignore
-                    return onChange(entry, entry);
-                }}
-            >
+            <>
+                {showNewEntryModal && model ? (
+                    <NewReferencedEntryDialog
+                        onClose={() => setShowNewEntryModal(false)}
+                        model={model}
+                        onChange={entry => {
+                            /* TODO: The `any` argument is wrong, and needs revision. */
+                            return onChange(entry, entry);
+                        }}
+                    />
+                ) : null}
+
                 <AutoComplete
                     {...bind}
                     renderItem={renderItem}
@@ -82,9 +89,9 @@ const ContentEntriesAutocomplete: React.FC<ContentEntriesAutocompleteProps> = ({
                         </>
                     }
                     onInput={debounce(search => setSearch(search), 250)}
-                    noResultFound={<NewEntryButton />}
+                    noResultFound={<NewEntryButton onClick={() => setShowNewEntryModal(true)} />}
                 />
-            </NewRefEntryFormDialog>
+            </>
         );
     }
 

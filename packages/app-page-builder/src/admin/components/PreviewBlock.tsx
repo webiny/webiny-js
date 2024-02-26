@@ -1,16 +1,13 @@
 import React from "react";
-import { Content as ContentType } from "@webiny/app-page-builder-elements/types";
 import { Content } from "@webiny/app-page-builder-elements/components/Content";
 import { PbPageBlock, PbEditorElement } from "~/types";
-import { addElementId } from "~/editor/helpers";
-import { PageElementsProvider } from "~/contexts/PageBuilder/PageElementsProvider";
 
-export const PreviewBlock = ({ element }: { element: PbPageBlock | PbEditorElement }) => {
-    const elementsWithIds = addElementId(element.content);
+interface PreviewBlockProps {
+    element: PbPageBlock | PbEditorElement;
+}
 
-    return (
-        <PageElementsProvider>
-            <Content content={elementsWithIds as ContentType} />
-        </PageElementsProvider>
-    );
-};
+export const PreviewBlock = React.memo(({ element }: PreviewBlockProps) => {
+    return <Content content={element.content} />;
+});
+
+PreviewBlock.displayName = "PreviewBlock";

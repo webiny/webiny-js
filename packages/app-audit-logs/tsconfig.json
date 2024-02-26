@@ -1,0 +1,46 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [
+    { "path": "../api-audit-logs" },
+    { "path": "../app" },
+    { "path": "../app-aco" },
+    { "path": "../app-admin" },
+    { "path": "../app-security" },
+    { "path": "../form" },
+    { "path": "../plugins" },
+    { "path": "../react-properties" },
+    { "path": "../react-router" },
+    { "path": "../ui" }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
+      "@webiny/api-audit-logs": ["../api-audit-logs/src"],
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"],
+      "@webiny/app-aco/*": ["../app-aco/src/*"],
+      "@webiny/app-aco": ["../app-aco/src"],
+      "@webiny/app-admin/*": ["../app-admin/src/*"],
+      "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-security/*": ["../app-security/src/*"],
+      "@webiny/app-security": ["../app-security/src"],
+      "@webiny/form/*": ["../form/src/*"],
+      "@webiny/form": ["../form/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/react-properties/*": ["../react-properties/src/*"],
+      "@webiny/react-properties": ["../react-properties/src"],
+      "@webiny/react-router/*": ["../react-router/src/*"],
+      "@webiny/react-router": ["../react-router/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"]
+    },
+    "baseUrl": "."
+  }
+}

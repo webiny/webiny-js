@@ -7,7 +7,7 @@ interface ImageProps {
     element: PbEditorElement;
 }
 
-const Image: React.FC<ImageProps> = props => {
+const Image = (props: ImageProps) => {
     const { element, ...rest } = props;
     return <PeImage element={element as Element} {...rest} />;
 };

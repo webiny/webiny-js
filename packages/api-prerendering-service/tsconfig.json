@@ -3,6 +3,7 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api" },
+    { "path": "../aws-sdk" },
     { "path": "../error" },
     { "path": "../handler" },
     { "path": "../handler-client" },
@@ -19,6 +20,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],

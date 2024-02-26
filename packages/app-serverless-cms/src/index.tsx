@@ -28,8 +28,10 @@ export {
     Plugins,
     Plugin,
     makeComposable,
+    makeDecoratable,
     createComponentPlugin,
     createProviderPlugin,
+    createDecorator,
     createProvider,
     MenuItem,
     MenuItemRenderer,
@@ -48,6 +50,7 @@ export {
 export type {
     ComposeProps,
     HigherOrderComponent,
+    Decorator,
     ProviderProps,
     LayoutProps,
     LoginScreenProps,
@@ -66,3 +69,4 @@ export { useTenancy } from "@webiny/app-tenancy";
 export type { Tenant } from "@webiny/app-tenancy";
 
 export { AddPbWebsiteSettings } from "@webiny/app-page-builder";
+export * from "./apolloClientFactory";

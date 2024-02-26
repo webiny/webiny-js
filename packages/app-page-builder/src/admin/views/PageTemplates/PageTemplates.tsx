@@ -13,7 +13,7 @@ import { CmsModel } from "@webiny/app-headless-cms/types";
 
 import PageTemplatesDataList from "./PageTemplatesDataList";
 import PageTemplateDetails from "./PageTemplateDetails";
-import CreateStaticTemplateDialog from "./CreateStaticTemplateDialog";
+import { CreateStaticTemplateDialog } from "./CreateStaticTemplateDialog";
 import { PbPageTemplate } from "~/types";
 import { LIST_PAGE_TEMPLATES, CREATE_PAGE_TEMPLATE, DELETE_PAGE_TEMPLATE } from "./graphql";
 import { useTemplatesPermissions } from "~/hooks/permissions";
@@ -26,7 +26,7 @@ export interface CreatableItem {
     };
 }
 
-const PageTemplates: React.FC = () => {
+const PageTemplates = () => {
     const { history } = useRouter();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();

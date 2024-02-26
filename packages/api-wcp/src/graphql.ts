@@ -17,6 +17,7 @@ export const createWcpGraphQL = () => {
                 multiTenancy: WcpProjectPackageFeaturesFeature
                 advancedPublishingWorkflow: WcpProjectPackageFeaturesFeature
                 advancedAccessControlLayer: WcpProjectPackageFeaturesFeature
+                auditLogs: WcpProjectPackageFeaturesFeature
             }
 
             type WcpProjectPackage {

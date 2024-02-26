@@ -1,14 +1,14 @@
-import React, { useEffect } from "react";
-import { HigherOrderComponent, useApp } from "~/index";
+import { useEffect } from "react";
+import { GenericComponent, Decorator, useApp } from "~/index";
 
 export interface ProviderProps {
-    hoc: HigherOrderComponent;
+    hoc: Decorator<GenericComponent>;
 }
 
 /**
  * Register a new React context provider.
  */
-export const Provider: React.FC<ProviderProps> = ({ hoc }) => {
+export const Provider = ({ hoc }: ProviderProps) => {
     const { addProvider } = useApp();
 
     useEffect(() => {

@@ -39,11 +39,7 @@ interface RevisionsOutput {
     options: RevisionsOutputOption[];
     value: RevisionsOutputOption | null;
 }
-const FormElementAdvancedSettings: React.FC<FormElementAdvancedSettingsProps> = ({
-    Bind,
-    submit,
-    data
-}) => {
+const FormElementAdvancedSettings = ({ Bind, submit, data }: FormElementAdvancedSettingsProps) => {
     const listQuery = useQuery<ListFormsQueryResponse>(LIST_FORMS, { fetchPolicy: "network-only" });
 
     const selectedForm = useMemo(() => {

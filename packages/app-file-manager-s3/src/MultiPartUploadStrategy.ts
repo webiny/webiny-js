@@ -23,7 +23,7 @@ export class MultiPartUploadStrategy implements FileUploadStrategy {
 
         // For dev purposes, we take this global var into consideration.
         if (process.env.NODE_ENV === "development") {
-            // @ts-ignore
+            // @ts-expect-error
             const windowSize = window["fmUploadChunkSize"];
             if (windowSize) {
                 return windowSize;
@@ -39,7 +39,7 @@ export class MultiPartUploadStrategy implements FileUploadStrategy {
 
         // For dev purposes, we take this global var into consideration.
         if (process.env.NODE_ENV === "development") {
-            // @ts-ignore
+            // @ts-expect-error
             const windowChunks = window["fmUploadParallelChunks"];
             if (windowChunks) {
                 return windowChunks;

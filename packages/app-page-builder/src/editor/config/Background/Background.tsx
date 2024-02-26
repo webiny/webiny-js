@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { css } from "emotion";
 import { EditorContent } from "~/editor";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
@@ -12,7 +12,7 @@ const backgroundStyle = css({
     minHeight: "100%"
 });
 
-const Background: React.FC = () => {
+const Background = () => {
     const [activeElement, setActiveElement] = useActiveElement();
 
     const deactivateElement = useCallback(() => {
@@ -25,7 +25,7 @@ const Background: React.FC = () => {
     return <div className={backgroundStyle} onClick={deactivateElement} />;
 };
 
-export const BackgroundPlugin = createComponentPlugin(EditorContent, PrevContent => {
+export const BackgroundPlugin = createDecorator(EditorContent, PrevContent => {
     return function AddBackground() {
         return (
             <>

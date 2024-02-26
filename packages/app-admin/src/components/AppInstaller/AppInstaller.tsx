@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { default as localStorage } from "store";
-import { LoginScreen } from "~/index";
+import { LoginScreen, Tags } from "~/index";
 import { useSecurity } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -18,7 +18,11 @@ declare global {
 import { Wrapper, InnerContent, InstallContent, installerSplitView, SuccessDialog } from "./styled";
 import { config as appConfig } from "@webiny/app/config";
 
-export const AppInstaller: React.FC = ({ children }) => {
+interface AppInstallerProps {
+    children: React.ReactNode;
+}
+
+export const AppInstaller = ({ children }: AppInstallerProps) => {
     const tenantId = localStorage.get("webiny_tenant") || "root";
     const lsKey = `webiny_installation_${tenantId}`;
     const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
@@ -55,19 +59,21 @@ export const AppInstaller: React.FC = ({ children }) => {
 
     const renderLayout = (content: React.ReactNode, secure = false): React.ReactElement => {
         return (
-            <SplitView className={installerSplitView}>
-                <LeftPanel span={2}>
-                    <Sidebar
-                        allInstallers={installers}
-                        installer={installer}
-                        showLogin={showLogin}
-                    />
-                </LeftPanel>
-                <RightPanel span={10}>
-                    {!showLogin && !secure && content}
-                    {(showLogin || secure) && <LoginScreen>{content}</LoginScreen>}
-                </RightPanel>
-            </SplitView>
+            <Tags tags={{ installer: true }}>
+                <SplitView className={installerSplitView}>
+                    <LeftPanel span={2}>
+                        <Sidebar
+                            allInstallers={installers}
+                            installer={installer}
+                            showLogin={showLogin}
+                        />
+                    </LeftPanel>
+                    <RightPanel span={10}>
+                        {!showLogin && !secure && content}
+                        {(showLogin || secure) && <LoginScreen>{content}</LoginScreen>}
+                    </RightPanel>
+                </SplitView>
+            </Tags>
         );
     };
 

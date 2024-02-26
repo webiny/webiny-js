@@ -19,7 +19,11 @@ export const BaseFields = ({ model }: BaseFieldsProps) => {
             <ModelProvider model={model}>
                 <Fields
                     contentModel={model}
-                    Bind={Bind as any}
+                    /**
+                     * TODO: Figure out correct Bind type
+                     */
+                    // @ts-expect-error
+                    Bind={Bind}
                     fields={fields}
                     layout={model.layout || []}
                 />

@@ -15,10 +15,17 @@ import {
 } from "@webiny/app-cognito-authenticator/hooks/useSignIn";
 import StateContainer from "./StateContainer";
 import { alignRight, alignCenter, InnerContent, Title, errorMessage } from "./StyledComponents";
+import { CognitoFederatedProvider } from "~/index";
+import { FederatedLogin } from "./FederatedLogin";
 
-const SignIn: React.FC = () => {
+interface SignInProps {
+    federatedProviders?: CognitoFederatedProvider[];
+}
+
+const SignIn = (props: SignInProps) => {
     const { message, changeState } = useAuthenticator();
     const { signIn, loading, error, shouldRender } = useSignIn();
+    const { federatedProviders = [] } = props;
 
     if (!shouldRender) {
         return null;
@@ -101,6 +108,9 @@ const SignIn: React.FC = () => {
                                     </a>
                                 </Cell>
                             </Grid>
+                            {federatedProviders.length ? (
+                                <FederatedLogin providers={federatedProviders} />
+                            ) : null}
                         </InnerContent>
                     </Elevation>
                 )}

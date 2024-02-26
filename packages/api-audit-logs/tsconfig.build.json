@@ -1,0 +1,33 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api/tsconfig.build.json" },
+    { "path": "../api-aco/tsconfig.build.json" },
+    { "path": "../api-apw/tsconfig.build.json" },
+    { "path": "../api-form-builder/tsconfig.build.json" },
+    { "path": "../api-mailer/tsconfig.build.json" },
+    { "path": "../api-page-builder/tsconfig.build.json" },
+    { "path": "../api-page-builder-import-export/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" },
+    { "path": "../api-admin-users/tsconfig.build.json" },
+    { "path": "../api-file-manager/tsconfig.build.json" },
+    { "path": "../api-headless-cms/tsconfig.build.json" },
+    { "path": "../api-i18n/tsconfig.build.json" },
+    { "path": "../api-security/tsconfig.build.json" },
+    { "path": "../api-tenancy/tsconfig.build.json" },
+    { "path": "../api-wcp/tsconfig.build.json" },
+    { "path": "../handler-aws/tsconfig.build.json" },
+    { "path": "../handler-graphql/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
+    "baseUrl": "."
+  }
+}

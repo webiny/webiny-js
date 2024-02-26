@@ -218,7 +218,7 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
 
             if (childFields.length > 0) {
                 if (field.multipleValues) {
-                    const inputValues = value[field.storageId] as any[] | undefined;
+                    const inputValues = value[field.storageId] as unknown as Record<string, any>[];
                     if (!inputValues || Array.isArray(inputValues) === false) {
                         return output;
                     }

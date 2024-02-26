@@ -9,7 +9,6 @@ export interface PageElement {
     id: string;
     name: string;
     type: "element" | "block";
-    category: string;
     content: any;
     preview?: Partial<File>;
     createdOn: string;
@@ -75,7 +74,7 @@ export interface PageSettings {
      */
     [key: string]: any;
 }
-export interface Page {
+export interface Page<T = Record<string, any> | null> {
     id: string;
     pid: string;
     locale: string;
@@ -85,7 +84,7 @@ export interface Page {
     createdFrom: string | null;
     path: string;
     category: string;
-    content: Record<string, any> | null;
+    content: T;
     publishedOn: string | null;
     version: number;
     settings: PageSettings;
@@ -257,7 +256,7 @@ export interface MenuStorageOperations {
     /**
      * Get a single menu item by given params.
      */
-    get(params: MenuStorageOperationsGetParams): Promise<Menu>;
+    get(params: MenuStorageOperationsGetParams): Promise<Menu | null>;
     /**
      * Get all menu items by given params.
      */
@@ -343,7 +342,7 @@ export interface PageElementStorageOperations {
     ): Promise<PageElementStorageOperationsListResponse>;
     create(params: PageElementStorageOperationsCreateParams): Promise<PageElement>;
     update(params: PageElementStorageOperationsUpdateParams): Promise<PageElement>;
-    delete(params: PageElementStorageOperationsDeleteParams): Promise<PageElement>;
+    delete(params: PageElementStorageOperationsDeleteParams): Promise<void>;
 }
 
 /**
@@ -822,6 +821,7 @@ export interface PageBlockStorageOperationsListParams {
         tenant: string;
         locale: string;
         createdBy?: string;
+        blockCategory?: string;
     };
     sort?: string[];
     limit?: number;
@@ -879,7 +879,7 @@ export interface PageBlockStorageOperations {
 
     create(params: PageBlockStorageOperationsCreateParams): Promise<PageBlock>;
     update(params: PageBlockStorageOperationsUpdateParams): Promise<PageBlock>;
-    delete(params: PageBlockStorageOperationsDeleteParams): Promise<PageBlock>;
+    delete(params: PageBlockStorageOperationsDeleteParams): Promise<void>;
 }
 
 /**

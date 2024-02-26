@@ -1,5 +1,3 @@
-import { makeComposable } from "@webiny/app-admin";
+import { createVoidComponent, makeDecoratable } from "@webiny/app-admin";
 
-export const TenantFormFields = makeComposable("TenantFormFields", () => {
-    return null;
-});
+export const TenantFormFields = makeDecoratable("TenantFormFields", createVoidComponent());

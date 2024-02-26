@@ -2,12 +2,12 @@ import { validation } from "@webiny/validation";
 /**
  * Package @commodo/fields does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { boolean, fields, string, withFields, number } from "@commodo/fields";
 /**
  * Package commodo-fields-object does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { object } from "commodo-fields-object";
 
 export const FormFieldsModel = withFields({
@@ -39,6 +39,16 @@ export const FormFieldsModel = withFields({
         })()
     }),
     settings: object({ value: {} })
+})();
+
+export const FormStepsModel = withFields({
+    steps: fields({
+        value: {},
+        instanceOf: withFields({
+            title: string(),
+            layout: object({ value: [] })
+        })()
+    })
 })();
 
 export const FormSettingsModel = withFields({
@@ -89,7 +99,7 @@ export const FormUpdateDataModel = withFields({
         value: [],
         instanceOf: FormFieldsModel
     }),
-    layout: object({ value: [] }),
+    steps: object({ instanceOf: FormStepsModel, value: {} }),
     settings: fields({ instanceOf: FormSettingsModel, value: {} }),
     triggers: object()
 })();
@@ -118,7 +128,7 @@ export const FormSubmissionCreateDataModel = withFields({
             parent: string({ validation: validation.create("required") }),
             name: string({ validation: validation.create("required") }),
             version: number({ validation: validation.create("required") }),
-            layout: object({ value: [] }),
+            steps: object({ instanceOf: FormStepsModel, value: {} }),
             fields: fields({
                 list: true,
                 value: [],

@@ -1,12 +1,13 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getSelection, $isRangeSelection, LexicalCommand } from "lexical";
-import { Compose, makeComposable } from "@webiny/react-composition";
+import { LexicalCommand } from "lexical";
+import { Compose, makeDecoratable } from "@webiny/react-composition";
 import { FontColorActionContext } from "~/context/FontColorActionContext";
-import { $isFontColorNode, ADD_FONT_COLOR_COMMAND, FontColorPayload } from "~/nodes/FontColorNode";
+import { $isFontColorNode, ADD_FONT_COLOR_COMMAND, FontColorPayload } from "@webiny/lexical-nodes";
 import { getSelectedNode } from "~/utils/getSelectedNode";
+import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
 
-export const FontColorPicker = makeComposable("FontColorPicker", (): JSX.Element | null => {
+export const FontColorPicker = makeDecoratable("FontColorPicker", (): JSX.Element | null => {
     useEffect(() => {
         console.log("Default FontColorPicker, please add your own component");
     }, []);
@@ -17,28 +18,27 @@ interface FontActionColorPicker {
     element: JSX.Element;
 }
 
-const FontActionColorPicker: React.FC<FontActionColorPicker> = ({ element }): JSX.Element => {
+const FontActionColorPicker = ({ element }: FontActionColorPicker): JSX.Element => {
     return <Compose component={FontColorPicker} with={() => () => element} />;
 };
 
-export interface FontColorAction extends React.FC<unknown> {
+export type FontColorAction = React.ComponentType<unknown> & {
     ColorPicker: typeof FontActionColorPicker;
-}
+};
 
 export const FontColorAction: FontColorAction = () => {
     const [editor] = useLexicalComposerContext();
-    const [fontColor, setFontColor] = useState<string>("#000");
+    const fontColor = useDeriveValueFromSelection(({ rangeSelection }) => {
+        if (!rangeSelection) {
+            return "#000";
+        }
 
-    const setFontColorSelect = useCallback(
-        (fontColorValue: string) => {
-            setFontColor(fontColorValue);
-        },
-        [fontColor]
-    );
+        const node = getSelectedNode(rangeSelection);
+        return $isFontColorNode(node) ? node.getColorStyle().color : "#000";
+    });
 
     const onFontColorSelect = useCallback(
         (colorValue: string, themeColorName: string | undefined) => {
-            setFontColorSelect(colorValue);
             editor.dispatchCommand<LexicalCommand<FontColorPayload>>(ADD_FONT_COLOR_COMMAND, {
                 color: colorValue,
                 themeColorName
@@ -47,40 +47,19 @@ export const FontColorAction: FontColorAction = () => {
         []
     );
 
-    const updatePopup = useCallback(() => {
-        editor.getEditorState().read(() => {
-            const selection = $getSelection();
-            if (!$isRangeSelection(selection)) {
-                return;
-            }
-            const node = getSelectedNode(selection);
-            if ($isFontColorNode(node)) {
-                const colorStyle = node.getColorStyle();
-                setFontColor(colorStyle.color);
-            }
-        });
-    }, [editor]);
-
-    useEffect(() => {
-        document.addEventListener("selectionchange", updatePopup);
-        return () => {
-            document.removeEventListener("selectionchange", updatePopup);
-        };
-    }, [updatePopup]);
+    const context = useMemo(
+        () => ({
+            value: fontColor,
+            applyColor: onFontColorSelect
+        }),
+        [onFontColorSelect, fontColor]
+    );
 
     return (
-        <FontColorActionContext.Provider
-            value={{
-                value: fontColor,
-                applyColor: onFontColorSelect
-            }}
-        >
+        <FontColorActionContext.Provider value={context}>
             <FontColorPicker />
         </FontColorActionContext.Provider>
     );
 };
 
-{
-    /* Color picker dropdown settings */
-}
 FontColorAction.ColorPicker = FontActionColorPicker;

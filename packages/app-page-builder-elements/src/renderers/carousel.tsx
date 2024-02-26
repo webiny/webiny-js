@@ -81,7 +81,10 @@ export const createCarousel = (params: CreateCarouselParams) => {
                     return;
                 }
 
-                const register = await import("swiper/element/bundle");
+                const register = await import(
+                    /* webpackChunkName: "pageBuilderElementsRendererCarousel" */
+                    "swiper/element/bundle"
+                );
 
                 register.register();
             };

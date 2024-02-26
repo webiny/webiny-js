@@ -4,8 +4,10 @@ import { useNavigate } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin";
 import { getTenantId } from "@webiny/app/utils";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
-
-// @ts-ignore Library doesn't have types.
+/**
+ * Library does not have types.
+ */
+// @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
 import { Input } from "@webiny/ui/Input";
 import { Typography } from "@webiny/ui/Typography";

@@ -4,8 +4,8 @@ const semver = require("semver");
 const execa = require("execa");
 const loadJSON = require("load-json-file");
 const writeJSON = require("write-json-file");
-const ConventionalCommitUtilities = require("@lerna/conventional-commits");
 const { Octokit } = require("@octokit/rest");
+const { Changelog } = require("./Changelog");
 
 class Release {
     tag = undefined;
@@ -53,7 +53,7 @@ class Release {
         this.resetAllChanges = reset;
     }
 
-    async execute() {
+    async versionPackages() {
         this.__validateConfig();
 
         this.logger.info("Attempting to release tag %s", this.tag);
@@ -98,6 +98,14 @@ class Release {
         await execa("yarn", lernaVersionArgs, { stdio: "inherit" });
         this.logger.info("Packages versioning completed");
 
+        // Read the new version
+        const lernaJSON = await loadJSON("lerna.json");
+        return { version: lernaJSON.version, tag: this.tag };
+    }
+
+    async execute() {
+        await this.versionPackages();
+
         // Run `lerna` to publish packages
         const lernaPublishArgs = [
             "lerna",
@@ -117,17 +125,22 @@ class Release {
             const lernaJSON = await loadJSON("lerna.json");
             const versionTag = `v${lernaJSON.version}`;
 
-            // Changelog needs to be generated _before_ tagging.
-            const changelog = await this.__getChangelog(lernaJSON.version);
-            this.logger.info("Generated release notes");
-
             // Create the tag
             await execa("git", ["tag", versionTag, "-m", versionTag]);
             await execa("git", ["push", "origin", versionTag]);
             this.logger.info("Created Git tag %s", versionTag);
 
-            const { data: release } = await this.__createGithubRelease(versionTag, changelog);
-            this.logger.info("Created Github release: %s", release.html_url);
+            // Changelog and Github release.
+            const changelog = await this.__getChangelog(lernaJSON.version);
+            this.logger.log("Changelog:\n\n%s\n\n", changelog);
+
+            try {
+                const { data: release } = await this.__createGithubRelease(versionTag, changelog);
+                this.logger.info("Created Github release: %s", release.html_url);
+            } catch (err) {
+                this.logger.warning("Failed to create a Github release: %s", err.message);
+                this.logger.log(err);
+            }
         }
 
         // Reset all changes made during versioning.
@@ -167,20 +180,12 @@ class Release {
         return semver.sort(versions).pop().toString();
     }
 
-    async __getChangelog(version) {
-        const manifest = {
-            name: "root",
-            location: process.cwd(),
-            manifestLocation: process.cwd() + "/package.json"
-        };
+    async __getChangelog(currentlyPublishedVersion) {
+        const from = `v${this.mostRecentVersion}`;
+        const to = `v${currentlyPublishedVersion}`;
 
-        return ConventionalCommitUtilities.updateChangelog(manifest, "root", {
-            rootPath: process.cwd(),
-            tagPrefix: "v",
-            version
-        }).then(({ newEntry }) => {
-            return newEntry;
-        });
+        this.logger.info(`Generating changelog ${from}..${to}`);
+        return new Changelog(process.cwd()).generate(from, to);
     }
 
     async __createGithubRelease(tag, changelog) {

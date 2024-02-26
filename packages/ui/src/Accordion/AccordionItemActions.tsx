@@ -1,7 +1,11 @@
 import React from "react";
 import { IconButton } from "~/Button";
 
-export const AccordionItemActions: React.FC = ({ children }) => {
+interface AccordionItemActionsProps {
+    children: React.ReactNode;
+}
+
+export const AccordionItemActions = ({ children }: AccordionItemActionsProps) => {
     return <>{children}</>;
 };
 
@@ -22,4 +26,12 @@ export const AccordionItemAction = ({ icon, onClick, disabled }: AccordionItemAc
             }}
         />
     );
+};
+
+export interface AccordionItemElementProps {
+    element: JSX.Element;
+}
+
+export const AccordionItemElement = ({ element }: AccordionItemElementProps) => {
+    return <div onClick={e => e.stopPropagation()}>{element}</div>;
 };

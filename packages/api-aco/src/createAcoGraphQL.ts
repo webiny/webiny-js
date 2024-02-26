@@ -1,4 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { filterSchema } from "~/filter/filter.gql";
 import { folderSchema } from "~/folder/folder.gql";
 import { appGql } from "~/apps/app.gql";
 import { AcoContext } from "~/types";
@@ -55,6 +56,7 @@ const baseSchema = new GraphQLSchemaPlugin({
         input AcoSort {
             id: AcoSortDirection
             createdOn: AcoSortDirection
+            modifiedOn: AcoSortDirection
             savedOn: AcoSortDirection
             title: AcoSortDirection
         }
@@ -114,5 +116,5 @@ const baseSchema = new GraphQLSchemaPlugin({
 });
 
 export const createAcoGraphQL = (): GraphQLSchemaPlugin<AcoContext>[] => {
-    return [baseSchema, appGql, folderSchema];
+    return [baseSchema, appGql, folderSchema, filterSchema];
 };

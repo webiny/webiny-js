@@ -5,7 +5,37 @@ import GlobalSearchPlugins from "./GlobalSearchPlugins";
 import usePermission from "~/admin/hooks/usePermission";
 import { ContentGroupsMenuItems } from "./ContentGroupsMenuItems";
 
-const CmsMenuLoaderComponent: React.FC = () => {
+interface ChildMenuProps {
+    canAccess: boolean;
+}
+
+const CmsContentModelsMenu = ({ canAccess }: ChildMenuProps) => {
+    if (!canAccess) {
+        return null;
+    }
+    return (
+        <Menu
+            name={"headlessCMS.contentModels.models"}
+            label={"Models"}
+            path={"/cms/content-models"}
+        />
+    );
+};
+
+const CmsContentGroupsMenu = ({ canAccess }: ChildMenuProps) => {
+    if (!canAccess) {
+        return null;
+    }
+    return (
+        <Menu
+            name={"headlessCMS.contentModels.groups"}
+            label={"Groups"}
+            path={"/cms/content-model-groups"}
+        />
+    );
+};
+
+const CmsMenuLoaderComponent = () => {
     const {
         canAccessManageEndpoint,
         canReadContentModels,
@@ -26,20 +56,8 @@ const CmsMenuLoaderComponent: React.FC = () => {
             <Menu name={"headlessCMS"} label={"Headless CMS"} icon={<HeadlessCmsIcon />}>
                 {(canCreateContentModels || canCreateContentModelGroups) && (
                     <Menu name={"headlessCMS.contentModels"} label={"Content Models"} pin={"first"}>
-                        {canCreateContentModels && (
-                            <Menu
-                                name={"headlessCMS.contentModels.models"}
-                                label={"Models"}
-                                path={"/cms/content-models"}
-                            />
-                        )}
-                        {canCreateContentModelGroups && (
-                            <Menu
-                                name={"headlessCMS.contentModels.groups"}
-                                label={"Groups"}
-                                path={"/cms/content-model-groups"}
-                            />
-                        )}
+                        <CmsContentModelsMenu canAccess={canCreateContentModels} />
+                        <CmsContentGroupsMenu canAccess={canCreateContentModelGroups} />
                     </Menu>
                 )}
                 <ContentGroupsMenuItems />
@@ -49,6 +67,6 @@ const CmsMenuLoaderComponent: React.FC = () => {
     );
 };
 
-export const CmsMenuLoader: React.FC = React.memo(CmsMenuLoaderComponent);
+export const CmsMenuLoader: React.ComponentType = React.memo(CmsMenuLoaderComponent);
 
 CmsMenuLoader.displayName = "CmsMenuLoader";

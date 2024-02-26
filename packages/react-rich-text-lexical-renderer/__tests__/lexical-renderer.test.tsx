@@ -2,7 +2,6 @@
  * @jest-environment jsdom
  */
 import { render } from "@testing-library/react";
-import { RichTextLexicalRenderer } from "~/index";
 import React from "react";
 import {
     defaultHeadingValue,
@@ -13,7 +12,8 @@ import {
     notCorrectValue
 } from "./lexical-content";
 import { emptyEditorContent, LexicalCmsInputRender } from "./lexical-render";
-import theme from "theme/theme";
+import theme from "./theme";
+import { RichTextLexicalRenderer } from "~/index";
 
 describe("Test Rich Lexical Renderer", () => {
     it("Paragraph string value type is rendered", async () => {
@@ -68,6 +68,7 @@ describe("Test Rich Lexical Renderer", () => {
         expect(container.innerHTML.includes("editor")).toBeTruthy();
         // emotion produced css classes are here
         expect(container.innerHTML.includes("css-")).toBeTruthy();
-        expect(container.innerHTML.includes("-lx")).toBeTruthy();
+        // `css-99wy28` is a class generated for `paragraph1` styles defined in the `theme`.
+        expect(container.innerHTML.includes("css-99wy28")).toBeTruthy();
     });
 });

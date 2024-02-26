@@ -5,7 +5,7 @@ import { BaseAction, BaseActionProps } from "./BaseAction";
 export type MenuItemActionType = "menu-item-action";
 export type MenuItemActionProps = Omit<BaseActionProps, "$type">;
 
-export const BaseMenuItemAction: React.FC<MenuItemActionProps> = props => {
+export const BaseMenuItemAction = (props: MenuItemActionProps) => {
     return <BaseAction {...props} $type={"menu-item-action"} />;
 };
 

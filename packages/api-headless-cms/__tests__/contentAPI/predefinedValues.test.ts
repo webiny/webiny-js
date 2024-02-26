@@ -1,4 +1,4 @@
-import { CmsModel, CmsGroup } from "~/types";
+import { CmsGroup, CmsModel } from "~/types";
 import models from "./mocks/contentModels";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { useBugManageHandler } from "../testHelpers/useBugManageHandler";
@@ -82,16 +82,18 @@ describe("predefined values", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
+                        lastPublishedOn: null,
+                        firstPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
-                            publishedOn: null,
                             status: "draft",
                             title: "A hard debuggable bug",
                             version: 1
@@ -135,7 +137,9 @@ describe("predefined values", () => {
                             {
                                 storageId: expect.stringMatching("text@"),
                                 fieldId: "bugType",
-                                error: "Value sent does not match any of the available predefined values."
+                                id: "bugType",
+                                error: "Value sent does not match any of the available predefined values.",
+                                parents: []
                             }
                         ]
                     }
@@ -171,8 +175,10 @@ describe("predefined values", () => {
                         data: [
                             {
                                 fieldId: "bugValue",
+                                id: "bugValue",
                                 storageId: expect.stringMatching("number@"),
-                                error: "Value sent does not match any of the available predefined values."
+                                error: "Value sent does not match any of the available predefined values.",
+                                parents: []
                             }
                         ]
                     }
@@ -208,13 +214,17 @@ describe("predefined values", () => {
                         data: [
                             {
                                 fieldId: "bugType",
+                                id: "bugType",
                                 storageId: expect.stringMatching("text@"),
-                                error: "Value sent does not match any of the available predefined values."
+                                error: "Value sent does not match any of the available predefined values.",
+                                parents: []
                             },
                             {
                                 fieldId: "bugValue",
+                                id: "bugValue",
                                 storageId: expect.stringMatching("number@"),
-                                error: "Value sent does not match any of the available predefined values."
+                                error: "Value sent does not match any of the available predefined values.",
+                                parents: []
                             }
                         ]
                     }
@@ -248,16 +258,18 @@ describe("predefined values", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
+                        lastPublishedOn: null,
+                        firstPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
-                            publishedOn: null,
                             status: "draft",
                             title: "Critical bug!",
                             version: 1
@@ -298,16 +310,18 @@ describe("predefined values", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
+                        lastPublishedOn: null,
+                        firstPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
-                            publishedOn: null,
                             status: "draft",
                             title: "High bug value",
                             version: 1
@@ -350,16 +364,18 @@ describe("predefined values", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
+                        lastPublishedOn: null,
+                        firstPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
-                            publishedOn: null,
                             status: "draft",
                             title: "High bug value",
                             version: 1
@@ -427,16 +443,18 @@ describe("predefined values", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
                         },
+                        lastPublishedOn: null,
+                        firstPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "bug",
-                            publishedOn: null,
                             status: "draft",
                             title: "High bug value",
                             version: 1

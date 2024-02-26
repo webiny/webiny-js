@@ -50,7 +50,7 @@ export interface ExportPagesDialogProps {
     search?: { query: string };
 }
 
-const ExportPageLoadingDialogMessage: React.FC<ExportPagesDialogProps> = props => {
+const ExportPageLoadingDialogMessage = (props: ExportPagesDialogProps) => {
     const { exportPage } = useExportPage();
     const {
         exportPageData: { revisionType }
@@ -78,7 +78,7 @@ interface ExportPageDialogProps {
     exportUrl: string;
 }
 
-const ExportPageDialogMessage: React.FC<ExportPageDialogProps> = ({ exportUrl }) => {
+const ExportPageDialogMessage = ({ exportUrl }: ExportPageDialogProps) => {
     const { showSnackbar } = useSnackbar();
 
     return (
@@ -89,7 +89,11 @@ const ExportPageDialogMessage: React.FC<ExportPageDialogProps> = ({ exportUrl })
                 </Cell>
                 <Cell span={12}>
                     <div className={linkWrapper}>
-                        <Typography use={"body2"} className={"link-text"}>
+                        <Typography
+                            use={"body2"}
+                            className={"link-text"}
+                            data-testid={"pb-pages-export-dialog-export-url"}
+                        >
                             {exportUrl}
                         </Typography>
                         <span>
@@ -128,6 +132,7 @@ interface UseExportPageDialog {
     showExportPageInitializeDialog: (props: ExportPagesDialogProps) => void;
     hideDialog: () => void;
 }
+
 const useExportPageDialog = (): UseExportPageDialog => {
     const { showDialog, hideDialog } = useDialog();
 

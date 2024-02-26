@@ -28,10 +28,7 @@ export interface AdminUsersPermissionsProps {
     onChange: (value: SecurityPermission[]) => void;
 }
 
-export const AdminUsersPermissions: React.FC<AdminUsersPermissionsProps> = ({
-    value,
-    onChange
-}) => {
+export const AdminUsersPermissions = ({ value, onChange }: AdminUsersPermissionsProps) => {
     const { getPermission } = useSecurity();
 
     // We disable form elements for custom permissions if AACL cannot be used.

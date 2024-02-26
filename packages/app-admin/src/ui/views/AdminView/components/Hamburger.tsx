@@ -4,7 +4,7 @@ import { useUi } from "@webiny/app/hooks/useUi";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as MenuIcon } from "@material-design-icons/svg/outlined/menu.svg";
 
-const Hamburger: React.FC = () => {
+const Hamburger = () => {
     const ui = useUi();
 
     const toggleMenu = useCallback(() => {

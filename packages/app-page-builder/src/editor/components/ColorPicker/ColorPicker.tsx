@@ -171,18 +171,13 @@ const styles = {
 
 interface ColorPickerProps {
     value: string;
-    onChange: Function;
-    onChangeComplete: Function;
+    onChange: (value: string) => void;
+    onChangeComplete: (value: string) => void;
     compact?: boolean;
     handlerClassName?: string;
 }
 
-const ColorPicker: React.FC<ColorPickerProps> = ({
-    value,
-    onChange,
-    onChangeComplete,
-    compact = false
-}) => {
+const ColorPicker = ({ value, onChange, onChangeComplete, compact = false }: ColorPickerProps) => {
     const [showPicker, setShowPicker] = useState(false);
 
     const getColorValue = useCallback(rgb => {

@@ -1,17 +1,19 @@
-import React, { FC, Fragment, useEffect, useRef, useState } from "react";
+import React, { FC, Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { OktaAuth } from "@okta/okta-auth-js";
 import OktaSignIn from "@okta/okta-signin-widget";
 import get from "lodash/get";
-import { Compose, LoginScreenRenderer, useTenancy } from "@webiny/app-serverless-cms";
-import { createAuthentication } from "./createAuthentication";
-import { UserMenuModule } from "~/modules/userMenu";
-import { AppClientModule } from "~/modules/appClient";
 import { useApolloClient } from "@apollo/react-hooks";
 import gql from "graphql-tag";
+import { Compose, LoginScreenRenderer, useTags, useTenancy } from "@webiny/app-serverless-cms";
+import { createAuthentication, Config } from "./createAuthentication";
+import { UserMenuModule } from "~/modules/userMenu";
+import { AppClientModule } from "~/modules/appClient";
+import { NotAuthorizedError } from "./components";
 
 interface AppClientIdLoaderProps {
     oktaFactory: OktaFactory;
     rootAppClientId: string;
+    onError?: Config["onError"];
 }
 
 const GET_CLIENT_ID = gql`
@@ -25,10 +27,11 @@ const GET_CLIENT_ID = gql`
 const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
     oktaFactory,
     rootAppClientId,
+    onError,
     children
 }) => {
     const [loaded, setState] = useState<boolean>(false);
-    const authRef = useRef<React.FC | null>(null);
+    const authRef = useRef<React.ComponentType | null>(null);
     const client = useApolloClient();
     const { tenant, setTenant } = useTenancy();
 
@@ -45,7 +48,8 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
             console.info(`Configuring Okta with App Client Id "${rootAppClientId}"`);
             authRef.current = createAuthentication({
                 ...oktaFactory({ clientId: rootAppClientId }),
-                clientId: rootAppClientId
+                clientId: rootAppClientId,
+                onError
             });
             setState(true);
             return;
@@ -55,7 +59,11 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
             const clientId = get(data, "tenancy.appClientId");
             if (clientId) {
                 console.info(`Configuring Okta with App Client Id "${clientId}"`);
-                authRef.current = createAuthentication({ ...oktaFactory({ clientId }), clientId });
+                authRef.current = createAuthentication({
+                    ...oktaFactory({ clientId }),
+                    clientId,
+                    onError
+                });
                 setState(true);
             } else {
                 console.warn(`Couldn't load appClientId for tenant "${tenantId}"`);
@@ -63,16 +71,34 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({
         });
     }, []);
 
-    return loaded ? React.createElement(authRef.current as React.FC, {}, children) : null;
+    return loaded
+        ? React.createElement(authRef.current as React.ComponentType, {}, children)
+        : null;
 };
 
+interface OktaLoginScreenProps {
+    children: React.ReactNode;
+}
+
 const createLoginScreen = (params: OktaProps) => {
-    return function OktaLoginScreenHOC(): React.FC {
-        return function OktaLoginScreen({ children }) {
+    return function OktaLoginScreenHOC() {
+        return function OktaLoginScreen({ children }: OktaLoginScreenProps) {
+            const { installer } = useTags();
+            const [error, setError] = useState<string | null>(null);
+
+            const onError = useCallback((error: Error) => {
+                setError(error.message);
+            }, []);
+
+            if (error && !installer) {
+                return <NotAuthorizedError />;
+            }
+
             return (
                 <AppClientIdLoader
                     oktaFactory={params.factory}
                     rootAppClientId={params.rootAppClientId}
+                    onError={onError}
                 >
                     {children}
                 </AppClientIdLoader>
@@ -100,14 +126,14 @@ export interface OktaProps {
     children?: React.ReactNode;
 }
 
-export const Okta: React.FC<OktaProps> = props => {
+export const Okta = (props: OktaProps) => {
     /**
      * TODO @ts-refactor
      * Figure correct type for Compose.component
      */
     return (
         <Fragment>
-            <Compose component={LoginScreenRenderer as any} with={createLoginScreen(props)} />
+            <Compose component={LoginScreenRenderer} with={createLoginScreen(props)} />
             <UserMenuModule />
             <AppClientModule />
         </Fragment>

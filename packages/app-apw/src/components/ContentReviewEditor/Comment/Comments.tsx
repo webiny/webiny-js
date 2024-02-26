@@ -6,9 +6,10 @@ import { Box, Columns, Stack } from "~/components/Layout";
 import { fromNow } from "~/utils";
 import { Avatar } from "~/views/publishingWorkflows/components/ReviewersList";
 import { useCommentsList } from "~/hooks/useCommentsList";
-import { TypographyBody, TypographySecondary, AuthorName, richTextWrapperStyles } from "../Styled";
+import { AuthorName, richTextWrapperStyles, TypographyBody, TypographySecondary } from "../Styled";
 import { CommentFile } from "../ChangeRequest/ApwFile";
 import { FileWithOverlay } from "../ChangeRequest/ChangeRequestMedia";
+import { useFetchInterval } from "~/hooks/useFetchInterval";
 
 const HEADER_HEIGHT = "65px";
 const CR_DETAIL_HEIGHT = "179px";
@@ -31,7 +32,7 @@ interface CommentProps {
     width?: string;
 }
 
-const Comment: React.FC<CommentProps> = props => {
+const Comment = (props: CommentProps) => {
     const { comment, ...restProps } = props;
     return (
         <Stack marginBottom={6} space={2} {...restProps}>
@@ -68,8 +69,16 @@ const Comment: React.FC<CommentProps> = props => {
     );
 };
 
+const COMMENTS_REFRESH_INTERVAL = 10000; // 10s
+
 export const Comments = React.forwardRef<HTMLDivElement>(function comments(_, ref) {
-    const { comments } = useCommentsList();
+    const { comments, refetch, loading } = useCommentsList();
+
+    useFetchInterval({
+        interval: COMMENTS_REFRESH_INTERVAL,
+        callback: refetch,
+        loading
+    });
 
     return (
         <CommentsBox space={6} paddingX={6} paddingY={5}>

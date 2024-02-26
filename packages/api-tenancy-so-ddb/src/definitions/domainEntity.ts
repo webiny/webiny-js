@@ -1,8 +1,8 @@
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 
 interface Params {
     entityName: string;
-    table: Table;
+    table: Table<string, string, string>;
 }
 export const createDomainEntity = ({ entityName, table }: Params): Entity<any> => {
     return new Entity({

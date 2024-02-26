@@ -2,7 +2,7 @@ import React, { useState, useCallback, SyntheticEvent } from "react";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { createComponentPlugin } from "@webiny/app-admin";
+import { createDecorator } from "@webiny/app-admin";
 import { BlockTitle, blockTitleWrapper, TitleInputWrapper, TitleWrapper } from "./Styled";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { BlockAtomType } from "~/blockEditor/state";
@@ -16,7 +16,7 @@ declare global {
     }
 }
 
-const Title: React.FC = () => {
+const Title = () => {
     const handler = useEventActionHandler();
     const [block] = useBlock();
     const { showSnackbar } = useSnackbar();
@@ -54,7 +54,7 @@ const Title: React.FC = () => {
 
     const onKeyDown = useCallback(
         (e: SyntheticEvent<HTMLInputElement>) => {
-            // @ts-ignore
+            // @ts-expect-error
             switch (e.key) {
                 case "Escape":
                     e.preventDefault();
@@ -113,7 +113,7 @@ const Title: React.FC = () => {
     );
 };
 
-export const TitlePlugin = createComponentPlugin(EditorBar.LeftSection, LeftSection => {
+export const TitlePlugin = createDecorator(EditorBar.LeftSection, LeftSection => {
     return function AddTitle(props) {
         return (
             <LeftSection>

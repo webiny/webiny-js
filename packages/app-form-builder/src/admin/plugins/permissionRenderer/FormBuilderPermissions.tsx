@@ -47,10 +47,7 @@ interface FormBuilderPermissionsProps {
     value: string;
     onChange: (value: SecurityPermission[]) => void;
 }
-export const FormBuilderPermissions: React.FC<FormBuilderPermissionsProps> = ({
-    value,
-    onChange
-}) => {
+export const FormBuilderPermissions = ({ value, onChange }: FormBuilderPermissionsProps) => {
     const { getPermission } = useSecurity();
 
     // We disable form elements for custom permissions if AACL cannot be used.

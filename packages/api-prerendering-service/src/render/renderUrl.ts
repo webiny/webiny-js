@@ -1,10 +1,11 @@
-import chromium from "chrome-aws-lambda";
+import chromium from "@sparticuz/chromium";
+import puppeteer, { Browser, Page } from "puppeteer-core";
 import posthtml from "posthtml";
 import { noopener } from "posthtml-noopener";
 /**
  * Package posthtml-plugin-link-preload has no types.
  */
-// @ts-ignore
+// @ts-expect-error
 import posthtmlPluginLinkPreload from "posthtml-plugin-link-preload";
 import absoluteAssetUrls from "./absoluteAssetUrls";
 import injectApolloState from "./injectApolloState";
@@ -20,7 +21,6 @@ import {
     RenderUrlParams,
     RenderUrlPostHtmlParams
 } from "./types";
-import { Browser, Page } from "puppeteer-core";
 import { TagPathLink } from "~/types";
 
 const windowSet = (page: Page, name: string, value: string | boolean) => {
@@ -63,7 +63,7 @@ export default async (url: string, args: RenderUrlParams): Promise<[File[], Meta
     const render = await renderUrl(url, args);
 
     // Process HTML.
-    // TODO: should be plugins (will also eliminate lower @ts-ignore instructions).
+    // TODO: should be plugins (will also eliminate lower ts-ignore instructions).
     console.log("Processing HTML...");
 
     // TODO: regular text processing plugins...
@@ -130,8 +130,11 @@ export const defaultRenderUrlFunction = async (
 ): Promise<RenderResult> => {
     let browser!: Browser;
 
+    // NOTE: For the next upgrade (once we have a newer AWS layer for chromium), this issue contains some useful information:
+    // https://github.com/Sparticuz/chromium/issues/85
+
     try {
-        browser = await chromium.puppeteer.launch({
+        browser = await puppeteer.launch({
             args: chromium.args,
             defaultViewport: chromium.defaultViewport,
             executablePath: await chromium.executablePath,
@@ -204,7 +207,7 @@ export const defaultRenderUrlFunction = async (
         await browserPage.goto(url, { waitUntil: "networkidle0" });
 
         const apolloState = await browserPage.evaluate(() => {
-            // @ts-ignore
+            // @ts-expect-error
             return window.getApolloState();
         });
 
@@ -218,7 +221,16 @@ export const defaultRenderUrlFunction = async (
         };
     } finally {
         if (browser) {
+            // We need to close all open pages first, to prevent browser from hanging when closed.
+            const pages = await browser.pages();
+            for (const page of pages) {
+                await page.close();
+            }
+
+            // Now we can attempt to close the browser.
+            console.log("Closing browser...");
             await browser.close();
+            console.log("Browser closed!");
         }
     }
 

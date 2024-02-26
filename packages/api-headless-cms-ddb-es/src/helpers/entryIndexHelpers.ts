@@ -191,15 +191,15 @@ export const extractEntriesFromIndex = ({
         /**
          * If we want to remove the rawValues, TYPE, latest, published and __type, we must make them optional or ignore them.
          */
-        // @ts-ignore
+        // @ts-expect-error
         delete newEntry["rawValues"];
-        // @ts-ignore
+        // @ts-expect-error
         delete newEntry["TYPE"];
-        // @ts-ignore
+        // @ts-expect-error
         delete newEntry["__type"];
-        // @ts-ignore
+        // @ts-expect-error
         delete newEntry["latest"];
-        // @ts-ignore
+        // @ts-expect-error
         delete newEntry["published"];
         list.push({ ...newEntry });
     }

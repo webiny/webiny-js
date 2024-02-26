@@ -3,7 +3,7 @@ import editorMock from "~/admin/assets/editor-mock.png";
 import { Typography } from "@webiny/ui/Typography";
 import { LoadingEditor, LoadingTitle } from "./EditorLoadingScreen.styles";
 
-export const EditorLoadingScreen: React.FC = () => {
+export const EditorLoadingScreen = () => {
     return (
         <LoadingEditor>
             <img src={editorMock} alt={"page builder editor mock"} />

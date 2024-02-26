@@ -171,7 +171,7 @@ export class FormFieldElement<
         /**
          * TODO @ts-refactor possibly different subtype. Or so TS complains.
          */
-        // @ts-ignore
+        // @ts-expect-error
         this._afterChange.push(cb);
     }
 

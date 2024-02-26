@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { usePageElements } from "~/hooks/usePageElements";
 import { LinkComponent } from "~/types";
 import styled, { CSSObject } from "@emotion/styled";
@@ -37,11 +37,13 @@ export interface CreateButtonParams {
     clickHandlers?: Array<ButtonClickHandler> | (() => Array<ButtonClickHandler>);
 }
 
-const ButtonBody: React.FC<{ className?: string; onClick?: () => void }> = ({
-    className,
-    children,
-    onClick
-}) => (
+interface ButtonBodyProps {
+    className?: string;
+    children?: React.ReactNode;
+    onClick?: () => void;
+}
+
+const ButtonBody = ({ className, children, onClick }: ButtonBodyProps) => (
     <ClassNames>
         {({ cx }) => (
             <div className={cx("button-body", className)} onClick={onClick}>
@@ -51,7 +53,12 @@ const ButtonBody: React.FC<{ className?: string; onClick?: () => void }> = ({
     </ClassNames>
 );
 
-const ButtonIcon: React.FC<{ className?: string; svg: string }> = ({ className, svg }) => (
+interface ButtonIconProps {
+    className?: string;
+    svg: string;
+}
+
+const ButtonIcon = ({ className, svg }: ButtonIconProps) => (
     <ClassNames>
         {({ cx }) => (
             <div
@@ -62,7 +69,11 @@ const ButtonIcon: React.FC<{ className?: string; svg: string }> = ({ className, 
     </ClassNames>
 );
 
-const ButtonText: React.FC<{ text: string }> = ({ text }) => {
+interface ButtonTextProps {
+    text: string;
+}
+
+const ButtonText = ({ text }: ButtonTextProps) => {
     return <div className={"button-text"}>{text}</div>;
 };
 
@@ -81,6 +92,7 @@ export interface ButtonElementData {
         href: string;
         clickHandler?: string;
         variables?: Record<string, any>;
+        scrollToElement?: string;
     };
 }
 
@@ -100,7 +112,7 @@ export const createButton = (params: CreateButtonParams = {}) => {
             const { link, icon } = element.data;
 
             const buttonText = props.buttonText || element.data.buttonText;
-            const action = props.action || element.data.action;
+            const action = props.action?.href ? props.action : element.data.action;
 
             let buttonInnerContent = <ButtonText text={buttonText} />;
 
@@ -113,7 +125,7 @@ export const createButton = (params: CreateButtonParams = {}) => {
                 StyledButtonBody = styled(StyledButtonBody)({
                     display: "flex",
                     ...ICON_POSITION_FLEX_DIRECTION[position]
-                });
+                }) as (props: ButtonBodyProps) => JSX.Element;
 
                 StyledButtonIcon = styled(ButtonIcon)(
                     {
@@ -136,10 +148,31 @@ export const createButton = (params: CreateButtonParams = {}) => {
                 );
             }
 
-            const linkActions = ["link", "scrollToElement"];
-            if (link?.href || linkActions.includes(action?.actionType)) {
-                const href = link?.href || action?.href;
-                const newTab = link?.newTab || action?.newTab;
+            // The `link` property is a legacy property, and it's not used anymore,
+            // but we still need to support it in order to not break existing pages.
+            const isLinkAction = useMemo(() => {
+                return link?.href || ["link", "scrollToElement"].includes(action?.actionType);
+            }, [link?.href, action?.actionType]);
+
+            if (isLinkAction) {
+                let href = "";
+
+                // In case the `action.actionType` is `scrollToElement`, the flag will remain false.
+                let newTab = false;
+
+                if (link?.href) {
+                    href = link.href;
+                    newTab = link?.newTab;
+                } else {
+                    if (action.actionType === "link") {
+                        href = action.href;
+                        newTab = action.newTab;
+                    }
+
+                    if (action.actionType === "scrollToElement") {
+                        href = "#" + action.scrollToElement;
+                    }
+                }
 
                 return (
                     <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>

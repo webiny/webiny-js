@@ -9,13 +9,17 @@ import apiInformation from "./admin/plugins/apiInformation";
 import { ContentEntriesModule } from "~/admin/views/contentEntries/ContentEntriesModule";
 import { DefaultOnEntryDelete } from "./admin/plugins/entry/DefaultOnEntryDelete";
 import { DefaultOnEntryPublish } from "~/admin/plugins/entry/DefaultOnEntryPublish";
+import { DefaultOnEntryUnpublish } from "~/admin/plugins/entry/DefaultOnEntryUnpublish";
 import allPlugins from "./allPlugins";
 import { LexicalEditorCmsPlugin } from "~/admin/components/LexicalCmsEditor/LexicalEditorCmsPlugin";
 
+interface HeadlessCMSProvider {
+    children: React.ReactNode;
+}
+
 const createHeadlessCMSProvider =
-    (createApolloClient: CreateApolloClient) =>
-    (Component: React.FC): React.FC => {
-        return function HeadlessCMSProvider({ children }) {
+    (createApolloClient: CreateApolloClient) => (Component: React.ComponentType) => {
+        return function HeadlessCMSProvider({ children }: HeadlessCMSProvider) {
             return (
                 <CmsProvider createApolloClient={createApolloClient}>
                     <Component>{children}</Component>
@@ -66,6 +70,7 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
                 <CmsMenuLoader />
                 <DefaultOnEntryDelete />
                 <DefaultOnEntryPublish />
+                <DefaultOnEntryUnpublish />
             </Plugins>
             <LexicalEditorCmsPlugin />
         </Fragment>

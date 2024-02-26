@@ -1,7 +1,7 @@
 /**
  * Package @commodo/fields does not have types.
  */
-// @ts-ignore
+// @ts-expect-error
 import { string, withFields } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import { mdbid } from "@webiny/utils";
@@ -90,20 +90,29 @@ export function createScheduleActionMethods({
             await createDataModel.validate();
 
             const id: string = mdbid();
-            const identity = getIdentity();
 
             const data: ApwScheduleActionData = await createDataModel.toJSON();
+
+            const currentDateTime = new Date();
+            const currentIdentity = getIdentity();
 
             const scheduleAction: ApwScheduleAction = {
                 ...getTenantAndLocale(),
                 data,
                 id,
-                createdOn: new Date().toISOString(),
-                savedOn: new Date().toISOString(),
+                createdOn: currentDateTime.toISOString(),
+                modifiedOn: null,
+                savedOn: currentDateTime.toISOString(),
                 createdBy: {
-                    id: identity.id,
-                    type: identity.type,
-                    displayName: identity.displayName
+                    id: currentIdentity.id,
+                    type: currentIdentity.type,
+                    displayName: currentIdentity.displayName
+                },
+                modifiedBy: null,
+                savedBy: {
+                    id: currentIdentity.id,
+                    type: currentIdentity.type,
+                    displayName: currentIdentity.displayName
                 }
             };
 

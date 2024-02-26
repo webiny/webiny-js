@@ -1,6 +1,6 @@
 import React from "react";
 import {
-    createComponentPlugin,
+    createDecorator,
     FileManagerFileItem,
     FileManagerOnChange,
     FileManagerRenderer as BaseFileManagerRenderer
@@ -15,7 +15,8 @@ import { FM_ACO_APP } from "~/constants";
 import { FileManagerViewWithConfig } from "./FileManagerViewConfig";
 import { FoldersProvider } from "@webiny/app-aco/contexts/folders";
 import { NavigateFolderProvider } from "./NavigateFolderProvider";
-import { DialogsProvider } from "@webiny/app-aco";
+import { AcoWithConfig, DialogsProvider } from "@webiny/app-aco";
+import { CompositionScope } from "@webiny/react-composition";
 
 /**
  * Convert a FileItem object to a FileManagerFileItem, which is then passed to `onChange` callback.
@@ -45,9 +46,41 @@ const imagesAccept = [
     "image/svg+xml"
 ];
 
-export const FileManagerRenderer = createComponentPlugin(BaseFileManagerRenderer, () => {
+interface FileManagerProviderProps
+    extends Omit<FileManagerViewProviderProps, "accept" | "children"> {
+    children: React.ReactNode;
+    images?: boolean;
+    accept?: string[];
+}
+
+export function FileManagerProvider({
+    children,
+    images,
+    accept,
+    ...props
+}: FileManagerProviderProps) {
+    const mimeTypes = images ? accept || imagesAccept : accept || [];
+
+    return (
+        <CompositionScope name={"fm"}>
+            <FoldersProvider type={FM_ACO_APP}>
+                <NavigateFolderProvider>
+                    <DialogsProvider>
+                        <AcoWithConfig>
+                            <FileManagerViewProvider {...props} accept={mimeTypes}>
+                                <FileManagerViewWithConfig>{children}</FileManagerViewWithConfig>
+                            </FileManagerViewProvider>
+                        </AcoWithConfig>
+                    </DialogsProvider>
+                </NavigateFolderProvider>
+            </FoldersProvider>
+        </CompositionScope>
+    );
+}
+
+export const FileManagerRenderer = createDecorator(BaseFileManagerRenderer, () => {
     return function FileManagerRenderer(props) {
-        const { onChange, images, accept, ...forwardProps } = props;
+        const { onChange, ...forwardProps } = props;
 
         const handleFileOnChange = (value?: FileItem[] | FileItem) => {
             if (!onChange || !value || (Array.isArray(value) && !value.length)) {
@@ -55,7 +88,7 @@ export const FileManagerRenderer = createComponentPlugin(BaseFileManagerRenderer
             }
 
             if (Array.isArray(value)) {
-                const finalValue: FileManagerFileItem[] = value.map(formatFileItem);
+                const finalValue = value.map(formatFileItem);
                 (onChange as FileManagerOnChange<FileManagerFileItem[]>)(finalValue);
                 return;
             }
@@ -63,24 +96,17 @@ export const FileManagerRenderer = createComponentPlugin(BaseFileManagerRenderer
             (onChange as FileManagerOnChange<FileManagerFileItem>)(formatFileItem(value));
         };
 
-        const viewProps: FileManagerViewProviderProps = {
+        const viewProps: Omit<FileManagerProviderProps, "children"> = {
             ...forwardProps,
-            onChange: typeof onChange === "function" ? handleFileOnChange : undefined,
-            accept: images ? accept || imagesAccept : accept || []
+            onUploadCompletion:
+                forwardProps.onUploadCompletion as FileManagerViewProviderProps["onUploadCompletion"],
+            onChange: typeof onChange === "function" ? handleFileOnChange : undefined
         };
 
         return (
-            <FoldersProvider type={FM_ACO_APP}>
-                <NavigateFolderProvider>
-                    <DialogsProvider>
-                        <FileManagerViewProvider {...viewProps}>
-                            <FileManagerViewWithConfig>
-                                <FileManagerView />
-                            </FileManagerViewWithConfig>
-                        </FileManagerViewProvider>
-                    </DialogsProvider>
-                </NavigateFolderProvider>
-            </FoldersProvider>
+            <FileManagerProvider {...viewProps}>
+                <FileManagerView />
+            </FileManagerProvider>
         );
     };
 });

@@ -27,6 +27,7 @@ export type Sort = {
 };
 declare module "@webiny/api-headless-cms/types" {
     interface HeadlessCms {
+        // TODO: @pavel expose this method on the `context.cms` by default
         getExecutableSchema: (
             type: ApiEndpoint
         ) => Promise<
@@ -41,10 +42,6 @@ export const createInternalCmsQuerying = () => {
     return [
         // First we need to expose a utility to access the executable CMS schema.
         new ContextPlugin<CmsContext>(context => {
-            const getLastModifiedTime = () => {
-                return context.cms.getModelLastChange();
-            };
-
             const getTenant = () => {
                 return context.tenancy.getCurrentTenant();
             };
@@ -67,7 +64,6 @@ export const createInternalCmsQuerying = () => {
                     return getSchema({
                         context,
                         getTenant,
-                        getLastModifiedTime,
                         getLocale,
                         type
                     });

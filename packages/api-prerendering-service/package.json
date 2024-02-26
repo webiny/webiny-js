@@ -15,37 +15,38 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.22.6",
+    "@babel/runtime": "^7.23.9",
+    "@sparticuz/chromium": "109.0.0",
     "@webiny/api": "0.0.0",
+    "@webiny/aws-sdk": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-client": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "chrome-aws-lambda": "^5.5.0",
-    "lodash": "^4.17.20",
+    "lodash": "4.17.21",
     "object-hash": "^2.1.1",
     "pluralize": "^8.0.0",
     "posthtml": "^0.15.0",
     "posthtml-noopener": "^1.0.5",
     "posthtml-plugin-link-preload": "^1.0.0",
-    "puppeteer-core": "^5.5.0",
+    "puppeteer-core": "19.4.1",
     "shortid": "^2.2.16",
     "srcset": "^4.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.22.6",
-    "@babel/core": "^7.22.8",
-    "@babel/plugin-proposal-export-default-from": "^7.16.0",
-    "@babel/preset-env": "^7.22.7",
-    "@babel/preset-typescript": "^7.22.5",
+    "@babel/cli": "^7.23.9",
+    "@babel/core": "^7.23.9",
+    "@babel/plugin-proposal-export-default-from": "^7.23.3",
+    "@babel/preset-env": "^7.23.9",
+    "@babel/preset-typescript": "^7.23.3",
     "@types/object-hash": "^2.2.1",
     "@types/puppeteer-core": "^5.4.0",
     "@webiny/cli": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "prettier": "^2.8.3",
-    "rimraf": "^3.0.2",
+    "rimraf": "^5.0.5",
     "ttypescript": "^1.5.12",
     "typescript": "4.7.4"
   },
@@ -56,13 +57,6 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
-  },
-  "adio": {
-    "ignore": {
-      "src": [
-        "aws-sdk"
-      ]
-    }
   },
   "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }

@@ -1,21 +1,21 @@
-import React, { FC, Fragment, useCallback, useEffect, useRef, useState } from "react";
+import React, { FC, Fragment, useCallback, useEffect, useRef } from "react";
 import {
     $getSelection,
-    $isRangeSelection,
-    COMMAND_PRIORITY_CRITICAL,
     COMMAND_PRIORITY_LOW,
     LexicalEditor,
+    RangeSelection,
     SELECTION_CHANGE_COMMAND
 } from "lexical";
 import { createPortal } from "react-dom";
 import { mergeRegister } from "@lexical/utils";
+import { $isLinkNode } from "@webiny/lexical-nodes";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import "./Toolbar.css";
 import { getDOMRangeRect } from "~/utils/getDOMRangeRect";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
-import { useRichTextEditor } from "~/hooks/useRichTextEditor";
-import { getLexicalTextSelectionState } from "~/utils/getLexicalTextSelectionState";
 import { useLexicalEditorConfig } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
+import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
+import { getSelectedNode } from "~/utils/getSelectedNode";
 
 interface FloatingToolbarProps {
     anchorElem: HTMLElement;
@@ -151,94 +151,15 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ anchorElem, editor }) => {
     );
 };
 
-interface useToolbarProps {
-    editor: LexicalEditor;
-    anchorElem: HTMLElement;
+/**
+ * TODO: this logic should live in Node classes. A toolbar should not decide when to show itself.
+ */
+function isLinkNode(selection: RangeSelection) {
+    const node = getSelectedNode(selection);
+    const parent = node.getParent();
+
+    return $isLinkNode(parent) || $isLinkNode(node);
 }
-
-const useToolbar: FC<useToolbarProps> = ({
-    editor,
-    anchorElem = document.body
-}): JSX.Element | null => {
-    const { nodeIsText, setNodeIsText, setActiveEditor, setIsEditable, setTextBlockSelection } =
-        useRichTextEditor();
-    const [toolbarActiveEditor, setToolbarActiveEditor] = useState<LexicalEditor>(editor);
-
-    const updateToolbar = useCallback(() => {
-        editor.getEditorState().read(() => {
-            // Should not to pop up the floating toolbar when using IME input
-            if (editor.isComposing()) {
-                return;
-            }
-
-            const selection = $getSelection();
-
-            if ($isRangeSelection(selection)) {
-                const selectionState = getLexicalTextSelectionState(toolbarActiveEditor, selection);
-                if (selectionState) {
-                    setTextBlockSelection(selectionState);
-                    if (
-                        selectionState.selectedText !== "" &&
-                        !selectionState.state?.link.isSelected
-                    ) {
-                        setNodeIsText(true);
-                    } else {
-                        setNodeIsText(false);
-                    }
-                }
-            }
-
-            if (!$isRangeSelection(selection)) {
-                setNodeIsText(false);
-                return;
-            }
-        });
-    }, [toolbarActiveEditor]);
-
-    useEffect(() => {
-        document.addEventListener("selectionchange", updateToolbar);
-        return () => {
-            document.removeEventListener("selectionchange", updateToolbar);
-        };
-    }, [updateToolbar]);
-
-    useEffect(() => {
-        return editor.registerCommand(
-            SELECTION_CHANGE_COMMAND,
-            (_payload, newEditor) => {
-                updateToolbar();
-                setToolbarActiveEditor(newEditor);
-                setActiveEditor(newEditor);
-                return false;
-            },
-            COMMAND_PRIORITY_CRITICAL
-        );
-    }, [editor, updateToolbar]);
-
-    useEffect(() => {
-        return mergeRegister(
-            editor.registerEditableListener(editable => {
-                setIsEditable(editable);
-            }),
-            toolbarActiveEditor.registerUpdateListener(({ editorState }) => {
-                editorState.read(() => {
-                    updateToolbar();
-                });
-            }),
-            editor.registerRootListener(() => {
-                if (editor.getRootElement() === null) {
-                    setNodeIsText(false);
-                }
-            })
-        );
-    }, [updateToolbar, editor, toolbarActiveEditor]);
-
-    if (!nodeIsText) {
-        return null;
-    }
-
-    return createPortal(<FloatingToolbar anchorElem={anchorElem} editor={editor} />, anchorElem);
-};
 
 export interface ToolbarProps {
     anchorElem?: HTMLElement;
@@ -246,5 +167,17 @@ export interface ToolbarProps {
 
 export const Toolbar = ({ anchorElem = document.body }: ToolbarProps) => {
     const [editor] = useLexicalComposerContext();
-    return useToolbar({ editor, anchorElem });
+    const showToolbar = useDeriveValueFromSelection(({ rangeSelection }) => {
+        if (!rangeSelection) {
+            return false;
+        }
+
+        return !isLinkNode(rangeSelection) && !rangeSelection.isCollapsed();
+    });
+
+    if (!showToolbar) {
+        return null;
+    }
+
+    return createPortal(<FloatingToolbar anchorElem={anchorElem} editor={editor} />, anchorElem);
 };

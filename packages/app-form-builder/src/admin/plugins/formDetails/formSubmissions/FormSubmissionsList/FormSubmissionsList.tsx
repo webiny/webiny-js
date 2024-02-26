@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-/**
- * Package timeago-react does not have types
- */
-// @ts-ignore
-import TimeAgo from "timeago-react";
+import { TimeAgo } from "@webiny/ui/TimeAgo";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
@@ -45,7 +41,7 @@ const InlineLoaderWrapper = styled.div`
 interface FullNameProps {
     submission: FbFormSubmissionData;
 }
-const FullName: React.FC<FullNameProps> = ({ submission }) => {
+const FullName = ({ submission }: FullNameProps) => {
     const {
         data: { firstName, lastName, email }
     } = submission;
@@ -57,7 +53,7 @@ const FullName: React.FC<FullNameProps> = ({ submission }) => {
 interface FormVersionProps {
     submission: FbFormSubmissionData;
 }
-const FormVersion: React.FC<FormVersionProps> = ({ submission }) => {
+const FormVersion = ({ submission }: FormVersionProps) => {
     return <span>Form revision #{submission.form.version}</span>;
 };
 
@@ -69,7 +65,7 @@ interface FormSubmissionsListProps {
 
 const { DataList, ListItem, ListItemMeta, ListItemText, ListTextOverline } = ListComponents;
 
-export const FormSubmissionsList: React.FC<FormSubmissionsListProps> = ({ form }) => {
+export const FormSubmissionsList = ({ form }: FormSubmissionsListProps) => {
     const {
         loading,
         fetchMoreLoading,

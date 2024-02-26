@@ -10,7 +10,9 @@ import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useParentBlock } from "~/editor/hooks/useParentBlock";
 
 const removeVariableFromBlock = (block: PbEditorElement, variableId: string) => {
-    const updatedVariables = block.data.variables.filter(
+    const variables = block.data.variables ?? [];
+
+    const updatedVariables = variables.filter(
         (variable: PbBlockVariable) => variable.id.split(".")[0] !== variableId
     );
 
@@ -26,7 +28,7 @@ const removeVariableFromBlock = (block: PbEditorElement, variableId: string) => 
 interface DeleteActionPropsType {
     children: React.ReactElement;
 }
-const DeleteAction: React.FC<DeleteActionPropsType> = ({ children }) => {
+const DeleteAction = ({ children }: DeleteActionPropsType) => {
     const eventActionHandler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementByIdSelector(activeElementId as string));

@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
 import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
 import { executeWithRetry } from "@webiny/utils";
@@ -31,7 +31,7 @@ export class FileManager_5_35_0_001_FileData implements DataMigration<FileMigrat
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
 
-    constructor(table: Table) {
+    constructor(table: Table<string, string, string>) {
         this.newFileEntity = createStandardEntity(table, "File");
         this.legacyFileEntity = createLegacyFileEntity(table);
         this.tenantEntity = createTenantEntity(table);

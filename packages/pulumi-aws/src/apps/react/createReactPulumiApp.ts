@@ -6,6 +6,7 @@ import { createPrivateAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
 import * as pulumi from "@pulumi/pulumi";
 import { CoreOutput } from "../common/CoreOutput";
+import { withServiceManifest } from "~/utils/withServiceManifest";
 
 export type ReactPulumiApp = ReturnType<typeof createReactPulumiApp>;
 
@@ -43,7 +44,7 @@ export interface CreateReactPulumiAppParams {
 }
 
 export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParams) => {
-    return createPulumiApp({
+    const app = createPulumiApp({
         name: projectAppParams.name,
         path: projectAppParams.folder,
         config: projectAppParams,
@@ -68,7 +69,7 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
             // By doing this, we're ensuring user's adjustments are not applied to late.
             if (projectAppParams.pulumi) {
                 app.addHandler(() => {
-                    return projectAppParams.pulumi!(app as ReactPulumiApp);
+                    return projectAppParams.pulumi!(app as unknown as ReactPulumiApp);
                 });
             }
 
@@ -170,4 +171,6 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
             };
         }
     });
+
+    return withServiceManifest(app);
 };

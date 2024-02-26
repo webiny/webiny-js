@@ -9,13 +9,13 @@ import {
 } from "~/types";
 import { createFieldsList } from "./createFieldsList";
 import { getModelTitleFieldId } from "./getModelTitleFieldId";
+import { FormSubmitOptions } from "@webiny/form";
 
 const CONTENT_META_FIELDS = /* GraphQL */ `
     meta {
         title
         description
         image
-        publishedOn
         version
         locked
         status
@@ -25,14 +25,92 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
 const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
     id
     entryId
-    savedOn
     createdOn
+    savedOn
+    modifiedOn
+    firstPublishedOn
+    lastPublishedOn
     createdBy {
         id
         type
         displayName
     }
-    ownedBy {
+    savedBy {
+        id
+        type
+        displayName
+    }
+    modifiedBy {
+        id
+        type
+        displayName
+    }
+    firstPublishedBy {
+        id
+        type
+        displayName
+    }
+    lastPublishedBy {
+        id
+        type
+        displayName
+    }
+    revisionCreatedOn
+    revisionSavedOn
+    revisionModifiedOn
+    revisionFirstPublishedOn
+    revisionLastPublishedOn
+    revisionCreatedBy {
+        id
+        type
+        displayName
+    }
+    revisionSavedBy {
+        id
+        type
+        displayName
+    }
+    revisionModifiedBy {
+        id
+        type
+        displayName
+    }
+    revisionFirstPublishedBy {
+        id
+        type
+        displayName
+    }
+    revisionLastPublishedBy {
+        id
+        type
+        displayName
+    }
+    revisionCreatedOn
+    revisionSavedOn
+    revisionModifiedOn
+    revisionFirstPublishedOn
+    revisionLastPublishedOn
+    revisionCreatedBy {
+        id
+        type
+        displayName
+    }
+    revisionSavedBy {
+        id
+        type
+        displayName
+    }
+    revisionModifiedBy {
+        id
+        type
+        displayName
+    }
+    revisionFirstPublishedBy {
+        id
+        type
+        displayName
+    }
+    revisionLastPublishedBy {
         id
         type
         displayName
@@ -207,15 +285,18 @@ export interface CmsEntryCreateMutationVariables {
      * We have any here because we do not know which fields does entry have
      */
     data: Record<string, any>;
+    options?: FormSubmitOptions;
 }
 
 export const createCreateMutation = (model: CmsEditorContentModel) => {
+    const createFields = createFieldsList({ model, fields: model.fields });
+
     return gql`
-        mutation CmsEntriesCreate${model.singularApiName}($data: ${model.singularApiName}Input!) {
-            content: create${model.singularApiName}(data: $data) {
+        mutation CmsEntriesCreate${model.singularApiName}($data: ${model.singularApiName}Input!, $options: CreateCmsEntryOptionsInput) {
+            content: create${model.singularApiName}(data: $data, options: $options) {
                 data {
                     ${CONTENT_ENTRY_SYSTEM_FIELDS}
-                    ${createFieldsList({ model, fields: model.fields })}
+                    ${createFields}
                 }
                 error ${ERROR_FIELD}
             }
@@ -240,14 +321,17 @@ export interface CmsEntryCreateFromMutationVariables {
      * We have any here because we do not know which fields does entry have
      */
     data?: Record<string, any>;
+    options?: FormSubmitOptions;
 }
 
 export const createCreateFromMutation = (model: CmsEditorContentModel) => {
     return gql`
         mutation CmsCreate${model.singularApiName}From($revision: ID!, $data: ${
         model.singularApiName
-    }Input) {
-        content: create${model.singularApiName}From(revision: $revision, data: $data) {
+    }Input, $options: CreateRevisionCmsEntryOptionsInput) {
+        content: create${
+            model.singularApiName
+        }From(revision: $revision, data: $data, options: $options) {
                 data {
                     ${CONTENT_ENTRY_SYSTEM_FIELDS}
                     ${createFieldsList({ model, fields: model.fields })}
@@ -274,14 +358,17 @@ export interface CmsEntryUpdateMutationVariables {
      * We have any here because we do not know which fields does entry have
      */
     data: Record<string, any>;
+    options?: FormSubmitOptions;
 }
 
 export const createUpdateMutation = (model: CmsEditorContentModel) => {
     return gql`
         mutation CmsUpdate${model.singularApiName}($revision: ID!, $data: ${
         model.singularApiName
-    }Input!) {
-            content: update${model.singularApiName}(revision: $revision, data: $data) {
+    }Input!, $options: UpdateCmsEntryOptionsInput) {
+            content: update${
+                model.singularApiName
+            }(revision: $revision, data: $data, options: $options) {
                 data {
                     ${CONTENT_ENTRY_SYSTEM_FIELDS}
                     ${createFieldsList({ model, fields: model.fields })}
@@ -312,8 +399,8 @@ export const createPublishMutation = (model: CmsEditorContentModel) => {
         mutation CmsPublish${model.singularApiName}($revision: ID!) {
             content: publish${model.singularApiName}(revision: $revision) {
                 data {
-                    id
-                    ${CONTENT_META_FIELDS}
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createFieldsList({ model, fields: model.fields })}
                 }
                 error ${ERROR_FIELD}
             }
@@ -339,9 +426,9 @@ export const createUnpublishMutation = (model: CmsEditorContentModel) => {
     return gql`
         mutation CmsUnpublish${model.singularApiName}($revision: ID!) {
             content: unpublish${model.singularApiName}(revision: $revision) {
-                data {
-                    id
-                    ${CONTENT_META_FIELDS}
+                 data {
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createFieldsList({ model, fields: model.fields })}
                 }
                 error ${ERROR_FIELD}
             }

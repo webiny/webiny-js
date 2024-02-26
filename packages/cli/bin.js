@@ -22,12 +22,12 @@ const currentNodeVersion = process.versions.node;
 
     try {
         const { stdout } = await execa("yarn", ["--version"]);
-        if (!semver.satisfies(stdout, ">=2")) {
-            console.error(chalk.red(`"@webiny/cli" requires yarn >=2!`));
+        if (!semver.satisfies(stdout, ">=3")) {
+            console.error(chalk.red(`"@webiny/cli" requires yarn 3 or 4!`));
             process.exit(1);
         }
     } catch (err) {
-        console.error(chalk.red(`"@webiny/cli" requires yarn >=2!`));
+        console.error(chalk.red(`"@webiny/cli" requires yarn 3 or 4!`));
         console.log(
             `Run ${chalk.blue("yarn set version berry")} to install a compatible version of yarn.`
         );

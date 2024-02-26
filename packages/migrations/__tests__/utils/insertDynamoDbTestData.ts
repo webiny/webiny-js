@@ -1,27 +1,28 @@
-import { Table } from "dynamodb-toolbox";
 import chunk from "lodash/chunk";
+import { Table } from "@webiny/db-dynamodb/toolbox";
+import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
+import { BatchWriteCommand } from "@webiny/aws-sdk/client-dynamodb";
 
-export const insertDynamoDbTestData = async (table: Table, data: Record<string, any>[]) => {
-    const documentClient = table.DocumentClient;
-
-    if (!documentClient) {
-        throw Error(`DocumentClient is not set on the "${table.name}" table.`);
-    }
-
+export const insertDynamoDbTestData = async (
+    table: Table<string, string, string>,
+    data: Record<string, any>[]
+) => {
+    const client = getDocumentClient({}, true);
     const chunkedItems: any[][] = chunk(data, 25);
     for (const items of chunkedItems) {
-        const params = {
-            RequestItems: {
-                [table.name]: items.map(item => {
-                    return {
-                        PutRequest: {
-                            Item: item
-                        }
-                    };
-                })
-            }
-        };
-
-        await documentClient.batchWrite(params).promise();
+        const batch = items.map(item => {
+            return {
+                PutRequest: {
+                    Item: item
+                }
+            };
+        });
+        await client.send(
+            new BatchWriteCommand({
+                RequestItems: {
+                    [table.name]: batch
+                }
+            })
+        );
     }
 };

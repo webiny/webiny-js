@@ -34,7 +34,7 @@ const scaleableVideo = css({
     }
 });
 
-const YoutubeEmbed: React.FC<OEmbedProps> = props => {
+const YoutubeEmbed = (props: OEmbedProps) => {
     const { element, data } = props;
 
     if (data && data.loading) {

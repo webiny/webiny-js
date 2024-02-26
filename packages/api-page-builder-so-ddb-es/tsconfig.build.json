@@ -3,7 +3,9 @@
   "include": ["src"],
   "references": [
     { "path": "../api-elasticsearch/tsconfig.build.json" },
+    { "path": "../api-elasticsearch-tasks/tsconfig.build.json" },
     { "path": "../api-page-builder/tsconfig.build.json" },
+    { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler-db/tsconfig.build.json" },

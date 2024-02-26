@@ -2,14 +2,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getSelectionStyleValueForProperty, $patchStyleText } from "@lexical/selection";
 import { mergeRegister } from "@lexical/utils";
-import {
-    $getSelection,
-    $isRangeSelection,
-    COMMAND_PRIORITY_CRITICAL,
-    LexicalEditor,
-    SELECTION_CHANGE_COMMAND
-} from "lexical";
-import { DropDown, DropDownItem } from "../../ui/DropDown";
+import { $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
+import { DropDown, DropDownItem } from "~/ui/DropDown";
+import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
 
 const FONT_SIZE_OPTIONS: string[] = [
     "8px",
@@ -84,40 +79,21 @@ function FontSizeDropDown(props: FontSizeDropDownProps): JSX.Element {
 export const FontSizeAction = () => {
     const [editor] = useLexicalComposerContext();
     const [isEditable, setIsEditable] = useState(() => editor.isEditable());
-    const [activeEditor, setActiveEditor] = useState(editor);
-    const [fontSize, setFontSize] = useState<string>("15px");
-
-    const updateToolbar = useCallback(() => {
-        const selection = $getSelection();
-        if ($isRangeSelection(selection)) {
-            setFontSize($getSelectionStyleValueForProperty(selection, "font-size", "15px"));
+    const fontSize = useDeriveValueFromSelection(({ rangeSelection }) => {
+        if (!rangeSelection) {
+            return "15px";
         }
-    }, [activeEditor]);
+        return $getSelectionStyleValueForProperty(rangeSelection, "font-size", "15px");
+    });
 
     useEffect(() => {
         return mergeRegister(
             editor.registerEditableListener(editable => {
                 setIsEditable(editable);
-            }),
-            activeEditor.registerUpdateListener(({ editorState }) => {
-                editorState.read(() => {
-                    updateToolbar();
-                });
             })
         );
-    }, [activeEditor, editor]);
+    }, [editor]);
 
-    useEffect(() => {
-        return editor.registerCommand(
-            SELECTION_CHANGE_COMMAND,
-            (_payload, newEditor) => {
-                updateToolbar();
-                setActiveEditor(newEditor);
-                return false;
-            },
-            COMMAND_PRIORITY_CRITICAL
-        );
-    }, [editor, updateToolbar]);
     return (
         <>
             <FontSizeDropDown disabled={!isEditable} value={fontSize} editor={editor} />

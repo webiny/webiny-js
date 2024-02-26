@@ -1,4 +1,4 @@
-import EventBridgeClient from "aws-sdk/clients/eventbridge";
+import { EventBridgeClient, PutEventsCommand } from "@webiny/aws-sdk/client-eventbridge";
 import { CliContext } from "@webiny/cli/types";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
@@ -27,8 +27,8 @@ export const renderWebsite = {
         try {
             const client = new EventBridgeClient({ region: coreOutput["region"] });
 
-            const result = await client
-                .putEvents({
+            const result = await client.send(
+                new PutEventsCommand({
                     Entries: [
                         {
                             Source: "webiny-cli",
@@ -38,7 +38,7 @@ export const renderWebsite = {
                         }
                     ]
                 })
-                .promise();
+            );
 
             const entry = result.Entries?.[0];
             if (entry?.ErrorMessage) {

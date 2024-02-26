@@ -15,13 +15,13 @@ export interface NodeProps {
     after?: string;
 }
 
-export const Node: React.FC<NodeProps> = ({
+export const Node = ({
     name,
     node,
     after = undefined,
     before = undefined,
     remove = false
-}) => {
+}: NodeProps) => {
     const placeBefore = before !== undefined ? `node:${before}` : undefined;
     const placeAfter = after !== undefined ? `node:${after}` : undefined;
 

@@ -1,9 +1,9 @@
-import { Entity, Table } from "dynamodb-toolbox";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { Attributes } from "~/types";
 
 interface Params {
     entityName: string;
-    table: Table;
+    table: Table<string, string, string>;
     attributes?: Attributes;
 }
 
@@ -39,10 +39,19 @@ export const createScheduleActionsEntity = ({ entityName, table, attributes }: P
             createdOn: {
                 type: "string"
             },
+            modifiedOn: {
+                type: "string"
+            },
             savedOn: {
                 type: "string"
             },
             createdBy: {
+                type: "map"
+            },
+            modifiedBy: {
+                type: "map"
+            },
+            savedBy: {
                 type: "map"
             },
             tenant: {

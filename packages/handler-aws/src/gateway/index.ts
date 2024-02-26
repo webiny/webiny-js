@@ -1,27 +1,16 @@
-import awsLambdaFastify, {
-    LambdaFastifyOptions as LambdaOptions,
-    LambdaResponse
-} from "@fastify/aws-lambda";
-import { APIGatewayEvent, Context as LambdaContext } from "aws-lambda";
-import {
-    createHandler as createBaseHandler,
-    CreateHandlerParams as BaseCreateHandlerParams,
-    RoutePlugin,
-    createRoute
-} from "@webiny/handler";
+import type { APIGatewayEvent, Context as LambdaContext } from "aws-lambda";
+import awsLambdaFastify, { LambdaResponse } from "@fastify/aws-lambda";
+import { createHandler as createBaseHandler, createRoute, RoutePlugin } from "@webiny/handler";
 import { registerDefaultPlugins } from "~/plugins";
-import { Base64EncodeHeader } from "~/types";
+import { Base64EncodeHeader, HandlerFactoryParams } from "~/types";
 import { APIGatewayProxyEventHeaders } from "aws-lambda/trigger/api-gateway-proxy";
+
+export { RoutePlugin, createRoute };
+
+export type HandlerParams = HandlerFactoryParams;
 
 export interface HandlerCallable {
     (event: APIGatewayEvent, ctx: LambdaContext): Promise<LambdaResponse>;
-}
-
-export interface CreateHandlerParams extends BaseCreateHandlerParams {
-    http?: {
-        debug?: boolean;
-    };
-    lambdaOptions?: LambdaOptions;
 }
 
 const getHeader = (headers: APIGatewayProxyEventHeaders, header: string): string | undefined => {
@@ -61,12 +50,12 @@ const attachRequiredProperties = (event: APIGatewayEvent): void => {
     }
 };
 
-export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
-    return (event, context) => {
+export const createHandler = (params: HandlerParams): HandlerCallable => {
+    return async (event, context) => {
         const app = createBaseHandler({
             ...params,
             options: {
-                logger: params.http?.debug === true,
+                logger: params.debug === true,
                 ...(params.options || {})
             }
         });
@@ -97,5 +86,3 @@ export const createHandler = (params: CreateHandlerParams): HandlerCallable => {
         return appLambda(event, context);
     };
 };
-
-export { RoutePlugin, createRoute };

@@ -5,6 +5,8 @@ import { createPageProcessors } from "~/page/processors";
 import { getSearchablePageContent } from "~/utils/getSearchableContent";
 import { PageSearchProcessor, PbAcoContext } from "~/types";
 import { createApp } from "~/app";
+import { PageBuilderCrudDecorators } from "~/utils/PageBuilderCrudDecorators";
+import { createPbPageWbyAcoLocationGqlField } from "~/page/graphql/createPbPageWbyAcoLocationGqlField";
 
 export * from "./createAppModifier";
 export * from "./plugins";
@@ -28,6 +30,12 @@ const setupContext = async (context: PbAcoContext): Promise<void> => {
     };
 };
 
+const decoratePageBuilderCrud = async (context: PbAcoContext): Promise<void> => {
+    if (context.wcp.canUseFolderLevelPermissions()) {
+        new PageBuilderCrudDecorators({ context }).decorate();
+    }
+};
+
 export const createAcoPageBuilderContext = () => {
     const plugin = new ContextPlugin<PbAcoContext>(async context => {
         if (!context.aco) {
@@ -37,8 +45,10 @@ export const createAcoPageBuilderContext = () => {
             return;
         }
         await setupContext(context);
+        await decoratePageBuilderCrud(context);
         createPageHooks(context);
         createPageProcessors(context);
+        createPbPageWbyAcoLocationGqlField(context);
     });
 
     plugin.name = "page-builder-aco.createContext";

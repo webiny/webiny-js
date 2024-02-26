@@ -1,4 +1,4 @@
-import { Table } from "dynamodb-toolbox";
+import { Table } from "@webiny/db-dynamodb/toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
 import { DataMigration, DataMigrationContext } from "@webiny/data-migration";
@@ -19,6 +19,7 @@ import { getCompressedData } from "~/migrations/5.35.0/006/utils/getCompressedDa
 
 import {
     batchWriteAll,
+    BatchWriteItem,
     esCreateIndex,
     esFindOne,
     esGetIndexExist,
@@ -49,7 +50,11 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
     private readonly localeEntity: ReturnType<typeof createLocaleEntity>;
     private readonly tenantEntity: ReturnType<typeof createTenantEntity>;
 
-    constructor(table: Table, esTable: Table, elasticsearchClient: Client) {
+    constructor(
+        table: Table<string, string, string>,
+        esTable: Table<string, string, string>,
+        elasticsearchClient: Client
+    ) {
         this.elasticsearchClient = elasticsearchClient;
         this.ddbEntryEntity = createDdbEntryEntity(table);
         this.ddbEsEntryEntity = createDdbEsEntryEntity(esTable);
@@ -67,7 +72,11 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
         return "Migrate PbPage Data -> Create ACO Search Records";
     }
 
-    async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
+    async shouldExecute({ logger, forceExecute }: DataMigrationContext): Promise<boolean> {
+        if (forceExecute) {
+            return true;
+        }
+
         const tenants = await this.listTenants();
         if (tenants.length === 0) {
             logger.info(`No tenants found in the system; skipping migration.`);
@@ -215,8 +224,8 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                             `Processing batch #${batch} in group ${groupId} (${pages.length} pages).`
                         );
 
-                        const ddbItems = [] as any;
-                        const ddbEsItems = [] as any;
+                        const ddbItems: BatchWriteItem[] = [];
+                        const ddbEsItems: BatchWriteItem[] = [];
 
                         for (const page of pages) {
                             const ddbPage = await queryOne<any>({
@@ -226,6 +235,14 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                                     eq: "L"
                                 }
                             });
+
+                            /**
+                             * If the content is `gzip`, it means this page is created with the latest version
+                             * of Webiny, and we don't need to migrate it.
+                             */
+                            if (ddbPage.content?.compression === "gzip") {
+                                continue;
+                            }
 
                             const {
                                 createdBy,
@@ -245,7 +262,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                             const entry = await this.createSearchRecordCommonFields(ddbPage);
                             const content = await getSearchablePageContent(ddbPage);
 
-                            const rawDatas = {
+                            const rawData = {
                                 modelId: ACO_SEARCH_MODEL_ID,
                                 version: 1,
                                 savedOn,
@@ -306,7 +323,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                             const latestDdbEs = {
                                 PK: `T#${pageTenant}#L#${pageLocale}#CMS#CME#wby-aco-${pid}`,
                                 SK: "L",
-                                data: await getCompressedData(rawDatas),
+                                data: await getCompressedData(rawData),
                                 index: esGetIndexName({
                                     tenant: pageTenant,
                                     locale: pageLocale,

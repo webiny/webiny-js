@@ -314,4 +314,32 @@ describe("5.36.0-001", () => {
             expect(grouped.notApplicable.length).toBe(0);
         }
     });
+
+    it("should run the migration if forced via an ENV variable", async () => {
+        await insertTestData(table, [...createTenantsData(), ...createLocalesData()]);
+        await insertTestFiles(1);
+
+        const handler = createDdbMigrationHandler({ table, migrations: [AcoRecords_5_36_0_001] });
+
+        // Should run the migration
+        {
+            process.stdout.write("[First run]\n");
+            const { data, error } = await handler();
+            assertNotError(error);
+            const grouped = groupMigrations(data.migrations);
+            expect(grouped.executed.length).toBe(1);
+        }
+
+        // Should force-run the migration
+        {
+            process.env["WEBINY_MIGRATION_FORCE_EXECUTE_5_36_0_001"] = "true";
+            process.stdout.write("[Second run]\n");
+            const { data, error } = await handler();
+            assertNotError(error);
+            const grouped = groupMigrations(data.migrations);
+            expect(grouped.executed.length).toBe(1);
+            expect(grouped.skipped.length).toBe(0);
+            expect(grouped.notApplicable.length).toBe(0);
+        }
+    });
 });

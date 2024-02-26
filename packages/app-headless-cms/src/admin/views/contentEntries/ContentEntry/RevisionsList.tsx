@@ -31,7 +31,7 @@ const style = {
     })
 };
 
-const RevisionsList: React.FC = () => {
+const RevisionsList = () => {
     const { entry, revisions, loading } = useContentEntry();
 
     return (

@@ -4,10 +4,13 @@ import { TenancyContext } from "@webiny/api-tenancy/types";
 import { SecurityContext, SecurityPermission } from "@webiny/api-security/types";
 import { Context } from "@webiny/api/types";
 import { FileLifecycleEvents } from "./types/file.lifecycle";
-import { File } from "./types/file";
+import { CreatedBy, File } from "./types/file";
 import { Topic } from "@webiny/pubsub/types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
+import { Context as TasksContext } from "@webiny/tasks/types";
+
 export * from "./types/file.lifecycle";
+export * from "./types/file";
 export * from "./types/file";
 
 export interface FileManagerContextObject extends FilesCRUD, SettingsCRUD, SystemCRUD {
@@ -19,7 +22,8 @@ export interface FileManagerContext
         SecurityContext,
         TenancyContext,
         I18NContext,
-        CmsContext {
+        CmsContext,
+        TasksContext {
     fileManager: FileManagerContextObject;
 }
 
@@ -31,6 +35,16 @@ export interface FilePermission extends SecurityPermission {
 
 export interface FileInput {
     id: string;
+
+    // In the background, we're actually mapping these to entry-level fields.
+    // This is fine since we don't use revisions for files.
+    createdOn?: string | Date | null;
+    modifiedOn?: string | Date | null;
+    savedOn?: string | Date | null;
+    createdBy?: CreatedBy | null;
+    modifiedBy?: CreatedBy | null;
+    savedBy?: CreatedBy | null;
+
     key: string;
     name: string;
     size: number;
@@ -111,11 +125,26 @@ export interface FileManagerSystem {
     tenant: string;
 }
 
+export interface OnSettingsBeforeUpdateTopicParams {
+    input: Partial<FileManagerSettings>;
+    original: FileManagerSettings;
+    settings: FileManagerSettings;
+}
+
+export interface OnSettingsAfterUpdateTopicParams {
+    input: Partial<FileManagerSettings>;
+    original: FileManagerSettings;
+    settings: FileManagerSettings;
+}
+
 export type SettingsCRUD = {
     getSettings(): Promise<FileManagerSettings | null>;
     createSettings(data?: Partial<FileManagerSettings>): Promise<FileManagerSettings>;
     updateSettings(data: Partial<FileManagerSettings>): Promise<FileManagerSettings>;
     deleteSettings(): Promise<boolean>;
+
+    onSettingsBeforeUpdate: Topic<OnSettingsBeforeUpdateTopicParams>;
+    onSettingsAfterUpdate: Topic<OnSettingsAfterUpdateTopicParams>;
 };
 /********
  * Storage operations

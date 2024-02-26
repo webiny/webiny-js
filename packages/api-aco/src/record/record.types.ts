@@ -25,7 +25,7 @@ export interface SearchRecordTag {
     count: number;
 }
 
-export interface ListSearchRecordsWhere {
+export interface ListSearchRecordsWhere<TData extends GenericSearchData = GenericSearchData> {
     type: string;
     location?: {
         folderId: string;
@@ -33,6 +33,7 @@ export interface ListSearchRecordsWhere {
     tags_in?: string[];
     tags_startsWith?: string;
     tags_not_startsWith?: string;
+    data?: TData;
 }
 
 export interface ListSearchRecordsParams {
@@ -172,7 +173,7 @@ export interface AcoSearchRecordCrudBase {
         data: UpdateSearchRecordParams<TData>
     ): Promise<SearchRecord<TData>>;
     move(id: string, folderId?: string | null): Promise<boolean>;
-    delete(id: string): Promise<Boolean>;
+    delete(id: string): Promise<boolean>;
 }
 
 export interface AcoSearchRecordCrud
@@ -199,7 +200,7 @@ export interface AcoSearchRecordCrud
         data: UpdateSearchRecordParams<TData>
     ): Promise<SearchRecord<TData>>;
     move(model: CmsModel, id: string, folderId?: string | null): Promise<boolean>;
-    delete(model: CmsModel, id: string): Promise<Boolean>;
+    delete(model: CmsModel, id: string): Promise<boolean>;
     onSearchRecordBeforeCreate: Topic<OnSearchRecordBeforeCreateTopicParams>;
     onSearchRecordAfterCreate: Topic<OnSearchRecordAfterCreateTopicParams>;
     onSearchRecordBeforeUpdate: Topic<OnSearchRecordBeforeUpdateTopicParams>;

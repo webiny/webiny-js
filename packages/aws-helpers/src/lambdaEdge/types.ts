@@ -1,12 +1,17 @@
-import * as awsLambda from "aws-lambda";
+import type {
+    CloudFrontEvent as BaseCloudFrontEvent,
+    CloudFrontRequest as BaseCloudFrontRequest,
+    CloudFrontRequestEvent as BaseCloudFrontRequestEvent,
+    CloudFrontResponse as BaseCloudFrontResponse,
+    CloudFrontResponseEvent as BaseCloudFrontResponseEvent,
+    CloudFrontResultResponse as BaseCloudFrontResultResponse,
+    CloudFrontHeaders as BaseCloudFrontHeaders
+} from "aws-lambda";
 
-// We have to re-export types one by one.
-// Otherwise `aws-lambda` will land in JS output.
-
-export type CloudFrontEvent = awsLambda.CloudFrontEvent;
-export type CloudFrontRequest = awsLambda.CloudFrontRequest;
-export type CloudFrontRequestEvent = awsLambda.CloudFrontRequestEvent;
-export type CloudFrontResponse = awsLambda.CloudFrontResponse & { body?: string };
-export type CloudFrontResponseEvent = awsLambda.CloudFrontResponseEvent;
-export type CloudFrontResultResponse = awsLambda.CloudFrontResultResponse;
-export type CloudFrontHeaders = awsLambda.CloudFrontHeaders;
+export type CloudFrontEvent = BaseCloudFrontEvent;
+export type CloudFrontRequest = BaseCloudFrontRequest;
+export type CloudFrontRequestEvent = BaseCloudFrontRequestEvent;
+export type CloudFrontResponse = BaseCloudFrontResponse & { body?: string };
+export type CloudFrontResponseEvent = BaseCloudFrontResponseEvent;
+export type CloudFrontResultResponse = BaseCloudFrontResultResponse;
+export type CloudFrontHeaders = BaseCloudFrontHeaders;

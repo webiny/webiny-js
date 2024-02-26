@@ -3,6 +3,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { PulumiApp, PulumiAppResource } from "@webiny/pulumi";
 import { CoreOutput } from "./common";
+import { LAMBDA_RUNTIME } from "~/constants";
 
 interface Params {
     region: string;
@@ -90,7 +91,7 @@ export function applyTenantRouter(
         name: `${PREFIX}-origin-request`,
         config: {
             publish: true,
-            runtime: "nodejs14.x",
+            runtime: LAMBDA_RUNTIME,
             handler: "index.handler",
             role: role.output.arn,
             timeout: 5,
@@ -106,7 +107,10 @@ export function applyTenantRouter(
         // the environment is destroyed. Users need to delete the function manually. We decided to use
         // this option here because it enables us to avoid annoying AWS Lambda function replication
         // errors upon destroying the stack (see https://github.com/pulumi/pulumi-aws/issues/2178).
-        opts: { provider: awsUsEast1, retainOnDelete: true }
+        opts: { provider: awsUsEast1, retainOnDelete: true },
+        meta: {
+            canUseVpc: false
+        }
     });
 
     cloudfront.config.defaultCacheBehavior(value => {

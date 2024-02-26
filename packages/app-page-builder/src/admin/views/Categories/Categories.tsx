@@ -4,7 +4,7 @@ import CategoriesDataList from "./CategoriesDataList";
 import CategoriesForm from "./CategoriesForm";
 import { useCategoriesPermissions } from "~/hooks/permissions";
 
-const Categories: React.FC = () => {
+const Categories = () => {
     const { canCreate } = useCategoriesPermissions();
 
     return (

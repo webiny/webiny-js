@@ -16,6 +16,11 @@ interface FbSubmissionMeta {
     [key: string]: any;
 }
 
+interface FbFormStep {
+    title: string;
+    layout: string[][];
+}
+
 interface FbFormFieldValidator {
     name: string;
     message: any;
@@ -105,7 +110,7 @@ export interface FbForm {
     publishedOn: string | null;
     status: string;
     fields: FbFormField[];
-    layout: string[][];
+    steps: FbFormStep[];
     stats: Omit<FbFormStats, "conversionRate">;
     settings: Record<string, any>;
     triggers: Record<string, any> | null;
@@ -128,7 +133,7 @@ interface FormCreateInput {
 interface FormUpdateInput {
     name: string;
     fields: Record<string, any>[];
-    layout: string[][];
+    steps: FbFormStep[];
     settings: Record<string, any>;
     triggers: Record<string, any> | null;
 }
@@ -279,6 +284,15 @@ export interface OnFormSubmissionAfterDelete {
     form: FbForm;
     submission: FbSubmission;
 }
+export interface OnFormSubmissionsBeforeExport {
+    form: FbForm;
+}
+export interface OnFormSubmissionsAfterExport {
+    result: {
+        key: any;
+        src: string;
+    };
+}
 export interface SubmissionsCRUD {
     getSubmissionsByIds(form: string | FbForm, submissionIds: string[]): Promise<FbSubmission[]>;
     listFormSubmissions(
@@ -302,6 +316,8 @@ export interface SubmissionsCRUD {
     onFormSubmissionAfterUpdate: Topic<OnFormSubmissionAfterUpdate>;
     onFormSubmissionBeforeDelete: Topic<OnFormSubmissionBeforeDelete>;
     onFormSubmissionAfterDelete: Topic<OnFormSubmissionAfterDelete>;
+    onFormSubmissionsBeforeExport: Topic<OnFormSubmissionsBeforeExport>;
+    onFormSubmissionsAfterExport: Topic<OnFormSubmissionsAfterExport>;
 }
 
 export interface OnSystemBeforeInstallTopic {
@@ -342,6 +358,7 @@ export interface FbSubmission {
         version: number;
         fields: Record<string, any>[];
         layout: string[][];
+        steps: FbFormStep[];
     };
     logs: Record<string, any>[];
     createdOn: string;

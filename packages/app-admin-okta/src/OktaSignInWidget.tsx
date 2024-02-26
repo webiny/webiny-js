@@ -24,7 +24,7 @@ export const LoginContent = styled("div")({
     margin: "0 auto 25px auto"
 });
 
-const OktaSignInWidget: React.FC<OktaSignInWidgetProps> = ({ oktaSignIn }) => {
+const OktaSignInWidget = ({ oktaSignIn }: OktaSignInWidgetProps) => {
     const { oktaAuth } = useOktaAuth();
     const widgetRef = useRef<HTMLDivElement>(null);
 
@@ -45,7 +45,7 @@ const OktaSignInWidget: React.FC<OktaSignInWidgetProps> = ({ oktaSignIn }) => {
                     /**
                      * TODO @ts-refactor figure out correct widgetRef type @pavel
                      */
-                    // @ts-ignore
+                    // @ts-expect-error
                     el: widgetRef.current
                 },
                 res => {

@@ -1,10 +1,10 @@
 import React from "react";
 import { Provider } from "./Provider";
 import { Plugins } from "./Plugins";
-import { HigherOrderComponent } from "@webiny/react-composition";
+import { GenericComponent, Decorator } from "@webiny/react-composition";
 
 interface PluginProps {
-    providers?: HigherOrderComponent[];
+    providers?: Decorator<GenericComponent>[];
     children?: React.ReactNode;
 }
 
