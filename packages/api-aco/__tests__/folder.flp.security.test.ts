@@ -370,7 +370,7 @@ describe("Folder Level Permissions - Security Checks", () => {
         });
     });
 
-    it("should not be able to access a folder if its parent is inaccessible", async () => {
+    it("should still be be able to access a folder if its parent is inaccessible", async () => {
         const folderA = await acoIdentityA
             .createFolder({
                 data: {
