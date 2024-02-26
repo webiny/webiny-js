@@ -10,7 +10,7 @@ import {
     logTestNameBeforeEachTest,
     scanTable
 } from "~tests/utils";
-import { CmsEntriesInitNewMetaFields_5_39_0_003 } from "~/migrations/5.39.0/003/ddb-es";
+import { CmsEntriesInitNewMetaFields_5_39_2_001 } from "~/migrations/5.39.2/001/ddb-es";
 
 import { transferDynamoDbToElasticsearch } from "~tests/utils/insertElasticsearchTestData";
 import { esGetIndexSettings } from "~/utils";
@@ -20,20 +20,20 @@ import { listElasticsearchItems } from "~tests/utils/listElasticsearchItems";
 import { getDecompressedData } from "~tests/migrations/5.37.0/003/ddb-es/getDecompressedData";
 
 // Test data.
-import { ddbPrimaryTableData } from "./003.ddbPrimaryTableData";
-import { ddbEsTableData } from "./003.ddbEsTableData";
-import { headlessCmsAcoSearchRecordPbPage } from "./003.es-index-root-headless-cms-en-us-acosearchrecord-pbpage";
-import { headlessCmsFmFile } from "./003.es-index-root-headless-cms-en-us-fmfile";
-import { headlessCmsModelA } from "./003.es-index-root-headless-cms-en-us-modela";
-import { headlessCmsModelB } from "./003.es-index-root-headless-cms-en-us-modelb";
+import { ddbPrimaryTableData } from "./001.ddbPrimaryTableData";
+import { ddbEsTableData } from "./001.ddbEsTableData";
+import { headlessCmsAcoSearchRecordPbPage } from "./001.es-index-root-headless-cms-en-us-acosearchrecord-pbpage";
+import { headlessCmsFmFile } from "./001.es-index-root-headless-cms-en-us-fmfile";
+import { headlessCmsModelA } from "./001.es-index-root-headless-cms-en-us-modela";
+import { headlessCmsModelB } from "./001.es-index-root-headless-cms-en-us-modelb";
 
 // Migrated test data.
-import { ddbPrimaryTableDataMigrated } from "./migrated/003.ddbPrimaryTableData";
-import { ddbEsTableDataMigrated } from "./migrated/003.ddbEsTableData";
-import { headlessCmsAcoSearchRecordPbPageMigrated } from "./migrated/003.es-index-root-headless-cms-en-us-acosearchrecord-pbpage";
-import { headlessCmsFmFileMigrated } from "./migrated/003.es-index-root-headless-cms-en-us-fmfile";
-import { headlessCmsModelAMigrated } from "./migrated/003.es-index-root-headless-cms-en-us-modela";
-import { headlessCmsModelBMigrated } from "./migrated/003.es-index-root-headless-cms-en-us-modelb";
+import { ddbPrimaryTableDataMigrated } from "./migrated/001.ddbPrimaryTableData";
+import { ddbEsTableDataMigrated } from "./migrated/001.ddbEsTableData";
+import { headlessCmsAcoSearchRecordPbPageMigrated } from "./migrated/001.es-index-root-headless-cms-en-us-acosearchrecord-pbpage";
+import { headlessCmsFmFileMigrated } from "./migrated/001.es-index-root-headless-cms-en-us-fmfile";
+import { headlessCmsModelAMigrated } from "./migrated/001.es-index-root-headless-cms-en-us-modela";
+import { headlessCmsModelBMigrated } from "./migrated/001.es-index-root-headless-cms-en-us-modelb";
 
 jest.retryTimes(0);
 jest.setTimeout(900000);
@@ -49,7 +49,7 @@ const expectModifiedFieldsAreSynced = (entry: Record<string, unknown>) => {
     expect(hasEntryModifiedOn).toBe(hasEntryModifiedBy);
 };
 
-describe("5.39.0-003", () => {
+describe("5.39.2-001", () => {
     const primaryTable = getPrimaryDynamoDbTable();
     const dynamoToEsTable = getDynamoToEsTable();
     const elasticsearchClient = createElasticsearchClient();
@@ -92,7 +92,7 @@ describe("5.39.0-003", () => {
             primaryTable,
             dynamoToEsTable,
             elasticsearchClient,
-            migrations: [CmsEntriesInitNewMetaFields_5_39_0_003]
+            migrations: [CmsEntriesInitNewMetaFields_5_39_2_001]
         });
 
         const { data, error } = await handler();
@@ -112,7 +112,7 @@ describe("5.39.0-003", () => {
             primaryTable,
             dynamoToEsTable,
             elasticsearchClient,
-            migrations: [CmsEntriesInitNewMetaFields_5_39_0_003]
+            migrations: [CmsEntriesInitNewMetaFields_5_39_2_001]
         });
 
         const { data, error } = await handler();
@@ -259,7 +259,7 @@ describe("5.39.0-003", () => {
             primaryTable,
             dynamoToEsTable,
             elasticsearchClient,
-            migrations: [CmsEntriesInitNewMetaFields_5_39_0_003]
+            migrations: [CmsEntriesInitNewMetaFields_5_39_2_001]
         });
 
         // Should run the migration

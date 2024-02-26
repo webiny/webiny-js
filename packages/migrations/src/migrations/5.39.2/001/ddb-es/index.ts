@@ -32,7 +32,7 @@ import { fixTypeFieldValue } from "~/migrations/5.39.0/001/utils/fixTypeFieldVal
 import { isMigratedEntry } from "~/migrations/5.39.0/001/utils/isMigratedEntry";
 import { getOldestRevisionCreatedOn } from "~/migrations/5.39.0/001/utils/getOldestRevisionCreatedOn";
 import { getFirstLastPublishedOnBy } from "~/migrations/5.39.0/001/utils/getFirstLastPublishedOn";
-import { hasValidTypeFieldValue } from "~/migrations/5.39.0/003/ddb-es/utils/hasValidTypeFieldValue";
+import { hasValidTypeFieldValue } from "~/migrations/5.39.2/001/ddb-es/utils/hasValidTypeFieldValue";
 import { ScanDbItem } from "@webiny/db-dynamodb";
 
 interface LastEvaluatedKey {
@@ -60,7 +60,7 @@ interface DynamoDbElasticsearchRecord {
     data: string;
 }
 
-export class CmsEntriesInitNewMetaFields_5_39_0_003 implements DataMigration {
+export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
     private readonly elasticsearchClient: Client;
     private readonly ddbEntryEntity: ReturnType<typeof createDdbEntryEntity>;
     private readonly ddbEsEntryEntity: ReturnType<typeof createDdbEsEntryEntity>;
@@ -76,11 +76,11 @@ export class CmsEntriesInitNewMetaFields_5_39_0_003 implements DataMigration {
     }
 
     getId() {
-        return "5.39.0-003";
+        return "5.39.2-001";
     }
 
     getDescription() {
-        return "Write new revision and entry-level on/by meta fields.";
+        return "Write new revision and entry-level on/by meta fields (2nd pass).";
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
@@ -363,7 +363,7 @@ export class CmsEntriesInitNewMetaFields_5_39_0_003 implements DataMigration {
     }
 }
 
-makeInjectable(CmsEntriesInitNewMetaFields_5_39_0_003, [
+makeInjectable(CmsEntriesInitNewMetaFields_5_39_2_001, [
     inject(PrimaryDynamoTableSymbol),
     inject(ElasticsearchDynamoTableSymbol),
     inject(ElasticsearchClientSymbol)
