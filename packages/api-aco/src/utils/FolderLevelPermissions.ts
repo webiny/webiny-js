@@ -219,8 +219,10 @@ export class FolderLevelPermissions {
                         p => p.target === `admin:${identity.id}`
                     );
 
+                const hasFullAccess = permissions.some(p => p.name === "*");
+
                 if (currentIdentityIncludedInPermissions) {
-                    // Ensure existing identity permission is always the first one in the array.
+                    // 1. Ensure existing identity permission is always the first one in the array.
                     const currentIdentityPermissionIndex =
                         currentFolderPermissions.permissions.findIndex(
                             p => p.target === `admin:${identity.id}`
@@ -234,12 +236,32 @@ export class FolderLevelPermissions {
                             );
                         currentFolderPermissions.permissions.unshift(currentIdentityPermission);
                     }
+
+                    // 2. We must ensure current identity has the "owner" level if they possess full access
+                    // based on security permissions. This protects us from non-full-access users restricting
+                    // access to full-access users. This should not happen. Full-access users should always
+                    // be in control of the permissions for a folder.
+                    if (hasFullAccess) {
+                        const accessInheritedFrom =
+                            currentFolderPermissions.permissions[0].inheritedFrom;
+
+                        // Why are we checking for non-existence of `accessInheritedFrom`?
+                        // Because if it doesn't exist, it means the permission is not inherited from
+                        // a parent folder, which means it's a direct permission set on the folder.
+                        // In this case, we must ensure the permission is set to "owner".
+                        if (!accessInheritedFrom) {
+                            currentFolderPermissions.permissions[0] = {
+                                target: `admin:${identity.id}`,
+                                level: "owner",
+                                inheritedFrom: "role:full-access"
+                            };
+                        }
+                    }
                 } else {
                     // Current identity not included in permissions? Let's add it.
                     let currentIdentityPermission: FolderPermission | null = null;
 
                     // 1. Check if the user has full access.
-                    const hasFullAccess = permissions.some(p => p.name === "*");
                     if (hasFullAccess) {
                         currentIdentityPermission = {
                             target: `admin:${identity.id}`,
