@@ -62,8 +62,7 @@ export class FolderLevelPermissions {
     private readonly canUseFolderLevelPermissions: () => boolean;
     private readonly isAuthorizationEnabled: () => boolean;
     private allFolders: Record<string, Folder[]> = {};
-    private listFoldersPermissionsPromises: Record<string, Promise<FolderPermissionsList> | null> =
-        {};
+    private foldersPermissionsLists: Record<string, Promise<FolderPermissionsList> | null> = {};
 
     constructor(params: FolderLevelPermissionsParams) {
         this.getIdentity = params.getIdentity;
@@ -117,12 +116,12 @@ export class FolderLevelPermissions {
     async listFoldersPermissions(
         params: ListFolderPermissionsParams
     ): Promise<FolderPermissionsList> {
-        const existingPromise = this.listFoldersPermissionsPromises[params.folderType];
-        if (existingPromise) {
-            return existingPromise;
+        const existingFoldersPermissionsList = this.foldersPermissionsLists[params.folderType];
+        if (existingFoldersPermissionsList) {
+            return existingFoldersPermissionsList;
         }
 
-        this.listFoldersPermissionsPromises[params.folderType] = new Promise(async resolve => {
+        this.foldersPermissionsLists[params.folderType] = new Promise(async resolve => {
             if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
                 resolve([]);
                 return;
@@ -285,7 +284,7 @@ export class FolderLevelPermissions {
             //return processedFolderPermissions;
         });
 
-        return this.listFoldersPermissionsPromises[params.folderType]!;
+        return this.foldersPermissionsLists[params.folderType]!;
     }
 
     async getFolderPermissions(
