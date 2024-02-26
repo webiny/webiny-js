@@ -49,14 +49,17 @@ export const EditorSidebar = React.memo(() => {
     const [element] = useActiveElement();
     const [sidebar, setSidebar] = useElementSidebar();
 
-    const getActiveTabIndex = useCallback(() => {
-        return store.get(LOCAL_STORAGE_KEY, sidebar.activeTabIndex);
-    }, []);
+    const activeTabIndex = store.get(LOCAL_STORAGE_KEY, sidebar.activeTabIndex) ?? 0;
 
-    const setActiveTabIndex = useCallback(index => {
-        setSidebar(prev => updateSidebarActiveTabIndexMutation(prev, index));
-        store.set(LOCAL_STORAGE_KEY, index);
-    }, []);
+    const setActiveTabIndex = useCallback(
+        index => {
+            setSidebar(prev => updateSidebarActiveTabIndexMutation(prev, index));
+            if (element) {
+                store.set(LOCAL_STORAGE_KEY, index);
+            }
+        },
+        [element]
+    );
 
     const unhighlightElementTab = useCallback(() => {
         setSidebar(prev => highlightSidebarTabMutation(prev, false));
@@ -70,7 +73,7 @@ export const EditorSidebar = React.memo(() => {
 
     return (
         <Elevation z={1} className={rightSideBar}>
-            <Tabs value={getActiveTabIndex()} updateValue={setActiveTabIndex}>
+            <Tabs value={activeTabIndex} onActivate={setActiveTabIndex}>
                 <EditorSidebarTab label={"Style"}>
                     <StyleSettingsTabContent />
                 </EditorSidebarTab>
