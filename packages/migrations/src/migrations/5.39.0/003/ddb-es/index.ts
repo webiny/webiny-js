@@ -15,8 +15,7 @@ import {
     disableElasticsearchIndexing,
     esGetIndexName,
     fetchOriginalElasticsearchSettings,
-    restoreOriginalElasticsearchSettings,
-    scan
+    restoreOriginalElasticsearchSettings
 } from "~/utils";
 import { inject, makeInjectable } from "@webiny/ioc";
 import { Client } from "@elastic/elasticsearch";
@@ -85,31 +84,43 @@ export class CmsEntriesInitNewMetaFields_5_39_0_003 implements DataMigration {
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
-        const result = await scan<ScanDbItem<CmsEntry>>({
-            entity: this.ddbEntryEntity,
-            options: {
-                filters: [
-                    {
-                        attr: "_et",
-                        eq: "CmsEntries"
+        let shouldExecute = false;
+
+        await ddbScanWithCallback<ScanDbItem<CmsEntry>>(
+            {
+                entity: this.ddbEntryEntity,
+                options: {
+                    filters: [
+                        {
+                            attr: "_et",
+                            eq: "CmsEntries"
+                        }
+                    ],
+                    limit: 100
+                }
+            },
+            async result => {
+                if (result.error) {
+                    logger.error(result.error);
+                    throw new Error(result.error);
+                }
+
+                for (const item of result.items) {
+                    if (!hasValidTypeFieldValue(item)) {
+                        shouldExecute = true;
+
+                        // Stop further scanning.
+                        return false;
                     }
-                ],
-                limit: 100
-            }
-        });
+                }
 
-        if (result.items.length === 0) {
-            logger.info(`No CMS entries found in the system; skipping migration.`);
-            return false;
-        } else if (result.error) {
-            logger.error(result.error);
-            throw new Error(result.error);
-        }
-
-        for (const item of result.items) {
-            if (!hasValidTypeFieldValue(item)) {
+                // Continue further scanning.
                 return true;
             }
+        );
+
+        if (shouldExecute) {
+            return true;
         }
 
         logger.info(`CMS entries already upgraded. skipping...`);
