@@ -98,7 +98,7 @@ export class FolderLevelPermissions {
         return filteredFoldersWithPermissions;
     }
 
-    invalidateCache(folderType?: string) {
+    invalidateFoldersCache(folderType?: string) {
         if (folderType) {
             if (folderType in this.allFolders) {
                 delete this.allFolders[folderType];
@@ -108,7 +108,17 @@ export class FolderLevelPermissions {
         }
     }
 
-    updateCache(folderType: string, modifier: (folders: Folder[]) => Folder[]) {
+    invalidateFoldersPermissionsListCache(folderType?: string) {
+        if (folderType) {
+            if (folderType in this.foldersPermissionsLists) {
+                delete this.foldersPermissionsLists[folderType];
+            }
+        } else {
+            this.allFolders = {};
+        }
+    }
+
+    updateFoldersCache(folderType: string, modifier: (folders: Folder[]) => Folder[]) {
         const foldersClone = structuredClone(this.allFolders[folderType]) || [];
         this.allFolders[folderType] = modifier(foldersClone);
     }

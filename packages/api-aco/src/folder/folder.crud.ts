@@ -137,7 +137,7 @@ export const createFolderCrudMethods = ({
             const folder = await storageOperations.createFolder({ data });
 
             // We need to add the newly created folder to FLP's internal cache.
-            folderLevelPermissions.updateCache(folder.type, cachedFolders => {
+            folderLevelPermissions.updateFoldersCache(folder.type, cachedFolders => {
                 return [...cachedFolders, folder];
             });
 
@@ -225,7 +225,7 @@ export const createFolderCrudMethods = ({
             await onFolderAfterUpdate.publish({ original, input: { id, data }, folder });
 
             // We need to update the folder in FLP's internal cache.
-            folderLevelPermissions.updateCache(folder.type, cachedFolders => {
+            folderLevelPermissions.updateFoldersCache(folder.type, cachedFolders => {
                 return cachedFolders.map(currentFolder => {
                     if (currentFolder.id === folder.id) {
                         return folder;
@@ -233,6 +233,8 @@ export const createFolderCrudMethods = ({
                     return currentFolder;
                 });
             });
+
+            folderLevelPermissions.invalidateFoldersPermissionsListCache(folder.type);
 
             await folderLevelPermissions.assignFolderPermissions(folder);
             return folder;
