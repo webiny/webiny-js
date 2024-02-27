@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "Tockets",
+  "description": "Websockets",
   "contributors": [
     "Bruno Zorić <bruno@webiny.com>"
   ],
@@ -51,15 +51,5 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
-  },
-  "adio": {
-    "ignore": {
-      "src": [
-        "aws-lambda"
-      ],
-      "dependencies": [
-        "@types/aws-lambda"
-      ]
-    }
   }
 }

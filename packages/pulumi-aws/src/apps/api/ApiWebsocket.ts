@@ -194,7 +194,7 @@ export const ApiWebsocket = createAppModule({
             lambdaWebsocketPolicy,
             lambdaWebsocketRolePolicyAttachment,
             deployment,
-            websocketApiUri: pulumi.interpolate`${websocketApi.output.apiEndpoint}/${websocketApiStage.output.name}`
+            websocketApiUrl: pulumi.interpolate`${websocketApi.output.apiEndpoint}/${websocketApiStage.output.name}`
         };
     }
 });
