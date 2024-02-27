@@ -29,6 +29,7 @@ import { LexicalEditorPlugin } from "@webiny/lexical-editor-pb-element";
 import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Module as MailerSettings } from "@webiny/app-mailer";
 import { Folders } from "@webiny/app-aco";
+import { Sockets } from "@webiny/app-sockets";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
     createApolloClient?: BaseAdminProps["createApolloClient"];
@@ -47,6 +48,7 @@ const App = (props: AdminProps) => {
             <Tenancy />
             <Security />
             <AccessManagement />
+            <Sockets />
             <AppInstaller />
             <Folders />
             <FileManager />

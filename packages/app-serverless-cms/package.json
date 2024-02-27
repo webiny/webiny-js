@@ -28,6 +28,7 @@
     "@webiny/app-page-builder": "0.0.0",
     "@webiny/app-security": "0.0.0",
     "@webiny/app-security-access-management": "0.0.0",
+    "@webiny/app-sockets": "0.0.0",
     "@webiny/app-tenancy": "0.0.0",
     "@webiny/app-tenant-manager": "0.0.0",
     "@webiny/lexical-editor-actions": "0.0.0",
