@@ -230,13 +230,13 @@ export class SocketsRunner implements ISocketsRunner {
             ...result,
             messageId
         };
-        console.log(
-            "sending: " +
-                JSON.stringify({
-                    connection,
-                    dataToSend
-                })
-        );
+        // console.log(
+        //     "sending: " +
+        //         JSON.stringify({
+        //             connection,
+        //             dataToSend
+        //         })
+        // );
         await this.context.sockets.sendToConnection(connection, dataToSend);
     }
 }
