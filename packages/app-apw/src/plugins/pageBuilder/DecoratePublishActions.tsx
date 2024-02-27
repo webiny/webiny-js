@@ -45,9 +45,9 @@ const PublishRevisionDecorator = createDecorator(
 );
 
 const PublishPageMenuOptionDecorator = createDecorator(
-    Components.PageDetails.Toolbar.PublishRevision,
+    Components.PageDetails.Revisions.Actions.PublishRevision,
     OriginalRenderer => {
-        return function PageReview() {
+        return function PageReview(props) {
             const { revision } = Components.PageDetails.Revisions.useRevision();
             const contentReviewId = useContentReviewId(revision.id);
             const navigate = useNavigate();
@@ -57,7 +57,7 @@ const PublishPageMenuOptionDecorator = createDecorator(
             }
 
             if (!contentReviewId) {
-                return <OriginalRenderer />;
+                return <OriginalRenderer {...props} />;
             }
 
             return (

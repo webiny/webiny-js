@@ -4,6 +4,7 @@ import EditPageInToolbar from "./admin/plugins/pageDetails/header/editRevision/E
 import * as RevisionsList from "./admin/plugins/pageDetails/pageRevisions/RevisionsList";
 import { usePage as usePageDetailsPage } from "./admin/views/Pages/PageDetails";
 import { PreviewPage as PreviewPageToolbar } from "./admin/plugins/pageDetails/header/pageOptionsMenu/PreviewPage";
+import { DuplicatePage as DuplicatePageToolbar } from "./admin/plugins/pageDetails/header/pageOptionsMenu/DuplicatePage";
 import {
     PublishPageMenuOption,
     DeleteRevisionMenuOption,
@@ -19,7 +20,8 @@ import {
     MovePage,
     EditPage,
     PreviewPage,
-    ChangePageStatus
+    ChangePageStatus,
+    DuplicatePage
 } from "~/admin/components/Table/Table";
 import { usePage } from "~/admin/views/Pages/hooks/usePage";
 
@@ -41,6 +43,10 @@ export const Components = {
              * This component renders the "Edit" page action.
              */
             EditPage,
+            /**
+             * This component renders the "Duplicate" page action.
+             */
+            DuplicatePage,
             /**
              * This component renders the "Delete" page action.
              */
@@ -79,7 +85,11 @@ export const Components = {
             /**
              * This component renders the "Preview" action in the dropdown menu.
              */
-            PreviewPage: PreviewPageToolbar
+            PreviewPage: PreviewPageToolbar,
+            /**
+             * This component renders the "Duplicate" action in the dropdown menu.
+             */
+            DuplicatePage: DuplicatePageToolbar
         },
         /**
          * These components are used in the page revisions tab, in the page details drawer.
