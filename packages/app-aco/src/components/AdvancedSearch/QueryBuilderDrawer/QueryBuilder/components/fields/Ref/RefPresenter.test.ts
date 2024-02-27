@@ -1,5 +1,5 @@
 import { RefPresenter } from "./RefPresenter";
-import { EntryDTO, EntryRepository } from "./domain";
+import { EntryReference, EntryRepository } from "./domain";
 import { EntriesGatewayInterface } from "./gateways";
 
 const mockGateway: EntriesGatewayInterface = {
@@ -19,22 +19,31 @@ const createMockGateway = ({
 describe("RefPresenter", () => {
     const modelId = "modelId-demo";
 
-    const entry1: EntryDTO = {
+    const entry1: EntryReference = {
         id: "id-1",
         entryId: "entryId-1",
-        title: "Entry 1"
+        title: "Entry 1",
+        model: {
+            modelId
+        }
     };
 
-    const entry2: EntryDTO = {
+    const entry2: EntryReference = {
         id: "id-2",
         entryId: "entryId-2",
-        title: "Entry 2"
+        title: "Entry 2",
+        model: {
+            modelId
+        }
     };
 
-    const entry3: EntryDTO = {
+    const entry3: EntryReference = {
         id: "id-3",
         entryId: "entryId-3",
-        title: "Entry 3"
+        title: "Entry 3",
+        model: {
+            modelId
+        }
     };
 
     const gateway = createMockGateway({
@@ -50,13 +59,14 @@ describe("RefPresenter", () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        const repository = new EntryRepository(gateway, modelId);
+        const repository = new EntryRepository(gateway, [modelId]);
         presenter = new RefPresenter(repository);
     });
 
-    it("should load an existing entry by passing the `entryId`", async () => {
+    it("should load an existing entry by passing a tuple composed by `entryId` and `modelId`", async () => {
         const entryId = "entryId-1";
-        const loadPromise = presenter.load(entryId);
+        const value = JSON.stringify({ entryId, modelId });
+        const loadPromise = presenter.load(value);
 
         // Let's check the transition to loading state
         expect(presenter.vm).toEqual({
@@ -68,20 +78,24 @@ describe("RefPresenter", () => {
         await loadPromise;
 
         // should fetch the entry from the gateway
-        expect(gateway.get).toBeCalledTimes(1);
-        expect(gateway.get).toBeCalledWith(modelId, entryId);
+        expect(gateway.get).toHaveBeenCalledTimes(1);
+        expect(gateway.get).toHaveBeenCalledWith(modelId, entryId);
 
         // should update the `vm` and set the `currentEntry`
         expect(presenter.vm).toEqual({
             selected: {
-                id: entryId,
-                name: "Entry 1"
+                id: entry1.id,
+                entryId: entry1.entryId,
+                name: entry1.title,
+                modelId
             },
             loading: false,
             options: [
                 {
-                    id: entryId,
-                    name: "Entry 1"
+                    id: entry1.id,
+                    entryId: entry1.entryId,
+                    name: entry1.title,
+                    modelId
                 }
             ]
         });
@@ -91,7 +105,7 @@ describe("RefPresenter", () => {
         await presenter.load();
 
         // should NOT fetch the entry from the gateway
-        expect(gateway.get).toBeCalledTimes(0);
+        expect(gateway.get).toHaveBeenCalledTimes(0);
 
         // should not update the `vm`
         expect(presenter.vm).toEqual({
@@ -125,8 +139,8 @@ describe("RefPresenter", () => {
         await searchPromise;
 
         // should fetch the entries from the gateway
-        expect(gateway.list).toBeCalledTimes(1);
-        expect(gateway.list).toBeCalledWith(modelId, query);
+        expect(gateway.list).toHaveBeenCalledTimes(1);
+        expect(gateway.list).toHaveBeenCalledWith([modelId], query);
 
         // let's check the current `vm`
         // be aware: data comes from the mocked gateway
@@ -135,16 +149,22 @@ describe("RefPresenter", () => {
             loading: false,
             options: [
                 {
-                    id: entry1.entryId,
-                    name: entry1.title
+                    id: entry1.id,
+                    entryId: entry1.entryId,
+                    name: entry1.title,
+                    modelId
                 },
                 {
-                    id: entry2.entryId,
-                    name: entry2.title
+                    id: entry2.id,
+                    entryId: entry2.entryId,
+                    name: entry2.title,
+                    modelId
                 },
                 {
-                    id: entry3.entryId,
-                    name: entry3.title
+                    id: entry3.id,
+                    entryId: entry3.entryId,
+                    name: entry3.title,
+                    modelId
                 }
             ]
         });

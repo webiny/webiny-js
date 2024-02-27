@@ -3,11 +3,12 @@ import { Filters as BaseFilters, FiltersOnSubmit } from "@webiny/app-admin";
 import { useContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useContentEntriesList } from "~/admin/views/contentEntries/hooks";
 import { AdvancedSearch, GraphQLInputMapper, useFilterRepository } from "@webiny/app-aco";
-import { useModel } from "~/admin/hooks";
+import { useApolloClient, useModel } from "~/admin/hooks";
 import { FieldsMapper } from "./FieldsMapper";
 import { FieldRaw, FilterDTO } from "@webiny/app-aco/components/AdvancedSearch/domain";
 
 export const Filters = () => {
+    const client = useApolloClient();
     const { browser } = useContentEntryListConfig();
     const list = useContentEntriesList();
     const { model } = useModel();
@@ -58,6 +59,7 @@ export const Filters = () => {
                 fields={fields}
                 repository={repository}
                 onApplyFilter={applyAdvancedSearch}
+                refClient={client}
             />
         </BaseFilters>
     );

@@ -1,5 +1,5 @@
 import React from "react";
-
+import { ApolloClient } from "apollo-client";
 import { Bind } from "@webiny/form";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { Cell, Grid } from "@webiny/ui/Grid";
@@ -18,9 +18,17 @@ interface FilterProps {
     fields: FieldDTO[];
     onDelete: () => void;
     onFieldSelectChange: (data: string) => void;
+    refClient: ApolloClient<any>;
 }
 
-export const Filter = ({ name, onDelete, onFieldSelectChange, fields, filter }: FilterProps) => {
+export const Filter = ({
+    name,
+    onDelete,
+    onFieldSelectChange,
+    fields,
+    filter,
+    refClient
+}: FilterProps) => {
     return (
         <FilterContainer>
             <Grid>
@@ -72,6 +80,7 @@ export const Filter = ({ name, onDelete, onFieldSelectChange, fields, filter }: 
                             <InputField
                                 name={`${name}.value`}
                                 field={fields.find(field => field.value === filter.field)}
+                                refClient={refClient}
                             />
                         )}
                     </CellInner>

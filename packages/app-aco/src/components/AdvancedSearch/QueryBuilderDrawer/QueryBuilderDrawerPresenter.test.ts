@@ -61,7 +61,10 @@ describe("QueryBuilderDrawerPresenter", () => {
                 value: fieldId,
                 type: fieldType,
                 predefined: expect.any(Array),
-                conditions: expect.any(Array)
+                conditions: expect.any(Array),
+                settings: {
+                    modelIds: []
+                }
             }
         ]);
 
@@ -475,7 +478,10 @@ describe("FieldDTO definition", () => {
                     { label: "doesn't start with", value: "_not_startsWith" }
                 ],
                 predefined: [],
-                type: FieldType.TEXT
+                type: FieldType.TEXT,
+                settings: {
+                    modelIds: []
+                }
             }
         ],
         [
@@ -492,7 +498,10 @@ describe("FieldDTO definition", () => {
                     { label: "doesn't contain", value: "_not_contains" }
                 ],
                 predefined: [],
-                type: FieldType.TEXT
+                type: FieldType.TEXT,
+                settings: {
+                    modelIds: []
+                }
             }
         ],
         [
@@ -509,7 +518,10 @@ describe("FieldDTO definition", () => {
                     { label: "is not equal to", value: "_not" }
                 ],
                 predefined: [],
-                type: FieldType.BOOLEAN
+                type: FieldType.BOOLEAN,
+                settings: {
+                    modelIds: []
+                }
             }
         ],
         [
@@ -533,7 +545,10 @@ describe("FieldDTO definition", () => {
                     { label: "is after or equal to", value: "_gte" }
                 ],
                 predefined: [],
-                type: FieldType.DATE
+                type: FieldType.DATE,
+                settings: {
+                    modelIds: []
+                }
             }
         ],
         [
@@ -557,7 +572,10 @@ describe("FieldDTO definition", () => {
                     { label: "is after or equal to", value: "_gte" }
                 ],
                 predefined: [],
-                type: FieldType.TIME
+                type: FieldType.TIME,
+                settings: {
+                    modelIds: []
+                }
             }
         ],
         [
@@ -581,7 +599,10 @@ describe("FieldDTO definition", () => {
                     { label: "is after or equal to", value: "_gte" }
                 ],
                 predefined: [],
-                type: FieldType.DATETIME_WITH_TIMEZONE
+                type: FieldType.DATETIME_WITH_TIMEZONE,
+                settings: {
+                    modelIds: []
+                }
             }
         ],
         [
@@ -605,7 +626,10 @@ describe("FieldDTO definition", () => {
                     { label: "is after or equal to", value: "_gte" }
                 ],
                 predefined: [],
-                type: FieldType.DATETIME_WITHOUT_TIMEZONE
+                type: FieldType.DATETIME_WITHOUT_TIMEZONE,
+                settings: {
+                    modelIds: []
+                }
             }
         ],
         [
@@ -637,7 +661,10 @@ describe("FieldDTO definition", () => {
                         label: "value 1"
                     }
                 ],
-                type: FieldType.MULTIPLE_VALUES
+                type: FieldType.MULTIPLE_VALUES,
+                settings: {
+                    modelIds: []
+                }
             }
         ],
         [
@@ -658,7 +685,43 @@ describe("FieldDTO definition", () => {
                     { label: "is greater or equal to", value: "_gte" }
                 ],
                 predefined: [],
-                type: FieldType.NUMBER
+                type: FieldType.NUMBER,
+                settings: {
+                    modelIds: []
+                }
+            }
+        ],
+        [
+            {
+                id: `${FieldType.REF}-field`,
+                label: `${FieldType.REF} field`,
+                type: FieldType.REF,
+                settings: {
+                    models: [
+                        {
+                            modelId: "modelId-1"
+                        },
+                        {
+                            modelId: "modelId-2"
+                        },
+                        {
+                            modelId: "modelId-3"
+                        }
+                    ]
+                }
+            },
+            {
+                label: `${FieldType.REF} field`,
+                value: `${FieldType.REF}-field.entryId`,
+                conditions: [
+                    { label: "is equal to", value: " " },
+                    { label: "is not equal to", value: "_not" }
+                ],
+                predefined: [],
+                type: FieldType.REF,
+                settings: {
+                    modelIds: ["modelId-1", "modelId-2", "modelId-3"]
+                }
             }
         ],
         [
@@ -672,7 +735,10 @@ describe("FieldDTO definition", () => {
                 value: "any-field",
                 conditions: [],
                 predefined: [],
-                type: FieldType.TEXT
+                type: FieldType.TEXT,
+                settings: {
+                    modelIds: []
+                }
             }
         ]
     ];

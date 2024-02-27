@@ -27,7 +27,7 @@ export class RefPresenter implements IRefPresenter {
         makeAutoObservable(this);
     }
 
-    async load(value: string) {
+    async load(value?: string) {
         try {
             if (!value) {
                 return;

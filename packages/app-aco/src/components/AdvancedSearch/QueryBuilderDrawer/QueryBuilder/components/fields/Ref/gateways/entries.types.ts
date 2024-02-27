@@ -1,12 +1,6 @@
 import { AcoError } from "~/types";
 import { EntryReference } from "../domain";
 
-export interface CmsReferenceContentEntry {
-    id: string;
-    entryId: string;
-    title: string;
-}
-
 export interface ListEntriesQueryVariables {
     modelIds: string[];
     query?: string;

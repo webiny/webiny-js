@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef } from "react";
+import { ApolloClient } from "apollo-client";
 import { observer } from "mobx-react-lite";
-
 import { FormAPI } from "@webiny/form";
 import { DrawerContent } from "@webiny/ui/Drawer";
 // @ts-expect-error
@@ -21,6 +21,7 @@ interface QueryBuilderDrawerProps {
     onApply: (data: FilterDTO) => void;
     onValidationError: (message: string) => void;
     filter: FilterDTO;
+    refClient: ApolloClient<any>;
     vm: {
         isOpen: boolean;
     };
@@ -88,6 +89,7 @@ export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDr
                     }
                     onAddNewFilterToGroup={groupIndex => presenter.addNewFilterToGroup(groupIndex)}
                     onAddGroup={() => presenter.addGroup()}
+                    refClient={props.refClient}
                     vm={presenter.vm}
                 />
                 <Footer formRef={ref} onClose={props.onClose} onSave={onSave} />

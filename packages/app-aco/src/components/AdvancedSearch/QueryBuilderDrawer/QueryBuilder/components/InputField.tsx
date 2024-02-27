@@ -1,5 +1,5 @@
 import React from "react";
-
+import { ApolloClient } from "apollo-client";
 import {
     Boolean,
     DateWithoutTimezone,
@@ -14,9 +14,10 @@ import { FieldDTO, FieldType } from "~/components/AdvancedSearch/domain";
 interface InputFieldProps {
     field?: FieldDTO;
     name: string;
+    refClient: ApolloClient<any>;
 }
 
-export const InputField = ({ field, name }: InputFieldProps) => {
+export const InputField = ({ field, name, refClient }: InputFieldProps) => {
     if (!field) {
         return null;
     }
@@ -31,7 +32,7 @@ export const InputField = ({ field, name }: InputFieldProps) => {
         case FieldType.MULTIPLE_VALUES:
             return <MultipleValues predefined={field.predefined} name={name} />;
         case FieldType.REF:
-            return <Ref name={name} modelIds={field.settings.modelIds} />;
+            return <Ref name={name} modelIds={field.settings.modelIds} client={refClient} />;
         default:
             return <Input name={name} type={field.type} />;
     }
