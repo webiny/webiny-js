@@ -7,7 +7,7 @@ const NO_SUCH_ENTITY_IAM_ERROR = "NoSuchEntity";
 
 export const checkOsServiceRole = {
     type: "hook-before-deploy",
-    name: "hook-before-deploy-es-service-role",
+    name: "hook-before-deploy-os-service-role",
     async hook(params: Record<string, any>, context: CliContext) {
         const spinner = ora();
         spinner.start(`Checking Amazon OpenSearch service role...`);
