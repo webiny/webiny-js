@@ -55,8 +55,8 @@ describe("5.39.0-001", () => {
             scanTable(table, {
                 filters: [
                     {
-                        attr: "TYPE",
-                        beginsWith: "cms.entry"
+                        attr: "_et",
+                        eq: "CmsEntries"
                     }
                 ]
             })

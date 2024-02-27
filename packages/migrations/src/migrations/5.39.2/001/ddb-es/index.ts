@@ -15,21 +15,25 @@ import {
     disableElasticsearchIndexing,
     esGetIndexName,
     fetchOriginalElasticsearchSettings,
-    restoreOriginalElasticsearchSettings,
-    scan
+    restoreOriginalElasticsearchSettings
 } from "~/utils";
 import { inject, makeInjectable } from "@webiny/ioc";
 import { Client } from "@elastic/elasticsearch";
 import { executeWithRetry } from "@webiny/utils";
-import { createDdbEntryEntity, createDdbEsEntryEntity } from "../entities/createEntryEntity";
-import { CmsEntry } from "../types";
-import { getDecompressedData } from "../utils/getDecompressedData";
-import { getCompressedData } from "../utils/getCompressedData";
-import { assignNewMetaFields } from "../utils/assignNewMetaFields";
-import { fixTypeFieldValue } from "../utils/fixTypeFieldValue";
-import { isMigratedEntry } from "../utils/isMigratedEntry";
-import { getOldestRevisionCreatedOn } from "../utils/getOldestRevisionCreatedOn";
+import {
+    createDdbEntryEntity,
+    createDdbEsEntryEntity
+} from "~/migrations/5.39.0/001/entities/createEntryEntity";
+import { CmsEntry } from "~/migrations/5.39.0/001/types";
+import { getDecompressedData } from "~/migrations/5.39.0/001/utils/getDecompressedData";
+import { getCompressedData } from "~/migrations/5.39.0/001/utils/getCompressedData";
+import { assignNewMetaFields } from "~/migrations/5.39.0/001/utils/assignNewMetaFields";
+import { fixTypeFieldValue } from "~/migrations/5.39.0/001/utils/fixTypeFieldValue";
+import { isMigratedEntry } from "~/migrations/5.39.0/001/utils/isMigratedEntry";
+import { getOldestRevisionCreatedOn } from "~/migrations/5.39.0/001/utils/getOldestRevisionCreatedOn";
 import { getFirstLastPublishedOnBy } from "~/migrations/5.39.0/001/utils/getFirstLastPublishedOn";
+import { hasValidTypeFieldValue } from "~/migrations/5.39.2/001/ddb-es/utils/hasValidTypeFieldValue";
+import { ScanDbItem } from "@webiny/db-dynamodb";
 
 interface LastEvaluatedKey {
     PK: string;
@@ -56,7 +60,7 @@ interface DynamoDbElasticsearchRecord {
     data: string;
 }
 
-export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
+export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
     private readonly elasticsearchClient: Client;
     private readonly ddbEntryEntity: ReturnType<typeof createDdbEntryEntity>;
     private readonly ddbEsEntryEntity: ReturnType<typeof createDdbEsEntryEntity>;
@@ -72,45 +76,54 @@ export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
     }
 
     getId() {
-        return "5.39.0-001";
+        return "5.39.2-001";
     }
 
     getDescription() {
-        return "Write new revision and entry-level on/by meta fields.";
+        return "Write new revision and entry-level on/by meta fields (second pass).";
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
-        const result = await scan<DynamoDbElasticsearchRecord>({
-            entity: this.ddbEsEntryEntity,
-            options: {
-                filters: [
-                    {
-                        attr: "_et",
-                        eq: "CmsEntriesElasticsearch"
+        let shouldExecute = false;
+
+        await ddbScanWithCallback<ScanDbItem<CmsEntry>>(
+            {
+                entity: this.ddbEntryEntity,
+                options: {
+                    attributes: ["TYPE", "SK"],
+                    filters: [
+                        {
+                            attr: "_et",
+                            eq: "CmsEntries"
+                        }
+                    ],
+                    limit: 100
+                }
+            },
+            async result => {
+                if (result.error) {
+                    logger.error(result.error);
+                    throw new Error(result.error);
+                }
+
+                for (const item of result.items) {
+                    if (!hasValidTypeFieldValue(item)) {
+                        shouldExecute = true;
+
+                        // Stop further scanning.
+                        return false;
                     }
-                ],
-                limit: 100
-            }
-        });
+                }
 
-        if (result.items.length === 0) {
-            logger.info(`No CMS entries found in the system; skipping migration.`);
-            return false;
-        } else if (result.error) {
-            logger.error(result.error);
-            throw new Error(result.error);
-        }
-
-        for (const item of result.items) {
-            const data = await getDecompressedData<CmsEntry>(item.data);
-            if (!data) {
-                continue;
-            }
-
-            if (!isMigratedEntry(data)) {
+                // Continue further scanning.
                 return true;
             }
+        );
+
+        if (shouldExecute) {
+            return true;
         }
+
         logger.info(`CMS entries already upgraded. skipping...`);
         return false;
     }
@@ -162,6 +175,10 @@ export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
                  * Update the DynamoDB part of the records.
                  */
                 for (const item of result.items) {
+                    if (hasValidTypeFieldValue(item) && isMigratedEntry(item)) {
+                        continue;
+                    }
+
                     const index = esGetIndexName({
                         tenant: item.tenant,
                         locale: item.locale,
@@ -191,21 +208,23 @@ export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
                         });
                     }
 
-                    // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
-                    const createdOn = await getOldestRevisionCreatedOn({
-                        entry: item,
-                        entryEntity: this.ddbEntryEntity
-                    });
+                    if (!isMigratedEntry(item)) {
+                        // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
+                        const createdOn = await getOldestRevisionCreatedOn({
+                            entry: item,
+                            entryEntity: this.ddbEntryEntity
+                        });
 
-                    const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
-                        entry: item,
-                        entryEntity: this.ddbEntryEntity
-                    });
+                        const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
+                            entry: item,
+                            entryEntity: this.ddbEntryEntity
+                        });
 
-                    assignNewMetaFields(item, {
-                        createdOn,
-                        ...firstLastPublishedOnByFields
-                    });
+                        assignNewMetaFields(item, {
+                            createdOn,
+                            ...firstLastPublishedOnByFields
+                        });
+                    }
 
                     // Fixes the value of the `TYPE` field, if it's not valid.
                     fixTypeFieldValue(item);
@@ -348,7 +367,7 @@ export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
     }
 }
 
-makeInjectable(CmsEntriesInitNewMetaFields_5_39_0_001, [
+makeInjectable(CmsEntriesInitNewMetaFields_5_39_2_001, [
     inject(PrimaryDynamoTableSymbol),
     inject(ElasticsearchDynamoTableSymbol),
     inject(ElasticsearchClientSymbol)

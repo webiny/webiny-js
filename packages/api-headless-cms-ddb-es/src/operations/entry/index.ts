@@ -430,7 +430,7 @@ export const createEntriesStorageOperations = (
                     entity.putBatch({
                         ...storageEntry,
                         ...latestKeys,
-                        TYPE: createLatestSortKey()
+                        TYPE: createLatestRecordType()
                     })
                 );
 
@@ -483,7 +483,7 @@ export const createEntriesStorageOperations = (
                 items.push(
                     entity.putBatch({
                         ...updatedLatestStorageEntry,
-                        TYPE: createLatestSortKey()
+                        TYPE: createLatestRecordType()
                     })
                 );
 
@@ -1315,7 +1315,7 @@ export const createEntriesStorageOperations = (
                 items.push(
                     entity.putBatch({
                         ...updatedLatestStorageEntry,
-                        TYPE: createLatestSortKey()
+                        TYPE: createLatestRecordType()
                     })
                 );
 
