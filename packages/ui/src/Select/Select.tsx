@@ -7,7 +7,7 @@ import {
 import { FormElementMessage } from "~/FormElementMessage";
 import { FormComponentProps } from "~/types";
 import classNames from "classnames";
-import { webinySelect, noLabel } from "./styled";
+import { webinySelect } from "./styled";
 
 export type SelectProps = FormComponentProps &
     RmwcSelectProps & {
@@ -110,13 +110,10 @@ export const Select = (props: SelectProps) => {
                     "webiny-ui-select mdc-ripple-surface mdc-ripple-upgraded",
                     webinySelect,
                     props.size ? `webiny-ui-select--size-${props.size}` : null,
-                    props.className,
-                    {
-                        [noLabel]: !props.label
-                    }
+                    props.className
                 )}
-                onChange={e => {
-                    props.onChange && props.onChange((e.target as HTMLInputElement).value);
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                    props.onChange && props.onChange(e.target.value);
                 }}
             />
 

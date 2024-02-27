@@ -24,11 +24,11 @@ const centeredContent = css({
         display: "flex",
         flexDirection: "column",
         height: "calc(100vh - 70px)",
-        ".mdc-list": {
+        ".mdc-deprecated-list": {
             overflow: "auto"
         }
     },
-    ">.mdc-list": {
+    ">.mdc-deprecated-list": {
         display: "flex",
         flexDirection: "column",
         maxHeight: "calc(100vh - 70px)",

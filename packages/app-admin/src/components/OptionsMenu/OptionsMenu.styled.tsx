@@ -7,7 +7,7 @@ export const Menu: StyledComponent<MenuProps> = styled(OriginalMenu)`
         pointer-events: none;
     }
 
-    .mdc-list-item__graphic {
+    .mdc-deprecated-list-item__graphic {
         margin-right: 16px;
     }
 `;
