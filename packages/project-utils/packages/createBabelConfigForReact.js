@@ -38,7 +38,7 @@ module.exports = ({ path, esm }) => ({
                 useESModules: false
             }
         ],
-        ["babel-plugin-emotion", { autoLabel: true }],
+        ["@emotion/babel-plugin", { autoLabel: "dev-only" }],
         [
             "@babel/plugin-proposal-object-rest-spread",
             {

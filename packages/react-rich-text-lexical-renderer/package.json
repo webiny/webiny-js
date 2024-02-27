@@ -16,13 +16,14 @@
     "react": "17.0.2"
   },
   "devDependencies": {
+    "@emotion/react": "^11.10.6",
     "@testing-library/react": "^12.1.5",
+    "@webiny/app-theme": "0.0.0",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "@webiny/react-composition": "0.0.0",
     "identity-obj-proxy": "^3.0.0",
-    "prettier": "^2.8.3",
-    "theme": "0.0.0"
+    "prettier": "^2.8.3"
   },
   "publishConfig": {
     "access": "public",

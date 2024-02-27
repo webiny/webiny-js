@@ -48,11 +48,10 @@
     "babel-plugin-macros": "3.1.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "chalk": "^4.1.0",
-    "commitizen": "^4.3.0",
     "cross-env": "^5.2.0",
-    "cz-customizable": "^5.2.0",
+    "deepmerge": "^4.3.1",
     "env-ci": "2.0.1",
-    "eslint": "^8.4.1",
+    "eslint": "^8.56.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-import-resolver-babel-module": "^5.3.1",
     "eslint-plugin-import": "^2.25.3",
@@ -77,7 +76,7 @@
     "inquirer-checkbox-plus-prompt": "^1.0.1",
     "inquirer-maxlength-input-prompt": "^1.0.0",
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "jest-extended": "4.0.2",
     "lerna": "8.1.2",
     "lint-staged": "^15.2.2",
@@ -121,9 +120,6 @@
     "watch:api": "yarn webiny ws run watch --scope='@webiny/api*'",
     "clear-dist": "yarn rimraf packages/*/dist",
     "delete-empty-package-folders": "node scripts/deleteEmptyPackageFolders.js",
-    "commit": "node ./scripts/commitizen.js",
-    "commit:no-verify": "yarn commit --no-verify",
-    "commit:verify": "yarn lint-staged",
     "cypress:open": "cd cypress-tests && yarn cypress open",
     "cy:open": "yarn cypress:open",
     "cypress:run": "cd cypress-tests && yarn cypress run",
@@ -170,12 +166,6 @@
   "yargs": {
     "populate--": true
   },
-  "config": {
-    "commitizen": {
-      "cliPath": "node_modules/commitizen",
-      "path": "./scripts/cz-adapter"
-    }
-  },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
@@ -213,12 +203,14 @@
     "@types/react": "17.0.39",
     "@types/jsdom": "link:./typings/void",
     "@types/webpack": "^5.28.0",
+    "jsdom": "24.0.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "semver": "7.5.4",
     "typescript": "4.7.4",
     "codex-tooltip": "1.0.2",
     "@types/eslint": "8.2.1",
+    "xml2js": "0.6.2",
     "yargs": "^17.3.1",
     "lerna@8.1.2": "patch:lerna@npm%3A8.1.2#./.yarn/patches/lerna-npm-8.1.2-be48ad2329.patch"
   },
