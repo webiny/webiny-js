@@ -16678,6 +16678,7 @@ __metadata:
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/app-security-access-management": 0.0.0
+    "@webiny/app-sockets": 0.0.0
     "@webiny/app-tenancy": 0.0.0
     "@webiny/app-tenant-manager": 0.0.0
     "@webiny/cli": 0.0.0
@@ -16692,6 +16693,32 @@ __metadata:
     apollo-utilities: ^1.3.4
     babel-plugin-emotion: ^9.2.8
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
+    react: 17.0.2
+    react-dom: 17.0.2
+    rimraf: ^5.0.5
+    ttypescript: ^1.5.12
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
+"@webiny/app-sockets@0.0.0, @webiny/app-sockets@workspace:packages/app-sockets":
+  version: 0.0.0-use.local
+  resolution: "@webiny/app-sockets@workspace:packages/app-sockets"
+  dependencies:
+    "@aws-amplify/auth": ^5.1.9
+    "@babel/cli": ^7.23.9
+    "@babel/core": ^7.23.9
+    "@babel/plugin-proposal-class-properties": ^7.18.6
+    "@babel/preset-env": ^7.23.9
+    "@babel/preset-react": ^7.23.3
+    "@babel/preset-typescript": ^7.23.3
+    "@webiny/app": 0.0.0
+    "@webiny/app-i18n": 0.0.0
+    "@webiny/app-tenancy": 0.0.0
+    "@webiny/cli": 0.0.0
+    "@webiny/project-utils": 0.0.0
+    "@webiny/utils": 0.0.0
+    babel-plugin-emotion: ^9.2.8
     react: 17.0.2
     react-dom: 17.0.2
     rimraf: ^5.0.5

@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [
+    { "path": "../app" },
+    { "path": "../app-i18n" },
+    { "path": "../app-tenancy" },
+    { "path": "../utils" }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"],
+      "@webiny/app-i18n/*": ["../app-i18n/src/*"],
+      "@webiny/app-i18n": ["../app-i18n/src"],
+      "@webiny/app-tenancy/*": ["../app-tenancy/src/*"],
+      "@webiny/app-tenancy": ["../app-tenancy/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
+    },
+    "baseUrl": "."
+  }
+}
