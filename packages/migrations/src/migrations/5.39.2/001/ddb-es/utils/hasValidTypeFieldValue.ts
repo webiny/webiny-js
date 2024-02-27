@@ -1,12 +1,10 @@
-import { CmsEntry } from "~/migrations/5.39.0/001/types";
-import { ScanDbItem } from "@webiny/db-dynamodb";
 import {
     createRecordType,
     createLatestRecordType,
     createPublishedRecordType
 } from "@webiny/api-headless-cms-ddb-es/operations/entry/recordType";
 
-export const hasValidTypeFieldValue = (entry: ScanDbItem<CmsEntry>) => {
+export const hasValidTypeFieldValue = (entry: { SK: string; TYPE?: string }) => {
     if (entry.SK.startsWith("REV#")) {
         return entry.TYPE === createRecordType();
     }
