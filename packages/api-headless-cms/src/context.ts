@@ -9,6 +9,9 @@ import { createModelsCrud } from "~/crud/contentModel.crud";
 import { createContentEntryCrud } from "~/crud/contentEntry.crud";
 import { StorageOperationsCmsModelPlugin } from "~/plugins";
 import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
+import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
+import { ModelGroupsPermissions } from "./utils/permissions/ModelGroupsPermissions";
+import { EntriesPermissions } from "./utils/permissions/EntriesPermissions";
 import { createExportCrud } from "~/export";
 import { createImportCrud } from "~/export/crud/importing";
 
@@ -60,6 +63,25 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         await context.benchmark.measure("headlessCms.createContext", async () => {
             await storageOperations.beforeInit(context);
 
+            const modelGroupsPermissions = new ModelGroupsPermissions({
+                getIdentity: context.security.getIdentity,
+                getPermissions: () => context.security.getPermissions("cms.contentModelGroup"),
+                fullAccessPermissionName: "cms.*"
+            });
+
+            const modelsPermissions = new ModelsPermissions({
+                getIdentity: context.security.getIdentity,
+                getPermissions: () => context.security.getPermissions("cms.contentModel"),
+                fullAccessPermissionName: "cms.*",
+                modelGroupsPermissions
+            });
+
+            const entriesPermissions = new EntriesPermissions({
+                getIdentity: context.security.getIdentity,
+                getPermissions: () => context.security.getPermissions("cms.contentEntry"),
+                fullAccessPermissionName: "cms.*"
+            });
+
             const accessControl = new AccessControl({
                 getIdentity: context.security.getIdentity,
                 getGroupsPermissions: () =>
@@ -81,6 +103,14 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 PREVIEW: type === "preview",
                 MANAGE: type === "manage",
                 storageOperations,
+
+                // TODO: remove with 5.40 release.
+                permissions: {
+                    groups: modelGroupsPermissions,
+                    models: modelsPermissions,
+                    entries: entriesPermissions
+                },
+
                 accessControl,
                 ...createSystemCrud({
                     context,
