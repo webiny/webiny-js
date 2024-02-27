@@ -9,9 +9,7 @@ export class MockSocketsEventValidator implements ISocketsEventValidator {
             requestContext: {
                 ...(input.requestContext || {})
             },
-            data: {
-                ...(input.data || {})
-            }
+            body: input.body || JSON.stringify({})
         } as unknown as ISocketsEvent<T>;
     }
 }

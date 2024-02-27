@@ -16,7 +16,7 @@ export const ApiOutput = createAppModule({
                 throw new Error("API application is not deployed.");
             }
 
-            const results = {
+            return {
                 apiDomain: output["apiDomain"] as string,
                 apiUrl: output["apiUrl"] as string,
                 apwSchedulerEventRule: output["apwSchedulerEventRule"] as string | undefined,
@@ -36,9 +36,6 @@ export const ApiOutput = createAppModule({
                 region: output["region"] as string,
                 websocketUrl: output["websocketApiUrl"] as string
             };
-
-            console.log(results);
-            return results;
         });
     }
 });

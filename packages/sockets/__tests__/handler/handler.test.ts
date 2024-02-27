@@ -17,13 +17,11 @@ describe("handler", () => {
                     routeKey: SocketsEventRoute.default,
                     connectionId: "myConnectionId"
                 },
-                data: {
+                body: JSON.stringify({
+                    token: "aToken",
                     locale: "en-US",
-                    tenant: "root",
-                    identity: {
-                        id: "myIdentityId"
-                    }
-                }
+                    tenant: "root"
+                })
             }),
             createMockLambdaContext()
         );
@@ -51,13 +49,11 @@ describe("handler", () => {
                     routeKey: SocketsEventRoute.connect,
                     connectionId: "myConnectionId"
                 },
-                data: {
+                body: JSON.stringify({
+                    token: "aToken",
                     locale: "en-US",
-                    tenant: "root",
-                    identity: {
-                        id: "myIdentityId"
-                    }
-                }
+                    tenant: "root"
+                })
             }),
             createMockLambdaContext()
         );
@@ -90,13 +86,11 @@ describe("handler", () => {
                     routeKey: SocketsEventRoute.connect,
                     connectionId: "myConnectionId"
                 },
-                data: {
+                body: JSON.stringify({
+                    token: "aToken",
                     locale: "en-US",
-                    tenant: "root",
-                    identity: {
-                        id: "myIdentityId"
-                    }
-                }
+                    tenant: "root"
+                })
             }),
             createMockLambdaContext()
         );
@@ -116,13 +110,11 @@ describe("handler", () => {
                     routeKey: SocketsEventRoute.disconnect,
                     connectionId: "myConnectionId"
                 },
-                data: {
+                body: JSON.stringify({
+                    token: "aToken",
                     locale: "en-US",
-                    tenant: "root",
-                    identity: {
-                        id: "myIdentityId"
-                    }
-                }
+                    tenant: "root"
+                })
             }),
             createMockLambdaContext()
         );
@@ -155,13 +147,11 @@ describe("handler", () => {
                     routeKey: SocketsEventRoute.disconnect,
                     connectionId: "myConnectionId"
                 },
-                data: {
+                body: JSON.stringify({
+                    token: "aToken",
                     locale: "en-US",
-                    tenant: "root",
-                    identity: {
-                        id: "myIdentityId"
-                    }
-                }
+                    tenant: "root"
+                })
             }),
             createMockLambdaContext()
         );

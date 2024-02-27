@@ -14,39 +14,39 @@ import { WebsocketSubscriptionManager } from "~/sockets/WebsocketSubscriptionMan
 export class BlackHoleWebsocketManager implements IWebsocketManager {
     private readonly subscriptions = new WebsocketSubscriptionManager();
 
+    public connect(): void {
+        return;
+    }
+
+    public close(): void {
+        return;
+    }
+
+    public send<T extends IWebsocketManagerSendData = IWebsocketManagerSendData>(data: T): void {
+        console.log("BlackHoleWebsocketManager.send", data);
+    }
+
     public onOpen(): IWebsocketSubscription<IWebsocketManagerOpenEvent> {
-        console.log("BlackHoleWebsocketManager.onOpen");
         return this.subscriptions.onOpen(async () => {
             return;
         });
     }
 
     public onClose(): IWebsocketSubscription<IWebsocketManagerCloseEvent> {
-        console.log("BlackHoleWebsocketManager.onClose");
         return this.subscriptions.onClose(async () => {
             return;
         });
     }
 
     public onError(): IWebsocketSubscription<IWebsocketManagerErrorEvent> {
-        console.log("BlackHoleWebsocketManager.onError");
         return this.subscriptions.onError(async () => {
             return;
         });
     }
 
     public onMessage(): IWebsocketSubscription<IWebsocketManagerMessageEvent> {
-        console.log("BlackHoleWebsocketManager.onMessage");
         return this.subscriptions.onMessage(async () => {
             return;
         });
-    }
-
-    public close(): void {
-        console.log("BlackHoleWebsocketManager.close");
-    }
-
-    public send<T extends IWebsocketManagerSendData = IWebsocketManagerSendData>(data: T): void {
-        console.log("BlackHoleWebsocketManager.send", data);
     }
 }

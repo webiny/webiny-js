@@ -1,11 +1,12 @@
 import { HandlerFactoryParams } from "@webiny/handler-aws/types";
 import { ISocketsEventValidator } from "~/validator";
 import { ISocketsResponse } from "~/response";
-import { PartialDeep } from "type-fest";
 import { APIGatewayProxyResult, Context as LambdaContext } from "aws-lambda";
+import { GenericRecord } from "@webiny/api/types";
+import { PartialDeep } from "type-fest";
 
 export interface HandlerCallable {
-    (event: ISocketsEventPartial, context: LambdaContext): Promise<APIGatewayProxyResult>;
+    (event: ISocketsIncomingEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
 }
 
 export interface HandlerParams extends HandlerFactoryParams {
@@ -23,6 +24,9 @@ export interface ISocketsEventData {
     token?: string;
     tenant?: string;
     locale?: string;
+    messageId?: string;
+    action?: string;
+    data?: GenericRecord;
 }
 
 export enum SocketsEventRequestContextEventType {
@@ -60,19 +64,20 @@ export interface ISocketsEventRequestContext {
     connectedAt: number;
     domainName: string;
     eventType: SocketsEventRequestContextEventType;
-    messageId?: string;
     routeKey: SocketsEventRoute | string;
-    requestId: string;
-    extendedRequestId: string;
-    apiId: string;
-    authorizer?: ISocketsEventRequestContextAuthorizer;
-    error?: ISocketsEventRequestContextError;
-    identity: ISocketsEventRequestContextIdentity;
-    requestTime: string;
-    requestTimeEpoch: number;
     stage: string;
-    status?: number;
-    messageDirection: string;
+
+    // messageId?: string;
+    // requestId: string;
+    // extendedRequestId: string;
+    // apiId: string;
+    // authorizer?: ISocketsEventRequestContextAuthorizer;
+    // error?: ISocketsEventRequestContextError;
+    // identity: ISocketsEventRequestContextIdentity;
+    // requestTime: string;
+    // requestTimeEpoch: number;
+    // status?: number;
+    // messageDirection: string;
 }
 
 export interface ISocketsEventHeaders {
@@ -109,4 +114,6 @@ export interface ISocketsEvent<T extends ISocketsEventData = ISocketsEventData> 
     body?: T;
 }
 
-export type ISocketsEventPartial = PartialDeep<ISocketsEvent>;
+export interface ISocketsIncomingEvent extends PartialDeep<Omit<ISocketsEvent, "body">> {
+    body?: string | GenericRecord;
+}

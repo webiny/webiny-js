@@ -12,6 +12,7 @@ import {
     IWebsocketSubscriptionCallback,
     IWebsocketSubscriptionManager
 } from "~/sockets/abstractions/IWebsocketSubscriptionManager";
+import { IGenericData } from "~/sockets/abstractions/IWebsocketConnection";
 
 export class WebsocketSubscriptionManager implements IWebsocketSubscriptionManager {
     private subscriptions: IWebsocketsSubscriptionManagerSubscriptions = {
@@ -45,10 +46,10 @@ export class WebsocketSubscriptionManager implements IWebsocketSubscriptionManag
         return value;
     }
 
-    public onMessage(
-        cb: IWebsocketSubscriptionCallback<IWebsocketManagerMessageEvent>
-    ): IWebsocketSubscription<IWebsocketManagerMessageEvent> {
-        const value = this.createSubscription<IWebsocketManagerMessageEvent>("message", cb);
+    public onMessage<T extends IGenericData = IGenericData>(
+        cb: IWebsocketSubscriptionCallback<T>
+    ): IWebsocketSubscription<T> {
+        const value = this.createSubscription<T>("message", cb);
         this.subscriptions.message[value.id] = value;
         return value;
     }
@@ -71,25 +72,19 @@ export class WebsocketSubscriptionManager implements IWebsocketSubscriptionManag
         }
     }
 
-    public async triggerOnMessage(event: MessageEvent): Promise<void> {
-        for (const id in this.subscriptions.message) {
-            await this.subscriptions.message[id].cb(event);
+    public async triggerOnMessage(event: IWebsocketManagerMessageEvent<string>): Promise<void> {
+        let data: IGenericData = {};
+        try {
+            data = JSON.parse(event.data);
+        } catch (ex) {
+            console.error("Failed to parse the incoming message.", ex);
         }
-    }
-    // TODO fix types
-    private attach(
-        type: IWebsocketManagerEvent,
-        cb: IWebsocketSubscriptionCallback<any>
-    ): IWebsocketSubscription<any> {
-        const id = generateId();
-        this.subscriptions[type][id] = {
-            cb,
-            id,
-            off: () => {
-                delete this.subscriptions[type][id];
-            }
-        };
-        return this.subscriptions[type][id];
+        for (const id in this.subscriptions.message) {
+            await this.subscriptions.message[id].cb({
+                ...event,
+                data: data || {}
+            });
+        }
     }
 
     private createSubscription<T>(

@@ -1,6 +1,6 @@
-import { ISocketsEventData, ISocketsEventPartial } from "~/handler/types";
+import { ISocketsEventData, ISocketsIncomingEvent } from "~/handler/types";
 
-const getEventBody = (event: ISocketsEventPartial): ISocketsEventData => {
+const getEventBody = (event: ISocketsIncomingEvent): ISocketsEventData => {
     if (!event.body) {
         return {};
     } else if (typeof event.body === "object") {
@@ -17,19 +17,19 @@ const getEventBody = (event: ISocketsEventPartial): ISocketsEventData => {
     return {};
 };
 
-const getToken = (body: ISocketsEventData, event: ISocketsEventPartial): string | null => {
+const getToken = (body: ISocketsEventData, event: ISocketsIncomingEvent): string | null => {
     return body?.token || event.queryStringParameters?.token || null;
 };
 
-const getTenant = (body: ISocketsEventData, event: ISocketsEventPartial): string => {
+const getTenant = (body: ISocketsEventData, event: ISocketsIncomingEvent): string => {
     return body?.tenant || event.queryStringParameters?.tenant || "root";
 };
 
-const getLocale = (body: ISocketsEventData, event: ISocketsEventPartial): string => {
+const getLocale = (body: ISocketsEventData, event: ISocketsIncomingEvent): string => {
     return body?.locale || event.queryStringParameters?.locale || "en-US";
 };
 
-export const getEventValues = (event: ISocketsEventPartial) => {
+export const getEventValues = (event: ISocketsIncomingEvent) => {
     const body = getEventBody(event);
 
     const token = getToken(body, event);

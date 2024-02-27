@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Auth } from "@aws-amplify/auth";
 import { WebsocketManager } from "./sockets/WebsocketManager";
 import { BlackHoleWebsocketManager } from "./sockets/BlackHoleWebsocketManager";
@@ -8,8 +8,7 @@ import { useI18N } from "@webiny/app-i18n";
 import { IGenericData } from "~/sockets/abstractions/IWebsocketConnection";
 import { WebsocketConnection } from "~/sockets/WebsocketConnection";
 import { WebsocketSubscriptionManager } from "~/sockets/WebsocketSubscriptionManager";
-
-const defaultUrl = "wss://0ptk9t6akg.execute-api.eu-central-1.amazonaws.com/dev";
+import { WebsocketActions } from "~/sockets/WebsocketActions";
 
 interface GetUrlParams {
     tenant: string;
@@ -29,15 +28,23 @@ const getUrl = (params: GetUrlParams): string | undefined => {
         console.log("Missing a locale to connect to the websocket.");
         return;
     }
-    const websocketUrl = process.env.REACT_APP_WEBSOCKET_URL;
+    const websocketApiUrl = process.env.REACT_APP_WEBSOCKET_URL;
 
-    const url = !websocketUrl || websocketUrl === "undefined" ? defaultUrl : websocketUrl;
+    const url = !websocketApiUrl || websocketApiUrl === "undefined" ? undefined : websocketApiUrl;
+    if (!url) {
+        console.error("Missing REACT_APP_WEBSOCKET_URL environment variable.");
+        return;
+    }
 
-    return `${url}?token=${token}tenant=${tenant}&locale=${locale}`;
+    return `${url}?token=${token}&tenant=${tenant}&locale=${locale}`;
 };
 
+export interface ISocketsContextSendCallable {
+    <T extends IGenericData = IGenericData>(action: string, data?: T, timeout?: number): void;
+}
+
 export interface ISocketsContext {
-    send: <T extends IGenericData = IGenericData>(data: T) => void;
+    send: ISocketsContextSendCallable;
 }
 
 export const SocketsContext = React.createContext<ISocketsContext>(
@@ -48,73 +55,88 @@ export interface ISocketsProviderProps {
     children: React.ReactNode;
 }
 
-export const SocketsProvider = (props: ISocketsProviderProps) => {
-    const [token, setToken] = useState<string | null>(null);
+const getToken = async (): Promise<string | null> => {
+    const user = await Auth.currentSession();
+    if (!user) {
+        return null;
+    }
+    const token = user.getIdToken();
+    if (!token) {
+        return null;
+    }
+    return token.getJwtToken();
+};
 
+interface ICurrentData {
+    tenant?: string;
+    locale?: string;
+}
+
+export const SocketsProvider = (props: ISocketsProviderProps) => {
     const { tenant } = useTenancy();
     const { getCurrentLocale } = useI18N();
     const locale = getCurrentLocale("default");
 
     const socketsRef = useRef<IWebsocketManager>(new BlackHoleWebsocketManager());
 
-    useEffect(() => {
-        if (!token || !tenant || !locale) {
-            return;
-        } else if (socketsRef.current) {
-            socketsRef.current.close();
-        }
-        const url = getUrl({ tenant, locale, token });
-
-        if (!url) {
-            console.error("Not possible to connect to the websocket without a valid URL.", {
-                tenant,
-                locale,
-                token
-            });
-            return;
-        }
-
-        const manager = new WebsocketManager(
-            new WebsocketConnection({
-                subscriptionManager: new WebsocketSubscriptionManager(),
-                url
-            })
-        );
-
-        manager.connect();
-        socketsRef.current = manager;
-    }, [tenant, locale, token]);
-
-    // TODO remove when finished with development
-    (window as any).webinySockets = socketsRef.current;
+    const [current, setCurrent] = useState<ICurrentData>({});
 
     useEffect(() => {
         (async () => {
-            const user = await Auth.currentSession();
-            const idToken = user.getIdToken();
-            setToken(idToken.getJwtToken());
-        })();
-    }, []);
-
-    const send = useCallback(
-        (data: IGenericData) => {
+            const token = await getToken();
             if (!token || !tenant || !locale) {
-                console.error("Not possible to send a message without a token, tenant or locale.", {
-                    token,
+                return;
+            } else if (current.tenant === tenant && current.locale === locale) {
+                return;
+            } else if (socketsRef.current) {
+                socketsRef.current.close();
+            }
+            const url = getUrl({ tenant, locale, token });
+
+            if (!url) {
+                console.error("Not possible to connect to the websocket without a valid URL.", {
                     tenant,
-                    locale
+                    locale,
+                    token
                 });
                 return;
             }
-            socketsRef.current.send({
-                ...data,
-                token,
+
+            setCurrent({
                 tenant,
                 locale
             });
+
+            socketsRef.current = new WebsocketManager(
+                new WebsocketConnection({
+                    subscriptionManager: new WebsocketSubscriptionManager(),
+                    url,
+                    protocol: ["webiny-ws-v1"]
+                })
+            );
+            socketsRef.current.connect();
+        })();
+    }, [tenant, locale]);
+
+    const websocketActions = useMemo(() => {
+        return new WebsocketActions({
+            manager: socketsRef.current,
+            tenant,
+            locale,
+            getToken
+        });
+    }, [socketsRef.current, tenant, locale]);
+
+    const send = useCallback<ISocketsContextSendCallable>(
+        async (action, data, timeout) => {
+            return websocketActions.action(action, data, timeout);
         },
-        [socketsRef.current, token, tenant, locale]
+        [websocketActions]
     );
+
+    // TODO remove when finished with development
+    (window as any).webinySockets = socketsRef.current;
+    (window as any).send = send;
 
     const value: ISocketsContext = {
         send

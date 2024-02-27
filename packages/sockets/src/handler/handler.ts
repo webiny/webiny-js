@@ -60,14 +60,8 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
                 validator || new SocketsEventValidator(),
                 response || new SocketsResponse()
             );
-            console.log("EVENT:");
-            console.log(typeof event);
-            console.log(JSON.stringify(event));
 
             const result = await handler.run(event);
-
-            console.log("RESULT");
-            console.log(JSON.stringify(result));
 
             return reply
                 .status(result.statusCode)
@@ -86,7 +80,7 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
             ["x-webiny-cms-endpoint"]: endpoint,
             ...event.headers
         };
-        console.log("using headrs", JSON.stringify(headers));
+
         return execute({
             app,
             url,

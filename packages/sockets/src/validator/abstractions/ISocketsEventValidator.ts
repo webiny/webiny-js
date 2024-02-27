@@ -1,6 +1,6 @@
-import { ISocketsEvent, ISocketsEventData, ISocketsEventPartial } from "~/handler/types";
+import { ISocketsEvent, ISocketsEventData, ISocketsIncomingEvent } from "~/handler/types";
 
-export type ISocketsEventValidatorValidateParams = ISocketsEventPartial;
+export type ISocketsEventValidatorValidateParams = ISocketsIncomingEvent;
 
 export interface ISocketsEventValidator {
     /**

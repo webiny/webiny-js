@@ -1,5 +1,5 @@
 import { IWebsocketManager, IWebsocketManagerSendData } from "./abstractions/IWebsocketManager";
-import { IWebsocketConnection } from "./abstractions/IWebsocketConnection";
+import { IGenericData, IWebsocketConnection } from "./abstractions/IWebsocketConnection";
 import {
     IWebsocketSubscription,
     IWebsocketSubscriptionCallback
@@ -8,7 +8,8 @@ import {
     IWebsocketManagerCloseEvent,
     IWebsocketManagerErrorEvent,
     IWebsocketManagerMessageEvent,
-    IWebsocketManagerOpenEvent
+    IWebsocketManagerOpenEvent,
+    WebsocketCloseCode
 } from "~/sockets/types";
 
 export class WebsocketManager implements IWebsocketManager {
@@ -30,10 +31,10 @@ export class WebsocketManager implements IWebsocketManager {
         return this.connection.subscriptionManager.onClose(cb);
     }
 
-    public onMessage(
-        cb: IWebsocketSubscriptionCallback<IWebsocketManagerMessageEvent>
-    ): IWebsocketSubscription<IWebsocketManagerMessageEvent> {
-        return this.connection.subscriptionManager.onMessage(cb);
+    public onMessage<T extends IGenericData = IGenericData>(
+        cb: IWebsocketSubscriptionCallback<IWebsocketManagerMessageEvent<T>>
+    ): IWebsocketSubscription<IWebsocketManagerMessageEvent<T>> {
+        return this.connection.subscriptionManager.onMessage<T>(cb);
     }
 
     public onError(
@@ -46,7 +47,7 @@ export class WebsocketManager implements IWebsocketManager {
         this.connection.reconnect();
     }
 
-    public close(code?: number, reason?: string): void {
+    public close(code?: WebsocketCloseCode, reason?: string): void {
         this.connection.close(code, reason);
     }
 

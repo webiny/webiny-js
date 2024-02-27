@@ -22,7 +22,7 @@ describe("sockets runner", () => {
         const resultRootLevel = await runner.run({});
 
         expect(resultRootLevel).toEqual({
-            statusCode: 500,
+            statusCode: 200,
             message: "Validation failed.",
             error: {
                 message: "Validation failed.",
@@ -35,13 +35,6 @@ describe("sockets runner", () => {
                             data: {
                                 path: ["requestContext"]
                             }
-                        },
-                        data: {
-                            code: "invalid_type",
-                            message: "Required",
-                            data: {
-                                path: ["data"]
-                            }
                         }
                     }
                 },
@@ -49,12 +42,11 @@ describe("sockets runner", () => {
             }
         });
 
-        const resultFirstLevel = await runner.run({
-            requestContext: {},
-            data: {}
+        const resultRequestContext = await runner.run({
+            requestContext: {}
         });
 
-        expect(resultFirstLevel).toEqual({
+        expect(resultRequestContext).toEqual({
             error: {
                 code: "VALIDATION_FAILED_INVALID_FIELDS",
                 data: {
@@ -94,95 +86,11 @@ describe("sockets runner", () => {
                                 path: ["requestContext", "routeKey"]
                             }
                         },
-                        "requestContext.requestId": {
-                            code: "invalid_type",
-                            message: "Required",
-                            data: {
-                                path: ["requestContext", "requestId"]
-                            }
-                        },
-                        "requestContext.extendedRequestId": {
-                            code: "invalid_type",
-                            message: "Required",
-                            data: {
-                                path: ["requestContext", "extendedRequestId"]
-                            }
-                        },
-                        "requestContext.apiId": {
-                            code: "invalid_type",
-                            message: "Required",
-                            data: {
-                                path: ["requestContext", "apiId"]
-                            }
-                        },
-                        "requestContext.authorizer": {
-                            code: "invalid_type",
-                            message: "Required",
-                            data: {
-                                path: ["requestContext", "authorizer"]
-                            }
-                        },
-                        "requestContext.error": {
-                            code: "invalid_type",
-                            message: "Required",
-                            data: {
-                                path: ["requestContext", "error"]
-                            }
-                        },
-                        "requestContext.identity": {
-                            code: "invalid_type",
-                            message: "Required",
-                            data: {
-                                path: ["requestContext", "identity"]
-                            }
-                        },
-                        "requestContext.requestTime": {
-                            code: "invalid_type",
-                            message: "Required",
-                            data: {
-                                path: ["requestContext", "requestTime"]
-                            }
-                        },
-                        "requestContext.requestTimeEpoch": {
-                            code: "invalid_type",
-                            message: "Required",
-                            data: {
-                                path: ["requestContext", "requestTimeEpoch"]
-                            }
-                        },
                         "requestContext.stage": {
                             code: "invalid_type",
                             message: "Required",
                             data: {
                                 path: ["requestContext", "stage"]
-                            }
-                        },
-                        "requestContext.status": {
-                            code: "invalid_type",
-                            message: "Required",
-                            data: {
-                                path: ["requestContext", "status"]
-                            }
-                        },
-                        "data.identity": {
-                            code: "invalid_type",
-                            message: "Required",
-                            data: {
-                                path: ["data", "identity"]
-                            }
-                        },
-                        "data.tenant": {
-                            code: "invalid_type",
-                            message: "Required",
-                            data: {
-                                path: ["data", "tenant"]
-                            }
-                        },
-                        "data.locale": {
-                            code: "invalid_type",
-                            message: "Required",
-                            data: {
-                                path: ["data", "locale"]
                             }
                         }
                     }
@@ -191,7 +99,7 @@ describe("sockets runner", () => {
                 stack: expect.any(String)
             },
             message: "Validation failed.",
-            statusCode: 500
+            statusCode: 200
         });
     });
 
@@ -211,13 +119,11 @@ describe("sockets runner", () => {
             requestContext: {
                 routeKey: "aRouteKey"
             },
-            data: {
+            body: JSON.stringify({
+                token: "aToken",
                 tenant: "root",
-                locale: "en-US",
-                identity: {
-                    id: "id-1"
-                }
-            }
+                locale: "en-US"
+            })
         });
         expect(result).toEqual({
             error: {
@@ -229,7 +135,7 @@ describe("sockets runner", () => {
                 stack: expect.any(String)
             },
             message: 'Route "aRouteKey" action failed.',
-            statusCode: 500
+            statusCode: 200
         });
     });
 
@@ -249,13 +155,11 @@ describe("sockets runner", () => {
             requestContext: {
                 routeKey: SocketsEventRoute.default
             },
-            data: {
+            body: JSON.stringify({
+                token: "aToken",
                 tenant: "root",
-                locale: "en-US",
-                identity: {
-                    id: "id-1"
-                }
-            }
+                locale: "en-US"
+            })
         });
         expect(result).toEqual({
             statusCode: 200
@@ -279,13 +183,11 @@ describe("sockets runner", () => {
                 connectionId: "myConnectionIdAbcdefg",
                 routeKey: SocketsEventRoute.connect
             },
-            data: {
+            body: JSON.stringify({
+                token: "aToken",
                 tenant: "root",
-                locale: "en-US",
-                identity: {
-                    id: "id-1"
-                }
-            }
+                locale: "en-US"
+            })
         });
         expect(result).toEqual({
             statusCode: 200
@@ -309,13 +211,11 @@ describe("sockets runner", () => {
                 connectionId: "myConnectionIdAbcdefg",
                 routeKey: SocketsEventRoute.disconnect
             },
-            data: {
+            body: JSON.stringify({
+                token: "aToken",
                 tenant: "root",
-                locale: "en-US",
-                identity: {
-                    id: "id-1"
-                }
-            }
+                locale: "en-US"
+            })
         });
         expect(result).toEqual({
             error: {
@@ -328,7 +228,7 @@ describe("sockets runner", () => {
                 stack: expect.any(String)
             },
             message: 'Route "$disconnect" action failed.',
-            statusCode: 500
+            statusCode: 200
         });
     });
 
@@ -355,13 +255,11 @@ describe("sockets runner", () => {
                 connectionId: "myConnectionIdAbcdefg",
                 routeKey: SocketsEventRoute.connect
             },
-            data: {
+            body: JSON.stringify({
+                token: "aToken",
                 tenant: "root",
-                locale: "en-US",
-                identity: {
-                    id: "id-1"
-                }
-            }
+                locale: "en-US"
+            })
         });
         expect(connectResult).toEqual({
             statusCode: 200
@@ -375,7 +273,7 @@ describe("sockets runner", () => {
             }
         ]);
 
-        const afterConnectConnectionsViaIdentity = await registry.listViaIdentity("id-1");
+        const afterConnectConnectionsViaIdentity = await registry.listViaIdentity("id-12345678");
         expect(afterConnectConnectionsViaIdentity).toHaveLength(1);
         expect(afterConnectConnectionsViaIdentity).toMatchObject([
             {
@@ -388,13 +286,11 @@ describe("sockets runner", () => {
                 connectionId: "myConnectionIdAbcdefg",
                 routeKey: SocketsEventRoute.disconnect
             },
-            data: {
+            body: JSON.stringify({
+                token: "aToken",
                 tenant: "root",
-                locale: "en-US",
-                identity: {
-                    id: "id-1"
-                }
-            }
+                locale: "en-US"
+            })
         });
         expect(result).toEqual({
             statusCode: 200
@@ -429,13 +325,11 @@ describe("sockets runner", () => {
             requestContext: {
                 routeKey: "myCustomRouteKey"
             },
-            data: {
+            body: JSON.stringify({
+                token: "aToken",
                 tenant: "root",
-                locale: "en-US",
-                identity: {
-                    id: "id-1"
-                }
-            }
+                locale: "en-US"
+            })
         });
         expect(result).toEqual({
             statusCode: 200
