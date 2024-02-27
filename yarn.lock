@@ -18849,6 +18849,7 @@ __metadata:
     form-data: 3.0.0
     is-ci: 3.0.0
     node-fetch: 2.6.1
+    wts: "https://github.com/webiny/wts#ae82e59470d79dc448a74239bf9d2328f4b93499"
   languageName: unknown
   linkType: soft
 
@@ -47023,6 +47024,17 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 2e69a635cc907809bac0aa775b12e6cc6d7ef58a6f212331d5b6ab1ea097d403963e058f6011ccfd5b814387a06c2fcac1f7e2ce8877c1871f9cdf13d5775eec
+  languageName: node
+  linkType: hard
+
+"wts@https://github.com/webiny/wts#ae82e59470d79dc448a74239bf9d2328f4b93499":
+  version: 2.0.0
+  resolution: "wts@https://github.com/webiny/wts.git#commit=ae82e59470d79dc448a74239bf9d2328f4b93499"
+  dependencies:
+    btoa: ^1.2.1
+    js-cookie: ^2.2.1
+    node-fetch: ^2.6.1
+  checksum: 03c68d77c24b9f97b481749db372932295c90f6df1194be2aa67e8c60feafa10d02640990479d6ae63684f481bd3b08bd3c41c1c663ff85b73de063a774c8793
   languageName: node
   linkType: hard
 
