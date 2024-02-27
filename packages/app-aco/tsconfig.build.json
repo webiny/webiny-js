@@ -4,7 +4,6 @@
   "references": [
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
-    { "path": "../app-i18n/tsconfig.build.json" },
     { "path": "../app-headless-cms-common/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../app-wcp/tsconfig.build.json" },
