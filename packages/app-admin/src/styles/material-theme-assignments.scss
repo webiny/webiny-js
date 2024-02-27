@@ -7,7 +7,7 @@
 @use "@material/tab/mixins" as tab;
 @use "@material/tab-indicator/mixins" as tabIndicator;
 @use "@material/list/mixins" as list;
-@use "@material/switch/mixins" as switch;
+@use "@material/switch" as switch;
 @use "@material/textfield/mixins" as textfield;
 @use "@material/select/mixins" as select;
 @use "@material/checkbox/mixins" as checkbox;
@@ -107,41 +107,68 @@
 }
 
 // list
-.mdc-list {
-  @include list.item-primary-text-ink-color($mdc-theme-text-primary-on-background);
-  @include list.item-secondary-text-ink-color($mdc-theme-text-secondary-on-background);
-  @include list.item-graphic-ink-color($mdc-theme-text-secondary-on-background);
-  @include list.item-meta-ink-color($mdc-theme-text-secondary-on-background);
-  @include list.divider-color($mdc-theme-on-background);
-  @include list.group-subheader-ink-color($mdc-theme-text-primary-on-background);
-  @include list.single-line-shape-radius(0);
+.mdc-deprecated-list {
+  @include list.deprecated-item-primary-text-ink-color($mdc-theme-text-primary-on-background);
+  @include list.deprecated-item-secondary-text-ink-color($mdc-theme-text-secondary-on-background);
+  @include list.deprecated-item-graphic-ink-color($mdc-theme-text-secondary-on-background);
+  @include list.deprecated-item-meta-ink-color($mdc-theme-text-secondary-on-background);
+  @include list.deprecated-divider-color($mdc-theme-on-background);
+  @include list.deprecated-group-subheader-ink-color($mdc-theme-text-primary-on-background);
+  @include list.deprecated-single-line-shape-radius(0);
 
-  .mdc-list-item {
+  .mdc-deprecated-list-item {
     color: $mdc-theme-text-primary-on-background;
   }
 
-  .mdc-list-item:hover,
-  .mdc-list-item::after,
-  .mdc-list-item::before {
+  .mdc-deprecated-list-item__ripple {
+    overflow: hidden;
+  }
+
+  .mdc-deprecated-list-item:hover,
+  .mdc-deprecated-list-item::after,
+  .mdc-deprecated-list-item::before {
     background-color: transparent;
   }
-  &:not(.mdc-list--non-interactive) {
-    .mdc-list-item:hover {
+  &:not(.mdc-deprecated-list--non-interactive) {
+    .mdc-deprecated-list-item:hover {
       background-color: $mdc-theme-text-hint-on-dark;
       cursor: pointer;
-    }
-    .mdc-list-item::after,
-    .mdc-list-item::before {
-      background-color: $mdc-theme-text-primary-on-background;
     }
   }
 }
 
 // switch
 .mdc-switch {
-  @include switch.toggled-off-track-color($mdc-theme-on-surface);
+  @include switch.theme-styles(
+    (
+      selected-focus-handle-color: $mdc-theme-secondary,
+      selected-focus-state-layer-color: $mdc-theme-secondary,
+      selected-focus-track-color: rgba($mdc-theme-secondary, 0.54),
+      selected-handle-color: $mdc-theme-secondary,
+      selected-hover-handle-color: $mdc-theme-secondary,
+      selected-hover-state-layer-color: $mdc-theme-secondary,
+      selected-hover-track-color: rgba($mdc-theme-secondary, 0.54),
+      selected-pressed-handle-color: $mdc-theme-secondary,
+      selected-pressed-state-layer-color: $mdc-theme-secondary,
+      selected-pressed-track-color: rgba($mdc-theme-secondary, 0.54),
+      selected-track-color: rgba($mdc-theme-secondary, 0.54),
+      unselected-focus-handle-color: $mdc-theme-surface,
+      unselected-focus-track-color: rgba($mdc-theme-on-surface, 0.38),
+      unselected-handle-color: $mdc-theme-surface,
+      unselected-hover-handle-color: $mdc-theme-surface,
+      unselected-hover-track-color: rgba($mdc-theme-on-surface, 0.38),
+      unselected-pressed-handle-color: $mdc-theme-surface,
+      unselected-pressed-track-color: rgba($mdc-theme-on-surface, 0.38),
+      unselected-track-color: rgba($mdc-theme-on-surface, 0.38)
+    )
+  );
+
   margin-left: 5px;
   margin-right: 10px;
+
+  .mdc-switch__icons {
+    display: none;
+  }
 }
 
 // menu
@@ -273,11 +300,21 @@ Fix the width of input components when inside grids
   width: 100%;
   @include select.ink-color($mdc-theme-text-primary-on-background);
   @include select.label-color($mdc-theme-text-secondary-on-background);
-  @include select.bottom-line-color($mdc-theme-text-secondary-on-background);
-  @include select.hover-bottom-line-color($mdc-theme-text-primary-on-background);
+  @include select.bottom-line-color(
+    (
+      default: $mdc-theme-text-secondary-on-background,
+      hover: $mdc-theme-text-primary-on-background
+    )
+  );
   @include select.container-fill-color($mdc-theme-on-background);
-  @include select.shape-radius(0);
+  @include select.filled-shape-radius(0);
   @include select.outline-shape-radius(2);
+  @include select.dropdown-icon-color(
+    (
+      default: $mdc-theme-text-primary-on-background,
+      focused: $mdc-theme-primary
+    )
+  );
 
   /*
   Fix for select box appearance. For some reason browser prefix css attributes are striped away.
@@ -297,17 +334,6 @@ Fix the width of input components when inside grids
   &:not(.mdc-select--disabled).mdc-select--focused {
     .mdc-floating-label {
       color: rgba(0, 0, 0, 0.6);
-    }
-    .mdc-select__dropdown-icon {
-      @include select.dd-arrow-svg-bg_($mdc-theme-primary, 1);
-    }
-  }
-  &:not(.mdc-select--disabled).mdc-select--focused {
-    .mdc-floating-label {
-      color: rgba(0, 0, 0, 0.6);
-    }
-    .mdc-select__dropdown-icon {
-      @include select.dd-arrow-svg-bg_($mdc-theme-primary, 1);
     }
   }
 }

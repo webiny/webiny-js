@@ -33,7 +33,7 @@ const ToolbarContainer = styled("div")({
 const DrawerContainer = styled("div")<{ open: boolean }>(({ open }) => ({
     pointerEvents: open ? "all" : "none",
     ".mdc-drawer__drawer": {
-        "> .mdc-list": {
+        "> .mdc-deprecated-list": {
             padding: 0
         }
     }

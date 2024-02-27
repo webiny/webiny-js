@@ -43,7 +43,11 @@ context("Page Builder - Menu CRUD", () => {
                 .within(() => {
                     cy.findByText(menuNameEdit).should("exist");
                     cy.findByText(menuDescEdit).should("exist");
-                    cy.findByTestId("pb-menus-list-delete-menu-btn").click({ force: true });
+                    // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                    // Now targeting <button> directly. Revert to `.findByTestId("pb-menus-list-delete-menu-btn")` if issue is fixed.
+                    cy.get('button[data-testid="pb-menus-list-delete-menu-btn"]').click({
+                        force: true
+                    });
                 });
         });
 

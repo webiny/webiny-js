@@ -31,7 +31,7 @@ const listItem = css`
     &:last-child {
         border-bottom: none;
     }
-    .mdc-list-item__graphic {
+    .mdc-deprecated-list-item__graphic {
         margin-right: 20px;
     }
 `;

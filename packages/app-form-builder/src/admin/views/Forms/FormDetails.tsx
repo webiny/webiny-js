@@ -27,7 +27,7 @@ const DetailsContainer = styled("div")({
     height: "100%",
     overflow: "hidden",
     position: "relative",
-    nav: {
+    ".mdc-tab-bar": {
         backgroundColor: "var(--mdc-theme-surface)"
     }
 });
