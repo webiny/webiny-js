@@ -66,7 +66,7 @@ export interface HeadlessCms
     /**
      * Permissions for groups, models and entries.
      * @internal
-     * @deprecated Will be removed with the 5.40.0 release.
+     * @deprecated Will be removed with the 5.40.0 release. Use `accessControl` instead.
      */
     permissions: HeadlessCmsPermissions;
 
