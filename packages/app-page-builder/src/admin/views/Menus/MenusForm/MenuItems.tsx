@@ -69,7 +69,7 @@ const MenuItems = (props: MenuItemsProps) => {
                     />
                 </Cell>
                 <Cell span={5}>
-                    {currentMenuItem && canSave && (
+                    {!currentMenuItem && canSave && (
                         <>
                             <MenuHolder>
                                 <Typography use={"body2"}>

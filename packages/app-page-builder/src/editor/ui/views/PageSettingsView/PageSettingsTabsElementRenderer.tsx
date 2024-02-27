@@ -5,7 +5,7 @@ import { PageSettingsTabsElement } from "~/editor/ui/views/PageSettingsView/Page
 import { List } from "@webiny/ui/List";
 
 export const listStyle = css({
-    "&.mdc-list": {
+    "&.mdc-deprecated-list": {
         padding: 0,
         backgroundColor: "var(--mdc-theme-surface)"
     }

@@ -54,7 +54,9 @@ context("Page Builder - Blocks Export/Import", () => {
         });
 
         cy.findByPlaceholderText("Search blocks").should("exist");
-        cy.findByTestId("pb-blocks-list-options-menu").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("pb-blocks-list-options-menu")` if issue is fixed.
+        cy.get('button[data-testid="pb-blocks-list-options-menu"]').click();
         cy.findByText("Export all blocks").click();
         cy.findByText("Your export is now ready!").should("exist");
 
@@ -68,7 +70,9 @@ context("Page Builder - Blocks Export/Import", () => {
 
                 cy.visit("/page-builder/page-blocks");
                 cy.findByPlaceholderText("Search blocks").should("exist");
-                cy.findByTestId("pb-blocks-list-options-menu").click();
+                // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                // Now targeting <button> directly. Revert to `.findByTestId("pb-blocks-list-options-menu")` if issue is fixed.
+                cy.get('button[data-testid="pb-blocks-list-options-menu"]').click();
                 cy.findByRole("menuitem", { name: "Import blocks" }).click();
                 cy.contains("Paste File URL").should("exist").click();
                 cy.contains("File URL").type(url);
@@ -98,7 +102,9 @@ context("Page Builder - Blocks Export/Import", () => {
         });
 
         cy.contains(blockCategoryData1.name).click();
-        cy.findByTestId("pb-blocks-list-block-export-btn").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("pb-blocks-list-block-export-btn")` if issue is fixed.
+        cy.get('button[data-testid="pb-blocks-list-block-export-btn"]').click();
         cy.findByText("Your export is now ready!").should("exist");
         cy.get("span.link-text.mdc-typography--body2")
             .invoke("text")
@@ -107,7 +113,9 @@ context("Page Builder - Blocks Export/Import", () => {
                 cy.pbDeleteAllBlocks();
 
                 cy.visit("/page-builder/page-blocks");
-                cy.findByTestId("pb-blocks-list-options-menu").click();
+                // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                // Now targeting <button> directly. Revert to `.findByTestId("pb-blocks-list-options-menu")` if issue is fixed.
+                cy.get('button[data-testid="pb-blocks-list-options-menu"]').click();
                 cy.findByRole("menuitem", { name: "Import blocks" }).click();
                 cy.contains("Paste File URL").should("exist").click();
                 cy.contains("File URL").type(url);

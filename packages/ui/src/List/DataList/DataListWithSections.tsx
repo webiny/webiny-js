@@ -27,27 +27,28 @@ import { PaginationProp, SortersProp } from "./types";
 const ListContainer = styled("div")({
     position: "relative",
     height: "100%",
-    ".mdc-list": {
+    ".mdc-deprecated-list": {
         paddingBottom: 0,
         paddingTop: 0
     },
-    ".mdc-list-item": {
+    ".mdc-deprecated-list-item": {
         borderBottom: "1px solid var(--mdc-theme-on-background)",
         padding: "10px 20px 10px 20px",
         height: "auto",
         minHeight: 40,
-        ".mdc-list-item__text, .mdc-list-item__secondary-text, .webiny-list-text-overline": {
-            display: "block"
-        },
-        ".mdc-list-item__graphic": {
+        ".mdc-deprecated-list-item__text, .mdc-deprecated-list-item__secondary-text, .webiny-list-text-overline":
+            {
+                display: "block"
+            },
+        ".mdc-deprecated-list-item__graphic": {
             marginRight: 20
         },
-        ".mdc-list-item__text": {
+        ".mdc-deprecated-list-item__text": {
             width: "100%",
             margin: "-20px 0",
             padding: "20px 0"
         },
-        ".mdc-list-item__meta": {
+        ".mdc-deprecated-list-item__meta": {
             alignItems: "center",
             display: "flex",
             justifyContent: "space-between",
@@ -72,7 +73,7 @@ const ListContainer = styled("div")({
             }
         },
         "&:hover": {
-            ".mdc-list-item__meta": {
+            ".mdc-deprecated-list-item__meta": {
                 ".webiny-list-top-caption, .webiny-list-bottom-caption": {
                     display: "none"
                 },
