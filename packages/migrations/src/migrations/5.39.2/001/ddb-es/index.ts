@@ -80,7 +80,7 @@ export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
     }
 
     getDescription() {
-        return "Write new revision and entry-level on/by meta fields (2nd pass).";
+        return "Write new revision and entry-level on/by meta fields (second pass).";
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
@@ -90,6 +90,7 @@ export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
             {
                 entity: this.ddbEntryEntity,
                 options: {
+                    attributes: ["TYPE", "SK"],
                     filters: [
                         {
                             attr: "_et",
