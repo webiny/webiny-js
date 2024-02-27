@@ -208,22 +208,25 @@ export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
                         });
                     }
 
-                    // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
-                    const createdOn = await getOldestRevisionCreatedOn({
-                        entry: item,
-                        entryEntity: this.ddbEntryEntity
-                    });
+                    if (!isMigratedEntry(item)) {
+                        // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
+                        const createdOn = await getOldestRevisionCreatedOn({
+                            entry: item,
+                            entryEntity: this.ddbEntryEntity
+                        });
 
-                    const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
-                        entry: item,
-                        entryEntity: this.ddbEntryEntity
-                    });
+                        const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
+                            entry: item,
+                            entryEntity: this.ddbEntryEntity
+                        });
 
-                    assignNewMetaFields(item, {
-                        createdOn,
-                        ...firstLastPublishedOnByFields
-                    });
+                        assignNewMetaFields(item, {
+                            createdOn,
+                            ...firstLastPublishedOnByFields
+                        });
+                    }
 
+                    // Fixes the value of the `TYPE` field, if it's not valid.
                     fixTypeFieldValue(item);
 
                     ddbItems.push(this.ddbEntryEntity.putBatch(item));

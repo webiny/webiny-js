@@ -207,6 +207,7 @@ export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
                         ...firstLastPublishedOnByFields
                     });
 
+                    // Fixes the value of the `TYPE` field, if it's not valid.
                     fixTypeFieldValue(item);
 
                     ddbItems.push(this.ddbEntryEntity.putBatch(item));
