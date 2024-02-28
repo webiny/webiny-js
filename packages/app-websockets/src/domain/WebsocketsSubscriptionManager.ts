@@ -1,20 +1,20 @@
 import { generateId } from "@webiny/utils/generateId";
 import {
-    IWebsocketManagerCloseEvent,
-    IWebsocketManagerErrorEvent,
+    IGenericData,
+    IWebsocketsManagerCloseEvent,
+    IWebsocketsManagerErrorEvent,
     IWebsocketManagerEvent,
-    IWebsocketManagerMessageEvent,
-    IWebsocketManagerOpenEvent
-} from "~/sockets/types";
+    IWebsocketsManagerMessageEvent,
+    IWebsocketsManagerOpenEvent
+} from "./types";
 import {
     IWebsocketsSubscriptionManagerSubscriptions,
-    IWebsocketSubscription,
-    IWebsocketSubscriptionCallback,
-    IWebsocketSubscriptionManager
-} from "~/sockets/abstractions/IWebsocketSubscriptionManager";
-import { IGenericData } from "~/sockets/abstractions/IWebsocketConnection";
+    IWebsocketsSubscription,
+    IWebsocketsSubscriptionCallback,
+    IWebsocketsSubscriptionManager
+} from "./abstractions/IWebsocketsSubscriptionManager";
 
-export class WebsocketSubscriptionManager implements IWebsocketSubscriptionManager {
+export class WebsocketsSubscriptionManager implements IWebsocketsSubscriptionManager {
     private subscriptions: IWebsocketsSubscriptionManagerSubscriptions = {
         open: {},
         close: {},
@@ -23,32 +23,32 @@ export class WebsocketSubscriptionManager implements IWebsocketSubscriptionManag
     };
 
     public onOpen(
-        cb: IWebsocketSubscriptionCallback<IWebsocketManagerOpenEvent>
-    ): IWebsocketSubscription<IWebsocketManagerOpenEvent> {
-        const value = this.createSubscription<IWebsocketManagerOpenEvent>("open", cb);
+        cb: IWebsocketsSubscriptionCallback<IWebsocketsManagerOpenEvent>
+    ): IWebsocketsSubscription<IWebsocketsManagerOpenEvent> {
+        const value = this.createSubscription<IWebsocketsManagerOpenEvent>("open", cb);
         this.subscriptions.close[value.id] = value;
         return value;
     }
 
     public onClose(
-        cb: IWebsocketSubscriptionCallback<IWebsocketManagerCloseEvent>
-    ): IWebsocketSubscription<IWebsocketManagerCloseEvent> {
-        const value = this.createSubscription<IWebsocketManagerCloseEvent>("close", cb);
+        cb: IWebsocketsSubscriptionCallback<IWebsocketsManagerCloseEvent>
+    ): IWebsocketsSubscription<IWebsocketsManagerCloseEvent> {
+        const value = this.createSubscription<IWebsocketsManagerCloseEvent>("close", cb);
         this.subscriptions.close[value.id] = value;
         return value;
     }
 
     public onError(
-        cb: IWebsocketSubscriptionCallback<IWebsocketManagerErrorEvent>
-    ): IWebsocketSubscription<IWebsocketManagerErrorEvent> {
-        const value = this.createSubscription<IWebsocketManagerErrorEvent>("error", cb);
+        cb: IWebsocketsSubscriptionCallback<IWebsocketsManagerErrorEvent>
+    ): IWebsocketsSubscription<IWebsocketsManagerErrorEvent> {
+        const value = this.createSubscription<IWebsocketsManagerErrorEvent>("error", cb);
         this.subscriptions.error[value.id] = value;
         return value;
     }
 
     public onMessage<T extends IGenericData = IGenericData>(
-        cb: IWebsocketSubscriptionCallback<T>
-    ): IWebsocketSubscription<T> {
+        cb: IWebsocketsSubscriptionCallback<T>
+    ): IWebsocketsSubscription<T> {
         const value = this.createSubscription<T>("message", cb);
         this.subscriptions.message[value.id] = value;
         return value;
@@ -72,7 +72,7 @@ export class WebsocketSubscriptionManager implements IWebsocketSubscriptionManag
         }
     }
 
-    public async triggerOnMessage(event: IWebsocketManagerMessageEvent<string>): Promise<void> {
+    public async triggerOnMessage(event: IWebsocketsManagerMessageEvent<string>): Promise<void> {
         let data: IGenericData = {};
         try {
             data = JSON.parse(event.data);
@@ -89,8 +89,8 @@ export class WebsocketSubscriptionManager implements IWebsocketSubscriptionManag
 
     private createSubscription<T>(
         type: IWebsocketManagerEvent,
-        cb: IWebsocketSubscriptionCallback<T>
-    ): IWebsocketSubscription<T> {
+        cb: IWebsocketsSubscriptionCallback<T>
+    ): IWebsocketsSubscription<T> {
         const id = generateId();
         return {
             cb,
@@ -102,6 +102,6 @@ export class WebsocketSubscriptionManager implements IWebsocketSubscriptionManag
     }
 }
 
-export const createWebsocketSubscriptionManager = (): IWebsocketSubscriptionManager => {
-    return new WebsocketSubscriptionManager();
+export const createWebsocketsSubscriptionManager = (): IWebsocketsSubscriptionManager => {
+    return new WebsocketsSubscriptionManager();
 };

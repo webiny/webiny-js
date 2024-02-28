@@ -1,10 +1,10 @@
-import { IGenericData } from "./IWebsocketConnection";
+import { IGenericData } from "./types";
 
 export interface IWebsocketActionOnResponse<R extends IGenericData = IGenericData> {
     (response: R | null): R | null;
 }
 
-export interface IWebsocketActionsTriggerParams<
+export interface IWebsocketsActionsTriggerParams<
     T extends IGenericData = IGenericData,
     R extends IGenericData = IGenericData
 > {
@@ -21,7 +21,7 @@ export interface IWebsocketActionsTriggerParams<
     timeout?: number;
 }
 
-export interface IWebsocketAction<
+export interface IWebsocketsAction<
     T extends IGenericData = IGenericData,
     R extends IGenericData = IGenericData
 > {
@@ -30,5 +30,5 @@ export interface IWebsocketAction<
      * If onResponse is defined the method will wait for the response.
      * If onResponse is not defined, the method will return null immediately.
      */
-    trigger(params?: IWebsocketActionsTriggerParams<T, R>): Promise<R | null>;
+    trigger(params?: IWebsocketsActionsTriggerParams<T, R>): Promise<R | null>;
 }

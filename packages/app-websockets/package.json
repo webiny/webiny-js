@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/app-sockets",
+  "name": "@webiny/app-websockets",
   "version": "0.0.0",
   "main": "index.js",
   "repository": {

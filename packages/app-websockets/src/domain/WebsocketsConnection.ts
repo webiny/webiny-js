@@ -1,31 +1,33 @@
-import { IWebsocketManagerMessageEvent, WebsocketCloseCode, WebsocketReadyState } from "./types";
 import {
     IGenericData,
-    IWebsocketConnection,
-    IWebsocketConnectionFactory,
-    IWebsocketConnectProtocol
-} from "./abstractions/IWebsocketConnection";
-import { IWebsocketSubscriptionManager } from "./abstractions/IWebsocketSubscriptionManager";
+    IWebsocketsConnection,
+    IWebsocketsConnectionFactory,
+    IWebsocketsConnectProtocol,
+    IWebsocketsManagerMessageEvent,
+    IWebsocketsSubscriptionManager,
+    WebsocketsCloseCode,
+    WebsocketsReadyState
+} from "./types";
 
-const defaultFactory: IWebsocketConnectionFactory = (url, protocol) => {
+const defaultFactory: IWebsocketsConnectionFactory = (url, protocol) => {
     return new WebSocket(url, protocol);
 };
 
-export interface IWebsocketConnectionParams {
+export interface IWebsocketsConnectionParams {
     url: string;
-    subscriptionManager: IWebsocketSubscriptionManager;
-    protocol?: IWebsocketConnectProtocol;
-    factory?: IWebsocketConnectionFactory;
+    subscriptionManager: IWebsocketsSubscriptionManager;
+    protocol?: IWebsocketsConnectProtocol;
+    factory?: IWebsocketsConnectionFactory;
 }
 
-export class WebsocketConnection implements IWebsocketConnection {
+export class WebsocketsConnection implements IWebsocketsConnection {
     private connection: WebSocket | null = null;
     private url: string;
-    private protocol: IWebsocketConnectProtocol;
-    public readonly subscriptionManager: IWebsocketSubscriptionManager;
-    private readonly factory: IWebsocketConnectionFactory;
+    private protocol: IWebsocketsConnectProtocol;
+    public readonly subscriptionManager: IWebsocketsSubscriptionManager;
+    private readonly factory: IWebsocketsConnectionFactory;
 
-    public constructor(params: IWebsocketConnectionParams) {
+    public constructor(params: IWebsocketsConnectionParams) {
         this.url = params.url;
         this.protocol = params.protocol;
         this.subscriptionManager = params.subscriptionManager;
@@ -36,8 +38,8 @@ export class WebsocketConnection implements IWebsocketConnection {
         this.connect(this.url, this.protocol);
     }
 
-    public connect(url: string, protocol?: IWebsocketConnectProtocol): void {
-        if (this.connection && this.connection.readyState !== WebsocketReadyState.CLOSED) {
+    public connect(url: string, protocol?: IWebsocketsConnectProtocol): void {
+        if (this.connection && this.connection.readyState !== WebsocketsReadyState.CLOSED) {
             return;
         }
         this.url = url;
@@ -58,17 +60,17 @@ export class WebsocketConnection implements IWebsocketConnection {
         });
         this.connection.addEventListener(
             "message",
-            (event: IWebsocketManagerMessageEvent<string>) => {
+            (event: IWebsocketsManagerMessageEvent<string>) => {
                 return this.subscriptionManager.triggerOnMessage(event);
             }
         );
     }
 
-    public close(code?: WebsocketCloseCode, reason?: string): boolean {
-        if (!this.connection || this.connection.readyState === WebsocketReadyState.CLOSED) {
+    public close(code?: WebsocketsCloseCode, reason?: string): boolean {
+        if (!this.connection || this.connection.readyState === WebsocketsReadyState.CLOSED) {
             this.connection = null;
             return true;
-        } else if (this.connection.readyState !== WebsocketReadyState.OPEN) {
+        } else if (this.connection.readyState !== WebsocketsReadyState.OPEN) {
             return false;
         }
         this.connection.close(code, reason);
@@ -76,8 +78,8 @@ export class WebsocketConnection implements IWebsocketConnection {
         return true;
     }
 
-    public reconnect(url?: string, protocol?: IWebsocketConnectProtocol): void {
-        if (!this.close(WebsocketCloseCode.RECONNECT, "Trying to reconnect.")) {
+    public reconnect(url?: string, protocol?: IWebsocketsConnectProtocol): void {
+        if (!this.close(WebsocketsCloseCode.RECONNECT, "Trying to reconnect.")) {
             console.error("Failed to close the connection before reconnecting.");
             return;
         }
@@ -86,7 +88,7 @@ export class WebsocketConnection implements IWebsocketConnection {
     }
 
     public send<T extends IGenericData = IGenericData>(data: T): void {
-        if (!this.connection || this.connection.readyState !== WebsocketReadyState.OPEN) {
+        if (!this.connection || this.connection.readyState !== WebsocketsReadyState.OPEN) {
             console.info("Websocket connection is not open, cannot send any data.", data);
             return;
         }
@@ -94,8 +96,8 @@ export class WebsocketConnection implements IWebsocketConnection {
     }
 }
 
-export const createWebsocketConnection = (
-    params: IWebsocketConnectionParams
-): IWebsocketConnection => {
-    return new WebsocketConnection(params);
+export const createWebsocketsConnection = (
+    params: IWebsocketsConnectionParams
+): IWebsocketsConnection => {
+    return new WebsocketsConnection(params);
 };

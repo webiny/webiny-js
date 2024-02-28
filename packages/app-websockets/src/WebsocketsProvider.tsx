@@ -3,24 +3,23 @@ import { useTenancy } from "@webiny/app-tenancy";
 import { useI18N } from "@webiny/app-i18n";
 import { getToken } from "./utils/getToken";
 import { getUrl } from "./utils/getUrl";
-import { IncomingGenericData, ISocketsContext, ISocketsContextSendCallable } from "~/types";
+import { IncomingGenericData, IWebsocketsContext, IWebsocketsContextSendCallable } from "~/types";
 import {
-    BlackHoleWebsocketManager,
-    createWebsocketAction,
-    createWebsocketActions,
-    createWebsocketConnection,
-    createWebsocketManager,
-    createWebsocketSubscriptionManager,
-    IGenericData,
-    IWebsocketManager
-} from "./sockets";
+    createWebsocketsAction,
+    createWebsocketsActions,
+    createWebsocketsBlackHoleManager,
+    createWebsocketsConnection,
+    createWebsocketsManager,
+    createWebsocketsSubscriptionManager
+} from "./domain";
+import { IGenericData, IWebsocketsManager } from "./domain/types";
 
-export interface ISocketsProviderProps {
+export interface IWebsocketsProviderProps {
     children: React.ReactNode;
 }
 
-export const SocketsContext = React.createContext<ISocketsContext>(
-    {} as unknown as ISocketsContext
+export const WebsocketsContext = React.createContext<IWebsocketsContext>(
+    {} as unknown as IWebsocketsContext
 );
 
 interface ICurrentData {
@@ -28,17 +27,17 @@ interface ICurrentData {
     locale?: string;
 }
 
-export const SocketsProvider = (props: ISocketsProviderProps) => {
+export const WebsocketsProvider = (props: IWebsocketsProviderProps) => {
     const { tenant } = useTenancy();
     const { getCurrentLocale } = useI18N();
     const locale = getCurrentLocale("default");
 
-    const socketsRef = useRef<IWebsocketManager>(new BlackHoleWebsocketManager());
+    const socketsRef = useRef<IWebsocketsManager>(createWebsocketsBlackHoleManager());
 
     const [current, setCurrent] = useState<ICurrentData>({});
 
     const subscriptionManager = useMemo(() => {
-        return createWebsocketSubscriptionManager();
+        return createWebsocketsSubscriptionManager();
     }, []);
 
     useEffect(() => {
@@ -67,8 +66,8 @@ export const SocketsProvider = (props: ISocketsProviderProps) => {
                 locale
             });
 
-            socketsRef.current = createWebsocketManager(
-                createWebsocketConnection({
+            socketsRef.current = createWebsocketsManager(
+                createWebsocketsConnection({
                     subscriptionManager,
                     url,
                     protocol: ["webiny-ws-v1"]
@@ -79,7 +78,7 @@ export const SocketsProvider = (props: ISocketsProviderProps) => {
     }, [tenant, locale, subscriptionManager]);
 
     const websocketActions = useMemo(() => {
-        return createWebsocketActions({
+        return createWebsocketsActions({
             manager: socketsRef.current,
             tenant,
             locale,
@@ -87,7 +86,7 @@ export const SocketsProvider = (props: ISocketsProviderProps) => {
         });
     }, [socketsRef.current, tenant, locale]);
 
-    const send = useCallback<ISocketsContextSendCallable>(
+    const send = useCallback<IWebsocketsContextSendCallable>(
         async (action, data, timeout) => {
             return websocketActions.run({
                 action,
@@ -102,7 +101,7 @@ export const SocketsProvider = (props: ISocketsProviderProps) => {
         <T extends IGenericData = IGenericData, R extends IGenericData = IGenericData>(
             name: string
         ) => {
-            return createWebsocketAction<T, R>(websocketActions, name);
+            return createWebsocketsAction<T, R>(websocketActions, name);
         },
         [websocketActions]
     );
@@ -128,10 +127,10 @@ export const SocketsProvider = (props: ISocketsProviderProps) => {
     (window as any).createAction = createAction;
     (window as any).onMessage = onMessage;
 
-    const value: ISocketsContext = {
+    const value: IWebsocketsContext = {
         send,
         createAction,
         onMessage
     };
-    return <SocketsContext.Provider value={value} {...props} />;
+    return <WebsocketsContext.Provider value={value} {...props} />;
 };

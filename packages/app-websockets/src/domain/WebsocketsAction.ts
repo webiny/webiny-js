@@ -1,21 +1,24 @@
-import { IGenericData } from "~/sockets/abstractions/IWebsocketConnection";
-import { IWebsocketActions } from "~/sockets/abstractions/IWebsocketActions";
-import { IWebsocketAction, IWebsocketActionsTriggerParams } from "./abstractions/IWebsocketAction";
+import {
+    IGenericData,
+    IWebsocketsAction,
+    IWebsocketsActions,
+    IWebsocketsActionsTriggerParams
+} from "./types";
 
-export class WebsocketAction<
+export class WebsocketsAction<
     T extends IGenericData = IGenericData,
     R extends IGenericData = IGenericData
-> implements IWebsocketAction<T, R>
+> implements IWebsocketsAction<T, R>
 {
-    private readonly actions: IWebsocketActions;
+    private readonly actions: IWebsocketsActions;
     private readonly name: string;
 
-    public constructor(actions: IWebsocketActions, name: string) {
+    public constructor(actions: IWebsocketsActions, name: string) {
         this.name = name;
         this.actions = actions;
     }
 
-    public async trigger(params?: IWebsocketActionsTriggerParams<T, R>): Promise<R | null> {
+    public async trigger(params?: IWebsocketsActionsTriggerParams<T, R>): Promise<R | null> {
         const { data, onResponse, timeout = 10000 } = params || {};
         const promise = this.actions.run<T, R>({
             action: this.name,
@@ -31,12 +34,12 @@ export class WebsocketAction<
     }
 }
 
-export const createWebsocketAction = <
+export const createWebsocketsAction = <
     T extends IGenericData = IGenericData,
     R extends IGenericData = IGenericData
 >(
-    actions: IWebsocketActions,
+    actions: IWebsocketsActions,
     name: string
-): IWebsocketAction<T, R> => {
-    return new WebsocketAction<T, R>(actions, name);
+): IWebsocketsAction<T, R> => {
+    return new WebsocketsAction<T, R>(actions, name);
 };

@@ -1,19 +1,20 @@
 import {
-    IWebsocketManager,
+    IGenericData,
+    IWebsocketsActions,
+    IWebsocketsActionsRunParams,
+    IWebsocketsManager,
     IWebsocketManagerSendData
-} from "~/sockets/abstractions/IWebsocketManager";
-import { IGenericData } from "~/sockets/abstractions/IWebsocketConnection";
-import { IWebsocketActions, IWebsocketActionsRunParams } from "./abstractions/IWebsocketActions";
+} from "./types";
 
 export interface IWebsocketActionsParams {
-    manager: IWebsocketManager;
+    manager: IWebsocketsManager;
     tenant: string | null;
     locale: string | null;
     getToken: () => Promise<string | null>;
 }
 
-export class WebsocketActions implements IWebsocketActions {
-    public readonly manager: IWebsocketManager;
+export class WebsocketsActions implements IWebsocketsActions {
+    public readonly manager: IWebsocketsManager;
 
     private readonly getToken: () => Promise<string | null>;
     private readonly tenant: string | null;
@@ -27,7 +28,7 @@ export class WebsocketActions implements IWebsocketActions {
     }
 
     public async run<T extends IGenericData = IGenericData, R extends IGenericData = IGenericData>(
-        params: IWebsocketActionsRunParams<T>
+        params: IWebsocketsActionsRunParams<T>
     ): Promise<R | null> {
         const { action, timeout, data } = params;
         const token = await this.getToken();
@@ -101,6 +102,6 @@ export class WebsocketActions implements IWebsocketActions {
     }
 }
 
-export const createWebsocketActions = (params: IWebsocketActionsParams): IWebsocketActions => {
-    return new WebsocketActions(params);
+export const createWebsocketsActions = (params: IWebsocketActionsParams): IWebsocketsActions => {
+    return new WebsocketsActions(params);
 };
