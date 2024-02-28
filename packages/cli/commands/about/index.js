@@ -3,8 +3,10 @@ const NO_VALUE = "-";
 const getData = async context => {
     const { getUser } = require("../wcp/utils");
     const { getNpxVersion } = require("./getNpxVersion");
+    const { getNpmVersion } = require("./getNpmVersion");
     const { getPulumiVersions } = require("./getPulumiVersions");
     const { getYarnVersion } = require("./getYarnVersion");
+    const { getDatabaseSetupLabel } = require("./getDatabaseSetup");
 
     const [pulumiVersion, pulumiAwsVersion] = await getPulumiVersions();
 
@@ -14,7 +16,7 @@ const getData = async context => {
             data: {
                 Name: context.project.name,
                 Version: context.version,
-                Template: context.project.config.template || NO_VALUE,
+                "Database Setup": getDatabaseSetupLabel(),
                 "Debug Enabled": process.env.DEBUG === "true" ? "Yes" : "No",
                 "Feature Flags": process.env.WEBINY_FEATURE_FLAGS || "N/A"
             }
@@ -32,22 +34,22 @@ const getData = async context => {
             }
         },
         {
-            sectionName: "Pulumi",
-            data: {
-                "@pulumi/pulumi": pulumiVersion,
-                "@pulumi/aws": pulumiAwsVersion,
-                "Used AWS Region": process.env.AWS_REGION,
-                "Secrets Provider": process.env.PULUMI_SECRETS_PROVIDER,
-                "Using Password": process.env.PULUMI_CONFIG_PASSPHRASE ? "Yes" : "No"
-            }
-        },
-        {
             sectionName: "Host",
             data: {
                 OS: `${process.platform} (${process.arch})`,
                 "Node.js": process.version,
+                NPM: await getNpmVersion(),
                 NPX: await getNpxVersion(),
                 Yarn: await getYarnVersion()
+            }
+        },
+        {
+            sectionName: "Pulumi",
+            data: {
+                "@pulumi/pulumi": pulumiVersion,
+                "@pulumi/aws": pulumiAwsVersion,
+                "Secrets Provider": process.env.PULUMI_SECRETS_PROVIDER,
+                "Using Password": process.env.PULUMI_CONFIG_PASSPHRASE ? "Yes" : "No"
             }
         }
     ];
