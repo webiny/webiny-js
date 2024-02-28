@@ -10,7 +10,7 @@ import {
     logTestNameBeforeEachTest,
     scanTable
 } from "~tests/utils";
-import { CmsEntriesInitNewMetaFields_5_39_0_001 } from "~/migrations/5.39.0/001/ddb-es";
+import { CmsEntriesInitNewMetaFields_5_39_2_001 } from "~/migrations/5.39.2/001/ddb-es";
 
 import { transferDynamoDbToElasticsearch } from "~tests/utils/insertElasticsearchTestData";
 import { esGetIndexSettings } from "~/utils";
@@ -49,7 +49,7 @@ const expectModifiedFieldsAreSynced = (entry: Record<string, unknown>) => {
     expect(hasEntryModifiedOn).toBe(hasEntryModifiedBy);
 };
 
-describe("5.39.0-001", () => {
+describe("5.39.2-001", () => {
     const primaryTable = getPrimaryDynamoDbTable();
     const dynamoToEsTable = getDynamoToEsTable();
     const elasticsearchClient = createElasticsearchClient();
@@ -92,7 +92,7 @@ describe("5.39.0-001", () => {
             primaryTable,
             dynamoToEsTable,
             elasticsearchClient,
-            migrations: [CmsEntriesInitNewMetaFields_5_39_0_001]
+            migrations: [CmsEntriesInitNewMetaFields_5_39_2_001]
         });
 
         const { data, error } = await handler();
@@ -112,7 +112,7 @@ describe("5.39.0-001", () => {
             primaryTable,
             dynamoToEsTable,
             elasticsearchClient,
-            migrations: [CmsEntriesInitNewMetaFields_5_39_0_001]
+            migrations: [CmsEntriesInitNewMetaFields_5_39_2_001]
         });
 
         const { data, error } = await handler();
@@ -259,7 +259,7 @@ describe("5.39.0-001", () => {
             primaryTable,
             dynamoToEsTable,
             elasticsearchClient,
-            migrations: [CmsEntriesInitNewMetaFields_5_39_0_001]
+            migrations: [CmsEntriesInitNewMetaFields_5_39_2_001]
         });
 
         // Should run the migration

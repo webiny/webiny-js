@@ -12,8 +12,17 @@ import { Topic } from "@webiny/pubsub/types";
 import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection";
 import { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types";
 import { AccessControl } from "~/crud/AccessControl/AccessControl";
+import { ModelGroupsPermissions } from "~/utils/permissions/ModelGroupsPermissions";
+import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
+import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
 
 export type ApiEndpoint = "manage" | "preview" | "read";
+
+interface HeadlessCmsPermissions {
+    groups: ModelGroupsPermissions;
+    models: ModelsPermissions;
+    entries: EntriesPermissions;
+}
 
 export interface HeadlessCms
     extends CmsSystemContext,
@@ -48,12 +57,19 @@ export interface HeadlessCms
      * The storage operations loaded for current context.
      */
     storageOperations: HeadlessCmsStorageOperations;
+
     /**
-     * Permissions for groups, models and entries.
-     *
-     * @internal
+     * Use to ensure perform authorization and ensure identities have access to the groups, models and entries.
      */
     accessControl: AccessControl;
+
+    /**
+     * Permissions for groups, models and entries.
+     * @internal
+     * @deprecated Will be removed with the 5.40.0 release. Use `accessControl` instead.
+     */
+    permissions: HeadlessCmsPermissions;
+
     /**
      * Export operations.
      */

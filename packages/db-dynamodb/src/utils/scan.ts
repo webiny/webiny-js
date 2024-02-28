@@ -71,6 +71,7 @@ export type ScanDbItem<T> = T & {
     SK: string;
     GSI1_PK: string;
     GSI1_SK: string;
+    TYPE: string;
 };
 
 export const scan = async <T>(params: ScanParams): Promise<ScanResponse<T>> => {
@@ -94,17 +95,32 @@ export const scan = async <T>(params: ScanParams): Promise<ScanResponse<T>> => {
 
 export const scanWithCallback = async <T>(
     params: ScanParams,
-    callback: (result: ScanResponse<ScanDbItem<T>>) => Promise<void>
+    callback: (result: ScanResponse<ScanDbItem<T>>) => Promise<void | boolean>
 ): Promise<void> => {
     let result = await scan<ScanDbItem<T>>(params);
     if (!result.items?.length && !result.lastEvaluatedKey) {
         return;
     }
-    await callback(result);
+
+    // If the result of the callback was `false`, that means the
+    // user's intention was to stop further table scanning.
+    const callbackResult = await callback(result);
+    const mustBreak = callbackResult === false;
+    if (mustBreak) {
+        return;
+    }
 
     while (result.next) {
         result = await result.next();
-        await callback(result);
+
+        // If the result of the callback was `false`, that means the
+        // user's intention was to stop further table scanning.
+        const callbackResult = await callback(result);
+        const mustBreak = callbackResult === false;
+        if (mustBreak) {
+            break;
+        }
+
         if (!result.next) {
             return;
         }
