@@ -78,8 +78,6 @@ export class WebsocketsActions implements IWebsocketsActions {
 
             promiseTimeout = setTimeout(() => {
                 const message = `Websocket action "${action}" timeout.`;
-                console.error(message);
-                console.info(JSON.stringify(data, null, 2));
                 subscription.off();
                 reject(new Error(message));
             }, timeout);
