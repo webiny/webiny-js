@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect } from "react";
-import { ApolloClient } from "apollo-client";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete_outline.svg";
 
@@ -29,7 +28,6 @@ export interface QueryBuilderProps {
     onDeleteFilterFromGroup: (groupIndex: number, filterIndex: number) => void;
     onAddNewFilterToGroup: (groupIndex: number) => void;
     onAddGroup: () => void;
-    refClient: ApolloClient<any>;
     vm: QueryBuilderViewModel;
 }
 
@@ -99,7 +97,6 @@ export const QueryBuilder = observer((props: QueryBuilderProps) => {
                                                             filterIndex
                                                         );
                                                     }}
-                                                    refClient={props.refClient}
                                                 />
                                                 <FilterOperationLabel
                                                     show={filters.length !== filterIndex + 1}

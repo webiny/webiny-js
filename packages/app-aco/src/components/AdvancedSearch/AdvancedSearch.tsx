@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo } from "react";
-import { ApolloClient } from "apollo-client";
 import { observer } from "mobx-react-lite";
 
 import { FieldRaw, FilterDTO, FilterRepository } from "./domain";
@@ -14,16 +13,18 @@ import { QuerySaverDialog } from "./QuerySaverDialog";
 import { SelectedFilter } from "./SelectedFilter";
 
 import { AdvancedSearchContainer } from "./AdvancedSearch.styled";
+import { useAcoConfig } from "~/config";
 
-interface AdvancedSearchProps {
+export interface AdvancedSearchProps {
     fields: FieldRaw[];
     repository: FilterRepository;
-    refClient: ApolloClient<any>;
     onApplyFilter: (data: FilterDTO | null) => void;
 }
 
 export const AdvancedSearch = observer(
-    ({ fields, repository, onApplyFilter, refClient }: AdvancedSearchProps) => {
+    ({ fields, repository, onApplyFilter }: AdvancedSearchProps) => {
+        const { advancedSearch } = useAcoConfig();
+
         const presenter = useMemo<AdvancedSearchPresenter>(() => {
             return new AdvancedSearchPresenter(repository);
         }, [repository]);
@@ -84,7 +85,7 @@ export const AdvancedSearch = observer(
                     <>
                         <QueryBuilderDrawer
                             fields={fields}
-                            refClient={refClient}
+                            fieldRendererConfigs={advancedSearch.fieldRenderers}
                             onClose={() => presenter.closeBuilder()}
                             onSave={filter => presenter.saveFilter(filter)}
                             onApply={applyFilter}

@@ -1,5 +1,5 @@
 import { ApolloClient } from "apollo-client";
-import { EntriesGatewayInterface, EntriesGraphQLGateway } from "../gateways";
+import { EntriesGatewayInterface, EntriesGraphQLGateway } from "../adapters";
 import { EntryRepository } from "./EntryRepository";
 
 export class EntryRepositoryFactory {

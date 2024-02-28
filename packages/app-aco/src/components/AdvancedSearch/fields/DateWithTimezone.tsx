@@ -5,6 +5,7 @@ import { useBind } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import { UTC_TIMEZONES } from "@webiny/utils";
+import { useInputField } from "~/components";
 
 const DateWithTimezoneContainer = styled.div`
     display: flex;
@@ -19,11 +20,9 @@ const TimeZoneSelectContainer = styled.div`
     width: 45%;
 `;
 
-interface DateWithTimezoneProps {
-    name: string;
-}
+export const DateWithTimezone = () => {
+    const { name } = useInputField();
 
-export const DateWithTimezone = ({ name }: DateWithTimezoneProps) => {
     const [dateTime, setDateTime] = useState("");
     const [timeZone, setTimeZone] = useState("+00:00");
 

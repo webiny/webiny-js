@@ -1,4 +1,4 @@
-import { AcoError } from "~/types";
+import { CmsErrorResponse } from "~/types";
 import { EntryReference } from "../domain";
 
 export interface ListEntriesQueryVariables {
@@ -10,7 +10,7 @@ export interface ListEntriesQueryVariables {
 export interface ListEntriesResponse {
     searchContentEntries: {
         data: EntryReference[] | null;
-        error: AcoError | null;
+        error: CmsErrorResponse | null;
     };
 }
 
@@ -24,6 +24,6 @@ export interface GetEntryQueryVariables {
 export interface GetEntryResponse {
     getLatestContentEntry: {
         data: EntryReference | null;
-        error: AcoError | null;
+        error: CmsErrorResponse | null;
     };
 }

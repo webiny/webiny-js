@@ -1,8 +1,8 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { EntryDTO, EntryReference } from "./Entry";
-import { EntriesGatewayInterface } from "../gateways";
-import { Loading } from "~/components/AdvancedSearch/domain";
+import { EntriesGatewayInterface } from "../adapters";
 import { EntryMapper } from "./EntryMapper";
+import { Loading } from "./Loading";
 
 export class EntryRepository {
     public readonly modelIds: string[];

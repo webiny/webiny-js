@@ -1,6 +1,6 @@
 import { RefPresenter } from "./RefPresenter";
-import { EntryReference, EntryRepository } from "./domain";
-import { EntriesGatewayInterface } from "./gateways";
+import { EntriesGatewayInterface } from "../adapters";
+import { EntryReference, EntryRepository } from "../domain";
 
 const mockGateway: EntriesGatewayInterface = {
     list: jest.fn(),

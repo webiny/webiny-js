@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import { ApolloClient } from "apollo-client";
 import { observer } from "mobx-react-lite";
 import { FormAPI } from "@webiny/form";
 import { DrawerContent } from "@webiny/ui/Drawer";
@@ -13,15 +12,16 @@ import { FieldRaw, FilterDTO } from "~/components/AdvancedSearch/domain";
 
 import { DrawerContainer } from "./QueryBuilderDrawer.styled";
 import { QueryBuilderDrawerPresenter, QueryBuilderFormData } from "./QueryBuilderDrawerPresenter";
+import { FieldRendererConfig } from "~/config/advanced-search/FieldRenderer";
 
 interface QueryBuilderDrawerProps {
     fields: FieldRaw[];
+    fieldRendererConfigs: FieldRendererConfig[];
     onClose: () => void;
     onSave: (data: FilterDTO) => void;
     onApply: (data: FilterDTO) => void;
     onValidationError: (message: string) => void;
     filter: FilterDTO;
-    refClient: ApolloClient<any>;
     vm: {
         isOpen: boolean;
     };
@@ -29,7 +29,7 @@ interface QueryBuilderDrawerProps {
 
 export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDrawerProps) => {
     const presenter = useMemo<QueryBuilderDrawerPresenter>(() => {
-        return new QueryBuilderDrawerPresenter(props.fields);
+        return new QueryBuilderDrawerPresenter(props.fields, props.fieldRendererConfigs);
     }, [props.fields]);
 
     useEffect(() => {
@@ -89,7 +89,6 @@ export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDr
                     }
                     onAddNewFilterToGroup={groupIndex => presenter.addNewFilterToGroup(groupIndex)}
                     onAddGroup={() => presenter.addGroup()}
-                    refClient={props.refClient}
                     vm={presenter.vm}
                 />
                 <Footer formRef={ref} onClose={props.onClose} onSave={onSave} />

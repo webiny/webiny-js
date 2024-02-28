@@ -1,5 +1,4 @@
 import React from "react";
-import { ApolloClient } from "apollo-client";
 import { Bind } from "@webiny/form";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { Cell, Grid } from "@webiny/ui/Grid";
@@ -8,27 +7,19 @@ import { Select } from "@webiny/ui/Select";
 import { InputField } from "./InputField";
 import { RemoveFilter } from "./controls";
 
-import { FieldDTO, FilterGroupFilterDTO } from "../../../domain";
+import { FieldDTOWithElement, FilterGroupFilterDTO } from "../../../domain";
 
 import { CellInner, FilterContainer } from "../Querybuilder.styled";
 
 interface FilterProps {
     name: string;
     filter: FilterGroupFilterDTO & { canDelete: boolean };
-    fields: FieldDTO[];
+    fields: FieldDTOWithElement[];
     onDelete: () => void;
     onFieldSelectChange: (data: string) => void;
-    refClient: ApolloClient<any>;
 }
 
-export const Filter = ({
-    name,
-    onDelete,
-    onFieldSelectChange,
-    fields,
-    filter,
-    refClient
-}: FilterProps) => {
+export const Filter = ({ name, onDelete, onFieldSelectChange, fields, filter }: FilterProps) => {
     return (
         <FilterContainer>
             <Grid>
@@ -80,7 +71,6 @@ export const Filter = ({
                             <InputField
                                 name={`${name}.value`}
                                 field={fields.find(field => field.value === filter.field)}
-                                refClient={refClient}
                             />
                         )}
                     </CellInner>

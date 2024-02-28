@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 
 import { useBind } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
+import { useInputField } from "~/components";
 
-interface DateWithoutTimezoneProps {
-    name: string;
-}
+export const DateWithoutTimezone = () => {
+    const { name } = useInputField();
 
-export const DateWithoutTimezone = ({ name }: DateWithoutTimezoneProps) => {
     const [dateTime, setDateTime] = useState("");
 
     const { onChange, value } = useBind({

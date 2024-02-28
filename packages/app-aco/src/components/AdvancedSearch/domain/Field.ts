@@ -40,6 +40,10 @@ export interface FieldDTO {
     settings: SettingsDTO;
 }
 
+export interface FieldDTOWithElement extends FieldDTO {
+    element: React.ReactElement | null;
+}
+
 export class Field {
     public readonly label: string;
     public readonly value: Value;

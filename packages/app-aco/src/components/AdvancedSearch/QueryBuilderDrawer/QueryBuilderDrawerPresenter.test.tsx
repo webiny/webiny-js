@@ -1,3 +1,4 @@
+import React from "react";
 import { QueryBuilderDrawerPresenter } from "./QueryBuilderDrawerPresenter";
 import {
     FieldDTO,
@@ -6,6 +7,7 @@ import {
     FilterDTO,
     Operation
 } from "~/components/AdvancedSearch/domain";
+import { FieldRendererConfig } from "~/config/advanced-search/FieldRenderer";
 
 describe("QueryBuilderDrawerPresenter", () => {
     const defaultFilter = { field: "", value: "", condition: "" };
@@ -44,7 +46,15 @@ describe("QueryBuilderDrawerPresenter", () => {
             }
         ];
 
-        presenter = new QueryBuilderDrawerPresenter(defaultFields);
+        const fieldConfigs: FieldRendererConfig[] = [
+            {
+                types: [FieldType.TEXT],
+                name: "demo",
+                element: <>{"Any element"}</>
+            }
+        ];
+
+        presenter = new QueryBuilderDrawerPresenter(defaultFields, fieldConfigs);
     });
 
     it("should create QueryBuilderDrawerPresenter with `vm` definition", () => {
@@ -743,11 +753,19 @@ describe("FieldDTO definition", () => {
         ]
     ];
 
+    const configs: FieldRendererConfig[] = [
+        {
+            types: [FieldType.TEXT],
+            name: "demo",
+            element: <>{"Any element"}</>
+        }
+    ];
+
     fields.forEach(([fieldRaw, fieldDTO]) => {
         let presenter: QueryBuilderDrawerPresenter;
 
         beforeEach(() => {
-            presenter = new QueryBuilderDrawerPresenter([fieldRaw]);
+            presenter = new QueryBuilderDrawerPresenter([fieldRaw], configs);
         });
 
         it(`should transform "Raw ${fieldRaw.label}" -> "DTO ${fieldDTO.label}"`, () => {

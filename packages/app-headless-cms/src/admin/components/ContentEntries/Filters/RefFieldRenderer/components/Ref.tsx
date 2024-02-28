@@ -1,23 +1,23 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import { ApolloClient } from "apollo-client";
+
 import debounce from "lodash/debounce";
 import { observer } from "mobx-react-lite";
 import { useBind } from "@webiny/form";
+import { entryRepositoryFactory } from "../domain";
 import { AutoComplete } from "./AutoComplete";
 import { RefPresenter } from "./RefPresenter";
-import { entryRepositoryFactory } from "./domain";
+import { ContentEntryListConfig } from "~/admin/config/contentEntries";
+import { useApolloClient } from "~/admin/hooks";
 
-export interface RefProps {
-    name: string;
-    modelIds: string[];
-    client: ApolloClient<any>;
-}
+export const Ref = observer(() => {
+    const { useInputField } = ContentEntryListConfig.Browser.AdvancedSearch.FieldRenderer;
+    const { name, field } = useInputField();
+    const client = useApolloClient();
 
-export const Ref = observer(({ name, modelIds, client }: RefProps) => {
     const presenter = useMemo<RefPresenter>(() => {
-        const repository = entryRepositoryFactory.getRepository(client, modelIds);
+        const repository = entryRepositoryFactory.getRepository(client, field.settings.modelIds);
         return new RefPresenter(repository);
-    }, [client, modelIds]);
+    }, [client, field]);
 
     const { value } = useBind({
         name
@@ -31,6 +31,8 @@ export const Ref = observer(({ name, modelIds, client }: RefProps) => {
         debounce(value => presenter.search(value), 250),
         [presenter.search]
     );
+
+    console.log("presenter.vm", presenter.vm);
 
     return <AutoComplete name={name} onInput={onInput} vm={presenter.vm} />;
 });
