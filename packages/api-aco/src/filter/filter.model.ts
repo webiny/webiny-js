@@ -1,5 +1,5 @@
 import { createModelField } from "~/utils/createModelField";
-import { createPrivateModelDefinition } from "@webiny/api-headless-cms";
+import { createPrivateModel } from "@webiny/api-headless-cms";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
 
 const name = () =>
@@ -145,8 +145,8 @@ const value = () =>
 
 export const FILTER_MODEL_ID = "acoFilter";
 
-export const createFilterModelDefinition = () => {
-    return createPrivateModelDefinition({
+export const createFilterModel = () => {
+    return createPrivateModel({
         name: "ACO - Filter",
         modelId: FILTER_MODEL_ID,
         titleFieldId: "name",

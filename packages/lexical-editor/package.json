@@ -18,7 +18,7 @@
     "@webiny/lexical-theme": "0.0.0",
     "@webiny/react-composition": "0.0.0",
     "@webiny/react-properties": "0.0.0",
-    "lexical": "^0.12.2",
+    "lexical": "0.12.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },

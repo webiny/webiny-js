@@ -87,7 +87,7 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
             </span>
         )
     });
-    const { entry, tabsRef } = useContentEntry();
+    const { entry, setActiveTab } = useContentEntry();
     const { canEdit, canDelete, canPublish, canUnpublish } = usePermission();
     const { icon, text: tooltipText } = getIcon(revision);
 
@@ -130,10 +130,7 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                         <MenuItem
                             onClick={() => {
                                 editRevision();
-                                if (!tabsRef.current) {
-                                    return;
-                                }
-                                tabsRef.current.switchTab(0);
+                                setActiveTab(0);
                             }}
                         >
                             <ListItemGraphic>

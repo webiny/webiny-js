@@ -340,10 +340,11 @@ export const createCmsModel = (
     return new CmsModelPlugin(model, options);
 };
 
-export const createPrivateModelDefinition = (
+export const createPrivateModel = (
     input: Omit<CmsPrivateModelFull, "group" | "isPrivate" | "noValidate">
 ): CmsPrivateModelFull => {
     return {
+        authorization: false,
         ...input,
         isPrivate: true,
         noValidate: true,
