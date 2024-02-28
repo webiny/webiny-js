@@ -2,6 +2,8 @@ export { ActionDelete } from "./ActionDelete";
 export { SecureActionDelete } from "./SecureActionDelete";
 export { ActionExport } from "./ActionExport";
 export { ActionMove } from "./ActionMove";
+export { ActionDuplicate } from "./ActionDuplicate";
+export { SecureActionDuplicate } from "./SecureActionDuplicate";
 export { SecureActionMove } from "./SecureActionMove";
 export { ActionPublish } from "./ActionPublish";
 export { SecureActionPublish } from "./SecureActionPublish";
