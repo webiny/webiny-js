@@ -44,7 +44,8 @@ export class RefPresenter implements IRefPresenter {
             runInAction(() => {
                 this.currentEntry = entry;
             });
-        } catch (e) {
+        } catch (error) {
+            console.error("Error while loading initial value", error);
             return;
         }
     }

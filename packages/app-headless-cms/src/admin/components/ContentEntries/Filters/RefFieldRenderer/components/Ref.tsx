@@ -17,7 +17,7 @@ export const Ref = observer(() => {
     const presenter = useMemo<RefPresenter>(() => {
         const repository = entryRepositoryFactory.getRepository(client, field.settings.modelIds);
         return new RefPresenter(repository);
-    }, [client, field]);
+    }, [client, field.settings.modelIds]);
 
     const { value } = useBind({
         name
@@ -31,8 +31,6 @@ export const Ref = observer(() => {
         debounce(value => presenter.search(value), 250),
         [presenter.search]
     );
-
-    console.log("presenter.vm", presenter.vm);
 
     return <AutoComplete name={name} onInput={onInput} vm={presenter.vm} />;
 });
