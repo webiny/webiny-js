@@ -180,7 +180,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         return convertToTask<T, O>(entry as unknown as CmsEntry<ITask<T, O>>);
     };
 
-    const deleteTask = async(id: string) => {
+    const deleteTask = async (id: string) => {
         return context.security.withoutAuthorization(async () => {
             const model = await getTaskModel();
             await context.cms.deleteEntry(model, createRevisionId(id));
