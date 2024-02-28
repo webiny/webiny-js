@@ -5,7 +5,7 @@ import {
     IWebsocketManagerMessageEvent,
     IWebsocketManagerOpenEvent
 } from "~/sockets/types";
-import { IGenericData } from "~/sockets/abstractions/IWebsocketConnection";
+import { IGenericData } from "./IWebsocketConnection";
 
 export interface IWebsocketSubscriptionCallback<T> {
     (data: T): Promise<void>;
@@ -14,6 +14,9 @@ export interface IWebsocketSubscriptionCallback<T> {
 export interface IWebsocketSubscription<T> {
     cb: IWebsocketSubscriptionCallback<T>;
     id: string;
+    /**
+     * Remove the subscription on the message.
+     */
     off: () => void;
 }
 

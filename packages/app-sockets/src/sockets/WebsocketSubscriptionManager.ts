@@ -101,3 +101,7 @@ export class WebsocketSubscriptionManager implements IWebsocketSubscriptionManag
         };
     }
 }
+
+export const createWebsocketSubscriptionManager = (): IWebsocketSubscriptionManager => {
+    return new WebsocketSubscriptionManager();
+};

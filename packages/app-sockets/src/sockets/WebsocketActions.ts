@@ -3,7 +3,7 @@ import {
     IWebsocketManagerSendData
 } from "~/sockets/abstractions/IWebsocketManager";
 import { IGenericData } from "~/sockets/abstractions/IWebsocketConnection";
-import { IWebsocketActions } from "./abstractions/IWebsocketActions";
+import { IWebsocketActions, IWebsocketActionsRunParams } from "./abstractions/IWebsocketActions";
 
 export interface IWebsocketActionsParams {
     manager: IWebsocketManager;
@@ -26,10 +26,10 @@ export class WebsocketActions implements IWebsocketActions {
         this.getToken = params.getToken;
     }
 
-    public async action<
-        T extends IGenericData = IGenericData,
-        R extends IGenericData = IGenericData
-    >(action: string, data?: T, timeout = 10000): Promise<R | null> {
+    public async run<T extends IGenericData = IGenericData, R extends IGenericData = IGenericData>(
+        params: IWebsocketActionsRunParams<T>
+    ): Promise<R | null> {
+        const { action, timeout, data } = params;
         const token = await this.getToken();
         if (!token) {
             console.error("Token is not set - cannot send a websocket message.");
@@ -41,8 +41,27 @@ export class WebsocketActions implements IWebsocketActions {
             console.error("Locale is not set - cannot send a websocket message.");
             return null;
         }
-
-        return new Promise<R>((resolve, reject) => {
+        /**
+         * If no timeout was sent, we will just send the message and return null.
+         * No waiting for the response.
+         */
+        if (!timeout || timeout < 0) {
+            this.manager.send<IWebsocketManagerSendData<T>>({
+                /**
+                 * It is ok to cast as we are checking the values a few lines above.
+                 */
+                token,
+                tenant: this.tenant as string,
+                locale: this.locale as string,
+                action,
+                data: data || ({} as T)
+            });
+            return null;
+        }
+        /**
+         * In case of a timeout, we will send the message and wait for the response.
+         */
+        return await new Promise<R>((resolve, reject) => {
             let promiseTimeout: NodeJS.Timeout | null = null;
             const subscription = this.manager.onMessage<R>(async event => {
                 if (event.data.messageId !== subscription.id) {
@@ -81,3 +100,7 @@ export class WebsocketActions implements IWebsocketActions {
         });
     }
 }
+
+export const createWebsocketActions = (params: IWebsocketActionsParams): IWebsocketActions => {
+    return new WebsocketActions(params);
+};

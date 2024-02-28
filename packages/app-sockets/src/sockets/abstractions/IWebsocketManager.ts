@@ -1,8 +1,8 @@
-import { IGenericData } from "~/sockets/abstractions/IWebsocketConnection";
+import { IGenericData } from "./IWebsocketConnection";
 import {
     IWebsocketSubscription,
     IWebsocketSubscriptionCallback
-} from "~/sockets/abstractions/IWebsocketSubscriptionManager";
+} from "./IWebsocketSubscriptionManager";
 import {
     IWebsocketManagerCloseEvent,
     IWebsocketManagerErrorEvent,
@@ -29,7 +29,7 @@ export interface IWebsocketManagerSendData<T extends IGenericData = IGenericData
      * A unique message ID - generated on the UI side.
      * TODO implement waiting for the message response.
      */
-    messageId: string;
+    messageId?: string;
     /**
      * Action being fired on the API side.
      */

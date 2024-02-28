@@ -50,3 +50,7 @@ export class BlackHoleWebsocketManager implements IWebsocketManager {
         });
     }
 }
+
+export const createBlackHoleWebsocketManager = (): IWebsocketManager => {
+    return new BlackHoleWebsocketManager();
+};

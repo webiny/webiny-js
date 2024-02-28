@@ -1,11 +1,15 @@
-import { IWebsocketManager } from "~/sockets/abstractions/IWebsocketManager";
-import { IGenericData } from "~/sockets/abstractions/IWebsocketConnection";
+import { IWebsocketManager } from "./IWebsocketManager";
+import { IGenericData } from "./IWebsocketConnection";
+
+export interface IWebsocketActionsRunParams<T extends IGenericData = IGenericData> {
+    action: string;
+    data?: T;
+    timeout?: number;
+}
 
 export interface IWebsocketActions {
     manager: IWebsocketManager;
-    action<T extends IGenericData = IGenericData, R extends IGenericData = IGenericData>(
-        action: string,
-        data: T,
-        timeout?: number
+    run<T extends IGenericData = IGenericData, R extends IGenericData = IGenericData>(
+        params: IWebsocketActionsRunParams<T>
     ): Promise<R | null>;
 }

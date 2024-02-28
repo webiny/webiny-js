@@ -93,3 +93,9 @@ export class WebsocketConnection implements IWebsocketConnection {
         this.connection.send(JSON.stringify(data));
     }
 }
+
+export const createWebsocketConnection = (
+    params: IWebsocketConnectionParams
+): IWebsocketConnection => {
+    return new WebsocketConnection(params);
+};

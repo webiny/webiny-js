@@ -48,13 +48,13 @@ const App = (props: AdminProps) => {
             <Tenancy />
             <Security />
             <AccessManagement />
-            <Sockets />
             <AppInstaller />
             <Folders />
             <FileManager />
             <GraphQLPlayground createApolloClient={createApolloClient} />
             <I18N />
             <I18NContent />
+            <Sockets />
             <Provider hoc={ViewCompositionProvider} />
             <PageBuilder />
             <LexicalEditorPlugin />

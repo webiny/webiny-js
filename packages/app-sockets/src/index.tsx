@@ -25,3 +25,6 @@ const SocketsExtension = () => {
 };
 
 export const Sockets = React.memo(SocketsExtension);
+
+export * from "./types";
+export * from "./hooks";

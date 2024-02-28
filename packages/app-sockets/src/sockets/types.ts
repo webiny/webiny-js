@@ -1,4 +1,10 @@
-import { IGenericData } from "~/sockets/abstractions/IWebsocketConnection";
+import { IGenericData } from "./abstractions/IWebsocketConnection";
+
+export * from "./abstractions/IWebsocketAction";
+export * from "./abstractions/IWebsocketActions";
+export * from "./abstractions/IWebsocketConnection";
+export * from "./abstractions/IWebsocketManager";
+export * from "./abstractions/IWebsocketSubscriptionManager";
 
 export type IWebsocketManagerMessageEvent<T = IGenericData> = MessageEvent<T>;
 export type IWebsocketManagerCloseEvent = CloseEvent;

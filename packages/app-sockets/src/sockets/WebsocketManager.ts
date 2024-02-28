@@ -55,3 +55,7 @@ export class WebsocketManager implements IWebsocketManager {
         return this.connection.send<T>(data);
     }
 }
+
+export const createWebsocketManager = (connection: IWebsocketConnection): IWebsocketManager => {
+    return new WebsocketManager(connection);
+};
