@@ -115,6 +115,9 @@ const CUSTOM_HANDLERS = {
     "app-file-manager": () => {
         return ["packages/app-file-manager"];
     },
+    "app-headless-cms": () => {
+        return ["packages/app-headless-cms"];
+    },
     tasks: () => {
         return ["packages/tasks --storage=ddb", "packages/tasks --storage=ddb-es,ddb"];
     },
