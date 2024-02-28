@@ -52,7 +52,7 @@ describe("QueryBuilderDrawerPresenter", () => {
 
         const fieldConfigs: FieldRendererConfig[] = [
             {
-                types: [FieldType.TEXT],
+                type: FieldType.TEXT,
                 name: "demo",
                 element: <p>{"Any element"}</p>
             }
@@ -485,47 +485,47 @@ describe("FieldDTO definition", () => {
 
     const configs: FieldRendererConfig[] = [
         {
-            types: [FieldType.TEXT],
+            type: FieldType.TEXT,
             name: "text-field",
             element: textElement
         },
         {
-            types: [FieldType.DATE],
+            type: FieldType.DATE,
             name: "date-field",
             element: dateElement
         },
         {
-            types: [FieldType.TIME],
+            type: FieldType.TIME,
             name: "time-field",
             element: timeElement
         },
         {
-            types: [FieldType.NUMBER],
+            type: FieldType.NUMBER,
             name: "number-field",
             element: numberElement
         },
         {
-            types: [FieldType.BOOLEAN],
+            type: FieldType.BOOLEAN,
             name: "boolean-field",
             element: booleanElement
         },
         {
-            types: [FieldType.DATETIME_WITH_TIMEZONE],
+            type: FieldType.DATETIME_WITH_TIMEZONE,
             name: "dateTimeWithTimezone-field",
             element: dateTimeWithTimezoneElement
         },
         {
-            types: [FieldType.DATETIME_WITHOUT_TIMEZONE],
+            type: FieldType.DATETIME_WITHOUT_TIMEZONE,
             name: "dateTimeWithoutTimezone-field",
             element: dateTimeWithoutTimezoneElement
         },
         {
-            types: [FieldType.MULTIPLE_VALUES],
+            type: FieldType.MULTIPLE_VALUES,
             name: "multipleValues-field",
             element: multipleValuesElement
         },
         {
-            types: [FieldType.REF],
+            type: FieldType.REF,
             name: "ref-field",
             element: refElement
         }

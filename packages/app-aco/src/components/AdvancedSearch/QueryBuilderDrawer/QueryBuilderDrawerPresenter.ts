@@ -233,9 +233,7 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
 
     private getFieldsWithElement() {
         return this.fields.map(field => {
-            const config = this.fieldRendererConfigs.find(config =>
-                config.types.includes(field.type)
-            );
+            const config = this.fieldRendererConfigs.find(config => config.type === field.type);
             const element = config?.element ?? null;
             return { ...field, element };
         });

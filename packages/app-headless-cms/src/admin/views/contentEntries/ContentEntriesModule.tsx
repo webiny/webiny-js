@@ -96,7 +96,7 @@ export const ContentEntriesModule = () => {
                 <Browser.AdvancedSearch.FieldRenderer
                     name={"ref"}
                     element={<Ref />}
-                    types={[Browser.AdvancedSearch.FieldRenderer.FieldType.REF]}
+                    type={Browser.AdvancedSearch.FieldRenderer.FieldType.REF}
                 />
             </ContentEntryListConfig>
             <ContentEntryEditorConfig>
