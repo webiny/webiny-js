@@ -60,6 +60,7 @@
     "graphql": "^15.7.2",
     "graphql-tag": "^2.12.6",
     "lodash": "4.17.21",
+    "mobx": "^6.9.0",
     "mobx-react-lite": "^3.4.3",
     "prop-types": "^15.7.2",
     "raw.macro": "^0.4.2",
