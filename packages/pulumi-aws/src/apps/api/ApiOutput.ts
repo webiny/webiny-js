@@ -34,7 +34,7 @@ export const ApiOutput = createAppModule({
                 cognitoUserPoolPasswordPolicy: output["cognitoUserPoolPasswordPolicy"] as string,
                 dynamoDbTable: output["dynamoDbTable"] as string,
                 region: output["region"] as string,
-                websocketUrl: output["websocketApiUrl"] as string
+                websocketApiUrl: output["websocketApiUrl"] as string
             };
         });
     }
