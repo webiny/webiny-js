@@ -16,7 +16,7 @@ export const ApiOutput = createAppModule({
                 throw new Error("API application is not deployed.");
             }
 
-            const results = {
+            return {
                 apiDomain: output["apiDomain"] as string,
                 apiUrl: output["apiUrl"] as string,
                 apwSchedulerEventRule: output["apwSchedulerEventRule"] as string | undefined,
@@ -34,11 +34,8 @@ export const ApiOutput = createAppModule({
                 cognitoUserPoolPasswordPolicy: output["cognitoUserPoolPasswordPolicy"] as string,
                 dynamoDbTable: output["dynamoDbTable"] as string,
                 region: output["region"] as string,
-                websocketUrl: output["websocketApiUrl"] as string
+                websocketApiUrl: output["websocketApiUrl"] as string
             };
-
-            console.log(results);
-            return results;
         });
     }
 });

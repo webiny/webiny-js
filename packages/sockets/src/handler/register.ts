@@ -1,8 +1,8 @@
 import { registry } from "@webiny/handler-aws/registry";
 import { createSourceHandler } from "@webiny/handler-aws";
-import { HandlerParams, ISocketsEvent } from "./types";
+import { HandlerParams, ISocketsIncomingEvent } from "./types";
 
-const handler = createSourceHandler<ISocketsEvent, HandlerParams>({
+const handler = createSourceHandler<ISocketsIncomingEvent, HandlerParams>({
     name: "handler-webiny-websockets",
     canUse: event => {
         const { routeKey, connectionId, eventType } = event.requestContext || {};

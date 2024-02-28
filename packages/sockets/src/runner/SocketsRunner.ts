@@ -1,12 +1,15 @@
 import WebinyError from "@webiny/error";
-import { ISocketsEvent, ISocketsEventData, SocketsEventRoute } from "~/handler/types";
+import {
+    ISocketsEvent,
+    ISocketsEventData,
+    ISocketsEventRequestContext,
+    ISocketsIncomingEvent,
+    SocketsEventRequestContextEventType,
+    SocketsEventRoute
+} from "~/handler/types";
 import { Context } from "~/types";
 import { ISocketsEventValidator } from "~/validator";
-import {
-    ISocketsRunner,
-    ISocketsRunnerResponse,
-    ISocketsRunnerRunParams
-} from "./abstractions/ISocketsRunner";
+import { ISocketsRunner, ISocketsRunnerResponse } from "./abstractions/ISocketsRunner";
 import { ISocketsRoutePluginCallableParams, SocketsRoutePlugin } from "~/plugins";
 import { middleware } from "@webiny/utils";
 import { ISocketsConnectionRegistry } from "~/registry";
@@ -22,6 +25,15 @@ type MiddlewareParams<C extends Context = Context> = Pick<
     ISocketsRoutePluginCallableParams<C>,
     "context" | "event" | "registry"
 >;
+
+interface ISocketsRunnerRespondParams
+    extends Pick<
+        ISocketsEventRequestContext,
+        "connectionId" | "domainName" | "stage" | "eventType"
+    > {
+    messageId?: string;
+    result: ISocketsResponseOkResult | ISocketsResponseErrorResult;
+}
 
 export class SocketsRunner implements ISocketsRunner {
     private readonly context: Context;
@@ -42,13 +54,13 @@ export class SocketsRunner implements ISocketsRunner {
     }
 
     public async run<T extends ISocketsEventData = ISocketsEventData>(
-        input: ISocketsRunnerRunParams<T>
+        input: ISocketsIncomingEvent
     ): Promise<ISocketsRunnerResponse> {
         let event: ISocketsEvent<T> | undefined;
         try {
             event = await this.validator.validate<T>(input);
         } catch (ex) {
-            return this.response.error({
+            const result = this.response.error({
                 message: "Validation failed.",
                 error: {
                     message: ex.message,
@@ -57,6 +69,30 @@ export class SocketsRunner implements ISocketsRunner {
                     stack: ex.stack
                 }
             });
+
+            const { connectionId, domainName, stage, eventType } = input.requestContext || {};
+            let messageId: string | undefined;
+            try {
+                const body =
+                    typeof input.body === "string" ? input.body : JSON.stringify(input.body || {});
+                const json = JSON.parse(body);
+                messageId = json.messageId;
+            } catch {
+                // Do nothing
+            }
+            if (!connectionId || !stage || !domainName || !eventType) {
+                return result;
+            }
+
+            await this.respond({
+                connectionId,
+                domainName,
+                stage,
+                eventType,
+                messageId,
+                result
+            });
+            return result;
         }
 
         let result: ISocketsResponseOkResult | ISocketsResponseErrorResult;
@@ -74,7 +110,11 @@ export class SocketsRunner implements ISocketsRunner {
             });
         }
         try {
-            await this.respond(event, result);
+            await this.respond({
+                ...event.requestContext,
+                messageId: event.body?.messageId,
+                result
+            });
             return result;
         } catch (ex) {
             return this.response.error({
@@ -166,19 +206,18 @@ export class SocketsRunner implements ISocketsRunner {
         });
     }
 
-    private async respond(
-        event: ISocketsEvent,
-        result: ISocketsResponseOkResult | ISocketsResponseErrorResult
-    ): Promise<void> {
-        const { connectionId, domainName, stage } = event.requestContext;
-        if (!connectionId || !domainName || !stage) {
+    private async respond(params: ISocketsRunnerRespondParams): Promise<void> {
+        const { connectionId, domainName, stage, eventType, result, messageId } = params;
+        if (eventType !== SocketsEventRequestContextEventType.message) {
+            return;
+        } else if (!connectionId || !domainName || !stage) {
             const message = "No connectionId, domainName or stage.";
             const data = {
                 connectionId,
                 domainName,
                 stage
             };
-            console.log(message, JSON.stringify(data));
+            console.error(message, JSON.stringify(data));
             throw new WebinyError(message, "GENERAL_ERROR", data);
         }
         const connection: ISocketsTransporterSendConnection = {
@@ -186,13 +225,11 @@ export class SocketsRunner implements ISocketsRunner {
             domainName,
             stage
         };
-        console.log(
-            "sending: " +
-                JSON.stringify({
-                    connection,
-                    result
-                })
-        );
-        await this.context.sockets.sendToConnection(connection, result);
+
+        const dataToSend = {
+            ...result,
+            messageId
+        };
+        await this.context.sockets.sendToConnection(connection, dataToSend);
     }
 }

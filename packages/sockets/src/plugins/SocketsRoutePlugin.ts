@@ -34,7 +34,7 @@ export class SocketsRoutePlugin<
     R extends ISocketsRunnerResponse = ISocketsRunnerResponse,
     T extends ISocketsEventData = ISocketsEventData
 > extends Plugin {
-    public static override readonly type: string = "sockets.route.action";
+    public static override readonly type: string = "sockets.route";
 
     public readonly route: SocketsEventRoute | string;
     private readonly cb: ISocketsRoutePluginCallable<C, R, T>;

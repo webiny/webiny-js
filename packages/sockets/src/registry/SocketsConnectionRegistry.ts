@@ -71,7 +71,7 @@ export class SocketsConnectionRegistry implements ISocketsConnectionRegistry {
                 keys
             });
         } catch (ex) {
-            console.log(
+            console.error(
                 `Could not remove connection from the database: ${original.data.connectionId}`
             );
             throw new WebinyError(ex.message, ex.code, keys);

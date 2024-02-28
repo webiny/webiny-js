@@ -1,4 +1,4 @@
-import { createSocketsRoutePlugins } from "~/runner/actions";
+import { createSocketsRoutePlugins } from "~/runner/routes";
 import { createWcpContext } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "~tests/helpers/tenancySecurity";
 import { createDummyLocales, createIdentity, createPermissions } from "~tests/helpers/helpers";

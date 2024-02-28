@@ -5,6 +5,23 @@ import { createPlugins } from "~tests/helpers/plugins";
 import { createMockEvent } from "~tests/mocks/event";
 import { useHandler } from "~tests/helpers/useHandler";
 
+jest.mock("@webiny/aws-sdk/client-apigatewaymanagementapi", () => {
+    return {
+        ApiGatewayManagementApiClient: class ApiGatewayManagementApiClient {
+            async send(cmd: any) {
+                return cmd;
+            }
+        },
+        PostToConnectionCommand: class PostToConnectionCommand {
+            public readonly input: any;
+
+            constructor(input: any) {
+                this.input = input;
+            }
+        }
+    };
+});
+
 describe("handler", () => {
     it("should run handler with the given event - default route - ok status", async () => {
         const handler = createHandler({
@@ -17,19 +34,26 @@ describe("handler", () => {
                     routeKey: SocketsEventRoute.default,
                     connectionId: "myConnectionId"
                 },
-                data: {
+                body: JSON.stringify({
+                    messageId: "message123",
+                    action: "mockAction",
+                    token: "aToken",
                     locale: "en-US",
-                    tenant: "root",
-                    identity: {
-                        id: "myIdentityId"
-                    }
-                }
+                    tenant: "root"
+                })
             }),
             createMockLambdaContext()
         );
 
-        expect(result).toEqual({
-            statusCode: 200
+        expect(result).toMatchObject({
+            statusCode: 200,
+            isBase64Encoded: false,
+            headers: {
+                "sec-websocket-protocol": "webiny-ws-v1"
+            },
+            body: JSON.stringify({
+                statusCode: 200
+            })
         });
     });
 
@@ -41,7 +65,7 @@ describe("handler", () => {
         const context = await contextHandler.handle();
 
         const connectionsBeforeConnect = await context.sockets.listConnections({
-            id: "myIdentityId"
+            id: "id-12345678"
         });
         expect(connectionsBeforeConnect).toHaveLength(0);
 
@@ -51,23 +75,30 @@ describe("handler", () => {
                     routeKey: SocketsEventRoute.connect,
                     connectionId: "myConnectionId"
                 },
-                data: {
+                body: JSON.stringify({
+                    messageId: "message123",
+                    action: "mockAction",
+                    token: "aToken",
                     locale: "en-US",
-                    tenant: "root",
-                    identity: {
-                        id: "myIdentityId"
-                    }
-                }
+                    tenant: "root"
+                })
             }),
             createMockLambdaContext()
         );
 
-        expect(result).toEqual({
-            statusCode: 200
+        expect(result).toMatchObject({
+            statusCode: 200,
+            isBase64Encoded: false,
+            headers: {
+                "sec-websocket-protocol": "webiny-ws-v1"
+            },
+            body: JSON.stringify({
+                statusCode: 200
+            })
         });
 
         const connectionsAfterConnect = await context.sockets.listConnections({
-            id: "myIdentityId"
+            id: "id-12345678"
         });
         expect(connectionsAfterConnect).toHaveLength(1);
     });
@@ -80,7 +111,7 @@ describe("handler", () => {
         const context = await contextHandler.handle();
 
         const connectionsBeforeConnect = await context.sockets.listConnections({
-            id: "myIdentityId"
+            id: "id-12345678"
         });
         expect(connectionsBeforeConnect).toHaveLength(0);
 
@@ -90,23 +121,30 @@ describe("handler", () => {
                     routeKey: SocketsEventRoute.connect,
                     connectionId: "myConnectionId"
                 },
-                data: {
+                body: JSON.stringify({
+                    messageId: "message123",
+                    action: "mockAction",
+                    token: "aToken",
                     locale: "en-US",
-                    tenant: "root",
-                    identity: {
-                        id: "myIdentityId"
-                    }
-                }
+                    tenant: "root"
+                })
             }),
             createMockLambdaContext()
         );
 
-        expect(connectResult).toEqual({
-            statusCode: 200
+        expect(connectResult).toMatchObject({
+            statusCode: 200,
+            isBase64Encoded: false,
+            headers: {
+                "sec-websocket-protocol": "webiny-ws-v1"
+            },
+            body: JSON.stringify({
+                statusCode: 200
+            })
         });
 
         const connectionsAfterConnect = await context.sockets.listConnections({
-            id: "myIdentityId"
+            id: "id-12345678"
         });
         expect(connectionsAfterConnect).toHaveLength(1);
 
@@ -116,23 +154,30 @@ describe("handler", () => {
                     routeKey: SocketsEventRoute.disconnect,
                     connectionId: "myConnectionId"
                 },
-                data: {
+                body: JSON.stringify({
+                    messageId: "message123",
+                    action: "mockAction",
+                    token: "aToken",
                     locale: "en-US",
-                    tenant: "root",
-                    identity: {
-                        id: "myIdentityId"
-                    }
-                }
+                    tenant: "root"
+                })
             }),
             createMockLambdaContext()
         );
 
-        expect(disconnectResult).toEqual({
-            statusCode: 200
+        expect(disconnectResult).toMatchObject({
+            statusCode: 200,
+            isBase64Encoded: false,
+            headers: {
+                "sec-websocket-protocol": "webiny-ws-v1"
+            },
+            body: JSON.stringify({
+                statusCode: 200
+            })
         });
 
         const connectionsAfterDisconnect = await context.sockets.listConnections({
-            id: "myIdentityId"
+            id: "id-12345678"
         });
         expect(connectionsAfterDisconnect).toHaveLength(0);
     });
@@ -145,7 +190,7 @@ describe("handler", () => {
         const context = await contextHandler.handle();
 
         const connectionsBeforeDisconnect = await context.sockets.listConnections({
-            id: "myIdentityId"
+            id: "id-12345678"
         });
         expect(connectionsBeforeDisconnect).toHaveLength(0);
 
@@ -155,18 +200,28 @@ describe("handler", () => {
                     routeKey: SocketsEventRoute.disconnect,
                     connectionId: "myConnectionId"
                 },
-                data: {
+                body: JSON.stringify({
+                    messageId: "message123",
+                    action: "mockAction",
+                    token: "aToken",
                     locale: "en-US",
-                    tenant: "root",
-                    identity: {
-                        id: "myIdentityId"
-                    }
-                }
+                    tenant: "root"
+                })
             }),
             createMockLambdaContext()
         );
 
-        expect(disconnectResult).toEqual({
+        expect(disconnectResult).toMatchObject({
+            statusCode: 200,
+            isBase64Encoded: false,
+            headers: {
+                "sec-websocket-protocol": "webiny-ws-v1"
+            },
+            body: expect.any(String)
+        });
+        const bodyResult = JSON.parse(disconnectResult.body);
+
+        expect(bodyResult).toEqual({
             error: {
                 code: "CONNECTION_NOT_FOUND",
                 data: {
@@ -177,7 +232,7 @@ describe("handler", () => {
                 stack: expect.any(String)
             },
             message: 'Route "$disconnect" action failed.',
-            statusCode: 500
+            statusCode: 200
         });
     });
 });
