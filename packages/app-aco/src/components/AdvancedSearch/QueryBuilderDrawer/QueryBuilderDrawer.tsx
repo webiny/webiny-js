@@ -29,7 +29,7 @@ interface QueryBuilderDrawerProps {
 
 export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDrawerProps) => {
     const presenter = useMemo<QueryBuilderDrawerPresenter>(() => {
-        return new QueryBuilderDrawerPresenter(props.fields, props.fieldRendererConfigs);
+        return new QueryBuilderDrawerPresenter(props.fields);
     }, [props.fields]);
 
     useEffect(() => {
@@ -70,6 +70,14 @@ export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDr
         }
     });
 
+    const fieldsWithRenderer = useMemo(() => {
+        return presenter.vm.fields.map(field => {
+            const config = props.fieldRendererConfigs.find(config => config.type === field.type);
+            const element = config?.element ?? null;
+            return { ...field, element };
+        });
+    }, [presenter.vm.fields, props.fieldRendererConfigs]);
+
     const ref = useRef<FormAPI | null>(null);
 
     return (
@@ -89,6 +97,7 @@ export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDr
                     }
                     onAddNewFilterToGroup={groupIndex => presenter.addNewFilterToGroup(groupIndex)}
                     onAddGroup={() => presenter.addGroup()}
+                    fields={fieldsWithRenderer}
                     vm={presenter.vm}
                 />
                 <Footer formRef={ref} onClose={props.onClose} onSave={onSave} />

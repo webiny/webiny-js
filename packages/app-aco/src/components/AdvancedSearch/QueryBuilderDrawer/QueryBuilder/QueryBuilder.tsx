@@ -18,6 +18,7 @@ import {
 } from "./components";
 
 import { AccordionItemInner, Content, FilterOperationContainer } from "./Querybuilder.styled";
+import { FieldDTOWithElement } from "~/components/AdvancedSearch/domain";
 
 export interface QueryBuilderProps {
     onForm: (form: FormAPI) => void;
@@ -28,6 +29,7 @@ export interface QueryBuilderProps {
     onDeleteFilterFromGroup: (groupIndex: number, filterIndex: number) => void;
     onAddNewFilterToGroup: (groupIndex: number) => void;
     onAddGroup: () => void;
+    fields: FieldDTOWithElement[];
     vm: QueryBuilderViewModel;
 }
 
@@ -83,7 +85,7 @@ export const QueryBuilder = observer((props: QueryBuilderProps) => {
                                                 <Filter
                                                     name={`groups.${groupIndex}.filters.${filterIndex}`}
                                                     filter={filter}
-                                                    fields={props.vm.fields}
+                                                    fields={props.fields}
                                                     onFieldSelectChange={data =>
                                                         props.onSetFilterFieldData(
                                                             groupIndex,

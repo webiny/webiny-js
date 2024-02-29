@@ -3,7 +3,6 @@ import { makeAutoObservable } from "mobx";
 import {
     Field,
     FieldDTO,
-    FieldDTOWithElement,
     FieldMapper,
     FieldRaw,
     Filter,
@@ -12,7 +11,6 @@ import {
     FilterGroupFilterDTO,
     Operation
 } from "../domain";
-import { FieldRendererConfig } from "~/config/advanced-search/FieldRenderer";
 
 export interface QueryBuilderDrawerPresenterInterface {
     load(filter: FilterDTO): void;
@@ -30,7 +28,7 @@ export interface QueryBuilderDrawerPresenterInterface {
 export interface QueryBuilderViewModel {
     name: string;
     description: string;
-    fields: FieldDTOWithElement[];
+    fields: FieldDTO[];
     invalidFields: Record<string, { isValid: boolean; message: string }>;
     invalidMessage: string;
     data: QueryBuilderFormData;
@@ -49,16 +47,14 @@ export interface QueryBuilderFormData {
 
 export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterInterface {
     private readonly fields: FieldDTO[];
-    private readonly fieldRendererConfigs: FieldRendererConfig[];
     private formWasSubmitted = false;
     private invalidFields: QueryBuilderViewModel["invalidFields"] = {};
     private invalidMessage = "";
     private filter: FilterDTO | undefined;
 
-    constructor(fields: FieldRaw[], fieldRendererConfigs: FieldRendererConfig[]) {
+    constructor(fields: FieldRaw[]) {
         this.filter = undefined;
         this.fields = FieldMapper.toDTO(fields.map(field => Field.createFromRaw(field)));
-        this.fieldRendererConfigs = fieldRendererConfigs;
         makeAutoObservable(this);
     }
 
@@ -70,7 +66,7 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
         return {
             name: this.filter?.name || "",
             description: this.filter?.description || "",
-            fields: this.getFieldsWithElement(),
+            fields: this.fields,
             invalidFields: this.invalidFields,
             invalidMessage: this.invalidMessage,
             data: {
@@ -229,13 +225,5 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
         }
 
         return validation;
-    }
-
-    private getFieldsWithElement() {
-        return this.fields.map(field => {
-            const config = this.fieldRendererConfigs.find(config => config.type === field.type);
-            const element = config?.element ?? null;
-            return { ...field, element };
-        });
     }
 }

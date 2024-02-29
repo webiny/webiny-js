@@ -1,24 +1,18 @@
-/**
- * @jest-environment jsdom
- */
-import React from "react";
-import { render } from "@testing-library/react";
 import { QueryBuilderDrawerPresenter } from "./QueryBuilderDrawerPresenter";
 import {
-    FieldDTOWithElement,
+    FieldDTO,
     FieldRaw,
     FieldType,
     FilterDTO,
     Operation
 } from "~/components/AdvancedSearch/domain";
-import { FieldRendererConfig } from "~/config/advanced-search/FieldRenderer";
 
 describe("QueryBuilderDrawerPresenter", () => {
     const defaultFilter = { field: "", value: "", condition: "" };
 
     const fieldId = "test-field";
     const fieldLabel = "Test Field";
-    const fieldType = FieldType.TEXT;
+    const fieldType = "text";
 
     const testFilter = {
         field: "",
@@ -50,15 +44,7 @@ describe("QueryBuilderDrawerPresenter", () => {
             }
         ];
 
-        const fieldConfigs: FieldRendererConfig[] = [
-            {
-                type: FieldType.TEXT,
-                name: "demo",
-                element: <p>{"Any element"}</p>
-            }
-        ];
-
-        presenter = new QueryBuilderDrawerPresenter(defaultFields, fieldConfigs);
+        presenter = new QueryBuilderDrawerPresenter(defaultFields);
     });
 
     it("should create QueryBuilderDrawerPresenter with `vm` definition", () => {
@@ -78,8 +64,7 @@ describe("QueryBuilderDrawerPresenter", () => {
                 conditions: expect.any(Array),
                 settings: {
                     modelIds: []
-                },
-                element: expect.anything()
+                }
             }
         ]);
 
@@ -473,65 +458,7 @@ describe("QueryBuilderDrawerPresenter", () => {
 });
 
 describe("FieldDTO definition", () => {
-    const textElement = <p>{"Text element"}</p>;
-    const dateElement = <p>{"Date element"}</p>;
-    const timeElement = <p>{"Time element"}</p>;
-    const numberElement = <p>{"Number element"}</p>;
-    const booleanElement = <p>{"Boolean element"}</p>;
-    const dateTimeWithTimezoneElement = <p>{"Date/Time with timezone element"}</p>;
-    const dateTimeWithoutTimezoneElement = <p>{"Date/Time without timezone element"}</p>;
-    const multipleValuesElement = <p>{"Multiple Values element"}</p>;
-    const refElement = <p>{"Ref element"}</p>;
-
-    const configs: FieldRendererConfig[] = [
-        {
-            type: FieldType.TEXT,
-            name: "text-field",
-            element: textElement
-        },
-        {
-            type: FieldType.DATE,
-            name: "date-field",
-            element: dateElement
-        },
-        {
-            type: FieldType.TIME,
-            name: "time-field",
-            element: timeElement
-        },
-        {
-            type: FieldType.NUMBER,
-            name: "number-field",
-            element: numberElement
-        },
-        {
-            type: FieldType.BOOLEAN,
-            name: "boolean-field",
-            element: booleanElement
-        },
-        {
-            type: FieldType.DATETIME_WITH_TIMEZONE,
-            name: "dateTimeWithTimezone-field",
-            element: dateTimeWithTimezoneElement
-        },
-        {
-            type: FieldType.DATETIME_WITHOUT_TIMEZONE,
-            name: "dateTimeWithoutTimezone-field",
-            element: dateTimeWithoutTimezoneElement
-        },
-        {
-            type: FieldType.MULTIPLE_VALUES,
-            name: "multipleValues-field",
-            element: multipleValuesElement
-        },
-        {
-            type: FieldType.REF,
-            name: "ref-field",
-            element: refElement
-        }
-    ];
-
-    const fields: [FieldRaw, FieldDTOWithElement][] = [
+    const fields: [FieldRaw, FieldDTO][] = [
         [
             {
                 id: `${FieldType.TEXT}-field`,
@@ -554,8 +481,7 @@ describe("FieldDTO definition", () => {
                 type: FieldType.TEXT,
                 settings: {
                     modelIds: []
-                },
-                element: textElement
+                }
             }
         ],
         [
@@ -575,8 +501,7 @@ describe("FieldDTO definition", () => {
                 type: FieldType.TEXT,
                 settings: {
                     modelIds: []
-                },
-                element: textElement
+                }
             }
         ],
         [
@@ -596,8 +521,7 @@ describe("FieldDTO definition", () => {
                 type: FieldType.BOOLEAN,
                 settings: {
                     modelIds: []
-                },
-                element: booleanElement
+                }
             }
         ],
         [
@@ -624,8 +548,7 @@ describe("FieldDTO definition", () => {
                 type: FieldType.DATE,
                 settings: {
                     modelIds: []
-                },
-                element: dateElement
+                }
             }
         ],
         [
@@ -652,8 +575,7 @@ describe("FieldDTO definition", () => {
                 type: FieldType.TIME,
                 settings: {
                     modelIds: []
-                },
-                element: timeElement
+                }
             }
         ],
         [
@@ -680,8 +602,7 @@ describe("FieldDTO definition", () => {
                 type: FieldType.DATETIME_WITH_TIMEZONE,
                 settings: {
                     modelIds: []
-                },
-                element: dateTimeWithTimezoneElement
+                }
             }
         ],
         [
@@ -708,8 +629,7 @@ describe("FieldDTO definition", () => {
                 type: FieldType.DATETIME_WITHOUT_TIMEZONE,
                 settings: {
                     modelIds: []
-                },
-                element: dateTimeWithoutTimezoneElement
+                }
             }
         ],
         [
@@ -744,8 +664,7 @@ describe("FieldDTO definition", () => {
                 type: FieldType.MULTIPLE_VALUES,
                 settings: {
                     modelIds: []
-                },
-                element: multipleValuesElement
+                }
             }
         ],
         [
@@ -769,8 +688,7 @@ describe("FieldDTO definition", () => {
                 type: FieldType.NUMBER,
                 settings: {
                     modelIds: []
-                },
-                element: numberElement
+                }
             }
         ],
         [
@@ -803,8 +721,7 @@ describe("FieldDTO definition", () => {
                 type: FieldType.REF,
                 settings: {
                     modelIds: ["modelId-1", "modelId-2", "modelId-3"]
-                },
-                element: refElement
+                }
             }
         ],
         [
@@ -821,30 +738,20 @@ describe("FieldDTO definition", () => {
                 type: FieldType.TEXT,
                 settings: {
                     modelIds: []
-                },
-                element: textElement
+                }
             }
         ]
     ];
 
-    fields.forEach(([fieldRaw, fieldDTOWithElement]) => {
+    fields.forEach(([fieldRaw, fieldDTO]) => {
         let presenter: QueryBuilderDrawerPresenter;
 
         beforeEach(() => {
-            presenter = new QueryBuilderDrawerPresenter([fieldRaw], configs);
+            presenter = new QueryBuilderDrawerPresenter([fieldRaw]);
         });
 
-        it(`should transform "Raw ${fieldRaw.label}" -> "DTO ${fieldDTOWithElement.label}"`, () => {
-            expect(presenter.vm.fields[0].label).toEqual(fieldDTOWithElement.label);
-            expect(presenter.vm.fields[0].value).toEqual(fieldDTOWithElement.value);
-            expect(presenter.vm.fields[0].conditions).toEqual(fieldDTOWithElement.conditions);
-            expect(presenter.vm.fields[0].predefined).toEqual(fieldDTOWithElement.predefined);
-            expect(presenter.vm.fields[0].type).toEqual(fieldDTOWithElement.type);
-            expect(presenter.vm.fields[0].settings).toEqual(fieldDTOWithElement.settings);
-
-            const { container: received } = render(<>{presenter.vm.fields[0].element}</>);
-            const { container: expected } = render(<>{fieldDTOWithElement.element}</>);
-            expect(received.innerHTML).toEqual(expected.innerHTML);
+        it(`should transform "Raw ${fieldRaw.label}" -> "DTO ${fieldDTO.label}"`, () => {
+            expect(presenter.vm.fields).toEqual([fieldDTO]);
         });
     });
 });
