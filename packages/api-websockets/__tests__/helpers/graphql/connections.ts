@@ -46,3 +46,68 @@ export const LIST_CONNECTIONS = /* GraphQL */ `
         }
     }
 `;
+
+export interface IDisconnectIdentityConnectionsVariables {
+    identityId: string;
+}
+
+export const DISCONNECT_IDENTITY_CONNECTIONS = /* GraphQL */ `
+    mutation DisconnectIdentityConnections($identityId: String!) {
+        websockets {
+            disconnectIdentity(identityId: $identityId) {
+                data
+                error {
+                    message
+                    code
+                    data
+                }
+            }
+        }
+    }
+`;
+
+export interface IDisconnectTenantConnectionsVariables {
+    tenant: string;
+    locale?: string;
+}
+
+export interface IDisconnectConnectionsResponse {
+    data: {
+        websockets: {
+            disconnectConnection: {
+                data?: boolean;
+                error?: IWebsocketsResponseError;
+            };
+        };
+    };
+}
+
+export const DISCONNECT_TENANT_CONNECTIONS = /* GraphQL */ `
+    mutation DisconnectIdentityConnections($tenant: String!, $locale: String) {
+        websockets {
+            disconnectTenant(tenant: $tenant, locale: $locale) {
+                data
+                error {
+                    message
+                    code
+                    data
+                }
+            }
+        }
+    }
+`;
+
+export const DISCONNECT_ALL_CONNECTIONS = /* GraphQL */ `
+    mutation DisconnectAllConnections {
+        websockets {
+            disconnectAll {
+                data
+                error {
+                    message
+                    code
+                    data
+                }
+            }
+        }
+    }
+`;

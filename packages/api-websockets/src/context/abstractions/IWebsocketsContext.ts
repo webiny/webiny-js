@@ -11,19 +11,25 @@ export type IWebsocketsContextListConnectionsResponse = Promise<
 
 export type IWebsocketsIdentity = Pick<SecurityIdentity, "id" | "displayName" | "type">;
 
-export interface IWebsocketsContextListConnectionsParams {
-    where?: {
-        identityId?: string;
-        tenant?: string;
-        locale?: string;
-    };
+export interface IWebsocketsContextListConnectionsParamsWhere {
+    identityId?: string;
+    tenant?: string;
+    locale?: string;
 }
 
-export interface IWebsocketsContextDisconnectParams {
+export interface IWebsocketsContextListConnectionsParams {
+    where?: IWebsocketsContextListConnectionsParamsWhere;
+}
+
+export interface IWebsocketsContextDisconnectParamsWhere {
     connectionId?: string;
     identityId?: string;
     tenant?: string;
     locale?: string;
+}
+
+export interface IWebsocketsContextDisconnectParams {
+    where?: IWebsocketsContextDisconnectParamsWhere;
 }
 
 export interface IWebsocketsContext {

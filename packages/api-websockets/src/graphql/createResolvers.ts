@@ -1,13 +1,19 @@
 import { Resolvers } from "@webiny/handler-graphql/types";
 import { Context } from "~/types";
 import { emptyResolver, resolve } from "./utils";
+import { IWebsocketsContextListConnectionsParams } from "~/context";
 
-export interface WebsocketsQueryListConnectionsArgs {
-    where?: {
-        identityId?: string;
-        tenant?: string;
-        locale?: string;
-    };
+export interface IWebsocketsMutationDisconnectConnectionArgs {
+    connectionId: string;
+}
+
+export interface IWebsocketsMutationDisconnectIdentityArgs {
+    identityId: string;
+}
+
+export interface IWebsocketsMutationDisconnectTenantArgs {
+    tenant: string;
+    locale?: string;
 }
 
 export const createResolvers = (): Resolvers<Context> => {
@@ -19,29 +25,53 @@ export const createResolvers = (): Resolvers<Context> => {
             websockets: emptyResolver
         },
         WebsocketsQuery: {
-            listConnections: async (_, args: WebsocketsQueryListConnectionsArgs, context) => {
+            listConnections: async (_, args: IWebsocketsContextListConnectionsParams, context) => {
                 return resolve(async () => {
                     return await context.websockets.listConnections(args);
                 });
             }
         },
         WebsocketsMutation: {
-            disconnectConnection: async (_, args, context) => {
+            // @ts-expect-error
+            disconnectConnection: async (
+                _,
+                args: IWebsocketsMutationDisconnectConnectionArgs,
+                context
+            ) => {
                 return resolve(async () => {
-                    return await context.websockets.disconnect(args);
+                    return await context.websockets.disconnect({
+                        where: {
+                            connectionId: args.connectionId
+                        }
+                    });
                 });
             },
-            disconnectIdentity: async (_, args, context) => {
+            // @ts-expect-error
+            disconnectIdentity: async (
+                _,
+                args: IWebsocketsMutationDisconnectIdentityArgs,
+                context
+            ) => {
                 return resolve(async () => {
-                    return await context.websockets.disconnect(args);
+                    return await context.websockets.disconnect({
+                        where: {
+                            identityId: args.identityId
+                        }
+                    });
                 });
             },
-            disconnectTenant: async (_, args, context) => {
+            // @ts-expect-error
+            disconnectTenant: async (_, args: IWebsocketsMutationDisconnectTenantArgs, context) => {
                 return resolve(async () => {
-                    return await context.websockets.disconnect(args);
+                    return await context.websockets.disconnect({
+                        where: {
+                            tenant: args.tenant,
+                            locale: args.locale
+                        }
+                    });
                 });
             },
-            disconnectAll: async (_, args, context) => {
+            disconnectAll: async (_, __, context) => {
                 return resolve(async () => {
                     return await context.websockets.disconnect();
                 });

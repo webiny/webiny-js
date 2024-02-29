@@ -42,43 +42,21 @@ export class WebsocketsContext implements IWebsocketsContext {
     public async listConnections(
         params?: IWebsocketsContextListConnectionsParams
     ): IWebsocketsContextListConnectionsResponse {
-        if (params?.where?.identityId) {
-            return await this.registry.listViaIdentity(params?.where?.identityId);
-        } else if (params?.where?.tenant) {
-            return await this.registry.listViaTenant(params.where.tenant, params?.where.locale);
+        const where = params?.where || {};
+        if (where.identityId) {
+            return await this.registry.listViaIdentity(where.identityId);
+        } else if (where.tenant) {
+            return await this.registry.listViaTenant(where.tenant, where.locale);
         }
         return await this.registry.listAll();
     }
 
     public async disconnect(params?: IWebsocketsContextDisconnectParams): Promise<boolean> {
-        if (params?.connectionId) {
-            await this.registry.unregister({ connectionId: params.connectionId });
-            return true;
-        } else if (params?.identityId) {
-            const connections = await this.listConnections({
-                where: {
-                    identityId: params?.identityId
-                }
-            });
-            for (const connection of connections) {
-                await this.registry.unregister({ connectionId: connection.connectionId });
-            }
-            return true;
-        } else if (params?.tenant) {
-            const connections = await this.listConnections({
-                where: {
-                    tenant: params.tenant,
-                    locale: params.locale
-                }
-            });
-            for (const connection of connections) {
-                await this.registry.unregister({ connectionId: connection.connectionId });
-            }
-            return true;
-        }
-        const connections = await this.listConnections();
+        const where = params?.where || {};
+
+        const connections = await this.listConnections({ where });
         for (const connection of connections) {
-            await this.registry.unregister({ connectionId: connection.connectionId });
+            await this.registry.unregister(connection);
         }
         return true;
     }

@@ -196,4 +196,144 @@ describe("crud graphql", () => {
 
         expect(resultDev.data.websockets.listConnections.data).toHaveLength(5);
     });
+
+    it("should disconnect a specific identity connection", async () => {
+        const { listConnections, disconnectIdentity } = useGraphQLHandler();
+
+        await insertConnections(5);
+
+        const [resultBeforeDisconnect] = await listConnections();
+        expect(resultBeforeDisconnect.data.websockets.listConnections.data).toHaveLength(5);
+
+        const [result] = await disconnectIdentity("id-1");
+        expect(result).toEqual({
+            data: {
+                websockets: {
+                    disconnectIdentity: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [resultAfterDisconnect] = await listConnections();
+        expect(resultAfterDisconnect.data.websockets.listConnections.data).toHaveLength(4);
+    });
+
+    it("should disconnect a specific tenant connection", async () => {
+        const { listConnections, disconnectTenant } = useGraphQLHandler();
+
+        await insertConnections(5);
+        await insertConnections(5, {
+            suffix: "dev",
+            tenant: "dev"
+        });
+
+        const [resultBeforeDisconnect] = await listConnections();
+        expect(resultBeforeDisconnect.data.websockets.listConnections.data).toHaveLength(10);
+
+        const [result] = await disconnectTenant("root");
+        expect(result).toEqual({
+            data: {
+                websockets: {
+                    disconnectTenant: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [resultAfterDisconnect] = await listConnections();
+        expect(resultAfterDisconnect.data.websockets.listConnections.data).toHaveLength(5);
+    });
+
+    it("should disconnect specific tenant/locale combination", async () => {
+        const { listConnections, disconnectTenant } = useGraphQLHandler();
+
+        await insertConnections(5);
+        await insertConnections(5, {
+            suffix: "dev-en",
+            tenant: "dev",
+            locale: "en-US"
+        });
+        await insertConnections(5, {
+            suffix: "dev-hr",
+            tenant: "dev",
+            locale: "hr-HR"
+        });
+
+        const [resultBeforeDisconnect] = await listConnections();
+        expect(resultBeforeDisconnect.data.websockets.listConnections.data).toHaveLength(15);
+
+        const [result] = await disconnectTenant("dev", "en-US");
+        expect(result).toEqual({
+            data: {
+                websockets: {
+                    disconnectTenant: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [resultAfterDisconnect] = await listConnections();
+        expect(resultAfterDisconnect.data.websockets.listConnections.data).toHaveLength(10);
+
+        const [resultRoot] = await disconnectTenant("root", "en-US");
+        expect(resultRoot).toEqual({
+            data: {
+                websockets: {
+                    disconnectTenant: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [resultAfterRootDisconnect] = await listConnections();
+        expect(resultAfterRootDisconnect.data.websockets.listConnections.data).toHaveLength(5);
+    });
+
+    it("should disconnect all connections", async () => {
+        const { listConnections, disconnectAll } = useGraphQLHandler();
+
+        await insertConnections(5);
+        await insertConnections(5, {
+            suffix: "dev",
+            tenant: "dev"
+        });
+        await insertConnections(5, {
+            suffix: "webiny",
+            tenant: "webiny",
+            locale: "de-DE"
+        });
+
+        await insertConnections(5, {
+            suffix: "webiny-en",
+            tenant: "webiny",
+            locale: "en-US"
+        });
+
+        const [resultBeforeDisconnect] = await listConnections();
+        expect(resultBeforeDisconnect.data.websockets.listConnections.data).toHaveLength(20);
+
+        const [result] = await disconnectAll();
+        expect(result).toEqual({
+            data: {
+                websockets: {
+                    disconnectAll: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [resultAfterDisconnect] = await listConnections();
+        expect(resultAfterDisconnect.data.websockets.listConnections.data).toHaveLength(0);
+    });
 });

@@ -3,21 +3,28 @@ import { createPlugins } from "./plugins";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import {
+    DISCONNECT_ALL_CONNECTIONS,
+    DISCONNECT_IDENTITY_CONNECTIONS,
+    DISCONNECT_TENANT_CONNECTIONS,
+    IDisconnectIdentityConnectionsVariables,
+    IDisconnectConnectionsResponse,
+    IDisconnectTenantConnectionsVariables,
     IListConnectionsResponse,
     IListConnectionsVariables,
     LIST_CONNECTIONS
 } from "./graphql/connections";
 import { getIntrospectionQuery } from "graphql";
+import { GenericRecord } from "@webiny/api/types";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
 }
 
-export interface InvokeParams {
+export interface InvokeParams<V = GenericRecord> {
     httpMethod?: "POST";
     body: {
         query: string;
-        variables?: Record<string, any>;
+        variables?: V;
     };
     headers?: Record<string, string>;
 }
@@ -28,12 +35,12 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
     const handler = createHandler({
         plugins: createPlugins(plugins)
     });
-    const invoke = async <T = any>({
+    const invoke = async <T = any, V = any>({
         httpMethod = "POST",
         body,
         headers = {},
         ...rest
-    }: InvokeParams): Promise<[T, any]> => {
+    }: InvokeParams<V>): Promise<[T, any]> => {
         const response = await handler(
             {
                 path: "/graphql",
@@ -59,8 +66,36 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
             return invoke({ body: { query: getIntrospectionQuery() } });
         },
         listConnections: async (variables?: IListConnectionsVariables) => {
-            return invoke<IListConnectionsResponse>({
+            return invoke<IListConnectionsResponse, IListConnectionsVariables>({
                 body: { query: LIST_CONNECTIONS, variables }
+            });
+        },
+        disconnectIdentity: async (identityId: string) => {
+            return invoke<IDisconnectConnectionsResponse, IDisconnectIdentityConnectionsVariables>({
+                body: {
+                    query: DISCONNECT_IDENTITY_CONNECTIONS,
+                    variables: {
+                        identityId
+                    }
+                }
+            });
+        },
+        disconnectTenant: async (tenant: string, locale?: string) => {
+            return invoke<IDisconnectConnectionsResponse, IDisconnectTenantConnectionsVariables>({
+                body: {
+                    query: DISCONNECT_TENANT_CONNECTIONS,
+                    variables: {
+                        tenant,
+                        locale
+                    }
+                }
+            });
+        },
+        disconnectAll: async () => {
+            return invoke<IDisconnectConnectionsResponse>({
+                body: {
+                    query: DISCONNECT_ALL_CONNECTIONS
+                }
             });
         }
     };
