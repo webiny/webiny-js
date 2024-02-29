@@ -75,15 +75,7 @@ export function usePbWebsiteSettings() {
                  */
                 // TODO @pavel
                 sendEvent("custom-domain", {
-                    domain: data.websiteUrl
-                });
-
-                /**
-                 * setProperties is async, why is it not awaited?
-                 */
-                // TODO @pavel
-                setProperties({
-                    domain: data.websiteUrl
+                    domain: data.websiteUrl,
                 });
             }
 

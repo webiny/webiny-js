@@ -4,7 +4,7 @@ const { WTS } = require("wts/src/node");
  * The main `sendEvent` function.
  * NOTE: don't use this in your app directly. Instead, use the one from `cli.js` or `react.js` files accordingly.
  */
-module.exports = ({ event, user, version, ci, newUser, properties, extraPayload } = {}) => {
+module.exports = ({ event, user, version, ci, newUser, properties } = {}) => {
     if (!event) {
         throw new Error(`Cannot send event - missing "event" name.`);
     }
@@ -29,15 +29,13 @@ module.exports = ({ event, user, version, ci, newUser, properties, extraPayload 
         properties = {};
     }
 
-    if (!extraPayload) {
-        extraPayload = {};
+    return () => {
+        const wts = new WTS();
+        return wts.trackEvent(user, event, {
+            ...properties,
+            newUser: newUser ? "yes" : "no",
+            version,
+            ci: ci ? "yes" : "no"
+        });
     }
-
-    const wts = new WTS();
-    wts.trackEvent(user, event, {
-        ...properties,
-        newUser: newUser ? "yes" : "no",
-        version,
-        ci: ci ? "yes" : "no"
-    });
 };

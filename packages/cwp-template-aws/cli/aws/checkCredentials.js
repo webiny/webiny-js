@@ -52,9 +52,9 @@ module.exports = {
         const profile = process.env.AWS_PROFILE || "default";
 
         if (profile) {
-            context.info(`Using profile ${green(profile)} in ${green(region)} region.`);
+            context.debug(`Using profile ${green(profile)} in ${green(region)} region.`);
         } else {
-            context.info(`Using access key ID ${green(accessKeyId)} in ${green(region)} region.`);
+            context.debug(`Using access key ID ${green(accessKeyId)} in ${green(region)} region.`);
         }
     }
 };
