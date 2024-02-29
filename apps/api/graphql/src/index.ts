@@ -40,7 +40,7 @@ import scaffoldsPlugins from "./plugins/scaffolds";
 import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
 import { createCountDynamoDbTask } from "~/plugins/countDynamoDbTask";
 import { createContinuingTask } from "~/plugins/continuingTask";
-import { createSockets } from "@webiny/sockets";
+import { createSockets } from "@webiny/api-websockets";
 
 const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
