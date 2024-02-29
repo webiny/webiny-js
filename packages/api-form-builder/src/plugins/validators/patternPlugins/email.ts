@@ -5,7 +5,7 @@ const plugin: FbFormFieldPatternValidatorPlugin = {
     name: "form-field-validator-pattern-email",
     pattern: {
         name: "email",
-        regex: `^\\w[\\w.-]*@([\\w-]+\\.)+[\\w-]+$`,
+        regex: `^\\w[\\+\\w.-]*@([\\w-]+\\.)+[\\w-]+$`,
         flags: "i"
     }
 };
