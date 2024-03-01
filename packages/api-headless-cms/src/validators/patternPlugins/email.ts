@@ -6,7 +6,7 @@ export const createEmailPatternValidator = (): CmsModelFieldPatternValidatorPlug
         name: "cms-model-field-validator-pattern-email",
         pattern: {
             name: "email",
-            regex: `^\\w[\\w.-]*@([\\w-]+\\.)+[\\w-]+$`,
+            regex: `^\\w[\\+\\w.-]*@([\\w-]+\\.)+[\\w-]+$`,
             flags: "i"
         }
     };
