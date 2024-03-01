@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 
-import { FieldRaw, FilterDTO, FilterRepository } from "./domain";
+import { Field, FieldMapper, FieldRaw, FilterDTO, FilterRepository } from "./domain";
 
 import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
 
@@ -59,6 +59,18 @@ export const AdvancedSearch = observer(
             onApplyFilter(filter);
         };
 
+        const fieldsWithRenderer = useMemo(() => {
+            const fieldDTOs = FieldMapper.toDTO(fields.map(field => Field.createFromRaw(field)));
+
+            return fieldDTOs.map(field => {
+                const config = advancedSearch.fieldRenderers.find(
+                    config => config.type === field.type
+                );
+                const element = config?.element ?? null;
+                return { ...field, element };
+            });
+        }, [fields, advancedSearch.fieldRenderers]);
+
         return (
             <>
                 <AdvancedSearchContainer>
@@ -84,8 +96,7 @@ export const AdvancedSearch = observer(
                 {presenter.vm.currentFilter ? (
                     <>
                         <QueryBuilderDrawer
-                            fields={fields}
-                            fieldRendererConfigs={advancedSearch.fieldRenderers}
+                            fields={fieldsWithRenderer}
                             onClose={() => presenter.closeBuilder()}
                             onSave={filter => presenter.saveFilter(filter)}
                             onApply={applyFilter}

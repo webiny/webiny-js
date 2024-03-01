@@ -1,16 +1,6 @@
 import { makeAutoObservable } from "mobx";
 
-import {
-    Field,
-    FieldDTO,
-    FieldMapper,
-    FieldRaw,
-    Filter,
-    FilterDTO,
-    FilterGroupDTO,
-    FilterGroupFilterDTO,
-    Operation
-} from "../domain";
+import { Filter, FilterDTO, FilterGroupDTO, FilterGroupFilterDTO, Operation } from "../domain";
 
 export interface QueryBuilderDrawerPresenterInterface {
     load(filter: FilterDTO): void;
@@ -28,7 +18,6 @@ export interface QueryBuilderDrawerPresenterInterface {
 export interface QueryBuilderViewModel {
     name: string;
     description: string;
-    fields: FieldDTO[];
     invalidFields: Record<string, { isValid: boolean; message: string }>;
     invalidMessage: string;
     data: QueryBuilderFormData;
@@ -46,15 +35,13 @@ export interface QueryBuilderFormData {
 }
 
 export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterInterface {
-    private readonly fields: FieldDTO[];
     private formWasSubmitted = false;
     private invalidFields: QueryBuilderViewModel["invalidFields"] = {};
     private invalidMessage = "";
     private filter: FilterDTO | undefined;
 
-    constructor(fields: FieldRaw[]) {
+    constructor() {
         this.filter = undefined;
-        this.fields = FieldMapper.toDTO(fields.map(field => Field.createFromRaw(field)));
         makeAutoObservable(this);
     }
 
@@ -66,7 +53,6 @@ export class QueryBuilderDrawerPresenter implements QueryBuilderDrawerPresenterI
         return {
             name: this.filter?.name || "",
             description: this.filter?.description || "",
-            fields: this.fields,
             invalidFields: this.invalidFields,
             invalidMessage: this.invalidMessage,
             data: {

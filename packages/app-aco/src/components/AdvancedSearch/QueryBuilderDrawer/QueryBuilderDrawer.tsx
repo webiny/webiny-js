@@ -8,15 +8,13 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { QueryBuilder } from "./QueryBuilder";
 
-import { FieldRaw, FilterDTO } from "~/components/AdvancedSearch/domain";
+import { FieldDTOWithElement, FilterDTO } from "~/components/AdvancedSearch/domain";
 
 import { DrawerContainer } from "./QueryBuilderDrawer.styled";
 import { QueryBuilderDrawerPresenter, QueryBuilderFormData } from "./QueryBuilderDrawerPresenter";
-import { FieldRendererConfig } from "~/config/advanced-search/FieldRenderer";
 
 interface QueryBuilderDrawerProps {
-    fields: FieldRaw[];
-    fieldRendererConfigs: FieldRendererConfig[];
+    fields: FieldDTOWithElement[];
     onClose: () => void;
     onSave: (data: FilterDTO) => void;
     onApply: (data: FilterDTO) => void;
@@ -29,7 +27,7 @@ interface QueryBuilderDrawerProps {
 
 export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDrawerProps) => {
     const presenter = useMemo<QueryBuilderDrawerPresenter>(() => {
-        return new QueryBuilderDrawerPresenter(props.fields);
+        return new QueryBuilderDrawerPresenter();
     }, [props.fields]);
 
     useEffect(() => {
@@ -70,14 +68,6 @@ export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDr
         }
     });
 
-    const fieldsWithRenderer = useMemo(() => {
-        return presenter.vm.fields.map(field => {
-            const config = props.fieldRendererConfigs.find(config => config.type === field.type);
-            const element = config?.element ?? null;
-            return { ...field, element };
-        });
-    }, [presenter.vm.fields, props.fieldRendererConfigs]);
-
     const ref = useRef<FormAPI | null>(null);
 
     return (
@@ -97,7 +87,7 @@ export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDr
                     }
                     onAddNewFilterToGroup={groupIndex => presenter.addNewFilterToGroup(groupIndex)}
                     onAddGroup={() => presenter.addGroup()}
-                    fields={fieldsWithRenderer}
+                    fields={props.fields}
                     vm={presenter.vm}
                 />
                 <Footer formRef={ref} onClose={props.onClose} onSave={onSave} />
