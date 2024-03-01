@@ -13,12 +13,12 @@
   "dependencies": {
     "@babel/runtime": "^7.23.9",
     "@webiny/api": "0.0.0",
-    "@webiny/api-prerendering-service": "0.0.0",
+    "@webiny/api-prerendering-service": "5.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
-    "@webiny/handler-client": "0.0.0",
-    "@webiny/utils": "0.0.0",
+    "@webiny/handler-client": "5.0.0",
+    "@webiny/utils": "5.16.0",
     "lodash": "4.17.21"
   },
   "devDependencies": {
