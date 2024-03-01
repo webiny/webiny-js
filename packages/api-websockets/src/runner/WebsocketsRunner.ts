@@ -11,7 +11,7 @@ import { Context } from "~/types";
 import { IWebsocketsEventValidator } from "~/validator";
 import { IWebsocketsRunner, IWebsocketsRunnerResponse } from "./abstractions/IWebsocketsRunner";
 import { IWebsocketsRoutePluginCallableParams, WebsocketsRoutePlugin } from "~/plugins";
-import { middleware } from "@webiny/utils";
+import { middleware } from "~/utils/middleware";
 import { IWebsocketsConnectionRegistry } from "~/registry";
 import {
     IWebsocketsResponse,
