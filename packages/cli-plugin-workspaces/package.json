@@ -10,7 +10,7 @@
   "author": "Webiny Ltd.",
   "description": "A CLI plugin for working with workspaces.",
   "dependencies": {
-    "@webiny/project-utils": "0.0.0",
+    "@webiny/project-utils": "0.1.0",
     "archy": "1.0.0",
     "chalk": "4.1.2",
     "color": "^4.2.3",
