@@ -36,6 +36,7 @@
     "@webiny/api-tenancy-so-ddb": "latest",
     "@webiny/api-tenant-manager": "latest",
     "@webiny/api-wcp": "latest",
+    "@webiny/api-websockets": "latest",
     "@webiny/cli": "latest",
     "@webiny/db-dynamodb": "latest",
     "@webiny/handler-aws": "latest",
