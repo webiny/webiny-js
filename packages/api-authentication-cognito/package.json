@@ -13,8 +13,8 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api": "0.0.0",
-    "@webiny/api-authentication": "0.0.0",
-    "@webiny/api-cognito-authenticator": "0.0.0"
+    "@webiny/api-authentication": "5.17.0",
+    "@webiny/api-cognito-authenticator": "5.17.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
