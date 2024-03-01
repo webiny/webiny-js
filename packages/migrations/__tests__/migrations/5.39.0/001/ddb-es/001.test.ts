@@ -48,6 +48,7 @@ const expectModifiedFieldsAreSynced = (entry: Record<string, unknown>) => {
     const hasEntryModifiedBy = !!entry.entryModifiedBy;
     expect(hasEntryModifiedOn).toBe(hasEntryModifiedBy);
 };
+
 describe("5.39.0-001", () => {
     const primaryTable = getPrimaryDynamoDbTable();
     const dynamoToEsTable = getDynamoToEsTable();

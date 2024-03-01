@@ -2,6 +2,7 @@ import { CmsContext, HeadlessCmsStorageOperations } from "~/types";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import { CmsParametersPlugin, CmsParametersPluginResponse } from "~/plugins/CmsParametersPlugin";
+import { AccessControl } from "~/crud/AccessControl/AccessControl";
 import { createSystemCrud } from "~/crud/system.crud";
 import { createModelGroupsCrud } from "~/crud/contentModelGroup.crud";
 import { createModelsCrud } from "~/crud/contentModel.crud";
@@ -81,6 +82,19 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 fullAccessPermissionName: "cms.*"
             });
 
+            const accessControl = new AccessControl({
+                getIdentity: context.security.getIdentity,
+                getGroupsPermissions: () =>
+                    context.security.getPermissions("cms.contentModelGroup"),
+                getModelsPermissions: () => context.security.getPermissions("cms.contentModel"),
+                getEntriesPermissions: () => context.security.getPermissions("cms.contentEntry"),
+                listAllGroups: () => {
+                    return context.security.withoutAuthorization(() => {
+                        return context.cms.listGroups();
+                    });
+                }
+            });
+
             context.cms = {
                 type,
                 locale,
@@ -89,11 +103,15 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 PREVIEW: type === "preview",
                 MANAGE: type === "manage",
                 storageOperations,
+
+                // TODO: remove with 5.40 release.
                 permissions: {
                     groups: modelGroupsPermissions,
                     models: modelsPermissions,
                     entries: entriesPermissions
                 },
+
+                accessControl,
                 ...createSystemCrud({
                     context,
                     getTenant,
@@ -107,7 +125,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                     getLocale,
                     getIdentity,
                     storageOperations,
-                    modelGroupsPermissions
+                    accessControl
                 }),
                 ...createModelsCrud({
                     context,
@@ -115,7 +133,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                     getTenant,
                     getIdentity,
                     storageOperations,
-                    modelsPermissions
+                    accessControl
                 }),
                 ...createContentEntryCrud({
                     context,
@@ -123,8 +141,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                     getTenant,
                     getLocale,
                     storageOperations,
-                    entriesPermissions,
-                    modelsPermissions
+                    accessControl
                 }),
                 export: {
                     ...createExportCrud(context)

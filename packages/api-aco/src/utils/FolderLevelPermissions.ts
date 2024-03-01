@@ -62,6 +62,7 @@ export class FolderLevelPermissions {
     private readonly canUseFolderLevelPermissions: () => boolean;
     private readonly isAuthorizationEnabled: () => boolean;
     private allFolders: Record<string, Folder[]> = {};
+    private foldersPermissionsLists: Record<string, Promise<FolderPermissionsList> | null> = {};
 
     constructor(params: FolderLevelPermissionsParams) {
         this.getIdentity = params.getIdentity;
@@ -72,14 +73,6 @@ export class FolderLevelPermissions {
         this.canUseFolderLevelPermissions = params.canUseFolderLevelPermissions;
 
         this.isAuthorizationEnabled = params.isAuthorizationEnabled;
-
-        // TODO: resolve this issue.
-        // We immediately enable authorization, because, at the moment, the rest of the system
-        // requires us to have FLP always enabled. We must now disable it, even if the security's
-        // `isAuthorizationEnabled` is set to false. To resolve this, we'll need to refactor CMS-based
-        // CRUD files and have them use CMS storage operations instead of CMS CRUD methods.
-        // We'll be handling this in the near future.
-        this.isAuthorizationEnabled = () => true;
     }
 
     async listAllFolders(folderType: string): Promise<Folder[]> {
@@ -105,7 +98,7 @@ export class FolderLevelPermissions {
         return filteredFoldersWithPermissions;
     }
 
-    invalidateCache(folderType?: string) {
+    invalidateFoldersCache(folderType?: string) {
         if (folderType) {
             if (folderType in this.allFolders) {
                 delete this.allFolders[folderType];
@@ -115,7 +108,17 @@ export class FolderLevelPermissions {
         }
     }
 
-    updateCache(folderType: string, modifier: (folders: Folder[]) => Folder[]) {
+    invalidateFoldersPermissionsListCache(folderType?: string) {
+        if (folderType) {
+            if (folderType in this.foldersPermissionsLists) {
+                delete this.foldersPermissionsLists[folderType];
+            }
+        } else {
+            this.allFolders = {};
+        }
+    }
+
+    updateFoldersCache(folderType: string, modifier: (folders: Folder[]) => Folder[]) {
         const foldersClone = structuredClone(this.allFolders[folderType]) || [];
         this.allFolders[folderType] = modifier(foldersClone);
     }
@@ -123,159 +126,197 @@ export class FolderLevelPermissions {
     async listFoldersPermissions(
         params: ListFolderPermissionsParams
     ): Promise<FolderPermissionsList> {
-        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
-            return [];
+        const existingFoldersPermissionsList = this.foldersPermissionsLists[params.folderType];
+        if (existingFoldersPermissionsList) {
+            return existingFoldersPermissionsList;
         }
 
-        const { folderType, foldersList } = params;
-
-        const allFolders = foldersList || (await this.listAllFolders(folderType));
-        const identity = this.getIdentity();
-        const permissions = await this.listPermissions();
-
-        let identityTeam: Team | null;
-        if (this.canUseTeams()) {
-            identityTeam = await this.getIdentityTeam();
-        }
-
-        const processedFolderPermissions: FolderPermissionsListItem[] = [];
-
-        const processFolderPermissions = (folder: Folder) => {
-            if (processedFolderPermissions.some(fp => fp.folderId === folder.id)) {
+        this.foldersPermissionsLists[params.folderType] = new Promise(async resolve => {
+            if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
+                resolve([]);
                 return;
+                // return [];
             }
 
-            // Copy permissions, so we don't modify the original object.
-            const currentFolderPermissions: FolderPermissionsListItem = {
-                folderId: folder.id,
-                // On new folders, permissions can be `null`. Guard against that.
-                permissions: folder.permissions?.map(permission => ({ ...permission })) || []
-            };
+            const { folderType, foldersList } = params;
 
-            // Check for permissions inherited from parent folder.
-            if (folder.parentId) {
-                const parentFolder = allFolders!.find(f => f.id === folder.parentId)!;
-                if (parentFolder) {
-                    // First check if the parent folder has already been processed.
-                    let processedParentFolderPermissions = processedFolderPermissions.find(
-                        fp => fp.folderId === parentFolder.id
-                    );
+            const allFolders = foldersList || (await this.listAllFolders(folderType));
+            const identity = this.getIdentity();
+            const permissions = await this.listPermissions();
 
-                    // If not, process the parent folder.
-                    if (!processedParentFolderPermissions) {
-                        processFolderPermissions(parentFolder);
-                        processedParentFolderPermissions = processedFolderPermissions.find(
-                            fp => fp.folderId === folder.parentId
+            let identityTeam: Team | null;
+            if (this.canUseTeams()) {
+                identityTeam = await this.getIdentityTeam();
+            }
+
+            const processedFolderPermissions: FolderPermissionsListItem[] = [];
+
+            const processFolderPermissions = (folder: Folder) => {
+                if (processedFolderPermissions.some(fp => fp.folderId === folder.id)) {
+                    return;
+                }
+
+                // Copy permissions, so we don't modify the original object.
+                const currentFolderPermissions: FolderPermissionsListItem = {
+                    folderId: folder.id,
+                    // On new folders, permissions can be `null`. Guard against that.
+                    permissions: folder.permissions?.map(permission => ({ ...permission })) || []
+                };
+
+                // Check for permissions inherited from parent folder.
+                if (folder.parentId) {
+                    const parentFolder = allFolders!.find(f => f.id === folder.parentId)!;
+                    if (parentFolder) {
+                        // First check if the parent folder has already been processed.
+                        let processedParentFolderPermissions = processedFolderPermissions.find(
+                            fp => fp.folderId === parentFolder.id
                         );
-                    }
 
-                    // If the parent folder has permissions, let's add them to the current folder.
-                    if (processedParentFolderPermissions) {
-                        const isPublicParentFolder =
-                            processedParentFolderPermissions.permissions.some(
-                                p => p.level === "public"
+                        // If not, process the parent folder.
+                        if (!processedParentFolderPermissions) {
+                            processFolderPermissions(parentFolder);
+                            processedParentFolderPermissions = processedFolderPermissions.find(
+                                fp => fp.folderId === folder.parentId
                             );
+                        }
 
-                        // We inherit parent permissions if:
-                        // 1. the parent folder is not public or...
-                        // 2. ...the parent folder is public, but the current folder doesn't have any permissions set
-                        const mustInherit =
-                            !isPublicParentFolder ||
-                            currentFolderPermissions.permissions.length === 0;
+                        // If the parent folder has permissions, let's add them to the current folder.
+                        if (processedParentFolderPermissions) {
+                            const isPublicParentFolder =
+                                processedParentFolderPermissions.permissions.some(
+                                    p => p.level === "public"
+                                );
 
-                        if (mustInherit) {
-                            const inheritedPermissions =
-                                processedParentFolderPermissions.permissions.map(p => {
-                                    return {
-                                        ...p,
-                                        inheritedFrom:
-                                            "parent:" + processedParentFolderPermissions!.folderId
-                                    };
-                                });
+                            // We inherit parent permissions if:
+                            // 1. the parent folder is not public or...
+                            // 2. ...the parent folder is public, but the current folder doesn't have any permissions set
+                            const mustInherit =
+                                !isPublicParentFolder ||
+                                currentFolderPermissions.permissions.length === 0;
 
-                            currentFolderPermissions.permissions.push(...inheritedPermissions);
+                            if (mustInherit) {
+                                const inheritedPermissions =
+                                    processedParentFolderPermissions.permissions.map(p => {
+                                        return {
+                                            ...p,
+                                            inheritedFrom:
+                                                "parent:" +
+                                                processedParentFolderPermissions!.folderId
+                                        };
+                                    });
+
+                                currentFolderPermissions.permissions.push(...inheritedPermissions);
+                            }
                         }
                     }
                 }
-            }
 
-            // Let's ensure current identity's permission is included in the permissions array.
-            // We first check if the current identity is already included in the permissions array.
-            // If not, we check if the user has full access or if the team user belongs to has access.
-            const currentIdentityIncludedInPermissions = currentFolderPermissions.permissions.some(
-                p => p.target === `admin:${identity.id}`
-            );
-
-            if (currentIdentityIncludedInPermissions) {
-                // Ensure existing identity permission is always the first one in the array.
-                const currentIdentityPermissionIndex =
-                    currentFolderPermissions.permissions.findIndex(
+                // Let's ensure current identity's permission is included in the permissions array.
+                // We first check if the current identity is already included in the permissions array.
+                // If not, we check if the user has full access or if the team user belongs to has access.
+                const currentIdentityIncludedInPermissions =
+                    currentFolderPermissions.permissions.some(
                         p => p.target === `admin:${identity.id}`
                     );
 
-                if (currentIdentityPermissionIndex > 0) {
-                    const [currentIdentityPermission] = currentFolderPermissions.permissions.splice(
-                        currentIdentityPermissionIndex,
-                        1
-                    );
-                    currentFolderPermissions.permissions.unshift(currentIdentityPermission);
-                }
-            } else {
-                // Current identity not included in permissions? Let's add it.
-                let currentIdentityPermission: FolderPermission | null = null;
-
-                // 1. Check if the user has full access.
                 const hasFullAccess = permissions.some(p => p.name === "*");
-                if (hasFullAccess) {
-                    currentIdentityPermission = {
-                        target: `admin:${identity.id}`,
-                        level: "owner",
-                        inheritedFrom: "role:full-access"
-                    };
-                } else if (identityTeam) {
-                    // 2. Check the team user belongs to grants access to the folder.
-                    const teamPermission = currentFolderPermissions.permissions.find(
-                        p => p.target === `team:${identityTeam!.id}`
-                    );
 
-                    if (teamPermission) {
+                if (currentIdentityIncludedInPermissions) {
+                    // 1. Ensure existing identity permission is always the first one in the array.
+                    const currentIdentityPermissionIndex =
+                        currentFolderPermissions.permissions.findIndex(
+                            p => p.target === `admin:${identity.id}`
+                        );
+
+                    if (currentIdentityPermissionIndex > 0) {
+                        const [currentIdentityPermission] =
+                            currentFolderPermissions.permissions.splice(
+                                currentIdentityPermissionIndex,
+                                1
+                            );
+                        currentFolderPermissions.permissions.unshift(currentIdentityPermission);
+                    }
+
+                    // 2. We must ensure current identity has the "owner" level if they possess full access
+                    // based on security permissions. This protects us from non-full-access users restricting
+                    // access to full-access users. This should not happen. Full-access users should always
+                    // be in control of the permissions for a folder.
+                    if (hasFullAccess) {
+                        const accessInheritedFrom =
+                            currentFolderPermissions.permissions[0].inheritedFrom;
+
+                        // Why are we checking for non-existence of `accessInheritedFrom`?
+                        // Because if it doesn't exist, it means the permission is not inherited from
+                        // a parent folder, which means it's a direct permission set on the folder.
+                        // In this case, we must ensure the permission is set to "owner".
+                        if (!accessInheritedFrom) {
+                            currentFolderPermissions.permissions[0] = {
+                                target: `admin:${identity.id}`,
+                                level: "owner",
+                                inheritedFrom: "role:full-access"
+                            };
+                        }
+                    }
+                } else {
+                    // Current identity not included in permissions? Let's add it.
+                    let currentIdentityPermission: FolderPermission | null = null;
+
+                    // 1. Check if the user has full access.
+                    if (hasFullAccess) {
                         currentIdentityPermission = {
                             target: `admin:${identity.id}`,
-                            level: teamPermission.level,
-                            inheritedFrom: "team:" + identityTeam!.id
+                            level: "owner",
+                            inheritedFrom: "role:full-access"
                         };
+                    } else if (identityTeam) {
+                        // 2. Check the team user belongs to grants access to the folder.
+                        const teamPermission = currentFolderPermissions.permissions.find(
+                            p => p.target === `team:${identityTeam!.id}`
+                        );
+
+                        if (teamPermission) {
+                            currentIdentityPermission = {
+                                target: `admin:${identity.id}`,
+                                level: teamPermission.level,
+                                inheritedFrom: "team:" + identityTeam!.id
+                            };
+                        }
+                    }
+
+                    if (currentIdentityPermission) {
+                        // If permission is found, let's add it to the beginning of the array.
+                        // We're doing this just because it looks nicer in the UI.
+                        currentFolderPermissions.permissions.unshift(currentIdentityPermission);
                     }
                 }
 
-                if (currentIdentityPermission) {
-                    // If permission is found, let's add it to the beginning of the array.
-                    // We're doing this just because it looks nicer in the UI.
-                    currentFolderPermissions.permissions.unshift(currentIdentityPermission);
+                // Note that this can only happen with root folders. All other (child) folders will
+                // always have at least one permission (inherited from parent).
+                const mustAddPublicPermission = currentFolderPermissions.permissions.length === 0;
+                if (mustAddPublicPermission) {
+                    currentFolderPermissions.permissions = [
+                        {
+                            target: `admin:${identity.id}`,
+                            level: "public",
+                            inheritedFrom: "public"
+                        }
+                    ];
                 }
+
+                processedFolderPermissions.push(currentFolderPermissions);
+            };
+
+            for (let i = 0; i < allFolders!.length; i++) {
+                const folder = allFolders![i];
+                processFolderPermissions(folder);
             }
 
-            // Note that this can only happen with root folders. All other (child) folders will
-            // always have at least one permission (inherited from parent).
-            const mustAddPublicPermission = currentFolderPermissions.permissions.length === 0;
-            if (mustAddPublicPermission) {
-                currentFolderPermissions.permissions = [
-                    {
-                        target: `admin:${identity.id}`,
-                        level: "public",
-                        inheritedFrom: "public"
-                    }
-                ];
-            }
+            resolve(processedFolderPermissions);
+            return;
+            //return processedFolderPermissions;
+        });
 
-            processedFolderPermissions.push(currentFolderPermissions);
-        };
-
-        for (let i = 0; i < allFolders!.length; i++) {
-            const folder = allFolders![i];
-            processFolderPermissions(folder);
-        }
-
-        return processedFolderPermissions;
+        return this.foldersPermissionsLists[params.folderType]!;
     }
 
     async getFolderPermissions(
@@ -296,27 +337,6 @@ export class FolderLevelPermissions {
         }
 
         const { folder } = params;
-
-        // We check for parent folder access first because the passed folder should be
-        // inaccessible if the parent folder is inaccessible.
-        if (folder.parentId) {
-            let foldersList = params.foldersList;
-            if (!foldersList) {
-                foldersList = await this.listAllFolders(folder.type);
-            }
-
-            const parentFolder = foldersList.find(f => f.id === folder.parentId);
-            if (parentFolder) {
-                const canAccessParentFolder = await this.canAccessFolder({
-                    ...params,
-                    folder: parentFolder
-                });
-
-                if (!canAccessParentFolder) {
-                    return false;
-                }
-            }
-        }
 
         const folderPermissions = await this.getFolderPermissions({
             folder,

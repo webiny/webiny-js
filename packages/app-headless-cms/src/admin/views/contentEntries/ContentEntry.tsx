@@ -49,8 +49,16 @@ declare global {
 }
 
 export const ContentEntry = () => {
-    const { loading, entry, showEmptyView, canCreate, createEntry, tabsRef, setFormRef } =
-        useContentEntry();
+    const {
+        loading,
+        entry,
+        showEmptyView,
+        canCreate,
+        createEntry,
+        activeTab,
+        setActiveTab,
+        setFormRef
+    } = useContentEntry();
 
     // Render "No content selected" view.
     if (showEmptyView) {
@@ -73,7 +81,7 @@ export const ContentEntry = () => {
     return (
         <DetailsContainer>
             <test-id data-testid="cms-content-details">
-                <Tabs ref={tabsRef}>
+                <Tabs value={activeTab} onActivate={setActiveTab}>
                     <Tab
                         label={"Content"}
                         disabled={loading}

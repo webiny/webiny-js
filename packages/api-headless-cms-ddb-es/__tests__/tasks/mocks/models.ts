@@ -2,7 +2,7 @@ import {
     CmsGroup,
     createCmsGroup,
     createCmsModel,
-    createPrivateModelDefinition
+    createPrivateModel
 } from "@webiny/api-headless-cms";
 
 export const createMockModels = () => {
@@ -64,7 +64,7 @@ export const createMockModels = () => {
             titleFieldId: "title"
         }),
         createCmsModel(
-            createPrivateModelDefinition({
+            createPrivateModel({
                 modelId: "tag",
                 name: "Tag",
                 fields: [],
