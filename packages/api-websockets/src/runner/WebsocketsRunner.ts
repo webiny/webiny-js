@@ -18,7 +18,7 @@ import {
     IWebsocketsResponseErrorResult,
     IWebsocketsResponseOkResult
 } from "~/response";
-import { IWebsocketsTransporterSendConnection } from "~/transporter";
+import { IWebsocketsTransportSendConnection } from "~/transport";
 import { IWebsocketsIdentity } from "~/context";
 
 type MiddlewareParams<C extends Context = Context> = Pick<
@@ -132,18 +132,18 @@ export class WebsocketsRunner implements IWebsocketsRunner {
         }
     }
 
-    private getRoutePlugins(action: WebsocketsEventRoute | string): WebsocketsRoutePlugin[] {
+    private getRoutePlugins(route: WebsocketsEventRoute | string): WebsocketsRoutePlugin[] {
         const plugins = this.context.plugins
             .byType<WebsocketsRoutePlugin>(WebsocketsRoutePlugin.type)
             .filter(plugin => {
-                return plugin.route === action;
+                return plugin.route === route;
             });
         if (plugins.length === 0) {
             throw new WebinyError(
-                `There are no action plugins for "${action}"`,
-                "NO_ACTION_PLUGINS",
+                `There are no plugins for the route: ${route}.`,
+                "NO_ROUTE_PLUGINS",
                 {
-                    action
+                    route
                 }
             );
         }
@@ -220,7 +220,7 @@ export class WebsocketsRunner implements IWebsocketsRunner {
             console.error(message, JSON.stringify(data));
             throw new WebinyError(message, "GENERAL_ERROR", data);
         }
-        const connection: IWebsocketsTransporterSendConnection = {
+        const connection: IWebsocketsTransportSendConnection = {
             connectionId,
             domainName,
             stage
@@ -230,6 +230,6 @@ export class WebsocketsRunner implements IWebsocketsRunner {
             ...result,
             messageId
         };
-        await this.context.websockets.sendToConnection(connection, dataToSend);
+        await this.context.websockets.sendToConnections([connection], dataToSend);
     }
 }

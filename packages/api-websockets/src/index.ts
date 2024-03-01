@@ -8,7 +8,7 @@ export const createWebsockets = (): Plugin[] => {
 };
 
 export * from "./validator";
-export * from "./transporter";
+export * from "./transport";
 export * from "./runner";
 export * from "./registry";
 export * from "./context";

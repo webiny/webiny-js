@@ -3,7 +3,7 @@ import { useHandler } from "~tests/helpers/useHandler";
 import { WebsocketsEventValidator } from "~/validator";
 import { MockWebsocketsEventValidator } from "~tests/mocks/MockWebsocketsEventValidator";
 import { WebsocketsContext } from "~/context";
-import { MockWebsocketsTransporter } from "~tests/mocks/MockWebsocketsTransporter";
+import { MockWebsocketsTransport } from "~tests/mocks/MockWebsocketsTransport";
 import { WebsocketsEventRoute } from "~/handler/types";
 import { createWebsocketsRoutePlugin } from "~/plugins";
 import { WebsocketsResponse } from "~/response";
@@ -14,6 +14,10 @@ describe("websockets runner", () => {
 
         const context = await handler.handle();
         const registry = context.websockets.registry;
+        /**
+         * We need to replace the context received from the handler with the one we create here.
+         */
+        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
         const validator = new WebsocketsEventValidator();
         const response = new WebsocketsResponse();
 
@@ -111,13 +115,14 @@ describe("websockets runner", () => {
         const validator = new MockWebsocketsEventValidator();
         const response = new WebsocketsResponse();
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransporter());
+        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
 
         const runner = new WebsocketsRunner(context, registry, validator, response);
 
         const result = await runner.run({
             requestContext: {
-                routeKey: "aRouteKey"
+                // cast so we can trigger an error
+                routeKey: "aRouteKey" as unknown as WebsocketsEventRoute
             },
             body: JSON.stringify({
                 token: "aToken",
@@ -127,11 +132,11 @@ describe("websockets runner", () => {
         });
         expect(result).toEqual({
             error: {
-                code: "NO_ACTION_PLUGINS",
+                code: "NO_ROUTE_PLUGINS",
                 data: {
-                    action: "aRouteKey"
+                    route: "aRouteKey"
                 },
-                message: 'There are no action plugins for "aRouteKey"',
+                message: "There are no plugins for the route: aRouteKey.",
                 stack: expect.any(String)
             },
             message: 'Route "aRouteKey" action failed.',
@@ -147,7 +152,7 @@ describe("websockets runner", () => {
         const validator = new MockWebsocketsEventValidator();
         const response = new WebsocketsResponse();
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransporter());
+        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
 
         const runner = new WebsocketsRunner(context, registry, validator, response);
 
@@ -174,7 +179,7 @@ describe("websockets runner", () => {
         const validator = new MockWebsocketsEventValidator();
         const response = new WebsocketsResponse();
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransporter());
+        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
 
         const runner = new WebsocketsRunner(context, registry, validator, response);
 
@@ -202,7 +207,7 @@ describe("websockets runner", () => {
         const validator = new MockWebsocketsEventValidator();
         const response = new WebsocketsResponse();
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransporter());
+        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
 
         const runner = new WebsocketsRunner(context, registry, validator, response);
 
@@ -240,7 +245,7 @@ describe("websockets runner", () => {
         const validator = new MockWebsocketsEventValidator();
         const response = new WebsocketsResponse();
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransporter());
+        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
 
         const runner = new WebsocketsRunner(context, registry, validator, response);
 
@@ -317,7 +322,7 @@ describe("websockets runner", () => {
         const validator = new MockWebsocketsEventValidator();
         const response = new WebsocketsResponse();
 
-        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransporter());
+        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
 
         const runner = new WebsocketsRunner(context, registry, validator, response);
 

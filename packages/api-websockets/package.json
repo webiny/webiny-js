@@ -40,6 +40,7 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "aws-lambda": "^1.0.7",
+    "graphql": "^15.8.0",
     "rimraf": "^5.0.5",
     "ttypescript": "^1.5.13",
     "typescript": "4.7.4"

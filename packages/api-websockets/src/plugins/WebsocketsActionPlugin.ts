@@ -1,72 +1,33 @@
 import { Plugin } from "@webiny/plugins";
-import { Context } from "~/types";
 import { GenericRecord } from "@webiny/api/types";
+import {
+    IWebsocketsActionPluginCallable,
+    IWebsocketsActionPluginCallableParams,
+    WebsocketsActionPluginCallableResponse
+} from "./abstrations/IWebsocketsActionPlugin";
 
-export interface IWebsocketsActionPluginCallableParamsSend {
-    toConnection<T extends GenericRecord = GenericRecord>(
-        connectionId: string,
-        data: T
-    ): Promise<void>;
-    toTenant<T extends GenericRecord = GenericRecord>(tenant: string, data: T): Promise<void>;
-    toTenantAndLocale<T extends GenericRecord = GenericRecord>(
-        tenant: string,
-        locale: string,
-        data: T
-    ): Promise<void>;
-    toIdentity<T extends GenericRecord = GenericRecord>(identity: string, data: T): Promise<void>;
-}
-
-export interface IWebsocketsActionPluginCallableParamsRespondError<
-    T extends GenericRecord = GenericRecord
-> {
-    message: string;
-    code: string;
-    data: T;
-}
-
-export interface IWebsocketsActionPluginCallableParamsRespondOkResponse<
-    T extends GenericRecord = GenericRecord
-> {
-    data: T;
-    error?: never;
-}
-
-export interface IWebsocketsActionPluginCallableParamsRespondErrorResponse<
-    T extends GenericRecord = GenericRecord
-> {
-    error: IWebsocketsActionPluginCallableParamsRespondError<T>;
-    data?: never;
-}
-
-export interface IWebsocketsActionPluginCallableParamsRespond {
-    ok<T extends GenericRecord = GenericRecord>(
-        data: T
-    ): Promise<IWebsocketsActionPluginCallableParamsRespondOkResponse<T>>;
-    error<T extends GenericRecord = GenericRecord>(
-        error: IWebsocketsActionPluginCallableParamsRespondError<T>
-    ): Promise<IWebsocketsActionPluginCallableParamsRespondErrorResponse<T>>;
-}
-
-export interface IWebsocketsActionPluginCallableParams<C extends Context = Context> {
-    context: C;
-    next(): Promise<void>;
-    send: IWebsocketsActionPluginCallableParamsSend;
-    respond: IWebsocketsActionPluginCallableParamsRespond;
-}
-
-export interface IWebsocketsActionPluginCallable {
-    (params: IWebsocketsActionPluginCallableParams): Promise<void>;
-}
-
-export class WebsocketsActionPlugin extends Plugin {
+export class WebsocketsActionPlugin<T extends GenericRecord = GenericRecord> extends Plugin {
     public static override readonly type: string = "websockets.route.action";
 
     public readonly action: string;
-    private readonly cb: IWebsocketsActionPluginCallable;
+    private readonly cb: IWebsocketsActionPluginCallable<T>;
 
-    public constructor(action: string, cb: IWebsocketsActionPluginCallable) {
+    public constructor(action: string, cb: IWebsocketsActionPluginCallable<T>) {
         super();
         this.action = action;
         this.cb = cb;
     }
+
+    public run(
+        params: IWebsocketsActionPluginCallableParams
+    ): Promise<WebsocketsActionPluginCallableResponse<T>> {
+        return this.cb(params);
+    }
 }
+
+export const createWebsocketsAction = <T extends GenericRecord = GenericRecord>(
+    action: string,
+    cb: IWebsocketsActionPluginCallable<T>
+) => {
+    return new WebsocketsActionPlugin<T>(action, cb);
+};

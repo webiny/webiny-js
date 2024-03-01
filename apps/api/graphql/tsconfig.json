@@ -199,8 +199,8 @@
       "@webiny/api-background-tasks-ddb": ["../../../packages/api-background-tasks-ddb/src"],
       "@webiny/tasks/*": ["../../../packages/tasks/src/*"],
       "@webiny/tasks": ["../../../packages/tasks/src"],
-      "@webiny/api-websockets/*": ["../../../packages/sockets/src/*"],
-      "@webiny/api-websockets": ["../../../packages/sockets/src"]
+      "@webiny/api-websockets/*": ["../../../packages/api-websockets/src/*"],
+      "@webiny/api-websockets": ["../../../packages/api-websockets/src"]
     },
     "baseUrl": "."
   }

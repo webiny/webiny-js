@@ -11,7 +11,9 @@ describe("websockets connection registry", () => {
             tenant: "root",
             locale: "en-US",
             identity: {
-                id: "id-1"
+                id: "id-1",
+                displayName: "John Doe",
+                type: "admin"
             },
             domainName: "https://webiny.com",
             stage: "dev",
@@ -23,7 +25,9 @@ describe("websockets connection registry", () => {
             tenant: "root",
             locale: "en-US",
             identity: {
-                id: "id-1"
+                id: "id-1",
+                displayName: "John Doe",
+                type: "admin"
             },
             domainName: "https://webiny.com",
             stage: "dev",
@@ -36,7 +40,9 @@ describe("websockets connection registry", () => {
                 tenant: i % 2 ? "root" : "anotherTenant",
                 locale: "en-US",
                 identity: {
-                    id: `id-${i}`
+                    id: `id-${i}`,
+                    displayName: "John Doe",
+                    type: "admin"
                 },
                 domainName: "https://webiny.com",
                 stage: "dev",
@@ -90,7 +96,9 @@ describe("websockets connection registry", () => {
             tenant: "root",
             locale: "en-US",
             identity: {
-                id: "id-1"
+                id: "id-1",
+                displayName: "John Doe",
+                type: "admin"
             },
             domainName: "https://webiny.com",
             stage: "dev",
@@ -102,7 +110,9 @@ describe("websockets connection registry", () => {
             tenant: "root",
             locale: "en-US",
             identity: {
-                id: "id-1"
+                id: "id-1",
+                displayName: "John Doe",
+                type: "admin"
             },
             domainName: "https://webiny.com",
             stage: "dev",

@@ -3,17 +3,18 @@ import {
     PostToConnectionCommand
 } from "@webiny/aws-sdk/client-apigatewaymanagementapi";
 import {
-    IWebsocketsTransporter,
-    IWebsocketsTransporterSendConnection,
-    IWebsocketsTransporterSendData
-} from "./abstractions/IWebsocketsTransporter";
+    IWebsocketsTransport,
+    IWebsocketsTransportSendConnection,
+    IWebsocketsTransportSendData
+} from "./abstractions/IWebsocketsTransport";
+import { GenericRecord } from "@webiny/api/types";
 
-export class WebsocketsTransporter implements IWebsocketsTransporter {
+export class WebsocketsTransport implements IWebsocketsTransport {
     private readonly clients = new Map<string, ApiGatewayManagementApiClient>();
 
-    public async send<T extends IWebsocketsTransporterSendData = IWebsocketsTransporterSendData>(
-        connections: IWebsocketsTransporterSendConnection[],
-        data: T
+    public async send<T extends GenericRecord = GenericRecord>(
+        connections: IWebsocketsTransportSendConnection[],
+        data: IWebsocketsTransportSendData<T>
     ): Promise<void> {
         for (const connection of connections) {
             try {
@@ -34,7 +35,7 @@ export class WebsocketsTransporter implements IWebsocketsTransporter {
     }
 
     private getClient(
-        connection: IWebsocketsTransporterSendConnection
+        connection: IWebsocketsTransportSendConnection
     ): ApiGatewayManagementApiClient {
         const endpoint = `https://${connection.domainName}/${connection.stage}`;
         const client = this.clients.get(endpoint);

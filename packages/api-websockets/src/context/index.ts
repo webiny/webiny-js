@@ -2,7 +2,7 @@ import { ContextPlugin } from "@webiny/handler";
 import { Context } from "~/types";
 import { WebsocketsContext } from "./WebsocketsContext";
 import { WebsocketsConnectionRegistry } from "~/registry";
-import { WebsocketsTransporter } from "~/transporter";
+import { WebsocketsTransport } from "~/transport";
 
 export * from "./WebsocketsContext";
 export * from "./abstractions/IWebsocketsContext";
@@ -15,8 +15,8 @@ export const createWebsocketsContext = () => {
         // @ts-expect-error
         const documentClient = context.db.driver.documentClient;
         const registry = new WebsocketsConnectionRegistry(documentClient);
-        const transporter = new WebsocketsTransporter();
-        context.websockets = new WebsocketsContext(registry, transporter);
+        const transport = new WebsocketsTransport();
+        context.websockets = new WebsocketsContext(registry, transport);
     });
 
     plugin.name = "websockets.context";

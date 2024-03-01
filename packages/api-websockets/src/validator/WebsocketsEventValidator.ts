@@ -44,9 +44,9 @@ const bodyValidation = zod
         token: zod.string(),
         tenant: zod.string(),
         locale: zod.string(),
-        messageId: zod.string(),
+        messageId: zod.string().nullish(),
         action: zod.string(),
-        data: zod.object({}).passthrough().optional()
+        data: zod.object({}).passthrough().nullish()
     })
     .passthrough()
     .optional();

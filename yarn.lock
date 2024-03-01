@@ -16047,6 +16047,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/utils": 0.0.0
     aws-lambda: ^1.0.7
+    graphql: ^15.8.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
     type-fest: ^2.19.0

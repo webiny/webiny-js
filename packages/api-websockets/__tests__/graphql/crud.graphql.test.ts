@@ -3,6 +3,23 @@ import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
 import { IWebsocketsConnectionRegistryData, WebsocketsConnectionRegistry } from "~/registry";
 import { IWebsocketsIdentity } from "~/context";
 
+jest.mock("@webiny/aws-sdk/client-apigatewaymanagementapi", () => {
+    return {
+        ApiGatewayManagementApiClient: class ApiGatewayManagementApiClient {
+            async send(cmd: any) {
+                return cmd;
+            }
+        },
+        PostToConnectionCommand: class PostToConnectionCommand {
+            public readonly input: any;
+
+            constructor(input: any) {
+                this.input = input;
+            }
+        }
+    };
+});
+
 interface InsertConnectionsParams {
     suffix?: string;
     tenant?: string;

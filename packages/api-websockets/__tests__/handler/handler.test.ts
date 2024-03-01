@@ -65,7 +65,9 @@ describe("handler", () => {
         const context = await contextHandler.handle();
 
         const connectionsBeforeConnect = await context.websockets.listConnections({
-            id: "id-12345678"
+            where: {
+                identityId: "id-12345678"
+            }
         });
         expect(connectionsBeforeConnect).toHaveLength(0);
 
@@ -98,7 +100,9 @@ describe("handler", () => {
         });
 
         const connectionsAfterConnect = await context.websockets.listConnections({
-            id: "id-12345678"
+            where: {
+                identityId: "id-12345678"
+            }
         });
         expect(connectionsAfterConnect).toHaveLength(1);
     });
@@ -111,7 +115,9 @@ describe("handler", () => {
         const context = await contextHandler.handle();
 
         const connectionsBeforeConnect = await context.websockets.listConnections({
-            id: "id-12345678"
+            where: {
+                identityId: "id-12345678"
+            }
         });
         expect(connectionsBeforeConnect).toHaveLength(0);
 
@@ -144,7 +150,9 @@ describe("handler", () => {
         });
 
         const connectionsAfterConnect = await context.websockets.listConnections({
-            id: "id-12345678"
+            where: {
+                identityId: "id-12345678"
+            }
         });
         expect(connectionsAfterConnect).toHaveLength(1);
 
@@ -177,7 +185,9 @@ describe("handler", () => {
         });
 
         const connectionsAfterDisconnect = await context.websockets.listConnections({
-            id: "id-12345678"
+            where: {
+                identityId: "id-12345678"
+            }
         });
         expect(connectionsAfterDisconnect).toHaveLength(0);
     });
@@ -190,7 +200,9 @@ describe("handler", () => {
         const context = await contextHandler.handle();
 
         const connectionsBeforeDisconnect = await context.websockets.listConnections({
-            id: "id-12345678"
+            where: {
+                identityId: "id-12345678"
+            }
         });
         expect(connectionsBeforeDisconnect).toHaveLength(0);
 

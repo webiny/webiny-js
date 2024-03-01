@@ -1,20 +1,25 @@
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
 import { WebsocketsContext } from "~/context/WebsocketsContext";
 import { WebsocketsConnectionRegistry } from "~/registry";
-import { WebsocketsTransporter } from "~/transporter";
-import { MockWebsocketsTransporter } from "~tests/mocks/MockWebsocketsTransporter";
+import { MockWebsocketsTransport } from "~tests/mocks/MockWebsocketsTransport";
+
+interface IMockData {
+    mockData?: boolean;
+}
 
 describe("websockets context", () => {
     it("should properly list connections", async () => {
         const documentClient = getDocumentClient();
         const registry = new WebsocketsConnectionRegistry(documentClient);
-        const transporter = new WebsocketsTransporter();
+        const transport = new MockWebsocketsTransport();
 
-        const context = new WebsocketsContext(registry, transporter);
+        const context = new WebsocketsContext(registry, transport);
         expect(context).toBeInstanceOf(WebsocketsContext);
 
         const resultNoConnections = await context.listConnections({
-            id: "id-1"
+            where: {
+                identityId: "id-1"
+            }
         });
         expect(resultNoConnections).toEqual([]);
 
@@ -23,7 +28,9 @@ describe("websockets context", () => {
             tenant: "root",
             locale: "en-US",
             identity: {
-                id: "id-1"
+                id: "id-1",
+                displayName: "John Doe",
+                type: "admin"
             },
             domainName: "https://webiny.com",
             stage: "dev",
@@ -31,7 +38,9 @@ describe("websockets context", () => {
         });
 
         const resultWithConnections = await context.listConnections({
-            id: "id-1"
+            where: {
+                identityId: "id-1"
+            }
         });
         expect(resultWithConnections).toEqual([
             {
@@ -39,7 +48,9 @@ describe("websockets context", () => {
                 tenant: "root",
                 locale: "en-US",
                 identity: {
-                    id: "id-1"
+                    id: "id-1",
+                    displayName: "John Doe",
+                    type: "admin"
                 },
                 domainName: "https://webiny.com",
                 stage: "dev",
@@ -48,37 +59,45 @@ describe("websockets context", () => {
         ]);
     });
 
-    it("should properly send a message via transporter", async () => {
+    it("should properly send a message via transport", async () => {
         const documentClient = getDocumentClient();
         const registry = new WebsocketsConnectionRegistry(documentClient);
-        const transporter = new MockWebsocketsTransporter();
+        const transport = new MockWebsocketsTransport();
 
-        const context = new WebsocketsContext(registry, transporter);
+        const context = new WebsocketsContext(registry, transport);
 
         await registry.register({
             connectionId: "connection-1",
             tenant: "root",
             locale: "en-US",
             identity: {
-                id: "id-1"
+                id: "id-1",
+                displayName: "John Doe",
+                type: "admin"
             },
             domainName: "https://webiny.com",
             stage: "dev",
             connectedOn: new Date().toISOString()
         });
 
-        await context.send(
+        await context.send<IMockData>(
             {
-                id: "id-1"
+                id: "id-1",
+                displayName: "John Doe",
+                type: "admin"
             },
             {
-                mockData: true
+                data: {
+                    mockData: true
+                }
             }
         );
 
-        expect(transporter.messages.size).toBe(1);
-        expect(transporter.messages.get("connection-1")).toEqual({
-            mockData: true
+        expect(transport.messages.size).toBe(1);
+        expect(transport.messages.get("connection-1")).toEqual({
+            data: {
+                mockData: true
+            }
         });
     });
 });
