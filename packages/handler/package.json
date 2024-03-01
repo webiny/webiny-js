@@ -15,9 +15,9 @@
     "@babel/runtime": "^7.23.9",
     "@fastify/compress": "6.2.0",
     "@fastify/cookie": "8.3.0",
-    "@webiny/api": "0.0.0",
-    "@webiny/error": "0.0.0",
-    "@webiny/handler-client": "0.0.0",
+    "@webiny/api": "0.1.0",
+    "@webiny/error": "5.0.0",
+    "@webiny/handler-client": "5.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "fastify": "4.11.0"
