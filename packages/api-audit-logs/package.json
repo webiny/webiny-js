@@ -43,13 +43,13 @@
   "dependencies": {
     "@webiny/api": "0.0.0",
     "@webiny/api-aco": "0.0.0",
-    "@webiny/api-apw": "0.0.0",
-    "@webiny/api-form-builder": "0.0.0",
+    "@webiny/api-apw": "5.23.0",
+    "@webiny/api-form-builder": "2.0.0",
     "@webiny/api-mailer": "0.0.0",
     "@webiny/api-page-builder": "0.0.0",
-    "@webiny/api-page-builder-import-export": "0.0.0",
-    "@webiny/error": "0.0.0",
-    "@webiny/handler": "0.0.0",
+    "@webiny/api-page-builder-import-export": "5.16.0",
+    "@webiny/error": "5.0.0",
+    "@webiny/handler": "4.0.0",
     "@webiny/utils": "0.0.0"
   }
 }
