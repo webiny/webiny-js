@@ -10,8 +10,8 @@
   "author": "Webiny LTD",
   "license": "MIT",
   "dependencies": {
-    "@webiny/api-elasticsearch-tasks": "0.0.0",
-    "@webiny/plugins": "0.0.0",
+    "@webiny/api-elasticsearch-tasks": "5.39.0",
+    "@webiny/plugins": "0.1.0",
     "@webiny/tasks": "0.0.0"
   },
   "devDependencies": {
