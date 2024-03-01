@@ -18,12 +18,63 @@ import {
     CmsModel,
     CmsModelField
 } from "~/types";
+import { makeDecoratable } from "@webiny/react-composition";
 
 const BottomMargin = styled.div`
     margin-bottom: 20px;
 `;
 
 type GetBind = CmsModelFieldRendererProps["getBind"];
+
+export interface MultiValueItemContainerProps {
+    value: TemplateValue;
+    contentModel: CmsModel;
+    isFirst: boolean;
+    isLast: boolean;
+    onMoveUp: () => void;
+    onMoveDown: () => void;
+    onDelete: () => void;
+    onClone: () => void;
+    title: React.ReactNode;
+    description: string;
+    icon: JSX.Element;
+    actions: JSX.Element;
+    template: CmsDynamicZoneTemplate;
+    children: React.ReactNode;
+}
+
+export const MultiValueItemContainer = makeDecoratable(
+    "MultiValueItemContainer",
+    ({ title, description, icon, actions, children }: MultiValueItemContainerProps) => {
+        return (
+            <AccordionItem title={title} description={description} icon={icon} actions={actions}>
+                {children}
+            </AccordionItem>
+        );
+    }
+);
+
+export interface MultiValueItemItemProps {
+    template: CmsDynamicZoneTemplate;
+    contentModel: CmsModel;
+    Bind: BindComponent;
+}
+
+export const MultiValueItem = makeDecoratable(
+    "MultiValueItem",
+    (props: MultiValueItemItemProps) => {
+        const { template, Bind, contentModel } = props;
+
+        return (
+            <Fields
+                fields={template.fields}
+                layout={template.layout || []}
+                contentModel={contentModel}
+                Bind={Bind}
+            />
+        );
+    }
+);
 
 interface TemplateValue {
     _templateId: string;
@@ -65,10 +116,19 @@ const TemplateValueForm = ({
     }
 
     return (
-        <AccordionItem
+        <MultiValueItemContainer
+            value={value}
+            contentModel={contentModel}
+            onClone={onClone}
+            isFirst={isFirst}
+            isLast={isLast}
+            onDelete={onDelete}
+            onMoveUp={onMoveUp}
+            onMoveDown={onMoveDown}
             title={template.name}
             description={template.description}
             icon={<TemplateIcon icon={template.icon} />}
+            template={template}
             actions={
                 <AccordionItem.Actions>
                     <AccordionItem.Action
@@ -87,28 +147,35 @@ const TemplateValueForm = ({
                 </AccordionItem.Actions>
             }
         >
-            <Fields
-                fields={template.fields}
-                layout={template.layout || []}
-                contentModel={contentModel}
-                Bind={Bind}
-            />
-        </AccordionItem>
+            <MultiValueItem template={template} contentModel={contentModel} Bind={Bind} />
+        </MultiValueItemContainer>
     );
 };
 
+export interface MultiValueContainerProps extends MultiValueDynamicZoneProps {
+    children: React.ReactNode;
+}
+
+export const MultiValueContainer = makeDecoratable<
+    React.FunctionComponent<MultiValueContainerProps>
+>("MultiValueContainer", ({ children }) => {
+    return (
+        <Accordion>
+            <>{children}</>
+        </Accordion>
+    );
+});
+
 interface MultiValueDynamicZoneProps {
+    // TODO: this prop might be useless, because we now have a `useModelField` hook.
     field: CmsModelField;
     bind: BindComponentRenderProp;
     contentModel: CmsModel;
     getBind: GetBind;
 }
 
-export const MultiValueDynamicZone = ({
-    bind,
-    getBind,
-    contentModel
-}: MultiValueDynamicZoneProps) => {
+export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
+    const { bind, getBind, contentModel } = props;
     const onTemplate = (template: CmsDynamicZoneTemplate) => {
         bind.appendValue({ _templateId: template.id });
     };
@@ -124,7 +191,7 @@ export const MultiValueDynamicZone = ({
     return (
         <>
             {hasValues ? (
-                <Accordion>
+                <MultiValueContainer {...props}>
                     {values.map((value, index) => (
                         <TemplateValueForm
                             key={index}
@@ -139,7 +206,7 @@ export const MultiValueDynamicZone = ({
                             onClone={() => cloneValue(index)}
                         />
                     ))}
-                </Accordion>
+                </MultiValueContainer>
             ) : null}
             {hasValues ? (
                 <AddTemplateIcon onTemplate={onTemplate} />

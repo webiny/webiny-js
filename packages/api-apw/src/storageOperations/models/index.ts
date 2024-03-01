@@ -1,10 +1,10 @@
 import WebinyError from "@webiny/error";
 import { CmsModelPlugin, createCmsModel } from "@webiny/api-headless-cms";
-import { createWorkflowModelDefinition } from "./workflow.model";
-import { createContentReviewModelDefinition } from "./contentReview.model";
-import { createReviewerModelDefinition } from "./reviewer.model";
-import { createCommentModelDefinition } from "./comment.model";
-import { createChangeRequestModelDefinition } from "./changeRequest.model";
+import { createWorkflowModel } from "./workflow.model";
+import { createContentReviewModel } from "./contentReview.model";
+import { createReviewerModel } from "./reviewer.model";
+import { createCommentModel } from "./comment.model";
+import { createChangeRequestModel } from "./changeRequest.model";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 import { isInstallationPending } from "~/plugins/utils";
 
@@ -33,15 +33,15 @@ export const createApwModels = (context: CmsContext) => {
     /**
      * Create  CmsModel plugins.
      */
-    const changeRequestModelDefinition = createChangeRequestModelDefinition();
-    const reviewerModelDefinition = createReviewerModelDefinition();
-    const workflowModelDefinition = createWorkflowModelDefinition({
+    const changeRequestModelDefinition = createChangeRequestModel();
+    const reviewerModelDefinition = createReviewerModel();
+    const workflowModelDefinition = createWorkflowModel({
         reviewerModelId: reviewerModelDefinition.modelId
     });
-    const commentModelDefinition = createCommentModelDefinition({
+    const commentModelDefinition = createCommentModel({
         modelId: changeRequestModelDefinition.modelId
     });
-    const contentReviewModelDefinition = createContentReviewModelDefinition({
+    const contentReviewModelDefinition = createContentReviewModel({
         reviewerModelId: reviewerModelDefinition.modelId
     });
 

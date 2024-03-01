@@ -10,10 +10,11 @@ import { SecurityPermission } from "@webiny/api-security/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { Topic } from "@webiny/pubsub/types";
 import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection";
+import { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types";
+import { AccessControl } from "~/crud/AccessControl/AccessControl";
 import { ModelGroupsPermissions } from "~/utils/permissions/ModelGroupsPermissions";
 import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
-import { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types";
 
 export type ApiEndpoint = "manage" | "preview" | "read";
 
@@ -56,12 +57,19 @@ export interface HeadlessCms
      * The storage operations loaded for current context.
      */
     storageOperations: HeadlessCmsStorageOperations;
+
+    /**
+     * Use to ensure perform authorization and ensure identities have access to the groups, models and entries.
+     */
+    accessControl: AccessControl;
+
     /**
      * Permissions for groups, models and entries.
-     *
      * @internal
+     * @deprecated Will be removed with the 5.40.0 release. Use `accessControl` instead.
      */
     permissions: HeadlessCmsPermissions;
+
     /**
      * Export operations.
      */
@@ -444,6 +452,12 @@ export interface CmsModelGroup {
     name: string;
 }
 
+export interface CmsModelAuthorization {
+    permissions: boolean;
+
+    [key: string]: any;
+}
+
 /**
  * Base CMS Model. Should not be exported and used outside of this package.
  *
@@ -558,6 +572,13 @@ export interface CmsModel {
      * Only available for the plugin constructed models.
      */
     isPrivate?: boolean;
+
+    /**
+     * Does this model require authorization to be performed?
+     * Only available for models created via plugins.
+     */
+    authorization?: boolean | CmsModelAuthorization;
+
     /**
      * Is this model created via plugin?
      */
@@ -2618,7 +2639,7 @@ export type CmsEntryResolverFactory<TSource = any, TArgs = any, TContext = CmsCo
  */
 export interface BaseCmsSecurityPermission extends SecurityPermission {
     own?: boolean;
-    rwd: string | number;
+    rwd: string;
 }
 
 /**

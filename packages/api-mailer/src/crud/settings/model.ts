@@ -1,5 +1,5 @@
 import lodashCamelCase from "lodash/camelCase";
-import { createCmsModel, createPrivateModelDefinition } from "@webiny/api-headless-cms";
+import { createCmsModel, createPrivateModel } from "@webiny/api-headless-cms";
 import { CmsModelField, CmsModelFieldValidation } from "@webiny/api-headless-cms/types";
 
 export const SETTINGS_MODEL_ID = "mailerSettings";
@@ -46,7 +46,7 @@ const createNumberField = (params: Omit<CreateFieldParams, "type">) => {
 
 export const createSettingsModel = () => {
     return createCmsModel(
-        createPrivateModelDefinition({
+        createPrivateModel({
             name: "Mailer Settings",
             modelId: SETTINGS_MODEL_ID,
             fields: [

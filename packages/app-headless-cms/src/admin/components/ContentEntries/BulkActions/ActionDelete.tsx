@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useCms, useContentEntry } from "~/admin/hooks";
 import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
+import { parseIdentifier } from "@webiny/utils/parseIdentifier";
 
 export const ActionDelete = observer(() => {
     const { deleteEntry } = useCms();
@@ -28,10 +29,15 @@ export const ActionDelete = observer(() => {
             execute: async () => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
+                        /**
+                         * We need an entryId because we want to delete all revisions of the entry.
+                         * By sending an entryId (id without #version), we are telling to the API to delete all revisions.
+                         */
+                        const { id } = parseIdentifier(item.id);
                         const response = await deleteEntry({
                             model: contentModel,
                             entry: item,
-                            id: item.id
+                            id
                         });
 
                         const { error } = response;

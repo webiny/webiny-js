@@ -1,4 +1,4 @@
-import { createPrivateModelDefinition } from "@webiny/api-headless-cms";
+import { createPrivateModel } from "@webiny/api-headless-cms";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
 import { createModelField } from "./utils";
 import { stepTitleField, stepTypeField, stepIdField, stepReviewersField } from "./workflow.model";
@@ -279,10 +279,10 @@ interface CreateContentReviewModelDefinitionParams {
 
 export const CONTENT_REVIEW_MODEL_ID = "apwContentReviewModelDefinition";
 
-export const createContentReviewModelDefinition = ({
+export const createContentReviewModel = ({
     reviewerModelId
 }: CreateContentReviewModelDefinitionParams) => {
-    return createPrivateModelDefinition({
+    return createPrivateModel({
         name: "APW - Content Review",
         modelId: CONTENT_REVIEW_MODEL_ID,
         titleFieldId: "content",

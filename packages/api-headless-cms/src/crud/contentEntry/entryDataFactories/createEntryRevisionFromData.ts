@@ -15,7 +15,8 @@ import { validateModelEntryDataOrThrow } from "../entryDataValidation";
 import { referenceFieldsMapping } from "../referenceFieldsMapping";
 import { createIdentifier, parseIdentifier } from "@webiny/utils";
 import WebinyError from "@webiny/error";
-import { STATUS_DRAFT } from "./statuses";
+import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "./statuses";
+import { AccessControl } from "~/crud/AccessControl/AccessControl";
 
 type CreateEntryRevisionFromDataParams = {
     sourceId: string;
@@ -28,6 +29,7 @@ type CreateEntryRevisionFromDataParams = {
     getLocale: () => I18NLocale;
     originalEntry: CmsEntry;
     latestStorageEntry: CmsEntry;
+    accessControl: AccessControl;
 };
 
 export const createEntryRevisionFromData = async ({
@@ -38,7 +40,8 @@ export const createEntryRevisionFromData = async ({
     context,
     getIdentity: getSecurityIdentity,
     originalEntry,
-    latestStorageEntry
+    latestStorageEntry,
+    accessControl
 }: CreateEntryRevisionFromDataParams): Promise<{
     entry: CmsEntry;
     input: Record<string, any>;
@@ -74,6 +77,74 @@ export const createEntryRevisionFromData = async ({
     const currentIdentity = getSecurityIdentity();
     const currentDateTime = new Date();
 
+    /**
+     * Users can set the initial status of the entry. If so, we need to make
+     * sure they have the required permissions and also that all the fields
+     * are filled in correctly.
+     */
+    const status = rawInput.status || STATUS_DRAFT;
+    if (status !== STATUS_DRAFT) {
+        if (status === STATUS_PUBLISHED) {
+            await accessControl.ensureCanAccessEntry({ model, pw: "p" });
+        } else if (status === STATUS_UNPUBLISHED) {
+            // If setting the status other than draft, we have to check if the user has permissions to publish.
+            await accessControl.ensureCanAccessEntry({ model, pw: "u" });
+        }
+    }
+
+    const locked = status !== STATUS_DRAFT;
+
+    let revisionLevelPublishingMetaFields: Pick<
+        CmsEntry,
+        | "revisionFirstPublishedOn"
+        | "revisionLastPublishedOn"
+        | "revisionFirstPublishedBy"
+        | "revisionLastPublishedBy"
+    > = {
+        revisionFirstPublishedOn: getDate(rawInput.revisionFirstPublishedOn, null),
+        revisionLastPublishedOn: getDate(rawInput.revisionLastPublishedOn, null),
+        revisionFirstPublishedBy: getIdentity(rawInput.revisionFirstPublishedBy, null),
+        revisionLastPublishedBy: getIdentity(rawInput.revisionLastPublishedBy, null)
+    };
+
+    let entryLevelPublishingMetaFields: Pick<
+        CmsEntry,
+        "firstPublishedOn" | "lastPublishedOn" | "firstPublishedBy" | "lastPublishedBy"
+    > = {
+        firstPublishedOn: getDate(rawInput.firstPublishedOn, latestStorageEntry.firstPublishedOn),
+        lastPublishedOn: getDate(rawInput.lastPublishedOn, latestStorageEntry.lastPublishedOn),
+        firstPublishedBy: getIdentity(
+            rawInput.firstPublishedBy,
+            latestStorageEntry.firstPublishedBy
+        ),
+        lastPublishedBy: getIdentity(rawInput.lastPublishedBy, latestStorageEntry.lastPublishedBy)
+    };
+
+    if (status === STATUS_PUBLISHED) {
+        revisionLevelPublishingMetaFields = {
+            revisionFirstPublishedOn: getDate(rawInput.revisionFirstPublishedOn, currentDateTime),
+            revisionLastPublishedOn: getDate(rawInput.revisionLastPublishedOn, currentDateTime),
+            revisionFirstPublishedBy: getIdentity(
+                rawInput.revisionFirstPublishedBy,
+                currentIdentity
+            ),
+            revisionLastPublishedBy: getIdentity(rawInput.revisionLastPublishedBy, currentIdentity)
+        };
+
+        entryLevelPublishingMetaFields = {
+            firstPublishedOn: getDate(
+                rawInput.firstPublishedOn,
+                latestStorageEntry.firstPublishedOn
+            ),
+            lastPublishedOn: getDate(rawInput.lastPublishedOn, currentDateTime),
+            firstPublishedBy: getIdentity(
+                rawInput.firstPublishedBy,
+                latestStorageEntry.firstPublishedBy
+            ),
+            lastPublishedBy: getIdentity(rawInput.lastPublishedBy, currentIdentity)
+        };
+    }
+
     const entry: CmsEntry = {
         ...originalEntry,
         id,
@@ -85,16 +156,10 @@ export const createEntryRevisionFromData = async ({
         createdOn: getDate(rawInput.createdOn, latestStorageEntry.createdOn),
         savedOn: getDate(rawInput.savedOn, currentDateTime),
         modifiedOn: getDate(rawInput.modifiedOn, currentDateTime),
-        firstPublishedOn: getDate(rawInput.firstPublishedOn, latestStorageEntry.firstPublishedOn),
-        lastPublishedOn: getDate(rawInput.lastPublishedOn, latestStorageEntry.lastPublishedOn),
         createdBy: getIdentity(rawInput.createdBy, latestStorageEntry.createdBy),
         savedBy: getIdentity(rawInput.savedBy, currentIdentity),
         modifiedBy: getIdentity(rawInput.modifiedBy, currentIdentity),
-        firstPublishedBy: getIdentity(
-            rawInput.firstPublishedBy,
-            latestStorageEntry.firstPublishedBy
-        ),
-        lastPublishedBy: getIdentity(rawInput.lastPublishedBy, latestStorageEntry.lastPublishedBy),
+        ...entryLevelPublishingMetaFields,
 
         /**
          * Revision-level meta fields. 👇
@@ -102,16 +167,13 @@ export const createEntryRevisionFromData = async ({
         revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDateTime),
         revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
         revisionModifiedOn: getDate(rawInput.revisionModifiedOn, null),
-        revisionFirstPublishedOn: getDate(rawInput.revisionFirstPublishedOn, null),
-        revisionLastPublishedOn: getDate(rawInput.revisionLastPublishedOn, null),
         revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity),
         revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
         revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, null),
-        revisionFirstPublishedBy: getIdentity(rawInput.revisionFirstPublishedBy, null),
-        revisionLastPublishedBy: getIdentity(rawInput.revisionLastPublishedBy, null),
+        ...revisionLevelPublishingMetaFields,
 
-        locked: false,
-        status: STATUS_DRAFT,
+        locked,
+        status,
         values
     };
 
