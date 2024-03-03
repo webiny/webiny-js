@@ -54,6 +54,8 @@ const createSchema = (plugins: PluginsContainer): GraphQLSchemaPlugin<CmsContext
                 # force delete an entry that might have some records left behind in the database
                 # see CmsDeleteEntryOptions in types.ts
                 force: Boolean
+                # permanently delete an entry without moving it to the bin
+                permanently: Boolean
             }
 
             type CmsDeleteResponse {

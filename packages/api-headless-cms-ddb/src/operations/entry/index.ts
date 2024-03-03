@@ -479,6 +479,71 @@ export const createEntriesStorageOperations = (
         const id = entry.id || entry.entryId;
         const model = getStorageOperationsModel(initialModel);
 
+        /**
+         * First we need to load all the revisions and published / latest entries.
+         */
+        const queryAllParams: QueryAllParams = {
+            entity,
+            partitionKey: createPartitionKey({
+                id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
+            options: {
+                gte: " "
+            }
+        };
+
+        let records: DbItem<CmsEntry>[] = [];
+        try {
+            records = await queryAll(queryAllParams);
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not load all records.",
+                ex.code || "LOAD_ALL_RECORDS_ERROR",
+                {
+                    error: ex,
+                    id
+                }
+            );
+        }
+
+        /**
+         * Then create the batch writes for the DynamoDB, with the updated data.
+         */
+        const items = records.map(record => {
+            return entity.putBatch({
+                ...record,
+                ...entry,
+                deleted: true
+            });
+        });
+        /**
+         * And finally write it...
+         */
+        try {
+            await batchWriteAll({
+                table: entity.table,
+                items
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not delete the entry.",
+                ex.code || "DELETE_ENTRY_ERROR",
+                {
+                    error: ex,
+                    partitionKey: queryAllParams.partitionKey,
+                    id
+                }
+            );
+        }
+    };
+
+    const destroyEntry: CmsEntryStorageOperations["destroy"] = async (initialModel, params) => {
+        const { entry } = params;
+        const id = entry.id || entry.entryId;
+        const model = getStorageOperationsModel(initialModel);
+
         const queryAllParams: QueryAllParams = {
             entity,
             partitionKey: createPartitionKey({
@@ -521,8 +586,8 @@ export const createEntriesStorageOperations = (
             });
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not delete the entry.",
-                ex.code || "DELETE_ENTRY_ERROR",
+                ex.message || "Could not destroy the entry.",
+                ex.code || "DESTROY_ENTRY_ERROR",
                 {
                     error: ex,
                     partitionKey: queryAllParams.partitionKey,
@@ -624,7 +689,8 @@ export const createEntriesStorageOperations = (
          */
         const revisions = await dataLoaders.getAllEntryRevisions({
             model,
-            ids: entries
+            ids: entries,
+            deleted: false
         });
         /**
          * Then we need to construct the queries for all the revisions and entries.
@@ -688,7 +754,8 @@ export const createEntriesStorageOperations = (
 
             const items = await dataLoaders.getLatestRevisionByEntryId({
                 model,
-                ids: [params.id]
+                ids: [params.id],
+                deleted: false
             });
             const item = items.shift() || null;
             if (!item) {
@@ -705,7 +772,8 @@ export const createEntriesStorageOperations = (
 
             const items = await dataLoaders.getPublishedRevisionByEntryId({
                 model,
-                ids: [params.id]
+                ids: [params.id],
+                deleted: false
             });
             const item = items.shift() || null;
             if (!item) {
@@ -725,7 +793,8 @@ export const createEntriesStorageOperations = (
 
         const items = await dataLoaders.getRevisionById({
             model,
-            ids: [params.id]
+            ids: [params.id],
+            deleted: false
         });
         const item = items.shift() || null;
         if (!item) {
@@ -741,11 +810,13 @@ export const createEntriesStorageOperations = (
         initialModel,
         params
     ) => {
+        const { id, deleted = false } = params;
         const model = getStorageOperationsModel(initialModel);
 
         const items = await dataLoaders.getAllEntryRevisions({
             model,
-            ids: [params.id]
+            ids: [id],
+            deleted
         });
 
         return items.map(item => {
@@ -757,11 +828,13 @@ export const createEntriesStorageOperations = (
     };
 
     const getByIds: CmsEntryStorageOperations["getByIds"] = async (initialModel, params) => {
+        const { ids, deleted = false } = params;
         const model = getStorageOperationsModel(initialModel);
 
         const items = await dataLoaders.getRevisionById({
             model,
-            ids: params.ids
+            ids,
+            deleted
         });
 
         return items.map(item => {
@@ -776,11 +849,13 @@ export const createEntriesStorageOperations = (
         initialModel,
         params
     ) => {
+        const { ids, deleted = false } = params;
         const model = getStorageOperationsModel(initialModel);
 
         const items = await dataLoaders.getLatestRevisionByEntryId({
             model,
-            ids: params.ids
+            ids,
+            deleted
         });
 
         return items.map(item => {
@@ -795,11 +870,13 @@ export const createEntriesStorageOperations = (
         initialModel,
         params
     ) => {
+        const { ids, deleted = false } = params;
         const model = getStorageOperationsModel(initialModel);
 
         const items = await dataLoaders.getPublishedRevisionByEntryId({
             model,
-            ids: params.ids
+            ids,
+            deleted
         });
 
         return items.map(item => {
@@ -1311,6 +1388,7 @@ export const createEntriesStorageOperations = (
         createRevisionFrom,
         update,
         move,
+        destroy: destroyEntry,
         delete: deleteEntry,
         deleteRevision,
         deleteMultipleEntries,

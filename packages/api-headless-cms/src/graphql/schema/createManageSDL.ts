@@ -168,11 +168,11 @@ export const createManageSDL: CreateManageSDL = ({
         }
 
         extend type Query {
-            get${singularName}(revision: ID, entryId: ID, status: CmsEntryStatusType): ${singularName}Response
+            get${singularName}(revision: ID, entryId: ID, status: CmsEntryStatusType, deleted: Boolean): ${singularName}Response
     
-            get${singularName}Revisions(id: ID!): ${singularName}ArrayResponse
+            get${singularName}Revisions(id: ID!, deleted: Boolean): ${singularName}ArrayResponse
     
-            get${pluralName}ByIds(revisions: [ID!]!): ${singularName}ArrayResponse
+            get${pluralName}ByIds(revisions: [ID!]!, deleted: Boolean): ${singularName}ArrayResponse
     
             list${pluralName} (
                 where: ${singularName}ListWhereInput
@@ -180,6 +180,7 @@ export const createManageSDL: CreateManageSDL = ({
                 limit: Int
                 after: String
                 search: String
+                deleted: Boolean
             ): ${singularName}ListResponse
         }
 

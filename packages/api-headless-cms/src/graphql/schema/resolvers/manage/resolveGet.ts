@@ -13,17 +13,19 @@ interface ValuesFromArgsParams {
     status?: "published" | "latest";
     entryId?: string;
     revision: string;
+    deleted?: boolean;
 }
 interface ArgsValues {
     published?: boolean;
     entryId?: string;
     revision?: string;
+    deleted: boolean;
 }
 
 const possibleTypes = ["published", "latest"];
 
 const getValuesFromArgs = (args?: ValuesFromArgsParams): ArgsValues => {
-    const { status, revision, entryId } = args || {};
+    const { status, revision, entryId, deleted = false } = args || {};
     if (!revision && !entryId) {
         throw new WebinyError(
             "You must pass a 'revision' or an 'entryId' argument.",
@@ -58,11 +60,13 @@ const getValuesFromArgs = (args?: ValuesFromArgsParams): ArgsValues => {
         const { id } = parseIdentifier(entryId || revision);
         return {
             published: status === "published",
-            entryId: id
+            entryId: id,
+            deleted
         };
     }
     return {
-        revision
+        revision,
+        deleted
     };
 };
 
@@ -70,16 +74,16 @@ export const resolveGet: ResolveGet =
     ({ model }) =>
     async (_, args: any, context) => {
         try {
-            const { entryId, published, revision } = getValuesFromArgs(args);
+            const { entryId, published, revision, deleted } = getValuesFromArgs(args);
 
             if (entryId) {
                 const result = published
-                    ? await context.cms.getPublishedEntriesByIds(model, [entryId])
-                    : await context.cms.getLatestEntriesByIds(model, [entryId]);
+                    ? await context.cms.getPublishedEntriesByIds(model, [entryId], deleted)
+                    : await context.cms.getLatestEntriesByIds(model, [entryId], deleted);
                 return new Response(result.shift() || null);
             }
 
-            const entry = await context.cms.getEntryById(model, revision as string);
+            const entry = await context.cms.getEntryById(model, revision as string, deleted);
 
             return new Response(entry);
         } catch (e) {

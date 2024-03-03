@@ -1480,6 +1480,10 @@ export interface CmsEntry<T = CmsEntryValues> {
     /**
      * An ISO 8601 date/time string.
      */
+    revisionDeletedOn: string | null;
+    /**
+     * An ISO 8601 date/time string.
+     */
     revisionFirstPublishedOn: string | null;
     /**
      * An ISO 8601 date/time string.
@@ -1498,6 +1502,10 @@ export interface CmsEntry<T = CmsEntryValues> {
      * Identity that last ionModified the entry.
      */
     revisionModifiedBy: CmsIdentity | null;
+    /**
+     * Identity that last deleted the revision.
+     */
+    revisionDeletedBy: CmsIdentity | null;
     /**
      * Identity that first published the entry.
      */
@@ -1522,6 +1530,10 @@ export interface CmsEntry<T = CmsEntryValues> {
     /**
      * An ISO 8601 date/time string.
      */
+    deletedOn: string | null;
+    /**
+     * An ISO 8601 date/time string.
+     */
     firstPublishedOn: string | null;
     /**
      * An ISO 8601 date/time string.
@@ -1540,6 +1552,10 @@ export interface CmsEntry<T = CmsEntryValues> {
      * Identity that last modified the entry.
      */
     modifiedBy: CmsIdentity | null;
+    /**
+     * Identity that last deleted the entry.
+     */
+    deletedBy: CmsIdentity | null;
     /**
      * Identity that first published the entry.
      */
@@ -1594,6 +1610,10 @@ export interface CmsEntry<T = CmsEntryValues> {
     meta?: {
         [key: string]: any;
     };
+    /**
+     * Is the entry in the bin?
+     */
+    deleted?: boolean | null;
 }
 
 export interface CmsStorageEntry extends CmsEntry {
@@ -1993,6 +2013,7 @@ export type CmsEntryListSort = string[];
 export interface CmsEntryGetParams {
     where: CmsEntryListWhere;
     sort?: CmsEntryListSort;
+    deleted?: boolean;
 }
 
 /**
@@ -2008,6 +2029,7 @@ export interface CmsEntryListParams {
     fields?: string[];
     limit?: number;
     after?: string | null;
+    deleted?: boolean;
 }
 
 /**
@@ -2208,6 +2230,22 @@ export interface OnEntryDeleteErrorTopicParams {
     model: CmsModel;
 }
 
+export interface OnEntryBeforeDestroyTopicParams {
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+export interface OnEntryAfterDestroyTopicParams {
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+export interface OnEntryDestroyErrorTopicParams {
+    error: Error;
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
 export interface OnEntryRevisionBeforeDeleteTopicParams {
     entry: CmsEntry;
     model: CmsModel;
@@ -2402,6 +2440,10 @@ export interface CmsDeleteEntryOptions {
      * This is to force clean the entry records that might have been left behind a failed delete.
      */
     force?: boolean;
+    /**
+     * Destroying the entry directly, without moving it to the bin.
+     */
+    permanent?: boolean;
 }
 
 /**
@@ -2434,11 +2476,15 @@ export interface CmsEntryContext {
     /**
      * Get a list of entries for a model by a given ID (revision).
      */
-    getEntriesByIds: (model: CmsModel, revisions: string[]) => Promise<CmsEntry[]>;
+    getEntriesByIds: (
+        model: CmsModel,
+        revisions: string[],
+        deleted?: boolean
+    ) => Promise<CmsEntry[]>;
     /**
      * Get the entry for a model by a given ID.
      */
-    getEntryById: (model: CmsModel, revision: string) => Promise<CmsEntry>;
+    getEntryById: (model: CmsModel, revision: string, deleted?: boolean) => Promise<CmsEntry>;
     /**
      * List entries for a model. Internal method used by get, listLatest and listPublished.
      */
@@ -2463,11 +2509,19 @@ export interface CmsEntryContext {
     /**
      * List published entries by IDs.
      */
-    getPublishedEntriesByIds: (model: CmsModel, ids: string[]) => Promise<CmsEntry[]>;
+    getPublishedEntriesByIds: (
+        model: CmsModel,
+        ids: string[],
+        deleted?: boolean
+    ) => Promise<CmsEntry[]>;
     /**
      * List latest entries by IDs.
      */
-    getLatestEntriesByIds: (model: CmsModel, ids: string[]) => Promise<CmsEntry[]>;
+    getLatestEntriesByIds: (
+        model: CmsModel,
+        ids: string[],
+        deleted?: boolean
+    ) => Promise<CmsEntry[]>;
     /**
      * Create a new content entry.
      */
@@ -2538,7 +2592,7 @@ export interface CmsEntryContext {
     /**
      * Get all entry revisions.
      */
-    getEntryRevisions: (model: CmsModel, id: string) => Promise<CmsEntry[]>;
+    getEntryRevisions: (model: CmsModel, id: string, deleted?: boolean) => Promise<CmsEntry[]>;
     /**
      * List all unique values for a given field.
      *
@@ -2570,6 +2624,10 @@ export interface CmsEntryContext {
     onEntryBeforeDelete: Topic<OnEntryBeforeDeleteTopicParams>;
     onEntryAfterDelete: Topic<OnEntryAfterDeleteTopicParams>;
     onEntryDeleteError: Topic<OnEntryDeleteErrorTopicParams>;
+
+    onEntryBeforeDestroy: Topic<OnEntryBeforeDestroyTopicParams>;
+    onEntryAfterDestroy: Topic<OnEntryAfterDestroyTopicParams>;
+    onEntryDestroyError: Topic<OnEntryDestroyErrorTopicParams>;
 
     onEntryRevisionBeforeDelete: Topic<OnEntryRevisionBeforeDeleteTopicParams>;
     onEntryRevisionAfterDelete: Topic<OnEntryRevisionAfterDeleteTopicParams>;
@@ -2873,6 +2931,10 @@ export interface CmsEntryStorageOperationsDeleteParams {
     entry: CmsEntry;
 }
 
+export interface CmsEntryStorageOperationsDestroyParams {
+    entry: CmsEntry;
+}
+
 export interface CmsEntryStorageOperationsDeleteEntriesParams {
     entries: string[];
 }
@@ -2911,18 +2973,22 @@ export interface CmsEntryStorageOperationsGetUniqueFieldValuesParams {
 
 export interface CmsEntryStorageOperationsGetByIdsParams {
     ids: readonly string[];
+    deleted: boolean;
 }
 
 export interface CmsEntryStorageOperationsGetLatestByIdsParams {
     ids: readonly string[];
+    deleted: boolean;
 }
 
 export interface CmsEntryStorageOperationsGetPublishedByIdsParams {
     ids: readonly string[];
+    deleted: boolean;
 }
 
 export interface CmsEntryStorageOperationsGetRevisionsParams {
     id: string;
+    deleted: boolean;
 }
 
 export interface CmsEntryStorageOperationsGetRevisionParams {
@@ -3067,6 +3133,10 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
      * Delete the entry.
      */
     delete: (model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) => Promise<void>;
+    /**
+     * Destroy the entry.
+     */
+    destroy: (model: CmsModel, params: CmsEntryStorageOperationsDestroyParams) => Promise<void>;
     /**
      * Delete multiple entries, with a limit on how much can be deleted in one call.
      */
