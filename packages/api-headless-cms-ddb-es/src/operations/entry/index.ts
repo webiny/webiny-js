@@ -370,12 +370,14 @@ export const createEntriesStorageOperations = (
          */
         const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
             model,
-            ids: [entry.id]
+            ids: [entry.id],
+            deleted: false
         });
 
         const [publishedStorageEntry] = await dataLoaders.getPublishedRevisionByEntryId({
             model,
-            ids: [entry.id]
+            ids: [entry.id],
+            deleted: false
         });
 
         const items = [
@@ -704,6 +706,85 @@ export const createEntriesStorageOperations = (
             tenant: model.tenant
         });
 
+        const records = await queryAll<CmsEntry>({
+            entity,
+            partitionKey,
+            options: {
+                gte: " "
+            }
+        });
+
+        const esRecords = await queryAll<CmsEntry>({
+            entity: esEntity,
+            partitionKey,
+            options: {
+                gte: " "
+            }
+        });
+
+        const items = records.map(record => {
+            return entity.putBatch({
+                ...record,
+                ...entry,
+                deleted: true
+            });
+        });
+
+        const esItems = esRecords.map(record => {
+            return esEntity.putBatch({
+                ...record,
+                ...entry,
+                deleted: true
+            });
+        });
+
+        try {
+            await batchWriteAll({
+                table: entity.table,
+                items
+            });
+            dataLoaders.clearAll({
+                model
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not delete entry records from DynamoDB table.",
+                ex.code || "DELETE_ENTRY_ERROR",
+                {
+                    error: ex,
+                    id
+                }
+            );
+        }
+
+        try {
+            await batchWriteAll({
+                table: esEntity.table,
+                items: esItems
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not delete entry records from DynamoDB Elasticsearch table.",
+                ex.code || "DELETE_ENTRY_ERROR",
+                {
+                    error: ex,
+                    id
+                }
+            );
+        }
+    };
+
+    const destroyEntry: CmsEntryStorageOperations["destroy"] = async (initialModel, params) => {
+        const { entry } = params;
+        const id = entry.id || entry.entryId;
+        const model = getStorageOperationsModel(initialModel);
+
+        const partitionKey = createPartitionKey({
+            id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
+
         const items = await queryAll<CmsEntry>({
             entity,
             partitionKey,
@@ -744,8 +825,8 @@ export const createEntriesStorageOperations = (
             });
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not delete entry records from DynamoDB table.",
-                ex.code || "DELETE_ENTRY_ERROR",
+                ex.message || "Could not destroy entry records from DynamoDB table.",
+                ex.code || "DESTROY_ENTRY_ERROR",
                 {
                     error: ex,
                     id
@@ -760,8 +841,8 @@ export const createEntriesStorageOperations = (
             });
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not delete entry records from DynamoDB Elasticsearch table.",
-                ex.code || "DELETE_ENTRY_ERROR",
+                ex.message || "Could not destroy entry records from DynamoDB Elasticsearch table.",
+                ex.code || "DESTROY_ENTRY_ERROR",
                 {
                     error: ex,
                     id
@@ -791,7 +872,8 @@ export const createEntriesStorageOperations = (
          */
         const [publishedStorageEntry] = await dataLoaders.getPublishedRevisionByEntryId({
             model,
-            ids: [entry.id]
+            ids: [entry.id],
+            deleted: false
         });
         /**
          * We need to delete all existing records of the given entry revision.
@@ -931,7 +1013,8 @@ export const createEntriesStorageOperations = (
          */
         const revisions = await dataLoaders.getAllEntryRevisions({
             model,
-            ids: entries
+            ids: entries,
+            deleted: false
         });
         /**
          * Then we need to construct the queries for all the revisions and entries.
@@ -1120,7 +1203,8 @@ export const createEntriesStorageOperations = (
          */
         const [publishedStorageEntry] = await dataLoaders.getPublishedRevisionByEntryId({
             model,
-            ids: [entry.id]
+            ids: [entry.id],
+            deleted: false
         });
 
         const revisionKeys = {
@@ -1189,7 +1273,8 @@ export const createEntriesStorageOperations = (
              */
             const [previouslyPublishedEntry] = await dataLoaders.getRevisionById({
                 model,
-                ids: [publishedStorageEntry.id]
+                ids: [publishedStorageEntry.id],
+                deleted: false
             });
             items.push(
                 /**
@@ -1220,7 +1305,8 @@ export const createEntriesStorageOperations = (
          */
         const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
             model,
-            ids: [entry.id]
+            ids: [entry.id],
+            deleted: false
         });
 
         if (latestStorageEntry?.id === entry.id) {
@@ -1411,7 +1497,8 @@ export const createEntriesStorageOperations = (
          */
         const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
             model,
-            ids: [entry.id]
+            ids: [entry.id],
+            deleted: false
         });
 
         const partitionKey = createPartitionKey({
@@ -1507,7 +1594,8 @@ export const createEntriesStorageOperations = (
 
             const [entry] = await dataLoaders.getLatestRevisionByEntryId({
                 model,
-                ids: [params.id]
+                ids: [params.id],
+                deleted: false
             });
             if (!entry) {
                 return null;
@@ -1524,7 +1612,8 @@ export const createEntriesStorageOperations = (
 
             const [entry] = await dataLoaders.getPublishedRevisionByEntryId({
                 model,
-                ids: [params.id]
+                ids: [params.id],
+                deleted: false
             });
             if (!entry) {
                 return null;
@@ -1543,7 +1632,8 @@ export const createEntriesStorageOperations = (
 
         const [entry] = await dataLoaders.getRevisionById({
             model,
-            ids: [params.id]
+            ids: [params.id],
+            deleted: false
         });
         if (!entry) {
             return null;
@@ -1562,7 +1652,8 @@ export const createEntriesStorageOperations = (
 
         const entries = await dataLoaders.getAllEntryRevisions({
             model,
-            ids: [params.id]
+            ids: [params.id],
+            deleted: false
         });
 
         return entries.map(entry => {
@@ -1578,7 +1669,8 @@ export const createEntriesStorageOperations = (
 
         const entries = await dataLoaders.getRevisionById({
             model,
-            ids: params.ids
+            ids: params.ids,
+            deleted: false
         });
 
         return entries.map(entry => {
@@ -1597,7 +1689,8 @@ export const createEntriesStorageOperations = (
 
         const entries = await dataLoaders.getLatestRevisionByEntryId({
             model,
-            ids: params.ids
+            ids: params.ids,
+            deleted: false
         });
         return entries.map(entry => {
             return convertEntryKeysFromStorage({
@@ -1615,7 +1708,8 @@ export const createEntriesStorageOperations = (
 
         const entries = await dataLoaders.getPublishedRevisionByEntryId({
             model,
-            ids: params.ids
+            ids: params.ids,
+            deleted: false
         });
 
         return entries.map(entry => {
@@ -1770,6 +1864,7 @@ export const createEntriesStorageOperations = (
         createRevisionFrom,
         update,
         move,
+        destroy: destroyEntry,
         delete: deleteEntry,
         deleteRevision,
         deleteMultipleEntries,
