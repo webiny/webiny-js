@@ -161,8 +161,8 @@ export class Condition {
 
             case "ref":
                 return createConditions([
-                    { label: "is equal to", value: " " },
-                    { label: "is not equal to", value: "_not" }
+                    { label: "contains", value: " " },
+                    { label: "doesn't contain", value: "_not" }
                 ]);
 
             default:
