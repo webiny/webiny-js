@@ -153,6 +153,20 @@ export const createDroppedElement = (
 
     return createElement(source.type, {}, target);
 };
+
+export function prefixElementIdsRecursively(
+    elements: PbEditorElement[],
+    id: string
+): PbEditorElement[] {
+    return elements.map(element => {
+        return {
+            ...element,
+            id: `${id}.${element.id}`,
+            elements: prefixElementIdsRecursively(element.elements as PbEditorElement[], id)
+        };
+    });
+}
+
 /**
  * Add unique id to elements recursively
  */
@@ -165,7 +179,6 @@ export const addElementId = (target: Omit<PbEditorElement, "id">): PbEditorEleme
         ...(target as PbEditorElement),
         id: getNanoid()
     };
-    // element.id = getNanoid();
 
     if (Array.isArray(element.elements)) {
         element.elements = (element.elements as PbEditorElement[]).map(el => {
@@ -174,6 +187,7 @@ export const addElementId = (target: Omit<PbEditorElement, "id">): PbEditorEleme
     }
     return element;
 };
+
 /**
  * Remove id from elements recursively
  */

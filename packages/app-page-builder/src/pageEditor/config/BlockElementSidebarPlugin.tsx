@@ -52,8 +52,8 @@ const UnlinkTab = ({ permission }: UnlinkTabProps) => {
     return (
         <RootElement>
             <UnlinkBlockWrapper permission={permission}>
-                This is a block element - to change it you need to unlink it first. By unlinking it,
-                any changes made to the block will no longer automatically reflect to this page.
+                This is a block element. To change it, you need to unlink it first. By unlinking it,
+                any changes made to the block will no longer automatically reflect on this page.
                 <div className="button-wrapper">
                     {permission ? (
                         <UnlinkBlockAction>
@@ -64,7 +64,7 @@ const UnlinkTab = ({ permission }: UnlinkTabProps) => {
                     )}
                 </div>
                 <div className="info-wrapper">
-                    <InfoIcon /> Click here to learn more about how block work
+                    <InfoIcon /> Click here to learn more about how blocks work.
                 </div>
             </UnlinkBlockWrapper>
         </RootElement>

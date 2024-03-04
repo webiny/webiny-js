@@ -1,14 +1,21 @@
 import React, { useCallback, useMemo } from "react";
 import { useRecoilValue } from "recoil";
-import { uiAtom, setDisplayModeMutation } from "~/editor/recoil/modules";
+import {
+    uiAtom,
+    setDisplayModeMutation,
+    setPagePreviewDimensionMutation,
+    PagePreviewDimension
+} from "~/editor/recoil/modules";
 import { plugins } from "@webiny/plugins";
 import { useUI } from "~/editor/hooks/useUI";
 import { DisplayMode, PbEditorResponsiveModePlugin } from "~/types";
+import debounce from "lodash/debounce";
 
 export interface UseDisplayMode {
     displayMode: DisplayMode;
     config: PbEditorResponsiveModePlugin["config"];
     setDisplayMode: (mode: DisplayMode) => void;
+    setPagePreviewDimensions: (dimensions: PagePreviewDimension) => void;
 }
 
 export function useDisplayMode(): UseDisplayMode {
@@ -29,6 +36,12 @@ export function useDisplayMode(): UseDisplayMode {
         [displayMode]
     );
 
+    const setPagePreviewDimensions = useMemo(() => {
+        return debounce((dimensions: PagePreviewDimension) => {
+            setUiValue(prev => setPagePreviewDimensionMutation(prev, dimensions));
+        }, 20);
+    }, [displayMode]);
+
     if (!memoizedDisplayMode) {
         return {
             config: {
@@ -41,10 +54,11 @@ export function useDisplayMode(): UseDisplayMode {
                 icon: <></>
             },
             displayMode,
-            setDisplayMode
+            setDisplayMode,
+            setPagePreviewDimensions
         };
     }
     const { config } = memoizedDisplayMode;
 
-    return { displayMode, config, setDisplayMode };
+    return { displayMode, config, setDisplayMode, setPagePreviewDimensions };
 }
