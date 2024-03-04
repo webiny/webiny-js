@@ -18,7 +18,6 @@ import {
     OnEntryAfterCreateTopicParams,
     OnEntryAfterDeleteMultipleTopicParams,
     OnEntryAfterDeleteTopicParams,
-    OnEntryAfterDestroyTopicParams,
     OnEntryAfterMoveTopicParams,
     OnEntryAfterPublishTopicParams,
     OnEntryAfterRepublishTopicParams,
@@ -27,7 +26,6 @@ import {
     OnEntryBeforeCreateTopicParams,
     OnEntryBeforeDeleteMultipleTopicParams,
     OnEntryBeforeDeleteTopicParams,
-    OnEntryBeforeDestroyTopicParams,
     OnEntryBeforeGetTopicParams,
     OnEntryBeforeMoveTopicParams,
     OnEntryBeforePublishTopicParams,
@@ -38,7 +36,6 @@ import {
     OnEntryCreateRevisionErrorTopicParams,
     OnEntryDeleteErrorTopicParams,
     OnEntryDeleteMultipleErrorTopicParams,
-    OnEntryDestroyErrorTopicParams,
     OnEntryMoveErrorTopicParams,
     OnEntryPublishErrorTopicParams,
     OnEntryRepublishErrorTopicParams,
@@ -194,17 +191,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const onEntryDeleteError = createTopic<OnEntryDeleteErrorTopicParams>("cms.onEntryDeleteError");
 
     /**
-     * Destroy
-     */
-    const onEntryBeforeDestroy = createTopic<OnEntryBeforeDestroyTopicParams>(
-        "cms.onEntryBeforeDestroy"
-    );
-    const onEntryAfterDestroy =
-        createTopic<OnEntryAfterDestroyTopicParams>("cms.onEntryAfterDestroy");
-    const onEntryDestroyError =
-        createTopic<OnEntryDestroyErrorTopicParams>("cms.onEntryDestroyError");
-
-    /**
      * Delete revision
      */
     const onEntryRevisionBeforeDelete = createTopic<OnEntryRevisionBeforeDeleteTopicParams>(
@@ -261,23 +247,26 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const destroyEntryHelper = async (params: DeleteEntryParams): Promise<void> => {
         const { model, entry } = params;
         try {
-            await onEntryBeforeDestroy.publish({
+            await onEntryBeforeDelete.publish({
                 entry,
-                model
+                model,
+                permanent: true
             });
 
             await storageOperations.entries.destroy(model, {
                 entry
             });
 
-            await onEntryAfterDestroy.publish({
-                entry,
-                model
-            });
-        } catch (ex) {
-            await onEntryDestroyError.publish({
+            await onEntryAfterDelete.publish({
                 entry,
                 model,
+                permanent: true
+            });
+        } catch (ex) {
+            await onEntryDeleteError.publish({
+                entry,
+                model,
+                permanent: true,
                 error: ex
             });
             throw new WebinyError(
@@ -297,7 +286,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         try {
             await onEntryBeforeDelete.publish({
                 entry,
-                model
+                model,
+                permanent: false
             });
 
             await storageOperations.entries.delete(model, {
@@ -306,12 +296,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
             await onEntryAfterDelete.publish({
                 entry,
-                model
+                model,
+                permanent: false
             });
         } catch (ex) {
             await onEntryDeleteError.publish({
                 entry,
                 model,
+                permanent: false,
                 error: ex
             });
             throw new WebinyError(
@@ -1465,10 +1457,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         onEntryBeforeDelete,
         onEntryAfterDelete,
         onEntryDeleteError,
-
-        onEntryBeforeDestroy,
-        onEntryAfterDestroy,
-        onEntryDestroyError,
 
         onEntryRevisionBeforeDelete,
         onEntryRevisionAfterDelete,

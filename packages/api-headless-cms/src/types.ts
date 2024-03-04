@@ -2217,32 +2217,19 @@ export interface OnEntryUnpublishErrorTopicParams {
 export interface OnEntryBeforeDeleteTopicParams {
     entry: CmsEntry;
     model: CmsModel;
+    permanent: boolean;
 }
 
 export interface OnEntryAfterDeleteTopicParams {
     entry: CmsEntry;
     model: CmsModel;
+    permanent: boolean;
 }
 
 export interface OnEntryDeleteErrorTopicParams {
     error: Error;
     entry: CmsEntry;
-    model: CmsModel;
-}
-
-export interface OnEntryBeforeDestroyTopicParams {
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-export interface OnEntryAfterDestroyTopicParams {
-    entry: CmsEntry;
-    model: CmsModel;
-}
-
-export interface OnEntryDestroyErrorTopicParams {
-    error: Error;
-    entry: CmsEntry;
+    permanent: boolean;
     model: CmsModel;
 }
 
@@ -2624,10 +2611,6 @@ export interface CmsEntryContext {
     onEntryBeforeDelete: Topic<OnEntryBeforeDeleteTopicParams>;
     onEntryAfterDelete: Topic<OnEntryAfterDeleteTopicParams>;
     onEntryDeleteError: Topic<OnEntryDeleteErrorTopicParams>;
-
-    onEntryBeforeDestroy: Topic<OnEntryBeforeDestroyTopicParams>;
-    onEntryAfterDestroy: Topic<OnEntryAfterDestroyTopicParams>;
-    onEntryDestroyError: Topic<OnEntryDestroyErrorTopicParams>;
 
     onEntryRevisionBeforeDelete: Topic<OnEntryRevisionBeforeDeleteTopicParams>;
     onEntryRevisionAfterDelete: Topic<OnEntryRevisionAfterDeleteTopicParams>;
