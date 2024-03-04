@@ -11,7 +11,8 @@ import {
     PageBlock,
     PageBlocksCrud,
     PageBlockStorageOperationsListParams,
-    PbContext
+    PbContext,
+    PageContentElement
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
@@ -326,7 +327,10 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                             ...blockData?.content?.data,
                             variables
                         },
-                        elements: blockData?.content?.elements || []
+                        elements: generateElementIds(
+                            blockData?.content?.elements || [],
+                            pageBlock.id
+                        )
                     })
                 );
             }
@@ -335,3 +339,13 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
         }
     };
 };
+
+function generateElementIds(elements: PageContentElement[], id: string): PageContentElement[] {
+    return elements.map(element => {
+        return {
+            ...element,
+            id: `${id}.${element.id}`,
+            elements: generateElementIds(element.elements, id)
+        };
+    });
+}
