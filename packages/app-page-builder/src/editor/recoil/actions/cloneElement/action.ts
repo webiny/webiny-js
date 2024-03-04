@@ -2,12 +2,12 @@ import { UpdateElementActionEvent } from "..";
 import { EventActionCallable, EventActionHandlerCallableState, PbEditorElement } from "~/types";
 import { CloneElementActionArgsType } from "../cloneElement/types";
 import { getNanoid } from "~/editor/helpers";
-import { getIdGenerator, IdGenerator } from "./idGenerator";
+import { getIdGenerator, IdGenerator, randomIdGenerator } from "./idGenerator";
 
 export const cloneElement = async (
     state: EventActionHandlerCallableState,
     element: PbEditorElement,
-    idGenerator: IdGenerator
+    idGenerator: IdGenerator = randomIdGenerator
 ): Promise<PbEditorElement> => {
     return {
         ...(element as PbEditorElement),

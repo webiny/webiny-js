@@ -24,7 +24,7 @@ export const useDebugUtilities = () => {
 
         // @ts-expect-error This function is for debugging purposes!
         window["debug_printPageContent"] = () => {
-            getRawElementTree({ dereferenceBlocks: false }).then(tree => {
+            getRawElementTree().then(tree => {
                 console.log(tree);
             });
         };

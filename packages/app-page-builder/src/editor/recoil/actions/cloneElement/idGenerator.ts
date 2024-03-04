@@ -5,7 +5,7 @@ export interface IdGenerator {
     (element: PbEditorElement): string;
 }
 
-const randomIdGenerator: IdGenerator = () => getNanoid();
+export const randomIdGenerator: IdGenerator = () => getNanoid();
 
 const createBlockElementIdGenerator = (currentBlockId: string, newBlockId: string): IdGenerator => {
     return element => {
