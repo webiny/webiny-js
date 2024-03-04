@@ -1137,9 +1137,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         }
 
-        await accessControl.ensureCanAccessEntry({ model, entry, rwd: "d" });
-
         const originalEntry = await entryFromStorageTransform(context, model, storageEntry);
+        await accessControl.ensureCanAccessEntry({ model, entry: originalEntry, rwd: "d" });
 
         if (!permanent) {
             const { entry } = await createDeleteEntryData({
