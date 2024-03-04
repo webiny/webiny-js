@@ -1,18 +1,26 @@
 export interface MiddlewareCallable {
     (...args: any[]): Promise<any>;
 }
+
+export interface MiddlewareResolve {
+    (...args: any[]): void;
+}
+
+export interface MiddlewareReject {
+    (error: Error): void;
+}
 /**
  * Compose a single middleware from the array of middleware functions
  */
-export const middleware = (functions: MiddlewareCallable[] = []) => {
-    return (...args: any[]): Promise<any> => {
+export const middleware = <Params = any, Response = any>(functions: MiddlewareCallable[] = []) => {
+    return (...args: Params[]): Promise<Response | undefined> => {
         if (!functions.length) {
-            return Promise.resolve();
+            return Promise.resolve<Response | undefined>(undefined);
         }
 
         // Create a clone of function chain to prevent modifying the original array with `shift()`
         const chain = [...functions];
-        return new Promise((parentResolve: any, parentReject) => {
+        return new Promise((parentResolve: MiddlewareResolve, parentReject: MiddlewareReject) => {
             const next = async (): Promise<any> => {
                 const fn = chain.shift();
                 if (!fn) {

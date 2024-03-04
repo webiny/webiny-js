@@ -9,6 +9,7 @@ import {
     ApiGraphql,
     ApiMigration,
     ApiPageBuilder,
+    ApiWebsocket,
     CoreOutput,
     CreateCorePulumiAppParams,
     VpcConfig
@@ -187,15 +188,14 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     // TODO: move to okta plugin
                     OKTA_ISSUER: process.env["OKTA_ISSUER"],
                     WEBINY_LOGS_FORWARD_URL,
-                    /**
-                     * APW
-                     */
                     APW_SCHEDULER_SCHEDULE_ACTION_HANDLER:
                         apwScheduler.scheduleAction.lambda.output.arn
                 },
                 apwSchedulerEventRule: apwScheduler.eventRule.output,
                 apwSchedulerEventTarget: apwScheduler.eventTarget.output
             });
+
+            const websocket = app.addModule(ApiWebsocket);
 
             const fileManager = app.addModule(ApiFileManager, {
                 env: {
@@ -265,7 +265,9 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 migrationLambdaArn: migration.function.output.arn,
                 graphqlLambdaName: graphql.functions.graphql.output.name,
                 backgroundTaskLambdaArn: backgroundTask.backgroundTask.output.arn,
-                backgroundTaskStepFunctionArn: backgroundTask.stepFunction.output.arn
+                backgroundTaskStepFunctionArn: backgroundTask.stepFunction.output.arn,
+                websocketApiId: websocket.websocketApi.output.id,
+                websocketApiUrl: websocket.websocketApiUrl
             });
 
             app.addHandler(() => {
