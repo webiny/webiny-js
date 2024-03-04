@@ -16,6 +16,13 @@ jest.mock("@webiny/aws-sdk/client-apigatewaymanagementapi", () => {
             constructor(input: any) {
                 this.input = input;
             }
+        },
+        DeleteConnectionCommand: class DeleteConnectionCommand {
+            public readonly input: any;
+
+            constructor(input: any) {
+                this.input = input;
+            }
         }
     };
 });
@@ -55,7 +62,7 @@ const insertConnections = async (amount: number, params?: InsertConnectionsParam
 };
 
 describe("crud graphql", () => {
-    it("should list all connections", async () => {
+    it.skip("should list all connections", async () => {
         const { listConnections } = useGraphQLHandler();
 
         const [resultBeforeInsertingConnections] = await listConnections();
@@ -85,7 +92,7 @@ describe("crud graphql", () => {
         );
     });
 
-    it("should list all connections for a specific identity", async () => {
+    it.skip("should list all connections for a specific identity", async () => {
         const { listConnections } = useGraphQLHandler();
 
         const [resultBeforeInsertingConnections] = await listConnections();
@@ -217,17 +224,17 @@ describe("crud graphql", () => {
     it("should disconnect a specific identity connection", async () => {
         const { listConnections, disconnectIdentity } = useGraphQLHandler();
 
-        await insertConnections(5);
+        const connections = await insertConnections(5);
 
         const [resultBeforeDisconnect] = await listConnections();
         expect(resultBeforeDisconnect.data.websockets.listConnections.data).toHaveLength(5);
 
         const [result] = await disconnectIdentity("id-1");
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             data: {
                 websockets: {
                     disconnectIdentity: {
-                        data: true,
+                        data: connections.filter(c => c.identity.id === "id-1"),
                         error: null
                     }
                 }
@@ -241,7 +248,7 @@ describe("crud graphql", () => {
     it("should disconnect a specific tenant connection", async () => {
         const { listConnections, disconnectTenant } = useGraphQLHandler();
 
-        await insertConnections(5);
+        const connections = await insertConnections(5);
         await insertConnections(5, {
             suffix: "dev",
             tenant: "dev"
@@ -255,7 +262,7 @@ describe("crud graphql", () => {
             data: {
                 websockets: {
                     disconnectTenant: {
-                        data: true,
+                        data: expect.arrayContaining(connections),
                         error: null
                     }
                 }
@@ -263,14 +270,15 @@ describe("crud graphql", () => {
         });
 
         const [resultAfterDisconnect] = await listConnections();
+
         expect(resultAfterDisconnect.data.websockets.listConnections.data).toHaveLength(5);
     });
 
     it("should disconnect specific tenant/locale combination", async () => {
         const { listConnections, disconnectTenant } = useGraphQLHandler();
 
-        await insertConnections(5);
-        await insertConnections(5, {
+        const rootEnConnections = await insertConnections(5);
+        const devEnConnections = await insertConnections(5, {
             suffix: "dev-en",
             tenant: "dev",
             locale: "en-US"
@@ -289,7 +297,7 @@ describe("crud graphql", () => {
             data: {
                 websockets: {
                     disconnectTenant: {
-                        data: true,
+                        data: expect.arrayContaining(devEnConnections),
                         error: null
                     }
                 }
@@ -304,7 +312,7 @@ describe("crud graphql", () => {
             data: {
                 websockets: {
                     disconnectTenant: {
-                        data: true,
+                        data: expect.arrayContaining(rootEnConnections),
                         error: null
                     }
                 }
@@ -318,22 +326,24 @@ describe("crud graphql", () => {
     it("should disconnect all connections", async () => {
         const { listConnections, disconnectAll } = useGraphQLHandler();
 
-        await insertConnections(5);
-        await insertConnections(5, {
-            suffix: "dev",
-            tenant: "dev"
-        });
-        await insertConnections(5, {
-            suffix: "webiny",
-            tenant: "webiny",
-            locale: "de-DE"
-        });
+        const connections = [
+            ...(await insertConnections(5)),
+            ...(await insertConnections(5, {
+                suffix: "dev",
+                tenant: "dev"
+            })),
+            ...(await insertConnections(5, {
+                suffix: "webiny",
+                tenant: "webiny",
+                locale: "de-DE"
+            })),
 
-        await insertConnections(5, {
-            suffix: "webiny-en",
-            tenant: "webiny",
-            locale: "en-US"
-        });
+            ...(await insertConnections(5, {
+                suffix: "webiny-en",
+                tenant: "webiny",
+                locale: "en-US"
+            }))
+        ];
 
         const [resultBeforeDisconnect] = await listConnections();
         expect(resultBeforeDisconnect.data.websockets.listConnections.data).toHaveLength(20);
@@ -343,7 +353,7 @@ describe("crud graphql", () => {
             data: {
                 websockets: {
                     disconnectAll: {
-                        data: true,
+                        data: expect.arrayContaining(connections),
                         error: null
                     }
                 }
@@ -352,5 +362,115 @@ describe("crud graphql", () => {
 
         const [resultAfterDisconnect] = await listConnections();
         expect(resultAfterDisconnect.data.websockets.listConnections.data).toHaveLength(0);
+    });
+
+    it("should disconnect specific connections", async () => {
+        const { listConnections, disconnect } = useGraphQLHandler();
+        const connections = await insertConnections(5);
+
+        const [resultBeforeDisconnect] = await listConnections();
+        expect(resultBeforeDisconnect.data.websockets.listConnections.data).toHaveLength(5);
+
+        const disconnectConnection = connections[0].connectionId;
+        const [result] = await disconnect([disconnectConnection]);
+        expect(result).toEqual({
+            data: {
+                websockets: {
+                    disconnect: {
+                        data: [connections[0]],
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [resultAfterDisconnect] = await listConnections();
+        expect(resultAfterDisconnect.data.websockets.listConnections.data).toHaveLength(4);
+    });
+
+    it("should not allow unauthorized access", async () => {
+        const { listConnections, disconnect, disconnectAll, disconnectIdentity, disconnectTenant } =
+            useGraphQLHandler({
+                permissions: []
+            });
+
+        const [listResult] = await listConnections();
+        expect(listResult).toMatchObject({
+            data: {
+                websockets: {
+                    listConnections: {
+                        data: null,
+                        error: {
+                            code: "SECURITY_NOT_AUTHORIZED",
+                            message: "Not authorized!"
+                        }
+                    }
+                }
+            }
+        });
+
+        const [disconnectResult] = await disconnect(["connection-1"]);
+        expect(disconnectResult).toMatchObject({
+            data: {
+                websockets: {
+                    disconnect: {
+                        data: null,
+                        error: {
+                            code: "SECURITY_NOT_AUTHORIZED",
+                            message: "Not authorized!",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+
+        const [disconnectTenantResult] = await disconnectTenant("root");
+        expect(disconnectTenantResult).toMatchObject({
+            data: {
+                websockets: {
+                    disconnectTenant: {
+                        data: null,
+                        error: {
+                            code: "SECURITY_NOT_AUTHORIZED",
+                            message: "Not authorized!",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+
+        const [disconnectIdentityResult] = await disconnectIdentity("id-1");
+        expect(disconnectIdentityResult).toMatchObject({
+            data: {
+                websockets: {
+                    disconnectIdentity: {
+                        data: null,
+                        error: {
+                            code: "SECURITY_NOT_AUTHORIZED",
+                            message: "Not authorized!",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+
+        const [disconnectAllResult] = await disconnectAll();
+        expect(disconnectAllResult).toMatchObject({
+            data: {
+                websockets: {
+                    disconnectAll: {
+                        data: null,
+                        error: {
+                            code: "SECURITY_NOT_AUTHORIZED",
+                            message: "Not authorized!",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
     });
 });

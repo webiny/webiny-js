@@ -18,6 +18,13 @@ jest.mock("@webiny/aws-sdk/client-apigatewaymanagementapi", () => {
             constructor(input: any) {
                 this.input = input;
             }
+        },
+        DeleteConnectionCommand: class DeleteConnectionCommand {
+            public readonly input: any;
+
+            constructor(input: any) {
+                this.input = input;
+            }
         }
     };
 });

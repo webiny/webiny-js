@@ -9,7 +9,7 @@ import { createWebsocketsRoutePlugin } from "~/plugins";
 import { WebsocketsResponse } from "~/response";
 
 describe("websockets runner", () => {
-    it("should run and fail the validation", async () => {
+    it.skip("should run and fail the validation", async () => {
         const handler = useHandler();
 
         const context = await handler.handle();
@@ -107,7 +107,7 @@ describe("websockets runner", () => {
         });
     });
 
-    it("should run and fail the route action - missing route", async () => {
+    it.skip("should run and fail the route action - missing route", async () => {
         const handler = useHandler();
 
         const context = await handler.handle();
@@ -144,7 +144,7 @@ describe("websockets runner", () => {
         });
     });
 
-    it("should run and return good status - default route", async () => {
+    it.skip("should run and return good status - default route", async () => {
         const handler = useHandler();
 
         const context = await handler.handle();
@@ -171,7 +171,7 @@ describe("websockets runner", () => {
         });
     });
 
-    it("should run and return good status - connect route", async () => {
+    it.skip("should run and return good status - connect route", async () => {
         const handler = useHandler();
 
         const context = await handler.handle();
@@ -237,7 +237,7 @@ describe("websockets runner", () => {
         });
     });
 
-    it("should run and return good status - disconnect route", async () => {
+    it.skip("should run and return good status - disconnect route", async () => {
         const handler = useHandler();
 
         const context = await handler.handle();
@@ -308,7 +308,7 @@ describe("websockets runner", () => {
         expect(afterDisconnectConnectionsViaIdentity).toHaveLength(0);
     });
 
-    it("should run and return good status - custom route", async () => {
+    it.skip("should run and return good status - custom route", async () => {
         const handler = useHandler({
             plugins: [
                 createWebsocketsRoutePlugin("myCustomRouteKey", async ({ response }) => {

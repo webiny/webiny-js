@@ -1,9 +1,11 @@
 import {
     ApiGatewayManagementApiClient,
+    DeleteConnectionCommand,
     PostToConnectionCommand
 } from "@webiny/aws-sdk/client-apigatewaymanagementapi";
 import {
     IWebsocketsTransport,
+    IWebsocketsTransportDisconnectConnection,
     IWebsocketsTransportSendConnection,
     IWebsocketsTransportSendData
 } from "./abstractions/IWebsocketsTransport";
@@ -28,6 +30,23 @@ export class WebsocketsTransport implements IWebsocketsTransport {
             } catch (ex) {
                 console.log(
                     `Failed to send message to connection "${connection.connectionId}". Check logs for more information.`
+                );
+                console.log(ex);
+            }
+        }
+    }
+
+    public async disconnect(connections: IWebsocketsTransportDisconnectConnection[]) {
+        for (const connection of connections) {
+            try {
+                const client = this.getClient(connection);
+                const command = new DeleteConnectionCommand({
+                    ConnectionId: connection.connectionId
+                });
+                await client.send(command);
+            } catch (ex) {
+                console.log(
+                    `Failed to disconnect connection "${connection.connectionId}". Check logs for more information.`
                 );
                 console.log(ex);
             }

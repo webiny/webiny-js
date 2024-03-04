@@ -12,8 +12,15 @@ import { PluginsContainer } from "@webiny/plugins";
 import { PluginCollection } from "@webiny/plugins/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import { SecurityPermission } from "@webiny/api-security/types";
 
-export const createPlugins = (plugins?: PluginCollection | PluginsContainer): PluginsContainer => {
+export interface Params {
+    plugins?: PluginCollection | PluginsContainer;
+    permissions?: SecurityPermission[];
+}
+
+export const createPlugins = (params?: Params): PluginsContainer => {
+    const { plugins, permissions } = params || {};
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const i18nStorage = getStorageOps<any[]>("i18n");
 
@@ -24,7 +31,7 @@ export const createPlugins = (plugins?: PluginCollection | PluginsContainer): Pl
         ...cmsStorage.plugins,
         ...createTenancyAndSecurity({
             setupGraphQL: false,
-            permissions: createPermissions(),
+            permissions: permissions || createPermissions(),
             identity: createIdentity()
         }),
         i18nContext(),
