@@ -255,10 +255,6 @@ const plugin: CliPluginsScaffoldCi<GithubActionsInput> = {
                 text: `${chalk.green(newRepoName)} code repository created.`
             });
         } else {
-            /**
-             * TODO @ts-refactor try to get the heads and tails of this.
-             */
-            // @ts-expect-error
             repo = await octokit.rest.repos
                 .get({
                     repo: existingRepo.name,
