@@ -16,8 +16,8 @@ import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "./statuses";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { Tenant } from "@webiny/api-tenancy/types";
-import { EntriesPermissions } from "~/utils/permissions/EntriesPermissions";
 import { getIdentity } from "~/utils/identity";
+import { AccessControl } from "~/crud/AccessControl/AccessControl";
 
 type DefaultValue = boolean | number | string | null;
 
@@ -29,7 +29,7 @@ type CreateEntryDataParams = {
     getIdentity: () => SecurityIdentity;
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
-    entriesPermissions: EntriesPermissions;
+    accessControl: AccessControl;
 };
 
 export const createEntryData = async ({
@@ -40,7 +40,7 @@ export const createEntryData = async ({
     getIdentity: getSecurityIdentity,
     getLocale,
     getTenant,
-    entriesPermissions
+    accessControl
 }: CreateEntryDataParams): Promise<{
     entry: CmsEntry;
     input: Record<string, any>;
@@ -80,10 +80,10 @@ export const createEntryData = async ({
     const status = rawInput.status || STATUS_DRAFT;
     if (status !== STATUS_DRAFT) {
         if (status === STATUS_PUBLISHED) {
-            await entriesPermissions.ensure({ pw: "p" });
+            await accessControl.ensureCanAccessEntry({ model, pw: "p" });
         } else if (status === STATUS_UNPUBLISHED) {
             // If setting the status other than draft, we have to check if the user has permissions to publish.
-            await entriesPermissions.ensure({ pw: "u" });
+            await accessControl.ensureCanAccessEntry({ model, pw: "u" });
         }
     }
 
@@ -173,6 +173,15 @@ export const createEntryData = async ({
             folderId: rawInput.wbyAco_location?.folderId || ROOT_FOLDER
         }
     };
+
+    if (status !== STATUS_DRAFT) {
+        if (status === STATUS_PUBLISHED) {
+            await accessControl.ensureCanAccessEntry({ model, entry, pw: "p" });
+        } else if (status === STATUS_UNPUBLISHED) {
+            // If setting the status other than draft, we have to check if the user has permissions to publish.
+            await accessControl.ensureCanAccessEntry({ model, entry, pw: "u" });
+        }
+    }
 
     return { entry, input };
 };

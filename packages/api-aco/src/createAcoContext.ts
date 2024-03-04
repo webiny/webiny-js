@@ -2,9 +2,9 @@ import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
+import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { createAcoHooks } from "~/createAcoHooks";
 import { createAcoStorageOperations } from "~/createAcoStorageOperations";
-import { isInstallationPending } from "~/utils/isInstallationPending";
 import { AcoContext, CreateAcoParams, Folder, IAcoAppRegisterParams } from "~/types";
 import { createFolderCrudMethods } from "~/folder/folder.crud";
 import { createSearchRecordCrudMethods } from "~/record/record.crud";
@@ -185,9 +185,10 @@ export const createAcoContext = (params: CreateAcoContextParams = {}) => {
         /**
          * We can skip the ACO initialization if the installation is pending.
          */
-        if (isInstallationPending(context)) {
+        if (!(await isHeadlessCmsReady(context))) {
             return;
         }
+
         await context.benchmark.measure("aco.context.setup", async () => {
             await setupAcoContext(context, params);
         });

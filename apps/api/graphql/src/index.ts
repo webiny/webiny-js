@@ -40,6 +40,7 @@ import scaffoldsPlugins from "./plugins/scaffolds";
 import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
 import { createCountDynamoDbTask } from "~/plugins/countDynamoDbTask";
 import { createContinuingTask } from "~/plugins/continuingTask";
+import { createWebsockets } from "@webiny/api-websockets";
 
 const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
@@ -60,6 +61,7 @@ export const handler = createHandler({
         tenantManager(),
         i18nPlugins(),
         i18nDynamoDbStorageOperations(),
+        createWebsockets(),
         createHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient

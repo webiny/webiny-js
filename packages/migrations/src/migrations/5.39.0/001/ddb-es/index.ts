@@ -26,6 +26,7 @@ import { CmsEntry } from "../types";
 import { getDecompressedData } from "../utils/getDecompressedData";
 import { getCompressedData } from "../utils/getCompressedData";
 import { assignNewMetaFields } from "../utils/assignNewMetaFields";
+import { fixTypeFieldValue } from "../utils/fixTypeFieldValue";
 import { isMigratedEntry } from "../utils/isMigratedEntry";
 import { getOldestRevisionCreatedOn } from "../utils/getOldestRevisionCreatedOn";
 import { getFirstLastPublishedOnBy } from "~/migrations/5.39.0/001/utils/getFirstLastPublishedOn";
@@ -84,8 +85,8 @@ export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
             options: {
                 filters: [
                     {
-                        attr: "PK",
-                        contains: "#CMS#CME#"
+                        attr: "_et",
+                        eq: "CmsEntriesElasticsearch"
                     }
                 ],
                 limit: 100
@@ -143,12 +144,12 @@ export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
                 options: {
                     filters: [
                         {
-                            attr: "TYPE",
-                            beginsWith: "cms.entry"
+                            attr: "_et",
+                            eq: "CmsEntries"
                         }
                     ],
                     startKey: migrationStatus.lastEvaluatedKey || undefined,
-                    limit: 500
+                    limit: 100
                 }
             },
             async result => {
@@ -206,6 +207,9 @@ export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
                         ...firstLastPublishedOnByFields
                     });
 
+                    // Fixes the value of the `TYPE` field, if it's not valid.
+                    fixTypeFieldValue(item);
+
                     ddbItems.push(this.ddbEntryEntity.putBatch(item));
 
                     /**
@@ -214,10 +218,12 @@ export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
                     if (ddbEsGetItems[`${item.entryId}:L`]) {
                         continue;
                     }
+
                     ddbEsGetItems[`${item.entryId}:L`] = this.ddbEsEntryEntity.getBatch({
                         PK: item.PK,
                         SK: "L"
                     });
+
                     if (item.status === "published" || !!item.locked) {
                         ddbEsGetItems[`${item.entryId}:P`] = this.ddbEsEntryEntity.getBatch({
                             PK: item.PK,

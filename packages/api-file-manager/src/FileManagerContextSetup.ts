@@ -3,12 +3,10 @@ import { createFileManager, FileManagerConfig } from "~/createFileManager";
 import { FileStorage } from "~/storage/FileStorage";
 import WebinyError from "@webiny/error";
 import { SecurityPermission } from "@webiny/api-security/types";
-import { isInstallationPending } from "~/cmsFileStorage/isInstallationPending";
-import { createFileModel } from "~/cmsFileStorage/createFileManagerPlugins";
-import { FILE_MODEL_ID } from "~/cmsFileStorage/file.model";
+import { createFileModel, FILE_MODEL_ID } from "~/cmsFileStorage/file.model";
 import { CmsFilesStorage } from "~/cmsFileStorage/CmsFilesStorage";
 import { CmsModelModifierPlugin } from "~/modelModifier/CmsModelModifier";
-import { CmsModelPlugin } from "@webiny/api-headless-cms";
+import { CmsModelPlugin, isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { FilesPermissions } from "~/createFileManager/permissions/FilesPermissions";
 
 export class FileManagerContextSetup {
@@ -78,7 +76,7 @@ export class FileManagerContextSetup {
     }
 
     private async setupCmsStorageOperations(aliases: FileManagerAliasesStorageOperations) {
-        if (isInstallationPending({ tenancy: this.context.tenancy, i18n: this.context.i18n })) {
+        if (!(await isHeadlessCmsReady(this.context))) {
             console.log("Installation pending!");
             return;
         }
@@ -86,7 +84,7 @@ export class FileManagerContextSetup {
         const withPrivateFiles = this.context.wcp.canUsePrivateFiles();
 
         // This registers code plugins (model group, models)
-        const { fileModelDefinition } = createFileModel({ withPrivateFiles });
+        const fileModelDefinition = createFileModel({ withPrivateFiles });
 
         const modelModifiers = this.context.plugins.byType<CmsModelModifierPlugin>(
             CmsModelModifierPlugin.type

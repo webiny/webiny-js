@@ -7,7 +7,7 @@ const plugin: CmsModelFieldRegexValidatorExpressionPlugin = {
         name: "email",
         label: "E-mail",
         message: "Please enter a valid e-mail.",
-        regex: `^\\w[\\w.-]*@([\\w-]+\\.)+[\\w-]+$`,
+        regex: `^\\w[\\+\\w.-]*@([\\w-]+\\.)+[\\w-]+$`,
         flags: "i"
     }
 };

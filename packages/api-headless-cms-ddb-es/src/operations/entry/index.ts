@@ -63,6 +63,20 @@ export interface CreateEntriesStorageOperationsParams {
     plugins: PluginsContainer;
 }
 
+const IGNORED_ES_SEARCH_EXCEPTIONS = [
+    "index_not_found_exception",
+    "search_phase_execution_exception"
+];
+
+const shouldIgnoreElasticsearchException = (ex: Pick<Error, "message">) => {
+    if (IGNORED_ES_SEARCH_EXCEPTIONS.includes(ex.message)) {
+        console.log(`Ignoring Elasticsearch exception: ${ex.message}`);
+        console.log(ex);
+        return true;
+    }
+    return false;
+};
+
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
 ): CmsEntryStorageOperations => {
@@ -418,7 +432,7 @@ export const createEntriesStorageOperations = (
                     entity.putBatch({
                         ...storageEntry,
                         ...latestKeys,
-                        TYPE: createLatestSortKey()
+                        TYPE: createLatestRecordType()
                     })
                 );
 
@@ -471,7 +485,7 @@ export const createEntriesStorageOperations = (
                 items.push(
                     entity.putBatch({
                         ...updatedLatestStorageEntry,
-                        TYPE: createLatestSortKey()
+                        TYPE: createLatestRecordType()
                     })
                 );
 
@@ -1126,7 +1140,7 @@ export const createEntriesStorageOperations = (
              * We will silently ignore the `index_not_found_exception` error and return an empty result set.
              * This is because the index might not exist yet, and we don't want to throw an error.
              */
-            if (ex.message === "index_not_found_exception") {
+            if (shouldIgnoreElasticsearchException(ex)) {
                 return {
                     hasMoreItems: false,
                     totalCount: 0,
@@ -1387,7 +1401,7 @@ export const createEntriesStorageOperations = (
                 items.push(
                     entity.putBatch({
                         ...updatedLatestStorageEntry,
-                        TYPE: createLatestSortKey()
+                        TYPE: createLatestRecordType()
                     })
                 );
 
@@ -1835,7 +1849,7 @@ export const createEntriesStorageOperations = (
                 body
             });
         } catch (ex) {
-            if (ex.message === "index_not_found_exception") {
+            if (shouldIgnoreElasticsearchException(ex)) {
                 return [];
             }
             throw new WebinyError(

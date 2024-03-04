@@ -1,11 +1,11 @@
-import { createCmsModel, createPrivateModelDefinition } from "@webiny/api-headless-cms";
+import { createCmsModel, createPrivateModel } from "@webiny/api-headless-cms";
 import { ITaskLogItemType, TaskDataStatus } from "~/types";
 
 export const WEBINY_TASK_MODEL_ID = "webinyTask";
 export const WEBINY_TASK_LOG_MODEL_ID = "webinyTaskLog";
 
 const taskLogModelPlugin = createCmsModel(
-    createPrivateModelDefinition({
+    createPrivateModel({
         name: "Webiny Task Log",
         modelId: WEBINY_TASK_LOG_MODEL_ID,
         fields: [
@@ -137,7 +137,7 @@ const taskLogModelPlugin = createCmsModel(
 );
 
 const taskModelPlugin = createCmsModel(
-    createPrivateModelDefinition({
+    createPrivateModel({
         name: "Webiny Task",
         modelId: WEBINY_TASK_MODEL_ID,
         fields: [

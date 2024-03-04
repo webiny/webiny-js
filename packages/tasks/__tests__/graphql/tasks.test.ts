@@ -15,7 +15,7 @@ describe("graphql - tasks", () => {
     it("should list tasks", async () => {
         const context = await contextHandler.handle();
 
-        await context.tasks.createTask({
+        const task = await context.tasks.createTask({
             name: "My Custom Task #1",
             definitionId: "myCustomTaskNumber1",
             input: {
@@ -40,6 +40,11 @@ describe("graphql - tasks", () => {
                 someValue: "yes!",
                 someOtherValue: 12345678
             }
+        });
+
+        await context.tasks.createLog(task, {
+            executionName: task.executionName || "mock execution name",
+            iteration: 1
         });
 
         const response = await handler.listTasks();
@@ -98,7 +103,20 @@ describe("graphql - tasks", () => {
                                 createdOn: expect.any(String),
                                 savedOn: expect.any(String),
                                 eventResponse: null,
-                                logs: []
+                                logs: [
+                                    {
+                                        createdBy: {
+                                            displayName: "John Doe",
+                                            id: "id-12345678",
+                                            type: "admin"
+                                        },
+                                        createdOn: expect.toBeDateString(),
+                                        executionName: "mock execution name",
+                                        id: expect.any(String),
+                                        items: [],
+                                        iteration: 1
+                                    }
+                                ]
                             }
                         ],
                         meta: {

@@ -7,7 +7,7 @@ const NO_SUCH_ENTITY_IAM_ERROR = "NoSuchEntity";
 
 export const checkOsServiceRole = {
     type: "hook-before-deploy",
-    name: "hook-before-deploy-es-service-role",
+    name: "hook-before-deploy-os-service-role",
     async hook(params: Record<string, any>, context: CliContext) {
         const spinner = ora();
         spinner.start(`Checking Amazon OpenSearch service role...`);
@@ -24,7 +24,7 @@ export const checkOsServiceRole = {
             // We've seen cases where the `iam.getRole` call fails because of an issue
             // other than not being able to retrieve the service role. Let's print
             // additional info if that's the case. Will make debugging a bit easier.
-            if (err.Error.Code !== NO_SUCH_ENTITY_IAM_ERROR) {
+            if (err.Error?.Code !== NO_SUCH_ENTITY_IAM_ERROR) {
                 spinner.fail(
                     "Tried retrieving Amazon OpenSearch service role but failed with the following error: " +
                         err.message
