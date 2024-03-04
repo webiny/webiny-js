@@ -36,14 +36,14 @@ export const createDeleteEntryData = async ({
         /**
          * Entry-level meta fields. 👇
          */
-        deletedOn: getDate(currentDateTime),
-        deletedBy: getIdentity(currentIdentity),
+        deletedOn: getDate(currentDateTime, null),
+        deletedBy: getIdentity(currentIdentity, null),
 
         /**
          * Revision-level meta fields. 👇
          */
-        revisionDeletedOn: getDate(currentDateTime),
-        revisionDeletedBy: getIdentity(currentIdentity)
+        revisionDeletedOn: getDate(currentDateTime, null),
+        revisionDeletedBy: getIdentity(currentIdentity, null)
     };
 
     return { entry };

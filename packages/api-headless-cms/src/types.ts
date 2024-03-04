@@ -2292,9 +2292,10 @@ export interface CreateCmsEntryInput {
     createdOn?: Date | string;
     modifiedOn?: Date | string | null;
     savedOn?: Date | string;
+    deletedOn?: Date | string | null;
     createdBy?: CmsIdentity;
-    modifiedBy?: CmsIdentity | null;
     savedBy?: CmsIdentity;
+    deletedBy?: CmsIdentity | null;
     firstPublishedOn?: Date | string;
     lastPublishedOn?: Date | string;
     firstPublishedBy?: CmsIdentity;
@@ -2306,9 +2307,11 @@ export interface CreateCmsEntryInput {
     revisionCreatedOn?: Date | string;
     revisionModifiedOn?: Date | string | null;
     revisionSavedOn?: Date | string;
+    revisionDeletedOn?: Date | string | null;
     revisionCreatedBy?: CmsIdentity;
     revisionModifiedBy?: CmsIdentity | null;
     revisionSavedBy?: CmsIdentity;
+    revisionDeletedBy?: CmsIdentity | null;
     revisionFirstPublishedOn?: Date | string;
     revisionLastPublishedOn?: Date | string;
     revisionFirstPublishedBy?: CmsIdentity;
@@ -2376,11 +2379,13 @@ export interface UpdateCmsEntryInput {
     revisionCreatedOn?: Date | string | null;
     revisionModifiedOn?: Date | string | null;
     revisionSavedOn?: Date | string | null;
+    revisionDeletedOn?: Date | string | null;
     revisionFirstPublishedOn?: Date | string | null;
     revisionLastPublishedOn?: Date | string | null;
     revisionModifiedBy?: CmsIdentity | null;
     revisionCreatedBy?: CmsIdentity | null;
     revisionSavedBy?: CmsIdentity | null;
+    revisionDeletedBy?: CmsIdentity | null;
     revisionFirstPublishedBy?: CmsIdentity | null;
     revisionLastPublishedBy?: CmsIdentity | null;
 
@@ -2390,11 +2395,13 @@ export interface UpdateCmsEntryInput {
     createdOn?: Date | string | null;
     modifiedOn?: Date | string | null;
     savedOn?: Date | string | null;
+    deletedOn?: Date | string | null;
     firstPublishedOn?: Date | string | null;
     lastPublishedOn?: Date | string | null;
     createdBy?: CmsIdentity | null;
     modifiedBy?: CmsIdentity | null;
     savedBy?: CmsIdentity | null;
+    deletedBy?: CmsIdentity | null;
     firstPublishedBy?: CmsIdentity | null;
     lastPublishedBy?: CmsIdentity | null;
 
