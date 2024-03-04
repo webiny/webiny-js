@@ -349,7 +349,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const getPublishedEntriesByIds: CmsEntryContext["getPublishedEntriesByIds"] = async (
         model,
         ids,
-        deleted = false
+        deleted
     ) => {
         await accessControl.ensureCanAccessEntry({ model });
 
@@ -365,7 +365,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const getLatestEntriesByIds: CmsEntryContext["getLatestEntriesByIds"] = async (
         model,
         ids,
-        deleted = false
+        deleted
     ) => {
         await accessControl.ensureCanAccessEntry({ model });
 
@@ -405,7 +405,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const getEntryRevisions: CmsEntryContext["getEntryRevisions"] = async (
         model,
         entryId,
-        deleted = false
+        deleted
     ) => {
         return storageOperations.entries.getRevisions(model, {
             id: entryId,

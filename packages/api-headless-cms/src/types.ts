@@ -2984,22 +2984,22 @@ export interface CmsEntryStorageOperationsGetUniqueFieldValuesParams {
 
 export interface CmsEntryStorageOperationsGetByIdsParams {
     ids: readonly string[];
-    deleted: boolean;
+    deleted?: boolean;
 }
 
 export interface CmsEntryStorageOperationsGetLatestByIdsParams {
     ids: readonly string[];
-    deleted: boolean;
+    deleted?: boolean;
 }
 
 export interface CmsEntryStorageOperationsGetPublishedByIdsParams {
     ids: readonly string[];
-    deleted: boolean;
+    deleted?: boolean;
 }
 
 export interface CmsEntryStorageOperationsGetRevisionsParams {
     id: string;
-    deleted: boolean;
+    deleted?: boolean;
 }
 
 export interface CmsEntryStorageOperationsGetRevisionParams {
