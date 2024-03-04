@@ -9,21 +9,25 @@ export default /* GraphQL */ `
         createdOn: DateTime!
         modifiedOn: DateTime
         savedOn: DateTime!
+        deletedOn: DateTime
         firstPublishedOn: DateTime
         lastPublishedOn: DateTime
         createdBy: CmsIdentity!
         modifiedBy: CmsIdentity
         savedBy: CmsIdentity!
+        deletedBy: CmsIdentity
         firstPublishedBy: CmsIdentity
         lastPublishedBy: CmsIdentity
         revisionCreatedOn: DateTime!
         revisionModifiedOn: DateTime
         revisionSavedOn: DateTime!
+        revisionDeletedOn: DateTime
         revisionFirstPublishedOn: DateTime
         revisionLastPublishedOn: DateTime
         revisionCreatedBy: CmsIdentity!
         revisionModifiedBy: CmsIdentity
         revisionSavedBy: CmsIdentity!
+        revisionDeletedBy: CmsIdentity
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
 
@@ -63,21 +67,25 @@ export default /* GraphQL */ `
         createdOn: DateTime
         modifiedOn: DateTime
         savedOn: DateTime
+        deletedOn: DateTime
         firstPublishedOn: DateTime
         lastPublishedOn: DateTime
         createdBy: CmsIdentityInput
         modifiedBy: CmsIdentityInput
         savedBy: CmsIdentityInput
+        deletedBy: CmsIdentityInput
         firstPublishedBy: CmsIdentityInput
         lastPublishedBy: CmsIdentityInput
         revisionCreatedOn: DateTime
         revisionModifiedOn: DateTime
         revisionSavedOn: DateTime
+        revisionDeletedOn: DateTime
         revisionFirstPublishedOn: DateTime
         revisionLastPublishedOn: DateTime
         revisionCreatedBy: CmsIdentityInput
         revisionModifiedBy: CmsIdentityInput
         revisionSavedBy: CmsIdentityInput
+        revisionDeletedBy: CmsIdentityInput
         revisionFirstPublishedBy: CmsIdentityInput
         revisionLastPublishedBy: CmsIdentityInput
 
@@ -125,6 +133,13 @@ export default /* GraphQL */ `
         savedOn_lte: DateTime
         savedOn_between: [DateTime!]
         savedOn_not_between: [DateTime!]
+        deletedOn: DateTime
+        deletedOn_gt: DateTime
+        deletedOn_gte: DateTime
+        deletedOn_lt: DateTime
+        deletedOn_lte: DateTime
+        deletedOn_between: [DateTime!]
+        deletedOn_not_between: [DateTime!]
         firstPublishedOn: DateTime
         firstPublishedOn_gt: DateTime
         firstPublishedOn_gte: DateTime
@@ -151,6 +166,10 @@ export default /* GraphQL */ `
         savedBy_not: ID
         savedBy_in: [ID!]
         savedBy_not_in: [ID!]
+        deletedBy: ID
+        deletedBy_not: ID
+        deletedBy_in: [ID!]
+        deletedBy_not_in: [ID!]
         firstPublishedBy: ID
         firstPublishedBy_not: ID
         firstPublishedBy_in: [ID!]
@@ -180,6 +199,13 @@ export default /* GraphQL */ `
         revisionSavedOn_lte: DateTime
         revisionSavedOn_between: [DateTime!]
         revisionSavedOn_not_between: [DateTime!]
+        revisionDeletedOn: DateTime
+        revisionDeletedOn_gt: DateTime
+        revisionDeletedOn_gte: DateTime
+        revisionDeletedOn_lt: DateTime
+        revisionDeletedOn_lte: DateTime
+        revisionDeletedOn_between: [DateTime!]
+        revisionDeletedOn_not_between: [DateTime!]
         revisionFirstPublishedOn: DateTime
         revisionFirstPublishedOn_gt: DateTime
         revisionFirstPublishedOn_gte: DateTime
@@ -206,6 +232,10 @@ export default /* GraphQL */ `
         revisionSavedBy_not: ID
         revisionSavedBy_in: [ID!]
         revisionSavedBy_not_in: [ID!]
+        revisionDeletedBy: ID
+        revisionDeletedBy_not: ID
+        revisionDeletedBy_in: [ID!]
+        revisionDeletedBy_not_in: [ID!]
         revisionFirstPublishedBy: ID
         revisionFirstPublishedBy_not: ID
         revisionFirstPublishedBy_in: [ID!]
@@ -271,6 +301,8 @@ export default /* GraphQL */ `
         modifiedOn_DESC
         savedOn_ASC
         savedOn_DESC
+        deletedOn_ASC
+        deletedOn_DESC
         firstPublishedOn_ASC
         firstPublishedOn_DESC
         lastPublishedOn_ASC
@@ -281,6 +313,8 @@ export default /* GraphQL */ `
         revisionModifiedOn_DESC
         revisionSavedOn_ASC
         revisionSavedOn_DESC
+        revisionDeletedOn_ASC
+        revisionDeletedOn_DESC
         revisionFirstPublishedOn_ASC
         revisionFirstPublishedOn_DESC
         revisionLastPublishedOn_ASC
@@ -296,14 +330,17 @@ export default /* GraphQL */ `
             revision: ID
             entryId: ID
             status: CmsEntryStatusType
+            deleted: Boolean
         ): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
         getCategoryApiNameWhichIsABitDifferentThanModelIdRevisions(
             id: ID!
+            deleted: Boolean
         ): CategoryApiNameWhichIsABitDifferentThanModelIdArrayResponse
 
         getCategoriesApiModelByIds(
             revisions: [ID!]!
+            deleted: Boolean
         ): CategoryApiNameWhichIsABitDifferentThanModelIdArrayResponse
 
         listCategoriesApiModel(
@@ -312,6 +349,7 @@ export default /* GraphQL */ `
             limit: Int
             after: String
             search: String
+            deleted: Boolean
         ): CategoryApiNameWhichIsABitDifferentThanModelIdListResponse
     }
 
