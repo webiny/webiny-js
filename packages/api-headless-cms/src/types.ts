@@ -2458,7 +2458,7 @@ export interface CmsDeleteEntryOptions {
     /**
      * Destroying the entry directly, without moving it to the bin.
      */
-    permanent?: boolean;
+    permanently?: boolean;
 }
 
 /**
@@ -2491,15 +2491,11 @@ export interface CmsEntryContext {
     /**
      * Get a list of entries for a model by a given ID (revision).
      */
-    getEntriesByIds: (
-        model: CmsModel,
-        revisions: string[],
-        deleted?: boolean
-    ) => Promise<CmsEntry[]>;
+    getEntriesByIds: (model: CmsModel, revisions: string[]) => Promise<CmsEntry[]>;
     /**
      * Get the entry for a model by a given ID.
      */
-    getEntryById: (model: CmsModel, revision: string, deleted?: boolean) => Promise<CmsEntry>;
+    getEntryById: (model: CmsModel, revision: string) => Promise<CmsEntry>;
     /**
      * List entries for a model. Internal method used by get, listLatest and listPublished.
      */
@@ -2524,19 +2520,11 @@ export interface CmsEntryContext {
     /**
      * List published entries by IDs.
      */
-    getPublishedEntriesByIds: (
-        model: CmsModel,
-        ids: string[],
-        deleted?: boolean
-    ) => Promise<CmsEntry[]>;
+    getPublishedEntriesByIds: (model: CmsModel, ids: string[]) => Promise<CmsEntry[]>;
     /**
      * List latest entries by IDs.
      */
-    getLatestEntriesByIds: (
-        model: CmsModel,
-        ids: string[],
-        deleted?: boolean
-    ) => Promise<CmsEntry[]>;
+    getLatestEntriesByIds: (model: CmsModel, ids: string[]) => Promise<CmsEntry[]>;
     /**
      * Create a new content entry.
      */
@@ -2607,7 +2595,7 @@ export interface CmsEntryContext {
     /**
      * Get all entry revisions.
      */
-    getEntryRevisions: (model: CmsModel, id: string, deleted?: boolean) => Promise<CmsEntry[]>;
+    getEntryRevisions: (model: CmsModel, id: string) => Promise<CmsEntry[]>;
     /**
      * List all unique values for a given field.
      *
@@ -2984,22 +2972,18 @@ export interface CmsEntryStorageOperationsGetUniqueFieldValuesParams {
 
 export interface CmsEntryStorageOperationsGetByIdsParams {
     ids: readonly string[];
-    deleted?: boolean;
 }
 
 export interface CmsEntryStorageOperationsGetLatestByIdsParams {
     ids: readonly string[];
-    deleted?: boolean;
 }
 
 export interface CmsEntryStorageOperationsGetPublishedByIdsParams {
     ids: readonly string[];
-    deleted?: boolean;
 }
 
 export interface CmsEntryStorageOperationsGetRevisionsParams {
     id: string;
-    deleted?: boolean;
 }
 
 export interface CmsEntryStorageOperationsGetRevisionParams {

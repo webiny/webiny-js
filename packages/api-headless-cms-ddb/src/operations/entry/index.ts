@@ -688,8 +688,7 @@ export const createEntriesStorageOperations = (
          */
         const revisions = await dataLoaders.getAllEntryRevisions({
             model,
-            ids: entries,
-            deleted: false
+            ids: entries
         });
         /**
          * Then we need to construct the queries for all the revisions and entries.
@@ -753,8 +752,7 @@ export const createEntriesStorageOperations = (
 
             const items = await dataLoaders.getLatestRevisionByEntryId({
                 model,
-                ids: [params.id],
-                deleted: false
+                ids: [params.id]
             });
             const item = items.shift() || null;
             if (!item) {
@@ -771,8 +769,7 @@ export const createEntriesStorageOperations = (
 
             const items = await dataLoaders.getPublishedRevisionByEntryId({
                 model,
-                ids: [params.id],
-                deleted: false
+                ids: [params.id]
             });
             const item = items.shift() || null;
             if (!item) {
@@ -792,8 +789,7 @@ export const createEntriesStorageOperations = (
 
         const items = await dataLoaders.getRevisionById({
             model,
-            ids: [params.id],
-            deleted: false
+            ids: [params.id]
         });
         const item = items.shift() || null;
         if (!item) {
@@ -809,31 +805,29 @@ export const createEntriesStorageOperations = (
         initialModel,
         params
     ) => {
-        const { id, deleted = false } = params;
         const model = getStorageOperationsModel(initialModel);
 
         const items = await dataLoaders.getAllEntryRevisions({
             model,
-            ids: [id],
-            deleted
+            ids: [params.id]
         });
 
-        return items.map(item => {
-            return convertFromStorageEntry({
-                storageEntry: item,
-                model
+        return items
+            .filter(item => item.deleted !== true)
+            .map(item => {
+                return convertFromStorageEntry({
+                    storageEntry: item,
+                    model
+                });
             });
-        });
     };
 
     const getByIds: CmsEntryStorageOperations["getByIds"] = async (initialModel, params) => {
-        const { ids, deleted = false } = params;
         const model = getStorageOperationsModel(initialModel);
 
         const items = await dataLoaders.getRevisionById({
             model,
-            ids,
-            deleted
+            ids: params.ids
         });
 
         return items.map(item => {
@@ -848,13 +842,11 @@ export const createEntriesStorageOperations = (
         initialModel,
         params
     ) => {
-        const { ids, deleted = false } = params;
         const model = getStorageOperationsModel(initialModel);
 
         const items = await dataLoaders.getLatestRevisionByEntryId({
             model,
-            ids,
-            deleted
+            ids: params.ids
         });
 
         return items.map(item => {
@@ -869,13 +861,11 @@ export const createEntriesStorageOperations = (
         initialModel,
         params
     ) => {
-        const { ids, deleted = false } = params;
         const model = getStorageOperationsModel(initialModel);
 
         const items = await dataLoaders.getPublishedRevisionByEntryId({
             model,
-            ids,
-            deleted
+            ids: params.ids
         });
 
         return items.map(item => {

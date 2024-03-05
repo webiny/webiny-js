@@ -76,6 +76,15 @@ interface DeleteEntryParams {
     entry: CmsEntry;
 }
 
+type GetEntryRevisionParams = {
+    model: CmsModel;
+    id: string;
+    loadDeleted?: boolean;
+};
+
+type GetLatestEntryRevisionParams = GetEntryRevisionParams;
+type GetPublishedEntryRevisionParams = GetEntryRevisionParams;
+
 const createSort = (sort?: CmsEntryListSort): CmsEntryListSort => {
     if (Array.isArray(sort) && sort.filter(Boolean).length > 0) {
         return sort;
@@ -316,13 +325,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     /**
      * A helper to get entries by revision IDs
      */
-    const getEntriesByIds: CmsEntryContext["getEntriesByIds"] = async (model, ids, deleted) => {
+    const getEntriesByIds: CmsEntryContext["getEntriesByIds"] = async (model, ids) => {
         return context.benchmark.measure("headlessCms.crud.entries.getEntriesByIds", async () => {
             await accessControl.ensureCanAccessEntry({ model });
 
             const entries = await storageOperations.entries.getByIds(model, {
-                ids,
-                deleted
+                ids
             });
 
             return filterAsync(entries, async entry => {
@@ -330,7 +338,39 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         });
     };
-    const getEntryById: CmsEntryContext["getEntryById"] = async (model, id, deleted) => {
+    /**
+     * A helper to get the latest revision entry.
+     */
+    const getLatestRevisionByEntryId = async (params: GetLatestEntryRevisionParams) => {
+        const { model, id, loadDeleted = false } = params;
+        const entry = await storageOperations.entries.getLatestRevisionByEntryId(model, {
+            id
+        });
+        if (!entry) {
+            return null;
+        }
+        if (!loadDeleted && entry.deleted) {
+            return null;
+        }
+        return entry;
+    };
+    /**
+     * A helper to get the published revision entry.
+     */
+    const getPublishedRevisionByEntryId = async (params: GetPublishedEntryRevisionParams) => {
+        const { model, id, loadDeleted = false } = params;
+        const entry = await storageOperations.entries.getPublishedRevisionByEntryId(model, {
+            id
+        });
+        if (!entry) {
+            return null;
+        }
+        if (!loadDeleted && entry.deleted) {
+            return null;
+        }
+        return entry;
+    };
+    const getEntryById: CmsEntryContext["getEntryById"] = async (model, id) => {
         const where: CmsEntryListWhere = {
             id
         };
@@ -338,7 +378,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             where,
             model
         });
-        const [entry] = await getEntriesByIds(model, [id], deleted);
+        const [entry] = await getEntriesByIds(model, [id]);
         if (!entry) {
             throw new NotFoundError(`Entry by ID "${id}" not found.`);
         }
@@ -346,30 +386,23 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
     const getPublishedEntriesByIds: CmsEntryContext["getPublishedEntriesByIds"] = async (
         model,
-        ids,
-        deleted
+        ids
     ) => {
         await accessControl.ensureCanAccessEntry({ model });
 
         const entries = await storageOperations.entries.getPublishedByIds(model, {
-            ids,
-            deleted
+            ids
         });
 
         return filterAsync(entries, async entry => {
             return accessControl.canAccessEntry({ model, entry });
         });
     };
-    const getLatestEntriesByIds: CmsEntryContext["getLatestEntriesByIds"] = async (
-        model,
-        ids,
-        deleted
-    ) => {
+    const getLatestEntriesByIds: CmsEntryContext["getLatestEntriesByIds"] = async (model, ids) => {
         await accessControl.ensureCanAccessEntry({ model });
 
         const entries = await storageOperations.entries.getLatestByIds(model, {
-            ids,
-            deleted
+            ids
         });
 
         return filterAsync(entries, async entry => {
@@ -400,15 +433,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
         return item;
     };
-    const getEntryRevisions: CmsEntryContext["getEntryRevisions"] = async (
-        model,
-        entryId,
-        deleted
-    ) => {
-        return storageOperations.entries.getRevisions(model, {
-            id: entryId,
-            deleted
+    const getEntryRevisions: CmsEntryContext["getEntryRevisions"] = async (model, entryId) => {
+        const revisions = await storageOperations.entries.getRevisions(model, {
+            id: entryId
         });
+        return revisions.filter(filter => filter.deleted !== true);
     };
 
     const listEntries = async <T = CmsEntryValues>(
@@ -577,12 +606,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const originalStorageEntry = await storageOperations.entries.getRevisionById(model, {
             id: sourceId
         });
-        const latestStorageEntry = await storageOperations.entries.getLatestRevisionByEntryId(
+        const latestStorageEntry = await getLatestRevisionByEntryId({
             model,
-            {
-                id: uniqueId
-            }
-        );
+            id: uniqueId
+        });
 
         if (!originalStorageEntry) {
             throw new NotFoundError(
@@ -928,12 +955,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const storageEntryToDelete = await storageOperations.entries.getRevisionById(model, {
             id: revisionId
         });
-        const latestStorageEntry = await storageOperations.entries.getLatestRevisionByEntryId(
+        const latestStorageEntry = await getLatestRevisionByEntryId({
             model,
-            {
-                id: entryId
-            }
-        );
+            id: entryId
+        });
         const storagePreviousEntry = await storageOperations.entries.getPreviousRevision(model, {
             entryId,
             version: version as number
@@ -1106,10 +1131,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, id, options) => {
         await accessControl.ensureCanAccessEntry({ model, rwd: "d" });
 
-        const { force, permanent = true } = options || {};
+        const { force, permanently = true } = options || {};
 
-        const storageEntry = (await storageOperations.entries.getLatestRevisionByEntryId(model, {
-            id
+        const storageEntry = (await getLatestRevisionByEntryId({
+            model,
+            id,
+            loadDeleted: permanently
         })) as CmsEntry;
         /**
          * If there is no entry, and we do not force the deletion, just throw an error.
@@ -1138,7 +1165,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const originalEntry = await entryFromStorageTransform(context, model, storageEntry);
         await accessControl.ensureCanAccessEntry({ model, entry: originalEntry, rwd: "d" });
 
-        if (permanent) {
+        if (permanently) {
             return await destroyEntryHelper({
                 model,
                 entry: originalEntry
@@ -1170,12 +1197,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         await accessControl.ensureCanAccessEntry({ model, entry: originalEntry, pw: "p" });
 
         // We need the latest entry to get the latest entry-level meta fields.
-        const latestStorageEntry = await storageOperations.entries.getLatestRevisionByEntryId(
+        const latestStorageEntry = await getLatestRevisionByEntryId({
             model,
-            {
-                id: originalEntry.entryId
-            }
-        );
+            id: originalEntry.entryId
+        });
 
         if (!latestStorageEntry) {
             throw new NotFoundError(`Entry "${id}" in the model "${model.modelId}" was not found.`);
@@ -1238,12 +1263,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const { id: entryId } = parseIdentifier(id);
 
-        const originalStorageEntry = await storageOperations.entries.getPublishedRevisionByEntryId(
+        const originalStorageEntry = await getPublishedRevisionByEntryId({
             model,
-            {
-                id: entryId
-            }
-        );
+            id: entryId
+        });
 
         if (!originalStorageEntry) {
             throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
@@ -1432,38 +1455,38 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Get a single entry by revision ID from the database.
          */
-        async getEntryById(model, id, deleted?: boolean) {
+        async getEntryById(model, id) {
             return context.benchmark.measure("headlessCms.crud.entries.getEntryById", async () => {
-                return getEntryById(model, id, deleted);
+                return getEntryById(model, id);
             });
         },
         /**
          * Get published revisions by entry IDs.
          */
-        async getPublishedEntriesByIds(model: CmsModel, ids: string[], deleted?: boolean) {
+        async getPublishedEntriesByIds(model: CmsModel, ids: string[]) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.getPublishedEntriesByIds",
                 async () => {
-                    return getPublishedEntriesByIds(model, ids, deleted);
+                    return getPublishedEntriesByIds(model, ids);
                 }
             );
         },
         /**
          * Get the latest revisions by entry IDs.
          */
-        async getLatestEntriesByIds(model: CmsModel, ids: string[], deleted?: boolean) {
+        async getLatestEntriesByIds(model: CmsModel, ids: string[]) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.getLatestEntriesByIds",
                 async () => {
-                    return getLatestEntriesByIds(model, ids, deleted);
+                    return getLatestEntriesByIds(model, ids);
                 }
             );
         },
-        async getEntryRevisions(model, entryId, deleted?: boolean) {
+        async getEntryRevisions(model, entryId) {
             return context.benchmark.measure(
                 "headlessCms.crud.entries.getEntryRevisions",
                 async () => {
-                    return getEntryRevisions(model, entryId, deleted);
+                    return getEntryRevisions(model, entryId);
                 }
             );
         },

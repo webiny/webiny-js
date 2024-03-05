@@ -12,11 +12,7 @@ export const resolveGetByIds: ResolveGetByIds =
     async (_, args: any, context) => {
         const { revisions, deleted = false } = args;
         try {
-            const response: CmsEntry[] = await context.cms.getEntriesByIds(
-                model,
-                revisions,
-                deleted
-            );
+            const response: CmsEntry[] = await context.cms.getEntriesByIds(model, revisions);
 
             return new Response(response);
         } catch (e) {

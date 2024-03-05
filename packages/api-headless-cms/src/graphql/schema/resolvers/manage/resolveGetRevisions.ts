@@ -12,7 +12,7 @@ export const resolveGetRevisions: ResolveGetRevisions =
     async (_, args: any, context) => {
         const { id, deleted = false } = args;
         try {
-            const revisions = await context.cms.getEntryRevisions(model, id, deleted);
+            const revisions = await context.cms.getEntryRevisions(model, id);
 
             return new Response(revisions.sort((a, b) => b.version - a.version));
         } catch (e) {

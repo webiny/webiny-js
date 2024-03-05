@@ -78,12 +78,12 @@ export const resolveGet: ResolveGet =
 
             if (entryId) {
                 const result = published
-                    ? await context.cms.getPublishedEntriesByIds(model, [entryId], deleted)
-                    : await context.cms.getLatestEntriesByIds(model, [entryId], deleted);
+                    ? await context.cms.getPublishedEntriesByIds(model, [entryId])
+                    : await context.cms.getLatestEntriesByIds(model, [entryId]);
                 return new Response(result.shift() || null);
             }
 
-            const entry = await context.cms.getEntryById(model, revision as string, deleted);
+            const entry = await context.cms.getEntryById(model, revision as string);
 
             return new Response(entry);
         } catch (e) {

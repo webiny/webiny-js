@@ -384,14 +384,12 @@ export const createEntriesStorageOperations = (
          */
         const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
             model,
-            ids: [entry.id],
-            deleted: false
+            ids: [entry.id]
         });
 
         const [publishedStorageEntry] = await dataLoaders.getPublishedRevisionByEntryId({
             model,
-            ids: [entry.id],
-            deleted: false
+            ids: [entry.id]
         });
 
         const items = [
@@ -884,8 +882,7 @@ export const createEntriesStorageOperations = (
          */
         const [publishedStorageEntry] = await dataLoaders.getPublishedRevisionByEntryId({
             model,
-            ids: [entry.id],
-            deleted: false
+            ids: [entry.id]
         });
         /**
          * We need to delete all existing records of the given entry revision.
@@ -1025,8 +1022,7 @@ export const createEntriesStorageOperations = (
          */
         const revisions = await dataLoaders.getAllEntryRevisions({
             model,
-            ids: entries,
-            deleted: false
+            ids: entries
         });
         /**
          * Then we need to construct the queries for all the revisions and entries.
@@ -1215,8 +1211,7 @@ export const createEntriesStorageOperations = (
          */
         const [publishedStorageEntry] = await dataLoaders.getPublishedRevisionByEntryId({
             model,
-            ids: [entry.id],
-            deleted: false
+            ids: [entry.id]
         });
 
         const revisionKeys = {
@@ -1285,8 +1280,7 @@ export const createEntriesStorageOperations = (
              */
             const [previouslyPublishedEntry] = await dataLoaders.getRevisionById({
                 model,
-                ids: [publishedStorageEntry.id],
-                deleted: false
+                ids: [publishedStorageEntry.id]
             });
             items.push(
                 /**
@@ -1317,8 +1311,7 @@ export const createEntriesStorageOperations = (
          */
         const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
             model,
-            ids: [entry.id],
-            deleted: false
+            ids: [entry.id]
         });
 
         if (latestStorageEntry?.id === entry.id) {
@@ -1509,8 +1502,7 @@ export const createEntriesStorageOperations = (
          */
         const [latestStorageEntry] = await dataLoaders.getLatestRevisionByEntryId({
             model,
-            ids: [entry.id],
-            deleted: false
+            ids: [entry.id]
         });
 
         const partitionKey = createPartitionKey({
@@ -1606,8 +1598,7 @@ export const createEntriesStorageOperations = (
 
             const [entry] = await dataLoaders.getLatestRevisionByEntryId({
                 model,
-                ids: [params.id],
-                deleted: false
+                ids: [params.id]
             });
             if (!entry) {
                 return null;
@@ -1624,8 +1615,7 @@ export const createEntriesStorageOperations = (
 
             const [entry] = await dataLoaders.getPublishedRevisionByEntryId({
                 model,
-                ids: [params.id],
-                deleted: false
+                ids: [params.id]
             });
             if (!entry) {
                 return null;
@@ -1644,8 +1634,7 @@ export const createEntriesStorageOperations = (
 
         const [entry] = await dataLoaders.getRevisionById({
             model,
-            ids: [params.id],
-            deleted: false
+            ids: [params.id]
         });
         if (!entry) {
             return null;
@@ -1664,8 +1653,7 @@ export const createEntriesStorageOperations = (
 
         const entries = await dataLoaders.getAllEntryRevisions({
             model,
-            ids: [params.id],
-            deleted: false
+            ids: [params.id]
         });
 
         return entries.map(entry => {
@@ -1681,8 +1669,7 @@ export const createEntriesStorageOperations = (
 
         const entries = await dataLoaders.getRevisionById({
             model,
-            ids: params.ids,
-            deleted: false
+            ids: params.ids
         });
 
         return entries.map(entry => {
@@ -1701,8 +1688,7 @@ export const createEntriesStorageOperations = (
 
         const entries = await dataLoaders.getLatestRevisionByEntryId({
             model,
-            ids: params.ids,
-            deleted: false
+            ids: params.ids
         });
         return entries.map(entry => {
             return convertEntryKeysFromStorage({
@@ -1720,8 +1706,7 @@ export const createEntriesStorageOperations = (
 
         const entries = await dataLoaders.getPublishedRevisionByEntryId({
             model,
-            ids: params.ids,
-            deleted: false
+            ids: params.ids
         });
 
         return entries.map(entry => {

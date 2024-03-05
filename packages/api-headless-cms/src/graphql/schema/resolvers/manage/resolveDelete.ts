@@ -22,7 +22,7 @@ export const resolveDelete: ResolveDelete =
                  */
                 const options: CmsDeleteEntryOptions = {
                     force: deleteOptions?.force === true,
-                    permanent: deleteOptions?.permanent === true
+                    permanently: deleteOptions?.permanently
                 };
                 await context.cms.deleteEntry(model, revision, options);
             }

@@ -10,7 +10,6 @@ import { DataLoadersHandlerInterface, DataLoadersHandlerInterfaceClearAllParams 
 interface DataLoaderParams {
     model: Pick<CmsModel, "tenant" | "locale" | "modelId">;
     ids: readonly string[];
-    deleted: boolean;
 }
 
 interface GetLoaderParams {
@@ -38,13 +37,11 @@ export class DataLoadersHandler implements DataLoadersHandlerInterface {
             const { id: entryId } = parseIdentifier(id);
             return entryId;
         });
-        const entries = await this.loadMany("getAllEntryRevisions", params, ids);
-        return this.filterEntriesByDeletedField(entries, params.deleted);
+        return await this.loadMany("getAllEntryRevisions", params, ids);
     }
 
     public async getRevisionById(params: DataLoaderParams): Promise<CmsStorageEntry[]> {
-        const entries = await this.loadMany("getRevisionById", params, params.ids);
-        return this.filterEntriesByDeletedField(entries, params.deleted);
+        return await this.loadMany("getRevisionById", params, params.ids);
     }
 
     public async getPublishedRevisionByEntryId(
@@ -54,8 +51,7 @@ export class DataLoadersHandler implements DataLoadersHandlerInterface {
             const { id: entryId } = parseIdentifier(id);
             return entryId;
         });
-        const entries = await this.loadMany("getPublishedRevisionByEntryId", params, ids);
-        return this.filterEntriesByDeletedField(entries, params.deleted);
+        return await this.loadMany("getPublishedRevisionByEntryId", params, ids);
     }
 
     public async getLatestRevisionByEntryId(params: DataLoaderParams): Promise<CmsStorageEntry[]> {
@@ -63,8 +59,7 @@ export class DataLoadersHandler implements DataLoadersHandlerInterface {
             const { id: entryId } = parseIdentifier(id);
             return entryId;
         });
-        const entries = await this.loadMany("getLatestRevisionByEntryId", params, ids);
-        return this.filterEntriesByDeletedField(entries, params.deleted);
+        return await this.loadMany("getLatestRevisionByEntryId", params, ids);
     }
 
     /**
@@ -147,12 +142,5 @@ export class DataLoadersHandler implements DataLoadersHandlerInterface {
 
     public clearAll(params?: DataLoadersHandlerInterfaceClearAllParams): void {
         this.cache.clearAll(params?.model);
-    }
-
-    private filterEntriesByDeletedField(
-        entries: CmsStorageEntry[],
-        includeDeleted = false
-    ): CmsStorageEntry[] {
-        return entries.filter(entry => (includeDeleted ? entry.deleted : !entry.deleted));
     }
 }
