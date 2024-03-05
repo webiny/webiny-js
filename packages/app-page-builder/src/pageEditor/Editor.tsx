@@ -125,16 +125,9 @@ export const PageEditor = () => {
 
                 const { revisions = [], content, ...restOfPageData } = extractPageData(data);
 
-                const existingContent = content
-                    ? {
-                          ...content,
-                          elements: content.elements
-                      }
-                    : null;
-
                 const page: PageWithContent = {
                     ...restOfPageData,
-                    content: existingContent || createElement("document")
+                    content: content || createElement("document")
                 };
 
                 if (page.status === "draft") {

@@ -97,16 +97,9 @@ export const TemplateEditor = () => {
 
                 const { content, ...restOfTemplateData } = pageTemplateData;
 
-                const existingContent = content
-                    ? {
-                          ...content,
-                          elements: content.elements
-                      }
-                    : null;
-
                 setTemplate({
                     ...restOfTemplateData,
-                    content: existingContent || createElement("document")
+                    content: content || createElement("document")
                 });
             });
 
