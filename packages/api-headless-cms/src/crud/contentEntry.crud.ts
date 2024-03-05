@@ -316,11 +316,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     /**
      * A helper to get entries by revision IDs
      */
-    const getEntriesByIds: CmsEntryContext["getEntriesByIds"] = async (
-        model,
-        ids,
-        deleted = false
-    ) => {
+    const getEntriesByIds: CmsEntryContext["getEntriesByIds"] = async (model, ids, deleted) => {
         return context.benchmark.measure("headlessCms.crud.entries.getEntriesByIds", async () => {
             await accessControl.ensureCanAccessEntry({ model });
 
@@ -1110,7 +1106,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, id, options) => {
         await accessControl.ensureCanAccessEntry({ model, rwd: "d" });
 
-        const { force, permanent = false } = options || {};
+        const { force, permanent = true } = options || {};
 
         const storageEntry = (await storageOperations.entries.getLatestRevisionByEntryId(model, {
             id
@@ -1142,21 +1138,21 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const originalEntry = await entryFromStorageTransform(context, model, storageEntry);
         await accessControl.ensureCanAccessEntry({ model, entry: originalEntry, rwd: "d" });
 
-        if (!permanent) {
-            const { entry } = await createDeleteEntryData({
-                context,
+        if (permanent) {
+            return await destroyEntryHelper({
                 model,
-                originalEntry,
-                getIdentity: getSecurityIdentity
+                entry: originalEntry
             });
-
-            return await deleteEntryHelper({ model, entry });
         }
 
-        return await destroyEntryHelper({
+        const { entry } = await createDeleteEntryData({
+            context,
             model,
-            entry: originalEntry
+            originalEntry,
+            getIdentity: getSecurityIdentity
         });
+
+        return await deleteEntryHelper({ model, entry });
     };
     const publishEntry: CmsEntryContext["publishEntry"] = async (model, id) => {
         await accessControl.ensureCanAccessEntry({ model, pw: "p" });
