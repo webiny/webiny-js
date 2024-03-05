@@ -9,6 +9,7 @@ import { LoadingDialog } from "../styledComponents";
 import {
     GET_PAGES_IMPORT_TASK,
     GetPagesImportTaskResponse,
+    GetPagesImportTaskResponseDataStats,
     GetPagesImportTaskVariables,
     LIST_IMPORTED_PAGES,
     ListImportedPagesResponse,
@@ -27,7 +28,7 @@ const pendingMessage = t`Waiting for operation status`;
 const processingMessage = t`Importing pages`;
 const abortedMessage = t`Importing pages aborted`;
 
-const INTERVAL = 0.5 * 1000;
+const INTERVAL = 1.5 * 1000;
 
 const MESSAGES: Record<PbTaskStatus, string> = {
     [PbTaskStatus.success]: completionMessage,
@@ -35,6 +36,20 @@ const MESSAGES: Record<PbTaskStatus, string> = {
     [PbTaskStatus.pending]: pendingMessage,
     [PbTaskStatus.failed]: errorMessage,
     [PbTaskStatus.aborted]: abortedMessage
+};
+
+interface LoadingDialogStatsProps {
+    stats: GetPagesImportTaskResponseDataStats;
+}
+
+const LoadingDialogStats = ({ stats }: LoadingDialogStatsProps) => {
+    if (!stats.total) {
+        return t`Waiting for the information about pages...`;
+    }
+    return t`{completed} of {total} completed`({
+        completed: `${stats.completed}`,
+        total: `${stats.total}`
+    });
 };
 
 interface ImportPageLoadingDialogContentProps {
@@ -90,10 +105,11 @@ const ImportPageLoadingDialogContent = ({ taskId }: ImportPageLoadingDialogConte
         stats: null
     };
 
+    const skipListImportedPages = status !== PbTaskStatus.success || !taskId;
     const listImportedPages = useQuery<ListImportedPagesResponse, ListImportedPagesVariables>(
         LIST_IMPORTED_PAGES,
         {
-            skip: status !== PbTaskStatus.success || !taskId,
+            skip: skipListImportedPages,
             variables: {
                 taskId
             }
@@ -139,10 +155,7 @@ const ImportPageLoadingDialogContent = ({ taskId }: ImportPageLoadingDialogConte
                     {stats && (
                         <LoadingDialog.ProgressContainer>
                             <LoadingDialog.StatusTitle use={"body2"}>
-                                {t`{completed} of {total} completed`({
-                                    completed: `${stats.completed}`,
-                                    total: `${stats.total}`
-                                })}
+                                <LoadingDialogStats stats={stats} />
                             </LoadingDialog.StatusTitle>
                             <ProgressBar
                                 value={stats.completed}
@@ -153,10 +166,12 @@ const ImportPageLoadingDialogContent = ({ taskId }: ImportPageLoadingDialogConte
                         </LoadingDialog.ProgressContainer>
                     )}
                 </LoadingDialog.StatsContainer>
-                <ImportPagesDetails
-                    loading={listImportedPages.loading}
-                    result={listImportedPages.data}
-                />
+                {!skipListImportedPages && (
+                    <ImportPagesDetails
+                        loading={listImportedPages.loading}
+                        result={listImportedPages.data}
+                    />
+                )}
             </LoadingDialog.WrapperRight>
         </LoadingDialog.Wrapper>
     );
@@ -173,7 +188,15 @@ const useImportPageLoadingDialog = (): UseImportPageLoadingDialogCallableRespons
             showDialog(<ImportPageLoadingDialogContent {...props} />, {
                 title: importPageDialogTitle,
                 actions: {
-                    accept: { label: t`Continue`, onClick: () => window.location.reload() }
+                    accept: {
+                        label: t`Continue`,
+                        onClick: () => {
+                            window.location.reload();
+                        }
+                    }
+                },
+                onClose: () => {
+                    window.location.reload();
                 },
                 dataTestId: "import-pages.loading-dialog"
             });

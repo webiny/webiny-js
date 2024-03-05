@@ -190,15 +190,17 @@ export interface GetPagesImportTaskResponseDataData {
     error?: PbErrorResponse;
 }
 
+export interface GetPagesImportTaskResponseDataStats {
+    total: number;
+    completed: number;
+    failed: number;
+}
+
 export interface GetPagesImportTaskResponseData {
     id: string;
     status: PbTaskStatus;
     createdOn: string;
-    stats: {
-        total: number;
-        completed: number;
-        failed: number;
-    };
+    stats: GetPagesImportTaskResponseDataStats;
     data: GetPagesImportTaskResponseDataData;
 }
 
