@@ -59,8 +59,6 @@ yargs
         }
 
         if (error) {
-            console.log();
-
             // Unfortunately, yargs doesn't provide passed args here, so we had to do it via process.argv.
             if (process.argv.includes("--debug")) {
                 context.debug(error);

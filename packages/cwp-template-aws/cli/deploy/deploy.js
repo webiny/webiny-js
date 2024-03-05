@@ -21,7 +21,7 @@ const deploy = (appName, inputs, context) => {
 };
 
 module.exports = async (inputs, context) => {
-    const getTelemetryEventName = stage => `project-deploy-${stage}`;
+    const getTelemetryEventName = stage => `cli-project-deploy-${stage}`;
 
     const eventName = getTelemetryEventName("start");
     await sendEvent(eventName);
@@ -59,7 +59,7 @@ module.exports = async (inputs, context) => {
         isFirstDeployment && console.log();
         context.info(`Deploying ${green("Core")} project application...`);
 
-        // await deploy("apps/core", env, inputs);
+        await deploy("apps/core", inputs, context);
         context.success(`${green("Core")} project application was deployed successfully!`);
         isFirstDeployment && (await sleep(2000));
 
@@ -67,7 +67,7 @@ module.exports = async (inputs, context) => {
         console.log();
         context.info(`Deploying ${green("API")} project application...`);
 
-        await deploy("api", inputs, context);
+        await deploy("apps/api", inputs, context);
 
         context.success(`${green("API")} project application was deployed successfully!`);
         isFirstDeployment && (await sleep(2000));
@@ -77,7 +77,7 @@ module.exports = async (inputs, context) => {
         context.info(`Deploying ${green("Admin")} project application...`);
         isFirstDeployment && (await sleep());
 
-        // await deploy("apps/admin", env, inputs);
+        await deploy("apps/admin", inputs, context);
         context.success(`${green("Admin")} project application was deployed successfully!`);
 
         // Deploying `apps/admin` project application.
@@ -85,7 +85,7 @@ module.exports = async (inputs, context) => {
         context.info(`Deploying ${green("Website")} project application...`);
         isFirstDeployment && (await sleep());
 
-        // await deploy("apps/website", env, inputs);
+        await deploy("apps/website", inputs, context);
         context.success(`${green("Website")} project application was deployed successfully!`);
 
         const outputs = {

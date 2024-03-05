@@ -1,3 +1,5 @@
+const stripAnsi = require("strip-ansi");
+
 /**
  * The main `sendEvent` function.
  * NOTE: don't use this in your app directly. Instead, use the one from `cli.js` or `react.js` files accordingly.
@@ -35,11 +37,23 @@ module.exports = ({ event, user, properties, wts } = {}) => {
         throw new Error(`Cannot send event - missing "newUser" boolean property.`);
     }
 
-    const finalProperties = {
+    // 2. Sanitize properties.
+    const sanitizedProperties = {
         ...properties,
         newUser: properties.newUser === true ? "yes" : "no",
         ci: properties.ci === true ? "yes" : "no"
     };
 
-    return wts.trackEvent(user, event, finalProperties);
+    for (const key in sanitizedProperties) {
+        let sanitizedValue = sanitizedProperties[key];
+        if (typeof sanitizedValue === "string") {
+            sanitizedValue = sanitizedValue.trim();
+            sanitizedValue = stripAnsi(sanitizedValue);
+        }
+
+        sanitizedProperties[key] = sanitizedValue;
+    }
+
+    // 3. Send.
+    return wts.trackEvent(user, event, sanitizedProperties);
 };

@@ -37,6 +37,12 @@ module.exports = (params, context) => {
                 return;
             }
 
+            await runHook({
+                hook: BeforeDeployPlugin.type,
+                args: hookArgs,
+                context
+            });
+
             await login(projectApplication);
 
             const PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
@@ -53,12 +59,6 @@ module.exports = (params, context) => {
                         PULUMI_CONFIG_PASSPHRASE
                     }
                 }
-            });
-
-            await runHook({
-                hook: BeforeDeployPlugin.type,
-                args: hookArgs,
-                context
             });
 
             console.log();

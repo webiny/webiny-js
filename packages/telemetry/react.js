@@ -16,7 +16,7 @@ const sendEvent = async (event, properties = {}) => {
             ...properties,
             version: process.env.REACT_APP_WEBINY_VERSION,
             ci: process.env.REACT_APP_IS_CI === "true",
-            newUser: process.env.REACT_APP_WEBINY_TELEMETRY_NEW_USER === "true"
+            newUser: "false"
         },
         wts
     });

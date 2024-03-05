@@ -138,8 +138,12 @@ const createPulumiCommand = ({
                 });
             }
 
+            const debugFlag = context.error.hl(`--debug`);
             throw new Error(
-                "Command failed with an unexpected error. Please check the above logs.",
+                [
+                    `Command failed with an unexpected error. Please check the above logs. Alternatively,`,
+                    `try running the same command with the ${debugFlag} flag to get more detailed information.`
+                ].join(" "),
                 { cause: e }
             );
         }

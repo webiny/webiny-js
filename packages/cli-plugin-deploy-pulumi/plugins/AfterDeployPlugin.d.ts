@@ -1,14 +1,5 @@
-import { Plugin } from "@webiny/plugins";
+import { PulumiCommandLifecycleEventHookPlugin } from "./PulumiCommandLifecycleEventHookPlugin";
 
-export interface AfterDeployCallable {
-    (params: any, context: any): void | Promise<void>;
-}
-
-export class AfterDeployPlugin extends Plugin {
+export class AfterDeployPlugin extends PulumiCommandLifecycleEventHookPlugin {
     public static override readonly type: "hook-after-deploy";
-    private readonly _callable: AfterDeployCallable;
-
-    constructor(callable: AfterDeployCallable);
-
-    public hook(params: any, context: any): void | Promise<void>;
 }
