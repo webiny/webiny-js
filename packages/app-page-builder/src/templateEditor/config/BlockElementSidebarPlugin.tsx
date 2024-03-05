@@ -57,11 +57,20 @@ const UnlinkTab = ({ permission }: UnlinkTabProps) => {
                             <ButtonPrimary>Unlink block</ButtonPrimary>
                         </UnlinkBlockAction>
                     ) : (
-                        "No permissions"
+                        "No permissions."
                     )}
                 </div>
                 <div className="info-wrapper">
-                    <InfoIcon /> Click here to learn more about how blocks work.
+                    <InfoIcon />
+                    <a
+                        rel={"noreferrer"}
+                        target={"_blank"}
+                        href={
+                            "https://youtu.be/_tbU3tu58v4?list=PL9HlKSQaEuXQdyCQDH_w7VQQcZbc67cPU"
+                        }
+                    >
+                        Click here to learn more about how blocks work.
+                    </a>
                 </div>
             </UnlinkBlockWrapper>
         </RootElement>
