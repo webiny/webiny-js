@@ -2939,7 +2939,7 @@ export interface CmsEntryStorageOperationsDeleteRevisionParams<
 }
 
 export interface CmsEntryStorageOperationsDeleteParams {
-    entry: CmsEntry;
+    storageEntry: CmsStorageEntry;
 }
 
 export interface CmsEntryStorageOperationsDestroyParams {

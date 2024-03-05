@@ -475,8 +475,8 @@ export const createEntriesStorageOperations = (
     };
 
     const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
-        const { entry } = params;
-        const id = entry.id || entry.entryId;
+        const { storageEntry } = params;
+        const id = storageEntry.id || storageEntry.entryId;
         const model = getStorageOperationsModel(initialModel);
 
         /**
@@ -514,8 +514,7 @@ export const createEntriesStorageOperations = (
         const items = records.map(record => {
             return entity.putBatch({
                 ...record,
-                ...entry,
-                deleted: true
+                ...storageEntry
             });
         });
         /**

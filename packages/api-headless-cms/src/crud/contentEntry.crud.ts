@@ -279,6 +279,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
      */
     const deleteEntryHelper = async (params: DeleteEntryParams): Promise<void> => {
         const { model, entry } = params;
+        const storageEntry = await entryToStorageTransform(context, model, entry);
+
         try {
             await onEntryBeforeDelete.publish({
                 entry,
@@ -287,7 +289,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
 
             await storageOperations.entries.delete(model, {
-                entry
+                storageEntry
             });
 
             await onEntryAfterDelete.publish({
@@ -1108,7 +1110,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, id, options) => {
         await accessControl.ensureCanAccessEntry({ model, rwd: "d" });
 
-        const { force, permanent } = options || {};
+        const { force, permanent = false } = options || {};
 
         const storageEntry = (await storageOperations.entries.getLatestRevisionByEntryId(model, {
             id
