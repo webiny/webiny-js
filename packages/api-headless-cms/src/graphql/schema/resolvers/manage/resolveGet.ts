@@ -13,19 +13,17 @@ interface ValuesFromArgsParams {
     status?: "published" | "latest";
     entryId?: string;
     revision: string;
-    deleted?: boolean;
 }
 interface ArgsValues {
     published?: boolean;
     entryId?: string;
     revision?: string;
-    deleted: boolean;
 }
 
 const possibleTypes = ["published", "latest"];
 
 const getValuesFromArgs = (args?: ValuesFromArgsParams): ArgsValues => {
-    const { status, revision, entryId, deleted = false } = args || {};
+    const { status, revision, entryId } = args || {};
     if (!revision && !entryId) {
         throw new WebinyError(
             "You must pass a 'revision' or an 'entryId' argument.",
@@ -60,13 +58,11 @@ const getValuesFromArgs = (args?: ValuesFromArgsParams): ArgsValues => {
         const { id } = parseIdentifier(entryId || revision);
         return {
             published: status === "published",
-            entryId: id,
-            deleted
+            entryId: id
         };
     }
     return {
-        revision,
-        deleted
+        revision
     };
 };
 
@@ -74,7 +70,7 @@ export const resolveGet: ResolveGet =
     ({ model }) =>
     async (_, args: any, context) => {
         try {
-            const { entryId, published, revision, deleted } = getValuesFromArgs(args);
+            const { entryId, published, revision } = getValuesFromArgs(args);
 
             if (entryId) {
                 const result = published

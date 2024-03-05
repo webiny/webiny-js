@@ -173,6 +173,20 @@ const createSystemFields = (): ModelFields => {
                 type: "string"
             }),
             parents: []
+        },
+        deleted: {
+            type: "boolean",
+            unmappedType: undefined,
+            keyword: false,
+            systemField: true,
+            searchable: true,
+            sortable: false,
+            field: createSystemField({
+                storageId: "deleted",
+                fieldId: "deleted",
+                type: "boolean"
+            }),
+            parents: []
         }
     };
 };
