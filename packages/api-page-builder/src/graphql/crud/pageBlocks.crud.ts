@@ -12,7 +12,8 @@ import {
     PageBlocksCrud,
     PageBlockStorageOperationsListParams,
     PbContext,
-    PageContentElement
+    PageContentElement,
+    PageBlockVariable
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
@@ -288,11 +289,18 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
         ) {
             const blocks = [];
 
-            for (const pageBlock of content?.elements) {
-                const blockId = pageBlock.data?.blockId;
-                // If block has blockId, then it is a reference block, and we need to get elements for it.
+            /**
+             * If the content block has a `blockId`, then it is a referenced block.
+             * For referenced blocks, we need to load the actual block definition, and copy the elements to the current content block.
+             * We also need to determine the appropriate block variable value to use:
+             * - if there's already a block variable value on the content block, use it.
+             * - if not, fall back to the default block variable value, which was defined during the block creation, in the Block Editor.
+             */
+            for (const contentBlock of content?.elements) {
+                const blockId = contentBlock.data?.blockId;
+
                 if (!blockId) {
-                    blocks.push(pageBlock);
+                    blocks.push(contentBlock);
                     continue;
                 }
 
@@ -304,14 +312,22 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                     }
                 });
 
-                // We check if the block has variable values set on the page/template, and use them
-                // in priority over the ones set inline in the block editor.
-                const blockDataVariables = blockData?.content?.data?.variables || [];
-                const variables = blockDataVariables.map((blockDataVariable: any) => {
-                    const value =
-                        pageBlock.data?.variables?.find(
-                            (variable: any) => variable.id === blockDataVariable.id
-                        )?.value || blockDataVariable.value;
+                const blockDataVariables: PageBlockVariable[] =
+                    blockData?.content?.data?.variables || [];
+
+                const contentBlockVariables: PageBlockVariable[] =
+                    contentBlock.data?.variables || [];
+
+                const variables = blockDataVariables.map(blockDataVariable => {
+                    // Check if content block has a value for the given block variable.
+                    const contentBlockVariable = contentBlockVariables.find(
+                        variable => variable.id === blockDataVariable.id
+                    );
+
+                    // Use the content block variable value, or fall back to the default block variable value.
+                    const value = contentBlockVariable
+                        ? contentBlockVariable.value
+                        : blockDataVariable.value;
 
                     return {
                         ...blockDataVariable,
@@ -321,15 +337,15 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
 
                 blocks.push(
                     structuredClone({
-                        ...pageBlock,
+                        ...contentBlock,
                         data: {
-                            ...pageBlock?.data,
+                            ...contentBlock?.data,
                             ...blockData?.content?.data,
                             variables
                         },
                         elements: generateElementIds(
                             blockData?.content?.elements || [],
-                            pageBlock.id
+                            contentBlock.id
                         )
                     })
                 );
