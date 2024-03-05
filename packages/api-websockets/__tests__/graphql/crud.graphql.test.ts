@@ -62,7 +62,7 @@ const insertConnections = async (amount: number, params?: InsertConnectionsParam
 };
 
 describe("crud graphql", () => {
-    it.skip("should list all connections", async () => {
+    it("should list all connections", async () => {
         const { listConnections } = useGraphQLHandler();
 
         const [resultBeforeInsertingConnections] = await listConnections();
@@ -92,7 +92,7 @@ describe("crud graphql", () => {
         );
     });
 
-    it.skip("should list all connections for a specific identity", async () => {
+    it("should list all connections for a specific identity", async () => {
         const { listConnections } = useGraphQLHandler();
 
         const [resultBeforeInsertingConnections] = await listConnections();

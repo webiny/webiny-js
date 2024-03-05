@@ -9,7 +9,7 @@ import { createWebsocketsRoutePlugin } from "~/plugins";
 import { WebsocketsResponse } from "~/response";
 
 describe("websockets runner", () => {
-    it.skip("should run and fail the validation", async () => {
+    it("should run and fail the validation", async () => {
         const handler = useHandler();
 
         const context = await handler.handle();
@@ -107,7 +107,7 @@ describe("websockets runner", () => {
         });
     });
 
-    it.skip("should run and fail the route action - missing route", async () => {
+    it("should run and fail the route action - missing route", async () => {
         const handler = useHandler();
 
         const context = await handler.handle();
@@ -144,7 +144,7 @@ describe("websockets runner", () => {
         });
     });
 
-    it.skip("should run and return good status - default route", async () => {
+    it("should run and return good status - default route", async () => {
         const handler = useHandler();
 
         const context = await handler.handle();
@@ -171,7 +171,7 @@ describe("websockets runner", () => {
         });
     });
 
-    it.skip("should run and return good status - connect route", async () => {
+    it("should run and return good status - connect route", async () => {
         const handler = useHandler();
 
         const context = await handler.handle();
@@ -237,7 +237,7 @@ describe("websockets runner", () => {
         });
     });
 
-    it.skip("should run and return good status - disconnect route", async () => {
+    it("should run and return good status - disconnect route", async () => {
         const handler = useHandler();
 
         const context = await handler.handle();
@@ -308,7 +308,7 @@ describe("websockets runner", () => {
         expect(afterDisconnectConnectionsViaIdentity).toHaveLength(0);
     });
 
-    it.skip("should run and return good status - custom route", async () => {
+    it("should run and return good status - custom route", async () => {
         const handler = useHandler({
             plugins: [
                 createWebsocketsRoutePlugin("myCustomRouteKey", async ({ response }) => {
@@ -335,6 +335,29 @@ describe("websockets runner", () => {
                 tenant: "root",
                 locale: "en-US"
             })
+        });
+        expect(result).toEqual({
+            statusCode: 200
+        });
+    });
+
+    it("should return error due to body validation error", async () => {
+        const handler = useHandler();
+
+        const context = await handler.handle();
+        const registry = context.websockets.registry;
+        const validator = new MockWebsocketsEventValidator();
+        const response = new WebsocketsResponse();
+
+        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
+
+        const runner = new WebsocketsRunner(context, registry, validator, response);
+
+        const result = await runner.run({
+            requestContext: {
+                routeKey: WebsocketsEventRoute.default
+            },
+            body: "somethingWrong"
         });
         expect(result).toEqual({
             statusCode: 200

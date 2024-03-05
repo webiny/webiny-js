@@ -28,7 +28,7 @@ export class WebsocketsTransport implements IWebsocketsTransport {
                 });
                 await client.send(command);
             } catch (ex) {
-                console.log(
+                console.error(
                     `Failed to send message to connection "${connection.connectionId}". Check logs for more information.`
                 );
                 console.log(ex);
@@ -45,7 +45,7 @@ export class WebsocketsTransport implements IWebsocketsTransport {
                 });
                 await client.send(command);
             } catch (ex) {
-                console.log(
+                console.error(
                     `Failed to disconnect connection "${connection.connectionId}". Check logs for more information.`
                 );
                 console.log(ex);
