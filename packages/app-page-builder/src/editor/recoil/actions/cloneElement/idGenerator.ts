@@ -15,12 +15,12 @@ const createBlockElementIdGenerator = (currentBlockId: string, newBlockId: strin
     };
 };
 
-export const getIdGenerator = (element: PbEditorElement, newElementId: string) => {
+export const getIdGenerator = (element: PbEditorElement) => {
     const referencedBlock = Boolean(element.data.blockId);
 
     // If it's a referenced block, we construct the child elements IDs using existing IDs, and prefix them with the top-level
     // element ID. This way we have a unique top-level ID, but stable child element IDs (which will be resolved on the API on next load).
     return referencedBlock
-        ? createBlockElementIdGenerator(element.id, newElementId)
+        ? createBlockElementIdGenerator(element.id, randomIdGenerator(element))
         : randomIdGenerator;
 };

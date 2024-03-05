@@ -1,6 +1,5 @@
 import { EventActionCallable, EventActionHandlerCallableState, PbEditorElement } from "~/types";
 import { CloneElementActionArgsType } from "../cloneElement/types";
-import { getNanoid } from "~/editor/helpers";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import { getIdGenerator, IdGenerator } from "~/editor/recoil/actions/cloneElement/idGenerator";
 
@@ -17,10 +16,10 @@ export const cloneElement = async (
     element: PbEditorElement,
     idGenerator: IdGenerator
 ): Promise<PbEditorElement> => {
-    const elementId = getNanoid();
+    const elementId = idGenerator(element);
     return {
         ...(element as PbEditorElement),
-        id: idGenerator(element),
+        id: elementId,
         data: replaceTemplateBlockId(element.data, elementId),
         elements: await Promise.all(
             element.elements.map(async (el: PbEditorElement | string) => {
@@ -53,13 +52,9 @@ export const cloneElementAction: EventActionCallable<CloneElementActionArgsType>
     const parent = structuredClone(await state.getElementById(element.parent));
     const position = parent.elements.findIndex(el => el === element.id) + 1;
 
-    const newElementId = getNanoid();
-    const idGenerator = getIdGenerator(element, newElementId);
+    const idGenerator = getIdGenerator(element);
 
-    const clonedElement = {
-        ...(await cloneElement(state, element, idGenerator)),
-        id: newElementId
-    };
+    const clonedElement = await cloneElement(state, element, idGenerator);
 
     const newElement: PbEditorElement = {
         ...parent,
