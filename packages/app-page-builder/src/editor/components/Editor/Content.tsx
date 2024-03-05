@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo } from "react";
+import React, { useRef } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import kebabCase from "lodash/kebabCase";
@@ -80,30 +80,8 @@ const BaseContainer = styled(LegacyBaseContainer)`
 const Content = makeDecoratable("Content", () => {
     useDebugUtilities();
     const rootElement = useRootElement();
-    const { displayMode, setPagePreviewDimensions } = useDisplayMode();
+    const { displayMode } = useDisplayMode();
     const pagePreviewRef = useRef<HTMLDivElement>(null);
-
-    const resizeObserver = useMemo(() => {
-        return new ResizeObserver((entries: ResizeObserverEntry[]) => {
-            for (const entry of entries) {
-                const { width, height } = entry.contentRect;
-                setPagePreviewDimensions({ width, height });
-            }
-        });
-    }, []);
-
-    // Set resize observer
-    useEffect(() => {
-        if (pagePreviewRef.current) {
-            // Add resize observer
-            resizeObserver.observe(pagePreviewRef.current);
-        }
-
-        // Cleanup
-        return () => {
-            resizeObserver.disconnect();
-        };
-    }, []);
 
     return (
         <Elevation className={contentContainerWrapper} z={0}>

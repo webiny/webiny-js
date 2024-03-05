@@ -9,7 +9,6 @@ import {
 import { plugins } from "@webiny/plugins";
 import { useUI } from "~/editor/hooks/useUI";
 import { DisplayMode, PbEditorResponsiveModePlugin } from "~/types";
-import debounce from "lodash/debounce";
 
 export interface UseDisplayMode {
     displayMode: DisplayMode;
@@ -36,11 +35,10 @@ export function useDisplayMode(): UseDisplayMode {
         [displayMode]
     );
 
-    const setPagePreviewDimensions = useMemo(() => {
-        return debounce((dimensions: PagePreviewDimension) => {
-            setUiValue(prev => setPagePreviewDimensionMutation(prev, dimensions));
-        }, 20);
-    }, [displayMode]);
+    const setPagePreviewDimensions = useCallback(
+        dimensions => setUiValue(prev => setPagePreviewDimensionMutation(prev, dimensions)),
+        [displayMode]
+    );
 
     if (!memoizedDisplayMode) {
         return {
