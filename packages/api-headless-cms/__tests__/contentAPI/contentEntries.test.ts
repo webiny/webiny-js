@@ -705,4 +705,74 @@ describe("Content entries", () => {
             }
         });
     });
+
+    it("should process the delete of an entry, marking it as `deleted`", async () => {
+        const { greenApple } = await setupFruits();
+        /**
+         * First we should soft delete the fruit.
+         */
+        const [softDeleteSuccessResponse] = await deleteFruit({
+            revision: greenApple.entryId,
+            options: {
+                permanently: false
+            }
+        });
+        expect(softDeleteSuccessResponse).toEqual({
+            data: {
+                deleteFruit: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
+        /**
+         * If we repeat the operation, trying to soft delete it, we should get the non existing entry error.
+         */
+        const [softDeleteFailResponse] = await deleteFruit({
+            revision: greenApple.entryId,
+            options: {
+                permanently: false
+            }
+        });
+        expect(softDeleteFailResponse).toMatchObject({
+            data: {
+                deleteFruit: {
+                    data: null,
+                    error: {
+                        message: `Entry "${greenApple.entryId}" was not found!`
+                    }
+                }
+            }
+        });
+        /**
+         * And if we force deletion, trying to destroy the entry, we should get the success response.
+         */
+        const [deleteSuccessResponse] = await deleteFruit({
+            revision: greenApple.entryId
+        });
+        expect(deleteSuccessResponse).toEqual({
+            data: {
+                deleteFruit: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
+        /**
+         * If we repeat the operation we should get the non existing entry error.
+         */
+        const [deleteFailResponse] = await deleteFruit({
+            revision: greenApple.entryId
+        });
+        expect(deleteFailResponse).toMatchObject({
+            data: {
+                deleteFruit: {
+                    data: null,
+                    error: {
+                        message: `Entry "${greenApple.entryId}" was not found!`
+                    }
+                }
+            }
+        });
+    });
 });
