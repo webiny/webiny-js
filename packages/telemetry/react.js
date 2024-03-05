@@ -1,25 +1,25 @@
-const createSendEvent = require("./sendEvent");
+const baseSendEvent = require("./sendEvent");
+const { WTS } = require("wts/src/admin");
 
-/**
- *
- * @param event {String}
- * @param properties {Record<string, string>}
- * @return {Promise<T>}
- */
-const sendEvent = (event, properties = {}) => {
-
+const sendEvent = async (event, properties = {}) => {
     const shouldSend = process.env.REACT_APP_WEBINY_TELEMETRY !== "false";
+    if (!shouldSend) {
+        return;
+    }
 
-    const sendTelemetry = createSendEvent({
+    const wts = new WTS();
+
+    return baseSendEvent({
         event,
-        properties,
         user: process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID,
-        newUser: REACT_APP_WEBINY_TELEMETRY_NEW_USER === "true",
-        version: process.env.REACT_APP_WEBINY_VERSION,
-        ci: process.env.REACT_APP_IS_CI === "true",
+        properties: {
+            ...properties,
+            version: process.env.REACT_APP_WEBINY_VERSION,
+            ci: process.env.REACT_APP_IS_CI === "true",
+            newUser: process.env.REACT_APP_WEBINY_TELEMETRY_NEW_USER === "true"
+        },
+        wts
     });
-
-    return shouldSend ? sendTelemetry() : Promise.resolve();
 };
 
-module.exports = { setProperties, sendEvent };
+module.exports = { sendEvent };

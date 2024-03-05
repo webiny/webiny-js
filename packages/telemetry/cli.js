@@ -1,32 +1,27 @@
-const createSendEvent = require("./sendEvent");
 const { globalConfig } = require("@webiny/global-config");
-const isCI = require('is-ci');
+const isCI = require("is-ci");
+const { WTS } = require("wts/src/node");
+const baseSendEvent = require("./sendEvent");
 
-const sendEvent = ({ event, user, version, properties, extraPayload }) => {
+const sendEvent = async ({ event, user, version, properties }) => {
     const shouldSend = isEnabled();
+    if (!shouldSend) {
+        return;
+    }
 
-    try {
-        const sendTelemetry = createSendEvent({
-            event,
-            user: user || globalConfig.get("id"),
-            newUser: Boolean(globalConfig.get("newUser")),
+    const wts = new WTS();
+
+    return baseSendEvent({
+        event,
+        user: user || globalConfig.get("id"),
+        properties: {
+            ...properties,
             version: version || require("./package.json").version,
             ci: isCI,
-            properties,
-            extraPayload
-        });
-
-        if (shouldSend) {
-            return sendTelemetry();
-        }
-    } catch (err) {
-        // Ignore errors if telemetry is disabled.
-        if (!shouldSend) {
-            return;
-        }
-
-        throw err;
-    }
+            newUser: Boolean(globalConfig.get("newUser"))
+        },
+        wts
+    });
 };
 
 const enable = () => {

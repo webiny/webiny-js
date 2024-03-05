@@ -1,10 +1,12 @@
 const buildPackages = require("./deploy/buildPackages");
 const { createPulumiCommand, runHook, login, notify } = require("../utils");
+const { BeforeDeployPlugin } = require("../plugins/BeforeDeployPlugin");
 
 module.exports = (params, context) => {
     const command = createPulumiCommand({
         name: "deploy",
         createProjectApplicationWorkspace: params.build,
+        telemetry: true,
         command: async ({ inputs, context, projectApplication, pulumi, getDuration }) => {
             const { env, folder, build, deploy } = inputs;
 
@@ -54,18 +56,18 @@ module.exports = (params, context) => {
             });
 
             await runHook({
-                hook: "hook-before-deploy",
+                hook: BeforeDeployPlugin.type,
                 args: hookArgs,
                 context
             });
 
             console.log();
-            const continuing = inputs.preview ? `Previewing deployment...` : `Deploying...`;
-            context.info(continuing);
+            const actionTaken = inputs.preview ? `Previewing deployment...` : `Deploying...`;
+            context.info(actionTaken);
             console.log();
 
             if (inputs.preview) {
-                await pulumi.run({
+                const subprocess = pulumi.run({
                     command: "preview",
                     args: {
                         diff: true,
@@ -74,7 +76,6 @@ module.exports = (params, context) => {
                         // secretsProvider: PULUMI_SECRETS_PROVIDER
                     },
                     execa: {
-                        stdio: "inherit",
                         env: {
                             WEBINY_ENV: env,
                             WEBINY_PROJECT_NAME: context.project.name,
@@ -82,8 +83,13 @@ module.exports = (params, context) => {
                         }
                     }
                 });
+
+                subprocess.stdout.pipe(process.stdout);
+                subprocess.stderr.pipe(process.stderr);
+
+                await subprocess;
             } else {
-                await pulumi.run({
+                const subprocess = pulumi.run({
                     command: "up",
                     args: {
                         yes: true,
@@ -92,9 +98,6 @@ module.exports = (params, context) => {
                         debug: inputs.debug
                     },
                     execa: {
-                        // We pipe "stderr" so that we can intercept potential received error messages,
-                        // and hopefully, show extra information / help to the user.
-                        stdio: ["inherit", "inherit", "pipe"],
                         env: {
                             WEBINY_ENV: env,
                             WEBINY_PROJECT_NAME: context.project.name,
@@ -102,6 +105,11 @@ module.exports = (params, context) => {
                         }
                     }
                 });
+
+                subprocess.stdout.pipe(process.stdout);
+                subprocess.stderr.pipe(process.stderr);
+
+                await subprocess;
             }
 
             const duration = getDuration();

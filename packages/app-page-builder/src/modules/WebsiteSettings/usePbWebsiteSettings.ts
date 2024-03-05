@@ -3,7 +3,7 @@ import get from "lodash/get";
 import set from "lodash/set";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin";
-import { sendEvent, setProperties } from "@webiny/telemetry/react";
+import { sendEvent } from "@webiny/telemetry/react";
 import {
     GET_SETTINGS,
     GetSettingsQueryResponse,

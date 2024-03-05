@@ -2,14 +2,12 @@ const { blue } = require("chalk");
 const MATCH_STRING = "SubscriptionRequiredException";
 
 module.exports = {
-    type: "cli-command-error",
-    handle: ({ context, error }) => {
+    type: "hook-command-error",
+    canHandle: ({ error }) => {
         const { message } = error;
-        const hasError = typeof message === "string" && message.includes(MATCH_STRING);
-        if (!hasError) {
-            return;
-        }
-
+        return typeof message === "string" && message.includes(MATCH_STRING);
+    },
+    handle: ({ context }) => {
         context.info(
             [
                 `In most cases, the ${blue(

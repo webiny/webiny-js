@@ -1,12 +1,12 @@
-const { green, red } = require("chalk");
-const { Pulumi } = require("@webiny/pulumi-sdk");
-const ora = require("ora");
-const merge = require("lodash/merge");
-const { getProject } = require("@webiny/cli/utils");
-const path = require("path");
-const fs = require("fs");
-
 module.exports = async ({ projectApplication, pulumi, install }) => {
+    const { green, red } = require("chalk");
+    const { Pulumi } = require("@webiny/pulumi-sdk");
+    const ora = require("ora");
+    const merge = require("lodash/merge");
+    const { getProject } = require("@webiny/cli/utils");
+    const path = require("path");
+    const fs = require("fs");
+
     const spinner = new ora();
 
     let cwd;

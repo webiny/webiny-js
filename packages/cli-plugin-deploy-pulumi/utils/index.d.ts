@@ -9,7 +9,6 @@ export function getStackOutput<TStackOutput = Record<string, unknown>>(
 export function getStackOutput<TStackOutput = Record<string, any>>(options: {
     folder: string;
     env: string;
-    // variant?: string; TODO: finish staged deployments.
     map?: Record<string, string>;
     cwd?: string;
 }): TStackOutput;
@@ -21,3 +20,6 @@ interface GetPulumiParams {
 }
 
 export function getPulumi(params: GetPulumiParams): Pulumi;
+
+export * from "./GracefulError";
+export * from "./GracefulPulumiError";
