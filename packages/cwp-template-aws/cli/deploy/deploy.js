@@ -4,7 +4,7 @@ const {
     getPulumi,
     GracefulPulumiError
 } = require("@webiny/cli-plugin-deploy-pulumi/utils");
-const { sendEvent, getApiProjectApplicationFolder } = require("@webiny/cli/utils");
+const { sendEvent } = require("@webiny/cli/utils");
 const sleep = require("../utils/sleep");
 const deployCommand = require("@webiny/cli-plugin-deploy-pulumi/commands/deploy");
 
@@ -20,9 +20,9 @@ const deploy = (appName, inputs, context) => {
     );
 };
 
-module.exports = async (inputs, context) => {
-    const getTelemetryEventName = stage => `cli-project-deploy-${stage}`;
+const getTelemetryEventName = stage => `cli-project-deploy-${stage}`;
 
+module.exports = async (inputs, context) => {
     const eventName = getTelemetryEventName("start");
     await sendEvent(eventName);
 
@@ -38,10 +38,6 @@ module.exports = async (inputs, context) => {
         installed && console.log();
 
         // 2. Check if first deployment.
-
-        // 2.1 Check the location of `api` project application (can be `api` or `apps/api`).
-        const apiFolder = getApiProjectApplicationFolder(context.project);
-
         const isFirstDeployment = !getStackOutput({ folder: "core", env });
         if (isFirstDeployment) {
             context.info(
@@ -89,7 +85,7 @@ module.exports = async (inputs, context) => {
         context.success(`${green("Website")} project application was deployed successfully!`);
 
         const outputs = {
-            api: getStackOutput({ folder: apiFolder, env }),
+            api: getStackOutput({ folder: "apps/api", env }),
             apps: {
                 admin: getStackOutput({ folder: "apps/admin", env }),
                 site: getStackOutput({ folder: "apps/website", env })

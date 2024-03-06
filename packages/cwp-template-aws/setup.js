@@ -130,7 +130,6 @@ const setup = async args => {
         const options = {
             cwd: projectRoot,
             maxBuffer: "500_000_000",
-            stdio: "inherit"
         };
 
         try {

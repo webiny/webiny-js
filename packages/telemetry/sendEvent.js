@@ -1,5 +1,5 @@
 const stripAnsi = require("strip-ansi");
-
+const jsesc = require("jsesc");
 /**
  * The main `sendEvent` function.
  * NOTE: don't use this in your app directly. Instead, use the one from `cli.js` or `react.js` files accordingly.
@@ -49,6 +49,7 @@ module.exports = ({ event, user, properties, wts } = {}) => {
         if (typeof sanitizedValue === "string") {
             sanitizedValue = sanitizedValue.trim();
             sanitizedValue = stripAnsi(sanitizedValue);
+            sanitizedValue = jsesc(sanitizedValue);
         }
 
         sanitizedProperties[key] = sanitizedValue;
