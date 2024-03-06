@@ -49,6 +49,18 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
         });
 
         app.post(url, async (_, reply) => {
+            /**
+             * Happened to a client so adding a check.
+             * We cannot reproduce it.
+             */
+            if (!context) {
+                console.error("Missing Lambda context.");
+                return reply.send({
+                    error: {
+                        message: "This handler requires Lambda context to be passed."
+                    }
+                });
+            }
             const handler = new TaskRunner(
                 context,
                 /**

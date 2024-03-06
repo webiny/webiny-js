@@ -27,6 +27,8 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
     public readonly lambdaContext: Pick<LambdaContext, "getRemainingTimeInMillis">;
     private readonly validation: TaskEventValidation;
 
+    private readonly startTime: number;
+
     /**
      * We take all required variables separately because they will get injected via DI - so less refactoring is required in the future.
      */
@@ -38,16 +40,29 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         this.context = context;
         this.lambdaContext = lambdaContext;
         this.validation = validation;
+        this.startTime = Date.now();
     }
 
     public isCloseToTimeout(seconds?: number) {
         const milliseconds = seconds
             ? seconds * 1000
             : transformMinutesIntoMilliseconds(this.getIsCloseToTimeoutMinutes());
-        return this.lambdaContext.getRemainingTimeInMillis() < milliseconds;
+        return this.getRemainingTime() < milliseconds;
     }
 
     public getRemainingTime() {
+        /**
+         * Some strange error on clients lambda where the context is not passed into the runner.
+         * Can't reproduce it, but this should fix it if it happens again.
+         */
+        if (!this.lambdaContext?.getRemainingTimeInMillis) {
+            const result = this.startTime + 840000 - Date.now(); // 14 minutes
+            console.log(
+                "It looks like the Lambda Context getRemainingTimeInMillis does not exist. Mocked remaining time:",
+                result
+            );
+            return result;
+        }
         return this.lambdaContext.getRemainingTimeInMillis();
     }
 
