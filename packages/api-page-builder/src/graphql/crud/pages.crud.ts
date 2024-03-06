@@ -52,6 +52,7 @@ import {
 } from "@webiny/utils";
 import { createCompression } from "~/graphql/crud/pages/compression";
 import { PagesPermissions } from "./permissions/PagesPermissions";
+import { PageContent } from "./pages/PageContent";
 
 const STATUS_DRAFT = "draft";
 const STATUS_PUBLISHED = "published";
@@ -405,7 +406,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 createdOn: new Date().toISOString(),
                 ownedBy: owner,
                 createdBy: owner,
-                content: null,
+                content: PageContent.createEmpty().getValue(),
                 webinyVersion: context.WEBINY_VERSION
             };
 

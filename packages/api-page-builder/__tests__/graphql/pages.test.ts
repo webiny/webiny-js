@@ -1,10 +1,10 @@
+import bytes from "bytes";
 import useGqlHandler from "./useGqlHandler";
-
 import { defaultIdentity } from "../tenancySecurity";
 import { expectCompressed } from "~tests/graphql/utils/expectCompressed";
 import { decompress } from "./utils/compression";
 import { calculateSize, createPageContent } from "~tests/graphql/mocks/pageContent";
-import bytes from "bytes";
+import { PageElementId } from "~/graphql/crud/pages/PageElementId";
 
 jest.setTimeout(100000);
 
@@ -418,7 +418,12 @@ describe("CRUD Test", () => {
             data: {
                 name: "block-name",
                 blockCategory: "block-category",
-                content: { data: {}, elements: [], type: "block" }
+                content: {
+                    id: PageElementId.create().getValue(),
+                    data: {},
+                    elements: [],
+                    type: "block"
+                }
             }
         });
 
@@ -428,7 +433,12 @@ describe("CRUD Test", () => {
             data: {
                 name: "element-name",
                 type: "element",
-                content: { some: "element-content" }
+                content: {
+                    id: PageElementId.create().getValue(),
+                    type: "paragraph",
+                    data: {},
+                    elements: []
+                }
             }
         });
 
@@ -438,7 +448,7 @@ describe("CRUD Test", () => {
 
         const updatedContent = {
             ...uncompressedBlock,
-            elements: [...uncompressedBlock.content.elements, pageElementData]
+            elements: [...uncompressedBlock.content.elements, pageElementData.content]
         };
         const [updatePageBlockResult] = await updatePageBlock({
             id: blockData.id,
@@ -474,19 +484,26 @@ describe("CRUD Test", () => {
             category: "category-slug"
         });
 
-        const pageId = createPageResponse.data.pageBuilder.createPage.data.id;
+        const { id: pageId, content } = createPageResponse.data.pageBuilder.createPage.data;
 
         // Add block to the page as reference (without elements)
+        const pageBlockElementId = PageElementId.create().getValue();
+
         await updatePage({
             id: pageId,
             data: {
                 content: {
-                    data: {},
+                    ...content,
                     elements: [
-                        { data: { blockId: blockData.id }, elements: [], path: [], type: "block" }
-                    ],
-                    path: [],
-                    type: "document"
+                        ...content.elements,
+                        {
+                            id: pageBlockElementId,
+                            data: { blockId: blockData.id },
+                            elements: [],
+                            path: [],
+                            type: "block"
+                        }
+                    ]
                 }
             }
         });
@@ -501,12 +518,8 @@ describe("CRUD Test", () => {
             data: { blockId: blockData.id },
             elements: [
                 {
-                    id: pageElementData.id,
-                    name: "element-name",
-                    content: { some: "element-content" },
-                    type: "element",
-                    createdOn: expect.stringMatching(/^20/),
-                    createdBy: defaultIdentity
+                    ...pageElementData.content,
+                    id: `${pageBlockElementId}#${pageElementData.content.id}`
                 }
             ],
             path: [],

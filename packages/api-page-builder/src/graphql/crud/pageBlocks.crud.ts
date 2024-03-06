@@ -23,6 +23,7 @@ import {
 } from "~/graphql/crud/pageBlocks/validation";
 import { createZodError, mdbid, removeUndefinedValues } from "@webiny/utils";
 import { PageBlocksPermissions } from "./permissions/PageBlocksPermissions";
+import { PageElementId } from "~/graphql/crud/pages/PageElementId";
 
 export interface CreatePageBlocksCrudParams {
     context: PbContext;
@@ -362,8 +363,8 @@ function generateElementIds(elements: PageContentElement[], id: string): PageCon
     return elements.map(element => {
         return {
             ...element,
-            id: `${id}#${element.id}`,
-            elements: generateElementIds(element.elements, id),
+            id: `${id}#${PageElementId.create(element.id)}`,
+            elements: generateElementIds(element.elements || [], id),
             data: prefixElementVariableId(element.data, id)
         };
     });
