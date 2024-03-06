@@ -5,7 +5,7 @@ import { useHandler } from "~tests/context/useHandler";
 import { createMockModels } from "./mocks/models";
 import { CreateElasticsearchIndexTaskPlugin } from "@webiny/api-elasticsearch-tasks";
 import { createIndexesTaskDefinition } from "@webiny/api-elasticsearch-tasks/tasks";
-import { ResponseDoneResult } from "@webiny/tasks";
+import { ResponseDoneResult, TaskResponseStatus } from "@webiny/tasks";
 import { Context as TasksContext } from "@webiny/tasks/types";
 import { CmsContext } from "~/types";
 import { createRunner } from "@webiny/project-utils/testing/tasks";
