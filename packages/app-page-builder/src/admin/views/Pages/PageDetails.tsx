@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get";
 import { useQuery } from "@apollo/react-hooks";
 import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
@@ -16,7 +15,6 @@ import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { createUsePageHook, PageProvider } from "~/admin/contexts/Page";
-import { ROOT_FOLDER } from "~/admin/constants";
 import { PbPageData } from "~/types";
 
 const t = i18n.ns("app-page-builder/admin/views/pages/page-details");
@@ -95,15 +93,7 @@ export const PageDetails = ({ onCreatePage, canCreate, onDelete }: PageDetailsPr
         }
     });
 
-    const pageData = get(getPageQuery, "data.pageBuilder.getPage.data", {});
-    const folderId = get(pageData, "wbyAco_location.folderId") ?? ROOT_FOLDER;
-
-    const page = {
-        ...pageData,
-        wbyAco_location: {
-            folderId
-        }
-    };
+    const page = getPageQuery.data?.pageBuilder.getPage.data || {};
 
     if (!pageId || !isValidPageData(page)) {
         return <EmptyPageDetails canCreate={canCreate} onCreatePage={onCreatePage} />;
