@@ -320,9 +320,11 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
 
                 const variables = blockDataVariables.map(blockDataVariable => {
                     // Check if content block has a value for the given block variable.
-                    const contentBlockVariable = contentBlockVariables.find(
-                        variable => variable.id === blockDataVariable.id
-                    );
+                    const contentBlockVariable = contentBlockVariables.find(variable => {
+                        // We must ignore the prefix before the `#` character, as it will vary between block instances.
+                        const baseVariableId = variable.id.split("#").pop();
+                        return baseVariableId === blockDataVariable.id;
+                    });
 
                     // Use the content block variable value, or fall back to the default block variable value.
                     const value = contentBlockVariable
@@ -341,7 +343,7 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                         data: {
                             ...contentBlock?.data,
                             ...blockData?.content?.data,
-                            variables
+                            variables: generateBlockVariableIds(variables, contentBlock.id)
                         },
                         elements: generateElementIds(
                             blockData?.content?.elements || [],
@@ -360,8 +362,32 @@ function generateElementIds(elements: PageContentElement[], id: string): PageCon
     return elements.map(element => {
         return {
             ...element,
-            id: `${id}.${element.id}`,
-            elements: generateElementIds(element.elements, id)
+            id: `${id}#${element.id}`,
+            elements: generateElementIds(element.elements, id),
+            data: prefixElementVariableId(element.data, id)
         };
     });
+}
+
+function generateBlockVariableIds(variables: PageBlockVariable[], blockId: string) {
+    return variables.map(variable => {
+        const variableId = variable.id.split("#").pop();
+        const newId = [blockId, variableId].join("#");
+
+        return { ...variable, id: newId };
+    });
+}
+
+function prefixElementVariableId(
+    data: PageContentElement["data"],
+    id: string
+): PageContentElement["data"] {
+    if (data?.variableId) {
+        const variableId = data.variableId.split("#").pop();
+        const newId = [id, variableId].join("#");
+
+        return { ...data, variableId: newId };
+    }
+
+    return data;
 }
