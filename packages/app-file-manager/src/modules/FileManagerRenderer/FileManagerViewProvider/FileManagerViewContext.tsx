@@ -419,7 +419,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             setState(state => ({
                 ...state,
                 selected: [],
-                filters: Object.keys(filters)?.length ? filters : undefined,
+                filters: Object.keys(filters).length ? filters : undefined,
                 selection: {}
             }));
         },

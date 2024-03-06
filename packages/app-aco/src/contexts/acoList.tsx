@@ -299,7 +299,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
             );
 
             setState({
-                filters: Object.keys(filters)?.length ? filters : undefined,
+                filters: Object.keys(filters).length ? filters : undefined,
                 after: undefined
             });
         },
