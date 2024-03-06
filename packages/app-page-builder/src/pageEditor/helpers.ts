@@ -1,6 +1,6 @@
 import invariant from "invariant";
 import { plugins } from "@webiny/plugins";
-import { getNanoid, prefixElementIdsRecursively } from "~/editor/helpers";
+import { getNanoid, prefixElementIdsRecursively, generateBlockVariableIds } from "~/editor/helpers";
 import {
     PbEditorBlockPlugin,
     PbEditorElement,
@@ -25,7 +25,11 @@ export const createBlockReference = (name: string): PbEditorElement => {
         ...blockElement,
         id: blockId,
         elements: prefixElementIdsRecursively(blockElement.elements as PbEditorElement[], blockId),
-        data: { ...blockElement.data, blockId: plugin.id }
+        data: {
+            ...blockElement.data,
+            blockId: plugin.id,
+            variables: generateBlockVariableIds(blockElement.data.variables || [], blockId)
+        }
     };
 };
 

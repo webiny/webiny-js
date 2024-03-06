@@ -1,20 +1,19 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
-import { PbBlockVariable } from "~/types";
 
 export function useVariable<TValue = any>(variableId: string) {
     const [element] = useActiveElement();
     const elementRef = useRef(element);
+    const variableIdRef = useRef(variableId);
     const updateElement = useUpdateElement();
-    const variable = element?.data?.variables?.find(
-        (variable: PbBlockVariable) => variable.id === variableId
-    );
+    const variable = element?.data?.variables?.find(variable => variable.id === variableId);
 
     // We're storing a reference to an element, so we don't have to recreate the `onChange` callback on every update.
     useEffect(() => {
         elementRef.current = element;
-    }, [element]);
+        variableIdRef.current = variableId;
+    }, [element, variableId]);
 
     const onChange = useCallback(
         (value: TValue, history = false) => {
@@ -24,7 +23,7 @@ export function useVariable<TValue = any>(variableId: string) {
             }
 
             const newVariables = element.data.variables?.map(variable => {
-                if (variable?.id === variableId) {
+                if (variable.id === variableIdRef.current) {
                     return {
                         ...variable,
                         value
@@ -47,7 +46,7 @@ export function useVariable<TValue = any>(variableId: string) {
                 }
             );
         },
-        [variableId, updateElement]
+        [updateElement]
     );
 
     const onBlur = useCallback(() => {

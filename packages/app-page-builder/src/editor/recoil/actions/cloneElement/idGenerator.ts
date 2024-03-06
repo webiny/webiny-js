@@ -9,9 +9,9 @@ export const randomIdGenerator: IdGenerator = () => getNanoid();
 
 const createBlockElementIdGenerator = (currentBlockId: string, newBlockId: string): IdGenerator => {
     return element => {
-        const parts = element.id.split(".");
+        const parts = element.id.split("#");
 
-        return [newBlockId, ...parts.filter(part => part !== currentBlockId)].join(".");
+        return [newBlockId, ...parts.filter(part => part !== currentBlockId)].join("#");
     };
 };
 

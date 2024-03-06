@@ -2,10 +2,28 @@ import { EventActionCallable, EventActionHandlerCallableState, PbEditorElement }
 import { CloneElementActionArgsType } from "../cloneElement/types";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
 import { getIdGenerator, IdGenerator } from "~/editor/recoil/actions/cloneElement/idGenerator";
+import { generateBlockVariableIds } from "~/editor/helpers";
 
-const replaceTemplateBlockId = (data: PbEditorElement["data"], id: string) => {
+const replaceTemplateId = (data: PbEditorElement["data"], id: string) => {
     if ("templateBlockId" in data) {
-        return { ...data, templateBlockId: id };
+        return {
+            ...data,
+            templateBlockId: id
+        };
+    }
+
+    return data;
+};
+
+/**
+ * Replace the block ID portion of the variable ID with the given `id`.
+ */
+const replaceVariableIds = (data: PbEditorElement["data"], id: string) => {
+    if ("variables" in data) {
+        return {
+            ...data,
+            variables: generateBlockVariableIds(data.variables || [], id)
+        };
     }
 
     return data;
@@ -20,7 +38,6 @@ export const cloneElement = async (
     return {
         ...(element as PbEditorElement),
         id: elementId,
-        data: replaceTemplateBlockId(element.data, elementId),
         elements: await Promise.all(
             element.elements.map(async (el: PbEditorElement | string) => {
                 return cloneElement(
@@ -66,11 +83,10 @@ export const cloneElementAction: EventActionCallable<CloneElementActionArgsType>
     };
 
     if (element.type === "block" && element.data.blockId) {
-        // We also need to update template variables
-        newElement.data.template.variables.push({
-            blockId: clonedElement.id,
-            variables: [...(clonedElement.data.variables || [])]
-        });
+        clonedElement.data = [replaceTemplateId, replaceVariableIds].reduce(
+            (data, fn) => fn(data, clonedElement.id),
+            element.data
+        );
     }
 
     return {

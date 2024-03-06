@@ -4,6 +4,7 @@ import { set } from "dot-prop-immutable";
 import { DragObjectWithTypeWithTarget as BaseDragObjectWithTypeWithTarget } from "./components/Droppable";
 import { plugins } from "@webiny/plugins";
 import {
+    PbBlockVariable,
     PbEditorBlockPlugin,
     PbEditorElement,
     PbEditorPageElementPlugin,
@@ -154,6 +155,9 @@ export const createDroppedElement = (
     return createElement(source.type, {}, target);
 };
 
+/**
+ * Traverse elements and generate valid element IDs and `variableId` references.
+ */
 export function prefixElementIdsRecursively(
     elements: PbEditorElement[],
     id: string
@@ -161,9 +165,39 @@ export function prefixElementIdsRecursively(
     return elements.map(element => {
         return {
             ...element,
-            id: `${id}.${element.id}`,
-            elements: prefixElementIdsRecursively(element.elements as PbEditorElement[], id)
+            id: `${id}#${element.id}`,
+            elements: prefixElementIdsRecursively(element.elements as PbEditorElement[], id),
+            data: prefixElementVariableId(element.data, id)
         };
+    });
+}
+
+/**
+ * If element is referencing a variable (via the `variableId` attribute), update the reference with the given `id` prefix.
+ */
+function prefixElementVariableId(
+    data: PbEditorElement["data"],
+    id: string
+): PbEditorElement["data"] {
+    if (data?.variableId) {
+        const variableId = data.variableId.split("#").pop();
+        const newId = [id, variableId].join("#");
+
+        return { ...data, variableId: newId };
+    }
+
+    return data;
+}
+
+/**
+ * Update all block element variable IDs with the given `blockId` prefix.
+ */
+export function generateBlockVariableIds(variables: PbBlockVariable[], blockId: string) {
+    return variables.map(variable => {
+        const variableId = variable.id.split("#").pop();
+        const newId = [blockId, variableId].join("#");
+
+        return { ...variable, id: newId };
     });
 }
 
