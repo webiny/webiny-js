@@ -298,7 +298,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
 
             await storageOperations.entries.delete(model, {
-                storageEntry
+                storageEntry,
+                entry
             });
 
             await onEntryAfterDelete.publish({

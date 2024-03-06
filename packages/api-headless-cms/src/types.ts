@@ -1634,7 +1634,7 @@ export interface CmsEntry<T = CmsEntryValues> {
     /**
      * Is the entry in the bin?
      */
-    deleted?: boolean | null;
+    deleted: boolean;
 }
 
 export interface CmsStorageEntry extends CmsEntry {
@@ -2926,8 +2926,18 @@ export interface CmsEntryStorageOperationsDeleteRevisionParams<
     latestStorageEntry: T | null;
 }
 
-export interface CmsEntryStorageOperationsDeleteParams {
-    storageEntry: CmsStorageEntry;
+export interface CmsEntryStorageOperationsDeleteParams<
+    T extends CmsStorageEntry = CmsStorageEntry
+> {
+    /**
+     * The modified entry that is going to be saved as published.
+     * Entry is in its original form.
+     */
+    entry: CmsEntry;
+    /**
+     * The modified entry and prepared for the storage.
+     */
+    storageEntry: T;
 }
 
 export interface CmsEntryStorageOperationsDestroyParams {
