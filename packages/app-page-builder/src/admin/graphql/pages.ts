@@ -26,9 +26,6 @@ export interface PageResponseData {
         name: string;
     };
     content: Record<string, any>;
-    wbyAco_location: {
-        folderId?: string;
-    };
 }
 
 export const DATA_FIELDS = `
