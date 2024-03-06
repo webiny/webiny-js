@@ -8,7 +8,7 @@
     "is-ci": "3.0.0",
     "jsesc": "^3.0.2",
     "node-fetch": "2.6.1",
-    "strip-ansi": "^7.1.0",
+    "strip-ansi": "^6.0.1",
     "wts": "https://github.com/webiny/wts#ae82e59470d79dc448a74239bf9d2328f4b93499"
   },
   "publishConfig": {

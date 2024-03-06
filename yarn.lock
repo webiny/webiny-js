@@ -18813,8 +18813,7 @@ __metadata:
     is-ci: 3.0.0
     jsesc: ^3.0.2
     node-fetch: 2.6.1
-    strip-ansi: ^7.1.0
-    strip-ansi-control-characters: ^2.0.0
+    strip-ansi: ^6.0.1
     wts: "https://github.com/webiny/wts#ae82e59470d79dc448a74239bf9d2328f4b93499"
   languageName: unknown
   linkType: soft
@@ -43731,13 +43730,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strip-ansi-control-characters@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "strip-ansi-control-characters@npm:2.0.0"
-  checksum: ec8100a5099a55442930c6c4e983863ddbb490228c395b7700af909f3ffdbdc4975388ef91aaf88071f89481b2b6546501adf3362c1e5a4031c87c31ad7e776c
-  languageName: node
-  linkType: hard
-
 "strip-ansi@npm:5.2.0, strip-ansi@npm:^5.1.0":
   version: 5.2.0
   resolution: "strip-ansi@npm:5.2.0"
@@ -43780,15 +43772,6 @@ __metadata:
   dependencies:
     ansi-regex: ^6.0.1
   checksum: 257f78fa433520e7f9897722731d78599cb3fce29ff26a20a5e12ba4957463b50a01136f37c43707f4951817a75e90820174853d6ccc240997adc5df8f966039
-  languageName: node
-  linkType: hard
-
-"strip-ansi@npm:^7.1.0":
-  version: 7.1.0
-  resolution: "strip-ansi@npm:7.1.0"
-  dependencies:
-    ansi-regex: ^6.0.1
-  checksum: 859c73fcf27869c22a4e4d8c6acfe690064659e84bef9458aa6d13719d09ca88dcfd40cbf31fd0be63518ea1a643fe070b4827d353e09533a5b0b9fd4553d64d
   languageName: node
   linkType: hard
 
