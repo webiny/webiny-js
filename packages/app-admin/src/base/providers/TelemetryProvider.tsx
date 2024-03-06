@@ -27,7 +27,7 @@ export const createTelemetryProvider = () => (Component: React.ComponentType) =>
                 properties["wcpProjectId"] = project.projectId;
             }
 
-            sendEvent("app-start", properties);
+            sendEvent("admin-app-start", properties);
         }, []);
 
         return <Component>{children}</Component>;

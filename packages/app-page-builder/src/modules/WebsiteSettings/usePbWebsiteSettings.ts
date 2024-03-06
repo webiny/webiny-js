@@ -73,7 +73,7 @@ export function usePbWebsiteSettings() {
                 settings.websiteUrl !== data.websiteUrl && !data.websiteUrl.includes("localhost");
             if (logWebsiteUrl) {
                 // We don't want to await the result, so that we don't block the UI.
-                sendEvent("custom-domain", {
+                sendEvent("admin-custom-domain", {
                     domain: data.websiteUrl
                 });
             }
