@@ -1,12 +1,11 @@
-import { Context as LambdaContext } from "aws-lambda/handler";
 import { ITaskEvent, ITaskRawEvent } from "~/handler/types";
-import { ITaskRunner } from "./abstractions";
+import { ITaskEventValidation, ITaskRunner } from "./abstractions";
 import { Context } from "~/types";
 import { Response } from "~/response";
 import { TaskControl } from "./TaskControl";
-import { TaskEventValidation } from "./TaskEventValidation";
 import { IResponseResult } from "~/response/abstractions";
 import { getErrorProperties } from "~/utils/getErrorProperties";
+import { ITimer } from "~/timer";
 
 const transformMinutesIntoMilliseconds = (minutes: number) => {
     return minutes * 60000;
@@ -24,46 +23,27 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
      * Follow the same example for the rest of the properties.
      */
     public readonly context: C;
-    public readonly lambdaContext: Pick<LambdaContext, "getRemainingTimeInMillis">;
-    private readonly validation: TaskEventValidation;
-
-    private readonly startTime: number;
+    private readonly validation: ITaskEventValidation;
+    private readonly timer: ITimer;
 
     /**
      * We take all required variables separately because they will get injected via DI - so less refactoring is required in the future.
      */
-    public constructor(
-        lambdaContext: Pick<LambdaContext, "getRemainingTimeInMillis">,
-        context: C,
-        validation: TaskEventValidation = new TaskEventValidation()
-    ) {
+    public constructor(context: C, timer: ITimer, validation: ITaskEventValidation) {
         this.context = context;
-        this.lambdaContext = lambdaContext;
         this.validation = validation;
-        this.startTime = Date.now();
+        this.timer = timer;
     }
 
     public isCloseToTimeout(seconds?: number) {
         const milliseconds = seconds
             ? seconds * 1000
             : transformMinutesIntoMilliseconds(this.getIsCloseToTimeoutMinutes());
-        return this.getRemainingTime() < milliseconds;
+        return this.getTimer().getRemainingMilliseconds() < milliseconds;
     }
 
-    public getRemainingTime() {
-        /**
-         * Some strange error on clients lambda where the context is not passed into the runner.
-         * Can't reproduce it, but this should fix it if it happens again.
-         */
-        if (!this.lambdaContext?.getRemainingTimeInMillis) {
-            const result = this.startTime + 840000 - Date.now(); // 14 minutes
-            console.log(
-                "It looks like the Lambda Context getRemainingTimeInMillis does not exist. Mocked remaining time:",
-                result
-            );
-            return result;
-        }
-        return this.lambdaContext.getRemainingTimeInMillis();
+    public getTimer() {
+        return this.timer;
     }
 
     public async run(rawEvent: ITaskRawEvent): Promise<IResponseResult> {

@@ -8,6 +8,8 @@ import { Context, TaskResponseStatus } from "~/types";
 import { ITaskRawEvent } from "~/handler/types";
 import { TaskRunner } from "~/runner";
 import WebinyError from "@webiny/error";
+import { timerFactory } from "~/timer";
+import { TaskEventValidation } from "~/runner/TaskEventValidation";
 
 export interface HandlerCallable {
     (event: ITaskRawEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
@@ -62,11 +64,12 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
                 });
             }
             const handler = new TaskRunner(
-                context,
                 /**
                  * We can safely cast because we know that the context is of type tasks/Context
                  */
-                app.webiny as Context
+                app.webiny as Context,
+                timerFactory(context),
+                new TaskEventValidation()
             );
 
             app.__webiny_raw_result = await handler.run(event);
