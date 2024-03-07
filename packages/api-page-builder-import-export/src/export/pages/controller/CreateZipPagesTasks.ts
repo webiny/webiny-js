@@ -7,7 +7,7 @@ import {
 } from "~/export/pages/types";
 import { ITaskResponseResult } from "@webiny/tasks/types";
 
-const PAGES_IN_BATCH = 50;
+const PAGES_IN_BATCH = 25;
 
 /**
  * Go through all the pages and create subtasks for zipping pages in batches.
@@ -55,6 +55,7 @@ export class CreateZipPagesTasks {
                         ...input,
                         ...listPagesParams,
                         currentBatch,
+                        totalPages: meta.totalCount,
                         zippingPages: true
                     },
                     {
@@ -85,6 +86,7 @@ export class CreateZipPagesTasks {
                         ...input,
                         ...listPagesParams,
                         currentBatch,
+                        totalPages: meta.totalCount,
                         zippingPages: true
                     },
                     {

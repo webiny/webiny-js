@@ -70,6 +70,8 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 return null;
             }
 
+            const totalPages = task.input.totalPages || 0;
+
             const data: PbExportPagesTaskData = {
                 url: task.output?.url,
                 error: task.output?.error
@@ -87,7 +89,6 @@ export default new ContextPlugin<PbImportExportContext>(context => {
             });
 
             const stats = {
-                queued: [] as string[],
                 completed: [] as string[],
                 failed: [] as string[]
             };
@@ -96,11 +97,9 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 if (!subTask.output) {
                     continue;
                 }
-                const queued = subTask.input.queue || [];
                 const completed = Object.keys(subTask.output.done || []);
                 const failed = subTask.output.failed || [];
 
-                stats.queued.push(...queued, ...completed, ...failed);
                 stats.completed.push(...completed);
                 stats.failed.push(...failed);
             }
@@ -110,9 +109,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                 status: task.taskStatus,
                 data,
                 stats: {
-                    total:
-                        new Set([...stats.queued, ...stats.completed, ...stats.failed]).size ||
-                        task.input.totalPages,
+                    total: totalPages,
                     completed: stats.completed.length,
                     failed: stats.failed.length
                 }
@@ -211,7 +208,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                     }
                 };
             } catch (ex) {
-                console.log(ex);
+                console.error(ex);
                 throw ex;
             }
         },
@@ -268,7 +265,7 @@ export default new ContextPlugin<PbImportExportContext>(context => {
                     }
                 };
             } catch (ex) {
-                console.log(ex);
+                console.error(ex);
                 throw ex;
             }
         },

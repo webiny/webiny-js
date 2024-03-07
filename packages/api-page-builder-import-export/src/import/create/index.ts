@@ -42,7 +42,7 @@ export default (configuration: Configuration) => {
                         return templatesHandler(configuration, payload, context);
                     }
                     default: {
-                        console.log("Import PB", JSON.stringify(payload));
+                        console.error("Import PB", JSON.stringify(payload));
                         throw new Error("Invalid type provided: pb page.");
                     }
                 }

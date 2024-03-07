@@ -16,6 +16,7 @@
   "dependencies": {
     "@babel/runtime": "^7.22.6",
     "@commodo/fields": "beta",
+    "@smithy/node-http-handler": "^2.1.6",
     "@webiny/api": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-form-builder": "0.0.0",

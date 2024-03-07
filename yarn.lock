@@ -15550,6 +15550,7 @@ __metadata:
     "@babel/preset-typescript": ^7.22.5
     "@babel/runtime": ^7.22.6
     "@commodo/fields": beta
+    "@smithy/node-http-handler": ^2.1.6
     "@types/archiver": ^5.3.1
     "@types/node-fetch": ^2.6.1
     "@types/yauzl": ^2.9.2
