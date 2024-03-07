@@ -168,7 +168,6 @@ export const createEntryData = async ({
         version,
         status,
         locked,
-        deleted: false,
         values: input,
         location: {
             folderId: rawInput.wbyAco_location?.folderId || ROOT_FOLDER

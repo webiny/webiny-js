@@ -1634,7 +1634,7 @@ export interface CmsEntry<T = CmsEntryValues> {
     /**
      * Is the entry in the bin?
      */
-    deleted: boolean;
+    deleted?: boolean | null;
 }
 
 export interface CmsStorageEntry extends CmsEntry {
