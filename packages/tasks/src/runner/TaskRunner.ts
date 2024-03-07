@@ -31,19 +31,15 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
      */
     public constructor(context: C, timer: ITimer, validation: ITaskEventValidation) {
         this.context = context;
-        this.validation = validation;
         this.timer = timer;
+        this.validation = validation;
     }
 
     public isCloseToTimeout(seconds?: number) {
         const milliseconds = seconds
             ? seconds * 1000
             : transformMinutesIntoMilliseconds(this.getIsCloseToTimeoutMinutes());
-        return this.getTimer().getRemainingMilliseconds() < milliseconds;
-    }
-
-    public getTimer() {
-        return this.timer;
+        return this.timer.getRemainingMilliseconds() < milliseconds;
     }
 
     public async run(rawEvent: ITaskRawEvent): Promise<IResponseResult> {

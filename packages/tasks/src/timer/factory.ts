@@ -1,12 +1,17 @@
-import { ILambdaContextTimerContext, LambdaContextTimer } from "./LambdaContextTimer";
 import { ITimer } from "~/timer/abstractions/ITimer";
 import { CustomTimer } from "./CustomTimer";
+import { Context as LambdaContext } from "aws-lambda/handler";
+import { Timer } from "./Timer";
 
-export const timerFactory = (context: Partial<ILambdaContextTimerContext>): ITimer => {
-    if (!context?.getRemainingTimeInMillis) {
-        return new CustomTimer();
-    }
-    // Safe to cast as we check for the existing method above.
-    // TODO figure out why TypeScript is not happy with the above check.
-    return new LambdaContextTimer(context as ILambdaContextTimerContext);
+export type ITimerFactoryParams = Pick<LambdaContext, "getRemainingTimeInMillis">;
+
+export const timerFactory = (params?: Partial<ITimerFactoryParams>): ITimer => {
+    const customTimer = new CustomTimer();
+
+    return new Timer(() => {
+        if (params?.getRemainingTimeInMillis) {
+            return params.getRemainingTimeInMillis();
+        }
+        return customTimer.getRemainingMilliseconds();
+    });
 };
