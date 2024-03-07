@@ -100,6 +100,8 @@ describe("Content entries", () => {
         createFruit,
         publishFruit,
         deleteFruit,
+        listFruits,
+        getFruit,
         getContentEntries,
         getLatestContentEntries,
         getPublishedContentEntries,
@@ -707,9 +709,32 @@ describe("Content entries", () => {
     });
 
     it("should process the delete of an entry, marking it as `deleted`", async () => {
-        const { greenApple } = await setupFruits();
+        const fruits = await setupFruits();
+
+        const { apple, banana, greenApple, strawberry, orange } = fruits;
+
         /**
-         * First we should soft delete the fruit.
+         * First we check all fruits are loaded.
+         */
+        const [listSuccessResponse] = await listFruits({
+            sort: ["name_ASC"]
+        });
+        expect(listSuccessResponse).toEqual({
+            data: {
+                listFruits: {
+                    data: [apple, banana, greenApple, orange, strawberry],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: Object.keys(fruits).length
+                    }
+                }
+            }
+        });
+
+        /**
+         * Let's mark one fruit as deleted.
          */
         const [softDeleteSuccessResponse] = await deleteFruit({
             revision: greenApple.entryId,
@@ -725,8 +750,9 @@ describe("Content entries", () => {
                 }
             }
         });
+
         /**
-         * If we repeat the operation, trying to soft delete it, we should get the non existing entry error.
+         * If we repeat the operation, trying to mark it as deleted again, we should get the non existing entry error.
          */
         const [softDeleteFailResponse] = await deleteFruit({
             revision: greenApple.entryId,
@@ -744,6 +770,71 @@ describe("Content entries", () => {
                 }
             }
         });
+
+        /**
+         * Let's list the fruits again, we should not receive back the deleted fruit.
+         */
+        const [listAfterDeletionResponse] = await listFruits({
+            sort: ["name_ASC"]
+        });
+        expect(listAfterDeletionResponse).toEqual({
+            data: {
+                listFruits: {
+                    data: [apple, banana, orange, strawberry],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: Object.keys(fruits).length - 1
+                    }
+                }
+            }
+        });
+
+        /**
+         * Let's list the deleted fruits found in the bin.
+         */
+        const [listDeletedSuccessResponse] = await listFruits({ deleted: true });
+        expect(listDeletedSuccessResponse).toEqual({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            ...greenApple,
+                            meta: {
+                                ...greenApple.meta,
+                                revisions: [] // TODO: right now we are not adding a `deleted` flag to get single entry or revision, resulting an empty array.
+                            },
+                            deletedOn: expect.any(String),
+                            deletedBy: expect.any(Object)
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    }
+                }
+            }
+        });
+        /**
+         * Let's try to get the deleted fruit, we should get the non existing entry error.
+         */
+        const [getAfterDeletionResponse] = await getFruit({ revision: greenApple.entryId });
+        expect(getAfterDeletionResponse).toEqual({
+            data: {
+                getFruit: {
+                    data: null,
+                    error: {
+                        code: "NOT_FOUND",
+                        data: null,
+                        message: `Entry by ID "${greenApple.entryId}" not found.`
+                    }
+                }
+            }
+        });
+
         /**
          * And if we force deletion, trying to destroy the entry, we should get the success response.
          */
@@ -758,6 +849,7 @@ describe("Content entries", () => {
                 }
             }
         });
+
         /**
          * If we repeat the operation we should get the non existing entry error.
          */
@@ -770,6 +862,26 @@ describe("Content entries", () => {
                     data: null,
                     error: {
                         message: `Entry "${greenApple.entryId}" was not found!`
+                    }
+                }
+            }
+        });
+
+        /**
+         * Let's list the deleted fruits aka the bin, it should be empty.
+         */
+        const [listDeletedFailResponse] = await listFruits({
+            deleted: true
+        });
+        expect(listDeletedFailResponse).toEqual({
+            data: {
+                listFruits: {
+                    data: [],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 0
                     }
                 }
             }

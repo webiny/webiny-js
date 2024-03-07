@@ -475,8 +475,7 @@ export const createEntriesStorageOperations = (
     };
 
     const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
-        const { storageEntry } = params;
-        const id = storageEntry.id || storageEntry.entryId;
+        const { entry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 
         /**
@@ -485,7 +484,7 @@ export const createEntriesStorageOperations = (
         const queryAllParams: QueryAllParams = {
             entity,
             partitionKey: createPartitionKey({
-                id,
+                id: entry.id,
                 locale: model.locale,
                 tenant: model.tenant
             }),
@@ -503,10 +502,15 @@ export const createEntriesStorageOperations = (
                 ex.code || "LOAD_ALL_RECORDS_ERROR",
                 {
                     error: ex,
-                    id
+                    id: entry.id
                 }
             );
         }
+
+        const storageEntry = convertToStorageEntry({
+            model,
+            storageEntry: initialStorageEntry
+        });
 
         /**
          * Then create the batch writes for the DynamoDB, with the updated data.
@@ -531,8 +535,8 @@ export const createEntriesStorageOperations = (
                 ex.code || "DELETE_ENTRY_ERROR",
                 {
                     error: ex,
-                    partitionKey: queryAllParams.partitionKey,
-                    id
+                    entry,
+                    storageEntry
                 }
             );
         }

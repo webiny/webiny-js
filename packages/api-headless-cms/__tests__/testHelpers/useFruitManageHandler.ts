@@ -10,7 +10,13 @@ const fruitFields = `
     savedOn
     firstPublishedOn
     lastPublishedOn
+    deletedOn
     createdBy {
+        id
+        displayName
+        type
+    }
+    deletedBy {
         id
         displayName
         type
@@ -84,8 +90,9 @@ const listFruitsQuery = (model: CmsModel) => {
             $sort: [${model.singularApiName}ListSorter]
             $limit: Int
             $after: String
+            $deleted: Boolean
         ) {
-            listFruits: list${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after) {
+            listFruits: list${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after, deleted: $deleted) {
                 data {
                     ${fruitFields}
                 }
