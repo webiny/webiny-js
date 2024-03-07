@@ -57,21 +57,19 @@ module.exports = async (inputs, context) => {
         // If exists - read default inputs from "webiny.application.ts" file.
         inputs = merge({}, get(projectApplication, "config.cli.watch"), inputs);
 
-        if (projectApplication.type === "v5-workspaces") {
-            // We don't do anything here. We assume the workspace has already been created
-            // upon running the `webiny deploy` command. We rely on that.
-            // TODO: maybe we can improve this in the future, depending on the feedback.
-            // await createProjectApplicationWorkspace({
-            //     projectApplication,
-            //     env: inputs.env,
-            //     context,
-            //     inputs
-            // });
+        // We don't do anything here. We assume the workspace has already been created
+        // upon running the `webiny deploy` command. We rely on that.
+        // TODO: maybe we can improve this in the future, depending on the feedback.
+        // await createProjectApplicationWorkspace({
+        //     projectApplication,
+        //     env: inputs.env,
+        //     context,
+        //     inputs
+        // });
 
-            // Check if there are any plugins that need to be registered.
-            if (projectApplication.config.plugins) {
-                context.plugins.register(projectApplication.config.plugins);
-            }
+        // Check if there are any plugins that need to be registered.
+        if (projectApplication.config.plugins) {
+            context.plugins.register(projectApplication.config.plugins);
         }
 
         // Load env vars specified via .env files located in project application folder.
@@ -281,17 +279,7 @@ module.exports = async (inputs, context) => {
                 message: chalk.green("Watching cloud infrastructure resources...")
             });
 
-            let buildFoldersGlob = [projectApplication.paths.workspace, "**/build/*.js"].join("/");
-
-            // For non-workspaces projects, we still want to be watching `**/build/*.js` files located
-            // in user's project (for example `api/graphql/code/build/handler.js`).
-            if (projectApplication.type !== "v5-workspaces") {
-                buildFoldersGlob = [
-                    projectApplication.paths.absolute,
-                    inputs.folder,
-                    "**/build/*.js"
-                ].join("/");
-            }
+            const buildFoldersGlob = [projectApplication.paths.workspace, "**/build/*.js"].join("/");
 
             const buildFolders = glob.sync(buildFoldersGlob, { onlyFiles: false });
 
