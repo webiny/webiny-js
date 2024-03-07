@@ -528,15 +528,11 @@ export default /* GraphQL */ `
             revision: ID
             entryId: ID
             status: CmsEntryStatusType
-            deleted: Boolean
         ): ProductApiSingularResponse
 
-        getProductApiSingularRevisions(id: ID!, deleted: Boolean): ProductApiSingularArrayResponse
+        getProductApiSingularRevisions(id: ID!): ProductApiSingularArrayResponse
 
-        getProductPluralApiNameByIds(
-            revisions: [ID!]!
-            deleted: Boolean
-        ): ProductApiSingularArrayResponse
+        getProductPluralApiNameByIds(revisions: [ID!]!): ProductApiSingularArrayResponse
 
         listProductPluralApiName(
             where: ProductApiSingularListWhereInput

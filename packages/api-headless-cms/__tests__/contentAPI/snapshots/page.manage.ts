@@ -605,15 +605,11 @@ export default /* GraphQL */ `
             revision: ID
             entryId: ID
             status: CmsEntryStatusType
-            deleted: Boolean
         ): PageModelApiNameResponse
 
-        getPageModelApiNameRevisions(id: ID!, deleted: Boolean): PageModelApiNameArrayResponse
+        getPageModelApiNameRevisions(id: ID!): PageModelApiNameArrayResponse
 
-        getPagesModelApiNameByIds(
-            revisions: [ID!]!
-            deleted: Boolean
-        ): PageModelApiNameArrayResponse
+        getPagesModelApiNameByIds(revisions: [ID!]!): PageModelApiNameArrayResponse
 
         listPagesModelApiName(
             where: PageModelApiNameListWhereInput

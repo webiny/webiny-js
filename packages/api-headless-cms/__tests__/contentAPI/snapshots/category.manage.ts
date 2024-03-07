@@ -330,17 +330,14 @@ export default /* GraphQL */ `
             revision: ID
             entryId: ID
             status: CmsEntryStatusType
-            deleted: Boolean
         ): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
         getCategoryApiNameWhichIsABitDifferentThanModelIdRevisions(
             id: ID!
-            deleted: Boolean
         ): CategoryApiNameWhichIsABitDifferentThanModelIdArrayResponse
 
         getCategoriesApiModelByIds(
             revisions: [ID!]!
-            deleted: Boolean
         ): CategoryApiNameWhichIsABitDifferentThanModelIdArrayResponse
 
         listCategoriesApiModel(

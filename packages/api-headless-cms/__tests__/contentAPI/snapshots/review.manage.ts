@@ -342,12 +342,11 @@ export default /* GraphQL */ `
             revision: ID
             entryId: ID
             status: CmsEntryStatusType
-            deleted: Boolean
         ): ReviewApiModelResponse
 
-        getReviewApiModelRevisions(id: ID!, deleted: Boolean): ReviewApiModelArrayResponse
+        getReviewApiModelRevisions(id: ID!): ReviewApiModelArrayResponse
 
-        getReviewsApiModelByIds(revisions: [ID!]!, deleted: Boolean): ReviewApiModelArrayResponse
+        getReviewsApiModelByIds(revisions: [ID!]!): ReviewApiModelArrayResponse
 
         listReviewsApiModel(
             where: ReviewApiModelListWhereInput
