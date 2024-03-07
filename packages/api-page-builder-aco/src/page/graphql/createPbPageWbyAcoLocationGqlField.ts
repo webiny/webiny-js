@@ -1,6 +1,7 @@
 import { PbAcoContext } from "~/types";
 import { Page } from "@webiny/api-page-builder/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { ROOT_FOLDER } from "~/contants";
 
 export const createPbPageWbyAcoLocationGqlField = (context: PbAcoContext) => {
     context.plugins.register(
@@ -21,14 +22,14 @@ export const createPbPageWbyAcoLocationGqlField = (context: PbAcoContext) => {
                             page.pid
                         );
 
-                        if (pageSearchRecord && pageSearchRecord.location.folderId !== "root") {
+                        if (!pageSearchRecord) {
                             return {
-                                folderId: pageSearchRecord.location.folderId
+                                folderId: null
                             };
                         }
 
                         return {
-                            folderId: null
+                            folderId: pageSearchRecord.location.folderId || ROOT_FOLDER
                         };
                     }
                 }
