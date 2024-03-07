@@ -803,7 +803,8 @@ describe("Content entries", () => {
                             ...greenApple,
                             meta: {
                                 ...greenApple.meta,
-                                revisions: [] // TODO: right now we are not adding a `deleted` flag to get single entry or revision, resulting an empty array.
+                                // TODO: right now we are not adding a `deleted` flag to get single entry or revision, resulting an empty array.
+                                revisions: []
                             },
                             deletedOn: expect.any(String),
                             deletedBy: expect.any(Object)
