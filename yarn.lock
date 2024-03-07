@@ -18814,7 +18814,7 @@ __metadata:
     jsesc: ^3.0.2
     node-fetch: 2.6.1
     strip-ansi: ^6.0.1
-    wts: "https://github.com/webiny/wts#ae82e59470d79dc448a74239bf9d2328f4b93499"
+    wts: "https://github.com/webiny/wts#51fd5a89a8d12b27def57ff99a71e071e9085e6c"
   languageName: unknown
   linkType: soft
 
@@ -47001,14 +47001,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wts@https://github.com/webiny/wts#ae82e59470d79dc448a74239bf9d2328f4b93499":
+"wts@https://github.com/webiny/wts#51fd5a89a8d12b27def57ff99a71e071e9085e6c":
   version: 2.0.0
-  resolution: "wts@https://github.com/webiny/wts.git#commit=ae82e59470d79dc448a74239bf9d2328f4b93499"
+  resolution: "wts@https://github.com/webiny/wts.git#commit=51fd5a89a8d12b27def57ff99a71e071e9085e6c"
   dependencies:
     btoa: ^1.2.1
     js-cookie: ^2.2.1
     node-fetch: ^2.6.1
-  checksum: 03c68d77c24b9f97b481749db372932295c90f6df1194be2aa67e8c60feafa10d02640990479d6ae63684f481bd3b08bd3c41c1c663ff85b73de063a774c8793
+  checksum: d807a0ad235419c93662eb3da92250677c9baf5a93b3976784f0db6aca63ada465fb1e1a6716f1cbea7e069fcf43a2f9a175d84b860b78af52f54413d0f26a8a
   languageName: node
   linkType: hard
 

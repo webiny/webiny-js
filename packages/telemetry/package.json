@@ -9,7 +9,7 @@
     "jsesc": "^3.0.2",
     "node-fetch": "2.6.1",
     "strip-ansi": "^6.0.1",
-    "wts": "https://github.com/webiny/wts#ae82e59470d79dc448a74239bf9d2328f4b93499"
+    "wts": "https://github.com/webiny/wts#51fd5a89a8d12b27def57ff99a71e071e9085e6c"
   },
   "publishConfig": {
     "access": "public",
