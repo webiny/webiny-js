@@ -12,7 +12,8 @@ export const createTaskMock = (task?: Partial<ITask>): ITask => {
         taskStatus: TaskDataStatus.PENDING,
         createdBy: createMockIdentity(),
         eventResponse: undefined,
-        executionName: "mycustomexecutionname",
+        output: undefined,
+        executionName: "myCustomTaskExecution",
         iterations: 0,
         ...task
     };

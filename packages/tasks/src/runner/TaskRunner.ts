@@ -36,9 +36,7 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
     }
 
     public isCloseToTimeout(seconds?: number) {
-        const milliseconds = seconds
-            ? seconds * 1000
-            : transformMinutesIntoMilliseconds(this.getIsCloseToTimeoutMinutes());
+        const milliseconds = seconds ? seconds * 1000 : this.getIsCloseToTimeoutMilliseconds();
         return this.timer.getRemainingMilliseconds() < milliseconds;
     }
 
@@ -77,8 +75,9 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         }
     }
 
-    private getIsCloseToTimeoutMinutes() {
+    private getIsCloseToTimeoutMilliseconds() {
         const value = parseInt(process.env["WEBINY_TASKS_TIMEOUT_CLOSE_MINUTES"] || "");
-        return value > 0 ? value : DEFAULT_TASKS_TIMEOUT_CLOSE_MINUTES;
+        const result = value > 0 ? value : DEFAULT_TASKS_TIMEOUT_CLOSE_MINUTES;
+        return transformMinutesIntoMilliseconds(result);
     }
 }
