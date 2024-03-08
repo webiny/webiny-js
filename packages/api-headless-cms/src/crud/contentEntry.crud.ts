@@ -326,7 +326,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     /**
      * A helper to get entries by revision IDs
      */
-    const getEntriesByIds: CmsEntryContext["getEntriesByIds"] = async (model, ids) => {
+    const getEntriesByIds: CmsEntryContext["getEntriesByIds"] = async (
+        model,
+        ids,
+        loadDeleted = false
+    ) => {
         return context.benchmark.measure("headlessCms.crud.entries.getEntriesByIds", async () => {
             await accessControl.ensureCanAccessEntry({ model });
 
@@ -335,6 +339,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
 
             return filterAsync(entries, async entry => {
+                if (!loadDeleted && entry.deleted) {
+                    return false;
+                }
                 return accessControl.canAccessEntry({ model, entry });
             });
         });
