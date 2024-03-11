@@ -152,16 +152,7 @@ export class TaskManagerStore<
         if (options?.save === false) {
             return;
         }
-        // this.taskLog = await this.context.tasks.updateLog(this.taskLog.id, {
-        //     items: this.taskLog.items.concat([
-        //         {
-        //             message: log.message,
-        //             data: log.data,
-        //             type: ITaskLogItemType.INFO,
-        //             createdOn: new Date().toISOString()
-        //         }
-        //     ])
-        // });
+
         await this.save();
     }
     /**
@@ -186,17 +177,6 @@ export class TaskManagerStore<
             return;
         }
         await this.save();
-
-        // this.taskLog = await this.context.tasks.updateLog(this.taskLog.id, {
-        //     items: this.taskLog.items.concat([
-        //         {
-        //             message: log.message,
-        //             error: log.error instanceof Error ? getObjectProperties(log.error) : log.error,
-        //             type: ITaskLogItemType.ERROR,
-        //             createdOn: new Date().toISOString()
-        //         }
-        //     ])
-        // });
     }
 
     public async save(): Promise<void> {

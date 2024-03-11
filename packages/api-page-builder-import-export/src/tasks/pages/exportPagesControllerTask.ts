@@ -5,6 +5,7 @@ import {
     IExportPagesControllerOutput,
     PageExportTask
 } from "~/export/pages/types";
+import { ChildTasksCleanup } from "../common/ChildTasksCleanup";
 
 export const createExportPagesControllerTask = () => {
     // TODO make the task private with createPrivateTaskDefinition
@@ -43,6 +44,18 @@ export const createExportPagesControllerTask = () => {
                 // delay cleanup for 25hrs
                 delay: 25 * 60 * 60
             });
+            /**
+             * We want to clean all child tasks and logs, which have no errors.
+             */
+            const childTasksCleanup = new ChildTasksCleanup();
+            try {
+                await childTasksCleanup.execute({
+                    context,
+                    task
+                });
+            } catch (ex) {
+                console.error("Error while cleaning child tasks.", ex);
+            }
         },
         onError: async ({ context, task }) => {
             await context.tasks.trigger({

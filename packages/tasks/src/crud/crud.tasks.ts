@@ -210,6 +210,14 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         return convertToLog(entry as unknown as CmsEntry<ITaskLog>);
     };
 
+    const deleteLog = async (id: string) => {
+        return context.security.withoutAuthorization(async () => {
+            const model = await getLogModel();
+            await context.cms.deleteEntry(model, id);
+            return true;
+        });
+    };
+
     const getLog = async (id: string): Promise<ITaskLog | null> => {
         try {
             const entry = await context.security.withoutAuthorization(async () => {
@@ -275,6 +283,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         deleteTask,
         createLog,
         updateLog,
+        deleteLog,
         getLog,
         listLogs,
         getLatestLog,

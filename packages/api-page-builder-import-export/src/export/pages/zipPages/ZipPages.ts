@@ -55,6 +55,12 @@ export class ZipPages {
 
             const page = await getPage(pageId);
             if (!page) {
+                await store.addErrorLog({
+                    message: `Could not load page "${pageId}".`,
+                    error: {
+                        message: `Could not load page "${pageId}".`
+                    }
+                });
                 dataManager.addFailed(pageId);
                 continue;
             }

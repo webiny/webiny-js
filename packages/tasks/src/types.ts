@@ -153,7 +153,19 @@ export interface IListTaskParams extends Omit<CmsEntryListParams, "fields" | "se
         taskStatus_not_in?: string[];
     };
 }
-export type IListTaskLogParams = Omit<CmsEntryListParams, "fields" | "search">;
+export interface IListTaskLogParams extends Omit<CmsEntryListParams, "fields" | "search"> {
+    where?: CmsEntryListWhere & {
+        task?: string;
+        task_in?: string[];
+        task_not?: string;
+        iteration?: number;
+        iteration_not?: number;
+        iteration_gte?: number;
+        iteration_gt?: number;
+        iteration_lte?: number;
+        iteration_lt?: number;
+    };
+}
 
 export interface ITaskCreateData<T = ITaskDataInput> {
     definitionId: string;
@@ -217,34 +229,35 @@ export interface ITasksContextCrudObject {
     /**
      * Models
      */
-    getTaskModel: () => Promise<CmsModel>;
-    getLogModel: () => Promise<CmsModel>;
+    getTaskModel(): Promise<CmsModel>;
+    getLogModel(): Promise<CmsModel>;
     /**
      * Tasks
      */
-    getTask: <T = any, O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
+    getTask<T = any, O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
         id: string
-    ) => Promise<IGetTaskResponse<T, O> | null>;
-    listTasks: <T = any, O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
+    ): Promise<IGetTaskResponse<T, O> | null>;
+    listTasks<T = any, O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
         params?: IListTaskParams
-    ) => Promise<IListTasksResponse<T, O>>;
-    createTask: <T = any>(task: ITaskCreateData<T>) => Promise<ICreateTaskResponse<T>>;
-    updateTask: <
+    ): Promise<IListTasksResponse<T, O>>;
+    createTask<T = any>(task: ITaskCreateData<T>): Promise<ICreateTaskResponse<T>>;
+    updateTask<
         T = ITaskDataInput,
         O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
     >(
         id: string,
         data: Partial<ITaskUpdateData<T, O>>
-    ) => Promise<IUpdateTaskResponse<T, O>>;
-    deleteTask: (id: string) => Promise<IDeleteTaskResponse>;
+    ): Promise<IUpdateTaskResponse<T, O>>;
+    deleteTask(id: string): Promise<IDeleteTaskResponse>;
     /**
      * Logs
      */
-    createLog: (task: Pick<ITask, "id">, data: ITaskLogCreateInput) => Promise<ITaskLog>;
-    updateLog: (id: string, data: ITaskLogUpdateInput) => Promise<ITaskLog>;
-    getLog: (id: string) => Promise<ITaskLog | null>;
-    getLatestLog: (taskId: string) => Promise<ITaskLog>;
-    listLogs: (params: IListTaskLogParams) => Promise<IListTaskLogsResponse>;
+    createLog(task: Pick<ITask, "id">, data: ITaskLogCreateInput): Promise<ITaskLog>;
+    updateLog(id: string, data: ITaskLogUpdateInput): Promise<ITaskLog>;
+    deleteLog(id: string): Promise<boolean>;
+    getLog(id: string): Promise<ITaskLog | null>;
+    getLatestLog(taskId: string): Promise<ITaskLog>;
+    listLogs(params: IListTaskLogParams): Promise<IListTaskLogsResponse>;
     /**
      * Lifecycle events.
      */
@@ -300,13 +313,13 @@ export interface ITaskRunParams<
 > {
     context: C;
     response: ITaskResponse<I, O>;
-    isCloseToTimeout: (seconds?: number) => boolean;
-    isAborted: () => boolean;
+    isCloseToTimeout(seconds?: number): boolean;
+    isAborted(): boolean;
     input: I;
     store: ITaskManagerStore<I>;
-    trigger: <SI = ITaskDataInput>(
+    trigger<SI = ITaskDataInput>(
         params: Omit<ITaskTriggerParams<SI>, "parent">
-    ) => Promise<ITask<SI>>;
+    ): Promise<ITask<SI>>;
 }
 
 export interface ITaskOnSuccessParams<C extends Context, I = ITaskDataInput> {
@@ -384,32 +397,32 @@ export interface ITaskDefinition<
     /**
      * Task run method.
      */
-    run: (params: ITaskRunParams<C, I, O>) => Promise<ITaskResponseResult>;
+    run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult>;
     /**
      * When a new task is about to be triggered, we will run this method.
      * For example, you can use this method to check if there is a task of the same type already running.
      */
-    onBeforeTrigger?: <T = ITaskDataInput>(params: ITaskBeforeTriggerParams<C, T>) => Promise<void>;
+    onBeforeTrigger?<T = ITaskDataInput>(params: ITaskBeforeTriggerParams<C, T>): Promise<void>;
     /**
      * When task successfully finishes, this method will be called.
      * This will be called during the run time of the task.
      */
-    onDone?: (params: ITaskOnSuccessParams<C, I>) => Promise<void>;
+    onDone?(params: ITaskOnSuccessParams<C, I>): Promise<void>;
     /**
      * When task fails, this method will be called.
      * This will be called during the run time of the task.
      */
-    onError?: (params: ITaskOnErrorParams<C, I>) => Promise<void>;
+    onError?(params: ITaskOnErrorParams<C, I>): Promise<void>;
     /**
      * When task is aborted, this method will be called.
      * This method will be called when user aborts the task.
      */
-    onAbort?: (params: ITaskOnAbortParams<C>) => Promise<void>;
+    onAbort?(params: ITaskOnAbortParams<C>): Promise<void>;
     /**
      * When task hits max iterations, this method will be called.
      * This will be called during the run time of the task.
      */
-    onMaxIterations?: (params: ITaskOnMaxIterationsParams<C>) => Promise<void>;
+    onMaxIterations?(params: ITaskOnMaxIterationsParams<C>): Promise<void>;
     /**
      * Custom input fields and layout for the task input.
      */

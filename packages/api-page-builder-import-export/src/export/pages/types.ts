@@ -15,7 +15,6 @@ export interface IExportPagesControllerInput {
     where?: Record<string, any>;
     totalPages: number;
     after?: string | null;
-    limit?: number;
     currentBatch?: number;
     zippingPages?: boolean;
 }

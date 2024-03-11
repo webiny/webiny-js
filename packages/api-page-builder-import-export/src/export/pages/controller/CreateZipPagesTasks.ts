@@ -24,7 +24,7 @@ export class CreateZipPagesTasks {
         const listPagesParams: ListPagesParams = {
             where: input.where,
             after: input.after,
-            limit: input.limit && input.limit > 0 ? input.limit : PAGES_IN_BATCH
+            limit: PAGES_IN_BATCH
         };
 
         let currentBatch = input.currentBatch || 1;
