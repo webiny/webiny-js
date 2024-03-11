@@ -2,7 +2,8 @@ import { IExportPagesCombineZippedPagesParams } from "~/export/pages/types";
 import { ITaskResponseResult } from "@webiny/tasks";
 import { ListObjectsOutput, s3Stream } from "~/export/s3Stream";
 import { createExportPagesDataKey } from "~/export/pages/utils";
-import { CombineZipFiles } from "~/export/pages/utils/CombineZipFiles";
+import { ZipFiles } from "~/utils/ZipFiles";
+import uniqueId from "uniqid";
 
 export class CombineZippedPages {
     public async execute(
@@ -45,12 +46,12 @@ export class CombineZippedPages {
             return files;
         }, []);
 
-        const zipOfZip = new CombineZipFiles();
-
         let key: string;
 
         try {
-            const pageExportUpload = await zipOfZip.process("WEBINY_PAGE_EXPORT.zip", zipFileKeys);
+            const zipOfZip = new ZipFiles();
+            const target = uniqueId("EXPORTS/", "-WEBINY_PAGE_EXPORT.zip");
+            const pageExportUpload = await zipOfZip.process(target, zipFileKeys);
 
             if (!pageExportUpload?.Key) {
                 return response.error({

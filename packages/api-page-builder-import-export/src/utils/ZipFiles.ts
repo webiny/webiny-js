@@ -4,7 +4,6 @@ import {
     createS3Client,
     GetObjectCommand
 } from "@webiny/aws-sdk/client-s3";
-import uniqueId from "uniqid";
 import path from "path";
 import { type Readable, Stream } from "stream";
 import { Upload } from "@webiny/aws-sdk/lib-storage";
@@ -12,23 +11,23 @@ import { NodeHttpHandler } from "@smithy/node-http-handler";
 import { Agent as HttpsAgent } from "https";
 import { Agent as HttpAgent } from "http";
 
-export interface CombineZipFilesOptions {
+export interface ZipFilesOptions {
     debug?: boolean;
 }
 
-export class CombineZipFiles {
+export class ZipFiles {
     private readonly bucket: string = process.env.S3_BUCKET as string;
     private debug: boolean = process.env.DEBUG === "true";
 
-    public constructor(options?: CombineZipFilesOptions) {
+    public constructor(options?: ZipFilesOptions) {
         this.setDebug(options?.debug);
     }
 
     public async process(
-        filename: string,
-        inputFiles: string[]
+        targetFileName: string,
+        files: string[]
     ): Promise<CompleteMultipartUploadOutput> {
-        const fileNames = Array.from(inputFiles);
+        const fileNames = Array.from(files);
         const s3Client = createS3Client({
             requestHandler: new NodeHttpHandler({
                 connectionTimeout: 0,
@@ -52,7 +51,6 @@ export class CombineZipFiles {
             })
         });
 
-        const archiveFileName = uniqueId("EXPORTS/", `-${filename}`);
         const streamPassThrough = new Stream.PassThrough({
             autoDestroy: true
         });
@@ -64,7 +62,7 @@ export class CombineZipFiles {
                 Body: streamPassThrough,
                 Bucket: this.bucket,
                 ContentType: "application/zip",
-                Key: archiveFileName
+                Key: targetFileName
             },
             queueSize: 1,
             partSize: 1024 * 1024 * 5,
@@ -83,7 +81,7 @@ export class CombineZipFiles {
         archive.pipe(streamPassThrough);
 
         /**
-         * To combine all the zipped pages into a single zip file, we need to add files one by one.
+         * To combine all the files into a single zip file, we need to add files one by one.
          *
          * addFileToArchive() method is called every time an entry event is triggered on the archive - it means that file was added into the archive.
          * The method is called manually, first time, to start the process.
