@@ -106,7 +106,7 @@ describe("reindexing task runner", () => {
         const indexManager = createIndexManagerMock();
         const runner = new ReindexingTaskRunner(manager, indexManager);
 
-        const result = await runner.exec();
+        const result = await runner.exec(undefined, 100);
 
         expect(result).toEqual(
             new ResponseDoneResult({

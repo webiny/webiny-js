@@ -76,14 +76,20 @@ function FontSizeDropDown(props: FontSizeDropDownProps): JSX.Element {
     );
 }
 
+const defaultSize = "15px";
+
 export const FontSizeAction = () => {
     const [editor] = useLexicalComposerContext();
     const [isEditable, setIsEditable] = useState(() => editor.isEditable());
     const fontSize = useDeriveValueFromSelection(({ rangeSelection }) => {
         if (!rangeSelection) {
-            return "15px";
+            return defaultSize;
         }
-        return $getSelectionStyleValueForProperty(rangeSelection, "font-size", "15px");
+        try {
+            return $getSelectionStyleValueForProperty(rangeSelection, "font-size", "15px");
+        } catch {
+            return defaultSize;
+        }
     });
 
     useEffect(() => {

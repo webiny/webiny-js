@@ -5,12 +5,22 @@ import { InMemoryCache } from "@webiny/app/apollo-client/InMemoryCache";
 import { plugins } from "@webiny/plugins";
 import { ApolloDynamicLink } from "@webiny/app/plugins/ApolloDynamicLink";
 import { ApolloCacheObjectIdPlugin } from "@webiny/app/plugins/ApolloCacheObjectIdPlugin";
+import { IntrospectionFragmentMatcher } from "@webiny/app/apollo-client/IntrospectionFragmentMatcher";
 
 export interface CreateApolloClientParams {
     uri: string;
     batching?: Pick<BatchHttpLink.Options, "batchMax" | "batchInterval" | "batchKey">;
 }
+
 export const createApolloClient = ({ uri, batching }: CreateApolloClientParams) => {
+    const fragmentMatcher = new IntrospectionFragmentMatcher({
+        introspectionQueryResultData: {
+            __schema: {
+                types: []
+            }
+        }
+    });
+
     return new ApolloClient({
         link: ApolloLink.from([
             /**
@@ -25,6 +35,7 @@ export const createApolloClient = ({ uri, batching }: CreateApolloClientParams) 
         ]),
         cache: new InMemoryCache({
             addTypename: true,
+            fragmentMatcher,
             dataIdFromObject: obj => {
                 /**
                  * Since every data type coming from API can have a different data structure,
