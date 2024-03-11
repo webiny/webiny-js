@@ -41,8 +41,13 @@ config.commands
             JSON.stringify({ type: "success", stdout: processStdout, stderr: processStderr })
         );
     })
-    .catch(() => {
+    .catch(e => {
         parentPort.postMessage(
-            JSON.stringify({ type: "error", stdout: processStdout, stderr: processStderr })
+            JSON.stringify({
+                type: "error",
+                stdout: processStdout,
+                stderr: processStderr,
+                errorMessage: e.message
+            })
         );
     });
