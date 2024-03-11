@@ -3,6 +3,7 @@ import { createCacheKey } from "@webiny/utils";
 
 export {
     CompleteMultipartUploadCommandOutput,
+    AbortMultipartUploadCommandOutput,
     CompleteMultipartUploadOutput,
     DeleteObjectOutput,
     GetObjectCommand,

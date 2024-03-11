@@ -169,6 +169,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                 }
 
                 input PbListPagesWhereInput {
+                    pid_in: [ID!]
                     category: String
                     status: PbPageStatuses
                     tags: PbListPagesWhereTagsInput

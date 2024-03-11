@@ -212,6 +212,38 @@ describe("create index task", () => {
             webinyTaskId: task.id
         });
 
+        expect(result).toEqual({
+            status: "done",
+            webinyTaskId: task.id,
+            webinyTaskDefinitionId: createIndexesTask.id,
+            tenant: "root",
+            locale: "en-US",
+            message: "Indexes created.",
+            output: {
+                done: [
+                    createIndexName({
+                        tenant: "root",
+                        locale: "en-US",
+                        modelId: "car"
+                    }),
+                    createIndexName({
+                        tenant: "webiny",
+                        locale: "en-US",
+                        modelId: "car"
+                    }),
+                    createIndexName({
+                        tenant: "dev",
+                        locale: "en-US",
+                        modelId: "car"
+                    }),
+                    createIndexName({
+                        tenant: "sales",
+                        locale: "en-US",
+                        modelId: "car"
+                    })
+                ]
+            }
+        });
         expect(result).toBeInstanceOf(ResponseDoneResult);
 
         const doneTask = await context.tasks.getTask(task.id);

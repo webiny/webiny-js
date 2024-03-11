@@ -216,6 +216,9 @@ describe("page custom field", () => {
             name: "PbListPagesWhereInput",
             inputFields: [
                 {
+                    name: "pid_in"
+                },
+                {
                     name: "category"
                 },
                 {

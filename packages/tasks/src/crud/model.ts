@@ -14,13 +14,7 @@ const taskLogModelPlugin = createCmsModel(
                 fieldId: "executionName",
                 storageId: "text@executionName",
                 type: "text",
-                label: "Execution Name",
-                validation: [
-                    {
-                        name: "required",
-                        message: "Execution Name is required."
-                    }
-                ]
+                label: "Execution Name"
             },
             {
                 id: "task",

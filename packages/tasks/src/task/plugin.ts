@@ -13,7 +13,7 @@ import {
  *
  * This mechanism will prevent infinite loops in case of a bug in the task code.
  */
-const DEFAULT_MAX_ITERATIONS = 500;
+const DEFAULT_MAX_ITERATIONS = 50;
 
 export interface ITaskPluginSetFieldsCallback {
     (fields: ITaskDefinitionField[]): ITaskDefinitionField[] | undefined;

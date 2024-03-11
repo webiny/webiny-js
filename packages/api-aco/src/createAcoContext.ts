@@ -89,18 +89,31 @@ const setupAcoContext = async (
             });
 
             return withModel(async model => {
-                const results = await context.cms.storageOperations.entries.list(model, {
-                    limit: 100_000,
-                    where: {
-                        type,
+                try {
+                    const results = await context.cms.storageOperations.entries.list(model, {
+                        limit: 100_000,
+                        where: {
+                            type,
 
-                        // Folders always work with latest entries. We never publish them.
-                        latest: true
-                    },
-                    sort: ["title_ASC"]
-                });
+                            // Folders always work with latest entries. We never publish them.
+                            latest: true
+                        },
+                        sort: ["title_ASC"]
+                    });
 
-                return results.items.map(pickEntryFieldValues<Folder>);
+                    return results.items.map(pickEntryFieldValues<Folder>);
+                } catch (ex) {
+                    /**
+                     * Skip throwing an error if the error is related to the search phase execution.
+                     * This is a temporary solution to avoid breaking the entire system when no entries were ever inserted in the index.
+                     *
+                     * TODO: figure out better way to handle this.
+                     */
+                    if (ex.message === "search_phase_execution_exception") {
+                        return [];
+                    }
+                    throw ex;
+                }
             });
         },
         canUseTeams: () => context.wcp.canUseTeams(),
