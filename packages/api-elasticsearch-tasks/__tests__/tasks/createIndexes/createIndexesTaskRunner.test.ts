@@ -24,7 +24,7 @@ describe("create indexes task runner", () => {
         await elasticsearchClient.indices.deleteAll();
     });
 
-    it.skip("should not create any indexes because of the missing index plugins", async () => {
+    it("should not create any indexes because of the missing index plugins", async () => {
         const manager = new Manager({
             context: createContextMock(),
             store: createTaskManagerStoreMock(),
