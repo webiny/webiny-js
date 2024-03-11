@@ -3,7 +3,7 @@ import {
     Part,
     ListPartsOutput,
     ListPartsCommand,
-    CompleteMultipartUploadCommandOutput
+    CompleteMultipartUploadCommand
 } from "@webiny/aws-sdk/client-s3";
 
 interface CompleteMultiPartUploadParams {
@@ -20,6 +20,7 @@ interface GetAllUploadPartsParams {
 export class CompleteMultiPartUploadUseCase {
     private readonly s3: S3;
     private readonly bucket: string;
+    private readonly emptyMarkerValues = [undefined, "0"];
 
     constructor(bucket: string, s3Client: S3) {
         this.bucket = bucket;
@@ -42,21 +43,13 @@ export class CompleteMultiPartUploadUseCase {
             }
         };
 
-        return new Promise<void>((resolve, reject) => {
-            this.s3.completeMultipartUpload(
-                s3Params,
-                (err: any, data?: CompleteMultipartUploadCommandOutput) => {
-                    if (err) {
-                        console.error(err);
-                        reject(err);
-                        return;
-                    }
-
-                    console.log(data);
-                    resolve();
-                }
-            );
-        });
+        try {
+            const command = new CompleteMultipartUploadCommand(s3Params);
+            await this.s3.send(command);
+        } catch (err) {
+            console.error(err);
+            throw err;
+        }
     }
 
     private async getAllUploadParts(params: GetAllUploadPartsParams) {
@@ -76,7 +69,7 @@ export class CompleteMultiPartUploadUseCase {
             }
 
             marker = PartNumberMarker || undefined;
-            if (!marker) {
+            if (this.isMarkerEmpty(marker)) {
                 break;
             }
         }
@@ -85,5 +78,9 @@ export class CompleteMultiPartUploadUseCase {
             ETag: part.ETag as string,
             PartNumber: part.PartNumber as number
         }));
+    }
+
+    private isMarkerEmpty(marker: string | undefined) {
+        return this.emptyMarkerValues.includes(marker);
     }
 }
