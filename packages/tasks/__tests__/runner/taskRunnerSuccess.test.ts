@@ -4,6 +4,8 @@ import { ResponseContinueResult, ResponseDoneResult } from "~/response";
 import { TaskDataStatus } from "~/types";
 import { createLiveContextFactory } from "~tests/live";
 import { taskDefinition } from "~tests/runner/taskDefinition";
+import { TaskEventValidation } from "~/runner/TaskEventValidation";
+import { timerFactory } from "~/timer";
 
 describe("task runner trigger and end successfully", () => {
     const contextFactory = createLiveContextFactory({
@@ -13,14 +15,7 @@ describe("task runner trigger and end successfully", () => {
     it("should trigger a task run and end it successfully", async () => {
         const context = await contextFactory();
 
-        const runner = new TaskRunner(
-            {
-                getRemainingTimeInMillis: () => {
-                    return 5 * 60 * 1000;
-                }
-            },
-            context
-        );
+        const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
         const task = await context.tasks.createTask({
             definitionId: taskDefinition.id,
@@ -79,12 +74,11 @@ describe("task runner trigger and end successfully", () => {
         const context = await contextFactory();
 
         const firstRunner = new TaskRunner(
-            {
-                getRemainingTimeInMillis: () => {
-                    return 100;
-                }
-            },
-            context
+            context,
+            timerFactory({
+                getRemainingTimeInMillis: () => 1000
+            }),
+            new TaskEventValidation()
         );
 
         const task = await context.tasks.createTask({
@@ -146,14 +140,7 @@ describe("task runner trigger and end successfully", () => {
          * Second iteration of the task execution.
          */
 
-        const secondRunner = new TaskRunner(
-            {
-                getRemainingTimeInMillis: () => {
-                    return 5 * 60 * 1000;
-                }
-            },
-            context
-        );
+        const secondRunner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
         const doneResult = await secondRunner.run(createMockEvent(result));
 
         expect(doneResult).toBeInstanceOf(ResponseDoneResult);

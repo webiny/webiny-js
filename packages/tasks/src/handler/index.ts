@@ -8,6 +8,8 @@ import { Context, TaskResponseStatus } from "~/types";
 import { ITaskRawEvent } from "~/handler/types";
 import { TaskRunner } from "~/runner";
 import WebinyError from "@webiny/error";
+import { timerFactory } from "~/timer";
+import { TaskEventValidation } from "~/runner/TaskEventValidation";
 
 export interface HandlerCallable {
     (event: ITaskRawEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
@@ -49,12 +51,25 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
         });
 
         app.post(url, async (_, reply) => {
+            /**
+             * Happened to a client so adding a check.
+             * We cannot reproduce it.
+             */
+            if (!context) {
+                console.error("Missing Lambda context.");
+                return reply.send({
+                    error: {
+                        message: "This handler requires Lambda context to be passed."
+                    }
+                });
+            }
             const handler = new TaskRunner(
-                context,
                 /**
                  * We can safely cast because we know that the context is of type tasks/Context
                  */
-                app.webiny as Context
+                app.webiny as Context,
+                timerFactory(context),
+                new TaskEventValidation()
             );
 
             app.__webiny_raw_result = await handler.run(event);

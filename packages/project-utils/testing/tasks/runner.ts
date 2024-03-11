@@ -6,6 +6,8 @@ import {
     ITaskResponseDoneResultOutput
 } from "@webiny/tasks/types";
 import { TaskRunner } from "@webiny/tasks/runner";
+import { timerFactory } from "@webiny/tasks/timer";
+import { TaskEventValidation } from "@webiny/tasks/runner/TaskEventValidation";
 
 export interface CreateRunnerParams<
     C extends Context = Context,
@@ -25,15 +27,16 @@ export const createRunner = <
     params: CreateRunnerParams<C, I, O>
 ) => {
     const runner = new TaskRunner(
-        {
-            getRemainingTimeInMillis(): number {
+        params.context,
+        timerFactory({
+            getRemainingTimeInMillis: () => {
                 if (!params.getRemainingTimeInMills) {
                     return 5 * 60 * 1000;
                 }
                 return params.getRemainingTimeInMills();
             }
-        },
-        params.context
+        }),
+        new TaskEventValidation()
     );
 
     return (

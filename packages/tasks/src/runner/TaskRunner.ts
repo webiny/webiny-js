@@ -1,12 +1,11 @@
-import { Context as LambdaContext } from "aws-lambda/handler";
 import { ITaskEvent, ITaskRawEvent } from "~/handler/types";
-import { ITaskRunner } from "./abstractions";
+import { ITaskEventValidation, ITaskRunner } from "./abstractions";
 import { Context } from "~/types";
 import { Response } from "~/response";
 import { TaskControl } from "./TaskControl";
-import { TaskEventValidation } from "./TaskEventValidation";
 import { IResponseResult } from "~/response/abstractions";
 import { getErrorProperties } from "~/utils/getErrorProperties";
+import { ITimer } from "~/timer";
 
 const transformMinutesIntoMilliseconds = (minutes: number) => {
     return minutes * 60000;
@@ -24,31 +23,21 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
      * Follow the same example for the rest of the properties.
      */
     public readonly context: C;
-    public readonly lambdaContext: Pick<LambdaContext, "getRemainingTimeInMillis">;
-    private readonly validation: TaskEventValidation;
+    private readonly validation: ITaskEventValidation;
+    private readonly timer: ITimer;
 
     /**
      * We take all required variables separately because they will get injected via DI - so less refactoring is required in the future.
      */
-    public constructor(
-        lambdaContext: Pick<LambdaContext, "getRemainingTimeInMillis">,
-        context: C,
-        validation: TaskEventValidation = new TaskEventValidation()
-    ) {
+    public constructor(context: C, timer: ITimer, validation: ITaskEventValidation) {
         this.context = context;
-        this.lambdaContext = lambdaContext;
+        this.timer = timer;
         this.validation = validation;
     }
 
     public isCloseToTimeout(seconds?: number) {
-        const milliseconds = seconds
-            ? seconds * 1000
-            : transformMinutesIntoMilliseconds(this.getIsCloseToTimeoutMinutes());
-        return this.lambdaContext.getRemainingTimeInMillis() < milliseconds;
-    }
-
-    public getRemainingTime() {
-        return this.lambdaContext.getRemainingTimeInMillis();
+        const milliseconds = seconds ? seconds * 1000 : this.getIsCloseToTimeoutMilliseconds();
+        return this.timer.getRemainingMilliseconds() < milliseconds;
     }
 
     public async run(rawEvent: ITaskRawEvent): Promise<IResponseResult> {
@@ -86,8 +75,9 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         }
     }
 
-    private getIsCloseToTimeoutMinutes() {
+    private getIsCloseToTimeoutMilliseconds() {
         const value = parseInt(process.env["WEBINY_TASKS_TIMEOUT_CLOSE_MINUTES"] || "");
-        return value > 0 ? value : DEFAULT_TASKS_TIMEOUT_CLOSE_MINUTES;
+        const result = value > 0 ? value : DEFAULT_TASKS_TIMEOUT_CLOSE_MINUTES;
+        return transformMinutesIntoMilliseconds(result);
     }
 }
