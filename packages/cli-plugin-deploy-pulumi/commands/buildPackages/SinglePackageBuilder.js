@@ -1,5 +1,3 @@
-const path = require("path");
-const { Worker } = require("worker_threads");
 const { BasePackageBuilder } = require("./BasePackageBuilder");
 
 class SinglePackageBuilder extends BasePackageBuilder {
@@ -8,69 +6,34 @@ class SinglePackageBuilder extends BasePackageBuilder {
         const context = this.context;
         const inputs = this.inputs;
 
-        const { env, variant, debug } = inputs;
+        const { env, debug } = inputs;
 
         context.info(`Building %s package...`, pkg.name);
 
         console.log();
 
-        try {
-            await new Promise((resolve, reject) => {
-                let enableLogs = inputs.logs !== false;
+        console.log("pkg", pkg);
+        const options = {
+            env,
+            debug,
+            cwd: pkg.root,
 
-                const workerData = {
-                    options: {
-                        env,
-                        variant,
-                        debug,
-                        logs: enableLogs
-                    },
-                    package: { ...pkg.paths }
-                };
+            // No much sense in turning off logs when a single package is being built.
+            logs: true
+        };
 
-                const worker = new Worker(path.join(__dirname, "./worker.js"), { workerData });
-                worker.on("message", threadMessage => {
-                    const { type, message } = parseMessage(threadMessage);
-
-                    if (type === "success") {
-                        return resolve();
-                    }
-
-                    if (type === "error") {
-                        return reject();
-                    }
-
-                    if (Array.isArray(message)) {
-                        const messagesArray = message.filter(Boolean);
-                        if (messagesArray.length) {
-                            const [first, ...rest] = messagesArray;
-                            console.log(first, ...rest);
-                        }
-                    } else {
-                        console.log(message);
-                    }
-                });
-
-                worker.on("error", () => {
-                    return reject();
-                });
-            });
-        } catch (e) {
-            console.log("oo");
-            console.log(e)
+        let config = require(pkg.paths.config).default || require(pkg.paths.config);
+        if (typeof config === "function") {
+            config = config({ options, context });
         }
+
+        const hasBuildCommand = config.commands && typeof config.commands.build === "function";
+        if (!hasBuildCommand) {
+            throw new Error("Build command not found.");
+        }
+
+        await config.commands.build(options);
     }
 }
-
-const parseMessage = message => {
-    try {
-        return JSON.parse(message);
-    } catch (e) {
-        return {
-            type: "error",
-            message: `Could not parse received build result (JSON): ${message}`
-        };
-    }
-};
 
 module.exports = { SinglePackageBuilder };
