@@ -16,8 +16,6 @@ module.exports = (params, context) => {
                 context
             });
 
-            console.log()
-
             const builder = new PackagesBuilder({
                 packages: projectApplication.packages,
                 inputs,
@@ -25,8 +23,6 @@ module.exports = (params, context) => {
             });
 
             await builder.build();
-
-            console.log();
 
             await runHook({
                 hook: "hook-after-build",

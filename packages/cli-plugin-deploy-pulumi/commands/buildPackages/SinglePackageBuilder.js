@@ -8,17 +8,12 @@ class SinglePackageBuilder extends BasePackageBuilder {
 
         const { env, debug } = inputs;
 
-        context.info(`Building %s package...`, pkg.name);
-
-        console.log();
-
-        console.log("pkg", pkg);
         const options = {
             env,
             debug,
-            cwd: pkg.root,
+            cwd: pkg.paths.root,
 
-            // No much sense in turning off logs when a single package is being built.
+            // Not much sense in turning off logs when a single package is being built.
             logs: true
         };
 

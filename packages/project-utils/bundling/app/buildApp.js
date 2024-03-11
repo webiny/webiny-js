@@ -120,8 +120,10 @@ module.exports = async options => {
             log(err);
             log(chalk.red("Failed to compile.\n"));
             printBuildError(err);
-            process.exit(1);
+            // process.exit(1);
         }
+
+        throw err;
     }
 };
 

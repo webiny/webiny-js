@@ -54,15 +54,17 @@ class MultiplePackagesBuilder extends BasePackageBuilder {
                     const worker = new Worker(path.join(__dirname, "./worker.js"), {
                         workerData,
                         stderr: true,
-                        stdout: true,
+                        stdout: true
                     });
+
                     worker.on("message", threadMessage => {
-                        const { type, message } = parseMessage(threadMessage);
+                        const { type, stdout, stderr } = parseMessage(threadMessage);
 
                         if (type === "error") {
                             return reject({
                                 package: pkg,
-                                error: message,
+                                stdout,
+                                stderr,
                                 duration: getDuration()
                             });
                         }
@@ -70,50 +72,45 @@ class MultiplePackagesBuilder extends BasePackageBuilder {
                         if (type === "success") {
                             return resolve({
                                 package: pkg,
-                                error: message,
+                                stdout,
+                                stderr,
                                 duration: getDuration()
                             });
                         }
-
-                        // if (Array.isArray(message)) {
-                        //     const messagesArray = message.filter(Boolean);
-                        //     if (messagesArray.length) {
-                        //         const [first, ...rest] = messagesArray;
-                        //         console.log(first, ...rest);
-                        //     }
-                        // } else {
-                        //     console.log(message);
-                        // }
                     });
 
-                    worker.on("error", threadMessage => {
-                        const message = "wooot";
-
-                        reject({
-                            package: pkg,
-                            error: message,
-                            duration: getDuration()
-                        });
-                    });
-
-                    worker.on("exit", code => {
-                        if (code === 0) {
-                            return;
-                        }
-
-                        stats.error++;
-                        context.error(`An error occurred while building %s package.`, pkg.name);
-
-                        reject({
-                            package: pkg,
-                            result: {
-                                message: `Process exited with a non-zero exit code.`
-                            }
-                        });
-                    });
+                    // worker.on("error", threadMessage => {
+                    //     const message = "wooot";
+                    //
+                    //     console.log(threadMessage)
+                    //     reject({
+                    //         package: pkg,
+                    //         error: message,
+                    //         duration: getDuration()
+                    //     });
+                    // });
+                    //
+                    // worker.on("exit", (code, a) => {
+                    //     console.log("EXIT EVENT", code, a);
+                    //     if (code === 0) {
+                    //         return;
+                    //     }
+                    //
+                    //     stats.error++;
+                    //     context.error(`An error occurred while building %s package.`, pkg.name);
+                    //
+                    //     reject({
+                    //         package: pkg,
+                    //         result: {
+                    //             message: `Process exited with a non-zero exit code.`
+                    //         }
+                    //     });
+                    // });
                 })
             });
         }
+
+        // await Promise.all(buildTasks);
 
         const tasks = new Listr(
             buildTasks.map(buildTask => {
@@ -125,7 +122,9 @@ class MultiplePackagesBuilder extends BasePackageBuilder {
             { concurrent: true }
         );
 
-        await tasks.run();
+        await tasks.run().catch(err => {
+            console.error(err.stdout);
+        })
 
         // console.log();
         //
