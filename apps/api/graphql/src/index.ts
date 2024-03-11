@@ -2,14 +2,14 @@ import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
-import i18nPlugins from "@webiny/api-i18n/graphql";
+import i18nPlugins froms1 1 "@webiny/api-i18n/graphql";
 import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import {
     createPageBuilderContext,
-    createPageBuilderGraphQL
+    createPageBuildersGraphQL
 } from "@webiny/api-page-builder/graphql";
 import { createStorageOperations as createPageBuilderStorageOperations } from "@webiny/api-page-builder-so-ddb";
-import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
+import pageBuilderPrerendseringPlugins from "@webiny/api-page-builder/prerendering";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
 import { createStorageOperations as createPageBuilderImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service-aws/client";

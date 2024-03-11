@@ -17552,6 +17552,7 @@ __metadata:
     express: 4.17.1
     fast-glob: ^3.2.7
     handlebars: 4.7.7
+    listr: ^0.14.3
     localtunnel: 2.0.2
     lodash: ^4.17.20
     log-update: ^4.0.0

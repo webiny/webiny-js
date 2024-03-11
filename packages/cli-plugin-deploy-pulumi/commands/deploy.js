@@ -1,6 +1,7 @@
-const buildPackages = require("./deploy/buildPackages");
 const { createPulumiCommand, runHook, login, notify } = require("../utils");
 const { BeforeDeployPlugin } = require("../plugins/BeforeDeployPlugin");
+const ora = require("ora");
+const { PackagesBuilder } = require("./buildPackages/PackagesBuilder");
 
 module.exports = (params, context) => {
     const command = createPulumiCommand({
@@ -19,7 +20,17 @@ module.exports = (params, context) => {
                     context
                 });
 
-                await buildPackages({ projectApplication, inputs, context });
+                console.log();
+
+                const builder = new PackagesBuilder({
+                    packages: projectApplication.packages,
+                    inputs,
+                    context
+                });
+
+                await builder.build();
+
+                console.log();
 
                 await runHook({
                     hook: "hook-after-build",
@@ -61,10 +72,10 @@ module.exports = (params, context) => {
                 }
             });
 
-            console.log();
             const actionTaken = inputs.preview ? `Previewing deployment...` : `Deploying...`;
-            context.info(actionTaken);
             console.log();
+
+            const spinner = ora(actionTaken).start();
 
             if (inputs.preview) {
                 const subprocess = pulumi.run({
@@ -84,8 +95,8 @@ module.exports = (params, context) => {
                     }
                 });
 
-                subprocess.stdout.pipe(process.stdout);
-                subprocess.stderr.pipe(process.stderr);
+                // subprocess.stdout.pipe(process.stdout);
+                // subprocess.stderr.pipe(process.stderr);
 
                 await subprocess;
             } else {
@@ -106,18 +117,19 @@ module.exports = (params, context) => {
                     }
                 });
 
-                subprocess.stdout.pipe(process.stdout);
-                subprocess.stderr.pipe(process.stderr);
+                // subprocess.stdout.pipe(process.stdout);
+                // subprocess.stderr.pipe(process.stderr);
 
                 await subprocess;
             }
 
             const duration = getDuration();
+            let message = `Done! Deploy finished in ${duration}.`;
             if (inputs.preview) {
-                context.success(`Done! Preview finished in %s.`, duration);
-            } else {
-                context.success(`Done! Deploy finished in %s.`, duration);
+                message = `Done! Preview finished in ${duration}.`;
             }
+
+            spinner.succeed(message);
 
             console.log();
 
