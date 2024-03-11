@@ -30,14 +30,17 @@ export const FederatedLogin = ({ providers }: FederatedLoginProps) => {
     return (
         <FederatedContainer>
             {providers.map(provider => {
-                const Button = federatedButtons[provider];
+                const Button = provider in federatedButtons ? federatedButtons[provider] : null;
 
                 return (
                     <Button
                         key={provider}
                         onClick={() =>
                             Auth.federatedSignIn({
-                                provider: CognitoHostedUIIdentityProvider[provider]
+                                provider:
+                                    provider in CognitoHostedUIIdentityProvider
+                                        ? CognitoHostedUIIdentityProvider[provider]
+                                        : provider
                             })
                         }
                     />

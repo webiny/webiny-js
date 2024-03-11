@@ -63,7 +63,9 @@ export interface AuthenticationProps {
     children: React.ReactNode;
 }
 
-export type CognitoFederatedProvider = keyof typeof CognitoHostedUIIdentityProvider;
+// This tricks TypeScript into thinking that it's a string type that literal string types are not assignable to, and thus the union won't get reduced to only string.
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type CognitoFederatedProvider = keyof typeof CognitoHostedUIIdentityProvider | (string & {});
 
 export interface AuthenticationFactoryConfig extends AuthOptions {
     federatedProviders?: CognitoFederatedProvider[];
