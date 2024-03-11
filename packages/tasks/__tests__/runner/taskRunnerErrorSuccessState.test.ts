@@ -4,6 +4,8 @@ import { ResponseErrorResult } from "~/response";
 import { TaskDataStatus } from "~/types";
 import { createLiveContextFactory } from "~tests/live";
 import { taskDefinition } from "~tests/runner/taskDefinition";
+import { timerFactory } from "~/timer";
+import { TaskEventValidation } from "~/runner/TaskEventValidation";
 
 describe("task runner error in success state", () => {
     const contextFactory = createLiveContextFactory({
@@ -13,14 +15,7 @@ describe("task runner error in success state", () => {
     it("should trigger a task run - error because task is already in success state", async () => {
         const context = await contextFactory();
 
-        const runner = new TaskRunner(
-            {
-                getRemainingTimeInMillis: () => {
-                    return 100000;
-                }
-            },
-            context
-        );
+        const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
         const task = await context.tasks.createTask({
             definitionId: taskDefinition.id,

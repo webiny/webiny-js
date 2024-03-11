@@ -3,6 +3,8 @@ import { createMockEvent } from "~tests/mocks";
 import { ResponseAbortedResult } from "~/response";
 import { createLiveContextFactory } from "~tests/live";
 import { taskDefinition } from "~tests/runner/taskDefinition";
+import { timerFactory } from "~/timer";
+import { TaskEventValidation } from "~/runner/TaskEventValidation";
 
 describe("task runner abort", () => {
     const contextFactory = createLiveContextFactory({
@@ -12,14 +14,7 @@ describe("task runner abort", () => {
     it("should trigger a task run - end with aborted state", async () => {
         const context = await contextFactory();
 
-        const runner = new TaskRunner(
-            {
-                getRemainingTimeInMillis: () => {
-                    return 5 * 60 * 1000;
-                }
-            },
-            context
-        );
+        const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
         const task = await context.tasks.createTask({
             definitionId: taskDefinition.id,
