@@ -14,7 +14,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.23.9",
+    "@babel/runtime": "^7.24.0",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@webiny/lexical-editor": "0.0.0",
@@ -52,8 +52,8 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.23.9",
-    "@babel/preset-env": "^7.23.9",
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
     "@babel/preset-react": "^7.23.3",
     "@babel/preset-typescript": "^7.23.3",
     "@types/facepaint": "^1.2.2",

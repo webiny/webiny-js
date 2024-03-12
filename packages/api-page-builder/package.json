@@ -14,7 +14,7 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.23.9",
+    "@babel/runtime": "^7.24.0",
     "@webiny/api": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-i18n": "0.0.0",
@@ -45,9 +45,9 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.23.9",
+    "@babel/core": "^7.24.0",
     "@babel/plugin-proposal-export-default-from": "^7.23.3",
-    "@babel/preset-env": "^7.23.9",
+    "@babel/preset-env": "^7.24.0",
     "@babel/preset-typescript": "^7.23.3",
     "@types/extract-zip": "^1.6.2",
     "@types/node-fetch": "^2.6.1",
