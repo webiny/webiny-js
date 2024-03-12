@@ -229,7 +229,8 @@ module.exports = function (webpackEnv, { paths, options }) {
                 assert: require.resolve("assert-browserify"),
                 buffer: require.resolve("buffer/"),
                 crypto: require.resolve("crypto-browserify"),
-                path: require.resolve("path-browserify")
+                path: require.resolve("path-browserify"),
+                vm: require.resolve("vm-browserify")
             }
         },
 
@@ -415,6 +416,9 @@ module.exports = function (webpackEnv, { paths, options }) {
         plugins: [
             new webpack.ProvidePlugin({
                 Buffer: ["buffer", "Buffer"]
+            }),
+            new webpack.ProvidePlugin({
+                process: "process/browser"
             }),
             // Generates an `index.html` file with the <script> injected.
             new HtmlWebpackPlugin(

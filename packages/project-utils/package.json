@@ -75,6 +75,7 @@
     "typescript": "4.7.4",
     "url": "0.11.0",
     "url-loader": "4.1.1",
+    "vm-browserify": "^1.1.2",
     "webpack": "^5.90.0",
     "webpack-dev-server": "^4.6.0",
     "webpack-manifest-plugin": "^4.0.2",
