@@ -14,10 +14,10 @@
     "@lexical/rich-text": "^0.12.2",
     "@lexical/selection": "^0.12.2",
     "@lexical/utils": "^0.12.2",
-    "@webiny/lexical-nodes": "0.0.0",
+    "@webiny/lexical-nodes": "5.38.0",
     "@webiny/lexical-theme": "0.0.0",
     "@webiny/react-composition": "0.0.0",
-    "@webiny/react-properties": "0.0.0",
+    "@webiny/react-properties": "5.30.0",
     "lexical": "0.12.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
