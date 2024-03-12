@@ -3125,7 +3125,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:^7.23.9":
+"@babel/core@npm:^7.23.9, @babel/core@npm:^7.24.0":
   version: 7.24.0
   resolution: "@babel/core@npm:7.24.0"
   dependencies:
@@ -3448,16 +3448,6 @@ __metadata:
     "@babel/template": ^7.18.10
     "@babel/types": ^7.19.0
   checksum: eac1f5db428ba546270c2b8d750c24eb528b8fcfe50c81de2e0bdebf0e20f24bec688d4331533b782e4a907fad435244621ca2193cfcf80a86731299840e0f6e
-  languageName: node
-  linkType: hard
-
-"@babel/helper-function-name@npm:^7.21.0":
-  version: 7.21.0
-  resolution: "@babel/helper-function-name@npm:7.21.0"
-  dependencies:
-    "@babel/template": ^7.20.7
-    "@babel/types": ^7.21.0
-  checksum: d63e63c3e0e3e8b3138fa47b0cd321148a300ef12b8ee951196994dcd2a492cc708aeda94c2c53759a5c9177fffaac0fd8778791286746f72a000976968daf4e
   languageName: node
   linkType: hard
 
@@ -3940,7 +3930,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.1.0, @babel/parser@npm:^7.14.7, @babel/parser@npm:^7.20.13, @babel/parser@npm:^7.20.7, @babel/parser@npm:^7.6.4":
+"@babel/parser@npm:^7.1.0, @babel/parser@npm:^7.14.7, @babel/parser@npm:^7.20.7, @babel/parser@npm:^7.6.4":
   version: 7.20.15
   resolution: "@babel/parser@npm:7.20.15"
   bin:
@@ -3949,7 +3939,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.21.5, @babel/parser@npm:^7.21.8":
+"@babel/parser@npm:^7.21.8":
   version: 7.21.8
   resolution: "@babel/parser@npm:7.21.8"
   bin:
@@ -5477,7 +5467,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-runtime@npm:^7.23.9":
+"@babel/plugin-transform-runtime@npm:^7.24.0":
   version: 7.24.0
   resolution: "@babel/plugin-transform-runtime@npm:7.24.0"
   dependencies:
@@ -5797,7 +5787,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:^7.23.9":
+"@babel/preset-env@npm:^7.24.0":
   version: 7.24.0
   resolution: "@babel/preset-env@npm:7.24.0"
   dependencies:
@@ -6016,7 +6006,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.23.9":
+"@babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.24.0":
   version: 7.24.0
   resolution: "@babel/runtime@npm:7.24.0"
   dependencies:
@@ -6078,43 +6068,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/traverse@npm:^7.20.10, @babel/traverse@npm:^7.20.12, @babel/traverse@npm:^7.20.13, @babel/traverse@npm:^7.20.5, @babel/traverse@npm:^7.20.7":
-  version: 7.20.13
-  resolution: "@babel/traverse@npm:7.20.13"
-  dependencies:
-    "@babel/code-frame": ^7.18.6
-    "@babel/generator": ^7.20.7
-    "@babel/helper-environment-visitor": ^7.18.9
-    "@babel/helper-function-name": ^7.19.0
-    "@babel/helper-hoist-variables": ^7.18.6
-    "@babel/helper-split-export-declaration": ^7.18.6
-    "@babel/parser": ^7.20.13
-    "@babel/types": ^7.20.7
-    debug: ^4.1.0
-    globals: ^11.1.0
-  checksum: 30ca6e0bd18233fda48fa09315efd14dfc61dcf5b8fa3712b343bfc61b32bc63b5e85ea1773cc9576c9b293b96f46b4589aaeb0a52e1f3eeac4edc076d049fc7
-  languageName: node
-  linkType: hard
-
-"@babel/traverse@npm:^7.21.5":
-  version: 7.21.5
-  resolution: "@babel/traverse@npm:7.21.5"
-  dependencies:
-    "@babel/code-frame": ^7.21.4
-    "@babel/generator": ^7.21.5
-    "@babel/helper-environment-visitor": ^7.21.5
-    "@babel/helper-function-name": ^7.21.0
-    "@babel/helper-hoist-variables": ^7.18.6
-    "@babel/helper-split-export-declaration": ^7.18.6
-    "@babel/parser": ^7.21.5
-    "@babel/types": ^7.21.5
-    debug: ^4.1.0
-    globals: ^11.1.0
-  checksum: b403733fa7d858f0c8e224f0434a6ade641bc469a4f92975363391e796629d5bf53e544761dfe85039aab92d5389ebe7721edb309d7a5bb7df2bf74f37bf9f47
-  languageName: node
-  linkType: hard
-
-"@babel/traverse@npm:^7.24.0":
+"@babel/traverse@npm:^7.20.10, @babel/traverse@npm:^7.20.12, @babel/traverse@npm:^7.20.13, @babel/traverse@npm:^7.20.5, @babel/traverse@npm:^7.20.7, @babel/traverse@npm:^7.21.5, @babel/traverse@npm:^7.24.0":
   version: 7.24.0
   resolution: "@babel/traverse@npm:7.24.0"
   dependencies:
@@ -6143,7 +6097,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/types@npm:^7.21.0, @babel/types@npm:^7.21.4, @babel/types@npm:^7.21.5":
+"@babel/types@npm:^7.21.4, @babel/types@npm:^7.21.5":
   version: 7.21.5
   resolution: "@babel/types@npm:7.21.5"
   dependencies:
@@ -14553,10 +14507,10 @@ __metadata:
   resolution: "@webiny/api-aco@workspace:packages/api-aco"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/api": 0.0.0
     "@webiny/api-admin-users": 0.0.0
     "@webiny/api-authentication": 0.0.0
@@ -14594,9 +14548,9 @@ __metadata:
   resolution: "@webiny/api-admin-settings@workspace:packages/api-admin-settings"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
-    "@babel/runtime": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/runtime": ^7.24.0
     "@webiny/api-tenancy": 0.0.0
     "@webiny/aws-sdk": 0.0.0
     "@webiny/cli": 0.0.0
@@ -14635,7 +14589,7 @@ __metadata:
   resolution: "@webiny/api-admin-users-so-ddb@workspace:packages/api-admin-users-so-ddb"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@webiny/api-admin-users": 0.0.0
     "@webiny/aws-sdk": 0.0.0
     "@webiny/cli": 0.0.0
@@ -14655,7 +14609,7 @@ __metadata:
   resolution: "@webiny/api-admin-users@workspace:packages/api-admin-users"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@commodo/fields": 1.1.2-beta.20
     "@types/jsonwebtoken": ^9.0.2
     "@types/md5": ^2.3.2
@@ -14685,10 +14639,10 @@ __metadata:
   resolution: "@webiny/api-apw-scheduler-so-ddb@workspace:packages/api-apw-scheduler-so-ddb"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/api-apw": 0.0.0
     "@webiny/api-security": 0.0.0
     "@webiny/api-tenancy": 0.0.0
@@ -14714,9 +14668,9 @@ __metadata:
   resolution: "@webiny/api-apw@workspace:packages/api-apw"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
-    "@babel/runtime": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/runtime": ^7.24.0
     "@commodo/fields": 1.1.2-beta.20
     "@webiny/api": 0.0.0
     "@webiny/api-admin-settings": 0.0.0
@@ -14761,10 +14715,10 @@ __metadata:
   resolution: "@webiny/api-audit-logs@workspace:packages/api-audit-logs"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/api": 0.0.0
     "@webiny/api-aco": 0.0.0
     "@webiny/api-admin-users": 0.0.0
@@ -14798,7 +14752,7 @@ __metadata:
   resolution: "@webiny/api-authentication-cognito@workspace:packages/api-authentication-cognito"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@webiny/api": 0.0.0
     "@webiny/api-authentication": 0.0.0
     "@webiny/api-cognito-authenticator": 0.0.0
@@ -14814,12 +14768,12 @@ __metadata:
   resolution: "@webiny/api-authentication@workspace:packages/api-authentication"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-object-rest-spread": ^7.20.7
-    "@babel/plugin-transform-runtime": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/plugin-transform-runtime": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/api": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/handler": 0.0.0
@@ -14836,7 +14790,7 @@ __metadata:
   resolution: "@webiny/api-background-tasks-ddb@workspace:packages/api-background-tasks-ddb"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -14852,7 +14806,7 @@ __metadata:
   resolution: "@webiny/api-background-tasks-es@workspace:packages/api-background-tasks-es"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@webiny/api-elasticsearch-tasks": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
@@ -14869,7 +14823,7 @@ __metadata:
   resolution: "@webiny/api-background-tasks-os@workspace:packages/api-background-tasks-os"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@webiny/api-elasticsearch-tasks": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
@@ -14886,7 +14840,7 @@ __metadata:
   resolution: "@webiny/api-cognito-authenticator@workspace:packages/api-cognito-authenticator"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@types/jsonwebtoken": ^9.0.2
     "@types/jwk-to-pem": ^2.0.1
     "@types/node-fetch": ^2.6.1
@@ -14905,12 +14859,12 @@ __metadata:
   resolution: "@webiny/api-dynamodb-to-elasticsearch@workspace:packages/api-dynamodb-to-elasticsearch"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-object-rest-spread": ^7.20.7
-    "@babel/plugin-transform-runtime": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/plugin-transform-runtime": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@types/aws-lambda": ^8.10.131
     "@webiny/api-elasticsearch": 0.0.0
     "@webiny/aws-sdk": 0.0.0
@@ -14929,10 +14883,10 @@ __metadata:
   resolution: "@webiny/api-elasticsearch-tasks@workspace:packages/api-elasticsearch-tasks"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/api": 0.0.0
     "@webiny/api-elasticsearch": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
@@ -14964,7 +14918,7 @@ __metadata:
   resolution: "@webiny/api-elasticsearch@workspace:packages/api-elasticsearch"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@elastic/elasticsearch": 7.12.0
     "@webiny/api": 0.0.0
     "@webiny/cli": 0.0.0
@@ -14985,12 +14939,12 @@ __metadata:
   resolution: "@webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-object-rest-spread": ^7.20.7
-    "@babel/plugin-transform-runtime": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/plugin-transform-runtime": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/api-file-manager": 0.0.0
     "@webiny/aws-sdk": 0.0.0
     "@webiny/cli": 0.0.0
@@ -15012,7 +14966,7 @@ __metadata:
   resolution: "@webiny/api-file-manager-s3@workspace:packages/api-file-manager-s3"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@types/node-fetch": ^2.6.1
     "@webiny/api": 0.0.0
     "@webiny/api-file-manager": 0.0.0
@@ -15045,12 +14999,12 @@ __metadata:
   resolution: "@webiny/api-file-manager@workspace:packages/api-file-manager"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-object-rest-spread": ^7.20.7
-    "@babel/plugin-transform-runtime": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/plugin-transform-runtime": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@commodo/fields": 1.1.2-beta.20
     "@types/sharp": ^0.32.0
     "@webiny/api": 0.0.0
@@ -15084,10 +15038,10 @@ __metadata:
   resolution: "@webiny/api-form-builder-so-ddb-es@workspace:packages/api-form-builder-so-ddb-es"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@elastic/elasticsearch": 7.12.0
     "@webiny/api-dynamodb-to-elasticsearch": 0.0.0
     "@webiny/api-elasticsearch": 0.0.0
@@ -15117,10 +15071,10 @@ __metadata:
   resolution: "@webiny/api-form-builder-so-ddb@workspace:packages/api-form-builder-so-ddb"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/api-form-builder": 0.0.0
     "@webiny/aws-sdk": 0.0.0
     "@webiny/cli": 0.0.0
@@ -15144,10 +15098,10 @@ __metadata:
   resolution: "@webiny/api-form-builder@workspace:packages/api-form-builder"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@commodo/fields": 1.1.2-beta.20
     "@types/got": ^9.6.12
     "@types/json2csv": ^4.5.1
@@ -15192,9 +15146,9 @@ __metadata:
   resolution: "@webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
-    "@babel/runtime": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/runtime": ^7.24.0
     "@elastic/elasticsearch": 7.12.0
     "@types/jsonpack": ^1.1.0
     "@webiny/api": 0.0.0
@@ -15236,9 +15190,9 @@ __metadata:
   resolution: "@webiny/api-headless-cms-ddb@workspace:packages/api-headless-cms-ddb"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
-    "@babel/runtime": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/runtime": ^7.24.0
     "@types/jsonpack": ^1.1.0
     "@webiny/api-headless-cms": 0.0.0
     "@webiny/aws-sdk": 0.0.0
@@ -15265,9 +15219,9 @@ __metadata:
   resolution: "@webiny/api-headless-cms@workspace:packages/api-headless-cms"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
-    "@babel/runtime": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/runtime": ^7.24.0
     "@graphql-tools/schema": ^7.1.2
     "@webiny/api": 0.0.0
     "@webiny/api-i18n": 0.0.0
@@ -15315,8 +15269,8 @@ __metadata:
   resolution: "@webiny/api-i18n-content@workspace:packages/api-i18n-content"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/runtime": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/runtime": ^7.24.0
     "@webiny/api": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-security": 0.0.0
@@ -15333,10 +15287,10 @@ __metadata:
   resolution: "@webiny/api-i18n-ddb@workspace:packages/api-i18n-ddb"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/api": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-security": 0.0.0
@@ -15364,10 +15318,10 @@ __metadata:
   resolution: "@webiny/api-i18n@workspace:packages/api-i18n"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@types/accept-language-parser": ^1.5.3
     "@webiny/api": 0.0.0
     "@webiny/api-security": 0.0.0
@@ -15396,10 +15350,10 @@ __metadata:
   resolution: "@webiny/api-mailer@workspace:packages/api-mailer"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@types/crypto-js": ^4.1.1
     "@types/nodemailer": ^6.4.4
     "@webiny/api": 0.0.0
@@ -15435,10 +15389,10 @@ __metadata:
   resolution: "@webiny/api-page-builder-aco@workspace:packages/api-page-builder-aco"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/api": 0.0.0
     "@webiny/api-aco": 0.0.0
     "@webiny/api-admin-users": 0.0.0
@@ -15468,10 +15422,10 @@ __metadata:
   resolution: "@webiny/api-page-builder-import-export-so-ddb@workspace:packages/api-page-builder-import-export-so-ddb"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/api-page-builder-import-export": 0.0.0
     "@webiny/api-security": 0.0.0
     "@webiny/api-tenancy": 0.0.0
@@ -15495,11 +15449,11 @@ __metadata:
   resolution: "@webiny/api-page-builder-import-export@workspace:packages/api-page-builder-import-export"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-export-default-from": ^7.23.3
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@commodo/fields": beta
     "@types/archiver": ^5.3.1
     "@types/node-fetch": ^2.6.1
@@ -15547,10 +15501,10 @@ __metadata:
   resolution: "@webiny/api-page-builder-so-ddb-es@workspace:packages/api-page-builder-so-ddb-es"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@elastic/elasticsearch": 7.12.0
     "@elastic/elasticsearch-mock": 0.3.0
     "@webiny/api": 0.0.0
@@ -15598,10 +15552,10 @@ __metadata:
   resolution: "@webiny/api-page-builder-so-ddb@workspace:packages/api-page-builder-so-ddb"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/api-page-builder": 0.0.0
     "@webiny/api-security": 0.0.0
     "@webiny/api-tenancy": 0.0.0
@@ -15630,11 +15584,11 @@ __metadata:
   resolution: "@webiny/api-page-builder@workspace:packages/api-page-builder"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-export-default-from": ^7.23.3
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@types/extract-zip": ^1.6.2
     "@types/node-fetch": ^2.6.1
     "@types/rimraf": ^3.0.2
@@ -15681,11 +15635,11 @@ __metadata:
   resolution: "@webiny/api-prerendering-service-aws@workspace:packages/api-prerendering-service-aws"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-export-default-from": ^7.23.3
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/api": 0.0.0
     "@webiny/api-prerendering-service": 0.0.0
     "@webiny/aws-sdk": 0.0.0
@@ -15706,11 +15660,11 @@ __metadata:
   resolution: "@webiny/api-prerendering-service-so-ddb@workspace:packages/api-prerendering-service-so-ddb"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-export-default-from": ^7.23.3
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/api-prerendering-service": 0.0.0
     "@webiny/aws-sdk": 0.0.0
     "@webiny/cli": 0.0.0
@@ -15732,11 +15686,11 @@ __metadata:
   resolution: "@webiny/api-prerendering-service@workspace:packages/api-prerendering-service"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-export-default-from": ^7.23.3
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@sparticuz/chromium": 109.0.0
     "@types/object-hash": ^2.2.1
     "@types/puppeteer-core": ^5.4.0
@@ -15771,7 +15725,7 @@ __metadata:
   resolution: "@webiny/api-security-auth0@workspace:packages/api-security-auth0"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@types/jsonwebtoken": ^9.0.2
     "@types/jwk-to-pem": ^2.0.1
     "@types/node-fetch": ^2.6.1
@@ -15800,7 +15754,7 @@ __metadata:
   resolution: "@webiny/api-security-cognito@workspace:packages/api-security-cognito"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@types/jsonwebtoken": ^9.0.2
     "@webiny/api": 0.0.0
     "@webiny/api-admin-users": 0.0.0
@@ -15828,7 +15782,7 @@ __metadata:
   resolution: "@webiny/api-security-okta@workspace:packages/api-security-okta"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@types/node-fetch": ^2.6.1
     "@webiny/api": 0.0.0
     "@webiny/api-admin-users": 0.0.0
@@ -15853,7 +15807,7 @@ __metadata:
   resolution: "@webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@webiny/api-security": 0.0.0
     "@webiny/aws-sdk": 0.0.0
     "@webiny/cli": 0.0.0
@@ -15873,10 +15827,10 @@ __metadata:
   resolution: "@webiny/api-security@workspace:packages/api-security"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@commodo/fields": 1.1.2-beta.20
     "@types/jsonwebtoken": ^9.0.2
     "@webiny/api": 0.0.0
@@ -15912,7 +15866,7 @@ __metadata:
   resolution: "@webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@webiny/api-tenancy": 0.0.0
     "@webiny/aws-sdk": 0.0.0
     "@webiny/cli": 0.0.0
@@ -15932,7 +15886,7 @@ __metadata:
   resolution: "@webiny/api-tenancy@workspace:packages/api-tenancy"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@webiny/api": 0.0.0
     "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
@@ -15957,7 +15911,7 @@ __metadata:
   resolution: "@webiny/api-tenant-manager@workspace:packages/api-tenant-manager"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@webiny/api": 0.0.0
     "@webiny/api-security": 0.0.0
     "@webiny/api-tenancy": 0.0.0
@@ -15981,7 +15935,7 @@ __metadata:
   resolution: "@webiny/api-theme-manager@workspace:packages/api-theme-manager"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@webiny/api-security": 0.0.0
     "@webiny/api-tenancy": 0.0.0
     "@webiny/cli": 0.0.0
@@ -15999,12 +15953,12 @@ __metadata:
   resolution: "@webiny/api-wcp@workspace:packages/api-wcp"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-object-rest-spread": ^7.20.7
-    "@babel/plugin-transform-runtime": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/plugin-transform-runtime": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/api": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
@@ -16024,10 +15978,10 @@ __metadata:
   resolution: "@webiny/api-websockets@workspace:packages/api-websockets"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@types/aws-lambda": ^8.10.131
     "@webiny/api": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
@@ -16061,10 +16015,10 @@ __metadata:
   resolution: "@webiny/api@workspace:packages/api"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/aws-sdk": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
@@ -16081,11 +16035,11 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@material-design-icons/svg": ^0.12.1
@@ -16134,10 +16088,10 @@ __metadata:
     "@apollo/react-hooks": ^3.1.5
     "@auth0/auth0-react": ^1.10.1
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
     "@babel/plugin-proposal-throw-expressions": ^7.23.3
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@emotion/styled": ^11.10.6
@@ -16175,10 +16129,10 @@ __metadata:
     "@apollo/react-hooks": ^3.1.5
     "@aws-amplify/auth": ^5.1.9
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
     "@babel/plugin-proposal-throw-expressions": ^7.23.3
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@emotion/styled": ^11.10.6
@@ -16210,10 +16164,10 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
     "@babel/plugin-proposal-throw-expressions": ^7.23.3
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@emotion/styled": ^11.10.6
@@ -16251,11 +16205,11 @@ __metadata:
   resolution: "@webiny/app-admin-rmwc@workspace:packages/app-admin-rmwc"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/styled": ^11.10.6
     "@material-design-icons/svg": ^0.12.1
@@ -16295,10 +16249,10 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
     "@babel/plugin-proposal-throw-expressions": ^7.23.3
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@emotion/styled": ^11.10.6
@@ -16336,12 +16290,12 @@ __metadata:
     "@apollo/react-components": ^3.1.5
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@editorjs/editorjs": ^2.19.0
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
@@ -16401,11 +16355,11 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/is-prop-valid": ^1.1.1
     "@emotion/react": ^11.10.6
@@ -16452,11 +16406,11 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@material-design-icons/svg": ^0.14.3
@@ -16493,10 +16447,10 @@ __metadata:
   dependencies:
     "@aws-amplify/auth": ^5.1.9
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
     "@babel/plugin-proposal-throw-expressions": ^7.23.3
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@types/lodash": ^4.14.191
@@ -16515,7 +16469,7 @@ __metadata:
   resolution: "@webiny/app-file-manager-s3@workspace:packages/app-file-manager-s3"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@webiny/app": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -16534,11 +16488,11 @@ __metadata:
     "@apollo/react-components": ^3.1.5
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@material-design-icons/svg": ^0.14.3
@@ -16598,11 +16552,11 @@ __metadata:
     "@apollo/react-common": ^3.1.4
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@editorjs/editorjs": ^2.20.1
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
@@ -16659,9 +16613,9 @@ __metadata:
   resolution: "@webiny/app-graphql-playground@workspace:packages/app-graphql-playground"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@emotion/babel-plugin": ^11.11.0
@@ -16695,11 +16649,11 @@ __metadata:
   resolution: "@webiny/app-headless-cms-common@workspace:packages/app-headless-cms-common"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/babel-plugin": ^11.11.0
     "@fortawesome/fontawesome-svg-core": ^1.3.0
     "@types/react": 17.0.39
@@ -16727,11 +16681,11 @@ __metadata:
     "@apollo/react-common": ^3.1.4
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
@@ -16804,9 +16758,9 @@ __metadata:
   resolution: "@webiny/app-i18n-content@workspace:packages/app-i18n-content"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@emotion/babel-plugin": ^11.11.0
@@ -16833,11 +16787,11 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
@@ -16875,11 +16829,11 @@ __metadata:
   dependencies:
     "@apollo/react-components": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@types/react": 17.0.39
@@ -16912,12 +16866,12 @@ __metadata:
   resolution: "@webiny/app-page-builder-editor@workspace:packages/app-page-builder-editor"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@svgr/webpack": ^6.1.1
@@ -16957,11 +16911,11 @@ __metadata:
   resolution: "@webiny/app-page-builder-elements@workspace:packages/app-page-builder-elements"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@types/facepaint": ^1.2.2
@@ -17007,12 +16961,12 @@ __metadata:
     "@apollo/react-components": ^3.1.5
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
@@ -17105,8 +17059,8 @@ __metadata:
   resolution: "@webiny/app-plugin-admin-welcome-screen@workspace:packages/app-plugin-admin-welcome-screen"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@webiny/cli": 0.0.0
@@ -17125,9 +17079,9 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@emotion/babel-plugin": ^11.11.0
@@ -17162,9 +17116,9 @@ __metadata:
   resolution: "@webiny/app-security@workspace:packages/app-security"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@emotion/babel-plugin": ^11.11.0
@@ -17186,11 +17140,11 @@ __metadata:
   resolution: "@webiny/app-serverless-cms@workspace:packages/app-serverless-cms"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@webiny/app": 0.0.0
@@ -17238,12 +17192,12 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/styled": ^11.10.6
     "@types/react": 17.0.39
@@ -17270,11 +17224,11 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
@@ -17312,11 +17266,11 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
@@ -17354,11 +17308,11 @@ __metadata:
   resolution: "@webiny/app-theme@workspace:packages/app-theme"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/babel-plugin": ^11.11.0
     "@types/react": 17.0.39
     "@webiny/cli": 0.0.0
@@ -17380,11 +17334,11 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/react": ^11.10.6
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -17407,11 +17361,11 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/cache": ^11.10.5
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
@@ -17442,8 +17396,8 @@ __metadata:
   dependencies:
     "@aws-amplify/auth": ^5.1.9
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@webiny/app": 0.0.0
@@ -17466,12 +17420,12 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/styled": ^11.10.6
     "@types/lodash": ^4.14.191
     "@types/react": 17.0.39
@@ -17549,7 +17503,7 @@ __metadata:
     "@aws-sdk/s3-request-presigner": ^3.425.0
     "@aws-sdk/util-dynamodb": ^3.425.0
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/utils": 0.0.0
@@ -17588,8 +17542,8 @@ __metadata:
   resolution: "@webiny/cli-plugin-scaffold-admin-app-module@workspace:packages/cli-plugin-scaffold-admin-app-module"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@types/inquirer": ^7.3.1
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
@@ -17615,8 +17569,8 @@ __metadata:
   resolution: "@webiny/cli-plugin-scaffold-ci@workspace:packages/cli-plugin-scaffold-ci"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@types/inquirer": ^7.3.1
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
@@ -17643,8 +17597,8 @@ __metadata:
   resolution: "@webiny/cli-plugin-scaffold-full-stack-app@workspace:packages/cli-plugin-scaffold-full-stack-app"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@types/inquirer": ^7.3.1
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
@@ -17668,8 +17622,8 @@ __metadata:
   resolution: "@webiny/cli-plugin-scaffold-graphql-api@workspace:packages/cli-plugin-scaffold-graphql-api"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@types/inquirer": ^7.3.1
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
@@ -17697,8 +17651,8 @@ __metadata:
   resolution: "@webiny/cli-plugin-scaffold-graphql-service@workspace:packages/cli-plugin-scaffold-graphql-service"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@types/inquirer": ^7.3.1
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
@@ -17727,8 +17681,8 @@ __metadata:
   resolution: "@webiny/cli-plugin-scaffold-react-app@workspace:packages/cli-plugin-scaffold-react-app"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@types/inquirer": ^7.3.1
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
@@ -17755,8 +17709,8 @@ __metadata:
   resolution: "@webiny/cli-plugin-scaffold-react-component@workspace:packages/cli-plugin-scaffold-react-component"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@types/inquirer": ^7.3.1
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
@@ -17785,9 +17739,9 @@ __metadata:
   resolution: "@webiny/cli-plugin-scaffold@workspace:packages/cli-plugin-scaffold"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
-    "@babel/runtime": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/runtime": ^7.24.0
     "@types/inquirer": ^7.3.1
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
@@ -17855,7 +17809,7 @@ __metadata:
   resolution: "@webiny/commodo@workspace:packages/commodo"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@commodo/fields": 1.1.2-beta.20
     "@commodo/hooks": ^1.2.1
     "@commodo/name": ^1.3.1
@@ -17898,9 +17852,9 @@ __metadata:
   resolution: "@webiny/data-migration@workspace:packages/data-migration"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
-    "@babel/runtime": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/runtime": ^7.24.0
     "@elastic/elasticsearch": 7.12.0
     "@types/center-align": ^1.0.0
     "@types/pino": ^7.0.5
@@ -17931,7 +17885,7 @@ __metadata:
   resolution: "@webiny/db-dynamodb@workspace:packages/db-dynamodb"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@types/is-number": ^7.0.2
     "@webiny/api": 0.0.0
     "@webiny/aws-sdk": 0.0.0
@@ -17960,7 +17914,7 @@ __metadata:
   resolution: "@webiny/db@workspace:packages/db"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     rimraf: ^5.0.5
@@ -17973,7 +17927,7 @@ __metadata:
   resolution: "@webiny/error@workspace:packages/error"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     rimraf: ^5.0.5
@@ -17987,8 +17941,8 @@ __metadata:
   resolution: "@webiny/feature-flags@workspace:packages/feature-flags"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/runtime": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/runtime": ^7.24.0
     "@types/uniqid": ^5.3.2
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -18003,11 +17957,11 @@ __metadata:
   resolution: "@webiny/form@workspace:packages/form"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@testing-library/react": ^12.1.5
     "@testing-library/user-event": ^12.8.3
     "@types/invariant": ^2.2.35
@@ -18039,10 +17993,10 @@ __metadata:
   resolution: "@webiny/handler-aws@workspace:packages/handler-aws"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@fastify/aws-lambda": 3.1.3
     "@types/aws-lambda": ^8.10.134
     "@webiny/aws-sdk": 0.0.0
@@ -18064,10 +18018,10 @@ __metadata:
   resolution: "@webiny/handler-client@workspace:packages/handler-client"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/api": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
@@ -18084,9 +18038,9 @@ __metadata:
   resolution: "@webiny/handler-db@workspace:packages/handler-db"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
-    "@babel/runtime": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/runtime": ^7.24.0
     "@webiny/api": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/db": 0.0.0
@@ -18101,9 +18055,9 @@ __metadata:
   resolution: "@webiny/handler-graphql@workspace:packages/handler-graphql"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
-    "@babel/runtime": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/runtime": ^7.24.0
     "@graphql-tools/schema": ^7.0.0
     "@webiny/api": 0.0.0
     "@webiny/cli": 0.0.0
@@ -18129,10 +18083,10 @@ __metadata:
   resolution: "@webiny/handler-logs@workspace:packages/handler-logs"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@types/node-fetch": ^2.6.1
     "@webiny/cli": 0.0.0
     "@webiny/handler": 0.0.0
@@ -18149,10 +18103,10 @@ __metadata:
   resolution: "@webiny/handler@workspace:packages/handler"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@fastify/compress": 6.2.0
     "@fastify/cookie": 8.3.0
     "@webiny/api": 0.0.0
@@ -18174,11 +18128,11 @@ __metadata:
   resolution: "@webiny/i18n-react@workspace:packages/i18n-react"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/cli": 0.0.0
     "@webiny/i18n": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -18195,11 +18149,11 @@ __metadata:
   resolution: "@webiny/i18n@workspace:packages/i18n"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
     "@babel/register": ^7.23.7
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@types/accounting": ^0.4.2
     "@types/lodash": ^4.14.190
     "@webiny/cli": 0.0.0
@@ -18353,10 +18307,10 @@ __metadata:
   resolution: "@webiny/logger@workspace:packages/logger"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     pino: ^8.11.0
@@ -18400,8 +18354,8 @@ __metadata:
   resolution: "@webiny/plugins@workspace:packages/plugins"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/runtime": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/runtime": ^7.24.0
     "@types/uniqid": ^5.3.2
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -18417,13 +18371,13 @@ __metadata:
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
     "@babel/plugin-syntax-object-rest-spread": ^7.8.3
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@elastic/elasticsearch": 7.12.0
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.3
     "@svgr/webpack": ^6.1.1
@@ -18497,10 +18451,10 @@ __metadata:
   resolution: "@webiny/pubsub@workspace:packages/pubsub"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     rimraf: ^5.0.5
@@ -18514,10 +18468,10 @@ __metadata:
   resolution: "@webiny/pulumi-aws@workspace:packages/pulumi-aws"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@pulumi/aws": ^5.42.0
     "@pulumi/pulumi": ^3.99.0
     "@pulumi/random": ^3.0.0
@@ -18544,7 +18498,7 @@ __metadata:
   resolution: "@webiny/pulumi-sdk@workspace:packages/pulumi-sdk"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@pulumi/aws": ^5.42.0
     "@pulumi/pulumi": ^3.99.0
     "@types/lodash": ^4.14.190
@@ -18567,7 +18521,7 @@ __metadata:
   resolution: "@webiny/pulumi@workspace:packages/pulumi"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@pulumi/pulumi": ^3.99.0
     "@types/lodash": ^4.14.190
     "@webiny/cli": 0.0.0
@@ -18584,10 +18538,10 @@ __metadata:
   resolution: "@webiny/react-composition@workspace:packages/react-composition"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@testing-library/react": ^12.1.5
     "@types/react": 17.0.39
     "@webiny/cli": 0.0.0
@@ -18603,7 +18557,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/react-properties@workspace:packages/react-properties"
   dependencies:
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@testing-library/react": ^12.1.5
     "@types/react": 17.0.39
     "@webiny/cli": 0.0.0
@@ -18619,7 +18573,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/react-rich-text-lexical-renderer@workspace:packages/react-rich-text-lexical-renderer"
   dependencies:
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/react": ^11.10.6
     "@testing-library/react": ^12.1.5
     "@types/react": 17.0.39
@@ -18639,12 +18593,12 @@ __metadata:
   resolution: "@webiny/react-rich-text-renderer@workspace:packages/react-rich-text-renderer"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-transform-modules-commonjs": ^7.23.3
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@editorjs/editorjs": ^2.20.1
     "@types/react": 17.0.39
     "@types/sanitize-html": ^2.9.0
@@ -18664,9 +18618,9 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
-    "@babel/runtime": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/runtime": ^7.24.0
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -18690,10 +18644,10 @@ __metadata:
   resolution: "@webiny/serverless-cms-aws@workspace:packages/serverless-cms-aws"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@pulumi/aws": ^5.42.0
     "@pulumi/pulumi": ^3.99.0
     "@webiny/api-aco": 0.0.0
@@ -18757,10 +18711,10 @@ __metadata:
   resolution: "@webiny/tasks@workspace:packages/tasks"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@types/aws-lambda": ^8.10.131
     "@webiny/api": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
@@ -18803,11 +18757,11 @@ __metadata:
   resolution: "@webiny/theme@workspace:packages/theme"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@types/react": 17.0.39
@@ -18827,9 +18781,9 @@ __metadata:
   resolution: "@webiny/ui-composer@workspace:packages/ui-composer"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
-    "@babel/runtime": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/runtime": ^7.24.0
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -18846,11 +18800,11 @@ __metadata:
   resolution: "@webiny/ui@workspace:packages/ui"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-class-properties": ^7.18.6
-    "@babel/preset-env": ^7.23.9
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@editorjs/editorjs": ^2.24.3
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
@@ -18934,10 +18888,10 @@ __metadata:
   resolution: "@webiny/utils@workspace:packages/utils"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -18958,10 +18912,10 @@ __metadata:
   resolution: "@webiny/validation@workspace:packages/validation"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@types/lodash": ^4.14.190
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -18979,12 +18933,12 @@ __metadata:
   resolution: "@webiny/wcp@workspace:packages/wcp"
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/plugin-proposal-object-rest-spread": ^7.20.7
-    "@babel/plugin-transform-runtime": ^7.23.9
-    "@babel/preset-env": ^7.23.9
+    "@babel/plugin-transform-runtime": ^7.24.0
+    "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.0
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     node-fetch: ^2.6.13
@@ -36870,7 +36824,7 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@babel/cli": ^7.23.9
-    "@babel/core": ^7.23.9
+    "@babel/core": ^7.24.0
     "@babel/eslint-parser": ^7.23.9
     "@commitlint/cli": ^11.0.0
     "@commitlint/config-conventional": ^11.0.0

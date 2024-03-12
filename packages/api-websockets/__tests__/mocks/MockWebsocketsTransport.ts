@@ -16,4 +16,8 @@ export class MockWebsocketsTransport implements IWebsocketsTransport {
             this.messages.set(connection.connectionId, data);
         }
     }
+
+    public async disconnect(): Promise<void> {
+        return;
+    }
 }

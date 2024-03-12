@@ -15,6 +15,8 @@ const attributesToRemove = [
     "_et",
     "GSI1_PK",
     "GSI1_SK",
+    "GSI2_PK",
+    "GSI2_SK",
     "TYPE"
 ];
 
