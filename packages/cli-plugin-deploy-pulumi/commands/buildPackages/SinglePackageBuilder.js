@@ -1,4 +1,5 @@
 const { BasePackageBuilder } = require("./BasePackageBuilder");
+const {gray} = require("chalk");
 
 class SinglePackageBuilder extends BasePackageBuilder {
     async build() {
@@ -7,6 +8,10 @@ class SinglePackageBuilder extends BasePackageBuilder {
         const inputs = this.inputs;
 
         const { env, debug } = inputs;
+
+        const pkgName = pkg.name;
+        const pkgRelativePath = gray(`(${pkg.paths.relative})`);
+        context.info(`Building %s package...`, `${pkgName} ${pkgRelativePath}`);
 
         const options = {
             env,
@@ -28,6 +33,8 @@ class SinglePackageBuilder extends BasePackageBuilder {
         }
 
         await config.commands.build(options);
+
+
     }
 }
 

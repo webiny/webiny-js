@@ -22,6 +22,8 @@ const deploy = (appName, inputs, context) => {
 
 const getTelemetryEventName = stage => `cli-project-deploy-${stage}`;
 
+const newLine = () => console.log();
+
 module.exports = async (inputs, context) => {
     const eventName = getTelemetryEventName("start");
     await sendEvent(eventName);
@@ -53,10 +55,13 @@ module.exports = async (inputs, context) => {
 
         // Deploying `core` project application.
         isFirstDeployment && console.log();
-        context.info(`Deploying ${green("Core")} project application...`);
 
+        context.info(`Deploying ${green("Core")} project application...`);
+        newLine();
         await deploy("apps/core", inputs, context);
-        context.success(`${green("Core")} project application was deployed successfully!`);
+        newLine();
+        context.success(`${green("Core")} project application deployed successfully!`);
+
         isFirstDeployment && (await sleep(2000));
 
         // Deploying `api` project application.
@@ -65,7 +70,7 @@ module.exports = async (inputs, context) => {
 
         await deploy("apps/api", inputs, context);
 
-        context.success(`${green("API")} project application was deployed successfully!`);
+        context.success(`${green("API")} project application deployed successfully!`);
         isFirstDeployment && (await sleep(2000));
 
         // Deploying `apps/admin` project application.
@@ -74,7 +79,7 @@ module.exports = async (inputs, context) => {
         isFirstDeployment && (await sleep());
 
         await deploy("apps/admin", inputs, context);
-        context.success(`${green("Admin")} project application was deployed successfully!`);
+        context.success(`${green("Admin")} project application deployed successfully!`);
 
         // Deploying `apps/admin` project application.
         console.log();
@@ -82,7 +87,7 @@ module.exports = async (inputs, context) => {
         isFirstDeployment && (await sleep());
 
         await deploy("apps/website", inputs, context);
-        context.success(`${green("Website")} project application was deployed successfully!`);
+        context.success(`${green("Website")} project application deployed successfully!`);
 
         const outputs = {
             api: getStackOutput({ folder: "apps/api", env }),

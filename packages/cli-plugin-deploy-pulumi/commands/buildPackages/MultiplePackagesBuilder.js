@@ -71,10 +71,8 @@ class MultiplePackagesBuilder extends BasePackageBuilder {
 
         const tasks = new Listr(
             buildTasks.map(({ pkg, task }) => {
-                const pkgName = (pkg.name);
-                const pkgRelativePath = gray(`(${pkg.paths.relative})`);
                 return {
-                    title: `${pkgName} ${pkgRelativePath}`,
+                    title: this.getPackageLabel(pkg),
                     task: () => task
                 };
             }),
@@ -82,31 +80,37 @@ class MultiplePackagesBuilder extends BasePackageBuilder {
         );
 
         await tasks.run().catch(err => {
+            console.log()
+            context.error(`Failed to build all packages. For more details, check the logs below.`);
             console.log();
 
-            const errorsCount = context.error.hl(err.errors.length);
-            const errorsWord = errorsCount === 1 ? "error" : "errors";
-            const errorsOccurred = `(${errorsCount} ${errorsWord} occurred)`;
+            err.errors.forEach(({ package: pkg, error }, i) => {
+                const number = `${i + 1}.`;
+                const name = context.error.hl(pkg.name);
+                const relativePath = gray(`(${pkg.paths.relative})`);
+                const title = [number, name, relativePath].join(" ");
 
-            context.error(`Failed to build all packages ${errorsOccurred}.`);
-
-            console.log();
-            err.errors.forEach(({ package: pkg, error }) => {
-                console.log(context.error.hl(pkg.name));
+                console.log(title);
                 console.log(error.message);
                 console.log();
             });
 
-            throw new Error(`Failed to build all packages ${errorsOccurred}.`);
+            throw new Error(`Failed to build all packages.`);
         });
 
-        const duration = (new Date() - start) / 1000 + "s";
+        console.log()
 
         context.success(
             `Successfully built %s packages in %s.`,
-            projectApplication.packages.length,
-            duration
+            packages.length,
+            getDuration()
         );
+    }
+
+    getPackageLabel(pkg) {
+        const pkgName = pkg.name;
+        const pkgRelativePath = gray(`(${pkg.paths.relative})`);
+        return `${pkgName} ${pkgRelativePath}`;
     }
 }
 

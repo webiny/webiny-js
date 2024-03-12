@@ -5,7 +5,6 @@ const { getProjectApplication } = require("@webiny/cli/utils");
 
 module.exports = async options => {
     const duration = getDuration();
-    const path = require("path");
 
     const { overrides, logs, cwd, debug } = options;
 
@@ -15,8 +14,6 @@ module.exports = async options => {
     } catch {
         // No need to do anything.
     }
-
-    logs && console.log(`Compiling ${chalk.green(path.basename(cwd))}...`);
 
     let webpackConfig = require("./webpack.config")({
         production: !debug,

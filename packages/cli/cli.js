@@ -7,7 +7,7 @@ yargs.help(false);
 // Loads environment variables from multiple sources.
 require("./utils/loadEnvVariables");
 
-const { blue, red } = require("chalk");
+const { blue, red, bold, gray } = require("chalk");
 const context = require("./context");
 const { createCommands } = require("./commands");
 
@@ -60,6 +60,7 @@ yargs
 
         if (error) {
             // Unfortunately, yargs doesn't provide passed args here, so we had to do it via process.argv.
+            console.log()
             if (process.argv.includes("--debug")) {
                 context.debug(error);
             } else {

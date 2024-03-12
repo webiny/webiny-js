@@ -49,7 +49,12 @@ module.exports = [
                     });
                     yargs.option("logs", {
                         default: undefined,
-                        describe: `Enable base compilation-related logs`,
+                        describe: `Print build logs`,
+                        type: "boolean"
+                    });
+                    yargs.option("deployment-logs", {
+                        default: undefined,
+                        describe: `Print deployment logs`,
                         type: "boolean"
                     });
                 },

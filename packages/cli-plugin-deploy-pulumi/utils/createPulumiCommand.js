@@ -59,6 +59,8 @@ const createPulumiCommand = ({
             commandParams: JSON.stringify(params)
         };
 
+        let projectApplication = null;
+
         try {
             if (sendTelemetryEvents) {
                 const eventName = getTelemetryEventName("start");
@@ -77,7 +79,7 @@ const createPulumiCommand = ({
             const cwd = path.join(process.cwd(), params.folder);
 
             // Get project application metadata.
-            const projectApplication = getProjectApplication({ cwd });
+            projectApplication = getProjectApplication({ cwd });
 
             if (createProjectApplicationWorkspaceParam !== false) {
                 await createProjectApplicationWorkspace({
@@ -116,7 +118,11 @@ const createPulumiCommand = ({
 
             return result;
         } catch (e) {
-            const gracefulError = GracefulPulumiError.from(e);
+            const gracefulError = GracefulPulumiError.from(e, {
+                projectApplication,
+                commandName: command,
+                commandParams: params
+            });
             if (gracefulError) {
                 if (sendTelemetryEvents) {
                     const eventName = getTelemetryEventName("error-graceful");
