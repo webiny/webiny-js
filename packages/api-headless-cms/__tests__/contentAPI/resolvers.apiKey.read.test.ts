@@ -233,17 +233,17 @@ describe("READ - resolvers - api key", () => {
 
         const [result] = await getCategory(queryArgs, headers);
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             data: {
                 getCategory: {
                     data: null,
-                    error: expect.objectContaining({
+                    error: {
                         code: "SECURITY_NOT_AUTHORIZED",
                         message: `Not authorized!`,
-                        data: expect.objectContaining({
+                        data: {
                             reason: 'Not allowed to access "category" entries.'
-                        })
-                    })
+                        }
+                    }
                 }
             }
         });
@@ -278,17 +278,17 @@ describe("READ - resolvers - api key", () => {
 
         const [result] = await listCategories(queryArgs, headers);
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             data: {
                 listCategories: {
                     data: null,
-                    error: expect.objectContaining({
+                    error: {
                         code: "SECURITY_NOT_AUTHORIZED",
                         message: `Not authorized!`,
-                        data: expect.objectContaining({
+                        data: {
                             reason: 'Not allowed to access "category" entries.'
-                        })
-                    }),
+                        }
+                    },
                     meta: null
                 }
             }
@@ -331,17 +331,17 @@ describe("READ - resolvers - api key", () => {
 
         const [result] = await getCategory(queryArgs, headers);
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             data: {
                 getCategory: {
                     data: null,
-                    error: expect.objectContaining({
+                    error: {
                         code: "SECURITY_NOT_AUTHORIZED",
                         message: `Not authorized!`,
-                        data: expect.objectContaining({
+                        data: {
                             reason: 'Not allowed to access "category" entries.'
-                        })
-                    })
+                        }
+                    }
                 }
             }
         });
@@ -383,17 +383,17 @@ describe("READ - resolvers - api key", () => {
 
             const [result] = await listCategories(queryArgs, headers);
 
-            expect(result).toEqual({
+            expect(result).toMatchObject({
                 data: {
                     listCategories: {
                         data: null,
-                        error: expect.objectContaining({
+                        error: {
                             code: "SECURITY_NOT_AUTHORIZED",
                             message: `Not authorized!`,
-                            data: expect.objectContaining({
+                            data: {
                                 reason: 'Not allowed to access "category" entries.'
-                            })
-                        }),
+                            }
+                        },
                         meta: null
                     }
                 }
