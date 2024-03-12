@@ -16,9 +16,9 @@
   },
   "homepage": "https://github.com/webiny/webiny-js#readme",
   "dependencies": {
-    "@webiny/cli": "0.0.0",
+    "@webiny/cli": "0.3.0",
     "@webiny/cli-plugin-scaffold": "0.0.0",
-    "@webiny/cli-plugin-scaffold-graphql-api": "0.0.0",
+    "@webiny/cli-plugin-scaffold-graphql-api": "5.13.0",
     "case": "^1.6.3",
     "chalk": "^4.1.0",
     "ncp": "^2.0.0",
