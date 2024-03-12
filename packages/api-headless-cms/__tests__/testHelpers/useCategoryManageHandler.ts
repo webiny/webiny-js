@@ -89,10 +89,32 @@ const listCategoriesQuery = (model: CmsModel) => {
             $where: ${model.singularApiName}ListWhereInput
             $sort: [${model.singularApiName}ListSorter]
             $limit: Int
-            $after: String,
-            $deleted: Boolean
+            $after: String
         ) {
-            listCategories: list${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after, deleted: $deleted) {
+            listCategories: list${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after) {
+                data {
+                    ${categoryFields}
+                }
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
+const listDeletedCategoriesQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query ListDeletedCategories(
+            $where: ${model.singularApiName}ListWhereInput
+            $sort: [${model.singularApiName}ListSorter]
+            $limit: Int
+            $after: String
+        ) {
+            listDeletedCategories: listDeleted${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after) {
                 data {
                     ${categoryFields}
                 }
@@ -256,6 +278,15 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
         ) {
             return await contentHandler.invoke({
                 body: { query: listCategoriesQuery(model), variables },
+                headers
+            });
+        },
+        async listDeletedCategories(
+            variables: CmsEntryListParams = {},
+            headers: Record<string, any> = {}
+        ) {
+            return await contentHandler.invoke({
+                body: { query: listDeletedCategoriesQuery(model), variables },
                 headers
             });
         },

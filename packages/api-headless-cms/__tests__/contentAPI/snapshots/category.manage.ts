@@ -346,7 +346,14 @@ export default /* GraphQL */ `
             limit: Int
             after: String
             search: String
-            deleted: Boolean
+        ): CategoryApiNameWhichIsABitDifferentThanModelIdListResponse
+
+        listDeletedCategoriesApiModel(
+            where: CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput
+            sort: [CategoryApiNameWhichIsABitDifferentThanModelIdListSorter]
+            limit: Int
+            after: String
+            search: String
         ): CategoryApiNameWhichIsABitDifferentThanModelIdListResponse
     }
 

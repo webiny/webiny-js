@@ -617,7 +617,14 @@ export default /* GraphQL */ `
             limit: Int
             after: String
             search: String
-            deleted: Boolean
+        ): PageModelApiNameListResponse
+
+        listDeletedPagesModelApiName(
+            where: PageModelApiNameListWhereInput
+            sort: [PageModelApiNameListSorter]
+            limit: Int
+            after: String
+            search: String
         ): PageModelApiNameListResponse
     }
 

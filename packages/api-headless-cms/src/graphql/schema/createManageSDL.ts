@@ -180,7 +180,14 @@ export const createManageSDL: CreateManageSDL = ({
                 limit: Int
                 after: String
                 search: String
-                deleted: Boolean
+            ): ${singularName}ListResponse
+            
+            listDeleted${pluralName} (
+                where: ${singularName}ListWhereInput
+                sort: [${singularName}ListSorter]
+                limit: Int
+                after: String
+                search: String
             ): ${singularName}ListResponse
         }
 

@@ -540,7 +540,14 @@ export default /* GraphQL */ `
             limit: Int
             after: String
             search: String
-            deleted: Boolean
+        ): ProductApiSingularListResponse
+
+        listDeletedProductPluralApiName(
+            where: ProductApiSingularListWhereInput
+            sort: [ProductApiSingularListSorter]
+            limit: Int
+            after: String
+            search: String
         ): ProductApiSingularListResponse
     }
 

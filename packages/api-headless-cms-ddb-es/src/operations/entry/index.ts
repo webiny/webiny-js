@@ -707,7 +707,7 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
+    const moveToBin: CmsEntryStorageOperations["moveToBin"] = async (initialModel, params) => {
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 
@@ -779,7 +779,7 @@ export const createEntriesStorageOperations = (
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could mark as deleted all entry records from in the DynamoDB table.",
-                ex.code || "DELETE_ENTRY_ERROR",
+                ex.code || "MOVE_ENTRY_TO_BIN_ERROR",
                 {
                     error: ex,
                     entry,
@@ -865,7 +865,7 @@ export const createEntriesStorageOperations = (
             throw new WebinyError(
                 ex.message ||
                     "Could not mark as deleted entry records from DynamoDB Elasticsearch table.",
-                ex.code || "DELETE_ES_ENTRY_ERROR",
+                ex.code || "MOVE_ENTRY_TO_BIN_ERROR",
                 {
                     error: ex,
                     entry,
@@ -875,7 +875,7 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const destroyEntry: CmsEntryStorageOperations["destroy"] = async (initialModel, params) => {
+    const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
         const { entry } = params;
         const id = entry.id || entry.entryId;
         const model = getStorageOperationsModel(initialModel);
@@ -927,7 +927,7 @@ export const createEntriesStorageOperations = (
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not destroy entry records from DynamoDB table.",
-                ex.code || "DESTROY_ENTRY_ERROR",
+                ex.code || "DELETE_ENTRY_ERROR",
                 {
                     error: ex,
                     id
@@ -943,7 +943,7 @@ export const createEntriesStorageOperations = (
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not destroy entry records from DynamoDB Elasticsearch table.",
-                ex.code || "DESTROY_ENTRY_ERROR",
+                ex.code || "DELETE_ENTRY_ERROR",
                 {
                     error: ex,
                     id
@@ -1952,8 +1952,8 @@ export const createEntriesStorageOperations = (
         createRevisionFrom,
         update,
         move,
-        destroy: destroyEntry,
         delete: deleteEntry,
+        moveToBin,
         deleteRevision,
         deleteMultipleEntries,
         get,

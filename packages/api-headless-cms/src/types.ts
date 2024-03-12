@@ -2034,7 +2034,6 @@ export type CmsEntryListSort = string[];
 export interface CmsEntryGetParams {
     where: CmsEntryListWhere;
     sort?: CmsEntryListSort;
-    deleted?: boolean;
 }
 
 /**
@@ -2050,7 +2049,6 @@ export interface CmsEntryListParams {
     fields?: string[];
     limit?: number;
     after?: string | null;
-    deleted?: boolean;
 }
 
 /**
@@ -2518,6 +2516,13 @@ export interface CmsEntryContext {
         params?: CmsEntryListParams
     ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
     /**
+     * Lists the deleted entries. Used for manage API.
+     */
+    listDeletedEntries: <T = CmsEntryValues>(
+        model: CmsModel,
+        params?: CmsEntryListParams
+    ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
+    /**
      * List published entries by IDs.
      */
     getPublishedEntriesByIds: (model: CmsModel, ids: string[]) => Promise<CmsEntry[]>;
@@ -2926,7 +2931,11 @@ export interface CmsEntryStorageOperationsDeleteRevisionParams<
     latestStorageEntry: T | null;
 }
 
-export interface CmsEntryStorageOperationsDeleteParams<
+export interface CmsEntryStorageOperationsDeleteParams {
+    entry: CmsEntry;
+}
+
+export interface CmsEntryStorageOperationsMoveToBinParams<
     T extends CmsStorageEntry = CmsStorageEntry
 > {
     /**
@@ -2938,10 +2947,6 @@ export interface CmsEntryStorageOperationsDeleteParams<
      * The modified entry and prepared for the storage.
      */
     storageEntry: T;
-}
-
-export interface CmsEntryStorageOperationsDestroyParams {
-    entry: CmsEntry;
 }
 
 export interface CmsEntryStorageOperationsDeleteEntriesParams {
@@ -3139,9 +3144,9 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
      */
     delete: (model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) => Promise<void>;
     /**
-     * Destroy the entry.
+     * Move the entry to bin.
      */
-    destroy: (model: CmsModel, params: CmsEntryStorageOperationsDestroyParams) => Promise<void>;
+    moveToBin: (model: CmsModel, params: CmsEntryStorageOperationsMoveToBinParams) => Promise<void>;
     /**
      * Delete multiple entries, with a limit on how much can be deleted in one call.
      */

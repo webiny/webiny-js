@@ -303,10 +303,10 @@ describe("delete entries", () => {
         /**
          * Let's list the deleted items found in the bin, via manage endpoint...
          */
-        const [listDeletedManageResponse] = await manager.listCategories({ deleted: true });
+        const [listDeletedManageResponse] = await manager.listDeletedCategories();
         expect(listDeletedManageResponse).toEqual({
             data: {
-                listCategories: {
+                listDeletedCategories: {
                     data: expect.arrayContaining([
                         expect.objectContaining({
                             entryId: categoryToDelete.entryId,
@@ -323,12 +323,6 @@ describe("delete entries", () => {
                 }
             }
         });
-
-        /**
-         * ...but I should not be able to list deleted items via read endpoint.
-         */
-        const [listDeletedReadResponse] = await reader.listCategories({ deleted: true });
-        expect(listDeletedReadResponse.data.listCategories.data).toHaveLength(titles.length - 1);
 
         /**
          * ...and we should not be able to get the entry anymore.

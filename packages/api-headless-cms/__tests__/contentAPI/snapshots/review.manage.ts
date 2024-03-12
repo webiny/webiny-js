@@ -354,7 +354,14 @@ export default /* GraphQL */ `
             limit: Int
             after: String
             search: String
-            deleted: Boolean
+        ): ReviewApiModelListResponse
+
+        listDeletedReviewsApiModel(
+            where: ReviewApiModelListWhereInput
+            sort: [ReviewApiModelListSorter]
+            limit: Int
+            after: String
+            search: String
         ): ReviewApiModelListResponse
     }
 

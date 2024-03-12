@@ -474,7 +474,7 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
+    const moveToBin: CmsEntryStorageOperations["moveToBin"] = async (initialModel, params) => {
         const { entry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 
@@ -531,8 +531,8 @@ export const createEntriesStorageOperations = (
             });
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not delete the entry.",
-                ex.code || "DELETE_ENTRY_ERROR",
+                ex.message || "Could not move the entry to the bin.",
+                ex.code || "MOVE_ENTRY_TO_BIN_ERROR",
                 {
                     error: ex,
                     entry,
@@ -542,7 +542,7 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const destroyEntry: CmsEntryStorageOperations["destroy"] = async (initialModel, params) => {
+    const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
         const { entry } = params;
         const id = entry.id || entry.entryId;
         const model = getStorageOperationsModel(initialModel);
@@ -589,8 +589,8 @@ export const createEntriesStorageOperations = (
             });
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not destroy the entry.",
-                ex.code || "DESTROY_ENTRY_ERROR",
+                ex.message || "Could not delete the entry.",
+                ex.code || "DELETE_ENTRY_ERROR",
                 {
                     error: ex,
                     partitionKey: queryAllParams.partitionKey,
@@ -1381,8 +1381,8 @@ export const createEntriesStorageOperations = (
         createRevisionFrom,
         update,
         move,
-        destroy: destroyEntry,
         delete: deleteEntry,
+        moveToBin,
         deleteRevision,
         deleteMultipleEntries,
         getPreviousRevision,

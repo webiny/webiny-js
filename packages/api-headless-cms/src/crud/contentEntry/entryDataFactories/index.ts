@@ -1,4 +1,3 @@
-export * from "./createDeleteEntryData";
 export * from "./createEntryData";
 export * from "./createEntryRevisionFromData";
 export * from "./createPublishEntryData";

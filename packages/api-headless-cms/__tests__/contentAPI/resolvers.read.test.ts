@@ -339,13 +339,13 @@ describe("READ - Resolvers", () => {
             data: {
                 getCategory: {
                     data: null,
-                    error: {
+                    error: expect.objectContaining({
                         code: "SECURITY_NOT_AUTHORIZED",
-                        data: {
+                        message: `Not authorized!`,
+                        data: expect.objectContaining({
                             reason: 'Not allowed to access "category" entries.'
-                        },
-                        message: "Not authorized!"
-                    }
+                        })
+                    })
                 }
             }
         });
@@ -377,13 +377,13 @@ describe("READ - Resolvers", () => {
             data: {
                 getCategory: {
                     data: null,
-                    error: {
+                    error: expect.objectContaining({
                         code: "SECURITY_NOT_AUTHORIZED",
-                        data: {
+                        message: `Not authorized!`,
+                        data: expect.objectContaining({
                             reason: 'Not allowed to access "category" entries.'
-                        },
-                        message: "Not authorized!"
-                    }
+                        })
+                    })
                 }
             }
         });
