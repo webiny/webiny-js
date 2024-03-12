@@ -13,14 +13,14 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api": "0.0.0",
-    "@webiny/api-admin-users": "0.0.0",
-    "@webiny/api-cognito-authenticator": "0.0.0",
-    "@webiny/api-i18n": "0.0.0",
-    "@webiny/api-security": "0.0.0",
-    "@webiny/api-tenancy": "0.0.0",
+    "@webiny/api-admin-users": "5.38.0",
+    "@webiny/api-cognito-authenticator": "5.17.0",
+    "@webiny/api-i18n": "0.1.0",
+    "@webiny/api-security": "0.1.0",
+    "@webiny/api-tenancy": "5.9.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/error": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0"
+    "@webiny/handler-graphql": "5.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
