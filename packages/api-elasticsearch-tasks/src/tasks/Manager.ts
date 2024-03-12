@@ -50,8 +50,12 @@ export class Manager implements IManager {
         this.table = createTable({
             documentClient: this.documentClient
         });
-        this.isCloseToTimeout = params.isCloseToTimeout;
-        this.isAborted = params.isAborted;
+        this.isCloseToTimeout = () => {
+            return params.isCloseToTimeout();
+        };
+        this.isAborted = () => {
+            return params.isAborted();
+        };
         this.response = params.response;
         this.store = params.store;
     }

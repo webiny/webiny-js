@@ -1,27 +1,64 @@
 import gql from "graphql-tag";
-import { PageBuilderImportExportSubTask } from "~/types";
+import { PbErrorResponse } from "~/types";
+import {
+    CreatedBy,
+    PbImportExportTaskData,
+    PbListPagesSearchInput,
+    PbListPagesWhereInput,
+    PbTaskStatus
+} from "./types";
+import { PbRevisionType } from "~/contexts/PageBuilder";
 
 const ERROR = `
-error {   
+error {
     code
     message
     data
-}    
+}
 `;
 
 const STATS = `
 stats {
     total
-    processing
-    pending
     completed
     failed
 }`;
 
+export interface ImportPagesMutationVariables {
+    category: string;
+    zipFileUrl?: string;
+    meta?: Record<string, any>;
+}
+
+export interface ImportPagesMutationResponseDataTask {
+    id: string;
+    createdOn: string;
+    createdBy: CreatedBy;
+    status: PbTaskStatus;
+    data: PbImportExportTaskData;
+    stats: {
+        total: number;
+        completed: number;
+        failed: number;
+    };
+}
+export interface ImportPagesMutationResponseData {
+    task: ImportPagesMutationResponseDataTask;
+}
+
+export interface ImportPagesMutationResponse {
+    pageBuilder: {
+        importPages: {
+            data: ImportPagesMutationResponseData | null;
+            error: PbErrorResponse | null;
+        };
+    };
+}
+
 export const IMPORT_PAGES = gql`
     mutation PbImportPage(
         $category: String!,
-        $zipFileUrl: String,
+        $zipFileUrl: String!,
         $meta: JSON
     ) {
         pageBuilder {
@@ -34,7 +71,6 @@ export const IMPORT_PAGES = gql`
                     task {
                         id
                         status
-                        data
                         ${STATS}
                     }
                 }
@@ -44,9 +80,42 @@ export const IMPORT_PAGES = gql`
     }
 `;
 
+export interface ExportPagesVariables {
+    revisionType: PbRevisionType;
+    where?: PbListPagesWhereInput;
+    limit?: number;
+    sort?: string[];
+    search?: PbListPagesSearchInput;
+}
+
+export interface ExportPagesResponseDataTask {
+    id: string;
+    createdOn: string;
+    createdBy: CreatedBy;
+    status: PbTaskStatus;
+    data: PbImportExportTaskData;
+    stats: {
+        total: number;
+        completed: number;
+        failed: number;
+    };
+}
+
+export interface ExportPagesResponseData {
+    task: ExportPagesResponseDataTask;
+}
+
+export interface ExportPagesResponse {
+    pageBuilder: {
+        exportPages: {
+            data: ExportPagesResponseData | null;
+            error: PbErrorResponse | null;
+        };
+    };
+}
+
 export const EXPORT_PAGES = gql`
     mutation PbExportPages(
-        $ids: [ID!],
         $revisionType: PbExportPageRevisionType!,
         $where: PbListPagesWhereInput,
         $sort: [PbListPagesSort!],
@@ -54,7 +123,6 @@ export const EXPORT_PAGES = gql`
     ) {
         pageBuilder {
             exportPages(
-                ids: $ids,
                 revisionType: $revisionType,
                 where: $where,
                 sort: $sort,
@@ -64,7 +132,6 @@ export const EXPORT_PAGES = gql`
                     task {
                         id
                         status
-                        data
                         ${STATS}
                     }
                 }
@@ -73,6 +140,103 @@ export const EXPORT_PAGES = gql`
         }
     }
 `;
+
+export interface GetPageExportTaskVariables {
+    id: string;
+}
+
+export interface GetPageExportTaskResponse {
+    pageBuilder: {
+        getExportPagesTask: {
+            data?: ExportPagesResponseDataTask;
+            error?: PbErrorResponse;
+        };
+    };
+}
+
+export const GET_PAGE_EXPORT_TASK = gql`
+    query PbGetPageExportTask($id: ID!) {
+        pageBuilder {
+            getExportPagesTask(id: $id) {
+                data {
+                    id
+                    status
+                    createdOn
+                    data {
+                        error {
+                            message
+                            code
+                            data
+                        }
+                        url
+                    }
+                    stats {
+                        total
+                        completed
+                        failed
+                    }
+                }
+                ${ERROR}
+            }
+        }
+    }
+`;
+
+export interface GetPagesImportTaskVariables {
+    id: string;
+}
+
+export interface GetPagesImportTaskResponseDataData {
+    error?: PbErrorResponse;
+}
+
+export interface GetPagesImportTaskResponseDataStats {
+    total: number;
+    completed: number;
+    failed: number;
+}
+
+export interface GetPagesImportTaskResponseData {
+    id: string;
+    status: PbTaskStatus;
+    createdOn: string;
+    stats: GetPagesImportTaskResponseDataStats;
+    data: GetPagesImportTaskResponseDataData;
+}
+
+export interface GetPagesImportTaskResponse {
+    pageBuilder: {
+        getImportPagesTask: {
+            data?: GetPagesImportTaskResponseData;
+            error?: PbErrorResponse;
+        };
+    };
+}
+
+export const GET_PAGES_IMPORT_TASK = gql`
+    query PbGetPagesImportTask($id: ID!) {
+        pageBuilder {
+            getImportPagesTask(id: $id) {
+                data {
+                    id
+                    status
+                    createdOn
+                    ${STATS}
+                }
+                ${ERROR}
+            }
+        }
+    }
+`;
+
+export interface PageImportExportTaskResponse {
+    pageBuilder: {
+        getImportExportTask: {
+            data?: ExportPagesResponseDataTask;
+            error?: PbErrorResponse;
+        };
+    };
+}
 
 export const GET_PAGE_IMPORT_EXPORT_TASK = gql`
     query PbGetPageImportExportTask($id: ID!) {
@@ -90,27 +254,33 @@ export const GET_PAGE_IMPORT_EXPORT_TASK = gql`
     }
 `;
 
-export interface ListPageImportExportSubTasksResponse {
+export interface ListImportedPagesVariables {
+    taskId: string;
+}
+
+export interface ImportedPage {
+    id: string;
+    title: string;
+    version: number;
+}
+
+export interface ListImportedPagesResponse {
     pageBuilder: {
-        listImportExportSubTask: {
-            data: PageBuilderImportExportSubTask[];
-            error?: {
-                message: string;
-                code: string;
-                data: Record<string, any>;
-            };
+        listImportedPages: {
+            data?: ImportedPage[];
+            error?: PbErrorResponse;
         };
     };
 }
 
-export const LIST_PAGE_IMPORT_EXPORT_SUB_TASKS = gql`
-    query PbPageListPageImportExportSubTask($id: ID!, $status: PbImportExportTaskStatus, $limit: Int) {
+export const LIST_IMPORTED_PAGES = gql`
+    query PbListImportedPages($taskId: ID!) {
         pageBuilder {
-            listImportExportSubTask(id: $id, status: $status, limit: $limit) {
+            listImportedPages(taskId: $taskId) {
                 data {
                     id
-                    status
-                    data
+                    title
+                    version
                 }
                 ${ERROR}
             }

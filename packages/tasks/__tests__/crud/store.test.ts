@@ -125,6 +125,9 @@ describe("store crud", () => {
         });
 
         const updatedTask = await context.tasks.updateTask(task.id, {
+            output: {
+                myCustomOutput: "yes!"
+            },
             input: {
                 ...task.input,
                 someValue: false,
@@ -148,7 +151,11 @@ describe("store crud", () => {
             finishedOn: undefined,
             eventResponse: undefined,
             executionName: "",
-            taskStatus: TaskDataStatus.PENDING
+            taskStatus: TaskDataStatus.PENDING,
+            output: {
+                myCustomOutput: "yes!"
+            },
+            parentId: undefined
         };
         expect(updatedTask).toEqual(expectedUpdatedTask);
 

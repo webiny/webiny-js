@@ -5,5 +5,3 @@ export {
     PutEventsCommandInput,
     PutEventsCommandOutput
 } from "@aws-sdk/client-eventbridge";
-
-export * from "./types";

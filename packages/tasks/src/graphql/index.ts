@@ -29,6 +29,7 @@ interface ITriggerTaskMutationParams {
     name?: string;
     definition: string;
     input?: Record<string, any>;
+    delay?: number;
 }
 
 interface IDeleteTaskMutationParams {
@@ -259,7 +260,7 @@ const createGraphQL = () => {
                 }
 
                 extend type WebinyBackgroundTaskMutation {
-                    triggerTask(definition: WebinyBackgroundTaskDefinitionEnum!, input: JSON, name: String): WebinyBackgroundTaskTriggerResponse!
+                    triggerTask(definition: WebinyBackgroundTaskDefinitionEnum!, input: JSON, name: String, delay: Number): WebinyBackgroundTaskTriggerResponse!
                     abortTask(id: ID!, message: String): WebinyBackgroundTaskResponse!
                     deleteTask(id: ID!): WebinyBackgroundTaskDeleteResponse!
                 }
