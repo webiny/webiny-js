@@ -3,7 +3,6 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 import { createRawEventHandler } from "@webiny/handler-aws";
 import { blocksHandler } from "~/export/combine/blocksHandler";
 import { formsHandler } from "~/export/combine/formsHandler";
-import { pagesHandler } from "~/export/combine/pagesHandler";
 import { templatesHandler } from "~/export/combine/templatesHandler";
 
 export interface Payload {
@@ -35,7 +34,8 @@ export default () => {
                         return templatesHandler(payload, context);
                     }
                     default: {
-                        return pagesHandler(payload, context);
+                        console.log("Export PB combine", JSON.stringify(payload));
+                        throw new Error("Invalid type provided: pb combine.");
                     }
                 }
             });

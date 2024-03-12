@@ -11,7 +11,15 @@ export type ITaskResponseResult<
     | ITaskResponseAbortedResult;
 
 export interface ITaskResponseDoneResultOutput {
-    [key: string]: string | string[] | number | boolean | Record<string, string | number>;
+    error?: IResponseError;
+    [key: string]:
+        | string
+        | string[]
+        | number
+        | boolean
+        | undefined
+        | Record<string, string | number>
+        | IResponseError;
 }
 export interface ITaskResponseDoneResult<
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
@@ -47,11 +55,18 @@ export type ITaskResponseContinueOptions =
     | ITaskResponseContinueOptionsUntil
     | ITaskResponseContinueOptionsSeconds;
 
+export interface ITaskResponseDoneCallable<
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
+    (output?: O): ITaskResponseDoneResult<O>;
+    (message?: string, output?: O): ITaskResponseDoneResult<O>;
+}
+
 export interface ITaskResponse<
     T = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 > {
-    done: (message?: string, output?: O) => ITaskResponseDoneResult<O>;
+    done: ITaskResponseDoneCallable<O>;
     continue: (data: T, options?: ITaskResponseContinueOptions) => ITaskResponseContinueResult<T>;
     error: (error: IResponseError | Error | string) => ITaskResponseErrorResult;
     aborted: () => ITaskResponseAbortedResult;
