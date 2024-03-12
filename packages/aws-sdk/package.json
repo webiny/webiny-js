@@ -26,7 +26,7 @@
     "@aws-sdk/s3-presigned-post": "^3.425.0",
     "@aws-sdk/s3-request-presigner": "^3.425.0",
     "@aws-sdk/util-dynamodb": "^3.425.0",
-    "@webiny/utils": "0.0.0"
+    "@webiny/utils": "5.16.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
