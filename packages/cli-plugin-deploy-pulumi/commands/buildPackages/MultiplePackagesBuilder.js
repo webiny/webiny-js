@@ -2,10 +2,11 @@ const path = require("path");
 const { Worker } = require("worker_threads");
 const Listr = require("listr");
 const { BasePackageBuilder } = require("./BasePackageBuilder");
+const { gray } = require("chalk");
 
 class MultiplePackagesBuilder extends BasePackageBuilder {
     async build() {
-        const packages = [this.packages[0]];
+        const packages = this.packages;
         const context = this.context;
         const inputs = this.inputs;
 
@@ -45,25 +46,23 @@ class MultiplePackagesBuilder extends BasePackageBuilder {
                     });
 
                     worker.on("message", threadMessage => {
-                        const { type, stdout, stderr, errorMessage } = JSON.parse(threadMessage);
+                        const { type, stdout, stderr, error } = JSON.parse(threadMessage);
+
+                        const result = {
+                            package: pkg,
+                            stdout,
+                            stderr,
+                            error,
+                            duration: getDuration()
+                        };
 
                         if (type === "error") {
-                            return reject({
-                                package: pkg,
-                                stdout,
-                                stderr,
-                                errorMessage,
-                                duration: getDuration()
-                            });
+                            reject(result);
+                            return;
                         }
 
                         if (type === "success") {
-                            return resolve({
-                                package: pkg,
-                                stdout,
-                                stderr,
-                                duration: getDuration()
-                            });
+                            resolve(result);
                         }
                     });
                 })
@@ -71,18 +70,43 @@ class MultiplePackagesBuilder extends BasePackageBuilder {
         }
 
         const tasks = new Listr(
-            buildTasks.map(buildTask => {
+            buildTasks.map(({ pkg, task }) => {
+                const pkgName = (pkg.name);
+                const pkgRelativePath = gray(`(${pkg.paths.relative})`);
                 return {
-                    title: buildTask.pkg.name,
-                    task: () => buildTask.task
+                    title: `${pkgName} ${pkgRelativePath}`,
+                    task: () => task
                 };
             }),
-            { concurrent: true }
+            { concurrent: true, exitOnError: false }
         );
 
         await tasks.run().catch(err => {
-            console.log(err);
-        })
+            console.log();
+
+            const errorsCount = context.error.hl(err.errors.length);
+            const errorsWord = errorsCount === 1 ? "error" : "errors";
+            const errorsOccurred = `(${errorsCount} ${errorsWord} occurred)`;
+
+            context.error(`Failed to build all packages ${errorsOccurred}.`);
+
+            console.log();
+            err.errors.forEach(({ package: pkg, error }) => {
+                console.log(context.error.hl(pkg.name));
+                console.log(error.message);
+                console.log();
+            });
+
+            throw new Error(`Failed to build all packages ${errorsOccurred}.`);
+        });
+
+        const duration = (new Date() - start) / 1000 + "s";
+
+        context.success(
+            `Successfully built %s packages in %s.`,
+            projectApplication.packages.length,
+            duration
+        );
     }
 }
 

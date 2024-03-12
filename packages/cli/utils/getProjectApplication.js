@@ -66,6 +66,8 @@ module.exports = args => {
                 return {
                     name: packageJson.name,
                     paths: {
+                        absolute: dirname(config),
+                        relative: relative(project.root, dirPath),
                         root: dirname(config),
                         packageJson: join(dirPath, "package.json"),
                         config

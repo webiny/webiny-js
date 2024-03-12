@@ -47,7 +47,10 @@ config.commands
                 type: "error",
                 stdout: processStdout,
                 stderr: processStderr,
-                errorMessage: e.message
+                error: {
+                    message: e.message,
+                    stack: e.stack
+                }
             })
         );
     });

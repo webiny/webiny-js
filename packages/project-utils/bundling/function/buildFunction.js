@@ -32,7 +32,7 @@ module.exports = async options => {
     const webpack = require("webpack");
 
     return new Promise(async (resolve, reject) => {
-        return webpack(webpackConfig).run(async (err, stats) => {
+        webpack(webpackConfig).run(async (err, stats) => {
             let messages = {};
 
             if (err) {
@@ -41,8 +41,9 @@ module.exports = async options => {
                     warnings: []
                 });
 
-                console.error(messages.errors.join("\n\n"));
-                return reject();
+                const errorMessages = messages.errors.join("\n\n");
+                console.error(errorMessages);
+                return reject(new Error(errorMessages));
             }
 
             if (stats.hasErrors()) {
@@ -62,12 +63,14 @@ module.exports = async options => {
                     messages.errors.length = 1;
                 }
 
-                console.error(messages.errors.join("\n\n"));
-                return reject();
+                const errorMessages = messages.errors.join("\n\n");
+                console.error(errorMessages);
+                reject(new Error(errorMessages));
+                return;
             }
 
             logs && console.log(`Compiled successfully in ${chalk.green(duration()) + "s"}.`);
             resolve();
-        });
+        })
     });
 };

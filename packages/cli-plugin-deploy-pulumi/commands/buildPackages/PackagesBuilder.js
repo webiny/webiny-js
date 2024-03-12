@@ -7,7 +7,6 @@ class PackagesBuilder extends BasePackageBuilder {
     async build() {
         let BuilderClass = ZeroPackagesBuilder;
 
-        this.packages = [this.packages[0]];
         if (this.packages.length === 1) {
             BuilderClass = SinglePackageBuilder;
         } else {
