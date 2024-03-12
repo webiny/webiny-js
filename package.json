@@ -204,6 +204,7 @@
     "@types/jsdom": "link:./typings/void",
     "@types/webpack": "^5.28.0",
     "browserify-sign": "^4.2.2",
+    "@babel/traverse": "^7.24.0",
     "jsdom": "24.0.0",
     "react": "17.0.2",
     "crypto-js": "^4.2.0",
