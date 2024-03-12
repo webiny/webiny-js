@@ -7,10 +7,10 @@
   },
   "dependencies": {
     "@webiny/api-prerendering-service-aws": "0.0.0",
-    "@webiny/api-prerendering-service-so-ddb": "0.0.0",
+    "@webiny/api-prerendering-service-so-ddb": "5.17.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/cli": "0.0.0",
-    "@webiny/handler-aws": "0.0.0",
-    "@webiny/project-utils": "0.0.0"
+    "@webiny/handler-aws": "5.0.0",
+    "@webiny/project-utils": "0.1.0"
   }
 }
