@@ -16,6 +16,7 @@
   "dependencies": {
     "@babel/runtime": "^7.24.0",
     "@commodo/fields": "beta",
+    "@smithy/node-http-handler": "^2.1.6",
     "@webiny/api": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-form-builder": "0.0.0",
@@ -27,6 +28,7 @@
     "@webiny/handler-aws": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/pubsub": "0.0.0",
+    "@webiny/tasks": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
     "archiver": "^7.0.1",

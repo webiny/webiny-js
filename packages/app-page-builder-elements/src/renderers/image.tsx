@@ -24,6 +24,12 @@ export interface ImageRendererComponentProps extends Props, CreateImageParams {}
 
 const SUPPORTED_IMAGE_RESIZE_WIDTHS = [100, 300, 500, 750, 1000, 1500, 2500];
 
+const PbImg = styled.img`
+    max-width: 100%;
+    width: ${props => props.width};
+    height: ${props => props.height};
+`;
+
 export const ImageRendererComponent = ({
     onClick,
     renderEmpty,
@@ -32,31 +38,21 @@ export const ImageRendererComponent = ({
     linkComponent
 }: ImageRendererComponentProps) => {
     const LinkComponent = linkComponent || DefaultLinkComponent;
-
     const { getElement } = useRenderer();
-
     const element = getElement<ImageElementData>();
 
     let content;
     if (element.data?.image?.file?.src) {
-        // Image has its width / height set from its own settings.
-        const PbImg = styled.img({
-            width: element.data.image.width,
-            height: element.data.image.height,
-            maxWidth: "100%"
-        });
-
-        const { title } = element.data.image;
-        const { src } = value || element.data?.image?.file;
+        const { title, width, height, file } = element.data.image;
+        const { src } = value || file;
 
         // If a fixed image width in pixels was set, let's filter out unneeded
         // image resize widths. For example, if 155px was set as the fixed image
         // width, then we want the `srcset` attribute to only contain 100w and 300w.
         let srcSetWidths: number[] = [];
 
-        const imageWidth = element.data.image.width;
-        if (imageWidth && imageWidth.endsWith("px")) {
-            const imageWidthInt = parseInt(imageWidth);
+        if (width && width.endsWith("px")) {
+            const imageWidthInt = parseInt(width);
             for (let i = 0; i < SUPPORTED_IMAGE_RESIZE_WIDTHS.length; i++) {
                 const supportedResizeWidth = SUPPORTED_IMAGE_RESIZE_WIDTHS[i];
                 if (imageWidthInt > supportedResizeWidth) {
@@ -78,7 +74,18 @@ export const ImageRendererComponent = ({
             })
             .join(", ");
 
-        content = <PbImg alt={title} title={title} src={src} srcSet={srcSet} onClick={onClick} />;
+        content = (
+            <PbImg
+                // Image has its width / height set from its own settings.
+                width={width}
+                height={height}
+                alt={title}
+                title={title}
+                src={src}
+                srcSet={srcSet}
+                onClick={onClick}
+            />
+        );
     } else {
         content = renderEmpty || null;
     }
@@ -108,7 +115,7 @@ export const imageRendererOptions: CreateRendererOptions<Props> = {
 export type ImageRenderer = ReturnType<typeof createImage>;
 
 interface Props {
-    onClick?: React.MouseEventHandler<HTMLImageElement>;
+    onClick?: () => void;
     renderEmpty?: React.ReactNode;
     value?: { id: string; src: string };
     link?: { href: string; newTab?: boolean };

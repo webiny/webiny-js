@@ -1,4 +1,3 @@
-import { Reply, Request } from "@webiny/handler/types";
 import {
     Context,
     ITaskDataInput,
@@ -7,6 +6,8 @@ import {
     ITaskResponseDoneResultOutput
 } from "@webiny/tasks/types";
 import { TaskRunner } from "@webiny/tasks/runner";
+import { timerFactory } from "@webiny/tasks/timer";
+import { TaskEventValidation } from "@webiny/tasks/runner/TaskEventValidation";
 
 export interface CreateRunnerParams<
     C extends Context = Context,
@@ -26,20 +27,16 @@ export const createRunner = <
     params: CreateRunnerParams<C, I, O>
 ) => {
     const runner = new TaskRunner(
-        {
-            getRemainingTimeInMillis(): number {
+        params.context,
+        timerFactory({
+            getRemainingTimeInMillis: () => {
                 if (!params.getRemainingTimeInMills) {
                     return 5 * 60 * 1000;
                 }
                 return params.getRemainingTimeInMills();
             }
-        },
-        {} as Request,
-        {} as Reply,
-        /**
-         * We can safely cast because we know that the context is of type tasks/Context
-         */
-        params.context
+        }),
+        new TaskEventValidation()
     );
 
     return (

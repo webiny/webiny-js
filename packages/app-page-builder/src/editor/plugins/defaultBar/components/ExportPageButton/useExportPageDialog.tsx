@@ -12,6 +12,7 @@ import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { ReactComponent as FileDownloadIcon } from "~/editor/assets/icons/file_download_black_24dp.svg";
 import ExportPageLoadingDialogContent from "./ExportPageLoadingDialogContent";
 import useExportPage from "./useExportPage";
+import { PbListPagesWhereInput } from "~/admin/graphql/types";
 
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/exportPageButton");
 
@@ -43,9 +44,19 @@ const spinnerWrapper = css`
     height: 180px;
 `;
 
+const createWhere = (where?: PbListPagesWhereInput, ids?: string[]) => {
+    if (!ids?.length) {
+        return where;
+    }
+    return {
+        ...(where || {}),
+        pid_in: ids
+    };
+};
+
 export interface ExportPagesDialogProps {
     ids?: string[];
-    where?: Record<string, any>;
+    where?: PbListPagesWhereInput;
     sort?: string;
     search?: { query: string };
 }
@@ -56,11 +67,15 @@ const ExportPageLoadingDialogMessage = (props: ExportPagesDialogProps) => {
         exportPageData: { revisionType }
     } = usePageBuilder();
 
+    const { ids, sort, ...variables } = props;
+
     useEffect(() => {
         exportPage({
             variables: {
+                ...variables,
+                where: createWhere(variables.where, ids),
                 revisionType,
-                ...props
+                sort: sort ? [sort] : undefined
             }
         });
     }, []);

@@ -55,6 +55,7 @@
     "postcss-loader": "6.2.1",
     "postcss-normalize": "10.0.1",
     "postcss-preset-env": "9.4.0",
+    "process": "^0.11.10",
     "raw-loader": "4.0.2",
     "react": "17.0.2",
     "react-dev-utils": "12.0.0",
@@ -112,6 +113,7 @@
         "@svgr/webpack",
         "@types/webpack-env",
         "chalk",
+        "process",
         "raw-loader",
         "sass"
       ]

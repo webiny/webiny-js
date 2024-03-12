@@ -13,11 +13,15 @@ export const DialogContainer = () => {
         title,
         loading,
         actions = { cancel: null, accept: { label: "OK" } },
-        style
+        style,
+        onClose
     } = get(ui, "dialog.options", {});
 
     const hideDialog = useCallback(() => {
         ui.setState(ui => ({ ...ui, dialog: null }));
+        if (typeof onClose === "function") {
+            onClose();
+        }
     }, [ui]);
     /**
      * We need this part because message can change while the dialog is opened and in loading state.

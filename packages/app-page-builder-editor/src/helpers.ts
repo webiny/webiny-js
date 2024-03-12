@@ -1,10 +1,11 @@
-import { customAlphabet } from "nanoid";
+import { generateAlphaNumericId } from "@webiny/utils/generateId";
 import { set } from "dot-prop-immutable";
 import omit from "lodash/omit";
 import { PbEditorElement } from "~/types";
 
-const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-export const getNanoid = customAlphabet(ALPHANUMERIC, 10);
+export const getNanoid = () => {
+    return generateAlphaNumericId(10);
+};
 
 type FlattenElementsType = {
     [id: string]: PbEditorElement;
