@@ -33,6 +33,7 @@ export interface IWebsocketsConnectionRegistry {
     ): Promise<IWebsocketsConnectionRegistryData>;
     unregister(event: IWebsocketsConnectionRegistryUnregisterParams): Promise<void>;
 
+    listViaConnections(connections: string[]): Promise<IWebsocketsConnectionRegistryData[]>;
     listViaIdentity(identity: string): Promise<IWebsocketsConnectionRegistryData[]>;
     listViaTenant(tenant: string, locale?: string): Promise<IWebsocketsConnectionRegistryData[]>;
     listAll(): Promise<IWebsocketsConnectionRegistryData[]>;

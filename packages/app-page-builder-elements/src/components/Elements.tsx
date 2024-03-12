@@ -13,10 +13,15 @@ const getElementKey = (
     elementIndex: number,
     parentBlockElement?: ElementType
 ) => {
+    let parts: string[] = [element.id];
+
     if (parentBlockElement) {
-        return `${parentBlockElement.id}-${elementIndex}`;
+        parts = [parentBlockElement.id, elementIndex.toString()];
     }
-    return element.id;
+    // Add element type for easier debugging and more clarity in the profiler.
+    parts.push(element.type);
+
+    return parts.join("-");
 };
 
 export interface ElementsProps {
@@ -68,8 +73,7 @@ export const Elements = (props: ElementsProps) => {
                             parentDocumentElement,
                             isFirstElement: index === 0,
                             isLastElement: index === elements.length - 1,
-                            elementIndex: index,
-                            collection: elements
+                            elementIndex: index
                         }}
                     />
                 );

@@ -47,15 +47,41 @@ export const LIST_CONNECTIONS = /* GraphQL */ `
     }
 `;
 
+/**
+ * Disconnect all connections for a given identity.
+ */
 export interface IDisconnectIdentityConnectionsVariables {
     identityId: string;
+}
+
+export interface IDisconnectIdentityConnectionsResponse {
+    data: {
+        websockets: {
+            disconnectIdentity: {
+                data?: IWebsocketsConnectionRegistryData[];
+                error?: IWebsocketsResponseError;
+            };
+        };
+    };
 }
 
 export const DISCONNECT_IDENTITY_CONNECTIONS = /* GraphQL */ `
     mutation DisconnectIdentityConnections($identityId: String!) {
         websockets {
             disconnectIdentity(identityId: $identityId) {
-                data
+                data {
+                    connectionId
+                    domainName
+                    stage
+                    identity {
+                        id
+                        type
+                        displayName
+                    }
+                    connectedOn
+                    tenant
+                    locale
+                }
                 error {
                     message
                     code
@@ -66,16 +92,19 @@ export const DISCONNECT_IDENTITY_CONNECTIONS = /* GraphQL */ `
     }
 `;
 
+/**
+ * Disconnect all connections for a given tenant / locale.
+ */
 export interface IDisconnectTenantConnectionsVariables {
     tenant: string;
     locale?: string;
 }
 
-export interface IDisconnectConnectionsResponse {
+export interface IDisconnectTenantConnectionsResponse {
     data: {
         websockets: {
-            disconnectConnection: {
-                data?: boolean;
+            disconnectTenant: {
+                data?: IWebsocketsConnectionRegistryData[];
                 error?: IWebsocketsResponseError;
             };
         };
@@ -86,7 +115,19 @@ export const DISCONNECT_TENANT_CONNECTIONS = /* GraphQL */ `
     mutation DisconnectIdentityConnections($tenant: String!, $locale: String) {
         websockets {
             disconnectTenant(tenant: $tenant, locale: $locale) {
-                data
+                data {
+                    connectionId
+                    domainName
+                    stage
+                    identity {
+                        id
+                        type
+                        displayName
+                    }
+                    connectedOn
+                    tenant
+                    locale
+                }
                 error {
                     message
                     code
@@ -97,11 +138,83 @@ export const DISCONNECT_TENANT_CONNECTIONS = /* GraphQL */ `
     }
 `;
 
+/**
+ * Disconnect a single connection.
+ */
+export interface IDisconnectConnectionVariables {
+    connections: string[];
+}
+
+export interface IDisconnectConnectionResponse {
+    data: {
+        websockets: {
+            disconnect: {
+                data?: IWebsocketsConnectionRegistryData[];
+                error?: IWebsocketsResponseError;
+            };
+        };
+    };
+}
+
+export const DISCONNECT_CONNECTIONS = /* GraphQL */ `
+    mutation DisconnectConnections($connections: [String!]!) {
+        websockets {
+            disconnect(connections: $connections) {
+                data {
+                    connectionId
+                    domainName
+                    stage
+                    identity {
+                        id
+                        type
+                        displayName
+                    }
+                    connectedOn
+                    tenant
+                    locale
+                }
+                error {
+                    message
+                    code
+                    data
+                }
+            }
+        }
+    }
+`;
+
+/**
+ * Disconnect all connections.
+ */
+
+export interface IDisconnectAllConnectionsResponse {
+    data: {
+        websockets: {
+            disconnectAll: {
+                data?: IWebsocketsConnectionRegistryData[];
+                error?: IWebsocketsResponseError;
+            };
+        };
+    };
+}
+
 export const DISCONNECT_ALL_CONNECTIONS = /* GraphQL */ `
     mutation DisconnectAllConnections {
         websockets {
             disconnectAll {
-                data
+                data {
+                    connectionId
+                    domainName
+                    stage
+                    identity {
+                        id
+                        type
+                        displayName
+                    }
+                    connectedOn
+                    tenant
+                    locale
+                }
                 error {
                     message
                     code

@@ -26,6 +26,7 @@ import { FileManagerContext } from "@webiny/api-file-manager/types";
 
 // CRUD types.
 export interface ListPagesParamsWhere {
+    pid_in?: string[];
     category?: string;
     status?: string;
     tags?: { query: string[]; rule?: "any" | "all" };

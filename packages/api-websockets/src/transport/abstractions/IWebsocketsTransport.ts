@@ -20,9 +20,16 @@ export type IWebsocketsTransportSendConnection = Pick<
     "connectionId" | "domainName" | "stage"
 >;
 
+export type IWebsocketsTransportDisconnectConnection = Pick<
+    IWebsocketsConnectionRegistryData,
+    "connectionId" | "domainName" | "stage"
+>;
+
 export interface IWebsocketsTransport {
     send<T extends GenericRecord = GenericRecord>(
         connections: IWebsocketsTransportSendConnection[],
         data: IWebsocketsTransportSendData<T>
     ): Promise<void>;
+
+    disconnect(connections: IWebsocketsTransportDisconnectConnection[]): Promise<void>;
 }

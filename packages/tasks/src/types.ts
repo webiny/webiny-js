@@ -1,6 +1,7 @@
 import {
     CmsContext as BaseContext,
     CmsEntryListParams,
+    CmsEntryListWhere,
     CmsEntryMeta,
     CmsModel,
     CmsModelField
@@ -13,8 +14,10 @@ import {
     ITaskResponseResult
 } from "~/response/abstractions";
 import { ITaskManagerStore } from "./runner/abstractions";
-import { EventBridgeClientSendResponse } from "@webiny/aws-sdk/client-eventbridge";
+import { PutEventsCommandOutput } from "@webiny/aws-sdk/client-eventbridge";
 import { SecurityPermission } from "@webiny/api-security/types";
+
+export { PutEventsCommandOutput };
 
 export * from "./handler/types";
 export * from "./response/abstractions";
@@ -101,12 +104,15 @@ export interface ITask<
     createdBy: ITaskIdentity;
     startedOn?: string;
     finishedOn?: string;
-    eventResponse: EventBridgeClientSendResponse | undefined;
+    eventResponse: PutEventsCommandOutput | undefined;
     iterations: number;
     parentId?: string;
 }
 
-export type IGetTaskResponse<T = any> = ITask<T> | null;
+export type IGetTaskResponse<
+    T = any,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> = ITask<T, O> | null;
 
 export interface IListTasksResponse<
     T = any,
@@ -121,12 +127,45 @@ export interface IListTaskLogsResponse {
     meta: CmsEntryMeta;
 }
 
-export type ICreateTaskResponse<T = any> = ITask<T>;
-export type IUpdateTaskResponse<T = any> = ITask<T>;
+export type ICreateTaskResponse<
+    T = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> = ITask<T, O>;
+export type IUpdateTaskResponse<
+    T = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> = ITask<T, O>;
 export type IDeleteTaskResponse = boolean;
 
-export type IListTaskParams = Omit<CmsEntryListParams, "fields" | "search">;
-export type IListTaskLogParams = Omit<CmsEntryListParams, "fields" | "search">;
+export interface IListTaskParams extends Omit<CmsEntryListParams, "fields" | "search"> {
+    where?: CmsEntryListWhere & {
+        parentId?: string;
+        parentId_not?: string;
+        parentId_in?: string[];
+        parentId_not_in?: string[];
+        definitionId?: string;
+        definitionId_not?: string;
+        definitionId_in?: string[];
+        definitionId_not_in?: string[];
+        taskStatus?: string;
+        taskStatus_not?: string;
+        taskStatus_in?: string[];
+        taskStatus_not_in?: string[];
+    };
+}
+export interface IListTaskLogParams extends Omit<CmsEntryListParams, "fields" | "search"> {
+    where?: CmsEntryListWhere & {
+        task?: string;
+        task_in?: string[];
+        task_not?: string;
+        iteration?: number;
+        iteration_not?: number;
+        iteration_gte?: number;
+        iteration_gt?: number;
+        iteration_lte?: number;
+        iteration_lt?: number;
+    };
+}
 
 export interface ITaskCreateData<T = ITaskDataInput> {
     definitionId: string;
@@ -146,7 +185,7 @@ export interface ITaskUpdateData<
     executionName?: string;
     startedOn?: string;
     finishedOn?: string;
-    eventResponse?: Record<string, any>;
+    eventResponse?: PutEventsCommandOutput;
     iterations?: number;
 }
 
@@ -183,36 +222,42 @@ export interface ITaskLogCreateInput {
 }
 
 export interface ITaskLogUpdateInput {
-    items: ITaskLogItem[];
+    items?: ITaskLogItem[];
 }
 
 export interface ITasksContextCrudObject {
     /**
      * Models
      */
-    getTaskModel: () => Promise<CmsModel>;
-    getLogModel: () => Promise<CmsModel>;
+    getTaskModel(): Promise<CmsModel>;
+    getLogModel(): Promise<CmsModel>;
     /**
      * Tasks
      */
-    getTask: <T = any>(id: string) => Promise<IGetTaskResponse<T> | null>;
-    listTasks: <T = any, O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
+    getTask<T = any, O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
+        id: string
+    ): Promise<IGetTaskResponse<T, O> | null>;
+    listTasks<T = any, O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
         params?: IListTaskParams
-    ) => Promise<IListTasksResponse<T, O>>;
-    createTask: <T = any>(task: ITaskCreateData<T>) => Promise<ICreateTaskResponse<T>>;
-    updateTask: <T = any>(
+    ): Promise<IListTasksResponse<T, O>>;
+    createTask<T = any>(task: ITaskCreateData<T>): Promise<ICreateTaskResponse<T>>;
+    updateTask<
+        T = ITaskDataInput,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(
         id: string,
-        data: Partial<ITaskUpdateData<T>>
-    ) => Promise<IUpdateTaskResponse<T>>;
-    deleteTask: (id: string) => Promise<IDeleteTaskResponse>;
+        data: Partial<ITaskUpdateData<T, O>>
+    ): Promise<IUpdateTaskResponse<T, O>>;
+    deleteTask(id: string): Promise<IDeleteTaskResponse>;
     /**
      * Logs
      */
-    createLog: (task: Pick<ITask, "id">, data: ITaskLogCreateInput) => Promise<ITaskLog>;
-    updateLog: (id: string, data: ITaskLogUpdateInput) => Promise<ITaskLog>;
-    getLog: (id: string) => Promise<ITaskLog | null>;
-    getLatestLog: (taskId: string) => Promise<ITaskLog>;
-    listLogs: (params: IListTaskLogParams) => Promise<IListTaskLogsResponse>;
+    createLog(task: Pick<ITask, "id">, data: ITaskLogCreateInput): Promise<ITaskLog>;
+    updateLog(id: string, data: ITaskLogUpdateInput): Promise<ITaskLog>;
+    deleteLog(id: string): Promise<boolean>;
+    getLog(id: string): Promise<ITaskLog | null>;
+    getLatestLog(taskId: string): Promise<ITaskLog>;
+    listLogs(params: IListTaskLogParams): Promise<IListTaskLogsResponse>;
     /**
      * Lifecycle events.
      */
@@ -233,14 +278,12 @@ export interface ITasksContextDefinitionObject {
     listDefinitions: () => ITaskDefinition[];
 }
 
-/**
- * TODO: implement delayed trigger
- */
 export interface ITaskTriggerParams<I = ITaskDataInput> {
     parent?: ITask;
     definition: string;
     name?: string;
     input?: I;
+    delay?: number;
 }
 
 export interface ITaskAbortParams {
@@ -270,13 +313,13 @@ export interface ITaskRunParams<
 > {
     context: C;
     response: ITaskResponse<I, O>;
-    isCloseToTimeout: (seconds?: number) => boolean;
-    isAborted: () => boolean;
+    isCloseToTimeout(seconds?: number): boolean;
+    isAborted(): boolean;
     input: I;
     store: ITaskManagerStore<I>;
-    trigger: <SI = ITaskDataInput>(
+    trigger<SI = ITaskDataInput>(
         params: Omit<ITaskTriggerParams<SI>, "parent">
-    ) => Promise<ITask<SI>>;
+    ): Promise<ITask<SI>>;
 }
 
 export interface ITaskOnSuccessParams<C extends Context, I = ITaskDataInput> {
@@ -323,7 +366,7 @@ export type ITaskDefinitionField = Pick<
 
 export interface ITaskBeforeTriggerParams<C extends Context = Context, I = ITaskDataInput> {
     context: C;
-    input: I;
+    data: ITaskCreateData<I>;
 }
 
 export interface ITaskDefinition<
@@ -354,32 +397,32 @@ export interface ITaskDefinition<
     /**
      * Task run method.
      */
-    run: (params: ITaskRunParams<C, I, O>) => Promise<ITaskResponseResult>;
+    run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult>;
     /**
      * When a new task is about to be triggered, we will run this method.
      * For example, you can use this method to check if there is a task of the same type already running.
      */
-    onBeforeTrigger?: <T = ITaskDataInput>(params: ITaskBeforeTriggerParams<C, T>) => Promise<void>;
+    onBeforeTrigger?<T = ITaskDataInput>(params: ITaskBeforeTriggerParams<C, T>): Promise<void>;
     /**
      * When task successfully finishes, this method will be called.
      * This will be called during the run time of the task.
      */
-    onDone?: (params: ITaskOnSuccessParams<C, I>) => Promise<void>;
+    onDone?(params: ITaskOnSuccessParams<C, I>): Promise<void>;
     /**
      * When task fails, this method will be called.
      * This will be called during the run time of the task.
      */
-    onError?: (params: ITaskOnErrorParams<C, I>) => Promise<void>;
+    onError?(params: ITaskOnErrorParams<C, I>): Promise<void>;
     /**
      * When task is aborted, this method will be called.
      * This method will be called when user aborts the task.
      */
-    onAbort?: (params: ITaskOnAbortParams<C>) => Promise<void>;
+    onAbort?(params: ITaskOnAbortParams<C>): Promise<void>;
     /**
      * When task hits max iterations, this method will be called.
      * This will be called during the run time of the task.
      */
-    onMaxIterations?: (params: ITaskOnMaxIterationsParams<C>) => Promise<void>;
+    onMaxIterations?(params: ITaskOnMaxIterationsParams<C>): Promise<void>;
     /**
      * Custom input fields and layout for the task input.
      */

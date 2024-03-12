@@ -13,14 +13,14 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.23.9",
+    "@babel/runtime": "^7.24.0",
     "@webiny/handler": "0.0.0",
     "node-fetch": "^2.6.13"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.23.9",
-    "@babel/preset-env": "^7.23.9",
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
     "@babel/preset-typescript": "^7.23.3",
     "@types/node-fetch": "^2.6.1",
     "@webiny/cli": "0.0.0",

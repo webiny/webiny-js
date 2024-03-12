@@ -80,6 +80,13 @@ export class ReindexingTaskRunner {
                     if (isIndexAllowed(item.index) === false) {
                         continue;
                     }
+                    const exists = await this.indexManager.indexExists(item.index);
+                    if (!exists) {
+                        await this.manager.store.addInfoLog({
+                            message: `Index "${item.index}" does not exist. Skipping the item.`
+                        });
+                        continue;
+                    }
                     /**
                      * Is there a possibility that entityName does not exist? What do we do at that point?
                      */

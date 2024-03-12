@@ -8,6 +8,7 @@ export interface ITaskEventInput {
     locale: string;
     webinyTaskId: string;
     webinyTaskDefinitionId: string;
+    delay?: number;
 }
 
 export interface ITaskEvent {
@@ -18,4 +19,8 @@ export interface ITaskEvent {
     webinyTaskDefinitionId: string;
     executionName: string;
     stateMachineId: string;
+}
+
+export interface ITaskRawEvent extends ITaskEvent {
+    delay?: number;
 }
