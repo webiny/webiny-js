@@ -12,6 +12,7 @@ export class ListEntriesOperationLatest implements IListEntriesOperation {
         const where = { ...params.where, latest: true };
 
         return await this.listEntries.execute(model, {
+            sort: ["createdOn_DESC"],
             ...params,
             where
         });
