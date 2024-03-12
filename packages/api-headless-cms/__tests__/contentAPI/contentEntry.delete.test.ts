@@ -279,6 +279,96 @@ describe("delete entries", () => {
         });
 
         /**
+         * Let's try to create from, update, publish, unpublish and move the entry.
+         */
+        const [createFromResponse] = await manager.createCategoryFrom({
+            revision: categoryToDelete.entryId,
+            data: {
+                title: "Create from title"
+            }
+        });
+        expect(createFromResponse).toMatchObject({
+            data: {
+                createCategoryFrom: {
+                    data: null,
+                    error: {
+                        code: "NOT_FOUND",
+                        data: null,
+                        message: expect.any(String)
+                    }
+                }
+            }
+        });
+
+        const [updateResponse] = await manager.updateCategory({
+            revision: categoryToDelete.entryId,
+            data: {
+                title: "Updated title"
+            }
+        });
+        expect(updateResponse).toMatchObject({
+            data: {
+                updateCategory: {
+                    data: null,
+                    error: {
+                        code: "NOT_FOUND",
+                        data: null,
+                        message: expect.any(String)
+                    }
+                }
+            }
+        });
+
+        const [publishResponse] = await manager.publishCategory({
+            revision: categoryToDelete.id
+        });
+        expect(publishResponse).toMatchObject({
+            data: {
+                publishCategory: {
+                    data: null,
+                    error: {
+                        code: "NOT_FOUND",
+                        data: null,
+                        message: expect.any(String)
+                    }
+                }
+            }
+        });
+
+        const [unpublishResponse] = await manager.unpublishCategory({
+            revision: categoryToDelete.id
+        });
+        expect(unpublishResponse).toMatchObject({
+            data: {
+                unpublishCategory: {
+                    data: null,
+                    error: {
+                        code: "NOT_FOUND",
+                        data: null,
+                        message: expect.any(String)
+                    }
+                }
+            }
+        });
+
+        const [moveResponse] = await manager.moveCategory({
+            revision: categoryToDelete.id,
+            folderId: "any-id"
+        });
+        expect(moveResponse).toMatchObject({
+            data: {
+                moveCategory: {
+                    data: null,
+                    error: {
+                        code: "NOT_FOUND",
+                        data: null,
+                        message: expect.any(String)
+                    }
+                }
+            }
+        });
+
+        /**
          * Let's try repeat the operation, trying to mark it as deleted again.
          */
         const [deleteAgainResponse] = await manager.deleteCategory({
