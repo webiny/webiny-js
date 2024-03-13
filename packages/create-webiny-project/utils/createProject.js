@@ -11,6 +11,7 @@ const getPackageJson = require("./getPackageJson");
 const validateProjectName = require("./validateProjectName");
 const yaml = require("js-yaml");
 const findUp = require("find-up");
+const GracefulError = require("./GracefulError");
 
 const NOT_APPLICABLE = gray("N/A");
 
@@ -268,14 +269,23 @@ module.exports = async function createProject({
 
         await sendEvent({ event: "create-webiny-project-end" });
     } catch (err) {
-        await sendEvent({
-            event: "create-webiny-project-error",
-            properties: {
-                errorMessage: err.message,
-                errorStack: err.stack
-            }
-        });
-
+        if (err instanceof GracefulError) {
+            await sendEvent({
+                event: "create-webiny-project-error-graceful",
+                properties: {
+                    errorMessage: err.message,
+                    errorStack: err.stack
+                }
+            });
+        } else {
+            await sendEvent({
+                event: "create-webiny-project-error",
+                properties: {
+                    errorMessage: err.message,
+                    errorStack: err.stack
+                }
+            });
+        }
         const node = process.versions.node;
         const os = process.platform;
 
