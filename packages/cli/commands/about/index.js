@@ -10,6 +10,18 @@ const getData = async context => {
 
     const [pulumiVersion, pulumiAwsVersion] = await getPulumiVersions();
 
+    const wcpProjectId = process.env.WCP_PROJECT_ID;
+    const wcpUser = await getUser()
+        .catch(() => "N/A")
+        .then(res => res.email);
+
+    let wcpAuth = "N/A";
+    if (wcpUser !== "N/A") {
+        wcpAuth = process.env.WEBINY_PROJECT_ENVIRONMENT_API_KEY
+            ? "Project Environment API Key"
+            : "Personal Access Token";
+    }
+
     return [
         {
             sectionName: "Webiny Project",
@@ -24,13 +36,9 @@ const getData = async context => {
         {
             sectionName: "Webiny Control Panel (WCP)",
             data: {
-                "Project ID": context.project.config.id || process.env.WCP_PROJECT_ID,
-                User: await getUser()
-                    .catch(() => "N/A")
-                    .then(res => res.email),
-                Authentication: process.env.WEBINY_PROJECT_ENVIRONMENT_API_KEY
-                    ? "Project Environment API Key"
-                    : "Personal Access Token"
+                "Project ID": wcpProjectId,
+                User: wcpUser,
+                Authentication: wcpAuth
             }
         },
         {
