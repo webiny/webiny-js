@@ -9,14 +9,14 @@ import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorizatio
 import cognitoAuthentication, { syncWithCognito } from "@webiny/api-security-cognito";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
 import tenantLinkAuthorization from "@webiny/api-security/plugins/tenantLinkAuthorization";
-import createAdminUssersApp from "@webiny/api-admin-users";
+import createAdminUsersApp from "@webiny/api-admin-users";
 import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-so-ddb";
 
 export default ({ documentClient }: { documentClient: DynamoDBClient }) => [
     /**
      * Create Tenancy app in the `context`.
      */
-    createTenancyContext1({
+    createTenancyContext({
         storageOperations: tenancyStorageOperations({ documentClient })
     }),
 
