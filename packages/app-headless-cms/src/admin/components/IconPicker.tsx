@@ -247,8 +247,9 @@ export const IconPicker = ({
                 {
                     /**
                      * Unfortunately we need to cast for build to pass.
-                     * This will get removed soon.
-                     * TODO: @bruno
+                     *
+                     * real type is RenderableMenuChildren, but the TS is complaining.
+                     * @TODO bruno fix
                      */
                     mustRenderGrid && (renderGrid as unknown as React.ReactNode)
                 }
