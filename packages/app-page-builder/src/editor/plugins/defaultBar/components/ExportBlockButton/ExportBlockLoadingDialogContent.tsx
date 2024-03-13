@@ -4,9 +4,9 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
 import {
-    GET_PAGE_IMPORT_EXPORT_TASK,
-    GetPageImportExportSubTaskResponse
-} from "~/admin/graphql/pageImportExport.gql";
+    GET_BLOCK_IMPORT_EXPORT_TASK,
+    GetBlockImportExportTaskResponse
+} from "~/admin/graphql/blockImportExport.gql";
 import { LoadingDialog } from "~/editor/plugins/defaultBar/components/ImportButton/styledComponents";
 import ProgressBar from "~/editor/plugins/defaultBar/components/ImportButton/ProgressBar";
 import useExportBlockDialog from "./useExportBlockDialog";
@@ -37,7 +37,7 @@ const ExportBlockLoadingDialogContent = ({ taskId }: ExportBlockLoadingDialogCon
     const { showSnackbar } = useSnackbar();
     const { showExportBlockContentDialog } = useExportBlockDialog();
 
-    const { data } = useQuery<GetPageImportExportSubTaskResponse>(GET_PAGE_IMPORT_EXPORT_TASK, {
+    const { data } = useQuery<GetBlockImportExportTaskResponse>(GET_BLOCK_IMPORT_EXPORT_TASK, {
         variables: {
             id: taskId
         },
@@ -47,28 +47,25 @@ const ExportBlockLoadingDialogContent = ({ taskId }: ExportBlockLoadingDialogCon
         notifyOnNetworkStatusChange: true
     });
 
-    const pollExportBlockTaskStatus = useCallback(
-        (response: GetPageImportExportSubTaskResponse) => {
-            const { error, data } = response.pageBuilder.getImportExportTask || {};
-            if (error) {
-                showSnackbar(error.message);
-                return;
-            }
+    const pollExportBlockTaskStatus = useCallback((response: GetBlockImportExportTaskResponse) => {
+        const { error, data } = response.pageBuilder.getImportExportTask || {};
+        if (error) {
+            showSnackbar(error.message);
+            return;
+        }
 
-            // Handler failed task
-            if (data && data.status === "failed") {
-                setCompleted(true);
-                showSnackbar("Error: Failed to export blocks!");
-                setError(data.error);
-            }
+        // Handler failed task
+        if (data && data.status === "failed") {
+            setCompleted(true);
+            showSnackbar("Error: Failed to export blocks!");
+            setError(data.error);
+        }
 
-            if (data && data.status === "completed") {
-                setCompleted(true);
-                showExportBlockContentDialog({ exportUrl: data.data.url });
-            }
-        },
-        []
-    );
+        if (data && data.status === "completed") {
+            setCompleted(true);
+            showExportBlockContentDialog({ exportUrl: data.data.url });
+        }
+    }, []);
 
     useEffect(() => {
         if (!data) {
