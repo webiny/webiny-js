@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { FileManager, SingleImageUploadProps } from "@webiny/app-admin";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
-import pick from "lodash/pick";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { ImageRendererComponent } from "@webiny/app-page-builder-elements/renderers/image";
 import { AddImageIconWrapper, AddImageWrapper } from "@webiny/ui/ImageUpload/styled";
@@ -33,18 +32,19 @@ const PeImage = createRenderer(() => {
 
     const onChange = useCallback<NonNullable<SingleImageUploadProps["onChange"]>>(
         file => {
+            const elementClone = structuredClone(element);
+            if (file) {
+                const { id, src } = file;
+                elementClone.data.image = {
+                    ...elementClone.data.image,
+                    file: { id, src },
+                    htmlTag: "auto"
+                };
+            }
+
             handler.trigger(
                 new UpdateElementActionEvent({
-                    element: {
-                        ...element,
-                        data: {
-                            ...element.data,
-                            image: {
-                                ...(element.data.image || {}),
-                                file: file ? pick(file, ["id", "src"]) : undefined
-                            }
-                        }
-                    },
+                    element: elementClone,
                     history: true
                 })
             );
