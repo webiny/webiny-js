@@ -17875,6 +17875,7 @@ __metadata:
     lodash: ^4.17.20
     open: ^8.4.0
     write-json-file: 4.3.0
+    yesno: ^0.4.0
   languageName: unknown
   linkType: soft
 
@@ -47194,6 +47195,13 @@ __metadata:
     buffer-crc32: ~0.2.3
     fd-slicer: ~1.1.0
   checksum: 7f21fe0bbad6e2cb130044a5d1d0d5a0e5bf3d8d4f8c4e6ee12163ce798fee3de7388d22a7a0907f563ac5f9d40f8699a223d3d5c1718da90b0156da6904022b
+  languageName: node
+  linkType: hard
+
+"yesno@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "yesno@npm:0.4.0"
+  checksum: d5e7bc2ef8f8019f111dd82526c3d02f288e1b03ba5afa483140c1a98db9834589d0e07d9d1b14321489f727ceb0af0013d4b224b49dd10405743872e5ddd109
   languageName: node
   linkType: hard
 

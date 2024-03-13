@@ -8,6 +8,7 @@ const writeJsonFile = require("write-json-file");
 const loadJsonFile = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
 const { green, yellow } = require("chalk");
+const yesno = require("yesno");
 
 const IS_TEST = process.env.NODE_ENV === "test";
 
@@ -129,7 +130,7 @@ const setup = async args => {
         // Install dependencies.
         const options = {
             cwd: projectRoot,
-            maxBuffer: "500_000_000",
+            maxBuffer: "500_000_000"
         };
 
         try {
@@ -142,6 +143,18 @@ const setup = async args => {
     }
 
     if (!IS_TEST) {
+        const ok = await yesno({
+            question:
+                "Start deploying brah?",
+            defaultValue: true
+        });
+
+        if (ok) {
+            await execa("yarn", ["webiny", "deploy"], {
+                cwd: projectRoot
+            });
+        } else {
+
         console.log(
             [
                 "",
@@ -163,6 +176,7 @@ const setup = async args => {
                 "🚀 Happy coding!"
             ].join("\n")
         );
+    }
     }
 };
 

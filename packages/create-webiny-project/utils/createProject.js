@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { yellow, red, green, gray } = require("chalk");
+const { yellow, red, green, gray, bold } = require("chalk");
 const execa = require("execa");
 const fs = require("fs-extra");
 const Listr = require("listr");
@@ -11,9 +11,10 @@ const getPackageJson = require("./getPackageJson");
 const validateProjectName = require("./validateProjectName");
 const yaml = require("js-yaml");
 const findUp = require("find-up");
-const GracefulError = require("./GracefulError");
+const { GracefulError } = require("./GracefulError");
 
 const NOT_APPLICABLE = gray("N/A");
+const HL = bold(gray("—")).repeat(30);
 
 const sleep = () =>
     new Promise(resolve => {
@@ -128,7 +129,7 @@ module.exports = async function createProject({
             },
             {
                 // Setup yarn
-                title: "Setup yarn",
+                title: "Setup Yarn",
                 task: async () => {
                     const yarnVersion = "3.6.4";
                     const yarnFile = `yarn-${yarnVersion}.cjs`;
@@ -332,12 +333,12 @@ module.exports = async function createProject({
         console.log(
             [
                 "",
-                `${green("ERROR OUTPUT: ")}`,
-                "----------------------------------------",
+                `${bold("Error Logs")}`,
+                HL,
                 err.message,
                 "",
-                `${green("SYSTEM INFORMATION: ")}`,
-                "----------------------------------------",
+                `${bold("System Information")}`,
+                HL,
                 `create-webiny-project: ${cwp}`,
                 `Operating System: ${os}`,
                 `Node: ${node}`,
@@ -356,10 +357,10 @@ module.exports = async function createProject({
         console.log(`Writing logs to ${green(path.resolve(log))}...`);
         fs.writeFileSync(path.resolve(log), err.toString());
 
+        console.log();
         if (cleanup) {
-            console.log("Cleaning up generated files and folders...");
+            console.log("Deleting created files and folders...");
             rimraf.sync(projectRoot);
-            console.log("Done.");
         } else {
             console.log("Project cleanup skipped.");
         }
