@@ -1,9 +1,9 @@
 import React from "react";
 import {
     Menu as BaseMenu,
-    MenuProps as RmwcMenuProps,
     MenuItem as BaseMenuItem,
     MenuItemProps as BaseMenuItemProps,
+    MenuProps as RmwcMenuProps,
     MenuSurface,
     MenuSurfaceAnchor
 } from "@rmwc/menu";
@@ -103,13 +103,17 @@ class Menu extends React.Component<MenuProps, MenuState> {
 
     private readonly renderCustomContent = () => {
         const { children, render } = this.props;
+
+        const renderer = render || children;
         return (
             <MenuSurface
                 open={this.state.menuIsOpen}
                 onClose={this.closeMenu}
                 renderToPortal={this.props.renderToPortal}
             >
-                {typeof render === "function" ? render({ closeMenu: this.closeMenu }) : children}
+                {typeof renderer === "function"
+                    ? renderer({ closeMenu: this.closeMenu })
+                    : renderer}
             </MenuSurface>
         );
     };
