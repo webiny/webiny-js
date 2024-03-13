@@ -16,7 +16,7 @@
     "@apollo/react-hooks": "^3.1.5",
     "@babel/runtime": "^7.24.0",
     "@emotion/styled": "^11.10.6",
-    "@types/react": "18.2.54",
+    "@types/react": "18.2.65",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/plugins": "0.0.0",
