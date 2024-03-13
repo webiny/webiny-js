@@ -16,7 +16,7 @@
     "@babel/runtime": "^7.24.0",
     "accounting": "^0.4.1",
     "fecha": "^2.3.3",
-    "lodash": "4.17.21",
+    "lodash": "^4.17.21",
     "short-hash": "^1.0.0",
     "yargs": "^17.6.2"
   },

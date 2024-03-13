@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.24.0",
-    "@types/react": "18.2.54",
+    "@types/react": "18.2.65",
     "@webiny/react-composition": "0.0.0",
     "nanoid": "^3.3.7",
     "react": "18.2.0"
