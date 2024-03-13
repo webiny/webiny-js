@@ -58,3 +58,5 @@ export { AaclPermission } from "@webiny/app-wcp/types";
 
 // Theme
 export { useTheme, ThemeProvider } from "@webiny/app-theme";
+
+export * from "@webiny/app/renderApp";
