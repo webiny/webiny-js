@@ -11,17 +11,34 @@ const sendEvent = async ({ event, user, version, properties }) => {
 
     const wts = new WTS();
 
+    const wcpProperties = {};
+    const [wcpOrgId, wcpProjectId] = getWcpOrgProjectId();
+    if (wcpOrgId && wcpProjectId) {
+        wcpProperties.wcpOrgId = wcpOrgId;
+        wcpProperties.wcpProjectId = wcpProjectId;
+    }
+
     return baseSendEvent({
         event,
         user: user || globalConfig.get("id"),
         properties: {
             ...properties,
+            ...wcpProperties,
             version: version || require("./package.json").version,
             ci: isCI,
             newUser: Boolean(globalConfig.get("newUser"))
         },
         wts
     });
+};
+
+const getWcpOrgProjectId = () => {
+    // In CLI, WCP project ID is stored in the `WCP_PROJECT_ID` environment variable.
+    const id = process.env.WCP_PROJECT_ID;
+    if (typeof id === "string") {
+        return id.split("/");
+    }
+    return [];
 };
 
 const enable = () => {

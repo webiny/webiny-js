@@ -24,6 +24,15 @@ if (yargs.argv.env) {
     paths.push(path.join(project.root, `.env.${yargs.argv.env}`));
 }
 
+// If the `WCP_PROJECT_ID` environment variable is not set already, we check if there's
+// a WCP project ID set via the `webiny.project.ts` config file. If so, we assign it
+// to the `WCP_PROJECT_ID` environment variable.
+if (!process.env.WCP_PROJECT_ID) {
+    if (project.config.id) {
+        process.env.WCP_PROJECT_ID = project.config.id;
+    }
+}
+
 // Let's load environment variables
 for (let i = 0; i < paths.length; i++) {
     const path = paths[i];
