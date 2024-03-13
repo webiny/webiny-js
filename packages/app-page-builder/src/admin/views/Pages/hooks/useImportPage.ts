@@ -29,48 +29,51 @@ const useImportPage = ({
     const { showImportPageDialog } = useImportPageDialog();
     const { showImportPageLoadingDialog } = useImportPageLoadingDialog();
 
-    const importPageMutation = useCallback(async (
-        { slug: category }: PbCategory,
-        zipFileUrl: string,
-        folderId: string | undefined
-    ) => {
-        try {
-            setLoading();
-            const response = await importPage({
-                variables: {
-                    category,
-                    zipFileUrl,
-                    meta: {
-                        location: {
-                            folderId
+    const importPageMutation = useCallback(
+        async (
+            { slug: category }: PbCategory,
+            zipFileUrl: string,
+            folderId: string | undefined
+        ) => {
+            try {
+                setLoading();
+                const response = await importPage({
+                    variables: {
+                        category,
+                        zipFileUrl,
+                        meta: {
+                            location: {
+                                folderId
+                            }
                         }
                     }
+                });
+
+                clearLoading();
+                closeDialog();
+
+                if (!response.data?.pageBuilder?.importPages) {
+                    showSnackbar("Missing response from the page import mutation.");
+                    return;
                 }
-            });
+                const { error, data } = response.data.pageBuilder.importPages;
+                if (error) {
+                    showSnackbar(error.message);
+                    return;
+                } else if (!data) {
+                    showSnackbar("Missing data from the page import mutation.");
+                    return;
+                }
 
-            clearLoading();
-            closeDialog();
-
-            if (!response.data?.pageBuilder?.importPages) {
-                showSnackbar("Missing response from the page import mutation.");
-                return;
+                showImportPageLoadingDialog({
+                    taskId: data.task.id
+                });
+            } catch (e) {
+                showSnackbar(e.message);
             }
-            const { error, data } = response.data.pageBuilder.importPages;
-            if (error) {
-                showSnackbar(error.message);
-                return;
-            } else if (!data) {
-                showSnackbar("Missing data from the page import mutation.");
-                return;
-            }
-
-            showImportPageLoadingDialog({
-                taskId: data.task.id
-            });
-        } catch (e) {
-            showSnackbar(e.message);
-        }
-    }, []);
+        },
+        []
+    );
 
     const showDialog = useCallback(
         (category: PbCategory) => {
