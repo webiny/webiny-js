@@ -20,7 +20,7 @@
     "@webiny/react-properties": "0.0.0",
     "lexical": "0.12.2",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
     "@webiny/cli": "0.0.0",
