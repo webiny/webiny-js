@@ -7,6 +7,7 @@ const {
 const { sendEvent } = require("@webiny/cli/utils");
 const sleep = require("../utils/sleep");
 const deployCommand = require("@webiny/cli-plugin-deploy-pulumi/commands/deploy");
+const open = require("open");
 
 const deploy = (appName, inputs, context) => {
     return deployCommand(
@@ -99,6 +100,7 @@ module.exports = async (inputs, context) => {
 
         console.log();
         if (isFirstDeployment) {
+            open(outputs.apps.admin.appUrl);
             console.log(
                 [
                     `Congratulations! You've just deployed a brand new project (${green(
