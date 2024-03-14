@@ -9,6 +9,7 @@ const loadJsonFile = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
 const { green, yellow, bold } = require("chalk");
 const yesno = require("yesno");
+const ora = require("ora");
 
 const IS_TEST = process.env.NODE_ENV === "test";
 
@@ -134,14 +135,16 @@ const setup = async args => {
             maxBuffer: "500_000_000"
         };
 
+        const spinner = ora("Installing packages...").start();
         try {
             const subprocess = execa("yarn", [], options);
-
-            subprocess.stdout.pipe(process.stdout);
-            subprocess.stderr.pipe(process.stderr);
-
             await subprocess;
+            spinner.succeed("Packages installed successfully.");
         } catch (e) {
+            spinner.fail("Failed to install packages.");
+
+            console.log(e.message);
+
             throw new Error(
                 "Failed while installing project dependencies. Please check the above Yarn logs for more information."
             );
@@ -149,17 +152,21 @@ const setup = async args => {
     }
 
     if (!IS_TEST) {
-        console.log(`🎉 Your new Webiny project ${green(projectName)} has been created and is ready to be deployed for the first time!`);
-        console.log("Would you like to start the deployment now (you can also do this manually later)?");
-console.log()
+        console.log();
+        console.log(
+            `🎉 Your new Webiny project ${green(
+                projectName
+            )} has been created and is ready to be deployed for the first time!`
+        );
+        console.log();
 
         const ok = await yesno({
-            question: bold(`${green('?')} Proceed with the deployment (Y/n)?`),
+            question: bold(`${green("?")} Would you like to start the deployment now (Y/n)?`),
             defaultValue: true
         });
 
         if (ok) {
-            console.log()
+            console.log();
             await execa("yarn", ["webiny", "deploy"], {
                 cwd: projectRoot,
                 stdio: "inherit"
