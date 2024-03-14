@@ -1,5 +1,5 @@
 import React from "react";
-import { Column, DataTable } from "@webiny/ui/DataTable";
+import { Columns, DataTable } from "@webiny/ui/DataTable";
 import { BinPresenterViewModel } from "~/abstractions";
 import { BinEntryDTO } from "~/domain";
 import { ButtonDefault } from "@webiny/ui/Button";
@@ -10,17 +10,14 @@ export interface TableProps {
 }
 
 export const Table = (props: TableProps) => {
-    const columns: Column<BinEntryDTO> = [
-        {
-            id: "title",
+    const columns: Columns<BinEntryDTO> = {
+        title: {
             header: "Title"
         },
-        {
-            id: "id",
-            header: "id"
+        id: {
+            header: "ID"
         },
-        {
-            id: "delete",
+        delete: {
             header: " ",
             cell: (row: BinEntryDTO) => (
                 <ButtonDefault onClick={() => props.onEntryDelete(row.id)}>
@@ -28,7 +25,7 @@ export const Table = (props: TableProps) => {
                 </ButtonDefault>
             )
         }
-    ];
+    };
 
     return (
         <DataTable data={props.vm.entries} columns={columns} loadingInitial={props.vm.loading} />
