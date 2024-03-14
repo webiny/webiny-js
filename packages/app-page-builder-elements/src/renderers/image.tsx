@@ -10,7 +10,7 @@ declare global {
     namespace JSX {
         interface IntrinsicElements {
             // "object" HTML tags cannot be clicked, hence the need for "pb-image-object-wrapper" wrapper.
-            "pb-image-object-wrapper": any;
+            "pb-image-object": any;
         }
     }
 }
@@ -75,7 +75,7 @@ export const ImageRendererComponent = ({
 
         if (htmlTag === "object") {
             content = (
-                <pb-image-object-wrapper onClick={onClick}>
+                <pb-image-object onClick={onClick}>
                     <PbImgObject
                         // Image has its width / height set from its own settings.
                         width={width}
@@ -83,7 +83,7 @@ export const ImageRendererComponent = ({
                         title={title}
                         data={src}
                     />
-                </pb-image-object-wrapper>
+                </pb-image-object>
             );
         } else {
             // If a fixed image width in pixels was set, let's filter out unneeded
