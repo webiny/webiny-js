@@ -160,7 +160,7 @@ const TreeViewItem = ({ element, level, children, index }: TreeViewItemProps) =>
                     ref={dragAndDropRef}
                     data-handler-id={handlerId}
                 >
-                    <Typography use={"body2"} className={"title"}>
+                    <Typography use={"body2"} className={"title"} tag="span">
                         {element.type}
                         {elementIdAttribute && (
                             <p className={elementIdStyle}>{`#${elementIdAttribute}`}</p>
