@@ -101,9 +101,10 @@ export const Select = (props: SelectProps) => {
     const options = getOptions(other.options);
 
     return (
-        <React.Fragment>
+        <>
             <RmwcSelect
                 {...getRmwcProps(other)}
+                ref={undefined}
                 options={options}
                 value={value}
                 className={classNames(
@@ -124,7 +125,7 @@ export const Select = (props: SelectProps) => {
             {validationIsValid !== false && description && (
                 <FormElementMessage>{description}</FormElementMessage>
             )}
-        </React.Fragment>
+        </>
     );
 };
 

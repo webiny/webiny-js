@@ -79,9 +79,7 @@ export const UserInfo = makeDecoratable("UserInfo", () => {
                     />
                 </ListItemGraphic>
                 <div>
-                    <h3>
-                        <Typography use={"headline6"}>{displayName}</Typography>
-                    </h3>
+                    <Typography use={"headline6"}>{displayName}</Typography>
                     <Typography use={"subtitle2"}>{id}</Typography>
                 </div>
             </ListItem>
