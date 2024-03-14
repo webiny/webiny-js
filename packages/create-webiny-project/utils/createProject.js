@@ -29,6 +29,7 @@ module.exports = async function createProject({
     template,
     tag,
     log,
+    debug,
     cleanup,
     interactive,
     templateOptions,
@@ -263,6 +264,7 @@ module.exports = async function createProject({
             projectName,
             projectRoot,
             interactive,
+            debug,
             templateOptions: parsedTemplateOptions
         });
 

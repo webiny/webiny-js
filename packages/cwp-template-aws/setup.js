@@ -171,7 +171,12 @@ const setup = async args => {
         console.log();
 
         try {
-            await execa("yarn", ["webiny", "deploy", "--debug"], {
+            const command = ["webiny", "deploy"];
+            if (args.debug) {
+                command.push("--debug");
+            }
+            
+            await execa("yarn", command, {
                 cwd: projectRoot,
                 stdio: "inherit"
             });
