@@ -33,8 +33,6 @@ class SinglePackageBuilder extends BasePackageBuilder {
         }
 
         await config.commands.build(options);
-
-
     }
 }
 

@@ -5,13 +5,7 @@ const { ZeroPackagesBuilder } = require("./ZeroPackagesBuilder");
 
 class PackagesBuilder extends BasePackageBuilder {
     async build() {
-        let BuilderClass = ZeroPackagesBuilder;
-
-        if (this.packages.length === 1) {
-            BuilderClass = SinglePackageBuilder;
-        } else {
-            BuilderClass = MultiplePackagesBuilder;
-        }
+        const BuilderClass = this.getBuilderClass();
 
         const builder = new BuilderClass({
             packages: this.packages,
@@ -20,6 +14,19 @@ class PackagesBuilder extends BasePackageBuilder {
         });
 
         await builder.build();
+    }
+
+    getBuilderClass() {
+        const packagesCount = this.packages.length;
+        if (packagesCount === 0) {
+            return ZeroPackagesBuilder;
+        }
+
+        if (packagesCount === 1) {
+            return SinglePackageBuilder;
+        }
+
+        return MultiplePackagesBuilder;
     }
 }
 

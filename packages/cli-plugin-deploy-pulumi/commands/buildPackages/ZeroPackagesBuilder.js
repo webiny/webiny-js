@@ -1,9 +1,10 @@
 const { BasePackageBuilder } = require("./BasePackageBuilder");
 
-class ZeroPackagesBuilder extends BasePackageBuilder {
-    build() {
-        this.context.info(`No packages to build...`);
+class ZeroPackageBuilder extends BasePackageBuilder {
+    async build() {
+        // Simply don't do anything. There are no packages to build.
+        return;
     }
 }
 
-module.exports = { ZeroPackagesBuilder };
+module.exports = { ZeroPackageBuilder };

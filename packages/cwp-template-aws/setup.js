@@ -126,18 +126,14 @@ const setup = async args => {
     }
 
     if (!IS_TEST) {
-        console.log();
-        console.log(`⏳ Installing dependencies....`);
-        console.log();
         // Install dependencies.
-        const options = {
-            cwd: projectRoot,
-            maxBuffer: "500_000_000"
-        };
-
+        console.log();
         const spinner = ora("Installing packages...").start();
         try {
-            const subprocess = execa("yarn", [], options);
+            const subprocess = execa("yarn", [], {
+                cwd: projectRoot,
+                maxBuffer: "500_000_000"
+            });
             await subprocess;
             spinner.succeed("Packages installed successfully.");
         } catch (e) {
@@ -151,50 +147,52 @@ const setup = async args => {
         }
     }
 
-    if (!IS_TEST) {
-        console.log();
-        console.log(
-            `🎉 Your new Webiny project ${green(
-                projectName
-            )} has been created and is ready to be deployed for the first time!`
-        );
-        console.log();
-
-        const ok = await yesno({
-            question: bold(`${green("?")} Would you like to start the deployment now (Y/n)?`),
-            defaultValue: true
-        });
-
-        if (ok) {
-            console.log();
-            await execa("yarn", ["webiny", "deploy"], {
-                cwd: projectRoot,
-                stdio: "inherit"
-            });
-        } else {
-            console.log(
-                [
-                    "",
-                    `🎉 Your new Webiny project ${green(projectName)} is ready!`,
-                    "",
-                    `Finish the setup by running the following command: ${green(
-                        `cd ${projectName} && yarn webiny deploy`
-                    )}`,
-                    "",
-                    `To see all of the available CLI commands, run ${green(
-                        "yarn webiny --help"
-                    )} in your ${green(projectName)} directory.`,
-                    "",
-                    "Want to dive deeper into Webiny? Check out https://webiny.com/docs/!",
-                    "Like the project? Star us on https://github.com/webiny/webiny-js!",
-                    "",
-                    "Need help? Join our Slack community! https://www.webiny.com/slack",
-                    "",
-                    "🚀 Happy coding!"
-                ].join("\n")
-            );
-        }
+    if (IS_TEST) {
+        return;
     }
+
+    console.log();
+    console.log(
+        `🎉 Your new Webiny project ${green(
+            projectName
+        )} has been created and is ready to be deployed for the first time!`
+    );
+    console.log();
+
+    const ok = await yesno({
+        question: bold(`${green("?")} Would you like to deploy your project now (Y/n)?`),
+        defaultValue: true
+    });
+
+    console.log();
+
+    if (ok) {
+        console.log("🚀 Deploying your new Webiny project...");
+        console.log();
+        return execa("yarn", ["webiny", "deploy"], {
+            cwd: projectRoot,
+            stdio: "inherit"
+        });
+    }
+
+    console.log(
+        [
+            `Finish the setup by running the following command: ${green(
+                `cd ${projectName} && yarn webiny deploy`
+            )}`,
+            "",
+            `To see all of the available CLI commands, run ${green(
+                "yarn webiny --help"
+            )} in your ${green(projectName)} directory.`,
+            "",
+            "Want to dive deeper into Webiny? Check out https://webiny.com/docs/!",
+            "Like the project? Star us on https://github.com/webiny/webiny-js!",
+            "",
+            "Need help? Join our Slack community! https://www.webiny.com/slack",
+            "",
+            "🚀 Happy coding!"
+        ].join("\n")
+    );
 };
 
 module.exports = setup;
