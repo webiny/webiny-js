@@ -169,10 +169,19 @@ const setup = async args => {
     if (ok) {
         console.log("🚀 Deploying your new Webiny project...");
         console.log();
-        return execa("yarn", ["webiny", "deploy"], {
-            cwd: projectRoot,
-            stdio: "inherit"
-        });
+
+        try {
+            await execa("yarn", ["webiny", "deploy"], {
+                cwd: projectRoot,
+                stdio: "inherit"
+            });
+        } catch {
+            // Don't do anything. This is because the `webiny deploy` command has its own
+            // error handling and will print the error message. As far as this setup script
+            // is concerned, it succeeded, and it doesn't need to do anything else.
+        }
+
+        return;
     }
 
     console.log(

@@ -238,8 +238,6 @@ module.exports = async function createProject({
             templateName = templatePath;
         }
 
-        console.log(`Starting ${green(templateName)} template ...`);
-
         const templatePath = path.dirname(
             require.resolve(path.join(templateName, "package.json"), {
                 paths: [projectRoot]
