@@ -8,6 +8,7 @@ import { Link } from "@webiny/react-router";
 import { useModel } from "~/admin/components/ModelProvider";
 import { i18n } from "@webiny/app/i18n";
 import { css } from "emotion";
+import { Bin } from "~/admin/components/ContentEntries/Bin/components/Bin";
 
 const t = i18n.ns("app-headless-cms/admin/content-entries/table");
 
@@ -67,6 +68,7 @@ export const Sidebar = ({ folderId }: SidebarProps) => {
                 enableActions={true}
                 enableCreate={true}
             />
+            <Bin />
         </SidebarContainer>
     );
 };

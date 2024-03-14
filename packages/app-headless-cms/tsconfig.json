@@ -4,6 +4,7 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-aco" },
+    { "path": "../app-bin" },
     { "path": "../app-admin" },
     { "path": "../app-graphql-playground" },
     { "path": "../app-headless-cms-common" },
@@ -36,6 +37,8 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-aco/*": ["../app-aco/src/*"],
       "@webiny/app-aco": ["../app-aco/src"],
+      "@webiny/app-bin/*": ["../app-bin/src/*"],
+      "@webiny/app-bin": ["../app-bin/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-graphql-playground/*": ["../app-graphql-playground/src/*"],

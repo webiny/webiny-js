@@ -4,6 +4,7 @@
   "references": [
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-aco/tsconfig.build.json" },
+    { "path": "../app-bin/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-graphql-playground/tsconfig.build.json" },
     { "path": "../app-headless-cms-common/tsconfig.build.json" },

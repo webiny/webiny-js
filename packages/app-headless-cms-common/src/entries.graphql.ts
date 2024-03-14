@@ -213,14 +213,20 @@ export interface CmsEntriesListQueryVariables {
     after?: string;
 }
 
-export const createListQuery = (model: CmsEditorContentModel, fields?: CmsModelField[]) => {
+export const createListQuery = (
+    model: CmsEditorContentModel,
+    fields?: CmsModelField[],
+    deleted?: boolean
+) => {
+    const queryName = deleted ? `listDeleted${model.pluralApiName}` : `list${model.pluralApiName}`;
+
     return gql`
         query CmsEntriesList${model.pluralApiName}($where: ${
         model.singularApiName
     }ListWhereInput, $sort: [${
         model.singularApiName
     }ListSorter], $limit: Int, $after: String, $search: String) {
-            content: list${model.pluralApiName}(
+            content: ${queryName}(
             where: $where
             sort: $sort
             limit: $limit
@@ -256,12 +262,13 @@ export interface CmsEntryDeleteMutationResponse {
 
 export interface CmsEntryDeleteMutationVariables {
     revision: string;
+    permanently?: boolean;
 }
 
 export const createDeleteMutation = (model: CmsEditorContentModel) => {
     return gql`
-        mutation CmsEntriesDelete${model.singularApiName}($revision: ID!) {
-            content: delete${model.singularApiName}(revision: $revision) {
+        mutation CmsEntriesDelete${model.singularApiName}($revision: ID!, $permanently: Boolean) {
+            content: delete${model.singularApiName}(revision: $revision, options: {permanently: $permanently}) {
                 data
                 error ${ERROR_FIELD}
             }
