@@ -7,7 +7,7 @@ const merge = require("lodash/merge");
 const writeJsonFile = require("write-json-file");
 const loadJsonFile = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
-const { green, yellow } = require("chalk");
+const { green, yellow, bold } = require("chalk");
 const yesno = require("yesno");
 
 const IS_TEST = process.env.NODE_ENV === "test";
@@ -125,6 +125,7 @@ const setup = async args => {
     }
 
     if (!IS_TEST) {
+        console.log();
         console.log(`⏳ Installing dependencies....`);
         console.log();
         // Install dependencies.
@@ -134,7 +135,12 @@ const setup = async args => {
         };
 
         try {
-            await execa("yarn", [], options);
+            const subprocess = execa("yarn", [], options);
+
+            subprocess.stdout.pipe(process.stdout);
+            subprocess.stderr.pipe(process.stderr);
+
+            await subprocess;
         } catch (e) {
             throw new Error(
                 "Failed while installing project dependencies. Please check the above Yarn logs for more information."
@@ -143,40 +149,44 @@ const setup = async args => {
     }
 
     if (!IS_TEST) {
+        console.log(`🎉 Your new Webiny project ${green(projectName)} has been created and is ready to be deployed for the first time!`);
+        console.log("Would you like to start the deployment now (you can also do this manually later)?");
+console.log()
+
         const ok = await yesno({
-            question:
-                "Start deploying brah?",
+            question: bold(`${green('?')} Proceed with the deployment (Y/n)?`),
             defaultValue: true
         });
 
         if (ok) {
+            console.log()
             await execa("yarn", ["webiny", "deploy"], {
-                cwd: projectRoot
+                cwd: projectRoot,
+                stdio: "inherit"
             });
         } else {
-
-        console.log(
-            [
-                "",
-                `🎉 Your new Webiny project ${green(projectName)} is ready!`,
-                "",
-                `Finish the setup by running the following command: ${green(
-                    `cd ${projectName} && yarn webiny deploy`
-                )}`,
-                "",
-                `To see all of the available CLI commands, run ${green(
-                    "yarn webiny --help"
-                )} in your ${green(projectName)} directory.`,
-                "",
-                "Want to dive deeper into Webiny? Check out https://webiny.com/docs/!",
-                "Like the project? Star us on https://github.com/webiny/webiny-js!",
-                "",
-                "Need help? Join our Slack community! https://www.webiny.com/slack",
-                "",
-                "🚀 Happy coding!"
-            ].join("\n")
-        );
-    }
+            console.log(
+                [
+                    "",
+                    `🎉 Your new Webiny project ${green(projectName)} is ready!`,
+                    "",
+                    `Finish the setup by running the following command: ${green(
+                        `cd ${projectName} && yarn webiny deploy`
+                    )}`,
+                    "",
+                    `To see all of the available CLI commands, run ${green(
+                        "yarn webiny --help"
+                    )} in your ${green(projectName)} directory.`,
+                    "",
+                    "Want to dive deeper into Webiny? Check out https://webiny.com/docs/!",
+                    "Like the project? Star us on https://github.com/webiny/webiny-js!",
+                    "",
+                    "Need help? Join our Slack community! https://www.webiny.com/slack",
+                    "",
+                    "🚀 Happy coding!"
+                ].join("\n")
+            );
+        }
     }
 };
 
