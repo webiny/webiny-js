@@ -119,9 +119,7 @@ export const UserInfo = () => {
                     />
                 </ListItemGraphic>
                 <div>
-                    <h3>
-                        <Typography use={"headline6"}>{fullName}</Typography>
-                    </h3>
+                    <Typography use={"headline6"}>{fullName}</Typography>
                     <Typography use={"body2"}>{email}</Typography>
                 </div>
             </ListItem>
