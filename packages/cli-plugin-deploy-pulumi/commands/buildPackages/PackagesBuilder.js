@@ -1,7 +1,4 @@
 const { BasePackageBuilder } = require("./BasePackageBuilder");
-const { MultiplePackagesBuilder } = require("./MultiplePackagesBuilder");
-const { SinglePackageBuilder } = require("./SinglePackageBuilder");
-const { ZeroPackagesBuilder } = require("./ZeroPackagesBuilder");
 
 class PackagesBuilder extends BasePackageBuilder {
     async build() {
@@ -19,13 +16,16 @@ class PackagesBuilder extends BasePackageBuilder {
     getBuilderClass() {
         const packagesCount = this.packages.length;
         if (packagesCount === 0) {
+            const { ZeroPackagesBuilder } = require("./ZeroPackagesBuilder");
             return ZeroPackagesBuilder;
         }
 
         if (packagesCount === 1) {
+            const { SinglePackageBuilder } = require("./SinglePackageBuilder");
             return SinglePackageBuilder;
         }
 
+        const { MultiplePackagesBuilder } = require("./MultiplePackagesBuilder");
         return MultiplePackagesBuilder;
     }
 }
