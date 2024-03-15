@@ -81,7 +81,7 @@ export const ChangeRequestListItem = (props: ChangeRequestItemProps) => {
                     </Box>
                 </Columns>
                 <Box>
-                    <TypographySecondary use={"caption"}>
+                    <TypographySecondary use={"caption"} tag={"div"}>
                         <RichTextEditor
                             readOnly={true}
                             className={richTextWrapperStyles}
