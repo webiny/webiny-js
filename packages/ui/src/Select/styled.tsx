@@ -18,6 +18,10 @@ export const webinySelect = css`
         right: 0;
     }
 
+    > .mdc-select__anchor {
+        width: auto !important;
+    }
+
     &.webiny-ui-select--size-medium {
         &.mdc-select,
         .mdc-select__anchor {
