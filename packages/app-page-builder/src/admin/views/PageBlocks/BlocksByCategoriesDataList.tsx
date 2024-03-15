@@ -258,7 +258,9 @@ const BlocksByCategoriesDataList = ({
                 className={narrowDialog}
             >
                 <DialogTitle>
-                    <Typography use="headline5">Please select a block category</Typography>
+                    <Typography use="headline5" tag={"span"}>
+                        Please select a block category
+                    </Typography>
                 </DialogTitle>
                 <DialogContent>
                     <React.Fragment>
