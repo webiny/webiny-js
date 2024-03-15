@@ -80,7 +80,7 @@ class MultiplePackagesBuilder extends BasePackageBuilder {
         );
 
         await tasks.run().catch(err => {
-            console.log()
+            console.log();
             context.error(`Failed to build all packages. For more details, check the logs below.`);
             console.log();
 
@@ -98,13 +98,9 @@ class MultiplePackagesBuilder extends BasePackageBuilder {
             throw new Error(`Failed to build all packages.`);
         });
 
-        console.log()
+        console.log();
 
-        context.success(
-            `Successfully built %s packages in %s.`,
-            packages.length,
-            getDuration()
-        );
+        context.success(`Successfully built %s packages in %s.`, packages.length, getDuration());
     }
 
     getPackageLabel(pkg) {

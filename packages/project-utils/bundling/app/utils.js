@@ -2,7 +2,7 @@ const { version } = require("@webiny/project-utils/package.json");
 const { getProject } = require("@webiny/cli/utils");
 const { isEnabled } = require("@webiny/telemetry/cli");
 const { globalConfig } = require("@webiny/global-config");
-const isCI = require('is-ci');
+const isCI = require("is-ci");
 
 module.exports.applyDefaults = () => {
     let telemetry;
@@ -27,7 +27,9 @@ module.exports.applyDefaults = () => {
     }
 
     if (!("REACT_APP_WEBINY_TELEMETRY_NEW_USER" in process.env)) {
-        process.env.REACT_APP_WEBINY_TELEMETRY_NEW_USER = Boolean(globalConfig.get("newUser")).toString();
+        process.env.REACT_APP_WEBINY_TELEMETRY_NEW_USER = Boolean(
+            globalConfig.get("newUser")
+        ).toString();
     }
 
     if (!("INLINE_RUNTIME_CHUNK" in process.env)) {

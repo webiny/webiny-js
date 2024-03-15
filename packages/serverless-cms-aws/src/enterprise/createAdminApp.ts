@@ -7,9 +7,7 @@ export interface CreateAdminAppParams extends CreateAdminPulumiAppParams {
 }
 
 export function createAdminApp(projectAppParams: CreateAdminAppParams = {}) {
-    const builtInPlugins = [
-        uploadAppToS3({ folder: "apps/admin" }),
-    ];
+    const builtInPlugins = [uploadAppToS3({ folder: "apps/admin" })];
 
     const customPlugins = projectAppParams.plugins ? [...projectAppParams.plugins] : [];
 

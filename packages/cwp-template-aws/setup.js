@@ -175,7 +175,7 @@ const setup = async args => {
             if (args.debug) {
                 command.push("--debug");
             }
-            
+
             await execa("yarn", command, {
                 cwd: projectRoot,
                 stdio: "inherit"

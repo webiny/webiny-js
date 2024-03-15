@@ -32,7 +32,9 @@ module.exports = async options => {
     }
 
     // We remove the WebpackBar plugin, as it's not needed in watch mode.
-    const webpackBarPluginIndex  = webpackConfig.plugins.findIndex(plugin => plugin instanceof WebpackBar);
+    const webpackBarPluginIndex = webpackConfig.plugins.findIndex(
+        plugin => plugin instanceof WebpackBar
+    );
     const usesWebpackBar = webpackBarPluginIndex > -1;
     if (usesWebpackBar) {
         webpackConfig.plugins.splice(webpackBarPluginIndex, 1);

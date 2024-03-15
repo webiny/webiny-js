@@ -265,7 +265,9 @@ module.exports = async (inputs, context) => {
                 message: chalk.green("Watching cloud infrastructure resources...")
             });
 
-            const buildFoldersGlob = [projectApplication.paths.workspace, "**/build/*.js"].join("/");
+            const buildFoldersGlob = [projectApplication.paths.workspace, "**/build/*.js"].join(
+                "/"
+            );
 
             const buildFolders = glob.sync(buildFoldersGlob, { onlyFiles: false });
 

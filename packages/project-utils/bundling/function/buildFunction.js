@@ -68,6 +68,6 @@ module.exports = async options => {
 
             logs && console.log(`Compiled successfully in ${chalk.green(duration()) + "s"}.`);
             resolve();
-        })
+        });
     });
 };

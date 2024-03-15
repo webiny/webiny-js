@@ -6,7 +6,7 @@ import {
     generateCommonHandlers,
     generateDdbHandlers,
     generateDdbEsHandlers,
-    injectWcpTelemetryClientCode,
+    injectWcpTelemetryClientCode
 } from "./api/plugins";
 
 export { ApiOutput } from "@webiny/pulumi-aws";

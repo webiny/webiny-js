@@ -1,5 +1,5 @@
 const { BasePackageBuilder } = require("./BasePackageBuilder");
-const {gray} = require("chalk");
+const { gray } = require("chalk");
 
 class SinglePackageBuilder extends BasePackageBuilder {
     async build() {

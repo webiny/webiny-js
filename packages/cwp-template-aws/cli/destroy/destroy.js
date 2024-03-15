@@ -45,7 +45,7 @@ module.exports = async (inputs, context) => {
 
     console.log();
     context.info(`Destroying ${green("API")} project application...`);
-    await destroy('apps/api', env, inputs);
+    await destroy("apps/api", env, inputs);
 
     if (hasCore) {
         console.log();
