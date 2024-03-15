@@ -23,6 +23,7 @@ import {
 } from "./StyledComponents";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import { FieldSettings } from "./FieldSettings";
+import { ParentValueProvider } from "~/admin/components/ContentEntryForm/ParentValue";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -111,14 +112,15 @@ const ObjectsRenderer = (props: CmsModelFieldRendererProps) => {
                                 defaultValue={index === 0}
                             >
                                 <Cell span={12} className={fieldsWrapperStyle}>
-                                    <Fields
-                                        Bind={Bind}
-                                        {...bind.index}
-                                        contentModel={contentModel}
-                                        fields={settings.fields}
-                                        layout={settings.layout}
-                                        gridClassName={fieldsGridStyle}
-                                    />
+                                    <ParentValueProvider value={bind.index.value} name={"MultiObject Accordion " + index}>
+                                        <Fields
+                                            Bind={Bind}
+                                            contentModel={contentModel}
+                                            fields={settings.fields}
+                                            layout={settings.layout}
+                                            gridClassName={fieldsGridStyle}
+                                        />
+                                    </ParentValueProvider>
                                 </Cell>
                             </Accordion>
                         </ObjectItem>

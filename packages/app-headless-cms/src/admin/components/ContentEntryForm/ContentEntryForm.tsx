@@ -11,6 +11,7 @@ import { Fields } from "./Fields";
 import { Prompt } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin";
 import { ModelProvider, useModel } from "~/admin/components/ModelProvider";
+import { ParentValueProvider } from "~/admin/components/ContentEntryForm/ParentValue";
 
 const FormWrapper = styled("div")({
     height: "calc(100vh - 260px)",
@@ -149,22 +150,24 @@ export const ContentEntryForm = ({ onForm, ...props }: ContentEntryFormProps) =>
                         />
                         <FormWrapper data-testid={"cms-content-form"} ref={formElementRef}>
                             {loading && <CircularProgress />}
-                            {formRenderer ? (
-                                renderCustomLayout(formProps)
-                            ) : (
-                                <Fields
-                                    contentModel={model}
-                                    fields={model.fields || []}
-                                    layout={model.layout || []}
-                                    {...formProps}
-                                    /**
-                                     * TODO @ts-refactor
-                                     * Figure out type for Bind.
-                                     */
-                                    // @ts-expect-error
-                                    Bind={formProps.Bind}
-                                />
-                            )}
+                            <ParentValueProvider value={formProps.data} name={"ContentEntry"}>
+                                {formRenderer ? (
+                                    renderCustomLayout(formProps)
+                                ) : (
+                                    <Fields
+                                        contentModel={model}
+                                        fields={model.fields || []}
+                                        layout={model.layout || []}
+                                        {...formProps}
+                                        /**
+                                         * TODO @ts-refactor
+                                         * Figure out type for Bind.
+                                         */
+                                        // @ts-expect-error
+                                        Bind={formProps.Bind}
+                                    />
+                                )}
+                            </ParentValueProvider>
                         </FormWrapper>
                     </ModelProvider>
                 );

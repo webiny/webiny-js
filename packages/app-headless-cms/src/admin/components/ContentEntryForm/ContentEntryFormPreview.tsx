@@ -5,6 +5,7 @@ import { plugins } from "@webiny/plugins";
 import { RenderFieldElement } from "./RenderFieldElement";
 import { CmsContentFormRendererPlugin, CmsEditorContentModel } from "~/types";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
+import { ParentValueProvider } from "~/admin/components/ContentEntryForm/ParentValue";
 
 const FormWrapper = styled("div")({
     height: "calc(100vh - 260px)",
@@ -62,22 +63,24 @@ export const ContentEntryFormPreview = (props: ContentEntryFormPreviewProps) => 
         <Form>
             {formProps => (
                 <FormWrapper data-testid={"cms-content-form"}>
-                    {formRenderer ? (
-                        renderCustomLayout(formProps)
-                    ) : (
-                        <Fields
-                            contentModel={contentModel}
-                            fields={contentModel.fields}
-                            layout={contentModel.layout || []}
-                            {...formProps}
-                            /**
-                             * TODO @ts-refactor
-                             * Figure out type for Bind.
-                             */
-                            // @ts-expect-error
-                            Bind={formProps.Bind}
-                        />
-                    )}
+                    <ParentValueProvider value={formProps.data}>
+                        {formRenderer ? (
+                            renderCustomLayout(formProps)
+                        ) : (
+                            <Fields
+                                contentModel={contentModel}
+                                fields={contentModel.fields}
+                                layout={contentModel.layout || []}
+                                {...formProps}
+                                /**
+                                 * TODO @ts-refactor
+                                 * Figure out type for Bind.
+                                 */
+                                // @ts-expect-error
+                                Bind={formProps.Bind}
+                            />
+                        )}
+                    </ParentValueProvider>
                 </FormWrapper>
             )}
         </Form>
