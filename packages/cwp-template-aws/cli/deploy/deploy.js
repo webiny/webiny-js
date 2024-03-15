@@ -1,29 +1,38 @@
-const { green } = require("chalk");
 const {
     getStackOutput,
     getPulumi,
     GracefulPulumiError
 } = require("@webiny/cli-plugin-deploy-pulumi/utils");
 const { sendEvent } = require("@webiny/cli/utils");
-const sleep = require("../utils/sleep");
+const { bold } = require("chalk");
 const deployCommand = require("@webiny/cli-plugin-deploy-pulumi/commands/deploy");
+const { printEnvOutput } = require("../info");
+const sleep = require("../utils/sleep");
 const open = require("open");
+const ora = require("ora");
 
-const deploy = (appName, inputs, context) => {
-    return deployCommand(
+const deployApp = async ({ name, folder, inputs, context, isFirstDeployment }) => {
+    context.info(`Deploying %s project application...`, name);
+    console.log();
+
+    await deployCommand(
         {
             ...inputs,
-            folder: appName,
+            folder: folder,
             env: inputs.env || "dev",
             telemetry: false
         },
         context
     );
+
+    console.log();
+    context.success(`%s project application deployed successfully.`, name);
+    console.log();
+
+    isFirstDeployment && (await sleep());
 };
 
 const getTelemetryEventName = stage => `cli-project-deploy-${stage}`;
-
-const newLine = () => console.log();
 
 module.exports = async (inputs, context) => {
     const eventName = getTelemetryEventName("start");
@@ -41,100 +50,82 @@ module.exports = async (inputs, context) => {
         installed && console.log();
 
         // 2. Check if first deployment.
-        const isFirstDeployment = !getStackOutput({ folder: "core", env });
+        const isFirstDeployment = getStackOutput({ folder: "apps/core", env });
         if (isFirstDeployment) {
+            context.info(`Looks like this is your first time deploying the project.`);
             context.info(
-                `This is your first time deploying the project (${green(
-                    env
-                )} environment). Note that the initial deployment can take up to 15 minutes, so please be patient.`
+                `Note that the initial deployment can take up to %s, so please be patient.`,
+                "15 minutes"
             );
-
             await sleep();
         }
 
         // 3. Start deploying apps one-by-one.
-
-        // Deploying `core` project application.
         isFirstDeployment && console.log();
 
-        context.info(`Deploying ${green("Core")} project application...`);
-        newLine();
-        await deploy("apps/core", inputs, context);
-        newLine();
-        context.success(`${green("Core")} project application deployed successfully!`);
+        await deployApp({ name: "Core", folder: "apps/core", inputs, context, isFirstDeployment });
+        await deployApp({ name: "API", folder: "apps/api", inputs, context, isFirstDeployment });
+        await deployApp({
+            name: "Admin",
+            folder: "apps/admin",
+            inputs,
+            context,
+            isFirstDeployment
+        });
+        await deployApp({
+            name: "Website",
+            folder: "apps/website",
+            inputs,
+            context,
+            isFirstDeployment
+        });
 
-        isFirstDeployment && (await sleep(2000));
+        const adminAppOutput = getStackOutput({ folder: "apps/admin", env });
 
-        // Deploying `api` project application.
-        console.log();
-        context.info(`Deploying ${green("API")} project application...`);
-
-        await deploy("apps/api", inputs, context);
-
-        context.success(`${green("API")} project application deployed successfully!`);
-        isFirstDeployment && (await sleep(2000));
-
-        // Deploying `apps/admin` project application.
-        console.log();
-        context.info(`Deploying ${green("Admin")} project application...`);
-        isFirstDeployment && (await sleep());
-
-        await deploy("apps/admin", inputs, context);
-        context.success(`${green("Admin")} project application deployed successfully!`);
-
-        // Deploying `apps/admin` project application.
-        console.log();
-        context.info(`Deploying ${green("Website")} project application...`);
-        isFirstDeployment && (await sleep());
-
-        await deploy("apps/website", inputs, context);
-        context.success(`${green("Website")} project application deployed successfully!`);
-
-        const outputs = {
-            api: getStackOutput({ folder: "apps/api", env }),
-            apps: {
-                admin: getStackOutput({ folder: "apps/admin", env }),
-                site: getStackOutput({ folder: "apps/website", env })
-            }
-        };
-
-        console.log();
         if (isFirstDeployment) {
-            open(outputs.apps.admin.appUrl);
-            console.log(
-                [
-                    `Congratulations! You've just deployed a brand new project (${green(
-                        env
-                    )} environment)!`,
-                    "",
-                    `To finish the setup, please open your ${green("Admin")} app (${green(
-                        outputs.apps.admin.appUrl
-                    )}) and complete the installation wizard. To learn more, visit ${green(
-                        "https://www.webiny.com/docs"
-                    )}.`
-                ].join("\n")
-            );
-        } else {
-            const usefulLinks = [
-                `➜ Main GraphQL API: ${green(outputs.api.apiUrl + "/graphql")}`,
-                `➜ Admin app: ${green(outputs.apps.admin.appUrl)}`,
-                `➜ Public website:`,
-                `   - Website URL: ${green(outputs.apps.site.deliveryUrl)}`,
-                `   - Website preview URL: ${green(outputs.apps.site.appUrl)}`
-            ].join("\n");
+            context.success(`Congratulations! You've just deployed a brand new project!`);
+            console.log();
 
-            console.log(
-                [
-                    usefulLinks,
-                    "",
-                    `💡 Tip: to deploy project applications separately, use the ${green(
-                        "deploy"
-                    )} command (e.g. ${green(
-                        `yarn webiny deploy website --env ${env}`
-                    )}). For additional help, please run ${green("yarn webiny --help")}.`
-                ].join("\n")
+            context.info(
+                "The final step is to open the %s app in your browser and complete the installation wizard.",
+                "Admin"
             );
+
+            const spinner = ora(
+                `Opening ${context.info.hl("Admin")} app in your browser...`
+            ).start();
+
+            try {
+                await sleep(7000);
+                await open(adminAppOutput.appUrl);
+                spinner.succeed(
+                    `Successfully opened ${context.info.hl("Admin")} app in your browser.`
+                );
+                console.log();
+
+                context.success(
+                    `Initial deployed completed successfully. Here are some useful project details.`
+                );
+                console.log();
+            } catch (e) {
+                spinner.fail(`Failed to open ${context.error.hl("Admin")} app in your browser.`);
+
+                await sleep(1000);
+                console.log();
+                context.warning(
+                    `Failed to open %s app in your browser. To finish the setup, please visit %s and complete the installation.`,
+                    "Admin",
+                    adminAppOutput.appUrl
+                );
+                console.log();
+            }
+        } else {
+            context.success(`Project deployed successfully. Here are some useful project details.`);
+            console.log();
         }
+
+        console.log(bold("Project details"));
+        await printEnvOutput(env, context);
 
         const eventName = getTelemetryEventName("end");
         await sendEvent(eventName);

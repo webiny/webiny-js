@@ -1,4 +1,5 @@
 const NO_VALUE = "-";
+const isCI = require("is-ci");
 
 const getData = async context => {
     const { getUser } = require("../wcp/utils");
@@ -11,16 +12,8 @@ const getData = async context => {
     const [pulumiVersion, pulumiAwsVersion] = await getPulumiVersions();
 
     const wcpProjectId = process.env.WCP_PROJECT_ID;
-    const wcpUser = await getUser()
-        .catch(() => "N/A")
-        .then(res => res.email);
-
-    let wcpAuth = "N/A";
-    if (wcpUser !== "N/A") {
-        wcpAuth = process.env.WEBINY_PROJECT_ENVIRONMENT_API_KEY
-            ? "Project Environment API Key"
-            : "Personal Access Token";
-    }
+    const wcpUser = await getUser().catch(() => null);
+    const wcpUsingProjectEnvironmentApiKey = Boolean(process.env.WCP_ENVIRONMENT_API_KEY);
 
     return [
         {
@@ -37,8 +30,8 @@ const getData = async context => {
             sectionName: "Webiny Control Panel (WCP)",
             data: {
                 "Project ID": wcpProjectId,
-                User: wcpUser,
-                Authentication: wcpAuth
+                User: wcpUser?.email || "N/A",
+                "Using Project Environment API Key": wcpUsingProjectEnvironmentApiKey ? "Yes" : "No"
             }
         },
         {
@@ -48,7 +41,8 @@ const getData = async context => {
                 "Node.js": process.version,
                 NPM: await getNpmVersion(),
                 NPX: await getNpxVersion(),
-                Yarn: await getYarnVersion()
+                Yarn: await getYarnVersion(),
+                "Is CI": isCI ? "Yes" : "No"
             }
         },
         {
@@ -94,7 +88,7 @@ module.exports = {
                     console.log(bold(sectionName));
 
                     Object.keys(data).forEach(key => {
-                        console.log(key.padEnd(30), data[key] || NO_VALUE);
+                        console.log(key.padEnd(36), data[key] || NO_VALUE);
                     });
                 });
             }

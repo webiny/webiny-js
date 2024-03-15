@@ -2,25 +2,20 @@ const getStackOutput = require("@webiny/cli-plugin-deploy-pulumi/utils/getStackO
 const { green } = require("chalk");
 const path = require("path");
 
-const line = `—————————————————————————`;
-
 const printEnvOutput = async (env, context) => {
-    console.log(line);
-    console.log(`Environment: ${green(env)}`);
-    console.log(line);
-
     let stacksDeployedCount = 0;
     let output = getStackOutput({ folder: "apps/api", env });
     if (output) {
         stacksDeployedCount++;
         console.log(
             [
-                `‣ AWS Region: ${output.region}`,
+                `‣ Environment name: ${env}`,
+                `‣ AWS region: ${output.region}`,
                 `‣ Main GraphQL API: ${green(output.apiUrl + "/graphql")}`,
                 `‣ Headless CMS GraphQL API:`,
-                `   - Manage API: ${green(output.apiUrl + "/cms/manage/{LOCALE_CODE}")}`,
-                `   - Read API: ${green(output.apiUrl + "/cms/read/{LOCALE_CODE}")}`,
-                `   - Preview API: ${green(output.apiUrl + "/cms/preview/{LOCALE_CODE}")}`
+                `   · Manage API: ${green(output.apiUrl + "/cms/manage/{LOCALE_CODE}")}`,
+                `   · Read API: ${green(output.apiUrl + "/cms/read/{LOCALE_CODE}")}`,
+                `   · Preview API: ${green(output.apiUrl + "/cms/preview/{LOCALE_CODE}")}`
             ].join("\n")
         );
     } else {
@@ -41,8 +36,8 @@ const printEnvOutput = async (env, context) => {
         console.log(
             [
                 `‣ Public website:`,
-                `   - Website URL: ${green(output.deliveryUrl)}`,
-                `   - Website preview URL: ${green(output.appUrl)}`
+                `   · Website URL: ${green(output.deliveryUrl)}`,
+                `   · Website preview URL: ${green(output.appUrl)}`
             ].join("\n")
         );
     } else {
@@ -53,8 +48,6 @@ const printEnvOutput = async (env, context) => {
         context.info("It seems none of the stacks were deployed, so no info could be provided.");
         context.info(`Please check if the provided environment ${green(env)} is correct.`);
     }
-
-    console.log(line + "\n");
 };
 
 module.exports = {
@@ -108,3 +101,5 @@ module.exports = {
         );
     }
 };
+
+module.exports.printEnvOutput = printEnvOutput;
