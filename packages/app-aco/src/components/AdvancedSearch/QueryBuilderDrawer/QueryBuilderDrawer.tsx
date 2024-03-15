@@ -28,7 +28,7 @@ interface QueryBuilderDrawerProps {
 export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDrawerProps) => {
     const presenter = useMemo<QueryBuilderDrawerPresenter>(() => {
         return new QueryBuilderDrawerPresenter();
-    }, [props.fields]);
+    }, []);
 
     useEffect(() => {
         presenter.load(filter);
