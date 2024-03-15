@@ -8,7 +8,7 @@ interface ResolveCallable<T = any> {
 
 export const resolve = async <T = any>(fn: ResolveCallable<T>) => {
     try {
-        return new Response(await fn());
+        return new Response<T>(await fn());
     } catch (ex) {
         return new ErrorResponse(ex);
     }

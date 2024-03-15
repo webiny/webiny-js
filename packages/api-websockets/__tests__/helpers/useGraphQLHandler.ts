@@ -1,13 +1,17 @@
-import { PluginCollection } from "@webiny/plugins/types";
-import { createPlugins } from "./plugins";
+import { createPlugins, Params as CreatePluginsParams } from "./plugins";
 import { createHandler } from "@webiny/handler-aws/gateway";
 import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import {
     DISCONNECT_ALL_CONNECTIONS,
+    DISCONNECT_CONNECTIONS,
     DISCONNECT_IDENTITY_CONNECTIONS,
     DISCONNECT_TENANT_CONNECTIONS,
+    IDisconnectAllConnectionsResponse,
+    IDisconnectConnectionResponse,
+    IDisconnectConnectionVariables,
+    IDisconnectIdentityConnectionsResponse,
     IDisconnectIdentityConnectionsVariables,
-    IDisconnectConnectionsResponse,
+    IDisconnectTenantConnectionsResponse,
     IDisconnectTenantConnectionsVariables,
     IListConnectionsResponse,
     IListConnectionsVariables,
@@ -16,9 +20,7 @@ import {
 import { getIntrospectionQuery } from "graphql";
 import { GenericRecord } from "@webiny/api/types";
 
-export interface UseHandlerParams {
-    plugins?: PluginCollection;
-}
+export type UseHandlerParams = CreatePluginsParams;
 
 export interface InvokeParams<V = GenericRecord> {
     httpMethod?: "POST";
@@ -30,10 +32,8 @@ export interface InvokeParams<V = GenericRecord> {
 }
 
 export const useGraphQLHandler = (params?: UseHandlerParams) => {
-    const { plugins = [] } = params || {};
-
     const handler = createHandler({
-        plugins: createPlugins(plugins)
+        plugins: createPlugins(params)
     });
     const invoke = async <T = any, V = any>({
         httpMethod = "POST",
@@ -71,7 +71,10 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
             });
         },
         disconnectIdentity: async (identityId: string) => {
-            return invoke<IDisconnectConnectionsResponse, IDisconnectIdentityConnectionsVariables>({
+            return invoke<
+                IDisconnectIdentityConnectionsResponse,
+                IDisconnectIdentityConnectionsVariables
+            >({
                 body: {
                     query: DISCONNECT_IDENTITY_CONNECTIONS,
                     variables: {
@@ -81,7 +84,10 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
             });
         },
         disconnectTenant: async (tenant: string, locale?: string) => {
-            return invoke<IDisconnectConnectionsResponse, IDisconnectTenantConnectionsVariables>({
+            return invoke<
+                IDisconnectTenantConnectionsResponse,
+                IDisconnectTenantConnectionsVariables
+            >({
                 body: {
                     query: DISCONNECT_TENANT_CONNECTIONS,
                     variables: {
@@ -91,8 +97,18 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
                 }
             });
         },
+        disconnect: async (connections: string[]) => {
+            return invoke<IDisconnectConnectionResponse, IDisconnectConnectionVariables>({
+                body: {
+                    query: DISCONNECT_CONNECTIONS,
+                    variables: {
+                        connections
+                    }
+                }
+            });
+        },
         disconnectAll: async () => {
-            return invoke<IDisconnectConnectionsResponse>({
+            return invoke<IDisconnectAllConnectionsResponse>({
                 body: {
                     query: DISCONNECT_ALL_CONNECTIONS
                 }

@@ -2,9 +2,11 @@ import { Resolvers } from "@webiny/handler-graphql/types";
 import { Context } from "~/types";
 import { emptyResolver, resolve } from "./utils";
 import { IWebsocketsContextListConnectionsParams } from "~/context";
+import { IWebsocketsConnectionRegistryData } from "~/registry";
+import { checkPermissions } from "~/graphql/checkPermissions";
 
-export interface IWebsocketsMutationDisconnectConnectionArgs {
-    connectionId: string;
+export interface IWebsocketsMutationDisconnectConnectionsArgs {
+    connections: string[];
 }
 
 export interface IWebsocketsMutationDisconnectIdentityArgs {
@@ -27,21 +29,19 @@ export const createResolvers = (): Resolvers<Context> => {
         WebsocketsQuery: {
             listConnections: async (_, args: IWebsocketsContextListConnectionsParams, context) => {
                 return resolve(async () => {
+                    await checkPermissions(context);
                     return await context.websockets.listConnections(args);
                 });
             }
         },
         WebsocketsMutation: {
             // @ts-expect-error
-            disconnectConnection: async (
-                _,
-                args: IWebsocketsMutationDisconnectConnectionArgs,
-                context
-            ) => {
+            disconnect: async (_, args: IWebsocketsMutationDisconnectConnectionsArgs, context) => {
                 return resolve(async () => {
+                    await checkPermissions(context);
                     return await context.websockets.disconnect({
                         where: {
-                            connectionId: args.connectionId
+                            connections: args.connections
                         }
                     });
                 });
@@ -52,7 +52,8 @@ export const createResolvers = (): Resolvers<Context> => {
                 args: IWebsocketsMutationDisconnectIdentityArgs,
                 context
             ) => {
-                return resolve(async () => {
+                return resolve<IWebsocketsConnectionRegistryData[]>(async () => {
+                    await checkPermissions(context);
                     return await context.websockets.disconnect({
                         where: {
                             identityId: args.identityId
@@ -62,7 +63,8 @@ export const createResolvers = (): Resolvers<Context> => {
             },
             // @ts-expect-error
             disconnectTenant: async (_, args: IWebsocketsMutationDisconnectTenantArgs, context) => {
-                return resolve(async () => {
+                return resolve<IWebsocketsConnectionRegistryData[]>(async () => {
+                    await checkPermissions(context);
                     return await context.websockets.disconnect({
                         where: {
                             tenant: args.tenant,
@@ -72,7 +74,8 @@ export const createResolvers = (): Resolvers<Context> => {
                 });
             },
             disconnectAll: async (_, __, context) => {
-                return resolve(async () => {
+                return resolve<IWebsocketsConnectionRegistryData[]>(async () => {
+                    await checkPermissions(context);
                     return await context.websockets.disconnect();
                 });
             }

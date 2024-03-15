@@ -22,7 +22,7 @@ const streamPipeline = promisify(pipeline);
  */
 export async function extractAndUploadZipFileContents(zipFileUrl: string): Promise<ImportData[]> {
     const log = console.log;
-    const importDataList = [];
+    const importDataList: ImportData[] = [];
 
     const zipFileName = path.basename(zipFileUrl).split("?")[0];
 
@@ -47,12 +47,15 @@ export async function extractAndUploadZipFileContents(zipFileUrl: string): Promi
     log(`Removing ZIP file "${zipFileUrl}" from ${ZIP_FILE_PATH}`);
     await deleteFile(ZIP_FILE_PATH);
 
+    /**
+     * TODO: Possibly do this in parallel?
+     */
     // Extract each page/block zip and upload their content's to S3
-    for (let i = 0; i < zipFilePaths.length; i++) {
-        const currentPath = zipFilePaths[i];
+    for (const currentPath of zipFilePaths) {
         const dataMap = await extractZipAndUploadToS3(currentPath, uniquePath);
         importDataList.push(dataMap);
     }
+    // TODO @pavel why?
     log("Removing all ZIP files located at ", path.dirname(zipFilePaths[0]));
     await deleteFile(path.dirname(zipFilePaths[0]));
 

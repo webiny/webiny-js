@@ -340,4 +340,27 @@ describe("websockets runner", () => {
             statusCode: 200
         });
     });
+
+    it("should return error due to body validation error", async () => {
+        const handler = useHandler();
+
+        const context = await handler.handle();
+        const registry = context.websockets.registry;
+        const validator = new MockWebsocketsEventValidator();
+        const response = new WebsocketsResponse();
+
+        context.websockets = new WebsocketsContext(registry, new MockWebsocketsTransport());
+
+        const runner = new WebsocketsRunner(context, registry, validator, response);
+
+        const result = await runner.run({
+            requestContext: {
+                routeKey: WebsocketsEventRoute.default
+            },
+            body: "somethingWrong"
+        });
+        expect(result).toEqual({
+            statusCode: 200
+        });
+    });
 });

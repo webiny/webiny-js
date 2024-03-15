@@ -10,34 +10,61 @@ import {
 } from "./abstractions/IWebsocketsEventValidator";
 import { createZodError } from "@webiny/utils";
 
-const validation = zod.object({
-    headers: zod.object({}).passthrough().optional(),
-    requestContext: zod.object({
-        connectionId: zod.string(),
-        stage: zod.string(),
-        connectedAt: zod.number(),
-        domainName: zod.string(),
-        eventType: zod.enum([
-            WebsocketsEventRequestContextEventType.connect,
-            WebsocketsEventRequestContextEventType.message,
-            WebsocketsEventRequestContextEventType.disconnect
-        ]),
-        routeKey: zod.string()
-    }),
-    body: zod
-        .string()
-        .transform<IWebsocketsEventData>(value => {
-            if (!value) {
-                return null;
-            }
-            try {
-                return JSON.parse(value);
-            } catch {
-                return value;
-            }
-        })
-        .optional()
-});
+const validation = zod
+    .object({
+        headers: zod.object({}).passthrough().optional(),
+        requestContext: zod.object({
+            connectionId: zod.string(),
+            stage: zod.string(),
+            connectedAt: zod.number(),
+            domainName: zod.string(),
+            eventType: zod.enum([
+                WebsocketsEventRequestContextEventType.connect,
+                WebsocketsEventRequestContextEventType.message,
+                WebsocketsEventRequestContextEventType.disconnect
+            ]),
+            routeKey: zod.string()
+        }),
+        body: zod
+            .string()
+            .transform<IWebsocketsEventData>((value, context) => {
+                if (!value) {
+                    return undefined;
+                }
+                try {
+                    return JSON.parse(value);
+                } catch (ex) {
+                    /**
+                     * We want to log the error, for easier debugging.
+                     */
+                    console.error(`Failed body validation: ${ex.message}`);
+                    console.log(`Body: ${value}`);
+                    /**
+                     * And we want to add an issue to the context, so that the user knows what went wrong.
+                     */
+                    context.addIssue({
+                        path: [],
+                        message: `Invalid JSON: ${ex.message}`,
+                        code: zod.ZodIssueCode.custom,
+                        fatal: true
+                    });
+                }
+            })
+            .optional()
+    })
+    .superRefine((output, context) => {
+        if (output.requestContext.eventType !== WebsocketsEventRequestContextEventType.message) {
+            return;
+        } else if (output.body) {
+            return;
+        }
+        context.addIssue({
+            path: ["body"],
+            message: "There must be a body defined when having a message event.",
+            code: zod.ZodIssueCode.custom,
+            fatal: true
+        });
+    });
 
 const bodyValidation = zod
     .object({

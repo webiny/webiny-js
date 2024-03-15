@@ -6,7 +6,7 @@ import {
     IWebsocketsConnectionRegistryUnregisterParams
 } from "./abstractions/IWebsocketsConnectionRegistry";
 import { createEntity } from "~/registry/entity";
-import { deleteItem, get, put, queryAll } from "@webiny/db-dynamodb";
+import { batchReadAll, deleteItem, get, put, queryAll } from "@webiny/db-dynamodb";
 import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 import { EntityQueryOptions } from "@webiny/db-dynamodb/toolbox";
 
@@ -56,12 +56,10 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
             PK,
             SK: connectionId
         };
-        const original = await get<IWebsocketsConnectionRegistryDbItem>({
-            entity: this.entity,
-            keys
-        });
+        const original = await this.getViaConnection(connectionId);
         if (!original) {
             const message = `There is no connection with ID "${connectionId}".`;
+            console.error(message);
             throw new WebinyError(message, "CONNECTION_NOT_FOUND", keys);
         }
 
@@ -72,11 +70,48 @@ export class WebsocketsConnectionRegistry implements IWebsocketsConnectionRegist
             });
         } catch (ex) {
             console.error(
-                `Could not remove connection from the database: ${original.data.connectionId}`
+                `Could not remove connection from the database: ${original.connectionId}`
             );
             throw new WebinyError(ex.message, ex.code, keys);
         }
     }
+
+    private async getViaConnection(
+        connectionId: string
+    ): Promise<IWebsocketsConnectionRegistryData | null> {
+        const item = await get<IWebsocketsConnectionRegistryDbItem>({
+            entity: this.entity,
+            keys: {
+                PK,
+                SK: connectionId
+            }
+        });
+        return item?.data || null;
+    }
+
+    /**
+     * Uses Primary keys
+     */
+    public async listViaConnections(
+        connections: string[]
+    ): Promise<IWebsocketsConnectionRegistryData[]> {
+        const items = connections.map(connectionId => {
+            return this.entity.getBatch({
+                PK,
+                SK: connectionId
+            });
+        });
+
+        const results = await batchReadAll<IWebsocketsConnectionRegistryDbItem>({
+            table: this.entity.table,
+            items
+        });
+
+        return results.map(item => {
+            return item.data;
+        });
+    }
+
     /**
      * Uses GSI1 keys
      */

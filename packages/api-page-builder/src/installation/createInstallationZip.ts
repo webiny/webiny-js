@@ -1,12 +1,8 @@
 import path from "path";
-/**
- * Package zip-local does not have types.
- */
-// @ts-expect-error
-import zipper from "zip-local";
 import fs from "fs";
+import { create as createArchiver } from "archiver";
 
-export default (destination = "./pageBuilderInstallation.zip") => {
+export default async (destination = "./pageBuilderInstallation.zip"): Promise<void> => {
     if (fs.existsSync(destination)) {
         return;
     }
@@ -16,5 +12,21 @@ export default (destination = "./pageBuilderInstallation.zip") => {
         fs.mkdirSync(dir, { recursive: true });
     }
 
-    return zipper.sync.zip(path.join(__dirname, "files")).compress().save(destination);
+    const source = path.join(__dirname, "files");
+    const archive = createArchiver("zip", {
+        zlib: {
+            level: 9
+        }
+    });
+    const stream = fs.createWriteStream(destination);
+
+    return new Promise<void>((resolve, reject) => {
+        archive
+            .directory(source, false)
+            .on("error", err => reject(err))
+            .pipe(stream);
+
+        stream.on("close", () => resolve());
+        archive.finalize();
+    });
 };

@@ -3,32 +3,20 @@ import { IWebsocketsTransportSendConnection, IWebsocketsTransportSendData } from
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { GenericRecord } from "@webiny/api/types";
 
-export type IWebsocketsContextListConnectionsResponse = Promise<
-    IWebsocketsConnectionRegistryData[]
->;
-
 export type IWebsocketsIdentity = Pick<SecurityIdentity, "id" | "displayName" | "type">;
 
 export interface IWebsocketsContextListConnectionsParamsWhere {
     identityId?: string;
     tenant?: string;
     locale?: string;
+    connections?: string[];
 }
 
 export interface IWebsocketsContextListConnectionsParams {
     where?: IWebsocketsContextListConnectionsParamsWhere;
 }
 
-export interface IWebsocketsContextDisconnectParamsWhere {
-    connectionId?: string;
-    identityId?: string;
-    tenant?: string;
-    locale?: string;
-}
-
-export interface IWebsocketsContextDisconnectParams {
-    where?: IWebsocketsContextDisconnectParamsWhere;
-}
+export type IWebsocketsContextDisconnectConnectionsParams = IWebsocketsContextListConnectionsParams;
 
 export interface IWebsocketsContext {
     readonly registry: IWebsocketsConnectionRegistry;
@@ -43,6 +31,9 @@ export interface IWebsocketsContext {
     ): Promise<void>;
     listConnections(
         params?: IWebsocketsContextListConnectionsParams
-    ): IWebsocketsContextListConnectionsResponse;
-    disconnect(params?: IWebsocketsContextDisconnectParams, notify?: boolean): Promise<boolean>;
+    ): Promise<IWebsocketsConnectionRegistryData[]>;
+    disconnect(
+        params?: IWebsocketsContextDisconnectConnectionsParams,
+        notify?: boolean
+    ): Promise<IWebsocketsConnectionRegistryData[]>;
 }

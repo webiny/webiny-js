@@ -1,10 +1,9 @@
 import WebinyError from "@webiny/error";
-import { IWebsocketsConnectionRegistry } from "~/registry";
+import { IWebsocketsConnectionRegistry, IWebsocketsConnectionRegistryData } from "~/registry";
 import {
     IWebsocketsContext,
-    IWebsocketsContextDisconnectParams,
+    IWebsocketsContextDisconnectConnectionsParams,
     IWebsocketsContextListConnectionsParams,
-    IWebsocketsContextListConnectionsResponse,
     IWebsocketsIdentity
 } from "./abstractions/IWebsocketsContext";
 import {
@@ -44,10 +43,12 @@ export class WebsocketsContext implements IWebsocketsContext {
 
     public async listConnections(
         params?: IWebsocketsContextListConnectionsParams
-    ): IWebsocketsContextListConnectionsResponse {
+    ): Promise<IWebsocketsConnectionRegistryData[]> {
         const where = params?.where || {};
         if (where.identityId) {
             return await this.registry.listViaIdentity(where.identityId);
+        } else if (where.connections) {
+            return await this.registry.listViaConnections(where.connections);
         } else if (where.tenant) {
             return await this.registry.listViaTenant(where.tenant, where.locale);
         }
@@ -55,26 +56,39 @@ export class WebsocketsContext implements IWebsocketsContext {
     }
 
     public async disconnect(
-        params?: IWebsocketsContextDisconnectParams,
+        params?: IWebsocketsContextDisconnectConnectionsParams,
         notify = true
-    ): Promise<boolean> {
-        const where = params?.where || {};
+    ): Promise<IWebsocketsConnectionRegistryData[]> {
+        const connections = await this.listConnections(params);
 
-        const connections = await this.listConnections({ where });
         for (const connection of connections) {
-            await this.registry.unregister(connection);
+            try {
+                await this.registry.unregister(connection);
+            } catch {
+                // do nothing
+            }
         }
-        if (!notify) {
-            return true;
+        if (notify) {
+            try {
+                await this.transport.send(connections, {
+                    action: "forcedDisconnect"
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    "Failed to notify the clients about the forced disconnect.",
+                    "FORCED_DISCONNECT_NOTIFICATION_ERROR",
+                    {
+                        connections,
+                        error: ex
+                    }
+                );
+            }
         }
-
         try {
-            await this.transport.send(connections, {
-                action: "forcedDisconnect"
-            });
+            await this.transport.disconnect(connections);
         } catch (ex) {
             throw new WebinyError(
-                "Failed to notify the clients about the forced disconnect.",
+                "Failed to forcefully disconnect the Websocket clients.",
                 "FORCED_DISCONNECT_ERROR",
                 {
                     connections,
@@ -83,6 +97,6 @@ export class WebsocketsContext implements IWebsocketsContext {
             );
         }
 
-        return true;
+        return connections;
     }
 }
