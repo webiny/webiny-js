@@ -6,7 +6,7 @@ const {
 const { sendEvent } = require("@webiny/cli/utils");
 const { bold } = require("chalk");
 const deployCommand = require("@webiny/cli-plugin-deploy-pulumi/commands/deploy");
-const { printEnvOutput } = require("../info");
+const { getInfo } = require("../info");
 const sleep = require("../utils/sleep");
 const open = require("open");
 const ora = require("ora");
@@ -50,7 +50,7 @@ module.exports = async (inputs, context) => {
         installed && console.log();
 
         // 2. Check if first deployment.
-        const isFirstDeployment = getStackOutput({ folder: "apps/core", env });
+        const isFirstDeployment = !getStackOutput({ folder: "apps/core", env });
         if (isFirstDeployment) {
             context.info(`Looks like this is your first time deploying the project.`);
             context.info(
@@ -80,12 +80,21 @@ module.exports = async (inputs, context) => {
             isFirstDeployment
         });
 
+        if (isFirstDeployment) {
+            context.success(`Congratulations! You've just deployed a brand new project!`);
+        } else {
+            context.success(`Project deployed successfully.`);
+        }
+
+        const projectDetails = await getInfo(env);
+        console.log();
+        console.log(bold("Project Details"));
+        console.log(projectDetails);
+
         const adminAppOutput = getStackOutput({ folder: "apps/admin", env });
 
         if (isFirstDeployment) {
-            context.success(`Congratulations! You've just deployed a brand new project!`);
             console.log();
-
             context.info(
                 "The final step is to open the %s app in your browser and complete the installation wizard.",
                 "Admin"
@@ -101,31 +110,18 @@ module.exports = async (inputs, context) => {
                 spinner.succeed(
                     `Successfully opened ${context.info.hl("Admin")} app in your browser.`
                 );
-                console.log();
-
-                context.success(
-                    `Initial deployed completed successfully. Here are the project details.`
-                );
-                console.log();
             } catch (e) {
                 spinner.fail(`Failed to open ${context.error.hl("Admin")} app in your browser.`);
 
                 await sleep(1000);
                 console.log();
                 context.warning(
-                    `Failed to open %s app in your browser. To finish the setup, please visit %s and complete the installation.`,
+                    `Failed to open %s app in your browser. To finish the setup and start using the project, please visit %s and complete the installation wizard.`,
                     "Admin",
                     adminAppOutput.appUrl
                 );
-                console.log();
             }
-        } else {
-            context.success(`Project deployed successfully. Here are the project details.`);
-            console.log();
         }
-
-        console.log(bold("Project details"));
-        await printEnvOutput(env, context);
 
         const eventName = getTelemetryEventName("end");
         await sendEvent(eventName);
