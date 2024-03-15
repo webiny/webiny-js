@@ -1,14 +1,13 @@
-import { ApolloClient } from "apollo-client";
-import { EntriesGatewayInterface, EntriesGraphQLGateway } from "../adapters";
+import { EntriesGatewayInterface } from "../adapters";
 import { EntryRepository } from "./EntryRepository";
 
 export class EntryRepositoryFactory {
     private gateway: EntriesGatewayInterface | undefined;
     private cache: Map<string, EntryRepository> = new Map();
 
-    getRepository(client: ApolloClient<any>, modelIds: string[]) {
+    getRepository(gateway: EntriesGatewayInterface, modelIds: string[]) {
         if (!this.gateway) {
-            this.gateway = new EntriesGraphQLGateway(client);
+            this.gateway = gateway;
         }
 
         const cacheKey = this.getCacheKey(modelIds);

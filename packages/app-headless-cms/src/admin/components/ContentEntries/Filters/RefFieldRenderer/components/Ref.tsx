@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-
 import debounce from "lodash/debounce";
 import { observer } from "mobx-react-lite";
 import { useBind } from "@webiny/form";
+import { EntriesGraphQLGateway } from "../adapters";
 import { entryRepositoryFactory } from "../domain";
 import { AutoComplete } from "./AutoComplete";
 import { RefPresenter } from "./RefPresenter";
@@ -15,7 +15,8 @@ export const Ref = observer(() => {
     const client = useApolloClient();
 
     const presenter = useMemo<RefPresenter>(() => {
-        const repository = entryRepositoryFactory.getRepository(client, field.settings.modelIds);
+        const gateway = new EntriesGraphQLGateway(client);
+        const repository = entryRepositoryFactory.getRepository(gateway, field.settings.modelIds);
         return new RefPresenter(repository);
     }, [client, field.settings.modelIds]);
 
