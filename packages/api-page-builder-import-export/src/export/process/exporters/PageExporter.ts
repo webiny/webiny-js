@@ -5,7 +5,30 @@ import Zipper from "~/export/zipper";
 import { extractFilesFromData } from "~/export/utils";
 
 export interface ExportedPageData {
-    page: Pick<Page, "content" | "title" | "version" | "status" | "settings" | "path">;
+    /**
+     * TODO: is it really ok not to export whole page object?
+     * What if we add some new properties in the future?
+     *
+     * Type of the exported page data is now created by removing unnecessary properties from the Page type.
+     * This way TS will break if we add new property and forget to handle it in the export/import process.
+     */
+    page: Omit<
+        Page,
+        | "id"
+        | "pid"
+        | "tenant"
+        | "locale"
+        | "editor"
+        | "category"
+        | "createdFrom"
+        | "createdBy"
+        | "createdOn"
+        | "savedOn"
+        | "publishedOn"
+        | "locked"
+        | "ownedBy"
+        | "webinyVersion"
+    >;
     files: File[];
 }
 
@@ -27,14 +50,14 @@ export class PageExporter {
 
         const fileIds = [...files, ...pageSettingsImages].map(imageFile => imageFile.id);
         // Get file data for all images
-        const imageFilesData = [];
+        const imageFilesData: File[] = [];
         if (fileIds.length > 0) {
             const [filesData] = await this.fileManager.listFiles({ where: { id_in: fileIds } });
             imageFilesData.push(...filesData);
         }
 
         // Extract the page data in a json file and upload it to S3
-        const pageData = {
+        const pageData: ExportedPageData = {
             page: {
                 content: page.content,
                 title: page.title,

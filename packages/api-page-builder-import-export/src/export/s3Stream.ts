@@ -11,6 +11,8 @@ import {
 } from "@webiny/aws-sdk/client-s3";
 import { Upload } from "@webiny/aws-sdk/lib-storage";
 
+export type { ListObjectsOutput };
+
 const ARCHIVE_CONTENT_TYPE = "application/zip";
 
 class S3Stream {

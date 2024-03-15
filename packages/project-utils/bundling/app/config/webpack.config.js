@@ -216,9 +216,6 @@ module.exports = function (webpackEnv, { paths, options }) {
                 .filter(ext => useTypeScript || !ext.includes("ts")),
             alias: {
                 os: require.resolve("os-browserify/browser"),
-                // Support React Native Web
-                // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
-                "react-native": require.resolve("react-native-web"),
                 "react/jsx-runtime": require.resolve("react/jsx-runtime.js"),
                 react: require.resolve("react"),
                 // Allows for better profiling with ReactDevTools
@@ -232,7 +229,8 @@ module.exports = function (webpackEnv, { paths, options }) {
                 assert: require.resolve("assert-browserify"),
                 buffer: require.resolve("buffer/"),
                 crypto: require.resolve("crypto-browserify"),
-                path: require.resolve("path-browserify")
+                path: require.resolve("path-browserify"),
+                vm: require.resolve("vm-browserify")
             }
         },
 
@@ -418,6 +416,9 @@ module.exports = function (webpackEnv, { paths, options }) {
         plugins: [
             new webpack.ProvidePlugin({
                 Buffer: ["buffer", "Buffer"]
+            }),
+            new webpack.ProvidePlugin({
+                process: "process/browser"
             }),
             // Generates an `index.html` file with the <script> injected.
             new HtmlWebpackPlugin(

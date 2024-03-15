@@ -4,13 +4,14 @@ import {
     QueryCommand,
     unmarshall
 } from "@webiny/aws-sdk/client-dynamodb";
+import { GenericRecord } from "~/types";
 
 interface ServiceManifest {
     name: string;
     manifest: Manifest;
 }
 
-type Manifest = Record<string, any>;
+type Manifest = GenericRecord<string>;
 
 class ServiceManifestLoader {
     private client: DynamoDBDocument | undefined;
