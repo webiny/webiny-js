@@ -172,7 +172,11 @@ const UsersDataList = () => {
             {({ data }: { data: UserItem[] }) => (
                 <ScrollList twoLine avatarList data-testid="default-data-list">
                     {data.map(item => (
-                        <ListItem key={item.id} selected={item.id === id}>
+                        <ListItem
+                            key={item.id}
+                            selected={item.id === id}
+                            style={{ height: "auto" }}
+                        >
                             <ListItemGraphic>
                                 <Avatar
                                     renderImage={props => (
