@@ -33,6 +33,10 @@ export class RefPresenter implements IRefPresenter {
                 return;
             }
 
+            /**
+             * Currently, the FieldDTO `value` is stored as a string. For REF fields, we save `modelId` and `entryId` in an object and convert it into a JSON string.
+             * Here, we parse the string to extract parameters, which we subsequently use to retrieve the entry from the repository.
+             */
             const { entryId, modelId } = JSON.parse(value);
 
             const entry = await this.repository.getEntryById(modelId, entryId);

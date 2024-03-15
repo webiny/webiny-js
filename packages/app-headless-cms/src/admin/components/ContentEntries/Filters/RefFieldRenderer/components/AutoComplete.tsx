@@ -22,6 +22,11 @@ export const AutoComplete = (props: AutoCompleteProps) => {
                             return;
                         }
 
+                        /**
+                         * We currently store the value of the FieldDTO as a string.
+                         * For REF fields, we need to save both modelId and entryId to load this back when showing pre-populated options.
+                         * To achieve this, we'll store them in an object and convert it into a JSON string.
+                         */
                         onChange(
                             JSON.stringify({
                                 entryId: selection.entryId,
