@@ -106,7 +106,7 @@ context("Page Builder - Blocks Export/Import", () => {
         // Now targeting <button> directly. Revert to `.findByTestId("pb-blocks-list-block-export-btn")` if issue is fixed.
         cy.get('button[data-testid="pb-blocks-list-block-export-btn"]').click();
         cy.findByText("Your export is now ready!").should("exist");
-        cy.get("span.link-text.mdc-typography--body2")
+        cy.get(".link-text.mdc-typography--body2")
             .invoke("text")
             .then(url => {
                 cy.pbDeleteAllBlockCategories();
