@@ -48,53 +48,62 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  init:
-    name: Init
-    runs-on: webiny-build-packages
+  constants:
+    name: Create constants
+    runs-on: ubuntu-latest
     outputs:
-      ts: ${{ steps.get-timestamp.outputs.ts }}
+      global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
+      run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
       is-fork-pr: ${{ steps.is-fork-pr.outputs.is-fork-pr }}
     steps:
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-      - uses: actions/checkout@v4
-      - name: Get timestamp
-        id: get-timestamp
+      - name: Create global cache key
+        id: global-cache-key
         run: >-
-          echo "ts=$(node --eval "console.log(new Date().getTime())")" >>
+          echo "global-cache-key=${{ github.base_ref }}-${{ runner.os
+          }}-$(/bin/date -u "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >>
           $GITHUB_OUTPUT
+      - name: Create workflow run cache key
+        id: run-cache-key
+        run: >-
+          echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
+          vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
       - name: Is a PR from a fork
         id: is-fork-pr
         run: >-
           echo "is-fork-pr=${{ github.event.pull_request.head.repo.fork }}" >>
           $GITHUB_OUTPUT
+  init:
+    name: Init
+    needs: constants
+    runs-on: webiny-build-packages
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - uses: actions/checkout@v4
       - uses: actions/cache@v4
-        id: yarn-cache
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
-        id: cached-packages
         with:
           path: .webiny/cached-packages
-          key: >-
-            ${{ runner.os }}-${{ github.event.number }}-${{
-            secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: ${{ needs.constants.outputs.global-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
       - name: Build packages
         run: yarn build:quick
       - uses: actions/cache@v4
-        id: packages-cache
         with:
           path: .webiny/cached-packages
-          key: packages-cache-${{ steps.get-timestamp.outputs.ts }}
+          key: ${{ needs.constants.outputs.run-cache-key }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   staticCodeAnalysis:
-    needs: init
+    needs:
+      - constants
+      - init
     name: Static code analysis
     steps:
       - uses: actions/setup-node@v4
@@ -108,7 +117,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
-          key: packages-cache-${{ needs.init.outputs.ts }}
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
       - name: Check code formatting
@@ -145,7 +154,7 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   jestTestsNoStorage:
-    needs: init
+    needs: constants
     name: ${{ matrix.package.cmd }}
     strategy:
       fail-fast: false
@@ -174,7 +183,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
-          key: packages-cache-${{ needs.init.outputs.ts }}
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
       - name: Build packages
@@ -182,7 +191,7 @@ jobs:
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
   jestTestsDdb:
-    needs: init
+    needs: constants
     name: ${{ matrix.package.cmd }}
     strategy:
       fail-fast: false
@@ -226,7 +235,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
-          key: packages-cache-${{ needs.init.outputs.ts }}
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
       - name: Build packages
@@ -234,7 +243,7 @@ jobs:
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
   jestTestsDdbEs:
-    needs: init
+    needs: constants
     name: ${{ matrix.package.cmd }}
     strategy:
       fail-fast: false
@@ -283,7 +292,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
-          key: packages-cache-${{ needs.init.outputs.ts }}
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
       - name: Build packages
@@ -292,9 +301,9 @@ jobs:
         run: yarn test ${{ matrix.package.cmd }}
     permissions:
       id-token: write
-    if: needs.init.outputs.is-fork-pr != 'true'
+    if: needs.constants.outputs.is-fork-pr != 'true'
   jestTestsDdbOs:
-    needs: init
+    needs: constants
     name: ${{ matrix.package.cmd }}
     strategy:
       fail-fast: false
@@ -343,7 +352,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
-          key: packages-cache-${{ needs.init.outputs.ts }}
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
       - name: Build packages
@@ -352,11 +361,13 @@ jobs:
         run: yarn test ${{ matrix.package.cmd }}
     permissions:
       id-token: write
-    if: needs.init.outputs.is-fork-pr != 'true'
+    if: needs.constants.outputs.is-fork-pr != 'true'
   verdaccioPublish:
     name: Publish to Verdaccio
-    needs: init
-    if: needs.init.outputs.is-fork-pr != 'true'
+    needs:
+      - constants
+      - init
+    if: needs.constants.outputs.is-fork-pr != 'true'
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -372,7 +383,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
-          key: packages-cache-${{ needs.init.outputs.ts }}
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
       - name: Build packages
