@@ -104,7 +104,7 @@ module.exports = async (inputs, context) => {
                 console.log();
 
                 context.success(
-                    `Initial deployed completed successfully. Here are some useful project details.`
+                    `Initial deployed completed successfully. Here are the project details.`
                 );
                 console.log();
             } catch (e) {
@@ -120,7 +120,7 @@ module.exports = async (inputs, context) => {
                 console.log();
             }
         } else {
-            context.success(`Project deployed successfully. Here are some useful project details.`);
+            context.success(`Project deployed successfully. Here are the project details.`);
             console.log();
         }
 
