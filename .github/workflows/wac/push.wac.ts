@@ -46,6 +46,7 @@ const createCypressJobs = (dbSetup: string) => {
         YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
     };
 
+
     if (dbSetup === "ddb-es") {
         env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
         env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
