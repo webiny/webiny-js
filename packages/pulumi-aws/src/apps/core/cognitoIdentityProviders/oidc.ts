@@ -18,6 +18,7 @@ export const getOidcIdpConfig = (
             email: "email",
             given_name: "given_name",
             family_name: "family_name",
+            preferred_username: "email",
             ...config.attributeMapping
         }
     };

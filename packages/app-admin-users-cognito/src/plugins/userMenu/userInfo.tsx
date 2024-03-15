@@ -62,7 +62,11 @@ const linkStyles = css({
     }
 });
 
-export const UserInfo = () => {
+interface UserInfoProps {
+    accountRoute?: string;
+}
+
+export const UserInfo = ({ accountRoute }: UserInfoProps) => {
     const security = useSecurity();
 
     if (!security || !security.identity) {
@@ -73,7 +77,10 @@ export const UserInfo = () => {
     const { currentTenant, defaultTenant } = security.identity;
 
     let wrapper: any = { Component: Link, props: { to: "/account" } };
-    if (currentTenant && defaultTenant && currentTenant.id !== defaultTenant.id) {
+    if (
+        !accountRoute ||
+        (currentTenant && defaultTenant && currentTenant.id !== defaultTenant.id)
+    ) {
         wrapper = { Component: "div", props: {} };
     }
 

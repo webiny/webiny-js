@@ -1,19 +1,8 @@
 import React, { Fragment, memo } from "react";
-import {
-    Compose,
-    Plugin,
-    LoginScreenRenderer,
-    AddMenu as Menu,
-    AddUserMenuItem,
-    AddRoute,
-    Layout,
-    Decorator,
-    GenericComponent
-} from "@webiny/app-admin";
+import { Plugin, AddMenu as Menu, AddUserMenuItem, AddRoute, Layout } from "@webiny/app-admin";
 import { plugins } from "@webiny/plugins";
 import { HasPermission } from "@webiny/app-security";
 import { Permission } from "~/plugins/constants";
-import { createAuthentication, CreateAuthenticationConfig } from "~/createAuthentication";
 import { UsersView } from "~/ui/views/Users/UsersView";
 import { Account } from "~/ui/views/Account";
 import { UserInfo } from "./plugins/userMenu/userInfo";
@@ -23,29 +12,20 @@ import { SignOut } from "./plugins/userMenu/signOut";
 import installation from "./plugins/installation";
 import permissionRenderer from "./plugins/permissionRenderer";
 import cognito from "./plugins/cognito";
-
-const createLoginScreenDecorator = (
-    config?: CreateAuthenticationConfig
-): Decorator<GenericComponent> => {
-    return () => createAuthentication(config);
-};
-
-export interface CognitoProps {
-    config?: CreateAuthenticationConfig;
-}
+import { CognitoLogin, CognitoProps } from "./CognitoLogin";
 
 const CognitoIdP = (props: CognitoProps) => {
     plugins.register([installation, permissionRenderer, cognito()]);
 
     return (
         <Fragment>
-            <Compose
-                component={LoginScreenRenderer}
-                with={createLoginScreenDecorator(props.config)}
+            <CognitoLogin
+                config={props.config}
+                userMenuItems={{ userInfo: false, signOut: false }}
             />
             <Plugin>
                 <HasPermission name={Permission.Users}>
-                    <AddRoute exact path={"/admin-users"}>
+                    <AddRoute path={"/admin-users"}>
                         <Layout title={"Admin Users"}>
                             <UsersView />
                         </Layout>
@@ -60,12 +40,12 @@ const CognitoIdP = (props: CognitoProps) => {
                         </Menu>
                     </Menu>
                 </HasPermission>
-                <AddRoute exact path={"/account"}>
+                <AddRoute path={"/account"}>
                     <Layout title={"User Account"}>
                         <Account />
                     </Layout>
                 </AddRoute>
-                <AddUserMenuItem element={<UserInfo />} />
+                <AddUserMenuItem element={<UserInfo accountRoute={"/account"} />} />
                 <AddUserMenuItem element={<AccountDetails />} />
                 <AddUserMenuItem element={<SignOut />} />
             </Plugin>

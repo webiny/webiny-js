@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Auth } from "@aws-amplify/auth";
-import { AuthOptions, CognitoHostedUIIdentityProvider } from "@aws-amplify/auth/lib-esm/types";
+import { AuthOptions } from "@aws-amplify/auth/lib-esm/types";
 import ApolloClient from "apollo-client";
 import { useApolloClient } from "@apollo/react-hooks";
 import { setContext } from "apollo-link-context";
@@ -11,12 +11,21 @@ import { CognitoIdToken } from "@webiny/app-cognito-authenticator/types";
 import { Authenticator } from "@webiny/app-cognito-authenticator/Authenticator";
 import { useSecurity } from "@webiny/app-security";
 import { config as appConfig } from "@webiny/app/config";
-import SignIn from "~/views/SignIn";
-import RequireNewPassword from "~/views/RequireNewPassword";
-import ForgotPassword from "~/views/ForgotPassword";
-import SetNewPassword from "~/views/SetNewPassword";
-import SignedIn from "~/views/SignedIn";
-import LoggingIn from "~/views/LoggingIn";
+import { SignIn } from "~/views/SignIn";
+import { RequireNewPassword } from "~/views/RequireNewPassword";
+import { ForgotPassword } from "~/views/ForgotPassword";
+import { SetNewPassword } from "~/views/SetNewPassword";
+import { SignedIn } from "~/views/SignedIn";
+import { LoggingIn } from "~/views/LoggingIn";
+import { FederatedIdentityProvider } from "~/federatedIdentityProviders";
+import { FederatedProviders } from "~/components/FederatedProviders";
+import { View } from "~/components/View";
+
+export const Components = {
+    View,
+    FederatedProviders,
+    SignIn
+};
 
 const createApolloLinkPlugin = (): ApolloLinkPlugin => {
     return new ApolloLinkPlugin(() => {
@@ -63,17 +72,14 @@ export interface AuthenticationProps {
     children: React.ReactNode;
 }
 
-// This tricks TypeScript into thinking that it's a string type that literal string types are not assignable to, and thus the union won't get reduced to only string.
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type CognitoFederatedProvider = keyof typeof CognitoHostedUIIdentityProvider | (string & {});
-
 export interface AuthenticationFactoryConfig extends AuthOptions {
-    federatedProviders?: CognitoFederatedProvider[];
-    onError?(error: Error): void;
-    getIdentityData(params: {
+    allowSignInWithCredentials?: boolean;
+    federatedProviders?: FederatedIdentityProvider[];
+    onError?: (error: Error) => void;
+    getIdentityData: (params: {
         client: ApolloClient<any>;
         payload: { [key: string]: any };
-    }): Promise<{ [key: string]: any }>;
+    }) => Promise<{ [key: string]: any }>;
 }
 
 interface AuthenticationFactory {
@@ -81,6 +87,7 @@ interface AuthenticationFactory {
 }
 
 export const createAuthentication: AuthenticationFactory = ({
+    allowSignInWithCredentials = true,
     getIdentityData,
     onError,
     ...config
@@ -144,7 +151,10 @@ export const createAuthentication: AuthenticationFactory = ({
                 {loadingIdentity ? (
                     <LoggingIn />
                 ) : (
-                    <SignIn federatedProviders={config.federatedProviders} />
+                    <SignIn
+                        federatedProviders={config.federatedProviders}
+                        allowSignInWithCredentials={allowSignInWithCredentials}
+                    />
                 )}
                 <RequireNewPassword />
                 <ForgotPassword />
