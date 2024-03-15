@@ -133,12 +133,12 @@ export const pullRequestsDev = createWorkflow({
                 {
                     name: "Create global cache key",
                     id: "global-cache-key",
-                    run: 'echo "global-cache-key=${{ github.base_ref }}-${{ runner.os }}-$(/bin/date -u "+%m%d")-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
+                    run: 'echo "global-cache-key=${{ github.base_ref }}-${{ runner.os }}-$(/bin/date -u "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
                 },
                 {
                     name: "Create workflow run cache key",
                     id: "run-cache-key",
-                    run: 'echo "run-cache-key=-${{ github.run_id }}-${{ github.run_attempt }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
+                    run: 'echo "run-cache-key=-${{ github.run_id }}-${{ github.run_attempt }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
                 },
                 {
                     name: "Is a PR from a fork",
