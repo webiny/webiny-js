@@ -138,7 +138,7 @@ export const pullRequestsDev = createWorkflow({
                 {
                     name: "Create workflow run cache key",
                     id: "run-cache-key",
-                    run: 'echo "run-cache-key=-${{ github.run_id }}-${{ github.run_attempt }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
+                    run: 'echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
                 },
                 {
                     name: "Is a PR from a fork",
@@ -168,7 +168,7 @@ export const pullRequestsDev = createWorkflow({
             ]
         }),
         staticCodeAnalysis: createJob({
-            needs: "init",
+            needs: ["constants", "init"],
             name: "Static code analysis",
             steps: [
                 ...yarnCacheSteps,
@@ -226,7 +226,7 @@ export const pullRequestsDev = createWorkflow({
 
         verdaccioPublish: createJob({
             name: "Publish to Verdaccio",
-            needs: ["init", "constants"],
+            needs: ["constants", "init"],
             if: "needs.constants.outputs.is-fork-pr != 'true'",
             checkout: {
                 "fetch-depth": 0,

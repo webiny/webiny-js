@@ -65,8 +65,8 @@ jobs:
       - name: Create workflow run cache key
         id: run-cache-key
         run: >-
-          echo "run-cache-key=-${{ github.run_id }}-${{ github.run_attempt
-          }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
+          echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
+          vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
       - name: Is a PR from a fork
         id: is-fork-pr
         run: >-
@@ -101,7 +101,9 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   staticCodeAnalysis:
-    needs: init
+    needs:
+      - constants
+      - init
     name: Static code analysis
     steps:
       - uses: actions/setup-node@v4
@@ -363,8 +365,8 @@ jobs:
   verdaccioPublish:
     name: Publish to Verdaccio
     needs:
-      - init
       - constants
+      - init
     if: needs.constants.outputs.is-fork-pr != 'true'
     steps:
       - uses: actions/setup-node@v4
