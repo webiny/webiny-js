@@ -1,6 +1,6 @@
 import React, {
-    ReactElement,
     memo,
+    ReactElement,
     useCallback,
     useEffect,
     useMemo,
@@ -20,6 +20,9 @@ import {
     Cell,
     Column as DefaultColumn,
     ColumnDef,
+    flexRender,
+    getCoreRowModel,
+    getSortedRowModel,
     OnChangeFn,
     Row,
     RowSelectionState,
@@ -429,7 +432,7 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
         return sorting;
     }, [sorting]);
 
-    const table = useReactTable({
+    const table = useReactTable<T>({
         data: defineData(data, loadingInitial),
         columns: defineColumns(columns, {
             canSelectAllRows,
@@ -469,6 +472,12 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
         },
         [table, tableWidth]
     );
+    /**
+     * Had to memoize the rows to avoid browser freeze.
+     */
+    const tableRows = useMemo(() => {
+        return table.getRowModel().rows;
+    }, [table]);
 
     return (
         <div ref={tableRef}>
@@ -524,7 +533,7 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
                         ))}
                     </DataTableHead>
                     <DataTableBody>
-                        {table.getRowModel().rows.map(row => (
+                        {tableRows.map(row => (
                             <MemoTableRow<T>
                                 key={row.original.id || row.id}
                                 cells={row.getVisibleCells()}
