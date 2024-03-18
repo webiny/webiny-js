@@ -1,6 +1,7 @@
 import { CmsContext, CmsEntry, CmsFieldTypePlugins, CmsModel } from "~/types";
 import { resolveGet } from "./resolvers/manage/resolveGet";
 import { resolveList } from "./resolvers/manage/resolveList";
+import { resolveListDeleted } from "./resolvers/manage/resolveListDeleted";
 import { resolveGetRevisions } from "./resolvers/manage/resolveGetRevisions";
 import { resolveGetByIds } from "./resolvers/manage/resolveGetByIds";
 import { resolveCreate } from "./resolvers/manage/resolveCreate";
@@ -72,7 +73,8 @@ export const createManageResolvers: CreateManageResolvers = ({
             [`get${model.singularApiName}`]: resolveGet({ model }),
             [`get${model.singularApiName}Revisions`]: resolveGetRevisions({ model }),
             [`get${model.pluralApiName}ByIds`]: resolveGetByIds({ model }),
-            [`list${model.pluralApiName}`]: resolveList({ model })
+            [`list${model.pluralApiName}`]: resolveList({ model }),
+            [`listDeleted${model.pluralApiName}`]: resolveListDeleted({ model })
         },
         Mutation: {
             [`create${model.singularApiName}`]: resolveCreate({ model }),

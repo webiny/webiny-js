@@ -27,8 +27,12 @@ export class ElasticsearchQueryBuilderOperatorNotPlugin extends ElasticsearchQue
 
         if (typeOf === "boolean") {
             query.filter.push({
-                term: {
-                    [basePath]: !value
+                bool: {
+                    must_not: {
+                        term: {
+                            [path]: value
+                        }
+                    }
                 }
             });
             return;

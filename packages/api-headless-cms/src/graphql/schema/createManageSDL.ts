@@ -181,6 +181,14 @@ export const createManageSDL: CreateManageSDL = ({
                 after: String
                 search: String
             ): ${singularName}ListResponse
+            
+            listDeleted${pluralName} (
+                where: ${singularName}ListWhereInput
+                sort: [${singularName}ListSorter]
+                limit: Int
+                after: String
+                search: String
+            ): ${singularName}ListResponse
         }
 
         extend type Mutation {
