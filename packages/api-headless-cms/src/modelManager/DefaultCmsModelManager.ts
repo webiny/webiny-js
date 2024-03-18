@@ -42,6 +42,10 @@ export class DefaultCmsModelManager implements CmsModelManager {
         return this._context.cms.listLatestEntries(this._model, params);
     }
 
+    public async listDeleted(params: CmsEntryListParams) {
+        return this._context.cms.listDeletedEntries(this._model, params);
+    }
+
     public async getPublishedByIds(ids: string[]) {
         return this._context.cms.getPublishedEntriesByIds(this._model, ids);
     }

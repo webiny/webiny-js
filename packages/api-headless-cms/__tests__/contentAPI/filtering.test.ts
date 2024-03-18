@@ -72,7 +72,7 @@ describe("filtering", () => {
         ...manageOpts
     });
 
-    const filterOutFields = ["meta"];
+    const filterOutFields = ["meta", "deletedOn", "deletedBy"];
 
     const createAndPublishFruit = async (data: any): Promise<Fruit> => {
         const [response] = await createFruit({

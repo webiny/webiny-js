@@ -58,11 +58,13 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             revisionCreatedOn: { type: "string" },
             revisionModifiedOn: { type: "string" },
             revisionSavedOn: { type: "string" },
+            revisionDeletedOn: { type: "string" },
             revisionFirstPublishedOn: { type: "string" },
             revisionLastPublishedOn: { type: "string" },
             revisionCreatedBy: { type: "map" },
             revisionModifiedBy: { type: "map" },
             revisionSavedBy: { type: "map" },
+            revisionDeletedBy: { type: "map" },
             revisionFirstPublishedBy: { type: "map" },
             revisionLastPublishedBy: { type: "map" },
 
@@ -72,11 +74,13 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             createdOn: { type: "string" },
             modifiedOn: { type: "string" },
             savedOn: { type: "string" },
+            deletedOn: { type: "string" },
             firstPublishedOn: { type: "string" },
             lastPublishedOn: { type: "string" },
             createdBy: { type: "map" },
             modifiedBy: { type: "map" },
             savedBy: { type: "map" },
+            deletedBy: { type: "map" },
             firstPublishedBy: { type: "map" },
             lastPublishedBy: { type: "map" },
 
@@ -91,6 +95,9 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             },
             location: {
                 type: "map"
+            },
+            deleted: {
+                type: "boolean"
             },
             values: {
                 type: "map"

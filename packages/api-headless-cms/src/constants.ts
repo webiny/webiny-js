@@ -8,11 +8,13 @@ export const ENTRY_META_FIELDS = [
     "createdOn",
     "modifiedOn",
     "savedOn",
+    "deletedOn",
     "firstPublishedOn",
     "lastPublishedOn",
     "createdBy",
     "modifiedBy",
     "savedBy",
+    "deletedBy",
     "firstPublishedBy",
     "lastPublishedBy",
 
@@ -20,11 +22,13 @@ export const ENTRY_META_FIELDS = [
     "revisionCreatedOn",
     "revisionModifiedOn",
     "revisionSavedOn",
+    "revisionDeletedOn",
     "revisionFirstPublishedOn",
     "revisionLastPublishedOn",
     "revisionCreatedBy",
     "revisionModifiedBy",
     "revisionSavedBy",
+    "revisionDeletedBy",
     "revisionFirstPublishedBy",
     "revisionLastPublishedBy"
 ] as const;
@@ -35,11 +39,13 @@ export interface RecordWithEntryMetaFields {
     revisionCreatedOn: string;
     revisionSavedOn: string;
     revisionModifiedOn: string | null;
+    revisionDeletedOn: string | null;
     revisionFirstPublishedOn: string | null;
     revisionLastPublishedOn: string | null;
     revisionCreatedBy: CmsIdentity;
     revisionSavedBy: CmsIdentity;
     revisionModifiedBy: CmsIdentity | null;
+    revisionDeletedBy: CmsIdentity | null;
     revisionFirstPublishedBy: CmsIdentity | null;
     revisionLastPublishedBy: CmsIdentity | null;
 
@@ -47,11 +53,13 @@ export interface RecordWithEntryMetaFields {
     createdOn: string;
     savedOn: string;
     modifiedOn: string | null;
+    deletedOn: string | null;
     firstPublishedOn: string | null;
     lastPublishedOn: string | null;
     createdBy: CmsIdentity;
     savedBy: CmsIdentity;
     modifiedBy: CmsIdentity | null;
+    deletedBy: CmsIdentity | null;
     firstPublishedBy: CmsIdentity | null;
     lastPublishedBy: CmsIdentity | null;
 }
@@ -76,9 +84,13 @@ export const pickEntryMetaFields = (
 };
 
 export const isNullableEntryMetaField = (fieldName: EntryMetaFieldName) => {
-    // Only modifiedX and publishedX fields are nullable.
+    // Only modifiedX, publishedX, deletedX fields are nullable.
     const lcFieldName = fieldName.toLowerCase();
-    return lcFieldName.includes("modified") || lcFieldName.includes("published");
+    return (
+        lcFieldName.includes("modified") ||
+        lcFieldName.includes("published") ||
+        lcFieldName.includes("deleted")
+    );
 };
 
 export const isDateTimeEntryMetaField = (fieldName: EntryMetaFieldName) => {
