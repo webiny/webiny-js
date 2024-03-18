@@ -1,11 +1,7 @@
 const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
-const { getDuration } = require("../../utils");
-const chalk = require("chalk");
 const { getProjectApplication } = require("@webiny/cli/utils");
 
 module.exports = async options => {
-    const duration = getDuration();
-
     const { overrides, logs, cwd, debug } = options;
 
     let projectApplication;
@@ -66,7 +62,7 @@ module.exports = async options => {
                 return;
             }
 
-            logs && console.log(`Compiled successfully in ${chalk.green(duration()) + "s"}.`);
+            logs && console.log(`Compiled successfully.`);
             resolve();
         });
     });

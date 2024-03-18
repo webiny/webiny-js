@@ -27,9 +27,8 @@ module.exports.applyDefaults = () => {
     }
 
     if (!("REACT_APP_WEBINY_TELEMETRY_NEW_USER" in process.env)) {
-        process.env.REACT_APP_WEBINY_TELEMETRY_NEW_USER = Boolean(
-            globalConfig.get("newUser")
-        ).toString();
+        const newUser = Boolean(globalConfig.get("newUser")).toString();
+        process.env.REACT_APP_WEBINY_TELEMETRY_NEW_USER = newUser;
     }
 
     if (!("INLINE_RUNTIME_CHUNK" in process.env)) {

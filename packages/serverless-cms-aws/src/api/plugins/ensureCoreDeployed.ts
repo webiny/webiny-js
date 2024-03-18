@@ -2,7 +2,7 @@ import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 import { BeforeDeployPlugin } from "@webiny/cli-plugin-deploy-pulumi/plugins";
 import { GracefulError } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
-export const ensureApiDeployed = new BeforeDeployPlugin(({ env }, ctx) => {
+export const ensureCoreDeployed = new BeforeDeployPlugin(({ env }, ctx) => {
     const output = getStackOutput({ folder: "apps/core", env });
     const coreDeployed = output && Object.keys(output).length > 0;
     if (coreDeployed) {
@@ -21,4 +21,4 @@ export const ensureApiDeployed = new BeforeDeployPlugin(({ env }, ctx) => {
     );
 });
 
-ensureApiDeployed.name = "api.before-deploy.ensure-core-deployed";
+ensureCoreDeployed.name = "api.before-deploy.ensure-core-deployed";

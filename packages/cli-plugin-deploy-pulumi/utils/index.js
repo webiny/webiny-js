@@ -10,6 +10,7 @@ const runHook = require("./runHook");
 const notify = require("./notify");
 const login = require("./login");
 const mapStackOutput = require("./mapStackOutput");
+const measureDuration = require("./measureDuration");
 const getRandomColorForString = require("./getRandomColorForString");
 
 module.exports = {
@@ -20,6 +21,7 @@ module.exports = {
     createPulumiCommand,
     loadEnvVariables,
     mapStackOutput,
+    measureDuration,
     processHooks,
     runHook,
     notify,

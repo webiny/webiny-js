@@ -220,5 +220,8 @@
     "yargs": "^17.3.1",
     "lerna@8.1.2": "patch:lerna@npm%3A8.1.2#./.yarn/patches/lerna-npm-8.1.2-be48ad2329.patch"
   },
-  "packageManager": "yarn@3.6.4"
+  "packageManager": "yarn@3.6.4",
+  "dependencies": {
+    "humanize-duration": "^3.31.0"
+  }
 }

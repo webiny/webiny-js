@@ -4,6 +4,7 @@ const createProjectApplicationWorkspace = require("./createProjectApplicationWor
 const login = require("./login");
 const loadEnvVariables = require("./loadEnvVariables");
 const getPulumi = require("./getPulumi");
+const measureDuration = require("./measureDuration");
 const { GracefulPulumiError } = require("./GracefulPulumiError");
 
 const createPulumiCommand = ({
@@ -71,10 +72,7 @@ const createPulumiCommand = ({
                 throw new GracefulPulumiError(`Please specify environment, for example "dev".`);
             }
 
-            const start = new Date();
-            const getDuration = () => {
-                return (new Date() - start) / 1000 + "s";
-            };
+            const getDuration = measureDuration();
 
             const cwd = path.join(process.cwd(), params.folder);
 
