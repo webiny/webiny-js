@@ -292,6 +292,16 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         },
         setFilters(data) {
             setState(state => ({ ...state, filters: data, after: undefined }));
+            // Create filters object excluding entries with `undefined` values
+            const filters = Object.fromEntries(
+                Object.entries(data).filter(([, value]) => value !== undefined)
+            );
+
+            setState(state => ({
+                ...state,
+                filters: Object.keys(filters).length ? filters : undefined,
+                after: undefined
+            }));
         },
         setListSort(sort: ListSearchRecordsSort) {
             setState(state => ({ ...state, listSort: sort, after: undefined }));

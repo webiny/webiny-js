@@ -111,8 +111,6 @@ export const ApiWebsocket = createAppModule({
             }
         });
 
-        // TODO remove logging when stopped developing
-
         const apiGatewayLoggingRole = app.addResource(aws.iam.Role, {
             name: "apiGatewayLoggingRole",
             config: {
@@ -139,21 +137,6 @@ export const ApiWebsocket = createAppModule({
             }
         });
 
-        app.addResource(aws.apigateway.Account, {
-            name: "apiGatewayAccount",
-            config: {
-                cloudwatchRoleArn: apiGatewayLoggingRole.output.arn
-            }
-        });
-
-        // TODO remove when development is done
-        const logGroup = app.addResource(aws.cloudwatch.LogGroup, {
-            name: "websocket-api-log",
-            config: {
-                retentionInDays: 7
-            }
-        });
-
         const websocketApiStage = app.addResource(aws.apigatewayv2.Stage, {
             name: "websocket-api-stage",
             config: {
@@ -164,22 +147,6 @@ export const ApiWebsocket = createAppModule({
                     loggingLevel: "INFO",
                     throttlingBurstLimit: 1000,
                     throttlingRateLimit: 500
-                },
-                // TODO remove when development is done
-                accessLogSettings: {
-                    destinationArn: logGroup.output.arn,
-                    format: JSON.stringify({
-                        requestId: "$context.requestId",
-                        ip: "$context.identity.sourceIp",
-                        caller: "$context.identity.caller",
-                        user: "$context.identity.user",
-                        requestTime: "$context.requestTime",
-                        httpMethod: "$context.httpMethod",
-                        resourcePath: "$context.resourcePath",
-                        status: "$context.status",
-                        protocol: "$context.protocol",
-                        responseLength: "$context.responseLength"
-                    })
                 }
             }
         });

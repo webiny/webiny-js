@@ -23,8 +23,11 @@ export enum PageStatus {
 export enum ImportExportTaskStatus {
     PENDING = "pending",
     PROCESSING = "processing",
+    RUNNING = "running",
     COMPLETED = "completed",
-    FAILED = "failed"
+    SUCCESS = "success",
+    FAILED = "failed",
+    ABORTED = "aborted"
 }
 
 // TODO: for Webiny core team: create this type in the app-file-manager

@@ -20,10 +20,18 @@ import { ResponseAbortedResult } from "./ResponseAbortedResult";
 import { getErrorProperties } from "~/utils/getErrorProperties";
 
 export class Response implements IResponse {
-    public readonly event: ITaskEvent;
+    private _event: ITaskEvent;
+
+    public get event(): ITaskEvent {
+        return this._event;
+    }
 
     public constructor(event: ITaskEvent) {
-        this.event = event;
+        this._event = event;
+    }
+
+    public setEvent(event: ITaskEvent) {
+        this._event = event;
     }
 
     public from(params: IResponseFromParams): IResponseResult {

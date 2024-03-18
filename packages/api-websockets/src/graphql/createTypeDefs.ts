@@ -33,7 +33,7 @@ export const createTypeDefs = () => {
         }
 
         type WebsocketsDisconnectResponse {
-            data: Boolean
+            data: [WebsocketsConnection!]
             error: WebsocketsError
         }
 
@@ -60,7 +60,7 @@ export const createTypeDefs = () => {
         }
 
         extend type WebsocketsMutation {
-            disconnectConnection(connectionId: String!): WebsocketsDisconnectResponse!
+            disconnect(connections: [String!]!): WebsocketsDisconnectResponse!
             disconnectIdentity(identityId: String!): WebsocketsDisconnectResponse!
             disconnectTenant(tenant: String!, locale: String): WebsocketsDisconnectResponse!
             disconnectAll: WebsocketsDisconnectResponse!

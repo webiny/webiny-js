@@ -69,16 +69,6 @@ describe("reindexing", () => {
             finishedOn: expect.toBeDateString(),
             taskStatus: TaskDataStatus.SUCCESS,
             iterations: 1
-            // log: [
-            //     {
-            //         message: "Task started.",
-            //         createdOn: expect.toBeDateString()
-            //     },
-            //     {
-            //         createdOn: expect.toBeDateString(),
-            //         message: "No more items to process - no last evaluated keys."
-            //     }
-            // ]
         });
     });
 
@@ -111,17 +101,6 @@ describe("reindexing", () => {
             finishedOn: undefined,
             taskStatus: TaskDataStatus.RUNNING,
             iterations: 1
-            // log: [
-            //     {
-            //         message: "Task started.",
-            //         createdOn: expect.toBeDateString()
-            //     },
-            //     {
-            //         createdOn: expect.toBeDateString(),
-            //         message: "Task continuing.",
-            //         input: {}
-            //     }
-            // ]
         });
         /**
          * Should end the task when there are no more items to process.
@@ -152,21 +131,6 @@ describe("reindexing", () => {
             finishedOn: expect.toBeDateString(),
             taskStatus: TaskDataStatus.SUCCESS,
             iterations: 2
-            // log: [
-            //     {
-            //         message: "Task started.",
-            //         createdOn: expect.toBeDateString()
-            //     },
-            //     {
-            //         createdOn: expect.toBeDateString(),
-            //         message: "Task continuing.",
-            //         input: {}
-            //     },
-            //     {
-            //         createdOn: expect.toBeDateString(),
-            //         message: "No more items to process - no last evaluated keys."
-            //     }
-            // ]
         });
     });
 });

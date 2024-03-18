@@ -2,7 +2,9 @@ import { S3, S3ClientConfig } from "@aws-sdk/client-s3";
 import { createCacheKey } from "@webiny/utils";
 
 export {
+    CompleteMultipartUploadCommand,
     CompleteMultipartUploadCommandOutput,
+    AbortMultipartUploadCommandOutput,
     CompleteMultipartUploadOutput,
     DeleteObjectOutput,
     GetObjectCommand,

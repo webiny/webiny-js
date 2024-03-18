@@ -129,7 +129,7 @@ export const ElementControlHorizontalDropZones = () => {
             {meta.isLastElement && (
                 <Droppable
                     isVisible={() => true}
-                    onDrop={source => dropElementAction(source, meta.collection?.length)}
+                    onDrop={source => dropElementAction(source, meta.elementIndex + 1)}
                     type={type}
                 >
                     {({ drop, isOver }) => (

@@ -12,7 +12,7 @@ export const useHandler = (params?: UseHandlerParams) => {
     const { plugins = [] } = params || {};
 
     const handler = createRawHandler<any, Context>({
-        plugins: createPlugins(plugins)
+        plugins: createPlugins({ plugins })
     });
 
     return {

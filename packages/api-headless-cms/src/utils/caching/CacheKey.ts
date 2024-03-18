@@ -1,21 +1,5 @@
-import crypto from "crypto";
-import { ICacheKey, ICacheKeyKeys } from "./types";
-
-const getCacheKey = (input: ICacheKeyKeys): string => {
-    if (typeof input === "string") {
-        return input;
-    } else if (typeof input === "number") {
-        return `${input}`;
-    }
-    return JSON.stringify(input);
-};
-
-const createHash = (input: ICacheKeyKeys): string => {
-    const key = getCacheKey(input);
-    const hash = crypto.createHash("sha1");
-    hash.update(key);
-    return hash.digest("hex");
-};
+import { ICacheKey } from "./types";
+import { createCacheKey as createCacheKeyValue, ICacheKeyKeys } from "@webiny/utils";
 
 class CacheKey implements ICacheKey {
     private readonly key: string;
@@ -23,7 +7,10 @@ class CacheKey implements ICacheKey {
 
     private constructor(keys: ICacheKeyKeys) {
         this.keys = keys;
-        this.key = createHash(keys);
+        this.key = createCacheKeyValue(keys, {
+            algorithm: "sha1",
+            encoding: "hex"
+        });
     }
 
     public static create(key: ICacheKeyKeys): ICacheKey {

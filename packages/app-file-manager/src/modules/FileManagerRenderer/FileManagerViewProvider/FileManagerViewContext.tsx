@@ -411,10 +411,15 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             }));
         },
         setFilters(data) {
+            // Create filters object excluding entries with `undefined` values
+            const filters = Object.fromEntries(
+                Object.entries(data).filter(([, value]) => value !== undefined)
+            );
+
             setState(state => ({
                 ...state,
                 selected: [],
-                filters: data,
+                filters: Object.keys(filters).length ? filters : undefined,
                 selection: {}
             }));
         },
