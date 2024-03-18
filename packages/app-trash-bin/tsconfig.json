@@ -3,6 +3,7 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../app" },
+    { "path": "../app-aco" },
     { "path": "../app-admin" },
     { "path": "../app-security" },
     { "path": "../app-trash-bin-common" },

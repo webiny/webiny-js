@@ -23,8 +23,8 @@ export const ActionDelete = observer(() => {
 
     const openDeleteEntriesDialog = () =>
         showConfirmationDialog({
-            title: "Delete entries",
-            message: `You are about to delete ${entriesLabel}. Are you sure you want to continue?`,
+            title: "Move entries to trash",
+            message: `You are about to move ${entriesLabel} to trash. Are you sure you want to continue?`,
             loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
                 await worker.processInSeries(async ({ item, report }) => {
@@ -44,7 +44,7 @@ export const ActionDelete = observer(() => {
 
                         if (error) {
                             throw new Error(
-                                error.message || "Unknown error while deleting the entry"
+                                error.message || "Unknown error while moving the entry to trash."
                             );
                         }
 
@@ -52,7 +52,7 @@ export const ActionDelete = observer(() => {
 
                         report.success({
                             title: `${item.meta.title}`,
-                            message: "Entry successfully deleted."
+                            message: "Entry successfully moved to trash."
                         });
                     } catch (e) {
                         report.error({
@@ -66,8 +66,8 @@ export const ActionDelete = observer(() => {
 
                 showResultsDialog({
                     results: worker.results,
-                    title: "Delete entries",
-                    message: "Finished deleting entries! See full report below:"
+                    title: "Move entries to trash",
+                    message: "Finished moving entries to trash! See full report below:"
                 });
             }
         });
@@ -76,7 +76,7 @@ export const ActionDelete = observer(() => {
         <IconButton
             icon={<DeleteIcon />}
             onAction={openDeleteEntriesDialog}
-            label={`Delete ${entriesLabel}`}
+            label={`Move ${entriesLabel} to trash`}
             tooltipPlacement={"bottom"}
         />
     );
