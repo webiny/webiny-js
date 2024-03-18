@@ -1,10 +1,10 @@
 const path = require("path");
 const { Worker } = require("worker_threads");
 const Listr = require("listr");
-const { BasePackageBuilder } = require("./BasePackageBuilder");
+const { BasePackagesBuilder } = require("./BasePackagesBuilder");
 const { gray } = require("chalk");
 
-class MultiplePackagesBuilder extends BasePackageBuilder {
+class MultiplePackagesBuilder extends BasePackagesBuilder {
     async build() {
         const packages = this.packages;
         const context = this.context;

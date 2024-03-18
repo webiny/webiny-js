@@ -1,7 +1,7 @@
-const { BasePackageBuilder } = require("./BasePackageBuilder");
+const { BasePackagesBuilder } = require("./BasePackagesBuilder");
 const { gray } = require("chalk");
 
-class SinglePackageBuilder extends BasePackageBuilder {
+class SinglePackageBuilder extends BasePackagesBuilder {
     async build() {
         const pkg = this.packages[0];
         const context = this.context;

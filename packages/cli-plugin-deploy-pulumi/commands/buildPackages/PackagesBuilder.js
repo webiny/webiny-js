@@ -1,6 +1,6 @@
-const { BasePackageBuilder } = require("./BasePackageBuilder");
+const { BasePackagesBuilder } = require("./BasePackagesBuilder");
 
-class PackagesBuilder extends BasePackageBuilder {
+class PackagesBuilder extends BasePackagesBuilder {
     async build() {
         const BuilderClass = this.getBuilderClass();
 

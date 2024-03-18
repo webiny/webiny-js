@@ -1,4 +1,4 @@
-class BasePackageBuilder {
+class BasePackagesBuilder {
     constructor({ packages, inputs, context }) {
         this.packages = packages;
         this.inputs = inputs;
@@ -10,4 +10,4 @@ class BasePackageBuilder {
     }
 }
 
-module.exports = { BasePackageBuilder };
+module.exports = { BasePackagesBuilder };

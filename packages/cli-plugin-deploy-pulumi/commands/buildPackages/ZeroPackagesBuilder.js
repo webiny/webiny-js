@@ -1,6 +1,6 @@
-const { BasePackageBuilder } = require("./BasePackageBuilder");
+const { BasePackagesBuilder } = require("./BasePackagesBuilder");
 
-class ZeroPackagesBuilder extends BasePackageBuilder {
+class ZeroPackagesBuilder extends BasePackagesBuilder {
     build() {
         // Simply don't do anything. There are no packages to build.
         return;
