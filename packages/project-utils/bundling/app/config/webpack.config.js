@@ -528,8 +528,8 @@ module.exports = function (webpackEnv, { paths, options }) {
                     },
                     async: isEnvDevelopment
                 }),
+            logs && new WebpackBar({ name: path.basename(paths.appPath) })
 
-            logs && new WebpackBar()
         ].filter(Boolean),
 
         // Turn off performance processing because we utilize
