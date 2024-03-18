@@ -117,7 +117,7 @@ export function useBind({ Bind, field }: UseBindProps) {
                         }}
                     </Bind>
                 );
-            };
+            } as BindComponent;
 
             // We need to keep track of current field name, to support nested fields.
             memoizedBindComponents.current[name].parentName = name;

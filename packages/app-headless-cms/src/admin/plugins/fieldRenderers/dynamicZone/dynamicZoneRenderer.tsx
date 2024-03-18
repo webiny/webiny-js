@@ -13,7 +13,6 @@ import { SingleValueDynamicZone } from "./SingleValueDynamicZone";
 import { MultiValueDynamicZone } from "./MultiValueDynamicZone";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { makeDecoratable } from "@webiny/react-composition";
-import { ParentValueProvider } from "~/admin/hooks";
 
 const noBottomPadding = css`
     > .webiny-ui-accordion-item__content {
@@ -81,21 +80,19 @@ const DynamicZoneContent = ({ field, getBind, contentModel }: CmsModelFieldRende
         <Bind>
             {bind => {
                 return (
-                    <ParentValueProvider value={bind.value} name={`DynamicZone<${field.fieldId}>`}>
-                        <DynamicZoneContainer
-                            field={field}
+                    <DynamicZoneContainer
+                        field={field}
+                        bind={bind}
+                        getBind={getBind}
+                        contentModel={contentModel}
+                    >
+                        <Component
                             bind={bind}
+                            field={field}
                             getBind={getBind}
                             contentModel={contentModel}
-                        >
-                            <Component
-                                bind={bind}
-                                field={field}
-                                getBind={getBind}
-                                contentModel={contentModel}
-                            />
-                        </DynamicZoneContainer>
-                    </ParentValueProvider>
+                        />
+                    </DynamicZoneContainer>
                 );
             }}
         </Bind>

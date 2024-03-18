@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "@emotion/styled";
-
+import { makeDecoratable } from "@webiny/app-admin";
 import { Typography } from "@webiny/ui/Typography";
-import { CmsDynamicZoneTemplate } from "~/types";
 import { ButtonSecondary } from "@webiny/ui/Button";
+import { CmsDynamicZoneTemplate } from "~/types";
 import { TemplateIcon } from "~/admin/plugins/fieldRenderers/dynamicZone/TemplateIcon";
 
 const CardContainer = styled.div`
@@ -47,26 +47,29 @@ const CardButton = styled(ButtonSecondary)`
     margin-top: auto;
 `;
 
-interface TemplateCardProps {
+export interface TemplateCardProps {
     template: CmsDynamicZoneTemplate;
     onTemplate: (template: CmsDynamicZoneTemplate) => void;
 }
 
-export const TemplateCard = ({ template, onTemplate }: TemplateCardProps) => {
-    return (
-        <CardContainer>
-            <CardIcon>
-                <TemplateIcon icon={template.icon} />
-            </CardIcon>
-            <CardBody>
-                <CardTitle tag={"p"} use={"subtitle2"}>
-                    {template.name}
-                </CardTitle>
-                <CardDescription tag={"p"} use={"body2"}>
-                    {template.description}
-                </CardDescription>
-                <CardButton onClick={() => onTemplate(template)}>+ Insert Template</CardButton>
-            </CardBody>
-        </CardContainer>
-    );
-};
+export const TemplateItem = makeDecoratable(
+    "TemplateItem",
+    ({ template, onTemplate }: TemplateCardProps) => {
+        return (
+            <CardContainer>
+                <CardIcon>
+                    <TemplateIcon icon={template.icon} />
+                </CardIcon>
+                <CardBody>
+                    <CardTitle tag={"p"} use={"subtitle2"}>
+                        {template.name}
+                    </CardTitle>
+                    <CardDescription tag={"p"} use={"body2"}>
+                        {template.description}
+                    </CardDescription>
+                    <CardButton onClick={() => onTemplate(template)}>+ Insert Template</CardButton>
+                </CardBody>
+            </CardContainer>
+        );
+    }
+);

@@ -7,7 +7,7 @@ export { default as useApolloClient } from "./useApolloClient";
 export { default as usePermission } from "./usePermission";
 export { useModel } from "../components/ModelProvider";
 export { useModelEditor } from "../components/ContentModelEditor";
-export { useParentField, ParentValueProvider } from "../components/ContentEntryForm/ParentValue";
+export { useParentField, ParentFieldProvider } from "../components/ContentEntryForm/ParentValue";
 export { useModelField } from "../components/ModelFieldProvider";
 export { useModelFieldEditor } from "../components/FieldEditor";
 export { useChangeEntryStatus } from "~/admin/hooks/useChangeEntryStatus";

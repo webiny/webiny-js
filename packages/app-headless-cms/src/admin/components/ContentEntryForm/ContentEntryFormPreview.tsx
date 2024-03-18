@@ -2,10 +2,10 @@ import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import { Form, FormRenderPropParams } from "@webiny/form";
 import { plugins } from "@webiny/plugins";
-import { RenderFieldElement } from "./RenderFieldElement";
+import { FieldElement } from "./FieldElement";
 import { CmsContentFormRendererPlugin, CmsEditorContentModel } from "~/types";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
-import { ParentValueProvider } from "~/admin/components/ContentEntryForm/ParentValue";
+import { ModelProvider } from "~/admin/components/ModelProvider";
 
 const FormWrapper = styled("div")({
     height: "calc(100vh - 260px)",
@@ -27,7 +27,7 @@ export const ContentEntryFormPreview = (props: ContentEntryFormPreviewProps) => 
         (formRenderProps: FormRenderPropParams) => {
             const fields = contentModel.fields.reduce((acc, field) => {
                 acc[field.fieldId] = (
-                    <RenderFieldElement
+                    <FieldElement
                         field={field}
                         /**
                          * TODO @ts-refactor
@@ -62,8 +62,8 @@ export const ContentEntryFormPreview = (props: ContentEntryFormPreviewProps) => 
     return (
         <Form>
             {formProps => (
-                <FormWrapper data-testid={"cms-content-form"}>
-                    <ParentValueProvider value={formProps.data}>
+                <ModelProvider model={contentModel}>
+                    <FormWrapper data-testid={"cms-content-form"}>
                         {formRenderer ? (
                             renderCustomLayout(formProps)
                         ) : (
@@ -80,8 +80,8 @@ export const ContentEntryFormPreview = (props: ContentEntryFormPreviewProps) => 
                                 Bind={formProps.Bind}
                             />
                         )}
-                    </ParentValueProvider>
-                </FormWrapper>
+                    </FormWrapper>
+                </ModelProvider>
             )}
         </Form>
     );

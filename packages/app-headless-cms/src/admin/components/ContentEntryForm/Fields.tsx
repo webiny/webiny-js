@@ -1,6 +1,6 @@
 import React from "react";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { RenderFieldElement } from "./RenderFieldElement";
+import { FieldElement } from "./FieldElement";
 import {
     CmsEditorContentModel,
     CmsModelField,
@@ -27,7 +27,7 @@ export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: Fi
                 <React.Fragment key={rowIndex}>
                     {row.map(fieldId => (
                         <Cell span={Math.floor(12 / row.length)} key={fieldId}>
-                            <RenderFieldElement
+                            <FieldElement
                                 field={getFieldById(fields, fieldId) as CmsModelField}
                                 Bind={Bind}
                                 contentModel={contentModel}
