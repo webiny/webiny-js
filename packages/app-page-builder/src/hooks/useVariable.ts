@@ -9,7 +9,11 @@ export function useVariable<TValue = any>(variableId: string) {
     const updateElement = useUpdateElement();
     const variable = element?.data?.variables?.find(variable => variable.id === variableId);
 
-    // We're storing a reference to an element, so we don't have to recreate the `onChange` callback on every update.
+    /**
+     * We're storing references to the `element` and `variableId`, so we don't have to recreate the `onChange` callback on every update.
+     * This optimizes the rendering of UI, especially for heavy components like Lexical editor, but also prevents weird
+     * bugs from creeping in when a user switches between different blocks without deactivating the element first.
+     */
     useEffect(() => {
         elementRef.current = element;
         variableIdRef.current = variableId;
