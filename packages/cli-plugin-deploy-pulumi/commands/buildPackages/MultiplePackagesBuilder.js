@@ -3,6 +3,7 @@ const { Worker } = require("worker_threads");
 const Listr = require("listr");
 const { BasePackagesBuilder } = require("./BasePackagesBuilder");
 const { gray } = require("chalk");
+const { measureDuration } = require("../../utils");
 
 class MultiplePackagesBuilder extends BasePackagesBuilder {
     async build() {
@@ -10,10 +11,7 @@ class MultiplePackagesBuilder extends BasePackagesBuilder {
         const context = this.context;
         const inputs = this.inputs;
 
-        const start = new Date();
-        const getDuration = () => {
-            return (new Date() - start) / 1000 + "s";
-        };
+        const getBuildDuration = measureDuration();
 
         const { env, variant, debug } = inputs;
 
@@ -53,7 +51,7 @@ class MultiplePackagesBuilder extends BasePackagesBuilder {
                             stdout,
                             stderr,
                             error,
-                            duration: getDuration()
+                            duration: getBuildDuration()
                         };
 
                         if (type === "error") {
@@ -100,7 +98,7 @@ class MultiplePackagesBuilder extends BasePackagesBuilder {
 
         console.log();
 
-        context.success(`Successfully built %s packages in %s.`, packages.length, getDuration());
+        context.success(`Successfully built ${packages.length} packages in ${getBuildDuration()}.`);
     }
 
     getPackageLabel(pkg) {
