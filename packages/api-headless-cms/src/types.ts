@@ -1501,6 +1501,10 @@ export interface CmsEntry<T = CmsEntryValues> {
     /**
      * An ISO 8601 date/time string.
      */
+    revisionDeletedOn: string | null;
+    /**
+     * An ISO 8601 date/time string.
+     */
     revisionFirstPublishedOn: string | null;
     /**
      * An ISO 8601 date/time string.
@@ -1519,6 +1523,10 @@ export interface CmsEntry<T = CmsEntryValues> {
      * Identity that last ionModified the entry.
      */
     revisionModifiedBy: CmsIdentity | null;
+    /**
+     * Identity that last deleted the revision.
+     */
+    revisionDeletedBy: CmsIdentity | null;
     /**
      * Identity that first published the entry.
      */
@@ -1543,6 +1551,10 @@ export interface CmsEntry<T = CmsEntryValues> {
     /**
      * An ISO 8601 date/time string.
      */
+    deletedOn: string | null;
+    /**
+     * An ISO 8601 date/time string.
+     */
     firstPublishedOn: string | null;
     /**
      * An ISO 8601 date/time string.
@@ -1561,6 +1573,10 @@ export interface CmsEntry<T = CmsEntryValues> {
      * Identity that last modified the entry.
      */
     modifiedBy: CmsIdentity | null;
+    /**
+     * Identity that last deleted the entry.
+     */
+    deletedBy: CmsIdentity | null;
     /**
      * Identity that first published the entry.
      */
@@ -1615,6 +1631,10 @@ export interface CmsEntry<T = CmsEntryValues> {
     meta?: {
         [key: string]: any;
     };
+    /**
+     * Is the entry in the bin?
+     */
+    deleted?: boolean | null;
 }
 
 export interface CmsStorageEntry extends CmsEntry {
@@ -2216,16 +2236,19 @@ export interface OnEntryUnpublishErrorTopicParams {
 export interface OnEntryBeforeDeleteTopicParams {
     entry: CmsEntry;
     model: CmsModel;
+    permanent: boolean;
 }
 
 export interface OnEntryAfterDeleteTopicParams {
     entry: CmsEntry;
     model: CmsModel;
+    permanent: boolean;
 }
 
 export interface OnEntryDeleteErrorTopicParams {
     error: Error;
     entry: CmsEntry;
+    permanent: boolean;
     model: CmsModel;
 }
 
@@ -2288,9 +2311,10 @@ export interface CreateCmsEntryInput {
     createdOn?: Date | string;
     modifiedOn?: Date | string | null;
     savedOn?: Date | string;
+    deletedOn?: Date | string | null;
     createdBy?: CmsIdentity;
-    modifiedBy?: CmsIdentity | null;
     savedBy?: CmsIdentity;
+    deletedBy?: CmsIdentity | null;
     firstPublishedOn?: Date | string;
     lastPublishedOn?: Date | string;
     firstPublishedBy?: CmsIdentity;
@@ -2302,9 +2326,11 @@ export interface CreateCmsEntryInput {
     revisionCreatedOn?: Date | string;
     revisionModifiedOn?: Date | string | null;
     revisionSavedOn?: Date | string;
+    revisionDeletedOn?: Date | string | null;
     revisionCreatedBy?: CmsIdentity;
     revisionModifiedBy?: CmsIdentity | null;
     revisionSavedBy?: CmsIdentity;
+    revisionDeletedBy?: CmsIdentity | null;
     revisionFirstPublishedOn?: Date | string;
     revisionLastPublishedOn?: Date | string;
     revisionFirstPublishedBy?: CmsIdentity;
@@ -2372,11 +2398,13 @@ export interface UpdateCmsEntryInput {
     revisionCreatedOn?: Date | string | null;
     revisionModifiedOn?: Date | string | null;
     revisionSavedOn?: Date | string | null;
+    revisionDeletedOn?: Date | string | null;
     revisionFirstPublishedOn?: Date | string | null;
     revisionLastPublishedOn?: Date | string | null;
     revisionModifiedBy?: CmsIdentity | null;
     revisionCreatedBy?: CmsIdentity | null;
     revisionSavedBy?: CmsIdentity | null;
+    revisionDeletedBy?: CmsIdentity | null;
     revisionFirstPublishedBy?: CmsIdentity | null;
     revisionLastPublishedBy?: CmsIdentity | null;
 
@@ -2386,11 +2414,13 @@ export interface UpdateCmsEntryInput {
     createdOn?: Date | string | null;
     modifiedOn?: Date | string | null;
     savedOn?: Date | string | null;
+    deletedOn?: Date | string | null;
     firstPublishedOn?: Date | string | null;
     lastPublishedOn?: Date | string | null;
     createdBy?: CmsIdentity | null;
     modifiedBy?: CmsIdentity | null;
     savedBy?: CmsIdentity | null;
+    deletedBy?: CmsIdentity | null;
     firstPublishedBy?: CmsIdentity | null;
     lastPublishedBy?: CmsIdentity | null;
 
@@ -2423,6 +2453,10 @@ export interface CmsDeleteEntryOptions {
      * This is to force clean the entry records that might have been left behind a failed delete.
      */
     force?: boolean;
+    /**
+     * Destroying the entry directly, without moving it to the bin.
+     */
+    permanently?: boolean;
 }
 
 /**
@@ -2478,6 +2512,13 @@ export interface CmsEntryContext {
      * List published entries. Used for read API.
      */
     listPublishedEntries: <T = CmsEntryValues>(
+        model: CmsModel,
+        params?: CmsEntryListParams
+    ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
+    /**
+     * Lists the deleted entries. Used for manage API.
+     */
+    listDeletedEntries: <T = CmsEntryValues>(
         model: CmsModel,
         params?: CmsEntryListParams
     ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
@@ -2894,6 +2935,20 @@ export interface CmsEntryStorageOperationsDeleteParams {
     entry: CmsEntry;
 }
 
+export interface CmsEntryStorageOperationsMoveToBinParams<
+    T extends CmsStorageEntry = CmsStorageEntry
+> {
+    /**
+     * The modified entry that is going to be saved as published.
+     * Entry is in its original form.
+     */
+    entry: CmsEntry;
+    /**
+     * The modified entry and prepared for the storage.
+     */
+    storageEntry: T;
+}
+
 export interface CmsEntryStorageOperationsDeleteEntriesParams {
     entries: string[];
 }
@@ -3088,6 +3143,10 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
      * Delete the entry.
      */
     delete: (model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) => Promise<void>;
+    /**
+     * Move the entry to bin.
+     */
+    moveToBin: (model: CmsModel, params: CmsEntryStorageOperationsMoveToBinParams) => Promise<void>;
     /**
      * Delete multiple entries, with a limit on how much can be deleted in one call.
      */
