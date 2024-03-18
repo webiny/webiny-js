@@ -354,8 +354,8 @@ const TableRow = <T,>({ selected, cells, getColumnWidth }: TableRowProps<T>) => 
 const MemoTableRow = typedMemo(TableRow);
 
 export const DataTable = <T extends Record<string, any> & DefaultData>({
-    data,
-    columns,
+    data: initialData,
+    columns: initialColumns,
     onSelectRow,
     onToggleRow,
     loadingInitial,
@@ -373,6 +373,8 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
 }: Props<T>) => {
     const tableRef = useRef<HTMLDivElement>(null);
     const [tableWidth, setTableWidth] = useState(1);
+
+    const data = defineData(initialData, loadingInitial);
 
     useEffect(() => {
         const updateElementWidth = () => {
@@ -432,14 +434,16 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
         return sorting;
     }, [sorting]);
 
+    const columns = defineColumns(initialColumns, {
+        canSelectAllRows,
+        onSelectRow,
+        onToggleRow,
+        loadingInitial
+    });
+
     const table = useReactTable<T>({
-        data: defineData(data, loadingInitial),
-        columns: defineColumns(columns, {
-            canSelectAllRows,
-            onSelectRow,
-            onToggleRow,
-            loadingInitial
-        }),
+        data,
+        columns,
         enableColumnResizing: true,
         columnResizeMode: "onChange",
         getCoreRowModel: getCoreRowModel(),
@@ -477,7 +481,7 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
      */
     const tableRows = useMemo(() => {
         return table.getRowModel().rows;
-    }, [table]);
+    }, [table, data, columns]);
 
     return (
         <div ref={tableRef}>
