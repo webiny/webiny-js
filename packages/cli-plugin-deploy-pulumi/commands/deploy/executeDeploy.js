@@ -32,7 +32,6 @@ module.exports = async ({ inputs, context, pulumi }) => {
     const spinner = ora("Deploying...");
 
     try {
-
         const subprocess = pulumi.run({
             command: "up",
             args: {

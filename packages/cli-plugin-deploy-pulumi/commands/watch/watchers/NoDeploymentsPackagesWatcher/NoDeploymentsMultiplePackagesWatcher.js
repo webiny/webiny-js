@@ -71,7 +71,7 @@ class NoDeploymentsMultiplePackagesWatcher extends BasePackagesWatcher {
     }
 }
 
-const createLog = ({  context }) => {
+const createLog = ({ context }) => {
     return (packageName, message, type) => {
         const prefix = chalk.hex(getRandomColorForString(packageName))(packageName) + ": ";
 
@@ -100,7 +100,7 @@ const createLog = ({  context }) => {
             return;
         }
 
-        console.log(send)
+        console.log(send);
     };
 };
 
@@ -114,6 +114,5 @@ const parseMessage = message => {
         };
     }
 };
-
 
 module.exports = { NoDeploymentsMultiplePackagesWatcher };

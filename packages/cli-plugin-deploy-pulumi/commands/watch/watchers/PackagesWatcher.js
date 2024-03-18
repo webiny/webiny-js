@@ -14,8 +14,10 @@ class PackagesWatcher extends BasePackagesWatcher {
     }
 
     getWatcherClass() {
-        if (!this.inputs.deploy){
-            const { NoDeploymentsPackagesWatcher } = require("./NoDeploymentsPackagesWatcher/NoDeploymentsPackagesWatcher");
+        if (!this.inputs.deploy) {
+            const {
+                NoDeploymentsPackagesWatcher
+            } = require("./NoDeploymentsPackagesWatcher/NoDeploymentsPackagesWatcher");
             return NoDeploymentsPackagesWatcher;
         }
 

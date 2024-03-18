@@ -21,11 +21,15 @@ class NoDeploymentsPackagesWatcher extends BasePackagesWatcher {
         }
 
         if (packagesCount === 1) {
-            const { NoDeploymentsSinglePackageWatcher } = require("./NoDeploymentsSinglePackageWatcher");
+            const {
+                NoDeploymentsSinglePackageWatcher
+            } = require("./NoDeploymentsSinglePackageWatcher");
             return NoDeploymentsSinglePackageWatcher;
         }
 
-        const { NoDeploymentsMultiplePackagesWatcher } = require("./NoDeploymentsMultiplePackagesWatcher");
+        const {
+            NoDeploymentsMultiplePackagesWatcher
+        } = require("./NoDeploymentsMultiplePackagesWatcher");
         return NoDeploymentsMultiplePackagesWatcher;
     }
 }
