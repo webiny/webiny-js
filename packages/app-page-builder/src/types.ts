@@ -118,6 +118,7 @@ export interface PbElementDataImageType {
         src?: string;
     };
     title?: string;
+    htmlTag?: string;
 }
 
 export interface PbElementDataIconType {

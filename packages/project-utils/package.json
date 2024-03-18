@@ -114,6 +114,7 @@
         "@svgr/webpack",
         "@types/webpack-env",
         "chalk",
+        "process",
         "raw-loader",
         "sass"
       ]
