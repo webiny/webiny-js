@@ -282,16 +282,6 @@ const defineColumns = <T,>(
     }, [columns, onSelectRow, onToggleRow, loadingInitial]);
 };
 
-const defineData = <T,>(
-    data: Props<T>["data"],
-    loadingInitial: Props<T>["loadingInitial"]
-): T[] => {
-    if (loadingInitial) {
-        return Array(10).fill({});
-    }
-    return data;
-};
-
 const ColumnDirection = ({ direction }: ColumnDirectionProps): ReactElement | null => {
     if (direction) {
         return (
@@ -347,6 +337,11 @@ const TableRow = <T,>({ selected, cells, getColumnWidth }: TableRowProps<T>) => 
 
 const MemoTableRow = typedMemo(TableRow);
 
+/**
+ * Empty array must be defined outside of the React component so it does not force rerendering of the DataTable
+ */
+const emptyArray = Array(10).fill({});
+
 export const DataTable = <T extends Record<string, any> & DefaultData>({
     data: initialData,
     columns: initialColumns,
@@ -368,7 +363,7 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
     const tableRef = useRef<HTMLDivElement>(null);
     const [tableWidth, setTableWidth] = useState(1);
 
-    const data = defineData(initialData, loadingInitial);
+    const data = loadingInitial ? emptyArray : initialData;
 
     useEffect(() => {
         const updateElementWidth = () => {
@@ -530,14 +525,17 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
                         ))}
                     </DataTableHead>
                     <DataTableBody>
-                        {tableRows.map(row => (
-                            <MemoTableRow<T>
-                                key={row.original.id || row.id}
-                                cells={row.getVisibleCells()}
-                                selected={row.getIsSelected()}
-                                getColumnWidth={getColumnWidth}
-                            />
-                        ))}
+                        {tableRows.map(row => {
+                            const id = row.original.id || row.id;
+                            return (
+                                <MemoTableRow<T>
+                                    key={id}
+                                    cells={row.getVisibleCells()}
+                                    selected={row.getIsSelected()}
+                                    getColumnWidth={getColumnWidth}
+                                />
+                            );
+                        })}
                     </DataTableBody>
                 </DataTableContent>
             </Table>
