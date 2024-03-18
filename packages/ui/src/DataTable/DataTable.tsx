@@ -24,6 +24,7 @@ import {
     Row,
     RowSelectionState,
     SortingState,
+    ColumnSort,
     VisibilityState,
     flexRender,
     getCoreRowModel,
@@ -97,6 +98,8 @@ export type DefaultData = {
 export type TableRow<T> = Row<DefaultData & T>;
 
 export type Sorting = SortingState;
+
+export { ColumnSort };
 
 export type OnSortingChange = OnChangeFn<Sorting>;
 

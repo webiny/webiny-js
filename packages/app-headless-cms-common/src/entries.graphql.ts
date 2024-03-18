@@ -27,7 +27,8 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
     entryId
     createdOn
     savedOn
-    modifiedOn
+    modifiedOn,
+    deletedOn
     firstPublishedOn
     lastPublishedOn
     createdBy {
@@ -45,6 +46,11 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
         type
         displayName
     }
+    deletedBy {
+        id
+        type
+        displayName
+    }
     firstPublishedBy {
         id
         type
@@ -58,6 +64,7 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
     revisionCreatedOn
     revisionSavedOn
     revisionModifiedOn
+    revisionDeletedOn
     revisionFirstPublishedOn
     revisionLastPublishedOn
     revisionCreatedBy {
@@ -71,6 +78,11 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
         displayName
     }
     revisionModifiedBy {
+        id
+        type
+        displayName
+    }
+    revisionDeletedBy {
         id
         type
         displayName
@@ -218,15 +230,13 @@ export const createListQuery = (
     fields?: CmsModelField[],
     deleted?: boolean
 ) => {
-    const queryName = deleted ? `listDeleted${model.pluralApiName}` : `list${model.pluralApiName}`;
+    const queryName = deleted ? `Deleted${model.pluralApiName}` : model.pluralApiName;
 
     return gql`
-        query CmsEntriesList${model.pluralApiName}($where: ${
-        model.singularApiName
-    }ListWhereInput, $sort: [${
+        query CmsEntriesList${queryName}($where: ${model.singularApiName}ListWhereInput, $sort: [${
         model.singularApiName
     }ListSorter], $limit: Int, $after: String, $search: String) {
-            content: ${queryName}(
+            content: list${queryName}(
             where: $where
             sort: $sort
             limit: $limit

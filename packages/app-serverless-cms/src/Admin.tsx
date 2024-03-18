@@ -30,6 +30,7 @@ import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Module as MailerSettings } from "@webiny/app-mailer";
 import { Folders } from "@webiny/app-aco";
 import { Websockets } from "@webiny/app-websockets";
+import { TrashBin } from "@webiny/app-trash-bin";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
     createApolloClient?: BaseAdminProps["createApolloClient"];
@@ -51,6 +52,7 @@ const App = (props: AdminProps) => {
             <AppInstaller />
             <Folders />
             <FileManager />
+            <TrashBin />
             <GraphQLPlayground createApolloClient={createApolloClient} />
             <I18N />
             <I18NContent />

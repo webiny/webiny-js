@@ -18,6 +18,7 @@ export * from "./base/ui/LoginScreen";
 export * from "./base/ui/CenteredView";
 export * from "./base/ui/Dashboard";
 export * from "./base/ui/NotFound";
+export * from "./base/ui/TrashBin";
 
 // Base admin app
 export { Admin } from "./base/Admin";

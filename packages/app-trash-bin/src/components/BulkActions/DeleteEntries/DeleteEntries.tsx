@@ -1,0 +1,59 @@
+import React, { useMemo } from "react";
+import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
+import { observer } from "mobx-react-lite";
+import { TrashBinListConfig } from "~/configs";
+import { useTrashBin } from "~/hooks";
+import { getEntriesLabel } from "../BulkActions";
+
+export const BulkActionsDeleteEntries = observer(() => {
+    const { controller } = useTrashBin();
+
+    const { useWorker, useButtons, useDialog } = TrashBinListConfig.Browser.BulkAction;
+    const { IconButton } = useButtons();
+    const worker = useWorker();
+    const { showConfirmationDialog, showResultsDialog } = useDialog();
+
+    const entriesLabel = useMemo(() => {
+        return getEntriesLabel(worker.items.length);
+    }, [worker.items.length]);
+
+    const openDeleteEntriesDialog = () =>
+        showConfirmationDialog({
+            title: "Delete entries",
+            message: `You are about to permanent delete ${entriesLabel}. Are you sure you want to continue?`,
+            loadingLabel: `Processing ${entriesLabel}`,
+            execute: async () => {
+                await worker.processInSeries(async ({ item, report }) => {
+                    try {
+                        await controller.deleteEntry(item.id);
+                        report.success({
+                            title: `${item.title}`,
+                            message: "Entry successfully deleted."
+                        });
+                    } catch (e) {
+                        report.error({
+                            title: `${item.meta.title}`,
+                            message: e.message || "Unknown error while deleting the entry"
+                        });
+                    }
+                });
+
+                worker.resetItems();
+
+                showResultsDialog({
+                    results: worker.results,
+                    title: "Delete entries",
+                    message: "Finished deleting entries! See full report below:"
+                });
+            }
+        });
+
+    return (
+        <IconButton
+            icon={<DeleteIcon />}
+            onAction={openDeleteEntriesDialog}
+            label={`Delete ${entriesLabel}`}
+            tooltipPlacement={"bottom"}
+        />
+    );
+});
