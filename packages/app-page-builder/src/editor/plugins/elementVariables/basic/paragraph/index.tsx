@@ -1,4 +1,5 @@
 import React from "react";
+import { set } from "dot-prop-immutable";
 import { PbEditorPageElementVariableRendererPlugin } from "~/types";
 import RichVariableInput from "~/editor/plugins/elementSettings/variable/RichVariableInput";
 import { useElementVariables } from "~/editor/hooks/useElementVariableValue";
@@ -27,7 +28,7 @@ export default {
         const newText = variables?.length > 0 ? variables[0].value : null;
 
         if (newText && element?.data?.text?.data) {
-            element.data.text.data.text = newText;
+            return set(element, "data.text.data.text", newText);
         }
 
         return element;

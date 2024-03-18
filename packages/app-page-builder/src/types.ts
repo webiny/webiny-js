@@ -182,6 +182,7 @@ export interface PbElementDataTypeSource {
 
 export type PbElementDataType = {
     blockId?: string;
+    variableId?: string;
     variables?: PbBlockVariable[];
     action?: {
         href: string;
@@ -802,7 +803,14 @@ export interface EventActionHandler<TCallableState = unknown> {
     endBatch: () => void;
     enableHistory: () => void;
     disableHistory: () => void;
+    /**
+     * Get element tree (includes processing with decorators).
+     */
     getElementTree: (props: GetElementTreeProps) => Promise<PbEditorElement>;
+    /**
+     * Get raw element tree (DOES NOT include processing with decorators).
+     */
+    getRawElementTree: (props: GetElementTreeProps) => Promise<PbEditorElement>;
 }
 
 export interface EventActionHandlerTarget {

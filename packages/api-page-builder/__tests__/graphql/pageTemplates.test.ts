@@ -266,13 +266,13 @@ describe("Page Templates Test", () => {
                                     blockId: "DABBrS43HC",
                                     variables: [
                                         {
-                                            id: "FDEezrJ8NH",
+                                            id: "DABBrS43HC#FDEezrJ8NH",
                                             label: "Heading text",
                                             type: "heading",
                                             value: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"UPDATED-HEADING","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"heading-element","version":1,"tag":"h1","styles":[{"styleId":"heading1","type":"typography"}]}],"direction":null,"format":"","indent":0,"type":"root","version":1}}'
                                         },
                                         {
-                                            id: "SezNLOdXw3",
+                                            id: "DABBrS43HC#SezNLOdXw3",
                                             label: "Paragraph text",
                                             type: "paragraph",
                                             value: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"UPDATED-PARAGRAPH","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph-element","version":1,"styles":[{"styleId":"paragraph1","type":"typography"}]}],"direction":null,"format":"","indent":0,"type":"root","version":1}}'
@@ -300,16 +300,18 @@ describe("Page Templates Test", () => {
             data: {},
             elements: [
                 {
+                    id: "DABBrS43HC",
+                    type: "block",
                     data: {
                         variables: [
                             {
-                                id: "FDEezrJ8NH",
+                                id: "DABBrS43HC#FDEezrJ8NH",
                                 type: "heading",
                                 label: "Heading text",
                                 value: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"UPDATED-HEADING","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"heading-element","version":1,"tag":"h1","styles":[{"styleId":"heading1","type":"typography"}]}],"direction":null,"format":"","indent":0,"type":"root","version":1}}'
                             },
                             {
-                                id: "SezNLOdXw3",
+                                id: "DABBrS43HC#SezNLOdXw3",
                                 type: "paragraph",
                                 label: "Paragraph text",
                                 value: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"UPDATED-PARAGRAPH","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph-element","version":1,"styles":[{"styleId":"paragraph1","type":"typography"}]}],"direction":null,"format":"","indent":0,"type":"root","version":1}}'
@@ -337,7 +339,7 @@ describe("Page Templates Test", () => {
                                                         text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"UPDATED-HEADING","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"heading-element","version":1,"tag":"h1","styles":[{"styleId":"heading1","type":"typography"}]}],"direction":null,"format":"","indent":0,"type":"root","version":1}}'
                                                     }
                                                 },
-                                                variableId: "FDEezrJ8NH"
+                                                variableId: "DABBrS43HC#FDEezrJ8NH"
                                             }
                                         },
                                         {
@@ -353,7 +355,7 @@ describe("Page Templates Test", () => {
                                                         text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"UPDATED-PARAGRAPH","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph-element","version":1,"styles":[{"styleId":"paragraph1","type":"typography"}]}],"direction":null,"format":"","indent":0,"type":"root","version":1}}'
                                                     }
                                                 },
-                                                variableId: "SezNLOdXw3"
+                                                variableId: "DABBrS43HC#SezNLOdXw3"
                                             }
                                         }
                                     ]
