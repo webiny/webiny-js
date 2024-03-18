@@ -9,9 +9,11 @@ const { getProjectApplication, getProject } = require("@webiny/cli/utils");
 const get = require("lodash/get");
 const merge = require("lodash/merge");
 const simpleOutput = require("./watch/output/simpleOutput");
+const listPackages = require("./watch/listPackages");
 const minimatch = require("minimatch");
 const glob = require("fast-glob");
 const watchPackages = require("./watch/watchPackages");
+const { PackagesWatcher } = require("./watch/watchers/PackagesWatcher");
 const {
     login,
     getPulumi,
@@ -106,6 +108,17 @@ module.exports = async (inputs, context) => {
         args: hookArgs,
         context
     });
+
+    console.log();
+
+    // TODO: separate the rest of the code below into separate "watcher" classes.
+    // TODO: This was done just because of the time constraints.
+    if (!inputs.deploy) {
+        const packages = await listPackages({ inputs });
+        const packagesWatcher = new PackagesWatcher({ packages, context, inputs });
+        await packagesWatcher.watch();
+        return;
+    }
 
     // 1.1. Check if the project application and Pulumi stack exist.
     let PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
