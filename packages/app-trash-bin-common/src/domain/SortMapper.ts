@@ -1,5 +1,4 @@
-import { DbSort, ColumnSort } from "~/abstractions";
-import { SortDTO } from "~/domain/Sort";
+import { ColumnSort, DbSort, SortDTO } from "~/domain/Sort";
 
 export class SortMapper {
     static fromColumnToDTO(data: ColumnSort): SortDTO {

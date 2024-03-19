@@ -3,6 +3,13 @@ export interface SortDTO {
     order: "asc" | "desc";
 }
 
+export type DbSort = `${string}_ASC` | `${string}_DESC`;
+
+export interface ColumnSort {
+    id: string;
+    desc: boolean;
+}
+
 export class Sort {
     public field: string;
     public order: "asc" | "desc";

@@ -17,7 +17,7 @@ export const Table = (props: TableProps) => {
     return (
         <AcoTable<TrashBinEntryDTO>
             data={props.vm.entries}
-            loading={props.vm.loading}
+            loading={props.vm.loading["LIST"] || props.vm.loading["INIT"]}
             onSelectRow={entries => props.controller.selectEntries(entries)}
             sorting={props.vm.sorting}
             onSortingChange={sort => props.sortController.execute(sort)}

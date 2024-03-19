@@ -4,10 +4,11 @@ import { AcoWithConfig } from "@webiny/app-aco";
 import { CompositionScope } from "@webiny/app-admin";
 import {
     ISortController,
-    ITrashBinController,
     ITrashBinPresenter,
     ITrashBinRepository,
+    loadingRepositoryFactory,
     sortRepositoryFactory,
+    TrashBinRepositoryWithLoading,
     TrashBinRepositoryWithSort
 } from "@webiny/app-trash-bin-common";
 import { TrashBinPresenter } from "./TrashBinPresenter";
@@ -19,6 +20,8 @@ import { SortPresenter } from "~/components/TrashBin/SortPresenter";
 import { SortController } from "~/components/TrashBin/SortController";
 import { TrashBinPresenterWithSorting } from "~/components/TrashBin/TrashBinPresenterWithSorting";
 import { SortTrashBinController } from "~/components/TrashBin/SortTrashBinController";
+import { LoadingPresenter } from "~/components/TrashBin/LoadingPresenter";
+import { TrashBinPresenterWithLoading } from "~/components/TrashBin/TrashBinPresenterWithLoading";
 
 export interface TrashBinProps {
     repository: ITrashBinRepository;
@@ -33,19 +36,33 @@ export const TrashBin = observer((props: TrashBinProps) => {
     const sortPresenter = useMemo(() => new SortPresenter(sortRepository), [sortRepository]);
     const sortController = useMemo(() => new SortController(sortRepository), [sortRepository]);
 
-    const repository = useMemo(() => {
-        return new TrashBinRepositoryWithSort(sortRepository, props.repository);
-    }, [props.repository, sortRepository]);
+    const loadingRepository = useMemo(() => {
+        return loadingRepositoryFactory.getRepository();
+    }, []);
 
-    const trashBinPresenter = useMemo<ITrashBinPresenter>(() => {
+    const loadingPresenter = useMemo(
+        () => new LoadingPresenter(loadingRepository),
+        [loadingRepository]
+    );
+
+    const repository = useMemo(() => {
+        const withSortRepo = new TrashBinRepositoryWithSort(sortRepository, props.repository);
+        return new TrashBinRepositoryWithLoading(loadingRepository, withSortRepo);
+    }, [props.repository, sortRepository, loadingRepository]);
+
+    const trashBinPresenter = useMemo(() => {
         return new TrashBinPresenter(repository);
     }, [repository]);
 
     const presenter = useMemo<ITrashBinPresenter>(() => {
-        return new TrashBinPresenterWithSorting(trashBinPresenter, sortPresenter);
-    }, [trashBinPresenter, sortPresenter]);
+        const withSortPresenter = new TrashBinPresenterWithSorting(
+            trashBinPresenter,
+            sortPresenter
+        );
+        return new TrashBinPresenterWithLoading(withSortPresenter, loadingPresenter);
+    }, [trashBinPresenter, sortPresenter, loadingPresenter]);
 
-    const controller = useMemo<ITrashBinController>(() => {
+    const controller = useMemo<TrashBinController>(() => {
         return new TrashBinController(repository);
     }, [repository]);
 

@@ -7,13 +7,11 @@ import {
     ITrashBinRepository
 } from "~/abstractions";
 import { TrashBinEntry } from "./TrashBinEntry";
-import { Loading } from "./Loading";
 import { TrashBinListQueryVariables, TrashBinMetaResponse } from "~/types";
 
 export class TrashBinRepository<TEntry extends Record<string, any>> implements ITrashBinRepository {
     private listGateway: ITrashBinListGateway<TEntry>;
     private deleteGateway: ITrashBinDeleteEntryGateway;
-    private loading: Loading;
     private entryMapper: ITrashBinEntryMapper<TEntry>;
     private entries: TrashBinEntry[] = [];
     private selectedEntries: TrashBinEntry[] = [];
@@ -30,7 +28,6 @@ export class TrashBinRepository<TEntry extends Record<string, any>> implements I
     ) {
         this.listGateway = listGateway;
         this.deleteGateway = deleteGateway;
-        this.loading = new Loading();
         this.entryMapper = entryMapper;
         makeAutoObservable(this);
     }
@@ -40,7 +37,7 @@ export class TrashBinRepository<TEntry extends Record<string, any>> implements I
             return;
         }
 
-        const response = await this.runWithLoading(this.listGateway.execute({}));
+        const response = await this.listGateway.execute({});
 
         if (!response) {
             return;
@@ -63,10 +60,6 @@ export class TrashBinRepository<TEntry extends Record<string, any>> implements I
         return this.selectedEntries;
     }
 
-    getLoading() {
-        return this.loading.isLoading;
-    }
-
     getMeta() {
         return this.meta;
     }
@@ -75,9 +68,13 @@ export class TrashBinRepository<TEntry extends Record<string, any>> implements I
         return [];
     }
 
+    getLoading() {
+        return {};
+    }
+
     async listEntries(override: boolean, params?: TrashBinListQueryVariables) {
         const executeParams = params || ({} as TrashBinListQueryVariables);
-        const response = await this.runWithLoading(this.listGateway.execute(executeParams));
+        const response = await this.listGateway.execute(executeParams);
 
         if (!response) {
             return;
@@ -98,16 +95,12 @@ export class TrashBinRepository<TEntry extends Record<string, any>> implements I
     }
 
     async deleteEntry(id: string) {
-        const response = await this.runWithLoading(this.deleteGateway.execute(id));
+        const response = await this.deleteGateway.execute(id);
 
         if (response) {
             runInAction(() => {
                 this.entries = this.entries.filter(entry => entry.id !== id);
             });
         }
-    }
-
-    private async runWithLoading<T>(action: Promise<T>) {
-        return await this.loading.runCallbackWithLoading(action);
     }
 }

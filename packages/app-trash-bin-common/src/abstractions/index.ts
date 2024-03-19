@@ -1,5 +1,6 @@
+export * from "./ILoadingPresenter";
+export * from "./ILoadingRepository";
 export * from "./ISortController";
-export * from "./ISortMapper";
 export * from "./ISortPresenter";
 export * from "./ISortRepository";
 export * from "./ITrashBinController";

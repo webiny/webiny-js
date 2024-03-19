@@ -21,8 +21,7 @@ export const useDeleteTrashBinEntry = ({ entry, onAccept, onCancel }: UseDeleteE
                 <br />
                 Are you sure you want to permanently delete <strong>{entry.title}</strong>?
             </p>
-        ),
-        dataTestId: "cms.content-form.header.delete-dialog"
+        )
     });
 
     const openDialogDeleteEntry = useCallback(

@@ -26,7 +26,7 @@ export class TrashBinPresenter implements ITrashBinPresenter {
             entries: this.mapEntriesToDTOs(this.repository.getEntries()),
             selectedEntries: this.mapEntriesToDTOs(this.repository.getSelectedEntries()),
             sorting: [],
-            loading: this.repository.getLoading()
+            loading: {}
         };
     }
 

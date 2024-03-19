@@ -1,11 +1,10 @@
-import { TrashBinEntryDTO } from "~/domain";
-import { ColumnSort } from "~/abstractions/ISortMapper";
+import { ColumnSort, TrashBinEntryDTO } from "~/domain";
 
 export interface TrashBinPresenterViewModel {
     entries: TrashBinEntryDTO[];
     selectedEntries: TrashBinEntryDTO[];
     sorting: ColumnSort[];
-    loading: boolean;
+    loading: Record<string, boolean>;
 }
 
 export interface ITrashBinPresenter {

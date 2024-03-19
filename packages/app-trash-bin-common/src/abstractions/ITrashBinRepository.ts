@@ -7,7 +7,7 @@ export interface ITrashBinRepository {
     getEntries: () => TrashBinEntry[];
     getMeta: () => TrashBinMetaResponse;
     getSort: () => Sort[];
-    getLoading: () => boolean;
+    getLoading: () => Record<string, boolean>;
     listEntries: (override: boolean, params?: TrashBinListQueryVariables) => Promise<void>;
     selectEntries: (entries: TrashBinEntry[]) => Promise<void>;
     deleteEntry: (id: string) => Promise<void>;

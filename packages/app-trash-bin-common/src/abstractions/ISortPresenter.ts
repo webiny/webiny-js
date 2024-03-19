@@ -1,4 +1,4 @@
-import { ColumnSort } from "~/abstractions/ISortMapper";
+import { ColumnSort } from "~/domain";
 
 export interface SortPresenterViewModel {
     sorting: ColumnSort[];

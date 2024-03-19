@@ -1,3 +1,5 @@
+export * from "./LoadingRepository";
+export * from "./LoadingRepositoryFactory";
 export * from "./Sort";
 export * from "./SortMapper";
 export * from "./SortRepository";
@@ -7,3 +9,4 @@ export * from "./TrashBinEntryMapper";
 export * from "./TrashBinRepository";
 export * from "./TrashBinRepositoryFactory";
 export * from "./TrashBinRepositoryWithSort";
+export * from "./TrashBinRepositoryWithLoading";
