@@ -1,7 +1,0 @@
-TrashBinApp
-  |_ TrashBinConfigs
-        |_ Cells
-        |_ Actions
-  |_ TrashBinRenderer
-        |_ TrashBinOverlay
-            |_ Table
