@@ -32,11 +32,8 @@ const deployApp = async ({ name, folder, inputs, context, isFirstDeployment }) =
     isFirstDeployment && (await sleep());
 };
 
-const getTelemetryEventName = stage => `cli-project-deploy-${stage}`;
-
 module.exports = async (inputs, context) => {
-    const eventName = getTelemetryEventName("start");
-    await sendEvent(eventName);
+    await sendEvent("cli-project-deploy-start");
 
     try {
         const { env = "dev" } = inputs;
@@ -123,18 +120,15 @@ module.exports = async (inputs, context) => {
             }
         }
 
-        const eventName = getTelemetryEventName("end");
-        await sendEvent(eventName);
+        await sendEvent("cli-project-deploy-end");
     } catch (e) {
         if (e instanceof GracefulPulumiError) {
-            const eventName = getTelemetryEventName("error-graceful");
-            await sendEvent(eventName, {
+            await sendEvent("cli-project-deploy-error-graceful", {
                 errorMessage: e.message,
                 errorStack: e.stack
             });
         } else {
-            const eventName = getTelemetryEventName("error");
-            await sendEvent(eventName, {
+            await sendEvent("cli-project-deploy-error", {
                 errorMessage: e.message,
                 errorStack: e.stack
             });
