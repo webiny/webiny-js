@@ -5,7 +5,6 @@ export class TrashBinEntryMapper implements ITrashBinEntryMapper<CmsContentEntry
     toDTO(data: CmsContentEntry): TrashBinEntryDTO {
         return {
             id: data.entryId,
-            modelId: data.modelId,
             title: data.meta.title,
             createdBy: data.createdBy,
             deletedBy: {

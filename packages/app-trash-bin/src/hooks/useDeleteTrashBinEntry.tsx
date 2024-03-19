@@ -14,10 +14,10 @@ export const useDeleteTrashBinEntry = ({ entry, onAccept, onCancel }: UseDeleteE
     const { showSnackbar } = useSnackbar();
 
     const { showConfirmation } = useConfirmationDialog({
-        title: "Delete entry",
+        title: "Delete item",
         message: (
             <p>
-                You are about to delete this entry and all of its revisions!
+                You are about to delete this item and all of its revisions!
                 <br />
                 Are you sure you want to permanently delete <strong>{entry.title}</strong>?
             </p>

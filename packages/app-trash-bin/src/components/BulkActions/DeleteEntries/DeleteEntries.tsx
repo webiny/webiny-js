@@ -19,7 +19,7 @@ export const BulkActionsDeleteEntries = observer(() => {
 
     const openDeleteEntriesDialog = () =>
         showConfirmationDialog({
-            title: "Delete entries",
+            title: "Delete items",
             message: `You are about to permanent delete ${entriesLabel}. Are you sure you want to continue?`,
             loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
@@ -28,12 +28,12 @@ export const BulkActionsDeleteEntries = observer(() => {
                         await controller.deleteEntry(item.id);
                         report.success({
                             title: `${item.title}`,
-                            message: "Entry successfully deleted."
+                            message: "Item successfully deleted."
                         });
                     } catch (e) {
                         report.error({
                             title: `${item.meta.title}`,
-                            message: e.message || "Unknown error while deleting the entry"
+                            message: e.message || "Unknown error while deleting the item"
                         });
                     }
                 });
@@ -42,8 +42,8 @@ export const BulkActionsDeleteEntries = observer(() => {
 
                 showResultsDialog({
                     results: worker.results,
-                    title: "Delete entries",
-                    message: "Finished deleting entries! See full report below:"
+                    title: "Delete items",
+                    message: "Finished deleting items! See full report below:"
                 });
             }
         });

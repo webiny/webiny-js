@@ -14,8 +14,9 @@ export class TrashBinRepositoryWithSort implements ITrashBinRepository {
     }
 
     async init(): Promise<void> {
-        await this.trashBinRepository.init();
         await this.sortRepository.init();
+        const sort = this.sortRepository.get().map(sort => SortMapper.fromDTOtoDb(sort));
+        await this.trashBinRepository.init({ sort });
     }
 
     getEntries() {

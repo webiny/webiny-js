@@ -10,6 +10,7 @@ import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Title } from "~/components/Title";
 import { Table } from "~/components/Table";
 import { BulkActions } from "~/components/BulkActions";
+import { BottomInfoBar } from "~/components/BottomInfoBar";
 
 interface TrashBinOverlayProps {
     vm: TrashBinPresenterViewModel;
@@ -35,6 +36,7 @@ export const TrashBinOverlay = (props: TrashBinOverlayProps) => {
                     sortController={props.sortController}
                 />
             </Scrollbar>
+            <BottomInfoBar vm={props.vm} />
         </OverlayLayout>
     );
 };

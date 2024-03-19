@@ -32,12 +32,12 @@ export class TrashBinRepository<TEntry extends Record<string, any>> implements I
         makeAutoObservable(this);
     }
 
-    async init() {
+    async init(params = {}) {
         if (this.entries.length > 0) {
             return;
         }
 
-        const response = await this.listGateway.execute({});
+        const response = await this.listGateway.execute(params);
 
         if (!response) {
             return;

@@ -2,7 +2,7 @@ import { Sort, TrashBinEntry } from "~/domain";
 import { TrashBinListQueryVariables, TrashBinMetaResponse } from "~/types";
 
 export interface ITrashBinRepository {
-    init: () => Promise<void>;
+    init: (params?: TrashBinListQueryVariables) => Promise<void>;
     getSelectedEntries: () => TrashBinEntry[];
     getEntries: () => TrashBinEntry[];
     getMeta: () => TrashBinMetaResponse;

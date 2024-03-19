@@ -8,7 +8,7 @@ import { useTrashBin } from "~/hooks";
 import { BulkActionsContainer, BulkActionsInner, ButtonsContainer } from "./BulkActions.styled";
 
 export const getEntriesLabel = (count = 0): string => {
-    return `${count} ${count === 1 ? "entry" : "entries"}`;
+    return `${count} ${count === 1 ? "item" : "items"}`;
 };
 
 export const BulkActions = () => {
