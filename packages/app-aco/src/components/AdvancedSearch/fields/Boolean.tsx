@@ -2,12 +2,11 @@ import React from "react";
 
 import { Bind } from "@webiny/form";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
+import { useInputField } from "~/components";
 
-interface BooleanProps {
-    name: string;
-}
+export const Boolean = () => {
+    const { name } = useInputField();
 
-export const Boolean = ({ name }: BooleanProps) => {
     return (
         <Bind name={name}>
             {({ value, onChange, validation }) => (

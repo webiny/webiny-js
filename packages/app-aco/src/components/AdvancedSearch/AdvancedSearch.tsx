@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 
-import { FieldRaw, FilterDTO, FilterRepository } from "./domain";
+import { Field, FieldMapper, FieldRaw, FilterDTO, FilterRepository } from "./domain";
 
 import { AdvancedSearchPresenter } from "./AdvancedSearchPresenter";
 
@@ -13,8 +13,9 @@ import { QuerySaverDialog } from "./QuerySaverDialog";
 import { SelectedFilter } from "./SelectedFilter";
 
 import { AdvancedSearchContainer } from "./AdvancedSearch.styled";
+import { useAcoConfig } from "~/config";
 
-interface AdvancedSearchProps {
+export interface AdvancedSearchProps {
     fields: FieldRaw[];
     repository: FilterRepository;
     onApplyFilter: (data: FilterDTO | null) => void;
@@ -22,9 +23,11 @@ interface AdvancedSearchProps {
 
 export const AdvancedSearch = observer(
     ({ fields, repository, onApplyFilter }: AdvancedSearchProps) => {
+        const { advancedSearch } = useAcoConfig();
+
         const presenter = useMemo<AdvancedSearchPresenter>(() => {
             return new AdvancedSearchPresenter(repository);
-        }, [FilterRepository]);
+        }, [repository]);
 
         useEffect(() => {
             presenter.load();
@@ -56,6 +59,18 @@ export const AdvancedSearch = observer(
             onApplyFilter(filter);
         };
 
+        const fieldsWithRenderer = useMemo(() => {
+            const fieldDTOs = FieldMapper.toDTO(fields.map(field => Field.createFromRaw(field)));
+
+            return fieldDTOs.map(field => {
+                const config = advancedSearch.fieldRenderers.find(
+                    config => config.type === field.type
+                );
+                const element = config?.element ?? null;
+                return { ...field, element };
+            });
+        }, [fields, advancedSearch.fieldRenderers]);
+
         return (
             <>
                 <AdvancedSearchContainer>
@@ -81,7 +96,7 @@ export const AdvancedSearch = observer(
                 {presenter.vm.currentFilter ? (
                     <>
                         <QueryBuilderDrawer
-                            fields={fields}
+                            fields={fieldsWithRenderer}
                             onClose={() => presenter.closeBuilder()}
                             onSave={filter => presenter.saveFilter(filter)}
                             onApply={applyFilter}

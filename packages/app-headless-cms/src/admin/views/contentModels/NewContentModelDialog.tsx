@@ -49,12 +49,14 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
         CreateCmsModelMutationResponse,
         CreateCmsModelMutationVariables
     >(GQL.CREATE_CONTENT_MODEL, {
-        update(cache, { data }) {
+        onCompleted(data) {
+            setLoading(false);
+
             if (!data) {
-                setLoading(false);
                 showSnackbar("Missing data on Create Content Model Mutation Response.");
                 return;
             }
+
             const { data: model, error } = data.createContentModel;
 
             if (error) {
@@ -63,10 +65,21 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                 return;
             }
 
+            history.push("/cms/content-models/" + model.modelId);
+        },
+        update(cache, { data }) {
+            if (!data) {
+                return;
+            }
+
+            const { data: model, error } = data.createContentModel;
+
+            if (error) {
+                return;
+            }
+
             addModelToListCache(cache, model);
             addModelToGroupCache(cache, model);
-
-            history.push("/cms/content-models/" + model.modelId);
         }
     });
 

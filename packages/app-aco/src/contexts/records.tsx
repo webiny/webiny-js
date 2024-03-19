@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo, useState } from "react";
+import React, { ReactNode, useMemo } from "react";
 import sortBy from "lodash/sortBy";
 import unionBy from "lodash/unionBy";
 import lodashMerge from "lodash/merge";
@@ -40,6 +40,7 @@ import {
 import { validateOrGetDefaultDbSort } from "~/sorting";
 import { useAcoApp } from "~/hooks";
 import { parseIdentifier } from "@webiny/utils";
+import { useStateIfMounted } from "@webiny/app-admin";
 
 interface ListTagsParams {
     where?: ListTagsWhereQueryVariables;
@@ -111,10 +112,10 @@ export const SearchRecordsProvider = ({ children }: Props) => {
     const { app, client, mode } = useAcoApp();
     const { model } = app;
 
-    const [records, setRecords] = useState<SearchRecordItem[]>([]);
-    const [tags, setTags] = useState<TagItem[]>([]);
-    const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
-    const [meta, setMeta] = useState<ListMeta>(Object.create(defaultMeta));
+    const [records, setRecords] = useStateIfMounted<SearchRecordItem[]>([]);
+    const [tags, setTags] = useStateIfMounted<TagItem[]>([]);
+    const [loading, setLoading] = useStateIfMounted<Loading<LoadingActions>>(defaultLoading);
+    const [meta, setMeta] = useStateIfMounted<ListMeta>(Object.create(defaultMeta));
 
     const {
         GET_RECORD,

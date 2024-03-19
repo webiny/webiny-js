@@ -2,7 +2,6 @@ import lodashDebounce from "lodash/debounce";
 import { plugins } from "@webiny/plugins";
 import { SaveBlockActionArgsType } from "./types";
 import { BlockEventActionCallable } from "~/blockEditor/types";
-import { removeElementId } from "~/editor/helpers";
 import { PbElement, PbBlockVariable, PbBlockEditorCreateVariablePlugin } from "~/types";
 import { UpdatePageBlockInput } from "~/admin/contexts/AdminPageBuilder/PageBlocks/BlockGatewayInterface";
 
@@ -20,6 +19,14 @@ export const findElementByVariableId = (elements: PbElement[], variableId: strin
     }
 };
 
+/**
+ * This logic is necessary to collect the latest element state and generate up-to-date variable values.
+ * Otherwise, we might have outdated values in variables. For example: we link a `button` element, and then
+ * update the button label through the Styles tab. This update is not reflected directly on the default variable
+ * value. On block save, the variable value would be still outdated, if this `syncBlockVariables` is not executed.
+ *
+ * TODO: Ideally, we would update variable values as the element state itself gets updated, to avoid this entire piece of logic.
+ */
 const syncBlockVariables = (block: PbElement) => {
     const createVariablePlugins = plugins.byType<PbBlockEditorCreateVariablePlugin>(
         "pb-block-editor-create-variable"
@@ -72,7 +79,7 @@ export const saveBlockAction: BlockEventActionCallable<SaveBlockActionArgsType> 
         blockCategory: state.block.blockCategory,
         // We need to grab the contents of the "document" element, and we can safely just grab the first element
         // because we only have 1 block in the block editor.
-        content: removeElementId(syncBlockVariables(element.elements[0]))
+        content: syncBlockVariables(element.elements[0])
     };
 
     if (debouncedSave) {

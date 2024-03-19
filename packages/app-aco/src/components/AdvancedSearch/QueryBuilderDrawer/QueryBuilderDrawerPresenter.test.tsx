@@ -1,18 +1,8 @@
 import { QueryBuilderDrawerPresenter } from "./QueryBuilderDrawerPresenter";
-import {
-    FieldDTO,
-    FieldRaw,
-    FieldType,
-    FilterDTO,
-    Operation
-} from "~/components/AdvancedSearch/domain";
+import { FilterDTO, Operation } from "~/components/AdvancedSearch/domain";
 
 describe("QueryBuilderDrawerPresenter", () => {
     const defaultFilter = { field: "", value: "", condition: "" };
-
-    const fieldId = "test-field";
-    const fieldLabel = "Test Field";
-    const fieldType = "text";
 
     const testFilter = {
         field: "",
@@ -36,15 +26,7 @@ describe("QueryBuilderDrawerPresenter", () => {
     let presenter: QueryBuilderDrawerPresenter;
 
     beforeEach(() => {
-        const defaultFields: FieldRaw[] = [
-            {
-                id: fieldId,
-                label: fieldLabel,
-                type: fieldType
-            }
-        ];
-
-        presenter = new QueryBuilderDrawerPresenter(defaultFields);
+        presenter = new QueryBuilderDrawerPresenter();
     });
 
     it("should create QueryBuilderDrawerPresenter with `vm` definition", () => {
@@ -53,17 +35,6 @@ describe("QueryBuilderDrawerPresenter", () => {
         // `vm` should have the expected `name` and `description` definition
         expect(presenter.vm.name).toEqual(filter.name);
         expect(presenter.vm.description).toEqual(filter.description);
-
-        // `vm` should have the expected `fields` definition
-        expect(presenter.vm.fields).toEqual([
-            {
-                label: fieldLabel,
-                value: fieldId,
-                type: fieldType,
-                predefined: expect.any(Array),
-                conditions: expect.any(Array)
-            }
-        ]);
 
         // `vm` should have the expected `data` definition
         expect(presenter.vm.data).toEqual({
@@ -451,241 +422,5 @@ describe("QueryBuilderDrawerPresenter", () => {
         expect(presenter.vm.data.groups[0].filters).toEqual([
             { ...defaultFilter, field: "new-field", canDelete: false }
         ]);
-    });
-});
-
-describe("FieldDTO definition", () => {
-    const fields: [FieldRaw, FieldDTO][] = [
-        [
-            {
-                id: `${FieldType.TEXT}-field`,
-                label: `${FieldType.TEXT} field`,
-                type: FieldType.TEXT
-            },
-
-            {
-                label: `${FieldType.TEXT} field`,
-                value: `${FieldType.TEXT}-field`,
-                conditions: [
-                    { label: "is equal to", value: " " },
-                    { label: "contains", value: "_contains" },
-                    { label: "starts with", value: "_startsWith" },
-                    { label: "is not equal to", value: "_not" },
-                    { label: "doesn't contain", value: "_not_contains" },
-                    { label: "doesn't start with", value: "_not_startsWith" }
-                ],
-                predefined: [],
-                type: FieldType.TEXT
-            }
-        ],
-        [
-            {
-                id: "long-text-field",
-                label: "long-text field",
-                type: "long-text"
-            },
-            {
-                label: "long-text field",
-                value: "long-text-field",
-                conditions: [
-                    { label: "contains", value: "_contains" },
-                    { label: "doesn't contain", value: "_not_contains" }
-                ],
-                predefined: [],
-                type: FieldType.TEXT
-            }
-        ],
-        [
-            {
-                id: `${FieldType.BOOLEAN}-field`,
-                label: `${FieldType.BOOLEAN} field`,
-                type: FieldType.BOOLEAN
-            },
-            {
-                label: `${FieldType.BOOLEAN} field`,
-                value: `${FieldType.BOOLEAN}-field`,
-                conditions: [
-                    { label: "is equal to", value: " " },
-                    { label: "is not equal to", value: "_not" }
-                ],
-                predefined: [],
-                type: FieldType.BOOLEAN
-            }
-        ],
-        [
-            {
-                id: `${FieldType.DATE}-field`,
-                label: `${FieldType.DATE} field`,
-                type: "datetime",
-                settings: {
-                    type: FieldType.DATE
-                }
-            },
-            {
-                label: `${FieldType.DATE} field`,
-                value: `${FieldType.DATE}-field`,
-                conditions: [
-                    { label: "is equal to", value: " " },
-                    { label: "is not equal to", value: "_not" },
-                    { label: "is before", value: "_lt" },
-                    { label: "is before or equal to", value: "_lte" },
-                    { label: "is after", value: "_gt" },
-                    { label: "is after or equal to", value: "_gte" }
-                ],
-                predefined: [],
-                type: FieldType.DATE
-            }
-        ],
-        [
-            {
-                id: `${FieldType.TIME}-field`,
-                label: `${FieldType.TIME} field`,
-                type: "datetime",
-                settings: {
-                    type: FieldType.TIME
-                }
-            },
-            {
-                label: `${FieldType.TIME} field`,
-                value: `${FieldType.TIME}-field`,
-                conditions: [
-                    { label: "is equal to", value: " " },
-                    { label: "is not equal to", value: "_not" },
-                    { label: "is before", value: "_lt" },
-                    { label: "is before or equal to", value: "_lte" },
-                    { label: "is after", value: "_gt" },
-                    { label: "is after or equal to", value: "_gte" }
-                ],
-                predefined: [],
-                type: FieldType.TIME
-            }
-        ],
-        [
-            {
-                id: `${FieldType.DATETIME_WITH_TIMEZONE}-field`,
-                label: `${FieldType.DATETIME_WITH_TIMEZONE} field`,
-                type: "datetime",
-                settings: {
-                    type: FieldType.DATETIME_WITH_TIMEZONE
-                }
-            },
-            {
-                label: `${FieldType.DATETIME_WITH_TIMEZONE} field`,
-                value: `${FieldType.DATETIME_WITH_TIMEZONE}-field`,
-                conditions: [
-                    { label: "is equal to", value: " " },
-                    { label: "is not equal to", value: "_not" },
-                    { label: "is before", value: "_lt" },
-                    { label: "is before or equal to", value: "_lte" },
-                    { label: "is after", value: "_gt" },
-                    { label: "is after or equal to", value: "_gte" }
-                ],
-                predefined: [],
-                type: FieldType.DATETIME_WITH_TIMEZONE
-            }
-        ],
-        [
-            {
-                id: `${FieldType.DATETIME_WITHOUT_TIMEZONE}-field`,
-                label: `${FieldType.DATETIME_WITHOUT_TIMEZONE} field`,
-                type: "datetime",
-                settings: {
-                    type: FieldType.DATETIME_WITHOUT_TIMEZONE
-                }
-            },
-            {
-                label: `${FieldType.DATETIME_WITHOUT_TIMEZONE} field`,
-                value: `${FieldType.DATETIME_WITHOUT_TIMEZONE}-field`,
-                conditions: [
-                    { label: "is equal to", value: " " },
-                    { label: "is not equal to", value: "_not" },
-                    { label: "is before", value: "_lt" },
-                    { label: "is before or equal to", value: "_lte" },
-                    { label: "is after", value: "_gt" },
-                    { label: "is after or equal to", value: "_gte" }
-                ],
-                predefined: [],
-                type: FieldType.DATETIME_WITHOUT_TIMEZONE
-            }
-        ],
-        [
-            {
-                id: `${FieldType.MULTIPLE_VALUES}-field`,
-                label: `${FieldType.MULTIPLE_VALUES} field`,
-                type: "text",
-                multipleValues: true,
-                predefinedValues: {
-                    enabled: true,
-                    values: [
-                        {
-                            value: "value-1",
-                            label: "value 1"
-                        }
-                    ]
-                }
-            },
-            {
-                label: `${FieldType.MULTIPLE_VALUES} field`,
-                value: `${FieldType.MULTIPLE_VALUES}-field`,
-                conditions: [
-                    { label: "is equal to", value: " " },
-                    { label: "is not equal to", value: "_not" }
-                ],
-                predefined: [
-                    {
-                        value: "value-1",
-                        label: "value 1"
-                    }
-                ],
-                type: FieldType.MULTIPLE_VALUES
-            }
-        ],
-        [
-            {
-                id: `${FieldType.NUMBER}-field`,
-                label: `${FieldType.NUMBER} field`,
-                type: FieldType.NUMBER
-            },
-            {
-                label: `${FieldType.NUMBER} field`,
-                value: `${FieldType.NUMBER}-field`,
-                conditions: [
-                    { label: "is equal to", value: " " },
-                    { label: "is not equal to", value: "_not" },
-                    { label: "is less than", value: "_lt" },
-                    { label: "is less or equal to", value: "_lte" },
-                    { label: "is greater than", value: "_gt" },
-                    { label: "is greater or equal to", value: "_gte" }
-                ],
-                predefined: [],
-                type: FieldType.NUMBER
-            }
-        ],
-        [
-            {
-                id: "any-field",
-                label: "any field",
-                type: "any"
-            },
-            {
-                label: "any field",
-                value: "any-field",
-                conditions: [],
-                predefined: [],
-                type: FieldType.TEXT
-            }
-        ]
-    ];
-
-    fields.forEach(([fieldRaw, fieldDTO]) => {
-        let presenter: QueryBuilderDrawerPresenter;
-
-        beforeEach(() => {
-            presenter = new QueryBuilderDrawerPresenter([fieldRaw]);
-        });
-
-        it(`should transform "Raw ${fieldRaw.label}" -> "DTO ${fieldDTO.label}"`, () => {
-            expect(presenter.vm.fields).toEqual([fieldDTO]);
-        });
     });
 });
