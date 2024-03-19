@@ -280,6 +280,7 @@ export interface CmsDynamicZoneTemplate {
     fields: CmsModelField[];
     layout: string[][];
     validation: CmsModelFieldValidation[];
+    tags?: string[];
 }
 
 /**

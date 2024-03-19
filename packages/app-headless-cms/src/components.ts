@@ -2,7 +2,8 @@ import {
     DynamicZoneContainer,
     MultiValueContainer,
     MultiValueItemContainer,
-    MultiValueItem
+    MultiValueItem,
+    TemplateGallery
 } from "~/admin/plugins/fieldRenderers/dynamicZone";
 
 export const Components = {
@@ -18,7 +19,8 @@ export const Components = {
                 Container: MultiValueContainer,
                 ItemContainer: MultiValueItemContainer,
                 Item: MultiValueItem
-            }
+            },
+            TemplateGallery
         }
     }
 };

@@ -11,6 +11,7 @@ import {
     CmsModel,
     CmsModelField
 } from "~/types";
+import { ParentFieldProvider } from "~/admin/components/ContentEntryForm/ParentValue";
 
 type GetBind = CmsModelFieldRendererProps["getBind"];
 
@@ -46,27 +47,32 @@ export const SingleValueDynamicZone = ({
     return (
         <>
             {template ? (
-                <Accordion>
-                    <AccordionItem
-                        title={template.name}
-                        description={template.description}
-                        icon={<TemplateIcon icon={template.icon} />}
-                        open={true}
-                        interactive={false}
-                        actions={
-                            <AccordionItem.Actions>
-                                <AccordionItem.Action icon={<DeleteIcon />} onClick={unsetValue} />
-                            </AccordionItem.Actions>
-                        }
-                    >
-                        <Fields
-                            fields={template.fields}
-                            layout={template.layout || []}
-                            contentModel={contentModel}
-                            Bind={Bind}
-                        />
-                    </AccordionItem>
-                </Accordion>
+                <ParentFieldProvider value={bind.value} path={Bind.parentName}>
+                    <Accordion>
+                        <AccordionItem
+                            title={template.name}
+                            description={template.description}
+                            icon={<TemplateIcon icon={template.icon} />}
+                            open={true}
+                            interactive={false}
+                            actions={
+                                <AccordionItem.Actions>
+                                    <AccordionItem.Action
+                                        icon={<DeleteIcon />}
+                                        onClick={unsetValue}
+                                    />
+                                </AccordionItem.Actions>
+                            }
+                        >
+                            <Fields
+                                fields={template.fields}
+                                layout={template.layout || []}
+                                contentModel={contentModel}
+                                Bind={Bind}
+                            />
+                        </AccordionItem>
+                    </Accordion>
+                </ParentFieldProvider>
             ) : null}
             {bind.value ? null : <AddTemplateButton onTemplate={onTemplate} />}
         </>
