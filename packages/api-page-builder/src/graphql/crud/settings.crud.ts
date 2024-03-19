@@ -65,14 +65,6 @@ export const createSettingsCrud = (params: CreateSettingsCrudParams): SettingsCr
     );
 
     return {
-        /**
-         * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
-         */
-        onBeforeSettingsUpdate: onSettingsBeforeUpdate,
-        onAfterSettingsUpdate: onSettingsAfterUpdate,
-        /**
-         * Introduced in 5.34.0
-         */
         onSettingsBeforeUpdate,
         onSettingsAfterUpdate,
         async getCurrentSettings(this: PageBuilderContextObject) {

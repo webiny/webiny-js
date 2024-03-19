@@ -63,18 +63,6 @@ export const createCategoriesCrud = (params: CreateCategoriesCrudParams): Catego
     );
 
     return {
-        /**
-         * Lifecycle events - deprecated in 5.34.0 - will be removed from 5.36.0
-         */
-        onBeforeCategoryCreate: onCategoryBeforeCreate,
-        onAfterCategoryCreate: onCategoryAfterCreate,
-        onBeforeCategoryUpdate: onCategoryBeforeUpdate,
-        onAfterCategoryUpdate: onCategoryAfterUpdate,
-        onBeforeCategoryDelete: onCategoryBeforeDelete,
-        onAfterCategoryDelete: onCategoryAfterDelete,
-        /**
-         * Introduced in 5.34.0
-         */
         onCategoryBeforeCreate,
         onCategoryAfterCreate,
         onCategoryBeforeUpdate,

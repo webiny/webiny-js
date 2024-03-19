@@ -31,14 +31,6 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
     );
 
     return {
-        /**
-         * Deprecated in 5.34.0
-         */
-        onBeforeInstall: onSystemBeforeInstall,
-        onAfterInstall: onSystemAfterInstall,
-        /**
-         * Introduced in 5.34.0
-         */
         onSystemBeforeInstall,
         onSystemAfterInstall,
         storageOperations,
