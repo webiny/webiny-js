@@ -64,7 +64,7 @@ module.exports = options => {
                     },
                     async: !production
                 }),
-            options.logs && new WebpackBar()
+            options.logs && new WebpackBar({ name: path.basename(cwd) })
         ].filter(Boolean),
         // Run babel on all .js files and skip those in node_modules
         module: {

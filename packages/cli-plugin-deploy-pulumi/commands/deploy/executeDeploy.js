@@ -84,7 +84,7 @@ module.exports = async ({ inputs, context, pulumi }) => {
             }
         }
 
-        const message = `Deployed successfully in ${getDeploymentDuration()}.`;
+        const message = `Deployed in ${getDeploymentDuration()}.`;
 
         if (showDeploymentLogs) {
             context.success(message);

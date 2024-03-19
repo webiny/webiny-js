@@ -26,7 +26,7 @@ const deployApp = async ({ name, folder, inputs, context, isFirstDeployment }) =
     );
 
     console.log();
-    context.success(`%s project application deployed successfully.`, name);
+    context.success(`%s project application deployed.`, name);
     console.log();
 
     isFirstDeployment && (await sleep());
@@ -83,7 +83,7 @@ module.exports = async (inputs, context) => {
         if (isFirstDeployment) {
             context.success(`Congratulations! You've just deployed a brand new project!`);
         } else {
-            context.success(`Project deployed successfully.`);
+            context.success(`Project deployed.`);
         }
 
         const projectDetails = await getInfo(env);
