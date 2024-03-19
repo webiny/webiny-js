@@ -24,9 +24,6 @@ export interface DialogProps extends RmwcDialogProps {
     // Component's custom in-line styles.
     style?: React.CSSProperties;
 
-    // If true, dialog will be permanently fixed inside of a view (works for temporary and persistent modes).
-    open?: boolean;
-
     onClose?: (evt: DialogOnCloseEventT) => void;
 
     preventOutsideDismiss?: boolean;
