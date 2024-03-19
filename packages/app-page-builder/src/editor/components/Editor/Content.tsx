@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo, useCallback } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "@emotion/styled";
 import { css } from "emotion";
@@ -6,11 +6,11 @@ import kebabCase from "lodash/kebabCase";
 import { Elevation } from "@webiny/ui/Elevation";
 import { PbEditorElement, PbTheme } from "~/types";
 import {
-    uiAtom,
-    setPagePreviewDimensionMutation,
-    rootElementAtom,
     elementsAtom,
-    PagePreviewDimension
+    PagePreviewDimension,
+    rootElementAtom,
+    setPagePreviewDimensionMutation,
+    uiAtom
 } from "~/editor/recoil/modules";
 import { EditorContent } from "~/editor";
 
@@ -62,7 +62,7 @@ const contentContainerWrapper = css({
     margin: "95px 65px 50px 85px",
     padding: 0,
     position: "absolute",
-    width: "calc(100vw - 115px - 300px)",
+    width: "calc(100vw - 415px)",
     top: 0,
     boxSizing: "border-box",
     zIndex: 1
