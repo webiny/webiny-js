@@ -46,6 +46,10 @@ class FileLocker {
                     continue;
                 }
 
+                if (depVersion.startsWith("https:")) {
+                    continue;
+                }
+
                 const resolvedVersion = resolvePackageVersion(key, {
                     cwd: path.dirname(this.file)
                 });

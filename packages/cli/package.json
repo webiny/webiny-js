@@ -25,6 +25,7 @@
     "fs-extra": "^9.1.0",
     "graphql-request": "^3.7.0",
     "inquirer": "^7.3.3",
+    "is-ci": "^3.0.0",
     "ncp": "2.0.0",
     "open": "^8.0.6",
     "pirates": "^4.0.1",

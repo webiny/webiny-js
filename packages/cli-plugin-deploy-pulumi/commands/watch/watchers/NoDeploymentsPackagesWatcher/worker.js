@@ -26,19 +26,25 @@ for (let i = 0; i < types.length; i++) {
 (async () => {
     try {
         const { options, package: pckg } = workerData;
-        let config = require(pckg.config).default || require(pckg.config);
+        let config = require(pckg.config);
+        if (config.default) {
+            config = config.default;
+        }
+
         if (typeof config === "function") {
             config = config({ options: { ...options, cwd: pckg.root }, context: cli });
         }
 
-        const hasBuildCommand = config.commands && typeof config.commands.build === "function";
-        if (!hasBuildCommand) {
-            throw new Error("Build command not found.");
+        if (typeof config.commands.watch !== "function") {
+            console.log(
+                `Skipping watch; ${cli.warning.hl(
+                    "watch"
+                )} command is missing. Check package's ${cli.warning.hl("webiny.config.ts")} file.`
+            );
+            return;
         }
 
-        await config.commands.build(options);
-        parentPort.postMessage(JSON.stringify({ type: "success" }));
-        process.exit(0);
+        await config.commands.watch(options, cli);
     } catch (e) {
         console.log(e.stack);
         console.error(e);

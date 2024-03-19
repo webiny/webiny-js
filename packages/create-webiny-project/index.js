@@ -71,10 +71,16 @@ yargs.command(
         });
         yargs.option("log", {
             describe:
-                "Creates a log file to see output of installation. Defaults to creating cwp-logs.txt in current directory",
+                "Creates a log file to see output of installation. Defaults to create-webiny-project-logs.txt in current directory",
             alias: "l",
-            default: "cwp-logs.txt",
+            default: "create-webiny-project-logs.txt",
             type: "string",
+            demandOption: false
+        });
+        yargs.option("debug", {
+            describe: "Turn on debug logs",
+            default: false,
+            type: "boolean",
             demandOption: false
         });
         yargs.option("cleanup", {

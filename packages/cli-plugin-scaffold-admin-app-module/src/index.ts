@@ -15,7 +15,6 @@ import {
     updateScaffoldsIndexFile,
     formatCode
 } from "@webiny/cli-plugin-scaffold/utils";
-import { getApiProjectApplicationFolder } from "@webiny/cli/utils";
 import { projectHasCodeFolders } from "./utils";
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -53,7 +52,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "graphqlPluginsFolderPath",
                     message: "Enter GraphQL API plugins folder path:",
-                    default: `${getApiProjectApplicationFolder(context.project)}${gqlSuffixPath}`,
+                    default: `apps/api${gqlSuffixPath}`,
                     validate: (location: string) => {
                         if (location.length < 2) {
                             return `Please enter GraphQL API ${chalk.cyan("plugins")} folder path.`;
@@ -329,9 +328,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             console.log(
                 `‣ deploy the extended GraphQL API and continue developing by running the ${chalk.green(
-                    `yarn webiny watch ${getApiProjectApplicationFolder(
-                        context.project
-                    )}${suffixPath} --env dev`
+                    `yarn webiny watch apps/api${suffixPath} --env dev`
                 )} command`
             );
 
