@@ -75,7 +75,10 @@ module.exports = (params, context) => {
                 context
             });
 
-            await notify({ message: `"${folder}" stack deployed in ${getDuration()}.` });
+            await notify({
+                message: `"${folder}" stack deployed in ${getDuration()}.`,
+                timeout: 1
+            });
         }
     });
 

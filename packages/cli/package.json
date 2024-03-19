@@ -24,6 +24,7 @@
     "find-up": "5.0.0",
     "fs-extra": "^9.1.0",
     "graphql-request": "^3.7.0",
+    "is-ci": "^3.0.0",
     "inquirer": "^7.3.3",
     "ncp": "2.0.0",
     "open": "^8.0.6",

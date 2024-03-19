@@ -31,7 +31,10 @@ module.exports = async options => {
         webpackConfig = overrides.webpack(webpackConfig);
     }
 
-    // We remove the WebpackBar plugin, as it's not needed in watch mode.
+    // We remove the WebpackBar plugin, as it's not needed in watch mode. This is mostly
+    // because of the fact that, usually, when working on AWS Lambda function code, you're
+    // also redeploying the function. When watching with deployments enabled, we're showing
+    // our special watch command output, where Webpackbar doesn't work well.
     const webpackBarPluginIndex = webpackConfig.plugins.findIndex(
         plugin => plugin instanceof WebpackBar
     );

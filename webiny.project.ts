@@ -2,7 +2,7 @@ export default {
     name: "webiny-js",
     cli: {
         // No need to track anything when developing Webiny.
-        telemetry: true,
+        telemetry: false,
 
         plugins: async () => {
             /**
@@ -67,7 +67,6 @@ export default {
 
     featureFlags: {
         copyPermissionsButton: true,
-        experimentalAdminOmniSearch: true,
-        cliSimplifiedDeployOutput: true
+        experimentalAdminOmniSearch: true
     }
 };
