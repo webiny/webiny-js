@@ -32,11 +32,12 @@ const slugValidator: Validator = (value: string) => {
 };
 
 type CreatePageTemplateDialogProps = {
+    open: boolean;
     onClose: () => void;
     onSubmit: (formData: Pick<PbPageTemplate, "title" | "slug" | "description">) => Promise<void>;
 };
 
-const CreatePageTemplateDialog = ({ onClose, onSubmit }: CreatePageTemplateDialogProps) => {
+const CreatePageTemplateDialog = ({ open, onClose, onSubmit }: CreatePageTemplateDialogProps) => {
     const [loading, setLoading] = useState(false);
     const submitForm = useCallback(
         async (formData: PbPageTemplate) => {
@@ -48,7 +49,7 @@ const CreatePageTemplateDialog = ({ onClose, onSubmit }: CreatePageTemplateDialo
     );
 
     return (
-        <Dialog open={true} onClose={onClose} className={narrowDialog}>
+        <Dialog open={open} onClose={onClose} className={narrowDialog}>
             <Form onSubmit={submitForm}>
                 {({ form, Bind }) => (
                     <>
