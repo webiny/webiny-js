@@ -24,7 +24,7 @@ import { Typography } from "@webiny/ui/Typography";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { Dialog, DialogActions, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
 import { ButtonDefault, ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useSnackbar, useStateWithCallback } from "@webiny/app-admin/hooks";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as DownloadFileIcon } from "@webiny/app-admin/assets/icons/file_download.svg";
@@ -95,7 +95,7 @@ const BlocksByCategoriesDataList = ({
     canCreate
 }: PageBuilderBlocksByCategoriesDataListProps) => {
     const [sort, setSort] = useState<string>(SORTERS[2].sort);
-    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+    const [isDialogOpen, setIsDialogOpen] = useStateWithCallback<boolean>(false);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const listQuery = useQuery(LIST_PAGE_CATEGORIES);
@@ -145,8 +145,9 @@ const BlocksByCategoriesDataList = ({
     const onCreatePageBlock = async (categorySlug: string) => {
         try {
             const newBlock = await createBlock({ name: "New block", category: categorySlug });
-            setIsDialogOpen(false);
-            history.push(`/page-builder/block-editor/${newBlock.id}`);
+            setIsDialogOpen(false, () => {
+                history.push(`/page-builder/block-editor/${newBlock.id}`);
+            });
         } catch (error) {
             showSnackbar(error.message);
         }
