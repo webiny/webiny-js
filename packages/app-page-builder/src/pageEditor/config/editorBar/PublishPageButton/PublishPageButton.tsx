@@ -39,10 +39,9 @@ const DefaultPublishPageButton = () => {
             return;
         }
 
-        navigateToLatestFolder();
-
         // Let's wait a bit, because we are also redirecting the user.
         setTimeout(() => {
+            navigateToLatestFolder();
             showSnackbar("Your page was published successfully!");
         }, 500);
     }, [page.id]);
