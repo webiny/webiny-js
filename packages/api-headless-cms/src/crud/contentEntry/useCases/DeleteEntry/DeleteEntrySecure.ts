@@ -1,4 +1,4 @@
-import { IDeleteEntry } from "~/crud/contentEntry/adstractions";
+import { IDeleteEntry } from "~/crud/contentEntry/abstractions";
 import { AccessControl } from "~/crud/AccessControl/AccessControl";
 import { CmsDeleteEntryOptions, CmsModel } from "~/types";
 

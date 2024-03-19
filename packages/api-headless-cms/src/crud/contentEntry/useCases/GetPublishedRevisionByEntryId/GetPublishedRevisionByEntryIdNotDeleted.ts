@@ -1,4 +1,4 @@
-import { IGetPublishedRevisionByEntryId } from "../../adstractions";
+import { IGetPublishedRevisionByEntryId } from "../../abstractions";
 import { CmsEntryStorageOperationsGetPublishedRevisionParams, CmsModel } from "~/types";
 
 export class GetPublishedRevisionByEntryIdNotDeleted implements IGetPublishedRevisionByEntryId {

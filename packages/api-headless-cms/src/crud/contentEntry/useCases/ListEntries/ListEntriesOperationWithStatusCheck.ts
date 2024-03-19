@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { IListEntriesOperation } from "../../adstractions";
+import { IListEntriesOperation } from "../../abstractions";
 import { CmsEntryStorageOperationsListParams, CmsModel } from "~/types";
 
 export class ListEntriesOperationWithStatusCheck implements IListEntriesOperation {

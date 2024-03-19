@@ -17,7 +17,7 @@ import {
 } from "~/types";
 import { AccessControl } from "~/crud/AccessControl/AccessControl";
 import { SecurityIdentity } from "@webiny/api-security/types";
-import { IGetLatestRevisionByEntryId } from "~/crud/contentEntry/adstractions";
+import { IGetLatestRevisionByEntryId } from "~/crud/contentEntry/abstractions";
 
 export interface DeleteEntryUseCasesTopics {
     onEntryBeforeDelete: Topic<OnEntryBeforeDeleteTopicParams>;

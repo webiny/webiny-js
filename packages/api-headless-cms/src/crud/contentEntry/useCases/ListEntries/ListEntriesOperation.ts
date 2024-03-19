@@ -1,4 +1,4 @@
-import { IListEntriesOperation } from "../../adstractions";
+import { IListEntriesOperation } from "../../abstractions";
 import { CmsEntryStorageOperations, CmsEntryStorageOperationsListParams, CmsModel } from "~/types";
 
 export class ListEntriesOperation implements IListEntriesOperation {

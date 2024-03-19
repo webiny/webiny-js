@@ -1,4 +1,4 @@
-import { IDeleteEntryOperation } from "../../adstractions";
+import { IDeleteEntryOperation } from "../../abstractions";
 import {
     CmsEntryStorageOperations,
     CmsEntryStorageOperationsDeleteParams,

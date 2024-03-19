@@ -4,7 +4,7 @@ import {
     IDeleteEntry,
     IDeleteEntryOperation,
     IGetLatestRevisionByEntryId
-} from "../../adstractions";
+} from "../../abstractions";
 import { CmsDeleteEntryOptions, CmsEntry, CmsModel } from "~/types";
 import { TransformEntryDelete } from "./TransformEntryDelete";
 

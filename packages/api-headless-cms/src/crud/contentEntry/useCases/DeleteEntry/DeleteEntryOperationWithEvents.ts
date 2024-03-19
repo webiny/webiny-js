@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { IDeleteEntryOperation } from "../../adstractions";
+import { IDeleteEntryOperation } from "../../abstractions";
 import { CmsEntryStorageOperationsDeleteParams, CmsModel } from "~/types";
 import { DeleteEntryUseCasesTopics } from "./index";
 
