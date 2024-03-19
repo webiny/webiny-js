@@ -28,6 +28,7 @@ import {
     CellName,
     CellStatus
 } from "~/admin/components/ContentEntries/Table/Cells";
+import { Ref } from "~/admin/components/ContentEntries/Filters/RefFieldRenderer";
 
 const { Browser } = ContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
@@ -91,6 +92,11 @@ export const ContentEntriesModule = () => {
                     resizable={false}
                     hideable={false}
                     className={"rmwc-data-table__cell--align-end cms-aco-list-actions"}
+                />
+                <Browser.AdvancedSearch.FieldRenderer
+                    name={"ref"}
+                    element={<Ref />}
+                    type={Browser.AdvancedSearch.FieldRenderer.FieldType.REF}
                 />
             </ContentEntryListConfig>
             <ContentEntryEditorConfig>

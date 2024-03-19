@@ -2,21 +2,17 @@ import React from "react";
 
 import { Bind } from "@webiny/form";
 import { Select } from "@webiny/ui/Select";
+import { useInputField } from "~/components";
 
-import { Predefined } from "~/components/AdvancedSearch/domain";
+export const MultipleValues = () => {
+    const { name, field } = useInputField();
 
-interface MultipleValuesProps {
-    predefined: Predefined[];
-    name: string;
-}
-
-export const MultipleValues = ({ predefined, name }: MultipleValuesProps) => {
     return (
         <Bind name={name}>
             {({ value, onChange, validation }) => (
                 <Select
                     label={"Values"}
-                    options={predefined.map(field => ({
+                    options={field.predefined.map(field => ({
                         label: field.label,
                         value: field.value
                     }))}

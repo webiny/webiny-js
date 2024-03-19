@@ -1,5 +1,4 @@
 import React, { useCallback } from "react";
-import cloneDeep from "lodash/cloneDeep";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
@@ -15,19 +14,20 @@ const UnlinkBlockAction = ({ children }: UnlinkBlockActionPropsType) => {
     const updateElement = useUpdateElement();
 
     const onClick = useCallback(async (): Promise<void> => {
-        if (element) {
-            // we need to drop blockId and variables properties when unlinking, so they are separated from all other element data
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { blockId, variables = [], ...newData } = element.data;
-            const pbElement = (await getElementTree({
-                element: { ...element, data: newData }
-            })) as PbElement;
-            // we make copy of element to delete variableIds from it
-            const elementCopy = cloneDeep(pbElement);
-            const elementWithoutVariableIds = removeElementVariableIds(elementCopy, variables);
-
-            updateElement(elementWithoutVariableIds);
+        if (!element) {
+            return;
         }
+
+        const variables = element.data.variables || [];
+        const newElement = structuredClone(element);
+        delete newElement.data["blockId"];
+        delete newElement.data["templateBlockId"];
+        delete newElement.data["variables"];
+
+        const fullElementTree = (await getElementTree({ element: newElement })) as PbElement;
+        const cleanElement = removeElementVariableIds(fullElementTree, variables);
+
+        updateElement(cleanElement);
     }, [element, updateElement]);
 
     return React.cloneElement(children, { onClick });

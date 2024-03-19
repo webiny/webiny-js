@@ -4,7 +4,6 @@ import { Loading } from "./Loading";
 import { BlockGatewayInterface } from "./BlockGatewayInterface";
 import { PbEditorBlockPlugin, PbPageBlock } from "~/types";
 import { getDefaultBlockContent } from "./defaultBlockContent";
-import { addElementId } from "~/editor/helpers";
 import { createBlockPlugin } from "./createBlockPlugin";
 
 export class BlocksRepository {
@@ -152,7 +151,7 @@ export class BlocksRepository {
             ...block,
             name: pageBlock.name ?? block.name,
             blockCategory: pageBlock.category ?? block.blockCategory,
-            content: addElementId(pageBlock.content ?? block.content)
+            content: pageBlock.content ?? block.content
         };
 
         await this.runWithLoading(
@@ -204,9 +203,8 @@ export class BlocksRepository {
     }
 
     private processBlockFromApi(pageBlock: PbPageBlock) {
-        const withElementIds = { ...pageBlock, content: addElementId(pageBlock.content) };
-        this.createBlockPlugin(withElementIds);
-        return withElementIds;
+        this.createBlockPlugin(pageBlock);
+        return pageBlock;
     }
 
     /**
