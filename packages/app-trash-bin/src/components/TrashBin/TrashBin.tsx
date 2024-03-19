@@ -11,17 +11,17 @@ import {
     TrashBinRepositoryWithLoading,
     TrashBinRepositoryWithSort
 } from "@webiny/app-trash-bin-common";
-import { TrashBinPresenter } from "./TrashBinPresenter";
-import { TrashBinController } from "./TrashBinController";
+import {
+    LoadingPresenter,
+    SortPresenter,
+    TrashBinPresenter,
+    TrashBinPresenterWithLoading,
+    TrashBinPresenterWithSorting
+} from "./presenters";
+import { SortController, SortTrashBinController, TrashBinController } from "./controllers";
 import { TrashBinListWithConfig } from "~/configs";
-import { TrashBinOverlay } from "~/components/TrashBinOverlay";
 import { TrashBinProvider } from "~/hooks";
-import { SortPresenter } from "~/components/TrashBin/SortPresenter";
-import { SortController } from "~/components/TrashBin/SortController";
-import { TrashBinPresenterWithSorting } from "~/components/TrashBin/TrashBinPresenterWithSorting";
-import { SortTrashBinController } from "~/components/TrashBin/SortTrashBinController";
-import { LoadingPresenter } from "~/components/TrashBin/LoadingPresenter";
-import { TrashBinPresenterWithLoading } from "~/components/TrashBin/TrashBinPresenterWithLoading";
+import { TrashBinOverlay } from "~/components/TrashBinOverlay";
 
 export interface TrashBinProps {
     repository: ITrashBinRepository;
