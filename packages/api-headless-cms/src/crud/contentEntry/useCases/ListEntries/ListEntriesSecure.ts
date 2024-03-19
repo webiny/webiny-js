@@ -1,5 +1,5 @@
 import { AccessControl } from "~/crud/AccessControl/AccessControl";
-import { IListEntries } from "../../adstractions";
+import { IListEntries } from "../../abstractions";
 import { CmsEntry, CmsEntryListParams, CmsEntryMeta, CmsEntryValues, CmsModel } from "~/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 

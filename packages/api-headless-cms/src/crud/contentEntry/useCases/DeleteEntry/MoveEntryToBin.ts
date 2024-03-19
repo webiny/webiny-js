@@ -3,7 +3,7 @@ import {
     IDeleteEntry,
     IGetLatestRevisionByEntryId,
     IMoveEntryToBinOperation
-} from "~/crud/contentEntry/adstractions";
+} from "~/crud/contentEntry/abstractions";
 import { TransformEntryMoveToBin } from "./TransformEntryMoveToBin";
 import { CmsModel } from "~/types";
 

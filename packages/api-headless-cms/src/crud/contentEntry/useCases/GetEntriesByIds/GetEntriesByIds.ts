@@ -1,4 +1,4 @@
-import { IGetEntriesByIds } from "../../adstractions";
+import { IGetEntriesByIds } from "../../abstractions";
 import {
     CmsEntryStorageOperations,
     CmsEntryStorageOperationsGetByIdsParams,
