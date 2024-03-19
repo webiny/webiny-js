@@ -11,6 +11,7 @@ import { Title } from "~/components/Title";
 import { Table } from "~/components/Table";
 import { BulkActions } from "~/components/BulkActions";
 import { BottomInfoBar } from "~/components/BottomInfoBar";
+import { Empty } from "~/components/Empty";
 
 interface TrashBinOverlayProps {
     vm: TrashBinPresenterViewModel;
@@ -30,11 +31,17 @@ export const TrashBinOverlay = (props: TrashBinOverlayProps) => {
         <OverlayLayout onExited={props.onExited} barLeft={<Title title={"Trash bin"} />}>
             <BulkActions />
             <Scrollbar onScrollFrame={scrollFrame => onTableScroll({ scrollFrame })}>
-                <Table
-                    vm={props.vm}
-                    controller={props.controller}
-                    sortController={props.sortController}
-                />
+                {!props.vm.loading["INIT"] &&
+                !props.vm.loading["LIST"] &&
+                !props.vm.entries.length ? (
+                    <Empty />
+                ) : (
+                    <Table
+                        vm={props.vm}
+                        controller={props.controller}
+                        sortController={props.sortController}
+                    />
+                )}
             </Scrollbar>
             <BottomInfoBar vm={props.vm} />
         </OverlayLayout>
