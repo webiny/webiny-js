@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
-import { ISortRepository, ISortController, SortMapper } from "@webiny/app-trash-bin-common";
+import { ISortRepository, SortMapper } from "@webiny/app-trash-bin-common";
 import { OnSortingChange } from "@webiny/ui/DataTable";
+import { ISortController } from "../abstractions";
 
 export class SortController implements ISortController {
     private repository: ISortRepository;

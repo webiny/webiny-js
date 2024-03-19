@@ -10,7 +10,7 @@ interface UseDeleteEntryParams {
 }
 
 export const useDeleteTrashBinEntry = ({ entry, onAccept, onCancel }: UseDeleteEntryParams) => {
-    const { controller } = useTrashBin();
+    const { controllers } = useTrashBin();
     const { showSnackbar } = useSnackbar();
 
     const { showConfirmation } = useConfirmationDialog({
@@ -27,7 +27,7 @@ export const useDeleteTrashBinEntry = ({ entry, onAccept, onCancel }: UseDeleteE
     const openDialogDeleteEntry = useCallback(
         () =>
             showConfirmation(async () => {
-                await controller.deleteEntry(entry.id);
+                await controllers.deleteEntry.execute(entry.id);
 
                 showSnackbar(`${entry.title} was deleted successfully!`);
 

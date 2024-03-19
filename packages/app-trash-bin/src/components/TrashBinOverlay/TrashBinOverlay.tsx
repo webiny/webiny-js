@@ -15,15 +15,14 @@ import { Empty } from "~/components/Empty";
 
 interface TrashBinOverlayProps {
     vm: TrashBinPresenterViewModel;
-    controller: ITrashBinController;
-    sortController: ISortController;
+    controllers: ITrashBinController;
     onExited: () => void;
 }
 
 export const TrashBinOverlay = (props: TrashBinOverlayProps) => {
     const onTableScroll = debounce(async ({ scrollFrame }) => {
         if (scrollFrame.top > 0.8) {
-            await props.controller.listMoreEntries();
+            await props.controllers.listMoreEntries.execute();
         }
     }, 200);
 
@@ -36,11 +35,7 @@ export const TrashBinOverlay = (props: TrashBinOverlayProps) => {
                 !props.vm.entries.length ? (
                     <Empty />
                 ) : (
-                    <Table
-                        vm={props.vm}
-                        controller={props.controller}
-                        sortController={props.sortController}
-                    />
+                    <Table vm={props.vm} controllers={props.controllers} />
                 )}
             </Scrollbar>
             <BottomInfoBar vm={props.vm} />

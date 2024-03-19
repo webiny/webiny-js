@@ -1,14 +1,15 @@
 import { TrashBinPresenter } from "./TrashBinPresenter";
-import { TrashBinController } from "./TrashBinController";
 import {
     ITrashBinListGateway,
     ITrashBinDeleteEntryGateway,
     ITrashBinPresenter,
     ITrashBinEntryMapper,
     ITrashBinController,
-    TrashBinRepository
+    TrashBinRepository,
+    SortRepository
 } from "@webiny/app-trash-bin-common";
 import { TrashBinIdentity } from "@webiny/app-trash-bin-common/types";
+import { useControllers } from "~/components/TrashBin/controllers";
 
 interface Entry {
     id: string;
@@ -100,14 +101,19 @@ describe("TrashBinPresenter", () => {
     const entryMapper = new CustomEntryMapper();
 
     let presenter: ITrashBinPresenter;
-    let controller: ITrashBinController;
+    let controllers: ITrashBinController;
 
     beforeEach(() => {
         jest.clearAllMocks();
 
-        const repository = new TrashBinRepository(listGateway, deleteEntryGateway, entryMapper);
-        presenter = new TrashBinPresenter(repository);
-        controller = new TrashBinController(repository);
+        const trashBinRepository = new TrashBinRepository(
+            listGateway,
+            deleteEntryGateway,
+            entryMapper
+        );
+        const sortRepository = new SortRepository();
+        presenter = new TrashBinPresenter(trashBinRepository);
+        controllers = useControllers(trashBinRepository, sortRepository);
     });
 
     it("should create a presenter and list trash bin entries from the gateway", async () => {
@@ -115,15 +121,14 @@ describe("TrashBinPresenter", () => {
         const loadPromise = presenter.init();
 
         // Let's check the transition to loading state
-        expect(presenter.vm).toEqual({
-            entries: [],
-            loading: true
+        expect(presenter.vm).toMatchObject({
+            entries: []
         });
 
         await loadPromise;
 
         expect(listGateway.execute).toHaveBeenCalledTimes(1);
-        expect(presenter.vm).toEqual({
+        expect(presenter.vm).toMatchObject({
             entries: [
                 {
                     id: "entry-1",
@@ -149,8 +154,7 @@ describe("TrashBinPresenter", () => {
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
                 }
-            ],
-            loading: false
+            ]
         });
     });
 
@@ -160,7 +164,7 @@ describe("TrashBinPresenter", () => {
 
         expect(listGateway.execute).toHaveBeenCalledTimes(1);
 
-        expect(presenter.vm).toEqual({
+        expect(presenter.vm).toMatchObject({
             entries: [
                 {
                     id: "entry-1",
@@ -186,16 +190,15 @@ describe("TrashBinPresenter", () => {
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
                 }
-            ],
-            loading: false
+            ]
         });
 
-        await controller.deleteEntry(entry1.id);
+        await controllers.deleteEntry.execute(entry1.id);
 
         expect(deleteEntryGateway.execute).toHaveBeenCalledTimes(1);
         expect(deleteEntryGateway.execute).toHaveBeenCalledWith(entry1.id);
 
-        expect(presenter.vm).toEqual({
+        expect(presenter.vm).toMatchObject({
             entries: [
                 {
                     id: "entry-2",
@@ -213,8 +216,7 @@ describe("TrashBinPresenter", () => {
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
                 }
-            ],
-            loading: false
+            ]
         });
     });
 });

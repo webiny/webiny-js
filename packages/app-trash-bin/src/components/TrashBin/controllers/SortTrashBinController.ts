@@ -1,19 +1,19 @@
 import { makeAutoObservable } from "mobx";
-import { ISortController, ITrashBinController } from "@webiny/app-trash-bin-common";
 import { OnSortingChange } from "@webiny/ui/DataTable";
+import { ISortController, ISortEntriesController } from "../abstractions";
 
 export class SortTrashBinController implements ISortController {
     private sortController: ISortController;
-    private trashBinController: ITrashBinController;
+    private sortEntriesController: ISortEntriesController;
 
-    constructor(sortController: ISortController, trashBinController: ITrashBinController) {
+    constructor(sortController: ISortController, sortEntriesController: ISortEntriesController) {
         this.sortController = sortController;
-        this.trashBinController = trashBinController;
+        this.sortEntriesController = sortEntriesController;
         makeAutoObservable(this);
     }
 
     public execute: OnSortingChange = async updaterOrValue => {
         this.sortController.execute(updaterOrValue);
-        await this.trashBinController.sortEntries();
+        await this.sortEntriesController.execute();
     };
 }

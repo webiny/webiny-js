@@ -18,7 +18,7 @@ import {
     TrashBinPresenterWithLoading,
     TrashBinPresenterWithSorting
 } from "./presenters";
-import { SortController, SortTrashBinController, TrashBinController } from "./controllers";
+import { useControllers } from "./controllers";
 import { TrashBinListWithConfig } from "~/configs";
 import { TrashBinProvider } from "~/hooks";
 import { TrashBinOverlay } from "~/components/TrashBinOverlay";
@@ -30,11 +30,10 @@ export interface TrashBinProps {
 
 export const TrashBin = observer((props: TrashBinProps) => {
     const sortRepository = useMemo(() => {
-        return sortRepositoryFactory.getRepository([{ field: "deletedOn", order: "desc" }]);
+        return sortRepositoryFactory.getRepository();
     }, []);
 
     const sortPresenter = useMemo(() => new SortPresenter(sortRepository), [sortRepository]);
-    const sortController = useMemo(() => new SortController(sortRepository), [sortRepository]);
 
     const loadingRepository = useMemo(() => {
         return loadingRepositoryFactory.getRepository();
@@ -62,13 +61,7 @@ export const TrashBin = observer((props: TrashBinProps) => {
         return new TrashBinPresenterWithLoading(withSortPresenter, loadingPresenter);
     }, [trashBinPresenter, sortPresenter, loadingPresenter]);
 
-    const controller = useMemo<TrashBinController>(() => {
-        return new TrashBinController(repository);
-    }, [repository]);
-
-    const sortTrashBinController = useMemo<ISortController>(() => {
-        return new SortTrashBinController(sortController, controller);
-    }, [repository]);
+    const controllers = useControllers(repository, sortRepository);
 
     useEffect(() => {
         presenter.init();
@@ -78,11 +71,10 @@ export const TrashBin = observer((props: TrashBinProps) => {
         <CompositionScope name={"trash"}>
             <AcoWithConfig>
                 <TrashBinListWithConfig>
-                    <TrashBinProvider controller={controller} presenter={presenter}>
+                    <TrashBinProvider controllers={controllers} presenter={presenter}>
                         <TrashBinOverlay
                             vm={presenter.vm}
-                            controller={controller}
-                            sortController={sortTrashBinController}
+                            controllers={controllers}
                             onExited={props.onClose}
                         />
                     </TrashBinProvider>

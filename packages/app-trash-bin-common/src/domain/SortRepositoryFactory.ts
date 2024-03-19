@@ -1,14 +1,13 @@
 import { SortRepository } from "~/domain/SortRepository";
-import { Sort } from "~/domain/Sort";
 
 export class SortRepositoryFactory {
     private cache: Map<string, SortRepository> = new Map();
 
-    getRepository(sorts: Sort[]) {
+    getRepository() {
         const cacheKey = this.getCacheKey();
 
         if (!this.cache.has(cacheKey)) {
-            this.cache.set(cacheKey, new SortRepository(sorts));
+            this.cache.set(cacheKey, new SortRepository());
         }
 
         return this.cache.get(cacheKey) as SortRepository;

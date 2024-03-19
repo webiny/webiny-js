@@ -2,7 +2,7 @@ import { createGenericContext } from "@webiny/app-admin";
 import { ITrashBinController, ITrashBinPresenter } from "@webiny/app-trash-bin-common";
 
 export interface TrashBinContext {
-    controller: ITrashBinController;
+    controllers: ITrashBinController;
     presenter: ITrashBinPresenter;
 }
 

@@ -6,13 +6,13 @@ import { Sort } from "./Sort";
 export class SortRepository implements ISortRepository {
     private sorts: Sort[];
 
-    constructor(sorts: Sort[]) {
-        this.sorts = sorts;
+    constructor() {
+        this.sorts = [];
         makeAutoObservable(this);
     }
 
-    init() {
-        return Promise.resolve();
+    async init() {
+        this.sorts = [{ field: "deletedOn", order: "desc" }];
     }
 
     set(sorts: Sort[]) {
