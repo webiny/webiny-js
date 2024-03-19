@@ -13,7 +13,7 @@ export const useStateWithCallback: RetType = <T>(initialValue: T | (() => T)) =>
     const callbackQueue = useRef<CallBackType<T>[]>([]);
 
     useEffect(() => {
-        callbackQueue.current.forEach((cb) => cb(state));
+        callbackQueue.current.forEach(cb => cb(state));
         callbackQueue.current = [];
     }, [state]);
 
