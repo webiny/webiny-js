@@ -16,6 +16,7 @@ import Header from "./Header";
 import DragPreview from "../DragPreview";
 import { useModelEditor } from "./useModelEditor";
 import { CmsModelField, CmsEditorFieldsLayout } from "~/types";
+import { ContentEntryEditorWithConfig } from "~/admin/config/contentEntries";
 
 const t = i18n.ns("app-headless-cms/admin/editor");
 
@@ -111,7 +112,9 @@ export const Editor = () => {
                                 </EditContainer>
                             </Tab>
                             <Tab label={"Preview"} data-testid={"cms.editor.tab.preview"}>
-                                <PreviewTab activeTab={activeTabIndex === 1} />
+                                <ContentEntryEditorWithConfig>
+                                    <PreviewTab activeTab={activeTabIndex === 1} />
+                                </ContentEntryEditorWithConfig>
                             </Tab>
                         </Tabs>
                     </RightPanel>

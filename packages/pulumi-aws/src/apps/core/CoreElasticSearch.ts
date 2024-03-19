@@ -1,3 +1,8 @@
+/**
+ * Important documents to read:
+ *
+ * https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html#network-limits
+ */
 import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
@@ -240,7 +245,7 @@ export const ElasticSearch = createAppModule({
                 functionName: lambda.output.arn,
                 startingPosition: "LATEST",
                 maximumRetryAttempts: 3,
-                batchSize: 1000,
+                batchSize: 200,
                 maximumBatchingWindowInSeconds: 1
             }
         });

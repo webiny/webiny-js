@@ -1,5 +1,5 @@
 import React from "react";
-import { RenderFieldElement, ModelProvider } from "@webiny/app-headless-cms";
+import { FieldElement, ModelProvider } from "@webiny/app-headless-cms";
 import { Bind, BindPrefix } from "@webiny/form";
 import { Cell } from "@webiny/ui/Grid";
 import { FieldDTO, OperatorType } from "~/components/BulkActions/ActionEdit/domain";
@@ -28,11 +28,7 @@ export const FieldRenderer = (props: FieldRendererProps) => {
         <BindPrefix name={props.name}>{customFieldRenderer.element}</BindPrefix>
     ) : (
         <BindPrefix name={props.name + ".extensions"}>
-            <RenderFieldElement
-                field={props.field.raw}
-                Bind={Bind as any}
-                contentModel={fileModel}
-            />
+            <FieldElement field={props.field.raw} Bind={Bind as any} contentModel={fileModel} />
         </BindPrefix>
     );
 

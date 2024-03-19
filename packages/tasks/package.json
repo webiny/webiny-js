@@ -26,6 +26,7 @@
     "aws-lambda": "^1.0.7",
     "deep-equal": "^2.2.3",
     "lodash": "^4.17.21",
+    "object-merge-advanced": "^12.1.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {

@@ -1,6 +1,98 @@
-import { createWorkflow } from "github-actions-wac";
-import { createValidateWorkflowsJob, createJestTestsJob, createJob } from "./jobs";
-import { NODE_VERSION } from "./utils";
+import { createWorkflow, NormalJob } from "github-actions-wac";
+import { createValidateWorkflowsJob, createJob } from "./jobs";
+import { NODE_VERSION, listPackagesWithJestTests } from "./utils";
+
+const yarnCacheSteps: NormalJob["steps"] = [
+    {
+        uses: "actions/cache@v4",
+        with: {
+            path: ".yarn/cache",
+            key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
+        }
+    }
+];
+
+const buildGlobalCacheSteps = [
+    {
+        uses: "actions/cache@v4",
+        with: {
+            path: ".webiny/cached-packages",
+            key: "${{ needs.constants.outputs.global-cache-key }}"
+        }
+    }
+];
+
+const buildRunCacheSteps = [
+    {
+        uses: "actions/cache@v4",
+        with: {
+            path: ".webiny/cached-packages",
+            key: "${{ needs.constants.outputs.run-cache-key }}"
+        }
+    }
+];
+
+const createJestTestsJob = (storage: string | null) => {
+    const env: Record<string, string> = {};
+
+    if (storage) {
+        if (storage === "ddb-es") {
+            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
+            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
+            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
+        } else if (storage === "ddb-os") {
+            // We still use the same environment variables as for "ddb-es" setup, it's
+            // just that the values are read from different secrets.
+            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
+            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
+            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
+        }
+    }
+
+    const packages = listPackagesWithJestTests({
+        storage
+    });
+
+    const job: NormalJob = createJob({
+        needs: "constants",
+        name: "${{ matrix.package.cmd }}",
+        strategy: {
+            "fail-fast": false,
+            matrix: {
+                os: ["ubuntu-latest"],
+                node: [NODE_VERSION],
+                package: "${{ fromJson('" + JSON.stringify(packages) + "') }}"
+            }
+        },
+        "runs-on": "${{ matrix.os }}",
+        env,
+        awsAuth: storage === "ddb-es" || storage === "ddb-os",
+        steps: [
+            ...yarnCacheSteps,
+            ...buildRunCacheSteps,
+            {
+                name: "Install dependencies",
+                run: "yarn --immutable"
+            },
+            {
+                name: "Build packages",
+                run: "yarn build:quick"
+            },
+            {
+                name: "Run tests",
+                run: "yarn test ${{ matrix.package.cmd }}"
+            }
+        ]
+    });
+
+    // We prevent running of Jest tests if a PR was created from a fork.
+    // This is because we don't want to expose our AWS credentials to forks.
+    if (storage === "ddb-es" || storage === "ddb-os") {
+        job.if = "needs.constants.outputs.is-fork-pr != 'true'";
+    }
+
+    return job;
+};
 
 export const pullRequests = createWorkflow({
     name: "Pull Requests",
@@ -27,40 +119,39 @@ export const pullRequests = createWorkflow({
                 }
             ]
         }),
-        init: createJob({
-            name: "Init",
-            "runs-on": "webiny-build-packages",
+        constants: {
+            name: "Create constants",
+            "runs-on": "ubuntu-latest",
             outputs: {
-                ts: "${{ steps.get-timestamp.outputs.ts }}",
+                "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
+                "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}",
                 "is-fork-pr": "${{ steps.is-fork-pr.outputs.is-fork-pr }}"
             },
             steps: [
                 {
-                    name: "Get timestamp",
-                    id: "get-timestamp",
-                    run: 'echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT'
+                    name: "Create global cache key",
+                    id: "global-cache-key",
+                    run: 'echo "global-cache-key=${{ github.base_ref }}-${{ runner.os }}-$(/bin/date -u "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
+                },
+                {
+                    name: "Create workflow run cache key",
+                    id: "run-cache-key",
+                    run: 'echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
                 },
                 {
                     name: "Is a PR from a fork",
                     id: "is-fork-pr",
                     run: 'echo "is-fork-pr=${{ github.event.pull_request.head.repo.fork }}" >> $GITHUB_OUTPUT'
-                },
-                {
-                    uses: "actions/cache@v4",
-                    id: "yarn-cache",
-                    with: {
-                        path: ".yarn/cache",
-                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-                    }
-                },
-                {
-                    uses: "actions/cache@v4",
-                    id: "cached-packages",
-                    with: {
-                        path: ".webiny/cached-packages",
-                        key: "${{ runner.os }}-${{ github.event.number }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}"
-                    }
-                },
+                }
+            ]
+        },
+        init: createJob({
+            name: "Init",
+            needs: "constants",
+            "runs-on": "webiny-build-packages",
+            steps: [
+                ...yarnCacheSteps,
+                ...buildGlobalCacheSteps,
                 {
                     name: "Install dependencies",
                     run: "yarn --immutable"
@@ -69,34 +160,17 @@ export const pullRequests = createWorkflow({
                     name: "Build packages",
                     run: "yarn build:quick"
                 },
-                {
-                    uses: "actions/cache@v4",
-                    id: "packages-cache",
-                    with: {
-                        path: ".webiny/cached-packages",
-                        key: "packages-cache-${{ steps.get-timestamp.outputs.ts }}"
-                    }
-                }
+                // Once we've built packages with the help of the global cache, we can now cache
+                // the result for this run. All of the following jobs will use this cache.
+                ...buildRunCacheSteps
             ]
         }),
         staticCodeAnalysis: createJob({
-            needs: "init",
+            needs: ["constants", "init"],
             name: "Static code analysis",
             steps: [
-                {
-                    uses: "actions/cache@v4",
-                    with: {
-                        path: ".yarn/cache",
-                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-                    }
-                },
-                {
-                    uses: "actions/cache@v4",
-                    with: {
-                        path: ".webiny/cached-packages",
-                        key: "packages-cache-${{ needs.init.outputs.ts }}"
-                    }
-                },
+                ...yarnCacheSteps,
+                ...buildRunCacheSteps,
                 {
                     name: "Install dependencies",
                     run: "yarn --immutable"
@@ -123,13 +197,12 @@ export const pullRequests = createWorkflow({
             name: "Static code analysis (TypeScript)",
             "runs-on": "webiny-build-packages",
             steps: [
-                {
-                    uses: "actions/cache@v4",
-                    with: {
-                        path: ".yarn/cache",
-                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-                    }
-                },
+                ...yarnCacheSteps,
+
+                // We're not using run cache here. We want to build all packages
+                // with TypeScript, to ensure there are no TypeScript errors.
+                // ...buildRunCacheSteps,
+
                 {
                     name: "Install dependencies",
                     run: "yarn --immutable"
@@ -151,27 +224,15 @@ export const pullRequests = createWorkflow({
 
         verdaccioPublish: createJob({
             name: "Publish to Verdaccio",
-            needs: "init",
-            if: "needs.init.outputs.is-fork-pr != 'true'",
+            needs: ["constants", "init"],
+            if: "needs.constants.outputs.is-fork-pr != 'true'",
             checkout: {
                 "fetch-depth": 0,
                 ref: "${{ github.event.pull_request.head.ref }}"
             },
             steps: [
-                {
-                    uses: "actions/cache@v4",
-                    with: {
-                        path: ".yarn/cache",
-                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-                    }
-                },
-                {
-                    uses: "actions/cache@v4",
-                    with: {
-                        path: ".webiny/cached-packages",
-                        key: "packages-cache-${{ needs.init.outputs.ts }}"
-                    }
-                },
+                ...yarnCacheSteps,
+                ...buildRunCacheSteps,
                 {
                     name: "Install dependencies",
                     run: "yarn --immutable"
