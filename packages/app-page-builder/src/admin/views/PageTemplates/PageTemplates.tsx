@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
@@ -6,6 +6,7 @@ import { useMutation, useApolloClient } from "@apollo/react-hooks";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import { useStateWithCallback } from "@webiny/app-admin/hooks";
 import PageTemplatesDataList from "./PageTemplatesDataList";
 import PageTemplateDetails from "./PageTemplateDetails";
 import CreatePageTemplateDialog from "./CreatePageTemplateDialog";
@@ -26,7 +27,7 @@ const PageTemplates = () => {
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog();
-    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState<boolean>(false);
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = useStateWithCallback<boolean>(false);
 
     const { canCreate, canUpdate, canDelete } = useTemplatesPermissions();
 
@@ -47,9 +48,12 @@ const PageTemplates = () => {
             },
             refetchQueries: [{ query: LIST_PAGE_TEMPLATES }]
         });
+
         const { error, data } = get(res, `pageBuilder.pageTemplate`);
         if (data) {
-            history.push(`/page-builder/template-editor/${data.id}`);
+            setIsCreateDialogOpen(false, () => {
+                history.push(`/page-builder/template-editor/${data.id}`);
+            });
         } else {
             showSnackbar(error.message);
         }
@@ -99,12 +103,11 @@ const PageTemplates = () => {
                     />
                 </RightPanel>
             </SplitView>
-            {isCreateDialogOpen && (
-                <CreatePageTemplateDialog
-                    onClose={() => setIsCreateDialogOpen(false)}
-                    onSubmit={onCreatePageTemplate}
-                />
-            )}
+            <CreatePageTemplateDialog
+                open={isCreateDialogOpen}
+                onClose={() => setIsCreateDialogOpen(false)}
+                onSubmit={onCreatePageTemplate}
+            />
         </>
     );
 };
