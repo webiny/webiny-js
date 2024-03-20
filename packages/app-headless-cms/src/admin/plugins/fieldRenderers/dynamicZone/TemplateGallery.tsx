@@ -47,7 +47,7 @@ export interface TemplateGalleryProps {
     templates?: CmsDynamicZoneTemplate[];
 }
 
-const Gallery = makeDecoratable("TemplateGalley", (props: TemplateGalleryProps) => {
+const Gallery = makeDecoratable("TemplateGallery", (props: TemplateGalleryProps) => {
     const { field } = useModelField();
     const templates = props.templates || field.settings?.templates || [];
 
@@ -81,6 +81,10 @@ function withShouldRender<T extends DecoratableComponent>(Component: T) {
     });
 }
 
+/**
+ * We're wrapping each component with `withShouldRender`, because they're all decoratable, and `withShouldRender` attaches a
+ * conditional decorator, which optionally takes a `modelIds` prop, so you can control on which models that component will be decorated.
+ */
 export const TemplateGallery = Object.assign(withShouldRender(Gallery), {
     Container: withShouldRender(GalleryContainer),
     List: withShouldRender(GalleryList),
