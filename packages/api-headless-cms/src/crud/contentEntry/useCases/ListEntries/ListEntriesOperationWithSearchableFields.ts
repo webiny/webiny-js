@@ -1,4 +1,4 @@
-import { IListEntriesOperation } from "../../adstractions";
+import { IListEntriesOperation } from "../../abstractions";
 import { CmsContext, CmsEntryStorageOperationsListParams, CmsModel } from "~/types";
 import { getSearchableFields } from "~/crud/contentEntry/searchableFields";
 

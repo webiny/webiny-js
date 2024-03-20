@@ -1,6 +1,6 @@
 import { AccessControl } from "~/crud/AccessControl/AccessControl";
 import { filterAsync } from "~/utils/filterAsync";
-import { IGetEntriesByIds } from "../../adstractions";
+import { IGetEntriesByIds } from "../../abstractions";
 import { CmsEntryStorageOperationsGetByIdsParams, CmsModel } from "~/types";
 
 export class GetEntriesByIdsSecure implements IGetEntriesByIds {

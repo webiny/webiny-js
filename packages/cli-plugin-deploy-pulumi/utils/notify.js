@@ -7,7 +7,8 @@ module.exports = ({ message }) => {
             title: "Webiny CLI",
             message,
             icon: join(__dirname, "logo.png"),
-            sound: false
+            sound: false,
+            timeout: 1
         });
 
         setTimeout(resolve, 100);

@@ -14,6 +14,7 @@ import {
     WIDTH_UNIT_OPTIONS,
     HEIGHT_UNIT_OPTIONS
 } from "~/editor/plugins/elementSettings/elementSettingsUtils";
+import SelectField from "~/editor/plugins/elementSettings/components/SelectField";
 
 const classes = {
     grid: css({
@@ -48,6 +49,7 @@ const ImageSettings = ({
         (value: string | number) => getUpdateValue("height")(value),
         []
     );
+    const updateHtmlTag = useCallback((value: string) => getUpdateValue("htmlTag")(value), []);
 
     return (
         <Accordion title={"Image"} defaultValue={defaultAccordionValue}>
@@ -80,6 +82,18 @@ const ImageSettings = ({
                         useDefaultStyle={false}
                         className={spacingPickerStyle}
                     />
+                </Wrapper>
+                <Wrapper
+                    label={"HTML Tag"}
+                    containerClassName={classes.grid}
+                    leftCellSpan={4}
+                    rightCellSpan={8}
+                >
+                    <SelectField value={image?.htmlTag || "img"} onChange={updateHtmlTag}>
+                        <option value={"auto"}>{"Auto-detect"}</option>
+                        <option value={"img"}>{"<img>"}</option>
+                        <option value={"object"}>{"<object>"} (for SVGs)</option>
+                    </SelectField>
                 </Wrapper>
             </>
         </Accordion>

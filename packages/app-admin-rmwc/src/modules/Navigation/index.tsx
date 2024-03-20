@@ -2,16 +2,16 @@ import React, { Fragment, useCallback, useContext, useMemo, useState } from "rea
 import styled from "@emotion/styled";
 import { Drawer, DrawerContent, DrawerHeader } from "@webiny/ui/Drawer";
 import {
-    Compose,
-    Provider,
-    NavigationRenderer as NavigationSpec,
-    MenuItems,
-    MenuItemRenderer,
     Brand as BrandSpec,
-    useNavigation as useAdminNavigation,
+    Compose,
+    HigherOrderComponent,
     MenuData,
+    MenuItemRenderer,
+    MenuItems,
     MenuItemsProps,
-    HigherOrderComponent
+    NavigationRenderer as NavigationSpec,
+    Provider,
+    useNavigation as useAdminNavigation
 } from "@webiny/app-admin";
 import Hamburger from "./Hamburger";
 import { MenuGroupRenderer } from "./renderers/MenuGroupRenderer";
@@ -19,10 +19,9 @@ import { MenuSectionItemRenderer } from "./renderers/MenuSectionItemRenderer";
 import { MenuSectionRenderer } from "./renderers/MenuSectionRenderer";
 import { MenuLinkRenderer } from "./renderers/MenuLinkRenderer";
 import { MenuElementRenderer } from "./renderers/MenuElementRenderer";
-import { List, ListItem } from "@webiny/ui/List";
-import { MenuFooter, subFooter, MenuHeader, navHeader, navContent } from "./Styled";
-import { config as appConfig } from "@webiny/app/config";
-import { Typography } from "@webiny/ui/Typography";
+import { List } from "@webiny/ui/List";
+import { MenuFooter, MenuHeader, navContent, navHeader } from "./Styled";
+import { WebinyVersionListItem } from "./WebinyVersionListItem";
 
 const AutoWidthDrawer = styled(Drawer)`
     width: auto;
@@ -93,8 +92,6 @@ export const NavigationImpl = () => {
             [menuItems]
         );
 
-        const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
-
         return (
             <AutoWidthDrawer modal open={visible} onClose={hideDrawer}>
                 <DrawerHeader className={navHeader}>
@@ -108,9 +105,7 @@ export const NavigationImpl = () => {
                 <MenuFooter>
                     <List nonInteractive>
                         <MenuItems menuItems={footerMenu} />
-                        <ListItem ripple={false} className={subFooter}>
-                            <Typography use={"body2"}>Webiny v{wbyVersion}</Typography>
-                        </ListItem>
+                        <WebinyVersionListItem />
                     </List>
                 </MenuFooter>
             </AutoWidthDrawer>

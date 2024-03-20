@@ -19,7 +19,6 @@ import {
     LAST_USED_GQL_API_PLUGINS_PATH
 } from "@webiny/cli-plugin-scaffold/utils";
 import getContextMeta from "./getContextMeta";
-import { getApiProjectApplicationFolder } from "@webiny/cli/utils";
 import { projectHasCodeFolders } from "./utils";
 
 const ncp = util.promisify(ncpBase.ncp);
@@ -62,7 +61,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
                         return (
                             context.localStorage.get(LAST_USED_GQL_API_PLUGINS_PATH) ||
-                            `${getApiProjectApplicationFolder(context.project)}${suffixPath}`
+                            `apps/api${suffixPath}`
                         );
                     },
                     validate: (pluginsFolderPath: string) => {
@@ -358,9 +357,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             console.log(
                 `‣ deploy the extended GraphQL API and continue developing by running the ${chalk.green(
-                    `yarn webiny watch ${getApiProjectApplicationFolder(
-                        context.project
-                    )}${suffixPath} --env dev`
+                    `yarn webiny watch apps/api/${suffixPath} --env dev`
                 )} command`
             );
 

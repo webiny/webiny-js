@@ -1,7 +1,6 @@
 const fs = require("fs");
 const { green } = require("chalk");
 const { getPulumi } = require("@webiny/cli-plugin-deploy-pulumi/utils");
-const { getApiProjectApplicationFolder } = require("@webiny/cli/utils");
 const path = require("path");
 const execa = require("execa");
 
@@ -34,7 +33,6 @@ module.exports = async (inputs, context) => {
 
     pulumi.install();
 
-    const apiFolder = getApiProjectApplicationFolder(context.project);
     const hasCore = fs.existsSync(path.join(context.project.root, "apps", "core"));
 
     console.log();
@@ -47,7 +45,7 @@ module.exports = async (inputs, context) => {
 
     console.log();
     context.info(`Destroying ${green("API")} project application...`);
-    await destroy(apiFolder, env, inputs);
+    await destroy("apps/api", env, inputs);
 
     if (hasCore) {
         console.log();

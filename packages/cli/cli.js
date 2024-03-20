@@ -59,13 +59,14 @@ yargs
         }
 
         if (error) {
-            context.error(error.message);
             // Unfortunately, yargs doesn't provide passed args here, so we had to do it via process.argv.
+            console.log();
             if (process.argv.includes("--debug")) {
                 context.debug(error);
+            } else {
+                context.error(error.message);
             }
 
-            console.log();
             const plugins = context.plugins.byType("cli-command-error");
             for (let i = 0; i < plugins.length; i++) {
                 const plugin = plugins[i];

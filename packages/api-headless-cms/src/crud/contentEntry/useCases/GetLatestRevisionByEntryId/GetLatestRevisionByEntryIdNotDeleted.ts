@@ -1,4 +1,4 @@
-import { IGetLatestRevisionByEntryId } from "../../adstractions";
+import { IGetLatestRevisionByEntryId } from "../../abstractions";
 import { CmsEntryStorageOperationsGetLatestRevisionParams, CmsModel } from "~/types";
 
 export class GetLatestRevisionByEntryIdNotDeleted implements IGetLatestRevisionByEntryId {

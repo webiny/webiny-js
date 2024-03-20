@@ -1,21 +1,16 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import React, { useRef } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import kebabCase from "lodash/kebabCase";
 import { Elevation } from "@webiny/ui/Elevation";
-import { PbEditorElement, PbTheme } from "~/types";
-import {
-    elementsAtom,
-    PagePreviewDimension,
-    rootElementAtom,
-    setPagePreviewDimensionMutation,
-    uiAtom
-} from "~/editor/recoil/modules";
-import { EditorContent } from "~/editor";
-
 import { Element as PeElement } from "@webiny/app-page-builder-elements";
 import { Element as ElementType } from "@webiny/app-page-builder-elements/types";
+import { makeDecoratable } from "@webiny/react-composition";
+import { useRootElement } from "~/editor/hooks/useRootElement";
+import { useDisplayMode } from "~/editor/hooks/useDisplayMode";
+import { EditorContent } from "~/editor";
+import { PbTheme } from "~/types";
+import { useDebugUtilities } from "~/editor/useDebugUtilities";
 
 const BREADCRUMB_HEIGHT = 33;
 
@@ -82,40 +77,11 @@ const BaseContainer = styled(LegacyBaseContainer)`
     container-name: page-editor-canvas;
 `;
 
-const Content = () => {
-    const rootElementId = useRecoilValue(rootElementAtom);
-    const rootElement = useRecoilValue(elementsAtom(rootElementId)) as PbEditorElement;
-    const [{ displayMode }, setUiAtomValue] = useRecoilState(uiAtom);
+const Content = makeDecoratable("Content", () => {
+    useDebugUtilities();
+    const rootElement = useRootElement();
+    const { displayMode } = useDisplayMode();
     const pagePreviewRef = useRef<HTMLDivElement>(null);
-
-    const setPagePreviewDimension = useCallback(
-        (pagePreviewDimension: PagePreviewDimension) => {
-            setUiAtomValue(prev => setPagePreviewDimensionMutation(prev, pagePreviewDimension));
-        },
-        [uiAtom]
-    );
-
-    const resizeObserver = useMemo(() => {
-        return new ResizeObserver((entries: ResizeObserverEntry[]) => {
-            for (const entry of entries) {
-                const { width, height } = entry.contentRect;
-                setPagePreviewDimension({ width, height });
-            }
-        });
-    }, []);
-
-    // Set resize observer
-    useEffect(() => {
-        if (pagePreviewRef.current) {
-            // Add resize observer
-            resizeObserver.observe(pagePreviewRef.current);
-        }
-
-        // Cleanup
-        return () => {
-            resizeObserver.disconnect();
-        };
-    }, []);
 
     return (
         <Elevation className={contentContainerWrapper} z={0}>
@@ -132,6 +98,6 @@ const Content = () => {
             </ContentContainer>
         </Elevation>
     );
-};
+});
 
 export default Content;

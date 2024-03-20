@@ -1,36 +1,42 @@
-const createSendEvent = require("./sendEvent");
+const baseSendEvent = require("./sendEvent");
+const { WTS } = require("wts/src/admin");
 
-const setProperties = data => {
-    return sendEvent("$identify", data);
-};
-/**
- *
- * @param event {String}
- * @param data {Record<string, string>}
- * @return {Promise<T>}
- */
-const sendEvent = (event, data = {}) => {
-    let properties = {};
-    let extraPayload = {};
-    if (event !== "$identify") {
-        properties = data;
-    } else {
-        extraPayload = {
-            $set: data
-        };
+const sendEvent = async (event, properties = {}) => {
+    const shouldSend = process.env.REACT_APP_WEBINY_TELEMETRY !== "false";
+    if (!shouldSend) {
+        return;
     }
 
-    const shouldSend = process.env.REACT_APP_WEBINY_TELEMETRY !== "false";
+    const wts = new WTS();
 
-    const sendTelemetry = createSendEvent({
+    const wcpProperties = {};
+    const [wcpOrgId, wcpProjectId] = getWcpOrgProjectId();
+    if (wcpOrgId && wcpProjectId) {
+        wcpProperties.wcpOrgId = wcpOrgId;
+        wcpProperties.wcpProjectId = wcpProjectId;
+    }
+
+    return baseSendEvent({
         event,
-        properties,
-        extraPayload,
-        user: process.env.REACT_APP_USER_ID,
-        version: process.env.REACT_APP_WEBINY_VERSION
+        user: process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID,
+        properties: {
+            ...properties,
+            ...wcpProperties,
+            version: process.env.REACT_APP_WEBINY_VERSION,
+            ci: process.env.REACT_APP_IS_CI === "true",
+            newUser: process.env.REACT_APP_WEBINY_TELEMETRY_NEW_USER === "true"
+        },
+        wts
     });
-
-    return shouldSend ? sendTelemetry() : Promise.resolve();
 };
 
-module.exports = { setProperties, sendEvent };
+const getWcpOrgProjectId = () => {
+    // In React applications, WCP project ID is stored in the `REACT_APP_WCP_PROJECT_ID` environment variable.
+    const id = process.env.REACT_APP_WCP_PROJECT_ID;
+    if (typeof id === "string") {
+        return id.split("/");
+    }
+    return [];
+};
+
+module.exports = { sendEvent };

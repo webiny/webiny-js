@@ -1,4 +1,4 @@
-import { IGetLatestRevisionByEntryId } from "../../adstractions";
+import { IGetLatestRevisionByEntryId } from "../../abstractions";
 import {
     CmsEntryStorageOperations,
     CmsEntryStorageOperationsGetLatestRevisionParams,

@@ -1,6 +1,6 @@
 import { AccessControl } from "~/crud/AccessControl/AccessControl";
 import { filterAsync } from "~/utils/filterAsync";
-import { IGetPublishedEntriesByIds } from "../../adstractions";
+import { IGetPublishedEntriesByIds } from "../../abstractions";
 import { CmsEntryStorageOperationsGetPublishedByIdsParams, CmsModel } from "~/types";
 
 export class GetPublishedEntriesByIdsSecure implements IGetPublishedEntriesByIds {

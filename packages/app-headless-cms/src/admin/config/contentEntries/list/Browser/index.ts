@@ -1,3 +1,4 @@
+import { AdvancedSearch, AdvancedSearchConfig } from "./AdvancedSearch";
 import { BulkAction, BulkActionConfig } from "./BulkAction";
 import { EntryAction, EntryActionConfig } from "./EntryAction";
 import { Filter, FilterConfig } from "./Filter";
@@ -6,6 +7,7 @@ import { FolderAction, FolderActionConfig } from "./FolderAction";
 import { Table, TableConfig } from "./Table";
 
 export interface BrowserConfig {
+    advancedSearch: AdvancedSearchConfig;
     bulkActions: BulkActionConfig[];
     entryActions: EntryActionConfig[];
     filters: FilterConfig[];
@@ -15,6 +17,7 @@ export interface BrowserConfig {
 }
 
 export const Browser = {
+    AdvancedSearch,
     BulkAction,
     EntryAction,
     Filter,

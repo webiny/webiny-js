@@ -29,6 +29,8 @@ export type WcpProjectPackage = {
 };
 
 export interface WcpProject {
+    orgId: string;
+    projectId: string;
     package: WcpProjectPackage;
 }
 

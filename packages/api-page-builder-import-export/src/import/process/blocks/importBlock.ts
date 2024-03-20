@@ -12,6 +12,7 @@ import { deleteS3Folder } from "~/import/utils/deleteS3Folder";
 import { updateFilesInData } from "~/import/utils/updateFilesInData";
 import { INSTALL_EXTRACT_DIR } from "~/import/constants";
 import { ExportedBlockData } from "~/export/process/exporters/BlockExporter";
+import { ElementIdsProcessor } from "~/import/process/blocks/ElementIdsProcessor";
 
 interface ImportBlockParams {
     key: string;
@@ -45,7 +46,15 @@ export async function importBlock({
 
     // Load the block data file from disk.
     log(`Load file ${blockDataFileKey}`);
-    const { block, category, files } = await loadJson<ExportedBlockData>(BLOCK_DATA_FILE_PATH);
+
+    const {
+        category,
+        files,
+        block: rawBlock
+    } = await loadJson<ExportedBlockData>(BLOCK_DATA_FILE_PATH);
+
+    const blockProcessor = new ElementIdsProcessor();
+    const block = blockProcessor.process(rawBlock);
 
     // Only update block data if there are files.
     if (files && Array.isArray(files) && files.length > 0) {

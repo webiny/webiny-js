@@ -1,4 +1,4 @@
-import { IListEntriesOperation, IListEntries } from "~/crud/contentEntry/adstractions";
+import { IListEntriesOperation, IListEntries } from "~/crud/contentEntry/abstractions";
 import { CmsEntry, CmsEntryListParams, CmsEntryMeta, CmsEntryValues, CmsModel } from "~/types";
 import WebinyError from "@webiny/error";
 

@@ -16,7 +16,8 @@ export const createTelemetryProvider = () => (Component: ComponentWithChildren) 
             }
 
             eventSent = true;
-            sendEvent("app-start");
+
+            sendEvent("admin-app-start");
         }, []);
 
         return <Component>{children}</Component>;

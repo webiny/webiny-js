@@ -16,6 +16,12 @@ export interface PageElement {
     tenant: string;
     locale: string;
 }
+
+export interface PageContentElement {
+    id: string;
+    data: Record<string, any>;
+    elements: PageContentElement[];
+}
 /**
  * @category RecordModel
  */
