@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { ButtonDefault } from "@webiny/ui/Button";
-import { useTrashBinRepository } from "@webiny/app-trash-bin-common";
 import { useApolloClient, useModel } from "~/admin/hooks";
 import {
     TrashBinDeleteEntryGraphQLGateway,
@@ -14,24 +13,26 @@ export const TrashBin = () => {
     const client = useApolloClient();
     const { model } = useModel();
 
-    const repository = useMemo(() => {
-        const listGateway = new TrashBinListGraphQLGateway(client, model);
-        const deleteEntryGateway = new TrashBinDeleteEntryGraphQLGateway(client, model);
-        const entryMapper = new TrashBinEntryMapper();
-        return useTrashBinRepository(
-            listGateway,
-            deleteEntryGateway,
-            entryMapper,
-            `trash-bin:${model.modelId}`
-        );
+    const listGateway = useMemo(() => {
+        return new TrashBinListGraphQLGateway(client, model);
     }, [client, model]);
+
+    const deleteGateway = useMemo(() => {
+        return new TrashBinDeleteEntryGraphQLGateway(client, model);
+    }, [client, model]);
+
+    const entryMapper = useMemo(() => {
+        return new TrashBinEntryMapper();
+    }, []);
 
     return (
         <BaseTrashBin
-            repository={repository}
             render={({ showTrashBin }) => {
                 return <ButtonDefault onClick={showTrashBin}>{"Open trash bin"}</ButtonDefault>;
             }}
+            listGateway={listGateway}
+            deleteGateway={deleteGateway}
+            entryMapper={entryMapper}
         />
     );
 };

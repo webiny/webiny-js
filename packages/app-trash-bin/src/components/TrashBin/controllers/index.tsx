@@ -1,4 +1,8 @@
-import { ISortRepository, ITrashBinRepository } from "@webiny/app-trash-bin-common";
+import {
+    IMetaRepository,
+    ISortRepository,
+    ITrashBinRepository
+} from "@webiny/app-trash-bin-common";
 import { DeleteEntryController } from "./DeleteEntryController";
 import { ListMoreEntriesController } from "./ListMoreEntriesController";
 import { SelectEntriesController } from "./SelectEntriesController";
@@ -9,16 +13,19 @@ import { ITrashBinControllers } from "../abstractions";
 
 export const useControllers = (
     trashBinRepository: ITrashBinRepository,
-    sortRepository: ISortRepository
+    sortRepository: ISortRepository,
+    metaRepository: IMetaRepository
 ): ITrashBinControllers => {
-    // Trash Bin controllers
     const deleteEntryController = new DeleteEntryController(trashBinRepository);
-    const listMoreEntriesController = new ListMoreEntriesController(trashBinRepository);
     const selectEntriesController = new SelectEntriesController(trashBinRepository);
     const sortEntriesController = new SortEntriesController(trashBinRepository);
-
-    // Sort controllers
     const sortController = new SortController(sortRepository);
+
+    const listMoreEntriesController = new ListMoreEntriesController(
+        trashBinRepository,
+        metaRepository
+    );
+
     const sortTrashBinController = new SortTrashBinController(
         sortController,
         sortEntriesController

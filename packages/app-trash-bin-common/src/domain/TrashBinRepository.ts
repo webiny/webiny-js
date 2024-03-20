@@ -7,7 +7,7 @@ import {
     ITrashBinRepository
 } from "~/abstractions";
 import { TrashBinEntry } from "./TrashBinEntry";
-import { TrashBinListQueryVariables, TrashBinMetaResponse } from "~/types";
+import { TrashBinListQueryVariables } from "~/types";
 
 export class TrashBinRepository<TEntry extends Record<string, any>> implements ITrashBinRepository {
     private listGateway: ITrashBinListGateway<TEntry>;
@@ -15,11 +15,6 @@ export class TrashBinRepository<TEntry extends Record<string, any>> implements I
     private entryMapper: ITrashBinEntryMapper<TEntry>;
     private entries: TrashBinEntry[] = [];
     private selectedEntries: TrashBinEntry[] = [];
-    private meta: TrashBinMetaResponse = {
-        totalCount: 0,
-        cursor: null,
-        hasMoreItems: false
-    };
 
     constructor(
         listGateway: ITrashBinListGateway<TEntry>,
@@ -44,11 +39,10 @@ export class TrashBinRepository<TEntry extends Record<string, any>> implements I
         }
 
         runInAction(() => {
-            const [entries, meta] = response;
+            const [entries] = response;
             this.entries = entries.map(entry =>
                 TrashBinEntry.create(this.entryMapper.toDTO(entry))
             );
-            this.meta = meta;
         });
     }
 
@@ -60,18 +54,6 @@ export class TrashBinRepository<TEntry extends Record<string, any>> implements I
         return this.selectedEntries;
     }
 
-    getMeta() {
-        return this.meta;
-    }
-
-    getSort() {
-        return [];
-    }
-
-    getLoading() {
-        return {};
-    }
-
     async listEntries(override: boolean, params?: TrashBinListQueryVariables) {
         const executeParams = params || ({} as TrashBinListQueryVariables);
         const response = await this.listGateway.execute(executeParams);
@@ -81,12 +63,11 @@ export class TrashBinRepository<TEntry extends Record<string, any>> implements I
         }
 
         runInAction(() => {
-            const [entries, meta] = response;
+            const [entries] = response;
             const entriesDTO = entries.map(entry =>
                 TrashBinEntry.create(this.entryMapper.toDTO(entry))
             );
             this.entries = override ? entriesDTO : uniqBy([...this.entries, ...entriesDTO], "id");
-            this.meta = meta;
         });
     }
 

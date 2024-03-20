@@ -1,14 +1,11 @@
 import React from "react";
 import { Table as AcoTable } from "@webiny/app-aco";
-import {
-    ITrashBinController,
-    TrashBinEntryDTO,
-    TrashBinPresenterViewModel
-} from "@webiny/app-trash-bin-common";
+import { TrashBinEntryDTO, TrashBinPresenterViewModel } from "@webiny/app-trash-bin-common";
+import { ITrashBinControllers } from "~/components/TrashBin/abstractions";
 
 export interface TableProps {
     vm: TrashBinPresenterViewModel;
-    controllers: ITrashBinController;
+    controllers: ITrashBinControllers;
 }
 
 export const Table = (props: TableProps) => {

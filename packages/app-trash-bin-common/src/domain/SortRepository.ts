@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import orderBy from "lodash/orderBy";
 import { ISortRepository } from "~/abstractions";
-import { Sort } from "./Sort";
+import { Sort, SortDTO } from "./Sort";
 
 export class SortRepository implements ISortRepository {
     private sorts: Sort[];
@@ -11,16 +11,16 @@ export class SortRepository implements ISortRepository {
         makeAutoObservable(this);
     }
 
-    async init() {
-        this.sorts = [{ field: "deletedOn", order: "desc" }];
-    }
-
-    set(sorts: Sort[]) {
-        this.sorts = sorts;
+    async init(sorts?: SortDTO[]) {
+        this.sorts = this.mapSortsDTOToSorts(sorts);
     }
 
     get() {
         return this.sorts;
+    }
+
+    set(sorts: SortDTO[]) {
+        this.sorts = this.mapSortsDTOToSorts(sorts);
     }
 
     sortEntries<T>(entries: T[]): T[] {
@@ -29,5 +29,12 @@ export class SortRepository implements ISortRepository {
             this.sorts.map(sort => sort.field),
             this.sorts.map(sort => sort.order)
         );
+    }
+
+    private mapSortsDTOToSorts(sortsDTO?: SortDTO[]) {
+        if (!sortsDTO) {
+            return [];
+        }
+        return sortsDTO.map(sort => Sort.create(sort));
     }
 }

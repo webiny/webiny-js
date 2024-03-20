@@ -9,7 +9,7 @@ export class LoadingRepository implements ILoadingRepository {
         makeAutoObservable(this);
     }
 
-    async init(loadingEnum: any) {
+    async init(loadingEnum: Record<string, any>) {
         for (const key in loadingEnum) {
             if (typeof loadingEnum[key] === "boolean") {
                 this.loadings.set(key, loadingEnum[key]);

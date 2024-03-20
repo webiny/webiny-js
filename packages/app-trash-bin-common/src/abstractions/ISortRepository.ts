@@ -1,8 +1,7 @@
-import { Sort } from "~/domain";
+import { Sort, SortDTO } from "~/domain";
 
 export interface ISortRepository {
-    init: () => Promise<void>;
     sortEntries: <T>(entries: T[]) => T[];
-    set: (sorts: Sort[]) => void;
+    set: (sorts: SortDTO[]) => void;
     get: () => Sort[];
 }

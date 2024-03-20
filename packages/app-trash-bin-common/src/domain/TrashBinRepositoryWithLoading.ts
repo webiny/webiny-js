@@ -18,10 +18,6 @@ export class TrashBinRepositoryWithLoading implements ITrashBinRepository {
         await this.runCallbackWithLoading(this.trashBinRepository.init(), LoadingEnum.init);
     }
 
-    getEntries() {
-        return this.trashBinRepository.getEntries();
-    }
-
     async listEntries(override: boolean, params = {}) {
         const loadingKey = override ? LoadingEnum.list : LoadingEnum.listMore;
         await this.runCallbackWithLoading(
@@ -30,27 +26,19 @@ export class TrashBinRepositoryWithLoading implements ITrashBinRepository {
         );
     }
 
-    getLoading() {
-        return this.loadingRepository.get();
-    }
-
-    getSort() {
-        return this.trashBinRepository.getSort();
-    }
-
-    getSelectedEntries() {
-        return this.trashBinRepository.getSelectedEntries();
-    }
-
-    getMeta() {
-        return this.trashBinRepository.getMeta();
-    }
-
     async deleteEntry(id: string) {
         return await this.runCallbackWithLoading(
             this.trashBinRepository.deleteEntry(id),
             LoadingEnum.delete
         );
+    }
+
+    getEntries() {
+        return this.trashBinRepository.getEntries();
+    }
+
+    getSelectedEntries() {
+        return this.trashBinRepository.getSelectedEntries();
     }
 
     async selectEntries(entries: TrashBinEntry[]) {

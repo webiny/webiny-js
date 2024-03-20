@@ -13,6 +13,7 @@ export const BottomInfoBar = (props: BottomInfoBarProps) => {
         <BottomInfoBarWrapper>
             <BottomInfoBarInner>
                 <ListMeta
+                    loading={props.vm.loading["INIT"]}
                     totalCount={props.vm.meta.totalCount}
                     currentCount={props.vm.entries.length}
                 />

@@ -14,7 +14,6 @@ export class TrashBinRepositoryWithSort implements ITrashBinRepository {
     }
 
     async init(): Promise<void> {
-        await this.sortRepository.init();
         const sort = this.sortRepository.get().map(sort => SortMapper.fromDTOtoDb(sort));
         await this.trashBinRepository.init({ sort });
     }
@@ -29,27 +28,15 @@ export class TrashBinRepositoryWithSort implements ITrashBinRepository {
         return await this.trashBinRepository.listEntries(override, { sort, ...params });
     }
 
-    getSort() {
-        return this.sortRepository.get();
-    }
-
-    getSelectedEntries() {
-        return this.trashBinRepository.getSelectedEntries();
-    }
-
-    getLoading() {
-        return this.trashBinRepository.getLoading();
-    }
-
-    getMeta() {
-        return this.trashBinRepository.getMeta();
-    }
-
     async deleteEntry(id: string) {
         return await this.trashBinRepository.deleteEntry(id);
     }
 
     async selectEntries(entries: TrashBinEntry[]) {
         return await this.trashBinRepository.selectEntries(entries);
+    }
+
+    getSelectedEntries() {
+        return this.trashBinRepository.getSelectedEntries();
     }
 }

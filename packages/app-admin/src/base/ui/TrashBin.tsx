@@ -1,7 +1,11 @@
 import React, { useCallback, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { createVoidComponent, makeDecoratable } from "@webiny/react-composition";
-import { ITrashBinRepository } from "@webiny/app-trash-bin-common";
+import {
+    ITrashBinDeleteEntryGateway,
+    ITrashBinEntryMapper,
+    ITrashBinListGateway
+} from "@webiny/app-trash-bin-common";
 
 export type TrashBinRenderPropParams = {
     showTrashBin: () => void;
@@ -13,7 +17,9 @@ interface TrashBinRenderProps {
 
 export type TrashBinProps = {
     render: TrashBinRenderProps;
-    repository: ITrashBinRepository;
+    listGateway: ITrashBinListGateway<any>;
+    deleteGateway: ITrashBinDeleteEntryGateway;
+    entryMapper: ITrashBinEntryMapper<any>;
     onClose?: () => void;
     show?: boolean;
 };

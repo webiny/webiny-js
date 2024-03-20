@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 
 export interface ListMetaProps {
+    loading: boolean;
     currentCount: number;
     totalCount: number;
 }
@@ -10,7 +11,9 @@ export const ListMeta = (props: ListMetaProps) => {
         return `${count} ${count === 1 ? "item" : "items"}`;
     }, []);
 
-    return (
-        <span>{`Showing ${getLabel(props.currentCount)} of ${getLabel(props.totalCount)}.`}</span>
-    );
+    if (props.loading) {
+        return null;
+    }
+
+    return <span>{`Showing ${props.currentCount} out of ${getLabel(props.totalCount)}.`}</span>;
 };

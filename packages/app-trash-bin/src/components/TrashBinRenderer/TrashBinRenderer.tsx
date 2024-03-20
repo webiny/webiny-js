@@ -10,6 +10,6 @@ export const TrashBinRenderer = createDecorator(BaseTrashBinRenderer, () => {
             }
         }, [props.onClose]);
 
-        return <TrashBin repository={props.repository} onClose={onClose} />;
+        return <TrashBin {...props} onClose={onClose} />;
     };
 });

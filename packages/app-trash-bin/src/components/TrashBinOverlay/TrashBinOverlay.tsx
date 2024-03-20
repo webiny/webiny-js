@@ -1,21 +1,18 @@
 import React from "react";
 import debounce from "lodash/debounce";
 import { OverlayLayout } from "@webiny/app-admin";
-import {
-    ISortController,
-    ITrashBinController,
-    TrashBinPresenterViewModel
-} from "@webiny/app-trash-bin-common";
+import { TrashBinPresenterViewModel } from "@webiny/app-trash-bin-common";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Title } from "~/components/Title";
 import { Table } from "~/components/Table";
 import { BulkActions } from "~/components/BulkActions";
 import { BottomInfoBar } from "~/components/BottomInfoBar";
 import { Empty } from "~/components/Empty";
+import { ITrashBinControllers } from "~/components/TrashBin/abstractions";
 
 interface TrashBinOverlayProps {
     vm: TrashBinPresenterViewModel;
-    controllers: ITrashBinController;
+    controllers: ITrashBinControllers;
     onExited: () => void;
 }
 

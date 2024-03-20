@@ -1,4 +1,4 @@
-import { TrashBinListQueryVariables } from "~/types";
+import { TrashBinListQueryVariables } from "@webiny/app-trash-bin-common/types";
 
 export interface IListMoreEntriesController {
     execute: (params?: TrashBinListQueryVariables) => Promise<void>;

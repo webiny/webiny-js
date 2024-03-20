@@ -11,10 +11,9 @@ export class TrashBinRepositoryFactory<TEntry extends Record<string, any>> {
     getRepository(
         listGateway: ITrashBinListGateway<TEntry>,
         deleteGateway: ITrashBinDeleteEntryGateway,
-        entryMapper: ITrashBinEntryMapper<TEntry>,
-        namespace: string
+        entryMapper: ITrashBinEntryMapper<TEntry>
     ) {
-        const cacheKey = this.getCacheKey(namespace);
+        const cacheKey = this.getCacheKey();
 
         if (!this.cache.has(cacheKey)) {
             this.cache.set(
@@ -26,8 +25,8 @@ export class TrashBinRepositoryFactory<TEntry extends Record<string, any>> {
         return this.cache.get(cacheKey) as TrashBinRepository<TEntry>;
     }
 
-    private getCacheKey(namespace: string) {
-        return [Date.now().toString(), namespace].join("#");
+    private getCacheKey() {
+        return Date.now().toString();
     }
 }
 

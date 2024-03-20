@@ -12,11 +12,10 @@ export class SortController implements ISortController {
     }
 
     public execute: OnSortingChange = updaterOrValue => {
-        const currentSorts = this.repository.get().map(sort => SortMapper.fromDTOtoColumn(sort));
-        let newSorts = currentSorts;
+        let newSorts = this.repository.get().map(sort => SortMapper.fromDTOtoColumn(sort));
 
         if (typeof updaterOrValue === "function") {
-            newSorts = updaterOrValue(currentSorts || {});
+            newSorts = updaterOrValue(newSorts || []);
         }
 
         this.repository.set(newSorts.map(sort => SortMapper.fromColumnToDTO(sort)));

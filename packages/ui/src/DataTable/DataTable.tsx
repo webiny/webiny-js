@@ -449,6 +449,7 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
         enableRowSelection: isRowSelectable,
         onRowSelectionChange,
         enableSorting: !!onSortingChange,
+        enableSortingRemoval: false,
         manualSorting: true,
         onSortingChange,
         enableHiding: !!onColumnVisibilityChange,
