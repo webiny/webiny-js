@@ -6,6 +6,7 @@ import { Image } from "@webiny/app/components";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";
 import { Avatar } from "@webiny/ui/Avatar";
+import { useIsDefaultTenant } from "./useIsDefaultTenant";
 
 const avatarImage = css({
     height: "40px !important",
@@ -63,7 +64,12 @@ const linkStyles = css({
 });
 
 interface UserInfoProps {
-    accountRoute?: string;
+    /**
+     * Provide a route to the user's account view.
+     * It is optional, because in reality, only Cognito allows you to update your profile, and only when Webiny is managing
+     * those Cognito identities. If Cognito uses federated identity providers, you won't be able to update your account at all.
+     */
+    accountRoute?: `/${string}`;
 }
 
 export const UserInfo = ({ accountRoute }: UserInfoProps) => {
@@ -73,66 +79,81 @@ export const UserInfo = ({ accountRoute }: UserInfoProps) => {
         return null;
     }
 
-    // This is only applicable in multi-tenant environments
-    const { currentTenant, defaultTenant } = security.identity;
+    const { profile, displayName } = security.identity;
 
-    let wrapper: any = { Component: Link, props: { to: "/account" } };
-    if (
-        !accountRoute ||
-        (currentTenant && defaultTenant && currentTenant.id !== defaultTenant.id)
-    ) {
-        wrapper = { Component: "div", props: {} };
-    }
+    // Start with the assumption that the user doesn't have a profile in the system (external IDP).
+    let listItem: JSX.Element = <UserInfoListItem displayName={displayName} />;
 
-    const profile = security.identity.profile;
-    if (!profile) {
-        const { displayName } = security.identity;
+    if (profile) {
+        const { email, firstName, lastName, avatar, gravatar } = profile;
+        const fullName = `${firstName} ${lastName}`;
 
-        return (
-            <wrapper.Component {...wrapper.props} className={linkStyles}>
-                <ListItem ripple={false} className={linkStyles}>
-                    <ListItemGraphic className={avatarImage}>
-                        <Avatar
-                            className={"avatar"}
-                            src={undefined}
-                            alt={displayName}
-                            fallbackText={displayName}
-                            renderImage={props => <Image {...props} transform={{ width: 100 }} />}
-                        />
-                    </ListItemGraphic>
-                    <div>
-                        <h3>
-                            <Typography use={"headline6"}>{displayName}</Typography>
-                        </h3>
-                    </div>
-                </ListItem>
-            </wrapper.Component>
+        listItem = (
+            <UserInfoListItem
+                displayName={fullName}
+                avatarSrc={avatar ? avatar.src : gravatar}
+                email={email}
+            />
         );
     }
 
-    const { email, firstName, lastName, avatar, gravatar } = profile;
-    const fullName = `${firstName} ${lastName}`;
+    return (
+        <UserInfoListItemContainer accountRoute={accountRoute} className={linkStyles}>
+            {listItem}
+        </UserInfoListItemContainer>
+    );
+};
+
+interface UserInfoListItemContainer {
+    accountRoute?: `/${string}`;
+    className: string;
+    children: React.ReactNode;
+}
+
+const UserInfoListItemContainer = ({
+    accountRoute,
+    className,
+    children
+}: UserInfoListItemContainer) => {
+    const isDefaultTenant = useIsDefaultTenant();
+
+    // If there's no "accountRoute", or the user is not on his default tenant, don't render the link to "Account Details".
+    if (!accountRoute || !isDefaultTenant) {
+        return <div className={className}>{children}</div>;
+    }
 
     return (
-        <wrapper.Component {...wrapper.props} className={linkStyles}>
-            <ListItem ripple={false} className={linkStyles}>
-                <ListItemGraphic className={avatarImage}>
-                    <Avatar
-                        className={"avatar"}
-                        src={avatar ? avatar.src : gravatar}
-                        alt={fullName}
-                        fallbackText={fullName}
-                        renderImage={props => <Image {...props} transform={{ width: 100 }} />}
-                    />
-                </ListItemGraphic>
-                <div>
-                    <h3>
-                        <Typography use={"headline6"}>{fullName}</Typography>
-                    </h3>
-                    <Typography use={"body2"}>{email}</Typography>
-                </div>
-            </ListItem>
-        </wrapper.Component>
+        <Link to={accountRoute} className={className}>
+            {children}
+        </Link>
+    );
+};
+
+interface UserInfoListItemProps {
+    displayName: string;
+    email?: string;
+    avatarSrc?: string;
+}
+
+const UserInfoListItem = ({ avatarSrc, displayName, email }: UserInfoListItemProps) => {
+    return (
+        <ListItem ripple={false} className={linkStyles}>
+            <ListItemGraphic className={avatarImage}>
+                <Avatar
+                    className={"avatar"}
+                    src={avatarSrc}
+                    alt={displayName}
+                    fallbackText={displayName}
+                    renderImage={props => <Image {...props} transform={{ width: 100 }} />}
+                />
+            </ListItemGraphic>
+            <div>
+                <h3>
+                    <Typography use={"headline6"}>{displayName}</Typography>
+                </h3>
+                {email ? <Typography use={"body2"}>{email}</Typography> : null}
+            </div>
+        </ListItem>
     );
 };
 

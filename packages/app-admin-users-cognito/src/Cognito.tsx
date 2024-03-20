@@ -14,6 +14,8 @@ import permissionRenderer from "./plugins/permissionRenderer";
 import cognito from "./plugins/cognito";
 import { CognitoLogin, CognitoProps } from "./CognitoLogin";
 
+const ACCOUNT_ROUTE = "/account";
+
 const CognitoIdP = (props: CognitoProps) => {
     plugins.register([installation, permissionRenderer, cognito()]);
 
@@ -40,13 +42,13 @@ const CognitoIdP = (props: CognitoProps) => {
                         </Menu>
                     </Menu>
                 </HasPermission>
-                <AddRoute path={"/account"}>
+                <AddRoute path={ACCOUNT_ROUTE}>
                     <Layout title={"User Account"}>
                         <Account />
                     </Layout>
                 </AddRoute>
-                <AddUserMenuItem element={<UserInfo accountRoute={"/account"} />} />
-                <AddUserMenuItem element={<AccountDetails />} />
+                <AddUserMenuItem element={<UserInfo accountRoute={ACCOUNT_ROUTE} />} />
+                <AddUserMenuItem element={<AccountDetails accountRoute={ACCOUNT_ROUTE} />} />
                 <AddUserMenuItem element={<SignOut />} />
             </Plugin>
         </Fragment>
