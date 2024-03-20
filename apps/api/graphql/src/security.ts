@@ -73,15 +73,7 @@ export default ({ documentClient }: { documentClient: DynamoDBClient }) => [
     cognitoAuthentication({
         region: String(process.env.COGNITO_REGION),
         userPoolId: String(process.env.COGNITO_USER_POOL_ID),
-        identityType: "admin",
-        getIdentity({ identity, token }) {
-            const federatedIdentity = Boolean(token.identities);
-
-            return {
-                ...identity,
-                group: federatedIdentity ? "full-access" : undefined
-            };
-        }
+        identityType: "admin"
     }),
 
     /**
