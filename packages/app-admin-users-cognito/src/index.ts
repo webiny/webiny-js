@@ -6,7 +6,6 @@ export { CognitoLogin } from "./CognitoLogin";
 
 import { NotAuthorizedError } from "./createAuthentication/NotAuthorizedError";
 
-
 export const Components = {
     ...BaseComponents,
     NotAuthorizedError

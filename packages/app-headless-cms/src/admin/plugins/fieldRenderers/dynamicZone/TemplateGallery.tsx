@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/highlight_off.svg";
-import { createDecoratorFactory, DecoratableComponent, makeDecoratable } from "@webiny/app-admin";
+import { DecoratableComponent, makeDecoratable, withDecoratorFactory } from "@webiny/app-admin";
 import { IconButton } from "@webiny/ui/Button";
 import { CmsDynamicZoneTemplate } from "~/types";
 import { useModel, useModelField } from "~/admin/hooks";
@@ -67,29 +67,23 @@ const Gallery = makeDecoratable("TemplateGalley", (props: TemplateGalleryProps) 
     );
 });
 
-function withDecoratorFactory<T extends DecoratableComponent>(Component: T) {
-    return Object.assign(Component, {
-        createDecorator: createDecoratorFactory<{ modelIds?: string[] }>()(
-            Component,
-            decoratorProps => {
-                const { model } = useModel();
+export type ShouldRender = { modelIds?: string[] };
 
-                if (
-                    decoratorProps?.modelIds?.length &&
-                    !decoratorProps.modelIds.includes(model.modelId)
-                ) {
-                    return false;
-                }
+function withShouldRender<T extends DecoratableComponent>(Component: T) {
+    return withDecoratorFactory<ShouldRender>()(Component, decoratorProps => {
+        const { model } = useModel();
 
-                return true;
-            }
-        )
+        if (decoratorProps?.modelIds?.length && !decoratorProps.modelIds.includes(model.modelId)) {
+            return false;
+        }
+
+        return true;
     });
 }
 
-export const TemplateGallery = Object.assign(withDecoratorFactory(Gallery), {
-    Container: withDecoratorFactory(GalleryContainer),
-    List: withDecoratorFactory(GalleryList),
-    Item: withDecoratorFactory(TemplateItem),
-    Close: withDecoratorFactory(CloseGallery)
+export const TemplateGallery = Object.assign(withShouldRender(Gallery), {
+    Container: withShouldRender(GalleryContainer),
+    List: withShouldRender(GalleryList),
+    Item: withShouldRender(TemplateItem),
+    Close: withShouldRender(CloseGallery)
 });

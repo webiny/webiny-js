@@ -1,4 +1,4 @@
-export { CognitoIdToken} from "./types";
+export { CognitoIdToken } from "./types";
 export * from "./Authenticator";
 export * from "./hooks/useSignIn";
 export * from "./hooks/useAuthenticator";

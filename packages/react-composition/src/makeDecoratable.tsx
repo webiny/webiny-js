@@ -50,8 +50,7 @@ function makeDecoratableComponent<T extends GenericComponent>(
     return withDecoratorFactory()(Decoratable as DecoratableComponent<typeof Decoratable>);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function makeDecoratableHook<T extends GenericHook>(hook: T) {
+export function makeDecoratableHook<T extends GenericHook>(hook: T) {
     const decoratableHook = (params: Parameters<T>) => {
         const composedHook = useComponent(hook);
 
