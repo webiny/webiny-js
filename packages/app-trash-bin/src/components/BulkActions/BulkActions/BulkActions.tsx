@@ -16,10 +16,10 @@ export const BulkActions = () => {
     const { presenter, controllers } = useTrashBin();
 
     const headline = useMemo((): string => {
-        return getEntriesLabel(presenter.vm.selectedEntries.length) + ` selected:`;
-    }, [presenter.vm.selectedEntries]);
+        return getEntriesLabel(presenter.vm.selectedItems.length) + ` selected:`;
+    }, [presenter.vm.selectedItems]);
 
-    if (!presenter.vm.selectedEntries.length) {
+    if (!presenter.vm.selectedItems.length) {
         return null;
     }
 

@@ -1,7 +1,14 @@
-import { ColumnSort, DbSort, SortDTO } from "~/domain/Sort";
+import { SortingDTO } from "./Sorting";
 
-export class SortMapper {
-    static fromColumnToDTO(data: ColumnSort): SortDTO {
+export type DbSorting = `${string}_ASC` | `${string}_DESC`;
+
+export interface ColumnSorting {
+    id: string;
+    desc: boolean;
+}
+
+export class SortingMapper {
+    static fromColumnToDTO(data: ColumnSorting): SortingDTO {
         const { id, desc } = data;
 
         return {
@@ -10,7 +17,7 @@ export class SortMapper {
         };
     }
 
-    static fromDTOtoColumn(data: SortDTO): ColumnSort {
+    static fromDTOtoColumn(data: SortingDTO): ColumnSorting {
         const { field, order } = data;
 
         return {
@@ -19,7 +26,7 @@ export class SortMapper {
         };
     }
 
-    static fromDTOtoDb(data: SortDTO): DbSort {
+    static fromDTOtoDb(data: SortingDTO): DbSorting {
         const { field, order } = data;
 
         if (order === "asc") {

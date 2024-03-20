@@ -1,6 +1,6 @@
-import { IMetaRepository, ITrashBinListGateway } from "@webiny/app-trash-bin-common";
+import { ITrashBinListGateway } from "@webiny/app-trash-bin-common";
+import { IMetaRepository, Meta } from "@webiny/app-utilities";
 import { TrashBinListQueryVariables } from "@webiny/app-trash-bin-common/types";
-import { Meta } from "@webiny/app-trash-bin-common/domain/Meta";
 
 export class ListEntriesWithMeta implements ITrashBinListGateway<any> {
     private metaRepository: IMetaRepository;

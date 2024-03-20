@@ -1,14 +1,16 @@
 import React from "react";
 import debounce from "lodash/debounce";
 import { OverlayLayout } from "@webiny/app-admin";
-import { TrashBinPresenterViewModel } from "@webiny/app-trash-bin-common";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { Title } from "~/components/Title";
 import { Table } from "~/components/Table";
 import { BulkActions } from "~/components/BulkActions";
 import { BottomInfoBar } from "~/components/BottomInfoBar";
 import { Empty } from "~/components/Empty";
-import { ITrashBinControllers } from "~/components/TrashBin/abstractions";
+import {
+    ITrashBinControllers,
+    TrashBinPresenterViewModel
+} from "~/components/TrashBin/abstractions";
 
 interface TrashBinOverlayProps {
     vm: TrashBinPresenterViewModel;
@@ -29,7 +31,7 @@ export const TrashBinOverlay = (props: TrashBinOverlayProps) => {
             <Scrollbar onScrollFrame={scrollFrame => onTableScroll({ scrollFrame })}>
                 {!props.vm.loading["INIT"] &&
                 !props.vm.loading["LIST"] &&
-                !props.vm.entries.length ? (
+                !props.vm.items.length ? (
                     <Empty />
                 ) : (
                     <Table vm={props.vm} controllers={props.controllers} />

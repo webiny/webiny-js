@@ -1,29 +1,27 @@
 import { makeAutoObservable } from "mobx";
+import { ITrashBinItemMapper, TrashBinItem } from "@webiny/app-trash-bin-common";
 import {
     ILoadingRepository,
     IMetaRepository,
-    ISortRepository,
-    ITrashBinItemMapper,
-    ITrashBinPresenter,
-    ITrashBinRepository,
+    ISortingRepository,
     MetaMapper,
-    SortMapper,
-    TrashBinItem
-} from "@webiny/app-trash-bin-common";
-import { TrashBinItemMapper } from "~/domain";
+    SortingMapper
+} from "@webiny/app-utilities";
+import { ITrashBinPresenter, ITrashBinRepository } from "~/components/TrashBin/abstractions";
+import { TrashBinItemMapper } from "./domain";
 
 export class TrashBinPresenter implements ITrashBinPresenter {
     private itemsRepository: ITrashBinRepository;
     private loadingRepository: ILoadingRepository;
     private metaRepository: IMetaRepository;
-    private sortingRepository: ISortRepository;
+    private sortingRepository: ISortingRepository;
     private itemMapper: ITrashBinItemMapper<TrashBinItem>;
 
     constructor(
         itemsRepository: ITrashBinRepository,
         loadingRepository: ILoadingRepository,
         metaRepository: IMetaRepository,
-        sortingRepository: ISortRepository
+        sortingRepository: ISortingRepository
     ) {
         this.itemsRepository = itemsRepository;
         this.loadingRepository = loadingRepository;
@@ -39,10 +37,10 @@ export class TrashBinPresenter implements ITrashBinPresenter {
 
     get vm() {
         return {
-            entries: this.mapItemsToDTOs(this.itemsRepository.getItems()),
-            selectedEntries: this.mapItemsToDTOs(this.itemsRepository.getSelectedItems()),
+            items: this.mapItemsToDTOs(this.itemsRepository.getItems()),
+            selectedItems: this.mapItemsToDTOs(this.itemsRepository.getSelectedItems()),
             meta: MetaMapper.toDto(this.metaRepository.get()),
-            sorting: this.sortingRepository.get().map(sort => SortMapper.fromDTOtoColumn(sort)),
+            sorting: this.sortingRepository.get().map(sort => SortingMapper.fromDTOtoColumn(sort)),
             loading: this.loadingRepository.get()
         };
     }

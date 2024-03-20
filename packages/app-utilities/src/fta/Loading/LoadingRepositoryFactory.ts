@@ -1,4 +1,4 @@
-import { LoadingRepository } from "~/domain/LoadingRepository";
+import { LoadingRepository } from "./LoadingRepository";
 
 export class LoadingRepositoryFactory {
     private cache: Map<string, LoadingRepository> = new Map();

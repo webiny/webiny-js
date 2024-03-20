@@ -1,5 +1,5 @@
-import { TrashBinItem } from "~/domain";
-import { TrashBinListQueryVariables } from "~/types";
+import { TrashBinItem } from "@webiny/app-trash-bin-common";
+import { TrashBinListQueryVariables } from "@webiny/app-trash-bin-common/types";
 
 export interface ITrashBinRepository {
     init: (params?: TrashBinListQueryVariables) => Promise<void>;

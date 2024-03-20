@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
-import { IMetaRepository } from "~/abstractions/IMetaRepository";
-import { Meta, MetaDTO } from "~/domain/Meta";
-import { MetaMapper } from "~/domain/MetaMapper";
+import { IMetaRepository } from "./IMetaRepository";
+import { Meta, MetaDTO } from "./Meta";
+import { MetaMapper } from "./MetaMapper";
 
 export class MetaRepository implements IMetaRepository {
     private meta: Meta;

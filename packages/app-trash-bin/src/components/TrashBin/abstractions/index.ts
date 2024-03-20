@@ -5,3 +5,4 @@ export * from "./ISortController";
 export * from "./ISortItemsController";
 export * from "./ITrashBinControllers";
 export * from "./ITrashBinPresenter";
+export * from "./ITrashBinRepository";

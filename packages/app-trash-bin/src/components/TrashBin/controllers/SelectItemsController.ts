@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
-import { ITrashBinRepository, TrashBinItem } from "@webiny/app-trash-bin-common";
-import { ISelectItemsController } from "../abstractions";
+import { TrashBinItem } from "@webiny/app-trash-bin-common";
+import { ISelectItemsController, ITrashBinRepository } from "../abstractions";
 
 export class SelectItemsController implements ISelectItemsController {
     private repository: ITrashBinRepository;

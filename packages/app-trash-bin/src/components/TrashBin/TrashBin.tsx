@@ -5,14 +5,13 @@ import { CompositionScope } from "@webiny/app-admin";
 import {
     ITrashBinDeleteItemGateway,
     ITrashBinItemMapper,
-    ITrashBinListGateway,
-    loadingRepositoryFactory,
-    sortRepositoryFactory,
-    trashBinRepositoryFactory,
-    metaRepositoryFactory,
-    TrashBinRepositoryWithLoading,
-    TrashBinRepositoryWithSort
+    ITrashBinListGateway
 } from "@webiny/app-trash-bin-common";
+import {
+    loadingRepositoryFactory,
+    metaRepositoryFactory,
+    sortRepositoryFactory
+} from "@webiny/app-utilities";
 import { useControllers } from "./controllers";
 import { TrashBinListWithConfig } from "~/configs";
 import { TrashBinProvider } from "~/hooks";
@@ -20,6 +19,11 @@ import { TrashBinOverlay } from "~/components/TrashBinOverlay";
 import { ListEntriesWithMeta } from "~/components/TrashBin/gateways";
 import { TrashBinPresenter } from "~/components/TrashBin/TrashBinPresenter";
 import { LoadingEnum } from "~/types";
+import {
+    trashBinRepositoryFactory,
+    TrashBinRepositoryWithLoading,
+    TrashBinRepositoryWithSort
+} from "~/components/TrashBin/domain";
 
 export interface TrashBinProps {
     listGateway: ITrashBinListGateway<any>;

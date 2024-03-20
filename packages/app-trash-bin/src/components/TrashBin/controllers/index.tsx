@@ -1,19 +1,15 @@
-import {
-    IMetaRepository,
-    ISortRepository,
-    ITrashBinRepository
-} from "@webiny/app-trash-bin-common";
+import { IMetaRepository, ISortingRepository } from "@webiny/app-utilities";
 import { DeleteItemController } from "./DeleteItemController";
 import { ListMoreItemsController } from "./ListMoreItemsController";
 import { SelectItemsController } from "./SelectItemsController";
 import { SortController } from "./SortController";
 import { SortItemsController } from "./SortItemsController";
 import { SortTrashBinController } from "./SortTrashBinController";
-import { ITrashBinControllers } from "../abstractions";
+import { ITrashBinControllers, ITrashBinRepository } from "../abstractions";
 
 export const useControllers = (
     trashBinRepository: ITrashBinRepository,
-    sortRepository: ISortRepository,
+    sortRepository: ISortingRepository,
     metaRepository: IMetaRepository
 ): ITrashBinControllers => {
     const deleteItemController = new DeleteItemController(trashBinRepository);

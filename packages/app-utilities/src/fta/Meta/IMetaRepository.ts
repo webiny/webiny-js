@@ -1,4 +1,4 @@
-import { MetaDTO } from "~/domain/Meta";
+import { MetaDTO } from "./Meta";
 
 export interface IMetaRepository {
     get: () => MetaDTO;

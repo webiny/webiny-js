@@ -4,10 +4,10 @@ import {
     ITrashBinDeleteItemGateway,
     ITrashBinItemMapper,
     ITrashBinListGateway,
-    ITrashBinRepository
-} from "~/abstractions";
-import { TrashBinItem } from "./TrashBinItem";
-import { TrashBinListQueryVariables } from "~/types";
+    TrashBinItem
+} from "@webiny/app-trash-bin-common";
+import { TrashBinListQueryVariables } from "@webiny/app-trash-bin-common/types";
+import { ITrashBinRepository } from "~/components/TrashBin/abstractions";
 
 export class TrashBinRepository<TItem extends Record<string, any>> implements ITrashBinRepository {
     private listGateway: ITrashBinListGateway<TItem>;

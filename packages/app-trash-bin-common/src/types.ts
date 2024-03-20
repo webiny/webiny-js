@@ -18,13 +18,3 @@ export interface TrashBinIdentity {
     displayName: string;
     type: string;
 }
-
-export type Loading<T extends LoadingEnum> = { [K in T]?: boolean };
-
-export enum LoadingEnum {
-    init = "INIT",
-    list = "LIST",
-    listMore = "LIST_MORE",
-    delete = "DELETE",
-    restore = "RESTORE"
-}

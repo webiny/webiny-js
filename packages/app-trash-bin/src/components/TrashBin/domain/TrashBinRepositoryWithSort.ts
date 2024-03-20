@@ -1,20 +1,20 @@
 import { makeAutoObservable } from "mobx";
-import { ISortRepository, ITrashBinRepository } from "~/abstractions";
-import { SortMapper } from "~/domain/SortMapper";
-import { TrashBinItem } from "~/domain/TrashBinItem";
+import { TrashBinItem } from "@webiny/app-trash-bin-common";
+import { ISortingRepository, SortingMapper } from "@webiny/app-utilities";
+import { ITrashBinRepository } from "~/components/TrashBin/abstractions";
 
 export class TrashBinRepositoryWithSort implements ITrashBinRepository {
-    private sortRepository: ISortRepository;
+    private sortRepository: ISortingRepository;
     private trashBinRepository: ITrashBinRepository;
 
-    constructor(sortRepository: ISortRepository, trashBinRepository: ITrashBinRepository) {
+    constructor(sortRepository: ISortingRepository, trashBinRepository: ITrashBinRepository) {
         this.sortRepository = sortRepository;
         this.trashBinRepository = trashBinRepository;
         makeAutoObservable(this);
     }
 
     async init(): Promise<void> {
-        const sort = this.sortRepository.get().map(sort => SortMapper.fromDTOtoDb(sort));
+        const sort = this.sortRepository.get().map(sort => SortingMapper.fromDTOtoDb(sort));
         await this.trashBinRepository.init({ sort });
     }
 
@@ -24,7 +24,7 @@ export class TrashBinRepositoryWithSort implements ITrashBinRepository {
     }
 
     async listItems(override: boolean, params = {}) {
-        const sort = this.sortRepository.get().map(sort => SortMapper.fromDTOtoDb(sort));
+        const sort = this.sortRepository.get().map(sort => SortingMapper.fromDTOtoDb(sort));
         return await this.trashBinRepository.listItems(override, { sort, ...params });
     }
 

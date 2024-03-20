@@ -1,6 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { ITrashBinRepository } from "@webiny/app-trash-bin-common";
-import { IDeleteItemController } from "../abstractions";
+import { IDeleteItemController, ITrashBinRepository } from "../abstractions";
 
 export class DeleteItemController implements IDeleteItemController {
     private repository: ITrashBinRepository;

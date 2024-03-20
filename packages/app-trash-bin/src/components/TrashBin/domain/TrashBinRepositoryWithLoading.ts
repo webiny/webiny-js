@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
-import { ILoadingRepository, ITrashBinRepository } from "~/abstractions";
-import { TrashBinItem } from "~/domain/TrashBinItem";
+import { TrashBinItem } from "@webiny/app-trash-bin-common";
+import { ILoadingRepository } from "@webiny/app-utilities";
+import { ITrashBinRepository } from "~/components/TrashBin/abstractions";
 import { LoadingEnum } from "~/types";
 
 export class TrashBinRepositoryWithLoading implements ITrashBinRepository {

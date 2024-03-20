@@ -3,7 +3,7 @@ import {
     ITrashBinDeleteItemGateway,
     ITrashBinItemMapper,
     ITrashBinListGateway
-} from "~/abstractions";
+} from "@webiny/app-trash-bin-common";
 
 export class TrashBinRepositoryFactory<TEntry extends Record<string, any>> {
     private cache: Map<string, TrashBinRepository<TEntry>> = new Map();

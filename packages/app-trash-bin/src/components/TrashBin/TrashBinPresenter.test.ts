@@ -1,17 +1,14 @@
 import { TrashBinPresenter } from "./TrashBinPresenter";
-import {
-    ITrashBinListGateway,
-    ITrashBinDeleteItemGateway,
-    ITrashBinPresenter,
-    ITrashBinItemMapper,
-    TrashBinRepository,
-    SortRepository,
-    LoadingRepository,
-    MetaRepository
-} from "@webiny/app-trash-bin-common";
 import { TrashBinIdentity } from "@webiny/app-trash-bin-common/types";
 import { useControllers } from "~/components/TrashBin/controllers";
-import { ITrashBinControllers } from "~/components/TrashBin/abstractions";
+import { ITrashBinControllers, ITrashBinPresenter } from "~/components/TrashBin/abstractions";
+import {
+    ITrashBinDeleteItemGateway,
+    ITrashBinItemMapper,
+    ITrashBinListGateway
+} from "@webiny/app-trash-bin-common";
+import { TrashBinRepository } from "~/components/TrashBin/domain";
+import { LoadingRepository, MetaRepository, SortingRepository } from "@webiny/app-utilities";
 
 interface Item {
     id: string;
@@ -110,7 +107,7 @@ describe("TrashBinPresenter", () => {
 
         const itemRepo = new TrashBinRepository(listGateway, deleteItemGateway, itemMapper);
         const loadingRepo = new LoadingRepository();
-        const sortRepo = new SortRepository();
+        const sortRepo = new SortingRepository();
         const metaRepo = new MetaRepository();
 
         presenter = new TrashBinPresenter(itemRepo, loadingRepo, metaRepo, sortRepo);
@@ -123,14 +120,14 @@ describe("TrashBinPresenter", () => {
 
         // Let's check the transition to loading state
         expect(presenter.vm).toMatchObject({
-            entries: []
+            items: []
         });
 
         await loadPromise;
 
         expect(listGateway.execute).toHaveBeenCalledTimes(1);
         expect(presenter.vm).toMatchObject({
-            entries: [
+            items: [
                 {
                     id: "item-1",
                     $selectable: true,
@@ -166,7 +163,7 @@ describe("TrashBinPresenter", () => {
         expect(listGateway.execute).toHaveBeenCalledTimes(1);
 
         expect(presenter.vm).toMatchObject({
-            entries: [
+            items: [
                 {
                     id: "item-1",
                     $selectable: true,
@@ -200,7 +197,7 @@ describe("TrashBinPresenter", () => {
         expect(deleteItemGateway.execute).toHaveBeenCalledWith(item1.id);
 
         expect(presenter.vm).toMatchObject({
-            entries: [
+            items: [
                 {
                     id: "item-2",
                     $selectable: true,

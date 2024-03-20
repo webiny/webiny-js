@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { ILoadingRepository } from "~/abstractions";
+import { ILoadingRepository } from "./ILoadingRepository";
 
 export class LoadingRepository implements ILoadingRepository {
     private loadings: Map<string, boolean>;

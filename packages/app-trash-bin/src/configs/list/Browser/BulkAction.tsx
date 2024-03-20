@@ -53,8 +53,8 @@ const useWorker = () => {
     const { current: worker } = useRef(new Worker<TrashBinItemDTO>());
 
     useEffect(() => {
-        worker.items = presenter.vm.selectedEntries;
-    }, [presenter.vm.selectedEntries.length]);
+        worker.items = presenter.vm.selectedItems;
+    }, [presenter.vm.selectedItems.length]);
 
     // Reset selected items in both repository and Worker
     const resetItems = useCallback(() => {
@@ -63,7 +63,7 @@ const useWorker = () => {
     }, []);
 
     return {
-        items: presenter.vm.selectedEntries,
+        items: presenter.vm.selectedItems,
         process: (callback: (items: TrashBinItemDTO[]) => void) => worker.process(callback),
         processInSeries: async (
             callback: ({

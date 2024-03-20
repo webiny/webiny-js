@@ -1,4 +1,4 @@
-import { MetaRepository } from "~/domain/MetaRepository";
+import { MetaRepository } from "./MetaRepository";
 
 export class MetaRepositoryFactory {
     private cache: Map<string, MetaRepository> = new Map();
