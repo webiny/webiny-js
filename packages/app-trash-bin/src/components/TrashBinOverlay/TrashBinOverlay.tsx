@@ -7,6 +7,7 @@ import { Table } from "~/components/Table";
 import { BulkActions } from "~/components/BulkActions";
 import { BottomInfoBar } from "~/components/BottomInfoBar";
 import { Empty } from "~/components/Empty";
+import { SearchInput } from "~/components/SearchInput";
 import {
     ITrashBinControllers,
     TrashBinPresenterViewModel
@@ -26,7 +27,11 @@ export const TrashBinOverlay = (props: TrashBinOverlayProps) => {
     }, 200);
 
     return (
-        <OverlayLayout onExited={props.onExited} barLeft={<Title title={"Trash bin"} />}>
+        <OverlayLayout
+            onExited={props.onExited}
+            barLeft={<Title title={"Trash bin"} />}
+            barMiddle={<SearchInput />}
+        >
             <BulkActions />
             <Scrollbar onScrollFrame={scrollFrame => onTableScroll({ scrollFrame })}>
                 {!props.vm.loading["INIT"] &&

@@ -8,6 +8,8 @@ export interface TrashBinPresenterViewModel {
     sorting: ColumnSorting[];
     loading: Record<string, boolean>;
     meta: TrashBinMetaResponse;
+    searchQuery: string | undefined;
+    searchLabel: string;
 }
 
 export interface ITrashBinPresenter {

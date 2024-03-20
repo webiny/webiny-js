@@ -3,5 +3,3 @@ export * from "./SelectedItemsRepositoryFactory";
 export * from "./TrashBinItemMapper";
 export * from "./TrashBinItemsRepository";
 export * from "./TrashBinItemsRepositoryFactory";
-export * from "./TrashBinItemsRepositoryWithLoading";
-export * from "./TrashBinItemsRepositoryWithSort";

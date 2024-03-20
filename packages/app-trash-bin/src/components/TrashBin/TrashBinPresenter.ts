@@ -10,9 +10,11 @@ import {
 import {
     ITrashBinPresenter,
     ITrashBinItemsRepository,
-    ISelectedItemsRepository
+    ISelectedItemsRepository,
+    ISearchRepository
 } from "~/components/TrashBin/abstractions";
 import { TrashBinItemMapper } from "./domain";
+import { LoadingEnum } from "~/types";
 
 export class TrashBinPresenter implements ITrashBinPresenter {
     private itemsRepository: ITrashBinItemsRepository;
@@ -20,6 +22,7 @@ export class TrashBinPresenter implements ITrashBinPresenter {
     private loadingRepository: ILoadingRepository;
     private metaRepository: IMetaRepository;
     private sortingRepository: ISortingRepository;
+    private searchRepository: ISearchRepository;
     private itemMapper: ITrashBinItemMapper<TrashBinItem>;
 
     constructor(
@@ -27,19 +30,29 @@ export class TrashBinPresenter implements ITrashBinPresenter {
         selectedRepository: ISelectedItemsRepository,
         loadingRepository: ILoadingRepository,
         metaRepository: IMetaRepository,
-        sortingRepository: ISortingRepository
+        sortingRepository: ISortingRepository,
+        searchRepository: ISearchRepository
     ) {
         this.itemsRepository = itemsRepository;
         this.selectedRepository = selectedRepository;
         this.loadingRepository = loadingRepository;
         this.metaRepository = metaRepository;
         this.sortingRepository = sortingRepository;
+        this.searchRepository = searchRepository;
         this.itemMapper = new TrashBinItemMapper();
         makeAutoObservable(this);
     }
 
     async init() {
-        await this.itemsRepository.init();
+        await this.loadingRepository.init(LoadingEnum);
+
+        const initTasks = [
+            await this.selectedRepository.init(),
+            await this.searchRepository.init(),
+            await this.sortingRepository.init([{ field: "deletedOn", order: "desc" }]),
+            await this.itemsRepository.init()
+        ];
+        await this.loadingRepository.runCallBack(Promise.all(initTasks), LoadingEnum.init);
     }
 
     get vm() {
@@ -48,7 +61,9 @@ export class TrashBinPresenter implements ITrashBinPresenter {
             selectedItems: this.mapItemsToDTOs(this.selectedRepository.getSelectedItems()),
             meta: MetaMapper.toDto(this.metaRepository.get()),
             sorting: this.sortingRepository.get().map(sort => SortingMapper.fromDTOtoColumn(sort)),
-            loading: this.loadingRepository.get()
+            loading: this.loadingRepository.get(),
+            searchQuery: this.searchRepository.get(),
+            searchLabel: "Search all items"
         };
     }
 

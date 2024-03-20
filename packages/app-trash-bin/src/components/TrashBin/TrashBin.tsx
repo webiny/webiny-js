@@ -16,15 +16,19 @@ import { useControllers } from "./controllers";
 import { TrashBinListWithConfig } from "~/configs";
 import { TrashBinProvider } from "~/hooks";
 import { TrashBinOverlay } from "~/components/TrashBinOverlay";
-import { ListEntriesWithMeta } from "~/components/TrashBin/gateways";
+import {
+    DeleteItemWithLoading,
+    ListItemsWithLoading,
+    ListItemsWithMeta,
+    ListItemsWithSearch,
+    ListItemsWithSorting
+} from "~/components/TrashBin/gateways";
 import { TrashBinPresenter } from "~/components/TrashBin/TrashBinPresenter";
-import { LoadingEnum } from "~/types";
 import {
     selectedItemsRepositoryFactory,
-    trashBinItemsRepositoryFactory,
-    TrashBinItemsRepositoryWithLoading,
-    TrashBinItemsRepositoryWithSort
+    trashBinItemsRepositoryFactory
 } from "~/components/TrashBin/domain";
+import { searchRepositoryFactory } from "~/components/TrashBin/domain/SearchRepositoryFactory";
 
 export interface TrashBinProps {
     listGateway: ITrashBinListGateway<any>;
@@ -38,17 +42,9 @@ export const TrashBin = observer((props: TrashBinProps) => {
         return metaRepositoryFactory.getRepository();
     }, []);
 
-    const listGateway = useMemo(() => {
-        return new ListEntriesWithMeta(metaRepository, props.listGateway);
-    }, [metaRepository]);
-
-    const itemsRepository = useMemo(() => {
-        return trashBinItemsRepositoryFactory.getRepository(
-            listGateway,
-            props.deleteGateway,
-            props.itemMapper
-        );
-    }, [listGateway]);
+    const searchRepository = useMemo(() => {
+        return searchRepositoryFactory.getRepository();
+    }, []);
 
     const sortRepository = useMemo(() => {
         return sortRepositoryFactory.getRepository();
@@ -58,29 +54,64 @@ export const TrashBin = observer((props: TrashBinProps) => {
         return loadingRepositoryFactory.getRepository();
     }, []);
 
+    const listGateway = useMemo(() => {
+        const withSearch = new ListItemsWithSearch(searchRepository, props.listGateway);
+        const withSort = new ListItemsWithSorting(sortRepository, withSearch);
+        const withMeta = new ListItemsWithMeta(metaRepository, withSort);
+        const withLoading = new ListItemsWithLoading(loadingRepository, withMeta);
+        return new ListItemsWithMeta(metaRepository, withLoading);
+    }, [
+        metaRepository,
+        searchRepository,
+        sortRepository,
+        metaRepository,
+        loadingRepository,
+        props.listGateway
+    ]);
+
+    const deleteItemGateway = useMemo(() => {
+        return new DeleteItemWithLoading(loadingRepository, props.deleteGateway);
+    }, [loadingRepository, props.deleteGateway]);
+
+    const itemsRepository = useMemo(() => {
+        return trashBinItemsRepositoryFactory.getRepository(
+            listGateway,
+            deleteItemGateway,
+            props.itemMapper
+        );
+    }, [listGateway, deleteItemGateway, props.itemMapper]);
+
     const selectedRepository = useMemo(() => {
         return selectedItemsRepositoryFactory.getRepository();
     }, []);
 
-    const repository = useMemo(() => {
-        sortRepository.init([{ field: "deletedOn", order: "desc" }]);
-        loadingRepository.init(LoadingEnum);
-
-        const withSortRepo = new TrashBinItemsRepositoryWithSort(sortRepository, itemsRepository);
-        return new TrashBinItemsRepositoryWithLoading(loadingRepository, withSortRepo);
-    }, [itemsRepository, sortRepository, loadingRepository]);
-
     const controllers = useMemo(() => {
-        return useControllers(repository, selectedRepository, sortRepository, metaRepository);
-    }, [repository, sortRepository, metaRepository]);
+        return useControllers(
+            itemsRepository,
+            selectedRepository,
+            sortRepository,
+            metaRepository,
+            searchRepository
+        );
+    }, [itemsRepository, sortRepository, metaRepository, searchRepository]);
 
-    const presenter = new TrashBinPresenter(
-        repository,
+    const presenter = useMemo(() => {
+        return new TrashBinPresenter(
+            itemsRepository,
+            selectedRepository,
+            loadingRepository,
+            metaRepository,
+            sortRepository,
+            searchRepository
+        );
+    }, [
+        itemsRepository,
         selectedRepository,
         loadingRepository,
         metaRepository,
-        sortRepository
-    );
+        sortRepository,
+        searchRepository
+    ]);
 
     useEffect(() => {
         presenter.init();

@@ -5,6 +5,7 @@ export interface TrashBinListQueryVariables {
     sort?: string[];
     limit?: number;
     after?: string;
+    search?: string;
 }
 
 export interface TrashBinMetaResponse {

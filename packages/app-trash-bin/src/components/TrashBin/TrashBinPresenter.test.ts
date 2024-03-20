@@ -9,6 +9,7 @@ import {
 } from "@webiny/app-trash-bin-common";
 import { SelectedItemsRepository, TrashBinItemsRepository } from "~/components/TrashBin/domain";
 import { LoadingRepository, MetaRepository, SortingRepository } from "@webiny/app-utilities";
+import { SearchRepository } from "./domain/SearchRepository";
 
 interface Item {
     id: string;
@@ -110,9 +111,17 @@ describe("TrashBinPresenter", () => {
         const loadingRepo = new LoadingRepository();
         const sortRepo = new SortingRepository();
         const metaRepo = new MetaRepository();
+        const searchRepo = new SearchRepository();
 
-        presenter = new TrashBinPresenter(itemRepo, selectedRepo, loadingRepo, metaRepo, sortRepo);
-        controllers = useControllers(itemRepo, selectedRepo, sortRepo, metaRepo);
+        presenter = new TrashBinPresenter(
+            itemRepo,
+            selectedRepo,
+            loadingRepo,
+            metaRepo,
+            sortRepo,
+            searchRepo
+        );
+        controllers = useControllers(itemRepo, selectedRepo, sortRepo, metaRepo, searchRepo);
     });
 
     it("should create a presenter and list trash bin entries from the gateway", async () => {
