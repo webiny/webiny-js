@@ -10,6 +10,7 @@ import {
     ITrashBinControllers,
     ITrashBinItemsRepository
 } from "../abstractions";
+import { DeleteItemControllerWithMeta } from "~/components/TrashBin/controllers/DeleteItemControllerWithMeta";
 
 export const useControllers = (
     trashBinItemsRepository: ITrashBinItemsRepository,
@@ -29,10 +30,15 @@ export const useControllers = (
 
     const sortTrashBinController = new SortTrashBinController(sortController, sortItemsController);
 
+    const deleteItemControllerWithMeta = new DeleteItemControllerWithMeta(
+        metaRepository,
+        deleteItemController
+    );
+
     return {
         listMoreItems: listMoreItemsController,
         selectItems: selectItemsController,
         sortItems: sortTrashBinController,
-        deleteItem: deleteItemController
+        deleteItem: deleteItemControllerWithMeta
     };
 };
