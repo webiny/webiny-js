@@ -1,14 +1,16 @@
 import { makeAutoObservable } from "mobx";
-import { TrashBinItem } from "@webiny/app-trash-bin-common";
 import { ILoadingRepository } from "@webiny/app-utilities";
-import { ITrashBinRepository } from "~/components/TrashBin/abstractions";
+import { ITrashBinItemsRepository } from "~/components/TrashBin/abstractions";
 import { LoadingEnum } from "~/types";
 
-export class TrashBinRepositoryWithLoading implements ITrashBinRepository {
+export class TrashBinItemsRepositoryWithLoading implements ITrashBinItemsRepository {
     private loadingRepository: ILoadingRepository;
-    private trashBinRepository: ITrashBinRepository;
+    private trashBinRepository: ITrashBinItemsRepository;
 
-    constructor(loadingRepository: ILoadingRepository, trashBinRepository: ITrashBinRepository) {
+    constructor(
+        loadingRepository: ILoadingRepository,
+        trashBinRepository: ITrashBinItemsRepository
+    ) {
         this.loadingRepository = loadingRepository;
         this.trashBinRepository = trashBinRepository;
         makeAutoObservable(this);
@@ -36,14 +38,6 @@ export class TrashBinRepositoryWithLoading implements ITrashBinRepository {
 
     getItems() {
         return this.trashBinRepository.getItems();
-    }
-
-    getSelectedItems() {
-        return this.trashBinRepository.getSelectedItems();
-    }
-
-    async selectItems(items: TrashBinItem[]) {
-        return await this.trashBinRepository.selectItems(items);
     }
 
     private async runCallbackWithLoading<T>(

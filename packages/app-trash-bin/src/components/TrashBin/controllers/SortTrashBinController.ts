@@ -4,16 +4,16 @@ import { ISortController, ISortItemsController } from "../abstractions";
 
 export class SortTrashBinController implements ISortController {
     private sortController: ISortController;
-    private sortEntriesController: ISortItemsController;
+    private sortItemsController: ISortItemsController;
 
-    constructor(sortController: ISortController, sortEntriesController: ISortItemsController) {
+    constructor(sortController: ISortController, sortItemsController: ISortItemsController) {
         this.sortController = sortController;
-        this.sortEntriesController = sortEntriesController;
+        this.sortItemsController = sortItemsController;
         makeAutoObservable(this);
     }
 
     public execute: OnSortingChange = async updaterOrValue => {
         this.sortController.execute(updaterOrValue);
-        await this.sortEntriesController.execute();
+        await this.sortItemsController.execute();
     };
 }

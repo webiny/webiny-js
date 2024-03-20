@@ -20,9 +20,10 @@ import { ListEntriesWithMeta } from "~/components/TrashBin/gateways";
 import { TrashBinPresenter } from "~/components/TrashBin/TrashBinPresenter";
 import { LoadingEnum } from "~/types";
 import {
-    trashBinRepositoryFactory,
-    TrashBinRepositoryWithLoading,
-    TrashBinRepositoryWithSort
+    selectedItemsRepositoryFactory,
+    trashBinItemsRepositoryFactory,
+    TrashBinItemsRepositoryWithLoading,
+    TrashBinItemsRepositoryWithSort
 } from "~/components/TrashBin/domain";
 
 export interface TrashBinProps {
@@ -41,8 +42,8 @@ export const TrashBin = observer((props: TrashBinProps) => {
         return new ListEntriesWithMeta(metaRepository, props.listGateway);
     }, [metaRepository]);
 
-    const entryRepository = useMemo(() => {
-        return trashBinRepositoryFactory.getRepository(
+    const itemsRepository = useMemo(() => {
+        return trashBinItemsRepositoryFactory.getRepository(
             listGateway,
             props.deleteGateway,
             props.itemMapper
@@ -57,20 +58,25 @@ export const TrashBin = observer((props: TrashBinProps) => {
         return loadingRepositoryFactory.getRepository();
     }, []);
 
+    const selectedRepository = useMemo(() => {
+        return selectedItemsRepositoryFactory.getRepository();
+    }, []);
+
     const repository = useMemo(() => {
         sortRepository.init([{ field: "deletedOn", order: "desc" }]);
         loadingRepository.init(LoadingEnum);
 
-        const withSortRepo = new TrashBinRepositoryWithSort(sortRepository, entryRepository);
-        return new TrashBinRepositoryWithLoading(loadingRepository, withSortRepo);
-    }, [entryRepository, sortRepository, loadingRepository]);
+        const withSortRepo = new TrashBinItemsRepositoryWithSort(sortRepository, itemsRepository);
+        return new TrashBinItemsRepositoryWithLoading(loadingRepository, withSortRepo);
+    }, [itemsRepository, sortRepository, loadingRepository]);
 
     const controllers = useMemo(() => {
-        return useControllers(repository, sortRepository, metaRepository);
+        return useControllers(repository, selectedRepository, sortRepository, metaRepository);
     }, [repository, sortRepository, metaRepository]);
 
     const presenter = new TrashBinPresenter(
         repository,
+        selectedRepository,
         loadingRepository,
         metaRepository,
         sortRepository

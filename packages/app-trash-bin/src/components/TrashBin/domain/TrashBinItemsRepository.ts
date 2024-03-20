@@ -7,14 +7,15 @@ import {
     TrashBinItem
 } from "@webiny/app-trash-bin-common";
 import { TrashBinListQueryVariables } from "@webiny/app-trash-bin-common/types";
-import { ITrashBinRepository } from "~/components/TrashBin/abstractions";
+import { ITrashBinItemsRepository } from "~/components/TrashBin/abstractions";
 
-export class TrashBinRepository<TItem extends Record<string, any>> implements ITrashBinRepository {
+export class TrashBinItemsRepository<TItem extends Record<string, any>>
+    implements ITrashBinItemsRepository
+{
     private listGateway: ITrashBinListGateway<TItem>;
     private deleteGateway: ITrashBinDeleteItemGateway;
     private itemMapper: ITrashBinItemMapper<TItem>;
     private items: TrashBinItem[] = [];
-    private selectedItems: TrashBinItem[] = [];
 
     constructor(
         listGateway: ITrashBinListGateway<TItem>,
@@ -48,10 +49,6 @@ export class TrashBinRepository<TItem extends Record<string, any>> implements IT
         return this.items;
     }
 
-    getSelectedItems() {
-        return this.selectedItems;
-    }
-
     async listItems(override: boolean, params?: TrashBinListQueryVariables) {
         const executeParams = params || ({} as TrashBinListQueryVariables);
         const response = await this.listGateway.execute(executeParams);
@@ -65,10 +62,6 @@ export class TrashBinRepository<TItem extends Record<string, any>> implements IT
             const itemsDTO = items.map(entry => TrashBinItem.create(this.itemMapper.toDTO(entry)));
             this.items = override ? itemsDTO : uniqBy([...this.items, ...itemsDTO], "id");
         });
-    }
-
-    async selectItems(items: TrashBinItem[]) {
-        this.selectedItems = items;
     }
 
     async deleteItem(id: string) {

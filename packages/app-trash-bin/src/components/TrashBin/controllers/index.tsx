@@ -5,19 +5,27 @@ import { SelectItemsController } from "./SelectItemsController";
 import { SortController } from "./SortController";
 import { SortItemsController } from "./SortItemsController";
 import { SortTrashBinController } from "./SortTrashBinController";
-import { ITrashBinControllers, ITrashBinRepository } from "../abstractions";
+import {
+    ISelectedItemsRepository,
+    ITrashBinControllers,
+    ITrashBinItemsRepository
+} from "../abstractions";
 
 export const useControllers = (
-    trashBinRepository: ITrashBinRepository,
+    trashBinItemsRepository: ITrashBinItemsRepository,
+    selectedItemsRepository: ISelectedItemsRepository,
     sortRepository: ISortingRepository,
     metaRepository: IMetaRepository
 ): ITrashBinControllers => {
-    const deleteItemController = new DeleteItemController(trashBinRepository);
-    const selectItemsController = new SelectItemsController(trashBinRepository);
-    const sortItemsController = new SortItemsController(trashBinRepository);
+    const deleteItemController = new DeleteItemController(trashBinItemsRepository);
+    const selectItemsController = new SelectItemsController(selectedItemsRepository);
+    const sortItemsController = new SortItemsController(trashBinItemsRepository);
     const sortController = new SortController(sortRepository);
 
-    const listMoreItemsController = new ListMoreItemsController(trashBinRepository, metaRepository);
+    const listMoreItemsController = new ListMoreItemsController(
+        trashBinItemsRepository,
+        metaRepository
+    );
 
     const sortTrashBinController = new SortTrashBinController(sortController, sortItemsController);
 

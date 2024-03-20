@@ -1,10 +1,10 @@
 import { makeAutoObservable } from "mobx";
-import { IDeleteItemController, ITrashBinRepository } from "../abstractions";
+import { IDeleteItemController, ITrashBinItemsRepository } from "../abstractions";
 
 export class DeleteItemController implements IDeleteItemController {
-    private repository: ITrashBinRepository;
+    private repository: ITrashBinItemsRepository;
 
-    constructor(repository: ITrashBinRepository) {
+    constructor(repository: ITrashBinItemsRepository) {
         this.repository = repository;
         makeAutoObservable(this);
     }

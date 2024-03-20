@@ -7,7 +7,7 @@ import {
     ITrashBinItemMapper,
     ITrashBinListGateway
 } from "@webiny/app-trash-bin-common";
-import { TrashBinRepository } from "~/components/TrashBin/domain";
+import { SelectedItemsRepository, TrashBinItemsRepository } from "~/components/TrashBin/domain";
 import { LoadingRepository, MetaRepository, SortingRepository } from "@webiny/app-utilities";
 
 interface Item {
@@ -105,13 +105,14 @@ describe("TrashBinPresenter", () => {
     beforeEach(() => {
         jest.clearAllMocks();
 
-        const itemRepo = new TrashBinRepository(listGateway, deleteItemGateway, itemMapper);
+        const itemRepo = new TrashBinItemsRepository(listGateway, deleteItemGateway, itemMapper);
+        const selectedRepo = new SelectedItemsRepository();
         const loadingRepo = new LoadingRepository();
         const sortRepo = new SortingRepository();
         const metaRepo = new MetaRepository();
 
-        presenter = new TrashBinPresenter(itemRepo, loadingRepo, metaRepo, sortRepo);
-        controllers = useControllers(itemRepo, sortRepo, metaRepo);
+        presenter = new TrashBinPresenter(itemRepo, selectedRepo, loadingRepo, metaRepo, sortRepo);
+        controllers = useControllers(itemRepo, selectedRepo, sortRepo, metaRepo);
     });
 
     it("should create a presenter and list trash bin entries from the gateway", async () => {

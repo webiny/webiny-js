@@ -1,13 +1,13 @@
 import { makeAutoObservable } from "mobx";
 import { IMetaRepository } from "@webiny/app-utilities";
 import { TrashBinListQueryVariables } from "@webiny/app-trash-bin-common/types";
-import { IListMoreItemsController, ITrashBinRepository } from "../abstractions";
+import { IListMoreItemsController, ITrashBinItemsRepository } from "../abstractions";
 
 export class ListMoreItemsController implements IListMoreItemsController {
-    private repository: ITrashBinRepository;
+    private repository: ITrashBinItemsRepository;
     private metaRepository: IMetaRepository;
 
-    constructor(repository: ITrashBinRepository, metaRepository: IMetaRepository) {
+    constructor(repository: ITrashBinItemsRepository, metaRepository: IMetaRepository) {
         this.repository = repository;
         this.metaRepository = metaRepository;
         makeAutoObservable(this);

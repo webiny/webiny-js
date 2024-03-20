@@ -1,13 +1,12 @@
 import { makeAutoObservable } from "mobx";
-import { TrashBinItem } from "@webiny/app-trash-bin-common";
 import { ISortingRepository, SortingMapper } from "@webiny/app-utilities";
-import { ITrashBinRepository } from "~/components/TrashBin/abstractions";
+import { ITrashBinItemsRepository } from "~/components/TrashBin/abstractions";
 
-export class TrashBinRepositoryWithSort implements ITrashBinRepository {
+export class TrashBinItemsRepositoryWithSort implements ITrashBinItemsRepository {
     private sortRepository: ISortingRepository;
-    private trashBinRepository: ITrashBinRepository;
+    private trashBinRepository: ITrashBinItemsRepository;
 
-    constructor(sortRepository: ISortingRepository, trashBinRepository: ITrashBinRepository) {
+    constructor(sortRepository: ISortingRepository, trashBinRepository: ITrashBinItemsRepository) {
         this.sortRepository = sortRepository;
         this.trashBinRepository = trashBinRepository;
         makeAutoObservable(this);
@@ -30,13 +29,5 @@ export class TrashBinRepositoryWithSort implements ITrashBinRepository {
 
     async deleteItem(id: string) {
         return await this.trashBinRepository.deleteItem(id);
-    }
-
-    async selectItems(Items: TrashBinItem[]) {
-        return await this.trashBinRepository.selectItems(Items);
-    }
-
-    getSelectedItems() {
-        return this.trashBinRepository.getSelectedItems();
     }
 }

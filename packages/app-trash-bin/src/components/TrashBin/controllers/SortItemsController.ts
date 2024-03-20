@@ -1,10 +1,10 @@
 import { makeAutoObservable } from "mobx";
-import { ISortItemsController, ITrashBinRepository } from "../abstractions";
+import { ISortItemsController, ITrashBinItemsRepository } from "../abstractions";
 
 export class SortItemsController implements ISortItemsController {
-    private repository: ITrashBinRepository;
+    private repository: ITrashBinItemsRepository;
 
-    constructor(repository: ITrashBinRepository) {
+    constructor(repository: ITrashBinItemsRepository) {
         this.repository = repository;
         makeAutoObservable(this);
     }

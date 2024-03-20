@@ -1,12 +1,12 @@
-import { TrashBinRepository } from "./TrashBinRepository";
+import { TrashBinItemsRepository } from "./TrashBinItemsRepository";
 import {
     ITrashBinDeleteItemGateway,
     ITrashBinItemMapper,
     ITrashBinListGateway
 } from "@webiny/app-trash-bin-common";
 
-export class TrashBinRepositoryFactory<TEntry extends Record<string, any>> {
-    private cache: Map<string, TrashBinRepository<TEntry>> = new Map();
+export class TrashBinItemsRepositoryFactory<TEntry extends Record<string, any>> {
+    private cache: Map<string, TrashBinItemsRepository<TEntry>> = new Map();
 
     getRepository(
         listGateway: ITrashBinListGateway<TEntry>,
@@ -18,11 +18,11 @@ export class TrashBinRepositoryFactory<TEntry extends Record<string, any>> {
         if (!this.cache.has(cacheKey)) {
             this.cache.set(
                 cacheKey,
-                new TrashBinRepository(listGateway, deleteGateway, itemMapper)
+                new TrashBinItemsRepository(listGateway, deleteGateway, itemMapper)
             );
         }
 
-        return this.cache.get(cacheKey) as TrashBinRepository<TEntry>;
+        return this.cache.get(cacheKey) as TrashBinItemsRepository<TEntry>;
     }
 
     private getCacheKey() {
@@ -30,4 +30,4 @@ export class TrashBinRepositoryFactory<TEntry extends Record<string, any>> {
     }
 }
 
-export const trashBinRepositoryFactory = new TrashBinRepositoryFactory();
+export const trashBinItemsRepositoryFactory = new TrashBinItemsRepositoryFactory();
