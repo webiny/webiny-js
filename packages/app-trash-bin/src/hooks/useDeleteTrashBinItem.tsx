@@ -1,15 +1,15 @@
 import React, { useCallback } from "react";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
-import { TrashBinEntryDTO } from "@webiny/app-trash-bin-common";
+import { TrashBinItemDTO } from "@webiny/app-trash-bin-common";
 import { useTrashBin } from "~/hooks/useTrashBin";
 
-interface UseDeleteEntryParams {
-    entry: TrashBinEntryDTO;
+interface UseDeleteItemParams {
+    item: TrashBinItemDTO;
     onAccept?: () => void;
     onCancel?: () => void;
 }
 
-export const useDeleteTrashBinEntry = ({ entry, onAccept, onCancel }: UseDeleteEntryParams) => {
+export const useDeleteTrashBinItem = ({ item, onAccept, onCancel }: UseDeleteItemParams) => {
     const { controllers } = useTrashBin();
     const { showSnackbar } = useSnackbar();
 
@@ -19,24 +19,24 @@ export const useDeleteTrashBinEntry = ({ entry, onAccept, onCancel }: UseDeleteE
             <p>
                 You are about to delete this item and all of its revisions!
                 <br />
-                Are you sure you want to permanently delete <strong>{entry.title}</strong>?
+                Are you sure you want to permanently delete <strong>{item.title}</strong>?
             </p>
         )
     });
 
-    const openDialogDeleteEntry = useCallback(
+    const openDialogDeleteItem = useCallback(
         () =>
             showConfirmation(async () => {
-                await controllers.deleteEntry.execute(entry.id);
+                await controllers.deleteItem.execute(item.id);
 
-                showSnackbar(`${entry.title} was deleted successfully!`);
+                showSnackbar(`${item.title} was deleted successfully!`);
 
                 if (typeof onAccept === "function") {
                     await onAccept();
                 }
             }, onCancel),
-        [entry]
+        [item]
     );
 
-    return { openDialogDeleteEntry };
+    return { openDialogDeleteItem };
 };

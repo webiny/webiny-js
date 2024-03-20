@@ -1,6 +1,6 @@
 import { TrashBinIdentity } from "~/types";
 
-export interface TrashBinEntryDTO {
+export interface TrashBinItemDTO {
     id: string;
     title: string;
     createdBy: TrashBinIdentity;
@@ -9,14 +9,14 @@ export interface TrashBinEntryDTO {
     [key: string]: any;
 }
 
-export class TrashBinEntry {
+export class TrashBinItem {
     public id: string;
     public title: string;
     public createdBy: TrashBinIdentity;
     public deletedOn: string;
     public deletedBy: TrashBinIdentity;
 
-    protected constructor(entry: TrashBinEntryDTO) {
+    protected constructor(entry: TrashBinItemDTO) {
         this.id = entry.id;
         this.title = entry.title;
         this.createdBy = entry.createdBy;
@@ -24,7 +24,7 @@ export class TrashBinEntry {
         this.deletedBy = entry.deletedBy;
     }
 
-    static create(entry: TrashBinEntryDTO) {
-        return new TrashBinEntry(entry);
+    static create(entry: TrashBinItemDTO) {
+        return new TrashBinItem(entry);
     }
 }

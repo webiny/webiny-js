@@ -5,7 +5,7 @@ import { TrashBinListConfig } from "~/configs";
 import { useTrashBin } from "~/hooks";
 import { getEntriesLabel } from "../BulkActions";
 
-export const BulkActionsDeleteEntries = observer(() => {
+export const BulkActionsDeleteItems = observer(() => {
     const { controllers } = useTrashBin();
 
     const { useWorker, useButtons, useDialog } = TrashBinListConfig.Browser.BulkAction;
@@ -25,7 +25,7 @@ export const BulkActionsDeleteEntries = observer(() => {
             execute: async () => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
-                        await controllers.deleteEntry.execute(item.id);
+                        await controllers.deleteItem.execute(item.id);
                         report.success({
                             title: `${item.title}`,
                             message: "Item successfully deleted."

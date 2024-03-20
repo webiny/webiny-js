@@ -1,5 +1,4 @@
 import React from "react";
-import { TrashBinRenderer } from "~/components/TrashBinRenderer";
 import {
     CellActions,
     CellCreatedBy,
@@ -8,8 +7,8 @@ import {
     CellTitle
 } from "~/components/Cells";
 import { TrashBinListConfig } from "~/configs";
-import { DeleteEntryAction } from "~/components/Actions";
-import { BulkActionsDeleteEntries } from "~/components/BulkActions";
+import { DeleteItemAction } from "~/components/Actions";
+import { BulkActionsDeleteItems } from "~/components/BulkActions";
 
 const { Browser } = TrashBinListConfig;
 
@@ -50,8 +49,8 @@ export const TrashBinConfigs = () => {
                     hideable={false}
                     resizable={false}
                 />
-                <Browser.BulkAction name={"delete"} element={<BulkActionsDeleteEntries />} />
-                <Browser.EntryAction name={"delete"} element={<DeleteEntryAction />} />
+                <Browser.BulkAction name={"delete"} element={<BulkActionsDeleteItems />} />
+                <Browser.EntryAction name={"delete"} element={<DeleteItemAction />} />
             </TrashBinListConfig>
         </>
     );

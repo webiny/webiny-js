@@ -3,11 +3,11 @@ import {
     ISortRepository,
     ITrashBinRepository
 } from "@webiny/app-trash-bin-common";
-import { DeleteEntryController } from "./DeleteEntryController";
-import { ListMoreEntriesController } from "./ListMoreEntriesController";
-import { SelectEntriesController } from "./SelectEntriesController";
+import { DeleteItemController } from "./DeleteItemController";
+import { ListMoreItemsController } from "./ListMoreItemsController";
+import { SelectItemsController } from "./SelectItemsController";
 import { SortController } from "./SortController";
-import { SortEntriesController } from "./SortEntriesController";
+import { SortItemsController } from "./SortItemsController";
 import { SortTrashBinController } from "./SortTrashBinController";
 import { ITrashBinControllers } from "../abstractions";
 
@@ -16,25 +16,19 @@ export const useControllers = (
     sortRepository: ISortRepository,
     metaRepository: IMetaRepository
 ): ITrashBinControllers => {
-    const deleteEntryController = new DeleteEntryController(trashBinRepository);
-    const selectEntriesController = new SelectEntriesController(trashBinRepository);
-    const sortEntriesController = new SortEntriesController(trashBinRepository);
+    const deleteItemController = new DeleteItemController(trashBinRepository);
+    const selectItemsController = new SelectItemsController(trashBinRepository);
+    const sortItemsController = new SortItemsController(trashBinRepository);
     const sortController = new SortController(sortRepository);
 
-    const listMoreEntriesController = new ListMoreEntriesController(
-        trashBinRepository,
-        metaRepository
-    );
+    const listMoreItemsController = new ListMoreItemsController(trashBinRepository, metaRepository);
 
-    const sortTrashBinController = new SortTrashBinController(
-        sortController,
-        sortEntriesController
-    );
+    const sortTrashBinController = new SortTrashBinController(sortController, sortItemsController);
 
     return {
-        listMoreEntries: listMoreEntriesController,
-        selectEntries: selectEntriesController,
-        sortEntries: sortTrashBinController,
-        deleteEntry: deleteEntryController
+        listMoreItems: listMoreItemsController,
+        selectItems: selectItemsController,
+        sortItems: sortTrashBinController,
+        deleteItem: deleteItemController
     };
 };

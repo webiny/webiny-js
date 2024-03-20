@@ -1,34 +1,34 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import uniqBy from "lodash/uniqBy";
 import {
-    ITrashBinDeleteEntryGateway,
-    ITrashBinEntryMapper,
+    ITrashBinDeleteItemGateway,
+    ITrashBinItemMapper,
     ITrashBinListGateway,
     ITrashBinRepository
 } from "~/abstractions";
-import { TrashBinEntry } from "./TrashBinEntry";
+import { TrashBinItem } from "./TrashBinItem";
 import { TrashBinListQueryVariables } from "~/types";
 
-export class TrashBinRepository<TEntry extends Record<string, any>> implements ITrashBinRepository {
-    private listGateway: ITrashBinListGateway<TEntry>;
-    private deleteGateway: ITrashBinDeleteEntryGateway;
-    private entryMapper: ITrashBinEntryMapper<TEntry>;
-    private entries: TrashBinEntry[] = [];
-    private selectedEntries: TrashBinEntry[] = [];
+export class TrashBinRepository<TItem extends Record<string, any>> implements ITrashBinRepository {
+    private listGateway: ITrashBinListGateway<TItem>;
+    private deleteGateway: ITrashBinDeleteItemGateway;
+    private itemMapper: ITrashBinItemMapper<TItem>;
+    private items: TrashBinItem[] = [];
+    private selectedItems: TrashBinItem[] = [];
 
     constructor(
-        listGateway: ITrashBinListGateway<TEntry>,
-        deleteGateway: ITrashBinDeleteEntryGateway,
-        entryMapper: ITrashBinEntryMapper<TEntry>
+        listGateway: ITrashBinListGateway<TItem>,
+        deleteGateway: ITrashBinDeleteItemGateway,
+        entryMapper: ITrashBinItemMapper<TItem>
     ) {
         this.listGateway = listGateway;
         this.deleteGateway = deleteGateway;
-        this.entryMapper = entryMapper;
+        this.itemMapper = entryMapper;
         makeAutoObservable(this);
     }
 
     async init(params = {}) {
-        if (this.entries.length > 0) {
+        if (this.items.length > 0) {
             return;
         }
 
@@ -39,22 +39,20 @@ export class TrashBinRepository<TEntry extends Record<string, any>> implements I
         }
 
         runInAction(() => {
-            const [entries] = response;
-            this.entries = entries.map(entry =>
-                TrashBinEntry.create(this.entryMapper.toDTO(entry))
-            );
+            const [items] = response;
+            this.items = items.map(item => TrashBinItem.create(this.itemMapper.toDTO(item)));
         });
     }
 
-    getEntries() {
-        return this.entries;
+    getItems() {
+        return this.items;
     }
 
-    getSelectedEntries() {
-        return this.selectedEntries;
+    getSelectedItems() {
+        return this.selectedItems;
     }
 
-    async listEntries(override: boolean, params?: TrashBinListQueryVariables) {
+    async listItems(override: boolean, params?: TrashBinListQueryVariables) {
         const executeParams = params || ({} as TrashBinListQueryVariables);
         const response = await this.listGateway.execute(executeParams);
 
@@ -63,24 +61,22 @@ export class TrashBinRepository<TEntry extends Record<string, any>> implements I
         }
 
         runInAction(() => {
-            const [entries] = response;
-            const entriesDTO = entries.map(entry =>
-                TrashBinEntry.create(this.entryMapper.toDTO(entry))
-            );
-            this.entries = override ? entriesDTO : uniqBy([...this.entries, ...entriesDTO], "id");
+            const [items] = response;
+            const itemsDTO = items.map(entry => TrashBinItem.create(this.itemMapper.toDTO(entry)));
+            this.items = override ? itemsDTO : uniqBy([...this.items, ...itemsDTO], "id");
         });
     }
 
-    async selectEntries(entries: TrashBinEntry[]) {
-        this.selectedEntries = entries;
+    async selectItems(items: TrashBinItem[]) {
+        this.selectedItems = items;
     }
 
-    async deleteEntry(id: string) {
+    async deleteItem(id: string) {
         const response = await this.deleteGateway.execute(id);
 
         if (response) {
             runInAction(() => {
-                this.entries = this.entries.filter(entry => entry.id !== id);
+                this.items = this.items.filter(item => item.id !== id);
             });
         }
     }

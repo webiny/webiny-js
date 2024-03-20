@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { ILoadingRepository, ITrashBinRepository } from "~/abstractions";
-import { TrashBinEntry } from "~/domain/TrashBinEntry";
+import { TrashBinItem } from "~/domain/TrashBinItem";
 import { LoadingEnum } from "~/types";
 
 export class TrashBinRepositoryWithLoading implements ITrashBinRepository {
@@ -18,31 +18,31 @@ export class TrashBinRepositoryWithLoading implements ITrashBinRepository {
         await this.runCallbackWithLoading(this.trashBinRepository.init(), LoadingEnum.init);
     }
 
-    async listEntries(override: boolean, params = {}) {
+    async listItems(override: boolean, params = {}) {
         const loadingKey = override ? LoadingEnum.list : LoadingEnum.listMore;
         await this.runCallbackWithLoading(
-            this.trashBinRepository.listEntries(override, params),
+            this.trashBinRepository.listItems(override, params),
             loadingKey
         );
     }
 
-    async deleteEntry(id: string) {
+    async deleteItem(id: string) {
         return await this.runCallbackWithLoading(
-            this.trashBinRepository.deleteEntry(id),
+            this.trashBinRepository.deleteItem(id),
             LoadingEnum.delete
         );
     }
 
-    getEntries() {
-        return this.trashBinRepository.getEntries();
+    getItems() {
+        return this.trashBinRepository.getItems();
     }
 
-    getSelectedEntries() {
-        return this.trashBinRepository.getSelectedEntries();
+    getSelectedItems() {
+        return this.trashBinRepository.getSelectedItems();
     }
 
-    async selectEntries(entries: TrashBinEntry[]) {
-        return await this.trashBinRepository.selectEntries(entries);
+    async selectItems(items: TrashBinItem[]) {
+        return await this.trashBinRepository.selectItems(items);
     }
 
     private async runCallbackWithLoading<T>(

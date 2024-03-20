@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { ISortRepository, ITrashBinRepository } from "~/abstractions";
 import { SortMapper } from "~/domain/SortMapper";
-import { TrashBinEntry } from "~/domain/TrashBinEntry";
+import { TrashBinItem } from "~/domain/TrashBinItem";
 
 export class TrashBinRepositoryWithSort implements ITrashBinRepository {
     private sortRepository: ISortRepository;
@@ -18,25 +18,25 @@ export class TrashBinRepositoryWithSort implements ITrashBinRepository {
         await this.trashBinRepository.init({ sort });
     }
 
-    getEntries() {
-        const entries = this.trashBinRepository.getEntries();
-        return this.sortRepository.sortEntries(entries);
+    getItems() {
+        const Items = this.trashBinRepository.getItems();
+        return this.sortRepository.sortItems(Items);
     }
 
-    async listEntries(override: boolean, params = {}) {
+    async listItems(override: boolean, params = {}) {
         const sort = this.sortRepository.get().map(sort => SortMapper.fromDTOtoDb(sort));
-        return await this.trashBinRepository.listEntries(override, { sort, ...params });
+        return await this.trashBinRepository.listItems(override, { sort, ...params });
     }
 
-    async deleteEntry(id: string) {
-        return await this.trashBinRepository.deleteEntry(id);
+    async deleteItem(id: string) {
+        return await this.trashBinRepository.deleteItem(id);
     }
 
-    async selectEntries(entries: TrashBinEntry[]) {
-        return await this.trashBinRepository.selectEntries(entries);
+    async selectItems(Items: TrashBinItem[]) {
+        return await this.trashBinRepository.selectItems(Items);
     }
 
-    getSelectedEntries() {
-        return this.trashBinRepository.getSelectedEntries();
+    getSelectedItems() {
+        return this.trashBinRepository.getSelectedItems();
     }
 }

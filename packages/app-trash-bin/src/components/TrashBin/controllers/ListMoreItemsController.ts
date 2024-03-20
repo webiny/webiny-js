@@ -1,9 +1,9 @@
 import { makeAutoObservable } from "mobx";
 import { IMetaRepository, ITrashBinRepository } from "@webiny/app-trash-bin-common";
 import { TrashBinListQueryVariables } from "@webiny/app-trash-bin-common/types";
-import { IListMoreEntriesController } from "../abstractions";
+import { IListMoreItemsController } from "../abstractions";
 
-export class ListMoreEntriesController implements IListMoreEntriesController {
+export class ListMoreItemsController implements IListMoreItemsController {
     private repository: ITrashBinRepository;
     private metaRepository: IMetaRepository;
 
@@ -17,7 +17,7 @@ export class ListMoreEntriesController implements IListMoreEntriesController {
         const { hasMoreItems, cursor } = this.metaRepository.get();
 
         if (hasMoreItems && cursor) {
-            return await this.repository.listEntries(false, { ...params, after: cursor });
+            return await this.repository.listItems(false, { ...params, after: cursor });
         }
     }
 }

@@ -19,7 +19,7 @@ interface TrashBinOverlayProps {
 export const TrashBinOverlay = (props: TrashBinOverlayProps) => {
     const onTableScroll = debounce(async ({ scrollFrame }) => {
         if (scrollFrame.top > 0.8) {
-            await props.controllers.listMoreEntries.execute();
+            await props.controllers.listMoreItems.execute();
         }
     }, 200);
 

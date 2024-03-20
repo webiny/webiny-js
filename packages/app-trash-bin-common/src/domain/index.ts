@@ -8,7 +8,7 @@ export * from "./Sort";
 export * from "./SortMapper";
 export * from "./SortRepository";
 export * from "./SortRepositoryFactory";
-export * from "./TrashBinEntry";
+export * from "./TrashBinItem";
 export * from "./TrashBinRepository";
 export * from "./TrashBinRepositoryFactory";
 export * from "./TrashBinRepositoryWithLoading";

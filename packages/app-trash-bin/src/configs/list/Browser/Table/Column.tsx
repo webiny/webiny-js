@@ -1,7 +1,7 @@
 import React from "react";
 import { CompositionScope } from "@webiny/react-composition";
 import { AcoConfig, TableColumnConfig as ColumnConfig } from "@webiny/app-aco";
-import { TrashBinEntryDTO } from "@webiny/app-trash-bin-common";
+import { TrashBinItemDTO } from "@webiny/app-trash-bin-common";
 
 const { Table } = AcoConfig;
 
@@ -20,6 +20,6 @@ const BaseColumn = (props: ColumnProps) => {
 };
 
 export const Column = Object.assign(BaseColumn, {
-    useTableRow: Table.Column.useTableRow<TrashBinEntryDTO>,
+    useTableRow: Table.Column.useTableRow<TrashBinItemDTO>,
     isFolderRow: Table.Column.isFolderRow
 });

@@ -1,6 +1,6 @@
 import React from "react";
 import { Table as AcoTable } from "@webiny/app-aco";
-import { TrashBinEntryDTO, TrashBinPresenterViewModel } from "@webiny/app-trash-bin-common";
+import { TrashBinItemDTO, TrashBinPresenterViewModel } from "@webiny/app-trash-bin-common";
 import { ITrashBinControllers } from "~/components/TrashBin/abstractions";
 
 export interface TableProps {
@@ -10,12 +10,12 @@ export interface TableProps {
 
 export const Table = (props: TableProps) => {
     return (
-        <AcoTable<TrashBinEntryDTO>
+        <AcoTable<TrashBinItemDTO>
             data={props.vm.entries}
             loading={props.vm.loading["LIST"] || props.vm.loading["INIT"]}
-            onSelectRow={entries => props.controllers.selectEntries.execute(entries)}
+            onSelectRow={entries => props.controllers.selectItems.execute(entries)}
             sorting={props.vm.sorting}
-            onSortingChange={sort => props.controllers.sortEntries.execute(sort)}
+            onSortingChange={sort => props.controllers.sortItems.execute(sort)}
             selected={props.vm.selectedEntries}
             namespace={"trash-bin"}
         />

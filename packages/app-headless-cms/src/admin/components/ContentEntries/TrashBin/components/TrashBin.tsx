@@ -2,9 +2,9 @@ import React, { useMemo } from "react";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { useApolloClient, useModel } from "~/admin/hooks";
 import {
-    TrashBinDeleteEntryGraphQLGateway,
+    TrashBinDeleteItemGraphQLGateway,
     TrashBinListGraphQLGateway,
-    TrashBinEntryMapper
+    TrashBinItemMapper
 } from "../adapters";
 
 import { TrashBin as BaseTrashBin } from "@webiny/app-admin";
@@ -18,11 +18,11 @@ export const TrashBin = () => {
     }, [client, model]);
 
     const deleteGateway = useMemo(() => {
-        return new TrashBinDeleteEntryGraphQLGateway(client, model);
+        return new TrashBinDeleteItemGraphQLGateway(client, model);
     }, [client, model]);
 
-    const entryMapper = useMemo(() => {
-        return new TrashBinEntryMapper();
+    const itemMapper = useMemo(() => {
+        return new TrashBinItemMapper();
     }, []);
 
     return (
@@ -32,7 +32,7 @@ export const TrashBin = () => {
             }}
             listGateway={listGateway}
             deleteGateway={deleteGateway}
-            entryMapper={entryMapper}
+            itemMapper={itemMapper}
         />
     );
 };

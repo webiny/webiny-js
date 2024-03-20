@@ -3,10 +3,9 @@ import { observer } from "mobx-react-lite";
 import { AcoWithConfig } from "@webiny/app-aco";
 import { CompositionScope } from "@webiny/app-admin";
 import {
-    ITrashBinDeleteEntryGateway,
-    ITrashBinEntryMapper,
+    ITrashBinDeleteItemGateway,
+    ITrashBinItemMapper,
     ITrashBinListGateway,
-    ITrashBinRepository,
     loadingRepositoryFactory,
     sortRepositoryFactory,
     trashBinRepositoryFactory,
@@ -23,10 +22,9 @@ import { TrashBinPresenter } from "~/components/TrashBin/TrashBinPresenter";
 import { LoadingEnum } from "~/types";
 
 export interface TrashBinProps {
-    repository: ITrashBinRepository;
     listGateway: ITrashBinListGateway<any>;
-    deleteGateway: ITrashBinDeleteEntryGateway;
-    entryMapper: ITrashBinEntryMapper<any>;
+    deleteGateway: ITrashBinDeleteItemGateway;
+    itemMapper: ITrashBinItemMapper<any>;
     onClose: () => void;
 }
 
@@ -43,7 +41,7 @@ export const TrashBin = observer((props: TrashBinProps) => {
         return trashBinRepositoryFactory.getRepository(
             listGateway,
             props.deleteGateway,
-            props.entryMapper
+            props.itemMapper
         );
     }, [listGateway]);
 

@@ -1,5 +1,5 @@
 import { TrashBinListQueryVariables, TrashBinMetaResponse } from "~/types";
 
-export interface ITrashBinListGateway<TEntry> {
-    execute: (params: TrashBinListQueryVariables) => Promise<[TEntry[], TrashBinMetaResponse]>;
+export interface ITrashBinListGateway<TItem> {
+    execute: (params: TrashBinListQueryVariables) => Promise<[TItem[], TrashBinMetaResponse]>;
 }

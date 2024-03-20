@@ -1,11 +1,11 @@
-import { IDeleteEntryController } from "./IDeleteEntryController";
-import { IListMoreEntriesController } from "./IListMoreEntriesController";
-import { ISelectEntriesController } from "./ISelectEntriesController";
+import { IDeleteItemController } from "./IDeleteItemController";
+import { IListMoreItemsController } from "./IListMoreItemsController";
+import { ISelectItemsController } from "./ISelectItemsController";
 import { ISortController } from "./ISortController";
 
 export interface ITrashBinControllers {
-    deleteEntry: IDeleteEntryController;
-    listMoreEntries: IListMoreEntriesController;
-    selectEntries: ISelectEntriesController;
-    sortEntries: ISortController;
+    deleteItem: IDeleteItemController;
+    listMoreItems: IListMoreItemsController;
+    selectItems: ISelectItemsController;
+    sortItems: ISortController;
 }

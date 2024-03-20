@@ -1,11 +1,11 @@
-import { TrashBinEntry } from "~/domain";
+import { TrashBinItem } from "~/domain";
 import { TrashBinListQueryVariables } from "~/types";
 
 export interface ITrashBinRepository {
     init: (params?: TrashBinListQueryVariables) => Promise<void>;
-    listEntries: (override: boolean, params?: TrashBinListQueryVariables) => Promise<void>;
-    selectEntries: (entries: TrashBinEntry[]) => Promise<void>;
-    deleteEntry: (id: string) => Promise<void>;
-    getSelectedEntries: () => TrashBinEntry[];
-    getEntries: () => TrashBinEntry[];
+    listItems: (override: boolean, params?: TrashBinListQueryVariables) => Promise<void>;
+    selectItems: (items: TrashBinItem[]) => Promise<void>;
+    deleteItem: (id: string) => Promise<void>;
+    getSelectedItems: () => TrashBinItem[];
+    getItems: () => TrashBinItem[];
 }

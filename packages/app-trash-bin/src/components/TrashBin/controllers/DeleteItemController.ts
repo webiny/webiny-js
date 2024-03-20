@@ -1,8 +1,8 @@
 import { makeAutoObservable } from "mobx";
 import { ITrashBinRepository } from "@webiny/app-trash-bin-common";
-import { ISortEntriesController } from "../abstractions";
+import { IDeleteItemController } from "../abstractions";
 
-export class SortEntriesController implements ISortEntriesController {
+export class DeleteItemController implements IDeleteItemController {
     private repository: ITrashBinRepository;
 
     constructor(repository: ITrashBinRepository) {
@@ -10,7 +10,7 @@ export class SortEntriesController implements ISortEntriesController {
         makeAutoObservable(this);
     }
 
-    async execute() {
-        return await this.repository.listEntries(true);
+    async execute(id: string) {
+        return await this.repository.deleteItem(id);
     }
 }

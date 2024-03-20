@@ -23,9 +23,9 @@ export class SortRepository implements ISortRepository {
         this.sorts = this.mapSortsDTOToSorts(sorts);
     }
 
-    sortEntries<T>(entries: T[]): T[] {
+    sortItems<T>(items: T[]): T[] {
         return orderBy(
-            entries,
+            items,
             this.sorts.map(sort => sort.field),
             this.sorts.map(sort => sort.order)
         );

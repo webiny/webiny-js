@@ -1,9 +1,9 @@
-import { ColumnSort, TrashBinEntryDTO } from "@webiny/app-trash-bin-common";
+import { ColumnSort, TrashBinItemDTO } from "@webiny/app-trash-bin-common";
 import { TrashBinMetaResponse } from "@webiny/app-trash-bin-common/types";
 
 export interface TrashBinPresenterViewModel {
-    entries: TrashBinEntryDTO[];
-    selectedEntries: TrashBinEntryDTO[];
+    items: TrashBinItemDTO[];
+    selectedItems: TrashBinItemDTO[];
     sorting: ColumnSort[];
     loading: Record<string, boolean>;
     meta: TrashBinMetaResponse;

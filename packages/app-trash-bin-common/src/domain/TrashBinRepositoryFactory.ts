@@ -1,7 +1,7 @@
 import { TrashBinRepository } from "./TrashBinRepository";
 import {
-    ITrashBinDeleteEntryGateway,
-    ITrashBinEntryMapper,
+    ITrashBinDeleteItemGateway,
+    ITrashBinItemMapper,
     ITrashBinListGateway
 } from "~/abstractions";
 
@@ -10,15 +10,15 @@ export class TrashBinRepositoryFactory<TEntry extends Record<string, any>> {
 
     getRepository(
         listGateway: ITrashBinListGateway<TEntry>,
-        deleteGateway: ITrashBinDeleteEntryGateway,
-        entryMapper: ITrashBinEntryMapper<TEntry>
+        deleteGateway: ITrashBinDeleteItemGateway,
+        itemMapper: ITrashBinItemMapper<TEntry>
     ) {
         const cacheKey = this.getCacheKey();
 
         if (!this.cache.has(cacheKey)) {
             this.cache.set(
                 cacheKey,
-                new TrashBinRepository(listGateway, deleteGateway, entryMapper)
+                new TrashBinRepository(listGateway, deleteGateway, itemMapper)
             );
         }
 

@@ -1,7 +1,7 @@
-import { ITrashBinEntryMapper, TrashBinEntry } from "@webiny/app-trash-bin-common";
+import { ITrashBinItemMapper, TrashBinItem } from "@webiny/app-trash-bin-common";
 
-export class TrashBinEntryMapper implements ITrashBinEntryMapper<TrashBinEntry> {
-    toDTO(data: TrashBinEntry) {
+export class TrashBinItemMapper implements ITrashBinItemMapper<TrashBinItem> {
+    toDTO(data: TrashBinItem) {
         return {
             id: data.id,
             $selectable: true,

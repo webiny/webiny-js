@@ -1,3 +1,3 @@
 export * from "./TrashBinListGraphQLGateway";
-export * from "./TrashBinDeleteEntryGraphQLGateway";
-export * from "./TrashBinEntryMapper";
+export * from "./TrashBinDeleteItemGraphQLGateway";
+export * from "./TrashBinItemMapper";

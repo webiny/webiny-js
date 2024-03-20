@@ -30,10 +30,7 @@ export const BulkActions = () => {
                     <Typography use={"headline6"}>{headline}</Typography>
                     <Buttons actions={browser.bulkActions} />
                 </ButtonsContainer>
-                <IconButton
-                    icon={<Close />}
-                    onClick={() => controllers.selectEntries.execute([])}
-                />
+                <IconButton icon={<Close />} onClick={() => controllers.selectItems.execute([])} />
             </BulkActionsInner>
         </BulkActionsContainer>
     );

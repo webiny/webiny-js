@@ -1,8 +1,8 @@
-import { TrashBinEntryDTO, ITrashBinEntryMapper } from "@webiny/app-trash-bin-common";
+import { TrashBinItemDTO, ITrashBinItemMapper } from "@webiny/app-trash-bin-common";
 import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
 
-export class TrashBinEntryMapper implements ITrashBinEntryMapper<CmsContentEntry> {
-    toDTO(data: CmsContentEntry): TrashBinEntryDTO {
+export class TrashBinItemMapper implements ITrashBinItemMapper<CmsContentEntry> {
+    toDTO(data: CmsContentEntry): TrashBinItemDTO {
         return {
             id: data.entryId,
             title: data.meta.title,

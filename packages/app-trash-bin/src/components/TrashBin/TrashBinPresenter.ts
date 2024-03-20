@@ -3,21 +3,21 @@ import {
     ILoadingRepository,
     IMetaRepository,
     ISortRepository,
-    ITrashBinEntryMapper,
+    ITrashBinItemMapper,
     ITrashBinPresenter,
     ITrashBinRepository,
     MetaMapper,
     SortMapper,
-    TrashBinEntry
+    TrashBinItem
 } from "@webiny/app-trash-bin-common";
-import { TrashBinEntryMapper } from "~/domain";
+import { TrashBinItemMapper } from "~/domain";
 
 export class TrashBinPresenter implements ITrashBinPresenter {
     private itemsRepository: ITrashBinRepository;
     private loadingRepository: ILoadingRepository;
     private metaRepository: IMetaRepository;
     private sortingRepository: ISortRepository;
-    private entryMapper: ITrashBinEntryMapper<TrashBinEntry>;
+    private itemMapper: ITrashBinItemMapper<TrashBinItem>;
 
     constructor(
         itemsRepository: ITrashBinRepository,
@@ -29,7 +29,7 @@ export class TrashBinPresenter implements ITrashBinPresenter {
         this.loadingRepository = loadingRepository;
         this.metaRepository = metaRepository;
         this.sortingRepository = sortingRepository;
-        this.entryMapper = new TrashBinEntryMapper();
+        this.itemMapper = new TrashBinItemMapper();
         makeAutoObservable(this);
     }
 
@@ -39,15 +39,15 @@ export class TrashBinPresenter implements ITrashBinPresenter {
 
     get vm() {
         return {
-            entries: this.mapEntriesToDTOs(this.itemsRepository.getEntries()),
-            selectedEntries: this.mapEntriesToDTOs(this.itemsRepository.getSelectedEntries()),
+            entries: this.mapItemsToDTOs(this.itemsRepository.getItems()),
+            selectedEntries: this.mapItemsToDTOs(this.itemsRepository.getSelectedItems()),
             meta: MetaMapper.toDto(this.metaRepository.get()),
             sorting: this.sortingRepository.get().map(sort => SortMapper.fromDTOtoColumn(sort)),
             loading: this.loadingRepository.get()
         };
     }
 
-    private mapEntriesToDTOs(entries: TrashBinEntry[]) {
-        return entries.map(entry => this.entryMapper.toDTO(entry));
+    private mapItemsToDTOs(items: TrashBinItem[]) {
+        return items.map(item => this.itemMapper.toDTO(item));
     }
 }

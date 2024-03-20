@@ -1,1 +1,1 @@
-export * from "./TrashBinEntryMapper";
+export * from "./TrashBinItemMapper";

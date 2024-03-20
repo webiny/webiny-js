@@ -1,9 +1,9 @@
 import { TrashBinPresenter } from "./TrashBinPresenter";
 import {
     ITrashBinListGateway,
-    ITrashBinDeleteEntryGateway,
+    ITrashBinDeleteItemGateway,
     ITrashBinPresenter,
-    ITrashBinEntryMapper,
+    ITrashBinItemMapper,
     TrashBinRepository,
     SortRepository,
     LoadingRepository,
@@ -13,7 +13,7 @@ import { TrashBinIdentity } from "@webiny/app-trash-bin-common/types";
 import { useControllers } from "~/components/TrashBin/controllers";
 import { ITrashBinControllers } from "~/components/TrashBin/abstractions";
 
-interface Entry {
+interface Item {
     id: string;
     title: string;
     createdBy: TrashBinIdentity;
@@ -36,18 +36,18 @@ const identity2: TrashBinIdentity = {
 
 const createBinListGateway = ({
     execute
-}: ITrashBinListGateway<Entry>): ITrashBinListGateway<Entry> => ({
+}: ITrashBinListGateway<Item>): ITrashBinListGateway<Item> => ({
     execute
 });
 
-const createBinDeleteEntryGateway = ({
+const createBinDeleteItemGateway = ({
     execute
-}: ITrashBinDeleteEntryGateway): ITrashBinDeleteEntryGateway => ({
+}: ITrashBinDeleteItemGateway): ITrashBinDeleteItemGateway => ({
     execute
 });
 
-class CustomEntryMapper implements ITrashBinEntryMapper<Entry> {
-    toDTO(data: Entry) {
+class CustomItemMapper implements ITrashBinItemMapper<Item> {
+    toDTO(data: Item) {
         return {
             id: data.id,
             title: data.title,
@@ -58,27 +58,27 @@ class CustomEntryMapper implements ITrashBinEntryMapper<Entry> {
     }
 }
 describe("TrashBinPresenter", () => {
-    const entry1: Entry = {
-        id: "entry-1",
-        title: "Entry 1",
+    const item1: Item = {
+        id: "item-1",
+        title: "Item 1",
         createdBy: identity1,
         deletedBy: identity2,
         deletedOn: new Date().toString(),
         custom: "any custom data"
     };
 
-    const entry2: Entry = {
-        id: "entry-2",
-        title: "Entry 2",
+    const item2: Item = {
+        id: "item-2",
+        title: "Item 2",
         createdBy: identity1,
         deletedBy: identity1,
         deletedOn: new Date().toString(),
         custom: "any custom data"
     };
 
-    const entry3: Entry = {
-        id: "entry-3",
-        title: "Entry 3",
+    const item3: Item = {
+        id: "item-3",
+        title: "Item 3",
         createdBy: identity2,
         deletedBy: identity2,
         deletedOn: new Date().toString(),
@@ -88,19 +88,19 @@ describe("TrashBinPresenter", () => {
     const listGateway = createBinListGateway({
         execute: jest.fn().mockImplementation(() => {
             return Promise.resolve([
-                [entry1, entry2, entry3],
+                [item1, item2, item3],
                 { totalCount: 3, cursor: null, hasMoreItems: false }
             ]);
         })
     });
 
-    const deleteEntryGateway = createBinDeleteEntryGateway({
+    const deleteItemGateway = createBinDeleteItemGateway({
         execute: jest.fn().mockImplementation(() => {
             return Promise.resolve(true);
         })
     });
 
-    const entryMapper = new CustomEntryMapper();
+    const itemMapper = new CustomItemMapper();
 
     let presenter: ITrashBinPresenter;
     let controllers: ITrashBinControllers;
@@ -108,13 +108,13 @@ describe("TrashBinPresenter", () => {
     beforeEach(() => {
         jest.clearAllMocks();
 
-        const entryRepo = new TrashBinRepository(listGateway, deleteEntryGateway, entryMapper);
+        const itemRepo = new TrashBinRepository(listGateway, deleteItemGateway, itemMapper);
         const loadingRepo = new LoadingRepository();
         const sortRepo = new SortRepository();
         const metaRepo = new MetaRepository();
 
-        presenter = new TrashBinPresenter(entryRepo, loadingRepo, metaRepo, sortRepo);
-        controllers = useControllers(entryRepo, sortRepo, metaRepo);
+        presenter = new TrashBinPresenter(itemRepo, loadingRepo, metaRepo, sortRepo);
+        controllers = useControllers(itemRepo, sortRepo, metaRepo);
     });
 
     it("should create a presenter and list trash bin entries from the gateway", async () => {
@@ -132,25 +132,25 @@ describe("TrashBinPresenter", () => {
         expect(presenter.vm).toMatchObject({
             entries: [
                 {
-                    id: "entry-1",
+                    id: "item-1",
                     $selectable: true,
-                    title: "Entry 1",
+                    title: "Item 1",
                     createdBy: identity1,
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
                 },
                 {
-                    id: "entry-2",
+                    id: "item-2",
                     $selectable: true,
-                    title: "Entry 2",
+                    title: "Item 2",
                     createdBy: identity1,
                     deletedBy: identity1,
                     deletedOn: expect.any(String)
                 },
                 {
-                    id: "entry-3",
+                    id: "item-3",
                     $selectable: true,
-                    title: "Entry 3",
+                    title: "Item 3",
                     createdBy: identity2,
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
@@ -159,7 +159,7 @@ describe("TrashBinPresenter", () => {
         });
     });
 
-    it("should delete an entry, removing it from the list", async () => {
+    it("should delete an item, removing it from the list", async () => {
         // let's load some entries from the gateway
         await presenter.init();
 
@@ -168,25 +168,25 @@ describe("TrashBinPresenter", () => {
         expect(presenter.vm).toMatchObject({
             entries: [
                 {
-                    id: "entry-1",
+                    id: "item-1",
                     $selectable: true,
-                    title: "Entry 1",
+                    title: "Item 1",
                     createdBy: identity1,
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
                 },
                 {
-                    id: "entry-2",
+                    id: "item-2",
                     $selectable: true,
-                    title: "Entry 2",
+                    title: "Item 2",
                     createdBy: identity1,
                     deletedBy: identity1,
                     deletedOn: expect.any(String)
                 },
                 {
-                    id: "entry-3",
+                    id: "item-3",
                     $selectable: true,
-                    title: "Entry 3",
+                    title: "Item 3",
                     createdBy: identity2,
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
@@ -194,25 +194,25 @@ describe("TrashBinPresenter", () => {
             ]
         });
 
-        await controllers.deleteEntry.execute(entry1.id);
+        await controllers.deleteItem.execute(item1.id);
 
-        expect(deleteEntryGateway.execute).toHaveBeenCalledTimes(1);
-        expect(deleteEntryGateway.execute).toHaveBeenCalledWith(entry1.id);
+        expect(deleteItemGateway.execute).toHaveBeenCalledTimes(1);
+        expect(deleteItemGateway.execute).toHaveBeenCalledWith(item1.id);
 
         expect(presenter.vm).toMatchObject({
             entries: [
                 {
-                    id: "entry-2",
+                    id: "item-2",
                     $selectable: true,
-                    title: "Entry 2",
+                    title: "Item 2",
                     createdBy: identity1,
                     deletedBy: identity1,
                     deletedOn: expect.any(String)
                 },
                 {
-                    id: "entry-3",
+                    id: "item-3",
                     $selectable: true,
-                    title: "Entry 3",
+                    title: "Item 3",
                     createdBy: identity2,
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
