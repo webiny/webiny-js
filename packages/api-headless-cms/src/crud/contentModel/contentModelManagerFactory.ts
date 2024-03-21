@@ -2,22 +2,22 @@ import { CmsModel, CmsContext, ModelManagerPlugin, CmsModelManager } from "~/typ
 
 const defaultName = "content-model-manager-default";
 
-export const contentModelManagerFactory = async (
+export const contentModelManagerFactory = async <T>(
     context: CmsContext,
     model: CmsModel
-): Promise<CmsModelManager> => {
+): Promise<CmsModelManager<T>> => {
     const pluginsByType = context.plugins
         .byType<ModelManagerPlugin>("cms-content-model-manager")
         .reverse();
     for (const plugin of pluginsByType) {
         const target = Array.isArray(plugin.modelId) ? plugin.modelId : [plugin.modelId];
         if (target.includes(model.modelId) === true && plugin.name !== defaultName) {
-            return await plugin.create(context, model);
+            return await plugin.create<T>(context, model);
         }
     }
     const plugin = pluginsByType.find(plugin => plugin.name === defaultName);
     if (!plugin) {
         throw new Error("There is no default plugin to create CmsModelManager");
     }
-    return await plugin.create(context, model);
+    return await plugin.create<T>(context, model);
 };

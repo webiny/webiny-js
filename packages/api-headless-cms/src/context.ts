@@ -11,6 +11,7 @@ import { StorageOperationsCmsModelPlugin } from "~/plugins";
 import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
 import { createExportCrud } from "~/export";
 import { createImportCrud } from "~/export/crud/importing";
+import { createLockingMechanismCrud } from "~/lockingMechanism/crud";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -118,7 +119,10 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 },
                 importing: {
                     ...createImportCrud(context)
-                }
+                },
+                locking: createLockingMechanismCrud({
+                    context
+                })
             };
 
             if (!storageOperations.init) {
