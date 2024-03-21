@@ -65,11 +65,11 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
     };
 
     const managers = new Map<string, CmsModelManager>();
-    const updateManager = async (
+    const updateManager = async <T>(
         context: CmsContext,
         model: CmsModel
-    ): Promise<CmsModelManager> => {
-        const manager = await contentModelManagerFactory(context, model);
+    ): Promise<CmsModelManager<T>> => {
+        const manager = await contentModelManagerFactory<T>(context, model);
         managers.set(model.modelId, manager);
         return manager;
     };
@@ -191,15 +191,15 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         });
     };
 
-    const getEntryManager: CmsModelContext["getEntryManager"] = async (
-        target
-    ): Promise<CmsModelManager> => {
+    const getEntryManager: CmsModelContext["getEntryManager"] = async <T>(
+        target: string | Pick<CmsModel, "modelId">
+    ): Promise<CmsModelManager<T>> => {
         const modelId = typeof target === "string" ? target : target.modelId;
         if (managers.has(modelId)) {
-            return managers.get(modelId) as CmsModelManager;
+            return managers.get(modelId) as CmsModelManager<T>;
         }
         const model = await getModelFromCache(modelId);
-        return await updateManager(context, model);
+        return await updateManager<T>(context, model);
     };
 
     /**
