@@ -14615,18 +14615,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-admin-users-cognito-so-ddb@workspace:packages/api-admin-users-cognito-so-ddb":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-admin-users-cognito-so-ddb@workspace:packages/api-admin-users-cognito-so-ddb"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-admin-users-cognito@workspace:packages/api-admin-users-cognito":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-admin-users-cognito@workspace:packages/api-admin-users-cognito"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-admin-users-so-ddb@0.0.0, @webiny/api-admin-users-so-ddb@workspace:packages/api-admin-users-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-admin-users-so-ddb@workspace:packages/api-admin-users-so-ddb"
