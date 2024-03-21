@@ -62,6 +62,7 @@ export class TrashBinPresenter implements ITrashBinPresenter {
             meta: MetaMapper.toDto(this.metaRepository.get()),
             sorting: this.sortingRepository.get().map(sort => SortingMapper.fromDTOtoColumn(sort)),
             loading: this.loadingRepository.get(),
+            isEmptyView: this.getIsEmptyView(),
             searchQuery: this.searchRepository.get(),
             searchLabel: "Search all items"
         };
@@ -69,5 +70,11 @@ export class TrashBinPresenter implements ITrashBinPresenter {
 
     private mapItemsToDTOs(items: TrashBinItem[]) {
         return items.map(item => this.itemMapper.toDTO(item));
+    }
+
+    private getIsEmptyView() {
+        const loading = this.loadingRepository.get();
+        const items = this.itemsRepository.getItems();
+        return !loading[LoadingEnum.init] && !loading[LoadingEnum.list] && !items.length;
     }
 }

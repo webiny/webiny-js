@@ -7,6 +7,7 @@ export interface TrashBinPresenterViewModel {
     selectedItems: TrashBinItemDTO[];
     sorting: ColumnSorting[];
     loading: Record<string, boolean>;
+    isEmptyView: boolean;
     meta: TrashBinMetaResponse;
     searchQuery: string | undefined;
     searchLabel: string;

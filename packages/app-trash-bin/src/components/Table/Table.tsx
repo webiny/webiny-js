@@ -5,6 +5,7 @@ import {
     ITrashBinControllers,
     TrashBinPresenterViewModel
 } from "~/components/TrashBin/abstractions";
+import { LoadingEnum } from "~/types";
 
 export interface TableProps {
     vm: TrashBinPresenterViewModel;
@@ -15,7 +16,7 @@ export const Table = (props: TableProps) => {
     return (
         <AcoTable<TrashBinItemDTO>
             data={props.vm.items}
-            loading={props.vm.loading["LIST"] || props.vm.loading["INIT"]}
+            loading={props.vm.loading[LoadingEnum.init] || props.vm.loading[LoadingEnum.list]}
             onSelectRow={entries => props.controllers.selectItems.execute(entries)}
             sorting={props.vm.sorting}
             onSortingChange={sort => props.controllers.sortItems.execute(sort)}

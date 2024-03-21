@@ -34,9 +34,7 @@ export const TrashBinOverlay = (props: TrashBinOverlayProps) => {
         >
             <BulkActions />
             <Scrollbar onScrollFrame={scrollFrame => onTableScroll({ scrollFrame })}>
-                {!props.vm.loading["INIT"] &&
-                !props.vm.loading["LIST"] &&
-                !props.vm.items.length ? (
+                {props.vm.isEmptyView ? (
                     <Empty />
                 ) : (
                     <Table vm={props.vm} controllers={props.controllers} />
