@@ -1,13 +1,13 @@
 import React, { useMemo } from "react";
-import { ButtonDefault } from "@webiny/ui/Button";
 import { useApolloClient, useModel } from "~/admin/hooks";
+import { TrashBin as BaseTrashBin } from "@webiny/app-admin";
 import {
     TrashBinDeleteItemGraphQLGateway,
     TrashBinListGraphQLGateway,
     TrashBinItemMapper
 } from "../adapters";
 
-import { TrashBin as BaseTrashBin } from "@webiny/app-admin";
+import { TrashBinButton } from "./TrashBinButton";
 
 export const TrashBin = () => {
     const client = useApolloClient();
@@ -28,7 +28,7 @@ export const TrashBin = () => {
     return (
         <BaseTrashBin
             render={({ showTrashBin }) => {
-                return <ButtonDefault onClick={showTrashBin}>{"Open trash bin"}</ButtonDefault>;
+                return <TrashBinButton onClick={showTrashBin} />;
             }}
             listGateway={listGateway}
             deleteGateway={deleteGateway}

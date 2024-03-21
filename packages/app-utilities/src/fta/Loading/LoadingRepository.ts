@@ -25,7 +25,7 @@ export class LoadingRepository implements ILoadingRepository {
         this.loadings.set(key, isLoading);
     }
 
-    async runCallBack<T>(callback: Promise<T>, key: string): Promise<T | undefined> {
+    async runCallBack(callback: Promise<any>, key: string) {
         await this.set(key, true);
         const result = await callback;
         await this.set(key, false);
