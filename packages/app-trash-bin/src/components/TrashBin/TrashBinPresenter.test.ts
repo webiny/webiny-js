@@ -10,6 +10,14 @@ import {
 import { SelectedItemsRepository, TrashBinItemsRepository } from "~/components/TrashBin/domain";
 import { LoadingRepository, MetaRepository, SortingRepository } from "@webiny/app-utilities";
 import { SearchRepository } from "./domain/SearchRepository";
+import { LoadingEnum } from "~/types";
+import {
+    DeleteItemWithLoading,
+    ListItemsWithLoading,
+    ListItemsWithMeta,
+    ListItemsWithSearch,
+    ListItemsWithSorting
+} from "~/components/TrashBin/gateways";
 
 interface Item {
     id: string;
@@ -106,12 +114,25 @@ describe("TrashBinPresenter", () => {
     beforeEach(() => {
         jest.clearAllMocks();
 
-        const itemRepo = new TrashBinItemsRepository(listGateway, deleteItemGateway, itemMapper);
         const selectedRepo = new SelectedItemsRepository();
         const loadingRepo = new LoadingRepository();
         const sortRepo = new SortingRepository();
         const metaRepo = new MetaRepository();
         const searchRepo = new SearchRepository();
+
+        const withSearch = new ListItemsWithSearch(searchRepo, listGateway);
+        const withSort = new ListItemsWithSorting(sortRepo, withSearch);
+        const withMeta = new ListItemsWithMeta(metaRepo, withSort);
+        const withLoading = new ListItemsWithLoading(loadingRepo, withMeta);
+        const listGatewayDecorated = new ListItemsWithMeta(metaRepo, withLoading);
+
+        const deleteGatewayDecorated = new DeleteItemWithLoading(loadingRepo, deleteItemGateway);
+
+        const itemRepo = new TrashBinItemsRepository(
+            listGatewayDecorated,
+            deleteGatewayDecorated,
+            itemMapper
+        );
 
         presenter = new TrashBinPresenter(
             itemRepo,
@@ -201,7 +222,12 @@ describe("TrashBinPresenter", () => {
             ]
         });
 
-        await controllers.deleteItem.execute(item1.id);
+        const deletePromise = controllers.deleteItem.execute(item1.id);
+
+        // Let's check the transition to loading state
+        expect(presenter.vm.loading[LoadingEnum.delete]).toBeTrue();
+
+        await deletePromise;
 
         expect(deleteItemGateway.execute).toHaveBeenCalledTimes(1);
         expect(deleteItemGateway.execute).toHaveBeenCalledWith(item1.id);
