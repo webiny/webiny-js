@@ -1,9 +1,9 @@
 import React from "react";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete_outline.svg";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
-import { Fields } from "~/admin/components/ContentEntryForm/Fields";
 import { AddTemplateButton } from "./AddTemplate";
-import { TemplateIcon } from "~/admin/plugins/fieldRenderers/dynamicZone/TemplateIcon";
+import { TemplateIcon } from "./TemplateIcon";
+import { TemplateProvider } from "./TemplateProvider";
 import {
     BindComponentRenderProp,
     CmsDynamicZoneTemplate,
@@ -11,6 +11,7 @@ import {
     CmsModel,
     CmsModelField
 } from "~/types";
+import { Fields } from "~/admin/components/ContentEntryForm/Fields";
 import { ParentFieldProvider } from "~/admin/components/ContentEntryForm/ParentValue";
 
 type GetBind = CmsModelFieldRendererProps["getBind"];
@@ -64,12 +65,14 @@ export const SingleValueDynamicZone = ({
                                 </AccordionItem.Actions>
                             }
                         >
-                            <Fields
-                                fields={template.fields}
-                                layout={template.layout || []}
-                                contentModel={contentModel}
-                                Bind={Bind}
-                            />
+                            <TemplateProvider template={template}>
+                                <Fields
+                                    fields={template.fields}
+                                    layout={template.layout || []}
+                                    contentModel={contentModel}
+                                    Bind={Bind}
+                                />
+                            </TemplateProvider>
                         </AccordionItem>
                     </Accordion>
                 </ParentFieldProvider>
