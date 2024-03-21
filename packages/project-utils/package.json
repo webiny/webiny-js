@@ -46,6 +46,7 @@
     "get-yarn-workspaces": "1.0.2",
     "glob": "^7.1.2",
     "html-webpack-plugin": "5.5.0",
+    "is-ci": "^3.0.0",
     "lodash": "4.17.21",
     "mini-css-extract-plugin": "2.4.5",
     "null-loader": "^4.0.1",
@@ -80,7 +81,7 @@
     "webpack": "^5.90.0",
     "webpack-dev-server": "^4.6.0",
     "webpack-manifest-plugin": "^4.0.2",
-    "webpackbar": "5.0.2"
+    "webpackbar": "^6.0.0"
   },
   "devDependencies": {
     "@elastic/elasticsearch": "7.12.0",

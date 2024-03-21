@@ -1,4 +1,4 @@
-const buildPackages = require("./deploy/buildPackages");
+const { PackagesBuilder } = require("./buildPackages/PackagesBuilder");
 const { createPulumiCommand, runHook } = require("../utils");
 
 module.exports = (params, context) => {
@@ -16,7 +16,17 @@ module.exports = (params, context) => {
                 context
             });
 
-            await buildPackages({ projectApplication, inputs, context });
+            console.log();
+
+            const builder = new PackagesBuilder({
+                packages: projectApplication.packages,
+                inputs,
+                context
+            });
+
+            await builder.build();
+
+            console.log();
 
             await runHook({
                 hook: "hook-after-build",

@@ -144,7 +144,10 @@ export const ApiWebsocket = createAppModule({
                 deploymentId: deployment.output.id,
                 name: app.params.run.env,
                 defaultRouteSettings: {
-                    loggingLevel: "INFO",
+                    // Only enable if debugging. Note that by default, API Gateway does not
+                    // have the required permissions to write logs to CloudWatch logs. More:
+                    // https://coady.tech/aws-cloudwatch-logs-arn/
+                    // loggingLevel: "INFO",
                     throttlingBurstLimit: 1000,
                     throttlingRateLimit: 500
                 }
