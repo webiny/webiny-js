@@ -7,7 +7,7 @@
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../app-trash-bin-common/tsconfig.build.json" },
-    { "path": "../app-utilities/tsconfig.build.json" },
+    { "path": "../app-utils/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../react-properties/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" },

@@ -6,7 +6,7 @@ import {
     ISortingRepository,
     MetaMapper,
     SortingMapper
-} from "@webiny/app-utilities";
+} from "@webiny/app-utils";
 import {
     ITrashBinPresenter,
     ITrashBinItemsRepository,
@@ -44,15 +44,7 @@ export class TrashBinPresenter implements ITrashBinPresenter {
     }
 
     async init() {
-        await this.loadingRepository.init(LoadingEnum);
-
-        const initTasks = [
-            await this.selectedRepository.init(),
-            await this.searchRepository.init(),
-            await this.sortingRepository.init([{ field: "deletedOn", order: "desc" }]),
-            await this.itemsRepository.init()
-        ];
-        await this.loadingRepository.runCallBack(Promise.all(initTasks), LoadingEnum.init);
+        await this.itemsRepository.init();
     }
 
     get vm() {

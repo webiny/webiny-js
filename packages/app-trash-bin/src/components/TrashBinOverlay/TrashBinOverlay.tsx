@@ -8,21 +8,18 @@ import { BulkActions } from "~/components/BulkActions";
 import { BottomInfoBar } from "~/components/BottomInfoBar";
 import { Empty } from "~/components/Empty";
 import { SearchInput } from "~/components/SearchInput";
-import {
-    ITrashBinControllers,
-    TrashBinPresenterViewModel
-} from "~/components/TrashBin/abstractions";
+import { ITrashBinUseCases, TrashBinPresenterViewModel } from "~/components/TrashBin/abstractions";
 
 interface TrashBinOverlayProps {
     vm: TrashBinPresenterViewModel;
-    controllers: ITrashBinControllers;
+    useCases: ITrashBinUseCases;
     onExited: () => void;
 }
 
 export const TrashBinOverlay = (props: TrashBinOverlayProps) => {
     const onTableScroll = debounce(async ({ scrollFrame }) => {
         if (scrollFrame.top > 0.8) {
-            await props.controllers.listMoreItems.execute();
+            await props.useCases.listMoreItemsUseCase.execute();
         }
     }, 200);
 
@@ -37,7 +34,7 @@ export const TrashBinOverlay = (props: TrashBinOverlayProps) => {
                 {props.vm.isEmptyView ? (
                     <Empty />
                 ) : (
-                    <Table vm={props.vm} controllers={props.controllers} />
+                    <Table vm={props.vm} useCases={props.useCases} />
                 )}
             </Scrollbar>
             <BottomInfoBar vm={props.vm} />

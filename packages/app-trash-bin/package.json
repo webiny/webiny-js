@@ -18,7 +18,7 @@
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-security": "0.0.0",
     "@webiny/app-trash-bin-common": "0.0.0",
-    "@webiny/app-utilities": "0.0.0",
+    "@webiny/app-utils": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/react-properties": "0.0.0",
     "@webiny/ui": "0.0.0",

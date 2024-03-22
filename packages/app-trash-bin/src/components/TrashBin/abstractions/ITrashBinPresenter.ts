@@ -1,5 +1,5 @@
 import { TrashBinItemDTO } from "@webiny/app-trash-bin-common";
-import { ColumnSorting } from "@webiny/app-utilities";
+import { ColumnSorting } from "@webiny/app-utils";
 import { TrashBinMetaResponse } from "@webiny/app-trash-bin-common/types";
 
 export interface TrashBinPresenterViewModel {

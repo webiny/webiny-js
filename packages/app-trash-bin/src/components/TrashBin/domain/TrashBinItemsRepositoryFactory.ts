@@ -4,11 +4,13 @@ import {
     ITrashBinItemMapper,
     ITrashBinListGateway
 } from "@webiny/app-trash-bin-common";
+import { IMetaRepository } from "@webiny/app-utils";
 
 export class TrashBinItemsRepositoryFactory<TEntry extends Record<string, any>> {
     private cache: Map<string, TrashBinItemsRepository<TEntry>> = new Map();
 
     getRepository(
+        metaRepository: IMetaRepository,
         listGateway: ITrashBinListGateway<TEntry>,
         deleteGateway: ITrashBinDeleteItemGateway,
         itemMapper: ITrashBinItemMapper<TEntry>
@@ -18,7 +20,7 @@ export class TrashBinItemsRepositoryFactory<TEntry extends Record<string, any>> 
         if (!this.cache.has(cacheKey)) {
             this.cache.set(
                 cacheKey,
-                new TrashBinItemsRepository(listGateway, deleteGateway, itemMapper)
+                new TrashBinItemsRepository(metaRepository, listGateway, deleteGateway, itemMapper)
             );
         }
 

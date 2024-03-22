@@ -17466,7 +17466,7 @@ __metadata:
     "@webiny/app-admin": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/app-trash-bin-common": 0.0.0
-    "@webiny/app-utilities": 0.0.0
+    "@webiny/app-utils": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -17489,9 +17489,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-utilities@0.0.0, @webiny/app-utilities@workspace:packages/app-utilities":
+"@webiny/app-utils@0.0.0, @webiny/app-utils@workspace:packages/app-utils":
   version: 0.0.0-use.local
-  resolution: "@webiny/app-utilities@workspace:packages/app-utilities"
+  resolution: "@webiny/app-utils@workspace:packages/app-utils"
   dependencies:
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
