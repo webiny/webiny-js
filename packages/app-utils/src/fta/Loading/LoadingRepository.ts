@@ -17,14 +17,14 @@ export class LoadingRepository implements ILoadingRepository {
         return Object.fromEntries(this.loadings);
     }
 
-    async set(key: string, isLoading = true) {
-        this.loadings.set(key, isLoading);
+    async set(action: string, isLoading = true) {
+        this.loadings.set(action, isLoading);
     }
 
-    async runCallBack(callback: Promise<any>, key: string) {
-        await this.set(key, true);
+    async runCallBack(callback: Promise<any>, action: string) {
+        await this.set(action, true);
         const result = await callback;
-        await this.set(key, false);
+        await this.set(action, false);
         return result;
     }
 }

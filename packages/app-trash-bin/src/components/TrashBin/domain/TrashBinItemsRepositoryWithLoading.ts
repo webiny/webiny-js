@@ -2,7 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { TrashBinListQueryVariables } from "@webiny/app-trash-bin-common/types";
 import { ITrashBinItemsRepository } from "~/components/TrashBin/abstractions";
 import { ILoadingRepository } from "@webiny/app-utils";
-import { LoadingEnum } from "~/types";
+import { LoadingActions } from "~/types";
 
 export class TrashBinItemsRepositoryWithLoading implements ITrashBinItemsRepository {
     private loadingRepository: ILoadingRepository;
@@ -16,7 +16,7 @@ export class TrashBinItemsRepositoryWithLoading implements ITrashBinItemsReposit
 
     async init(params = {}) {
         await this.loadingRepository.init();
-        await this.loadingRepository.runCallBack(this.repository.init(params), LoadingEnum.init);
+        await this.loadingRepository.runCallBack(this.repository.init(params), LoadingActions.init);
     }
 
     getItems() {
@@ -24,14 +24,14 @@ export class TrashBinItemsRepositoryWithLoading implements ITrashBinItemsReposit
     }
 
     async listItems(params?: TrashBinListQueryVariables) {
-        const loadingKey = params?.after ? LoadingEnum.listMore : LoadingEnum.list;
-        await this.loadingRepository.runCallBack(this.repository.listItems(params), loadingKey);
+        const action = params?.after ? LoadingActions.listMore : LoadingActions.list;
+        await this.loadingRepository.runCallBack(this.repository.listItems(params), action);
     }
 
     async deleteItem(id: string) {
         await this.loadingRepository.runCallBack(
             this.repository.deleteItem(id),
-            LoadingEnum.delete
+            LoadingActions.delete
         );
     }
 }

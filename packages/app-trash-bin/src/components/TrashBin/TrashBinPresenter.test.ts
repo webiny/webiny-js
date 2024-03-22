@@ -15,7 +15,7 @@ import {
 } from "~/components/TrashBin/domain";
 import { LoadingRepository, MetaRepository, SortingRepository } from "@webiny/app-utils";
 import { SearchRepository } from "./domain/SearchRepository";
-import { LoadingEnum } from "~/types";
+import { LoadingActions } from "~/types";
 import { getUseCases } from "~/components/TrashBin/useCases";
 
 interface Item {
@@ -224,7 +224,7 @@ describe("TrashBinPresenter", () => {
         const deletePromise = useCases.deleteItemUseCase.execute(item1.id);
 
         // Let's check the transition to loading state
-        expect(presenter.vm.loading[LoadingEnum.delete]).toBeTrue();
+        expect(presenter.vm.loading[LoadingActions.delete]).toBeTrue();
 
         await deletePromise;
 

@@ -14,7 +14,7 @@ import {
     ISearchRepository
 } from "~/components/TrashBin/abstractions";
 import { TrashBinItemMapper } from "./domain";
-import { LoadingEnum } from "~/types";
+import { LoadingActions } from "~/types";
 
 export class TrashBinPresenter implements ITrashBinPresenter {
     private itemsRepository: ITrashBinItemsRepository;
@@ -67,6 +67,6 @@ export class TrashBinPresenter implements ITrashBinPresenter {
     private getIsEmptyView() {
         const loading = this.loadingRepository.get();
         const items = this.itemsRepository.getItems();
-        return !loading[LoadingEnum.init] && !loading[LoadingEnum.list] && !items.length;
+        return !loading[LoadingActions.init] && !loading[LoadingActions.list] && !items.length;
     }
 }

@@ -3,7 +3,7 @@ import { ListMeta } from "./ListMeta";
 import { ListStatus } from "./ListStatus";
 import { BottomInfoBarInner, BottomInfoBarWrapper } from "./BottomInfoBar.styled";
 import { TrashBinPresenterViewModel } from "~/components/TrashBin/abstractions";
-import { LoadingEnum } from "~/types";
+import { LoadingActions } from "~/types";
 
 interface BottomInfoBarProps {
     vm: TrashBinPresenterViewModel;
@@ -15,12 +15,13 @@ export const BottomInfoBar = (props: BottomInfoBarProps) => {
             <BottomInfoBarInner>
                 <ListMeta
                     loading={
-                        props.vm.loading[LoadingEnum.init] || props.vm.loading[LoadingEnum.list]
+                        props.vm.loading[LoadingActions.init] ||
+                        props.vm.loading[LoadingActions.list]
                     }
                     totalCount={props.vm.meta.totalCount}
                     currentCount={props.vm.items.length}
                 />
-                <ListStatus loading={props.vm.loading[LoadingEnum.listMore]} {...props} />
+                <ListStatus loading={props.vm.loading[LoadingActions.listMore]} {...props} />
             </BottomInfoBarInner>
         </BottomInfoBarWrapper>
     );
