@@ -244,7 +244,6 @@ const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<a
     }
 
     return createExecutableSchema({
-        endpoint: null,
         plugins: Object.values(plugins)
     });
 };

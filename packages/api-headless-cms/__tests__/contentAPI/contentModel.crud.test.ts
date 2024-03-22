@@ -86,9 +86,9 @@ describe("content model test", () => {
 
         expect(getTypeFields(ReadQuery)).toEqual(["getContentModel", "listContentModels"]);
         expect(getTypeFields(ManageQuery)).toEqual([
+            "exportStructure",
             "isEntryLocked",
             "getLockRecord",
-            "exportStructure",
             "getContentModel",
             "listContentModels",
             "searchContentEntries",
@@ -103,10 +103,10 @@ describe("content model test", () => {
         ]);
         expect(getTypeFields(ReadMutation)).toEqual([]);
         expect(getTypeFields(ManageMutation)).toEqual([
-            "lockEntry",
-            "unlockEntry",
             "validateImportStructure",
             "importStructure",
+            "lockEntry",
+            "unlockEntry",
             "createContentModel",
             "createContentModelFrom",
             "updateContentModel",
