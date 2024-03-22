@@ -18,6 +18,8 @@ import { createFieldConverters } from "~/fieldConverters";
 import { createExportGraphQL } from "~/export";
 import { createStorageTransform } from "~/storage";
 import { createLexicalHTMLRenderer } from "./htmlRenderer/createLexicalHTMLRenderer";
+import { createGraphQLSchema as createLockingMechanismGraphQLSchema } from "~/lockingMechanism/graphql/schema";
+
 export * from "./utils/isHeadlessCmsReady";
 export * from "./utils/createModelField";
 
@@ -35,6 +37,7 @@ export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams 
          */
         ...baseCreateGraphQL(params),
         createExportGraphQL(),
+        createLockingMechanismGraphQLSchema(),
         createLexicalHTMLRenderer()
     ];
 };

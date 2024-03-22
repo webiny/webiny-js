@@ -12,11 +12,11 @@ import { IUnlockEntryUseCaseExecute } from "~/lockingMechanism/abstractions/IUnl
 import { createUseCases } from "./useCases";
 
 interface Params {
-    context: CmsContext;
+    context: Pick<CmsContext, "plugins" | "cms" | "benchmark">;
 }
 
 export const createLockingMechanismCrud = ({ context }: Params): IHeadlessCmsLockingMechanism => {
-    context.plugins.register(createLockingModel());
+    context.plugins.register([createLockingModel()]);
 
     const getManager = async (): Promise<ICmsModelLockRecordManager> => {
         return await context.cms.getEntryManager<IHeadlessCmsLockRecordValues>(
@@ -48,7 +48,7 @@ export const createLockingMechanismCrud = ({ context }: Params): IHeadlessCmsLoc
     };
 
     const unlockEntry: IUnlockEntryUseCaseExecute = async params => {
-        return context.benchmark.measure("headlessCms.crud.locking.lockEntry", async () => {
+        return context.benchmark.measure("headlessCms.crud.locking.unlockEntry", async () => {
             return unlockEntryUseCase.execute(params);
         });
     };
