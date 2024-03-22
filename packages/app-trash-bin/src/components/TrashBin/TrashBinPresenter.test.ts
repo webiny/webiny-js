@@ -1,22 +1,17 @@
 import { TrashBinPresenter } from "./TrashBinPresenter";
 import { TrashBinIdentity } from "@webiny/app-trash-bin-common/types";
-import { ITrashBinUseCases, ITrashBinPresenter } from "~/components/TrashBin/abstractions";
+import { ITrashBinPresenter, ITrashBinUseControllers } from "~/components/TrashBin/abstractions";
 import {
     ITrashBinDeleteItemGateway,
     ITrashBinItemMapper,
     ITrashBinListGateway
 } from "@webiny/app-trash-bin-common";
-import {
-    SelectedItemsRepository,
-    TrashBinItemsRepository,
-    TrashBinItemsRepositoryWithLoading,
-    TrashBinItemsRepositoryWithSearch,
-    TrashBinItemsRepositoryWithSorting
-} from "~/components/TrashBin/domain";
+import { SelectedItemsRepository, TrashBinItemsRepository } from "~/components/TrashBin/domain";
 import { LoadingRepository, MetaRepository, SortingRepository } from "@webiny/app-utils";
 import { SearchRepository } from "./domain/SearchRepository";
 import { LoadingActions } from "~/types";
 import { getUseCases } from "~/components/TrashBin/useCases";
+import { getControllers } from "~/components/TrashBin/controllers";
 
 interface Item {
     id: string;
@@ -108,7 +103,7 @@ describe("TrashBinPresenter", () => {
     const itemMapper = new CustomItemMapper();
 
     let presenter: ITrashBinPresenter;
-    let useCases: ITrashBinUseCases;
+    let controllers: ITrashBinUseControllers;
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -125,32 +120,30 @@ describe("TrashBinPresenter", () => {
             itemMapper
         );
 
-        const repoWithSorting = new TrashBinItemsRepositoryWithSorting(sortRepo, itemsRepo);
-        const repoWithLoading = new TrashBinItemsRepositoryWithLoading(
-            loadingRepo,
-            repoWithSorting
-        );
-
-        const repo = new TrashBinItemsRepositoryWithSearch(searchRepo, repoWithLoading);
-
         presenter = new TrashBinPresenter(
-            repo,
+            itemsRepo,
             selectedRepo,
             loadingRepo,
             metaRepo,
             sortRepo,
             searchRepo
         );
-        useCases = getUseCases(repo, selectedRepo, sortRepo, metaRepo, searchRepo);
+
+        controllers = getControllers(
+            getUseCases(itemsRepo, selectedRepo, sortRepo, metaRepo, searchRepo, loadingRepo)
+        );
     });
 
     it("should create a presenter and list trash bin entries from the gateway", async () => {
         // let's load some entries from the gateway
-        const loadPromise = presenter.init();
+        const loadPromise = controllers.listItems.execute();
 
         // Let's check the transition to loading state
         expect(presenter.vm).toMatchObject({
-            items: []
+            items: [],
+            loading: {
+                [LoadingActions.list]: true
+            }
         });
 
         await loadPromise;
@@ -188,7 +181,7 @@ describe("TrashBinPresenter", () => {
 
     it("should delete an item, removing it from the list", async () => {
         // let's load some entries from the gateway
-        await presenter.init();
+        await controllers.listItems.execute();
 
         expect(listGateway.execute).toHaveBeenCalledTimes(1);
 
@@ -221,7 +214,7 @@ describe("TrashBinPresenter", () => {
             ]
         });
 
-        const deletePromise = useCases.deleteItemUseCase.execute(item1.id);
+        const deletePromise = controllers.deleteItem.execute(item1.id);
 
         // Let's check the transition to loading state
         expect(presenter.vm.loading[LoadingActions.delete]).toBeTrue();

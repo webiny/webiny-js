@@ -18,13 +18,11 @@ import { TrashBinOverlay } from "~/components/TrashBinOverlay";
 import { TrashBinPresenter } from "~/components/TrashBin/TrashBinPresenter";
 import {
     selectedItemsRepositoryFactory,
-    trashBinItemsRepositoryFactory,
-    TrashBinItemsRepositoryWithLoading,
-    TrashBinItemsRepositoryWithSearch,
-    TrashBinItemsRepositoryWithSorting
+    trashBinItemsRepositoryFactory
 } from "~/components/TrashBin/domain";
 import { searchRepositoryFactory } from "~/components/TrashBin/domain/SearchRepositoryFactory";
 import { getUseCases } from "~/components/TrashBin/useCases";
+import { getControllers } from "~/components/TrashBin/controllers";
 
 export interface TrashBinProps {
     listGateway: ITrashBinListGateway<any>;
@@ -43,6 +41,7 @@ export const TrashBin = observer((props: TrashBinProps) => {
     }, []);
 
     const sortingRepository = useMemo(() => {
+        // TODO: add config to handle default sorting
         return sortRepositoryFactory.getRepository([{ field: "deletedOn", order: "desc" }]);
     }, []);
 
@@ -63,31 +62,29 @@ export const TrashBin = observer((props: TrashBinProps) => {
         );
     }, [props.listGateway, props.deleteGateway, props.itemMapper]);
 
-    const repository = useMemo(() => {
-        const repoWithSorting = new TrashBinItemsRepositoryWithSorting(
-            sortingRepository,
-            itemsRepository
-        );
-        const repoWithLoading = new TrashBinItemsRepositoryWithLoading(
-            loadingRepository,
-            repoWithSorting
-        );
-        return new TrashBinItemsRepositoryWithSearch(searchRepository, repoWithLoading);
-    }, [itemsRepository, metaRepository, loadingRepository, searchRepository, sortingRepository]);
-
     const useCases = useMemo(() => {
         return getUseCases(
-            repository,
+            itemsRepository,
             selectedRepository,
             sortingRepository,
             metaRepository,
-            searchRepository
+            searchRepository,
+            loadingRepository
         );
-    }, [repository, sortingRepository, metaRepository, searchRepository]);
+    }, [
+        itemsRepository,
+        selectedRepository,
+        sortingRepository,
+        metaRepository,
+        searchRepository,
+        loadingRepository
+    ]);
+
+    const controllers = getControllers(useCases);
 
     const presenter = useMemo(() => {
         return new TrashBinPresenter(
-            repository,
+            itemsRepository,
             selectedRepository,
             loadingRepository,
             metaRepository,
@@ -95,7 +92,7 @@ export const TrashBin = observer((props: TrashBinProps) => {
             searchRepository
         );
     }, [
-        repository,
+        itemsRepository,
         selectedRepository,
         loadingRepository,
         metaRepository,
@@ -105,16 +102,17 @@ export const TrashBin = observer((props: TrashBinProps) => {
 
     useEffect(() => {
         presenter.init();
+        useCases.listItemsUseCase.execute();
     }, []);
 
     return (
         <CompositionScope name={"trash"}>
             <AcoWithConfig>
                 <TrashBinListWithConfig>
-                    <TrashBinProvider useCases={useCases} presenter={presenter}>
+                    <TrashBinProvider controllers={controllers} presenter={presenter}>
                         <TrashBinOverlay
                             vm={presenter.vm}
-                            useCases={useCases}
+                            controllers={controllers}
                             onExited={props.onClose}
                         />
                     </TrashBinProvider>

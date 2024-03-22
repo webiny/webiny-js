@@ -5,7 +5,7 @@ import { InputContainer, SearchIconContainer } from "./SearchInput.styled";
 import { useTrashBin } from "~/hooks";
 
 export const SearchInput = () => {
-    const { presenter, useCases } = useTrashBin();
+    const { presenter, controllers } = useTrashBin();
 
     return (
         <InputContainer>
@@ -16,7 +16,7 @@ export const SearchInput = () => {
                     if (value === presenter.vm.searchQuery) {
                         return;
                     }
-                    useCases.searchItemsUseCase.execute(value);
+                    controllers.searchItems.execute(value);
                 }}
             >
                 {({ value, onChange }) => (

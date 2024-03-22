@@ -1,3 +1,3 @@
-export interface ISearchController {
+export interface ISearchItemsController {
     execute: (query: string) => Promise<void>;
 }

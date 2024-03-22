@@ -44,7 +44,16 @@ export class TrashBinPresenter implements ITrashBinPresenter {
     }
 
     async init() {
-        await this.itemsRepository.init();
+        const initActions = [
+            await this.itemsRepository.init(),
+            await this.selectedRepository.init(),
+            await this.loadingRepository.init(),
+            await this.metaRepository.init(),
+            await this.sortingRepository.init(),
+            await this.searchRepository.init()
+        ];
+
+        await Promise.all(initActions);
     }
 
     get vm() {
@@ -67,6 +76,6 @@ export class TrashBinPresenter implements ITrashBinPresenter {
     private getIsEmptyView() {
         const loading = this.loadingRepository.get();
         const items = this.itemsRepository.getItems();
-        return !loading[LoadingActions.init] && !loading[LoadingActions.list] && !items.length;
+        return !loading[LoadingActions.list] && !items.length;
     }
 }

@@ -10,7 +10,7 @@ interface UseDeleteItemParams {
 }
 
 export const useDeleteTrashBinItem = ({ item, onAccept, onCancel }: UseDeleteItemParams) => {
-    const { useCases } = useTrashBin();
+    const { controllers } = useTrashBin();
     const { showSnackbar } = useSnackbar();
 
     const { showConfirmation } = useConfirmationDialog({
@@ -27,7 +27,7 @@ export const useDeleteTrashBinItem = ({ item, onAccept, onCancel }: UseDeleteIte
     const openDialogDeleteItem = useCallback(
         () =>
             showConfirmation(async () => {
-                await useCases.deleteItemUseCase.execute(item.id);
+                await controllers.deleteItem.execute(item.id);
 
                 showSnackbar(`${item.title} was deleted successfully!`);
 

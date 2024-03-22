@@ -11,6 +11,6 @@ export class SelectItemsUseCase implements ISelectItemsUseCase {
     }
 
     async execute(items: TrashBinItem[]) {
-        return await this.repository.selectItems(items);
+        await this.repository.selectItems(items);
     }
 }

@@ -14,10 +14,7 @@ export const BottomInfoBar = (props: BottomInfoBarProps) => {
         <BottomInfoBarWrapper>
             <BottomInfoBarInner>
                 <ListMeta
-                    loading={
-                        props.vm.loading[LoadingActions.init] ||
-                        props.vm.loading[LoadingActions.list]
-                    }
+                    loading={props.vm.loading[LoadingActions.list]}
                     totalCount={props.vm.meta.totalCount}
                     currentCount={props.vm.items.length}
                 />

@@ -10,6 +10,6 @@ export class DeleteItemUseCase implements IDeleteItemUseCase {
     }
 
     async execute(id: string) {
-        return await this.repository.deleteItem(id);
+        await this.repository.deleteItem(id);
     }
 }

@@ -1,5 +1,5 @@
-import { OnSortingChange } from "@webiny/ui/DataTable";
+import { SortingDTO } from "@webiny/app-utils";
 
 export interface ISortItemsUseCase {
-    execute: OnSortingChange;
+    execute: (sorts: SortingDTO[]) => Promise<void>;
 }

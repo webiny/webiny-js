@@ -17,7 +17,7 @@ export class ListMoreItemsUseCase implements IListMoreItemsUseCase {
         const { hasMoreItems, cursor } = this.metaRepository.get();
 
         if (hasMoreItems && cursor) {
-            return await this.itemsRepository.listItems({ ...params, after: cursor });
+            await this.itemsRepository.listItems({ ...params, after: cursor });
         }
     }
 }

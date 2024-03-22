@@ -13,7 +13,7 @@ export const getEntriesLabel = (count = 0): string => {
 
 export const BulkActions = () => {
     const { browser } = useTrashBinListConfig();
-    const { presenter, useCases } = useTrashBin();
+    const { presenter, controllers } = useTrashBin();
 
     const headline = useMemo((): string => {
         return getEntriesLabel(presenter.vm.selectedItems.length) + ` selected:`;
@@ -30,10 +30,7 @@ export const BulkActions = () => {
                     <Typography use={"headline6"}>{headline}</Typography>
                     <Buttons actions={browser.bulkActions} />
                 </ButtonsContainer>
-                <IconButton
-                    icon={<Close />}
-                    onClick={() => useCases.selectItemsUseCase.execute([])}
-                />
+                <IconButton icon={<Close />} onClick={() => controllers.selectItems.execute([])} />
             </BulkActionsInner>
         </BulkActionsContainer>
     );

@@ -1,5 +1,5 @@
-import { TrashBinListQueryVariables } from "@webiny/app-trash-bin-common/types";
+import { OnSortingChange } from "@webiny/ui/DataTable";
 
 export interface ISortItemsController {
-    execute: (params?: TrashBinListQueryVariables) => Promise<void>;
+    execute: OnSortingChange;
 }

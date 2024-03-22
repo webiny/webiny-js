@@ -32,24 +32,8 @@ export class TrashBinItemsRepository<TItem extends Record<string, any>>
         makeAutoObservable(this);
     }
 
-    async init(params = {}) {
-        if (this.items.length > 0) {
-            return;
-        }
-
-        await this.metaRepository.init();
-
-        const response = await this.listGateway.execute(params);
-
-        if (!response) {
-            return;
-        }
-
-        runInAction(() => {
-            const [items, meta] = response;
-            this.items = items.map(item => TrashBinItem.create(this.itemMapper.toDTO(item)));
-            this.metaRepository.set(Meta.create(meta));
-        });
+    async init() {
+        Promise.resolve();
     }
 
     getItems() {

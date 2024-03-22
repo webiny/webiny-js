@@ -1,8 +1,8 @@
 import { createGenericContext } from "@webiny/app-admin";
-import { ITrashBinUseCases, ITrashBinPresenter } from "~/components/TrashBin/abstractions";
+import { ITrashBinPresenter, ITrashBinUseControllers } from "~/components/TrashBin/abstractions";
 
 export interface TrashBinContext {
-    useCases: ITrashBinUseCases;
+    controllers: ITrashBinUseControllers;
     presenter: ITrashBinPresenter;
 }
 
