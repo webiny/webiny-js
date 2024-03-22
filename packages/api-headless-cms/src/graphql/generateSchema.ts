@@ -25,7 +25,6 @@ export const generateSchema = async (params: GenerateSchemaParams): Promise<Grap
         CmsGraphQLSchemaPlugin.type
     );
     return createExecutableSchema({
-        endpoint: context.cms.type,
         plugins: schemaPlugins
     });
 };
