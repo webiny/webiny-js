@@ -1677,7 +1677,7 @@ export interface CmsModelManager<T = CmsEntryValues> {
     /**
      * Delete an entry.
      */
-    delete: (id: string) => Promise<void>;
+    delete(id: string): Promise<void>;
 }
 
 /**
