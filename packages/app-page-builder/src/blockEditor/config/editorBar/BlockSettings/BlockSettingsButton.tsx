@@ -1,27 +1,23 @@
-import React, { useCallback } from "react";
-import { useRecoilState } from "recoil";
+import React, { useCallback, useState } from "react";
 import { IconButton } from "@webiny/ui/Button";
-import { createDecorator } from "@webiny/app-admin";
 import { ReactComponent as SettingsIcon } from "./settings.svg";
-import { blockSettingsStateAtom } from "./state";
-import { EditorBar } from "~/editor";
+import { BlockSettingsModal } from "./BlockSettingsModal";
 
-const BlockSettingsButton = () => {
-    const [, setState] = useRecoilState(blockSettingsStateAtom);
+export const BlockSettingsButton = () => {
+    const [open, setState] = useState(false);
+
     const onClickHandler = useCallback(() => {
         setState(true);
     }, []);
 
-    return <IconButton onClick={onClickHandler} icon={<SettingsIcon />} />;
-};
+    const onClose = useCallback(() => {
+        setState(false);
+    }, []);
 
-export const AddBlockSettingsButton = createDecorator(EditorBar.RightSection, RightSection => {
-    return function ComposeRightSection(props) {
-        return (
-            <RightSection>
-                <BlockSettingsButton />
-                {props.children}
-            </RightSection>
-        );
-    };
-});
+    return (
+        <>
+            <IconButton onClick={onClickHandler} icon={<SettingsIcon />} />
+            <BlockSettingsModal open={open} onClose={onClose} />
+        </>
+    );
+};

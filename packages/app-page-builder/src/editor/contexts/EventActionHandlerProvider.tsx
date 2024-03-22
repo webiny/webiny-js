@@ -15,7 +15,6 @@ import { plugins } from "@webiny/plugins";
 import {
     rootElementAtom,
     elementsAtom,
-    pluginsAtom,
     sidebarAtom,
     uiAtom,
     elementByIdSelector,
@@ -23,7 +22,6 @@ import {
     highlightElementAtom,
     SidebarAtomType,
     RootElementAtom,
-    PluginsAtomType,
     UiAtomType
 } from "../recoil/modules";
 
@@ -110,14 +108,12 @@ export const EventActionHandlerProvider = makeDecoratable(
         const setHighlightElementAtomValue = useSetRecoilState(highlightElementAtom);
         const [sidebarAtomValue, setSidebarAtomValue] = useRecoilState(sidebarAtom);
         const rootElementAtomValue = useRecoilValue(rootElementAtom);
-        const [pluginsAtomValue, setPluginsAtomValue] = useRecoilState(pluginsAtom);
         const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
         const snapshot = useRecoilSnapshot();
 
         const eventActionHandlerRef = useRef<EventActionHandler>();
         const sidebarAtomValueRef = useRef<SidebarAtomType>();
         const rootElementAtomValueRef = useRef<RootElementAtom>();
-        const pluginsAtomValueRef = useRef<PluginsAtomType>();
         const uiAtomValueRef = useRef<UiAtomType>();
         const snapshotRef = useRef<Snapshot>();
         const eventElements = useRef<Record<string, PbEditorElement>>({});
@@ -134,10 +130,9 @@ export const EventActionHandlerProvider = makeDecoratable(
         useEffect(() => {
             sidebarAtomValueRef.current = sidebarAtomValue;
             rootElementAtomValueRef.current = rootElementAtomValue;
-            pluginsAtomValueRef.current = pluginsAtomValue;
             uiAtomValueRef.current = uiAtomValue;
             snapshotRef.current = snapshot;
-        }, [sidebarAtomValue, rootElementAtomValue, pluginsAtomValue, uiAtomValue, snapshot]);
+        }, [sidebarAtomValue, rootElementAtomValue, uiAtomValue, snapshot]);
 
         const registry = useRef<RegistryType>(new Map());
 
@@ -272,7 +267,6 @@ export const EventActionHandlerProvider = makeDecoratable(
                 return {
                     sidebar: sidebarAtomValueRef.current as SidebarAtomType,
                     rootElement: rootElementAtomValueRef.current as RootElementAtom,
-                    plugins: pluginsAtomValueRef.current as PluginsAtomType,
                     ui: uiAtomValueRef.current as UiAtomType,
                     getElementById,
                     getElementTree,
@@ -315,10 +309,6 @@ export const EventActionHandlerProvider = makeDecoratable(
 
                     if (state.ui) {
                         setUiAtomValue(state.ui);
-                    }
-
-                    if (state.plugins) {
-                        setPluginsAtomValue(state.plugins);
                     }
 
                     if (state.hasOwnProperty("activeElement")) {

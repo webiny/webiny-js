@@ -23,9 +23,9 @@ export default () =>
             return (
                 <Action
                     tooltip={"Navigator"}
-                    plugin={this.name}
+                    // plugin={this.name}
                     icon={<NavigatorIcon />}
-                    closeOtherInGroup={true}
+                    // closeOtherInGroup={true}
                 />
             );
         },

@@ -2,12 +2,10 @@ import React, { useState, useCallback, SyntheticEvent } from "react";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { createDecorator } from "@webiny/app-admin";
 import { BlockTitle, blockTitleWrapper, TitleInputWrapper, TitleWrapper } from "./Styled";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { BlockAtomType } from "~/blockEditor/state";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
-import { EditorBar } from "~/editor";
 import { useBlock } from "~/blockEditor/hooks/useBlock";
 
 declare global {
@@ -16,7 +14,7 @@ declare global {
     }
 }
 
-const Title = () => {
+export const Title = () => {
     const handler = useEventActionHandler();
     const [block] = useBlock();
     const { showSnackbar } = useSnackbar();
@@ -112,14 +110,3 @@ const Title = () => {
         </TitleWrapper>
     );
 };
-
-export const TitlePlugin = createDecorator(EditorBar.LeftSection, LeftSection => {
-    return function AddTitle(props) {
-        return (
-            <LeftSection>
-                {props.children}
-                <Title />
-            </LeftSection>
-        );
-    };
-});

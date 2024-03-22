@@ -13,12 +13,13 @@ import { RecoilRoot, MutableSnapshot } from "recoil";
 import { Editor as EditorComponent } from "./components/Editor";
 import { EditorConfigApply } from "./components/Editor/EditorConfig";
 import { EditorProvider } from "./contexts/EditorProvider";
-import { EditorDefaultConfig } from "./config/EditorDefaultConfig";
+import { EditorDefaultConfig } from "./defaultConfig/EditorDefaultConfig";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import { elementsAtom, rootElementAtom } from "~/editor/recoil/modules";
 import { flattenElements } from "~/editor/helpers";
 import { PbEditorElement } from "~/types";
+import { EditorWithConfig } from "~/editor/config";
 
 export interface EditorStateInitializerFactory {
     (): EditorStateInitializer;
@@ -57,7 +58,9 @@ export const Editor = ({ stateInitializerFactory }: EditorProps) => {
                 <EditorProvider>
                     <EditorDefaultConfig />
                     <EditorConfigApply />
-                    <EditorComponent />
+                    <EditorWithConfig>
+                        <EditorComponent />
+                    </EditorWithConfig>
                 </EditorProvider>
             </RecoilRoot>
         </DndProvider>

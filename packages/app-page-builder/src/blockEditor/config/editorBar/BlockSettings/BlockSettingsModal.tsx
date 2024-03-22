@@ -1,35 +1,25 @@
 import React, { useCallback } from "react";
-import styled from "@emotion/styled";
-import { useRecoilState } from "recoil";
-
 import { Form } from "@webiny/form";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { SimpleFormContent } from "@webiny/app-admin/components/SimpleForm";
 import { validation } from "@webiny/validation";
 import { Select } from "@webiny/ui/Select";
 import { Dialog, DialogCancel, DialogTitle, DialogActions, DialogContent } from "@webiny/ui/Dialog";
-
-import { blockSettingsStateAtom } from "./state";
 import { useBlock } from "~/blockEditor/hooks/useBlock";
 import { useBlockCategories } from "~/blockEditor/hooks/useBlockCategories";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
 import { BlockAtomType } from "~/blockEditor/state";
 
-const ButtonWrapper = styled("div")({
-    display: "flex",
-    justifyContent: "space-between",
-    width: "100%"
-});
+export interface BlockSettingsModalProps {
+    open: boolean;
+    onClose: () => void;
+}
 
-const BlockSettingsModal = () => {
+export const BlockSettingsModal = ({ open, onClose }: BlockSettingsModalProps) => {
     const handler = useEventActionHandler();
     const [block] = useBlock();
     const blockCategories = useBlockCategories();
-    const [, setState] = useRecoilState(blockSettingsStateAtom);
-    const onClose = useCallback(() => {
-        setState(false);
-    }, []);
 
     const updateBlock = (data: Partial<BlockAtomType>) => {
         handler.trigger(
@@ -46,7 +36,7 @@ const BlockSettingsModal = () => {
     }, []);
 
     return (
-        <Dialog open={true} onClose={onClose}>
+        <Dialog open={open} onClose={onClose}>
             <Form data={{ blockCategory: block.blockCategory }} onSubmit={onSubmit}>
                 {({ form, Bind }) => (
                     <>
@@ -68,16 +58,14 @@ const BlockSettingsModal = () => {
                             </SimpleFormContent>
                         </DialogContent>
                         <DialogActions>
-                            <ButtonWrapper>
-                                <DialogCancel onClick={onClose}>Cancel</DialogCancel>
-                                <ButtonPrimary
-                                    onClick={ev => {
-                                        form.submit(ev);
-                                    }}
-                                >
-                                    Save
-                                </ButtonPrimary>
-                            </ButtonWrapper>
+                            <DialogCancel onClick={onClose}>Cancel</DialogCancel>
+                            <ButtonPrimary
+                                onClick={ev => {
+                                    form.submit(ev);
+                                }}
+                            >
+                                Save
+                            </ButtonPrimary>
                         </DialogActions>
                     </>
                 )}
@@ -85,5 +73,3 @@ const BlockSettingsModal = () => {
         </Dialog>
     );
 };
-
-export default BlockSettingsModal;
