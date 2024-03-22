@@ -1,48 +1,54 @@
 import React from "react";
-import styled from "@emotion/styled";
-import { Auth, CognitoHostedUIIdentityProvider } from "@aws-amplify/auth";
+import { Auth } from "@aws-amplify/auth";
+import { CognitoHostedUIIdentityProvider } from "@aws-amplify/auth/lib-esm/types/Auth";
 import {
     FacebookLoginButton,
     GoogleLoginButton,
     AppleLoginButton,
     AmazonLoginButton
 } from "react-social-login-buttons";
-import { CognitoFederatedProvider } from "~/index";
+import {
+    federatedIdentityProviders,
+    FederatedIdentityProvider
+} from "~/federatedIdentityProviders";
+import { FederatedProviders } from "~/components/FederatedProviders";
 
-const federatedButtons = {
+const federatedButtons: Record<string, React.ComponentType> = {
     Facebook: FacebookLoginButton,
     Google: GoogleLoginButton,
     Amazon: AmazonLoginButton,
-    Apple: AppleLoginButton,
-    Cognito: () => null
+    Apple: AppleLoginButton
 };
 
-const FederatedContainer = styled.div`
-    border-top: 1px solid #ececec;
-    padding-top: 20px;
-`;
-
 interface FederatedLoginProps {
-    providers: CognitoFederatedProvider[];
+    providers: FederatedIdentityProvider[];
 }
 
 export const FederatedLogin = ({ providers }: FederatedLoginProps) => {
     return (
-        <FederatedContainer>
-            {providers.map(provider => {
-                const Button = federatedButtons[provider];
+        <FederatedProviders.Container>
+            {providers.map(({ name, component }) => {
+                const Component = component ?? federatedButtons[name] ?? (() => null);
+                const cognitoProviderName = federatedIdentityProviders[name] ?? name;
+                const isCustomProvider = !(name in federatedIdentityProviders);
 
                 return (
-                    <Button
-                        key={provider}
-                        onClick={() =>
-                            Auth.federatedSignIn({
-                                provider: CognitoHostedUIIdentityProvider[provider]
-                            })
-                        }
+                    <Component
+                        key={name}
+                        signIn={() => {
+                            if (isCustomProvider) {
+                                Auth.federatedSignIn({
+                                    customProvider: cognitoProviderName
+                                });
+                            } else {
+                                Auth.federatedSignIn({
+                                    provider: cognitoProviderName as CognitoHostedUIIdentityProvider
+                                });
+                            }
+                        }}
                     />
                 );
             })}
-        </FederatedContainer>
+        </FederatedProviders.Container>
     );
 };

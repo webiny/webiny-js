@@ -26,7 +26,9 @@ interface AuthenticationProps {
 
 export const createAuthentication = (config: CreateAuthenticationConfig = {}) => {
     const withGetIdentityData = (Component: React.ComponentType<WithGetIdentityDataProps>) => {
-        const WithGetIdentityData = ({ children }: WithGetIdentityDataProps) => {
+        const WithGetIdentityData = ({
+            children
+        }: Omit<WithGetIdentityDataProps, "getIdentityData">) => {
             const { isMultiTenant } = useTenancy();
             const loginMutation = config.loginMutation || (isMultiTenant ? LOGIN_MT : LOGIN_ST);
             const getIdentityData = config.getIdentityData || createGetIdentityData(loginMutation);
