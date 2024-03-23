@@ -9,6 +9,7 @@ import {
 import { DrawersProvider } from "./DrawersProvider";
 import { DrawerTrigger } from "./DrawerTrigger";
 import { Drawer } from "./Drawer";
+import { IconButton } from "./IconButton";
 
 const SCOPE = "toolbar";
 
@@ -34,6 +35,6 @@ const Elements = makeDecoratable("ToolbarElements", (props: ElementsProps) => {
 
 export const Toolbar = Object.assign(BaseToolbar, {
     Layout,
-    Element: Object.assign(BaseToolbarElement, { DrawerTrigger, Drawer }),
+    Element: Object.assign(BaseToolbarElement, { DrawerTrigger, Drawer, IconButton }),
     Elements
 });

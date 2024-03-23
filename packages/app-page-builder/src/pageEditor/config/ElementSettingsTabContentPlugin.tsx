@@ -5,7 +5,7 @@ import { SidebarActions } from "~/editor";
 import { createDecorator } from "@webiny/app-admin";
 import Action from "~/editor/plugins/elementSettings/components/Action";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
-import useElementSettings from "~/editor/plugins/elementSettings/hooks/useElementSettings";
+import { useElementSettings } from "~/editor/plugins/elementSettings/hooks/useElementSettings";
 import { useRefreshBlock } from "~/editor/hooks/useRefreshBlock";
 import VariableSettings from "~/editor/plugins/elementSettings/variable/VariableSettings";
 import { useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";

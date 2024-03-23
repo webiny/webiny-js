@@ -7,6 +7,7 @@ import { PbEditorPageElementAdvancedSettingsPlugin } from "~/types";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { makeDecoratable } from "@webiny/app-admin";
+import { OnActiveElement } from "~/editor/defaultConfig/Sidebar/OnActiveElement";
 
 export const ElementSettings = () => {
     const [element] = useActiveElement();
@@ -36,9 +37,9 @@ export const ElementSettings = () => {
     return (
         <Form key={element && element.id} data={element.data} onSubmit={onSubmit}>
             {formProps => (
-                <>
+                <OnActiveElement>
                     <ElementSettingsRenderer formProps={formProps} />
-                </>
+                </OnActiveElement>
             )}
         </Form>
     );

@@ -4,7 +4,7 @@ import { EditorBarPlugins } from "./editorBar";
 import { BlockEditingPlugin } from "./blockEditing";
 import { BlockElementSidebarPlugin } from "./BlockElementSidebarPlugin";
 import { ElementSettingsTabContentPlugin } from "./ElementSettingsTabContentPlugin";
-import { ToolbarActionsPlugin } from "./ToolbarActionsPlugin";
+// import { ToolbarActionsPlugin } from "./ToolbarActionsPlugin";
 
 export const PageEditorConfig = React.memo(() => {
     return (
@@ -15,7 +15,7 @@ export const PageEditorConfig = React.memo(() => {
             <BlockEditingPlugin />
             <BlockElementSidebarPlugin />
             <ElementSettingsTabContentPlugin />
-            <ToolbarActionsPlugin />
+            {/* TODO: <ToolbarActionsPlugin />*/}
         </>
     );
 });

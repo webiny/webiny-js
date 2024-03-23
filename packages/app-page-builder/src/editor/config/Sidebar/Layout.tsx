@@ -4,15 +4,14 @@ import { css } from "emotion";
 import store from "store";
 import { makeDecoratable } from "@webiny/app-admin";
 import { Elevation } from "@webiny/ui/Elevation";
-import { Tabs, Tab, TabProps } from "@webiny/ui/Tabs";
+import { Tabs, Tab } from "@webiny/ui/Tabs";
 import {
     highlightSidebarTabMutation,
     updateSidebarActiveTabIndexMutation
 } from "~/editor/recoil/modules";
-import StyleSettingsTabContent from "./Sidebar/StyleSettingsTabContent";
-import ElementSettingsTabContent from "./Sidebar/ElementSettingsTabContent";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { useElementSidebar } from "~/editor/hooks/useElementSidebar";
+import { Sidebar } from "./Sidebar";
 
 const LOCAL_STORAGE_KEY = "webiny_pb_editor_active_tab";
 
@@ -45,7 +44,25 @@ const PanelHighLight = styled("div")({
     "@keyframes wf-blink-in": { "40%": { opacity: 1 } }
 });
 
-export const EditorSidebar = React.memo(() => {
+export const TabContainer = styled("div")({
+    display: "flex",
+    flexDirection: "column",
+    height: "calc(100vh - 65px - 48px)", // Subtract top-bar and tab-header height
+    overflowY: "auto",
+    // Style scrollbar
+    "&::-webkit-scrollbar": {
+        width: 1
+    },
+    "&::-webkit-scrollbar-track": {
+        boxShadow: "inset 0 0 6px rgba(0, 0, 0, 0.3)"
+    },
+    "&::-webkit-scrollbar-thumb": {
+        backgroundColor: "darkgrey",
+        outline: "1px solid slategrey"
+    }
+});
+
+export const Layout = makeDecoratable("SidebarLayout", () => {
     const [element] = useActiveElement();
     const [sidebar, setSidebar] = useElementSidebar();
 
@@ -74,25 +91,18 @@ export const EditorSidebar = React.memo(() => {
     return (
         <Elevation z={1} className={rightSideBar}>
             <Tabs value={activeTabIndex} onActivate={setActiveTabIndex}>
-                <EditorSidebarTab label={"Style"}>
-                    <StyleSettingsTabContent />
-                </EditorSidebarTab>
-                <EditorSidebarTab label={"Element"} disabled={!element}>
-                    <ElementSettingsTabContent />
-                </EditorSidebarTab>
+                <Tab label={"Style"}>
+                    <TabContainer>
+                        <Sidebar.Elements group={"style"} />
+                    </TabContainer>
+                </Tab>
+                <Tab label={"Element"} disabled={!element}>
+                    <TabContainer>
+                        <Sidebar.Elements group={"element"} />
+                    </TabContainer>
+                </Tab>
             </Tabs>
             {sidebar.highlightTab && <PanelHighLight />}
         </Elevation>
     );
 });
-
-EditorSidebar.displayName = "EditorSidebar";
-
-export type EditorSidebarTabProps = TabProps;
-
-export const EditorSidebarTab = makeDecoratable(
-    "EditorSidebarTab",
-    ({ children, ...props }: EditorSidebarTabProps): JSX.Element | null => {
-        return <Tab {...props}>{children}</Tab>;
-    }
-);

@@ -11,7 +11,7 @@ import { ElementTypeContainer } from "./StyledComponents";
 import CollapsableList from "./CollapsableList";
 import DragBlockIndicator from "./DragBlockIndicator";
 import { BLOCK, useMoveBlock, useSortableList } from "./navigatorHooks";
-import { NavigatorContext } from "./Navigator";
+import { NavigatorContext } from "./NavigatorDrawer";
 import { PbEditorElement } from "~/types";
 
 const elementIdStyle = css`

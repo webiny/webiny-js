@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, ReactElement } from "react";
 import classNames from "classnames";
 import { EmptyBlock, Collapsable, ArrowRight, HighlightItem } from "./StyledComponents";
-import { NavigatorContext } from "./Navigator";
+import { NavigatorContext } from "./NavigatorDrawer";
 
 interface CollapsableListProps {
     children: ReactElement | ReactElement[];

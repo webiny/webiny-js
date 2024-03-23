@@ -4,9 +4,12 @@ import { EditorConfig } from "~/editor/config";
 
 interface BlockEditorConfigProps {
     children: React.ReactNode;
+    name?: string;
 }
 
-const BaseBlockEditorConfig = ({ children }: BlockEditorConfigProps) => {
+const BaseBlockEditorConfig = ({
+    children
+}: BlockEditorConfigProps) => {
     return (
         <CompositionScope name={"pb.blockEditor"}>
             <EditorConfig>{children}</EditorConfig>

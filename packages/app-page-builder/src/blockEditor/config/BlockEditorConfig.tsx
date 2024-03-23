@@ -1,16 +1,14 @@
 import React from "react";
 import { EventActionPlugins, EventActionHandlerPlugin } from "./eventActions";
-import { ElementSettingsTabContentPlugin } from "./ElementSettingsTabContentPlugin";
-import { ToolbarActionsPlugin } from "./ToolbarActionsPlugin";
 import { DefaultBlockEditorConfig } from "./DefaultBlockEditorConfig";
+import { DefaultEditorConfig } from "~/editor";
 
 export const BlockEditorConfig = React.memo(() => {
     return (
         <>
+            <DefaultEditorConfig />
             <EventActionHandlerPlugin />
             <EventActionPlugins />
-            <ElementSettingsTabContentPlugin />
-            <ToolbarActionsPlugin />
             <DefaultBlockEditorConfig />
         </>
     );

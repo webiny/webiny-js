@@ -3,7 +3,7 @@ import { EventActionPlugins, EventActionHandlerPlugin } from "./eventActions";
 import { EditorBarPlugins } from "./editorBar";
 import { BlockEditingPlugin } from "~/pageEditor/config/blockEditing";
 import { BlockElementSidebarPlugin } from "~/templateEditor/config/BlockElementSidebarPlugin";
-import { ToolbarActionsPlugin } from "~/blockEditor/config/ToolbarActionsPlugin";
+// import { ToolbarActionsPlugin } from "~/blockEditor/config/ToolbarActionsPlugin";
 import { ElementSettingsTabContentPlugin } from "./ElementSettingsTabContentPlugin";
 
 export const TemplateEditorConfig = React.memo(() => {
@@ -15,7 +15,7 @@ export const TemplateEditorConfig = React.memo(() => {
             <BlockEditingPlugin />
             <BlockElementSidebarPlugin />
             <ElementSettingsTabContentPlugin />
-            <ToolbarActionsPlugin />
+            {/* TODO: <ToolbarActionsPlugin />*/}
         </>
     );
 });

@@ -1,6 +1,5 @@
 export * from "./createElement";
 export * from "./cloneElement";
-export * from "./deactivatePlugin";
 export * from "./deleteElement";
 export * from "./drag";
 export * from "./dropElement";

@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from "react";
-import { IconButton } from "@webiny/ui/Button";
-import { Tooltip } from "@webiny/ui/Tooltip";
 import { generateId } from "@webiny/utils";
 import { useDrawers } from "./DrawersProvider";
+import { IconButton } from "./IconButton";
 
 export interface DrawerTriggerProps {
     icon: JSX.Element;
@@ -28,9 +27,5 @@ export const DrawerTrigger = ({ drawer, label, icon }: DrawerTriggerProps) => {
         setActive(id);
     };
 
-    return (
-        <Tooltip placement={"right"} content={label}>
-            <IconButton icon={icon} onClick={toggleDrawer} />
-        </Tooltip>
-    );
+    return <IconButton icon={icon} label={label} onClick={toggleDrawer} />;
 };

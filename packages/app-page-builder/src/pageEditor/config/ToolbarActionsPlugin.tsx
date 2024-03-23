@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useCallback, useState } from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
@@ -7,8 +8,6 @@ import { plugins } from "@webiny/plugins";
 import { IconButton, ButtonPrimary } from "@webiny/ui/Button";
 import { Dialog, DialogCancel, DialogTitle, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 import { ReactComponent as LockIcon } from "@material-design-icons/svg/outlined/lock.svg";
-import { ToolbarActions } from "~/editor";
-import { renderPlugin } from "~/editor/components/Editor/Toolbar";
 import { useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";
 import { rootElementAtom, elementByIdSelector } from "~/editor/recoil/modules";
 import { PbEditorElement, PbEditorToolbarBottomPlugin, PbEditorToolbarTopPlugin } from "~/types";

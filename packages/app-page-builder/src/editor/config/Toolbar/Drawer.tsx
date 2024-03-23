@@ -35,14 +35,13 @@ export interface DrawerProps {
 }
 
 export const Drawer = ({ children, drawerClassName }: DrawerProps) => {
-    const { isOpen, close } = useDrawer();
+    const { isOpen } = useDrawer();
 
     return (
         <DrawerContainer open={isOpen}>
             <DrawerLeft
                 dismissible
                 open={isOpen}
-                onClose={close}
                 className={classNames(drawerStyle, drawerClassName)}
             >
                 <DrawerContent>{children}</DrawerContent>

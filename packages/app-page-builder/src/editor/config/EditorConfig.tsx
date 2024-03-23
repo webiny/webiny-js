@@ -4,6 +4,7 @@ import { TopBar } from "./TopBar/TopBar";
 import { Layout } from "./Layout";
 import { Content } from "./Content/Content";
 import { Toolbar } from "./Toolbar/Toolbar";
+import { Sidebar } from "./Sidebar/Sidebar";
 
 const base = createConfigurableComponent<ContentEntryEditorConfig>("PageBuilderEditorConfig");
 
@@ -13,10 +14,11 @@ export const EditorConfig = Object.assign(base.Config, {
     Content,
     TopBar,
     Toolbar,
+    Sidebar,
     useEditorConfig
 });
 
-export const EditorWithConfig = base.WithConfig;
+export const EditorWithConfig = Object.assign(base.WithConfig, { displayName: "EditorWithConfig" });
 
 interface ContentEntryEditorConfig {
     elements: ElementConfig[];

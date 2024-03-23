@@ -29,7 +29,7 @@ export const NavigatorContext = createContext<NavigatorContextValue>({
     }
 });
 
-const Navigator = () => {
+export const NavigatorDrawer = () => {
     const [elementTree, setElementTree] = useState<PbEditorElement | null>(null);
     const [expandAll, setExpandAll] = useState<boolean>(false);
     const [activeElementPath, setActiveElementPath] = useState<string[]>([]);
@@ -94,5 +94,3 @@ const Navigator = () => {
         </NavigatorContext.Provider>
     );
 };
-
-export default Navigator;

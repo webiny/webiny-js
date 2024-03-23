@@ -9,7 +9,7 @@ import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import ElementNotLinked from "~/blockEditor/components/elementSettingsTab/ElementNotLinked";
 import VariableSettings from "~/blockEditor/components/elementSettingsTab/VariableSettings";
 import VariablesList from "~/blockEditor/components/elementSettingsTab/VariablesList";
-import useElementSettings from "~/editor/plugins/elementSettings/hooks/useElementSettings";
+import { useElementSettings } from "~/editor/plugins/elementSettings/hooks/useElementSettings";
 import { useRefreshBlock } from "~/editor/hooks/useRefreshBlock";
 import { PbBlockEditorCreateVariablePlugin, PbEditorElement } from "~/types";
 

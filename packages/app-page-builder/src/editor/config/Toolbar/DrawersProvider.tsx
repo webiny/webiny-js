@@ -28,17 +28,15 @@ export const DrawersProvider = ({ children }: DrawerProviderProps) => {
     const { removeKeyHandler, addKeyHandler } = useKeyHandler();
 
     useEffect(() => {
-        if (activeId) {
-            addKeyHandler("escape", e => {
-                e.preventDefault();
-                setActive(undefined);
-            });
+        addKeyHandler("escape", e => {
+            e.preventDefault();
+            setActive(undefined);
+        });
 
-            return;
-        }
-
-        removeKeyHandler("escape");
-    }, [activeId]);
+        return () => {
+            removeKeyHandler("escape");
+        };
+    });
 
     const context: DrawerContext = {
         drawers,
