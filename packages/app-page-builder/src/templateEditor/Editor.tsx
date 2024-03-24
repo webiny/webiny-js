@@ -24,7 +24,8 @@ import { PbErrorResponse, PbBlockCategory, PbEditorElement, PbPageTemplate } fro
 import createBlockCategoryPlugin from "~/admin/utils/createBlockCategoryPlugin";
 import { PageTemplateWithContent } from "~/templateEditor/state";
 import { createStateInitializer } from "./createStateInitializer";
-import { TemplateEditorConfig } from "./config/TemplateEditorConfig";
+import { DefaultEditorConfig } from "~/editor/defaultConfig/DefaultEditorConfig";
+import { DefaultTemplateEditorConfig } from "./config/DefaultTemplateEditorConfig";
 import elementVariableRendererPlugins from "~/blockEditor/plugins/elementVariables";
 import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
 
@@ -126,7 +127,8 @@ export const TemplateEditor = () => {
 
     return (
         <React.Suspense fallback={<EditorLoadingScreen />}>
-            <TemplateEditorConfig />
+            <DefaultEditorConfig />
+            <DefaultTemplateEditorConfig />
             <LoadData>
                 <PbEditor
                     stateInitializerFactory={createStateInitializer(

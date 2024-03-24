@@ -5,11 +5,13 @@ import { Layout } from "./Layout";
 import { Content } from "./Content/Content";
 import { Toolbar } from "./Toolbar/Toolbar";
 import { Sidebar } from "./Sidebar/Sidebar";
+import { Elements } from "~/editor/config/Elements";
 
 const base = createConfigurableComponent<ContentEntryEditorConfig>("PageBuilderEditorConfig");
 
 export const EditorConfig = Object.assign(base.Config, {
     Element,
+    Elements,
     Layout,
     Content,
     TopBar,

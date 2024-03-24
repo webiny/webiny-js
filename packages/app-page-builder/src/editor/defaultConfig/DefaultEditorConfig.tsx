@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ReactComponent as TouchIcon } from "@material-design-icons/svg/round/touch_app.svg";
 import { ResponsiveModeSelector } from "./TopBar/ResponsiveModeSelector";
 import { Breadcrumbs } from "./Content/Breadcrumbs";
 import { Background } from "./Content/Background";
 import { Elements } from "./Content/Elements";
 import { ActionPlugins } from "./ActionPlugins";
-import { EditorConfig } from "~/editor/config";
+import { EditorConfig, useEditorConfig } from "~/editor/config";
 import { AddElement } from "./Toolbar/AddElement";
 import { Navigator } from "./Toolbar/Navigator";
 import { Saving } from "./Toolbar/Saving/Saving";
@@ -18,8 +18,17 @@ import { OnActiveElement } from "./Sidebar/OnActiveElement";
 import { ElementSettings } from "./Sidebar/ElementSettings/ElementSettings";
 import { StyleSettingsGroup } from "./Sidebar/StyleSettings/StyleSettingsGroup";
 import { ElementSettingsGroup } from "./Sidebar/ElementSettings/ElementSettingsGroup";
+import { ElementActionsAdapter } from "~/editor/defaultConfig/Sidebar/BackwardsCompatibility/ElementActionsAdapter";
 
 const { TopBar, Content, Toolbar, Sidebar } = EditorConfig;
+
+const LogElements = () => {
+    const { elements } = useEditorConfig();
+    useEffect(() => {
+        // console.log(elements);
+    }, [elements.length]);
+    return null;
+};
 
 // const StyleSettingsDecorator = Sidebar.StyleSettingsPlugin.createDecorator(() => {
 //     const skip = ["pb-editor-page-element-style-settings-property"];
@@ -86,11 +95,17 @@ export const DefaultEditorConfig = React.memo(() => {
                     group={"element"}
                     element={<ClickToActivate />}
                 />
+                {/* This element renders element actions. */}
                 <Sidebar.Element
                     name={"elementActions"}
                     group={"element"}
-                    element={<ElementActions />}
+                    element={
+                        <OnActiveElement>
+                            <ElementActions />
+                        </OnActiveElement>
+                    }
                 />
+                {/* This element renders element properties. */}
                 <Sidebar.Element
                     name={"elementSettings"}
                     group={"element"}
@@ -100,6 +115,10 @@ export const DefaultEditorConfig = React.memo(() => {
                         </OnActiveElement>
                     }
                 />
+                {/* This will register actions from plugins using the new API. */}
+                <ElementActionsAdapter />
+                {/*<Sidebar.ElementProperty name={""} element={<></>} />*/}
+                <LogElements />
             </EditorConfig>
         </>
     );

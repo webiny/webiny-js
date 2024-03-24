@@ -2,18 +2,16 @@ import React from "react";
 import { CompositionScope } from "@webiny/app-admin";
 import { EditorConfig } from "~/editor/config";
 
-interface BlockEditorConfigProps {
+interface TemplateEditorConfigProps {
     children: React.ReactNode;
 }
 
-const BaseBlockEditorConfig = ({
-    children
-}: BlockEditorConfigProps) => {
+const BaseTemplateEditorConfig = ({ children }: TemplateEditorConfigProps) => {
     return (
-        <CompositionScope name={"pb.blockEditor"}>
+        <CompositionScope name={"pb.templateEditor"}>
             <EditorConfig>{children}</EditorConfig>
         </CompositionScope>
     );
 };
 
-export const BlockEditorConfig = Object.assign(BaseBlockEditorConfig, EditorConfig);
+export const TemplateEditorConfig = Object.assign(BaseTemplateEditorConfig, EditorConfig);

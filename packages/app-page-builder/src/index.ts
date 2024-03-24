@@ -1,4 +1,6 @@
 export * from "./PageBuilder";
+export * from "./blockEditor/editorConfig/BlockEditorConfig";
+export * from "./templateEditor/editorConfig/TemplateEditorConfig";
 
 // Export extension components
 export * from "./modules/WebsiteSettings/AddPbWebsiteSettings";

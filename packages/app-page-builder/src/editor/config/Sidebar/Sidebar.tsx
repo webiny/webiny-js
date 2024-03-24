@@ -9,6 +9,7 @@ import {
 import { Tab } from "./Tab";
 import { useActiveGroup } from "~/editor/config/Sidebar/useActiveGroup";
 import { StyleSettingsPlugin } from "./StyleSettingsPlugin";
+import { IconButton } from "./IconButton";
 
 const SCOPE = "sidebar";
 
@@ -30,15 +31,22 @@ const Elements = makeDecoratable("SidebarElements", (props: ElementsProps) => {
 
 export type GroupProps = Omit<ElementProps, "group">;
 
-const BaseGroup = (props: GroupProps) => {
-    return <Sidebar.Element {...props} group={"groups"} />;
-};
+const BaseGroup = makeDecoratable("SidebarGroup", (props: GroupProps) => {
+    return <BaseSidebarElement {...props} group={"groups"} />;
+});
+
+export type ElementActionProps = Omit<ElementProps, "group">;
+
+const BaseElementAction = makeDecoratable("SidebarElementAction", (props: ElementActionProps) => {
+    return <BaseSidebarElement {...props} group={"actions"} />;
+});
 
 export const Sidebar = Object.assign(BaseSidebar, {
     Layout,
     Element: BaseSidebarElement,
     Elements,
     Group: Object.assign(BaseGroup, { Tab }),
+    ElementAction: Object.assign(BaseElementAction, { IconButton }),
     useActiveGroup,
     /* !!! Temporary solution !!! We need this for now, before we move element settings plugins to the new config API. */
     StyleSettingsPlugin

@@ -11,7 +11,7 @@ export interface ElementConfig {
 
 export interface ElementProps {
     name: string;
-    element?: JSX.Element;
+    element?: JSX.Element | null;
     group?: string;
     scope?: string;
     remove?: boolean;

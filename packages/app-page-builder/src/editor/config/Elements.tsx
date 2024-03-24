@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useEditorConfig } from "./EditorConfig";
 import { ElementConfig } from "~/editor/config/Element";
 
@@ -7,6 +7,7 @@ declare global {
     namespace JSX {
         interface IntrinsicElements {
             "pb-editor-elements": React.HTMLProps<HTMLDivElement>;
+            "pb-editor-element": React.HTMLProps<HTMLDivElement>;
         }
     }
 }
@@ -25,8 +26,6 @@ const byScope = (scope?: string) => {
     return scope ? (item: ElementConfig) => item.scope === scope : passthrough;
 };
 
-const ignore = { display: "contents" };
-
 export const Elements = ({ group, scope }: ElementsProps) => {
     const { elements } = useEditorConfig();
 
@@ -35,9 +34,11 @@ export const Elements = ({ group, scope }: ElementsProps) => {
     }, [elements, group, scope]);
 
     return (
-        <pb-editor-elements data-scope={scope} data-group={group} style={ignore}>
+        <pb-editor-elements data-scope={scope} data-group={group}>
             {groupElements.map(element => (
-                <Fragment key={element.name}>{element.element}</Fragment>
+                <pb-editor-element key={element.name} data-name={element.name}>
+                    {element.element}
+                </pb-editor-element>
             ))}
         </pb-editor-elements>
     );
