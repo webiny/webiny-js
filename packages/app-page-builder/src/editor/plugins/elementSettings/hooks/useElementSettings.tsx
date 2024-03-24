@@ -3,6 +3,7 @@ import { PbEditorPageElementPlugin, PbEditorPageElementSettingsPlugin } from "~/
 import { userElementSettingsPlugins } from "../../../helpers";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { useMemo } from "react";
+import {useDeactivateOnEsc} from "~/editor/plugins/elementSettings/hooks/useDeactivateOnEsc";
 
 interface ElementAction {
     plugin: PbEditorPageElementSettingsPlugin;
@@ -62,6 +63,7 @@ const getElementActions = (plugin?: PbEditorPageElementPlugin): ElementAction[] 
 };
 
 export function useElementSettings(): ElementAction[] {
+    useDeactivateOnEsc();
     const [element] = useActiveElement();
     const elementType = element ? element.type : undefined;
 

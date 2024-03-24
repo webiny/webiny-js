@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, ReactElement } from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { useKeyHandler } from "@webiny/app-admin";
+import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
 
 interface ActionProps {
     disabled?: boolean;

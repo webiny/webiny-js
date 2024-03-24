@@ -3,7 +3,7 @@ import classSet from "classnames";
 import { plugins } from "@webiny/plugins";
 import { useEventActionHandler } from "../../hooks/useEventActionHandler";
 import { EventActionHandler, PbEditorEventActionPlugin } from "~/types";
-import { useKeyHandler } from "../../hooks/useKeyHandler";
+import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
 import "./Editor.scss";
 import DragPreview from "./DragPreview";
 import Dialogs from "./Dialogs";

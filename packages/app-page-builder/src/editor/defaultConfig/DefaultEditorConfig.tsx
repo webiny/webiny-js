@@ -16,8 +16,22 @@ import { InfoMessage } from "./Sidebar/InfoMessage";
 import { StyleSettings } from "./Sidebar/StyleSettings/StyleSettings";
 import { OnActiveElement } from "./Sidebar/OnActiveElement";
 import { ElementSettings } from "./Sidebar/ElementSettings/ElementSettings";
+import { StyleSettingsGroup } from "./Sidebar/StyleSettings/StyleSettingsGroup";
+import { ElementSettingsGroup } from "./Sidebar/ElementSettings/ElementSettingsGroup";
 
 const { TopBar, Content, Toolbar, Sidebar } = EditorConfig;
+
+// const StyleSettingsDecorator = Sidebar.StyleSettingsPlugin.createDecorator(() => {
+//     const skip = ["pb-editor-page-element-style-settings-property"];
+//
+//     return function MaybeRender({ plugin, children }) {
+//         if (skip.includes(plugin.name as string)) {
+//             return null;
+//         }
+//
+//         return <>{children}</>;
+//     };
+// });
 
 const ClickToActivate = () => {
     return (
@@ -36,7 +50,7 @@ export const DefaultEditorConfig = React.memo(() => {
             <ActionPlugins />
             <EditorConfig>
                 <TopBar.Element
-                    name={"responsiveModeSelector"}
+                    name={"displaySizeSelector"}
                     group={"center"}
                     element={<ResponsiveModeSelector />}
                 />
@@ -49,10 +63,8 @@ export const DefaultEditorConfig = React.memo(() => {
                 <Toolbar.Element name={"undo"} group={"bottom"} element={<Undo />} />
                 <Toolbar.Element name={"redo"} group={"bottom"} element={<Redo />} />
                 {/* Sidebar Groups */}
-                {/*<Sidebar.Group name={"style"} label={"Style"} element={<StyleSettingsGroup/>}/>*/}
-                {/*<Sidebar.Group name={"element"} label={"Element"} element={<ElementSettingsGroup/>} />*/}
-                {/* TODO: <Sidebar.Elements group="groups"/> to render groups within the Layout? */}
-
+                <Sidebar.Group name={"style"} element={<StyleSettingsGroup />} />
+                <Sidebar.Group name={"element"} element={<ElementSettingsGroup />} />
                 {/* Style Settings Tab */}
                 <Sidebar.Element
                     name={"styleSettings"}

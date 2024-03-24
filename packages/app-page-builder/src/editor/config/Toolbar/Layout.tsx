@@ -23,7 +23,7 @@ const ToolbarContainer = styled("div")({
     zIndex: 3
 });
 
-const ToolbarActionsWrapper = styled("div")({
+const ToolbarActions = styled("div")({
     position: "relative",
     display: "flex",
     flexDirection: "column",
@@ -44,14 +44,14 @@ export const Layout = () => {
                 ))}
             </ToolbarDrawerContainer>
             <ToolbarContainer>
-                <ToolbarActionsWrapper>
+                <ToolbarActions>
                     <div>
                         <Toolbar.Elements group={"top"} />
                     </div>
                     <div>
                         <Toolbar.Elements group={"bottom"} />
                     </div>
-                </ToolbarActionsWrapper>
+                </ToolbarActions>
             </ToolbarContainer>
         </>
     );

@@ -2,6 +2,15 @@ import React, { Fragment, useMemo } from "react";
 import { useEditorConfig } from "./EditorConfig";
 import { ElementConfig } from "~/editor/config/Element";
 
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "pb-editor-elements": React.HTMLProps<HTMLDivElement>;
+        }
+    }
+}
+
 export interface ElementsProps {
     group?: string;
     scope?: string;
@@ -16,6 +25,8 @@ const byScope = (scope?: string) => {
     return scope ? (item: ElementConfig) => item.scope === scope : passthrough;
 };
 
+const ignore = { display: "contents" };
+
 export const Elements = ({ group, scope }: ElementsProps) => {
     const { elements } = useEditorConfig();
 
@@ -24,10 +35,10 @@ export const Elements = ({ group, scope }: ElementsProps) => {
     }, [elements, group, scope]);
 
     return (
-        <>
+        <pb-editor-elements data-scope={scope} data-group={group} style={ignore}>
             {groupElements.map(element => (
                 <Fragment key={element.name}>{element.element}</Fragment>
             ))}
-        </>
+        </pb-editor-elements>
     );
 };
