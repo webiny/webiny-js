@@ -102,7 +102,7 @@ export const TrashBin = observer((props: TrashBinProps) => {
 
     useEffect(() => {
         presenter.init();
-        useCases.listItemsUseCase.execute();
+        controllers.listItems.execute();
     }, []);
 
     return (
