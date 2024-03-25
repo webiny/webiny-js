@@ -63,7 +63,7 @@ export interface HeadlessCms
     /**
      * Record locking mechanism.
      */
-    locking: IHeadlessCmsLockingMechanism;
+    lockingMechanism: IHeadlessCmsLockingMechanism;
 }
 
 /**
@@ -1669,7 +1669,7 @@ export interface CmsModelManager<T = CmsEntryValues> {
     /**
      * Create an entry.
      */
-    create(data: CreateCmsEntryInput): Promise<CmsEntry<T>>;
+    create<I>(data: CreateCmsEntryInput & I): Promise<CmsEntry<T>>;
     /**
      * Update an entry.
      */

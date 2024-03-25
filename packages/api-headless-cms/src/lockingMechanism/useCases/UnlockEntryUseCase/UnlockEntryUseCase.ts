@@ -5,6 +5,7 @@ import {
 } from "~/lockingMechanism/abstractions/IUnlockEntryUseCase";
 import { IIsEntryLockedUseCase } from "~/lockingMechanism/abstractions/IsEntryLocked";
 import { ICmsModelLockRecordManager } from "~/lockingMechanism/types";
+import { createLockRecordDatabaseId } from "~/lockingMechanism/utils/lockRecordDatabaseId";
 
 export interface IUnlockEntryUseCaseParams {
     isEntryLockedUseCase: IIsEntryLockedUseCase;
@@ -27,7 +28,7 @@ export class UnlockEntryUseCase implements IUnlockEntryUseCase {
         }
         try {
             const manager = await this.getManager();
-            await manager.delete(params.id);
+            await manager.delete(createLockRecordDatabaseId(params.id));
         } catch (ex) {
             throw new WebinyError(
                 `Could not unlock entry: ${ex.message}`,

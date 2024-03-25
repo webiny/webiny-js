@@ -42,12 +42,6 @@ export const createBaseContentSchema = ({ context }: Params): ICmsGraphQLSchemaP
                 _empty: String
             }
 
-            type CmsIdentity {
-                id: String
-                displayName: String
-                type: String
-            }
-
             enum CmsEntryStatusType {
                 latest
                 published

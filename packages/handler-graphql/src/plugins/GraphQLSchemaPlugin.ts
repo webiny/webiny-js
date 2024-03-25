@@ -30,3 +30,7 @@ export class GraphQLSchemaPlugin<TContext = Context>
         };
     }
 }
+
+export const createGraphQLSchemaPlugin = <T = Context>(config: GraphQLSchemaPluginConfig<T>) => {
+    return new GraphQLSchemaPlugin<T>(config);
+};

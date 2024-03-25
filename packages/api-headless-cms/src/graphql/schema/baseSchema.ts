@@ -32,6 +32,12 @@ const createSchema = (plugins: PluginsContainer): IGraphQLSchemaPlugin<CmsContex
 
     const cmsPlugin = createCmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
+            type CmsIdentity {
+                id: String
+                displayName: String
+                type: String
+            }
+
             type CmsError {
                 code: String
                 message: String

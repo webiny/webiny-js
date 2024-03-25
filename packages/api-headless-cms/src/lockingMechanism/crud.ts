@@ -1,4 +1,5 @@
-import { CmsContext } from "~/types";
+import { WebinyError } from "@webiny/error";
+import { CmsContext, CmsIdentity } from "~/types";
 import {
     ICmsModelLockRecordManager,
     IHeadlessCmsLockingMechanism,
@@ -10,9 +11,10 @@ import { IIsEntryLockedUseCaseExecute } from "./abstractions/IsEntryLocked";
 import { ILockEntryUseCaseExecute } from "~/lockingMechanism/abstractions/ILockEntryUseCase";
 import { IUnlockEntryUseCaseExecute } from "~/lockingMechanism/abstractions/IUnlockEntryUseCase";
 import { createUseCases } from "./useCases";
+import { IUnlockEntryRequestUseCaseExecute } from "./abstractions/IUnlockEntryRequestUseCase";
 
 interface Params {
-    context: Pick<CmsContext, "plugins" | "cms" | "benchmark">;
+    context: Pick<CmsContext, "plugins" | "cms" | "benchmark" | "security">;
 }
 
 export const createLockingMechanismCrud = ({ context }: Params): IHeadlessCmsLockingMechanism => {
@@ -24,10 +26,28 @@ export const createLockingMechanismCrud = ({ context }: Params): IHeadlessCmsLoc
         );
     };
 
-    const { unlockEntryUseCase, lockEntryUseCase, getLockRecordUseCase, isEntryLockedUseCase } =
-        createUseCases({
-            getManager
-        });
+    const getIdentity = (): CmsIdentity => {
+        const identity = context.security.getIdentity();
+        if (!identity) {
+            throw new WebinyError("Identity missing.");
+        }
+        return {
+            id: identity.id,
+            displayName: identity.displayName,
+            type: identity.type
+        };
+    };
+
+    const {
+        unlockEntryUseCase,
+        lockEntryUseCase,
+        getLockRecordUseCase,
+        isEntryLockedUseCase,
+        unlockEntryRequestUseCase
+    } = createUseCases({
+        getIdentity,
+        getManager
+    });
 
     const getLockRecord: IGetLockRecordUseCaseExecute = async (id: string) => {
         return context.benchmark.measure("headlessCms.crud.locking.getLockRecord", async () => {
@@ -53,10 +73,20 @@ export const createLockingMechanismCrud = ({ context }: Params): IHeadlessCmsLoc
         });
     };
 
+    const unlockEntryRequest: IUnlockEntryRequestUseCaseExecute = async params => {
+        return context.benchmark.measure(
+            "headlessCms.crud.locking.unlockEntryRequest",
+            async () => {
+                return unlockEntryRequestUseCase.execute(params);
+            }
+        );
+    };
+
     return {
         isEntryLocked,
         getLockRecord,
         lockEntry,
-        unlockEntry
+        unlockEntry,
+        unlockEntryRequest
     };
 };
