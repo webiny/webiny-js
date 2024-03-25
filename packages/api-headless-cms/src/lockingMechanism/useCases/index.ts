@@ -3,8 +3,11 @@ import { GetLockRecordUseCase } from "./GetLockRecord/GetLockRecordUseCase";
 import { IsEntryLockedUseCase } from "./IsEntryLocked/IsEntryLockedUseCase";
 import { LockEntryUseCase } from "./LockEntryUseCase/LockEntryUseCase";
 import { UnlockEntryUseCase } from "./UnlockEntryUseCase/UnlockEntryUseCase";
+import { UnlockEntryRequestUseCase } from "./UnlockRequestUseCase/UnlockEntryRequestUseCase";
+import { CmsIdentity } from "~/types";
 
 export interface CreateUseCasesParams {
+    getIdentity: () => CmsIdentity;
     getManager(): Promise<ICmsModelLockRecordManager>;
 }
 
@@ -27,10 +30,17 @@ export const createUseCases = (params: CreateUseCasesParams) => {
         getManager: params.getManager
     });
 
+    const unlockEntryRequestUseCase = new UnlockEntryRequestUseCase({
+        getLockRecordUseCase,
+        getIdentity: params.getIdentity,
+        getManager: params.getManager
+    });
+
     return {
         getLockRecordUseCase,
         isEntryLockedUseCase,
         lockEntryUseCase,
-        unlockEntryUseCase
+        unlockEntryUseCase,
+        unlockEntryRequestUseCase
     };
 };

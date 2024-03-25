@@ -120,7 +120,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 importing: {
                     ...createImportCrud(context)
                 },
-                locking: createLockingMechanismCrud({
+                lockingMechanism: createLockingMechanismCrud({
                     context
                 })
             };

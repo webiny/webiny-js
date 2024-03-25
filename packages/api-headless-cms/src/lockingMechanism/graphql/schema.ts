@@ -1,21 +1,33 @@
-import { createCmsGraphQLSchemaPlugin } from "~/plugins";
 import { resolve } from "~/graphql/utils/resolve";
 import { ContextPlugin } from "@webiny/handler";
 import { CmsContext } from "~/types";
+import { createGraphQLSchemaPlugin, NotFoundError } from "@webiny/handler-graphql";
 
 export const createGraphQLSchema = (): ContextPlugin<CmsContext> => {
     const contextPlugin = new ContextPlugin<CmsContext>(async context => {
-        if (context.cms.type !== "manage") {
-            return;
-        }
-        const plugin = createCmsGraphQLSchemaPlugin({
+        const plugin = createGraphQLSchemaPlugin<CmsContext>({
             typeDefs: /* GraphQL */ `
+                enum CmsLockRecordActionType {
+                    requested
+                    approved
+                    denied
+                }
+
+                type CmsLockRecordAction {
+                    id: ID!
+                    type: CmsLockRecordActionType!
+                    message: String
+                    createdBy: CmsIdentity!
+                    createdOn: DateTime!
+                }
+
                 type CmsLockRecord {
                     id: ID!
                     targetId: String!
                     type: String!
                     lockedBy: CmsIdentity!
                     lockedOn: DateTime!
+                    actions: [CmsLockRecordAction!]
                 }
 
                 type CmsIsEntryLockedResponse {
@@ -38,44 +50,87 @@ export const createGraphQLSchema = (): ContextPlugin<CmsContext> => {
                     error: CmsError
                 }
 
-                extend type Query {
+                type CmsUnlockEntryRequestResponse {
+                    data: CmsLockRecord
+                    error: CmsError
+                }
+
+                type LockingMechanismQuery {
+                    _empty: String
+                }
+
+                type LockingMechanismMutation {
+                    _empty: String
+                }
+
+                extend type LockingMechanismQuery {
                     isEntryLocked(id: ID!, type: String!): CmsIsEntryLockedResponse!
                     getLockRecord(id: ID!): CmsLockRecordResponse!
                 }
 
-                extend type Mutation {
+                extend type LockingMechanismMutation {
                     lockEntry(id: ID!, type: String!): CmsLockEntryResponse!
                     unlockEntry(id: ID!, type: String!): CmsUnlockEntryResponse!
+                    unlockEntryRequest(id: ID!, type: String!): CmsUnlockEntryRequestResponse!
+                }
+
+                extend type Query {
+                    lockingMechanism: LockingMechanismQuery
+                }
+
+                extend type Mutation {
+                    lockingMechanism: LockingMechanismMutation
                 }
             `,
             resolvers: {
                 Query: {
-                    isEntryLocked: async (_, args, context) => {
+                    lockingMechanism: async () => ({})
+                },
+                Mutation: {
+                    lockingMechanism: async () => ({})
+                },
+                LockingMechanismQuery: {
+                    async isEntryLocked(_, args, context) {
                         return resolve(async () => {
-                            return context.cms.locking.isEntryLocked({
+                            return context.cms.lockingMechanism.isEntryLocked({
                                 id: args.id,
                                 type: args.type
                             });
                         });
                     },
-                    getLockRecord: async (_, args, context) => {
+                    async getLockRecord(_, args, context) {
                         return resolve(async () => {
-                            return context.cms.locking.getLockRecord(args.id);
+                            const result = await context.cms.lockingMechanism.getLockRecord(
+                                args.id
+                            );
+                            if (result) {
+                                return result;
+                            }
+                            throw new NotFoundError("Lock record not found.");
                         });
                     }
                 },
-                Mutation: {
-                    lockEntry: async (_, args, context) => {
+                LockingMechanismMutation: {
+                    async lockEntry(_, args, context) {
                         return resolve(async () => {
-                            return context.cms.locking.lockEntry({
+                            return context.cms.lockingMechanism.lockEntry({
                                 id: args.id,
                                 type: args.type
                             });
                         });
                     },
-                    unlockEntry: async (_, args, context) => {
+                    async unlockEntry(_, args, context) {
                         return resolve(async () => {
-                            return await context.cms.locking.unlockEntry({
+                            await context.cms.lockingMechanism.unlockEntry({
+                                id: args.id,
+                                type: args.type
+                            });
+                            return true;
+                        });
+                    },
+                    async unlockEntryRequest(_, args, context) {
+                        return resolve(async () => {
+                            return await context.cms.lockingMechanism.unlockEntryRequest({
                                 id: args.id,
                                 type: args.type
                             });

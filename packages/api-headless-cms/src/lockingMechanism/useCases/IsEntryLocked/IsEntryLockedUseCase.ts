@@ -4,7 +4,8 @@ import {
     IHeadlessCmsLockingMechanismIsLockedParams,
     IHeadlessCmsLockRecord
 } from "~/lockingMechanism/types";
-import { createLockRecordDatabaseId } from "~/lockingMechanism/utils/createLockRecordDatabaseId";
+import { createLockRecordDatabaseId } from "~/lockingMechanism/utils/lockRecordDatabaseId";
+import { NotFoundError } from "@webiny/handler-graphql";
 
 /**
  * In milliseconds.
@@ -26,10 +27,17 @@ export class IsEntryLockedUseCase implements IIsEntryLockedUseCase {
     }
 
     public async execute(params: IHeadlessCmsLockingMechanismIsLockedParams): Promise<boolean> {
-        const id = createLockRecordDatabaseId(params);
-        const result = await this.getLockRecordUseCase.execute(id);
+        const id = createLockRecordDatabaseId(params.id);
+        try {
+            const result = await this.getLockRecordUseCase.execute(id);
 
-        return this.isLocked(result);
+            return this.isLocked(result);
+        } catch (ex) {
+            if (ex instanceof NotFoundError === false) {
+                throw ex;
+            }
+            return false;
+        }
     }
 
     private isLocked(record?: IHeadlessCmsLockRecord | null): boolean {
