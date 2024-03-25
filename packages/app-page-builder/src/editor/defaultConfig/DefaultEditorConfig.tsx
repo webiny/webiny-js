@@ -1,6 +1,6 @@
 import React from "react";
 import { ReactComponent as TouchIcon } from "@material-design-icons/svg/round/touch_app.svg";
-import { ResponsiveModeSelector } from "./TopBar/ResponsiveModeSelector";
+import { DisplayModeSelector } from "./TopBar/DisplayModeSelector";
 import { Breadcrumbs } from "./Content/Breadcrumbs";
 import { Background } from "./Content/Background";
 import { Elements } from "./Content/Elements";
@@ -40,9 +40,9 @@ export const DefaultEditorConfig = React.memo(() => {
             <ActionPlugins />
             <EditorConfig>
                 <TopBar.Element
-                    name={"displaySizeSelector"}
+                    name={"displayModeSelector"}
                     group={"center"}
-                    element={<ResponsiveModeSelector />}
+                    element={<DisplayModeSelector />}
                 />
                 <Content.Element name={"breadcrumbs"} element={<Breadcrumbs />} />
                 <Content.Element name={"background"} element={<Background />} />

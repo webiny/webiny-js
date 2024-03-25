@@ -83,7 +83,7 @@ const classes = {
     })
 };
 
-export const ResponsiveModeSelector = () => {
+export const DisplayModeSelector = () => {
     const [{ displayMode, pagePreviewDimension }, setUiValue] = useUI();
     const {
         responsiveDisplayMode: { setDisplayMode }
