@@ -10,6 +10,7 @@ import { DrawersProvider } from "./DrawersProvider";
 import { DrawerTrigger } from "./DrawerTrigger";
 import { Drawer } from "./Drawer";
 import { IconButton } from "./IconButton";
+import { createGetId } from "~/editor/config/createGetId";
 
 const SCOPE = "toolbar";
 
@@ -21,10 +22,20 @@ const BaseToolbar = () => {
     );
 };
 
-export type ElementProps = Omit<BaseElementProps, "scope">;
+const getElementId = createGetId(SCOPE)();
+
+export type ElementProps = Omit<BaseElementProps, "scope" | "id">;
 
 const BaseToolbarElement = makeDecoratable("ToolbarElement", (props: ElementProps) => {
-    return <BaseElement {...props} scope={SCOPE} />;
+    return (
+        <BaseElement
+            {...props}
+            scope={SCOPE}
+            id={getElementId(props.name)}
+            before={props.before ? getElementId(props.before) : undefined}
+            after={props.after ? getElementId(props.after) : undefined}
+        />
+    );
 });
 
 export type ElementsProps = Omit<BaseElementsProps, "scope">;

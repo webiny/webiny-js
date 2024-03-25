@@ -12,7 +12,4 @@ export { EditorConfig } from "./components/Editor/EditorConfig";
 export { DefaultEditorConfig } from "./defaultConfig/DefaultEditorConfig";
 export * from "./components/Editor/EditorBar";
 export { EditorProvider } from "./contexts/EditorProvider";
-export { EditorSidebarTab, EditorSidebarTabProps } from "./components/Editor/EditorSidebar";
-export { SidebarActions } from "./components/Editor/Sidebar/ElementSettingsTabContent";
-export { ElementSettingsRenderer } from "./plugins/elementSettings/advanced/ElementSettings";
 export { default as DropZone } from "../editor/components/DropZone";

@@ -3,11 +3,10 @@ import { merge } from "dot-prop-immutable";
 import { renderPlugins } from "@webiny/app/plugins";
 import { plugins } from "@webiny/plugins";
 import { Form, FormOnSubmit, FormRenderPropParams } from "@webiny/form";
-import { PbEditorPageElementAdvancedSettingsPlugin } from "~/types";
+import { PbEditorElement, PbEditorPageElementAdvancedSettingsPlugin } from "~/types";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
-import { makeDecoratable } from "@webiny/app-admin";
-import { OnActiveElement } from "~/editor/defaultConfig/Sidebar/OnActiveElement";
+import { Sidebar } from "~/editor/config/Sidebar/Sidebar";
 
 export const ElementSettings = () => {
     const [element] = useActiveElement();
@@ -37,33 +36,21 @@ export const ElementSettings = () => {
     return (
         <Form key={element && element.id} data={element.data} onSubmit={onSubmit}>
             {formProps => (
-                <OnActiveElement>
-                    <ElementSettingsRenderer formProps={formProps} />
-                </OnActiveElement>
+                <>
+                    <LegacyPlugins element={element} formProps={formProps} />
+                    <Sidebar.Elements group={"elementProperties"} />
+                </>
             )}
         </Form>
     );
 };
 
-export const ElementSettingsRenderer = makeDecoratable(
-    "ElementSettingsRenderer",
-    // Settings this to `any`, because this API is now deprecated, and we don't want to have it visible.
-    ({ formProps }: any) => {
-        return <LegacyPlugins formProps={formProps} />;
-    }
-);
-
 interface LegacyPluginsProps {
+    element: PbEditorElement;
     formProps: FormRenderPropParams;
 }
 
-const LegacyPlugins = ({ formProps }: LegacyPluginsProps) => {
-    const [element] = useActiveElement();
-
-    if (!element) {
-        return null;
-    }
-
+const LegacyPlugins = ({ element, formProps }: LegacyPluginsProps) => {
     return (
         <>
             {renderPlugins<PbEditorPageElementAdvancedSettingsPlugin>(

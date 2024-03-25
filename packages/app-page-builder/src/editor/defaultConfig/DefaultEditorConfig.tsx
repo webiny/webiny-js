@@ -13,34 +13,23 @@ import { Redo, Undo } from "./Toolbar/UndoRedo/UndoRedo";
 import { ElementActions } from "./Sidebar/ElementSettings/ElementActions";
 import { NoActiveElement } from "./Sidebar/NoActiveElement";
 import { InfoMessage } from "./Sidebar/InfoMessage";
-import { StyleSettings } from "./Sidebar/StyleSettings/StyleSettings";
 import { OnActiveElement } from "./Sidebar/OnActiveElement";
 import { ElementSettings } from "./Sidebar/ElementSettings/ElementSettings";
+import { StyleSettingsAdapter } from "./Sidebar/BackwardsCompatibility/StyleSettingsAdapter";
 import { StyleSettingsGroup } from "./Sidebar/StyleSettings/StyleSettingsGroup";
+import { StyleProperties } from "./Sidebar/StyleSettings/StyleProperties";
 import { ElementSettingsGroup } from "./Sidebar/ElementSettings/ElementSettingsGroup";
-import { ElementActionsAdapter } from "~/editor/defaultConfig/Sidebar/BackwardsCompatibility/ElementActionsAdapter";
+import { ElementActionsAdapter } from "./Sidebar/BackwardsCompatibility/ElementActionsAdapter";
 
 const { TopBar, Content, Toolbar, Sidebar } = EditorConfig;
 
 const LogElements = () => {
     const { elements } = useEditorConfig();
     useEffect(() => {
-        // console.log(elements);
+        console.log(elements);
     }, [elements.length]);
     return null;
 };
-
-// const StyleSettingsDecorator = Sidebar.StyleSettingsPlugin.createDecorator(() => {
-//     const skip = ["pb-editor-page-element-style-settings-property"];
-//
-//     return function MaybeRender({ plugin, children }) {
-//         if (skip.includes(plugin.name as string)) {
-//             return null;
-//         }
-//
-//         return <>{children}</>;
-//     };
-// });
 
 const ClickToActivate = () => {
     return (
@@ -80,7 +69,7 @@ export const DefaultEditorConfig = React.memo(() => {
                     group={"style"}
                     element={
                         <OnActiveElement>
-                            <StyleSettings />
+                            <StyleProperties />
                         </OnActiveElement>
                     }
                 />
@@ -115,10 +104,10 @@ export const DefaultEditorConfig = React.memo(() => {
                         </OnActiveElement>
                     }
                 />
+                {/* This will register style settings from plugins using the new API. */}
+                <StyleSettingsAdapter />
                 {/* This will register actions from plugins using the new API. */}
                 <ElementActionsAdapter />
-                {/*<Sidebar.ElementProperty name={""} element={<></>} />*/}
-                <LogElements />
             </EditorConfig>
         </>
     );

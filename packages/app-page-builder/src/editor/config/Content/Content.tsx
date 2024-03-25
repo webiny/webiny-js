@@ -3,6 +3,7 @@ import { makeDecoratable } from "@webiny/app-admin";
 import { Layout } from "./Layout";
 import { Elements as BaseElements } from "~/editor/config/Elements";
 import { Element as BaseElement, ElementProps as BaseElementProps } from "~/editor/config/Element";
+import { createGetId } from "~/editor/config/createGetId";
 
 const SCOPE = "content";
 
@@ -14,10 +15,20 @@ const BaseContent = makeDecoratable("EditorContent", () => {
     );
 });
 
-export type ElementProps = Omit<BaseElementProps, "scope" | "group">;
+export type ElementProps = Omit<BaseElementProps, "scope" | "group" | "id">;
+
+const getElementId = createGetId(SCOPE)();
 
 const Element = makeDecoratable("ContentElement", (props: ElementProps) => {
-    return <BaseElement {...props} scope={SCOPE} />;
+    return (
+        <BaseElement
+            {...props}
+            scope={SCOPE}
+            id={getElementId(props.name)}
+            before={props.before ? getElementId(props.before) : undefined}
+            after={props.after ? getElementId(props.after) : undefined}
+        />
+    );
 });
 
 const Elements = makeDecoratable("ContentElements", () => {

@@ -1,4 +1,4 @@
-import { plugins } from "@webiny/plugins";
+ import { plugins } from "@webiny/plugins";
 import { PbEditorPageElementPlugin, PbEditorPageElementSettingsPlugin } from "~/types";
 import { userElementSettingsPlugins } from "../../../helpers";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";

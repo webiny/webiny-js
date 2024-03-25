@@ -15,9 +15,10 @@ import { PageSettingsOverlay } from "./TopBar/PageSettings/PageSettings";
 import { RevisionsDropdownMenu } from "./TopBar/Revisions/Revisions";
 import { HideSaveAction } from "~/templateEditor/config/Sidebar/HideSaveAction";
 import { VariableSettings } from "./Sidebar/VariableSettings";
-import { TemplateMode } from "~/pageEditor/config/Sidebar/TemplateMode";
+import { TemplateMode } from "./Sidebar/TemplateMode";
+import { UnlinkTemplate } from "./Toolbar/UnlinkTemplate";
 
-const { TopBar, Toolbar, Content, Sidebar, Element } = PageEditorConfig;
+const { TopBar, Content, Sidebar, Element } = PageEditorConfig;
 
 export const DefaultPageEditorConfig = React.memo(() => {
     return (
@@ -27,10 +28,7 @@ export const DefaultPageEditorConfig = React.memo(() => {
             <PageEditorConfig>
                 <TopBar.Element name={"buttonBack"} group={"left"} element={<BackButton />} />
                 <TopBar.Element name={"title"} group={"left"} element={<Title />} />
-                <TopBar.Action
-                    name={"dropdownMenuRevisions}"}
-                    element={<RevisionsDropdownMenu />}
-                />
+                <TopBar.Action name={"dropdownMenuRevisions"} element={<RevisionsDropdownMenu />} />
                 <TopBar.Action name={"divider"} element={<TopBar.Divider />} />
                 <TopBar.Action name={"buttonPageSettings"} element={<PageSettingsButton />} />
                 <TopBar.Action name={"buttonPublishPage"} element={<PublishPageButton />} />
@@ -49,10 +47,12 @@ export const DefaultPageEditorConfig = React.memo(() => {
                     name={"variableSettings"}
                     group={"element"}
                     element={<VariableSettings />}
+                    after={"elementActions"}
                 />
                 <UnlinkBlock />
                 <HideSaveAction />
                 <TemplateMode />
+                <UnlinkTemplate />
             </PageEditorConfig>
         </>
     );
