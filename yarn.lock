@@ -6388,15 +6388,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commodo/hooks@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "@commodo/hooks@npm:1.2.1"
-  dependencies:
-    repropose: ^1.0.2
-  checksum: 2d0bded62a615cd6e01e143104248c689e9c98f45d8c2816ce6ba261c9c0c25bc8a79c8b070d24bb0d88e792833aa92bd129dfc47621656d9bf41e1d2c822554
-  languageName: node
-  linkType: hard
-
 "@commodo/name@npm:^1.2.2-beta.20, @commodo/name@npm:^1.3.1":
   version: 1.3.1
   resolution: "@commodo/name@npm:1.3.1"
@@ -17843,28 +17834,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/commodo@workspace:packages/commodo":
-  version: 0.0.0-use.local
-  resolution: "@webiny/commodo@workspace:packages/commodo"
-  dependencies:
-    "@babel/cli": ^7.23.9
-    "@babel/core": ^7.24.0
-    "@commodo/fields": 1.1.2-beta.20
-    "@commodo/hooks": ^1.2.1
-    "@commodo/name": ^1.3.1
-    "@webiny/cli": 0.0.0
-    "@webiny/project-utils": 0.0.0
-    commodo-fields-date: ^1.0.3
-    commodo-fields-float: ^1.0.2
-    commodo-fields-int: ^1.0.1
-    commodo-fields-object: ^1.0.3
-    ramda: ^0.26.1
-    repropose: ^1.0.2
-    rimraf: ^5.0.5
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
 "@webiny/cwp-template-aws@workspace:packages/cwp-template-aws":
   version: 0.0.0-use.local
   resolution: "@webiny/cwp-template-aws@workspace:packages/cwp-template-aws"
@@ -22163,37 +22132,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commodo-fields-date@npm:^1.0.3":
-  version: 1.0.7
-  resolution: "commodo-fields-date@npm:1.0.7"
-  dependencies:
-    "@commodo/fields": ^1.0.0
-    repropose: ^1.0.2
-  checksum: 64476b6658cecc59668a0f07d6bbae99cc2d887be0112c63e13c1c784a1626bf35b612e0693b086e6c362c13adb26094a1da70e83e324095632680185e22154a
-  languageName: node
-  linkType: hard
-
-"commodo-fields-float@npm:^1.0.2":
-  version: 1.0.4
-  resolution: "commodo-fields-float@npm:1.0.4"
-  dependencies:
-    "@commodo/fields": ^1.0.0
-    repropose: ^1.0.2
-  checksum: 7200db1eaebf85bfae1e452c6c37538eb4e245f840239e82d4570380f4f5660b841cc99407564d827504121ed94497038d328b319a765ad16ac4d093b4c7f179
-  languageName: node
-  linkType: hard
-
-"commodo-fields-int@npm:^1.0.1":
-  version: 1.0.3
-  resolution: "commodo-fields-int@npm:1.0.3"
-  dependencies:
-    "@commodo/fields": ^1.0.0
-    repropose: ^1.0.2
-  checksum: 62961d7bd7870b6a2ea90fe24f0bc7c768abfcf80f04790542d6cef7e4f09994b8e0deae23d76d2e544f11b711873b5f24d580b367a850aa22b17e72dadee895
-  languageName: node
-  linkType: hard
-
-"commodo-fields-object@npm:^1.0.3, commodo-fields-object@npm:^1.0.6":
+"commodo-fields-object@npm:^1.0.6":
   version: 1.0.6
   resolution: "commodo-fields-object@npm:1.0.6"
   dependencies:
@@ -35336,13 +35275,6 @@ __metadata:
   dependencies:
     performance-now: ^2.1.0
   checksum: 50ba284e481c8185dbcf45fc4618ba3aec580bb50c9121385d5698cb6012fe516d2015b1df6dd407a7b7c58d44be8086108236affbce1861edd6b44637c8cd52
-  languageName: node
-  linkType: hard
-
-"ramda@npm:^0.26.1":
-  version: 0.26.1
-  resolution: "ramda@npm:0.26.1"
-  checksum: 19c2730e44c129538151ae034c89be9b2c6a4ccc7c65cff57497418bc532ce09282f98cd927c39b0b03c6bc3f1d1a12d822b7b07f96a1634f4958a6c05b7b384
   languageName: node
   linkType: hard
 
