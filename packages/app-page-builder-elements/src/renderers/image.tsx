@@ -5,6 +5,16 @@ import { useRenderer } from "~/hooks/useRenderer";
 import { LinkComponent as LinkComponentType } from "~/types";
 import { DefaultLinkComponent } from "~/renderers/components";
 
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            // "object" HTML tags cannot be clicked, hence the need for "pb-image-object-wrapper" wrapper.
+            "pb-image-object": any;
+        }
+    }
+}
+
 export interface ImageElementData {
     image?: {
         title: string;
@@ -13,6 +23,7 @@ export interface ImageElementData {
         file?: {
             src: string;
         };
+        htmlTag?: string;
     };
     link?: {
         newTab: boolean;
@@ -30,6 +41,17 @@ const PbImg = styled.img`
     height: ${props => props.height};
 `;
 
+const PbImgObject = styled.object`
+    max-width: 100%;
+    width: ${props => props.width};
+    height: ${props => props.height};
+
+    // "object" HTML tags cannot be clicked, hence the need for the wrapper
+    // "pb-image-object-wrapper" tag, which handles click events. For this
+    // to work, we need to set "pointer-events: none" on the object tag.
+    pointer-events: none;
+`;
+
 export const ImageRendererComponent = ({
     onClick,
     renderEmpty,
@@ -44,48 +66,67 @@ export const ImageRendererComponent = ({
     let content;
     if (element.data?.image?.file?.src) {
         const { title, width, height, file } = element.data.image;
+        let { htmlTag } = element.data.image;
         const { src } = value || file;
 
-        // If a fixed image width in pixels was set, let's filter out unneeded
-        // image resize widths. For example, if 155px was set as the fixed image
-        // width, then we want the `srcset` attribute to only contain 100w and 300w.
-        let srcSetWidths: number[] = [];
-
-        if (width && width.endsWith("px")) {
-            const imageWidthInt = parseInt(width);
-            for (let i = 0; i < SUPPORTED_IMAGE_RESIZE_WIDTHS.length; i++) {
-                const supportedResizeWidth = SUPPORTED_IMAGE_RESIZE_WIDTHS[i];
-                if (imageWidthInt > supportedResizeWidth) {
-                    srcSetWidths.push(supportedResizeWidth);
-                } else {
-                    srcSetWidths.push(supportedResizeWidth);
-                    break;
-                }
-            }
-        } else {
-            // If a fixed image width was not provided, we
-            // rely on all the supported image resize widths.
-            srcSetWidths = SUPPORTED_IMAGE_RESIZE_WIDTHS;
+        if (htmlTag === "auto") {
+            htmlTag = src.endsWith(".svg") ? "object" : "img";
         }
 
-        const srcSet = srcSetWidths
-            .map(item => {
-                return `${src}?width=${item} ${item}w`;
-            })
-            .join(", ");
+        if (htmlTag === "object") {
+            content = (
+                <pb-image-object onClick={onClick}>
+                    <PbImgObject
+                        // Image has its width / height set from its own settings.
+                        width={width}
+                        height={height}
+                        title={title}
+                        data={src}
+                    />
+                </pb-image-object>
+            );
+        } else {
+            // If a fixed image width in pixels was set, let's filter out unneeded
+            // image resize widths. For example, if 155px was set as the fixed image
+            // width, then we want the `srcset` attribute to only contain 100w and 300w.
+            let srcSetWidths: number[] = [];
 
-        content = (
-            <PbImg
-                // Image has its width / height set from its own settings.
-                width={width}
-                height={height}
-                alt={title}
-                title={title}
-                src={src}
-                srcSet={srcSet}
-                onClick={onClick}
-            />
-        );
+            if (width && width.endsWith("px")) {
+                const imageWidthInt = parseInt(width);
+                for (let i = 0; i < SUPPORTED_IMAGE_RESIZE_WIDTHS.length; i++) {
+                    const supportedResizeWidth = SUPPORTED_IMAGE_RESIZE_WIDTHS[i];
+                    if (imageWidthInt > supportedResizeWidth) {
+                        srcSetWidths.push(supportedResizeWidth);
+                    } else {
+                        srcSetWidths.push(supportedResizeWidth);
+                        break;
+                    }
+                }
+            } else {
+                // If a fixed image width was not provided, we
+                // rely on all the supported image resize widths.
+                srcSetWidths = SUPPORTED_IMAGE_RESIZE_WIDTHS;
+            }
+
+            const srcSet = srcSetWidths
+                .map(item => {
+                    return `${src}?width=${item} ${item}w`;
+                })
+                .join(", ");
+
+            content = (
+                <PbImg
+                    // Image has its width / height set from its own settings.
+                    width={width}
+                    height={height}
+                    alt={title}
+                    title={title}
+                    src={src}
+                    srcSet={srcSet}
+                    onClick={onClick}
+                />
+            );
+        }
     } else {
         content = renderEmpty || null;
     }

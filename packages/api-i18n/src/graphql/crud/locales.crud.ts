@@ -53,18 +53,6 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
     );
 
     return {
-        /**
-         * Deprecated in 5.34.0
-         */
-        onBeforeCreate: onLocaleBeforeCreate,
-        onAfterCreate: onLocaleAfterCreate,
-        onBeforeUpdate: onLocaleBeforeUpdate,
-        onAfterUpdate: onLocaleAfterUpdate,
-        onBeforeDelete: onLocaleBeforeDelete,
-        onAfterDelete: onLocaleAfterDelete,
-        /**
-         * Introduced in 5.34.0
-         */
         onLocaleBeforeCreate,
         onLocaleAfterCreate,
         onLocaleBeforeUpdate,

@@ -528,7 +528,6 @@ module.exports = function (webpackEnv, { paths, options }) {
                     },
                     async: isEnvDevelopment
                 }),
-
             logs && new WebpackBar({ name: path.basename(paths.appPath) })
         ].filter(Boolean),
 

@@ -1,4 +1,4 @@
-import { IGetEntriesByIds } from "../../adstractions";
+import { IGetEntriesByIds } from "../../abstractions";
 import { CmsEntryStorageOperationsGetByIdsParams, CmsModel } from "~/types";
 
 export class GetEntriesByIdsNotDeleted implements IGetEntriesByIds {

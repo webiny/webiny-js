@@ -1,4 +1,4 @@
-import { IGetPublishedEntriesByIds } from "../../adstractions";
+import { IGetPublishedEntriesByIds } from "../../abstractions";
 import { CmsEntryStorageOperationsGetPublishedByIdsParams, CmsModel } from "~/types";
 
 export class GetPublishedEntriesByIdsNotDeleted implements IGetPublishedEntriesByIds {

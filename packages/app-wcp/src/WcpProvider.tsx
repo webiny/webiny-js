@@ -9,6 +9,8 @@ export const GET_WCP_PROJECT = gql`
         wcp {
             getProject {
                 data {
+                    orgId
+                    projectId
                     package {
                         features {
                             seats {
