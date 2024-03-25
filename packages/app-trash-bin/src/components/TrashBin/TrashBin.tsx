@@ -8,7 +8,6 @@ import {
     ITrashBinListGateway
 } from "@webiny/app-trash-bin-common";
 import {
-    LoadingRepository,
     loadingRepositoryFactory,
     metaRepositoryFactory,
     sortRepositoryFactory
