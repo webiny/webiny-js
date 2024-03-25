@@ -6,9 +6,7 @@ interface BlockEditorConfigProps {
     children: React.ReactNode;
 }
 
-const BaseBlockEditorConfig = ({
-    children
-}: BlockEditorConfigProps) => {
+const BaseBlockEditorConfig = ({ children }: BlockEditorConfigProps) => {
     return (
         <CompositionScope name={"pb.blockEditor"}>
             <EditorConfig>{children}</EditorConfig>

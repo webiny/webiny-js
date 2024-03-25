@@ -1,14 +1,12 @@
 import React from "react";
 import { css } from "emotion";
 import { ReactComponent as DownButton } from "@material-design-icons/svg/round/arrow_drop_down.svg";
-import { createDecorator } from "@webiny/app-admin";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
 import { useRevisions } from "~/pageEditor/hooks/useRevisions";
 import { RevisionItemAtomType } from "~/pageEditor/state";
-import { EditorBar } from "~/editor";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 
 const buttonStyle = css({

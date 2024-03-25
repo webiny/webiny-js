@@ -13,7 +13,6 @@ import {
 } from "~/admin/plugins/pageDetails/pageRevisions/MenuOptions";
 import { PageRevisionListItemGraphic } from "~/admin/plugins/pageDetails/pageRevisions/PageRevisionListItemGraphic";
 import { PublishPageButton, usePage as usePageFromEditor } from "./pageEditor";
-import { PreviewPage as PreviewPageMenuOption } from "./pageEditor/config/editorBar/PreviewPageButton/PreviewPageButton";
 import {
     DeletePage,
     MovePage,
@@ -132,11 +131,7 @@ export const Components = {
             /**
              * This component renders a button to publish the page.
              */
-            PublishPage: PublishPageButton,
-            /**
-             * This component renders an item in the dropdown menu.
-             */
-            PreviewPage: PreviewPageMenuOption
+            PublishPage: PublishPageButton
         }
     }
 };

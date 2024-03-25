@@ -32,11 +32,7 @@ export const DefaultTemplateEditorConfig = React.memo(() => {
                 <Toolbar.Element name={"savingIndicator"} remove />
                 <Content.Element name={"addBlock"} element={<AddBlock />} />
                 <Content.Element name={"addContent"} element={<AddContent />} />
-                <Element
-                    group={"overlays"}
-                    name={"blocksBrowser"}
-                    element={<BlocksBrowser />}
-                />
+                <Element group={"overlays"} name={"blocksBrowser"} element={<BlocksBrowser />} />
                 <Sidebar.ElementAction name={"editBlock"} element={<EditBlockAction />} />
                 <Sidebar.ElementAction name={"refreshBlock"} element={<RefreshBlockAction />} />
                 <Sidebar.Element

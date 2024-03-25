@@ -1,24 +1,34 @@
 import React, { useCallback } from "react";
+import { ReactComponent as HomeIcon } from "@material-design-icons/svg/round/home.svg";
+import { useConfirmationDialog } from "@webiny/app-admin";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
-import { MenuItem } from "@webiny/ui/Menu";
-import { ListItemGraphic } from "@webiny/ui/List";
-import { Icon } from "@webiny/ui/Icon";
-import { ReactComponent as HomeIcon } from "~/admin/assets/round-home-24px.svg";
-import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
 import { usePage } from "~/pageEditor/hooks/usePage";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
+import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
+import { PageEditorConfig } from "~/pageEditor/editorConfig/PageEditorConfig";
 
-export const SetAsHomepageButton = React.memo(() => {
+const { TopBar } = PageEditorConfig;
+
+export const SetAsHomepageOption = () => {
     const [page] = usePage();
     const { navigateToLatestFolder } = useNavigatePage();
     const { showSnackbar } = useSnackbar();
     const pageBuilder = useAdminPageBuilder();
+    const { showConfirmation } = useConfirmationDialog({
+        message: (
+            <span>
+                You&#39;re about to set this page as your new homepage, are you sure you want to
+                continue?
+                <br />
+                Note that the page will automatically be published.
+            </span>
+        )
+    });
 
     const { settings, updateSettingsMutation, isSpecialPage } = usePageBuilderSettings();
 
-    const setAsHomepage = useCallback(async () => {
+    const setPageAsHomepage = useCallback(async () => {
         const publishPageResult = await pageBuilder.publishPage(page as { id: string }, {
             client: pageBuilder.client
         });
@@ -29,6 +39,7 @@ export const SetAsHomepageButton = React.memo(() => {
         if (!publishPageResult) {
             return;
         }
+
         if (publishPageResult.error) {
             return showSnackbar(publishPageResult.error.message);
         }
@@ -57,29 +68,11 @@ export const SetAsHomepageButton = React.memo(() => {
     }, [page.id]);
 
     return (
-        <ConfirmationDialog
-            message={
-                <span>
-                    You&#39;re about to set this page as your new homepage, are you sure you want to
-                    continue?
-                    <br />
-                    Note that the page will automatically be published.
-                </span>
-            }
-        >
-            {({ showConfirmation }) => (
-                <MenuItem
-                    disabled={isSpecialPage(page.pid!, "home")}
-                    onClick={() => showConfirmation(setAsHomepage)}
-                >
-                    <ListItemGraphic>
-                        <Icon icon={<HomeIcon />} />
-                    </ListItemGraphic>
-                    Set as homepage
-                </MenuItem>
-            )}
-        </ConfirmationDialog>
+        <TopBar.DropdownAction.MenuItem
+            label={"Set as homepage"}
+            onClick={() => showConfirmation(setPageAsHomepage)}
+            icon={<HomeIcon />}
+            disabled={isSpecialPage(page.pid!, "home")}
+        />
     );
-});
-
-SetAsHomepageButton.displayName = "SetAsHomepageButton";
+};

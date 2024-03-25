@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { ReactComponent as TouchIcon } from "@material-design-icons/svg/round/touch_app.svg";
 import { ResponsiveModeSelector } from "./TopBar/ResponsiveModeSelector";
 import { Breadcrumbs } from "./Content/Breadcrumbs";
 import { Background } from "./Content/Background";
 import { Elements } from "./Content/Elements";
 import { ActionPlugins } from "./ActionPlugins";
-import { EditorConfig, useEditorConfig } from "~/editor/config";
+import { EditorConfig } from "~/editor/config";
 import { AddElement } from "./Toolbar/AddElement";
 import { Navigator } from "./Toolbar/Navigator";
 import { Saving } from "./Toolbar/Saving/Saving";
@@ -22,14 +22,6 @@ import { ElementSettingsGroup } from "./Sidebar/ElementSettings/ElementSettingsG
 import { ElementActionsAdapter } from "./Sidebar/BackwardsCompatibility/ElementActionsAdapter";
 
 const { TopBar, Content, Toolbar, Sidebar } = EditorConfig;
-
-const LogElements = () => {
-    const { elements } = useEditorConfig();
-    useEffect(() => {
-        console.log(elements);
-    }, [elements.length]);
-    return null;
-};
 
 const ClickToActivate = () => {
     return (
