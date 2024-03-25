@@ -18,6 +18,7 @@ export class TrashBinItemsRepository<TItem extends Record<string, any>>
     private deleteGateway: ITrashBinDeleteItemGateway;
     private itemMapper: ITrashBinItemMapper<TItem>;
     private items: TrashBinItem[] = [];
+    private params: TrashBinListQueryVariables = {};
 
     constructor(
         metaRepository: IMetaRepository,
@@ -29,18 +30,25 @@ export class TrashBinItemsRepository<TItem extends Record<string, any>>
         this.listGateway = listGateway;
         this.deleteGateway = deleteGateway;
         this.itemMapper = entryMapper;
+        this.params = {};
         makeAutoObservable(this);
-    }
-
-    async init() {
-        Promise.resolve();
     }
 
     getItems() {
         return this.items;
     }
 
+    getMeta() {
+        return this.metaRepository.get();
+    }
+
+    getLoading() {
+        return {};
+    }
+
     async listItems(params?: TrashBinListQueryVariables) {
+        this.params = params || {};
+
         const response = await this.listGateway.execute({ ...params });
 
         if (!response) {
@@ -49,10 +57,28 @@ export class TrashBinItemsRepository<TItem extends Record<string, any>>
 
         runInAction(() => {
             const [items, meta] = response;
+            this.items = items.map(entry => TrashBinItem.create(this.itemMapper.toDTO(entry)));
+            this.metaRepository.set(Meta.create(meta));
+        });
+    }
 
+    async listMoreItems() {
+        const { cursor } = this.metaRepository.get();
+
+        if (!cursor) {
+            return;
+        }
+
+        const response = await this.listGateway.execute({ ...this.params, after: cursor });
+
+        if (!response) {
+            return;
+        }
+
+        runInAction(() => {
+            const [items, meta] = response;
             const itemsDTO = items.map(entry => TrashBinItem.create(this.itemMapper.toDTO(entry)));
-            this.items = params?.after ? uniqBy([...this.items, ...itemsDTO], "id") : itemsDTO;
-
+            this.items = uniqBy([...this.items, ...itemsDTO], "id");
             this.metaRepository.set(Meta.create(meta));
         });
     }
@@ -60,11 +86,13 @@ export class TrashBinItemsRepository<TItem extends Record<string, any>>
     async deleteItem(id: string) {
         const response = await this.deleteGateway.execute(id);
 
-        if (response) {
-            runInAction(() => {
-                this.items = this.items.filter(item => item.id !== id);
-                this.metaRepository.decreaseTotalCount(1);
-            });
+        if (!response) {
+            return;
         }
+
+        runInAction(() => {
+            this.items = this.items.filter(item => item.id !== id);
+            this.metaRepository.decreaseTotalCount(1);
+        });
     }
 }

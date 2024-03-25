@@ -14,6 +14,5 @@ export interface TrashBinPresenterViewModel {
 }
 
 export interface ITrashBinPresenter {
-    init: () => Promise<void>;
     get vm(): TrashBinPresenterViewModel;
 }

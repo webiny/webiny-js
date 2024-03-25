@@ -12,10 +12,6 @@ export class MetaRepository implements IMetaRepository {
         makeAutoObservable(this);
     }
 
-    async init() {
-        return Promise.resolve();
-    }
-
     async set(meta: MetaDTO) {
         this.meta = Meta.create(meta);
     }

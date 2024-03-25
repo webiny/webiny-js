@@ -9,10 +9,6 @@ export class LoadingRepository implements ILoadingRepository {
         makeAutoObservable(this);
     }
 
-    async init() {
-        return Promise.resolve();
-    }
-
     get() {
         return Object.fromEntries(this.loadings);
     }

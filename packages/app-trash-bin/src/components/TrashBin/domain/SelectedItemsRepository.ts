@@ -9,10 +9,6 @@ export class SelectedItemsRepository implements ISelectedItemsRepository {
         makeAutoObservable(this);
     }
 
-    async init() {
-        return Promise.resolve();
-    }
-
     getSelectedItems() {
         return this.items;
     }

@@ -1,5 +1,5 @@
-import { TrashBinItem } from "@webiny/app-trash-bin-common";
+import { TrashBinItemDTO } from "@webiny/app-trash-bin-common";
 
 export interface ISelectItemsController {
-    execute: (items: TrashBinItem[]) => Promise<void>;
+    execute: (items: TrashBinItemDTO[]) => Promise<void>;
 }

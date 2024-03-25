@@ -1,5 +1,5 @@
 import { ISelectItemsController, ISelectItemsUseCase } from "~/components/TrashBin/abstractions";
-import { TrashBinItem } from "@webiny/app-trash-bin-common";
+import { TrashBinItem, TrashBinItemDTO } from "@webiny/app-trash-bin-common";
 
 export class SelectItemsController implements ISelectItemsController {
     private selectItemsUseCase: ISelectItemsUseCase;
@@ -8,7 +8,8 @@ export class SelectItemsController implements ISelectItemsController {
         this.selectItemsUseCase = selectItemsUseCase;
     }
 
-    async execute(items: TrashBinItem[]) {
-        await this.selectItemsUseCase.execute(items);
+    async execute(items: TrashBinItemDTO[]) {
+        const itemsDTOs = items.map(item => TrashBinItem.create(item));
+        await this.selectItemsUseCase.execute(itemsDTOs);
     }
 }

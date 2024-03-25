@@ -11,10 +11,6 @@ export class SortingRepository implements ISortingRepository {
         makeAutoObservable(this);
     }
 
-    async init() {
-        return Promise.resolve();
-    }
-
     get() {
         return this.sortings;
     }

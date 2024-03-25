@@ -8,10 +8,6 @@ export class SearchRepository implements ISearchRepository {
         makeAutoObservable(this);
     }
 
-    async init() {
-        return Promise.resolve();
-    }
-
     get() {
         return this.query;
     }

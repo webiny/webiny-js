@@ -1,12 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { ITrashBinItemMapper, TrashBinItem } from "@webiny/app-trash-bin-common";
-import {
-    ILoadingRepository,
-    IMetaRepository,
-    ISortingRepository,
-    MetaMapper,
-    SortingMapper
-} from "@webiny/app-utils";
+import { ISortingRepository, MetaMapper, SortingMapper } from "@webiny/app-utils";
 import {
     ITrashBinPresenter,
     ITrashBinItemsRepository,
@@ -19,8 +13,6 @@ import { LoadingActions } from "~/types";
 export class TrashBinPresenter implements ITrashBinPresenter {
     private itemsRepository: ITrashBinItemsRepository;
     private selectedRepository: ISelectedItemsRepository;
-    private loadingRepository: ILoadingRepository;
-    private metaRepository: IMetaRepository;
     private sortingRepository: ISortingRepository;
     private searchRepository: ISearchRepository;
     private itemMapper: ITrashBinItemMapper<TrashBinItem>;
@@ -28,41 +20,24 @@ export class TrashBinPresenter implements ITrashBinPresenter {
     constructor(
         itemsRepository: ITrashBinItemsRepository,
         selectedRepository: ISelectedItemsRepository,
-        loadingRepository: ILoadingRepository,
-        metaRepository: IMetaRepository,
         sortingRepository: ISortingRepository,
         searchRepository: ISearchRepository
     ) {
         this.itemsRepository = itemsRepository;
         this.selectedRepository = selectedRepository;
-        this.loadingRepository = loadingRepository;
-        this.metaRepository = metaRepository;
         this.sortingRepository = sortingRepository;
         this.searchRepository = searchRepository;
         this.itemMapper = new TrashBinItemMapper();
         makeAutoObservable(this);
     }
 
-    async init() {
-        const initActions = [
-            await this.itemsRepository.init(),
-            await this.selectedRepository.init(),
-            await this.loadingRepository.init(),
-            await this.metaRepository.init(),
-            await this.sortingRepository.init(),
-            await this.searchRepository.init()
-        ];
-
-        await Promise.all(initActions);
-    }
-
     get vm() {
         return {
             items: this.mapItemsToDTOs(this.itemsRepository.getItems()),
             selectedItems: this.mapItemsToDTOs(this.selectedRepository.getSelectedItems()),
-            meta: MetaMapper.toDto(this.metaRepository.get()),
+            meta: MetaMapper.toDto(this.itemsRepository.getMeta()),
             sorting: this.sortingRepository.get().map(sort => SortingMapper.fromDTOtoColumn(sort)),
-            loading: this.loadingRepository.get(),
+            loading: this.itemsRepository.getLoading(),
             isEmptyView: this.getIsEmptyView(),
             searchQuery: this.searchRepository.get(),
             searchLabel: "Search all items"
@@ -74,7 +49,7 @@ export class TrashBinPresenter implements ITrashBinPresenter {
     }
 
     private getIsEmptyView() {
-        const loading = this.loadingRepository.get();
+        const loading = this.itemsRepository.getLoading();
         const items = this.itemsRepository.getItems();
         return !loading[LoadingActions.list] && !items.length;
     }
