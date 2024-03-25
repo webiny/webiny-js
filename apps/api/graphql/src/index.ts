@@ -41,7 +41,6 @@ import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
 import { createCountDynamoDbTask } from "~/plugins/countDynamoDbTask";
 import { createContinuingTask } from "~/plugins/continuingTask";
 import { createWebsockets } from "@webiny/api-websockets";
-import { customSorterPlugin, customSortingPlugin } from "~/plugins/customSorterPlugin";
 
 const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
@@ -49,8 +48,6 @@ const documentClient = getDocumentClient();
 export const handler = createHandler({
     plugins: [
         createBenchmarkEnablePlugin(),
-        customSorterPlugin,
-        customSortingPlugin,
         createWcpContext(),
         createWcpGraphQL(),
         dynamoDbPlugins(),
