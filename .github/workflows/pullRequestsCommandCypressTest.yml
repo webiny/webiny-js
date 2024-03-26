@@ -172,8 +172,8 @@ jobs:
           name: verdaccio-files-ddb
           retention-days: 1
           path: |
-            dev/.verdaccio/
-            dev/.verdaccio.yaml
+            checked-out-pr/.verdaccio/
+            checked-out-pr/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
