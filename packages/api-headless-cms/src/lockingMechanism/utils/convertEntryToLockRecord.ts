@@ -6,6 +6,7 @@ import {
     IHeadlessCmsLockRecordApprovedAction,
     IHeadlessCmsLockRecordDeniedAction,
     IHeadlessCmsLockRecordEntryType,
+    IHeadlessCmsLockRecordObject,
     IHeadlessCmsLockRecordRequestedAction,
     IHeadlessCmsLockRecordValues
 } from "~/lockingMechanism/types";
@@ -63,6 +64,17 @@ export class HeadlessCmsLockRecord implements IHeadlessCmsLockRecord {
         this._actions = input.values.actions;
     }
 
+    public toObject(): IHeadlessCmsLockRecordObject {
+        return {
+            id: this._id,
+            targetId: this._targetId,
+            type: this._type,
+            lockedBy: this._lockedBy,
+            lockedOn: this._lockedOn,
+            actions: this._actions
+        };
+    }
+
     public addAction(action: IHeadlessCmsLockRecordAction) {
         if (!this._actions) {
             this._actions = [];
@@ -76,7 +88,7 @@ export class HeadlessCmsLockRecord implements IHeadlessCmsLockRecord {
         }
         return this._actions.find(
             (action): action is IHeadlessCmsLockRecordRequestedAction =>
-                action.type === IHeadlessCmsLockRecordActionType.request
+                action.type === IHeadlessCmsLockRecordActionType.requested
         );
     }
 

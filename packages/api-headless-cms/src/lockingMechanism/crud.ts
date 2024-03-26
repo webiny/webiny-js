@@ -3,7 +3,16 @@ import { CmsContext, CmsIdentity } from "~/types";
 import {
     ICmsModelLockRecordManager,
     IHeadlessCmsLockingMechanism,
-    IHeadlessCmsLockRecordValues
+    IHeadlessCmsLockRecordValues,
+    OnEntryAfterLockTopicParams,
+    OnEntryAfterUnlockRequestTopicParams,
+    OnEntryAfterUnlockTopicParams,
+    OnEntryBeforeLockTopicParams,
+    OnEntryBeforeUnlockRequestTopicParams,
+    OnEntryBeforeUnlockTopicParams,
+    OnEntryLockErrorTopicParams,
+    OnEntryUnlockErrorTopicParams,
+    OnEntryUnlockRequestErrorTopicParams
 } from "./types";
 import { createLockingModel, RECORD_LOCKING_MODEL_ID } from "./model";
 import { IGetLockRecordUseCaseExecute } from "./abstractions/IGetLockRecordUseCase";
@@ -12,6 +21,7 @@ import { ILockEntryUseCaseExecute } from "~/lockingMechanism/abstractions/ILockE
 import { IUnlockEntryUseCaseExecute } from "~/lockingMechanism/abstractions/IUnlockEntryUseCase";
 import { createUseCases } from "./useCases";
 import { IUnlockEntryRequestUseCaseExecute } from "./abstractions/IUnlockEntryRequestUseCase";
+import { createTopic } from "@webiny/pubsub";
 
 interface Params {
     context: Pick<CmsContext, "plugins" | "cms" | "benchmark" | "security">;
@@ -38,20 +48,48 @@ export const createLockingMechanismCrud = ({ context }: Params): IHeadlessCmsLoc
         };
     };
 
+    const onEntryBeforeLock = createTopic<OnEntryBeforeLockTopicParams>(
+        "cms.lockingMechanism.onEntryBeforeLock"
+    );
+    const onEntryAfterLock = createTopic<OnEntryAfterLockTopicParams>(
+        "cms.lockingMechanism.onEntryAfterLock"
+    );
+    const onEntryLockError = createTopic<OnEntryLockErrorTopicParams>(
+        "cms.lockingMechanism.onEntryLockError"
+    );
+    const onEntryBeforeUnlock = createTopic<OnEntryBeforeUnlockTopicParams>(
+        "cms.lockingMechanism.onEntryBeforeUnlock"
+    );
+    const onEntryAfterUnlock = createTopic<OnEntryAfterUnlockTopicParams>(
+        "cms.lockingMechanism.onEntryAfterUnlock"
+    );
+    const onEntryUnlockError = createTopic<OnEntryUnlockErrorTopicParams>(
+        "cms.lockingMechanism.onEntryUnlockError"
+    );
+    const onEntryBeforeUnlockRequest = createTopic<OnEntryBeforeUnlockRequestTopicParams>(
+        "cms.lockingMechanism.onEntryBeforeUnlockRequest"
+    );
+    const onEntryAfterUnlockRequest = createTopic<OnEntryAfterUnlockRequestTopicParams>(
+        "cms.lockingMechanism.onEntryAfterUnlockRequest"
+    );
+    const onEntryUnlockRequestError = createTopic<OnEntryUnlockRequestErrorTopicParams>(
+        "cms.lockingMechanism.onEntryUnlockRequestError"
+    );
+
     const {
-        unlockEntryUseCase,
-        lockEntryUseCase,
         getLockRecordUseCase,
         isEntryLockedUseCase,
+        lockEntryUseCase,
+        unlockEntryUseCase,
         unlockEntryRequestUseCase
     } = createUseCases({
         getIdentity,
         getManager
     });
 
-    const getLockRecord: IGetLockRecordUseCaseExecute = async (id: string) => {
+    const getLockRecord: IGetLockRecordUseCaseExecute = async input => {
         return context.benchmark.measure("headlessCms.crud.locking.getLockRecord", async () => {
-            return getLockRecordUseCase.execute(id);
+            return getLockRecordUseCase.execute(input);
         });
     };
 
@@ -63,13 +101,43 @@ export const createLockingMechanismCrud = ({ context }: Params): IHeadlessCmsLoc
 
     const lockEntry: ILockEntryUseCaseExecute = async params => {
         return context.benchmark.measure("headlessCms.crud.locking.lockEntry", async () => {
-            return lockEntryUseCase.execute(params);
+            try {
+                await onEntryBeforeLock.publish(params);
+                const record = await lockEntryUseCase.execute(params);
+                await onEntryAfterLock.publish({
+                    ...params,
+                    record
+                });
+                return record;
+            } catch (ex) {
+                await onEntryLockError.publish({
+                    ...params,
+                    error: ex
+                });
+                throw ex;
+            }
         });
     };
 
     const unlockEntry: IUnlockEntryUseCaseExecute = async params => {
         return context.benchmark.measure("headlessCms.crud.locking.unlockEntry", async () => {
-            return unlockEntryUseCase.execute(params);
+            try {
+                await onEntryBeforeUnlock.publish({
+                    ...params,
+                    getIdentity
+                });
+                await unlockEntryUseCase.execute(params);
+                await onEntryAfterUnlock.publish({
+                    ...params,
+                    getIdentity
+                });
+            } catch (ex) {
+                await onEntryUnlockError.publish({
+                    ...params,
+                    getIdentity
+                });
+                throw ex;
+            }
         });
     };
 
@@ -77,12 +145,41 @@ export const createLockingMechanismCrud = ({ context }: Params): IHeadlessCmsLoc
         return context.benchmark.measure(
             "headlessCms.crud.locking.unlockEntryRequest",
             async () => {
-                return unlockEntryRequestUseCase.execute(params);
+                try {
+                    await onEntryBeforeUnlockRequest.publish(params);
+                    const record = await unlockEntryRequestUseCase.execute(params);
+                    await onEntryAfterUnlockRequest.publish({
+                        ...params,
+                        record
+                    });
+                    return record;
+                } catch (ex) {
+                    await onEntryUnlockRequestError.publish({
+                        ...params,
+                        error: ex
+                    });
+                    throw ex;
+                }
             }
         );
     };
 
     return {
+        /**
+         * Lifecycle events
+         */
+        onEntryBeforeLock,
+        onEntryAfterLock,
+        onEntryLockError,
+        onEntryBeforeUnlock,
+        onEntryAfterUnlock,
+        onEntryUnlockError,
+        onEntryBeforeUnlockRequest,
+        onEntryAfterUnlockRequest,
+        onEntryUnlockRequestError,
+        /**
+         * Methods
+         */
         isEntryLocked,
         getLockRecord,
         lockEntry,

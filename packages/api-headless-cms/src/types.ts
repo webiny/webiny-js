@@ -1,6 +1,6 @@
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
-import { Context } from "@webiny/api/types";
+import { Context, GenericRecord } from "@webiny/api/types";
 import {
     GraphQLFieldResolver,
     GraphQLSchemaDefinition,
@@ -13,6 +13,13 @@ import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollectio
 import { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types";
 import { AccessControl } from "~/crud/AccessControl/AccessControl";
 import { IHeadlessCmsLockingMechanism } from "./lockingMechanism/types";
+
+export interface CmsError {
+    message: string;
+    code: string;
+    data: GenericRecord;
+    stack?: string;
+}
 
 export type ApiEndpoint = "manage" | "preview" | "read";
 

@@ -3,27 +3,27 @@ import {
     IUnlockEntryUseCase,
     IUnlockEntryUseCaseExecuteParams
 } from "~/lockingMechanism/abstractions/IUnlockEntryUseCase";
-import { IIsEntryLockedUseCase } from "~/lockingMechanism/abstractions/IsEntryLocked";
 import { ICmsModelLockRecordManager } from "~/lockingMechanism/types";
 import { createLockRecordDatabaseId } from "~/lockingMechanism/utils/lockRecordDatabaseId";
+import { IGetLockRecordUseCase } from "~/lockingMechanism/abstractions/IGetLockRecordUseCase";
 
 export interface IUnlockEntryUseCaseParams {
-    isEntryLockedUseCase: IIsEntryLockedUseCase;
+    readonly getLockRecordUseCase: IGetLockRecordUseCase;
     getManager(): Promise<ICmsModelLockRecordManager>;
 }
 
 export class UnlockEntryUseCase implements IUnlockEntryUseCase {
-    private readonly isEntryLockedUseCase: IIsEntryLockedUseCase;
+    private readonly getLockRecordUseCase: IGetLockRecordUseCase;
     private readonly getManager: () => Promise<ICmsModelLockRecordManager>;
 
     public constructor(params: IUnlockEntryUseCaseParams) {
-        this.isEntryLockedUseCase = params.isEntryLockedUseCase;
+        this.getLockRecordUseCase = params.getLockRecordUseCase;
         this.getManager = params.getManager;
     }
 
     public async execute(params: IUnlockEntryUseCaseExecuteParams): Promise<void> {
-        const locked = await this.isEntryLockedUseCase.execute(params);
-        if (!locked) {
+        const record = await this.getLockRecordUseCase.execute(params.id);
+        if (!record) {
             return;
         }
         try {

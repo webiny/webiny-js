@@ -1,4 +1,7 @@
-import { IGetLockRecordUseCase } from "~/lockingMechanism/abstractions/IGetLockRecordUseCase";
+import {
+    IGetLockRecordUseCase,
+    IGetLockRecordUseCaseExecuteParams
+} from "~/lockingMechanism/abstractions/IGetLockRecordUseCase";
 import { ICmsModelLockRecordManager, IHeadlessCmsLockRecord } from "~/lockingMechanism/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { convertEntryToLockRecord } from "~/lockingMechanism/utils/convertEntryToLockRecord";
@@ -16,8 +19,11 @@ export class GetLockRecordUseCase implements IGetLockRecordUseCase {
         this.getManager = params.getManager;
     }
 
-    public async execute(input: string): Promise<IHeadlessCmsLockRecord | null> {
-        const recordId = createLockRecordDatabaseId(input);
+    public async execute(
+        input: IGetLockRecordUseCaseExecuteParams
+    ): Promise<IHeadlessCmsLockRecord | null> {
+        const inputId = typeof input === "string" ? input : input.id;
+        const recordId = createLockRecordDatabaseId(inputId);
         const id = createIdentifier({
             id: recordId,
             version: 1
