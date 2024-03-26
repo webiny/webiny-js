@@ -1,1 +1,0 @@
-export { ResponsiveModeSelectorPlugin } from "./ResponsiveModeSelectorPlugin";
