@@ -7,30 +7,34 @@ export default /* GraphQL */ `
         entryId: String!
         modelId: String!
 
-        createdOn: DateTime!
+        createdOn: DateTime
         modifiedOn: DateTime
-        savedOn: DateTime!
+        savedOn: DateTime
         deletedOn: DateTime
+        restoredOn: DateTime
         firstPublishedOn: DateTime
         lastPublishedOn: DateTime
-        createdBy: CmsIdentity!
-        modifiedBy: CmsIdentity
-        savedBy: CmsIdentity!
-        deletedBy: CmsIdentity
-        firstPublishedBy: CmsIdentity
-        lastPublishedBy: CmsIdentity
-        revisionCreatedOn: DateTime!
+        createdBy: CmsIdentityInput
+        modifiedBy: CmsIdentityInput
+        savedBy: CmsIdentityInput
+        deletedBy: CmsIdentityInput
+        restoredBy: CmsIdentityInput
+        firstPublishedBy: CmsIdentityInput
+        lastPublishedBy: CmsIdentityInput
+        revisionCreatedOn: DateTime
         revisionModifiedOn: DateTime
-        revisionSavedOn: DateTime!
+        revisionSavedOn: DateTime
         revisionDeletedOn: DateTime
+        revisionRestoredOn: DateTime
         revisionFirstPublishedOn: DateTime
         revisionLastPublishedOn: DateTime
-        revisionCreatedBy: CmsIdentity!
-        revisionModifiedBy: CmsIdentity
-        revisionSavedBy: CmsIdentity!
-        revisionDeletedBy: CmsIdentity
-        revisionFirstPublishedBy: CmsIdentity
-        revisionLastPublishedBy: CmsIdentity
+        revisionCreatedBy: CmsIdentityInput
+        revisionModifiedBy: CmsIdentityInput
+        revisionSavedBy: CmsIdentityInput
+        revisionDeletedBy: CmsIdentityInput
+        revisionRestoredBy: CmsIdentityInput
+        revisionFirstPublishedBy: CmsIdentityInput
+        revisionLastPublishedBy: CmsIdentityInput
 
         text: String
         product(populate: Boolean = true): ProductApiSingular
@@ -82,6 +86,13 @@ export default /* GraphQL */ `
         deletedOn_lte: DateTime
         deletedOn_between: [DateTime!]
         deletedOn_not_between: [DateTime!]
+        restoredOn: DateTime
+        restoredOn_gt: DateTime
+        restoredOn_gte: DateTime
+        restoredOn_lt: DateTime
+        restoredOn_lte: DateTime
+        restoredOn_between: [DateTime!]
+        restoredOn_not_between: [DateTime!]
         firstPublishedOn: DateTime
         firstPublishedOn_gt: DateTime
         firstPublishedOn_gte: DateTime
@@ -112,6 +123,10 @@ export default /* GraphQL */ `
         deletedBy_not: ID
         deletedBy_in: [ID!]
         deletedBy_not_in: [ID!]
+        restoredBy: ID
+        restoredBy_not: ID
+        restoredBy_in: [ID!]
+        restoredBy_not_in: [ID!]
         firstPublishedBy: ID
         firstPublishedBy_not: ID
         firstPublishedBy_in: [ID!]
@@ -147,6 +162,13 @@ export default /* GraphQL */ `
         revisionDeletedOn_lt: DateTime
         revisionDeletedOn_lte: DateTime
         revisionDeletedOn_between: [DateTime!]
+        revisionRestoredOn: DateTime
+        revisionRestoredOn_gt: DateTime
+        revisionRestoredOn_gte: DateTime
+        revisionRestoredOn_lt: DateTime
+        revisionRestoredOn_lte: DateTime
+        revisionRestoredOn_between: [DateTime!]
+        revisionRestoredOn_not_between: [DateTime!]
         revisionDeletedOn_not_between: [DateTime!]
         revisionFirstPublishedOn: DateTime
         revisionFirstPublishedOn_gt: DateTime
@@ -178,6 +200,10 @@ export default /* GraphQL */ `
         revisionDeletedBy_not: ID
         revisionDeletedBy_in: [ID!]
         revisionDeletedBy_not_in: [ID!]
+        revisionRestoredBy: ID
+        revisionRestoredBy_not: ID
+        revisionRestoredBy_in: [ID!]
+        revisionRestoredBy_not_in: [ID!]
         revisionFirstPublishedBy: ID
         revisionFirstPublishedBy_not: ID
         revisionFirstPublishedBy_in: [ID!]
@@ -228,6 +254,8 @@ export default /* GraphQL */ `
         savedOn_DESC
         deletedOn_ASC
         deletedOn_DESC
+        restoredOn_ASC
+        restoredOn_DESC
         firstPublishedOn_ASC
         firstPublishedOn_DESC
         lastPublishedOn_ASC
@@ -240,14 +268,12 @@ export default /* GraphQL */ `
         revisionSavedOn_DESC
         revisionDeletedOn_ASC
         revisionDeletedOn_DESC
+        revisionRestoredOn_ASC
+        revisionRestoredOn_DESC
         revisionFirstPublishedOn_ASC
         revisionFirstPublishedOn_DESC
         revisionLastPublishedOn_ASC
         revisionLastPublishedOn_DESC
-        text_ASC
-        text_DESC
-        rating_ASC
-        rating_DESC
     }
 
     type ReviewApiModelResponse {

@@ -600,6 +600,74 @@ export const createEntriesStorageOperations = (
         }
     };
 
+    const restore: CmsEntryStorageOperations["restore"] = async (initialModel, params) => {
+        const { entry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
+
+        /**
+         * First we need to load all the revisions and published / latest entries.
+         */
+        const queryAllParams: QueryAllParams = {
+            entity,
+            partitionKey: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
+            options: {
+                gte: " "
+            }
+        };
+
+        let records: DbItem<CmsEntry>[] = [];
+        try {
+            records = await queryAll(queryAllParams);
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not load all records.",
+                ex.code || "LOAD_ALL_RECORDS_ERROR",
+                {
+                    error: ex,
+                    id: entry.id
+                }
+            );
+        }
+
+        const storageEntry = convertToStorageEntry({
+            model,
+            storageEntry: initialStorageEntry
+        });
+
+        /**
+         * Then create the batch writes for the DynamoDB, with the updated data.
+         */
+        const items = records.map(record => {
+            return entity.putBatch({
+                ...record,
+                ...storageEntry
+            });
+        });
+        /**
+         * And finally write it...
+         */
+        try {
+            await batchWriteAll({
+                table: entity.table,
+                items
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not restore the entry from the bin.",
+                ex.code || "RESTORE_ENTRY_ERROR",
+                {
+                    error: ex,
+                    entry,
+                    storageEntry
+                }
+            );
+        }
+    };
+
     const deleteRevision: CmsEntryStorageOperations["deleteRevision"] = async (
         initialModel,
         params
@@ -1383,6 +1451,7 @@ export const createEntriesStorageOperations = (
         move,
         delete: deleteEntry,
         moveToBin,
+        restore,
         deleteRevision,
         deleteMultipleEntries,
         getPreviousRevision,

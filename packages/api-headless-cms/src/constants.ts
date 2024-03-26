@@ -9,12 +9,14 @@ export const ENTRY_META_FIELDS = [
     "modifiedOn",
     "savedOn",
     "deletedOn",
+    "restoredOn",
     "firstPublishedOn",
     "lastPublishedOn",
     "createdBy",
     "modifiedBy",
     "savedBy",
     "deletedBy",
+    "restoredBy",
     "firstPublishedBy",
     "lastPublishedBy",
 
@@ -23,12 +25,14 @@ export const ENTRY_META_FIELDS = [
     "revisionModifiedOn",
     "revisionSavedOn",
     "revisionDeletedOn",
+    "revisionRestoredOn",
     "revisionFirstPublishedOn",
     "revisionLastPublishedOn",
     "revisionCreatedBy",
     "revisionModifiedBy",
     "revisionSavedBy",
     "revisionDeletedBy",
+    "revisionRestoredBy",
     "revisionFirstPublishedBy",
     "revisionLastPublishedBy"
 ] as const;
@@ -40,12 +44,14 @@ export interface RecordWithEntryMetaFields {
     revisionSavedOn: string;
     revisionModifiedOn: string | null;
     revisionDeletedOn: string | null;
+    revisionRestoredOn: string | null;
     revisionFirstPublishedOn: string | null;
     revisionLastPublishedOn: string | null;
     revisionCreatedBy: CmsIdentity;
     revisionSavedBy: CmsIdentity;
     revisionModifiedBy: CmsIdentity | null;
     revisionDeletedBy: CmsIdentity | null;
+    revisionRestoredBy: CmsIdentity | null;
     revisionFirstPublishedBy: CmsIdentity | null;
     revisionLastPublishedBy: CmsIdentity | null;
 
@@ -54,12 +60,14 @@ export interface RecordWithEntryMetaFields {
     savedOn: string;
     modifiedOn: string | null;
     deletedOn: string | null;
+    restoredOn: string | null;
     firstPublishedOn: string | null;
     lastPublishedOn: string | null;
     createdBy: CmsIdentity;
     savedBy: CmsIdentity;
     modifiedBy: CmsIdentity | null;
     deletedBy: CmsIdentity | null;
+    restoredBy: CmsIdentity | null;
     firstPublishedBy: CmsIdentity | null;
     lastPublishedBy: CmsIdentity | null;
 }
@@ -89,7 +97,8 @@ export const isNullableEntryMetaField = (fieldName: EntryMetaFieldName) => {
     return (
         lcFieldName.includes("modified") ||
         lcFieldName.includes("published") ||
-        lcFieldName.includes("deleted")
+        lcFieldName.includes("deleted") ||
+        lcFieldName.includes("restored")
     );
 };
 

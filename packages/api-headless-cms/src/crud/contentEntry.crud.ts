@@ -20,6 +20,7 @@ import {
     OnEntryAfterMoveTopicParams,
     OnEntryAfterPublishTopicParams,
     OnEntryAfterRepublishTopicParams,
+    OnEntryAfterRestoreTopicParams,
     OnEntryAfterUnpublishTopicParams,
     OnEntryAfterUpdateTopicParams,
     OnEntryBeforeCreateTopicParams,
@@ -29,6 +30,7 @@ import {
     OnEntryBeforeMoveTopicParams,
     OnEntryBeforePublishTopicParams,
     OnEntryBeforeRepublishTopicParams,
+    OnEntryBeforeRestoreTopicParams,
     OnEntryBeforeUnpublishTopicParams,
     OnEntryBeforeUpdateTopicParams,
     OnEntryCreateErrorTopicParams,
@@ -38,6 +40,7 @@ import {
     OnEntryMoveErrorTopicParams,
     OnEntryPublishErrorTopicParams,
     OnEntryRepublishErrorTopicParams,
+    OnEntryRestoreErrorTopicParams,
     OnEntryRevisionAfterCreateTopicParams,
     OnEntryRevisionAfterDeleteTopicParams,
     OnEntryRevisionBeforeCreateTopicParams,
@@ -78,7 +81,8 @@ import {
     getLatestRevisionByEntryIdUseCases,
     getPreviousRevisionByEntryIdUseCases,
     getPublishedRevisionByEntryIdUseCases,
-    deleteEntryUseCases
+    deleteEntryUseCases,
+    restoreEntryUseCases
 } from "~/crud/contentEntry/useCases";
 
 interface CreateContentEntryCrudParams {
@@ -182,6 +186,17 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         createTopic<OnEntryBeforeDeleteTopicParams>("cms.onEntryBeforeDelete");
     const onEntryAfterDelete = createTopic<OnEntryAfterDeleteTopicParams>("cms.onEntryAfterDelete");
     const onEntryDeleteError = createTopic<OnEntryDeleteErrorTopicParams>("cms.onEntryDeleteError");
+
+    /**
+     * Restore
+     */
+    const onEntryBeforeRestore = createTopic<OnEntryBeforeRestoreTopicParams>(
+        "cms.onEntryBeforeRestore"
+    );
+    const onEntryAfterRestore =
+        createTopic<OnEntryAfterRestoreTopicParams>("cms.onEntryAfterRestore");
+    const onEntryRestoreError =
+        createTopic<OnEntryRestoreErrorTopicParams>("cms.onEntryRestoreError");
 
     /**
      * Delete revision
@@ -293,10 +308,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     /**
      * Get latest revision by entryId
      */
-    const { getLatestRevisionByEntryIdUseCase, getLatestRevisionByEntryIdWithDeletedUseCase } =
-        getLatestRevisionByEntryIdUseCases({
-            operation: storageOperations.entries.getLatestRevisionByEntryId
-        });
+    const {
+        getLatestRevisionByEntryIdUseCase,
+        getLatestRevisionByEntryIdWithDeletedUseCase,
+        getLatestRevisionByEntryIdDeletedUseCase
+    } = getLatestRevisionByEntryIdUseCases({
+        operation: storageOperations.entries.getLatestRevisionByEntryId
+    });
 
     /**
      * Get previous revision by entryId
@@ -327,6 +345,18 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             context
         }
     );
+
+    /**
+     * Restore entry
+     */
+    const { restoreEntryUseCase } = restoreEntryUseCases({
+        restoreOperation: storageOperations.entries.restore,
+        getEntry: getLatestRevisionByEntryIdDeletedUseCase,
+        getIdentity: getSecurityIdentity,
+        topics: { onEntryBeforeRestore, onEntryAfterRestore, onEntryRestoreError },
+        accessControl,
+        context
+    });
 
     const getEntryById: CmsEntryContext["getEntryById"] = async (model, id) => {
         const where: CmsEntryListWhere = {
@@ -1182,6 +1212,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         onEntryAfterDelete,
         onEntryDeleteError,
 
+        onEntryBeforeRestore,
+        onEntryAfterRestore,
+        onEntryRestoreError,
+
         onEntryRevisionBeforeDelete,
         onEntryRevisionAfterDelete,
         onEntryRevisionDeleteError,
@@ -1358,6 +1392,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         async deleteEntry(model, entryId, options) {
             return context.benchmark.measure("headlessCms.crud.entries.deleteEntry", async () => {
                 return deleteEntry(model, entryId, options);
+            });
+        },
+        async restoreEntry(model, entryId) {
+            return context.benchmark.measure("headlessCms.crud.entries.restoreEntry", async () => {
+                return restoreEntryUseCase.execute(model, entryId);
             });
         },
         async deleteMultipleEntries(model, ids) {

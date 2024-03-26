@@ -9,6 +9,7 @@ import { resolveUpdate } from "./resolvers/manage/resolveUpdate";
 import { resolveValidate } from "./resolvers/manage/resolveValidate";
 import { resolveMove } from "./resolvers/manage/resolveMove";
 import { resolveDelete } from "./resolvers/manage/resolveDelete";
+import { resolveRestore } from "./resolvers/manage/resolveRestore";
 import { resolveDeleteMultiple } from "./resolvers/manage/resolveDeleteMultiple";
 import { resolvePublish } from "./resolvers/manage/resolvePublish";
 import { resolveRepublish } from "./resolvers/manage/resolveRepublish";
@@ -82,6 +83,7 @@ export const createManageResolvers: CreateManageResolvers = ({
             [`validate${model.singularApiName}`]: resolveValidate({ model }),
             [`move${model.singularApiName}`]: resolveMove({ model }),
             [`delete${model.singularApiName}`]: resolveDelete({ model }),
+            [`restore${model.singularApiName}`]: resolveRestore({ model }),
             [`deleteMultiple${model.pluralApiName}`]: resolveDeleteMultiple({ model }),
             [`publish${model.singularApiName}`]: resolvePublish({ model }),
             [`republish${model.singularApiName}`]: resolveRepublish({ model }),
