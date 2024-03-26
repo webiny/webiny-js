@@ -272,24 +272,6 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
     const pageElementProcessors: PageElementProcessor[] = [];
 
     return {
-        /**
-         * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
-         */
-        onBeforePageCreate: onPageBeforeCreate,
-        onAfterPageCreate: onPageAfterCreate,
-        onBeforePageCreateFrom: onPageBeforeCreateFrom,
-        onAfterPageCreateFrom: onPageAfterCreateFrom,
-        onBeforePageUpdate: onPageBeforeUpdate,
-        onAfterPageUpdate: onPageAfterUpdate,
-        onBeforePageDelete: onPageBeforeDelete,
-        onAfterPageDelete: onPageAfterDelete,
-        onBeforePagePublish: onPageBeforePublish,
-        onAfterPagePublish: onPageAfterPublish,
-        onBeforePageUnpublish: onPageBeforeUnpublish,
-        onAfterPageUnpublish: onPageAfterUnpublish,
-        /**
-         * Introduced in 5.34.0
-         */
         onPageBeforeCreate,
         onPageAfterCreate,
         onPageBeforeCreateFrom,

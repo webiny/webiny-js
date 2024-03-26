@@ -3,7 +3,7 @@ import get from "lodash/get";
 import set from "lodash/set";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin";
-import { sendEvent, setProperties } from "@webiny/telemetry/react";
+import { sendEvent } from "@webiny/telemetry/react";
 import {
     GET_SETTINGS,
     GetSettingsQueryResponse,
@@ -69,20 +69,11 @@ export function usePbWebsiteSettings() {
             // TODO: try useForm and onSubmit
             data.websiteUrl = (data.websiteUrl || "").replace(/\/+$/g, "");
 
-            if (settings.websiteUrl !== data.websiteUrl && !data.websiteUrl.includes("localhost")) {
-                /**
-                 * sendEvent is async, why is it not awaited?
-                 */
-                // TODO @pavel
-                sendEvent("custom-domain", {
-                    domain: data.websiteUrl
-                });
-
-                /**
-                 * setProperties is async, why is it not awaited?
-                 */
-                // TODO @pavel
-                setProperties({
+            const logWebsiteUrl =
+                settings.websiteUrl !== data.websiteUrl && !data.websiteUrl.includes("localhost");
+            if (logWebsiteUrl) {
+                // We don't want to await the result, so that we don't block the UI.
+                sendEvent("admin-custom-domain", {
                     domain: data.websiteUrl
                 });
             }

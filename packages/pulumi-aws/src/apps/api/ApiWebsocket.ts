@@ -96,21 +96,6 @@ export const ApiWebsocket = createAppModule({
             }
         });
 
-        const deployment = app.addResource(aws.apigatewayv2.Deployment, {
-            name: "websocket-api-deployment",
-            config: {
-                apiId: websocketApi.output.id,
-                description: "WebSocket API Deployment"
-            },
-            opts: {
-                dependsOn: [
-                    websocketApiDefaultRoute.output,
-                    websocketApiConnectRoute.output,
-                    websocketApiDisconnectRoute.output
-                ]
-            }
-        });
-
         const apiGatewayLoggingRole = app.addResource(aws.iam.Role, {
             name: "apiGatewayLoggingRole",
             config: {
@@ -141,10 +126,13 @@ export const ApiWebsocket = createAppModule({
             name: "websocket-api-stage",
             config: {
                 apiId: websocketApi.output.id,
-                deploymentId: deployment.output.id,
+                autoDeploy: true,
                 name: app.params.run.env,
                 defaultRouteSettings: {
-                    loggingLevel: "INFO",
+                    // Only enable when debugging. Note that by default, API Gateway does not
+                    // have the required permissions to write logs to CloudWatch logs. More:
+                    // https://coady.tech/aws-cloudwatch-logs-arn/
+                    // loggingLevel: "INFO",
                     throttlingBurstLimit: 1000,
                     throttlingRateLimit: 500
                 }
@@ -160,7 +148,6 @@ export const ApiWebsocket = createAppModule({
             websocketLambdaPermission,
             lambdaWebsocketPolicy,
             lambdaWebsocketRolePolicyAttachment,
-            deployment,
             websocketApiUrl: pulumi.interpolate`${websocketApi.output.apiEndpoint}/${websocketApiStage.output.name}`
         };
     }

@@ -1,60 +1,77 @@
 const getStackOutput = require("@webiny/cli-plugin-deploy-pulumi/utils/getStackOutput");
-const { green } = require("chalk");
 const path = require("path");
+const { blue } = require("chalk");
 
-const line = `—————————————————————————`;
+const getInfo = async env => {
+    const apiOutputPromise = new Promise(resolve => {
+        resolve(getStackOutput({ folder: "apps/api", env }));
+    });
 
-const printEnvOutput = async (env, context) => {
-    console.log(line);
-    console.log(`Environment: ${green(env)}`);
-    console.log(line);
+    const adminOutputPromise = new Promise(resolve => {
+        resolve(getStackOutput({ folder: "apps/admin", env }));
+    });
 
-    let stacksDeployedCount = 0;
-    let output = getStackOutput({ folder: "apps/api", env });
-    if (output) {
-        stacksDeployedCount++;
-        console.log(
-            [
-                `‣ AWS Region: ${output.region}`,
-                `‣ Main GraphQL API: ${green(output.apiUrl + "/graphql")}`,
-                `‣ Headless CMS GraphQL API:`,
-                `   - Manage API: ${green(output.apiUrl + "/cms/manage/{LOCALE_CODE}")}`,
-                `   - Read API: ${green(output.apiUrl + "/cms/read/{LOCALE_CODE}")}`,
-                `   - Preview API: ${green(output.apiUrl + "/cms/preview/{LOCALE_CODE}")}`
-            ].join("\n")
-        );
-    } else {
-        context.info(`Stack ${green("apps/api")} not deployed yet.`);
-    }
+    const websiteOutputPromise = new Promise(resolve => {
+        resolve(getStackOutput({ folder: "apps/website", env }));
+    });
 
-    output = getStackOutput({ folder: "apps/admin", env });
-    if (output) {
-        stacksDeployedCount++;
-        console.log([`‣ Admin app: ${green(output.appUrl)}`].join("\n"));
-    } else {
-        context.info(`Stack ${green("apps/admin")} not deployed yet.`);
-    }
+    const outputs = await Promise.all([apiOutputPromise, adminOutputPromise, websiteOutputPromise]);
 
-    output = getStackOutput({ folder: "apps/website", env });
-    if (output) {
-        stacksDeployedCount++;
-        console.log(
-            [
-                `‣ Public website:`,
-                `   - Website URL: ${green(output.deliveryUrl)}`,
-                `   - Website preview URL: ${green(output.appUrl)}`
-            ].join("\n")
-        );
-    } else {
-        context.info(`Stack ${green("apps/website")} not deployed yet.`);
-    }
+    const stacksDeployedCount = outputs.filter(Boolean).length;
 
     if (stacksDeployedCount === 0) {
-        context.info("It seems none of the stacks were deployed, so no info could be provided.");
-        context.info(`Please check if the provided environment ${green(env)} is correct.`);
+        return [
+            "It seems none of the stacks were deployed, so no info could be provided.",
+            `Please check if the provided environment ${env} is correct.`
+        ];
     }
 
-    console.log(line + "\n");
+    const [api, admin, website] = outputs;
+
+    const output = [];
+
+    // API.
+    if (api) {
+        output.push(
+            `‣ Environment name: ${blue(env)}`,
+            `‣ AWS region: ${api?.region}`,
+            `‣ Main GraphQL API: ${api.apiUrl + "/graphql"}`,
+            `‣ Headless CMS GraphQL API:`,
+            `   · Manage API: ${api.apiUrl + "/cms/manage/{LOCALE_CODE}"}`,
+            `   · Read API: ${api.apiUrl + "/cms/read/{LOCALE_CODE}"}`,
+            `   · Preview API: ${api.apiUrl + "/cms/preview/{LOCALE_CODE}"}`
+        );
+    } else {
+        output.push(
+            `‣ Environment name: -`,
+            `‣ AWS region: -`,
+            `‣ Main GraphQL API: -`,
+            `‣ Headless CMS GraphQL API:`,
+            `   · Manage API: -`,
+            `   · Read API: -`,
+            `   · Preview API: -`
+        );
+    }
+
+    // Admin.
+    if (admin) {
+        output.push(`‣ Admin app: ${admin.appUrl}`);
+    } else {
+        output.push(`‣ Admin app: -`);
+    }
+
+    // Website.
+    if (website) {
+        output.push(
+            `‣ Public website:`,
+            `   · Website URL: ${website.deliveryUrl}`,
+            `   · Website preview URL: ${website.appUrl}`
+        );
+    } else {
+        output.push(`‣ Public website:`, `   · Website URL: -`, `   · Website preview URL: -`);
+    }
+
+    return output.join("\n");
 };
 
 module.exports = {
@@ -96,15 +113,40 @@ module.exports = {
                         path.basename(current, ".json")
                     );
 
-                    for (const env of existingEnvs) {
-                        await printEnvOutput(env, context);
+                    if (existingEnvs.length === 0) {
+                        context.info(
+                            "It seems that no environments have been deployed yet. Please deploy the project first."
+                        );
+                        return;
                     }
 
-                    return;
+                    if (existingEnvs.length === 1) {
+                        context.info("There is one deployed environment.");
+                        context.info("Here is the information for the environment.");
+                    } else {
+                        context.info(
+                            "There's a total of %d deployed environments.",
+                            existingEnvs.length
+                        );
+                        context.info("Here is the information for each environment.");
+                        console.log();
+                    }
+
+                    for (const env of existingEnvs) {
+                        console.log(await getInfo(env, context));
+                        console.log();
+                    }
+                } else {
+                    await getInfo(env, context);
                 }
 
-                await printEnvOutput(env, context);
+                context.info(
+                    "If some of the information is missing for a particular environment, make sure that the project has been fully deployed into that environment. You can do that by running the %s command.",
+                    "yarn webiny deploy --env {ENVIRONMENT_NAME}"
+                );
             }
         );
     }
 };
+
+module.exports.getInfo = getInfo;

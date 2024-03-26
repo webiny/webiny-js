@@ -1,165 +1,139 @@
-const fs = require("fs");
-const { green } = require("chalk");
-const { getStackOutput, getPulumi } = require("@webiny/cli-plugin-deploy-pulumi/utils");
-const { sendEvent, getApiProjectApplicationFolder } = require("@webiny/cli/utils");
-const path = require("path");
-const execa = require("execa");
+const {
+    getStackOutput,
+    getPulumi,
+    GracefulPulumiError
+} = require("@webiny/cli-plugin-deploy-pulumi/utils");
+const { sendEvent } = require("@webiny/cli/utils");
+const { bold } = require("chalk");
+const deployCommand = require("@webiny/cli-plugin-deploy-pulumi/commands/deploy");
+const { getInfo } = require("../info");
 const sleep = require("../utils/sleep");
+const open = require("open");
+const ora = require("ora");
 
-const deploy = (stack, env, inputs) =>
-    execa(
-        "yarn",
-        [
-            "webiny",
-            "deploy",
-            stack,
-            "--env",
-            env,
-            "--debug",
-            Boolean(inputs.debug),
-            "--build",
-            Boolean(inputs.build),
-            "--preview",
-            Boolean(inputs.preview)
-        ],
+const deployApp = async ({ name, folder, inputs, context, isFirstDeployment }) => {
+    context.info(`Deploying %s project application...`, name);
+    console.log();
+
+    await deployCommand(
         {
-            stdio: "inherit"
-        }
+            ...inputs,
+            folder: folder,
+            env: inputs.env || "dev",
+            telemetry: false
+        },
+        context
     );
 
+    console.log();
+    context.success(`%s project application deployed.`, name);
+    console.log();
+
+    isFirstDeployment && (await sleep());
+};
+
 module.exports = async (inputs, context) => {
-    const { env = "dev" } = inputs;
-
-    // 1. By calling the install manually here, we get to know if the installation was initiated or not.
-    const pulumi = await getPulumi({ install: false });
-
-    const installed = await pulumi.install();
-
-    // If we just installed Pulumi, let's add a new line.
-    installed && console.log();
-
-    // 2. Check if first deployment.
-
-    // 2.1 Check the location of `api` project application (can be `api` or `apps/api`).
-    const apiFolder = getApiProjectApplicationFolder(context.project);
-
-    // 2.2 We want to be backwards compatible. That's why we need to take into
-    // consideration that some projects do not have the `core` application.
-    const hasCore = fs.existsSync(path.join(context.project.root, "apps", "core"));
-
-    // If we have at least `core` output or `api` output,
-    // then we can be sure this is not the first deployment.
-    let isFirstDeployment;
-    if (hasCore) {
-        isFirstDeployment = !getStackOutput({ folder: "apps/core", env });
-    } else {
-        isFirstDeployment = !getStackOutput({ folder: apiFolder, env });
-    }
-
-    if (isFirstDeployment) {
-        context.info(
-            `This is your first time deploying the project (${green(
-                env
-            )} environment). Note that the initial deployment can take up to 15 minutes, so please be patient.`
-        );
-
-        await sleep();
-    }
-
-    // 3. Start deploying apps one-by-one.
+    await sendEvent("cli-project-deploy-start");
 
     try {
-        await sendEvent({ event: "project-deploy-start" });
+        const { env = "dev" } = inputs;
 
-        // Deploying `core` project application.
-        if (hasCore) {
-            isFirstDeployment && console.log();
-            context.info(`Deploying ${green("Core")} project application...`);
+        // 1. Check if Pulumi is installed. By calling the `install` method
+        // manually, we get to know if the installation was initiated or not.
+        const pulumi = await getPulumi({ install: false });
+        const installed = await pulumi.install();
 
-            await deploy("apps/core", env, inputs);
-            context.success(`${green("Core")} project application was deployed successfully!`);
-            isFirstDeployment && (await sleep(2000));
+        // If we just installed Pulumi, let's add a new line.
+        installed && console.log();
+
+        // 2. Check if first deployment.
+        const isFirstDeployment = !getStackOutput({ folder: "apps/core", env });
+        if (isFirstDeployment) {
+            context.info(`Looks like this is your first time deploying the project.`);
+            context.info(
+                `Note that the initial deployment can take up to %s, so please be patient.`,
+                "15 minutes"
+            );
+            await sleep();
         }
 
-        // Deploying `api` project application.
-        console.log();
-        context.info(`Deploying ${green("API")} project application...`);
+        // 3. Start deploying apps one-by-one.
+        isFirstDeployment && console.log();
 
-        await deploy(apiFolder, env, inputs);
-        context.success(`${green("API")} project application was deployed successfully!`);
-        isFirstDeployment && (await sleep(2000));
-
-        // Deploying `apps/admin` project application.
-        console.log();
-        context.info(`Deploying ${green("Admin")} project application...`);
-        isFirstDeployment && (await sleep());
-
-        await deploy("apps/admin", env, inputs);
-        context.success(`${green("Admin")} project application was deployed successfully!`);
-
-        // Deploying `apps/admin` project application.
-        console.log();
-        context.info(`Deploying ${green("Website")} project application...`);
-        isFirstDeployment && (await sleep());
-
-        await deploy("apps/website", env, inputs);
-        context.success(`${green("Website")} project application was deployed successfully!`);
-
-        await sendEvent({ event: "project-deploy-end" });
-    } catch (e) {
-        await sendEvent({
-            event: "project-deploy-error",
-            properties: {
-                errorMessage: e.message,
-                errorStack: e.stack
-            }
+        await deployApp({ name: "Core", folder: "apps/core", inputs, context, isFirstDeployment });
+        await deployApp({ name: "API", folder: "apps/api", inputs, context, isFirstDeployment });
+        await deployApp({
+            name: "Admin",
+            folder: "apps/admin",
+            inputs,
+            context,
+            isFirstDeployment
+        });
+        await deployApp({
+            name: "Website",
+            folder: "apps/website",
+            inputs,
+            context,
+            isFirstDeployment
         });
 
-        throw e;
-    }
-
-    const outputs = {
-        api: getStackOutput({ folder: apiFolder, env }),
-        apps: {
-            admin: getStackOutput({ folder: "apps/admin", env }),
-            site: getStackOutput({ folder: "apps/website", env })
+        if (isFirstDeployment) {
+            context.success(`Congratulations! You've just deployed a brand new project!`);
+        } else {
+            context.success(`Project deployed.`);
         }
-    };
 
-    console.log();
-    if (isFirstDeployment) {
-        console.log(
-            [
-                `Congratulations! You've just deployed a brand new project (${green(
-                    env
-                )} environment)!`,
-                "",
-                `To finish the setup, please open your ${green("Admin")} app (${green(
-                    outputs.apps.admin.appUrl
-                )}) and complete the installation wizard. To learn more, visit ${green(
-                    "https://www.webiny.com/docs"
-                )}.`
-            ].join("\n")
-        );
-    } else {
-        const usefulLinks = [
-            `➜ Main GraphQL API: ${green(outputs.api.apiUrl + "/graphql")}`,
-            `➜ Admin app: ${green(outputs.apps.admin.appUrl)}`,
-            `➜ Public website:`,
-            `   - Website URL: ${green(outputs.apps.site.deliveryUrl)}`,
-            `   - Website preview URL: ${green(outputs.apps.site.appUrl)}`
-        ].join("\n");
+        const projectDetails = await getInfo(env);
+        console.log();
+        console.log(bold("Project Details"));
+        console.log(projectDetails);
 
-        console.log(
-            [
-                usefulLinks,
-                "",
-                `💡 Tip: to deploy project applications separately, use the ${green(
-                    "deploy"
-                )} command (e.g. ${green(
-                    `yarn webiny deploy website --env ${env}`
-                )}). For additional help, please run ${green("yarn webiny --help")}.`
-            ].join("\n")
-        );
+        const adminAppOutput = getStackOutput({ folder: "apps/admin", env });
+
+        if (isFirstDeployment) {
+            console.log();
+            context.info(
+                "The final step is to open the %s app in your browser and complete the installation wizard.",
+                "Admin"
+            );
+
+            const spinner = ora(
+                `Opening ${context.info.hl("Admin")} app in your browser...`
+            ).start();
+
+            try {
+                await sleep(7000);
+                await open(adminAppOutput.appUrl);
+                spinner.succeed(
+                    `Successfully opened ${context.info.hl("Admin")} app in your browser.`
+                );
+            } catch (e) {
+                spinner.fail(`Failed to open ${context.error.hl("Admin")} app in your browser.`);
+
+                await sleep(1000);
+                console.log();
+                context.warning(
+                    `Failed to open %s app in your browser. To finish the setup and start using the project, please visit %s and complete the installation wizard.`,
+                    "Admin",
+                    adminAppOutput.appUrl
+                );
+            }
+        }
+
+        await sendEvent("cli-project-deploy-end");
+    } catch (e) {
+        if (e instanceof GracefulPulumiError) {
+            await sendEvent("cli-project-deploy-error-graceful", {
+                errorMessage: e.message,
+                errorStack: e.stack
+            });
+        } else {
+            await sendEvent("cli-project-deploy-error", {
+                errorMessage: e.message,
+                errorStack: e.stack
+            });
+        }
+
+        throw e;
     }
 };

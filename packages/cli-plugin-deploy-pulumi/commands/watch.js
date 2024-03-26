@@ -9,9 +9,11 @@ const { getProjectApplication, getProject } = require("@webiny/cli/utils");
 const get = require("lodash/get");
 const merge = require("lodash/merge");
 const simpleOutput = require("./watch/output/simpleOutput");
+const listPackages = require("./watch/listPackages");
 const minimatch = require("minimatch");
 const glob = require("fast-glob");
 const watchPackages = require("./watch/watchPackages");
+const { PackagesWatcher } = require("./watch/watchers/PackagesWatcher");
 const {
     login,
     getPulumi,
@@ -55,21 +57,19 @@ module.exports = async (inputs, context) => {
         // If exists - read default inputs from "webiny.application.ts" file.
         inputs = merge({}, get(projectApplication, "config.cli.watch"), inputs);
 
-        if (projectApplication.type === "v5-workspaces") {
-            // We don't do anything here. We assume the workspace has already been created
-            // upon running the `webiny deploy` command. We rely on that.
-            // TODO: maybe we can improve this in the future, depending on the feedback.
-            // await createProjectApplicationWorkspace({
-            //     projectApplication,
-            //     env: inputs.env,
-            //     context,
-            //     inputs
-            // });
+        // We don't do anything here. We assume the workspace has already been created
+        // upon running the `webiny deploy` command. We rely on that.
+        // TODO: maybe we can improve this in the future, depending on the feedback.
+        // await createProjectApplicationWorkspace({
+        //     projectApplication,
+        //     env: inputs.env,
+        //     context,
+        //     inputs
+        // });
 
-            // Check if there are any plugins that need to be registered.
-            if (projectApplication.config.plugins) {
-                context.plugins.register(projectApplication.config.plugins);
-            }
+        // Check if there are any plugins that need to be registered.
+        if (projectApplication.config.plugins) {
+            context.plugins.register(projectApplication.config.plugins);
         }
 
         // Load env vars specified via .env files located in project application folder.
@@ -108,6 +108,17 @@ module.exports = async (inputs, context) => {
         args: hookArgs,
         context
     });
+
+    console.log();
+
+    // TODO: separate the rest of the code below into separate "watcher" classes.
+    // TODO: This was done just because of the time constraints.
+    if (!inputs.deploy) {
+        const packages = await listPackages({ inputs });
+        const packagesWatcher = new PackagesWatcher({ packages, context, inputs });
+        await packagesWatcher.watch();
+        return;
+    }
 
     // 1.1. Check if the project application and Pulumi stack exist.
     let PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
@@ -267,17 +278,9 @@ module.exports = async (inputs, context) => {
                 message: chalk.green("Watching cloud infrastructure resources...")
             });
 
-            let buildFoldersGlob = [projectApplication.paths.workspace, "**/build/*.js"].join("/");
-
-            // For non-workspaces projects, we still want to be watching `**/build/*.js` files located
-            // in user's project (for example `api/graphql/code/build/handler.js`).
-            if (projectApplication.type !== "v5-workspaces") {
-                buildFoldersGlob = [
-                    projectApplication.paths.absolute,
-                    inputs.folder,
-                    "**/build/*.js"
-                ].join("/");
-            }
+            const buildFoldersGlob = [projectApplication.paths.workspace, "**/build/*.js"].join(
+                "/"
+            );
 
             const buildFolders = glob.sync(buildFoldersGlob, { onlyFiles: false });
 
