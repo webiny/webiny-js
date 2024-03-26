@@ -19,6 +19,7 @@ import {
     CmsModelField
 } from "~/types";
 import { makeDecoratable } from "@webiny/react-composition";
+import { TemplateProvider } from "~/admin/plugins/fieldRenderers/dynamicZone/TemplateProvider";
 
 const BottomMargin = styled.div`
     margin-bottom: 20px;
@@ -66,12 +67,14 @@ export const MultiValueItem = makeDecoratable(
         const { template, Bind, contentModel } = props;
 
         return (
-            <Fields
-                fields={template.fields}
-                layout={template.layout || []}
-                contentModel={contentModel}
-                Bind={Bind}
-            />
+            <TemplateProvider template={template}>
+                <Fields
+                    fields={template.fields}
+                    layout={template.layout || []}
+                    contentModel={contentModel}
+                    Bind={Bind}
+                />
+            </TemplateProvider>
         );
     }
 );
@@ -156,15 +159,16 @@ export interface MultiValueContainerProps extends MultiValueDynamicZoneProps {
     children: React.ReactNode;
 }
 
-export const MultiValueContainer = makeDecoratable<
-    React.FunctionComponent<MultiValueContainerProps>
->("MultiValueContainer", ({ children }) => {
-    return (
-        <Accordion>
-            <>{children}</>
-        </Accordion>
-    );
-});
+export const MultiValueContainer = makeDecoratable(
+    "MultiValueContainer",
+    ({ children }: MultiValueContainerProps) => {
+        return (
+            <Accordion>
+                <>{children}</>
+            </Accordion>
+        );
+    }
+);
 
 interface MultiValueDynamicZoneProps {
     // TODO: this prop might be useless, because we now have a `useModelField` hook.
