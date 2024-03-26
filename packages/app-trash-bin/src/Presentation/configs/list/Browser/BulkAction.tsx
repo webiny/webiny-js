@@ -49,21 +49,21 @@ export const BaseBulkAction = ({
 };
 
 const useWorker = () => {
-    const { presenter, controllers } = useTrashBin();
+    const { vm, selectItems } = useTrashBin();
     const { current: worker } = useRef(new Worker<TrashBinItemDTO>());
 
     useEffect(() => {
-        worker.items = presenter.vm.selectedItems;
-    }, [presenter.vm.selectedItems.length]);
+        worker.items = vm.selectedItems;
+    }, [vm.selectedItems.length]);
 
     // Reset selected items in both repository and Worker
     const resetItems = useCallback(() => {
         worker.items = [];
-        controllers.selectItems.execute([]);
+        selectItems.execute([]);
     }, []);
 
     return {
-        items: presenter.vm.selectedItems,
+        items: vm.selectedItems,
         process: (callback: (items: TrashBinItemDTO[]) => void) => worker.process(callback),
         processInSeries: async (
             callback: ({

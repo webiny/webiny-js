@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
-import { Sorting } from "./Sorting";
 import { ISortingRepository } from "./ISortingRepository";
+import { Sorting } from "~/fta/Domain/Models";
 
 export class SortingRepository implements ISortingRepository {
     private sorting: Sorting[] = [];

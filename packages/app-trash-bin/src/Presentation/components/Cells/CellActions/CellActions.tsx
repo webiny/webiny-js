@@ -1,7 +1,7 @@
 import React from "react";
 import { useAcoConfig } from "@webiny/app-aco";
 import { OptionsMenu } from "@webiny/app-admin";
-import { TrashBinListConfig } from "~/Configs";
+import { TrashBinListConfig } from "~/Presentation/configs";
 import { TrashBinItemProvider } from "~/Presentation/hooks";
 
 export const CellActions = () => {

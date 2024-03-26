@@ -1,7 +1,7 @@
 import React from "react";
 import { ReactComponent as File } from "@material-design-icons/svg/outlined/description.svg";
 import { RowIcon, RowText, RowTitle } from "./CellTitle.styled";
-import { TrashBinListConfig } from "~/Configs";
+import { TrashBinListConfig } from "~/Presentation/configs";
 
 export const CellTitle = () => {
     const { useTableRow } = TrashBinListConfig.Browser.Table.Column;

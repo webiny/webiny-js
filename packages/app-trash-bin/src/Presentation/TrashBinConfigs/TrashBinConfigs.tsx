@@ -1,6 +1,6 @@
 import React from "react";
 
-import { TrashBinListConfig } from "~/Configs";
+import { TrashBinListConfig } from "~/Presentation/configs";
 import { BulkActionsDeleteItems } from "../components/BulkActions";
 import {
     CellActions,

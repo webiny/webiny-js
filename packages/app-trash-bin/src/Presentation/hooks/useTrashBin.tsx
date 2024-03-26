@@ -8,5 +8,12 @@ export interface TrashBinContext {
 
 const { Provider, useHook } = createGenericContext<TrashBinContext>("TrashBinContext");
 
-export const useTrashBin = useHook;
+export const useTrashBin = () => {
+    const context = useHook();
+
+    return {
+        vm: context.presenter.vm,
+        ...context.controllers
+    };
+};
 export const TrashBinProvider = Provider;

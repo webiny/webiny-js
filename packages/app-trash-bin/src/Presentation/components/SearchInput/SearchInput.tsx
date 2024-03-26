@@ -5,25 +5,25 @@ import { InputContainer, SearchIconContainer } from "./SearchInput.styled";
 import { useTrashBin } from "~/Presentation/hooks";
 
 export const SearchInput = () => {
-    const { presenter, controllers } = useTrashBin();
+    const { vm, searchItems } = useTrashBin();
 
     return (
         <InputContainer>
             <SearchIconContainer icon={<SearchIcon />} />
             <DelayedOnChange
-                value={presenter.vm.searchQuery}
+                value={vm.searchQuery}
                 onChange={value => {
-                    if (value === presenter.vm.searchQuery) {
+                    if (value === vm.searchQuery) {
                         return;
                     }
-                    controllers.searchItems.execute(value);
+                    searchItems.execute(value);
                 }}
             >
                 {({ value, onChange }) => (
                     <input
                         value={value}
                         onChange={e => onChange(e.target.value)}
-                        placeholder={presenter.vm.searchLabel}
+                        placeholder={vm.searchLabel}
                         data-testid={"trash-bin.search-input"}
                     />
                 )}

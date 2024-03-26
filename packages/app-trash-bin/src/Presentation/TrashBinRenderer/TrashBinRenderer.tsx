@@ -5,7 +5,7 @@ import {
     TrashBinRenderer as BaseTrashBinRenderer
 } from "@webiny/app-admin";
 import { AcoWithConfig, useAcoConfig } from "@webiny/app-aco";
-import { TrashBinListWithConfig } from "~/Configs";
+import { TrashBinListWithConfig } from "~/Presentation/configs";
 import { TrashBin } from "../TrashBin";
 import { Sorting } from "@webiny/app-utils";
 import {

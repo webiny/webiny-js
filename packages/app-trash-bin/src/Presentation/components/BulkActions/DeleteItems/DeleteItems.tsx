@@ -1,12 +1,12 @@
 import React, { useMemo } from "react";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { observer } from "mobx-react-lite";
-import { TrashBinListConfig } from "~/Configs";
+import { TrashBinListConfig } from "~/Presentation/configs";
 import { useTrashBin } from "~/Presentation/hooks";
 import { getEntriesLabel } from "../BulkActions";
 
 export const BulkActionsDeleteItems = observer(() => {
-    const { controllers } = useTrashBin();
+    const { deleteItem } = useTrashBin();
 
     const { useWorker, useButtons, useDialog } = TrashBinListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
@@ -25,7 +25,7 @@ export const BulkActionsDeleteItems = observer(() => {
             execute: async () => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
-                        await controllers.deleteItem.execute(item.id);
+                        await deleteItem.execute(item.id);
                         report.success({
                             title: `${item.title}`,
                             message: "Item successfully deleted."
