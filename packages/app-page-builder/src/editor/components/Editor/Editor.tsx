@@ -1,19 +1,14 @@
 import React, { useEffect } from "react";
 import classSet from "classnames";
+import { plugins } from "@webiny/plugins";
 import { useEventActionHandler } from "../../hooks/useEventActionHandler";
 import { EventActionHandler, PbEditorEventActionPlugin } from "~/types";
-import { rootElementAtom, uiAtom } from "../../recoil/modules";
-import { useRecoilValue } from "recoil";
-import { useKeyHandler } from "../../hooks/useKeyHandler";
-import { plugins } from "@webiny/plugins";
+import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
 import "./Editor.scss";
-// Components
-import { EditorBar } from "~/editor";
-import EditorToolbar from "./Toolbar";
-import EditorContent from "./Content";
 import DragPreview from "./DragPreview";
 import Dialogs from "./Dialogs";
-import { EditorSidebar } from "./EditorSidebar";
+import { useUI } from "~/editor/hooks/useUI";
+import { EditorConfig } from "~/editor/config";
 
 type PluginRegistryType = Map<string, () => void>;
 
@@ -52,34 +47,21 @@ const unregisterPlugins = (handler: EventActionHandler, registered: PluginRegist
     }
 };
 
-const triggerActionButtonClick = (name: string): void => {
-    const id = `#action-${name}`;
-    const element = document.querySelector<HTMLElement>(id);
-    if (!element) {
-        console.warn(`There is no html element "${id}"`);
-        return;
-    }
-    element.click();
-};
-
 export const Editor = () => {
     const eventActionHandler = useEventActionHandler();
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
-    const { isDragging, isResizing } = useRecoilValue(uiAtom);
+    const [{ isDragging, isResizing }] = useUI();
 
-    const rootElementId = useRecoilValue(rootElementAtom);
-
-    const firstRender = React.useRef<boolean>(true);
     const registeredPlugins = React.useRef<PluginRegistryType>(new Map());
 
     useEffect(() => {
         addKeyHandler("mod+z", e => {
             e.preventDefault();
-            triggerActionButtonClick("undo");
+            eventActionHandler.undo();
         });
         addKeyHandler("mod+shift+z", e => {
             e.preventDefault();
-            triggerActionButtonClick("redo");
+            eventActionHandler.redo();
         });
         registeredPlugins.current = registerPlugins(eventActionHandler);
 
@@ -91,13 +73,6 @@ export const Editor = () => {
         };
     }, []);
 
-    useEffect(() => {
-        if (!rootElementId || firstRender.current === true) {
-            firstRender.current = false;
-            return;
-        }
-    }, [rootElementId]);
-
     const classes = {
         "pb-editor": true,
         "pb-editor-dragging": isDragging,
@@ -105,10 +80,7 @@ export const Editor = () => {
     };
     return (
         <div className={classSet(classes)}>
-            <EditorBar />
-            <EditorToolbar />
-            <EditorContent />
-            <EditorSidebar />
+            <EditorConfig.Layout />
             <Dialogs />
             <DragPreview />
         </div>
