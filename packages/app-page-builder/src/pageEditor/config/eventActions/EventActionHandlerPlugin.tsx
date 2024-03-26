@@ -7,8 +7,8 @@ import {
 } from "~/editor/contexts/EventActionHandlerProvider";
 import { usePage } from "~/pageEditor/hooks/usePage";
 import { useRevisions } from "~/pageEditor/hooks/useRevisions";
-import { useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";
-import { PageAtomType, RevisionsAtomType, TemplateModeAtomType } from "~/pageEditor/state";
+import { TemplateModeAtomType, useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";
+import { PageAtomType, RevisionsAtomType } from "~/pageEditor/state";
 import { PageEditorEventActionCallableState } from "~/pageEditor/types";
 import { PbElement, PbEditorElement } from "~/types";
 

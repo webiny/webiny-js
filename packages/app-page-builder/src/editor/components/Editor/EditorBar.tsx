@@ -1,12 +1,8 @@
 import React from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
-import { TopAppBar, TopAppBarSection } from "@webiny/ui/TopAppBar";
-import { createVoidComponent, DecoratableComponent, makeDecoratable } from "@webiny/app-admin";
-
-const topBar = css({
-    boxShadow: "1px 0px 5px 0px rgba(128,128,128,1)"
-});
+import { TopAppBarSection } from "@webiny/ui/TopAppBar";
+import { createVoidComponent, makeDecoratable } from "@webiny/app-admin";
 
 const centerTopBar = css({
     "&.mdc-top-app-bar__section": {
@@ -61,32 +57,13 @@ const DividerRenderer = makeDecoratable("DividerRenderer", () => {
     return <StyledDivider />;
 });
 
-type EditorBar = DecoratableComponent & {
-    LeftSection: DecoratableComponent;
-    CenterSection: DecoratableComponent;
-    RightSection: DecoratableComponent;
-    BackButton: DecoratableComponent;
-    Divider: DecoratableComponent;
-};
-
-const ComposableEditorBar = makeDecoratable("EditorBar", () => {
-    return <EditorBarRenderer />;
-});
-
-export const EditorBarRenderer = makeDecoratable("EditorBarRenderer", () => {
-    return (
-        <TopAppBar className={topBar} fixed>
-            <LeftSection />
-            <CenterSection />
-            <RightSection />
-        </TopAppBar>
-    );
-});
-
-export const EditorBar: EditorBar = Object.assign(ComposableEditorBar, {
-    LeftSection,
-    CenterSection,
-    RightSection,
-    BackButton,
-    Divider
-});
+export const EditorBar = Object.assign(
+    {},
+    {
+        LeftSection,
+        CenterSection,
+        RightSection,
+        BackButton,
+        Divider
+    }
+);

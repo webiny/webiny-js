@@ -21,6 +21,7 @@
     "@webiny/app-security": "0.0.0",
     "@webiny/form": "0.0.0",
     "@webiny/plugins": "0.0.0",
+    "@webiny/react-composition": "0.0.0",
     "@webiny/ui": "0.0.0",
     "@webiny/validation": "0.0.0",
     "apollo-client": "^2.6.10",
@@ -54,6 +55,9 @@
   },
   "adio": {
     "ignore": {
+      "dependencies": [
+        "@webiny/react-composition"
+      ],
       "peerDependencies": [
         "react-dom"
       ]
