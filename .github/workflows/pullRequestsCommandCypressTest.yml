@@ -109,9 +109,7 @@ jobs:
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: >-
-        ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2e-wby-cms-ddb-constants.outputs.ts }}_ddb
+      WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-constants.outputs.pulumi-backend-url }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -138,7 +136,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: checked-out-pr/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.global-cache-key }}
+          key: ${{ needs.e2e-wby-cms-ddb-constants.outputs.global-cache-key }}
       - name: Install dependencies
         working-directory: checked-out-pr
         run: yarn --immutable
@@ -148,7 +146,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: checked-out-pr/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          key: ${{ needs.e2e-wby-cms-ddb-constants.outputs.run-cache-key }}
       - name: Start Verdaccio local server
         working-directory: checked-out-pr
         run: >-
@@ -254,9 +252,7 @@ jobs:
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: >-
-        ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2e-wby-cms-ddb-constants.outputs.ts }}_ddb
+      WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-constants.outputs.pulumi-backend-url }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -278,7 +274,7 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: checked-out-pr/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          key: ${{ needs.e2e-wby-cms-ddb-constants.outputs.run-cache-key }}
       - name: Install dependencies
         working-directory: checked-out-pr
         run: yarn --immutable
