@@ -1,7 +1,6 @@
 import { createGenericContext } from "@webiny/app-admin";
 import { ITrashBinControllers, ITrashBinPresenter } from "~/Presentation/abstractions";
 import { TrashBinItemDTO } from "@webiny/app-trash-bin-common";
-import { Updater, SortingState } from "@tanstack/table-core";
 
 export interface TrashBinContext {
     controllers: ITrashBinControllers;
@@ -20,8 +19,7 @@ export const useTrashBin = () => {
         listMoreItems: () => context.controllers.listMoreItems.execute(),
         searchItems: (query: string) => context.controllers.searchItems.execute(query),
         selectItems: (items: TrashBinItemDTO[]) => context.controllers.selectItems.execute(items),
-        sortItems: (sortingChange: Updater<SortingState>) =>
-            context.controllers.sortItems.execute(sortingChange)
+        sortItems: () => context.controllers.sortItems.execute
     };
 };
 export const TrashBinProvider = Provider;
