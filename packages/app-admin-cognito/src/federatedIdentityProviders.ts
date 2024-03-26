@@ -1,11 +1,11 @@
 import React from "react";
 
 export const federatedIdentityProviders: Record<string, string> = {
-    Cognito: "COGNITO",
-    Google: "Google",
-    Facebook: "Facebook",
-    Amazon: "LoginWithAmazon",
-    Apple: "SignInWithApple"
+    cognito: "COGNITO",
+    google: "Google",
+    facebook: "Facebook",
+    amazon: "LoginWithAmazon",
+    apple: "SignInWithApple"
 };
 
 export interface SignInProps {
@@ -14,5 +14,5 @@ export interface SignInProps {
 
 export type FederatedIdentityProvider = {
     name: string;
-    component?: React.FunctionComponent<SignInProps>;
+    component: React.FunctionComponent<SignInProps>;
 };

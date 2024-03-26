@@ -16233,7 +16233,6 @@ __metadata:
     emotion: ^10.0.27
     react: 17.0.2
     react-dom: 17.0.2
-    react-social-login-buttons: ^3.9.1
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -40721,15 +40720,6 @@ __metadata:
     react: ^0.14.0 || ^15.0.0-0 || ^16.0.0
     react-dom: ^0.14.0 || ^15.0.0-0 || ^16.0.0
   checksum: fef1abf2098adf253e868acce128ba21c90665213ff444ab289e23c1af941664a13978cb049399b573a886d94dbf9982949efc8cb096eb6cca7d3c9eed2367c3
-  languageName: node
-  linkType: hard
-
-"react-social-login-buttons@npm:^3.9.1":
-  version: 3.9.1
-  resolution: "react-social-login-buttons@npm:3.9.1"
-  peerDependencies:
-    react: ^15.0.0 || ^16.0.0 || ^17.x || ^18.x
-  checksum: 6d0f199cd916b0ebda8057f150fa8441753729132ad61ead111b31415b09f2d8134f6feda61244ecfa413448c0ce3748fb9611d6dbe96fa2e8c60461e18c3ac2
   languageName: node
   linkType: hard
 
