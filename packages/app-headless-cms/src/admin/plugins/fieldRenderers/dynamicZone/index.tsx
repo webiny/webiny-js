@@ -5,3 +5,4 @@ export {
     MultiValueContainer,
     MultiValueItem
 } from "./MultiValueDynamicZone";
+export * from "./TemplateProvider";
