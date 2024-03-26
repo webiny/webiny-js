@@ -1,1 +1,1 @@
-export * from "../dummy";
+export { dummy as default } from "../dummy";

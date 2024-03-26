@@ -1,4 +1,4 @@
-import dummy from "../dummy";
+import { dummy } from "../dummy";
 
 export const undo = dummy;
 

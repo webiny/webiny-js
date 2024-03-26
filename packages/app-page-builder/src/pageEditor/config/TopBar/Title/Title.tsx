@@ -106,7 +106,7 @@ export const Title = () => {
     const autoFocus = !window.Cypress;
 
     return editTitle ? (
-        <TitleInputWrapper>
+        <TitleInputWrapper data-testid="pb-editor-page-title">
             <Input
                 autoFocus={autoFocus}
                 fullwidth

@@ -113,7 +113,7 @@ context("Login Page", () => {
         });
     });
 
-    it.skip('recover password E2E for "full-access" user', () => {
+    it('recover password E2E for "full-access" user', () => {
         let passwordResetCode;
         const newUserAccountEmail = uniqid("cypress_", "@z1fihlo8.mailosaur.net");
 

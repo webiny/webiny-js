@@ -1,3 +1,3 @@
-import dummy from "../dummy";
+import { dummy } from "../dummy";
 
 export default () => dummy;
