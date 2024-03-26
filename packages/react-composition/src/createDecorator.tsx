@@ -1,6 +1,12 @@
 import React from "react";
-import { CanReturnNull, Compose, Decoratable, Decorator } from "./index";
-import { DecoratableComponent, DecoratableHook } from "~/types";
+import {
+    CanReturnNull,
+    Decoratable,
+    DecoratableComponent,
+    DecoratableHook,
+    Decorator
+} from "~/types";
+import { Compose } from "~/Compose";
 
 type GetBaseFunction<T> = T extends DecoratableComponent<infer F> ? F : never;
 
@@ -18,7 +24,13 @@ export function createComponentPlugin<T extends Decoratable>(
     return createDecorator(Base, hoc);
 }
 
-export type GetDecorateeParams<T> = T extends (params: infer P) => any ? P : never;
+// Maybe there's a better way to mark params as non-existent, but for now I left it as `any`.
+// TODO: revisit this type; not sure if `?` can be handled in one clause
+export type GetDecorateeParams<T> = T extends (params?: infer P1) => any
+    ? P1
+    : T extends (params: infer P2) => any
+    ? P2
+    : any;
 
 export type GetDecoratee<T> = T extends DecoratableHook<infer F>
     ? F
