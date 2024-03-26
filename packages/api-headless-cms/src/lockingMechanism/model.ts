@@ -37,23 +37,112 @@ export const createLockingModel = () => {
                         {
                             name: "required",
                             message: "Record type is required."
-                        },
-                        /**
-                         * Update pattern with additional types as required.
-                         * Also update IHeadlessCmsLockRecordEntryType in types.ts file with additional types as required.
-                         */
-                        {
-                            name: "pattern",
-                            message: "Record type is required.",
-                            settings: {
-                                pattern: {
-                                    name: "custom",
-                                    regex: "^pb:page|cms:([a-zA-Z0-9_-]+)$",
-                                    flags: ""
-                                }
-                            }
                         }
                     ]
+                },
+                {
+                    id: "actions",
+                    type: "object",
+                    fieldId: "actions",
+                    storageId: "object@actions",
+                    label: "Actions",
+                    multipleValues: true,
+                    settings: {
+                        fields: [
+                            {
+                                id: "type",
+                                type: "text",
+                                fieldId: "type",
+                                storageId: "text@type",
+                                label: "Action Type",
+                                validation: [
+                                    {
+                                        name: "required",
+                                        message: "Action type is required."
+                                    }
+                                ]
+                            },
+                            {
+                                id: "message",
+                                type: "text",
+                                fieldId: "message",
+                                storageId: "text@message",
+                                label: "Message"
+                            },
+                            {
+                                id: "createdBy",
+                                type: "object",
+                                fieldId: "createdBy",
+                                storageId: "object@createdBy",
+                                label: "Created By",
+                                validation: [
+                                    {
+                                        name: "required",
+                                        message: "Created by is required."
+                                    }
+                                ],
+                                settings: {
+                                    fields: [
+                                        {
+                                            id: "id",
+                                            type: "text",
+                                            fieldId: "id",
+                                            storageId: "text@id",
+                                            label: "ID",
+                                            validation: [
+                                                {
+                                                    name: "required",
+                                                    message: "ID is required."
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            id: "displayName",
+                                            type: "text",
+                                            fieldId: "displayName",
+                                            storageId: "text@displayName",
+                                            label: "Display Name",
+                                            validation: [
+                                                {
+                                                    name: "required",
+                                                    message: "Display name is required."
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            id: "type",
+                                            type: "text",
+                                            fieldId: "type",
+                                            storageId: "text@type",
+                                            label: "Type",
+                                            validation: [
+                                                {
+                                                    name: "required",
+                                                    message: "Type is required."
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                id: "createdOn",
+                                type: "datetime",
+                                fieldId: "createdOn",
+                                storageId: "datetime@createdOn",
+                                settings: {
+                                    type: "dateTimeWithTimezone"
+                                },
+                                label: "Created On",
+                                validation: [
+                                    {
+                                        name: "required",
+                                        message: "Created on is required."
+                                    }
+                                ]
+                            }
+                        ]
+                    }
                 }
             ]
         })

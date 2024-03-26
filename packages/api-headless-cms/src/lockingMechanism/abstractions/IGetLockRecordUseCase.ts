@@ -1,7 +1,12 @@
 import { IHeadlessCmsLockRecord } from "~/lockingMechanism/types";
 
+export interface IGetLockRecordUseCaseExecuteParamsObject {
+    id: string;
+}
+export type IGetLockRecordUseCaseExecuteParams = IGetLockRecordUseCaseExecuteParamsObject | string;
+
 export interface IGetLockRecordUseCaseExecute {
-    (id: string): Promise<IHeadlessCmsLockRecord | null>;
+    (params: IGetLockRecordUseCaseExecuteParams): Promise<IHeadlessCmsLockRecord | null>;
 }
 
 export interface IGetLockRecordUseCase {

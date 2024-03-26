@@ -1,4 +1,5 @@
-import { CmsIdentity, CmsModelManager } from "~/types";
+import { CmsError, CmsIdentity, CmsModelManager } from "~/types";
+import { Topic } from "@webiny/pubsub/types";
 
 export type ICmsModelLockRecordManager = CmsModelManager<IHeadlessCmsLockRecordValues>;
 
@@ -8,13 +9,13 @@ export interface IHeadlessCmsLockRecordValues {
     actions?: IHeadlessCmsLockRecordAction[];
 }
 export enum IHeadlessCmsLockRecordActionType {
-    request = "requested",
+    requested = "requested",
     approved = "approved",
     denied = "denied"
 }
 
 export interface IHeadlessCmsLockRecordRequestedAction {
-    type: IHeadlessCmsLockRecordActionType.request;
+    type: IHeadlessCmsLockRecordActionType.requested;
     message?: string;
     createdOn: Date;
     createdBy: CmsIdentity;
@@ -38,21 +39,18 @@ export type IHeadlessCmsLockRecordAction =
     | IHeadlessCmsLockRecordRequestedAction
     | IHeadlessCmsLockRecordApprovedAction
     | IHeadlessCmsLockRecordDeniedAction;
-//
-// export interface IHeadlessCmsLockRecordAction {
-//     action: IHeadlessCmsLockRecordActionAction;
-//     message?: string;
-//     createdOn: Date;
-//     createdBy: CmsIdentity;
-// }
 
-export interface IHeadlessCmsLockRecord {
+export interface IHeadlessCmsLockRecordObject {
     id: string;
     targetId: string;
     type: IHeadlessCmsLockRecordEntryType;
     lockedBy: CmsIdentity;
     lockedOn: Date;
     actions?: IHeadlessCmsLockRecordAction[];
+}
+
+export interface IHeadlessCmsLockRecord extends IHeadlessCmsLockRecordObject {
+    toObject(): IHeadlessCmsLockRecordObject;
     addAction(action: IHeadlessCmsLockRecordAction): void;
     getUnlockRequested(): IHeadlessCmsLockRecordRequestedAction | undefined;
     getUnlockApproved(): IHeadlessCmsLockRecordApprovedAction | undefined;
@@ -62,7 +60,7 @@ export interface IHeadlessCmsLockRecord {
 /**
  * Do not use any special chars other than #, as we use this to create lock record IDs.
  */
-export type IHeadlessCmsLockRecordEntryType = "pb#page" | `cms#${string}`;
+export type IHeadlessCmsLockRecordEntryType = string;
 
 export interface IHeadlessCmsLockingMechanismIsLockedParams {
     id: string;
@@ -84,7 +82,45 @@ export interface IHeadlessCmsLockingMechanismUnlockEntryRequestParams {
     type: IHeadlessCmsLockRecordEntryType;
 }
 
+export interface OnEntryBeforeLockTopicParams {
+    id: string;
+    type: IHeadlessCmsLockRecordEntryType;
+}
+
+export interface OnEntryAfterLockTopicParams {
+    id: string;
+    type: IHeadlessCmsLockRecordEntryType;
+    record: IHeadlessCmsLockRecord;
+}
+
+export interface OnEntryLockErrorTopicParams {
+    id: string;
+    type: IHeadlessCmsLockRecordEntryType;
+    error: CmsError;
+}
+
+export interface OnEntryBeforeUnlockTopicParams {}
+
+export interface OnEntryAfterUnlockTopicParams {}
+
+export interface OnEntryUnlockErrorTopicParams {}
+
+export interface OnEntryBeforeUnlockRequestTopicParams {}
+
+export interface OnEntryAfterUnlockRequestTopicParams {}
+
+export interface OnEntryUnlockRequestErrorTopicParams {}
+
 export interface IHeadlessCmsLockingMechanism {
+    onEntryBeforeLock: Topic<OnEntryBeforeLockTopicParams>;
+    onEntryAfterLock: Topic<OnEntryAfterLockTopicParams>;
+    onEntryLockError: Topic<OnEntryLockErrorTopicParams>;
+    onEntryBeforeUnlock: Topic<OnEntryBeforeUnlockTopicParams>;
+    onEntryAfterUnlock: Topic<OnEntryAfterUnlockTopicParams>;
+    onEntryUnlockError: Topic<OnEntryUnlockErrorTopicParams>;
+    onEntryBeforeUnlockRequest: Topic<OnEntryBeforeUnlockRequestTopicParams>;
+    onEntryAfterUnlockRequest: Topic<OnEntryAfterUnlockRequestTopicParams>;
+    onEntryUnlockRequestError: Topic<OnEntryUnlockRequestErrorTopicParams>;
     getLockRecord(id: string): Promise<IHeadlessCmsLockRecord | null>;
     isEntryLocked(params: IHeadlessCmsLockingMechanismIsLockedParams): Promise<boolean>;
     lockEntry(params: IHeadlessCmsLockingMechanismLockEntryParams): Promise<IHeadlessCmsLockRecord>;

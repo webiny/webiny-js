@@ -1,6 +1,28 @@
 import { IHeadlessCmsLockRecord } from "~/lockingMechanism/types";
 import { CmsError } from "~tests/contentAPI/aco/setup/graphql/contentEntry";
 
+export const LOCK_RECORD = /* GraphQL */ `
+    id
+    targetId
+    type
+    lockedBy {
+        id
+        displayName
+        type
+    }
+    lockedOn
+    actions {
+        type
+        createdOn
+        createdBy {
+            id
+            displayName
+            type
+        }
+        message
+    }
+`;
+
 export interface IIsEntryLockedGraphQlVariables {
     id: string;
     type: string;
@@ -49,15 +71,7 @@ export const GET_LOCK_RECORD_QUERY = /* GraphQL */ `
         lockingMechanism {
             getLockRecord(id: $id) {
                 data {
-                    id
-                    targetId
-                    type
-                    lockedBy {
-                        id
-                        displayName
-                        type
-                    }
-                    lockedOn
+                    ${LOCK_RECORD}
                 }
                 error {
                     message
@@ -89,15 +103,7 @@ export const LOCK_ENTRY_MUTATION = /* GraphQL */ `
         lockingMechanism {
             lockEntry(id: $id, type: $type) {
                 data {
-                    id
-                    targetId
-                    type
-                    lockedBy {
-                        id
-                        displayName
-                        type
-                    }
-                    lockedOn
+                    ${LOCK_RECORD}
                 }
                 error {
                     message
@@ -159,25 +165,7 @@ export const UNLOCK_ENTRY_REQUEST_MUTATION = /* GraphQL */ `
         lockingMechanism {
             unlockEntryRequest(id: $id, type: $type) {
                 data {
-                    id
-                    targetId
-                    type
-                    lockedBy {
-                        id
-                        displayName
-                        type
-                    }
-                    lockedOn
-                    actions {
-                        type
-                        createdOn
-                        createdBy {
-                            id
-                            displayName
-                            type
-                        }
-                        message
-                    }
+                    ${LOCK_RECORD}
                 }
                 error {
                     message
