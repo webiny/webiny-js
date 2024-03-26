@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { AcoWithConfig } from "@webiny/app-aco";
-import { CompositionScope } from "@webiny/app-admin";
 import {
     ITrashBinDeleteItemGateway,
     ITrashBinItemMapper,
@@ -10,14 +8,15 @@ import {
 import {
     loadingRepositoryFactory,
     metaRepositoryFactory,
+    Sorting,
     sortRepositoryFactory
 } from "@webiny/app-utils";
-import { TrashBinListWithConfig } from "~/configs";
 import { TrashBinProvider } from "~/hooks";
 import { TrashBinOverlay } from "~/components/TrashBinOverlay";
 import { TrashBinPresenter } from "~/components/TrashBin/TrashBinPresenter";
 import {
     selectedItemsRepositoryFactory,
+    SortRepositoryWithDefaults,
     trashBinItemsRepositoryFactory,
     TrashBinItemsRepositoryWithLoading
 } from "~/components/TrashBin/domain";
@@ -30,6 +29,7 @@ export interface TrashBinProps {
     deleteGateway: ITrashBinDeleteItemGateway;
     itemMapper: ITrashBinItemMapper<any>;
     onClose: () => void;
+    sorting: Sorting[];
 }
 
 export const TrashBin = observer((props: TrashBinProps) => {
@@ -42,9 +42,9 @@ export const TrashBin = observer((props: TrashBinProps) => {
     }, []);
 
     const sortingRepository = useMemo(() => {
-        // TODO: add config to handle default sorting
-        return sortRepositoryFactory.getRepository([{ field: "deletedOn", order: "desc" }]);
-    }, []);
+        const sortRepository = sortRepositoryFactory.getRepository();
+        return new SortRepositoryWithDefaults(props.sorting, sortRepository);
+    }, [props.sorting]);
 
     const loadingRepository = useMemo(() => {
         return loadingRepositoryFactory.getRepository();
@@ -102,18 +102,8 @@ export const TrashBin = observer((props: TrashBinProps) => {
     }, []);
 
     return (
-        <CompositionScope name={"trash"}>
-            <AcoWithConfig>
-                <TrashBinListWithConfig>
-                    <TrashBinProvider controllers={controllers} presenter={presenter}>
-                        <TrashBinOverlay
-                            vm={presenter.vm}
-                            controllers={controllers}
-                            onExited={props.onClose}
-                        />
-                    </TrashBinProvider>
-                </TrashBinListWithConfig>
-            </AcoWithConfig>
-        </CompositionScope>
+        <TrashBinProvider controllers={controllers} presenter={presenter}>
+            <TrashBinOverlay vm={presenter.vm} controllers={controllers} onExited={props.onClose} />
+        </TrashBinProvider>
     );
 });

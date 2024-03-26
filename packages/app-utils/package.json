@@ -11,7 +11,6 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/utils": "0.0.0",
-    "lodash": "^4.17.21",
     "mobx": "^6.9.0"
   },
   "devDependencies": {

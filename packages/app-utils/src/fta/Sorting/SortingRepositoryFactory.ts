@@ -1,14 +1,13 @@
 import { SortingRepository } from "./SortingRepository";
-import { SortingDTO } from "~/fta";
 
 export class SortingRepositoryFactory {
     private cache: Map<string, SortingRepository> = new Map();
 
-    getRepository(sortings: SortingDTO[]) {
+    getRepository() {
         const cacheKey = this.getCacheKey();
 
         if (!this.cache.has(cacheKey)) {
-            this.cache.set(cacheKey, new SortingRepository(sortings));
+            this.cache.set(cacheKey, new SortingRepository());
         }
 
         return this.cache.get(cacheKey) as SortingRepository;

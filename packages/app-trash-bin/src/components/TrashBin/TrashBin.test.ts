@@ -7,10 +7,11 @@ import {
 } from "@webiny/app-trash-bin-common";
 import {
     SelectedItemsRepository,
+    SortRepositoryWithDefaults,
     TrashBinItemsRepository,
     TrashBinItemsRepositoryWithLoading
 } from "~/components/TrashBin/domain";
-import { LoadingRepository, MetaRepository, SortingRepository } from "@webiny/app-utils";
+import { LoadingRepository, MetaRepository, Sorting, SortingRepository } from "@webiny/app-utils";
 import { SearchRepository } from "./domain/SearchRepository";
 import { LoadingActions } from "~/types";
 import { getUseCases } from "~/components/TrashBin/useCases";
@@ -60,7 +61,10 @@ class CustomItemMapper implements ITrashBinItemMapper<Item> {
         };
     }
 }
-describe("TrashBinPresenter", () => {
+
+const defaultSorting: Sorting[] = [{ field: "deletedOn", order: "desc" }];
+
+describe("TrashBin", () => {
     const item1: Item = {
         id: "item-1",
         title: "Item 1",
@@ -120,7 +124,8 @@ describe("TrashBinPresenter", () => {
     ) => {
         const selectedRepo = new SelectedItemsRepository();
         const loadingRepo = new LoadingRepository();
-        const sortRepo = new SortingRepository([{ field: "deletedOn", order: "desc" }]);
+        const sortRepo = new SortingRepository();
+        const sortRepoWithDefaults = new SortRepositoryWithDefaults(defaultSorting, sortRepo);
         const metaRepo = new MetaRepository();
         const searchRepo = new SearchRepository();
         const trashBinItemsRepo = new TrashBinItemsRepository(
@@ -132,8 +137,15 @@ describe("TrashBinPresenter", () => {
         const itemsRepo = new TrashBinItemsRepositoryWithLoading(loadingRepo, trashBinItemsRepo);
 
         return {
-            presenter: new TrashBinPresenter(itemsRepo, selectedRepo, sortRepo, searchRepo),
-            controllers: getControllers(getUseCases(itemsRepo, selectedRepo, sortRepo, searchRepo))
+            presenter: new TrashBinPresenter(
+                itemsRepo,
+                selectedRepo,
+                sortRepoWithDefaults,
+                searchRepo
+            ),
+            controllers: getControllers(
+                getUseCases(itemsRepo, selectedRepo, sortRepoWithDefaults, searchRepo)
+            )
         };
     };
 
@@ -157,6 +169,10 @@ describe("TrashBinPresenter", () => {
         await listPromise;
 
         expect(listGateway.execute).toHaveBeenCalledTimes(1);
+        expect(listGateway.execute).toHaveBeenCalledWith({
+            sort: ["deletedOn_DESC"]
+        });
+
         expect(presenter.vm).toMatchObject({
             items: [
                 {

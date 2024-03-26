@@ -1,6 +1,12 @@
 import React, { useCallback } from "react";
-import { createDecorator, TrashBinRenderer as BaseTrashBinRenderer } from "@webiny/app-admin";
-import { TrashBin } from "~/components/TrashBin";
+import {
+    CompositionScope,
+    createDecorator,
+    TrashBinRenderer as BaseTrashBinRenderer
+} from "@webiny/app-admin";
+import { AcoWithConfig } from "@webiny/app-aco";
+import { TrashBinListWithConfig } from "~/configs";
+import { TrashBinOuter } from "~/components/TrashBinOuter";
 
 export const TrashBinRenderer = createDecorator(BaseTrashBinRenderer, () => {
     return function TrashBinRenderer(props) {
@@ -10,6 +16,14 @@ export const TrashBinRenderer = createDecorator(BaseTrashBinRenderer, () => {
             }
         }, [props.onClose]);
 
-        return <TrashBin {...props} onClose={onClose} />;
+        return (
+            <CompositionScope name={"trash"}>
+                <AcoWithConfig>
+                    <TrashBinListWithConfig>
+                        <TrashBinOuter {...props} onClose={onClose} />
+                    </TrashBinListWithConfig>
+                </AcoWithConfig>
+            </CompositionScope>
+        );
     };
 });

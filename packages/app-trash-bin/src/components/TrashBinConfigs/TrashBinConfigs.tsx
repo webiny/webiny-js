@@ -49,6 +49,7 @@ export const TrashBinConfigs = () => {
                     hideable={false}
                     resizable={false}
                 />
+                <Browser.Table.Sorting name={"deletedOn"} field={"deletedOn"} order={"desc"} />
                 <Browser.BulkAction name={"delete"} element={<BulkActionsDeleteItems />} />
                 <Browser.EntryAction name={"delete"} element={<DeleteItemAction />} />
             </TrashBinListConfig>

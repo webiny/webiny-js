@@ -1,36 +1,19 @@
 import { makeAutoObservable } from "mobx";
-import orderBy from "lodash/orderBy";
-import { Sorting, SortingDTO } from "./Sorting";
+import { Sorting } from "./Sorting";
 import { ISortingRepository } from "./ISortingRepository";
 
 export class SortingRepository implements ISortingRepository {
-    private sortings: Sorting[];
+    private sorting: Sorting[] = [];
 
-    constructor(sorts: SortingDTO[]) {
-        this.sortings = sorts.map(sort => Sorting.create(sort));
+    constructor() {
         makeAutoObservable(this);
     }
 
     get() {
-        return this.sortings;
+        return this.sorting;
     }
 
-    set(sortings: SortingDTO[]) {
-        this.sortings = this.mapDTOsToSorts(sortings);
-    }
-
-    sortItems<T>(items: T[]): T[] {
-        return orderBy(
-            items,
-            this.sortings.map(sort => sort.field),
-            this.sortings.map(sort => sort.order)
-        );
-    }
-
-    private mapDTOsToSorts(sortingsDTO?: SortingDTO[]) {
-        if (!sortingsDTO) {
-            return [];
-        }
-        return sortingsDTO.map(sorting => Sorting.create(sorting));
+    set(sorts: Sorting[]) {
+        this.sorting = sorts;
     }
 }

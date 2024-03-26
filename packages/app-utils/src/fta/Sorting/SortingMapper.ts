@@ -1,4 +1,4 @@
-import { SortingDTO } from "./Sorting";
+import { Sorting, SortingDTO } from "./Sorting";
 
 export type DbSorting = `${string}_ASC` | `${string}_DESC`;
 
@@ -8,6 +8,15 @@ export interface ColumnSorting {
 }
 
 export class SortingMapper {
+    static toDTO(data: Sorting | SortingDTO): SortingDTO {
+        const { field, order } = data;
+
+        return {
+            field,
+            order
+        };
+    }
+
     static fromColumnToDTO(data: ColumnSorting): SortingDTO {
         const { id, desc } = data;
 

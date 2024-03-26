@@ -1,7 +1,6 @@
-import { Sorting, SortingDTO } from "./Sorting";
+import { Sorting } from "./Sorting";
 
 export interface ISortingRepository {
-    sortItems: <T>(items: T[]) => T[];
-    set: (sortings: SortingDTO[]) => void;
+    set: (sorts: Sorting[]) => void;
     get: () => Sorting[];
 }
