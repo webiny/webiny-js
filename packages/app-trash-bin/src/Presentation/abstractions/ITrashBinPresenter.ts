@@ -11,6 +11,7 @@ export interface TrashBinPresenterViewModel {
     meta: TrashBinMetaResponse;
     searchQuery: string | undefined;
     searchLabel: string;
+    nameColumnId: string;
 }
 
 export interface ITrashBinPresenter {

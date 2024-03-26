@@ -15,18 +15,21 @@ export class TrashBinPresenter {
     private sortingRepository: ISortingRepository;
     private searchRepository: ISearchRepository;
     private itemMapper: ITrashBinItemMapper<TrashBinItem>;
+    private readonly nameColumnId: string | undefined;
 
     constructor(
         itemsRepository: ITrashBinItemsRepository,
         selectedRepository: ISelectedItemsRepository,
         sortingRepository: ISortingRepository,
-        searchRepository: ISearchRepository
+        searchRepository: ISearchRepository,
+        nameColumnId?: string
     ) {
         this.itemsRepository = itemsRepository;
         this.selectedRepository = selectedRepository;
         this.sortingRepository = sortingRepository;
         this.searchRepository = searchRepository;
         this.itemMapper = new TrashBinItemMapper();
+        this.nameColumnId = nameColumnId;
         makeAutoObservable(this);
     }
 
@@ -39,7 +42,8 @@ export class TrashBinPresenter {
             loading: this.itemsRepository.getLoading(),
             isEmptyView: this.getIsEmptyView(),
             searchQuery: this.searchRepository.get(),
-            searchLabel: "Search all items"
+            searchLabel: "Search all items",
+            nameColumnId: this.nameColumnId || "id"
         };
     }
 

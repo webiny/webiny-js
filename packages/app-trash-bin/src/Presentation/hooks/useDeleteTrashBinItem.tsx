@@ -27,7 +27,7 @@ export const useDeleteTrashBinItem = ({ item, onAccept, onCancel }: UseDeleteIte
     const openDialogDeleteItem = useCallback(
         () =>
             showConfirmation(async () => {
-                await deleteItem.execute(item.id);
+                await deleteItem(item.id);
 
                 showSnackbar(`${item.title} was deleted successfully!`);
 

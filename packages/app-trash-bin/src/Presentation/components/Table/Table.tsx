@@ -18,6 +18,7 @@ export const Table = (props: TableProps) => {
             sorting={props.vm.sorting}
             onSortingChange={sort => props.controllers.sortItems.execute(sort)}
             selected={props.vm.selectedItems}
+            nameColumnId={props.vm.nameColumnId}
             namespace={"trash-bin"}
         />
     );

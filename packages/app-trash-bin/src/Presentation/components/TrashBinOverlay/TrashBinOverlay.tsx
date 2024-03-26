@@ -2,14 +2,13 @@ import React from "react";
 import debounce from "lodash/debounce";
 import { OverlayLayout } from "@webiny/app-admin";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
-import { TrashBinPresenterViewModel } from "~/Presentation/abstractions/ITrashBinPresenter";
-import { ITrashBinControllers } from "~/Presentation/abstractions";
 import { Title } from "~/Presentation/components/Title";
 import { SearchInput } from "~/Presentation/components/SearchInput";
 import { BulkActions } from "~/Presentation/components/BulkActions";
 import { Empty } from "~/Presentation/components/Empty";
 import { Table } from "~/Presentation/components/Table";
 import { BottomInfoBar } from "~/Presentation/components/BottomInfoBar";
+import { ITrashBinControllers, TrashBinPresenterViewModel } from "~/Presentation/abstractions";
 
 interface TrashBinOverlayProps {
     vm: TrashBinPresenterViewModel;
@@ -38,7 +37,7 @@ export const TrashBinOverlay = (props: TrashBinOverlayProps) => {
                     <Table vm={props.vm} controllers={props.controllers} />
                 )}
             </Scrollbar>
-            <BottomInfoBar vm={props.vm} />
+            <BottomInfoBar />
         </OverlayLayout>
     );
 };

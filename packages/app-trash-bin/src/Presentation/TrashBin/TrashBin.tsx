@@ -29,6 +29,7 @@ export interface TrashBinProps {
     itemMapper: ITrashBinItemMapper<any>;
     onClose: () => void;
     sorting: Sorting[];
+    nameColumnId?: string;
 }
 
 export const TrashBin = observer((props: TrashBinProps) => {
@@ -90,9 +91,16 @@ export const TrashBin = observer((props: TrashBinProps) => {
             itemsRepository,
             selectedRepository,
             sortingRepository,
-            searchRepository
+            searchRepository,
+            props.nameColumnId
         );
-    }, [itemsRepository, selectedRepository, sortingRepository, searchRepository]);
+    }, [
+        itemsRepository,
+        selectedRepository,
+        sortingRepository,
+        searchRepository,
+        props.nameColumnId
+    ]);
 
     useEffect(() => {
         controllers.listItems.execute();

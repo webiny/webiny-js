@@ -18,8 +18,8 @@ export const TrashBinConfigs = () => {
         <>
             <TrashBinListConfig>
                 <Browser.Table.Column
-                    name={"title"}
-                    header={"Title"}
+                    name={"name"}
+                    header={"Name"}
                     cell={<CellTitle />}
                     sortable={true}
                     hideable={false}

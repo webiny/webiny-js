@@ -22,6 +22,7 @@ export type TrashBinProps = {
     itemMapper: ITrashBinItemMapper<any>;
     onClose?: () => void;
     show?: boolean;
+    nameColumnId?: string;
 };
 
 function getPortalTarget() {

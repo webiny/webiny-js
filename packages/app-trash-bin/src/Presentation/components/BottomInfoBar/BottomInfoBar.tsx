@@ -2,23 +2,21 @@ import React from "react";
 import { ListMeta } from "./ListMeta";
 import { ListStatus } from "./ListStatus";
 import { BottomInfoBarInner, BottomInfoBarWrapper } from "./BottomInfoBar.styled";
-import { TrashBinPresenterViewModel } from "~/Presentation/abstractions";
 import { LoadingActions } from "~/types";
+import { useTrashBin } from "~/Presentation/hooks";
 
-interface BottomInfoBarProps {
-    vm: TrashBinPresenterViewModel;
-}
+export const BottomInfoBar = () => {
+    const { vm } = useTrashBin();
 
-export const BottomInfoBar = (props: BottomInfoBarProps) => {
     return (
         <BottomInfoBarWrapper>
             <BottomInfoBarInner>
                 <ListMeta
-                    loading={props.vm.loading[LoadingActions.list]}
-                    totalCount={props.vm.meta.totalCount}
-                    currentCount={props.vm.items.length}
+                    loading={vm.loading[LoadingActions.list]}
+                    totalCount={vm.meta.totalCount}
+                    currentCount={vm.items.length}
                 />
-                <ListStatus loading={props.vm.loading[LoadingActions.listMore]} {...props} />
+                <ListStatus loading={vm.loading[LoadingActions.listMore]} />
             </BottomInfoBarInner>
         </BottomInfoBarWrapper>
     );

@@ -59,7 +59,7 @@ const useWorker = () => {
     // Reset selected items in both repository and Worker
     const resetItems = useCallback(() => {
         worker.items = [];
-        selectItems.execute([]);
+        selectItems([]);
     }, []);
 
     return {

@@ -33,6 +33,7 @@ export const TrashBin = () => {
             listGateway={listGateway}
             deleteGateway={deleteGateway}
             itemMapper={itemMapper}
+            nameColumnId={model.titleFieldId || "id"}
         />
     );
 };

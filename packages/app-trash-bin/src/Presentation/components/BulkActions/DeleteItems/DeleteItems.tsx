@@ -25,7 +25,7 @@ export const BulkActionsDeleteItems = observer(() => {
             execute: async () => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
-                        await deleteItem.execute(item.id);
+                        await deleteItem(item.id);
                         report.success({
                             title: `${item.title}`,
                             message: "Item successfully deleted."

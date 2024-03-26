@@ -19,6 +19,7 @@ interface TrashBinWrapperProps {
     deleteGateway: ITrashBinDeleteItemGateway;
     itemMapper: ITrashBinItemMapper<any>;
     onClose: () => void;
+    nameColumnId?: string;
 }
 
 const TrashBinWrapper = (props: TrashBinWrapperProps) => {

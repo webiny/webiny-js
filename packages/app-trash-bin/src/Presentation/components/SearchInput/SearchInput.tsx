@@ -16,7 +16,7 @@ export const SearchInput = () => {
                     if (value === vm.searchQuery) {
                         return;
                     }
-                    searchItems.execute(value);
+                    searchItems(value);
                 }}
             >
                 {({ value, onChange }) => (
