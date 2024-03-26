@@ -521,6 +521,7 @@ export default /* GraphQL */ `
         revisionDeletedOn_lt: DateTime
         revisionDeletedOn_lte: DateTime
         revisionDeletedOn_between: [DateTime!]
+        revisionDeletedOn_not_between: [DateTime!]
         revisionRestoredOn: DateTime
         revisionRestoredOn_gt: DateTime
         revisionRestoredOn_gte: DateTime
@@ -528,7 +529,6 @@ export default /* GraphQL */ `
         revisionRestoredOn_lte: DateTime
         revisionRestoredOn_between: [DateTime!]
         revisionRestoredOn_not_between: [DateTime!]
-        revisionDeletedOn_not_between: [DateTime!]
         revisionFirstPublishedOn: DateTime
         revisionFirstPublishedOn_gt: DateTime
         revisionFirstPublishedOn_gte: DateTime

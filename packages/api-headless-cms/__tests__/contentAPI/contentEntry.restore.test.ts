@@ -25,8 +25,6 @@ describe("restore entries", () => {
             data
         });
 
-        console.log("response", JSON.stringify(response));
-
         const createdCategory = response.data.createCategory.data;
 
         if (response.data.createCategory.error) {
@@ -238,6 +236,12 @@ describe("restore entries", () => {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
+                        },
+                        restoredOn: expect.any(String),
+                        restoredBy: {
+                            id: "id-12345678",
+                            displayName: "John Doe",
+                            type: "admin"
                         }
                     },
                     error: null
@@ -251,6 +255,12 @@ describe("restore entries", () => {
                         ...categoryToDelete,
                         deletedOn: expect.any(String),
                         deletedBy: {
+                            id: "id-12345678",
+                            displayName: "John Doe",
+                            type: "admin"
+                        },
+                        restoredOn: expect.any(String),
+                        restoredBy: {
                             id: "id-12345678",
                             displayName: "John Doe",
                             type: "admin"
