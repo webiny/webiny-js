@@ -1,15 +1,24 @@
-import { IIsEntryLockedUseCase } from "~/abstractions/IsEntryLocked";
+import {
+    IIsEntryLockedUseCase,
+    IIsEntryLockedUseCaseExecuteParams
+} from "~/abstractions/IsEntryLocked";
 import { IGetLockRecordUseCase } from "~/abstractions/IGetLockRecordUseCase";
-import { ILockingMechanismIsLockedParams, ILockingMechanismLockRecord } from "~/types";
+import { ILockingMechanismLockRecord } from "~/types";
 import { createLockRecordDatabaseId } from "~/utils/lockRecordDatabaseId";
 import { NotFoundError } from "@webiny/handler-graphql";
 
+const defaultTimeoutInSeconds = 600;
 /**
  * In milliseconds.
  */
 const getTimeout = () => {
-    const userDefined = parseInt(process.env.WEBINY_RECORD_LOCK_TIMEOUT || "600");
-    return (isNaN(userDefined) ? 600 : userDefined) * 1000;
+    const userDefined = process.env.WEBINY_RECORD_LOCK_TIMEOUT
+        ? parseInt(process.env.WEBINY_RECORD_LOCK_TIMEOUT)
+        : undefined;
+    if (!userDefined || isNaN(userDefined) || userDefined <= 0) {
+        return defaultTimeoutInSeconds * 1000;
+    }
+    return userDefined * 1000;
 };
 
 export interface IIsEntryLockedParams {
@@ -23,7 +32,7 @@ export class IsEntryLockedUseCase implements IIsEntryLockedUseCase {
         this.getLockRecordUseCase = params.getLockRecordUseCase;
     }
 
-    public async execute(params: ILockingMechanismIsLockedParams): Promise<boolean> {
+    public async execute(params: IIsEntryLockedUseCaseExecuteParams): Promise<boolean> {
         const id = createLockRecordDatabaseId(params.id);
         try {
             const result = await this.getLockRecordUseCase.execute(id);
