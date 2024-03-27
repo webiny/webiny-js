@@ -12,7 +12,6 @@ import { Topic } from "@webiny/pubsub/types";
 import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection";
 import { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types";
 import { AccessControl } from "~/crud/AccessControl/AccessControl";
-import { IHeadlessCmsLockingMechanism } from "./lockingMechanism/types";
 
 export interface CmsError {
     message: string;
@@ -67,10 +66,6 @@ export interface HeadlessCms
      */
     export: HeadlessCmsExport;
     importing: HeadlessCmsImport;
-    /**
-     * Record locking mechanism.
-     */
-    lockingMechanism: IHeadlessCmsLockingMechanism;
 }
 
 /**
