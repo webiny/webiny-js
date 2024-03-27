@@ -4,7 +4,7 @@ import { usePage } from "~/pageEditor/hooks/usePage";
 import { usePreviewPage } from "~/admin/hooks/usePreviewPage";
 import { PageEditorConfig } from "~/pageEditor/editorConfig/PageEditorConfig";
 
-const { TopBar } = PageEditorConfig;
+const { Ui } = PageEditorConfig;
 
 export const PreviewPageOption = () => {
     const [page] = usePage();
@@ -15,7 +15,7 @@ export const PreviewPageOption = () => {
     });
 
     return (
-        <TopBar.DropdownAction.MenuItem
+        <Ui.TopBar.DropdownAction.MenuItem
             label={"Preview"}
             onClick={previewPage}
             icon={<PreviewIcon />}

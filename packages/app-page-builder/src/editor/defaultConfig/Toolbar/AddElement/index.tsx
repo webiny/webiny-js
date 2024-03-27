@@ -5,7 +5,7 @@ import { useUI } from "~/editor/hooks/useUI";
 import { AddElementDrawer } from "./AddElementDrawer";
 import { useDrawer } from "~/editor/config/Toolbar/DrawerProvider";
 
-const { Toolbar } = EditorConfig;
+const { Ui } = EditorConfig;
 
 const HideOnDrag = () => {
     const [{ isDragging }] = useUI();
@@ -22,14 +22,14 @@ const HideOnDrag = () => {
 
 export const AddElement = () => {
     return (
-        <Toolbar.Element.DrawerTrigger
+        <Ui.Toolbar.Element.DrawerTrigger
             icon={<AddIcon />}
             label={"Add Element"}
             drawer={
-                <Toolbar.Element.Drawer>
+                <Ui.Toolbar.Element.Drawer>
                     <HideOnDrag />
                     <AddElementDrawer />
-                </Toolbar.Element.Drawer>
+                </Ui.Toolbar.Element.Drawer>
             }
         />
     );

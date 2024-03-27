@@ -8,7 +8,7 @@ import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { PageEditorConfig } from "~/pageEditor/editorConfig/PageEditorConfig";
 
-const { TopBar } = PageEditorConfig;
+const { Ui } = PageEditorConfig;
 
 export const SetAsHomepageOption = () => {
     const [page] = usePage();
@@ -68,7 +68,7 @@ export const SetAsHomepageOption = () => {
     }, [page.id]);
 
     return (
-        <TopBar.DropdownAction.MenuItem
+        <Ui.TopBar.DropdownAction.MenuItem
             label={"Set as homepage"}
             onClick={() => showConfirmation(setPageAsHomepage)}
             icon={<HomeIcon />}

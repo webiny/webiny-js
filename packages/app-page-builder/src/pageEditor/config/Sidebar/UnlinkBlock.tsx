@@ -71,7 +71,7 @@ const UnlinkWidget = ({ permission }: UnlinkTabProps) => {
  * - if in "template mode", hide the "style" tab
  * - render the "Unlink Block" widget, if the block is "linked"
  */
-export const UnlinkBlock = PageEditorConfig.Sidebar.Elements.createDecorator(Original => {
+export const UnlinkBlock = PageEditorConfig.Ui.Sidebar.Elements.createDecorator(Original => {
     return function SidebarElements(props) {
         const [element] = useActiveElement();
         const blockReference = useBlockReference();

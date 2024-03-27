@@ -2,7 +2,7 @@ import React from "react";
 import { TemplateEditorConfig } from "~/templateEditor/editorConfig/TemplateEditorConfig";
 import { useBlockReference } from "~/templateEditor/config/Sidebar/useBlockReference";
 
-const { Sidebar } = TemplateEditorConfig;
+const { ElementAction } = TemplateEditorConfig;
 
 interface HideIfBlockReferenceProps {
     children: React.ReactNode;
@@ -18,7 +18,7 @@ const HideIfBlockReference = ({ children }: HideIfBlockReferenceProps) => {
     return <>{children}</>;
 };
 
-export const HideSaveAction = Sidebar.ElementAction.createDecorator(Original => {
+export const HideSaveAction = ElementAction.createDecorator(Original => {
     return function SaveAction(props) {
         if (props.name !== "save") {
             return <Original {...props} />;

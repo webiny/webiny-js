@@ -6,7 +6,7 @@ import { Form, FormOnSubmit, FormRenderPropParams } from "@webiny/form";
 import { PbEditorElement, PbEditorPageElementAdvancedSettingsPlugin } from "~/types";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
-import { Sidebar } from "~/editor/config/Sidebar/Sidebar";
+import { ElementProperties, ElementProperty } from "~/editor/config/ElementProperty";
 
 export const ElementSettings = () => {
     const [element] = useActiveElement();
@@ -38,7 +38,7 @@ export const ElementSettings = () => {
             {formProps => (
                 <>
                     <LegacyPlugins element={element} formProps={formProps} />
-                    <Sidebar.Elements group={"elementProperties"} />
+                    <ElementProperties group={ElementProperty.ELEMENT} />
                 </>
             )}
         </Form>

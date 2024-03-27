@@ -1,6 +1,6 @@
 import React from "react";
-import { Sidebar } from "~/editor/config/Sidebar/Sidebar";
+import { ElementProperties, ElementProperty } from "~/editor/config/ElementProperty";
 
 export const StyleProperties = () => {
-    return <Sidebar.Elements group={"styleProperties"} />;
+    return <ElementProperties group={ElementProperty.STYLE} />;
 };

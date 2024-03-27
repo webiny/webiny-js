@@ -14,7 +14,7 @@ import { RefreshBlockAction } from "./Sidebar/RefreshBlockAction";
 import { EditBlockAction } from "./Sidebar/EditBlockAction";
 import { HideSaveAction } from "./Sidebar/HideSaveAction";
 
-const { TopBar, Toolbar, Content, Sidebar, Element } = TemplateEditorConfig;
+const { Ui, ElementAction } = TemplateEditorConfig;
 
 export const DefaultTemplateEditorConfig = React.memo(() => {
     return (
@@ -22,24 +22,24 @@ export const DefaultTemplateEditorConfig = React.memo(() => {
             <EventActionHandlerPlugin />
             <EventActionPlugins />
             <TemplateEditorConfig>
-                <TopBar.Element name={"buttonBack"} group={"left"} element={<BackButton />} />
-                <TopBar.Element name={"title"} group={"left"} element={<Title />} />
-                <TopBar.Action
+                <Ui.TopBar.Element name={"buttonBack"} group={"left"} element={<BackButton />} />
+                <Ui.TopBar.Element name={"title"} group={"left"} element={<Title />} />
+                <Ui.TopBar.Action
                     name={"buttonTemplateSettings"}
                     element={<TemplateSettingsButton />}
                 />
-                <TopBar.Action name={"buttonSaveTemplate"} element={<SaveTemplateButton />} />
-                <Toolbar.Element name={"savingIndicator"} remove />
-                <Content.Element name={"addBlock"} element={<AddBlock />} />
-                <Content.Element name={"addContent"} element={<AddContent />} />
-                <Element group={"overlays"} name={"blocksBrowser"} element={<BlocksBrowser />} />
-                <Sidebar.ElementAction name={"editBlock"} element={<EditBlockAction />} />
-                <Sidebar.ElementAction name={"refreshBlock"} element={<RefreshBlockAction />} />
-                <Sidebar.Element
+                <Ui.TopBar.Action name={"buttonSaveTemplate"} element={<SaveTemplateButton />} />
+                <Ui.Toolbar.Element name={"savingIndicator"} remove />
+                <Ui.Content.Element name={"addBlock"} element={<AddBlock />} />
+                <Ui.Content.Element name={"addContent"} element={<AddContent />} />
+                <Ui.Element group={"overlays"} name={"blocksBrowser"} element={<BlocksBrowser />} />
+                <Ui.Sidebar.Element
                     name={"blockActions"}
                     group={"element"}
                     element={<ElementSettingsGroup />}
                 />
+                <ElementAction name={"editBlock"} element={<EditBlockAction />} />
+                <ElementAction name={"refreshBlock"} element={<RefreshBlockAction />} />
                 <HideSaveAction />
                 <UnlinkBlock />
             </TemplateEditorConfig>

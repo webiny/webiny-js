@@ -4,7 +4,7 @@ import { useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";
 import { PageEditorConfig } from "~/pageEditor/editorConfig/PageEditorConfig";
 import { ScrollableContainer } from "~/editor/defaultConfig/Sidebar/ScrollableContainer";
 
-export const TemplateMode = PageEditorConfig.Sidebar.Elements.createDecorator(Original => {
+export const TemplateMode = PageEditorConfig.Ui.Sidebar.Elements.createDecorator(Original => {
     return function TemplateMode(props) {
         const [isTemplateMode] = useTemplateMode();
 

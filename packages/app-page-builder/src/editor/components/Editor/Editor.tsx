@@ -80,7 +80,7 @@ export const Editor = () => {
     };
     return (
         <div className={classSet(classes)}>
-            <EditorConfig.Layout />
+            <EditorConfig.Ui.Layout />
             <Dialogs />
             <DragPreview />
         </div>

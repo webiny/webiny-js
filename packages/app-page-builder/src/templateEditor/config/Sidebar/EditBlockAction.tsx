@@ -3,6 +3,8 @@ import { ReactComponent as EditIcon } from "@material-design-icons/svg/round/edi
 import { TemplateEditorConfig } from "~/templateEditor/editorConfig/TemplateEditorConfig";
 import { useBlockReference } from "./useBlockReference";
 
+const { ElementAction } = TemplateEditorConfig;
+
 export const EditBlockAction = () => {
     const blockReference = useBlockReference();
 
@@ -11,7 +13,7 @@ export const EditBlockAction = () => {
     }
 
     return (
-        <TemplateEditorConfig.Sidebar.ElementAction.IconButton
+        <ElementAction.IconButton
             label={"Edit block"}
             icon={<EditIcon />}
             onClick={() =>

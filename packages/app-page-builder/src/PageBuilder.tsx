@@ -111,8 +111,8 @@ const EditorRendererPlugin = createDecorator(EditorRenderer, () => {
 });
 
 const displayContents = css`
-    pb-editor-elements,
-    pb-editor-element {
+    pb-editor-ui-elements,
+    pb-editor-ui-element {
         display: contents;
     }
 `;

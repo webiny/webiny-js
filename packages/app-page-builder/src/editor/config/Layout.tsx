@@ -5,11 +5,11 @@ import { EditorConfig } from "~/editor/config/EditorConfig";
 export const Layout = makeDecoratable("EditorLayout", () => {
     return (
         <>
-            <EditorConfig.TopBar />
-            <EditorConfig.Toolbar />
-            <EditorConfig.Content />
-            <EditorConfig.Sidebar />
-            <EditorConfig.Elements group={"overlays"} />
+            <EditorConfig.Ui.TopBar />
+            <EditorConfig.Ui.Toolbar />
+            <EditorConfig.Ui.Content />
+            <EditorConfig.Ui.Sidebar />
+            <EditorConfig.Ui.Elements group={"overlays"} />
         </>
     );
 });

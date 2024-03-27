@@ -27,6 +27,8 @@ const ShouldRender = ({ plugin, children }: ShouldRenderProps) => {
     return shouldRender ? <>{children}</> : null;
 };
 
+const { ElementAction } = EditorConfig;
+
 export const ElementActionsAdapter = () => {
     const actionPlugins = plugins.byType<PbEditorPageElementSettingsPlugin>(
         "pb-editor-page-element-settings"
@@ -39,7 +41,7 @@ export const ElementActionsAdapter = () => {
                     typeof plugin.renderAction === "function" ? plugin.renderAction({}) : null;
 
                 return (
-                    <EditorConfig.Sidebar.ElementAction
+                    <ElementAction
                         key={plugin.name + "-" + index}
                         name={getActionName(String(plugin.name))}
                         element={<ShouldRender plugin={plugin}>{element}</ShouldRender>}

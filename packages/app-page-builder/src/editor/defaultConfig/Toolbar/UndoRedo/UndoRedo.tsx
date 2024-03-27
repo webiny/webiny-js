@@ -9,7 +9,7 @@ import { useActiveElement } from "~/editor/hooks/useActiveElement";
 const osFamily = platform.os ? platform.os.family : null;
 const metaKey = osFamily === "OS X" ? "CMD" : "CTRL";
 
-const { Toolbar } = EditorConfig;
+const { Ui } = EditorConfig;
 
 export const Undo = () => {
     const { undo } = useEventActionHandler();
@@ -20,7 +20,7 @@ export const Undo = () => {
         setActiveElement(null);
     };
     return (
-        <Toolbar.Element.IconButton
+        <Ui.Toolbar.Element.IconButton
             icon={<UndoIcon />}
             label={`Undo (${metaKey}+Z)`}
             onClick={onClick}
@@ -37,7 +37,7 @@ export const Redo = () => {
         redo();
     };
     return (
-        <Toolbar.Element.IconButton
+        <Ui.Toolbar.Element.IconButton
             icon={<RedoIcon />}
             label={`Redo (${metaKey}+SHIFT+Z)`}
             onClick={onClick}

@@ -6,20 +6,20 @@ import { SaveBlockButton } from "~/blockEditor/config/TopBar/SaveBlockButton";
 import { BlockSettingsButton } from "~/blockEditor/config/TopBar/BlockSettings/BlockSettingsButton";
 import { ElementSettingsDecorator } from "~/blockEditor/config/ElementSettingsTab";
 
-const { TopBar, Toolbar } = BlockEditorConfig;
+const { Ui } = BlockEditorConfig;
 
 export const DefaultBlockEditorConfig = () => {
     return (
         <BlockEditorConfig>
-            <TopBar.Element name={"buttonBack"} group={"left"} element={<BackButton />} />
-            <TopBar.Element name={"title"} group={"left"} element={<Title />} />
-            <TopBar.Action name={"buttonSaveBlock"} element={<SaveBlockButton />} />
-            <TopBar.Action
+            <Ui.TopBar.Element name={"buttonBack"} group={"left"} element={<BackButton />} />
+            <Ui.TopBar.Element name={"title"} group={"left"} element={<Title />} />
+            <Ui.TopBar.Action name={"buttonSaveBlock"} element={<SaveBlockButton />} />
+            <Ui.TopBar.Action
                 name={"buttonBlockSettings"}
                 element={<BlockSettingsButton />}
                 before={"buttonSaveBlock"}
             />
-            <Toolbar.Element name={"savingIndicator"} remove />
+            <Ui.Toolbar.Element name={"savingIndicator"} remove />
             <ElementSettingsDecorator />
         </BlockEditorConfig>
     );
