@@ -1,5 +1,8 @@
-import { CmsEntryStorageOperationsRestoreParams, CmsModel } from "~/types";
+import { CmsEntryStorageOperationsRestoreParams, CmsModel, CmsStorageEntry } from "~/types";
 
 export interface IRestoreEntryOperation {
-    execute: (model: CmsModel, options: CmsEntryStorageOperationsRestoreParams) => Promise<void>;
+    execute: (
+        model: CmsModel,
+        options: CmsEntryStorageOperationsRestoreParams
+    ) => Promise<CmsStorageEntry>;
 }

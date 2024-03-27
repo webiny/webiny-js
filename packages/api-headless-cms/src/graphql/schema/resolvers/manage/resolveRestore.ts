@@ -15,9 +15,9 @@ export const resolveRestore: ResolveRestore =
             if (!revision) {
                 throw new Error(`The input value "revision" is required!`);
             }
-            await context.cms.restoreEntry(model, revision);
 
-            return new Response(true);
+            const entry = await context.cms.restoreEntry(model, revision);
+            return new Response(entry);
         } catch (ex) {
             return new ErrorResponse(ex);
         }

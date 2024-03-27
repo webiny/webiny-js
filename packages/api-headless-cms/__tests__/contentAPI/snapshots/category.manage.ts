@@ -424,7 +424,9 @@ export default /* GraphQL */ `
             options: CmsDeleteEntryOptions
         ): CmsDeleteResponse
 
-        restoreCategoryApiNameWhichIsABitDifferentThanModelId(revision: ID!): CmsRestoreResponse
+        restoreCategoryApiNameWhichIsABitDifferentThanModelId(
+            revision: ID!
+        ): CategoryApiNameWhichIsABitDifferentThanModelIdResponse
 
         deleteMultipleCategoriesApiModel(entries: [ID!]!): CmsDeleteMultipleResponse!
 

@@ -31,6 +31,6 @@ export class RestoreEntry implements IRestoreEntry {
 
         const { entry, storageEntry } = await this.transformEntry.execute(model, entryToRestore);
 
-        await this.restoreEntry.execute(model, { entry, storageEntry });
+        return await this.restoreEntry.execute(model, { entry, storageEntry });
     }
 }

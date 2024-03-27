@@ -13,6 +13,6 @@ export class RestoreEntrySecure implements IRestoreEntry {
 
     async execute(model: CmsModel, id: string) {
         await this.accessControl.ensureCanAccessEntry({ model, rwd: "d" });
-        await this.useCase.execute(model, id);
+        return await this.useCase.execute(model, id);
     }
 }

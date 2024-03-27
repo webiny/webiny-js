@@ -85,13 +85,13 @@ describe("restore entries", () => {
         const [listReadResponse] = await reader.listCategories();
         expect(listReadResponse.data.listCategories.data).toHaveLength(titles.length);
 
-        const categoryToDelete = categories[0];
+        const categoryToRestore = categories[0];
 
         /**
          * Let's move one entry to the trash bin.
          */
         const [deleteResponse] = await manager.deleteCategory({
-            revision: categoryToDelete.entryId,
+            revision: categoryToRestore.entryId,
             options: {
                 permanently: false
             }
@@ -121,10 +121,10 @@ describe("restore entries", () => {
          * ...and we should not be able to get the entry anymore.
          */
         const [getAfterDeleteManageResponse] = await manager.getCategory({
-            revision: categoryToDelete.id
+            revision: categoryToRestore.id
         });
         const [getAfterDeleteReadResponse] = await manager.getCategory({
-            revision: categoryToDelete.id
+            revision: categoryToRestore.id
         });
         expect(getAfterDeleteManageResponse).toMatchObject({
             data: {
@@ -158,7 +158,7 @@ describe("restore entries", () => {
                 listDeletedCategories: {
                     data: expect.arrayContaining([
                         expect.objectContaining({
-                            entryId: categoryToDelete.entryId,
+                            entryId: categoryToRestore.entryId,
                             deletedBy: expect.any(Object),
                             deletedOn: expect.any(String)
                         })
@@ -177,12 +177,27 @@ describe("restore entries", () => {
          * Let's try to restore an entry from the bin, we should get the success response...
          */
         const [restoreBinItemResponse] = await manager.restoreCategory({
-            revision: categoryToDelete.entryId
+            revision: categoryToRestore.entryId
         });
+
         expect(restoreBinItemResponse).toMatchObject({
             data: {
                 restoreCategory: {
-                    data: true,
+                    data: {
+                        ...categoryToRestore,
+                        deletedOn: expect.any(String),
+                        deletedBy: {
+                            id: "id-12345678",
+                            displayName: "John Doe",
+                            type: "admin"
+                        },
+                        restoredOn: expect.any(String),
+                        restoredBy: {
+                            id: "id-12345678",
+                            displayName: "John Doe",
+                            type: "admin"
+                        }
+                    },
                     error: null
                 }
             }
@@ -192,7 +207,7 @@ describe("restore entries", () => {
          * ...but, if we try to repeat the operation, it should fail.
          */
         const [restoreAgainBinItemResponse] = await manager.restoreCategory({
-            revision: categoryToDelete.entryId
+            revision: categoryToRestore.entryId
         });
         expect(restoreAgainBinItemResponse).toMatchObject({
             data: {
@@ -201,7 +216,7 @@ describe("restore entries", () => {
                     error: {
                         code: "NOT_FOUND",
                         data: null,
-                        message: `Entry "${categoryToDelete.entryId}" was not found!`
+                        message: `Entry "${categoryToRestore.entryId}" was not found!`
                     }
                 }
             }
@@ -221,16 +236,16 @@ describe("restore entries", () => {
          * ...and we should be able to get the entry.
          */
         const [getAfterRestoreManageResponse] = await manager.getCategory({
-            revision: categoryToDelete.id
+            revision: categoryToRestore.id
         });
         const [getAfterRestoreReadResponse] = await manager.getCategory({
-            revision: categoryToDelete.id
+            revision: categoryToRestore.id
         });
         expect(getAfterRestoreManageResponse).toMatchObject({
             data: {
                 getCategory: {
                     data: {
-                        ...categoryToDelete,
+                        ...categoryToRestore,
                         deletedOn: expect.any(String),
                         deletedBy: {
                             id: "id-12345678",
@@ -252,7 +267,7 @@ describe("restore entries", () => {
             data: {
                 getCategory: {
                     data: {
-                        ...categoryToDelete,
+                        ...categoryToRestore,
                         deletedOn: expect.any(String),
                         deletedBy: {
                             id: "id-12345678",
@@ -275,7 +290,7 @@ describe("restore entries", () => {
          * We should NOT be able to restore an entry tha has not been moved to the trash bin.
          */
         const [restoreItemNotInTrashResponse] = await manager.restoreCategory({
-            revision: categoryToDelete.entryId
+            revision: categoryToRestore.entryId
         });
         expect(restoreItemNotInTrashResponse).toMatchObject({
             data: {
@@ -284,7 +299,7 @@ describe("restore entries", () => {
                     error: {
                         code: "NOT_FOUND",
                         data: null,
-                        message: `Entry "${categoryToDelete.entryId}" was not found!`
+                        message: `Entry "${categoryToRestore.entryId}" was not found!`
                     }
                 }
             }

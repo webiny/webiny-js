@@ -2264,6 +2264,7 @@ export interface OnEntryBeforeRestoreTopicParams {
 export interface OnEntryAfterRestoreTopicParams {
     entry: CmsEntry;
     model: CmsModel;
+    storageEntry: CmsEntry;
 }
 
 export interface OnEntryRestoreErrorTopicParams {
@@ -2625,7 +2626,7 @@ export interface CmsEntryContext {
     /**
      * Restore entry from trash bin with all its revisions.
      */
-    restoreEntry: (model: CmsModel, id: string) => Promise<void>;
+    restoreEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
     /**
      * Delete multiple entries
      */
@@ -3212,7 +3213,7 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
     /**
      * Move the entry to bin.
      */
-    restore: (model: CmsModel, params: CmsEntryStorageOperationsRestoreParams) => Promise<void>;
+    restore: (model: CmsModel, params: CmsEntryStorageOperationsRestoreParams<T>) => Promise<T>;
     /**
      * Delete multiple entries, with a limit on how much can be deleted in one call.
      */

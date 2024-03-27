@@ -13,6 +13,6 @@ export class RestoreEntryOperation implements IRestoreEntryOperation {
     }
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsRestoreParams) {
-        await this.operation(model, params);
+        return await this.operation(model, params);
     }
 }

@@ -201,7 +201,9 @@ const restoreCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation RestoreCategory($revision: ID!) {
             restoreCategory: restore${model.singularApiName}(revision: $revision) {
-                data
+                data {
+                    ${categoryFields}
+                }
                 ${errorFields}
             }
         }
@@ -347,10 +349,7 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
         },
         async restoreCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: {
-                    query: restoreCategoryMutation(model),
-                    variables
-                },
+                body: { query: restoreCategoryMutation(model), variables },
                 headers
             });
         },

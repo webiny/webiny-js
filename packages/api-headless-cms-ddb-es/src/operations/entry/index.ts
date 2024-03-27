@@ -976,9 +976,6 @@ export const createEntriesStorageOperations = (
                 })
             );
         }
-        if (esGetItems.length === 0) {
-            return;
-        }
 
         const esRecords = await batchReadAll<ElasticsearchDbRecord>({
             table: esEntity.table,
@@ -1000,7 +997,7 @@ export const createEntriesStorageOperations = (
         ).filter(Boolean) as ElasticsearchDbRecord[];
 
         if (esItems.length === 0) {
-            return;
+            return initialStorageEntry;
         }
 
         /**
@@ -1040,6 +1037,8 @@ export const createEntriesStorageOperations = (
                 }
             );
         }
+
+        return initialStorageEntry;
     };
 
     const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {

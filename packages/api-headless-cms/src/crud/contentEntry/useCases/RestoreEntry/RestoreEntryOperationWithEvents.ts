@@ -14,19 +14,22 @@ export class RestoreEntryOperationWithEvents implements IRestoreEntryOperation {
     }
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsRestoreParams) {
-        const { entry } = params;
+        const entry = params.entry;
         try {
             await this.topics.onEntryBeforeRestore.publish({
                 entry,
                 model
             });
 
-            await this.operation.execute(model, params);
+            const result = await this.operation.execute(model, params);
 
             await this.topics.onEntryAfterRestore.publish({
                 entry,
+                storageEntry: result,
                 model
             });
+
+            return result;
         } catch (ex) {
             await this.topics.onEntryRestoreError.publish({
                 entry,

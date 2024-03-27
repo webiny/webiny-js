@@ -1396,7 +1396,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         },
         async restoreEntry(model, entryId) {
             return context.benchmark.measure("headlessCms.crud.entries.restoreEntry", async () => {
-                return restoreEntryUseCase.execute(model, entryId);
+                return await restoreEntryUseCase.execute(model, entryId);
             });
         },
         async deleteMultipleEntries(model, ids) {

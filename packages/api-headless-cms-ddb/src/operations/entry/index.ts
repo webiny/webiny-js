@@ -655,6 +655,12 @@ export const createEntriesStorageOperations = (
                 table: entity.table,
                 items
             });
+
+            dataLoaders.clearAll({
+                model
+            });
+
+            return initialStorageEntry;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not restore the entry from the bin.",

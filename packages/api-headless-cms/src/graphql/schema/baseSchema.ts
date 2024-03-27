@@ -63,11 +63,6 @@ const createSchema = (plugins: PluginsContainer): GraphQLSchemaPlugin<CmsContext
                 error: CmsError
             }
 
-            type CmsRestoreResponse {
-                data: Boolean
-                error: CmsError
-            }
-
             type CmsDeleteMultipleDataResponse {
                 id: ID!
             }
