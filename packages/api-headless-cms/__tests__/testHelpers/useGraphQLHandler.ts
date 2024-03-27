@@ -48,23 +48,6 @@ import {
     CmsValidateStructureMutationVariables
 } from "~tests/testHelpers/graphql/structure";
 import { defaultIdentity } from "~tests/testHelpers/tenancySecurity";
-import {
-    GET_LOCK_RECORD_QUERY,
-    IGetLockRecordGraphQlResponse,
-    IGetLockRecordGraphQlVariables,
-    IIsEntryLockedGraphQlResponse,
-    IIsEntryLockedGraphQlVariables,
-    ILockEntryGraphQlResponse,
-    ILockEntryGraphQlVariables,
-    IS_ENTRY_LOCKED_QUERY,
-    IUnlockEntryGraphQlResponse,
-    IUnlockEntryGraphQlVariables,
-    IUnlockEntryRequestGraphQlResponse,
-    IUnlockEntryRequestGraphQlVariables,
-    LOCK_ENTRY_MUTATION,
-    UNLOCK_ENTRY_MUTATION,
-    UNLOCK_ENTRY_REQUEST_MUTATION
-} from "./graphql/lockingMechanism";
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
 
@@ -222,34 +205,6 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         },
         async searchContentEntries(variables: SearchContentEntriesVariables) {
             return invoke({ body: { query: SEARCH_CONTENT_ENTRIES_QUERY, variables } });
-        },
-        /**
-         * Locking Mechanism
-         */
-        async isEntryLockedQuery(variables: IIsEntryLockedGraphQlVariables) {
-            return invoke<IIsEntryLockedGraphQlResponse>({
-                body: { query: IS_ENTRY_LOCKED_QUERY, variables }
-            });
-        },
-        async getLockRecordQuery(variables: IGetLockRecordGraphQlVariables) {
-            return invoke<IGetLockRecordGraphQlResponse>({
-                body: { query: GET_LOCK_RECORD_QUERY, variables }
-            });
-        },
-        async lockEntryMutation(variables: ILockEntryGraphQlVariables) {
-            return invoke<ILockEntryGraphQlResponse>({
-                body: { query: LOCK_ENTRY_MUTATION, variables }
-            });
-        },
-        async unlockEntryMutation(variables: IUnlockEntryGraphQlVariables) {
-            return invoke<IUnlockEntryGraphQlResponse>({
-                body: { query: UNLOCK_ENTRY_MUTATION, variables }
-            });
-        },
-        async unlockEntryRequestMutation(variables: IUnlockEntryRequestGraphQlVariables) {
-            return invoke<IUnlockEntryRequestGraphQlResponse>({
-                body: { query: UNLOCK_ENTRY_REQUEST_MUTATION, variables }
-            });
         }
     };
 };
