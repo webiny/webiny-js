@@ -4,8 +4,7 @@ import { NODE_OPTIONS, NODE_VERSION } from "./utils";
 import { createJob, createValidateWorkflowsJob } from "./jobs";
 
 const DIR_PR = "checked-out-pr";
-const DIR_NPX_CWP = "npx-cwp";
-const DIR_NEW_WEBINY_PROJECT = DIR_NPX_CWP + "/new-webiny-project";
+const DIR_TEST_PROJECT = "new-webiny-project";
 
 const createCheckoutPrSteps = ({ workingDirectory = "" } = {}) =>
     [
@@ -161,18 +160,13 @@ const createJobs = (dbSetup: string) => {
                 run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
             },
             {
-                name: "Create directory",
-                run: "mkdir " + DIR_NPX_CWP
-            },
-            {
                 name: "Create a new Webiny project",
-                "working-directory": DIR_NPX_CWP,
-                run: `npx create-webiny-project@local-npm test-project --tag local-npm --no-interactive --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"region":"\${{ env.AWS_REGION }}","storageOperations":"${dbSetup}"}'
+                run: `npx create-webiny-project@local-npm ${DIR_TEST_PROJECT} --tag local-npm --no-interactive --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"region":"\${{ env.AWS_REGION }}","storageOperations":"${dbSetup}"}'
 `
             },
             {
                 name: "Print CLI version",
-                "working-directory": DIR_NEW_WEBINY_PROJECT,
+                "working-directory": DIR_TEST_PROJECT,
                 run: "yarn webiny --version"
             },
             {
@@ -182,18 +176,18 @@ const createJobs = (dbSetup: string) => {
                     name: `project-files-${dbSetup}`,
                     "retention-days": 1,
                     path: [
-                        `${DIR_NEW_WEBINY_PROJECT}/`,
-                        `!${DIR_NEW_WEBINY_PROJECT}/node_modules/**/*`,
-                        `!${DIR_NEW_WEBINY_PROJECT}/**/node_modules/**/*`,
-                        `!${DIR_NEW_WEBINY_PROJECT}/.yarn/cache/**/*`
+                        `${DIR_TEST_PROJECT}/`,
+                        `!${DIR_TEST_PROJECT}/node_modules/**/*`,
+                        `!${DIR_TEST_PROJECT}/**/node_modules/**/*`,
+                        `!${DIR_TEST_PROJECT}/.yarn/cache/**/*`
                     ].join("\n")
                 }
             },
-            ...createDeployWebinySteps({ workingDirectory: DIR_NEW_WEBINY_PROJECT }),
+            ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
             {
                 name: "Create Cypress config",
                 "working-directory": DIR_PR,
-                run: `yarn setup-cypress --projectFolder ../${DIR_NEW_WEBINY_PROJECT}`
+                run: `yarn setup-cypress --projectFolder ../${DIR_TEST_PROJECT}`
             },
             {
                 name: "Save Cypress config",
