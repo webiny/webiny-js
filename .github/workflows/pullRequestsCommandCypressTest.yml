@@ -287,5 +287,6 @@ jobs:
           }}' > cypress-tests/cypress.config.ts
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         timeout-minutes: 40
+        working-directory: checked-out-pr
         run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
     runs-on: ubuntu-latest

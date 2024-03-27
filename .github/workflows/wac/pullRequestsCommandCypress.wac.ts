@@ -239,6 +239,7 @@ const createJobs = (dbSetup: string) => {
             {
                 name: 'Cypress - run "${{ matrix.cypress-folder }}" tests',
                 "timeout-minutes": 40,
+                "working-directory": DIR_PR,
                 run: 'yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"'
             }
         ]
