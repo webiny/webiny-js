@@ -88,7 +88,7 @@ describe("restore entries", () => {
         const categoryToDelete = categories[0];
 
         /**
-         * Let's now delete one entry, marking it as deleted.
+         * Let's move one entry to the trash bin.
          */
         const [deleteResponse] = await manager.deleteCategory({
             revision: categoryToDelete.entryId,
@@ -267,6 +267,25 @@ describe("restore entries", () => {
                         }
                     },
                     error: null
+                }
+            }
+        });
+
+        /**
+         * We should NOT be able to restore an entry tha has not been moved to the trash bin.
+         */
+        const [restoreItemNotInTrashResponse] = await manager.restoreCategory({
+            revision: categoryToDelete.entryId
+        });
+        expect(restoreItemNotInTrashResponse).toMatchObject({
+            data: {
+                restoreCategory: {
+                    data: null,
+                    error: {
+                        code: "NOT_FOUND",
+                        data: null,
+                        message: `Entry "${categoryToDelete.entryId}" was not found!`
+                    }
                 }
             }
         });
