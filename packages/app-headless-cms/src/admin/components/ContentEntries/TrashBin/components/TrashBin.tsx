@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useApolloClient, useModel } from "~/admin/hooks";
+import { useApolloClient, useModel, usePermission } from "~/admin/hooks";
 import { TrashBin as BaseTrashBin } from "@webiny/app-admin";
 import {
     TrashBinDeleteItemGraphQLGateway,
@@ -11,6 +11,7 @@ import { TrashBinButton } from "./TrashBinButton";
 
 export const TrashBin = () => {
     const client = useApolloClient();
+    const { canDeleteEntries } = usePermission();
     const { model } = useModel();
 
     const listGateway = useMemo(() => {
@@ -24,6 +25,10 @@ export const TrashBin = () => {
     const itemMapper = useMemo(() => {
         return new TrashBinItemMapper();
     }, []);
+
+    if (!canDeleteEntries("cms.contentEntry")) {
+        return null;
+    }
 
     return (
         <BaseTrashBin
