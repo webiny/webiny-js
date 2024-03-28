@@ -19,7 +19,7 @@ import { DropElementActionArgsType } from "~/editor/recoil/actions/dropElement/t
 import Accordion from "~/editor/plugins/elementSettings/components/Accordion";
 import { useSnackbar } from "@webiny/app-admin";
 import { AddElementButton } from "~/editor/plugins/elements/cell/AddElementButton";
-import { useDrawer } from "~/editor/config/Toolbar/DrawerProvider";
+import { useDrawer } from "~/editor/config/Toolbar/Drawers/DrawerProvider";
 
 const accordionStyle = css`
     & .icon-container svg {

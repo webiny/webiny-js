@@ -1,6 +1,5 @@
 import React from "react";
-import { EventActionHandlerPlugin, EventActionPlugins } from "./eventActions";
-import { PageEditorConfig } from "~/pageEditor/editorConfig/PageEditorConfig";
+import { EventActionHandlerDecorator, EventActionHandlers } from "./eventActions";
 import { AddBlock } from "~/templateEditor/config/Content/BlocksBrowser/AddBlock";
 import { AddContent } from "~/templateEditor/config/Content/BlocksBrowser/AddContent";
 import { BackButton } from "./TopBar/BackButton/BackButton";
@@ -19,15 +18,16 @@ import { TemplateMode } from "./Sidebar/TemplateMode";
 import { UnlinkTemplate } from "./Toolbar/UnlinkTemplate";
 import { PreviewPageOption } from "./TopBar/PreviewPageOption/PreviewPageOption";
 import { SetAsHomepageOption } from "./TopBar/SetAsHomepageOption/SetAsHomepageOption";
+import { EditorConfig } from "~/editor/config";
 
-const { ElementAction, Ui } = PageEditorConfig;
+const { ElementAction, Ui } = EditorConfig;
 
 export const DefaultPageEditorConfig = React.memo(() => {
     return (
         <>
-            <EventActionHandlerPlugin />
-            <EventActionPlugins />
-            <PageEditorConfig>
+            <EventActionHandlerDecorator />
+            <EditorConfig>
+                <EventActionHandlers />
                 <Ui.TopBar.Element name={"buttonBack"} group={"left"} element={<BackButton />} />
                 <Ui.TopBar.Element name={"title"} group={"left"} element={<Title />} />
                 <Ui.TopBar.Action
@@ -75,7 +75,7 @@ export const DefaultPageEditorConfig = React.memo(() => {
                 <HideSaveAction />
                 <TemplateMode />
                 <UnlinkTemplate />
-            </PageEditorConfig>
+            </EditorConfig>
         </>
     );
 });

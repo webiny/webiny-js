@@ -3,7 +3,7 @@ import { ReactComponent as AddIcon } from "~/editor/assets/icons/add_circle_outl
 import { EditorConfig } from "~/editor/config";
 import { useUI } from "~/editor/hooks/useUI";
 import { AddElementDrawer } from "./AddElementDrawer";
-import { useDrawer } from "~/editor/config/Toolbar/DrawerProvider";
+import { useDrawer } from "~/editor/config/Toolbar/Drawers/DrawerProvider";
 
 const { Ui } = EditorConfig;
 

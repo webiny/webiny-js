@@ -6,10 +6,10 @@ import {
     Elements as BaseElements,
     ElementsProps as BaseElementsProps
 } from "~/editor/config/Elements";
-import { DrawersProvider } from "./DrawersProvider";
-import { DrawerTrigger } from "./DrawerTrigger";
-import { Drawer } from "./Drawer";
-import { IconButton } from "./IconButton";
+import { DrawersProvider } from "./Drawers/DrawersProvider";
+import { DrawerTrigger } from "./Drawers/DrawerTrigger";
+import { Drawer } from "./Drawers/Drawer";
+import { IconButton } from "./Drawers/IconButton";
 import { createGetId } from "~/editor/config/createGetId";
 
 const SCOPE = "toolbar";

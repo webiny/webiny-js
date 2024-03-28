@@ -1,6 +1,5 @@
 import React from "react";
-import { EventActionHandlerPlugin, EventActionPlugins } from "./eventActions";
-import { TemplateEditorConfig } from "../editorConfig/TemplateEditorConfig";
+import { EventActionHandlerDecorator, EventActionHandlers } from "./eventActions";
 import { BackButton } from "./TopBar/BackButton/BackButton";
 import { SaveTemplateButton } from "./TopBar/SaveTemplateButton/SaveTemplateButton";
 import { TemplateSettingsButton } from "./TopBar/TemplateSettingsButton/TemplateSettingsButton";
@@ -13,15 +12,16 @@ import { ElementSettingsGroup } from "./Sidebar/ElementSettingsGroup";
 import { RefreshBlockAction } from "./Sidebar/RefreshBlockAction";
 import { EditBlockAction } from "./Sidebar/EditBlockAction";
 import { HideSaveAction } from "./Sidebar/HideSaveAction";
+import { EditorConfig } from "~/editor/config";
 
-const { Ui, ElementAction } = TemplateEditorConfig;
+const { Ui, ElementAction } = EditorConfig;
 
 export const DefaultTemplateEditorConfig = React.memo(() => {
     return (
         <>
-            <EventActionHandlerPlugin />
-            <EventActionPlugins />
-            <TemplateEditorConfig>
+            <EventActionHandlerDecorator />
+            <EditorConfig>
+                <EventActionHandlers />
                 <Ui.TopBar.Element name={"buttonBack"} group={"left"} element={<BackButton />} />
                 <Ui.TopBar.Element name={"title"} group={"left"} element={<Title />} />
                 <Ui.TopBar.Action
@@ -42,7 +42,7 @@ export const DefaultTemplateEditorConfig = React.memo(() => {
                 <ElementAction name={"refreshBlock"} element={<RefreshBlockAction />} />
                 <HideSaveAction />
                 <UnlinkBlock />
-            </TemplateEditorConfig>
+            </EditorConfig>
         </>
     );
 });

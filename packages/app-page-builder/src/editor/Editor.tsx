@@ -1,14 +1,3 @@
-/**
- * This file contains the base framework for building editor variations.
- * Currently, we have 3 editors:
- * - block editor
- * - template editor
- * - page editor
- *
- * This framework provides the basic mechanics, like d&d elements, element settings, toolbars, etc.
- * Other things, like loading/saving data to and from the GraphQL API, toolbar elements, etc. need
- * to be provided using the composition API, <EditorConfig> component, and `createStateInitializer` prop.
- */
 import React, { useCallback } from "react";
 import { RecoilRoot, MutableSnapshot } from "recoil";
 import { Editor as EditorComponent } from "./components/Editor";

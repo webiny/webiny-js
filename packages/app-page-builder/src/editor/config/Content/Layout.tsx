@@ -19,7 +19,7 @@ const contentContainerWrapper = css`
 
 export const Layout = ({ className = contentContainerWrapper, children }: LayoutProps) => {
     return (
-        <Elevation className={className} z={0}>
+        <Elevation className={className} z={0} data-role={"content-layout"}>
             {children}
         </Elevation>
     );

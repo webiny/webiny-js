@@ -26,7 +26,7 @@ export const Layout = makeDecoratable(
         const { activeGroup, setActiveGroup } = Sidebar.useActiveGroup();
 
         return (
-            <Elevation z={1} className={className}>
+            <Elevation z={1} className={className} data-role={"sidebar-layout"}>
                 <Tabs value={activeGroup} onActivate={setActiveGroup}>
                     <Sidebar.Elements group="groups" />
                 </Tabs>

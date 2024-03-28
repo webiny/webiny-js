@@ -9,7 +9,7 @@ interface TemplateEditorConfigProps {
 const BaseTemplateEditorConfig = ({ children }: TemplateEditorConfigProps) => {
     return (
         <CompositionScope name={"pb.templateEditor"}>
-            <EditorConfig>{children}</EditorConfig>
+            <EditorConfig priority={"secondary"}>{children}</EditorConfig>
         </CompositionScope>
     );
 };

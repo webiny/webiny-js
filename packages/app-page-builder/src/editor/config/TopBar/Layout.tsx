@@ -29,7 +29,11 @@ export interface TopBarLayoutProps {
 
 export const Layout = makeDecoratable("TopBarLayout", (props: TopBarLayoutProps) => {
     return (
-        <TopAppBar className={props.className ?? topBar} fixed={props.fixed ?? true}>
+        <TopAppBar
+            className={props.className ?? topBar}
+            fixed={props.fixed ?? true}
+            data-role={"top-bar-layout"}
+        >
             <TopAppBarSection alignStart style={oneThird}>
                 <TopBar.Elements group={"left"} />
             </TopAppBarSection>

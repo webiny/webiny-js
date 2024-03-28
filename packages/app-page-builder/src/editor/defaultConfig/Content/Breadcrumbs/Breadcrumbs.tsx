@@ -100,7 +100,7 @@ export const Breadcrumbs = () => {
     }
 
     return (
-        <ul className={breadcrumbs}>
+        <ul className={breadcrumbs} data-role={"content-breadcrumbs"}>
             {items.map(({ id, type }, index) => (
                 <li
                     key={id}
