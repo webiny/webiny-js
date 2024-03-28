@@ -38,7 +38,7 @@
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
     "dayjs": "^1.10.4",
-    "lodash": "4.17.21"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",

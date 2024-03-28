@@ -71,7 +71,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
     const { showConfirmation } = useConfirmationDialog();
 
     const filterMenus = useCallback(
-        ({ title, slug, description }) => {
+        ({ title, slug, description }: PbMenu) => {
             return (
                 title.toLowerCase().includes(filter) ||
                 slug.toLowerCase().includes(filter) ||
@@ -82,7 +82,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
     );
 
     const sortMenus = useCallback(
-        menus => {
+        (menus: PbMenu[]) => {
             if (!sort) {
                 return menus;
             }
@@ -96,7 +96,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
     const slug = new URLSearchParams(location.search).get("slug");
 
     const deleteItem = useCallback(
-        item => {
+        (item: PbMenu) => {
             showConfirmation(async () => {
                 const response = await deleteIt({
                     variables: item

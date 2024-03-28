@@ -19,19 +19,19 @@ export interface DraggableProps {
 }
 
 const Draggable = (props: DraggableProps) => {
-    const { children, beginDrag, endDrag, target } = props;
+    const { children, beginDrag, endDrag } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({
-        item: { type: "element", target },
-        collect: monitor => ({
-            isDragging: monitor.isDragging()
-        }),
-        begin(monitor) {
+        type: "element",
+        item(monitor) {
             if (typeof beginDrag === "function") {
                 return beginDrag(props, monitor);
             }
             return beginDrag;
         },
+        collect: monitor => ({
+            isDragging: monitor.isDragging()
+        }),
         end(item, monitor) {
             if (typeof endDrag === "function") {
                 return endDrag(item, monitor);

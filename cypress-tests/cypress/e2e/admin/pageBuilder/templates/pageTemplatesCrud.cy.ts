@@ -28,7 +28,9 @@ context("Page Builder - Template CRUD", () => {
             cy.get("li")
                 .first()
                 .within(() => {
-                    cy.findByTestId("pb-templates-list-edit-template-btn").click({
+                    // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                    // Now targeting <button> directly. Revert to `.findByTestId("pb-templates-list-edit-template-btn")` if issue is fixed.
+                    cy.get('button[data-testid="pb-templates-list-edit-template-btn"]').click({
                         force: true
                     });
                 });
@@ -43,7 +45,9 @@ context("Page Builder - Template CRUD", () => {
             cy.get("li")
                 .first()
                 .within(() => {
-                    cy.findByTestId("pb-templates-list-delete-template-btn").click({
+                    // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                    // Now targeting <button> directly. Revert to `.findByTestId("pb-templates-list-delete-template-btn")` if issue is fixed.
+                    cy.get('button[data-testid="pb-templates-list-delete-template-btn"]').click({
                         force: true
                     });
                 });

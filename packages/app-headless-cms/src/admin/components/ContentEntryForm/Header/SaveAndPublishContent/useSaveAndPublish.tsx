@@ -24,7 +24,7 @@ export const useSaveAndPublish = (): UseSaveAndPublishResponse => {
     });
 
     const showConfirmationDialog = useCallback(
-        ({ ev, onAccept, onCancel }) => {
+        ({ ev, onAccept, onCancel }: ShowConfirmationDialogParams) => {
             showConfirmation(async () => {
                 const entry = await form.current.submit(ev);
                 if (!entry || !entry.id) {

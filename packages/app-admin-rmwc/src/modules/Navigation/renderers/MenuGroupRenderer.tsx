@@ -32,10 +32,10 @@ const transitionStyles: Record<string, any> = {
 };
 
 const menuTitle = css({
-    ".mdc-drawer &.mdc-list": {
+    ".mdc-drawer &.mdc-deprecated-list": {
         borderBottom: "1px solid var(--mdc-theme-on-background)",
         padding: 0,
-        ".mdc-list-item": {
+        ".mdc-deprecated-list-item": {
             margin: 0,
             padding: "0 15px",
             height: "48px",

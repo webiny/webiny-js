@@ -11,7 +11,7 @@ export const Dialog = styled(BaseDialog)`
 
     .mdc-dialog__content {
         overflow: auto;
-        .mdc-list:first-of-type {
+        .mdc-deprecated-list:first-of-type {
             padding: 0;
         }
     }

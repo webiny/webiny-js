@@ -1,5 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useState } from "react";
 import { createVoidComponent, makeDecoratable } from "@webiny/app";
+import { ComponentWithChildren } from "~/types";
 
 export interface UserMenuItemData {
     label?: string;
@@ -31,7 +32,7 @@ interface UserMenuProviderProps {
     [key: string]: any;
 }
 
-export const UserMenuProvider = (Component: React.ComponentType) => {
+export const UserMenuProvider = (Component: ComponentWithChildren) => {
     return function UserMenuProvider({ children, ...props }: UserMenuProviderProps) {
         const [menuItems, setItems] = useState<UserMenuItemData[]>([]);
 

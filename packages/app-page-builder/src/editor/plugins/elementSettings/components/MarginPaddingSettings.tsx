@@ -217,7 +217,7 @@ const MarginPaddingSettings = ({
     });
 
     const toggleAdvanced = useCallback(
-        event => {
+        (event: React.MouseEvent) => {
             event.stopPropagation();
             getUpdateValue(`${displayMode}.advanced`)(!advanced);
         },

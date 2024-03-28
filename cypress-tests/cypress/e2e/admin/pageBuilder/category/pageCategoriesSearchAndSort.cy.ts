@@ -123,7 +123,9 @@ context("Page Builder - Page Categories Search and Sort", () => {
         cy.findByPlaceholderText("Search categories").clear();
 
         // Assert that all the categories are being sorted properly.
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
 
         // 1. Select "Newest to oldest" and assert the categories are being sorted properly.
         cy.findByTestId("data-list-modal-wrapper").within(() => {

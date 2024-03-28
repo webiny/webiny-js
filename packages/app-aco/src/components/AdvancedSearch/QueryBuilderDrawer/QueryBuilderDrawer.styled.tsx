@@ -12,7 +12,7 @@ export const CloseButton = styled(IconButton)`
 export const DrawerContainer = styled(DrawerRight)`
     width: 1000px;
 
-    .mdc-list-item {
+    .mdc-deprecated-list-item {
         margin: 0 0;
         padding: 0 0;
         font-size: 1rem;
@@ -25,7 +25,7 @@ export const DrawerContainer = styled(DrawerRight)`
             margin-top: 0;
         }
 
-        .mdc-list-item__meta {
+        .mdc-deprecated-list-item__meta {
             margin-left: auto !important;
             margin-right: 0 !important;
         }

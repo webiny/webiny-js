@@ -7,6 +7,7 @@ import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
 import { pageSettingsStateAtom } from "~/pageEditor/config/editorBar/PageSettings/state";
 import { usePage } from "~/pageEditor/hooks/usePage";
 import { UpdatedPage } from "~/pageEditor/config/eventActions/saveRevision/types";
+import { PbPageData } from "~/types";
 
 export type UsePageSettings = ReturnType<typeof usePageSettings>;
 
@@ -23,7 +24,7 @@ export function usePageSettings() {
         setSettingsState(false);
     }, []);
 
-    const savePage = useCallback(pageValue => {
+    const savePage = useCallback((pageValue: Partial<PbPageData>) => {
         eventActionHandler.trigger(
             new UpdateDocumentActionEvent({
                 document: pageValue,

@@ -1,15 +1,8 @@
-import React from "react";
-/**
- *
- * Package react-sortable-tree does not have types
- */
-// @ts-expect-error
-import SortableTree from "react-sortable-tree";
-import { plugins } from "@webiny/plugins";
-import MenuItemRenderer from "./MenuItemRenderer";
+import React, { useCallback } from "react";
+import NodeRendererDefault, { NodeRendererDefaultProps } from "./MenuItemRenderer";
+import { SortableTree, TreeItems, TreeItemComponentProps } from "dnd-kit-sortable-tree";
 import { Typography } from "@webiny/ui/Typography";
 import styled from "@emotion/styled";
-import { PbMenuItemPlugin } from "~/types";
 import { MenuTreeItem } from "~/admin/views/Menus/types";
 
 const TreeWrapper = styled("div")({
@@ -37,42 +30,54 @@ export interface MenuItemsListProps {
     deleteItem: (item: MenuTreeItem) => void;
     canSave: boolean;
 }
-class MenuItemsList extends React.Component<MenuItemsListProps> {
-    static canHaveChildren(node: MenuTreeItem): boolean {
-        const pbMenuItemPlugins = plugins.byType<PbMenuItemPlugin>("pb-menu-item");
-        const plugin = pbMenuItemPlugins.find(pl => pl.menuItem.type === node.type);
-        return plugin ? plugin.menuItem.canHaveChildren : false;
+
+const canHaveChildren = (node: MenuTreeItem) => {
+    node.canHaveChildren = node.type === "folder";
+    if (node.children) {
+        node.children.forEach(child => {
+            canHaveChildren(child);
+        });
     }
+};
 
-    public override render() {
-        const { items, onChange, editItem, deleteItem, canSave } = this.props;
-        const data = Array.isArray(items) ? [...items] : [];
+const traverseItems = (tree: MenuTreeItem[]) => {
+    tree.forEach(node => canHaveChildren(node));
+    return tree;
+};
 
-        let dom = (
-            <EmptyTree>
-                <Typography use={"overline"}>There are no menu items to display</Typography>
-            </EmptyTree>
+const MenuItemsList = (props: MenuItemsListProps) => {
+    const { items, onChange, editItem, deleteItem } = props;
+    const data = Array.isArray(items) ? [...items] : [];
+    const modifiedData = traverseItems(data) as unknown as TreeItems<NodeRendererDefaultProps>;
+    const onChangeTree = useCallback(
+        (items: TreeItems<NodeRendererDefaultProps>) => {
+            const menuItems = items as unknown as MenuTreeItem[];
+            onChange(menuItems);
+        },
+        [onChange]
+    );
+    let dom = (
+        <EmptyTree>
+            <Typography use={"overline"}>There are no menu items to display</Typography>
+        </EmptyTree>
+    );
+    const TreeNode = React.forwardRef<HTMLDivElement, TreeItemComponentProps<MenuTreeItem>>(
+        (props, ref) => (
+            <NodeRendererDefault {...props} ref={ref} editItem={editItem} deleteItem={deleteItem} />
+        )
+    );
+    TreeNode.displayName = "TreeNode";
+    if (data.length > 0) {
+        dom = (
+            <SortableTree
+                items={modifiedData}
+                onItemsChanged={items => onChangeTree(items)}
+                // @ts-expect-error
+                TreeItemComponent={TreeNode}
+                indentationWidth={30}
+            />
         );
-        if (data.length > 0) {
-            dom = (
-                <SortableTree
-                    treeData={data}
-                    onChange={onChange}
-                    canNodeHaveChildren={MenuItemsList.canHaveChildren}
-                    nodeContentRenderer={MenuItemRenderer}
-                    rowHeight={80}
-                    getNodeKey={({ node }: { node: MenuTreeItem }) => node.id}
-                    generateNodeProps={() => ({
-                        editItem,
-                        deleteItem,
-                        canSave
-                    })}
-                />
-            );
-        }
-
-        return <TreeWrapper>{dom}</TreeWrapper>;
     }
-}
-
+    return <TreeWrapper>{dom}</TreeWrapper>;
+};
 export default MenuItemsList;

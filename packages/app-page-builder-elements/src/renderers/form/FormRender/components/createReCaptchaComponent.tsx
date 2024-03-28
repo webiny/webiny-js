@@ -33,12 +33,14 @@ const createReCaptchaComponent = ({
 
         const { settings } = formData;
         if (typeof props.children === "function") {
-            return props.children({
+            const childElement = props.children({
                 errorMessage: settings.reCaptcha.errorMessage
             });
+
+            return React.isValidElement(childElement) ? childElement : null;
         }
 
-        if (props.children) {
+        if (props.children && React.isValidElement(props.children)) {
             return props.children;
         }
 

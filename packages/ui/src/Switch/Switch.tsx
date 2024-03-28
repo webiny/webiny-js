@@ -20,10 +20,6 @@ type Props = Omit<SwitchProps, "value"> &
 class Switch extends React.Component<Props> {
     static rmwcProps = ["id", "disabled", "checked", "label", "rootProps", "className"];
 
-    onChange = (e: React.SyntheticEvent<HTMLElement>) => {
-        this.props.onChange && this.props.onChange((e.target as HTMLInputElement).checked);
-    };
-
     public override render() {
         const { value, description, validation } = this.props;
 
@@ -34,7 +30,7 @@ class Switch extends React.Component<Props> {
                 <RmwcSwitch
                     {...getClasses({ ...pick(this.props, Switch.rmwcProps) }, "webiny-ui-switch")}
                     checked={Boolean(value)}
-                    onChange={this.onChange}
+                    onClick={() => this.props.onChange && this.props.onChange(!value)}
                 />
 
                 {validationIsValid === false && (

@@ -74,14 +74,18 @@ context("Search and Sort Security API Key", () => {
         cy.visit(`/access-management/api-keys`);
 
         // Sort apiKeys from "Name A -> Z"
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select(sort.NAME_A_TO_Z);
-            cy.findByTestId("default-data-list.filter").click();
+            // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+            // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+            cy.get('button[data-testid="default-data-list.filter"]').click();
         });
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => {
                     cy.findByText(apiKeys[0].name).should("exist");
@@ -89,28 +93,36 @@ context("Search and Sort Security API Key", () => {
         });
 
         // Sort apiKeys from "Name Z -> A"
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select(sort.NAME_Z_TO_A);
-            cy.findByTestId("default-data-list.filter").click();
+            // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+            // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+            cy.get('button[data-testid="default-data-list.filter"]').click();
         });
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => cy.findByText(apiKeys[total - 1].name))
                 .should("exist");
         });
 
         // Sort apiKeys from "Oldest to Newest"
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select(sort.OLDEST_TO_NEWEST);
-            cy.findByTestId("default-data-list.filter").click();
+            // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+            // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+            cy.get('button[data-testid="default-data-list.filter"]').click();
         });
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => {
                     cy.findByText(apiKeys[0].name).should("exist");
@@ -118,14 +130,18 @@ context("Search and Sort Security API Key", () => {
         });
 
         // Sort apiKeys from "Newest to Oldest"
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select(sort.NEWEST_TO_OLDEST);
-            cy.findByTestId("default-data-list.filter").click();
+            // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+            // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+            cy.get('button[data-testid="default-data-list.filter"]').click();
         });
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => {
                     cy.findByText(apiKeys[total - 1].name).should("exist");

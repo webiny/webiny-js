@@ -47,9 +47,7 @@ const SignIn = (props: SignInProps) => {
                         <InnerContent>
                             {loading && <CircularProgress label={"Signing in..."} />}
                             <Title>
-                                <h1>
-                                    <Typography use="headline4">Sign In</Typography>
-                                </h1>
+                                <Typography use="headline4">Sign In</Typography>
                             </Title>
 
                             {message && !error && (

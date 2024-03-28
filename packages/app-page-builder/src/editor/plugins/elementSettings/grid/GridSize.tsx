@@ -31,7 +31,7 @@ const classes = {
         }
     }),
     icon: css({
-        "& .mdc-list-item__graphic > svg": {
+        "& .mdc-deprecated-list-item__graphic > svg": {
             width: "18px",
             height: "18px"
         }

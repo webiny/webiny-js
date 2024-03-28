@@ -58,9 +58,9 @@ export const searchBarDropdown = css({
     zIndex: 2,
     color: "var(--mdc-theme-on-surface)",
     borderRadius: "0 0 5px 5px",
-    ".mdc-list": {
+    ".mdc-deprecated-list": {
         padding: 0,
-        ".mdc-list-item": {
+        ".mdc-deprecated-list-item": {
             "&.selected": {
                 fontWeight: "bold"
             },

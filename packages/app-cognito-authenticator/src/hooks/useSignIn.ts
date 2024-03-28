@@ -1,6 +1,7 @@
 import { useCallback, useReducer } from "react";
 import { Auth } from "@aws-amplify/auth";
 import { useAuthenticator } from "./useAuthenticator";
+import { AuthData } from "~/Authenticator";
 
 export interface UseSignInCallableParams {
     username: string;
@@ -29,7 +30,7 @@ export function useSignIn(): UseSignIn {
     const { authState, changeState } = useAuthenticator();
 
     const checkContact = useCallback(
-        user => {
+        (user: AuthData) => {
             Auth.verifiedContact(user).then(data => {
                 if (data.verified) {
                     changeState("signedIn", user);
@@ -42,7 +43,7 @@ export function useSignIn(): UseSignIn {
     );
 
     const signIn = useCallback(
-        async input => {
+        async (input: UseSignInCallableParams) => {
             setState({ loading: true, error: null });
             const { username, password } = input;
 

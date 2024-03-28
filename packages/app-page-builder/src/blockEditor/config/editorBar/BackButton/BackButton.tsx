@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { css } from "emotion";
+import styled from "@emotion/styled";
 import { createDecorator } from "@webiny/app-admin";
 import { useLocation, useNavigate } from "@webiny/react-router";
 import { IconButton } from "@webiny/ui/Button";
@@ -7,9 +7,9 @@ import { EditorBar } from "~/editor";
 import { ReactComponent as BackIcon } from "./round-arrow_back-24px.svg";
 import { useBlock } from "~/blockEditor/hooks/useBlock";
 
-const backStyles = css({
-    marginLeft: -10
-});
+const BackButtonWrapper = styled.div`
+    margin-left: -10px;
+`;
 
 export const BackButtonPlugin = createDecorator(EditorBar.BackButton, () => {
     return function BackButton() {
@@ -27,12 +27,13 @@ export const BackButtonPlugin = createDecorator(EditorBar.BackButton, () => {
         }, [key, navigate]);
 
         return (
-            <IconButton
-                data-testid="pb-editor-back-button"
-                className={backStyles}
-                onClick={onClick}
-                icon={<BackIcon />}
-            />
+            <BackButtonWrapper>
+                <IconButton
+                    data-testid="pb-editor-back-button"
+                    onClick={onClick}
+                    icon={<BackIcon />}
+                />
+            </BackButtonWrapper>
         );
     };
 });

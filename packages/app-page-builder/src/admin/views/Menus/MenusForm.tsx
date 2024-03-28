@@ -33,6 +33,7 @@ import omit from "lodash/omit";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { useMenusPermissions } from "~/hooks/permissions";
+import { PbMenu } from "~/types";
 
 const t = i18n.ns("app-page-builder/admin/menus/form");
 const ButtonWrapper = styled("div")({
@@ -92,7 +93,7 @@ const MenusForm = ({ canCreate }: MenusFormProps) => {
     const loading = [getQuery, createMutation, updateMutation].find(item => item.loading);
 
     const onSubmit = useCallback(
-        async formData => {
+        async (formData: PbMenu) => {
             const isUpdate = loadedMenu.slug;
             const data = pick(formData, ["slug", "title", "description", "items"]);
             const [operation, args] = isUpdate
@@ -162,7 +163,7 @@ const MenusForm = ({ canCreate }: MenusFormProps) => {
                             <Cell span={6}>
                                 <Bind name="slug" validators={validation.create("required")}>
                                     <Input
-                                        disabled={data.createdOn}
+                                        disabled={Boolean(data.createdOn)}
                                         label={t`Slug`}
                                         data-testid="pb.menu.create.slug"
                                     />

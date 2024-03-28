@@ -9,7 +9,7 @@ import { useNavigation } from "../index";
 const listItemStyle = css`
     font-weight: 400 !important;
 
-    .mdc-list &.mdc-list-item:hover {
+    .mdc-deprecated-list &.mdc-deprecated-list-item:hover {
         cursor: pointer;
         background-color: var(--mdc-theme-background);
     }

@@ -24,6 +24,22 @@ interface FormComponentProps {
     folder: FolderItem;
 }
 
+interface UpdatePermissionCallableParams {
+    permission: FolderPermission;
+}
+
+interface UpdatePermissionCallable {
+    (params: UpdatePermissionCallableParams): void;
+}
+
+interface RemoveUserTeamCallableParams {
+    permission: FolderPermission;
+}
+
+interface RemoveUserTeamCallable {
+    (params: RemoveUserTeamCallableParams): void;
+}
+
 const FormComponent = ({ folder }: FormComponentProps) => {
     const [permissions, setPermissions] = useState<FolderPermission[]>(folder.permissions || []); // Moved useState outside showDialog
     const listTargetsQuery = useQuery(LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS);
@@ -39,7 +55,7 @@ const FormComponent = ({ folder }: FormComponentProps) => {
     }, [permissions]);
 
     const addPermission = useCallback(
-        value => {
+        (value: FolderPermission[]) => {
             const selectedUserOrTeam = value[value.length - 1];
             const newPermission: FolderPermission = {
                 target: selectedUserOrTeam.target,
@@ -53,7 +69,7 @@ const FormComponent = ({ folder }: FormComponentProps) => {
         [permissions]
     );
 
-    const updatePermission = useCallback(
+    const updatePermission = useCallback<UpdatePermissionCallable>(
         ({ permission: updatedPermission }) => {
             setPermissions(
                 permissions.map(permission => {
@@ -67,7 +83,7 @@ const FormComponent = ({ folder }: FormComponentProps) => {
         [permissions]
     );
 
-    const removeUserTeam = useCallback(
+    const removeUserTeam = useCallback<RemoveUserTeamCallable>(
         item => {
             setPermissions(
                 permissions.filter(permission => permission.target !== item.permission.target)
@@ -102,7 +118,7 @@ export const useSetPermissionsDialog = (): UseSetPermissionsDialogResponse => {
     const { updateFolder } = useFolders();
     const { showSnackbar } = useSnackbar();
 
-    const onAccept = useCallback(async (folder, data) => {
+    const onAccept = useCallback(async (folder: FolderItem, data: Partial<FolderItem>) => {
         const updateData = { ...folder, ...data };
 
         try {

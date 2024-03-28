@@ -216,7 +216,7 @@ module.exports = function (webpackEnv, { paths, options }) {
                 .filter(ext => useTypeScript || !ext.includes("ts")),
             alias: {
                 os: require.resolve("os-browserify/browser"),
-                "react/jsx-runtime": require.resolve("react/jsx-runtime.js"),
+                "react/jsx-runtime": require.resolve("react/jsx-runtime"),
                 react: require.resolve("react"),
                 // Allows for better profiling with ReactDevTools
                 ...(isEnvProductionProfile && {

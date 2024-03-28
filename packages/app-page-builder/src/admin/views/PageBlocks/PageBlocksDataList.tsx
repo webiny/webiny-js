@@ -143,7 +143,7 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
     }, [selectedBlocksCategory, pageBlocks.pageBlocks]);
 
     const filterData = useCallback(
-        ({ name }) => {
+        ({ name }: PbPageBlock) => {
             return name.toLowerCase().includes(filter);
         },
         [filter]
@@ -165,7 +165,7 @@ const PageBlocksDataList = ({ filter, canCreate, canEdit, canDelete }: PageBlock
         [selectedBlocksCategory]
     );
 
-    const duplicateItem = useCallback(async item => {
+    const duplicateItem = useCallback(async (item: PbPageBlock) => {
         setLoadingLabel(t`Creating a copy of "{name}"...`({ name: item.name }));
 
         const newName = `${item.name} (copy)`;

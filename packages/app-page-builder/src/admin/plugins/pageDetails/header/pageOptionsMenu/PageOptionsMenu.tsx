@@ -168,12 +168,11 @@ const PageOptionsMenu = (props: PageOptionsMenuProps) => {
                         </MenuItem>
                     )}
 
-                    {isCreateTemplateDialogOpen && (
-                        <CreatePageTemplateDialog
-                            onClose={() => setIsCreateTemplateDialogOpen(false)}
-                            onSubmit={handleCreateTemplateClick}
-                        />
-                    )}
+                    <CreatePageTemplateDialog
+                        open={isCreateTemplateDialogOpen}
+                        onClose={() => setIsCreateTemplateDialogOpen(false)}
+                        onSubmit={handleCreateTemplateClick}
+                    />
                 </>
             )}
 

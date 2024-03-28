@@ -45,18 +45,23 @@ const INSTALL = gql`
 interface PbInstallerProps {
     onInstalled: () => void;
 }
+
+interface PbInstallerSubmitData {
+    name: string;
+}
+
 const PBInstaller = ({ onInstalled }: PbInstallerProps) => {
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const onSubmit = useCallback(async form => {
+    const onSubmit = useCallback(async (formData: PbInstallerSubmitData) => {
         setLoading(true);
         setError(null);
 
         const { data: res } = await client.mutate({
             mutation: INSTALL,
-            variables: { data: form }
+            variables: { data: formData }
         });
         setLoading(false);
         const { error } = res.pageBuilder.install;

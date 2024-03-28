@@ -9,7 +9,7 @@ interface SecurityProviderProps {
     children: React.ReactNode;
 }
 
-const SecurityProviderHOC = (Component: React.ComponentType) => {
+const SecurityProviderHOC = (Component: React.ComponentType<SecurityProviderProps>) => {
     return function SecurityProvider({ children }: SecurityProviderProps) {
         return (
             <ContextProvider>

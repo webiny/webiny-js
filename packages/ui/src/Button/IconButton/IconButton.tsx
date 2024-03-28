@@ -3,8 +3,16 @@ import {
     IconButton as RIconButton,
     IconButtonProps as RmwcIconButtonProps
 } from "@rmwc/icon-button";
+import styled from "@emotion/styled";
 
 import { FormComponentProps } from "../../types";
+
+const StyledRIconButton = styled(RIconButton)`
+    i {
+        all: unset;
+        pointer-events: none;
+    }
+`;
 
 export interface IconButtonProps extends Omit<FormComponentProps, "onChange">, RmwcIconButtonProps {
     id?: string;
@@ -49,7 +57,7 @@ const IconButton = (props: IconButtonProps) => {
     const { id, icon, label, onClick, className, disabled, ripple } = props;
 
     return (
-        <RIconButton
+        <StyledRIconButton
             id={id}
             data-testid={props["data-testid"]}
             onClick={onClick}

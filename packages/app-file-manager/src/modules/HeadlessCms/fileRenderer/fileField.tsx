@@ -60,7 +60,9 @@ export const singleFile: CmsModelFieldRendererPlugin = {
                     {({ editFile }) => (
                         <ImageFieldWrapper>
                             <Label>
-                                <Typography use="body1">{field.label}</Typography>
+                                <Typography use="body1" tag={"span"}>
+                                    {field.label}
+                                </Typography>
                             </Label>
 
                             <Bind>

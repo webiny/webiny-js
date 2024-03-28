@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { Group } from "~/types";
 
 const fields = `
     id
@@ -9,6 +10,14 @@ const fields = `
     system
     createdOn
 `;
+
+export interface ListGroupsResponse {
+    security: {
+        groups: {
+            data: Group[];
+        };
+    };
+}
 
 export const LIST_GROUPS = gql`
     query listGroups {

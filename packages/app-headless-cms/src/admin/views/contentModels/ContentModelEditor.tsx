@@ -19,9 +19,11 @@ const ContentModelEditorView = () => {
     }
     return (
         <ContentModelEditorProvider key={modelId} apolloClient={apolloClient} modelId={modelId}>
-            <DndProvider backend={HTML5Backend}>
-                <Editor />
-            </DndProvider>
+            {
+                <DndProvider backend={HTML5Backend}>
+                    <Editor />
+                </DndProvider>
+            }
         </ContentModelEditorProvider>
     );
 };

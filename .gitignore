@@ -26,6 +26,7 @@ apps/**/build/
 cypress.json
 cypress.config.ts
 cypress/screenshots/*
+cypress-tests/cypress/screenshots/*
 .pulumi
 Pulumi.*
 !Pulumi.yaml

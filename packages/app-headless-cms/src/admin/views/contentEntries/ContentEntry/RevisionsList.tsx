@@ -17,10 +17,10 @@ const style = {
         flexDirection: "column",
         overflow: "auto",
         maxHeight: "calc(100vh - 160px)",
-        ".mdc-list .mdc-list-item": {
+        ".mdc-deprecated-list .mdc-deprecated-list-item": {
             borderBottom: "1px solid var(--mdc-theme-on-background)"
         },
-        ".mdc-list .mdc-list-item:last-child": {
+        ".mdc-deprecated-list .mdc-deprecated-list-item:last-child": {
             borderBottom: "none"
         }
     }),

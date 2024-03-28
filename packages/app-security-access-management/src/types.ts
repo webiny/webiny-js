@@ -6,6 +6,8 @@ export interface Group {
     description: string;
     slug: string;
     system?: boolean;
+    permissions: SecurityPermission[];
+    createdOn: string;
 }
 
 export interface Team {
@@ -14,6 +16,7 @@ export interface Team {
     description: string;
     slug: string;
     system?: boolean;
+    createdOn: string;
 }
 
 export interface ApiKey {
@@ -22,4 +25,5 @@ export interface ApiKey {
     name: string;
     description: string;
     permissions: SecurityPermission[];
+    createdOn: string;
 }

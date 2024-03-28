@@ -106,7 +106,9 @@ context("Page Builder - Blocks", () => {
         cy.visit("/page-builder/page-blocks");
         cy.findByPlaceholderText("Search blocks").should("exist");
         cy.contains(blockCategoryData1.name).click();
-        cy.wait(500).findByTestId("pb-blocks-list-block-edit-btn").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("pb-blocks-list-block-edit-btn")` if issue is fixed.
+        cy.wait(500).get('button[data-testid="pb-blocks-list-block-edit-btn"]').click();
         cy.wait(1500).findByTestId("pb-editor-page-title").click();
         cy.get(`input[value="${blockNames1}"]`)
             .clear()

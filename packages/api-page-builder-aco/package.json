@@ -49,6 +49,6 @@
     "@webiny/api-page-builder": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "lodash": "4.17.21"
+    "lodash": "^4.17.21"
   }
 }

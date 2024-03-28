@@ -42,7 +42,7 @@ const menuList = css`
     box-shadow: none !important;
     border: 1px solid var(--mdc-theme-on-background);
 
-    .mdc-list-item {
+    .mdc-deprecated-list-item {
         align-items: center;
         text-align: left;
         width: 154px;

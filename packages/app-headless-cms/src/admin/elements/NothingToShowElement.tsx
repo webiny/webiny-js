@@ -20,13 +20,13 @@ const linkStyle = css({
 });
 
 const submenuItems = css({
-    ".mdc-drawer &.mdc-list-item": {
+    ".mdc-drawer &.mdc-deprecated-list-item": {
         paddingLeft: 0
     }
 });
 
 const submenuList = css({
-    "&.mdc-list": {
+    "&.mdc-deprecated-list": {
         padding: 0
     }
 });

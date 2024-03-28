@@ -49,6 +49,9 @@ export type InputProps<TValue = any> = FormComponentProps<TValue> &
         children?: React.ReactNode;
     };
 
+export type InputOnKeyDownProps = React.SyntheticEvent<HTMLInputElement> & {
+    key?: string;
+};
 /**
  * Use Input component to store short string values, like first name, last name, e-mail etc.
  * Additionally, with rows prop, it can also be turned into a text area, to store longer strings.
@@ -126,7 +129,7 @@ export const Input = (props: InputProps) => {
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
     const inputOnKeyDown = useCallback(
-        e => {
+        (e: InputOnKeyDownProps) => {
             if (typeof onEnter === "function" && e.key === "Enter") {
                 onEnter();
             }

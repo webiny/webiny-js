@@ -23,7 +23,7 @@
     "@webiny/validation": "0.0.0",
     "commodo-fields-object": "^1.0.6",
     "dataloader": "^2.0.0",
-    "lodash": "4.17.21",
+    "lodash": "^4.17.21",
     "md5": "^2.3.0"
   },
   "devDependencies": {

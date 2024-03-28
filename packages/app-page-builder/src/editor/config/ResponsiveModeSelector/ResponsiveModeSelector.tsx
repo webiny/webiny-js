@@ -5,7 +5,7 @@ import { plugins } from "@webiny/plugins";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
-import { PbEditorResponsiveModePlugin } from "~/types";
+import { PbEditorResponsiveModePlugin, DisplayMode } from "~/types";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
 import { useUI } from "~/editor/hooks/useUI";
 import { setDisplayModeMutation } from "~/editor/recoil/modules";
@@ -90,7 +90,7 @@ export const ResponsiveModeSelector = () => {
     } = usePageBuilder();
 
     const setEditorMode = useCallback(
-        displayMode => {
+        (displayMode: DisplayMode) => {
             setUiValue(prev => setDisplayModeMutation(prev, displayMode));
             /**
              * We are updating the "displayMode" in PageBuilder context.

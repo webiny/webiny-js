@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import get from "lodash/get";
 import { useLazyQuery, useQuery } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
@@ -10,7 +9,8 @@ import ProgressBar from "../ProgressBar";
 import { LoadingDialog } from "../styledComponents";
 import {
     GET_TEMPLATE_IMPORT_EXPORT_TASK,
-    LIST_TEMPLATE_IMPORT_EXPORT_SUB_TASKS
+    LIST_TEMPLATE_IMPORT_EXPORT_SUB_TASKS,
+    GetTemplateImportExportTaskResponse
 } from "~/admin/graphql/templateImportExport.gql";
 import { ImportExportTaskStatus } from "~/types";
 
@@ -39,17 +39,20 @@ const ImportTemplateLoadingDialogContent = ({
 }: ImportTemplateLoadingDialogContentProps) => {
     const { showSnackbar } = useSnackbar();
     const [completed, setCompleted] = useState<boolean>(false);
-    const [error, setError] = useState<Error | null>(null);
+    const [error, setError] = useState<Record<string, string> | null>(null);
 
-    const { data } = useQuery(GET_TEMPLATE_IMPORT_EXPORT_TASK, {
-        variables: {
-            id: taskId
-        },
-        skip: taskId === null,
-        fetchPolicy: "network-only",
-        pollInterval: completed ? 0 : INTERVAL,
-        notifyOnNetworkStatusChange: true
-    });
+    const { data } = useQuery<GetTemplateImportExportTaskResponse>(
+        GET_TEMPLATE_IMPORT_EXPORT_TASK,
+        {
+            variables: {
+                id: taskId
+            },
+            skip: taskId === null,
+            fetchPolicy: "network-only",
+            pollInterval: completed ? 0 : INTERVAL,
+            notifyOnNetworkStatusChange: true
+        }
+    );
 
     const [getSubTasks, getSubTasksQuery] = useLazyQuery(LIST_TEMPLATE_IMPORT_EXPORT_SUB_TASKS, {
         variables: {
@@ -58,25 +61,28 @@ const ImportTemplateLoadingDialogContent = ({
         }
     });
 
-    const pollExportTemplateTaskStatus = useCallback(response => {
-        const { error, data } = get(response, "pageBuilder.getImportExportTask", {});
-        if (error) {
-            return showSnackbar(error.message);
-        }
+    const pollExportTemplateTaskStatus = useCallback(
+        (response: GetTemplateImportExportTaskResponse) => {
+            const { error, data } = response.pageBuilder.getImportExportTask || {};
+            if (error) {
+                return showSnackbar(error.message);
+            }
 
-        // Handler failed task
-        if (data && data.status === "failed") {
-            setCompleted(true);
-            showSnackbar("Error: Failed to import templates");
-            // TODO: @ashutosh show an informative dialog about error.
-            setError(data.error);
-        }
+            // Handler failed task
+            if (data && data.status === "failed") {
+                setCompleted(true);
+                showSnackbar("Error: Failed to import templates");
+                // TODO: @ashutosh show an informative dialog about error.
+                setError(data.error);
+            }
 
-        if (data && data.status === "completed") {
-            setCompleted(true);
-            getSubTasks();
-        }
-    }, []);
+            if (data && data.status === "completed") {
+                setCompleted(true);
+                getSubTasks();
+            }
+        },
+        []
+    );
 
     // This component will remain as long as we stick to `/page-builder/templates` route.
     useEffect(() => {
@@ -86,10 +92,10 @@ const ImportTemplateLoadingDialogContent = ({
         pollExportTemplateTaskStatus(data);
     }, [data]);
 
-    const { status, stats } = get(data, "pageBuilder.getImportExportTask.data", {
+    const { status, stats } = data?.pageBuilder.getImportExportTask.data || {
         status: "pending",
         stats: null
-    });
+    };
 
     return (
         <LoadingDialog.Wrapper>

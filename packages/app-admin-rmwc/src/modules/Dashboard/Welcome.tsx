@@ -162,10 +162,11 @@ const Welcome = () => {
                                         <Typography use={"headline6"}>
                                             <p className={widgetTitleStyle}>{pl.widget.title}</p>
                                         </Typography>
-                                        <Typography use={"body1"}>
-                                            <p className={widgetDescriptionStyle}>
-                                                {pl.widget.description}
-                                            </p>
+                                        <Typography
+                                            use={"body1"}
+                                            className={widgetDescriptionStyle}
+                                        >
+                                            {pl.widget.description}
                                         </Typography>
                                         <div className={widgetButtonStyle}>{pl.widget.cta}</div>
                                     </Elevation>
@@ -189,15 +190,13 @@ const Welcome = () => {
                     </Cell>
                     <Cell span={8}>
                         <Typography use={"body1"} className={communityStyle}>
-                            <p>
-                                Explore the Webiny documentation, learn about the architecture and
-                                check out code examples and guides:
-                            </p>
+                            Explore the Webiny documentation, learn about the architecture and check
+                            out code examples and guides:
                         </Typography>
                     </Cell>
                     <Cell span={4} style={{ marginLeft: "1rem" }}>
                         <Typography use={"body1"} className={communityStyle}>
-                            <p>Get to know Webiny team members, discuss new ideas and get help:</p>
+                            Get to know Webiny team members, discuss new ideas and get help:
                         </Typography>
                     </Cell>
                     <Cell

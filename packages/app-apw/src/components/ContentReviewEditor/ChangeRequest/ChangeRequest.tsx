@@ -127,7 +127,7 @@ export const ChangeRequest = (props: ChangeRequestProps) => {
                         <TypographyTitle use={"subtitle1"}>{changeRequest.title}</TypographyTitle>
                     </Box>
                     <RichTextBox>
-                        <TypographyBody use={"body2"}>
+                        <TypographyBody use={"body2"} tag={"div"}>
                             <RichTextEditor
                                 key={richTextEditorKey}
                                 className={cx(richTextWrapperStyles, textStyles)}

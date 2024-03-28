@@ -242,7 +242,7 @@ export const removeElementId = (el: PbElement): PbElement => {
     return el;
 };
 
-export const createBlockElements = (name: string): PbEditorElement => {
+export const createBlockElements = (name?: string): PbEditorElement => {
     const plugin = plugins.byName<PbEditorBlockPlugin>(name);
 
     invariant(plugin, `Missing block plugin "${name}"!`);

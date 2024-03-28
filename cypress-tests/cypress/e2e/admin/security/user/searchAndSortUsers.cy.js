@@ -90,14 +90,18 @@ context("Search and sort security users", () => {
         cy.visit(`/admin-users`);
 
         // Sort users from "email A -> Z"
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select(sort.EMAIL_A_TO_Z);
-            cy.findByTestId("default-data-list.filter").click();
+            // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+            // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+            cy.get('button[data-testid="default-data-list.filter"]').click();
         });
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => {
                     cy.findByText(users[0].email).should("exist");
@@ -105,14 +109,18 @@ context("Search and sort security users", () => {
         });
 
         // Sort users from "email Z -> A"
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select(sort.EMAIL_Z_TO_A);
-            cy.findByTestId("default-data-list.filter").click();
+            // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+            // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+            cy.get('button[data-testid="default-data-list.filter"]').click();
         });
         // We're testing it against the second element because the first one will be "Admin" user
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .next()
                 .within(() => {
@@ -121,14 +129,18 @@ context("Search and sort security users", () => {
         });
 
         // Sort users from "Oldest to Newest"
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select(sort.OLDEST_TO_NEWEST);
-            cy.findByTestId("default-data-list.filter").click();
+            // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+            // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+            cy.get('button[data-testid="default-data-list.filter"]').click();
         });
         // We're testing it against the second element because the first one will be "Admin" user
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .next()
                 .within(() => {
@@ -137,14 +149,18 @@ context("Search and sort security users", () => {
         });
 
         // Sort users from "Newest to Oldest"
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select(sort.NEWEST_TO_OLDEST);
-            cy.findByTestId("default-data-list.filter").click();
+            // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+            // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+            cy.get('button[data-testid="default-data-list.filter"]').click();
         });
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.get(".mdc-list-item")
+            cy.get(".mdc-deprecated-list-item")
                 .first()
                 .within(() => {
                     cy.findByText(users[total - 1].email).should("exist");

@@ -52,7 +52,9 @@ context("Page Builder - Template Sorting", () => {
     it("Should be able to create templates and then sort them correctly", () => {
         cy.visit("/page-builder/page-templates");
 
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.get(".webiny-ui-select select").select("Newest to oldest");
         cy.findByTestId("default-data-list").within(() => {
             cy.get("li")
@@ -61,7 +63,9 @@ context("Page Builder - Template Sorting", () => {
         });
 
         cy.visit("/page-builder/page-templates");
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.get(".webiny-ui-select select").select("Oldest to newest");
         cy.findByTestId("default-data-list").within(() => {
             cy.get("li")
@@ -70,7 +74,9 @@ context("Page Builder - Template Sorting", () => {
         });
 
         cy.visit("/page-builder/page-templates");
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.get(".webiny-ui-select select").select("Title A-Z");
         cy.findByTestId("default-data-list")
             .first()
@@ -81,7 +87,9 @@ context("Page Builder - Template Sorting", () => {
             });
 
         cy.visit("/page-builder/page-templates");
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.get(".webiny-ui-select select").select("Title Z-A");
         cy.findByTestId("default-data-list")
             .first()

@@ -25,7 +25,7 @@ context("Page Builder - Blocks", () => {
         cy.findByTestId("pb-block-categories-form-save-block-category-btn").click();
 
         // Creates new block within the created category and checks if block edit page loads.
-        cy.visit("/page-builder/page-blocks");
+        cy.wait(500).visit("/page-builder/page-blocks");
         cy.findByPlaceholderText("Search blocks").should("exist");
         cy.findByTestId("pb-blocks-list-new-block-btn").click();
         cy.findByText(blockCategorySlug).click();
@@ -45,7 +45,9 @@ context("Page Builder - Blocks", () => {
         cy.visit("/page-builder/page-blocks");
         cy.findByPlaceholderText("Search blocks").should("exist");
         cy.contains(blockCategoryName).click();
-        cy.findByTestId("pb-blocks-list-block-duplicate-btn").eq(0).click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("pb-blocks-list-block-duplicate-btn")` if issue is fixed.
+        cy.get('button[data-testid="pb-blocks-list-block-duplicate-btn"]').eq(0).click();
         cy.findByPlaceholderText("Search blocks", { timeout: 10000 }).should("exist");
         cy.contains(blockCategoryName).click();
         cy.contains("New block (copy)").should("exist");
@@ -58,7 +60,11 @@ context("Page Builder - Blocks", () => {
             cy.get("li")
                 .first()
                 .within(() => {
-                    cy.findByTestId("pb-block-categories-list-delete-block-category-btn").click({
+                    // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                    // Now targeting <button> directly. Revert to `.findByTestId("pb-block-categories-list-delete-block-category-btn")` if issue is fixed.
+                    cy.get(
+                        'button[data-testid="pb-block-categories-list-delete-block-category-btn"]'
+                    ).click({
                         force: true
                     });
                 });
@@ -85,7 +91,11 @@ context("Page Builder - Blocks", () => {
             cy.get("li")
                 .first()
                 .within(() => {
-                    cy.findByTestId("pb-block-categories-list-delete-block-category-btn").click({
+                    // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                    // Now targeting <button> directly. Revert to `.findByTestId("pb-block-categories-list-delete-block-category-btn")` if issue is fixed.
+                    cy.get(
+                        'button[data-testid="pb-block-categories-list-delete-block-category-btn"]'
+                    ).click({
                         force: true
                     });
                 });

@@ -43,7 +43,9 @@ context("Forms Creation", () => {
         });
 
         // 4. UnPublish the form
-        cy.findByTestId("fb.form-preview.header.unpublish").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("fb.form-preview.header.unpublish")` if issue is fixed.
+        cy.get('button[data-testid="fb.form-preview.header.unpublish"]').click();
         cy.findByTestId("fb.form-preview.header.unpublish-dialog").within(() => {
             cy.findByTestId("confirmationdialog-confirm-action").click();
         });
@@ -60,7 +62,9 @@ context("Forms Creation", () => {
         });
 
         // 5. Create a new revision from the locked v1 and publish it
-        cy.findByTestId("fb.form-preview.header.create-revision").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("fb.form-preview.header.create-revision")` if issue is fixed.
+        cy.get('button[data-testid="fb.form-preview.header.create-revision"]').click();
         cy.wait(500);
         // 5.1. Add "Website" field to the form
         cy.findByTestId("form-editor-field-group-contact").click();
@@ -126,7 +130,9 @@ context("Forms Creation", () => {
         cy.findAllByTestId("fb.form-revisions.action-menu.create-revision").last().click();
         cy.wait(1000);
         // 8. Go back in form details view and check it's status
-        cy.findByTestId("fb-editor-back-button").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("fb-editor-back-button")` if issue is fixed.
+        cy.get('button[data-testid="fb-editor-back-button"]').click();
         cy.wait(1000);
 
         cy.findByTestId("default-data-list").within(() => {
@@ -140,7 +146,9 @@ context("Forms Creation", () => {
         });
 
         // Delete form.
-        cy.findByTestId("fb.form-preview.header.delete").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("fb.form-preview.header.delete")` if issue is fixed.
+        cy.get('button[data-testid="fb.form-preview.header.delete"]').click();
         cy.wait(500);
         cy.findByTestId("fb.form-preview.header.delete-dialog").within(() => {
             cy.findByText("Confirmation required!").should("exist");

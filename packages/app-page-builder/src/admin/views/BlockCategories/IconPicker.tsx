@@ -6,7 +6,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Grid } from "react-virtualized";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
-import { Menu } from "@webiny/ui/Menu";
+import { Menu, MenuChildrenFunctionProps } from "@webiny/ui/Menu";
 import { Input } from "@webiny/ui/Input";
 import { PbIcon, PbIconsPlugin } from "~/types";
 import { FormComponentProps } from "@webiny/ui/types";
@@ -110,9 +110,8 @@ const IconPicker = ({ value, onChange, label, description, validation }: IconPic
     }, [mustRenderGrid]);
 
     const onFilterChange = useCallback(
-        (value, cb) => {
+        (value: string) => {
             setFilter(value);
-            cb();
         },
         [filter]
     );
@@ -129,7 +128,7 @@ const IconPicker = ({ value, onChange, label, description, validation }: IconPic
     }, [filter]);
 
     const renderCell = useCallback(
-        ({ closeMenu }) => {
+        ({ closeMenu }: MenuChildrenFunctionProps) => {
             return function renderCell({
                 columnIndex,
                 key,
@@ -159,11 +158,15 @@ const IconPicker = ({ value, onChange, label, description, validation }: IconPic
                 );
             };
         },
-        [icons]
+        [mustRenderGrid, icons]
     );
 
     const renderGrid = useCallback(
-        ({ closeMenu }) => {
+        ({ closeMenu }: MenuChildrenFunctionProps) => {
+            if (!mustRenderGrid) {
+                return;
+            }
+
             return (
                 <>
                     <DelayedOnChange value={filter} onChange={onFilterChange}>
@@ -196,7 +199,7 @@ const IconPicker = ({ value, onChange, label, description, validation }: IconPic
                 </>
             );
         },
-        [icons]
+        [mustRenderGrid, icons]
     );
 
     const fontAwesomeIconValue: any =
@@ -221,9 +224,8 @@ const IconPicker = ({ value, onChange, label, description, validation }: IconPic
                         </div>
                     </div>
                 }
-            >
-                {mustRenderGrid && renderGrid}
-            </Menu>
+                render={renderGrid}
+            />
 
             {validationIsValid === false && (
                 <FormElementMessage error>{validationMessage}</FormElementMessage>

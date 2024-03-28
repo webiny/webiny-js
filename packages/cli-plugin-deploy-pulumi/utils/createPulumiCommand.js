@@ -121,20 +121,12 @@ const createPulumiCommand = ({
                 commandName: command,
                 commandParams: params
             });
-            if (gracefulError) {
-                if (sendTelemetryEvents) {
-                    const eventName = getTelemetryEventName("error-graceful");
-                    await sendEvent(eventName, {
-                        ...telemetryProperties,
-                        errorMessage: e.message,
-                        errorStack: e.stack
-                    });
-                }
-                throw gracefulError;
-            }
 
             if (sendTelemetryEvents) {
-                const eventName = getTelemetryEventName("error");
+                const eventName = gracefulError
+                    ? getTelemetryEventName("error-graceful")
+                    : getTelemetryEventName("error");
+
                 await sendEvent(eventName, {
                     ...telemetryProperties,
                     errorMessage: e.message,
@@ -142,14 +134,18 @@ const createPulumiCommand = ({
                 });
             }
 
-            const debugFlag = context.error.hl(`--debug`);
-            throw new Error(
-                [
-                    `Command failed with an unexpected error. Please check the above logs. Alternatively,`,
-                    `try running the same command with the ${debugFlag} flag to get more detailed information.`
-                ].join(" "),
-                { cause: e }
-            );
+            let message = "Command failed with an unexpected error. Please check the above logs.";
+            if (!params.debug) {
+                const debugFlag = context.error.hl(`--debug`);
+                message += ` Alternatively, try running the same command with the ${debugFlag} flag to get more detailed information.`;
+            }
+
+            throw new Error(message, {
+                cause: {
+                    error: e,
+                    gracefulError: gracefulError
+                }
+            });
         }
     };
 };

@@ -47,6 +47,7 @@ interface FormBuilderPermissionsProps {
     value: string;
     onChange: (value: SecurityPermission[]) => void;
 }
+
 export const FormBuilderPermissions = ({ value, onChange }: FormBuilderPermissionsProps) => {
     const { getPermission } = useSecurity();
 
@@ -56,7 +57,7 @@ export const FormBuilderPermissions = ({ value, onChange }: FormBuilderPermissio
     }, []);
 
     const onFormChange = useCallback(
-        data => {
+        (data: FormPermissionsData) => {
             let newValue: FormBuilderSecurityPermission[] = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `fb` permission objects, it's easier to build new ones from scratch.

@@ -10,6 +10,7 @@ type MoverProps = {
 };
 const DragBlockIndicator = ({ type }: MoverProps) => {
     const [, drag] = useDrag({
+        type,
         item: { type } as DraggableItem,
         collect: monitor => ({
             isDragging: monitor.isDragging()

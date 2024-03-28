@@ -29,12 +29,15 @@ export interface MenuProps {
     target?: string;
     rel?: string;
     element?: JSX.Element;
-    children?: React.ReactNode | React.ReactNode[];
     pin?: "first" | "last";
 }
 
 export interface MenuData extends MenuProps {
     children: MenuData[];
+}
+
+export interface AddMenuProps extends MenuProps {
+    children?: React.ReactNode;
 }
 
 export const createEmptyMenu = (name: string): MenuData => {
@@ -80,7 +83,7 @@ const mergeMenuItems = (item1: MenuData, item2: MenuData): MenuData => {
 /**
  * Register a new menu item into the Admin app.
  */
-export const AddMenu = ({ children, ...props }: MenuProps) => {
+export const AddMenu = ({ children, ...props }: AddMenuProps) => {
     const menu = useMenu();
     const navigation = useNavigation();
 

@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
 import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
-import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps } from "~/types";
+import { PbEditorElement, PbEditorPageElementSettingsRenderComponentProps, PbIcon } from "~/types";
 // Components
 import IconPickerComponent from "../../../components/IconPicker";
 import Accordion from "../../elementSettings/components/Accordion";
@@ -75,8 +75,14 @@ const ButtonSettings = ({
         postModifyElement: updateButtonElementIcon
     });
 
-    const updateType = useCallback(value => getUpdateValue("type")(value), [getUpdateValue]);
-    const updateIcon = useCallback(value => getUpdateValue("icon.id")(value?.id), [getUpdateValue]);
+    const updateType = useCallback(
+        (value: string) => getUpdateValue("type")(value),
+        [getUpdateValue]
+    );
+    const updateIcon = useCallback(
+        (value: PbIcon) => getUpdateValue("icon.id")(value?.id),
+        [getUpdateValue]
+    );
     const updateIconColor = useCallback(
         (value: string) => getUpdateValue("icon.color")(value),
         [getUpdateValue]

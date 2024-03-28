@@ -12,7 +12,8 @@ import {
     CompositionProvider,
     GenericComponent,
     compose,
-    Decorator
+    Decorator,
+    HigherOrderComponent
 } from "@webiny/react-composition";
 import { Routes as SortRoutes } from "./core/Routes";
 import { DebounceRender } from "./core/DebounceRender";
@@ -59,6 +60,8 @@ interface ProviderProps {
     children: React.ReactNode;
 }
 
+type ComponentWithChildren = React.ComponentType<{ children?: React.ReactNode }>;
+
 export const App = ({ debounceRender = 50, routes = [], providers = [], children }: AppProps) => {
     const [state, setState] = useState<State>({
         routes: routes.reduce<RoutesByPath>((acc, item) => {
@@ -77,7 +80,7 @@ export const App = ({ debounceRender = 50, routes = [], providers = [], children
         });
     }, []);
 
-    const addProvider = useCallback(component => {
+    const addProvider = useCallback((component: HigherOrderComponent<any, any>) => {
         setState(state => {
             if (state.providers.findIndex(m => m === component) > -1) {
                 return state;
@@ -90,7 +93,7 @@ export const App = ({ debounceRender = 50, routes = [], providers = [], children
         });
     }, []);
 
-    const addPlugin = useCallback(element => {
+    const addPlugin = useCallback((element: JSX.Element) => {
         setState(state => {
             return {
                 ...state,
@@ -120,7 +123,7 @@ export const App = ({ debounceRender = 50, routes = [], providers = [], children
         return compose(...(state.providers || []))(({ children }: ProviderProps) => {
             return <DebounceRender wait={debounceRender}>{children}</DebounceRender>;
         });
-    }, [state.providers.length]);
+    }, [state.providers.length]) as ComponentWithChildren;
 
     Providers.displayName = "Providers";
 

@@ -26,9 +26,9 @@ export interface AccordionProps {
 }
 
 const listStyle = css`
-    &.mdc-list {
+    &.mdc-deprecated-list {
         padding: 0;
-        &.mdc-list--two-line .mdc-list-item {
+        &.mdc-deprecated-list--two-line .mdc-deprecated-list-item {
             height: 48px;
             padding: 8px 20px;
         }

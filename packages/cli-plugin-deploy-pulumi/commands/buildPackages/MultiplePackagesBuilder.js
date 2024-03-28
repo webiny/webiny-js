@@ -98,7 +98,7 @@ class MultiplePackagesBuilder extends BasePackagesBuilder {
 
         console.log();
 
-        context.success(`Successfully built ${packages.length} packages in ${getBuildDuration()}.`);
+        context.success(`Built ${packages.length} packages in ${getBuildDuration()}.`);
     }
 
     getPackageLabel(pkg) {

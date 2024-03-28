@@ -97,7 +97,7 @@ module.exports = async ({ inputs, context, pulumi }) => {
             throw e;
         }
 
-        spinner.fail(`Deployment failed. Please check the below logs for more details.`);
+        spinner.fail(`Deployment failed. For more details, please check the error logs below.`);
         console.log();
         console.log(e.stderr || e.stdout || e.message);
         throw e;

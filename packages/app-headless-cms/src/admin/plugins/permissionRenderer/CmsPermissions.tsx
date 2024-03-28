@@ -255,7 +255,7 @@ export const CMSPermissions = ({ value, onChange }: CMSPermissionsProps) => {
 
     const locales = getFormLocales();
 
-    const getSelectedContentModelGroups = useCallback(data => {
+    const getSelectedContentModelGroups = useCallback((data: CmsSecurityPermission) => {
         if (data && data.contentModelGroupAccessScope === "groups" && data.contentModelGroupProps) {
             return data.contentModelGroupProps.groups;
         }

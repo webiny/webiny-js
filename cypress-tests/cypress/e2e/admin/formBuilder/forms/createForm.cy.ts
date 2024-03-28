@@ -52,7 +52,9 @@ context("Forms Creation", () => {
                     .first()
                     .within(() => {
                         cy.findByText(newFormTitle2).should("be.visible");
-                        cy.findByTestId("edit-form-action").click({ force: true });
+                        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                        // Now targeting <button> directly. Revert to `.findByTestId("edit-form-action")` if issue is fixed.
+                        cy.get('button[data-testid="edit-form-action"]').click({ force: true });
                     });
             });
 
@@ -88,7 +90,9 @@ context("Forms Creation", () => {
                 cy.findAllByTestId("default-data-list-element")
                     .first()
                     .within(() => {
-                        cy.findByTestId("delete-form-action").click({ force: true });
+                        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                        // Now targeting <button> directly. Revert to `.findByTestId("delete-form-action")` if issue is fixed.
+                        cy.get('button[data-testid="delete-form-action"]').click({ force: true });
                     });
             });
 

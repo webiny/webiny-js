@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } f
 import pick from "lodash/pick";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { FormOnSubmit } from "@webiny/form";
+import { FormAPI, FormOnSubmit } from "@webiny/form";
 import {
     CmsEntryCreateFromMutationResponse,
     CmsEntryCreateFromMutationVariables,
@@ -102,7 +102,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     );
 
     const goToRevision = useCallback(
-        id => {
+        (id: string) => {
             const fId = query.get("folderId");
             const folderId = fId ? `&folderId=${encodeURIComponent(fId)}` : "";
             history.push(
@@ -209,7 +209,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     );
 
     const updateContent = useCallback(
-        async (revision, data, form) => {
+        async (revision: string, data: CmsContentEntry, form: FormAPI<CmsContentEntry>) => {
             setLoading(true);
             const response = await updateMutation({
                 variables: {
@@ -246,7 +246,7 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
     );
 
     const createContentFrom = useCallback(
-        async (revision: string, formData: Record<string, any>, form) => {
+        async (revision: string, formData: Record<string, any>, form: FormAPI<CmsContentEntry>) => {
             setLoading(true);
             const response = await createFromMutation({
                 variables: {
@@ -295,9 +295,9 @@ export function useContentEntryForm(params: UseContentEntryFormParams): UseConte
 
     const onSubmit: FormOnSubmit<CmsContentEntry> = async (data, form) => {
         const fieldsIds = model.fields.map(item => item.fieldId);
-        const formData = pick(data, [...fieldsIds]);
+        const formData = pick(data, [...fieldsIds]) as CmsContentEntry;
 
-        const gqlData = prepareFormData(formData, model.fields);
+        const gqlData = prepareFormData<CmsContentEntry>(formData, model.fields);
 
         if (!entry.id) {
             return createContent(gqlData as CmsContentEntry, form);

@@ -34,7 +34,7 @@
     "@webiny/utils": "0.0.0",
     "dataloader": "^2.0.0",
     "elastic-ts": "^0.8.0",
-    "lodash": "4.17.21"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",

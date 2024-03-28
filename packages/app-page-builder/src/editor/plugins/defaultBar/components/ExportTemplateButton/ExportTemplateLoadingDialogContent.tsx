@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useQuery } from "@apollo/react-hooks";
-import { GET_TEMPLATE_IMPORT_EXPORT_TASK } from "~/admin/graphql/templateImportExport.gql";
-import get from "lodash/get";
+import {
+    GET_TEMPLATE_IMPORT_EXPORT_TASK,
+    GetTemplateImportExportTaskResponse
+} from "~/admin/graphql/templateImportExport.gql";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "@webiny/app/i18n";
 import { LoadingDialog } from "../ImportButton/styledComponents";
@@ -31,40 +33,46 @@ interface ExportTemplateLoadingDialogContent {
 
 const ExportTemplateLoadingDialogContent = ({ taskId }: ExportTemplateLoadingDialogContent) => {
     const [completed, setCompleted] = useState<boolean>(false);
-    const [error, setError] = useState<Error | null>(null);
+    const [error, setError] = useState<Record<string, string> | null>(null);
     const { showSnackbar } = useSnackbar();
     const { showExportTemplateContentDialog } = useExportTemplateDialog();
 
-    const { data } = useQuery(GET_TEMPLATE_IMPORT_EXPORT_TASK, {
-        variables: {
-            id: taskId
+    const { data } = useQuery<GetTemplateImportExportTaskResponse>(
+        GET_TEMPLATE_IMPORT_EXPORT_TASK,
+        {
+            variables: {
+                id: taskId
+            },
+            skip: taskId === null,
+            fetchPolicy: "network-only",
+            pollInterval: completed ? 0 : INTERVAL,
+            notifyOnNetworkStatusChange: true
+        }
+    );
+
+    const pollExportTemplateTaskStatus = useCallback(
+        (response: GetTemplateImportExportTaskResponse) => {
+            const { error, data } = response.pageBuilder.getImportExportTask || {};
+            if (error) {
+                showSnackbar(error.message);
+                return;
+            }
+
+            // Handler failed task
+            if (data && data.status === "failed") {
+                setCompleted(true);
+                showSnackbar("Error: Failed to export templates!");
+                setError(data.error);
+            }
+
+            if (data && data.status === "completed") {
+                setCompleted(true);
+                // getSubTasks();
+                showExportTemplateContentDialog({ exportUrl: data.data.url });
+            }
         },
-        skip: taskId === null,
-        fetchPolicy: "network-only",
-        pollInterval: completed ? 0 : INTERVAL,
-        notifyOnNetworkStatusChange: true
-    });
-
-    const pollExportTemplateTaskStatus = useCallback(response => {
-        const { error, data } = get(response, "pageBuilder.getImportExportTask", {});
-        if (error) {
-            showSnackbar(error.message);
-            return;
-        }
-
-        // Handler failed task
-        if (data && data.status === "failed") {
-            setCompleted(true);
-            showSnackbar("Error: Failed to export templates!");
-            setError(data.error);
-        }
-
-        if (data && data.status === "completed") {
-            setCompleted(true);
-            // getSubTasks();
-            showExportTemplateContentDialog({ exportUrl: data.data.url });
-        }
-    }, []);
+        []
+    );
 
     // This component will remain as long as we stick to `/page-builder/templates` route.
     useEffect(() => {
@@ -74,10 +82,10 @@ const ExportTemplateLoadingDialogContent = ({ taskId }: ExportTemplateLoadingDia
         pollExportTemplateTaskStatus(data);
     }, [data]);
 
-    const { status, stats } = get(data, "pageBuilder.getImportExportTask.data", {
+    const { status, stats } = data?.pageBuilder.getImportExportTask.data || {
         status: ImportExportTaskStatus.PENDING,
         stats: null
-    });
+    };
 
     return (
         <LoadingDialog.Wrapper>

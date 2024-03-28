@@ -15,7 +15,7 @@ export const listItem = css({
     "&:last-child": {
         borderBottom: "none"
     },
-    ".mdc-list-item__graphic": {
+    ".mdc-deprecated-list-item__graphic": {
         marginRight: 20
     }
 });

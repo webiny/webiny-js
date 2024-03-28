@@ -15,17 +15,21 @@ export const ThemeManagerContext = createContext<ThemeManagerContext>({
 });
 ThemeManagerContext.displayName = "ThemeManagerContext";
 
-export const ThemeManagerProviderHOC: HigherOrderComponent<unknown> = PreviousProvider => {
+export const ThemeManagerProviderHOC: HigherOrderComponent<
+    React.PropsWithChildren
+> = PreviousProvider => {
     return function ThemeProvider({ children }) {
         const [themes, setThemes] = useState<ThemeSource[]>([]);
 
         const addTheme = useCallback(
-            theme => {
+            (theme: ThemeSource) => {
                 setThemes(themes => [...themes, theme]);
 
                 return () => {
                     setThemes(themes => {
-                        const index = themes.findIndex(theme);
+                        const index = themes.findIndex(item => {
+                            return item.name === theme.name;
+                        });
                         if (index > -1) {
                             return [...themes.slice(0, index), ...themes.slice(index + 1)];
                         }

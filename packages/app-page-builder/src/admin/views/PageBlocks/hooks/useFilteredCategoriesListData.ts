@@ -10,7 +10,7 @@ const useFilteredCategoriesListData = (
     filter: string
 ): [PbPageBlock[], PbBlockCategory[]] => {
     const filterBlocksData = useCallback(
-        ({ name }) => {
+        ({ name }: PbPageBlock) => {
             return name.toLowerCase().includes(filter);
         },
         [filter]
@@ -20,7 +20,7 @@ const useFilteredCategoriesListData = (
         filter === "" ? pageBlocksData : pageBlocksData.filter(filterBlocksData);
 
     const filterBlockCategoriesData = useCallback(
-        ({ slug }) => {
+        ({ slug }: PbBlockCategory) => {
             return (
                 filteredBlocksData.filter(pageBlock => pageBlock.blockCategory === slug).length > 0
             );
@@ -32,7 +32,7 @@ const useFilteredCategoriesListData = (
         filter === "" ? blockCategoriesData : blockCategoriesData.filter(filterBlockCategoriesData);
 
     const sortData = useCallback(
-        categories => {
+        (categories: PbBlockCategory[]) => {
             if (!sort) {
                 return categories;
             }

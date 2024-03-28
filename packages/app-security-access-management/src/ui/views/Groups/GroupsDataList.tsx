@@ -17,7 +17,7 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import { LIST_GROUPS, DELETE_GROUP } from "./graphql";
+import { LIST_GROUPS, DELETE_GROUP, ListGroupsResponse } from "./graphql";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { Cell, Grid } from "@webiny/ui/Grid";
@@ -62,17 +62,17 @@ export const GroupsDataList = () => {
         dataTestId: "default-data-list.delete-dialog"
     });
 
-    const { data: listResponse, loading: listLoading } = useQuery(LIST_GROUPS);
+    const { data: listResponse, loading: listLoading } = useQuery<ListGroupsResponse>(LIST_GROUPS);
 
     const [deleteIt, { loading: deleteLoading }] = useMutation(DELETE_GROUP, {
         refetchQueries: [{ query: LIST_GROUPS }]
     });
 
-    const data = listLoading && !listResponse ? [] : listResponse.security.groups.data;
+    const data = listLoading && !listResponse ? [] : listResponse?.security.groups.data || [];
     const id = new URLSearchParams(location.search).get("id");
 
     const filterGroup = useCallback(
-        ({ name, slug, description }) => {
+        ({ name, slug, description }: Group) => {
             return (
                 name.toLowerCase().includes(filter) ||
                 slug.toLowerCase().includes(filter) ||
@@ -83,7 +83,7 @@ export const GroupsDataList = () => {
     );
 
     const sortGroups = useCallback(
-        groups => {
+        (groups: Group[]) => {
             if (!sort) {
                 return groups;
             }
@@ -94,7 +94,7 @@ export const GroupsDataList = () => {
     );
 
     const deleteItem = useCallback(
-        item => {
+        (item: Group) => {
             showConfirmation(async () => {
                 const { data } = await deleteIt({
                     variables: item

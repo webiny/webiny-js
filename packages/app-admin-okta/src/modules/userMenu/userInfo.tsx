@@ -24,7 +24,7 @@ const linkStyles = css({
     paddingBottom: 0,
     textDecoration: "none",
     display: "block",
-    ">.mdc-list-item": {
+    ">.mdc-deprecated-list-item": {
         display: "flex",
         height: "65px !important",
         marginTop: 15,
@@ -35,12 +35,12 @@ const linkStyles = css({
     "h3, h3>.mdc-typography--headline6": {
         lineHeight: "1em !important"
     },
-    ".mdc-menu &.mdc-list-item": {
-        ">.mdc-list-item__text": {
+    ".mdc-menu &.mdc-deprecated-list-item": {
+        ">.mdc-deprecated-list-item__text": {
             fontWeight: "bold"
         }
     },
-    ".mdc-list-item": {
+    ".mdc-deprecated-list-item": {
         height: "auto",
         ".mdc-typography--headline6": {
             overflow: "hidden",
@@ -79,9 +79,7 @@ export const UserInfo = makeDecoratable("UserInfo", () => {
                     />
                 </ListItemGraphic>
                 <div>
-                    <h3>
-                        <Typography use={"headline6"}>{displayName}</Typography>
-                    </h3>
+                    <Typography use={"headline6"}>{displayName}</Typography>
                     <Typography use={"body2"}>{id}</Typography>
                 </div>
             </ListItem>

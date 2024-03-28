@@ -28,6 +28,7 @@ const classes = {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
+            paddingLeft: "16px",
             "& .accordion-title": {
                 span: {
                     marginLeft: 16

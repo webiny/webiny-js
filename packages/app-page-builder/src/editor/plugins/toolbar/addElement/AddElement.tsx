@@ -35,7 +35,7 @@ const accordionStyle = css`
 type ElementsListProps = {
     groupPlugin: PbEditorPageElementGroupPlugin;
     elements: PbEditorPageElementPlugin[];
-    renderDraggable: (element: any, plugin: any) => JSX.Element;
+    renderDraggable: (element: React.ReactNode, plugin: PbEditorPageElementPlugin) => JSX.Element;
     refresh: () => void;
 };
 
@@ -75,6 +75,15 @@ const ElementsList = ({ groupPlugin, elements, renderDraggable, refresh }: Eleme
         </Styled.Elements>
     );
 };
+
+interface RenderOverlayCb {
+    (
+        element: React.ReactNode,
+        onClick: ((event: React.MouseEvent<any, MouseEvent>) => any) | undefined,
+        label: string,
+        plugin: PbEditorPageElementPlugin
+    ): React.ReactNode;
+}
 
 const AddElement = () => {
     const handler = useEventActionHandler();
@@ -146,8 +155,8 @@ const AddElement = () => {
         el.classList.remove("pb-editor-dragging");
     }, []);
 
-    const renderOverlay = useCallback(
-        (element, onClick = null, label, plugin) => {
+    const renderOverlay = useCallback<RenderOverlayCb>(
+        (element, onClick, label, plugin) => {
             return (
                 <Styled.ElementPreview>
                     <Styled.Overlay>
@@ -170,7 +179,7 @@ const AddElement = () => {
         [enableDragOverlay, disableDragOverlay]
     );
 
-    const renderDraggable = useCallback(
+    const renderDraggable = useCallback<ElementsListProps["renderDraggable"]>(
         (element, plugin) => {
             const { elementType } = plugin;
 
@@ -236,7 +245,7 @@ const AddElement = () => {
                                           });
                                           setTimeout(deactivatePlugin, 20);
                                       }
-                                    : null,
+                                    : undefined,
                                 params ? "Click to Add" : "Drag to Add",
                                 plugin
                             )}

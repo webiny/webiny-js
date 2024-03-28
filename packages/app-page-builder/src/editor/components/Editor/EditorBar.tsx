@@ -61,6 +61,8 @@ const DividerRenderer = makeDecoratable("DividerRenderer", () => {
     return <StyledDivider />;
 });
 
+// type DecoratableComponentWithChildren = DecoratableComponent<React.PropsWithChildren<unknown>>;
+
 type EditorBar = DecoratableComponent & {
     LeftSection: DecoratableComponent;
     CenterSection: DecoratableComponent;

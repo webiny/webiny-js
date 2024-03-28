@@ -62,10 +62,13 @@ const getValue = (params: GetValueParams): string => {
     return (value || defaultValue) as string;
 };
 
+export type OnKeyDownProps = React.SyntheticEvent<HTMLInputElement, Event> &
+    React.KeyboardEvent<HTMLInputElement>;
+
 interface InputBoxProps {
     value?: string | number;
     onChange?: (value: any) => void;
-    onKeyDown?: (e: React.SyntheticEvent<HTMLInputElement>) => any;
+    onKeyDown?: (e: OnKeyDownProps) => any;
     defaultValue?: string | number;
     type?: "string" | "number";
     [key: string]: any;

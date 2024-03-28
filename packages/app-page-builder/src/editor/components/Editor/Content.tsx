@@ -57,7 +57,7 @@ const contentContainerWrapper = css({
     margin: "95px 65px 50px 85px",
     padding: 0,
     position: "absolute",
-    width: "calc(100vw - 115px - 300px)",
+    width: "calc(100vw - 415px)",
     top: 0,
     boxSizing: "border-box",
     zIndex: 1

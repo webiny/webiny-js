@@ -15,7 +15,7 @@ import { PbElement, PbEditorElement } from "~/types";
 type ProviderProps = EventActionHandlerProviderProps<PageEditorEventActionCallableState>;
 
 const PbEventActionHandler = createDecorator(
-    EventActionHandlerProvider as DecoratableComponent<GenericComponent<ProviderProps>>,
+    EventActionHandlerProvider as unknown as DecoratableComponent<GenericComponent<ProviderProps>>,
     Component => {
         return function PbEventActionHandlerProvider(props) {
             const pageAtomValueRef = useRef<PageAtomType>();

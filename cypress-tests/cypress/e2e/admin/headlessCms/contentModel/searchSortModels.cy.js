@@ -126,10 +126,14 @@ context("Headless CMS - Search and Sort Content Models", () => {
         cy.visit("/cms/content-models");
 
         // Sort groups by "Newest to Oldest"
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select("savedOn_DESC");
-            cy.findByTestId("default-data-list.filter").click();
+            // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+            // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+            cy.get('button[data-testid="default-data-list.filter"]').click();
         });
         // Last model should be on the top
         cy.findByTestId("default-data-list").within(() => {
@@ -141,10 +145,14 @@ context("Headless CMS - Search and Sort Content Models", () => {
         });
 
         // Sort groups by "Oldest to Newest"
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select("savedOn_ASC");
-            cy.findByTestId("default-data-list.filter").click();
+            // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+            // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+            cy.get('button[data-testid="default-data-list.filter"]').click();
         });
         // Last model should not be on the top
         cy.findByTestId("default-data-list").within(() => {

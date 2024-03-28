@@ -45,7 +45,7 @@ const Comment = (props: CommentProps) => {
                 </Box>
             </Columns>
             <CommentBox paddingX={3.5} paddingY={5}>
-                <TypographyBody use={"caption"}>
+                <TypographyBody use={"caption"} tag={"div"}>
                     <RichTextEditor
                         readOnly={true}
                         className={richTextWrapperStyles}
