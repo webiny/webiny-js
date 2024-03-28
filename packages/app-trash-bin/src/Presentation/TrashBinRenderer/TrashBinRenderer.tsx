@@ -19,17 +19,24 @@ interface TrashBinWrapperProps {
     deleteGateway: ITrashBinDeleteItemGateway;
     itemMapper: ITrashBinItemMapper<any>;
     onClose: () => void;
+    title?: string;
     nameColumnId?: string;
 }
 
-const TrashBinWrapper = (props: TrashBinWrapperProps) => {
+const TrashBinWrapper = ({ title = "Trash Bin", ...props }: TrashBinWrapperProps) => {
     const { table } = useAcoConfig();
 
     if (!table.sorting.length) {
         return null;
     }
 
-    return <TrashBin {...props} sorting={table.sorting.map(sort => Sorting.create(sort))} />;
+    return (
+        <TrashBin
+            {...props}
+            title={title}
+            sorting={table.sorting.map(sort => Sorting.create(sort))}
+        />
+    );
 };
 
 export const TrashBinRenderer = createDecorator(BaseTrashBinRenderer, () => {

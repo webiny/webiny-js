@@ -29,6 +29,7 @@ export interface TrashBinProps {
     itemMapper: ITrashBinItemMapper<any>;
     onClose: () => void;
     sorting: Sorting[];
+    title: string;
     nameColumnId?: string;
 }
 
@@ -108,7 +109,12 @@ export const TrashBin = observer((props: TrashBinProps) => {
 
     return (
         <TrashBinProvider controllers={controllers} presenter={presenter}>
-            <TrashBinOverlay vm={presenter.vm} controllers={controllers} onExited={props.onClose} />
+            <TrashBinOverlay
+                vm={presenter.vm}
+                controllers={controllers}
+                onExited={props.onClose}
+                title={props.title}
+            />
         </TrashBinProvider>
     );
 });

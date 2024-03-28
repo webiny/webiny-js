@@ -22,10 +22,10 @@ export const useDeleteEntry = ({ entry, onAccept, onCancel }: UseDeleteEntryPara
 
     const title = get(entry, "meta.title");
     const { showConfirmation } = useConfirmationDialog({
-        title: "Move entry to trash",
+        title: "Trash entry",
         message: (
             <p>
-                Are you sure you want to move <strong>{title}</strong> to the trash?
+                Are you sure you want to trash <strong>{title}</strong>?
                 <br />
                 This action will include all of its revisions?
             </p>
@@ -44,11 +44,11 @@ export const useDeleteEntry = ({ entry, onAccept, onCancel }: UseDeleteEntryPara
                 });
 
                 if (error) {
-                    showDialog(error.message, { title: `Could not move ${title} to trash!` });
+                    showDialog(error.message, { title: `Could not trash ${title}!` });
                     return;
                 }
 
-                showSnackbar(`${title} has been moved to the trash successfully!`);
+                showSnackbar(`${title} has been trashed successfully!`);
                 removeRecordFromCache(entry.id);
                 navigateToLatestFolder();
 

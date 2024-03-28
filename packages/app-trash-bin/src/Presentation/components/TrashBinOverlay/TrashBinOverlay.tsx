@@ -13,6 +13,7 @@ import { ITrashBinControllers, TrashBinPresenterViewModel } from "~/Presentation
 interface TrashBinOverlayProps {
     vm: TrashBinPresenterViewModel;
     controllers: ITrashBinControllers;
+    title: string;
     onExited: () => void;
 }
 
@@ -26,7 +27,7 @@ export const TrashBinOverlay = (props: TrashBinOverlayProps) => {
     return (
         <OverlayLayout
             onExited={props.onExited}
-            barLeft={<Title title={"Trash bin"} />}
+            barLeft={<Title title={props.title} />}
             barMiddle={<SearchInput />}
         >
             <BulkActions />

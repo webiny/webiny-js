@@ -16,7 +16,7 @@ export const DeleteEntry = () => {
     return (
         <OptionsMenuItem
             icon={<Delete />}
-            label={"Move to trash"}
+            label={"Trash"}
             onAction={openDialogDeleteEntry}
             data-testid={"aco.actions.entry.delete"}
         />

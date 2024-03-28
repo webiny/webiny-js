@@ -39,6 +39,7 @@ export const TrashBin = () => {
             deleteGateway={deleteGateway}
             itemMapper={itemMapper}
             nameColumnId={model.titleFieldId || "id"}
+            title={`Trash - ${model.name}`}
         />
     );
 };

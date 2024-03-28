@@ -23,6 +23,7 @@ export type TrashBinProps = {
     onClose?: () => void;
     show?: boolean;
     nameColumnId?: string;
+    title?: string;
 };
 
 function getPortalTarget() {
