@@ -6,6 +6,7 @@ import {
 } from "~/crud/contentEntry/abstractions";
 import { TransformEntryRestore } from "./TransformEntryRestore";
 import { CmsModel } from "~/types";
+import { parseIdentifier } from "@webiny/utils";
 
 export class RestoreEntry implements IRestoreEntry {
     private getEntry: IGetLatestRevisionByEntryId;
@@ -23,7 +24,8 @@ export class RestoreEntry implements IRestoreEntry {
     }
 
     async execute(model: CmsModel, id: string) {
-        const entryToRestore = await this.getEntry.execute(model, { id });
+        const { id: entryid } = parseIdentifier(id);
+        const entryToRestore = await this.getEntry.execute(model, { id: entryid });
 
         if (!entryToRestore) {
             throw new NotFoundError(`Entry "${id}" was not found!`);
