@@ -44,7 +44,7 @@ export const pushStable = createWorkflow({
                 {
                     name: "Create workflow run cache key",
                     id: "run-cache-key",
-                    run: 'echo "run-cache-key=-${{ github.run_id }}-${{ github.run_attempt }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
+                    run: 'echo "run-cache-key=-${{ github.run_id }}-${{ github.run_attempt }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
                 }
             ]
         },
