@@ -99,7 +99,7 @@ jobs:
   npmReleaseLatest:
     needs:
       - constants
-      - npm-release-beta
+      - npmReleaseBeta
     name: NPM release ("latest" tag)
     environment: release
     env:
