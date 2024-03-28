@@ -107,7 +107,7 @@ export const pushStable = createWorkflow({
             ]
         }),
         npmReleaseLatest: createJob({
-            needs: ["constants", "npm-release-beta"],
+            needs: ["constants", "npmReleaseBeta"],
             name: 'NPM release ("latest" tag)',
             environment: "release",
             env: {
