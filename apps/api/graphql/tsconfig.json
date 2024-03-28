@@ -39,6 +39,9 @@
       "path": "../../../packages/api-headless-cms/tsconfig.build.json"
     },
     {
+      "path": "../../../packages/api-headless-cms-aco/tsconfig.build.json"
+    },
+    {
       "path": "../../../packages/api-headless-cms-ddb/tsconfig.build.json"
     },
     {

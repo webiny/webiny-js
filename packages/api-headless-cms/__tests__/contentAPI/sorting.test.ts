@@ -81,7 +81,7 @@ describe("sorting + cursor", () => {
         ...manageOpts
     });
 
-    const filterOutFields = ["meta", "deletedOn", "deletedBy"];
+    const filterOutFields = ["meta", "deletedOn", "deletedBy", "restoredOn", "restoredBy"];
 
     const createAndPublishFruit = async (data: any) => {
         const [response] = await createFruit({
