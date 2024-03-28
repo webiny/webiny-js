@@ -47,7 +47,8 @@ const OnEntryDelete = () => {
         >({
             mutation,
             variables: {
-                revision: id
+                revision: id,
+                permanently: false
             }
         });
 

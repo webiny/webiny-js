@@ -21,6 +21,7 @@
     { "path": "../app-security-access-management/tsconfig.build.json" },
     { "path": "../app-tenancy/tsconfig.build.json" },
     { "path": "../app-tenant-manager/tsconfig.build.json" },
+    { "path": "../app-trash-bin/tsconfig.build.json" },
     { "path": "../app-websockets/tsconfig.build.json" },
     { "path": "../lexical-editor-actions/tsconfig.build.json" },
     { "path": "../lexical-editor-pb-element/tsconfig.build.json" },

@@ -5,6 +5,7 @@
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../app-theme/tsconfig.build.json" },
+    { "path": "../app-trash-bin-common/tsconfig.build.json" },
     { "path": "../app-wcp/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../lexical-editor/tsconfig.build.json" },

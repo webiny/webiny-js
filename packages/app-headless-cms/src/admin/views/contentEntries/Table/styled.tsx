@@ -21,9 +21,23 @@ export const Wrapper = styled("div")`
 `;
 
 export const SidebarContainer = styled("div")`
-    height: calc(100vh - 91px);
-    overflow-y: scroll;
+    height: calc(100vh - 64px);
     background: var(--mdc-theme-surface);
     border-right: 1px solid var(--mdc-theme-on-background);
-    padding: 10px 10px 0;
+    position: relative;
+`;
+
+export const SidebarContent = styled("div")`
+    height: calc(100vh - 136px);
+    overflow-y: scroll;
+    padding: 8px;
+`;
+
+export const SidebarFooter = styled("div")`
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--mdc-theme-surface);
+    border-top: 1px solid var(--mdc-theme-on-background);
 `;

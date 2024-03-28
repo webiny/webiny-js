@@ -23,8 +23,8 @@ export const ActionDelete = observer(() => {
 
     const openDeleteEntriesDialog = () =>
         showConfirmationDialog({
-            title: "Delete entries",
-            message: `You are about to delete ${entriesLabel}. Are you sure you want to continue?`,
+            title: "Trash entries",
+            message: `You are about to trash ${entriesLabel}. Are you sure you want to continue?`,
             loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
                 await worker.processInSeries(async ({ item, report }) => {
@@ -44,7 +44,7 @@ export const ActionDelete = observer(() => {
 
                         if (error) {
                             throw new Error(
-                                error.message || "Unknown error while deleting the entry"
+                                error.message || "Unknown error while trashing the entry."
                             );
                         }
 
@@ -52,7 +52,7 @@ export const ActionDelete = observer(() => {
 
                         report.success({
                             title: `${item.meta.title}`,
-                            message: "Entry successfully deleted."
+                            message: "Entry successfully trashed."
                         });
                     } catch (e) {
                         report.error({
@@ -66,8 +66,8 @@ export const ActionDelete = observer(() => {
 
                 showResultsDialog({
                     results: worker.results,
-                    title: "Delete entries",
-                    message: "Finished deleting entries! See full report below:"
+                    title: "Trash entries",
+                    message: "Finished trashing entries! See full report below:"
                 });
             }
         });
@@ -76,7 +76,7 @@ export const ActionDelete = observer(() => {
         <IconButton
             icon={<DeleteIcon />}
             onAction={openDeleteEntriesDialog}
-            label={`Delete ${entriesLabel}`}
+            label={`Trash ${entriesLabel}`}
             tooltipPlacement={"bottom"}
         />
     );
