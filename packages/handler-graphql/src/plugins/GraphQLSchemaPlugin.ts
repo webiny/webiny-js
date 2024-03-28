@@ -2,14 +2,21 @@ import { Plugin } from "@webiny/plugins";
 import { GraphQLSchemaDefinition, Resolvers, Types } from "~/types";
 import { Context } from "@webiny/api/types";
 
+export interface IGraphQLSchemaPlugin<TContext = Context> extends Plugin {
+    schema: GraphQLSchemaDefinition<TContext>;
+}
+
 export interface GraphQLSchemaPluginConfig<TContext> {
     typeDefs?: Types;
     resolvers?: Resolvers<TContext>;
 }
 
-export class GraphQLSchemaPlugin<TContext = Context> extends Plugin {
+export class GraphQLSchemaPlugin<TContext = Context>
+    extends Plugin
+    implements IGraphQLSchemaPlugin<TContext>
+{
     public static override readonly type: string = "graphql-schema";
-    private config: GraphQLSchemaPluginConfig<TContext>;
+    protected config: GraphQLSchemaPluginConfig<TContext>;
 
     constructor(config: GraphQLSchemaPluginConfig<TContext>) {
         super();
@@ -23,3 +30,7 @@ export class GraphQLSchemaPlugin<TContext = Context> extends Plugin {
         };
     }
 }
+
+export const createGraphQLSchemaPlugin = <T = Context>(config: GraphQLSchemaPluginConfig<T>) => {
+    return new GraphQLSchemaPlugin<T>(config);
+};

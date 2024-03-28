@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 import WebinyError from "@webiny/error";
 import {
-    CmsModel,
     CmsContext,
+    CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
     CmsModelFieldToGraphQLPluginValidateChildFieldsValidate,
@@ -16,7 +16,11 @@ import { getBaseFieldType } from "~/utils/getBaseFieldType";
 import { getContentModelTitleFieldId } from "./fields/titleField";
 import { getContentModelDescriptionFieldId } from "./fields/descriptionField";
 import { getContentModelImageFieldId } from "./fields/imageField";
-import { CmsGraphQLSchemaPlugin, CmsGraphQLSchemaSorterPlugin } from "~/plugins";
+import {
+    CmsGraphQLSchemaPlugin,
+    CmsGraphQLSchemaSorterPlugin,
+    ICmsGraphQLSchemaPlugin
+} from "~/plugins";
 import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins";
 import { createExecutableSchema } from "~/graphql/createExecutableSchema";
 import { generateAlphaNumericId } from "@webiny/utils";
@@ -227,8 +231,8 @@ const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<a
     });
 
     const plugins = context.plugins
-        .byType<CmsGraphQLSchemaPlugin>(CmsGraphQLSchemaPlugin.type)
-        .reduce<Record<string, CmsGraphQLSchemaPlugin>>((collection, plugin) => {
+        .byType<ICmsGraphQLSchemaPlugin>(CmsGraphQLSchemaPlugin.type)
+        .reduce<Record<string, ICmsGraphQLSchemaPlugin>>((collection, plugin) => {
             const name =
                 plugin.name || `${CmsGraphQLSchemaPlugin.type}-${generateAlphaNumericId(16)}`;
             collection[name] = plugin;

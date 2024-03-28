@@ -1,6 +1,6 @@
 import { CmsContext, CmsModelFieldValidatorPlugin } from "~/types";
-import { CmsGraphQLSchemaPlugin } from "~/plugins";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { createCmsGraphQLSchemaPlugin } from "~/plugins";
+import { GraphQLSchemaPlugin, IGraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { PluginsContainer } from "@webiny/plugins";
 import { ContextPlugin } from "@webiny/api";
 import camelCase from "lodash/camelCase";
@@ -22,16 +22,22 @@ const createSkipValidatorEnum = (plugins: PluginsContainer) => {
     }
     return /* GraphQL */ `
         enum SkipValidatorEnum {
-        ${validators.join("\n")}
+           ${validators.join("\n")}
         }
     `;
 };
 
-const createSchema = (plugins: PluginsContainer): GraphQLSchemaPlugin<CmsContext>[] => {
+const createSchema = (plugins: PluginsContainer): IGraphQLSchemaPlugin<CmsContext>[] => {
     const skipValidatorEnum = createSkipValidatorEnum(plugins);
 
-    const cmsPlugin = new CmsGraphQLSchemaPlugin({
+    const cmsPlugin = createCmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
+            type CmsIdentity {
+                id: String
+                displayName: String
+                type: String
+            }
+
             type CmsError {
                 code: String
                 message: String

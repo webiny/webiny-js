@@ -3,12 +3,12 @@ import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import { CmsContext, CmsEntry, CmsEntryListWhere, CmsIdentity, CmsModel } from "~/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import { getEntryTitle } from "~/utils/getEntryTitle";
-import { CmsGraphQLSchemaPlugin } from "~/plugins";
+import { createCmsGraphQLSchemaPlugin, ICmsGraphQLSchemaPlugin } from "~/plugins";
 import { getEntryDescription } from "~/utils/getEntryDescription";
 import { getEntryImage } from "~/utils/getEntryImage";
 import { entryFieldFromStorageTransform } from "~/utils/entryStorage";
 import { Resolvers } from "@webiny/handler-graphql/types";
-import { ENTRY_META_FIELDS, isNullableEntryMetaField, isDateTimeEntryMetaField } from "~/constants";
+import { ENTRY_META_FIELDS, isDateTimeEntryMetaField, isNullableEntryMetaField } from "~/constants";
 
 interface EntriesByModel {
     [key: string]: string[];
@@ -310,9 +310,9 @@ interface Params {
 
 export const createContentEntriesSchema = ({
     context
-}: Params): CmsGraphQLSchemaPlugin<CmsContext> => {
+}: Params): ICmsGraphQLSchemaPlugin<CmsContext> => {
     if (!context.cms.MANAGE) {
-        const plugin = new CmsGraphQLSchemaPlugin({
+        const plugin = createCmsGraphQLSchemaPlugin({
             typeDefs: "",
             resolvers: {}
         });
@@ -327,7 +327,7 @@ export const createContentEntriesSchema = ({
         return `${field}: ${fieldType}${isNullable}`;
     }).join("\n");
 
-    const plugin = new CmsGraphQLSchemaPlugin({
+    const plugin = createCmsGraphQLSchemaPlugin({
         // Had to remove /* GraphQL */ because prettier would not format the code correctly.
         typeDefs: `
             type CmsModelMeta {

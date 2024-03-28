@@ -12,7 +12,6 @@ import {
     CmsModel,
     CmsStorageEntry,
     EntryBeforeListTopicParams,
-    HeadlessCms,
     HeadlessCmsStorageOperations,
     OnEntryAfterCreateTopicParams,
     OnEntryAfterDeleteMultipleTopicParams,
@@ -69,16 +68,16 @@ import {
 } from "./contentEntry/entryDataFactories";
 import { AccessControl } from "./AccessControl/AccessControl";
 import {
+    deleteEntryUseCases,
     getEntriesByIdsUseCases,
-    listEntriesUseCases,
     getLatestEntriesByIdsUseCases,
-    getPublishedEntriesByIdsUseCases,
-    getRevisionsByEntryIdUseCases,
-    getRevisionByIdUseCases,
     getLatestRevisionByEntryIdUseCases,
     getPreviousRevisionByEntryIdUseCases,
+    getPublishedEntriesByIdsUseCases,
     getPublishedRevisionByEntryIdUseCases,
-    deleteEntryUseCases
+    getRevisionByIdUseCases,
+    getRevisionsByEntryIdUseCases,
+    listEntriesUseCases
 } from "~/crud/contentEntry/useCases";
 
 interface CreateContentEntryCrudParams {
@@ -1250,8 +1249,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         },
         /**
-         * TODO determine if this method is required at all.
-         *
          * @internal
          */
         async getEntry(model, params) {
@@ -1273,7 +1270,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         },
         async listLatestEntries<T = CmsEntryValues>(
-            this: HeadlessCms,
             model: CmsModel,
             params?: CmsEntryListParams
         ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
@@ -1285,7 +1281,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         },
         async listDeletedEntries<T = CmsEntryValues>(
-            this: HeadlessCms,
             model: CmsModel,
             params?: CmsEntryListParams
         ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {

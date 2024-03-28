@@ -5,7 +5,11 @@ import { createManageResolvers } from "./createManageResolvers";
 import { createReadResolvers } from "./createReadResolvers";
 import { createPreviewResolvers } from "./createPreviewResolvers";
 import { createGraphQLSchemaPluginFromFieldPlugins } from "~/utils/getSchemaFromFieldPlugins";
-import { CmsGraphQLSchemaPlugin, CmsGraphQLSchemaSorterPlugin } from "~/plugins";
+import {
+    CmsGraphQLSchemaSorterPlugin,
+    createCmsGraphQLSchemaPlugin,
+    ICmsGraphQLSchemaPlugin
+} from "~/plugins";
 import { createFieldTypePluginRecords } from "~/graphql/schema/createFieldTypePluginRecords";
 
 interface GenerateSchemaPluginsParams {
@@ -15,7 +19,7 @@ interface GenerateSchemaPluginsParams {
 
 export const generateSchemaPlugins = async (
     params: GenerateSchemaPluginsParams
-): Promise<CmsGraphQLSchemaPlugin[]> => {
+): Promise<ICmsGraphQLSchemaPlugin[]> => {
     const { context, models } = params;
     const { plugins, cms } = context;
 
@@ -49,7 +53,7 @@ export const generateSchemaPlugins = async (
             switch (type) {
                 case "manage":
                     {
-                        const plugin = new CmsGraphQLSchemaPlugin({
+                        const plugin = createCmsGraphQLSchemaPlugin({
                             typeDefs: createManageSDL({
                                 models,
                                 model,
@@ -71,7 +75,7 @@ export const generateSchemaPlugins = async (
                 case "preview":
                 case "read":
                     {
-                        const plugin = new CmsGraphQLSchemaPlugin({
+                        const plugin = createCmsGraphQLSchemaPlugin({
                             typeDefs: createReadSDL({
                                 models,
                                 model,
