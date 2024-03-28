@@ -16,7 +16,6 @@ declare global {
 }
 
 import { Wrapper, InnerContent, InstallContent, installerSplitView, SuccessDialog } from "./styled";
-import { config as appConfig } from "@webiny/app/config";
 
 interface AppInstallerProps {
     children: React.ReactNode;
@@ -25,7 +24,6 @@ interface AppInstallerProps {
 export const AppInstaller = ({ children }: AppInstallerProps) => {
     const tenantId = localStorage.get("webiny_tenant") || "root";
     const lsKey = `webiny_installation_${tenantId}`;
-    const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
     const isRootTenant = tenantId === "root";
     /*
      * This flag allows us to avoid rendering the <iframe> when the app is tested with Cypress
@@ -35,11 +33,11 @@ export const AppInstaller = ({ children }: AppInstallerProps) => {
     const isCypressTest = window && window.Cypress;
 
     const markInstallerAsCompleted = () => {
-        localStorage.set(lsKey, wbyVersion);
+        localStorage.set(lsKey, true);
     };
 
     const isInstallerCompleted = () => {
-        return localStorage.get(lsKey) === wbyVersion;
+        return localStorage.get(lsKey) === true;
     };
 
     const [finished, setFinished] = useState(false);
