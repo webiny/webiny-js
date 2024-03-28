@@ -44,7 +44,7 @@ export const pushStable = createWorkflow({
                 {
                     name: "Create workflow run cache key",
                     id: "run-cache-key",
-                    run: 'echo "run-cache-key=-${{ github.run_id }}-${{ github.run_attempt }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
+                    run: 'echo "run-cache-key=-${{ github.run_id }}-${{ github.run_attempt }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
                 }
             ]
         },
@@ -76,9 +76,7 @@ export const pushStable = createWorkflow({
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
                 BETA_VERSION: "${{ vars.BETA_VERSION }}"
             },
-            checkout: {
-                with: { "fetch-depth": 0 }
-            },
+            checkout: { "fetch-depth": 0 },
             steps: [
                 ...yarnCacheSteps,
                 ...buildRunCacheSteps,
@@ -109,7 +107,7 @@ export const pushStable = createWorkflow({
             ]
         }),
         npmReleaseLatest: createJob({
-            needs: ["constants", "npm-release-beta"],
+            needs: ["constants", "npmReleaseBeta"],
             name: 'NPM release ("latest" tag)',
             environment: "release",
             env: {

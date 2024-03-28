@@ -2,7 +2,7 @@ import {
     TenancyStorageOperations,
     TenancyStorageOperations as BaseTenantsStorageOperations
 } from "@webiny/api-tenancy/types";
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { TableConstructor } from "@webiny/db-dynamodb/toolbox";
 import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
@@ -21,7 +21,7 @@ export interface TableModifier {
 
 export interface CreateTenancyStorageOperations {
     (params: {
-        documentClient: DynamoDBClient;
+        documentClient: DynamoDBDocument;
         table?: TableModifier;
         attributes?: Record<ENTITIES, Attributes>;
     }): TenancyStorageOperations;
