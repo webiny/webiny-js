@@ -10,7 +10,14 @@ import {
     UpdateFormRevisionMutationResponse,
     UpdateFormRevisionMutationVariables
 } from "./graphql";
-import { deleteField, moveStep, handleMoveRow, handleMoveField } from "./functions";
+import {
+    deleteField,
+    moveStep,
+    handleMoveRow,
+    handleMoveField,
+    validateStepRule,
+    handleDeleteConditionGroup
+} from "./functions";
 import moveField from "./functions/handleMoveField/moveField";
 import getFieldPosition from "./functions/handleMoveField/getFieldPosition";
 import { plugins } from "@webiny/plugins";
@@ -19,6 +26,7 @@ import {
     FbFormModelField,
     FieldIdType,
     FieldLayoutPositionType,
+    FbFormRule,
     FbBuilderFieldPlugin,
     FbFormModel,
     FbUpdateFormInput,
@@ -48,6 +56,8 @@ type State = FormEditorProviderContextState;
 export interface InsertFieldParams {
     data: FbFormModelField;
     target: DropTarget;
+    // "source" can be undefined if we create a custom field
+    source?: DropSource;
     destination: DropDestination;
 }
 
@@ -56,6 +66,23 @@ export interface MoveFieldParams {
     field: FbFormModelField | string;
     source: DropSource;
     destination: DropDestination;
+}
+
+export interface DeleteFieldParams {
+    field: FbFormModelField;
+    containerType?: "conditionGroup" | "step";
+    containerId: string;
+}
+
+export interface DeleteConditionGroupParams {
+    formStep: FbFormStep;
+    conditionGroup: FbFormModelField;
+}
+
+export interface UpdateStepParams {
+    id: string | null;
+    title: string;
+    rules: FbFormRule[];
 }
 
 export type SaveFormResult = Promise<{ data: FbFormModel | null; error: FbErrorResponse | null }>;
@@ -67,13 +94,15 @@ export interface FormEditor {
     state: State;
     addStep: () => void;
     deleteStep: (id: string) => void;
-    updateStep: (title: string, id: string | null) => void;
+    updateStep: (params: UpdateStepParams) => void;
     getForm: (id: string) => Promise<{ data: GetFormQueryResponse }>;
     saveForm: (data: FbFormModel | null) => SaveFormResult;
     setData: (setter: SetDataCallable, saveForm?: boolean) => Promise<void>;
     getFields: () => FbFormModelField[];
     getStepFields: (targetStepId: string) => FbFormModelField[][];
     getField: (query: Partial<Record<keyof FbFormModelField, string>>) => FbFormModelField | null;
+    deleteConditionGroup: (params: DeleteConditionGroupParams) => void;
+    getConditionGroupLayoutFields: (conditionGroupId: string) => FbFormModelField[][];
     getFieldPlugin: (
         query: Partial<Record<keyof FbBuilderFieldPlugin["field"], string>>
     ) => FbBuilderFieldPlugin | null;
@@ -87,11 +116,12 @@ export interface FormEditor {
     ) => void;
     moveStep: (params: MoveStepParams) => void;
     updateField: (field: FbFormModelField) => void;
-    deleteField: (field: FbFormModelField, targetStepId: string) => void;
+    deleteField: (params: DeleteFieldParams) => void;
     getFieldPosition: (
         field: FieldIdType | FbFormModelField,
         data: FbFormStep
     ) => FieldLayoutPositionType | null;
+    validateStepRules: (data: FbFormModel) => FbFormModel;
 }
 
 const extractFieldErrors = (error: FbErrorResponse, form: FbFormModel): FormEditorFieldError[] => {
@@ -173,9 +203,10 @@ export const useFormEditorFactory = (
                 // Or when we need to delete corresponding step.
                 const modifiedData = {
                     ...data,
-                    steps: data?.steps.map(formStep => ({
+                    steps: data?.steps.map((formStep, index) => ({
                         ...formStep,
-                        id: mdbid()
+                        id: mdbid(),
+                        index
                     }))
                 };
 
@@ -196,7 +227,7 @@ export const useFormEditorFactory = (
                 data = {
                     ...data,
                     steps: data.steps.map(formStep =>
-                        pick(formStep, ["title", "layout"])
+                        pick(formStep, ["title", "layout", "rules"])
                     ) as unknown as FbFormStep[]
                 };
                 if (!data) {
@@ -295,6 +326,21 @@ export const useFormEditorFactory = (
                         .filter(Boolean) as FbFormModelField[];
                 });
             },
+            getConditionGroupLayoutFields: conditionGroupId => {
+                const conditionGroupLayout = state.data.fields
+                    .find(field => field._id === conditionGroupId)
+                    ?.settings.layout.filter((row: string[]) => Boolean(row));
+
+                return conditionGroupLayout.map((row: string[]) => {
+                    return row
+                        .map((id: string) => {
+                            return self.getField({
+                                _id: id
+                            });
+                        })
+                        .filter(Boolean) as FbFormModelField[];
+                });
+            },
 
             /**
              * Return field plugin.
@@ -349,46 +395,96 @@ export const useFormEditorFactory = (
                 self.setData(data => {
                     data.steps.push({
                         id: mdbid(),
-                        title: `New Step`,
-                        layout: []
+                        title: `Step`,
+                        layout: [],
+                        rules: [],
+                        index: data.steps.length
                     });
 
-                    return data;
+                    return {
+                        ...self.validateStepRules(data)
+                    };
                 });
             },
-            deleteStep: (targetStepId: string) => {
-                const stepFields = self.getStepFields(targetStepId).flat(1);
+            deleteStep: (stepId: string) => {
+                const stepFields = self.getStepFields(stepId).flat(1);
 
                 const deleteStepFields = (data: FbFormModel) => {
-                    const stepLayout = stepFields.map(field =>
-                        deleteField({ field, data, targetStepId })
-                    );
+                    const formStep = data.steps.find(step => step.id === stepId) as FbFormStep;
+                    const stepLayout = stepFields.map(field => {
+                        if (field.type === "condition-group" && field._id) {
+                            handleDeleteConditionGroup({
+                                data,
+                                formStep,
+                                stepFields,
+                                conditionGroup: field,
+                                conditionGroupFields: self
+                                    .getConditionGroupLayoutFields(field._id)
+                                    .flat(1)
+                            });
+                        } else {
+                            deleteField({
+                                field,
+                                data,
+                                containerId: stepId
+                            });
+                        }
+                    });
                     return stepLayout;
                 };
 
                 self.setData(data => {
-                    const deleteStepIndex = data.steps.findIndex(step => step.id === targetStepId);
+                    const deleteStepIndex = data.steps.findIndex(step => step.id === stepId);
                     deleteStepFields(data);
                     data.steps.splice(deleteStepIndex, 1);
 
-                    return data;
+                    return {
+                        ...self.validateStepRules(data)
+                    };
                 });
             },
-            updateStep: (stepTitle, id) => {
-                if (!stepTitle) {
+            updateStep: ({ title, rules, id }) => {
+                if (!title) {
                     showSnackbar("Step title cannot be empty");
                 } else {
                     self.setData(data => {
                         const stepIndex = data.steps.findIndex(step => step.id === id);
-                        data.steps[stepIndex].title = stepTitle;
-                        return data;
+                        data.steps[stepIndex].title = title;
+                        data.steps[stepIndex].rules = rules;
+
+                        return {
+                            ...self.validateStepRules(data)
+                        };
                     });
                 }
+            },
+            deleteConditionGroup: ({ formStep, conditionGroup }) => {
+                if (!conditionGroup._id) {
+                    return;
+                }
+
+                const stepFields = self.getStepFields(formStep.id).flat(1);
+                const conditionGroupFields = self
+                    .getConditionGroupLayoutFields(conditionGroup._id)
+                    .flat(1);
+
+                self.setData(data => {
+                    handleDeleteConditionGroup({
+                        data,
+                        formStep,
+                        stepFields,
+                        conditionGroup,
+                        conditionGroupFields
+                    });
+                    return {
+                        ...self.validateStepRules(data)
+                    };
+                });
             },
             /**
              * Inserts a new field into the target position.
              */
-            insertField: ({ data, destination, target }) => {
+            insertField: ({ data, destination, target, source }) => {
                 const field = cloneDeep(data);
                 field._id = shortid.generate();
 
@@ -413,7 +509,8 @@ export const useFormEditorFactory = (
                         data,
                         field,
                         target,
-                        destination
+                        destination,
+                        source
                     });
 
                     // We are dropping a new field at the specified index.
@@ -433,7 +530,9 @@ export const useFormEditorFactory = (
                         source,
                         destination
                     });
-                    return data;
+                    return {
+                        ...self.validateStepRules(data)
+                    };
                 });
             },
             moveStep: ({ source, destination }) => {
@@ -444,7 +543,9 @@ export const useFormEditorFactory = (
                         data: data.steps
                     });
 
-                    return data;
+                    return {
+                        ...self.validateStepRules(data)
+                    };
                 });
             },
             /**
@@ -459,7 +560,9 @@ export const useFormEditorFactory = (
                         source,
                         destination
                     });
-                    return data;
+                    return {
+                        ...self.validateStepRules(data)
+                    };
                 });
             },
 
@@ -475,17 +578,49 @@ export const useFormEditorFactory = (
                             break;
                         }
                     }
-                    return data;
+                    return {
+                        ...self.validateStepRules(data)
+                    };
                 });
             },
+            validateStepRules: data => {
+                const steps = data.steps.map((step, index) => {
+                    // We need this check in case we moved step with rules to the bottom of the steps list,
+                    // because last step cannot have rules, and if it has then we need to mark it as broken.
+                    if (data.steps[data.steps.length - 1].id === step.id && step.rules.length) {
+                        const rules = step.rules.map(rule => {
+                            return { ...rule, isValid: false };
+                        });
 
+                        return { ...step, rules };
+                    } else if (step.rules.length) {
+                        const rules = step.rules.map(rule => {
+                            const isValid = validateStepRule({
+                                rule,
+                                fields: data.fields,
+                                stepIndex: index,
+                                steps: data.steps
+                            });
+
+                            return { ...rule, isValid };
+                        });
+
+                        return { ...step, rules };
+                    } else {
+                        return step;
+                    }
+                });
+                return { ...data, steps };
+            },
             /**
              * Deletes a field (both from the list of field and the layout).
              */
-            deleteField: (field, targetStepId) => {
+            deleteField: ({ field, containerId, containerType }) => {
                 self.setData(data => {
-                    deleteField({ field, data, targetStepId });
-                    return data;
+                    deleteField({ field, data, containerId, containerType });
+                    return {
+                        ...self.validateStepRules(data)
+                    };
                 });
             },
 
@@ -493,7 +628,7 @@ export const useFormEditorFactory = (
              * Returns row / index position for given field.
              */
             getFieldPosition: (field, data) => {
-                return getFieldPosition({ field, data });
+                return getFieldPosition({ field, layout: data.layout });
             }
         };
 

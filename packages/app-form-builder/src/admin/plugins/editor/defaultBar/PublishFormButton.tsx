@@ -34,6 +34,8 @@ const PublishFormButton = () => {
         return null;
     }
 
+    const isStepRulesValid = data.steps.every(step => step.rules.every(rule => rule.isValid));
+
     return (
         <ConfirmationDialog
             title={t`Publish form`}
@@ -45,35 +47,41 @@ const PublishFormButton = () => {
                     data-testid={"fb.editor.default-bar.publish"}
                     onClick={() => {
                         showConfirmation(async () => {
-                            await publish({
-                                variables: {
-                                    revision: data.id
-                                },
-                                update(_, response) {
-                                    if (!response.data) {
-                                        showSnackbar(
-                                            "Missing response data on Publish Revision Mutation."
+                            if (isStepRulesValid) {
+                                await publish({
+                                    variables: {
+                                        revision: data.id
+                                    },
+                                    update(_, response) {
+                                        if (!response.data) {
+                                            showSnackbar(
+                                                "Missing response data on Publish Revision Mutation."
+                                            );
+                                            return;
+                                        }
+                                        const { data: revision, error } =
+                                            response.data.formBuilder.publishRevision || {};
+
+                                        if (error) {
+                                            showSnackbar(error.message);
+                                            return;
+                                        }
+
+                                        history.push(
+                                            `/form-builder/forms?id=${encodeURIComponent(
+                                                revision.id
+                                            )}`
                                         );
-                                        return;
+
+                                        // Let's wait a bit, because we are also redirecting the user.
+                                        setTimeout(() => {
+                                            showSnackbar(t`Your form was published successfully!`);
+                                        }, 500);
                                     }
-                                    const { data: revision, error } =
-                                        response.data.formBuilder.publishRevision || {};
-
-                                    if (error) {
-                                        showSnackbar(error.message);
-                                        return;
-                                    }
-
-                                    history.push(
-                                        `/form-builder/forms?id=${encodeURIComponent(revision.id)}`
-                                    );
-
-                                    // Let's wait a bit, because we are also redirecting the user.
-                                    setTimeout(() => {
-                                        showSnackbar(t`Your form was published successfully!`);
-                                    }, 500);
-                                }
-                            });
+                                });
+                            } else {
+                                showSnackbar(t`Some step rules are broken!`);
+                            }
                         });
                     }}
                 >

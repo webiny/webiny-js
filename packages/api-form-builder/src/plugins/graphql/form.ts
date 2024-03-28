@@ -57,6 +57,28 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             input FbFormStepInput {
                 title: String
                 layout: [[String]]
+                rules: [FbFormRuleInput]
+            }
+
+            input FbFormRuleInput {
+                title: String
+                action: FbFormRuleActionInput
+                matchAll: Boolean
+                id: String
+                conditions: [FbFormConditionInput]
+                isValid: Boolean
+            }
+
+            input FbFormRuleActionInput {
+                type: String
+                value: String
+            }
+
+            input FbFormConditionInput {
+                id: String
+                fieldName: String
+                filterType: String
+                filterValue: String
             }
 
             input FbFieldOptionsInput {
@@ -79,6 +101,28 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             type FbFormStepType {
                 title: String
                 layout: [[String]]
+                rules: [FbFormRuleType]
+            }
+
+            type FbFormRuleType {
+                title: String
+                action: FbFormRuleActionType
+                matchAll: Boolean
+                id: String
+                conditions: [FbFormConditionType]
+                isValid: Boolean
+            }
+
+            type FbFormRuleActionType {
+                type: String
+                value: String
+            }
+
+            type FbFormConditionType {
+                id: String
+                fieldName: String
+                filterType: String
+                filterValue: String
             }
 
             type FbFormFieldType {

@@ -41,7 +41,7 @@ const StyledRowContainer = styled(RowContainer)<{ isDragging: boolean }>`
 `;
 
 interface EditTabStepProps {
-    setIsEditStep: (params: { isOpened: boolean; id: string }) => void;
+    setIsEditStep: (params: { isOpened: boolean; step: FbFormStep }) => void;
     formStep: FbFormStep;
     index: number;
 }

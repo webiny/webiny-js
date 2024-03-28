@@ -46,7 +46,8 @@ export const FormStepsModel = withFields({
         value: {},
         instanceOf: withFields({
             title: string(),
-            layout: object({ value: [] })
+            layout: object({ value: [] }),
+            rules: object({ value: [] })
         })()
     })
 })();

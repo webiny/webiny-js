@@ -47,6 +47,29 @@ export interface FormDataStep {
     id: string;
     title: string;
     layout: string[][];
+    rules: FormRule[];
+    index: number;
+}
+
+export type FbFormRuleAction = {
+    type: string;
+    value: string;
+};
+
+export interface FormRule {
+    action: FbFormRuleAction;
+    matchAll: boolean;
+    id: string;
+    title: string;
+    conditions: FormCondition[];
+    isValid: boolean;
+}
+
+export interface FormCondition {
+    id: string;
+    fieldName: string;
+    filterType: string;
+    filterValue: string;
 }
 
 export interface FormData {
@@ -87,6 +110,8 @@ export type FormLayoutComponentProps<T = any> = {
     getDefaultValues: () => { [key: string]: any };
     goToNextStep: () => void;
     goToPreviousStep: () => void;
+    validateStepConditions: (formData: Record<string, any>, stepIndex: number) => void;
+    setFormState: (formData: Record<string, any>) => void;
     isLastStep: boolean;
     isFirstStep: boolean;
     isMultiStepForm: boolean;

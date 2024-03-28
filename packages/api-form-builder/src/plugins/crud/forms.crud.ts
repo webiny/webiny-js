@@ -355,7 +355,8 @@ export const createFormsCrud = (params: CreateFormsCrudParams): FormsCRUD => {
                 steps: [
                     {
                         title: "Step 1",
-                        layout: []
+                        layout: [],
+                        rules: []
                     }
                 ],
                 settings: await new models.FormSettingsModel().toJSON(),

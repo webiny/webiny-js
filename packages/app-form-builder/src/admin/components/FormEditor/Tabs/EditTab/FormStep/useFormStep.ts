@@ -89,7 +89,10 @@ export const useFormStep = () => {
                     console.log(source);
                     return;
                 }
-                const sourceContainer = data.steps.find(step => step.id === source.containerId);
+                const sourceContainer =
+                    source.containerType === "conditionGroup"
+                        ? data.fields.find(f => f._id === source.containerId)?.settings
+                        : data.steps.find(step => step.id === source.containerId);
                 const fieldId = sourceContainer?.layout[source.position.row][source.position.index];
                 if (!fieldId) {
                     console.log("Missing data when moving field.");
@@ -107,6 +110,7 @@ export const useFormStep = () => {
             insertField({
                 data: plugin.field.createField(),
                 target,
+                source,
                 destination
             });
 

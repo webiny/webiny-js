@@ -33,6 +33,8 @@ export const Field = (props: FieldProps) => {
             return <HiddenField {...props} />;
         case "datetime":
             return <DateTimeField {...props} />;
+        case "condition-group":
+            return null;
         default:
             return <span>Cannot render field.</span>;
     }
