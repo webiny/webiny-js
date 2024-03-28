@@ -76,9 +76,7 @@ export const pushStable = createWorkflow({
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
                 BETA_VERSION: "${{ vars.BETA_VERSION }}"
             },
-            checkout: {
-                with: { "fetch-depth": 0 }
-            },
+            checkout: { "fetch-depth": 0 },
             steps: [
                 ...yarnCacheSteps,
                 ...buildRunCacheSteps,
