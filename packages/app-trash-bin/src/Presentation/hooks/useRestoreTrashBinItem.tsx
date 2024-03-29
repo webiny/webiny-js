@@ -31,11 +31,7 @@ export const useRestoreTrashBinItem = ({ item }: UseRestoreItemParams) => {
 
                     const restoredItem = vm.restoredItems.find(restored => restored.id === item.id);
 
-                    if (!restoredItem) {
-                        return;
-                    }
-
-                    showSnackbar(`${restoredItem.title} was restored successfully!`, {
+                    showSnackbar(`${item.title} was restored successfully!`, {
                         action: restoredItem && (
                             <SnackbarAction
                                 label="Show location"

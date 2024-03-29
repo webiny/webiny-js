@@ -1,21 +1,31 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { ReactComponent as RestoreIcon } from "@material-design-icons/svg/outlined/restore.svg";
 import { observer } from "mobx-react-lite";
 import { TrashBinListConfig } from "~/Presentation/configs";
 import { useTrashBin } from "~/Presentation/hooks";
 import { getEntriesLabel } from "../BulkActions";
+import { TrashBinItemDTO } from "@webiny/app-trash-bin-common";
+import { RestoreItemsReportMessage } from "~/Presentation/components/BulkActions/RestoreItems/RestoreItemsReportMessage";
 
 export const BulkActionsRestoreItems = observer(() => {
-    const { restoreItem } = useTrashBin();
+    const { vm, restoreItem, onItemRestore } = useTrashBin();
 
     const { useWorker, useButtons, useDialog } = TrashBinListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
     const worker = useWorker();
-    const { showConfirmationDialog, showResultsDialog } = useDialog();
+    const { showConfirmationDialog, showResultsDialog, hideResultsDialog } = useDialog();
 
     const entriesLabel = useMemo(() => {
         return getEntriesLabel(worker.items.length);
     }, [worker.items.length]);
+
+    const onLocationClick = useCallback(
+        async (item: TrashBinItemDTO) => {
+            hideResultsDialog();
+            await onItemRestore(item);
+        },
+        [onItemRestore]
+    );
 
     const openRestoreEntriesDialog = () =>
         showConfirmationDialog({
@@ -26,9 +36,18 @@ export const BulkActionsRestoreItems = observer(() => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
                         await restoreItem(item.id);
+
+                        const restoredItem = vm.restoredItems.find(
+                            restored => restored.id === item.id
+                        );
+
                         report.success({
                             title: `${item.title}`,
-                            message: "Item successfully restored."
+                            message: restoredItem && (
+                                <RestoreItemsReportMessage
+                                    onLocationClick={() => onLocationClick(restoredItem)}
+                                />
+                            )
                         });
                     } catch (e) {
                         report.error({
