@@ -6,6 +6,7 @@ export class TrashBinItemMapper implements ITrashBinItemMapper<CmsContentEntry> 
         return {
             id: data.entryId,
             title: data.meta.title,
+            location: data.wbyAco_location,
             createdBy: data.createdBy,
             deletedBy: {
                 id: data.deletedBy?.id || "",

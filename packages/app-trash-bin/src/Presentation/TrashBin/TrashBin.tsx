@@ -3,7 +3,9 @@ import { observer } from "mobx-react-lite";
 import {
     ITrashBinDeleteItemGateway,
     ITrashBinItemMapper,
-    ITrashBinListGateway
+    ITrashBinListGateway,
+    ITrashBinRestoreItemGateway,
+    TrashBinItemDTO
 } from "@webiny/app-trash-bin-common";
 import {
     loadingRepositoryFactory,
@@ -26,8 +28,10 @@ import { TrashBinControllers } from "~/Presentation/TrashBin/TrashBinControllers
 export interface TrashBinProps {
     listGateway: ITrashBinListGateway<any>;
     deleteGateway: ITrashBinDeleteItemGateway;
+    restoreGateway: ITrashBinRestoreItemGateway<any>;
     itemMapper: ITrashBinItemMapper<any>;
     onClose: () => void;
+    onItemRestore: (item: TrashBinItemDTO) => Promise<void>;
     sorting: Sorting[];
     title: string;
     nameColumnId?: string;
@@ -60,6 +64,7 @@ export const TrashBin = observer((props: TrashBinProps) => {
             metaRepository,
             props.listGateway,
             props.deleteGateway,
+            props.restoreGateway,
             props.itemMapper
         );
 
@@ -69,6 +74,7 @@ export const TrashBin = observer((props: TrashBinProps) => {
         loadingRepository,
         props.listGateway,
         props.deleteGateway,
+        props.restoreGateway,
         props.itemMapper
     ]);
 
@@ -108,7 +114,11 @@ export const TrashBin = observer((props: TrashBinProps) => {
     }, []);
 
     return (
-        <TrashBinProvider controllers={controllers} presenter={presenter}>
+        <TrashBinProvider
+            controllers={controllers}
+            presenter={presenter}
+            onItemRestore={props.onItemRestore}
+        >
             <TrashBinOverlay
                 vm={presenter.vm}
                 controllers={controllers}

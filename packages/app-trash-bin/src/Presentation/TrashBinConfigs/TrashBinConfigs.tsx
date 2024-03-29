@@ -1,7 +1,7 @@
 import React from "react";
 
 import { TrashBinListConfig } from "~/Presentation/configs";
-import { BulkActionsDeleteItems } from "../components/BulkActions";
+import { BulkActionsDeleteItems, BulkActionsRestoreItems } from "../components/BulkActions";
 import {
     CellActions,
     CellCreatedBy,
@@ -9,7 +9,7 @@ import {
     CellDeletedOn,
     CellTitle
 } from "~/Presentation/components/Cells";
-import { DeleteItemAction } from "~/Presentation/components/Actions";
+import { DeleteItemAction, RestoreItemAction } from "~/Presentation/components/Actions";
 
 const { Browser } = TrashBinListConfig;
 
@@ -51,7 +51,9 @@ export const TrashBinConfigs = () => {
                     resizable={false}
                 />
                 <Browser.Table.Sorting name={"deletedOn"} field={"deletedOn"} order={"desc"} />
+                <Browser.BulkAction name={"restore"} element={<BulkActionsRestoreItems />} />
                 <Browser.BulkAction name={"delete"} element={<BulkActionsDeleteItems />} />
+                <Browser.EntryAction name={"restore"} element={<RestoreItemAction />} />
                 <Browser.EntryAction name={"delete"} element={<DeleteItemAction />} />
             </TrashBinListConfig>
         </>

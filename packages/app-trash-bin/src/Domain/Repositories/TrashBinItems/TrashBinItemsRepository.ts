@@ -4,6 +4,7 @@ import {
     ITrashBinDeleteItemGateway,
     ITrashBinItemMapper,
     ITrashBinListGateway,
+    ITrashBinRestoreItemGateway,
     TrashBinItem
 } from "@webiny/app-trash-bin-common";
 import { IMetaRepository, Meta } from "@webiny/app-utils";
@@ -16,19 +17,23 @@ export class TrashBinItemsRepository<TItem extends Record<string, any>>
     private metaRepository: IMetaRepository;
     private listGateway: ITrashBinListGateway<TItem>;
     private deleteGateway: ITrashBinDeleteItemGateway;
+    private restoreGateway: ITrashBinRestoreItemGateway<TItem>;
     private itemMapper: ITrashBinItemMapper<TItem>;
     private items: TrashBinItem[] = [];
+    private restoredItems: TrashBinItem[] = [];
     private params: TrashBinListQueryVariables = {};
 
     constructor(
         metaRepository: IMetaRepository,
         listGateway: ITrashBinListGateway<TItem>,
         deleteGateway: ITrashBinDeleteItemGateway,
+        restoreGateway: ITrashBinRestoreItemGateway<TItem>,
         entryMapper: ITrashBinItemMapper<TItem>
     ) {
         this.metaRepository = metaRepository;
         this.listGateway = listGateway;
         this.deleteGateway = deleteGateway;
+        this.restoreGateway = restoreGateway;
         this.itemMapper = entryMapper;
         this.params = {};
         makeAutoObservable(this);
@@ -36,6 +41,10 @@ export class TrashBinItemsRepository<TItem extends Record<string, any>>
 
     getItems() {
         return this.items;
+    }
+
+    getRestoredItems() {
+        return this.restoredItems;
     }
 
     getMeta() {
@@ -77,6 +86,9 @@ export class TrashBinItemsRepository<TItem extends Record<string, any>>
 
         runInAction(() => {
             const [items, meta] = response;
+
+            console.log("items", items);
+
             const itemsDTO = items.map(entry => TrashBinItem.create(this.itemMapper.toDTO(entry)));
             this.items = uniqBy([...this.items, ...itemsDTO], "id");
             this.metaRepository.set(Meta.create(meta));
@@ -92,6 +104,23 @@ export class TrashBinItemsRepository<TItem extends Record<string, any>>
 
         runInAction(() => {
             this.items = this.items.filter(item => item.id !== id);
+            this.metaRepository.decreaseTotalCount(1);
+        });
+    }
+
+    async restoreItem(id: string) {
+        const item = await this.restoreGateway.execute(id);
+
+        if (!item) {
+            return;
+        }
+
+        runInAction(() => {
+            this.items = this.items.filter(item => item.id !== id);
+            this.restoredItems = [
+                ...this.restoredItems,
+                TrashBinItem.create(this.itemMapper.toDTO(item))
+            ];
             this.metaRepository.decreaseTotalCount(1);
         });
     }

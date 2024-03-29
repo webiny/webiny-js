@@ -288,6 +288,35 @@ export const createDeleteMutation = (model: CmsEditorContentModel) => {
 
 /**
  * ############################################
+ * Restore Mutation
+ */
+export interface CmsEntryRestoreMutationResponse {
+    content: {
+        data: CmsContentEntry | null;
+        error: CmsErrorResponse | null;
+    };
+}
+
+export interface CmsEntryRestoreMutationVariables {
+    revision: string;
+}
+
+export const createRestoreMutation = (model: CmsEditorContentModel) => {
+    return gql`
+        mutation CmsEntriesRestore${model.singularApiName}($revision: ID!) {
+            content: restore${model.singularApiName}(revision: $revision) {
+                data {
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createFieldsList({ model, fields: model.fields })}
+                }
+                error ${ERROR_FIELD}
+            }
+        }
+    `;
+};
+
+/**
+ * ############################################
  * Create Mutation
  */
 export interface CmsEntryCreateMutationResponse {

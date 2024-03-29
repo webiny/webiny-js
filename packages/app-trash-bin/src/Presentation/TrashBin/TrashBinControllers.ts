@@ -8,6 +8,7 @@ import {
     ListItemsUseCaseWithSearch,
     ListItemsUseCaseWithSorting,
     ListMoreItemsUseCase,
+    RestoreItemUseCase,
     SearchItemsUseCase,
     SelectItemsUseCase,
     SortItemsUseCase
@@ -16,6 +17,7 @@ import {
     DeleteItemController,
     ListItemsController,
     ListMoreItemsController,
+    RestoreItemController,
     SearchItemsController,
     SelectItemsController,
     SortItemsController
@@ -66,10 +68,14 @@ export class TrashBinControllers {
         // Delete Item UseCase
         const deleteItemUseCase = new DeleteItemUseCase(this.itemsRepository);
 
+        // Restore Item UseCase
+        const restoreItemUseCase = new RestoreItemUseCase(this.itemsRepository);
+
         // Create controllers
         const listItems = new ListItemsController(listItemsUseCase);
         const listMoreItems = new ListMoreItemsController(listMoreItemsUseCase);
         const deleteItem = new DeleteItemController(deleteItemUseCase);
+        const restoreItem = new RestoreItemController(restoreItemUseCase);
         const selectItems = new SelectItemsController(selectItemsUseCase);
         const sortItems = new SortItemsController(listItemsUseCase, sortItemsUseCase);
         const searchItems = new SearchItemsController(listItemsUseCase, searchItemsUseCase);
@@ -78,6 +84,7 @@ export class TrashBinControllers {
             listItems,
             listMoreItems,
             deleteItem,
+            restoreItem,
             selectItems,
             sortItems,
             searchItems

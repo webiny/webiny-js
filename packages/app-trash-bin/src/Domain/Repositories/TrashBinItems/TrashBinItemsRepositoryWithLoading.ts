@@ -21,6 +21,10 @@ export class TrashBinItemsRepositoryWithLoading implements ITrashBinItemsReposit
         return this.trashBinItemsRepository.getItems();
     }
 
+    getRestoredItems() {
+        return this.trashBinItemsRepository.getRestoredItems();
+    }
+
     getMeta() {
         return this.trashBinItemsRepository.getMeta();
     }
@@ -47,6 +51,13 @@ export class TrashBinItemsRepositoryWithLoading implements ITrashBinItemsReposit
         await this.loadingRepository.runCallBack(
             this.trashBinItemsRepository.deleteItem(id),
             LoadingActions.delete
+        );
+    }
+
+    async restoreItem(id: string) {
+        await this.loadingRepository.runCallBack(
+            this.trashBinItemsRepository.restoreItem(id),
+            LoadingActions.restore
         );
     }
 }

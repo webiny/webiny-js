@@ -5,11 +5,9 @@ import { useTrashBin } from "./useTrashBin";
 
 interface UseDeleteItemParams {
     item: TrashBinItemDTO;
-    onAccept?: () => void;
-    onCancel?: () => void;
 }
 
-export const useDeleteTrashBinItem = ({ item, onAccept, onCancel }: UseDeleteItemParams) => {
+export const useDeleteTrashBinItem = ({ item }: UseDeleteItemParams) => {
     const { deleteItem } = useTrashBin();
     const { showSnackbar } = useSnackbar();
 
@@ -27,14 +25,13 @@ export const useDeleteTrashBinItem = ({ item, onAccept, onCancel }: UseDeleteIte
     const openDialogDeleteItem = useCallback(
         () =>
             showConfirmation(async () => {
-                await deleteItem(item.id);
-
-                showSnackbar(`${item.title} was deleted successfully!`);
-
-                if (typeof onAccept === "function") {
-                    await onAccept();
+                try {
+                    await deleteItem(item.id);
+                    showSnackbar(`${item.title} was deleted successfully!`);
+                } catch (ex) {
+                    showSnackbar(ex.message || `Error while deleting ${item.title}`);
                 }
-            }, onCancel),
+            }),
         [item]
     );
 

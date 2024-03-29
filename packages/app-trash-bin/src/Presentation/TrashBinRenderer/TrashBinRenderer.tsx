@@ -11,14 +11,18 @@ import { Sorting } from "@webiny/app-utils";
 import {
     ITrashBinDeleteItemGateway,
     ITrashBinItemMapper,
-    ITrashBinListGateway
+    ITrashBinListGateway,
+    ITrashBinRestoreItemGateway,
+    TrashBinItemDTO
 } from "@webiny/app-trash-bin-common";
 
 interface TrashBinWrapperProps {
     listGateway: ITrashBinListGateway<any>;
     deleteGateway: ITrashBinDeleteItemGateway;
+    restoreGateway: ITrashBinRestoreItemGateway<any>;
     itemMapper: ITrashBinItemMapper<any>;
     onClose: () => void;
+    onItemRestore: (item: TrashBinItemDTO) => Promise<void>;
     title?: string;
     nameColumnId?: string;
 }
@@ -47,11 +51,26 @@ export const TrashBinRenderer = createDecorator(BaseTrashBinRenderer, () => {
             }
         }, [props.onClose]);
 
+        const onItemRestore = useCallback(
+            async (item: any) => {
+                if (typeof props.onItemRestore === "function") {
+                    props.onItemRestore(item);
+                }
+
+                onClose();
+            },
+            [props.onItemRestore, onClose]
+        );
+
         return (
             <CompositionScope name={"trash"}>
                 <AcoWithConfig>
                     <TrashBinListWithConfig>
-                        <TrashBinWrapper {...props} onClose={onClose} />
+                        <TrashBinWrapper
+                            {...props}
+                            onClose={onClose}
+                            onItemRestore={onItemRestore}
+                        />
                     </TrashBinListWithConfig>
                 </AcoWithConfig>
             </CompositionScope>

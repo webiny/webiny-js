@@ -4,7 +4,9 @@ import { createVoidComponent, makeDecoratable } from "@webiny/react-composition"
 import {
     ITrashBinDeleteItemGateway,
     ITrashBinItemMapper,
-    ITrashBinListGateway
+    ITrashBinListGateway,
+    ITrashBinRestoreItemGateway,
+    TrashBinItemDTO
 } from "@webiny/app-trash-bin-common";
 
 export type TrashBinRenderPropParams = {
@@ -19,8 +21,10 @@ export type TrashBinProps = {
     render: TrashBinRenderProps;
     listGateway: ITrashBinListGateway<any>;
     deleteGateway: ITrashBinDeleteItemGateway;
+    restoreGateway: ITrashBinRestoreItemGateway<any>;
     itemMapper: ITrashBinItemMapper<any>;
     onClose?: () => void;
+    onItemRestore?: (item: TrashBinItemDTO) => Promise<void>;
     show?: boolean;
     nameColumnId?: string;
     title?: string;

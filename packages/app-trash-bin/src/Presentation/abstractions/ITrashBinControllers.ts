@@ -2,6 +2,7 @@ import {
     IDeleteItemController,
     IListItemsController,
     IListMoreItemsController,
+    IRestoreItemController,
     ISearchItemsController,
     ISelectItemsController,
     ISortItemsController
@@ -9,6 +10,7 @@ import {
 
 export interface ITrashBinControllers {
     deleteItem: IDeleteItemController;
+    restoreItem: IRestoreItemController;
     listMoreItems: IListMoreItemsController;
     listItems: IListItemsController;
     selectItems: ISelectItemsController;

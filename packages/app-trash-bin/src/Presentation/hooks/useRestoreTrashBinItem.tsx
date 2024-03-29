@@ -1,0 +1,54 @@
+import React, { useCallback } from "react";
+import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
+import { TrashBinItemDTO } from "@webiny/app-trash-bin-common";
+import { useTrashBin } from "./useTrashBin";
+import { SnackbarAction } from "@webiny/ui/Snackbar";
+
+interface UseRestoreItemParams {
+    item: TrashBinItemDTO;
+}
+
+export const useRestoreTrashBinItem = ({ item }: UseRestoreItemParams) => {
+    const { restoreItem, onItemRestore, vm } = useTrashBin();
+    const { showSnackbar } = useSnackbar();
+
+    const { showConfirmation } = useConfirmationDialog({
+        title: "Restore item",
+        message: (
+            <p>
+                You are about to restore <strong>{item.title}</strong>.
+                <br />
+                Are you sure you want to continue?
+            </p>
+        )
+    });
+
+    const openDialogRestoreItem = useCallback(
+        () =>
+            showConfirmation(async () => {
+                try {
+                    await restoreItem(item.id);
+
+                    const restoredItem = vm.restoredItems.find(restored => restored.id === item.id);
+
+                    if (!restoredItem) {
+                        return;
+                    }
+
+                    showSnackbar(`${restoredItem.title} was restored successfully!`, {
+                        action: restoredItem && (
+                            <SnackbarAction
+                                label="Show location"
+                                onClick={() => onItemRestore(restoredItem)}
+                            />
+                        )
+                    });
+                } catch (ex) {
+                    showSnackbar(ex.message || `Error while restoring ${item.title}`);
+                }
+            }),
+        [item]
+    );
+
+    return { openDialogRestoreItem };
+};

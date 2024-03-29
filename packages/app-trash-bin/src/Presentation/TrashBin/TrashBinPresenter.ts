@@ -36,6 +36,7 @@ export class TrashBinPresenter {
     get vm() {
         return {
             items: this.mapItemsToDTOs(this.itemsRepository.getItems()),
+            restoredItems: this.mapItemsToDTOs(this.itemsRepository.getRestoredItems()),
             selectedItems: this.mapItemsToDTOs(this.selectedRepository.getSelectedItems()),
             meta: MetaMapper.toDto(this.itemsRepository.getMeta()),
             sorting: this.sortingRepository.get().map(sort => SortingMapper.fromDTOtoColumn(sort)),

@@ -3,7 +3,8 @@ import { TrashBinIdentity } from "@webiny/app-trash-bin-common/types";
 import {
     ITrashBinDeleteItemGateway,
     ITrashBinItemMapper,
-    ITrashBinListGateway
+    ITrashBinListGateway,
+    ITrashBinRestoreItemGateway
 } from "@webiny/app-trash-bin-common";
 import { LoadingRepository, MetaRepository, Sorting, SortingRepository } from "@webiny/app-utils";
 import { LoadingActions } from "~/types";
@@ -46,6 +47,12 @@ const createBinListGateway = ({
 const createBinDeleteItemGateway = ({
     execute
 }: ITrashBinDeleteItemGateway): ITrashBinDeleteItemGateway => ({
+    execute
+});
+
+const createBinRestoreItemGateway = ({
+    execute
+}: ITrashBinRestoreItemGateway<Item>): ITrashBinRestoreItemGateway<Item> => ({
     execute
 });
 
@@ -115,11 +122,18 @@ describe("TrashBin", () => {
         })
     });
 
+    const restoreItemGateway = createBinRestoreItemGateway({
+        execute: jest.fn().mockImplementation(() => {
+            return Promise.resolve(item1);
+        })
+    });
+
     const itemMapper = new CustomItemMapper();
 
     const init = (
         listGateway: ITrashBinListGateway<Item>,
-        deleteItemGateway: ITrashBinDeleteItemGateway
+        deleteItemGateway: ITrashBinDeleteItemGateway,
+        restoreItemGateway: ITrashBinRestoreItemGateway<Item>
     ) => {
         const selectedRepo = new SelectedItemsRepository();
         const loadingRepo = new LoadingRepository();
@@ -131,6 +145,7 @@ describe("TrashBin", () => {
             metaRepo,
             listGateway,
             deleteItemGateway,
+            restoreItemGateway,
             itemMapper
         );
         const itemsRepo = new TrashBinItemsRepositoryWithLoading(loadingRepo, trashBinItemsRepo);
@@ -156,7 +171,7 @@ describe("TrashBin", () => {
     });
 
     it("should create a presenter and list trash bin entries from the gateway", async () => {
-        const { presenter, controllers } = init(listGateway, deleteItemGateway);
+        const { presenter, controllers } = init(listGateway, deleteItemGateway, restoreItemGateway);
 
         const listPromise = controllers.listItems.execute();
 
@@ -226,7 +241,7 @@ describe("TrashBin", () => {
                 })
         });
 
-        const { presenter, controllers } = init(listGateway, deleteItemGateway);
+        const { presenter, controllers } = init(listGateway, deleteItemGateway, restoreItemGateway);
 
         // Let's list some initial entries
         await controllers.listItems.execute();
@@ -309,7 +324,11 @@ describe("TrashBin", () => {
                 })
         });
 
-        const { presenter, controllers } = init(sortListGateway, deleteItemGateway);
+        const { presenter, controllers } = init(
+            sortListGateway,
+            deleteItemGateway,
+            restoreItemGateway
+        );
 
         // let's list some entries from the gateway
         await controllers.listItems.execute();
@@ -383,7 +402,11 @@ describe("TrashBin", () => {
                 })
         });
 
-        const { presenter, controllers } = init(searchItemsGateway, deleteItemGateway);
+        const { presenter, controllers } = init(
+            searchItemsGateway,
+            deleteItemGateway,
+            restoreItemGateway
+        );
 
         // let's list some entries from the gateway
         await controllers.listItems.execute();
@@ -436,7 +459,7 @@ describe("TrashBin", () => {
     });
 
     it("should be able to select items", async () => {
-        const { presenter, controllers } = init(listGateway, deleteItemGateway);
+        const { presenter, controllers } = init(listGateway, deleteItemGateway, restoreItemGateway);
 
         // let's list some entries from the gateway
         await controllers.listItems.execute();
@@ -514,7 +537,7 @@ describe("TrashBin", () => {
     });
 
     it("should delete an item, removing it from the list", async () => {
-        const { presenter, controllers } = init(listGateway, deleteItemGateway);
+        const { presenter, controllers } = init(listGateway, deleteItemGateway, restoreItemGateway);
 
         // let's list some entries from the gateway
         await controllers.listItems.execute();
@@ -579,6 +602,89 @@ describe("TrashBin", () => {
                     $selectable: true,
                     title: "Item 3",
                     createdBy: identity2,
+                    deletedBy: identity2,
+                    deletedOn: expect.any(String)
+                }
+            ]
+        });
+    });
+
+    it("should restore an item, removing it from the list", async () => {
+        const { presenter, controllers } = init(listGateway, deleteItemGateway, restoreItemGateway);
+
+        // let's list some entries from the gateway
+        await controllers.listItems.execute();
+
+        expect(listGateway.execute).toHaveBeenCalledTimes(1);
+
+        expect(presenter.vm).toMatchObject({
+            items: [
+                {
+                    id: "item-1",
+                    $selectable: true,
+                    title: "Item 1",
+                    createdBy: identity1,
+                    deletedBy: identity2,
+                    deletedOn: expect.any(String)
+                },
+                {
+                    id: "item-2",
+                    $selectable: true,
+                    title: "Item 2",
+                    createdBy: identity1,
+                    deletedBy: identity1,
+                    deletedOn: expect.any(String)
+                },
+                {
+                    id: "item-3",
+                    $selectable: true,
+                    title: "Item 3",
+                    createdBy: identity2,
+                    deletedBy: identity2,
+                    deletedOn: expect.any(String)
+                }
+            ]
+        });
+
+        const restorePromise = controllers.restoreItem.execute(item1.id);
+
+        // Let's check the transition to loading state
+        expect(presenter.vm).toMatchObject({
+            loading: {
+                [LoadingActions.restore]: true
+            }
+        });
+
+        await restorePromise;
+
+        expect(restoreItemGateway.execute).toHaveBeenCalledTimes(1);
+        expect(restoreItemGateway.execute).toHaveBeenCalledWith(item1.id);
+
+        expect(presenter.vm).toMatchObject({
+            items: [
+                {
+                    id: "item-2",
+                    $selectable: true,
+                    title: "Item 2",
+                    createdBy: identity1,
+                    deletedBy: identity1,
+                    deletedOn: expect.any(String)
+                },
+                {
+                    id: "item-3",
+                    $selectable: true,
+                    title: "Item 3",
+                    createdBy: identity2,
+                    deletedBy: identity2,
+                    deletedOn: expect.any(String)
+                }
+            ],
+            restoredItems: [
+                {
+                    id: "item-1",
+                    $selectable: true,
+                    title: "Item 1",
+                    createdBy: identity1,
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
                 }

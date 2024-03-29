@@ -19,3 +19,7 @@ export interface TrashBinIdentity {
     displayName: string;
     type: string;
 }
+
+export interface TrashBinLocation {
+    folderId: string;
+}
