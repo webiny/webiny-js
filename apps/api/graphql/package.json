@@ -25,6 +25,7 @@
     "@webiny/api-i18n": "0.0.0",
     "@webiny/api-i18n-content": "0.0.0",
     "@webiny/api-i18n-ddb": "0.0.0",
+    "@webiny/api-locking-mechanism": "0.0.0",
     "@webiny/api-page-builder": "0.0.0",
     "@webiny/api-page-builder-aco": "0.0.0",
     "@webiny/api-page-builder-import-export": "0.0.0",
