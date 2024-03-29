@@ -1,5 +1,5 @@
 import { TrashBinPresenter } from "./TrashBinPresenter";
-import { TrashBinIdentity } from "@webiny/app-trash-bin-common/types";
+import { TrashBinIdentity, TrashBinLocation } from "@webiny/app-trash-bin-common/types";
 import {
     ITrashBinDeleteItemGateway,
     ITrashBinItemMapper,
@@ -20,6 +20,7 @@ import { TrashBinControllers } from "~/Presentation/TrashBin/TrashBinControllers
 interface Item {
     id: string;
     title: string;
+    location: TrashBinLocation;
     createdBy: TrashBinIdentity;
     deletedOn: string;
     deletedBy: TrashBinIdentity;
@@ -61,6 +62,7 @@ class CustomItemMapper implements ITrashBinItemMapper<Item> {
         return {
             id: data.id,
             title: data.title,
+            location: data.location,
             createdBy: data.createdBy,
             deletedOn: data.deletedOn,
             deletedBy: data.deletedBy
@@ -74,6 +76,9 @@ describe("TrashBin", () => {
     const item1: Item = {
         id: "item-1",
         title: "Item 1",
+        location: {
+            folderId: "folder-a"
+        },
         createdBy: identity1,
         deletedBy: identity2,
         deletedOn: new Date().toString(),
@@ -83,6 +88,9 @@ describe("TrashBin", () => {
     const item2: Item = {
         id: "item-2",
         title: "Item 2",
+        location: {
+            folderId: "folder-a"
+        },
         createdBy: identity1,
         deletedBy: identity1,
         deletedOn: new Date().toString(),
@@ -92,6 +100,9 @@ describe("TrashBin", () => {
     const item3: Item = {
         id: "item-3",
         title: "Item 3",
+        location: {
+            folderId: "folder-b"
+        },
         createdBy: identity2,
         deletedBy: identity2,
         deletedOn: new Date().toString(),
@@ -101,6 +112,9 @@ describe("TrashBin", () => {
     const item4: Item = {
         id: "item-4",
         title: "Item 4",
+        location: {
+            folderId: "folder-b"
+        },
         createdBy: identity1,
         deletedBy: identity1,
         deletedOn: new Date().toString(),
@@ -475,6 +489,9 @@ describe("TrashBin", () => {
                 id: "item-1",
                 $selectable: true,
                 title: "Item 1",
+                location: {
+                    folderId: "folder-a"
+                },
                 createdBy: identity1,
                 deletedBy: identity2,
                 deletedOn: new Date().toString()
@@ -487,6 +504,9 @@ describe("TrashBin", () => {
                     id: "item-1",
                     $selectable: true,
                     title: "Item 1",
+                    location: {
+                        folderId: "folder-a"
+                    },
                     createdBy: identity1,
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
@@ -500,6 +520,9 @@ describe("TrashBin", () => {
                 id: "item-1",
                 $selectable: true,
                 title: "Item 1",
+                location: {
+                    folderId: "folder-a"
+                },
                 createdBy: identity1,
                 deletedBy: identity2,
                 deletedOn: new Date().toString()
@@ -508,6 +531,9 @@ describe("TrashBin", () => {
                 id: "item-2",
                 $selectable: true,
                 title: "Item 2",
+                location: {
+                    folderId: "folder-a"
+                },
                 createdBy: identity1,
                 deletedBy: identity1,
                 deletedOn: new Date().toString()
@@ -520,6 +546,9 @@ describe("TrashBin", () => {
                     id: "item-1",
                     $selectable: true,
                     title: "Item 1",
+                    location: {
+                        folderId: "folder-a"
+                    },
                     createdBy: identity1,
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
@@ -528,6 +557,9 @@ describe("TrashBin", () => {
                     id: "item-2",
                     $selectable: true,
                     title: "Item 2",
+                    location: {
+                        folderId: "folder-a"
+                    },
                     createdBy: identity1,
                     deletedBy: identity1,
                     deletedOn: expect.any(String)
@@ -550,6 +582,9 @@ describe("TrashBin", () => {
                     id: "item-1",
                     $selectable: true,
                     title: "Item 1",
+                    location: {
+                        folderId: "folder-a"
+                    },
                     createdBy: identity1,
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
@@ -558,6 +593,9 @@ describe("TrashBin", () => {
                     id: "item-2",
                     $selectable: true,
                     title: "Item 2",
+                    location: {
+                        folderId: "folder-a"
+                    },
                     createdBy: identity1,
                     deletedBy: identity1,
                     deletedOn: expect.any(String)
@@ -566,6 +604,9 @@ describe("TrashBin", () => {
                     id: "item-3",
                     $selectable: true,
                     title: "Item 3",
+                    location: {
+                        folderId: "folder-b"
+                    },
                     createdBy: identity2,
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
@@ -593,6 +634,9 @@ describe("TrashBin", () => {
                     id: "item-2",
                     $selectable: true,
                     title: "Item 2",
+                    location: {
+                        folderId: "folder-a"
+                    },
                     createdBy: identity1,
                     deletedBy: identity1,
                     deletedOn: expect.any(String)
@@ -601,6 +645,9 @@ describe("TrashBin", () => {
                     id: "item-3",
                     $selectable: true,
                     title: "Item 3",
+                    location: {
+                        folderId: "folder-b"
+                    },
                     createdBy: identity2,
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
@@ -623,6 +670,9 @@ describe("TrashBin", () => {
                     id: "item-1",
                     $selectable: true,
                     title: "Item 1",
+                    location: {
+                        folderId: "folder-a"
+                    },
                     createdBy: identity1,
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
@@ -631,6 +681,9 @@ describe("TrashBin", () => {
                     id: "item-2",
                     $selectable: true,
                     title: "Item 2",
+                    location: {
+                        folderId: "folder-a"
+                    },
                     createdBy: identity1,
                     deletedBy: identity1,
                     deletedOn: expect.any(String)
@@ -639,6 +692,9 @@ describe("TrashBin", () => {
                     id: "item-3",
                     $selectable: true,
                     title: "Item 3",
+                    location: {
+                        folderId: "folder-b"
+                    },
                     createdBy: identity2,
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
@@ -666,6 +722,9 @@ describe("TrashBin", () => {
                     id: "item-2",
                     $selectable: true,
                     title: "Item 2",
+                    location: {
+                        folderId: "folder-a"
+                    },
                     createdBy: identity1,
                     deletedBy: identity1,
                     deletedOn: expect.any(String)
@@ -674,6 +733,9 @@ describe("TrashBin", () => {
                     id: "item-3",
                     $selectable: true,
                     title: "Item 3",
+                    location: {
+                        folderId: "folder-b"
+                    },
                     createdBy: identity2,
                     deletedBy: identity2,
                     deletedOn: expect.any(String)
@@ -684,6 +746,9 @@ describe("TrashBin", () => {
                     id: "item-1",
                     $selectable: true,
                     title: "Item 1",
+                    location: {
+                        folderId: "folder-a"
+                    },
                     createdBy: identity1,
                     deletedBy: identity2,
                     deletedOn: expect.any(String)

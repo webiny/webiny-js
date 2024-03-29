@@ -86,9 +86,6 @@ export class TrashBinItemsRepository<TItem extends Record<string, any>>
 
         runInAction(() => {
             const [items, meta] = response;
-
-            console.log("items", items);
-
             const itemsDTO = items.map(entry => TrashBinItem.create(this.itemMapper.toDTO(entry)));
             this.items = uniqBy([...this.items, ...itemsDTO], "id");
             this.metaRepository.set(Meta.create(meta));
