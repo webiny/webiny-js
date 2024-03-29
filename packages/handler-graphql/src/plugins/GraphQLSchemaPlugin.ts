@@ -31,8 +31,6 @@ export class GraphQLSchemaPlugin<TContext = Context>
     }
 }
 
-export const createGraphQLSchemaPlugin = <TContext = Context>(
-    params: GraphQLSchemaPluginConfig<TContext>
-) => {
-    return new GraphQLSchemaPlugin<TContext>(params);
+export const createGraphQLSchemaPlugin = <T = Context>(config: GraphQLSchemaPluginConfig<T>) => {
+    return new GraphQLSchemaPlugin<T>(config);
 };
