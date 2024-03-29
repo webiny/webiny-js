@@ -24,7 +24,7 @@ export class UnlockEntryUseCase implements IUnlockEntryUseCase {
     public async execute(
         params: IUnlockEntryUseCaseExecuteParams
     ): Promise<ILockingMechanismLockRecord> {
-        const record = await this.getLockRecordUseCase.execute(params);
+        const record = await this.getLockRecordUseCase.execute(params.id);
         if (!record) {
             throw new WebinyError("Lock Record not found.", "LOCK_RECORD_NOT_FOUND", {
                 ...params

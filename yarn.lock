@@ -13650,7 +13650,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-locking-mechanism@workspace:packages/api-locking-mechanism":
+"@webiny/api-locking-mechanism@0.0.0, @webiny/api-locking-mechanism@workspace:packages/api-locking-mechanism":
   version: 0.0.0-use.local
   resolution: "@webiny/api-locking-mechanism@workspace:packages/api-locking-mechanism"
   dependencies:
@@ -17962,6 +17962,7 @@ __metadata:
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-content": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
+    "@webiny/api-locking-mechanism": 0.0.0
     "@webiny/api-page-builder": 0.0.0
     "@webiny/api-page-builder-aco": 0.0.0
     "@webiny/api-page-builder-import-export": 0.0.0

@@ -5,6 +5,7 @@ import { LockEntryUseCase } from "./LockEntryUseCase/LockEntryUseCase";
 import { UnlockEntryUseCase } from "./UnlockEntryUseCase/UnlockEntryUseCase";
 import { UnlockEntryRequestUseCase } from "./UnlockRequestUseCase/UnlockEntryRequestUseCase";
 import { CmsIdentity } from "~/types";
+import { ListLockRecordsUseCase } from "./ListLockRecordsUseCase/ListLockRecordsUseCase";
 
 export interface CreateUseCasesParams {
     getIdentity: () => CmsIdentity;
@@ -12,6 +13,10 @@ export interface CreateUseCasesParams {
 }
 
 export const createUseCases = (params: CreateUseCasesParams) => {
+    const listLockRecordsUseCase = new ListLockRecordsUseCase({
+        getManager: params.getManager
+    });
+
     const getLockRecordUseCase = new GetLockRecordUseCase({
         getManager: params.getManager
     });
@@ -37,6 +42,7 @@ export const createUseCases = (params: CreateUseCasesParams) => {
     });
 
     return {
+        listLockRecordsUseCase,
         getLockRecordUseCase,
         isEntryLockedUseCase,
         lockEntryUseCase,

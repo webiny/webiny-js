@@ -14,7 +14,7 @@ import {
     OnEntryUnlockErrorTopicParams,
     OnEntryUnlockRequestErrorTopicParams
 } from "~/types";
-import { createLockingModel, RECORD_LOCKING_MODEL_ID } from "./model";
+import { RECORD_LOCKING_MODEL_ID } from "./model";
 import { IGetLockRecordUseCaseExecute } from "~/abstractions/IGetLockRecordUseCase";
 import { IIsEntryLockedUseCaseExecute } from "~/abstractions/IsEntryLocked";
 import { ILockEntryUseCaseExecute } from "~/abstractions/ILockEntryUseCase";
@@ -22,13 +22,24 @@ import { IUnlockEntryUseCaseExecute } from "~/abstractions/IUnlockEntryUseCase";
 import { createUseCases } from "~/useCases";
 import { IUnlockEntryRequestUseCaseExecute } from "~/abstractions/IUnlockEntryRequestUseCase";
 import { createTopic } from "@webiny/pubsub";
+import { IListLockRecordsUseCaseExecute } from "~/abstractions/IListLockRecordsUseCase";
 
 interface Params {
     context: Pick<Context, "plugins" | "cms" | "benchmark" | "security">;
 }
 
-export const createLockingMechanismCrud = ({ context }: Params): ILockingMechanism => {
-    context.plugins.register([createLockingModel()]);
+export const createLockingMechanismCrud = async ({
+    context
+}: Params): Promise<ILockingMechanism> => {
+    const getModel = async () => {
+        const model = await context.cms.getModel(RECORD_LOCKING_MODEL_ID);
+        if (model) {
+            return model;
+        }
+        throw new WebinyError("Locking Mechanism model not found", "MODEL_NOT_FOUND", {
+            modelId: RECORD_LOCKING_MODEL_ID
+        });
+    };
 
     const getManager = async (): Promise<ILockingMechanismModelManager> => {
         return await context.cms.getEntryManager<ILockingMechanismLockRecordValues>(
@@ -79,6 +90,7 @@ export const createLockingMechanismCrud = ({ context }: Params): ILockingMechani
     );
 
     const {
+        listLockRecordsUseCase,
         getLockRecordUseCase,
         isEntryLockedUseCase,
         lockEntryUseCase,
@@ -89,20 +101,26 @@ export const createLockingMechanismCrud = ({ context }: Params): ILockingMechani
         getManager
     });
 
-    const getLockRecord: IGetLockRecordUseCaseExecute = async input => {
-        return context.benchmark.measure("headlessCms.crud.locking.getLockRecord", async () => {
-            return getLockRecordUseCase.execute(input);
+    const listLockRecords: IListLockRecordsUseCaseExecute = async params => {
+        return context.benchmark.measure("lockingMechanism.listLockRecords", async () => {
+            return listLockRecordsUseCase.execute(params);
+        });
+    };
+
+    const getLockRecord: IGetLockRecordUseCaseExecute = async id => {
+        return context.benchmark.measure("lockingMechanism.getLockRecord", async () => {
+            return getLockRecordUseCase.execute(id);
         });
     };
 
     const isEntryLocked: IIsEntryLockedUseCaseExecute = async params => {
-        return context.benchmark.measure("headlessCms.crud.locking.isEntryLocked", async () => {
+        return context.benchmark.measure("lockingMechanism.isEntryLocked", async () => {
             return isEntryLockedUseCase.execute(params);
         });
     };
 
     const lockEntry: ILockEntryUseCaseExecute = async params => {
-        return context.benchmark.measure("headlessCms.crud.locking.lockEntry", async () => {
+        return context.benchmark.measure("lockingMechanism.lockEntry", async () => {
             try {
                 await onEntryBeforeLock.publish(params);
                 const record = await lockEntryUseCase.execute(params);
@@ -122,7 +140,7 @@ export const createLockingMechanismCrud = ({ context }: Params): ILockingMechani
     };
 
     const unlockEntry: IUnlockEntryUseCaseExecute = async params => {
-        return context.benchmark.measure("headlessCms.crud.locking.unlockEntry", async () => {
+        return context.benchmark.measure("lockingMechanism.unlockEntry", async () => {
             try {
                 await onEntryBeforeUnlock.publish({
                     ...params,
@@ -145,26 +163,23 @@ export const createLockingMechanismCrud = ({ context }: Params): ILockingMechani
     };
 
     const unlockEntryRequest: IUnlockEntryRequestUseCaseExecute = async params => {
-        return context.benchmark.measure(
-            "headlessCms.crud.locking.unlockEntryRequest",
-            async () => {
-                try {
-                    await onEntryBeforeUnlockRequest.publish(params);
-                    const record = await unlockEntryRequestUseCase.execute(params);
-                    await onEntryAfterUnlockRequest.publish({
-                        ...params,
-                        record
-                    });
-                    return record;
-                } catch (ex) {
-                    await onEntryUnlockRequestError.publish({
-                        ...params,
-                        error: ex
-                    });
-                    throw ex;
-                }
+        return context.benchmark.measure("lockingMechanism.unlockEntryRequest", async () => {
+            try {
+                await onEntryBeforeUnlockRequest.publish(params);
+                const record = await unlockEntryRequestUseCase.execute(params);
+                await onEntryAfterUnlockRequest.publish({
+                    ...params,
+                    record
+                });
+                return record;
+            } catch (ex) {
+                await onEntryUnlockRequestError.publish({
+                    ...params,
+                    error: ex
+                });
+                throw ex;
             }
-        );
+        });
     };
 
     return {
@@ -183,8 +198,10 @@ export const createLockingMechanismCrud = ({ context }: Params): ILockingMechani
         /**
          * Methods
          */
-        isEntryLocked,
+        getModel,
+        listLockRecords,
         getLockRecord,
+        isEntryLocked,
         lockEntry,
         unlockEntry,
         unlockEntryRequest

@@ -10,6 +10,8 @@ import {
     IGetLockRecordGraphQlVariables,
     IIsEntryLockedGraphQlResponse,
     IIsEntryLockedGraphQlVariables,
+    IListLockRecordsGraphQlResponse,
+    IListLockRecordsGraphQlVariables,
     ILockEntryGraphQlResponse,
     ILockEntryGraphQlVariables,
     IS_ENTRY_LOCKED_QUERY,
@@ -17,6 +19,7 @@ import {
     IUnlockEntryGraphQlVariables,
     IUnlockEntryRequestGraphQlResponse,
     IUnlockEntryRequestGraphQlVariables,
+    LIST_LOCK_RECORDS_QUERY,
     LOCK_ENTRY_MUTATION,
     UNLOCK_ENTRY_MUTATION,
     UNLOCK_ENTRY_REQUEST_MUTATION
@@ -34,7 +37,7 @@ export interface InvokeParams {
 }
 
 export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
-    const { identity, path } = params;
+    const { identity } = params;
 
     const core = createHandlerCore(params);
 
@@ -53,10 +56,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
     }: InvokeParams): Promise<[T, any]> => {
         const response = await handler(
             {
-                /**
-                 * If no path defined, use /graphql as we want to make request to main api
-                 */
-                path: path ? `/cms/${path}` : "/graphql",
+                path: "/graphql",
                 httpMethod,
                 headers: {
                     ["x-tenant"]: "root",
@@ -85,14 +85,19 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         /**
          * Locking Mechanism
          */
-        async isEntryLockedQuery(variables: IIsEntryLockedGraphQlVariables) {
-            return invoke<IIsEntryLockedGraphQlResponse>({
-                body: { query: IS_ENTRY_LOCKED_QUERY, variables }
+        async listLockRecordsQuery(variables?: IListLockRecordsGraphQlVariables) {
+            return invoke<IListLockRecordsGraphQlResponse>({
+                body: { query: LIST_LOCK_RECORDS_QUERY, variables }
             });
         },
         async getLockRecordQuery(variables: IGetLockRecordGraphQlVariables) {
             return invoke<IGetLockRecordGraphQlResponse>({
                 body: { query: GET_LOCK_RECORD_QUERY, variables }
+            });
+        },
+        async isEntryLockedQuery(variables: IIsEntryLockedGraphQlVariables) {
+            return invoke<IIsEntryLockedGraphQlResponse>({
+                body: { query: IS_ENTRY_LOCKED_QUERY, variables }
             });
         },
         async lockEntryMutation(variables: ILockEntryGraphQlVariables) {

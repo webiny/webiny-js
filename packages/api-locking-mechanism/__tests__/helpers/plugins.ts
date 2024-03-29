@@ -23,7 +23,6 @@ export interface CreateHandlerCoreParams {
     topPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     bottomPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    path?: `manage/${string}-${string}}` | `read/${string}-${string}}` | string;
 }
 
 export const createHandlerCore = (params: CreateHandlerCoreParams) => {
@@ -91,6 +90,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
             i18nStorage.storageOperations,
             createDummyLocales(),
             mockLocalesPlugins(),
+            graphQLHandlerPlugins(),
             createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations
             }),

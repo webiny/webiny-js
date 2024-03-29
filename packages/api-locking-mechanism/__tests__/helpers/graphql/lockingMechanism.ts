@@ -53,6 +53,40 @@ export const IS_ENTRY_LOCKED_QUERY = /* GraphQL */ `
     }
 `;
 
+export interface IListLockRecordsGraphQlVariables {
+    limit?: number;
+    after?: string;
+    sort?: string[];
+    where?: Record<string, any>;
+}
+
+export interface IListLockRecordsGraphQlResponse {
+    lockingMechanism: {
+        listLockRecords: {
+            data?: ILockingMechanismLockRecord[];
+            error?: CmsError;
+        };
+    };
+}
+
+export const LIST_LOCK_RECORDS_QUERY = /* GraphQL */ `
+    query ListLockRecords {
+        lockingMechanism {
+            listLockRecords {
+                data {
+                    ${LOCK_RECORD}
+                }
+                error {
+                    message
+                    code
+                    data
+                    stack
+                }
+            }
+        }
+    }
+`;
+
 export interface IGetLockRecordGraphQlVariables {
     id: string;
 }

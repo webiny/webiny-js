@@ -131,7 +131,7 @@ export const createLockingModel = () => {
                                 fieldId: "createdOn",
                                 storageId: "datetime@createdOn",
                                 settings: {
-                                    type: "dateTimeWithTimezone"
+                                    type: "dateTimeWithoutTimezone"
                                 },
                                 label: "Created On",
                                 validation: [

@@ -1,8 +1,11 @@
 import {
     CmsContext,
-    CmsError,
     CmsEntry,
+    CmsEntryListParams,
+    CmsEntryMeta,
+    CmsError,
     CmsIdentity,
+    CmsModel,
     CmsModelManager
 } from "@webiny/api-headless-cms/types";
 import { Topic } from "@webiny/pubsub/types";
@@ -10,6 +13,8 @@ import { Topic } from "@webiny/pubsub/types";
 export { CmsIdentity, CmsError, CmsEntry };
 
 export type ILockingMechanismModelManager = CmsModelManager<ILockingMechanismLockRecordValues>;
+
+export type ILockingMechanismMeta = CmsEntryMeta;
 
 export interface ILockingMechanismLockRecordValues {
     targetId: string;
@@ -69,6 +74,16 @@ export interface ILockingMechanismLockRecord extends ILockingMechanismLockRecord
  * Do not use any special chars other than #, as we use this to create lock record IDs.
  */
 export type ILockingMechanismLockRecordEntryType = string;
+
+export type ILockingMechanismListLockRecordsParams = Pick<
+    CmsEntryListParams,
+    "where" | "limit" | "sort" | "after"
+>;
+
+export interface ILockingMechanismListLockRecordsResponse {
+    items: ILockingMechanismLockRecord[];
+    meta: ILockingMechanismMeta;
+}
 
 export interface ILockingMechanismIsLockedParams {
     id: string;
@@ -152,6 +167,10 @@ export interface ILockingMechanism {
     onEntryBeforeUnlockRequest: Topic<OnEntryBeforeUnlockRequestTopicParams>;
     onEntryAfterUnlockRequest: Topic<OnEntryAfterUnlockRequestTopicParams>;
     onEntryUnlockRequestError: Topic<OnEntryUnlockRequestErrorTopicParams>;
+    getModel(): Promise<CmsModel>;
+    listLockRecords(
+        params?: ILockingMechanismListLockRecordsParams
+    ): Promise<ILockingMechanismListLockRecordsResponse>;
     getLockRecord(id: string): Promise<ILockingMechanismLockRecord | null>;
     isEntryLocked(params: ILockingMechanismIsLockedParams): Promise<boolean>;
     lockEntry(params: ILockingMechanismLockEntryParams): Promise<ILockingMechanismLockRecord>;
