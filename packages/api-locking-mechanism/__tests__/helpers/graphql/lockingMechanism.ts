@@ -1,6 +1,14 @@
 import { ILockingMechanismLockRecord } from "~/types";
 import { CmsError } from "@webiny/api-headless-cms/types";
 
+export const LOCK_ERROR = /* GraphQL */ `
+    error {
+        message
+        code
+        data
+    }
+    `;
+
 export const LOCK_RECORD = /* GraphQL */ `
     id
     targetId
@@ -42,12 +50,7 @@ export const IS_ENTRY_LOCKED_QUERY = /* GraphQL */ `
         lockingMechanism {
             isEntryLocked(id: $id, type: $type) {
                 data
-                error {
-                    message
-                    code
-                    data
-                    stack
-                }
+                ${LOCK_ERROR}
             }
         }
     }
@@ -76,12 +79,7 @@ export const LIST_LOCK_RECORDS_QUERY = /* GraphQL */ `
                 data {
                     ${LOCK_RECORD}
                 }
-                error {
-                    message
-                    code
-                    data
-                    stack
-                }
+                ${LOCK_ERROR}
             }
         }
     }
@@ -107,12 +105,7 @@ export const GET_LOCK_RECORD_QUERY = /* GraphQL */ `
                 data {
                     ${LOCK_RECORD}
                 }
-                error {
-                    message
-                    code
-                    data
-                    stack
-                }
+                ${LOCK_ERROR}
             }
         }
     }
@@ -139,12 +132,7 @@ export const LOCK_ENTRY_MUTATION = /* GraphQL */ `
                 data {
                     ${LOCK_RECORD}
                 }
-                error {
-                    message
-                    code
-                    data
-                    stack
-                }
+                ${LOCK_ERROR}
             }
         }
     }
@@ -171,12 +159,7 @@ export const UNLOCK_ENTRY_MUTATION = /* GraphQL */ `
                 data {
                     ${LOCK_RECORD}
                 }
-                error {
-                    message
-                    code
-                    data
-                    stack
-                }
+                ${LOCK_ERROR}
             }
         }
     }
@@ -203,12 +186,7 @@ export const UNLOCK_ENTRY_REQUEST_MUTATION = /* GraphQL */ `
                 data {
                     ${LOCK_RECORD}
                 }
-                error {
-                    message
-                    code
-                    data
-                    stack
-                }
+                ${LOCK_ERROR}
             }
         }
     }

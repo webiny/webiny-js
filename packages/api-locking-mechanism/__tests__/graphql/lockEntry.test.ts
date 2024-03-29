@@ -116,8 +116,7 @@ describe("lock entry", () => {
                             data: {
                                 id: "someId#0001",
                                 type: "cms#author"
-                            },
-                            stack: expect.any(String)
+                            }
                         }
                     }
                 }

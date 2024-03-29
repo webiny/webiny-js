@@ -24,8 +24,7 @@ describe("unlock entry", () => {
                                 id: "someId#0001",
                                 type: "cms#author"
                             },
-                            message: "Lock Record not found.",
-                            stack: expect.any(String)
+                            message: "Lock Record not found."
                         }
                     }
                 }
