@@ -1,16 +1,14 @@
-import { useCallback, useEffect } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
 import { plugins } from "@webiny/plugins";
 import { PbEditorPageElementPlugin, PbEditorPageElementStyleSettingsPlugin } from "~/types";
-import { useKeyHandler } from "../../../hooks/useKeyHandler";
 import { userElementStyleSettingsPlugins } from "../../../helpers";
-import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
+import { useActiveElement } from "~/editor/hooks/useActiveElement";
+import { useDeactivateOnEsc } from "~/editor/plugins/elementSettings/hooks/useDeactivateOnEsc";
 
-interface ElementAction {
+interface ElementSettings {
     plugin: PbEditorPageElementStyleSettingsPlugin;
     options: Record<string, any>;
 }
-const getElementActions = (plugin?: PbEditorPageElementPlugin): ElementAction[] => {
+const getElementSettings = (plugin?: PbEditorPageElementPlugin): ElementSettings[] => {
     if (!plugin || !plugin.settings) {
         return [];
     }
@@ -20,7 +18,7 @@ const getElementActions = (plugin?: PbEditorPageElementPlugin): ElementAction[] 
         ...(plugin.settings as string[])
     ];
 
-    const elementActions = pluginSettings
+    const elementSettings = pluginSettings
         .map(pl => {
             if (typeof pl === "string") {
                 return { plugin: plugins.byName(pl), options: {} };
@@ -32,52 +30,29 @@ const getElementActions = (plugin?: PbEditorPageElementPlugin): ElementAction[] 
 
             return null;
         })
-        .filter(Boolean) as ElementAction[];
+        .filter(Boolean) as ElementSettings[];
 
     return (
-        elementActions
+        elementSettings
             // Eliminate empty plugins
-            .filter(pl => {
-                return pl && pl.plugin;
-            })
+            .filter(pl => pl && pl.plugin)
             // Eliminate plugins other than "PbEditorPageElementStyleSettingsPlugin".
-            .filter(pl => {
-                return (
-                    pl && pl.plugin && pl.plugin.type === "pb-editor-page-element-style-settings"
-                );
-            })
+            .filter(pl => pl.plugin.type === "pb-editor-page-element-style-settings")
             // Eliminate duplicate plugins
-            .filter(
-                (pl, index, array) =>
-                    array.findIndex(item => item.plugin.name === pl.plugin.name) === index
-            )
+            .filter((pl, index, array) => {
+                return array.findIndex(item => item.plugin.name === pl.plugin.name) === index;
+            })
     );
 };
 
-const useElementStyleSettings = (): ElementAction[] => {
-    const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElement as string));
-    const elementType = element?.type;
-
-    const deactivateElement = useCallback(() => {
-        setActiveElementAtomValue(null);
-    }, []);
-
-    const { addKeyHandler, removeKeyHandler } = useKeyHandler();
-
-    useEffect(() => {
-        addKeyHandler("escape", e => {
-            e.preventDefault();
-            deactivateElement();
-        });
-        return () => removeKeyHandler("escape");
-    });
+export const useElementStyleSettings = (): ElementSettings[] => {
+    useDeactivateOnEsc();
+    const [element] = useActiveElement();
+    const elementType = element ? element.type : undefined;
 
     const plugin = plugins
         .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
         .find(pl => pl.elementType === elementType);
 
-    return getElementActions(plugin);
+    return getElementSettings(plugin);
 };
-
-export default useElementStyleSettings;

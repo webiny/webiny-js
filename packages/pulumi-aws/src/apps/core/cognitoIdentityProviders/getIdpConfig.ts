@@ -4,12 +4,14 @@ import { getGoogleIdpConfig } from "./google";
 import { getFacebookIdpConfig } from "./facebook";
 import { getAppleIdpConfig } from "./apple";
 import { getAmazonIdpConfig } from "./amazon";
+import { getOidcIdpConfig } from "./oidc";
 
 const idpMap = {
     google: getGoogleIdpConfig,
     facebook: getFacebookIdpConfig,
     amazon: getAmazonIdpConfig,
-    apple: getAppleIdpConfig
+    apple: getAppleIdpConfig,
+    oidc: getOidcIdpConfig
 };
 
 export const getIdpConfig = (
