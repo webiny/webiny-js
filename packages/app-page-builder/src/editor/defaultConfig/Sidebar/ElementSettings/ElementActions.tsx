@@ -15,7 +15,7 @@ const SidebarActions = styled("div")({
 export const ElementActions = () => {
     return (
         <SidebarActions>
-            <EditorConfig.Ui.Elements scope={"elementActions"} />
+            <EditorConfig.ElementActions />
         </SidebarActions>
     );
 };
