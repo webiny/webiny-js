@@ -59,12 +59,12 @@ const createCypressJobs = (dbSetup: string) => {
     const ucFirstDbSetup = dbSetup.charAt(0).toUpperCase() + dbSetup.slice(1);
 
     const jobNames = {
-        constants: `e2eTests${ucFirstDbSetup}-init`,
+        constants: `e2eTests${ucFirstDbSetup}-constants`,
         projectSetup: `e2eTests${ucFirstDbSetup}-setup`,
         cypressTests: `e2eTests${ucFirstDbSetup}-cypress`
     };
 
-    const initJob: NormalJob = createJob({
+    const constantsJob: NormalJob = createJob({
         name: `Constants - ${dbSetup.toUpperCase()}`,
         needs: "constants",
         outputs: {
@@ -240,7 +240,7 @@ const createCypressJobs = (dbSetup: string) => {
     });
 
     return {
-        [jobNames.constants]: initJob,
+        [jobNames.constants]: constantsJob,
         [jobNames.projectSetup]: projectSetupJob,
         [jobNames.cypressTests]: cypressTestsJob
     };
@@ -341,7 +341,7 @@ const createPushWorkflow = (branchName: string) => {
             }),
             codeAnalysis: createJob({
                 name: "Static code analysis",
-                needs: ["init", "build"],
+                needs: ["constants", "build"],
                 steps: [
                     ...createYarnCacheSteps(),
                     ...createBuildRunCacheSteps(),

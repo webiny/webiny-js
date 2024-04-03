@@ -79,7 +79,7 @@ jobs:
   codeAnalysis:
     name: Static code analysis
     needs:
-      - init
+      - constants
       - build
     steps:
       - uses: actions/setup-node@v4
@@ -344,7 +344,7 @@ jobs:
         run: yarn test ${{ matrix.package.cmd }}
     permissions:
       id-token: write
-  e2eTestsDdb-init:
+  e2eTestsDdb-constants:
     name: Constants - DDB
     needs: constants
     outputs:
@@ -372,7 +372,7 @@ jobs:
   e2eTestsDdb-setup:
     needs:
       - build
-      - e2eTestsDdb-init
+      - e2eTestsDdb-constants
     name: E2E (DDB) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -383,7 +383,7 @@ jobs:
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-init.outputs.pulumi-backend-url }}
+      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-constants.outputs.pulumi-backend-url }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -496,7 +496,7 @@ jobs:
       ${{ matrix.cypress-folder }} (ddb, ${{ matrix.os }}, Node v${{ matrix.node
       }})
     needs:
-      - e2eTestsDdb-init
+      - e2eTestsDdb-constants
       - e2eTestsDdb-setup
     strategy:
       fail-fast: false
@@ -505,7 +505,7 @@ jobs:
           - ubuntu-latest
         node:
           - 18
-        cypress-folder: ${{ fromJson(needs.e2eTestsDdb-init.outputs.cypress-folders) }}
+        cypress-folder: ${{ fromJson(needs.e2eTestsDdb-constants.outputs.cypress-folders) }}
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -513,7 +513,7 @@ jobs:
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-init.outputs.pulumi-backend-url }}
+      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-constants.outputs.pulumi-backend-url }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -541,7 +541,7 @@ jobs:
         timeout-minutes: 40
         run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
     runs-on: ubuntu-latest
-  e2eTestsDdb-es-init:
+  e2eTestsDdb-es-constants:
     name: Constants - DDB-ES
     needs: constants
     outputs:
@@ -569,7 +569,7 @@ jobs:
   e2eTestsDdb-es-setup:
     needs:
       - build
-      - e2eTestsDdb-es-init
+      - e2eTestsDdb-es-constants
     name: E2E (DDB-ES) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -580,7 +580,7 @@ jobs:
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-es-init.outputs.pulumi-backend-url }}
+      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-es-constants.outputs.pulumi-backend-url }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
@@ -696,7 +696,7 @@ jobs:
       ${{ matrix.cypress-folder }} (ddb-es, ${{ matrix.os }}, Node v${{
       matrix.node }})
     needs:
-      - e2eTestsDdb-es-init
+      - e2eTestsDdb-es-constants
       - e2eTestsDdb-es-setup
     strategy:
       fail-fast: false
@@ -705,7 +705,9 @@ jobs:
           - ubuntu-latest
         node:
           - 18
-        cypress-folder: ${{ fromJson(needs.e2eTestsDdb-es-init.outputs.cypress-folders) }}
+        cypress-folder: >-
+          ${{ fromJson(needs.e2eTestsDdb-es-constants.outputs.cypress-folders)
+          }}
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -713,7 +715,7 @@ jobs:
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-es-init.outputs.pulumi-backend-url }}
+      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-es-constants.outputs.pulumi-backend-url }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
@@ -744,7 +746,7 @@ jobs:
         timeout-minutes: 40
         run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
     runs-on: ubuntu-latest
-  e2eTestsDdb-os-init:
+  e2eTestsDdb-os-constants:
     name: Constants - DDB-OS
     needs: constants
     outputs:
@@ -772,7 +774,7 @@ jobs:
   e2eTestsDdb-os-setup:
     needs:
       - build
-      - e2eTestsDdb-os-init
+      - e2eTestsDdb-os-constants
     name: E2E (DDB-OS) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -783,7 +785,7 @@ jobs:
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-os-init.outputs.pulumi-backend-url }}
+      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-os-constants.outputs.pulumi-backend-url }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
@@ -899,7 +901,7 @@ jobs:
       ${{ matrix.cypress-folder }} (ddb-os, ${{ matrix.os }}, Node v${{
       matrix.node }})
     needs:
-      - e2eTestsDdb-os-init
+      - e2eTestsDdb-os-constants
       - e2eTestsDdb-os-setup
     strategy:
       fail-fast: false
@@ -908,7 +910,9 @@ jobs:
           - ubuntu-latest
         node:
           - 18
-        cypress-folder: ${{ fromJson(needs.e2eTestsDdb-os-init.outputs.cypress-folders) }}
+        cypress-folder: >-
+          ${{ fromJson(needs.e2eTestsDdb-os-constants.outputs.cypress-folders)
+          }}
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -916,7 +920,7 @@ jobs:
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-os-init.outputs.pulumi-backend-url }}
+      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-os-constants.outputs.pulumi-backend-url }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
