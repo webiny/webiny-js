@@ -3,55 +3,52 @@ import { createJob, createValidateWorkflowsJob } from "./jobs";
 import { createDeployWebinySteps, createSetupVerdaccioSteps } from "./steps";
 import { listPackagesWithJestTests, NODE_VERSION } from "./utils";
 
-const DIR_CLONED_REPO = "cloned-repo";
+const DIR_WEBINY_JS = "webiny-js";
 const DIR_TEST_PROJECT = "new-webiny-project";
 
-interface CacheStepsFactoryParams {
-    workingDirectory?: string;
-}
+const withCommonParams = (
+    steps: NonNullable<NormalJob["steps"]>,
+    commonParams: Record<string, any>
+) => steps.map(step => ({ ...step, ...commonParams }));
 
-const createYarnCacheSteps = (
-    params: CacheStepsFactoryParams = {}
-): NonNullable<NormalJob["steps"]> => {
-    const workingDirectory = params.workingDirectory || "";
+const yarnInstallBuildSteps = withCommonParams(
+    [
+        { name: "Install dependencies", run: "yarn --immutable" },
+        { name: "Build packages", run: "yarn build:quick" }
+    ],
+    { "working-directory": DIR_WEBINY_JS }
+);
+
+const createYarnCacheSteps = (): NonNullable<NormalJob["steps"]> => {
     return [
         {
             uses: "actions/cache@v4",
             with: {
-                enableCrossOsArchive: true,
-                path: [workingDirectory, ".yarn/cache"].filter(Boolean).join("/"),
+                path: DIR_WEBINY_JS + "/.yarn/cache",
                 key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
             }
         }
     ];
 };
 
-const createBuildGlobalCacheSteps = (
-    params: CacheStepsFactoryParams = {}
-): NonNullable<NormalJob["steps"]> => {
-    const workingDirectory = params.workingDirectory || "";
+const createBuildGlobalCacheSteps = (): NonNullable<NormalJob["steps"]> => {
     return [
         {
             uses: "actions/cache@v4",
             with: {
-                enableCrossOsArchive: true,
-                path: [workingDirectory, ".webiny/cached-packages"].filter(Boolean).join("/"),
+                path: DIR_WEBINY_JS + "/.webiny/cached-packages",
                 key: "${{ needs.constants.outputs.global-cache-key }}"
             }
         }
     ];
 };
 
-const createBuildRunCacheSteps = (
-    params: CacheStepsFactoryParams = {}
-): NonNullable<NormalJob["steps"]> => {
-    const workingDirectory = params.workingDirectory || "";
+const createBuildRunCacheSteps = (): NonNullable<NormalJob["steps"]> => {
     return [
         {
             uses: "actions/cache@v4",
             with: {
-                enableCrossOsArchive: true,
-                path: [workingDirectory, ".webiny/cached-packages"].filter(Boolean).join("/"),
+                path: DIR_WEBINY_JS + "/.webiny/cached-packages",
                 key: "${{ needs.constants.outputs.run-cache-key }}"
             }
         }
@@ -118,33 +115,27 @@ const createCypressJobs = (dbSetup: string) => {
         env,
         checkout: {
             "fetch-depth": 0,
-            path: DIR_CLONED_REPO
+            path: DIR_WEBINY_JS
         },
         awsAuth: true,
         steps: [
-            ...createYarnCacheSteps({ workingDirectory: DIR_CLONED_REPO }),
-            ...createBuildRunCacheSteps({ workingDirectory: DIR_CLONED_REPO }),
-            {
-                name: "Install dependencies",
-                "working-directory": DIR_CLONED_REPO,
-                run: "yarn --immutable"
-            },
-            {
-                name: "Build packages",
-                "working-directory": DIR_CLONED_REPO,
-                run: "yarn build:quick"
-            },
-            ...createSetupVerdaccioSteps({ workingDirectory: DIR_CLONED_REPO }),
-            {
-                name: 'Create ".npmrc" file in the project root, with a dummy auth token',
-                "working-directory": DIR_CLONED_REPO,
-                run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
-            },
-            {
-                name: "Version and publish to Verdaccio",
-                "working-directory": DIR_CLONED_REPO,
-                run: "yarn release --type=verdaccio"
-            },
+            ...createYarnCacheSteps(),
+            ...createBuildRunCacheSteps(),
+            ...yarnInstallBuildSteps,
+            ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...withCommonParams(
+                [
+                    {
+                        name: 'Create ".npmrc" file in the project root, with a dummy auth token',
+                        run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
+                    },
+                    {
+                        name: "Version and publish to Verdaccio",
+                        run: "yarn release --type=verdaccio"
+                    }
+                ],
+                { "working-directory": DIR_WEBINY_JS }
+            ),
             {
                 name: "Create verdaccio-files artifact",
                 uses: "actions/upload-artifact@v4",
@@ -152,8 +143,8 @@ const createCypressJobs = (dbSetup: string) => {
                     name: `verdaccio-files-${dbSetup}`,
                     "retention-days": 1,
                     path: [
-                        DIR_CLONED_REPO + "/.verdaccio/",
-                        DIR_CLONED_REPO + "/.verdaccio.yaml"
+                        DIR_WEBINY_JS + "/.verdaccio/",
+                        DIR_WEBINY_JS + "/.verdaccio.yaml"
                     ].join("\n")
                 }
             },
@@ -161,11 +152,6 @@ const createCypressJobs = (dbSetup: string) => {
                 name: "Disable Webiny telemetry",
                 run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
             },
-            {
-                name: "Create directory",
-                run: "mkdir xyz"
-            },
-
             {
                 name: "Create a new Webiny project",
                 run: `npx create-webiny-project@local-npm ${DIR_TEST_PROJECT} --tag local-npm --no-interactive --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"region":"$\{{ env.AWS_REGION }}","storageOperations":"${dbSetup}"}'
@@ -191,22 +177,24 @@ const createCypressJobs = (dbSetup: string) => {
                 }
             },
             ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
-            {
-                name: "Create Cypress config",
-                "working-directory": DIR_CLONED_REPO,
-                run: `yarn setup-cypress --projectFolder ../${DIR_TEST_PROJECT}`
-            },
-            {
-                name: "Save Cypress config",
-                id: "save-cypress-config",
-                "working-directory": DIR_CLONED_REPO,
-                run: "echo \"cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\\t\\n\\r')\" >> $GITHUB_OUTPUT"
-            },
-            {
-                name: "Cypress - run installation wizard test",
-                "working-directory": DIR_CLONED_REPO,
-                run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
-            }
+            ...withCommonParams(
+                [
+                    {
+                        name: "Create Cypress config",
+                        run: `yarn setup-cypress --projectFolder ../${DIR_TEST_PROJECT}`
+                    },
+                    {
+                        name: "Save Cypress config",
+                        id: "save-cypress-config",
+                        run: "echo \"cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\\t\\n\\r')\" >> $GITHUB_OUTPUT"
+                    },
+                    {
+                        name: "Cypress - run installation wizard test",
+                        run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
+                    }
+                ],
+                { "working-directory": DIR_WEBINY_JS }
+            )
         ]
     });
 
@@ -226,17 +214,21 @@ const createCypressJobs = (dbSetup: string) => {
         steps: [
             ...createYarnCacheSteps(),
             ...createBuildRunCacheSteps(),
-            { name: "Install dependencies", run: "yarn --immutable" },
-            { name: "Build packages", run: "yarn build:quick" },
-            {
-                name: "Set up Cypress config",
-                run: `echo '$\{{ needs.${jobNames.projectSetup}.outputs.cypress-config }}' > cypress-tests/cypress.config.ts`
-            },
-            {
-                name: 'Cypress - run "${{ matrix.cypress-folder }}" tests',
-                "timeout-minutes": 40,
-                run: 'yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"'
-            }
+            ...yarnInstallBuildSteps,
+            ...withCommonParams(
+                [
+                    {
+                        name: "Set up Cypress config",
+                        run: `echo '$\{{ needs.${jobNames.projectSetup}.outputs.cypress-config }}' > cypress-tests/cypress.config.ts`
+                    },
+                    {
+                        name: 'Cypress - run "${{ matrix.cypress-folder }}" tests',
+                        "timeout-minutes": 40,
+                        run: 'yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"'
+                    }
+                ],
+                { "working-directory": DIR_WEBINY_JS }
+            )
         ]
     });
 
@@ -264,9 +256,7 @@ const createJestTestsJob = (storage: string | null) => {
         }
     }
 
-    const packages = listPackagesWithJestTests({
-        storage
-    });
+    const packages = listPackagesWithJestTests({ storage });
 
     return createJob({
         needs: ["constants", "build"],
@@ -285,18 +275,11 @@ const createJestTestsJob = (storage: string | null) => {
         steps: [
             ...createYarnCacheSteps(),
             ...createBuildRunCacheSteps(),
-            {
-                name: "Install dependencies",
-                run: "yarn --immutable"
-            },
-            {
-                name: "Build packages",
-                run: "yarn build:quick"
-            },
-            {
-                name: "Run tests",
-                run: "yarn test ${{ matrix.package.cmd }}"
-            }
+            ...yarnInstallBuildSteps,
+            ...withCommonParams(
+                [{ name: "Run tests", run: "yarn test ${{ matrix.package.cmd }}" }],
+                { "working-directory": DIR_WEBINY_JS }
+            )
         ]
     });
 };
@@ -331,11 +314,11 @@ const createPushWorkflow = (branchName: string) => {
             build: createJob({
                 name: "Build",
                 needs: "constants",
+                "runs-on": "blacksmith-4vcpu-ubuntu-2204",
                 steps: [
                     ...createYarnCacheSteps(),
                     ...createBuildGlobalCacheSteps(),
-                    { name: "Install dependencies", run: "yarn --immutable" },
-                    { name: "Build packages", run: "yarn build:quick" },
+                    ...yarnInstallBuildSteps,
                     ...createBuildRunCacheSteps()
                 ]
             }),
@@ -345,24 +328,36 @@ const createPushWorkflow = (branchName: string) => {
                 steps: [
                     ...createYarnCacheSteps(),
                     ...createBuildRunCacheSteps(),
-                    { name: "Install dependencies", run: "yarn --immutable" },
-                    { name: "Check code formatting", run: "yarn prettier:check" },
-                    { name: "Check dependencies", run: "yarn adio" },
-                    { name: "Check TS configs", run: "yarn check-ts-configs" },
-                    { name: "ESLint", run: "yarn eslint" }
+                    ...withCommonParams(
+                        [
+                            { name: "Install dependencies", run: "yarn --immutable" },
+                            { name: "Check code formatting", run: "yarn prettier:check" },
+                            { name: "Check dependencies", run: "yarn adio" },
+                            { name: "Check TS configs", run: "yarn check-ts-configs" },
+                            { name: "ESLint", run: "yarn eslint" }
+                        ],
+                        { "working-directory": DIR_WEBINY_JS }
+                    )
                 ]
             }),
             staticCodeAnalysisTs: createJob({
                 name: "Static code analysis (TypeScript)",
+                "runs-on": "blacksmith-4vcpu-ubuntu-2204",
                 steps: [
                     ...createYarnCacheSteps(),
 
                     // We're not using run cache here. We want to build all packages
                     // with TypeScript, to ensure there are no TypeScript errors.
                     // ...createBuildRunCacheSteps,
-                    { name: "Install dependencies", run: "yarn --immutable" },
-                    { name: "Build packages (full)", run: "yarn build" },
-                    { name: "Check types for Cypress tests", run: "yarn cy:ts" }
+
+                    ...withCommonParams(
+                        [
+                            { name: "Install dependencies", run: "yarn --immutable" },
+                            { name: "Build packages (full)", run: "yarn build" },
+                            { name: "Check types for Cypress tests", run: "yarn cy:ts" }
+                        ],
+                        { "working-directory": DIR_WEBINY_JS }
+                    )
                 ]
             }),
             jestTestsNoStorage: createJestTestsJob(null),
@@ -391,32 +386,26 @@ const createPushWorkflow = (branchName: string) => {
             steps: [
                 ...createYarnCacheSteps(),
                 ...createBuildRunCacheSteps(),
-                {
-                    name: "Install dependencies",
-                    run: "yarn --immutable"
-                },
-                {
-                    name: "Build packages",
-                    run: "yarn build"
-                },
-                {
-                    name: 'Create ".npmrc" file in the project root',
-                    run: 'echo "//registry.npmjs.org/:_authToken=\\${NPM_TOKEN}" > .npmrc'
-                },
-                {
-                    name: "Set git info",
-                    run: 'git config --global user.email "webiny-bot@webiny.com"\ngit config --global user.name "webiny-bot"\n'
-                },
-                {
-                    name: "Version and publish to NPM",
-                    run: "yarn release --type=unstable"
-                }
+                ...yarnInstallBuildSteps,
+                ...withCommonParams(
+                    [
+                        {
+                            name: 'Create ".npmrc" file in the project root',
+                            run: 'echo "//registry.npmjs.org/:_authToken=\\${NPM_TOKEN}" > .npmrc'
+                        },
+                        {
+                            name: "Set git info",
+                            run: 'git config --global user.email "webiny-bot@webiny.com"\ngit config --global user.name "webiny-bot"\n'
+                        },
+                        { name: "Version and publish to NPM", run: "yarn release --type=unstable" }
+                    ],
+                    { "working-directory": DIR_WEBINY_JS }
+                )
             ]
         });
     }
 
     return workflow;
 };
-
 export const pushDev = createPushWorkflow("dev");
 export const pushNext = createPushWorkflow("next");
