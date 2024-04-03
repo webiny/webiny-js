@@ -493,7 +493,7 @@ jobs:
         run: yarn webiny deploy apps/website --env dev
       - name: Create Cypress config
         working-directory: cloned-repo
-        run: yarn setup-cypress --projectFolder ../xyz/test-project
+        run: yarn setup-cypress --projectFolder ../new-webiny-project
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: cloned-repo
@@ -697,7 +697,7 @@ jobs:
         run: yarn webiny deploy apps/website --env dev
       - name: Create Cypress config
         working-directory: cloned-repo
-        run: yarn setup-cypress --projectFolder ../xyz/test-project
+        run: yarn setup-cypress --projectFolder ../new-webiny-project
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: cloned-repo
@@ -906,7 +906,7 @@ jobs:
         run: yarn webiny deploy apps/website --env dev
       - name: Create Cypress config
         working-directory: cloned-repo
-        run: yarn setup-cypress --projectFolder ../xyz/test-project
+        run: yarn setup-cypress --projectFolder ../new-webiny-project
       - name: Save Cypress config
         id: save-cypress-config
         working-directory: cloned-repo

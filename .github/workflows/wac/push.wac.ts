@@ -191,11 +191,10 @@ const createCypressJobs = (dbSetup: string) => {
                 }
             },
             ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
-
             {
                 name: "Create Cypress config",
                 "working-directory": DIR_CLONED_REPO,
-                run: "yarn setup-cypress --projectFolder ../xyz/test-project"
+                run: `yarn setup-cypress --projectFolder ../${DIR_TEST_PROJECT}`
             },
             {
                 name: "Save Cypress config",
