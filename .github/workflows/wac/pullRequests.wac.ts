@@ -54,7 +54,7 @@ const createJestTestsJob = (storage: string | null) => {
     });
 
     const job: NormalJob = createJob({
-        needs: "constants",
+        needs: ["constants", "build"],
         name: "${{ matrix.package.cmd }}",
         strategy: {
             "fail-fast": false,
@@ -145,8 +145,8 @@ export const pullRequests = createWorkflow({
                 }
             ]
         },
-        init: createJob({
-            name: "Init",
+        build: createJob({
+            name: "Build",
             needs: "constants",
             "runs-on": "webiny-build-packages",
             steps: [
@@ -166,7 +166,7 @@ export const pullRequests = createWorkflow({
             ]
         }),
         staticCodeAnalysis: createJob({
-            needs: ["constants", "init"],
+            needs: ["constants", "build"],
             name: "Static code analysis",
             steps: [
                 ...yarnCacheSteps,
@@ -224,7 +224,7 @@ export const pullRequests = createWorkflow({
 
         verdaccioPublish: createJob({
             name: "Publish to Verdaccio",
-            needs: ["constants", "init"],
+            needs: ["constants", "build"],
             if: "needs.constants.outputs.is-fork-pr != 'true'",
             checkout: {
                 "fetch-depth": 0,

@@ -72,8 +72,8 @@ jobs:
         run: >-
           echo "is-fork-pr=${{ github.event.pull_request.head.repo.fork }}" >>
           $GITHUB_OUTPUT
-  init:
-    name: Init
+  build:
+    name: Build
     needs: constants
     runs-on: webiny-build-packages
     steps:
@@ -103,7 +103,7 @@ jobs:
   staticCodeAnalysis:
     needs:
       - constants
-      - init
+      - build
     name: Static code analysis
     steps:
       - uses: actions/setup-node@v4
@@ -154,7 +154,9 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   jestTestsNoStorage:
-    needs: constants
+    needs:
+      - constants
+      - build
     name: ${{ matrix.package.cmd }}
     strategy:
       fail-fast: false
@@ -191,7 +193,9 @@ jobs:
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
   jestTestsDdb:
-    needs: constants
+    needs:
+      - constants
+      - build
     name: ${{ matrix.package.cmd }}
     strategy:
       fail-fast: false
@@ -243,7 +247,9 @@ jobs:
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
   jestTestsDdbEs:
-    needs: constants
+    needs:
+      - constants
+      - build
     name: ${{ matrix.package.cmd }}
     strategy:
       fail-fast: false
@@ -303,7 +309,9 @@ jobs:
       id-token: write
     if: needs.constants.outputs.is-fork-pr != 'true'
   jestTestsDdbOs:
-    needs: constants
+    needs:
+      - constants
+      - build
     name: ${{ matrix.package.cmd }}
     strategy:
       fail-fast: false
@@ -366,7 +374,7 @@ jobs:
     name: Publish to Verdaccio
     needs:
       - constants
-      - init
+      - build
     if: needs.constants.outputs.is-fork-pr != 'true'
     steps:
       - uses: actions/setup-node@v4
