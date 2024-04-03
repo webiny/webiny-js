@@ -41,6 +41,7 @@ import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
 import { createCountDynamoDbTask } from "~/plugins/countDynamoDbTask";
 import { createContinuingTask } from "~/plugins/continuingTask";
 import { createWebsockets } from "@webiny/api-websockets";
+import { createHeadlessCmsTasks } from "@webiny/api-headless-cms-tasks";
 
 const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
@@ -101,6 +102,7 @@ export const handler = createHandler({
         }),
         createAco(),
         createAcoPageBuilderContext(),
+        createHeadlessCmsTasks(),
         scaffoldsPlugins(),
         createFileModelModifier(({ modifier }) => {
             modifier.addField({

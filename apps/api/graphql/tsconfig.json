@@ -39,6 +39,9 @@
       "path": "../../../packages/api-headless-cms/tsconfig.build.json"
     },
     {
+      "path": "../../../packages/api-headless-cms-tasks/tsconfig.build.json"
+    },
+    {
       "path": "../../../packages/api-headless-cms-ddb/tsconfig.build.json"
     },
     {
@@ -145,6 +148,8 @@
       "@webiny/api-headless-cms": ["../../../packages/api-headless-cms/src"],
       "@webiny/api-headless-cms-ddb/*": ["../../../packages/api-headless-cms-ddb/src/*"],
       "@webiny/api-headless-cms-ddb": ["../../../packages/api-headless-cms-ddb/src"],
+      "@webiny/api-headless-cms-tasks/*": ["../../../packages/api-headless-cms-tasks/src/*"],
+      "@webiny/api-headless-cms-tasks": ["../../../packages/api-headless-cms-tasks/src"],
       "@webiny/api-i18n/*": ["../../../packages/api-i18n/src/*"],
       "@webiny/api-i18n": ["../../../packages/api-i18n/src"],
       "@webiny/api-i18n-content/*": ["../../../packages/api-i18n-content/src/*"],
