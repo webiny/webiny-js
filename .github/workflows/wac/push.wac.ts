@@ -19,41 +19,35 @@ const yarnInstallBuildSteps = withCommonParams(
     { "working-directory": DIR_WEBINY_JS }
 );
 
-const createYarnCacheSteps = (): NonNullable<NormalJob["steps"]> => {
-    return [
-        {
-            uses: "actions/cache@v4",
-            with: {
-                path: DIR_WEBINY_JS + "/.yarn/cache",
-                key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-            }
+const yarnCacheSteps = [
+    {
+        uses: "actions/cache@v4",
+        with: {
+            path: DIR_WEBINY_JS + "/.yarn/cache",
+            key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
         }
-    ];
-};
+    }
+] as const;
 
-const createBuildGlobalCacheSteps = (): NonNullable<NormalJob["steps"]> => {
-    return [
-        {
-            uses: "actions/cache@v4",
-            with: {
-                path: DIR_WEBINY_JS + "/.webiny/cached-packages",
-                key: "${{ needs.constants.outputs.global-cache-key }}"
-            }
+const buildGlobalCacheSteps = [
+    {
+        uses: "actions/cache@v4",
+        with: {
+            path: DIR_WEBINY_JS + "/.webiny/cached-packages",
+            key: "${{ needs.constants.outputs.global-cache-key }}"
         }
-    ];
-};
+    }
+] as const;
 
-const createBuildRunCacheSteps = (): NonNullable<NormalJob["steps"]> => {
-    return [
-        {
-            uses: "actions/cache@v4",
-            with: {
-                path: DIR_WEBINY_JS + "/.webiny/cached-packages",
-                key: "${{ needs.constants.outputs.run-cache-key }}"
-            }
+const buildRunCacheSteps = [
+    {
+        uses: "actions/cache@v4",
+        with: {
+            path: DIR_WEBINY_JS + "/.webiny/cached-packages",
+            key: "${{ needs.constants.outputs.run-cache-key }}"
         }
-    ];
-};
+    }
+] as const;
 
 const createCypressJobs = (dbSetup: string) => {
     const ucFirstDbSetup = dbSetup.charAt(0).toUpperCase() + dbSetup.slice(1);
@@ -119,8 +113,8 @@ const createCypressJobs = (dbSetup: string) => {
         },
         awsAuth: true,
         steps: [
-            ...createYarnCacheSteps(),
-            ...createBuildRunCacheSteps(),
+            ...yarnCacheSteps,
+            ...buildRunCacheSteps,
             ...yarnInstallBuildSteps,
             ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
             ...withCommonParams(
@@ -142,10 +136,9 @@ const createCypressJobs = (dbSetup: string) => {
                 with: {
                     name: `verdaccio-files-${dbSetup}`,
                     "retention-days": 1,
-                    path: [
-                        DIR_WEBINY_JS + "/.verdaccio/",
-                        DIR_WEBINY_JS + "/.verdaccio.yaml"
-                    ].join("\n")
+                    path: [DIR_WEBINY_JS + "/.verdaccio/", DIR_WEBINY_JS + "/.verdaccio.yaml"].join(
+                        "\n"
+                    )
                 }
             },
             {
@@ -212,8 +205,8 @@ const createCypressJobs = (dbSetup: string) => {
         environment: "next",
         env,
         steps: [
-            ...createYarnCacheSteps(),
-            ...createBuildRunCacheSteps(),
+            ...yarnCacheSteps,
+            ...buildRunCacheSteps,
             ...yarnInstallBuildSteps,
             ...withCommonParams(
                 [
@@ -273,8 +266,8 @@ const createJestTestsJob = (storage: string | null) => {
         env,
         awsAuth: storage === "ddb-es" || storage === "ddb-os",
         steps: [
-            ...createYarnCacheSteps(),
-            ...createBuildRunCacheSteps(),
+            ...yarnCacheSteps,
+            ...buildRunCacheSteps,
             ...yarnInstallBuildSteps,
             ...withCommonParams(
                 [{ name: "Run tests", run: "yarn test ${{ matrix.package.cmd }}" }],
@@ -316,18 +309,18 @@ const createPushWorkflow = (branchName: string) => {
                 needs: "constants",
                 "runs-on": "blacksmith-4vcpu-ubuntu-2204",
                 steps: [
-                    ...createYarnCacheSteps(),
-                    ...createBuildGlobalCacheSteps(),
+                    ...yarnCacheSteps,
+                    ...buildGlobalCacheSteps,
                     ...yarnInstallBuildSteps,
-                    ...createBuildRunCacheSteps()
+                    ...buildRunCacheSteps
                 ]
             }),
             codeAnalysis: createJob({
                 name: "Static code analysis",
                 needs: ["constants", "build"],
                 steps: [
-                    ...createYarnCacheSteps(),
-                    ...createBuildRunCacheSteps(),
+                    ...yarnCacheSteps,
+                    ...buildRunCacheSteps,
                     ...withCommonParams(
                         [
                             { name: "Install dependencies", run: "yarn --immutable" },
@@ -344,11 +337,11 @@ const createPushWorkflow = (branchName: string) => {
                 name: "Static code analysis (TypeScript)",
                 "runs-on": "blacksmith-4vcpu-ubuntu-2204",
                 steps: [
-                    ...createYarnCacheSteps(),
+                    ...yarnCacheSteps,
 
                     // We're not using run cache here. We want to build all packages
                     // with TypeScript, to ensure there are no TypeScript errors.
-                    // ...createBuildRunCacheSteps,
+                    // ...buildRunCacheSteps,
 
                     ...withCommonParams(
                         [
@@ -384,8 +377,8 @@ const createPushWorkflow = (branchName: string) => {
             },
             checkout: { "fetch-depth": 0 },
             steps: [
-                ...createYarnCacheSteps(),
-                ...createBuildRunCacheSteps(),
+                ...yarnCacheSteps,
+                ...buildRunCacheSteps,
                 ...yarnInstallBuildSteps,
                 ...withCommonParams(
                     [
