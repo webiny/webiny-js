@@ -18,7 +18,7 @@ const createYarnCacheSteps = (
         {
             uses: "actions/cache@v4",
             with: {
-                path: [workingDirectory, ".yarn/cache"].join("/"),
+                path: [workingDirectory, ".yarn/cache"].filter(Boolean).join("/"),
                 key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
             }
         }
@@ -33,7 +33,7 @@ const createBuildGlobalCacheSteps = (
         {
             uses: "actions/cache@v4",
             with: {
-                path: [workingDirectory, ".webiny/cached-packages"].join("/"),
+                path: [workingDirectory, ".webiny/cached-packages"].filter(Boolean).join("/"),
                 key: "${{ needs.constants.outputs.global-cache-key }}"
             }
         }
@@ -48,7 +48,7 @@ const createBuildRunCacheSteps = (
         {
             uses: "actions/cache@v4",
             with: {
-                path: [workingDirectory, ".webiny/cached-packages"].join("/"),
+                path: [workingDirectory, ".webiny/cached-packages"].filter(Boolean).join("/"),
                 key: "${{ needs.constants.outputs.run-cache-key }}"
             }
         }

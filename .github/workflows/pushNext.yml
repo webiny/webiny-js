@@ -58,11 +58,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: /.yarn/cache
+          path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: /.webiny/cached-packages
+          path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
@@ -70,7 +70,7 @@ jobs:
         run: yarn build:quick
       - uses: actions/cache@v4
         with:
-          path: /.webiny/cached-packages
+          path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -87,11 +87,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: /.yarn/cache
+          path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: /.webiny/cached-packages
+          path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
@@ -117,7 +117,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: /.yarn/cache
+          path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn --immutable
@@ -155,11 +155,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: /.yarn/cache
+          path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: /.webiny/cached-packages
+          path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
@@ -209,11 +209,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: /.yarn/cache
+          path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: /.webiny/cached-packages
+          path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
@@ -268,11 +268,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: /.yarn/cache
+          path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: /.webiny/cached-packages
+          path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
@@ -329,11 +329,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: /.yarn/cache
+          path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: /.webiny/cached-packages
+          path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
@@ -523,11 +523,11 @@ jobs:
           path: dev
       - uses: actions/cache@v4
         with:
-          path: /.yarn/cache
+          path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: /.webiny/cached-packages
+          path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
@@ -729,11 +729,11 @@ jobs:
           path: dev
       - uses: actions/cache@v4
         with:
-          path: /.yarn/cache
+          path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: /.webiny/cached-packages
+          path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
@@ -935,11 +935,11 @@ jobs:
           path: dev
       - uses: actions/cache@v4
         with:
-          path: /.yarn/cache
+          path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: /.webiny/cached-packages
+          path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
@@ -980,11 +980,11 @@ jobs:
           fetch-depth: 0
       - uses: actions/cache@v4
         with:
-          path: /.yarn/cache
+          path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: /.webiny/cached-packages
+          path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
