@@ -9,7 +9,7 @@ interface BlockEditorConfigProps {
 const BaseBlockEditorConfig = ({ children }: BlockEditorConfigProps) => {
     return (
         <CompositionScope name={"pb.blockEditor"}>
-            <EditorConfig>{children}</EditorConfig>
+            <EditorConfig priority={"secondary"}>{children}</EditorConfig>
         </CompositionScope>
     );
 };

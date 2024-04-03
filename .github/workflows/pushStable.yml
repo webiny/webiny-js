@@ -32,8 +32,8 @@ jobs:
       - name: Create workflow run cache key
         id: run-cache-key
         run: >-
-          echo "run-cache-key=-${{ github.run_id }}-${{ github.run_attempt
-          }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
+          echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
+          vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
   build:
     name: Build
     needs: constants
@@ -61,6 +61,7 @@ jobs:
   npmReleaseBeta:
     needs:
       - constants
+      - build
     name: NPM release ("beta" tag)
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -74,8 +75,7 @@ jobs:
           node-version: 18
       - uses: actions/checkout@v4
         with:
-          with:
-            fetch-depth: 0
+          fetch-depth: 0
       - uses: actions/cache@v4
         with:
           path: .yarn/cache
@@ -100,7 +100,7 @@ jobs:
   npmReleaseLatest:
     needs:
       - constants
-      - npm-release-beta
+      - npmReleaseBeta
     name: NPM release ("latest" tag)
     environment: release
     env:

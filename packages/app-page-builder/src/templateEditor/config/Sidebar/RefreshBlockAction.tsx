@@ -4,6 +4,8 @@ import { TemplateEditorConfig } from "~/templateEditor/editorConfig/TemplateEdit
 import { useBlockReference } from "./useBlockReference";
 import { useRefreshBlock } from "~/editor/hooks/useRefreshBlock";
 
+const { ElementAction } = TemplateEditorConfig;
+
 export const RefreshBlockAction = () => {
     const blockReference = useBlockReference();
     const { refreshBlock, loading } = useRefreshBlock();
@@ -13,7 +15,7 @@ export const RefreshBlockAction = () => {
     }
 
     return (
-        <TemplateEditorConfig.Sidebar.ElementAction.IconButton
+        <ElementAction.IconButton
             label={loading ? "Refreshing..." : "Refresh block"}
             icon={<RefreshIcon />}
             onClick={() => refreshBlock(blockReference.block)}

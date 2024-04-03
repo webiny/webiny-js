@@ -1,29 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { EditorConfig } from "~/editor";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
-import { saveTemplateAction, SaveTemplateActionEvent } from "./saveTemplate";
+import { saveBlockAction, SaveBlockActionEvent } from "./saveBlock";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
-import { TemplateEditorEventActionCallableState } from "~/templateEditor/types";
+import { BlockEditorEventActionCallableState } from "~/blockEditor/types";
 import { Prompt } from "@webiny/react-router";
 
-const EventActionHandlers = () => {
-    const eventActionHandler = useEventActionHandler<TemplateEditorEventActionCallableState>();
+export const EventActionHandlers = () => {
+    const eventActionHandler = useEventActionHandler<BlockEditorEventActionCallableState>();
     const [isDirty, setDirty] = useState(false);
 
     useEffect(() => {
-        const offSaveTemplateAction = eventActionHandler.on(SaveTemplateActionEvent, (...args) => {
+        const offSaveBlockAction = eventActionHandler.on(SaveBlockActionEvent, (...args) => {
             setDirty(false);
-            return saveTemplateAction(...args);
+            return saveBlockAction(...args);
         });
 
-        const offUpdateTemplateAction = eventActionHandler.on(
+        const offUpdateBlockAction = eventActionHandler.on(
             UpdateDocumentActionEvent,
             async (state, _, args) => {
                 setDirty(true);
                 return {
                     state: {
-                        template: {
-                            ...state.template,
+                        block: {
+                            ...state.block,
                             ...(args?.document || {})
                         }
                     },
@@ -33,8 +32,8 @@ const EventActionHandlers = () => {
         );
 
         return () => {
-            offSaveTemplateAction();
-            offUpdateTemplateAction();
+            offSaveBlockAction();
+            offUpdateBlockAction();
         };
     }, []);
 
@@ -43,13 +42,5 @@ const EventActionHandlers = () => {
             when={isDirty}
             message="There are some unsaved changes! Are you sure you want to navigate away and discard all changes?"
         />
-    );
-};
-
-export const EventActionPlugins = () => {
-    return (
-        <EditorConfig>
-            <EventActionHandlers />
-        </EditorConfig>
     );
 };

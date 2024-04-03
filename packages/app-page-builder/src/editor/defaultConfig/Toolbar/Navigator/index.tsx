@@ -14,17 +14,17 @@ const drawerClassName = css({
     }
 });
 
-const { Toolbar } = EditorConfig;
+const { Ui } = EditorConfig;
 
 export const Navigator = () => {
     return (
-        <Toolbar.Element.DrawerTrigger
+        <Ui.Toolbar.Element.DrawerTrigger
             icon={<NavigatorIcon />}
             label={"Navigator"}
             drawer={
-                <Toolbar.Element.Drawer drawerClassName={drawerClassName}>
+                <Ui.Toolbar.Element.Drawer drawerClassName={drawerClassName}>
                     <NavigatorDrawer />
-                </Toolbar.Element.Drawer>
+                </Ui.Toolbar.Element.Drawer>
             }
         />
     );

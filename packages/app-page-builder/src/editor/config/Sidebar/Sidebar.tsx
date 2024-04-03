@@ -8,7 +8,6 @@ import {
 } from "~/editor/config/Elements";
 import { Tab } from "./Tab";
 import { useActiveGroup } from "~/editor/config/Sidebar/useActiveGroup";
-import { IconButton } from "./IconButton";
 import { createGetId } from "~/editor/config/createGetId";
 
 const SCOPE = "sidebar";
@@ -44,29 +43,6 @@ const Elements = makeDecoratable("SidebarElements", (props: ElementsProps) => {
     return <BaseElements {...props} scope={SCOPE} />;
 });
 
-export type ElementPropertyProps = Omit<BaseElementProps, "scope">;
-
-const getElementPropertyId = createGetId(SCOPE)("elementProperty");
-
-const BaseElementProperty = makeDecoratable(
-    "SidebarElementProperty",
-    (props: ElementPropertyProps) => {
-        return (
-            <ScopedElement
-                {...props}
-                id={getElementPropertyId(props.name)}
-                before={props.before ? getElementPropertyId(props.before) : undefined}
-                after={props.after ? getElementPropertyId(props.after) : undefined}
-            />
-        );
-    }
-);
-
-const ElementPropertyGroups = {
-    STYLE_GROUP: "styleProperties",
-    ELEMENT_GROUP: "elementProperties"
-};
-
 export type GroupProps = Omit<BaseElementProps, "group">;
 
 const BaseGroup = makeDecoratable("SidebarGroup", (props: GroupProps) => {
@@ -81,30 +57,10 @@ const BaseGroup = makeDecoratable("SidebarGroup", (props: GroupProps) => {
     );
 });
 
-const getElementActionId = createGetId(SCOPE)("elementAction");
-
-export type ElementActionProps = Omit<BaseElementProps, "group">;
-
-const BaseElementAction = makeDecoratable("SidebarElementAction", (props: ElementActionProps) => {
-    return (
-        <ScopedElement
-            {...props}
-            group={"actions"}
-            id={getElementActionId(props.name)}
-            before={props.before ? getElementActionId(props.before) : undefined}
-            after={props.after ? getElementActionId(props.after) : undefined}
-        />
-    );
-});
-
 export const Sidebar = Object.assign(BaseSidebar, {
     Layout,
     Element: BaseElement,
-    ElementProperty: Object.assign(BaseElementProperty, ElementPropertyGroups),
     Elements,
     Group: Object.assign(BaseGroup, { Tab }),
-    ElementAction: Object.assign(BaseElementAction, {
-        IconButton
-    }),
     useActiveGroup
 });

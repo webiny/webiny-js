@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { Toolbar } from "./Toolbar";
-import { useDrawers } from "./DrawersProvider";
-import { DrawerProvider } from "./DrawerProvider";
+import { useDrawers } from "./Drawers/DrawersProvider";
+import { DrawerProvider } from "./Drawers/DrawerProvider";
 
 const ToolbarDrawerContainer = styled("div")({
     top: 64,
@@ -11,6 +11,7 @@ const ToolbarDrawerContainer = styled("div")({
     backgroundColor: "var(--mdc-theme-surface)",
     zIndex: 2
 });
+
 const ToolbarContainer = styled("div")({
     position: "fixed",
     display: "inline-block",
@@ -36,15 +37,15 @@ export const Layout = () => {
 
     return (
         <>
-            <ToolbarDrawerContainer>
+            <ToolbarDrawerContainer data-role={"toolbar-drawers"}>
                 {drawers.map(drawer => (
                     <DrawerProvider key={drawer.id} drawer={drawer}>
                         {drawer.element}
                     </DrawerProvider>
                 ))}
             </ToolbarDrawerContainer>
-            <ToolbarContainer>
-                <ToolbarActions>
+            <ToolbarContainer data-role={"toolbar-layout"}>
+                <ToolbarActions data-role={"toolbar-actions"}>
                     <div>
                         <Toolbar.Elements group={"top"} />
                     </div>

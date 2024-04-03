@@ -32,7 +32,7 @@ export function BackButton() {
                 onClick={onClick}
                 icon={<BackIcon />}
             />
-            <BlockEditorConfig.TopBar.Divider />
+            <BlockEditorConfig.Ui.TopBar.Divider />
         </>
     );
 }

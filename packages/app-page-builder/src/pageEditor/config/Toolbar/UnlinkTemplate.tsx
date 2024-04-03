@@ -84,7 +84,7 @@ const UnlinkTemplateAction = () => {
     );
 };
 
-export const UnlinkTemplate = PageEditorConfig.Toolbar.Elements.createDecorator(Original => {
+export const UnlinkTemplate = PageEditorConfig.Ui.Toolbar.Elements.createDecorator(Original => {
     return function UnlinkTemplate(props) {
         const [isTemplateMode] = useTemplateMode();
 

@@ -6,17 +6,40 @@ import { Content } from "./Content/Content";
 import { Toolbar } from "./Toolbar/Toolbar";
 import { Sidebar } from "./Sidebar/Sidebar";
 import { Elements } from "~/editor/config/Elements";
+import { OnActiveElement } from "./OnActiveElement";
+import { NoActiveElement } from "./NoActiveElement";
+import { ElementProperties, ElementProperty } from "./ElementProperty";
+import { ElementAction } from "./ElementAction";
 
 const base = createConfigurableComponent<ContentEntryEditorConfig>("PageBuilderEditorConfig");
 
 export const EditorConfig = Object.assign(base.Config, {
-    Element,
-    Elements,
-    Layout,
-    Content,
-    TopBar,
-    Toolbar,
-    Sidebar,
+    /**
+     * Components to configure editor UI.
+     */
+    Ui: {
+        Element,
+        Elements,
+        Layout,
+        Content,
+        TopBar,
+        Toolbar,
+        Sidebar,
+        OnActiveElement,
+        NoActiveElement
+    },
+    /**
+     * Define a new element property.
+     */
+    ElementProperty,
+    /**
+     * Render element properties for the given group.
+     */
+    ElementProperties,
+    /**
+     * Define an element action.
+     */
+    ElementAction,
     useEditorConfig
 });
 

@@ -1,35 +1,27 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import { DecoratableComponent, GenericComponent, createDecorator } from "@webiny/app-admin";
+import { createDecorator, DecoratableComponent, GenericComponent } from "@webiny/app-admin";
 import {
     EventActionHandlerProvider,
     EventActionHandlerProviderProps,
     GetCallableState
 } from "~/editor/contexts/EventActionHandlerProvider";
-import { usePage } from "~/pageEditor/hooks/usePage";
-import { useRevisions } from "~/pageEditor/hooks/useRevisions";
-import { TemplateModeAtomType, useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";
-import { PageAtomType, RevisionsAtomType } from "~/pageEditor/state";
-import { PageEditorEventActionCallableState } from "~/pageEditor/types";
+import { TemplateEditorEventActionCallableState } from "~/templateEditor/types";
+import { PageTemplate } from "~/templateEditor/state";
+import { useTemplate } from "~/templateEditor/hooks/useTemplate";
 import { PbElement, PbEditorElement } from "~/types";
 
-type ProviderProps = EventActionHandlerProviderProps<PageEditorEventActionCallableState>;
+type ProviderProps = EventActionHandlerProviderProps<TemplateEditorEventActionCallableState>;
 
-const PbEventActionHandler = createDecorator(
+export const EventActionHandlerDecorator = createDecorator(
     EventActionHandlerProvider as DecoratableComponent<GenericComponent<ProviderProps>>,
     Component => {
         return function PbEventActionHandlerProvider(props) {
-            const pageAtomValueRef = useRef<PageAtomType>();
-            const revisionsAtomValueRef = useRef<RevisionsAtomType>();
-            const templateModeAtomValueRef = useRef<TemplateModeAtomType>();
-            const [pageAtomValue, setPageAtomValue] = usePage();
-            const [revisionsAtomValue] = useRevisions();
-            const [templateModeAtomValue] = useTemplateMode();
+            const templateAtomValueRef = useRef<PageTemplate>();
+            const [templateAtomValue, setTemplateAtomValue] = useTemplate();
 
             useEffect(() => {
-                pageAtomValueRef.current = pageAtomValue;
-                revisionsAtomValueRef.current = revisionsAtomValue;
-                templateModeAtomValueRef.current = templateModeAtomValue;
-            }, [pageAtomValue, revisionsAtomValue, templateModeAtomValue]);
+                templateAtomValueRef.current = templateAtomValue;
+            }, [templateAtomValue]);
 
             const getElementTree: ProviderProps["getElementTree"] = useMemo(
                 () => [
@@ -70,8 +62,8 @@ const PbEventActionHandler = createDecorator(
                     next => {
                         return ({ state, history = true }) => {
                             const res = next({ state, history });
-                            if (res.state.page) {
-                                setPageAtomValue(res.state.page);
+                            if (res.state.template) {
+                                setTemplateAtomValue(res.state.template);
                             }
 
                             return { state, history };
@@ -85,9 +77,7 @@ const PbEventActionHandler = createDecorator(
                 const callableState = next(state);
 
                 return {
-                    page: pageAtomValueRef.current as PageAtomType,
-                    revisions: revisionsAtomValueRef.current as RevisionsAtomType,
-                    isTemplateMode: templateModeAtomValueRef.current as TemplateModeAtomType,
+                    template: templateAtomValueRef.current as PageTemplate,
                     ...callableState
                 };
             };
@@ -103,7 +93,3 @@ const PbEventActionHandler = createDecorator(
         };
     }
 );
-
-export const EventActionHandlerPlugin = () => {
-    return <PbEventActionHandler />;
-};

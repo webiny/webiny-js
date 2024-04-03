@@ -64,7 +64,7 @@ const UnlinkTab = ({ permission }: UnlinkTabProps) => {
     );
 };
 
-export const UnlinkBlock = TemplateEditorConfig.Sidebar.Elements.createDecorator(Original => {
+export const UnlinkBlock = TemplateEditorConfig.Ui.Sidebar.Elements.createDecorator(Original => {
     return function SidebarElements(props) {
         const [element] = useActiveElement();
 

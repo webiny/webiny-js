@@ -28,6 +28,8 @@ const StyleFromPlugin = ({ name, plugin }: StyleFromPluginProps) => {
     ) : null;
 };
 
+const { Ui, ElementProperty } = EditorConfig;
+
 export const StyleSettingsAdapter = () => {
     const stylePlugins = plugins.byType<PbEditorPageElementStyleSettingsPlugin>(
         "pb-editor-page-element-style-settings"
@@ -38,15 +40,19 @@ export const StyleSettingsAdapter = () => {
             {stylePlugins.map(plugin => {
                 const name = getPropertyName(String(plugin.name));
                 return (
-                    <EditorConfig.Sidebar.ElementProperty
+                    <ElementProperty
                         key={plugin.name}
-                        group={EditorConfig.Sidebar.ElementProperty.STYLE_GROUP}
+                        group={EditorConfig.ElementProperty.STYLE}
                         name={name}
-                        element={<StyleFromPlugin name={name} plugin={plugin} />}
+                        element={
+                            <Ui.OnActiveElement>
+                                <StyleFromPlugin name={name} plugin={plugin} />
+                            </Ui.OnActiveElement>
+                        }
                     />
                 );
             })}
-            <EditorConfig.Sidebar.ElementProperty name={"property"} before={"$first"} />
+            <ElementProperty name={"property"} before={"$first"} />
         </>
     );
 };

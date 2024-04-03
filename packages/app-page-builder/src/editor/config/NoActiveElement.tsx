@@ -1,14 +1,14 @@
 import React from "react";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 
-interface OnActiveElementProps {
+export interface NoActiveElementProps {
     children?: React.ReactNode;
 }
 
-export const OnActiveElement = ({ children }: OnActiveElementProps) => {
+export const NoActiveElement = ({ children }: NoActiveElementProps) => {
     const [element] = useActiveElement();
 
-    if (!element) {
+    if (element) {
         return null;
     }
 
