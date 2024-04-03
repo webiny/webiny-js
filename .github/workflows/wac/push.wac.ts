@@ -115,7 +115,7 @@ const createCypressJobs = (dbSetup: string) => {
         env,
         checkout: {
             "fetch-depth": 0,
-            path: "dev"
+            path: DIR_CLONED_REPO
         },
         awsAuth: true,
         steps: [
@@ -221,7 +221,6 @@ const createCypressJobs = (dbSetup: string) => {
         },
         environment: "next",
         env,
-        checkout: { path: "dev" },
         steps: [
             ...createYarnCacheSteps(),
             ...createBuildRunCacheSteps(),

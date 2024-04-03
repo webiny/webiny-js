@@ -397,7 +397,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          path: dev
+          path: cloned-repo
       - uses: actions/cache@v4
         with:
           path: cloned-repo/.yarn/cache
@@ -520,8 +520,6 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
-        with:
-          path: dev
       - uses: actions/cache@v4
         with:
           path: .yarn/cache
@@ -599,7 +597,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          path: dev
+          path: cloned-repo
       - uses: actions/cache@v4
         with:
           path: cloned-repo/.yarn/cache
@@ -727,8 +725,6 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
-        with:
-          path: dev
       - uses: actions/cache@v4
         with:
           path: .yarn/cache
@@ -806,7 +802,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          path: dev
+          path: cloned-repo
       - uses: actions/cache@v4
         with:
           path: cloned-repo/.yarn/cache
@@ -934,8 +930,6 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
-        with:
-          path: dev
       - uses: actions/cache@v4
         with:
           path: .yarn/cache
