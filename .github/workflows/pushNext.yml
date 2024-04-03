@@ -56,6 +56,8 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
+        with:
+          path: webiny-js
       - uses: actions/cache@v4
         with:
           path: webiny-js/.yarn/cache
@@ -87,6 +89,8 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
+        with:
+          path: webiny-js
       - uses: actions/cache@v4
         with:
           path: webiny-js/.yarn/cache
@@ -122,6 +126,8 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
+        with:
+          path: webiny-js
       - uses: actions/cache@v4
         with:
           path: webiny-js/.yarn/cache
@@ -163,6 +169,8 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
+        with:
+          path: webiny-js
       - uses: actions/cache@v4
         with:
           path: webiny-js/.yarn/cache
@@ -220,6 +228,8 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
+        with:
+          path: webiny-js
       - uses: actions/cache@v4
         with:
           path: webiny-js/.yarn/cache
@@ -282,6 +292,8 @@ jobs:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
       - uses: actions/checkout@v4
+        with:
+          path: webiny-js
       - uses: actions/cache@v4
         with:
           path: webiny-js/.yarn/cache
@@ -346,6 +358,8 @@ jobs:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
       - uses: actions/checkout@v4
+        with:
+          path: webiny-js
       - uses: actions/cache@v4
         with:
           path: webiny-js/.yarn/cache
@@ -541,6 +555,8 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
+        with:
+          path: webiny-js
       - uses: actions/cache@v4
         with:
           path: webiny-js/.yarn/cache
@@ -749,6 +765,8 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
+        with:
+          path: webiny-js
       - uses: actions/cache@v4
         with:
           path: webiny-js/.yarn/cache
@@ -957,6 +975,8 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
+        with:
+          path: webiny-js
       - uses: actions/cache@v4
         with:
           path: webiny-js/.yarn/cache

@@ -204,6 +204,7 @@ const createCypressJobs = (dbSetup: string) => {
         },
         environment: "next",
         env,
+        checkout: { path: DIR_WEBINY_JS },
         steps: [
             ...yarnCacheSteps,
             ...buildRunCacheSteps,
@@ -265,6 +266,7 @@ const createJestTestsJob = (storage: string | null) => {
         "runs-on": "${{ matrix.os }}",
         env,
         awsAuth: storage === "ddb-es" || storage === "ddb-os",
+        checkout: { path: DIR_WEBINY_JS },
         steps: [
             ...yarnCacheSteps,
             ...buildRunCacheSteps,
@@ -307,6 +309,7 @@ const createPushWorkflow = (branchName: string) => {
             build: createJob({
                 name: "Build",
                 needs: "constants",
+                checkout: { path: DIR_WEBINY_JS },
                 "runs-on": "blacksmith-4vcpu-ubuntu-2204",
                 steps: [
                     ...yarnCacheSteps,
@@ -318,6 +321,7 @@ const createPushWorkflow = (branchName: string) => {
             codeAnalysis: createJob({
                 name: "Static code analysis",
                 needs: ["constants", "build"],
+                checkout: { path: DIR_WEBINY_JS },
                 steps: [
                     ...yarnCacheSteps,
                     ...buildRunCacheSteps,
@@ -336,6 +340,7 @@ const createPushWorkflow = (branchName: string) => {
             staticCodeAnalysisTs: createJob({
                 name: "Static code analysis (TypeScript)",
                 "runs-on": "blacksmith-4vcpu-ubuntu-2204",
+                checkout: { path: DIR_WEBINY_JS },
                 steps: [
                     ...yarnCacheSteps,
 
