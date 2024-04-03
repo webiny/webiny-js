@@ -264,7 +264,7 @@ const createPushWorkflow = (branchName: string) => {
             build: createJob({
                 name: "Build",
                 needs: "init",
-                "runs-on": "webiny-build-packages",
+                "runs-on": "blacksmith-4vcpu-ubuntu-2204",
                 steps: [
                     {
                         uses: "actions/cache@v4",
@@ -342,7 +342,7 @@ const createPushWorkflow = (branchName: string) => {
             }),
             staticCodeAnalysisTs: createJob({
                 name: "Static code analysis (TypeScript)",
-                "runs-on": "webiny-build-packages",
+                "runs-on": "blacksmith-4vcpu-ubuntu-2204",
                 steps: [
                     {
                         uses: "actions/cache@v4",
