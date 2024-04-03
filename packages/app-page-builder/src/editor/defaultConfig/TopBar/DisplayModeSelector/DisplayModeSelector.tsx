@@ -1,14 +1,11 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import { css } from "emotion";
 import classNames from "classnames";
-import { plugins } from "@webiny/plugins";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
-import { PbEditorResponsiveModePlugin } from "~/types";
-import { usePageBuilder } from "~/hooks/usePageBuilder";
-import { useUI } from "~/editor/hooks/useUI";
-import { setDisplayModeMutation } from "~/editor/recoil/modules";
+import { DisplayMode } from "~/types";
+import { useDisplayMode } from "~/editor";
 
 const classes = {
     wrapper: css({
@@ -84,44 +81,24 @@ const classes = {
 };
 
 export const DisplayModeSelector = () => {
-    const [{ displayMode, pagePreviewDimension }, setUiValue] = useUI();
-    const {
-        responsiveDisplayMode: { setDisplayMode }
-    } = usePageBuilder();
-
-    const setEditorMode = useCallback(
-        displayMode => {
-            setUiValue(prev => setDisplayModeMutation(prev, displayMode));
-            /**
-             * We are updating the "displayMode" in PageBuilder context.
-             * Because "ElementRoot" needs its value to apply "visibility" element style setting.
-             */
-            setDisplayMode(displayMode);
-        },
-        [displayMode]
-    );
-
-    const editorModes = useMemo(
-        () => plugins.byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode"),
-        []
-    );
+    const { displayMode, displayModes, setDisplayMode } = useDisplayMode();
 
     const responsiveBarContent = useMemo(() => {
-        return editorModes.map(({ config: { displayMode: mode, icon, toolTip } }) => {
+        return displayModes.map(({ displayMode: mode, icon, tooltip }) => {
             return (
                 <Tooltip
                     key={mode}
                     content={
                         <div className={classes.tooltip}>
                             <div className={"tooltip__title"}>
-                                <Typography use={"subtitle1"}>{toolTip.title}</Typography>
+                                <Typography use={"subtitle1"}>{tooltip.title}</Typography>
                             </div>
                             <div className={"tooltip__info"}>
-                                {toolTip.subTitleIcon}
-                                <Typography use={"body2"}>{toolTip.subTitle}</Typography>
+                                {tooltip.subTitleIcon}
+                                <Typography use={"body2"}>{tooltip.subTitle}</Typography>
                             </div>
                             <div className={"tooltip__body"}>
-                                <Typography use={"body2"}>{toolTip.body}</Typography>
+                                <Typography use={"body2"}>{tooltip.body}</Typography>
                             </div>
                         </div>
                     }
@@ -130,25 +107,11 @@ export const DisplayModeSelector = () => {
                         active: mode === displayMode
                     })}
                 >
-                    <IconButton icon={icon} onClick={() => setEditorMode(mode)} />
+                    <IconButton icon={icon} onClick={() => setDisplayMode(mode as DisplayMode)} />
                 </Tooltip>
             );
         });
-    }, [setEditorMode, displayMode]);
+    }, [setDisplayMode, displayMode]);
 
-    return (
-        <div className={classes.wrapper}>
-            {responsiveBarContent}
-            <div className={classes.dimensionIndicator}>
-                <span className="width">
-                    <Typography use={"body2"}>{pagePreviewDimension.width}</Typography>
-                    <Typography use={"body2"}>PX</Typography>
-                </span>
-                <span className="height">
-                    <Typography use={"body2"}>{"100"}</Typography>
-                    <Typography use={"body2"}>%</Typography>
-                </span>
-            </div>
-        </div>
-    );
+    return <div className={classes.wrapper}>{responsiveBarContent}</div>;
 };
