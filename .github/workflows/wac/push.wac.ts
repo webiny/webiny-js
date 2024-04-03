@@ -3,284 +3,284 @@ import { createJob, createValidateWorkflowsJob } from "./jobs";
 import { createDeployWebinySteps, createSetupVerdaccioSteps } from "./steps";
 import { listPackagesWithJestTests, NODE_VERSION } from "./utils";
 
-const DIR_WEBINY_JS = "webiny-js";
-const DIR_TEST_PROJECT = "new-webiny-project";
-
 const withCommonParams = (
     steps: NonNullable<NormalJob["steps"]>,
     commonParams: Record<string, any>
 ) => steps.map(step => ({ ...step, ...commonParams }));
 
-const yarnInstallBuildSteps = withCommonParams(
-    [
-        { name: "Install dependencies", run: "yarn --immutable" },
-        { name: "Build packages", run: "yarn build:quick" }
-    ],
-    { "working-directory": DIR_WEBINY_JS }
-);
+const createPushWorkflow = (branchName: string) => {
+    const ucFirstBranchName = branchName.charAt(0).toUpperCase() + branchName.slice(1);
 
-const yarnCacheSteps = [
-    {
-        uses: "actions/cache@v4",
-        with: {
-            path: DIR_WEBINY_JS + "/.yarn/cache",
-            key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-        }
-    }
-] as const;
+    const DIR_WEBINY_JS = branchName;
+    const DIR_TEST_PROJECT = "new-webiny-project";
 
-const buildGlobalCacheSteps = [
-    {
-        uses: "actions/cache@v4",
-        with: {
-            path: DIR_WEBINY_JS + "/.webiny/cached-packages",
-            key: "${{ needs.constants.outputs.global-cache-key }}"
-        }
-    }
-] as const;
+    const yarnInstallBuildSteps = withCommonParams(
+        [
+            { name: "Install dependencies", run: "yarn --immutable" },
+            { name: "Build packages", run: "yarn build:quick" }
+        ],
+        { "working-directory": DIR_WEBINY_JS }
+    );
 
-const buildRunCacheSteps = [
-    {
-        uses: "actions/cache@v4",
-        with: {
-            path: DIR_WEBINY_JS + "/.webiny/cached-packages",
-            key: "${{ needs.constants.outputs.run-cache-key }}"
-        }
-    }
-] as const;
-
-const createCypressJobs = (dbSetup: string) => {
-    const ucFirstDbSetup = dbSetup.charAt(0).toUpperCase() + dbSetup.slice(1);
-
-    const jobNames = {
-        constants: `e2eTests${ucFirstDbSetup}-constants`,
-        projectSetup: `e2eTests${ucFirstDbSetup}-setup`,
-        cypressTests: `e2eTests${ucFirstDbSetup}-cypress`
-    };
-
-    const constantsJob: NormalJob = createJob({
-        name: `Constants - ${dbSetup.toUpperCase()}`,
-        needs: ["build"],
-        outputs: {
-            "cypress-folders": "${{ steps.list-cypress-folders.outputs.cypress-folders }}",
-            "pulumi-backend-url": "${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}"
-        },
-        steps: [
-            {
-                name: "List Cypress tests folders",
-                id: "list-cypress-folders",
-                run: 'echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT'
-            },
-            {
-                name: "Get Pulumi backend URL",
-                id: "get-pulumi-backend-url",
-                run: `echo "pulumi-backend-url=\${{ secrets.WEBINY_PULUMI_BACKEND }}\${{ github.run_id }}_${dbSetup}" >> $GITHUB_OUTPUT`
+    const yarnCacheSteps = [
+        {
+            uses: "actions/cache@v4",
+            with: {
+                path: DIR_WEBINY_JS + "/.yarn/cache",
+                key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
             }
-        ]
-    });
+        }
+    ] as const;
 
-    const env: Record<string, string> = {
-        CYPRESS_MAILOSAUR_API_KEY: "${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}",
-        PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
-        PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
-        WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
-        YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
-    };
-
-    if (dbSetup === "ddb-es") {
-        env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
-        env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
-        env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
-    } else if (dbSetup === "ddb-os") {
-        // We still use the same environment variables as for "ddb-es" setup, it's
-        // just that the values are read from different secrets.
-        env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
-        env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
-        env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
-    }
-
-    const projectSetupJob: NormalJob = createJob({
-        needs: ["constants", "build", jobNames.constants],
-        name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
-        outputs: {
-            "cypress-config": "${{ steps.save-cypress-config.outputs.cypress-config }}"
-        },
-        environment: "next",
-        env,
-        checkout: {
-            "fetch-depth": 0,
-            path: DIR_WEBINY_JS
-        },
-        awsAuth: true,
-        steps: [
-            ...yarnCacheSteps,
-            ...buildRunCacheSteps,
-            ...yarnInstallBuildSteps,
-            ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
-            ...withCommonParams(
-                [
-                    {
-                        name: 'Create ".npmrc" file in the project root, with a dummy auth token',
-                        run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
-                    },
-                    {
-                        name: "Version and publish to Verdaccio",
-                        run: "yarn release --type=verdaccio"
-                    }
-                ],
-                { "working-directory": DIR_WEBINY_JS }
-            ),
-            {
-                name: "Create verdaccio-files artifact",
-                uses: "actions/upload-artifact@v4",
-                with: {
-                    name: `verdaccio-files-${dbSetup}`,
-                    "retention-days": 1,
-                    path: [DIR_WEBINY_JS + "/.verdaccio/", DIR_WEBINY_JS + "/.verdaccio.yaml"].join(
-                        "\n"
-                    )
-                }
-            },
-            {
-                name: "Disable Webiny telemetry",
-                run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
-            },
-            {
-                name: "Create a new Webiny project",
-                run: `npx create-webiny-project@local-npm ${DIR_TEST_PROJECT} --tag local-npm --no-interactive --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"region":"$\{{ env.AWS_REGION }}","storageOperations":"${dbSetup}"}'
-`
-            },
-            {
-                name: "Print CLI version",
-                "working-directory": DIR_TEST_PROJECT,
-                run: "yarn webiny --version"
-            },
-            {
-                name: "Create project-files artifact",
-                uses: "actions/upload-artifact@v4",
-                with: {
-                    name: `project-files-${dbSetup}`,
-                    "retention-days": 1,
-                    path: [
-                        `${DIR_TEST_PROJECT}/`,
-                        `!${DIR_TEST_PROJECT}/node_modules/**/*`,
-                        `!${DIR_TEST_PROJECT}/**/node_modules/**/*`,
-                        `!${DIR_TEST_PROJECT}/.yarn/cache/**/*`
-                    ].join("\n")
-                }
-            },
-            ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
-            ...withCommonParams(
-                [
-                    {
-                        name: "Create Cypress config",
-                        run: `yarn setup-cypress --projectFolder ../${DIR_TEST_PROJECT}`
-                    },
-                    {
-                        name: "Save Cypress config",
-                        id: "save-cypress-config",
-                        run: "echo \"cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\\t\\n\\r')\" >> $GITHUB_OUTPUT"
-                    },
-                    {
-                        name: "Cypress - run installation wizard test",
-                        run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
-                    }
-                ],
-                { "working-directory": DIR_WEBINY_JS }
-            )
-        ]
-    });
-
-    const cypressTestsJob = createJob({
-        name: `$\{{ matrix.cypress-folder }} (${dbSetup}, $\{{ matrix.os }}, Node v$\{{ matrix.node }})`,
-        needs: ["constants", jobNames.constants, jobNames.projectSetup],
-        strategy: {
-            "fail-fast": false,
-            matrix: {
-                os: ["ubuntu-latest"],
-                node: [NODE_VERSION],
-                "cypress-folder": `$\{{ fromJson(needs.${jobNames.constants}.outputs.cypress-folders) }}`
+    const buildGlobalCacheSteps = [
+        {
+            uses: "actions/cache@v4",
+            with: {
+                path: DIR_WEBINY_JS + "/.webiny/cached-packages",
+                key: "${{ needs.constants.outputs.global-cache-key }}"
             }
-        },
-        environment: "next",
-        env,
-        checkout: { path: DIR_WEBINY_JS },
-        steps: [
-            ...yarnCacheSteps,
-            ...buildRunCacheSteps,
-            ...yarnInstallBuildSteps,
-            ...withCommonParams(
-                [
-                    {
-                        name: "Set up Cypress config",
-                        run: `echo '$\{{ needs.${jobNames.projectSetup}.outputs.cypress-config }}' > cypress-tests/cypress.config.ts`
-                    },
-                    {
-                        name: 'Cypress - run "${{ matrix.cypress-folder }}" tests',
-                        "timeout-minutes": 40,
-                        run: 'yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"'
-                    }
-                ],
-                { "working-directory": DIR_WEBINY_JS }
-            )
-        ]
-    });
+        }
+    ] as const;
 
-    return {
-        [jobNames.constants]: constantsJob,
-        [jobNames.projectSetup]: projectSetupJob,
-        [jobNames.cypressTests]: cypressTestsJob
-    };
-};
+    const buildRunCacheSteps = [
+        {
+            uses: "actions/cache@v4",
+            with: {
+                path: DIR_WEBINY_JS + "/.webiny/cached-packages",
+                key: "${{ needs.constants.outputs.run-cache-key }}"
+            }
+        }
+    ] as const;
 
-const createJestTestsJob = (storage: string | null) => {
-    const env: Record<string, string> = {};
+    const createCypressJobs = (dbSetup: string) => {
+        const ucFirstDbSetup = dbSetup.charAt(0).toUpperCase() + dbSetup.slice(1);
 
-    if (storage) {
-        if (storage === "ddb-es") {
+        const jobNames = {
+            constants: `e2eTests${ucFirstDbSetup}-constants`,
+            projectSetup: `e2eTests${ucFirstDbSetup}-setup`,
+            cypressTests: `e2eTests${ucFirstDbSetup}-cypress`
+        };
+
+        const constantsJob: NormalJob = createJob({
+            name: `Constants - ${dbSetup.toUpperCase()}`,
+            needs: ["build"],
+            outputs: {
+                "cypress-folders": "${{ steps.list-cypress-folders.outputs.cypress-folders }}",
+                "pulumi-backend-url": "${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}"
+            },
+            steps: [
+                {
+                    name: "List Cypress tests folders",
+                    id: "list-cypress-folders",
+                    run: 'echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT'
+                },
+                {
+                    name: "Get Pulumi backend URL",
+                    id: "get-pulumi-backend-url",
+                    run: `echo "pulumi-backend-url=\${{ secrets.WEBINY_PULUMI_BACKEND }}\${{ github.run_id }}_${dbSetup}" >> $GITHUB_OUTPUT`
+                }
+            ]
+        });
+
+        const env: Record<string, string> = {
+            CYPRESS_MAILOSAUR_API_KEY: "${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}",
+            PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
+            PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
+            WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
+            YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
+        };
+
+        if (dbSetup === "ddb-es") {
             env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
             env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
-            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
-        } else if (storage === "ddb-os") {
+            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
+        } else if (dbSetup === "ddb-os") {
             // We still use the same environment variables as for "ddb-es" setup, it's
             // just that the values are read from different secrets.
             env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
             env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
-            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
+            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
         }
-    }
 
-    const packages = listPackagesWithJestTests({ storage });
+        const projectSetupJob: NormalJob = createJob({
+            needs: ["constants", "build", jobNames.constants],
+            name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
+            outputs: {
+                "cypress-config": "${{ steps.save-cypress-config.outputs.cypress-config }}"
+            },
+            environment: "next",
+            env,
+            checkout: {
+                "fetch-depth": 0,
+                path: DIR_WEBINY_JS
+            },
+            awsAuth: true,
+            steps: [
+                ...yarnCacheSteps,
+                ...buildRunCacheSteps,
+                ...yarnInstallBuildSteps,
+                ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
+                ...withCommonParams(
+                    [
+                        {
+                            name: 'Create ".npmrc" file in the project root, with a dummy auth token',
+                            run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
+                        },
+                        {
+                            name: "Version and publish to Verdaccio",
+                            run: "yarn release --type=verdaccio"
+                        }
+                    ],
+                    { "working-directory": DIR_WEBINY_JS }
+                ),
+                {
+                    name: "Create verdaccio-files artifact",
+                    uses: "actions/upload-artifact@v4",
+                    with: {
+                        name: `verdaccio-files-${dbSetup}`,
+                        "retention-days": 1,
+                        path: [DIR_WEBINY_JS + "/.verdaccio/", DIR_WEBINY_JS + "/.verdaccio.yaml"].join(
+                            "\n"
+                        )
+                    }
+                },
+                {
+                    name: "Disable Webiny telemetry",
+                    run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
+                },
+                {
+                    name: "Create a new Webiny project",
+                    run: `npx create-webiny-project@local-npm ${DIR_TEST_PROJECT} --tag local-npm --no-interactive --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"region":"$\{{ env.AWS_REGION }}","storageOperations":"${dbSetup}"}'
+`
+                },
+                {
+                    name: "Print CLI version",
+                    "working-directory": DIR_TEST_PROJECT,
+                    run: "yarn webiny --version"
+                },
+                {
+                    name: "Create project-files artifact",
+                    uses: "actions/upload-artifact@v4",
+                    with: {
+                        name: `project-files-${dbSetup}`,
+                        "retention-days": 1,
+                        path: [
+                            `${DIR_TEST_PROJECT}/`,
+                            `!${DIR_TEST_PROJECT}/node_modules/**/*`,
+                            `!${DIR_TEST_PROJECT}/**/node_modules/**/*`,
+                            `!${DIR_TEST_PROJECT}/.yarn/cache/**/*`
+                        ].join("\n")
+                    }
+                },
+                ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
+                ...withCommonParams(
+                    [
+                        {
+                            name: "Create Cypress config",
+                            run: `yarn setup-cypress --projectFolder ../${DIR_TEST_PROJECT}`
+                        },
+                        {
+                            name: "Save Cypress config",
+                            id: "save-cypress-config",
+                            run: "echo \"cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\\t\\n\\r')\" >> $GITHUB_OUTPUT"
+                        },
+                        {
+                            name: "Cypress - run installation wizard test",
+                            run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
+                        }
+                    ],
+                    { "working-directory": DIR_WEBINY_JS }
+                )
+            ]
+        });
 
-    return createJob({
-        needs: ["constants", "build"],
-        name: "${{ matrix.package.cmd }}",
-        strategy: {
-            "fail-fast": false,
-            matrix: {
-                os: ["ubuntu-latest"],
-                node: [NODE_VERSION],
-                package: "${{ fromJson('" + JSON.stringify(packages) + "') }}"
+        const cypressTestsJob = createJob({
+            name: `$\{{ matrix.cypress-folder }} (${dbSetup}, $\{{ matrix.os }}, Node v$\{{ matrix.node }})`,
+            needs: ["constants", jobNames.constants, jobNames.projectSetup],
+            strategy: {
+                "fail-fast": false,
+                matrix: {
+                    os: ["ubuntu-latest"],
+                    node: [NODE_VERSION],
+                    "cypress-folder": `$\{{ fromJson(needs.${jobNames.constants}.outputs.cypress-folders) }}`
+                }
+            },
+            environment: "next",
+            env,
+            checkout: { path: DIR_WEBINY_JS },
+            steps: [
+                ...yarnCacheSteps,
+                ...buildRunCacheSteps,
+                ...yarnInstallBuildSteps,
+                ...withCommonParams(
+                    [
+                        {
+                            name: "Set up Cypress config",
+                            run: `echo '$\{{ needs.${jobNames.projectSetup}.outputs.cypress-config }}' > cypress-tests/cypress.config.ts`
+                        },
+                        {
+                            name: 'Cypress - run "${{ matrix.cypress-folder }}" tests',
+                            "timeout-minutes": 40,
+                            run: 'yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"'
+                        }
+                    ],
+                    { "working-directory": DIR_WEBINY_JS }
+                )
+            ]
+        });
+
+        return {
+            [jobNames.constants]: constantsJob,
+            [jobNames.projectSetup]: projectSetupJob,
+            [jobNames.cypressTests]: cypressTestsJob
+        };
+    };
+
+    const createJestTestsJob = (storage: string | null) => {
+        const env: Record<string, string> = {};
+
+        if (storage) {
+            if (storage === "ddb-es") {
+                env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
+                env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
+                env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
+            } else if (storage === "ddb-os") {
+                // We still use the same environment variables as for "ddb-es" setup, it's
+                // just that the values are read from different secrets.
+                env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
+                env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
+                env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
             }
-        },
-        "runs-on": "${{ matrix.os }}",
-        env,
-        awsAuth: storage === "ddb-es" || storage === "ddb-os",
-        checkout: { path: DIR_WEBINY_JS },
-        steps: [
-            ...yarnCacheSteps,
-            ...buildRunCacheSteps,
-            ...yarnInstallBuildSteps,
-            ...withCommonParams(
-                [{ name: "Run tests", run: "yarn test ${{ matrix.package.cmd }}" }],
-                { "working-directory": DIR_WEBINY_JS }
-            )
-        ]
-    });
-};
+        }
 
-const createPushWorkflow = (branchName: string) => {
-    const ucFirstBranchName = branchName.charAt(0).toUpperCase() + branchName.slice(1);
+        const packages = listPackagesWithJestTests({ storage });
+
+        return createJob({
+            needs: ["constants", "build"],
+            name: "${{ matrix.package.cmd }}",
+            strategy: {
+                "fail-fast": false,
+                matrix: {
+                    os: ["ubuntu-latest"],
+                    node: [NODE_VERSION],
+                    package: "${{ fromJson('" + JSON.stringify(packages) + "') }}"
+                }
+            },
+            "runs-on": "${{ matrix.os }}",
+            env,
+            awsAuth: storage === "ddb-es" || storage === "ddb-os",
+            checkout: { path: DIR_WEBINY_JS },
+            steps: [
+                ...yarnCacheSteps,
+                ...buildRunCacheSteps,
+                ...yarnInstallBuildSteps,
+                ...withCommonParams(
+                    [{ name: "Run tests", run: "yarn test ${{ matrix.package.cmd }}" }],
+                    { "working-directory": DIR_WEBINY_JS }
+                )
+            ]
+        });
+    };
 
     const workflow = createWorkflow({
         name: `${ucFirstBranchName} Branch - Push`,

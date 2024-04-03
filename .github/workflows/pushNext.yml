@@ -57,24 +57,24 @@ jobs:
           node-version: 18
       - uses: actions/checkout@v4
         with:
-          path: webiny-js
+          path: next
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.yarn/cache
+          path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: webiny-js
+        working-directory: next
       - name: Build packages
         run: yarn build:quick
-        working-directory: webiny-js
+        working-directory: next
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -90,30 +90,30 @@ jobs:
           node-version: 18
       - uses: actions/checkout@v4
         with:
-          path: webiny-js
+          path: next
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.yarn/cache
+          path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: webiny-js
+        working-directory: next
       - name: Check code formatting
         run: yarn prettier:check
-        working-directory: webiny-js
+        working-directory: next
       - name: Check dependencies
         run: yarn adio
-        working-directory: webiny-js
+        working-directory: next
       - name: Check TS configs
         run: yarn check-ts-configs
-        working-directory: webiny-js
+        working-directory: next
       - name: ESLint
         run: yarn eslint
-        working-directory: webiny-js
+        working-directory: next
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -127,20 +127,20 @@ jobs:
           node-version: 18
       - uses: actions/checkout@v4
         with:
-          path: webiny-js
+          path: next
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.yarn/cache
+          path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: webiny-js
+        working-directory: next
       - name: Build packages (full)
         run: yarn build
-        working-directory: webiny-js
+        working-directory: next
       - name: Check types for Cypress tests
         run: yarn cy:ts
-        working-directory: webiny-js
+        working-directory: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -170,24 +170,24 @@ jobs:
           node-version: 18
       - uses: actions/checkout@v4
         with:
-          path: webiny-js
+          path: next
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.yarn/cache
+          path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: webiny-js
+        working-directory: next
       - name: Build packages
         run: yarn build:quick
-        working-directory: webiny-js
+        working-directory: next
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
-        working-directory: webiny-js
+        working-directory: next
   jestTestsDdb:
     needs:
       - constants
@@ -229,24 +229,24 @@ jobs:
           node-version: 18
       - uses: actions/checkout@v4
         with:
-          path: webiny-js
+          path: next
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.yarn/cache
+          path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: webiny-js
+        working-directory: next
       - name: Build packages
         run: yarn build:quick
-        working-directory: webiny-js
+        working-directory: next
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
-        working-directory: webiny-js
+        working-directory: next
   jestTestsDdbEs:
     needs:
       - constants
@@ -293,24 +293,24 @@ jobs:
           aws-region: eu-central-1
       - uses: actions/checkout@v4
         with:
-          path: webiny-js
+          path: next
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.yarn/cache
+          path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: webiny-js
+        working-directory: next
       - name: Build packages
         run: yarn build:quick
-        working-directory: webiny-js
+        working-directory: next
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
-        working-directory: webiny-js
+        working-directory: next
     permissions:
       id-token: write
   jestTestsDdbOs:
@@ -359,24 +359,24 @@ jobs:
           aws-region: eu-central-1
       - uses: actions/checkout@v4
         with:
-          path: webiny-js
+          path: next
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.yarn/cache
+          path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: webiny-js
+        working-directory: next
       - name: Build packages
         run: yarn build:quick
-        working-directory: webiny-js
+        working-directory: next
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
-        working-directory: webiny-js
+        working-directory: next
     permissions:
       id-token: write
   e2eTestsDdb-constants:
@@ -433,23 +433,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          path: webiny-js
+          path: next
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.yarn/cache
+          path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: webiny-js
+        working-directory: next
       - name: Build packages
         run: yarn build:quick
-        working-directory: webiny-js
+        working-directory: next
       - name: Start Verdaccio local server
-        working-directory: webiny-js
+        working-directory: next
         run: >-
           yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
           .verdaccio.yaml
@@ -461,18 +461,18 @@ jobs:
         run: git config --global user.name "webiny-bot"
       - name: Create ".npmrc" file in the project root, with a dummy auth token
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-        working-directory: webiny-js
+        working-directory: next
       - name: Version and publish to Verdaccio
         run: yarn release --type=verdaccio
-        working-directory: webiny-js
+        working-directory: next
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb
           retention-days: 1
           path: |-
-            webiny-js/.verdaccio/
-            webiny-js/.verdaccio.yaml
+            next/.verdaccio/
+            next/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -511,18 +511,18 @@ jobs:
         run: yarn webiny deploy apps/website --env dev
       - name: Create Cypress config
         run: yarn setup-cypress --projectFolder ../new-webiny-project
-        working-directory: webiny-js
+        working-directory: next
       - name: Save Cypress config
         id: save-cypress-config
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
-        working-directory: webiny-js
+        working-directory: next
       - name: Cypress - run installation wizard test
         run: >-
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
-        working-directory: webiny-js
+        working-directory: next
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -556,30 +556,30 @@ jobs:
           node-version: 18
       - uses: actions/checkout@v4
         with:
-          path: webiny-js
+          path: next
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.yarn/cache
+          path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: webiny-js
+        working-directory: next
       - name: Build packages
         run: yarn build:quick
-        working-directory: webiny-js
+        working-directory: next
       - name: Set up Cypress config
         run: >-
           echo '${{ needs.e2eTestsDdb-setup.outputs.cypress-config }}' >
           cypress-tests/cypress.config.ts
-        working-directory: webiny-js
+        working-directory: next
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         timeout-minutes: 40
         run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
-        working-directory: webiny-js
+        working-directory: next
     runs-on: ubuntu-latest
   e2eTestsDdb-es-constants:
     name: Constants - DDB-ES
@@ -638,23 +638,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          path: webiny-js
+          path: next
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.yarn/cache
+          path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: webiny-js
+        working-directory: next
       - name: Build packages
         run: yarn build:quick
-        working-directory: webiny-js
+        working-directory: next
       - name: Start Verdaccio local server
-        working-directory: webiny-js
+        working-directory: next
         run: >-
           yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
           .verdaccio.yaml
@@ -666,18 +666,18 @@ jobs:
         run: git config --global user.name "webiny-bot"
       - name: Create ".npmrc" file in the project root, with a dummy auth token
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-        working-directory: webiny-js
+        working-directory: next
       - name: Version and publish to Verdaccio
         run: yarn release --type=verdaccio
-        working-directory: webiny-js
+        working-directory: next
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb-es
           retention-days: 1
           path: |-
-            webiny-js/.verdaccio/
-            webiny-js/.verdaccio.yaml
+            next/.verdaccio/
+            next/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -716,18 +716,18 @@ jobs:
         run: yarn webiny deploy apps/website --env dev
       - name: Create Cypress config
         run: yarn setup-cypress --projectFolder ../new-webiny-project
-        working-directory: webiny-js
+        working-directory: next
       - name: Save Cypress config
         id: save-cypress-config
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
-        working-directory: webiny-js
+        working-directory: next
       - name: Cypress - run installation wizard test
         run: >-
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
-        working-directory: webiny-js
+        working-directory: next
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -766,30 +766,30 @@ jobs:
           node-version: 18
       - uses: actions/checkout@v4
         with:
-          path: webiny-js
+          path: next
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.yarn/cache
+          path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: webiny-js
+        working-directory: next
       - name: Build packages
         run: yarn build:quick
-        working-directory: webiny-js
+        working-directory: next
       - name: Set up Cypress config
         run: >-
           echo '${{ needs.e2eTestsDdb-es-setup.outputs.cypress-config }}' >
           cypress-tests/cypress.config.ts
-        working-directory: webiny-js
+        working-directory: next
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         timeout-minutes: 40
         run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
-        working-directory: webiny-js
+        working-directory: next
     runs-on: ubuntu-latest
   e2eTestsDdb-os-constants:
     name: Constants - DDB-OS
@@ -848,23 +848,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          path: webiny-js
+          path: next
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.yarn/cache
+          path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: webiny-js
+        working-directory: next
       - name: Build packages
         run: yarn build:quick
-        working-directory: webiny-js
+        working-directory: next
       - name: Start Verdaccio local server
-        working-directory: webiny-js
+        working-directory: next
         run: >-
           yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
           .verdaccio.yaml
@@ -876,18 +876,18 @@ jobs:
         run: git config --global user.name "webiny-bot"
       - name: Create ".npmrc" file in the project root, with a dummy auth token
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-        working-directory: webiny-js
+        working-directory: next
       - name: Version and publish to Verdaccio
         run: yarn release --type=verdaccio
-        working-directory: webiny-js
+        working-directory: next
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb-os
           retention-days: 1
           path: |-
-            webiny-js/.verdaccio/
-            webiny-js/.verdaccio.yaml
+            next/.verdaccio/
+            next/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -926,18 +926,18 @@ jobs:
         run: yarn webiny deploy apps/website --env dev
       - name: Create Cypress config
         run: yarn setup-cypress --projectFolder ../new-webiny-project
-        working-directory: webiny-js
+        working-directory: next
       - name: Save Cypress config
         id: save-cypress-config
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
-        working-directory: webiny-js
+        working-directory: next
       - name: Cypress - run installation wizard test
         run: >-
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
-        working-directory: webiny-js
+        working-directory: next
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -976,30 +976,30 @@ jobs:
           node-version: 18
       - uses: actions/checkout@v4
         with:
-          path: webiny-js
+          path: next
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.yarn/cache
+          path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: webiny-js
+        working-directory: next
       - name: Build packages
         run: yarn build:quick
-        working-directory: webiny-js
+        working-directory: next
       - name: Set up Cypress config
         run: >-
           echo '${{ needs.e2eTestsDdb-os-setup.outputs.cypress-config }}' >
           cypress-tests/cypress.config.ts
-        working-directory: webiny-js
+        working-directory: next
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         timeout-minutes: 40
         run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
-        working-directory: webiny-js
+        working-directory: next
     runs-on: ubuntu-latest
   npmReleaseUnstable:
     needs:
@@ -1028,27 +1028,27 @@ jobs:
           fetch-depth: 0
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.yarn/cache
+          path: next/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: webiny-js/.webiny/cached-packages
+          path: next/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: webiny-js
+        working-directory: next
       - name: Build packages
         run: yarn build:quick
-        working-directory: webiny-js
+        working-directory: next
       - name: Create ".npmrc" file in the project root
         run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
-        working-directory: webiny-js
+        working-directory: next
       - name: Set git info
         run: |
           git config --global user.email "webiny-bot@webiny.com"
           git config --global user.name "webiny-bot"
-        working-directory: webiny-js
+        working-directory: next
       - name: Version and publish to NPM
         run: yarn release --type=unstable
-        working-directory: webiny-js
+        working-directory: next
     runs-on: ubuntu-latest
