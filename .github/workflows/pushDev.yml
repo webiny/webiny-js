@@ -371,6 +371,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2eTestsDdb-setup:
     needs:
+      - constants
       - build
       - e2eTestsDdb-constants
     name: E2E (DDB) - Project setup
@@ -569,6 +570,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2eTestsDdb-es-setup:
     needs:
+      - constants
       - build
       - e2eTestsDdb-es-constants
     name: E2E (DDB-ES) - Project setup
@@ -775,6 +777,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2eTestsDdb-os-setup:
     needs:
+      - constants
       - build
       - e2eTestsDdb-os-constants
     name: E2E (DDB-OS) - Project setup

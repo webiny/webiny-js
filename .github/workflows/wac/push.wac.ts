@@ -106,7 +106,7 @@ const createCypressJobs = (dbSetup: string) => {
     }
 
     const projectSetupJob: NormalJob = createJob({
-        needs: ["build", jobNames.constants],
+        needs: ["constants", "build", jobNames.constants],
         name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
         outputs: {
             "cypress-config": "${{ steps.save-cypress-config.outputs.cypress-config }}"
