@@ -212,7 +212,7 @@ const createCypressJobs = (dbSetup: string) => {
 
     const cypressTestsJob = createJob({
         name: `$\{{ matrix.cypress-folder }} (${dbSetup}, $\{{ matrix.os }}, Node v$\{{ matrix.node }})`,
-        needs: [jobNames.constants, jobNames.projectSetup],
+        needs: ["constants", jobNames.constants, jobNames.projectSetup],
         strategy: {
             "fail-fast": false,
             matrix: {

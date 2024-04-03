@@ -513,6 +513,7 @@ jobs:
       ${{ matrix.cypress-folder }} (ddb, ${{ matrix.os }}, Node v${{ matrix.node
       }})
     needs:
+      - constants
       - e2eTestsDdb-constants
       - e2eTestsDdb-setup
     strategy:
@@ -717,6 +718,7 @@ jobs:
       ${{ matrix.cypress-folder }} (ddb-es, ${{ matrix.os }}, Node v${{
       matrix.node }})
     needs:
+      - constants
       - e2eTestsDdb-es-constants
       - e2eTestsDdb-es-setup
     strategy:
@@ -926,6 +928,7 @@ jobs:
       ${{ matrix.cypress-folder }} (ddb-os, ${{ matrix.os }}, Node v${{
       matrix.node }})
     needs:
+      - constants
       - e2eTestsDdb-os-constants
       - e2eTestsDdb-os-setup
     strategy:
