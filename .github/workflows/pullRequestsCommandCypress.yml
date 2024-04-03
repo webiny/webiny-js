@@ -171,7 +171,7 @@ jobs:
         with:
           name: verdaccio-files-ddb
           retention-days: 1
-          path: |
+          path: |-
             checked-out-pr/.verdaccio/
             checked-out-pr/.verdaccio.yaml
       - name: Disable Webiny telemetry
@@ -412,7 +412,7 @@ jobs:
         with:
           name: verdaccio-files-ddb-es
           retention-days: 1
-          path: |
+          path: |-
             checked-out-pr/.verdaccio/
             checked-out-pr/.verdaccio.yaml
       - name: Disable Webiny telemetry
@@ -658,7 +658,7 @@ jobs:
         with:
           name: verdaccio-files-ddb-os
           retention-days: 1
-          path: |
+          path: |-
             checked-out-pr/.verdaccio/
             checked-out-pr/.verdaccio.yaml
       - name: Disable Webiny telemetry

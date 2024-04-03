@@ -23,33 +23,34 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  init:
-    name: Init
+  constants:
+    name: Create constants
     outputs:
-      day: ${{ steps.get-day.outputs.day }}
-      ts: ${{ steps.get-timestamp.outputs.ts }}
+      global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
+      run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
     steps:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v4
-      - name: Get day of the month
-        id: get-day
+      - name: Create global cache key
+        id: global-cache-key
         run: >-
-          echo "day=$(node --eval "console.log(new Date().getDate())")" >>
+          echo "global-cache-key=${{ github.base_ref }}-${{ runner.os
+          }}-$(/bin/date -u "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >>
           $GITHUB_OUTPUT
-      - name: Get timestamp
-        id: get-timestamp
+      - name: Create workflow run cache key
+        id: run-cache-key
         run: >-
-          echo "ts=$(node --eval "console.log(new Date().getTime())")" >>
-          $GITHUB_OUTPUT
+          echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
+          vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   build:
     name: Build
-    needs: init
+    needs: constants
     runs-on: blacksmith-4vcpu-ubuntu-2204
     steps:
       - uses: actions/setup-node@v4
@@ -57,26 +58,21 @@ jobs:
           node-version: 18
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
-        id: yarn-cache
         with:
-          path: .yarn/cache
+          path: /.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
-        id: global-daily-packages-cache
         with:
-          path: .webiny/cached-packages
-          key: >-
-            ${{ runner.os }}-${{ needs.init.outputs.day }}-${{
-            secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          path: /.webiny/cached-packages
+          key: ${{ needs.constants.outputs.global-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
       - name: Build packages
         run: yarn build:quick
       - uses: actions/cache@v4
-        id: packages-cache
         with:
-          path: .webiny/cached-packages
-          key: packages-cache-${{ needs.init.outputs.ts }}
+          path: /.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -92,12 +88,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: .yarn/cache
+          path: /.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: .webiny/cached-packages
-          key: packages-cache-${{ needs.init.outputs.ts }}
+          path: /.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
       - name: Check code formatting
@@ -122,7 +118,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: .yarn/cache
+          path: /.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn --immutable
@@ -134,7 +130,9 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   jestTestsNoStorage:
-    needs: init
+    needs:
+      - constants
+      - build
     name: ${{ matrix.package.cmd }}
     strategy:
       fail-fast: false
@@ -158,12 +156,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: .yarn/cache
+          path: /.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: .webiny/cached-packages
-          key: packages-cache-${{ needs.init.outputs.ts }}
+          path: /.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
       - name: Build packages
@@ -171,7 +169,9 @@ jobs:
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
   jestTestsDdb:
-    needs: init
+    needs:
+      - constants
+      - build
     name: ${{ matrix.package.cmd }}
     strategy:
       fail-fast: false
@@ -210,12 +210,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: .yarn/cache
+          path: /.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: .webiny/cached-packages
-          key: packages-cache-${{ needs.init.outputs.ts }}
+          path: /.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
       - name: Build packages
@@ -223,7 +223,9 @@ jobs:
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
   jestTestsDdbEs:
-    needs: init
+    needs:
+      - constants
+      - build
     name: ${{ matrix.package.cmd }}
     strategy:
       fail-fast: false
@@ -267,12 +269,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: .yarn/cache
+          path: /.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: .webiny/cached-packages
-          key: packages-cache-${{ needs.init.outputs.ts }}
+          path: /.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
       - name: Build packages
@@ -281,9 +283,10 @@ jobs:
         run: yarn test ${{ matrix.package.cmd }}
     permissions:
       id-token: write
-    if: needs.init.outputs.is-fork-pr != 'true'
   jestTestsDdbOs:
-    needs: init
+    needs:
+      - constants
+      - build
     name: ${{ matrix.package.cmd }}
     strategy:
       fail-fast: false
@@ -327,12 +330,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: .yarn/cache
+          path: /.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: .webiny/cached-packages
-          key: packages-cache-${{ needs.init.outputs.ts }}
+          path: /.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
       - name: Build packages
@@ -341,39 +344,35 @@ jobs:
         run: yarn test ${{ matrix.package.cmd }}
     permissions:
       id-token: write
-    if: needs.init.outputs.is-fork-pr != 'true'
   e2eTestsDdb-init:
-    name: E2E (DDB) - Init
+    name: Constants - DDB
+    needs: constants
     outputs:
-      day: ${{ steps.get-day.outputs.day }}
-      ts: ${{ steps.get-timestamp.outputs.ts }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
+      pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
     steps:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v4
-      - name: Get day of the month
-        id: get-day
-        run: >-
-          echo "day=$(node --eval "console.log(new Date().getDate())")" >>
-          $GITHUB_OUTPUT
-      - name: Get timestamp
-        id: get-timestamp
-        run: >-
-          echo "ts=$(node --eval "console.log(new Date().getTime())")" >>
-          $GITHUB_OUTPUT
       - name: List Cypress tests folders
         id: list-cypress-folders
         run: >-
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
+      - name: Get Pulumi backend URL
+        id: get-pulumi-backend-url
+        run: >-
+          echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
+          github.run_id }}_ddb" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2eTestsDdb-setup:
-    needs: e2eTestsDdb-init
+    needs:
+      - build
+      - e2eTestsDdb-init
     name: E2E (DDB) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -384,9 +383,7 @@ jobs:
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: >-
-        ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2eTestsDdb-init.outputs.ts }}_ddb
+      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-init.outputs.pulumi-backend-url }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -401,30 +398,21 @@ jobs:
           fetch-depth: 0
           path: dev
       - uses: actions/cache@v4
-        id: yarn-cache
         with:
-          path: dev/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
+          path: cloned-repo/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
-        id: cached-packages
         with:
-          path: dev/.webiny/cached-packages
-          key: >-
-            ${{ runner.os }}-${{ needs.e2eTestsDdb-init.outputs.day }}-${{
-            secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          path: cloned-repo/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
-        working-directory: dev
+        working-directory: cloned-repo
         run: yarn --immutable
       - name: Build packages
-        working-directory: dev
+        working-directory: cloned-repo
         run: yarn build:quick
-      - uses: actions/cache@v4
-        id: packages-cache
-        with:
-          path: dev/.webiny/cached-packages
-          key: packages-cache-${{ needs.e2eTestsDdb-init.outputs.ts }}
       - name: Start Verdaccio local server
-        working-directory: dev
+        working-directory: cloned-repo
         run: >-
           yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
           .verdaccio.yaml
@@ -435,71 +423,70 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
       - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: dev
+        working-directory: cloned-repo
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Version and publish to Verdaccio
-        working-directory: dev
+        working-directory: cloned-repo
         run: yarn release --type=verdaccio
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb
           retention-days: 1
-          path: |
-            dev/.verdaccio/
-            dev/.verdaccio.yaml
-      - name: Create directory
-        run: mkdir xyz
+          path: |-
+            cloned-repo/.verdaccio/
+            cloned-repo/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
           ~/.webiny/config
+      - name: Create directory
+        run: mkdir xyz
       - name: Create a new Webiny project
-        working-directory: xyz
         run: >
-          npx create-webiny-project@local-npm test-project --tag local-npm
+          npx create-webiny-project@local-npm new-webiny-project --tag local-npm
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION
           }}","storageOperations":"ddb"}'
       - name: Print CLI version
-        working-directory: xyz/test-project
+        working-directory: new-webiny-project
         run: yarn webiny --version
       - name: Create project-files artifact
         uses: actions/upload-artifact@v4
         with:
           name: project-files-ddb
           retention-days: 1
-          path: |
-            xyz/test-project/
-            !xyz/test-project/node_modules/**/*
-            !xyz/test-project/**/node_modules/**/*
-            !xyz/test-project/.yarn/cache/**/*
+          path: |-
+            new-webiny-project/
+            !new-webiny-project/node_modules/**/*
+            !new-webiny-project/**/node_modules/**/*
+            !new-webiny-project/.yarn/cache/**/*
       - name: Deploy Core
-        working-directory: xyz/test-project
+        working-directory: new-webiny-project
         run: yarn webiny deploy apps/core --env dev
       - name: Deploy API
-        working-directory: xyz/test-project
+        working-directory: new-webiny-project
         run: yarn webiny deploy apps/api --env dev
       - name: Deploy Admin Area
-        working-directory: xyz/test-project
+        working-directory: new-webiny-project
         run: yarn webiny deploy apps/admin --env dev
       - name: Deploy Website
-        working-directory: xyz/test-project
+        working-directory: new-webiny-project
         run: yarn webiny deploy apps/website --env dev
       - name: Create Cypress config
-        working-directory: dev
+        working-directory: cloned-repo
         run: yarn setup-cypress --projectFolder ../xyz/test-project
       - name: Save Cypress config
         id: save-cypress-config
-        working-directory: dev
+        working-directory: cloned-repo
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
       - name: Cypress - run installation wizard test
-        working-directory: dev/cypress-tests
+        working-directory: cloned-repo
         run: >-
-          yarn cypress run --browser chrome --spec
+          yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
     runs-on: ubuntu-latest
     permissions:
@@ -526,9 +513,7 @@ jobs:
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: >-
-        ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2eTestsDdb-init.outputs.ts }}_ddb
+      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-init.outputs.pulumi-backend-url }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -538,62 +523,53 @@ jobs:
           path: dev
       - uses: actions/cache@v4
         with:
-          path: dev/.webiny/cached-packages
-          key: packages-cache-${{ needs.e2eTestsDdb-init.outputs.ts }}
+          path: /.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: dev/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
+          path: /.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
-        working-directory: dev
         run: yarn --immutable
       - name: Build packages
-        working-directory: dev
         run: yarn build:quick
       - name: Set up Cypress config
-        working-directory: dev
         run: >-
           echo '${{ needs.e2eTestsDdb-setup.outputs.cypress-config }}' >
           cypress-tests/cypress.config.ts
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        working-directory: dev/cypress-tests
         timeout-minutes: 40
-        run: >-
-          yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder
-          }}"
+        run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
     runs-on: ubuntu-latest
   e2eTestsDdb-es-init:
-    name: E2E (DDB-ES) - Init
+    name: Constants - DDB-ES
+    needs: constants
     outputs:
-      day: ${{ steps.get-day.outputs.day }}
-      ts: ${{ steps.get-timestamp.outputs.ts }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
+      pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
     steps:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v4
-      - name: Get day of the month
-        id: get-day
-        run: >-
-          echo "day=$(node --eval "console.log(new Date().getDate())")" >>
-          $GITHUB_OUTPUT
-      - name: Get timestamp
-        id: get-timestamp
-        run: >-
-          echo "ts=$(node --eval "console.log(new Date().getTime())")" >>
-          $GITHUB_OUTPUT
       - name: List Cypress tests folders
         id: list-cypress-folders
         run: >-
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
+      - name: Get Pulumi backend URL
+        id: get-pulumi-backend-url
+        run: >-
+          echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
+          github.run_id }}_ddb-es" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2eTestsDdb-es-setup:
-    needs: e2eTestsDdb-es-init
+    needs:
+      - build
+      - e2eTestsDdb-es-init
     name: E2E (DDB-ES) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -604,12 +580,10 @@ jobs:
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: >-
-        ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2eTestsDdb-es-init.outputs.ts }}_ddb
+      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-es-init.outputs.pulumi-backend-url }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2eTestsDdb-es-init.outputs.ts }}_
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -624,30 +598,21 @@ jobs:
           fetch-depth: 0
           path: dev
       - uses: actions/cache@v4
-        id: yarn-cache
         with:
-          path: dev/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
+          path: cloned-repo/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
-        id: cached-packages
         with:
-          path: dev/.webiny/cached-packages
-          key: >-
-            ${{ runner.os }}-${{ needs.e2eTestsDdb-es-init.outputs.day }}-${{
-            secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          path: cloned-repo/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
-        working-directory: dev
+        working-directory: cloned-repo
         run: yarn --immutable
       - name: Build packages
-        working-directory: dev
+        working-directory: cloned-repo
         run: yarn build:quick
-      - uses: actions/cache@v4
-        id: packages-cache
-        with:
-          path: dev/.webiny/cached-packages
-          key: packages-cache-${{ needs.e2eTestsDdb-es-init.outputs.ts }}
       - name: Start Verdaccio local server
-        working-directory: dev
+        working-directory: cloned-repo
         run: >-
           yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
           .verdaccio.yaml
@@ -658,71 +623,70 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
       - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: dev
+        working-directory: cloned-repo
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Version and publish to Verdaccio
-        working-directory: dev
+        working-directory: cloned-repo
         run: yarn release --type=verdaccio
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb-es
           retention-days: 1
-          path: |
-            dev/.verdaccio/
-            dev/.verdaccio.yaml
-      - name: Create directory
-        run: mkdir xyz
+          path: |-
+            cloned-repo/.verdaccio/
+            cloned-repo/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
           ~/.webiny/config
+      - name: Create directory
+        run: mkdir xyz
       - name: Create a new Webiny project
-        working-directory: xyz
         run: >
-          npx create-webiny-project@local-npm test-project --tag local-npm
+          npx create-webiny-project@local-npm new-webiny-project --tag local-npm
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION
           }}","storageOperations":"ddb-es"}'
       - name: Print CLI version
-        working-directory: xyz/test-project
+        working-directory: new-webiny-project
         run: yarn webiny --version
       - name: Create project-files artifact
         uses: actions/upload-artifact@v4
         with:
           name: project-files-ddb-es
           retention-days: 1
-          path: |
-            xyz/test-project/
-            !xyz/test-project/node_modules/**/*
-            !xyz/test-project/**/node_modules/**/*
-            !xyz/test-project/.yarn/cache/**/*
+          path: |-
+            new-webiny-project/
+            !new-webiny-project/node_modules/**/*
+            !new-webiny-project/**/node_modules/**/*
+            !new-webiny-project/.yarn/cache/**/*
       - name: Deploy Core
-        working-directory: xyz/test-project
+        working-directory: new-webiny-project
         run: yarn webiny deploy apps/core --env dev
       - name: Deploy API
-        working-directory: xyz/test-project
+        working-directory: new-webiny-project
         run: yarn webiny deploy apps/api --env dev
       - name: Deploy Admin Area
-        working-directory: xyz/test-project
+        working-directory: new-webiny-project
         run: yarn webiny deploy apps/admin --env dev
       - name: Deploy Website
-        working-directory: xyz/test-project
+        working-directory: new-webiny-project
         run: yarn webiny deploy apps/website --env dev
       - name: Create Cypress config
-        working-directory: dev
+        working-directory: cloned-repo
         run: yarn setup-cypress --projectFolder ../xyz/test-project
       - name: Save Cypress config
         id: save-cypress-config
-        working-directory: dev
+        working-directory: cloned-repo
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
       - name: Cypress - run installation wizard test
-        working-directory: dev/cypress-tests
+        working-directory: cloned-repo
         run: >-
-          yarn cypress run --browser chrome --spec
+          yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
     runs-on: ubuntu-latest
     permissions:
@@ -749,12 +713,10 @@ jobs:
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: >-
-        ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2eTestsDdb-es-init.outputs.ts }}_ddb
+      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-es-init.outputs.pulumi-backend-url }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2eTestsDdb-es-init.outputs.ts }}_
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -764,62 +726,53 @@ jobs:
           path: dev
       - uses: actions/cache@v4
         with:
-          path: dev/.webiny/cached-packages
-          key: packages-cache-${{ needs.e2eTestsDdb-es-init.outputs.ts }}
+          path: /.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: dev/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
+          path: /.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
-        working-directory: dev
         run: yarn --immutable
       - name: Build packages
-        working-directory: dev
         run: yarn build:quick
       - name: Set up Cypress config
-        working-directory: dev
         run: >-
           echo '${{ needs.e2eTestsDdb-es-setup.outputs.cypress-config }}' >
           cypress-tests/cypress.config.ts
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        working-directory: dev/cypress-tests
         timeout-minutes: 40
-        run: >-
-          yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder
-          }}"
+        run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
     runs-on: ubuntu-latest
   e2eTestsDdb-os-init:
-    name: E2E (DDB-OS) - Init
+    name: Constants - DDB-OS
+    needs: constants
     outputs:
-      day: ${{ steps.get-day.outputs.day }}
-      ts: ${{ steps.get-timestamp.outputs.ts }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
+      pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
     steps:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: actions/checkout@v4
-      - name: Get day of the month
-        id: get-day
-        run: >-
-          echo "day=$(node --eval "console.log(new Date().getDate())")" >>
-          $GITHUB_OUTPUT
-      - name: Get timestamp
-        id: get-timestamp
-        run: >-
-          echo "ts=$(node --eval "console.log(new Date().getTime())")" >>
-          $GITHUB_OUTPUT
       - name: List Cypress tests folders
         id: list-cypress-folders
         run: >-
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
+      - name: Get Pulumi backend URL
+        id: get-pulumi-backend-url
+        run: >-
+          echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
+          github.run_id }}_ddb-os" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2eTestsDdb-os-setup:
-    needs: e2eTestsDdb-os-init
+    needs:
+      - build
+      - e2eTestsDdb-os-init
     name: E2E (DDB-OS) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -830,12 +783,10 @@ jobs:
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: >-
-        ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2eTestsDdb-os-init.outputs.ts }}_ddb
+      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-os-init.outputs.pulumi-backend-url }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2eTestsDdb-os-init.outputs.ts }}_
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -850,30 +801,21 @@ jobs:
           fetch-depth: 0
           path: dev
       - uses: actions/cache@v4
-        id: yarn-cache
         with:
-          path: dev/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
+          path: cloned-repo/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
-        id: cached-packages
         with:
-          path: dev/.webiny/cached-packages
-          key: >-
-            ${{ runner.os }}-${{ needs.e2eTestsDdb-os-init.outputs.day }}-${{
-            secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          path: cloned-repo/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
-        working-directory: dev
+        working-directory: cloned-repo
         run: yarn --immutable
       - name: Build packages
-        working-directory: dev
+        working-directory: cloned-repo
         run: yarn build:quick
-      - uses: actions/cache@v4
-        id: packages-cache
-        with:
-          path: dev/.webiny/cached-packages
-          key: packages-cache-${{ needs.e2eTestsDdb-os-init.outputs.ts }}
       - name: Start Verdaccio local server
-        working-directory: dev
+        working-directory: cloned-repo
         run: >-
           yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
           .verdaccio.yaml
@@ -884,71 +826,70 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
       - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: dev
+        working-directory: cloned-repo
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Version and publish to Verdaccio
-        working-directory: dev
+        working-directory: cloned-repo
         run: yarn release --type=verdaccio
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb-os
           retention-days: 1
-          path: |
-            dev/.verdaccio/
-            dev/.verdaccio.yaml
-      - name: Create directory
-        run: mkdir xyz
+          path: |-
+            cloned-repo/.verdaccio/
+            cloned-repo/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
           ~/.webiny/config
+      - name: Create directory
+        run: mkdir xyz
       - name: Create a new Webiny project
-        working-directory: xyz
         run: >
-          npx create-webiny-project@local-npm test-project --tag local-npm
+          npx create-webiny-project@local-npm new-webiny-project --tag local-npm
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION
           }}","storageOperations":"ddb-os"}'
       - name: Print CLI version
-        working-directory: xyz/test-project
+        working-directory: new-webiny-project
         run: yarn webiny --version
       - name: Create project-files artifact
         uses: actions/upload-artifact@v4
         with:
           name: project-files-ddb-os
           retention-days: 1
-          path: |
-            xyz/test-project/
-            !xyz/test-project/node_modules/**/*
-            !xyz/test-project/**/node_modules/**/*
-            !xyz/test-project/.yarn/cache/**/*
+          path: |-
+            new-webiny-project/
+            !new-webiny-project/node_modules/**/*
+            !new-webiny-project/**/node_modules/**/*
+            !new-webiny-project/.yarn/cache/**/*
       - name: Deploy Core
-        working-directory: xyz/test-project
+        working-directory: new-webiny-project
         run: yarn webiny deploy apps/core --env dev
       - name: Deploy API
-        working-directory: xyz/test-project
+        working-directory: new-webiny-project
         run: yarn webiny deploy apps/api --env dev
       - name: Deploy Admin Area
-        working-directory: xyz/test-project
+        working-directory: new-webiny-project
         run: yarn webiny deploy apps/admin --env dev
       - name: Deploy Website
-        working-directory: xyz/test-project
+        working-directory: new-webiny-project
         run: yarn webiny deploy apps/website --env dev
       - name: Create Cypress config
-        working-directory: dev
+        working-directory: cloned-repo
         run: yarn setup-cypress --projectFolder ../xyz/test-project
       - name: Save Cypress config
         id: save-cypress-config
-        working-directory: dev
+        working-directory: cloned-repo
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
       - name: Cypress - run installation wizard test
-        working-directory: dev/cypress-tests
+        working-directory: cloned-repo
         run: >-
-          yarn cypress run --browser chrome --spec
+          yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
     runs-on: ubuntu-latest
     permissions:
@@ -975,12 +916,10 @@ jobs:
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: >-
-        ${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-        needs.e2eTestsDdb-os-init.outputs.ts }}_ddb
+      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-os-init.outputs.pulumi-backend-url }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.e2eTestsDdb-os-init.outputs.ts }}_
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -990,27 +929,21 @@ jobs:
           path: dev
       - uses: actions/cache@v4
         with:
-          path: dev/.webiny/cached-packages
-          key: packages-cache-${{ needs.e2eTestsDdb-os-init.outputs.ts }}
+          path: /.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: dev/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('dev/**/yarn.lock') }}
+          path: /.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
-        working-directory: dev
         run: yarn --immutable
       - name: Build packages
-        working-directory: dev
         run: yarn build:quick
       - name: Set up Cypress config
-        working-directory: dev
         run: >-
           echo '${{ needs.e2eTestsDdb-os-setup.outputs.cypress-config }}' >
           cypress-tests/cypress.config.ts
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
-        working-directory: dev/cypress-tests
         timeout-minutes: 40
-        run: >-
-          yarn cypress run --browser chrome --spec "${{ matrix.cypress-folder
-          }}"
+        run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
     runs-on: ubuntu-latest

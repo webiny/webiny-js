@@ -152,7 +152,7 @@ const createJobs = (dbSetup: string) => {
                 with: {
                     name: `verdaccio-files-${dbSetup}`,
                     "retention-days": 1,
-                    path: [DIR_PR + "/.verdaccio/", DIR_PR + "/.verdaccio.yaml\n"].join("\n")
+                    path: [DIR_PR + "/.verdaccio/", DIR_PR + "/.verdaccio.yaml"].join("\n")
                 }
             },
             {
