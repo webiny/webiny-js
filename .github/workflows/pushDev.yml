@@ -346,6 +346,8 @@ jobs:
       id-token: write
   e2eTestsDdb-constants:
     name: Constants - DDB
+    needs:
+      - build
     outputs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
       pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
@@ -542,6 +544,8 @@ jobs:
     runs-on: ubuntu-latest
   e2eTestsDdb-es-constants:
     name: Constants - DDB-ES
+    needs:
+      - build
     outputs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
       pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
@@ -746,6 +750,8 @@ jobs:
     runs-on: ubuntu-latest
   e2eTestsDdb-os-constants:
     name: Constants - DDB-OS
+    needs:
+      - build
     outputs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
       pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
