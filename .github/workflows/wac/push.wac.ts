@@ -66,7 +66,6 @@ const createCypressJobs = (dbSetup: string) => {
 
     const constantsJob: NormalJob = createJob({
         name: `Constants - ${dbSetup.toUpperCase()}`,
-        needs: "constants",
         outputs: {
             "cypress-folders": "${{ steps.list-cypress-folders.outputs.cypress-folders }}",
             "pulumi-backend-url": "${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}"
