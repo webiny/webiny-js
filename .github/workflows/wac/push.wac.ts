@@ -18,7 +18,7 @@ const createYarnCacheSteps = (
         {
             uses: "actions/cache@v4",
             with: {
-                enableCrossOs: true,
+                enableCrossOsArchive: true,
                 path: [workingDirectory, ".yarn/cache"].filter(Boolean).join("/"),
                 key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
             }
@@ -34,7 +34,7 @@ const createBuildGlobalCacheSteps = (
         {
             uses: "actions/cache@v4",
             with: {
-                enableCrossOs: true,
+                enableCrossOsArchive: true,
                 path: [workingDirectory, ".webiny/cached-packages"].filter(Boolean).join("/"),
                 key: "${{ needs.constants.outputs.global-cache-key }}"
             }
@@ -50,7 +50,7 @@ const createBuildRunCacheSteps = (
         {
             uses: "actions/cache@v4",
             with: {
-                enableCrossOs: true,
+                enableCrossOsArchive: true,
                 path: [workingDirectory, ".webiny/cached-packages"].filter(Boolean).join("/"),
                 key: "${{ needs.constants.outputs.run-cache-key }}"
             }

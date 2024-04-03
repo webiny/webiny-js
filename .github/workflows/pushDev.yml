@@ -58,12 +58,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
       - name: Install dependencies
@@ -72,7 +72,7 @@ jobs:
         run: yarn build:quick
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
     env:
@@ -90,12 +90,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
@@ -122,7 +122,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
@@ -161,12 +161,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
@@ -217,12 +217,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
@@ -278,12 +278,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
@@ -341,12 +341,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
@@ -414,12 +414,12 @@ jobs:
           path: cloned-repo
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: cloned-repo/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: cloned-repo/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
@@ -538,12 +538,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
@@ -618,12 +618,12 @@ jobs:
           path: cloned-repo
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: cloned-repo/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: cloned-repo/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
@@ -747,12 +747,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
@@ -827,12 +827,12 @@ jobs:
           path: cloned-repo
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: cloned-repo/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: cloned-repo/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
@@ -956,12 +956,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          enableCrossOs: true
+          enableCrossOsArchive: true
           path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
