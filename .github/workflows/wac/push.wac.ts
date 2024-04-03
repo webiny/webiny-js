@@ -318,7 +318,7 @@ const createPushWorkflow = (branchName: string) => {
                     {
                         name: "Create global cache key",
                         id: "global-cache-key",
-                        run: 'echo "global-cache-key=${{ github.base_ref }}-${{ runner.os }}-$(/bin/date -u "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
+                        run: `echo "global-cache-key=${branchName}-\${{ runner.os }}-$(/bin/date -u "+%m%d")-\${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT`
                     },
                     {
                         name: "Create workflow run cache key",
