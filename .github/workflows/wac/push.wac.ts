@@ -331,7 +331,6 @@ const createPushWorkflow = (branchName: string) => {
             build: createJob({
                 name: "Build",
                 needs: "constants",
-                "runs-on": "blacksmith-4vcpu-ubuntu-2204",
                 steps: [
                     ...createYarnCacheSteps(),
                     ...createBuildGlobalCacheSteps(),
@@ -355,7 +354,6 @@ const createPushWorkflow = (branchName: string) => {
             }),
             staticCodeAnalysisTs: createJob({
                 name: "Static code analysis (TypeScript)",
-                "runs-on": "blacksmith-4vcpu-ubuntu-2204",
                 steps: [
                     ...createYarnCacheSteps(),
 

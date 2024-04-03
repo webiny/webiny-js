@@ -50,7 +50,6 @@ jobs:
   build:
     name: Build
     needs: constants
-    runs-on: blacksmith-4vcpu-ubuntu-2204
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -75,6 +74,7 @@ jobs:
           enableCrossOsArchive: true
           path: .webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -114,7 +114,6 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
-    runs-on: blacksmith-4vcpu-ubuntu-2204
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -131,6 +130,7 @@ jobs:
         run: yarn build
       - name: Check types for Cypress tests
         run: yarn cy:ts
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
