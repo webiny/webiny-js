@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import debounce from "lodash/debounce";
 import omit from "lodash/omit";
 import { useRouter } from "@webiny/react-router";
+import { makeDecoratable } from "@webiny/react-composition";
 import { useContentEntries } from "./useContentEntries";
 import { CmsContentEntry, EntryTableItem, TableItem } from "~/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
@@ -191,7 +192,7 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
     );
 };
 
-export const useContentEntriesList = (): ContentEntriesListProviderContext => {
+export const useContentEntriesList = makeDecoratable((): ContentEntriesListProviderContext => {
     const context = React.useContext(ContentEntriesListContext);
 
     if (!context) {
@@ -199,4 +200,4 @@ export const useContentEntriesList = (): ContentEntriesListProviderContext => {
     }
 
     return context;
-};
+});
