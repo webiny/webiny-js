@@ -15,6 +15,7 @@ export interface ResponseHeadersParams {
     asset: Asset;
 }
 
+
 export interface ResponseHeadersSetter {
     (params: ResponseHeadersParams): Promise<void> | void;
 }
