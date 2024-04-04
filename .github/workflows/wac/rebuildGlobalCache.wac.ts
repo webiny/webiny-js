@@ -1,4 +1,3 @@
-import { createWorkflow } from "github-actions-wac";
 import { createJob } from "./jobs";
 import {
     createGlobalBuildCacheSteps,
@@ -6,7 +5,7 @@ import {
     createYarnCacheSteps
 } from "./steps";
 
-const createRebuildCachesWorkflow = (branchName: string) => ({
+const createRebuildGlobalCacheWorkflow = (branchName: string) => ({
     name: "Rebuild Caches",
     on: {
         workflow_dispatch: {},
@@ -34,11 +33,11 @@ const createRebuildCachesWorkflow = (branchName: string) => ({
             steps: [
                 ...createYarnCacheSteps({ workingDirectory: branchName }),
                 ...createGlobalBuildCacheSteps({ workingDirectory: branchName }),
-                ...createInstallBuildSteps({ workingDirectory: branchName }),
+                ...createInstallBuildSteps({ workingDirectory: branchName })
             ]
         })
     }
 });
 
-export const rebuildCachesDev = createRebuildCachesWorkflow("dev");
-export const rebuildCachesNext = createRebuildCachesWorkflow("next");
+export const rebuildGlobalCacheDev = createRebuildGlobalCacheWorkflow("dev");
+export const rebuildGlobalCacheNext = createRebuildGlobalCacheWorkflow("next");
