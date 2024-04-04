@@ -92,9 +92,8 @@ const createCypressJobs = (dbSetup: string) => {
         steps: [
             ...createCheckoutPrSteps(),
             ...yarnCacheSteps,
-            ...globalBuildCacheSteps,
-            ...installBuildSteps,
             ...runBuildCacheSteps,
+            ...installBuildSteps,
             ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
             {
                 name: 'Create ".npmrc" file in the project root, with a dummy auth token',
