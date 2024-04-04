@@ -31,9 +31,7 @@ const createCheckoutPrSteps = () =>
             name: "Checkout Pull Request",
             "working-directory": "${{ needs.baseBranch.outputs.base-branch }}",
             run: "hub pr checkout ${{ github.event.issue.number }}",
-            env: {
-                GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}"
-            }
+            env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" }
         }
     ] as NonNullable<NormalJob["steps"]>;
 
@@ -229,7 +227,6 @@ export const pullRequestsCommandCypressTest = createWorkflow({
         AWS_REGION: "eu-central-1"
     },
     jobs: {
-        validateWorkflows: createValidateWorkflowsJob(),
         checkComment: createJob({
             name: `Check comment for /cypress`,
             if: "${{ github.event.issue.pull_request }}",
@@ -258,12 +255,14 @@ export const pullRequestsCommandCypressTest = createWorkflow({
                 }
             ]
         }),
+        validateWorkflows: createValidateWorkflowsJob({ needs: "checkComment" }),
         baseBranch: createJob({
             needs: "checkComment",
             name: "Get base branch",
             outputs: {
                 "base-branch": "${{ steps.base-branch.outputs.base-branch }}"
             },
+            checkout: false,
             env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
             steps: [
                 { name: "Install Hub Utility", run: "sudo apt-get install -y hub" },
