@@ -123,25 +123,21 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
-          path: $(hub pr show ${{ github.event.issue.number }} -f %B)/.yarn/cache
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: >-
-            $(hub pr show ${{ github.event.issue.number }} -f
-            %B)/.webiny/cached-packages
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Build packages
         run: yarn build:quick
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - uses: actions/cache@v4
         with:
-          path: >-
-            $(hub pr show ${{ github.event.issue.number }} -f
-            %B)/.webiny/cached-packages
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -150,6 +146,7 @@ jobs:
     needs:
       - baseBranch
       - constants
+      - build
     name: Constants - DDB
     outputs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
@@ -219,28 +216,24 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
-          path: $(hub pr show ${{ github.event.issue.number }} -f %B)/.yarn/cache
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: >-
-            $(hub pr show ${{ github.event.issue.number }} -f
-            %B)/.webiny/cached-packages
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
       - name: Install dependencies
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
         run: yarn --immutable
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Build packages
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
         run: yarn build:quick
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - uses: actions/cache@v4
         with:
-          path: >-
-            $(hub pr show ${{ github.event.issue.number }} -f
-            %B)/.webiny/cached-packages
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Start Verdaccio local server
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
           .verdaccio.yaml
@@ -251,21 +244,19 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
       - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Version and publish to Verdaccio
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn release --type=verdaccio
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb
           retention-days: 1
-          path: >-
-            $(hub pr show ${{ github.event.issue.number }} -f %B)/.verdaccio/
-
-            $(hub pr show ${{ github.event.issue.number }} -f
-            %B)/.verdaccio.yaml
+          path: |-
+            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio/
+            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -303,16 +294,16 @@ jobs:
         working-directory: new-webiny-project
         run: yarn webiny deploy apps/website --env dev
       - name: Create Cypress config
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn setup-cypress --projectFolder ../new-webiny-project
       - name: Save Cypress config
         id: save-cypress-config
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
       - name: Cypress - run installation wizard test
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
@@ -362,34 +353,33 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
-          path: $(hub pr show ${{ github.event.issue.number }} -f %B)/.yarn/cache
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: >-
-            $(hub pr show ${{ github.event.issue.number }} -f
-            %B)/.webiny/cached-packages
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Build packages
         run: yarn build:quick
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Set up Cypress config
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           echo '${{ needs.e2e-wby-cms-ddb-project-setup.outputs.cypress-config
           }}' > cypress-tests/cypress.config.ts
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         timeout-minutes: 40
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
     runs-on: ubuntu-latest
   e2e-wby-cms-ddb-es-constants:
     needs:
       - baseBranch
       - constants
+      - build
     name: Constants - DDB-ES
     outputs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
@@ -462,28 +452,24 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
-          path: $(hub pr show ${{ github.event.issue.number }} -f %B)/.yarn/cache
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: >-
-            $(hub pr show ${{ github.event.issue.number }} -f
-            %B)/.webiny/cached-packages
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
       - name: Install dependencies
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
         run: yarn --immutable
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Build packages
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
         run: yarn build:quick
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - uses: actions/cache@v4
         with:
-          path: >-
-            $(hub pr show ${{ github.event.issue.number }} -f
-            %B)/.webiny/cached-packages
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Start Verdaccio local server
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
           .verdaccio.yaml
@@ -494,21 +480,19 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
       - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Version and publish to Verdaccio
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn release --type=verdaccio
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb-es
           retention-days: 1
-          path: >-
-            $(hub pr show ${{ github.event.issue.number }} -f %B)/.verdaccio/
-
-            $(hub pr show ${{ github.event.issue.number }} -f
-            %B)/.verdaccio.yaml
+          path: |-
+            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio/
+            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -546,16 +530,16 @@ jobs:
         working-directory: new-webiny-project
         run: yarn webiny deploy apps/website --env dev
       - name: Create Cypress config
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn setup-cypress --projectFolder ../new-webiny-project
       - name: Save Cypress config
         id: save-cypress-config
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
       - name: Cypress - run installation wizard test
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
@@ -609,35 +593,34 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
-          path: $(hub pr show ${{ github.event.issue.number }} -f %B)/.yarn/cache
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: >-
-            $(hub pr show ${{ github.event.issue.number }} -f
-            %B)/.webiny/cached-packages
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Build packages
         run: yarn build:quick
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Set up Cypress config
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           echo '${{
           needs.e2e-wby-cms-ddb-es-project-setup.outputs.cypress-config }}' >
           cypress-tests/cypress.config.ts
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         timeout-minutes: 40
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
     runs-on: ubuntu-latest
   e2e-wby-cms-ddb-os-constants:
     needs:
       - baseBranch
       - constants
+      - build
     name: Constants - DDB-OS
     outputs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
@@ -710,28 +693,24 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
-          path: $(hub pr show ${{ github.event.issue.number }} -f %B)/.yarn/cache
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: >-
-            $(hub pr show ${{ github.event.issue.number }} -f
-            %B)/.webiny/cached-packages
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
       - name: Install dependencies
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
         run: yarn --immutable
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Build packages
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
         run: yarn build:quick
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - uses: actions/cache@v4
         with:
-          path: >-
-            $(hub pr show ${{ github.event.issue.number }} -f
-            %B)/.webiny/cached-packages
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Start Verdaccio local server
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
           .verdaccio.yaml
@@ -742,21 +721,19 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
       - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Version and publish to Verdaccio
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn release --type=verdaccio
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb-os
           retention-days: 1
-          path: >-
-            $(hub pr show ${{ github.event.issue.number }} -f %B)/.verdaccio/
-
-            $(hub pr show ${{ github.event.issue.number }} -f
-            %B)/.verdaccio.yaml
+          path: |-
+            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio/
+            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -794,16 +771,16 @@ jobs:
         working-directory: new-webiny-project
         run: yarn webiny deploy apps/website --env dev
       - name: Create Cypress config
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn setup-cypress --projectFolder ../new-webiny-project
       - name: Save Cypress config
         id: save-cypress-config
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
       - name: Cypress - run installation wizard test
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
@@ -857,28 +834,26 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
-          path: $(hub pr show ${{ github.event.issue.number }} -f %B)/.yarn/cache
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: >-
-            $(hub pr show ${{ github.event.issue.number }} -f
-            %B)/.webiny/cached-packages
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Build packages
         run: yarn build:quick
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Set up Cypress config
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           echo '${{
           needs.e2e-wby-cms-ddb-os-project-setup.outputs.cypress-config }}' >
           cypress-tests/cypress.config.ts
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         timeout-minutes: 40
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
     runs-on: ubuntu-latest

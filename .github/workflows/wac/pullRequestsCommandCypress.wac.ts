@@ -11,8 +11,7 @@ import { NODE_OPTIONS, NODE_VERSION } from "./utils";
 import { createJob, createValidateWorkflowsJob } from "./jobs";
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
-const BRANCH_NAME = "$(hub pr show ${{ github.event.issue.number }} -f %B)";
-const DIR_WEBINY_JS = BRANCH_NAME;
+const DIR_WEBINY_JS = "${{ needs.baseBranch.outputs.base-branch }}";
 const DIR_TEST_PROJECT = "new-webiny-project";
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
@@ -25,7 +24,7 @@ const createCheckoutPrSteps = () =>
         { name: "Install Hub Utility", run: "sudo apt-get install -y hub" },
         {
             name: "Checkout Pull Request",
-            "working-directory": "${{ needs.baseBranch.outputs.base-branch }}",
+            "working-directory": DIR_WEBINY_JS,
             run: "hub pr checkout ${{ github.event.issue.number }}",
             env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" }
         }
@@ -39,13 +38,13 @@ const createCypressJobs = (dbSetup: string) => {
     };
 
     const constantsJob: NormalJob = createJob({
-        needs: ["baseBranch", "constants"],
+        needs: ["baseBranch", "constants", "build"],
         name: `Constants - ${dbSetup.toUpperCase()}`,
         outputs: {
             "cypress-folders": "${{ steps.list-cypress-folders.outputs.cypress-folders }}",
             "pulumi-backend-url": "${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}"
         },
-        checkout: { path: "${{ needs.baseBranch.outputs.base-branch }}" },
+        checkout: { path: DIR_WEBINY_JS },
         steps: [
             ...createCheckoutPrSteps(),
             {
@@ -89,21 +88,12 @@ const createCypressJobs = (dbSetup: string) => {
         environment: "next",
         env,
         awsAuth: true,
-        checkout: { path: "${{ needs.baseBranch.outputs.base-branch }}" },
+        checkout: { path: DIR_WEBINY_JS },
         steps: [
             ...createCheckoutPrSteps(),
             ...yarnCacheSteps,
             ...globalBuildCacheSteps,
-            {
-                name: "Install dependencies",
-                "working-directory": DIR_WEBINY_JS,
-                run: "yarn --immutable"
-            },
-            {
-                name: "Build packages",
-                "working-directory": DIR_WEBINY_JS,
-                run: "yarn build:quick"
-            },
+            ...installBuildSteps,
             ...runBuildCacheSteps,
             ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
             {
@@ -292,7 +282,7 @@ export const pullRequestsCommandCypressTest = createWorkflow({
         build: createJob({
             name: "Build",
             needs: ["baseBranch", "constants"],
-            checkout: { path: "${{ needs.baseBranch.outputs.base-branch }}" },
+            checkout: { path: DIR_WEBINY_JS },
             "runs-on": "blacksmith-4vcpu-ubuntu-2204",
             steps: [
                 ...createCheckoutPrSteps(),
