@@ -52,6 +52,7 @@ const createJestTestsJob = (storage: string | null) => {
         "runs-on": "${{ matrix.os }}",
         env,
         awsAuth: storage === "ddb-es" || storage === "ddb-os",
+        checkout: { path: DIR_WEBINY_JS },
         steps: [
             ...yarnCacheSteps,
             ...runBuildCacheSteps,
@@ -128,6 +129,7 @@ export const pullRequests = createWorkflow({
             name: "Build",
             needs: "constants",
             "runs-on": "blacksmith-8vcpu-ubuntu-2204",
+            checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
@@ -141,6 +143,7 @@ export const pullRequests = createWorkflow({
         staticCodeAnalysis: createJob({
             needs: ["constants", "build"],
             name: "Static code analysis",
+            checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
@@ -159,6 +162,7 @@ export const pullRequests = createWorkflow({
         staticCodeAnalysisTs: createJob({
             name: "Static code analysis (TypeScript)",
             "runs-on": "blacksmith-8vcpu-ubuntu-2204",
+            checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
 
@@ -187,7 +191,8 @@ export const pullRequests = createWorkflow({
             if: "needs.constants.outputs.is-fork-pr != 'true'",
             checkout: {
                 "fetch-depth": 0,
-                ref: "${{ github.event.pull_request.head.ref }}"
+                ref: "${{ github.event.pull_request.head.ref }}",
+                path: DIR_WEBINY_JS
             },
             steps: [
                 ...yarnCacheSteps,

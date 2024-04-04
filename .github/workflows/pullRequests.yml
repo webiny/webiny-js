@@ -87,6 +87,8 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
+        with:
+          path: ${{ github.base_ref }}
       - uses: actions/cache@v4
         with:
           path: ${{ github.base_ref }}/.yarn/cache
@@ -118,6 +120,8 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
+        with:
+          path: ${{ github.base_ref }}
       - uses: actions/cache@v4
         with:
           path: ${{ github.base_ref }}/.yarn/cache
@@ -153,6 +157,8 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
+        with:
+          path: ${{ github.base_ref }}
       - uses: actions/cache@v4
         with:
           path: ${{ github.base_ref }}/.yarn/cache
@@ -194,6 +200,8 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
+        with:
+          path: ${{ github.base_ref }}
       - uses: actions/cache@v4
         with:
           path: ${{ github.base_ref }}/.yarn/cache
@@ -251,6 +259,8 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
+        with:
+          path: ${{ github.base_ref }}
       - uses: actions/cache@v4
         with:
           path: ${{ github.base_ref }}/.yarn/cache
@@ -313,6 +323,8 @@ jobs:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
       - uses: actions/checkout@v4
+        with:
+          path: ${{ github.base_ref }}
       - uses: actions/cache@v4
         with:
           path: ${{ github.base_ref }}/.yarn/cache
@@ -378,6 +390,8 @@ jobs:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
       - uses: actions/checkout@v4
+        with:
+          path: ${{ github.base_ref }}
       - uses: actions/cache@v4
         with:
           path: ${{ github.base_ref }}/.yarn/cache
@@ -412,6 +426,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
+          path: ${{ github.base_ref }}
       - uses: actions/cache@v4
         with:
           path: ${{ github.base_ref }}/.yarn/cache
