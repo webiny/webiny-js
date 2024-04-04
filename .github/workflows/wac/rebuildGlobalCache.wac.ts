@@ -29,7 +29,7 @@ const createRebuildGlobalCacheWorkflow = (branchName: string) => ({
         cacheDependenciesPackages: createJob({
             name: `Cache dependencies and packages`,
             needs: "constants",
-            checkout: { path: branchName },
+            checkout: { path: branchName, ref: branchName },
             steps: [
                 ...createYarnCacheSteps({ workingDirectory: branchName }),
                 ...createGlobalBuildCacheSteps({ workingDirectory: branchName }),
