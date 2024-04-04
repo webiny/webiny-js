@@ -221,17 +221,13 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.global-cache-key }}
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Build packages
         run: yarn build:quick
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - uses: actions/cache@v4
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
@@ -457,17 +453,13 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.global-cache-key }}
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Build packages
         run: yarn build:quick
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - uses: actions/cache@v4
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
@@ -698,17 +690,13 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.global-cache-key }}
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Build packages
         run: yarn build:quick
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - uses: actions/cache@v4
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
