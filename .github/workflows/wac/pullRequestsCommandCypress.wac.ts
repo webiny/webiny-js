@@ -263,6 +263,7 @@ export const pullRequestsCommandCypressTest = createWorkflow({
                 {
                     name: "Get base branch",
                     id: "base-branch",
+                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
                     run: 'echo "base-branch=$(hub pr show ${{ github.event.issue.number }} -f %B)" >> $GITHUB_OUTPUT'
                 }
             ]
