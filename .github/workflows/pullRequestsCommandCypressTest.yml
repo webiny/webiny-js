@@ -62,6 +62,8 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
+      - name: Install Hub Utility
+        run: sudo apt-get install -y hub
       - name: Get base branch
         id: base-branch
         run: >-

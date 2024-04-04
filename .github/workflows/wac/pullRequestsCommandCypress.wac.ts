@@ -261,6 +261,7 @@ export const pullRequestsCommandCypressTest = createWorkflow({
                 "base-branch": "${{ steps.base-branch.outputs.base-branch }}"
             },
             steps: [
+                { name: "Install Hub Utility", run: "sudo apt-get install -y hub" },
                 {
                     name: "Get base branch",
                     id: "base-branch",
