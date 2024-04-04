@@ -449,10 +449,9 @@ jobs:
         with:
           name: verdaccio-files
           retention-days: 1
-          path: |
-            .verdaccio/
-            .verdaccio.yaml
-        working-directory: ${{ github.base_ref }}
+          path: |-
+            ${{ github.base_ref }}/.verdaccio/
+            ${{ github.base_ref }}/.verdaccio.yaml
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'

@@ -218,19 +218,22 @@ export const pullRequests = createWorkflow({
                         {
                             name: "Version and publish to Verdaccio",
                             run: "yarn release --type=verdaccio"
-                        },
-                        {
-                            name: "Upload verdaccio files",
-                            uses: "actions/upload-artifact@v4",
-                            with: {
-                                name: "verdaccio-files",
-                                "retention-days": 1,
-                                path: ".verdaccio/\n.verdaccio.yaml\n"
-                            }
                         }
                     ],
                     { "working-directory": DIR_WEBINY_JS }
-                )
+                ),
+                {
+                    name: "Upload verdaccio files",
+                    uses: "actions/upload-artifact@v4",
+                    with: {
+                        name: "verdaccio-files",
+                        "retention-days": 1,
+                        path: [
+                            DIR_WEBINY_JS + "/.verdaccio/",
+                            DIR_WEBINY_JS + "/.verdaccio.yaml"
+                        ].join("\n")
+                    }
+                }
             ]
         }),
         testCreateWebinyProject: createJob({
