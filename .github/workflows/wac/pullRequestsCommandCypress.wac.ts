@@ -24,6 +24,10 @@ const createCheckoutPrSteps = () =>
     [
         { name: "Install Hub Utility", run: "sudo apt-get install -y hub" },
         {
+            name: "Create new folder for the base branch",
+            run: 'mkdir -p "${{ needs.baseBranch.outputs.base-branch }}"'
+        },
+        {
             name: "Checkout Pull Request",
             "working-directory": "${{ needs.baseBranch.outputs.base-branch }}",
             run: "hub pr checkout ${{ github.event.issue.number }}",
