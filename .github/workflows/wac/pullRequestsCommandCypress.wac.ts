@@ -24,10 +24,6 @@ const createCheckoutPrSteps = () =>
     [
         { name: "Install Hub Utility", run: "sudo apt-get install -y hub" },
         {
-            name: "Create new folder for the base branch",
-            run: 'mkdir -p "${{ needs.baseBranch.outputs.base-branch }}"'
-        },
-        {
             name: "Checkout Pull Request",
             "working-directory": "${{ needs.baseBranch.outputs.base-branch }}",
             run: "hub pr checkout ${{ github.event.issue.number }}",
@@ -262,8 +258,6 @@ export const pullRequestsCommandCypressTest = createWorkflow({
             outputs: {
                 "base-branch": "${{ steps.base-branch.outputs.base-branch }}"
             },
-            checkout: false,
-            env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
             steps: [
                 { name: "Install Hub Utility", run: "sudo apt-get install -y hub" },
                 {
@@ -281,13 +275,11 @@ export const pullRequestsCommandCypressTest = createWorkflow({
                 "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}"
             },
             checkout: false,
-            env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
             steps: [
-                ...createCheckoutPrSteps(),
                 {
                     name: "Create global cache key",
                     id: "global-cache-key",
-                    run: `echo "global-cache-key=${BRANCH_NAME}-\${{ runner.os }}-$(/bin/date -u "+%m%d")-\${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT`
+                    run: `echo "global-cache-key=\${{ needs.baseBranch.outputs.base-branch }}-\${{ runner.os }}-$(/bin/date -u "+%m%d")-\${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT`
                 },
                 {
                     name: "Create workflow run cache key",
@@ -299,8 +291,9 @@ export const pullRequestsCommandCypressTest = createWorkflow({
         build: createJob({
             name: "Build",
             needs: ["baseBranch", "constants"],
-            checkout: false,
-            env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+            checkout: {
+                path: "${{ needs.baseBranch.outputs.base-branch }}"
+            },
             "runs-on": "blacksmith-4vcpu-ubuntu-2204",
             steps: [
                 ...createCheckoutPrSteps(),
