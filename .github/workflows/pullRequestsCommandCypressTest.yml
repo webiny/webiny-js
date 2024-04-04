@@ -170,6 +170,7 @@ jobs:
         run: >-
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Get Pulumi backend URL
         id: get-pulumi-backend-url
         run: >-
@@ -399,6 +400,7 @@ jobs:
         run: >-
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Get Pulumi backend URL
         id: get-pulumi-backend-url
         run: >-
@@ -636,6 +638,7 @@ jobs:
         run: >-
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Get Pulumi backend URL
         id: get-pulumi-backend-url
         run: >-

@@ -50,7 +50,8 @@ const createCypressJobs = (dbSetup: string) => {
             {
                 name: "List Cypress tests folders",
                 id: "list-cypress-folders",
-                run: 'echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT'
+                run: 'echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT',
+                "working-directory": DIR_WEBINY_JS
             },
             {
                 name: "Get Pulumi backend URL",
