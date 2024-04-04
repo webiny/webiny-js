@@ -1,7 +1,8 @@
 import { createWorkflow } from "github-actions-wac";
 import { createJob, createValidateWorkflowsJob } from "./jobs";
-import { createRunBuildCacheSteps, createYarnCacheSteps } from "./steps";
+import { createRunBuildCacheSteps, createYarnCacheSteps, createInstallBuildSteps } from "./steps";
 
+const installBuildSteps = createInstallBuildSteps({ workingDirectory: "" });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: "" });
 const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: "" });
 
@@ -36,14 +37,7 @@ export const pushStable = createWorkflow({
             "runs-on": "webiny-build-packages",
             steps: [
                 ...yarnCacheSteps,
-                {
-                    name: "Install dependencies",
-                    run: "yarn --immutable"
-                },
-                {
-                    name: "Build packages",
-                    run: "yarn build:quick"
-                },
+                ...installBuildSteps,
 
                 // Once we've built packages (without the help of the global cache), we can now cache
                 // the result for this run workflow. All of the following jobs will use this cache.
@@ -62,14 +56,7 @@ export const pushStable = createWorkflow({
             steps: [
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
-                {
-                    name: "Install dependencies",
-                    run: "yarn --immutable"
-                },
-                {
-                    name: "Build packages",
-                    run: "yarn build"
-                },
+                ...installBuildSteps,
                 {
                     name: 'Create ".npmrc" file in the project root',
                     run: 'echo "//registry.npmjs.org/:_authToken=\\${NPM_TOKEN}" > .npmrc'
@@ -104,14 +91,7 @@ export const pushStable = createWorkflow({
             steps: [
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
-                {
-                    name: "Install dependencies",
-                    run: "yarn --immutable"
-                },
-                {
-                    name: "Build packages",
-                    run: "yarn build"
-                },
+                ...installBuildSteps,
                 {
                     name: 'Create ".npmrc" file in the project root',
                     run: 'echo "//registry.npmjs.org/:_authToken=\\${NPM_TOKEN}" > .npmrc'

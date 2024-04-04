@@ -56,8 +56,10 @@ jobs:
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn --immutable
+        working-directory: ''
       - name: Build packages
         run: yarn build:quick
+        working-directory: ''
       - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
@@ -93,8 +95,10 @@ jobs:
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
+        working-directory: ''
       - name: Build packages
-        run: yarn build
+        run: yarn build:quick
+        working-directory: ''
       - name: Create ".npmrc" file in the project root
         run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
       - name: Set git email
@@ -134,8 +138,10 @@ jobs:
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
+        working-directory: ''
       - name: Build packages
-        run: yarn build
+        run: yarn build:quick
+        working-directory: ''
       - name: Create ".npmrc" file in the project root
         run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
       - name: Set git email
