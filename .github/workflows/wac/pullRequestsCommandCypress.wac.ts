@@ -47,6 +47,7 @@ const createCypressJobs = (dbSetup: string) => {
             "cypress-folders": "${{ steps.list-cypress-folders.outputs.cypress-folders }}",
             "pulumi-backend-url": "${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}"
         },
+        checkout: false,
         steps: [
             ...createCheckoutPrSteps(),
             {
@@ -89,8 +90,8 @@ const createCypressJobs = (dbSetup: string) => {
         },
         environment: "next",
         env,
-        checkout: { path: DIR_WEBINY_JS },
         awsAuth: true,
+        checkout: false,
         steps: [
             ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
             ...yarnCacheSteps,
@@ -189,7 +190,7 @@ const createCypressJobs = (dbSetup: string) => {
         },
         environment: "next",
         env,
-        checkout: { path: DIR_WEBINY_JS },
+        checkout: false,
         steps: [
             ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
             ...yarnCacheSteps,
@@ -260,7 +261,9 @@ export const pullRequestsCommandCypressTest = createWorkflow({
                 "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
                 "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}"
             },
+            checkout: false,
             steps: [
+                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 {
                     name: "Create global cache key",
                     id: "global-cache-key",
@@ -276,9 +279,10 @@ export const pullRequestsCommandCypressTest = createWorkflow({
         build: createJob({
             name: "Build",
             needs: "constants",
-            checkout: { path: DIR_WEBINY_JS },
+            checkout: false,
             "runs-on": "blacksmith-4vcpu-ubuntu-2204",
             steps: [
+                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
                 ...installBuildSteps,

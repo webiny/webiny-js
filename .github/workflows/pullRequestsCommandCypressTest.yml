@@ -62,7 +62,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - uses: actions/checkout@v4
+      - name: Install Hub Utility
+        run: sudo apt-get install -y hub
+      - name: Checkout Pull Request
+        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        run: hub pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Create global cache key
         id: global-cache-key
         run: >-
@@ -86,9 +92,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - uses: actions/checkout@v4
-        with:
-          path: $(hub pr show ${{ github.event.issue.number }} -f %B)
+      - name: Install Hub Utility
+        run: sudo apt-get install -y hub
+      - name: Checkout Pull Request
+        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        run: hub pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
           path: $(hub pr show ${{ github.event.issue.number }} -f %B)/.yarn/cache
@@ -124,7 +134,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - uses: actions/checkout@v4
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -170,9 +179,6 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v4
-        with:
-          path: $(hub pr show ${{ github.event.issue.number }} -f %B)
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -312,9 +318,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - uses: actions/checkout@v4
-        with:
-          path: $(hub pr show ${{ github.event.issue.number }} -f %B)
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -358,7 +361,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - uses: actions/checkout@v4
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -407,9 +409,6 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v4
-        with:
-          path: $(hub pr show ${{ github.event.issue.number }} -f %B)
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -553,9 +552,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - uses: actions/checkout@v4
-        with:
-          path: $(hub pr show ${{ github.event.issue.number }} -f %B)
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -600,7 +596,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - uses: actions/checkout@v4
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -649,9 +644,6 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v4
-        with:
-          path: $(hub pr show ${{ github.event.issue.number }} -f %B)
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -795,9 +787,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - uses: actions/checkout@v4
-        with:
-          path: $(hub pr show ${{ github.event.issue.number }} -f %B)
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
