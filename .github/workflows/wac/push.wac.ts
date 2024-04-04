@@ -139,9 +139,10 @@ const createPushWorkflow = (branchName: string) => {
                     with: {
                         name: `verdaccio-files-${dbSetup}`,
                         "retention-days": 1,
-                        path: [DIR_WEBINY_JS + "/.verdaccio/", DIR_WEBINY_JS + "/.verdaccio.yaml"].join(
-                            "\n"
-                        )
+                        path: [
+                            DIR_WEBINY_JS + "/.verdaccio/",
+                            DIR_WEBINY_JS + "/.verdaccio.yaml"
+                        ].join("\n")
                     }
                 },
                 {
@@ -241,13 +242,15 @@ const createPushWorkflow = (branchName: string) => {
 
         if (storage) {
             if (storage === "ddb-es") {
-                env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
+                env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] =
+                    "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
                 env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
                 env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
             } else if (storage === "ddb-os") {
                 // We still use the same environment variables as for "ddb-es" setup, it's
                 // just that the values are read from different secrets.
-                env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
+                env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] =
+                    "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
                 env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
                 env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
             }
