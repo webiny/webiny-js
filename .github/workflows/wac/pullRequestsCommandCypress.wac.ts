@@ -281,6 +281,7 @@ export const pullRequestsCommandCypressTest = createWorkflow({
                 "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}"
             },
             checkout: false,
+            env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
             steps: [
                 ...createCheckoutPrSteps(),
                 {
@@ -299,6 +300,7 @@ export const pullRequestsCommandCypressTest = createWorkflow({
             name: "Build",
             needs: ["baseBranch", "constants"],
             checkout: false,
+            env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
             "runs-on": "blacksmith-4vcpu-ubuntu-2204",
             steps: [
                 ...createCheckoutPrSteps(),

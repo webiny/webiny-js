@@ -80,6 +80,10 @@ jobs:
     outputs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
       run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -105,14 +109,15 @@ jobs:
           echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
           vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   build:
     name: Build
     needs:
       - baseBranch
       - constants
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     runs-on: blacksmith-4vcpu-ubuntu-2204
     steps:
       - uses: actions/setup-node@v4
@@ -149,9 +154,6 @@ jobs:
             $(hub pr show ${{ github.event.issue.number }} -f
             %B)/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2e-wby-cms-ddb-constants:
     needs:
       - baseBranch
