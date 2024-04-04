@@ -57,6 +57,10 @@ jobs:
     name: Get base branch
     outputs:
       base-branch: ${{ steps.base-branch.outputs.base-branch }}
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -70,9 +74,6 @@ jobs:
           echo "base-branch=$(hub pr show ${{ github.event.issue.number }} -f
           %B)" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   constants:
     needs: baseBranch
     name: Create constants

@@ -260,6 +260,7 @@ export const pullRequestsCommandCypressTest = createWorkflow({
             outputs: {
                 "base-branch": "${{ steps.base-branch.outputs.base-branch }}"
             },
+            env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
             steps: [
                 { name: "Install Hub Utility", run: "sudo apt-get install -y hub" },
                 {
