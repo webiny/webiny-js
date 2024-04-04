@@ -11,8 +11,7 @@ import { NODE_OPTIONS, NODE_VERSION } from "./utils";
 import { createJob, createValidateWorkflowsJob } from "./jobs";
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
-const BRANCH_NAME = "$(hub pr show ${{ github.event.issue.number }} -f %B)";
-const DIR_WEBINY_JS = BRANCH_NAME;
+const DIR_WEBINY_JS = "${{ needs.baseBranch.outputs.base-branch }}";
 const DIR_TEST_PROJECT = "new-webiny-project";
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
@@ -20,16 +19,14 @@ const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS })
 const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 
-const createCheckoutPrSteps = ({ workingDirectory = "" } = {}) =>
+const createCheckoutPrSteps = () =>
     [
         { name: "Install Hub Utility", run: "sudo apt-get install -y hub" },
         {
             name: "Checkout Pull Request",
-            "working-directory": workingDirectory,
+            "working-directory": DIR_WEBINY_JS,
             run: "hub pr checkout ${{ github.event.issue.number }}",
-            env: {
-                GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}"
-            }
+            env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" }
         }
     ] as NonNullable<NormalJob["steps"]>;
 
@@ -41,18 +38,20 @@ const createCypressJobs = (dbSetup: string) => {
     };
 
     const constantsJob: NormalJob = createJob({
-        needs: "constants",
+        needs: ["baseBranch", "constants", "build"],
         name: `Constants - ${dbSetup.toUpperCase()}`,
         outputs: {
             "cypress-folders": "${{ steps.list-cypress-folders.outputs.cypress-folders }}",
             "pulumi-backend-url": "${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}"
         },
+        checkout: { path: DIR_WEBINY_JS },
         steps: [
             ...createCheckoutPrSteps(),
             {
                 name: "List Cypress tests folders",
                 id: "list-cypress-folders",
-                run: 'echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT'
+                run: 'echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT',
+                "working-directory": DIR_WEBINY_JS
             },
             {
                 name: "Get Pulumi backend URL",
@@ -82,30 +81,20 @@ const createCypressJobs = (dbSetup: string) => {
     }
 
     const projectSetupJob: NormalJob = createJob({
-        needs: ["constants", jobNames.constants],
+        needs: ["baseBranch", "constants", jobNames.constants],
         name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
         outputs: {
             "cypress-config": "${{ steps.save-cypress-config.outputs.cypress-config }}"
         },
         environment: "next",
         env,
-        checkout: { path: DIR_WEBINY_JS },
         awsAuth: true,
+        checkout: { path: DIR_WEBINY_JS },
         steps: [
-            ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...createCheckoutPrSteps(),
             ...yarnCacheSteps,
-            ...globalBuildCacheSteps,
-            {
-                name: "Install dependencies",
-                "working-directory": DIR_WEBINY_JS,
-                run: "yarn --immutable"
-            },
-            {
-                name: "Build packages",
-                "working-directory": DIR_WEBINY_JS,
-                run: "yarn build:quick"
-            },
             ...runBuildCacheSteps,
+            ...installBuildSteps,
             ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
             {
                 name: 'Create ".npmrc" file in the project root, with a dummy auth token',
@@ -178,7 +167,7 @@ const createCypressJobs = (dbSetup: string) => {
 
     const cypressTestsJob = createJob({
         name: `\${{ matrix.cypress-folder }} (${dbSetup}, \${{ matrix.os }}, Node v\${{ matrix.node }})`,
-        needs: ["constants", jobNames.constants, jobNames.projectSetup],
+        needs: ["baseBranch", "constants", jobNames.constants, jobNames.projectSetup],
         strategy: {
             "fail-fast": false,
             matrix: {
@@ -189,9 +178,9 @@ const createCypressJobs = (dbSetup: string) => {
         },
         environment: "next",
         env,
-        checkout: { path: DIR_WEBINY_JS },
+        checkout: { path: "${{ needs.baseBranch.outputs.base-branch }}" },
         steps: [
-            ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...createCheckoutPrSteps(),
             ...yarnCacheSteps,
             ...runBuildCacheSteps,
             ...installBuildSteps,
@@ -216,15 +205,14 @@ const createCypressJobs = (dbSetup: string) => {
     };
 };
 
-export const pullRequestsCommandCypressTest = createWorkflow({
-    name: "Pull Requests Command - Cypress (Test)",
+export const pullRequestsCommandCypress = createWorkflow({
+    name: "Pull Requests Command - Cypress",
     on: "issue_comment",
     env: {
         NODE_OPTIONS,
         AWS_REGION: "eu-central-1"
     },
     jobs: {
-        validateWorkflows: createValidateWorkflowsJob(),
         checkComment: createJob({
             name: `Check comment for /cypress`,
             if: "${{ github.event.issue.pull_request }}",
@@ -253,18 +241,36 @@ export const pullRequestsCommandCypressTest = createWorkflow({
                 }
             ]
         }),
-        constants: createJob({
+        validateWorkflows: createValidateWorkflowsJob({ needs: "checkComment" }),
+        baseBranch: createJob({
             needs: "checkComment",
+            name: "Get base branch",
+            outputs: {
+                "base-branch": "${{ steps.base-branch.outputs.base-branch }}"
+            },
+            steps: [
+                { name: "Install Hub Utility", run: "sudo apt-get install -y hub" },
+                {
+                    name: "Get base branch",
+                    id: "base-branch",
+                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    run: 'echo "base-branch=$(hub pr show ${{ github.event.issue.number }} -f %B)" >> $GITHUB_OUTPUT'
+                }
+            ]
+        }),
+        constants: createJob({
+            needs: "baseBranch",
             name: "Create constants",
             outputs: {
                 "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
                 "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}"
             },
+            checkout: false,
             steps: [
                 {
                     name: "Create global cache key",
                     id: "global-cache-key",
-                    run: `echo "global-cache-key=${BRANCH_NAME}-\${{ runner.os }}-$(/bin/date -u "+%m%d")-\${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT`
+                    run: `echo "global-cache-key=\${{ needs.baseBranch.outputs.base-branch }}-\${{ runner.os }}-$(/bin/date -u "+%m%d")-\${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT`
                 },
                 {
                     name: "Create workflow run cache key",
@@ -275,10 +281,11 @@ export const pullRequestsCommandCypressTest = createWorkflow({
         }),
         build: createJob({
             name: "Build",
-            needs: "constants",
+            needs: ["baseBranch", "constants"],
             checkout: { path: DIR_WEBINY_JS },
             "runs-on": "blacksmith-4vcpu-ubuntu-2204",
             steps: [
+                ...createCheckoutPrSteps(),
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
                 ...installBuildSteps,

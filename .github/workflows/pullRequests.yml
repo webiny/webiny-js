@@ -50,12 +50,14 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   constants:
     name: Create constants
-    runs-on: ubuntu-latest
     outputs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
       run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
       is-fork-pr: ${{ steps.is-fork-pr.outputs.is-fork-pr }}
     steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
       - name: Create global cache key
         id: global-cache-key
         run: >-
@@ -72,6 +74,10 @@ jobs:
         run: >-
           echo "is-fork-pr=${{ github.event.pull_request.head.repo.fork }}" >>
           $GITHUB_OUTPUT
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   build:
     name: Build
     needs: constants
@@ -83,19 +89,21 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: .yarn/cache
+          path: ${{ github.base_ref }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: .webiny/cached-packages
+          path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
+        working-directory: ${{ github.base_ref }}
       - name: Build packages
         run: yarn build:quick
+        working-directory: ${{ github.base_ref }}
       - uses: actions/cache@v4
         with:
-          path: .webiny/cached-packages
+          path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -112,22 +120,27 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: .yarn/cache
+          path: ${{ github.base_ref }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: .webiny/cached-packages
+          path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
+        working-directory: ${{ github.base_ref }}
       - name: Check code formatting
         run: yarn prettier:check
+        working-directory: ${{ github.base_ref }}
       - name: Check dependencies
         run: yarn adio
+        working-directory: ${{ github.base_ref }}
       - name: Check TS configs
         run: yarn check-ts-configs
+        working-directory: ${{ github.base_ref }}
       - name: ESLint
         run: yarn eslint
+        working-directory: ${{ github.base_ref }}
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -142,14 +155,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: .yarn/cache
+          path: ${{ github.base_ref }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn --immutable
+        working-directory: ${{ github.base_ref }}
       - name: Build packages (full)
         run: yarn build
+        working-directory: ${{ github.base_ref }}
       - name: Check types for Cypress tests
         run: yarn cy:ts
+        working-directory: ${{ github.base_ref }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -180,18 +196,21 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: .yarn/cache
+          path: ${{ github.base_ref }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: .webiny/cached-packages
+          path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
+        working-directory: ${{ github.base_ref }}
       - name: Build packages
         run: yarn build:quick
+        working-directory: ${{ github.base_ref }}
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
+        working-directory: ${{ github.base_ref }}
   jestTestsDdb:
     needs:
       - constants
@@ -234,18 +253,21 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: .yarn/cache
+          path: ${{ github.base_ref }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: .webiny/cached-packages
+          path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
+        working-directory: ${{ github.base_ref }}
       - name: Build packages
         run: yarn build:quick
+        working-directory: ${{ github.base_ref }}
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
+        working-directory: ${{ github.base_ref }}
   jestTestsDdbEs:
     needs:
       - constants
@@ -293,18 +315,21 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: .yarn/cache
+          path: ${{ github.base_ref }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: .webiny/cached-packages
+          path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
+        working-directory: ${{ github.base_ref }}
       - name: Build packages
         run: yarn build:quick
+        working-directory: ${{ github.base_ref }}
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
+        working-directory: ${{ github.base_ref }}
     permissions:
       id-token: write
     if: needs.constants.outputs.is-fork-pr != 'true'
@@ -355,18 +380,21 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: .yarn/cache
+          path: ${{ github.base_ref }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: .webiny/cached-packages
+          path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
+        working-directory: ${{ github.base_ref }}
       - name: Build packages
         run: yarn build:quick
+        working-directory: ${{ github.base_ref }}
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
+        working-directory: ${{ github.base_ref }}
     permissions:
       id-token: write
     if: needs.constants.outputs.is-fork-pr != 'true'
@@ -386,36 +414,44 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
       - uses: actions/cache@v4
         with:
-          path: .yarn/cache
+          path: ${{ github.base_ref }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: .webiny/cached-packages
+          path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
+        working-directory: ${{ github.base_ref }}
       - name: Build packages
         run: yarn build:quick
+        working-directory: ${{ github.base_ref }}
       - name: Start Verdaccio local server
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml
+        working-directory: ${{ github.base_ref }}
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
+        working-directory: ${{ github.base_ref }}
       - name: Set git email
         run: git config --global user.email "webiny-bot@webiny.com"
+        working-directory: ${{ github.base_ref }}
       - name: Set git username
         run: git config --global user.name "webiny-bot"
+        working-directory: ${{ github.base_ref }}
       - name: Create ".npmrc" file in the project root, with a dummy auth token
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+        working-directory: ${{ github.base_ref }}
       - name: Version and publish to Verdaccio
         run: yarn release --type=verdaccio
+        working-directory: ${{ github.base_ref }}
       - name: Upload verdaccio files
         uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files
           retention-days: 1
-          path: |
-            .verdaccio/
-            .verdaccio.yaml
+          path: |-
+            ${{ github.base_ref }}/.verdaccio/
+            ${{ github.base_ref }}/.verdaccio.yaml
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
