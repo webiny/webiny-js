@@ -148,7 +148,7 @@ export const pullRequests = createWorkflow({
         build: createJob({
             name: "Build",
             needs: "constants",
-            "runs-on": "webiny-build-packages",
+            "runs-on": "blacksmith-8vcpu-ubuntu-2204",
             steps: [
                 ...yarnCacheSteps,
                 ...buildGlobalCacheSteps,
@@ -195,7 +195,7 @@ export const pullRequests = createWorkflow({
         }),
         staticCodeAnalysisTs: createJob({
             name: "Static code analysis (TypeScript)",
-            "runs-on": "webiny-build-packages",
+            "runs-on": "blacksmith-8vcpu-ubuntu-2204",
             steps: [
                 ...yarnCacheSteps,
 
