@@ -6,7 +6,7 @@ import {
 } from "./steps";
 
 const createRebuildGlobalCacheWorkflow = (branchName: string) => ({
-    name: "Rebuild Caches",
+    name: `Rebuild Global Cache ("${branchName}" branch)`,
     on: {
         workflow_dispatch: {},
         schedule: [{ cron: "0 4 * * *" }]
@@ -27,7 +27,7 @@ const createRebuildGlobalCacheWorkflow = (branchName: string) => ({
             ]
         }),
         cacheDependenciesPackages: createJob({
-            name: `Cache dependencies and packages ("${branchName}" branch)`,
+            name: `Cache dependencies and packages`,
             needs: "constants",
             checkout: { path: branchName },
             steps: [

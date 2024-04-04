@@ -2,7 +2,7 @@
 # DO NOT MODIFY IT BY HAND. Instead, modify the source *.wac.ts file(s)
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
-name: Rebuild Caches
+name: Rebuild Global Cache ("dev" branch)
 'on':
   workflow_dispatch: {}
   schedule:
@@ -26,7 +26,7 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   cacheDependenciesPackages:
-    name: Cache dependencies and packages ("dev" branch)
+    name: Cache dependencies and packages
     needs: constants
     steps:
       - uses: actions/setup-node@v4
