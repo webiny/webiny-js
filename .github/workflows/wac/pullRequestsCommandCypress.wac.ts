@@ -20,12 +20,12 @@ const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS })
 const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 
-const createCheckoutPrSteps = ({ workingDirectory = "" } = {}) =>
+const createCheckoutPrSteps = () =>
     [
         { name: "Install Hub Utility", run: "sudo apt-get install -y hub" },
         {
             name: "Checkout Pull Request",
-            "working-directory": workingDirectory,
+            "working-directory": "${{ needs.baseBranch.outputs.base-branch }}",
             run: "hub pr checkout ${{ github.event.issue.number }}",
             env: {
                 GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}"
@@ -41,7 +41,7 @@ const createCypressJobs = (dbSetup: string) => {
     };
 
     const constantsJob: NormalJob = createJob({
-        needs: "constants",
+        needs: ["baseBranch", "constants"],
         name: `Constants - ${dbSetup.toUpperCase()}`,
         outputs: {
             "cypress-folders": "${{ steps.list-cypress-folders.outputs.cypress-folders }}",
@@ -83,7 +83,7 @@ const createCypressJobs = (dbSetup: string) => {
     }
 
     const projectSetupJob: NormalJob = createJob({
-        needs: ["constants", jobNames.constants],
+        needs: ["baseBranch", "constants", jobNames.constants],
         name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
         outputs: {
             "cypress-config": "${{ steps.save-cypress-config.outputs.cypress-config }}"
@@ -93,7 +93,7 @@ const createCypressJobs = (dbSetup: string) => {
         awsAuth: true,
         checkout: false,
         steps: [
-            ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...createCheckoutPrSteps(),
             ...yarnCacheSteps,
             ...globalBuildCacheSteps,
             {
@@ -179,7 +179,7 @@ const createCypressJobs = (dbSetup: string) => {
 
     const cypressTestsJob = createJob({
         name: `\${{ matrix.cypress-folder }} (${dbSetup}, \${{ matrix.os }}, Node v\${{ matrix.node }})`,
-        needs: ["constants", jobNames.constants, jobNames.projectSetup],
+        needs: ["baseBranch", "constants", jobNames.constants, jobNames.projectSetup],
         strategy: {
             "fail-fast": false,
             matrix: {
@@ -192,7 +192,7 @@ const createCypressJobs = (dbSetup: string) => {
         env,
         checkout: false,
         steps: [
-            ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...createCheckoutPrSteps(),
             ...yarnCacheSteps,
             ...runBuildCacheSteps,
             ...installBuildSteps,
@@ -254,8 +254,22 @@ export const pullRequestsCommandCypressTest = createWorkflow({
                 }
             ]
         }),
-        constants: createJob({
+        baseBranch: createJob({
             needs: "checkComment",
+            name: "Get base branch",
+            outputs: {
+                "base-branch": "${{ steps.base-branch.outputs.base-branch }}"
+            },
+            steps: [
+                {
+                    name: "Get base branch",
+                    id: "base-branch",
+                    run: 'echo "base-branch=$(hub pr show ${{ github.event.issue.number }} -f %B)" >> $GITHUB_OUTPUT'
+                }
+            ]
+        }),
+        constants: createJob({
+            needs: "baseBranch",
             name: "Create constants",
             outputs: {
                 "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
@@ -263,7 +277,7 @@ export const pullRequestsCommandCypressTest = createWorkflow({
             },
             checkout: false,
             steps: [
-                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
+                ...createCheckoutPrSteps(),
                 {
                     name: "Create global cache key",
                     id: "global-cache-key",
@@ -278,11 +292,11 @@ export const pullRequestsCommandCypressTest = createWorkflow({
         }),
         build: createJob({
             name: "Build",
-            needs: "constants",
+            needs: ["baseBranch", "constants"],
             checkout: false,
             "runs-on": "blacksmith-4vcpu-ubuntu-2204",
             steps: [
-                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
+                ...createCheckoutPrSteps(),
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
                 ...installBuildSteps,

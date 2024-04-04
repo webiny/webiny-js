@@ -52,8 +52,27 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  constants:
+  baseBranch:
     needs: checkComment
+    name: Get base branch
+    outputs:
+      base-branch: ${{ steps.base-branch.outputs.base-branch }}
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - uses: actions/checkout@v4
+      - name: Get base branch
+        id: base-branch
+        run: >-
+          echo "base-branch=$(hub pr show ${{ github.event.issue.number }} -f
+          %B)" >> $GITHUB_OUTPUT
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  constants:
+    needs: baseBranch
     name: Create constants
     outputs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
@@ -65,7 +84,7 @@ jobs:
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -86,7 +105,9 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   build:
     name: Build
-    needs: constants
+    needs:
+      - baseBranch
+      - constants
     runs-on: blacksmith-4vcpu-ubuntu-2204
     steps:
       - uses: actions/setup-node@v4
@@ -95,7 +116,7 @@ jobs:
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -125,7 +146,9 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2e-wby-cms-ddb-constants:
-    needs: constants
+    needs:
+      - baseBranch
+      - constants
     name: Constants - DDB
     outputs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
@@ -137,7 +160,7 @@ jobs:
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: ''
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -157,6 +180,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2e-wby-cms-ddb-project-setup:
     needs:
+      - baseBranch
       - constants
       - e2e-wby-cms-ddb-constants
     name: E2E (DDB) - Project setup
@@ -182,7 +206,7 @@ jobs:
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -293,6 +317,7 @@ jobs:
       ${{ matrix.cypress-folder }} (ddb, ${{ matrix.os }}, Node v${{ matrix.node
       }})
     needs:
+      - baseBranch
       - constants
       - e2e-wby-cms-ddb-constants
       - e2e-wby-cms-ddb-project-setup
@@ -321,7 +346,7 @@ jobs:
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -352,7 +377,9 @@ jobs:
         run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
     runs-on: ubuntu-latest
   e2e-wby-cms-ddb-es-constants:
-    needs: constants
+    needs:
+      - baseBranch
+      - constants
     name: Constants - DDB-ES
     outputs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
@@ -364,7 +391,7 @@ jobs:
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: ''
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -384,6 +411,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2e-wby-cms-ddb-es-project-setup:
     needs:
+      - baseBranch
       - constants
       - e2e-wby-cms-ddb-es-constants
     name: E2E (DDB-ES) - Project setup
@@ -412,7 +440,7 @@ jobs:
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -523,6 +551,7 @@ jobs:
       ${{ matrix.cypress-folder }} (ddb-es, ${{ matrix.os }}, Node v${{
       matrix.node }})
     needs:
+      - baseBranch
       - constants
       - e2e-wby-cms-ddb-es-constants
       - e2e-wby-cms-ddb-es-project-setup
@@ -555,7 +584,7 @@ jobs:
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -587,7 +616,9 @@ jobs:
         run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
     runs-on: ubuntu-latest
   e2e-wby-cms-ddb-os-constants:
-    needs: constants
+    needs:
+      - baseBranch
+      - constants
     name: Constants - DDB-OS
     outputs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
@@ -599,7 +630,7 @@ jobs:
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: ''
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -619,6 +650,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2e-wby-cms-ddb-os-project-setup:
     needs:
+      - baseBranch
       - constants
       - e2e-wby-cms-ddb-os-constants
     name: E2E (DDB-OS) - Project setup
@@ -647,7 +679,7 @@ jobs:
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -758,6 +790,7 @@ jobs:
       ${{ matrix.cypress-folder }} (ddb-os, ${{ matrix.os }}, Node v${{
       matrix.node }})
     needs:
+      - baseBranch
       - constants
       - e2e-wby-cms-ddb-os-constants
       - e2e-wby-cms-ddb-os-project-setup
@@ -790,7 +823,7 @@ jobs:
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: $(hub pr show ${{ github.event.issue.number }} -f %B)
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
