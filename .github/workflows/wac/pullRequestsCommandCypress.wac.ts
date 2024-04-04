@@ -45,7 +45,7 @@ const createCypressJobs = (dbSetup: string) => {
             "cypress-folders": "${{ steps.list-cypress-folders.outputs.cypress-folders }}",
             "pulumi-backend-url": "${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}"
         },
-        checkout: false,
+        checkout: { path: "${{ needs.baseBranch.outputs.base-branch }}" },
         steps: [
             ...createCheckoutPrSteps(),
             {
@@ -89,7 +89,7 @@ const createCypressJobs = (dbSetup: string) => {
         environment: "next",
         env,
         awsAuth: true,
-        checkout: false,
+        checkout: { path: "${{ needs.baseBranch.outputs.base-branch }}" },
         steps: [
             ...createCheckoutPrSteps(),
             ...yarnCacheSteps,
@@ -188,7 +188,7 @@ const createCypressJobs = (dbSetup: string) => {
         },
         environment: "next",
         env,
-        checkout: false,
+        checkout: { path: "${{ needs.baseBranch.outputs.base-branch }}" },
         steps: [
             ...createCheckoutPrSteps(),
             ...yarnCacheSteps,
@@ -291,9 +291,7 @@ export const pullRequestsCommandCypressTest = createWorkflow({
         build: createJob({
             name: "Build",
             needs: ["baseBranch", "constants"],
-            checkout: {
-                path: "${{ needs.baseBranch.outputs.base-branch }}"
-            },
+            checkout: { path: "${{ needs.baseBranch.outputs.base-branch }}" },
             "runs-on": "blacksmith-4vcpu-ubuntu-2204",
             steps: [
                 ...createCheckoutPrSteps(),

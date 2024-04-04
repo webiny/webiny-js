@@ -156,6 +156,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -202,6 +205,9 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -342,6 +348,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -387,6 +396,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -436,6 +448,9 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -580,6 +595,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -626,6 +644,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -675,6 +696,9 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
@@ -819,6 +843,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
