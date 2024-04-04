@@ -1,25 +1,9 @@
-import { createWorkflow, NormalJob } from "github-actions-wac";
+import { createWorkflow } from "github-actions-wac";
 import { createJob, createValidateWorkflowsJob } from "./jobs";
+import { createRunBuildCacheSteps, createYarnCacheSteps } from "./steps";
 
-const yarnCacheSteps: NormalJob["steps"] = [
-    {
-        uses: "actions/cache@v4",
-        with: {
-            path: ".yarn/cache",
-            key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-        }
-    }
-];
-
-const buildRunCacheSteps = [
-    {
-        uses: "actions/cache@v4",
-        with: {
-            path: ".webiny/cached-packages",
-            key: "${{ needs.constants.outputs.run-cache-key }}"
-        }
-    }
-];
+const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: "" });
+const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: "" });
 
 // Note: we don't use global build cache here because we don't know which cache to use.
 // Commits from both `dev` and `next` branches can be merged into `stable`, so we need
@@ -34,12 +18,10 @@ export const pushStable = createWorkflow({
     },
     jobs: {
         validateWorkflows: createValidateWorkflowsJob(),
-        constants: {
+        constants: createJob({
             name: "Create constants",
-            "runs-on": "ubuntu-latest",
-            outputs: {
-                "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}"
-            },
+            outputs: { "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}" },
+            setupNode: false,
             steps: [
                 {
                     name: "Create workflow run cache key",
@@ -47,7 +29,7 @@ export const pushStable = createWorkflow({
                     run: 'echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
                 }
             ]
-        },
+        }),
         build: createJob({
             name: "Build",
             needs: "constants",
@@ -65,7 +47,7 @@ export const pushStable = createWorkflow({
 
                 // Once we've built packages (without the help of the global cache), we can now cache
                 // the result for this run workflow. All of the following jobs will use this cache.
-                ...buildRunCacheSteps
+                ...runBuildCacheSteps
             ]
         }),
         npmReleaseBeta: createJob({
@@ -79,7 +61,7 @@ export const pushStable = createWorkflow({
             checkout: { "fetch-depth": 0 },
             steps: [
                 ...yarnCacheSteps,
-                ...buildRunCacheSteps,
+                ...runBuildCacheSteps,
                 {
                     name: "Install dependencies",
                     run: "yarn --immutable"
@@ -121,7 +103,7 @@ export const pushStable = createWorkflow({
             },
             steps: [
                 ...yarnCacheSteps,
-                ...buildRunCacheSteps,
+                ...runBuildCacheSteps,
                 {
                     name: "Install dependencies",
                     run: "yarn --immutable"

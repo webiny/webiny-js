@@ -1,7 +1,14 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
-import { createJob, createValidateWorkflowsJob } from "./jobs";
-import { createDeployWebinySteps, createSetupVerdaccioSteps } from "./steps";
 import { listPackagesWithJestTests, NODE_VERSION } from "./utils";
+import { createJob, createValidateWorkflowsJob } from "./jobs";
+import {
+    createDeployWebinySteps,
+    createSetupVerdaccioSteps,
+    createInstallBuildSteps,
+    createYarnCacheSteps,
+    createGlobalBuildCacheSteps,
+    createRunBuildCacheSteps
+} from "./steps";
 
 const withCommonParams = (
     steps: NonNullable<NormalJob["steps"]>,
@@ -14,43 +21,10 @@ const createPushWorkflow = (branchName: string) => {
     const DIR_WEBINY_JS = branchName;
     const DIR_TEST_PROJECT = "new-webiny-project";
 
-    const yarnInstallBuildSteps = withCommonParams(
-        [
-            { name: "Install dependencies", run: "yarn --immutable" },
-            { name: "Build packages", run: "yarn build:quick" }
-        ],
-        { "working-directory": DIR_WEBINY_JS }
-    );
-
-    const yarnCacheSteps = [
-        {
-            uses: "actions/cache@v4",
-            with: {
-                path: DIR_WEBINY_JS + "/.yarn/cache",
-                key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-            }
-        }
-    ] as const;
-
-    const buildGlobalCacheSteps = [
-        {
-            uses: "actions/cache@v4",
-            with: {
-                path: DIR_WEBINY_JS + "/.webiny/cached-packages",
-                key: "${{ needs.constants.outputs.global-cache-key }}"
-            }
-        }
-    ] as const;
-
-    const buildRunCacheSteps = [
-        {
-            uses: "actions/cache@v4",
-            with: {
-                path: DIR_WEBINY_JS + "/.webiny/cached-packages",
-                key: "${{ needs.constants.outputs.run-cache-key }}"
-            }
-        }
-    ] as const;
+    const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
+    const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
+    const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
+    const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 
     const createCypressJobs = (dbSetup: string) => {
         const ucFirstDbSetup = dbSetup.charAt(0).toUpperCase() + dbSetup.slice(1);
@@ -117,8 +91,8 @@ const createPushWorkflow = (branchName: string) => {
             awsAuth: true,
             steps: [
                 ...yarnCacheSteps,
-                ...buildRunCacheSteps,
-                ...yarnInstallBuildSteps,
+                ...runBuildCacheSteps,
+                ...installBuildSteps,
                 ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
                 ...withCommonParams(
                     [
@@ -211,8 +185,8 @@ const createPushWorkflow = (branchName: string) => {
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
-                ...buildRunCacheSteps,
-                ...yarnInstallBuildSteps,
+                ...runBuildCacheSteps,
+                ...installBuildSteps,
                 ...withCommonParams(
                     [
                         {
@@ -275,8 +249,8 @@ const createPushWorkflow = (branchName: string) => {
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
-                ...buildRunCacheSteps,
-                ...yarnInstallBuildSteps,
+                ...runBuildCacheSteps,
+                ...installBuildSteps,
                 ...withCommonParams(
                     [{ name: "Run tests", run: "yarn test ${{ matrix.package.cmd }}" }],
                     { "working-directory": DIR_WEBINY_JS }
@@ -316,9 +290,9 @@ const createPushWorkflow = (branchName: string) => {
                 "runs-on": "blacksmith-4vcpu-ubuntu-2204",
                 steps: [
                     ...yarnCacheSteps,
-                    ...buildGlobalCacheSteps,
-                    ...yarnInstallBuildSteps,
-                    ...buildRunCacheSteps
+                    ...globalBuildCacheSteps,
+                    ...installBuildSteps,
+                    ...runBuildCacheSteps
                 ]
             }),
             codeAnalysis: createJob({
@@ -327,7 +301,7 @@ const createPushWorkflow = (branchName: string) => {
                 checkout: { path: DIR_WEBINY_JS },
                 steps: [
                     ...yarnCacheSteps,
-                    ...buildRunCacheSteps,
+                    ...runBuildCacheSteps,
                     ...withCommonParams(
                         [
                             { name: "Install dependencies", run: "yarn --immutable" },
@@ -349,7 +323,7 @@ const createPushWorkflow = (branchName: string) => {
 
                     // We're not using run cache here. We want to build all packages
                     // with TypeScript, to ensure there are no TypeScript errors.
-                    // ...buildRunCacheSteps,
+                    // ...runBuildCacheSteps,
 
                     ...withCommonParams(
                         [
@@ -386,8 +360,8 @@ const createPushWorkflow = (branchName: string) => {
             checkout: { "fetch-depth": 0 },
             steps: [
                 ...yarnCacheSteps,
-                ...buildRunCacheSteps,
-                ...yarnInstallBuildSteps,
+                ...runBuildCacheSteps,
+                ...installBuildSteps,
                 ...withCommonParams(
                     [
                         {
