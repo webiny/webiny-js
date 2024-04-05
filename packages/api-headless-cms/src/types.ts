@@ -662,12 +662,12 @@ export type CmsModelAstTree = {
 export type CmsModelFieldAstNode =
     | {
           type: "collection";
-          collection: any;
+          collection: Record<string, any>;
           children: CmsModelFieldAstNode[];
       }
     | {
           type: "field";
-          field: any;
+          field: CmsModelField;
           children: CmsModelFieldAstNode[];
       };
 
