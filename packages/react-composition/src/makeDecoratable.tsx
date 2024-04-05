@@ -1,12 +1,6 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { useComponent } from "./Context";
-import {
-    CanReturnNull,
-    DecoratableComponent,
-    DecoratableHook,
-    GenericComponent,
-    GenericHook
-} from "~/types";
+import { DecoratableComponent, DecoratableHook, GenericComponent, GenericHook } from "~/types";
 import { withDecoratorFactory, withHookDecoratorFactory } from "~/decorators";
 
 const ComposableContext = createContext<string[]>([]);
@@ -75,11 +69,13 @@ export function createVoidComponent<T>() {
     };
 }
 
-export function makeDecoratable<T extends GenericHook>(hook: T): DecoratableHook<T>;
+export function makeDecoratable<T extends GenericHook>(
+    hook: T
+): ReturnType<typeof makeDecoratableHook<T>>;
 export function makeDecoratable<T extends GenericComponent>(
     name: string,
     Component: T
-): DecoratableComponent<CanReturnNull<T>>;
+): ReturnType<typeof makeDecoratableComponent<T>>;
 export function makeDecoratable(hookOrName: any, Component?: any) {
     if (Component) {
         return makeDecoratableComponent(hookOrName, Component);
