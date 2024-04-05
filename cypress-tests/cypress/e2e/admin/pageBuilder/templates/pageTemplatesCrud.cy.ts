@@ -36,7 +36,9 @@ context("Page Builder - Template CRUD", () => {
                 });
         });
         cy.findByTestId("pb-editor-page-title").click();
-        cy.get(`input[value="${templateName}"]`).clear().type(templateNameEdit).blur();
+        cy.findByTestId("pb-editor-page-title").within(() => {
+            cy.get(`input[value="${templateName}"]`).clear().type(templateNameEdit).blur();
+        });
         cy.findByRole("button", { name: "Save Changes" }).should("exist").click();
         cy.contains(templateNameEdit).should("exist");
 

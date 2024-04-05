@@ -1,10 +1,11 @@
 import { useMemo } from "react";
 import { createConfigurableComponent } from "@webiny/react-properties";
 import { Actions, ActionsConfig } from "./Actions";
+import { FieldElement } from "./FieldElement";
 
 const base = createConfigurableComponent<ContentEntryEditorConfig>("ContentEntryEditorConfig");
 
-export const ContentEntryEditorConfig = Object.assign(base.Config, { Actions });
+export const ContentEntryEditorConfig = Object.assign(base.Config, { Actions, FieldElement });
 
 export const ContentEntryEditorWithConfig = base.WithConfig;
 

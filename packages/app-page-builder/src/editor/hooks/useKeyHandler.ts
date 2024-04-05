@@ -72,15 +72,15 @@ export function useKeyHandler(): {
     addKeyHandler: AddKeyHandlerType;
     removeKeyHandler: RemoveKeyHandlerType;
 } {
-    const [id] = React.useState(getNanoid());
+    const idRef = React.useRef(getNanoid());
 
     return React.useMemo(
         () => ({
             addKeyHandler(key, handler) {
-                addKeyHandler(id, key, handler);
+                addKeyHandler(idRef.current, key, handler);
             },
             removeKeyHandler(key) {
-                removeKeyHandler(id, key);
+                removeKeyHandler(idRef.current, key);
             }
         }),
         []

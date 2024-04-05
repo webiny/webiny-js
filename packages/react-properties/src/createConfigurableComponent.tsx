@@ -25,19 +25,37 @@ interface ConfigApplyProps {
     children?: React.ReactNode;
 }
 
+export interface ConfigProps {
+    children: React.ReactNode;
+    priority?: "primary" | "secondary";
+}
+
 export function createConfigurableComponent<TConfig>(name: string) {
     /**
      * This component is used when we want to mount all composed configs.
      */
-    const ConfigApply = makeDecoratable(`${name}ConfigApply`, ({ children }: ConfigApplyProps) => {
-        return <>{children}</>;
-    });
+    const ConfigApplyPrimary = makeDecoratable(
+        `${name}ConfigApply<Primary>`,
+        ({ children }: ConfigApplyProps) => {
+            return <>{children}</>;
+        }
+    );
+
+    const ConfigApplySecondary = makeDecoratable(
+        `${name}ConfigApply<Secondary>`,
+        ({ children }: ConfigApplyProps) => {
+            return <>{children}</>;
+        }
+    );
 
     /**
      * This component is used to configure the component (it can be mounted many times).
      */
-    const Config = ({ children }: { children: React.ReactNode }) => {
-        return <Compose component={ConfigApply} with={createHOC(children)} />;
+    const Config = ({ priority = "primary", children }: ConfigProps) => {
+        if (priority === "primary") {
+            return <Compose component={ConfigApplyPrimary} with={createHOC(children)} />;
+        }
+        return <Compose component={ConfigApplySecondary} with={createHOC(children)} />;
     };
 
     interface ViewContext {
@@ -65,7 +83,8 @@ export function createConfigurableComponent<TConfig>(name: string) {
         return (
             <ViewContext.Provider value={context}>
                 <Properties onChange={stateUpdater}>
-                    <ConfigApply />
+                    <ConfigApplyPrimary />
+                    <ConfigApplySecondary />
                     {children}
                 </Properties>
             </ViewContext.Provider>

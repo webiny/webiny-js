@@ -21,7 +21,8 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
     resolvers: {
         AdminUsersQuery: {
             version: async (_, __, context) => {
-                return await context.adminUsers.getVersion();
+                const version = await context.adminUsers.getVersion();
+                return version ? "true" : null;
             }
         },
         AdminUsersMutation: {

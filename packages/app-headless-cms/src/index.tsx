@@ -1,12 +1,15 @@
 import React from "react";
-import { ContentEntryEditorConfig, ContentEntryListConfig } from "./admin/config/contentEntries";
+import {
+    ContentEntryEditorConfig as BaseContentEntryEditorConfig,
+    ContentEntryListConfig
+} from "./admin/config/contentEntries";
 
 export * from "./HeadlessCMS";
 export * from "./admin/hooks";
 export { LexicalEditorConfig } from "~/admin/lexicalConfig/LexicalEditorConfig";
-export { RenderFieldElement } from "~/admin/components/ContentEntryForm/RenderFieldElement";
+export * from "~/admin/components/ContentEntryForm/FieldElement";
 export { ModelProvider } from "~/admin/components/ModelProvider";
-export { ContentEntryEditorConfig, ContentEntryListConfig };
+export { ContentEntryListConfig };
 
 interface LegacyContentEntriesViewConfigProps {
     children: React.ReactNode;
@@ -28,11 +31,18 @@ const LegacyContentEntriesViewConfig = ({ children }: LegacyContentEntriesViewCo
 const LegacySorter = (props: any) => null;
 
 /**
- * @deprecated Use ContentEntryListConfig instead
+ * @deprecated Use ContentEntryListConfig instead.
  */
 export const ContentEntriesViewConfig = Object.assign(LegacyContentEntriesViewConfig, {
     Filter: ContentEntryListConfig.Browser.Filter,
     Sorter: LegacySorter
 });
 
-export * from "./components";
+import { Components as AllComponents } from "./components";
+
+/**
+ * @deprecated Use `ContentEntryEditorConfig` namespace instead.
+ */
+export const Components = AllComponents;
+
+export const ContentEntryEditorConfig = Object.assign(BaseContentEntryEditorConfig, AllComponents);

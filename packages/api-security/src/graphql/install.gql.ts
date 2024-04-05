@@ -17,7 +17,8 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
     resolvers: {
         SecurityQuery: {
             version: async (_, __, context) => {
-                return await context.security.getVersion();
+                const version = await context.security.getVersion();
+                return version ? "true" : null;
             }
         },
         SecurityMutation: {
