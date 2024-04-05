@@ -64,10 +64,10 @@ export function createDecoratorFactory<TDecorator>() {
     };
 }
 
-export function createHookDecoratorFactory<TDecorator>() {
+export function createHookDecoratorFactory() {
     return function from<TDecoratable extends DecoratableComponent>(decoratable: TDecoratable) {
         return function createDecorator(decorator: Decorator<GetDecoratee<TDecoratable>>) {
-            return function DecoratorPlugin(props: TDecorator) {
+            return function DecoratorPlugin() {
                 return (
                     <Compose
                         function={decoratable}
@@ -92,9 +92,9 @@ export function withDecoratorFactory<TDecorator>() {
     };
 }
 
-export function withHookDecoratorFactory<TDecorator>() {
+export function withHookDecoratorFactory() {
     return function WithHookDecorator<TDecoratable extends DecoratableHook>(hook: TDecoratable) {
-        const createDecorator = createHookDecoratorFactory<TDecorator>()(hook);
+        const createDecorator = createHookDecoratorFactory()(hook);
 
         return Object.assign(hook, { createDecorator }) as unknown as DecoratableHook<
             GenericHook<GetDecorateeParams<GetDecoratee<TDecoratable>>>
