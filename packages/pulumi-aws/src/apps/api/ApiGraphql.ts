@@ -24,6 +24,10 @@ export interface AddRouteParams {
     method: "DELETE" | "GET" | "HEAD" | "PATCH" | "POST" | "PUT" | "OPTIONS" | "ANY";
 }
 
+const EMPTY_TRASH_BIN_EVENT_RULE_NAME = `empty-trash-bin-event-rule`;
+const EMPTY_TRASH_BIN_EVENT_PERMISSION_NAME = `empty-trash-bin-event-target-permission`;
+const EMPTY_TRASH_BIN_EVENT_RULE_TARGET = `empty-trash-bin-event-rule-target`;
+
 export type ApiGraphql = PulumiAppModule<typeof ApiGraphql>;
 
 export const ApiGraphql = createAppModule({
@@ -81,6 +85,36 @@ export const ApiGraphql = createAppModule({
               "eventRuleName": {"S": "${params.apwSchedulerEventRule.name}"},
               "eventTargetId": {"S": "${params.apwSchedulerEventTarget.targetId}"}
             }`
+            }
+        });
+
+        // Create event rule.
+        const eventRule = app.addResource(aws.cloudwatch.EventRule, {
+            name: EMPTY_TRASH_BIN_EVENT_RULE_NAME,
+            config: {
+                description: "Enable us to empty the trash-bin ever day",
+                scheduleExpression: "rate(60 minutes)",
+                isEnabled: true
+            }
+        });
+
+        // Add required permission to the target lambda.
+        app.addResource(aws.lambda.Permission, {
+            name: EMPTY_TRASH_BIN_EVENT_PERMISSION_NAME,
+            config: {
+                action: "lambda:InvokeFunction",
+                function: graphql.output.arn,
+                principal: "events.amazonaws.com",
+                statementId: "allow-rule-invoke-" + EMPTY_TRASH_BIN_EVENT_RULE_NAME
+            }
+        });
+
+        // Target the main graphql lambda.
+        app.addResource(aws.cloudwatch.EventTarget, {
+            name: EMPTY_TRASH_BIN_EVENT_RULE_TARGET,
+            config: {
+                rule: eventRule.output.name,
+                arn: graphql.output.arn
             }
         });
 

@@ -1,57 +1,24 @@
+import { CmsContext, CmsEntry } from "@webiny/api-headless-cms/types";
 import { Context as BaseContext } from "@webiny/handler/types";
-import { CmsEntry, HeadlessCms } from "@webiny/api-headless-cms/types";
-import {
-    Context as TasksContext,
-    ITaskResponseDoneResultOutput,
-    ITaskRunParams
-} from "@webiny/tasks/types";
+import { Context as TasksContext, ITaskResponseDoneResultOutput } from "@webiny/tasks/types";
 
-export interface HeadlessCmsTasksContext extends BaseContext, HeadlessCms, TasksContext {}
+export interface HeadlessCmsTasksContext extends BaseContext, CmsContext, TasksContext {}
 
-export enum DeleteEntriesTask {
-    Controller = "deleteEntriesController",
-    Process = "deleteEntriesProcess"
+export enum EntriesTask {
+    EmptyTrashBins = "emptyTrashBins",
+    EmptyTrashBinByModel = "emptyTrashBinByModel"
 }
 
 /**
- * Delete entries - Controller
+ * Empty Trash Bin by Model
  */
-export interface IDeleteEntriesControllerInput {
+
+export interface IEmptyTrashBinByModelInput {
     modelId: string;
     where?: Record<string, any>;
-    totalEntries: number;
-    after?: string | null;
-    currentBatch?: number;
-    processing?: boolean;
 }
 
-export interface IDeleteEntriesControllerOutput extends ITaskResponseDoneResultOutput {
-    totalEntries: number;
-}
-
-export type IDeleteEntriesControllerTaskParams = ITaskRunParams<
-    HeadlessCmsTasksContext,
-    IDeleteEntriesControllerInput,
-    IDeleteEntriesControllerOutput
->;
-
-/**
- * Delete entries - Process entries
- */
-export interface IDeleteEntriesProcessEntriesInput {
-    modelId: string;
-    entries: CmsEntry[];
-    done?: CmsEntry[];
-    failed?: CmsEntry[];
-}
-
-export interface IDeleteEntriesProcessEntriesOutput extends ITaskResponseDoneResultOutput {
+export interface IEmptyTrashBinByModelOutput extends ITaskResponseDoneResultOutput {
     done: CmsEntry[];
     failed: CmsEntry[];
 }
-
-export type IDeleteEntriesProcessEntriesTaskParams = ITaskRunParams<
-    HeadlessCmsTasksContext,
-    IDeleteEntriesProcessEntriesInput,
-    IDeleteEntriesProcessEntriesOutput
->;

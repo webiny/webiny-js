@@ -1,3 +1,0 @@
-export const DELETE_ENTRIES_WAIT_TIME = 5;
-export const DELETE_ENTRIES_IN_BATCH = 25;
-export const CLOSE_TO_TIMEOUT_SECONDS = 300;
