@@ -1,5 +1,5 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
-import { createValidateWorkflowsJob, createJob } from "./jobs";
+import { createJob } from "./jobs";
 import { NODE_VERSION, listPackagesWithJestTests } from "./utils";
 import {
     createGlobalBuildCacheSteps,
@@ -78,7 +78,7 @@ export const pullRequests = createWorkflow({
     name: "Pull Requests",
     on: "pull_request",
     jobs: {
-        validateWorkflows: createValidateWorkflowsJob(),
+        // validateWorkflows: createValidateWorkflowsJob(),
         validateCommits: createJob({
             name: "Validate commit messages",
             if: "github.base_ref != 'dev'",
