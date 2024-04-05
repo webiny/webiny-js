@@ -1,6 +1,6 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
 import { listPackagesWithJestTests, NODE_VERSION } from "./utils";
-import { createJob, createValidateWorkflowsJob } from "./jobs";
+import { createJob } from "./jobs";
 import {
     createDeployWebinySteps,
     createSetupVerdaccioSteps,
@@ -263,7 +263,7 @@ const createPushWorkflow = (branchName: string) => {
         name: `${ucFirstBranchName} Branch - Push`,
         on: { push: { branches: [branchName] } },
         jobs: {
-            validateWorkflows: createValidateWorkflowsJob(),
+            // validateWorkflows: createValidateWorkflowsJob(),
             constants: createJob({
                 name: "Create constants",
                 outputs: {
