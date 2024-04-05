@@ -12,6 +12,7 @@ import { Topic } from "@webiny/pubsub/types";
 import { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection";
 import { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types";
 import { AccessControl } from "~/crud/AccessControl/AccessControl";
+import { CmsModelToAstConverter } from "~/utils/contentModelAst/CmsModelToAstConverter";
 
 export type ApiEndpoint = "manage" | "preview" | "read";
 
@@ -276,6 +277,19 @@ export interface CmsModelDynamicZoneField extends CmsModelField {
      */
     settings: {
         templates: CmsDynamicZoneTemplate[];
+    };
+}
+
+/**
+ * A definition for object field to show possible type of the field in settings.
+ */
+export interface CmsModelObjectField extends CmsModelField {
+    /**
+     * Settings object for the field. Contains `templates` property.
+     */
+    settings: {
+        fields: CmsModelField[];
+        parents?: string[];
     };
 }
 
@@ -633,6 +647,35 @@ export interface CmsModelFieldToGraphQLPluginValidateChildFields<
 }
 
 /**
+ * CMS Model AST
+ */
+
+export interface ICmsModelFieldToAst {
+    toAst(field: CmsModelField): CmsModelFieldAstNode;
+}
+
+export type CmsModelAstTree = {
+    type: "root";
+    children: CmsModelFieldAstNode[];
+};
+
+export type CmsModelFieldAstNode =
+    | {
+          type: "collection";
+          collection: any;
+          children: CmsModelFieldAstNode[];
+      }
+    | {
+          type: "field";
+          field: any;
+          children: CmsModelFieldAstNode[];
+      };
+
+export interface GetCmsModelFieldAst<TField> {
+    (field: TField, converter: ICmsModelFieldToAst): CmsModelFieldAstNode;
+}
+
+/**
  * @category Plugin
  * @category ModelField
  * @category GraphQL
@@ -891,6 +934,10 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
      * @param field
      */
     validateChildFields?: CmsModelFieldToGraphQLPluginValidateChildFields<TField>;
+    /**
+     * Get field AST.
+     */
+    getFieldAst?: GetCmsModelFieldAst<TField>;
 }
 
 /**
@@ -1782,6 +1829,10 @@ export interface CmsModelContext {
      * Get a single content model.
      */
     getModel: (modelId: string) => Promise<CmsModel | null>;
+    /**
+     * Get model to AST converter.
+     */
+    getModelToAstConverter: () => CmsModelToAstConverter;
     /**
      * Get all content models.
      */
