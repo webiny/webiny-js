@@ -36,7 +36,8 @@ export const createInstallGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                             return null;
                         }
 
-                        return pageBuilder.getSystemVersion();
+                        const version = await pageBuilder.getSystemVersion();
+                        return version ? "true" : null;
                     }
                 },
                 PbMutation: {

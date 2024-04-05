@@ -1,7 +1,7 @@
 import React from "react";
 import { set } from "dot-prop-immutable";
 import { PbEditorPageElementVariableRendererPlugin } from "~/types";
-import RichVariableInput from "~/editor/plugins/elementSettings/variable/RichVariableInput";
+import { RichVariableInput } from "~/editor/plugins/elementSettings/variable/RichVariableInput";
 import { useElementVariables } from "~/editor/hooks/useElementVariableValue";
 import { CompositionScope } from "@webiny/react-composition";
 

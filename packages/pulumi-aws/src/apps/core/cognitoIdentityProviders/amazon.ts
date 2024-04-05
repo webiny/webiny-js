@@ -14,7 +14,7 @@ export const getAmazonIdpConfig = (
     return {
         userPoolId,
         providerName: "Amazon",
-        providerType: "Amazon",
+        providerType: "LoginWithAmazon",
         providerDetails: config.providerDetails,
         idpIdentifiers: config.idpIdentifiers,
         attributeMapping: {

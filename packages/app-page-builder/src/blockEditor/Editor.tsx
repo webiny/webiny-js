@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
+import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { plugins } from "@webiny/plugins";
-import get from "lodash/get";
 import { Editor as PbEditor } from "~/admin/components/Editor";
 import { EditorLoadingScreen } from "~/admin/components/EditorLoadingScreen";
 import {
@@ -12,12 +12,12 @@ import {
 } from "~/admin/graphql/pages";
 import createElementPlugin from "~/admin/utils/createElementPlugin";
 import { createStateInitializer } from "./createStateInitializer";
-import { BlockEditorConfig } from "./config/BlockEditorConfig";
 import { BlockWithContent } from "~/blockEditor/state";
 import { createElement } from "~/editor/helpers";
 import { PbEditorElement } from "~/types";
 import elementVariablePlugins from "~/blockEditor/plugins/elementVariables";
 import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
+import { DefaultBlockEditorConfig } from "~/blockEditor/config/DefaultBlockEditorConfig";
 
 export const BlockEditor = () => {
     plugins.register(elementVariablePlugins());
@@ -67,8 +67,10 @@ export const BlockEditor = () => {
 
     return (
         <React.Suspense fallback={<EditorLoadingScreen />}>
-            <BlockEditorConfig />
+            <DefaultBlockEditorConfig />
             <LoadData>
+                {/* PbEditor components is a shell component, which is decorated in `src/PageBuilder.tsx`. */}
+                {/* This allows developers to override how the editor component is loaded and mounted. */}
                 <PbEditor
                     stateInitializerFactory={createStateInitializer(block as BlockWithContent)}
                 />

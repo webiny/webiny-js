@@ -40,7 +40,8 @@ const plugin = new GraphQLSchemaPlugin({
         CmsQuery: {
             version: async (_: any, __: any, context: CmsContext) => {
                 try {
-                    return context.cms.getSystemVersion();
+                    const version = await context.cms.getSystemVersion();
+                    return version ? "true" : null;
                 } catch (e) {
                     return new ErrorResponse(e);
                 }

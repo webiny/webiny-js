@@ -9,7 +9,7 @@ export const getAppleIdpConfig = (
     return {
         userPoolId,
         providerName: "Apple",
-        providerType: "Apple",
+        providerType: "SignInWithApple",
         providerDetails: config.providerDetails,
         idpIdentifiers: config.idpIdentifiers,
         attributeMapping: {

@@ -23,7 +23,7 @@ export const useDebugUtilities = () => {
         };
 
         // @ts-expect-error This function is for debugging purposes!
-        window["debug_printPageContent"] = () => {
+        window["debug_printDocumentContent"] = () => {
             getRawElementTree().then(tree => {
                 console.log(tree);
             });
