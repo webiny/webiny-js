@@ -15221,6 +15221,33 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/app-locking-mechanism@0.0.0, @webiny/app-locking-mechanism@workspace:packages/app-locking-mechanism":
+  version: 0.0.0-use.local
+  resolution: "@webiny/app-locking-mechanism@workspace:packages/app-locking-mechanism"
+  dependencies:
+    "@apollo/react-hooks": ^3.1.5
+    "@babel/cli": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/preset-react": ^7.23.3
+    "@babel/preset-typescript": ^7.23.3
+    "@webiny/app": 0.0.0
+    "@webiny/app-headless-cms": 0.0.0
+    "@webiny/app-websockets": 0.0.0
+    "@webiny/cli": 0.0.0
+    "@webiny/project-utils": 0.0.0
+    "@webiny/ui": 0.0.0
+    apollo-client: ^2.6.10
+    apollo-link: ^1.2.14
+    graphql-tag: ^2.12.6
+    react: 17.0.2
+    react-dom: 17.0.2
+    rimraf: ^5.0.5
+    ttypescript: ^1.5.12
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
 "@webiny/app-mailer@0.0.0, @webiny/app-mailer@workspace:packages/app-mailer":
   version: 0.0.0-use.local
   resolution: "@webiny/app-mailer@workspace:packages/app-mailer"
@@ -15558,6 +15585,7 @@ __metadata:
     "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-i18n": 0.0.0
     "@webiny/app-i18n-content": 0.0.0
+    "@webiny/app-locking-mechanism": 0.0.0
     "@webiny/app-mailer": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-security": 0.0.0

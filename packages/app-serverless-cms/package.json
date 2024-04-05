@@ -24,6 +24,7 @@
     "@webiny/app-headless-cms": "0.0.0",
     "@webiny/app-i18n": "0.0.0",
     "@webiny/app-i18n-content": "0.0.0",
+    "@webiny/app-locking-mechanism": "0.0.0",
     "@webiny/app-mailer": "0.0.0",
     "@webiny/app-page-builder": "0.0.0",
     "@webiny/app-security": "0.0.0",

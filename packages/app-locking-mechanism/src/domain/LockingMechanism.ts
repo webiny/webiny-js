@@ -1,0 +1,230 @@
+import { ILockingMechanism, ILockingMechanismSetRecordsCb } from "./abstractions/ILockingMechanism";
+import { ApolloClient } from "apollo-client";
+import { LockingMechanismGetLockRecord } from "./LockingMechanismGetLockRecord";
+import { LockingMechanismIsEntryLocked } from "./LockingMechanismIsEntryLocked";
+import { LockingMechanismListLockRecords } from "./LockingMechanismListLockRecords";
+import { LockingMechanismLockEntry } from "./LockingMechanismLockEntry";
+import { LockingMechanismUnlockEntry } from "./LockingMechanismUnlockEntry";
+import { LockingMechanismUnlockEntryRequest } from "./LockingMechanismUnlockEntryRequest";
+import { LockingMechanismClient } from "./LockingMechanismClient";
+import { ILockingMechanismGetLockRecord } from "./abstractions/ILockingMechanismGetLockRecord";
+import { ILockingMechanismIsEntryLocked } from "./abstractions/ILockingMechanismIsEntryLocked";
+import {
+    ILockingMechanismListLockRecords,
+    ILockingMechanismListLockRecordsResult
+} from "./abstractions/ILockingMechanismListLockRecords";
+import { ILockingMechanismLockEntry } from "./abstractions/ILockingMechanismLockEntry";
+import { ILockingMechanismUnlockEntry } from "./abstractions/ILockingMechanismUnlockEntry";
+import { ILockingMechanismUnlockEntryRequest } from "./abstractions/ILockingMechanismUnlockEntryRequest";
+import {
+    IIsRecordLockedParams,
+    ILockingMechanismError,
+    ILockingMechanismRecord,
+    IPossiblyLockingMechanismRecord
+} from "~/types";
+import { ILockingMechanismClient } from "./abstractions/ILockingMechanismClient";
+import { createLockingMechanismError } from "./utils/createLockingMechanismError";
+
+export interface ICreateLockingMechanismParams {
+    client: ApolloClient<any>;
+}
+
+export interface ILockingMechanismParams {
+    client: ILockingMechanismClient;
+    getLockRecord: ILockingMechanismGetLockRecord;
+    isEntryLocked: ILockingMechanismIsEntryLocked;
+    listLockRecords: ILockingMechanismListLockRecords;
+    lockEntry: ILockingMechanismLockEntry;
+    unlockEntry: ILockingMechanismUnlockEntry;
+    unlockEntryRequest: ILockingMechanismUnlockEntryRequest;
+}
+
+export interface IOnErrorCb {
+    (error: ILockingMechanismError): void;
+}
+
+class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLockingMechanismRecord>
+    implements ILockingMechanism<T>
+{
+    private currentRecordType?: string;
+    public loading = false;
+    public records: ILockingMechanismRecord[] = [];
+
+    private readonly client: ILockingMechanismClient;
+    private readonly getLockRecord: ILockingMechanismGetLockRecord;
+    private readonly isEntryLocked: ILockingMechanismIsEntryLocked;
+    private readonly listLockRecords: ILockingMechanismListLockRecords;
+    private readonly lockEntry: ILockingMechanismLockEntry;
+    private readonly unlockEntry: ILockingMechanismUnlockEntry;
+    private readonly unlockEntryRequest: ILockingMechanismUnlockEntryRequest;
+
+    private onErrorCb: IOnErrorCb | null = null;
+
+    public constructor(params: ILockingMechanismParams) {
+        this.client = params.client;
+        this.getLockRecord = params.getLockRecord;
+        this.isEntryLocked = params.isEntryLocked;
+        this.listLockRecords = params.listLockRecords;
+        this.lockEntry = params.lockEntry;
+        this.unlockEntry = params.unlockEntry;
+        this.unlockEntryRequest = params.unlockEntryRequest;
+    }
+
+    public async setRecords(
+        type: string,
+        records: T[],
+        cb: ILockingMechanismSetRecordsCb
+    ): Promise<void> {
+        if (records.length === 0) {
+            return;
+        } else if (this.loading) {
+            return;
+        }
+        const assignedIdList = this.assignRecords(type, records);
+        if (assignedIdList.length === 0) {
+            return;
+        }
+        this.setIsLoading(true);
+        let result: ILockingMechanismListLockRecordsResult;
+        try {
+            result = await this.listLockRecords.execute({
+                where: {
+                    id_in: assignedIdList,
+                    type
+                },
+                limit: 10000
+            });
+            console.log(result);
+        } catch (ex) {
+            console.error(ex);
+            this.triggerOnError(ex);
+            return;
+        }
+        if (result.error) {
+            this.triggerOnError(result.error);
+            return;
+        } else if (!result.data) {
+            this.triggerOnError(
+                createLockingMechanismError({
+                    message: `There is no data in the result and there is no error. Please check the network tab for more info.`,
+                    code: "NO_DATA_IN_RESULT"
+                })
+            );
+            return;
+        } else if (result.data.length === 0) {
+            this.setIsLoading(false);
+            return;
+        }
+
+        for (const record of result.data) {
+            const index = this.records.findIndex(r => {
+                return r.id === record.id;
+            });
+            if (index < 0) {
+                console.error(`There is no record with id ${record.id} in the records array.`);
+                continue;
+            }
+            this.records[index] = {
+                ...this.records[index],
+                $locked: {
+                    lockedBy: record.lockedBy,
+                    lockedOn: record.lockedOn,
+                    actions: record.actions
+                }
+            };
+        }
+
+        await cb(this.records);
+
+        this.setIsLoading(false);
+    }
+
+    public isRecordLocked(record: IIsRecordLockedParams): boolean {
+        return this.records.some(r => {
+            return r.id === record.id && !!r.locked;
+        });
+    }
+
+    public onError(cb: IOnErrorCb): void {
+        this.onErrorCb = cb;
+    }
+
+    public triggerOnError(error: ILockingMechanismError): void {
+        this.setIsLoading(false);
+        if (!this.onErrorCb) {
+            return;
+        }
+        this.onErrorCb(error);
+    }
+
+    private setIsLoading(loading: boolean): void {
+        this.loading = loading;
+    }
+    /**
+     * Assign records and return the assigned ID list.
+     */
+    private assignRecords(type: string, records: IPossiblyLockingMechanismRecord[]): string[] {
+        /**
+         * Reset records if new type is not as same as the old type.
+         */
+        if (this.currentRecordType !== type) {
+            this.records = [];
+            this.currentRecordType = type;
+        }
+
+        return records.reduce<string[]>((collection, record) => {
+            const index = this.records.findIndex(r => r.id === record.id);
+            if (index >= 0) {
+                return collection;
+            }
+            this.records.push({
+                ...record,
+                $lockingType: type,
+                $locked: undefined
+            });
+            collection.push(record.id);
+            return collection;
+        }, []);
+    }
+}
+
+export const createLockingMechanism = <T extends ILockingMechanismRecord>(
+    config: ICreateLockingMechanismParams
+): ILockingMechanism => {
+    const client = new LockingMechanismClient({
+        client: config.client
+    });
+
+    const getLockRecord = new LockingMechanismGetLockRecord({
+        client
+    });
+
+    const isEntryLocked = new LockingMechanismIsEntryLocked({
+        client
+    });
+
+    const listLockRecords = new LockingMechanismListLockRecords({
+        client
+    });
+
+    const lockEntry = new LockingMechanismLockEntry({
+        client
+    });
+
+    const unlockEntry = new LockingMechanismUnlockEntry({
+        client
+    });
+    const unlockEntryRequest = new LockingMechanismUnlockEntryRequest({
+        client
+    });
+
+    return new LockingMechanism<T>({
+        client,
+        getLockRecord,
+        isEntryLocked,
+        listLockRecords,
+        lockEntry,
+        unlockEntry,
+        unlockEntryRequest
+    });
+};

@@ -30,6 +30,7 @@ import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Module as MailerSettings } from "@webiny/app-mailer";
 import { Folders } from "@webiny/app-aco";
 import { Websockets } from "@webiny/app-websockets";
+import { LockingMechanism } from "@webiny/app-locking-mechanism";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
     createApolloClient?: BaseAdminProps["createApolloClient"];
@@ -54,8 +55,9 @@ const App = (props: AdminProps) => {
             <GraphQLPlayground createApolloClient={createApolloClient} />
             <I18N />
             <I18NContent />
-            <Websockets />
             <Provider hoc={ViewCompositionProvider} />
+            <Websockets />
+            <LockingMechanism />
             <PageBuilder />
             <LexicalEditorPlugin />
             <LexicalEditorActions />

@@ -25,6 +25,7 @@ interface UpdateSearchCallable {
 }
 
 export interface ContentEntriesListProviderContext {
+    modelId: string;
     folders: FolderTableItem[];
     getEntryEditUrl: (item: EntryTableItem) => string;
     hideFilters: () => void;
@@ -163,6 +164,7 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
     }, [sorting]);
 
     const context: ContentEntriesListProviderContext = {
+        modelId: contentModel.modelId,
         folders,
         getEntryEditUrl,
         isListLoading,
