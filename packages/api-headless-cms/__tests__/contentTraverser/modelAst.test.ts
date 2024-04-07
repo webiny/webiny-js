@@ -1,7 +1,7 @@
 import { useHandler } from "~tests/testHelpers/useHandler";
-import { articleModel } from "./article.model";
+import { articleModel } from "./mocks/article.model";
 import { CmsModelPlugin } from "~/plugins";
-import { CmsModelAstTree } from "~/types";
+import { CmsModelAst } from "~/types";
 
 describe("Model to AST", () => {
     it("should generate content model AST", async () => {
@@ -238,6 +238,6 @@ describe("Model to AST", () => {
                     ]
                 }
             ]
-        } as CmsModelAstTree);
+        } as CmsModelAst);
     });
 });

@@ -1,4 +1,4 @@
-import { CmsModel, CmsModelAstTree, CmsModelFieldAstNode, ICmsModelFieldToAst } from "~/types";
+import { CmsModel, CmsModelAst, CmsModelFieldAstNode, ICmsModelFieldToAst } from "~/types";
 
 /**
  * The purpose of this class is to convert the given CmsModel to an AST, which is easier to traverse programmatically.
@@ -13,7 +13,7 @@ export class CmsModelToAstConverter {
         this.fieldToAstConverter = fieldToAstConverter;
     }
 
-    toAst(model: CmsModel): CmsModelAstTree {
+    toAst(model: CmsModel): CmsModelAst {
         return {
             type: "root",
             children: model.fields.reduce<CmsModelFieldAstNode[]>((ast, field) => {

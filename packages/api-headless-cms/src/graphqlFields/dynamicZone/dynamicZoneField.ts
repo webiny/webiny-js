@@ -186,7 +186,10 @@ export const createDynamicZoneField =
                     children: templates.map(({ fields, ...template }) => {
                         return {
                             type: "collection",
-                            collection: template,
+                            collection: {
+                                ...template,
+                                discriminator: "_templateId"
+                            },
                             children: fields.map(field => converter.toAst(field))
                         };
                     })

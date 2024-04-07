@@ -44,7 +44,6 @@
     "pluralize": "^8.0.0",
     "semver": "^7.3.5",
     "slugify": "^1.4.0",
-    "unist-util-visit": "4.1.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

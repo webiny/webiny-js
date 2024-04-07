@@ -80,6 +80,7 @@ import {
     getPublishedRevisionByEntryIdUseCases,
     deleteEntryUseCases
 } from "~/crud/contentEntry/useCases";
+import { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser";
 
 interface CreateContentEntryCrudParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -1161,7 +1162,19 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
     };
 
+    const getEntryTraverser = async (modelId: string) => {
+        const modelAstConverter = context.cms.getModelToAstConverter();
+        const model = await context.cms.getModel(modelId);
+        if (!model) {
+            throw new Error(`Missing "${modelId}" model!`);
+        }
+
+        const modelAst = modelAstConverter.toAst(model);
+        return new ContentEntryTraverser(modelAst);
+    };
+
     return {
+        getEntryTraverser,
         onEntryBeforeCreate,
         onEntryAfterCreate,
         onEntryCreateError,
