@@ -5,7 +5,7 @@ import { FormComponentProps } from "~/types";
 
 interface Props extends FormComponentProps {
     // Component label.
-    label?: React.ReactNode;
+    label?: string;
 
     // Is checkbox disabled?
     disabled?: boolean;
@@ -37,8 +37,15 @@ class Checkbox extends React.Component<Props> {
     };
 
     public override render() {
-        const { value, label, disabled, indeterminate, description, validation, onClick } =
-            this.props;
+        const {
+            value,
+            label = "",
+            disabled,
+            indeterminate,
+            description,
+            validation,
+            onClick
+        } = this.props;
 
         const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
