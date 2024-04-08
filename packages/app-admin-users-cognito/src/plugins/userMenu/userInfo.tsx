@@ -148,9 +148,7 @@ const UserInfoListItem = ({ avatarSrc, displayName, email }: UserInfoListItemPro
                 />
             </ListItemGraphic>
             <div>
-                <h3>
-                    <Typography use={"headline6"}>{displayName}</Typography>
-                </h3>
+                <Typography use={"headline6"}>{displayName}</Typography>
                 {email ? <Typography use={"body2"}>{email}</Typography> : null}
             </div>
         </ListItem>
