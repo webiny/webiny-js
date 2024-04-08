@@ -12,7 +12,12 @@ export interface ILockingMechanism<
     T extends IPossiblyLockingMechanismRecord = IPossiblyLockingMechanismRecord
 > {
     records: ILockingMechanismRecord[];
-    setRecords(type: string, records: T[], cb: ILockingMechanismSetRecordsCb): Promise<void>;
+    setRecords(
+        folderId: string,
+        type: string,
+        records: T[],
+        cb: ILockingMechanismSetRecordsCb
+    ): Promise<void>;
     isRecordLocked(record: IIsRecordLockedParams): boolean;
 
     // lockEntry(params: ILockingMechanismLockEntryParams): Promise<ILockingMechanismLockEntryResult>;

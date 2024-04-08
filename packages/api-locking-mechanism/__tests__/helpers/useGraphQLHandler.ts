@@ -27,6 +27,10 @@ import {
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
 
+export interface IInvokeResult<T = any> {
+    data: T;
+}
+
 export interface InvokeParams {
     httpMethod?: "POST" | "GET" | "OPTIONS";
     body?: {
@@ -53,7 +57,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         body,
         headers = {},
         ...rest
-    }: InvokeParams): Promise<[T, any]> => {
+    }: InvokeParams): Promise<[IInvokeResult<T>, any]> => {
         const response = await handler(
             {
                 path: "/graphql",

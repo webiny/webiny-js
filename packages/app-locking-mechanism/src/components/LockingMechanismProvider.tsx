@@ -35,8 +35,8 @@ export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) 
             isRecordLocked(record) {
                 return lockingMechanism.isRecordLocked(record);
             },
-            async setRecords(type, records, cb) {
-                await lockingMechanism.setRecords(type, records, cb);
+            async setRecords(folderId, type, records, cb) {
+                await lockingMechanism.setRecords(folderId, type, records, cb);
             },
             records: lockingMechanism.records
         };

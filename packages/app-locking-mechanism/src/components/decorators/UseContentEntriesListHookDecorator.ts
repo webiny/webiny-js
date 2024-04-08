@@ -22,10 +22,17 @@ export const UseContentEntriesListHookDecorator = createDecorator(
                     return;
                 }
 
-                lockingMechanism.setRecords(value.modelId, records, async result => {
-                    setRecords(result);
-                });
+                lockingMechanism.setRecords(
+                    value.folderId,
+                    value.modelId,
+                    records,
+                    async result => {
+                        setRecords(result);
+                    }
+                );
             }, [value.modelId, records, setRecords]);
+
+            console.log("records", records);
 
             return {
                 ...value,

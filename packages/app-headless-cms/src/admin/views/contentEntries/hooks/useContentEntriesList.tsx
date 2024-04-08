@@ -13,7 +13,7 @@ import {
     createRecordsData,
     createFoldersData
 } from "@webiny/app-aco";
-import { CMS_ENTRY_LIST_LINK } from "~/admin/constants";
+import { CMS_ENTRY_LIST_LINK, ROOT_FOLDER } from "~/admin/constants";
 import { FolderTableItem, ListMeta } from "@webiny/app-aco/types";
 
 interface UpdateSearchCallableParams {
@@ -26,6 +26,7 @@ interface UpdateSearchCallable {
 
 export interface ContentEntriesListProviderContext {
     modelId: string;
+    folderId: string;
     folders: FolderTableItem[];
     getEntryEditUrl: (item: EntryTableItem) => string;
     hideFilters: () => void;
@@ -165,6 +166,7 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
 
     const context: ContentEntriesListProviderContext = {
         modelId: contentModel.modelId,
+        folderId: currentFolderId || ROOT_FOLDER,
         folders,
         getEntryEditUrl,
         isListLoading,

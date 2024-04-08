@@ -7,12 +7,10 @@ import {
 import { ILockingMechanismClient } from "./abstractions/ILockingMechanismClient";
 import { createLockingMechanismClient } from "./utils/createLockingMechanismClient";
 import {
-    createListLockRecords,
     ILockingMechanismListLockedRecordsResponse,
     ILockingMechanismListLockedRecordsVariables,
     LIST_LOCK_RECORDS
 } from "~/domain/graphql/listLockRecords";
-import { ILockingMechanismLockRecord } from "~/types";
 
 interface Params {
     client: ILockingMechanismClient | ApolloClient<any>;
@@ -44,11 +42,6 @@ export class LockingMechanismListLockRecords implements ILockingMechanismListLoc
         if (!result.data?.lockingMechanism?.listLockRecords) {
             throw new Error("No data returned from server.");
         }
-
-        return {
-            data: result.data.lockingMechanism.listLockRecords.data,
-            error: result.data.lockingMechanism.listLockRecords.error,
-            meta: result.data.lockingMechanism.listLockRecords.meta
-        };
+        return result.data.lockingMechanism.listLockRecords;
     }
 }

@@ -21,10 +21,12 @@ export interface ILockingMechanismRecordLocked {
 
 export interface IPossiblyLockingMechanismRecord extends EntryTableItem {
     $lockingType?: string;
+    entryId?: string;
     $locked?: ILockingMechanismRecordLocked | null;
 }
 
 export interface ILockingMechanismRecord extends IPossiblyLockingMechanismRecord {
+    entryId: string;
     $lockingType: string;
 }
 
@@ -37,7 +39,12 @@ export interface ILockingMechanismContext<
     T extends IPossiblyLockingMechanismRecord = IPossiblyLockingMechanismRecord
 > {
     records: ILockingMechanismRecord[];
-    setRecords(type: string, records: T[], cb: ILockingMechanismContextSetRecordsCb): void;
+    setRecords(
+        folderId: string,
+        type: string,
+        records: T[],
+        cb: ILockingMechanismContextSetRecordsCb
+    ): void;
     isRecordLocked(params: IIsRecordLockedParams): boolean;
 }
 

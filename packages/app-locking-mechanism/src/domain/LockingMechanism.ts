@@ -24,6 +24,7 @@ import {
 } from "~/types";
 import { ILockingMechanismClient } from "./abstractions/ILockingMechanismClient";
 import { createLockingMechanismError } from "./utils/createLockingMechanismError";
+import { parseIdentifier } from "@webiny/utils/parseIdentifier";
 
 export interface ICreateLockingMechanismParams {
     client: ApolloClient<any>;
@@ -47,6 +48,7 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
     implements ILockingMechanism<T>
 {
     private currentRecordType?: string;
+    private currentFolderId?: string;
     public loading = false;
     public records: ILockingMechanismRecord[] = [];
 
@@ -71,6 +73,7 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
     }
 
     public async setRecords(
+        folderId: string,
         type: string,
         records: T[],
         cb: ILockingMechanismSetRecordsCb
@@ -78,9 +81,14 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
         if (records.length === 0) {
             return;
         } else if (this.loading) {
+            console.log("is loading", {
+                folderId,
+                type,
+                records
+            });
             return;
         }
-        const assignedIdList = this.assignRecords(type, records);
+        const assignedIdList = this.assignRecords(folderId, type, records);
         if (assignedIdList.length === 0) {
             return;
         }
@@ -99,6 +107,8 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
             console.error(ex);
             this.triggerOnError(ex);
             return;
+        } finally {
+            this.setIsLoading(false);
         }
         if (result.error) {
             this.triggerOnError(result.error);
@@ -112,7 +122,6 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
             );
             return;
         } else if (result.data.length === 0) {
-            this.setIsLoading(false);
             return;
         }
 
@@ -135,8 +144,6 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
         }
 
         await cb(this.records);
-
-        this.setIsLoading(false);
     }
 
     public isRecordLocked(record: IIsRecordLockedParams): boolean {
@@ -163,26 +170,41 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
     /**
      * Assign records and return the assigned ID list.
      */
-    private assignRecords(type: string, records: IPossiblyLockingMechanismRecord[]): string[] {
+    private assignRecords(
+        folderId: string,
+        type: string,
+        records: IPossiblyLockingMechanismRecord[]
+    ): string[] {
         /**
          * Reset records if new type is not as same as the old type.
          */
-        if (this.currentRecordType !== type) {
+        // console.log("assigning records", {
+        //     folderId,
+        //     type,
+        //     currentRecordType: this.currentRecordType,
+        //     currentFolderId: this.currentFolderId,
+        //     records
+        // });
+        if (this.currentRecordType !== type || this.currentFolderId !== folderId) {
             this.records = [];
             this.currentRecordType = type;
+            this.currentFolderId = folderId;
         }
 
         return records.reduce<string[]>((collection, record) => {
-            const index = this.records.findIndex(r => r.id === record.id);
+            const { id: entryId } = parseIdentifier(record.id);
+            const index = this.records.findIndex(r => r.entryId === entryId);
             if (index >= 0) {
                 return collection;
             }
             this.records.push({
                 ...record,
+                entryId,
                 $lockingType: type,
                 $locked: undefined
             });
-            collection.push(record.id);
+
+            collection.push(entryId);
             return collection;
         }, []);
     }
