@@ -81,7 +81,7 @@ export const AddTemplateButton = (props: AddTemplateProps) => {
                     <Info>
                         <InfoIcon />
                         <Typography use={"caption"}>
-                            Click here to learn how templates and dynamic zones work
+                            Click here to learn how templates and dynamic zones work.
                         </Typography>
                     </Info>
                 </>

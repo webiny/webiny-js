@@ -733,7 +733,7 @@ export type PbEditorResponsiveModePlugin = Plugin & {
     type: "pb-editor-responsive-mode";
     config: {
         displayMode: string;
-        toolTip: {
+        tooltip: {
             title: string;
             subTitle: string;
             body: string;

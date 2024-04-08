@@ -31,37 +31,40 @@ export type DynamicZoneContainerProps = {
     className?: string;
 };
 
-export const DynamicZoneContainer = makeDecoratable<
-    React.FunctionComponent<DynamicZoneContainerProps>
->("DynamicZoneContainer", props => {
-    const {
-        field,
-        bind: {
-            validation: { isValid, message }
-        },
-        title = field.label,
-        description = field.helpText,
-        className,
-        children
-    } = props;
+export const DynamicZoneContainer = makeDecoratable(
+    "DynamicZoneContainer",
+    (props: DynamicZoneContainerProps) => {
+        const {
+            field,
+            bind: {
+                validation: { isValid, message }
+            },
+            title = field.label,
+            description = field.helpText,
+            className,
+            children
+        } = props;
 
-    const defaultClassName = field.multipleValues ? noBottomPadding : undefined;
+        const defaultClassName = field.multipleValues ? noBottomPadding : undefined;
 
-    return (
-        <>
-            <Accordion>
-                <AccordionItem
-                    title={title}
-                    description={description}
-                    className={className || defaultClassName}
-                >
-                    {children}
-                </AccordionItem>
-            </Accordion>
-            {isValid === false && <FormElementMessage error={true}>{message}</FormElementMessage>}
-        </>
-    );
-});
+        return (
+            <>
+                <Accordion>
+                    <AccordionItem
+                        title={title}
+                        description={description}
+                        className={className || defaultClassName}
+                    >
+                        {children}
+                    </AccordionItem>
+                </Accordion>
+                {isValid === false && (
+                    <FormElementMessage error={true}>{message}</FormElementMessage>
+                )}
+            </>
+        );
+    }
+);
 
 const DynamicZoneContent = ({ field, getBind, contentModel }: CmsModelFieldRendererProps) => {
     const templates = field.settings?.templates || [];

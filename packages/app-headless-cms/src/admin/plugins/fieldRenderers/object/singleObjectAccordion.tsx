@@ -1,9 +1,10 @@
 import React from "react";
 import { i18n } from "@webiny/app/i18n";
+import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { CmsModelFieldRendererPlugin } from "~/types";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
-import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { FieldSettings } from "./FieldSettings";
+import { ParentFieldProvider } from "~/admin/hooks";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -30,16 +31,22 @@ const plugin: CmsModelFieldRendererPlugin = {
             const settings = fieldSettings.getSettings();
 
             return (
-                <Accordion>
-                    <AccordionItem title={field.label} description={field.helpText}>
-                        <Fields
-                            Bind={Bind}
-                            contentModel={contentModel}
-                            fields={settings.fields || []}
-                            layout={settings.layout || []}
-                        />
-                    </AccordionItem>
-                </Accordion>
+                <Bind>
+                    {bindProps => (
+                        <ParentFieldProvider value={bindProps.value} path={Bind.parentName}>
+                            <Accordion>
+                                <AccordionItem title={field.label} description={field.helpText}>
+                                    <Fields
+                                        Bind={Bind}
+                                        contentModel={contentModel}
+                                        fields={settings.fields || []}
+                                        layout={settings.layout || []}
+                                    />
+                                </AccordionItem>
+                            </Accordion>
+                        </ParentFieldProvider>
+                    )}
+                </Bind>
             );
         }
     }

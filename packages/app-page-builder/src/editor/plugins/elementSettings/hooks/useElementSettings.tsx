@@ -1,14 +1,9 @@
-import { useEffect, useCallback } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
 import { plugins } from "@webiny/plugins";
-import {
-    PbEditorElement,
-    PbEditorPageElementPlugin,
-    PbEditorPageElementSettingsPlugin
-} from "~/types";
-import { useKeyHandler } from "../../../hooks/useKeyHandler";
+import { PbEditorPageElementPlugin, PbEditorPageElementSettingsPlugin } from "~/types";
 import { userElementSettingsPlugins } from "../../../helpers";
-import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
+import { useActiveElement } from "~/editor/hooks/useActiveElement";
+import { useMemo } from "react";
+import { useDeactivateOnEsc } from "~/editor/plugins/elementSettings/hooks/useDeactivateOnEsc";
 
 interface ElementAction {
     plugin: PbEditorPageElementSettingsPlugin;
@@ -67,31 +62,16 @@ const getElementActions = (plugin?: PbEditorPageElementPlugin): ElementAction[] 
     );
 };
 
-const useElementSettings = (): ElementAction[] => {
-    const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElement as string)) as PbEditorElement;
+export function useElementSettings(): ElementAction[] {
+    useDeactivateOnEsc();
+    const [element] = useActiveElement();
     const elementType = element ? element.type : undefined;
 
-    const deactivateElement = useCallback(() => {
-        3;
-        setActiveElementAtomValue(null);
-    }, []);
-
-    const { addKeyHandler, removeKeyHandler } = useKeyHandler();
-
-    useEffect(() => {
-        addKeyHandler("escape", e => {
-            e.preventDefault();
-            deactivateElement();
-        });
-        return () => removeKeyHandler("escape");
-    });
-
-    const plugin = plugins
-        .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
-        .find(pl => pl.elementType === elementType);
+    const plugin = useMemo(() => {
+        return plugins
+            .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+            .find(pl => pl.elementType === elementType);
+    }, [elementType]);
 
     return getElementActions(plugin);
-};
-
-export default useElementSettings;
+}

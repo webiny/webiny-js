@@ -60,7 +60,8 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                     }
 
                     try {
-                        return formBuilder.getSystemVersion();
+                        const version = await formBuilder.getSystemVersion();
+                        return version ? "true" : null;
                     } catch (e) {
                         return new ErrorResponse({
                             code: "FORM_BUILDER_ERROR",

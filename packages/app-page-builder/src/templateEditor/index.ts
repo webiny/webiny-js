@@ -1,1 +1,2 @@
-export { useTemplate } from "./hooks/useTemplate";
+export * from "./hooks";
+export * from "./editorConfig/TemplateEditorConfig";

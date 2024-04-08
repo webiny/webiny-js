@@ -4,10 +4,10 @@ import {
     PageAtomType,
     PageWithContent,
     revisionsAtom,
-    RevisionsAtomType,
-    templateModeAtom
+    RevisionsAtomType
 } from "~/pageEditor/state";
 import { EditorStateInitializerFactory } from "~/editor/Editor";
+import { templateModeAtom } from "./hooks/useTemplateMode";
 
 export const createStateInitializer = (
     page: PageWithContent,

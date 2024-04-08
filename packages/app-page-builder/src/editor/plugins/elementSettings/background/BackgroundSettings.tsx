@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo } from "react";
 import { css } from "emotion";
-import { useRecoilValue } from "recoil";
 import startCase from "lodash/startCase";
 import get from "lodash/get";
 import set from "lodash/set";
@@ -10,15 +9,9 @@ import { plugins } from "@webiny/plugins";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 import {
-    PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin
 } from "~/types";
-import {
-    activeElementAtom,
-    elementWithChildrenByIdSelector,
-    uiAtom
-} from "../../../recoil/modules";
 import useUpdateHandlers from "../useUpdateHandlers";
 // Components
 import Wrapper from "../components/Wrapper";
@@ -27,6 +20,8 @@ import Accordion from "../components/Accordion";
 import ColorPicker from "../components/ColorPicker";
 import { ContentWrapper, classes } from "../components/StyledComponents";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
+import { useDisplayMode } from "~/editor/hooks/useDisplayMode";
+import { useActiveElement } from "~/editor/hooks/useActiveElement";
 
 const positions = [
     "top left",
@@ -54,13 +49,12 @@ interface SettingsPropsType extends PbEditorPageElementSettingsRenderComponentPr
     };
 }
 const BackgroundSettings = ({ options, defaultAccordionValue }: SettingsPropsType) => {
-    const { displayMode } = useRecoilValue(uiAtom);
-    const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(
-        elementWithChildrenByIdSelector(activeElementId)
-    ) as PbEditorElement;
+    const { displayMode } = useDisplayMode();
+    const [element] = useActiveElement();
+
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
-        element,
+        // We know active element must exist for settings to be rendered, so using `!` is ok here.
+        element: element!,
         dataNamespace: DATA_NAMESPACE,
         postModifyElement: ({ newElement }) => {
             const value = get(newElement, `${DATA_NAMESPACE}.${displayMode}`, {});

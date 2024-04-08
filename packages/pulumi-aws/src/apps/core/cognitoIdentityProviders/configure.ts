@@ -27,7 +27,8 @@ export interface CognitoIdentityProvidersConfig {
 }
 
 export interface CognitoIdentityProviderConfig {
-    type: "google" | "facebook" | "amazon" | "apple";
+    name?: string;
+    type: "google" | "facebook" | "amazon" | "apple" | "oidc";
     providerDetails: IdentityProviderArgs["providerDetails"];
     idpIdentifiers?: IdentityProviderArgs["idpIdentifiers"];
     attributeMapping?: IdentityAttributeMapping;

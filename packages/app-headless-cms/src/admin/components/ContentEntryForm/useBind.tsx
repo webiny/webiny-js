@@ -18,12 +18,12 @@ export interface GetBindCallable {
     (index?: number): BindComponent;
 }
 
-export function useBind({ Bind: ParentBind, field }: UseBindProps) {
+export function useBind({ Bind, field }: UseBindProps) {
     const memoizedBindComponents = useRef<Record<string, BindComponent>>({});
 
     return useCallback(
         (index = -1) => {
-            const { parentName } = ParentBind;
+            const { parentName } = Bind;
             // If there's a parent name assigned to the given Bind component, we need to include it in the new field "name".
             // This allows us to have nested fields (like "object" field with nested properties)
             const name = [parentName, field.fieldId, index >= 0 ? index : undefined]
@@ -44,7 +44,7 @@ export function useBind({ Bind: ParentBind, field }: UseBindProps) {
                 const { name: childName, validators: childValidators, children } = params;
 
                 return (
-                    <ParentBind
+                    <Bind
                         name={childName || name}
                         validators={childValidators || inputValidators}
                         defaultValue={index === -1 ? defaultValue : null}
@@ -108,19 +108,20 @@ export function useBind({ Bind: ParentBind, field }: UseBindProps) {
                                 };
                             }
 
-                            if (typeof children === "function") {
-                                return children(props);
-                            }
+                            const element =
+                                typeof children === "function"
+                                    ? children(props)
+                                    : cloneElement(children, props);
 
-                            return cloneElement(children, props);
+                            return element;
                         }}
-                    </ParentBind>
+                    </Bind>
                 );
-            };
+            } as BindComponent;
 
             // We need to keep track of current field name, to support nested fields.
             memoizedBindComponents.current[name].parentName = name;
-            memoizedBindComponents.current[name].displayName = `ParentBind<${name}>`;
+            memoizedBindComponents.current[name].displayName = `Bind<${name}>`;
 
             return memoizedBindComponents.current[name];
         },

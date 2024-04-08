@@ -332,6 +332,7 @@ export interface CmsDynamicZoneTemplate {
     fields: CmsModelField[];
     layout: string[][];
     validation: CmsModelFieldValidator[];
+    tags?: string[];
 }
 
 export type CmsContentEntryStatusType = "draft" | "published" | "unpublished";
@@ -562,7 +563,7 @@ interface BindComponentProps<T = any, F = any>
 }
 
 export type BindComponent<T = any, F = any> = React.ComponentType<BindComponentProps<T, F>> & {
-    parentName?: string;
+    parentName: string;
 };
 
 /**

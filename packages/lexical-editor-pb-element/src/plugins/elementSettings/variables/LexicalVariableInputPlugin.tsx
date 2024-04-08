@@ -67,6 +67,10 @@ export const LexicalVariableInputPlugin = ({
     }, [value]);
 
     const onInputChange = useCallback((data: LexicalValue) => {
+        onChange(data, false);
+    }, []);
+
+    const onInputBlur = useCallback((data: LexicalValue) => {
         onChange(data, true);
     }, []);
 
@@ -94,7 +98,12 @@ export const LexicalVariableInputPlugin = ({
         <InputWrapper>
             <IconButton icon={<ExpandIcon />} onClick={onDialogOpenClick} />
             <EditorWrapper className="webiny-pb-page-element-text">
-                <LexicalEditor tag={tag} value={initialValue} onChange={onInputChange} />
+                <LexicalEditor
+                    tag={tag}
+                    value={initialValue}
+                    onChange={onInputChange}
+                    onBlur={onInputBlur}
+                />
             </EditorWrapper>
             <Dialog
                 onOpened={onDialogOpenedEvent}
