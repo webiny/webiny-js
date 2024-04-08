@@ -1,6 +1,6 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
 import { createJob } from "./jobs";
-import { NODE_VERSION, listPackagesWithJestTests } from "./utils";
+import { NODE_VERSION, BUILD_PACKAGES_RUNNER, listPackagesWithJestTests } from "./utils";
 import {
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
@@ -77,6 +77,10 @@ const createJestTestsJob = (storage: string | null) => {
 export const pullRequests = createWorkflow({
     name: "Pull Requests",
     on: "pull_request",
+    concurrency: {
+        group: "pr-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": true
+    },
     jobs: {
         // validateWorkflows: createValidateWorkflowsJob(),
         validateCommits: createJob({
@@ -128,7 +132,7 @@ export const pullRequests = createWorkflow({
         build: createJob({
             name: "Build",
             needs: "constants",
-            "runs-on": "blacksmith-8vcpu-ubuntu-2204",
+            "runs-on": BUILD_PACKAGES_RUNNER,
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
@@ -161,7 +165,7 @@ export const pullRequests = createWorkflow({
         }),
         staticCodeAnalysisTs: createJob({
             name: "Static code analysis (TypeScript)",
-            "runs-on": "blacksmith-8vcpu-ubuntu-2204",
+            "runs-on": BUILD_PACKAGES_RUNNER,
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,

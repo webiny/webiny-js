@@ -106,7 +106,7 @@ jobs:
     needs:
       - baseBranch
       - constants
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: webiny-build-packages
     steps:
       - uses: actions/setup-node@v4
         with:
