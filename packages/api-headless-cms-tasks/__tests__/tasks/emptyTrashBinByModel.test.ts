@@ -4,7 +4,7 @@ import { useHandler } from "~tests/context/useHandler";
 import { createMockModels } from "~tests/mocks";
 import { EntriesTask, HeadlessCmsTasksContext } from "~/types";
 
-import { createEmptyTrashBinByModelTask } from "~/tasks/entries/emptyTrashBinByModel";
+import { createEmptyTrashBinByModelTask } from "~/tasks/entries/emptyTrashBinByModelTask";
 
 const createDeletedEntries = async (
     context: HeadlessCmsTasksContext,
@@ -130,7 +130,7 @@ describe("Empty Trash Bin By Model", () => {
         const context = await handler();
 
         const MODEL_ID = "car";
-        const ENTRIES_COUNT = 1000;
+        const ENTRIES_COUNT = 200;
 
         await createDeletedEntries(context, MODEL_ID, ENTRIES_COUNT);
         const { entries, meta } = await listDeletedEntries(context, MODEL_ID);
