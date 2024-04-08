@@ -32,6 +32,9 @@ export const createTestWcpLicense = (): DecryptedWcpProjectLicense => {
                 [PROJECT_PACKAGE_FEATURE_NAME.AUDIT_LOGS]: {
                     enabled: false
                 },
+                [PROJECT_PACKAGE_FEATURE_NAME.RECORD_LOCKING]: {
+                    enabled: false
+                },
                 [PROJECT_PACKAGE_FEATURE_NAME.SEATS]: {
                     enabled: true,
                     options: {
