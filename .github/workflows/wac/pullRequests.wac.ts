@@ -77,6 +77,10 @@ const createJestTestsJob = (storage: string | null) => {
 export const pullRequests = createWorkflow({
     name: "Pull Requests",
     on: "pull_request",
+    concurrency: {
+        group: "pr-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": true
+    },
     jobs: {
         // validateWorkflows: createValidateWorkflowsJob(),
         validateCommits: createJob({
