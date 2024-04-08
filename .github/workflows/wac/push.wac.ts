@@ -1,5 +1,5 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
-import { listPackagesWithJestTests, NODE_VERSION } from "./utils";
+import { listPackagesWithJestTests, NODE_VERSION, BUILD_PACKAGES_RUNNER } from "./utils";
 import { createJob } from "./jobs";
 import {
     createDeployWebinySteps,
@@ -287,7 +287,7 @@ const createPushWorkflow = (branchName: string) => {
                 name: "Build",
                 needs: "constants",
                 checkout: { path: DIR_WEBINY_JS },
-                "runs-on": "blacksmith-4vcpu-ubuntu-2204",
+                "runs-on": BUILD_PACKAGES_RUNNER,
                 steps: [
                     ...yarnCacheSteps,
                     ...globalBuildCacheSteps,
@@ -316,7 +316,7 @@ const createPushWorkflow = (branchName: string) => {
             }),
             staticCodeAnalysisTs: createJob({
                 name: "Static code analysis (TypeScript)",
-                "runs-on": "blacksmith-4vcpu-ubuntu-2204",
+                "runs-on": BUILD_PACKAGES_RUNNER,
                 checkout: { path: DIR_WEBINY_JS },
                 steps: [
                     ...yarnCacheSteps,
