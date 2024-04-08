@@ -88,7 +88,8 @@ describe("Model to AST", () => {
                                 gqlTypeName: "Hero",
                                 icon: "fas/flag",
                                 description: "The top piece of content on every page.",
-                                id: "cv2zf965v324ivdc7e1vt"
+                                id: "cv2zf965v324ivdc7e1vt",
+                                discriminator: "_templateId"
                             },
                             children: [
                                 {
@@ -110,7 +111,8 @@ describe("Model to AST", () => {
                                 gqlTypeName: "SimpleText",
                                 icon: "fas/file-text",
                                 description: "Simple paragraph of text.",
-                                id: "81qiz2v453wx9uque0gox"
+                                id: "81qiz2v453wx9uque0gox",
+                                discriminator: "_templateId"
                             },
                             children: [
                                 {
@@ -128,19 +130,20 @@ describe("Model to AST", () => {
                         {
                             type: "collection",
                             collection: {
-                                name: "Objecting",
-                                gqlTypeName: "Objecting",
+                                description: "Settings",
+                                gqlTypeName: "Settings",
                                 icon: "fas/file-text",
-                                description: "Objecting test.",
-                                id: "9ht43gurhegkbdfsaafyads"
+                                id: "9ht43gurhegkbdfsaafyads",
+                                name: "Settings",
+                                discriminator: "_templateId"
                             },
                             children: [
                                 {
                                     type: "field",
                                     field: {
-                                        id: "nestedObject",
-                                        fieldId: "nestedObject",
-                                        label: "Nested Object",
+                                        id: "settings",
+                                        fieldId: "settings",
+                                        label: "Settings",
                                         type: "object",
                                         settings: {}
                                     },
@@ -148,20 +151,20 @@ describe("Model to AST", () => {
                                         {
                                             type: "field",
                                             field: {
-                                                id: "objectTitle",
-                                                fieldId: "objectTitle",
+                                                id: "title",
+                                                fieldId: "title",
                                                 type: "text",
-                                                label: "Object title"
+                                                label: "Title"
                                             },
                                             children: []
                                         },
                                         {
                                             type: "field",
                                             field: {
-                                                id: "objectNestedObject",
-                                                fieldId: "objectNestedObject",
+                                                id: "seo",
+                                                fieldId: "seo",
                                                 type: "object",
-                                                label: "Object nested object",
+                                                label: "SEO",
                                                 multipleValues: true,
                                                 settings: {}
                                             },
@@ -169,10 +172,10 @@ describe("Model to AST", () => {
                                                 {
                                                     type: "field",
                                                     field: {
-                                                        id: "nestedObjectNestedTitle",
-                                                        fieldId: "nestedObjectNestedTitle",
+                                                        id: "title",
+                                                        fieldId: "title",
                                                         type: "text",
-                                                        label: "Nested object nested title"
+                                                        label: "Title"
                                                     },
                                                     children: []
                                                 }
@@ -193,11 +196,12 @@ describe("Model to AST", () => {
                                         {
                                             type: "collection",
                                             collection: {
-                                                name: "SuperNestedObject",
-                                                gqlTypeName: "SuperNestedObject",
+                                                name: "Ad",
+                                                gqlTypeName: "Ad",
                                                 icon: "fab/buysellads",
-                                                description: "SuperNestedObject",
-                                                id: "0emukbsvmzpozx2lzk883"
+                                                description: "Ad",
+                                                id: "0emukbsvmzpozx2lzk883",
+                                                discriminator: "_templateId"
                                             },
                                             children: [
                                                 {

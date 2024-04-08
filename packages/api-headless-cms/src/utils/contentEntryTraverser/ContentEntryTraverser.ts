@@ -33,7 +33,7 @@ export class ContentEntryTraverser {
         this.modelAst = modelAst;
     }
 
-    async traverse(values: CmsEntryValues, visitor: ContentEntryValueVisitor) {
+    traverse(values: CmsEntryValues, visitor: ContentEntryValueVisitor) {
         this.visitTree(this.modelAst, values, [], visitor);
     }
 
@@ -65,7 +65,7 @@ export class ContentEntryTraverser {
 
             if (nodeHasChildren(node) && childrenAreCollections(node)) {
                 if (field.multipleValues) {
-                    (value as any[]).forEach((value, index) => {
+                    this.ensureArray(value).forEach((value, index) => {
                         this.findCollectionAndVisit(
                             node,
                             value,
@@ -80,7 +80,7 @@ export class ContentEntryTraverser {
             }
 
             if (field.multipleValues) {
-                (value as any[]).forEach((value, index) => {
+                this.ensureArray(value).forEach((value, index) => {
                     this.visitTree(node, value, [...fieldPath, index.toString()], visitor);
                 });
                 continue;
@@ -88,6 +88,14 @@ export class ContentEntryTraverser {
 
             this.visitTree(node, value, fieldPath, visitor);
         }
+    }
+
+    private ensureArray(value: any) {
+        if (!Array.isArray(value)) {
+            return [];
+        }
+
+        return value;
     }
 
     private findCollectionAndVisit(

@@ -1,5 +1,5 @@
 export * from "./types";
-export * from "./ast";
+export * from "./modelAst";
 export * from "./context";
 export * from "./identity";
 export * from "./model";

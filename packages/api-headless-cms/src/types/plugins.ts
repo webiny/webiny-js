@@ -8,7 +8,7 @@ import {
     CmsModelFieldToGraphQLPluginValidateChildFields,
     CmsModelFieldValidatorValidateParams
 } from "./types";
-import { GetCmsModelFieldAst } from "./ast";
+import { GetCmsModelFieldAst } from "./modelAst";
 import { CmsModelField, CmsModelFieldType, LockedField } from "./modelField";
 import { CmsModel } from "./model";
 

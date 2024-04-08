@@ -11,14 +11,14 @@ export const articleEntry = {
         },
         {
             _templateId: "9ht43gurhegkbdfsaafyads",
-            nestedObject: {
-                objectTitle: "Object title",
-                objectNestedObject: [
+            settings: {
+                title: "Title",
+                seo: [
                     {
-                        nestedObjectNestedTitle: "nestedObjectNestedTitle-0"
+                        title: "title-0"
                     },
                     {
-                        nestedObjectNestedTitle: "nestedObjectNestedTitle-1"
+                        title: "title-1"
                     }
                 ]
             }

@@ -72,38 +72,38 @@ export const articleModel = createPrivateModel({
                         ]
                     },
                     {
-                        name: "Objecting",
-                        gqlTypeName: "Objecting",
+                        name: "Settings",
+                        gqlTypeName: "Settings",
                         icon: "fas/file-text",
-                        description: "Objecting test.",
+                        description: "Settings",
                         id: "9ht43gurhegkbdfsaafyads",
                         fields: [
                             {
-                                id: "nestedObject",
-                                fieldId: "nestedObject",
-                                label: "Nested Object",
+                                id: "settings",
+                                fieldId: "settings",
+                                label: "Settings",
                                 type: "object",
                                 settings: {
                                     fields: [
                                         {
-                                            id: "objectTitle",
-                                            fieldId: "objectTitle",
+                                            id: "title",
+                                            fieldId: "title",
                                             type: "text",
-                                            label: "Object title"
+                                            label: "Title"
                                         },
                                         {
-                                            id: "objectNestedObject",
-                                            fieldId: "objectNestedObject",
+                                            id: "seo",
+                                            fieldId: "seo",
                                             type: "object",
-                                            label: "Object nested object",
+                                            label: "SEO",
                                             multipleValues: true,
                                             settings: {
                                                 fields: [
                                                     {
-                                                        id: "nestedObjectNestedTitle",
-                                                        fieldId: "nestedObjectNestedTitle",
+                                                        id: "title",
+                                                        fieldId: "title",
                                                         type: "text",
-                                                        label: "Nested object nested title"
+                                                        label: "Title"
                                                     }
                                                 ]
                                             }
@@ -116,10 +116,10 @@ export const articleModel = createPrivateModel({
                                 settings: {
                                     templates: [
                                         {
-                                            name: "SuperNestedObject",
-                                            gqlTypeName: "SuperNestedObject",
+                                            name: "Ad",
+                                            gqlTypeName: "Ad",
                                             icon: "fab/buysellads",
-                                            description: "SuperNestedObject",
+                                            description: "Ad",
                                             id: "0emukbsvmzpozx2lzk883",
                                             fields: [
                                                 {
