@@ -101,14 +101,8 @@ const AppearanceTab = () => {
                                             value={getValue(item.renderer.rendererName)}
                                             onChange={onChange(item.renderer.rendererName)}
                                             label={
-                                                <>
-                                                    <div>{item.renderer.name}</div>
-                                                    <div>
-                                                        <Typography use={"caption"}>
-                                                            {item.renderer.description}
-                                                        </Typography>
-                                                    </div>
-                                                </>
+                                                item.renderer.name +
+                                                `\n (${item.renderer.description})`
                                             }
                                         />
                                     </div>
