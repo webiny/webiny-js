@@ -4,7 +4,8 @@ import {
     CmsFieldTypePlugins,
     CmsModel,
     CmsModelField,
-    CmsModelFieldToGraphQLPlugin
+    CmsModelFieldToGraphQLPlugin,
+    CmsModelObjectField
 } from "~/types";
 import { createTypeFromFields } from "~/utils/createTypeFromFields";
 
@@ -85,7 +86,7 @@ const createListFilters = ({ field, model }: CreateListFiltersParams) => {
     return `${field.fieldId}: ${typeName}WhereInput`;
 };
 
-export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
+export const createObjectField = (): CmsModelFieldToGraphQLPlugin<CmsModelObjectField> => {
     return {
         name: "cms-model-field-to-graphql-object",
         type: "cms-model-field-to-graphql",
@@ -99,6 +100,18 @@ export const createObjectField = (): CmsModelFieldToGraphQLPlugin => {
                 fields: field.settings?.fields ?? [],
                 originalFields: originalField?.settings?.fields || []
             });
+        },
+        getFieldAst: (field, converter) => {
+            const { fields = [], ...settings } = field.settings;
+
+            return {
+                type: "field",
+                field: {
+                    ...field,
+                    settings
+                },
+                children: fields.map(field => converter.toAst(field))
+            };
         },
         read: {
             createTypeField({ field, models, model, fieldTypePlugins }) {
