@@ -43,33 +43,32 @@ export class TrashBinControllers {
 
     getControllers() {
         // Select Items UseCase
-        const selectItemsUseCase = new SelectItemsUseCase(this.selectedRepository);
+        const selectItemsUseCase = () => new SelectItemsUseCase(this.selectedRepository);
 
         // Sort Items UseCase
-        const sortItemsUseCase = new SortItemsUseCase(this.sortingRepository);
+        const sortItemsUseCase = () => new SortItemsUseCase(this.sortingRepository);
 
         // Search Items UseCase
-        const searchItemsUseCase = new SearchItemsUseCase(this.searchRepository);
+        const searchItemsUseCase = () => new SearchItemsUseCase(this.searchRepository);
 
         // List Items UseCase
-        const baseListItemsUseCase = new ListItemsUseCase(this.itemsRepository);
-        const listItemsWithSearch = new ListItemsUseCaseWithSearch(
-            this.searchRepository,
-            baseListItemsUseCase
-        );
-        const listItemsUseCase = new ListItemsUseCaseWithSorting(
-            this.sortingRepository,
-            listItemsWithSearch
-        );
+        const listItemsUseCase = () => {
+            const baseListItemsUseCase = new ListItemsUseCase(this.itemsRepository);
+            const listItemsWithSearch = new ListItemsUseCaseWithSearch(
+                this.searchRepository,
+                baseListItemsUseCase
+            );
+            return new ListItemsUseCaseWithSorting(this.sortingRepository, listItemsWithSearch);
+        };
 
         // List More Items UseCase
-        const listMoreItemsUseCase = new ListMoreItemsUseCase(this.itemsRepository);
+        const listMoreItemsUseCase = () => new ListMoreItemsUseCase(this.itemsRepository);
 
         // Delete Item UseCase
-        const deleteItemUseCase = new DeleteItemUseCase(this.itemsRepository);
+        const deleteItemUseCase = () => new DeleteItemUseCase(this.itemsRepository);
 
         // Restore Item UseCase
-        const restoreItemUseCase = new RestoreItemUseCase(this.itemsRepository);
+        const restoreItemUseCase = () => new RestoreItemUseCase(this.itemsRepository);
 
         // Create controllers
         const listItems = new ListItemsController(listItemsUseCase);

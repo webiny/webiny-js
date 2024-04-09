@@ -2,13 +2,14 @@ import { IDeleteItemUseCase } from "~/Domain";
 import { IDeleteItemController } from "./IDeleteItemController";
 
 export class DeleteItemController implements IDeleteItemController {
-    private deleteItemUseCase: IDeleteItemUseCase;
+    private readonly useCaseFactory: () => IDeleteItemUseCase;
 
-    constructor(deleteItemUseCase: IDeleteItemUseCase) {
-        this.deleteItemUseCase = deleteItemUseCase;
+    constructor(useCaseFactory: () => IDeleteItemUseCase) {
+        this.useCaseFactory = useCaseFactory;
     }
 
     async execute(id: string) {
-        await this.deleteItemUseCase.execute(id);
+        const deleteItemUseCase = this.useCaseFactory();
+        await deleteItemUseCase.execute(id);
     }
 }

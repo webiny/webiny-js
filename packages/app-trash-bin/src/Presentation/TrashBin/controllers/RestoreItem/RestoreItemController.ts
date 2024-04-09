@@ -2,13 +2,14 @@ import { IRestoreItemUseCase } from "~/Domain";
 import { IRestoreItemController } from "./IRestoreItemController";
 
 export class RestoreItemController implements IRestoreItemController {
-    private restoreItemUseCase: IRestoreItemUseCase;
+    private readonly useCaseFactory: () => IRestoreItemUseCase;
 
-    constructor(restoreItemUseCase: IRestoreItemUseCase) {
-        this.restoreItemUseCase = restoreItemUseCase;
+    constructor(useCaseFactory: () => IRestoreItemUseCase) {
+        this.useCaseFactory = useCaseFactory;
     }
 
     async execute(id: string) {
-        await this.restoreItemUseCase.execute(id);
+        const restoreItemUseCase = this.useCaseFactory();
+        await restoreItemUseCase.execute(id);
     }
 }

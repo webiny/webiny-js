@@ -2,13 +2,14 @@ import { IListItemsUseCase, IListMoreItemsUseCase } from "~/Domain";
 import { IListMoreItemsController } from "./IListMoreItemsController";
 
 export class ListMoreItemsController implements IListMoreItemsController {
-    private listMoreItemsUseCase: IListItemsUseCase;
+    private readonly useCaseFactory: () => IListItemsUseCase;
 
-    constructor(listMoreItemsUseCase: IListMoreItemsUseCase) {
-        this.listMoreItemsUseCase = listMoreItemsUseCase;
+    constructor(useCaseFactory: () => IListMoreItemsUseCase) {
+        this.useCaseFactory = useCaseFactory;
     }
 
     async execute() {
-        await this.listMoreItemsUseCase.execute();
+        const listMoreItemsUseCase = this.useCaseFactory();
+        await listMoreItemsUseCase.execute();
     }
 }

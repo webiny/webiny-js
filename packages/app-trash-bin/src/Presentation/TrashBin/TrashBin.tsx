@@ -119,12 +119,7 @@ export const TrashBin = observer((props: TrashBinProps) => {
             presenter={presenter}
             onItemRestore={props.onItemRestore}
         >
-            <TrashBinOverlay
-                vm={presenter.vm}
-                controllers={controllers}
-                onExited={props.onClose}
-                title={props.title}
-            />
+            <TrashBinOverlay onExited={props.onClose} title={props.title} />
         </TrashBinProvider>
     );
 });

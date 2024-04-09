@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useState, useCallback } from "react";
+import { autorun } from "mobx";
 import { createGenericContext } from "@webiny/app-admin";
 import { ITrashBinControllers, ITrashBinPresenter } from "~/Presentation/abstractions";
 import { TrashBinItemDTO } from "@webiny/app-trash-bin-common";
@@ -12,17 +14,66 @@ const { Provider, useHook } = createGenericContext<TrashBinContext>("TrashBinCon
 
 export const useTrashBin = () => {
     const context = useHook();
+    const [vm, setVm] = useState(context.presenter.vm);
+
+    useEffect(() => {
+        return autorun(() => {
+            const newState = context.presenter.vm;
+            setVm(newState);
+        });
+    }, [context.presenter]);
+
+    const onItemRestore = useCallback(
+        (item: TrashBinItemDTO) => context.onItemRestore(item),
+        [context.onItemRestore]
+    );
+
+    const deleteItem = useCallback(
+        (id: string) => context.controllers.deleteItem.execute(id),
+        [context.controllers.deleteItem]
+    );
+
+    const restoreItem = useCallback(
+        (id: string) => context.controllers.restoreItem.execute(id),
+        [context.controllers.restoreItem]
+    );
+
+    const listItems = useCallback(
+        () => context.controllers.listItems.execute(),
+        [context.controllers.listItems]
+    );
+
+    const listMoreItems = useCallback(
+        () => context.controllers.listMoreItems.execute(),
+        [context.controllers.listMoreItems]
+    );
+
+    const searchItems = useCallback(
+        (query: string) => context.controllers.searchItems.execute(query),
+        [context.controllers.searchItems]
+    );
+
+    const selectItems = useCallback(
+        (items: TrashBinItemDTO[]) => context.controllers.selectItems.execute(items),
+        [context.controllers.selectItems]
+    );
+
+    const sortItems = useMemo(
+        () => context.controllers.sortItems.execute,
+        [context.controllers.sortItems]
+    );
 
     return {
-        vm: context.presenter.vm,
-        onItemRestore: (item: TrashBinItemDTO) => context.onItemRestore(item),
-        deleteItem: (id: string) => context.controllers.deleteItem.execute(id),
-        restoreItem: (id: string) => context.controllers.restoreItem.execute(id),
-        listItems: () => context.controllers.listItems.execute(),
-        listMoreItems: () => context.controllers.listMoreItems.execute(),
-        searchItems: (query: string) => context.controllers.searchItems.execute(query),
-        selectItems: (items: TrashBinItemDTO[]) => context.controllers.selectItems.execute(items),
-        sortItems: () => context.controllers.sortItems.execute
+        vm,
+        onItemRestore,
+        deleteItem,
+        restoreItem,
+        listItems,
+        listMoreItems,
+        searchItems,
+        selectItems,
+        sortItems
     };
 };
+
 export const TrashBinProvider = Provider;

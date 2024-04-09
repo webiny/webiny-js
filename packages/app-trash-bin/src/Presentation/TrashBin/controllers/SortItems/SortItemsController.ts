@@ -4,12 +4,15 @@ import { IListItemsUseCase, ISortItemsUseCase } from "~/Domain";
 import { ISortItemsController } from "./ISortItemsController";
 
 export class SortItemsController implements ISortItemsController {
-    private listItemsUseCase: IListItemsUseCase;
-    private sortItemsUseCase: ISortItemsUseCase;
+    private listItemsUseCaseFactory: () => IListItemsUseCase;
+    private sortItemsUseCaseFactory: () => ISortItemsUseCase;
 
-    constructor(listItemsUseCase: IListItemsUseCase, sortItemsUseCase: ISortItemsUseCase) {
-        this.listItemsUseCase = listItemsUseCase;
-        this.sortItemsUseCase = sortItemsUseCase;
+    constructor(
+        listItemsUseCaseFactory: () => IListItemsUseCase,
+        sortItemsUseCaseFactory: () => ISortItemsUseCase
+    ) {
+        this.listItemsUseCaseFactory = listItemsUseCaseFactory;
+        this.sortItemsUseCaseFactory = sortItemsUseCaseFactory;
     }
 
     public execute: OnSortingChange = async updaterOrValue => {
@@ -19,9 +22,10 @@ export class SortItemsController implements ISortItemsController {
             newSorts = updaterOrValue(newSorts || []);
         }
 
-        await this.sortItemsUseCase.execute(
-            newSorts.map(sort => SortingMapper.fromColumnToDTO(sort))
-        );
-        await this.listItemsUseCase.execute();
+        const sortItemsUseCase = this.sortItemsUseCaseFactory();
+        const listItemsUseCase = this.listItemsUseCaseFactory();
+
+        await sortItemsUseCase.execute(newSorts.map(sort => SortingMapper.fromColumnToDTO(sort)));
+        await listItemsUseCase.execute();
     };
 }

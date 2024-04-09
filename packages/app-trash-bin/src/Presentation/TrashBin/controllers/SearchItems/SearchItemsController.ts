@@ -2,16 +2,22 @@ import { IListItemsUseCase, ISearchItemsUseCase } from "~/Domain";
 import { ISearchItemsController } from "./ISearchItemsController";
 
 export class SearchItemsController implements ISearchItemsController {
-    private listItemsUseCase: IListItemsUseCase;
-    private searchItemsUseCase: ISearchItemsUseCase;
+    private readonly listItemsUseCaseFactory: () => IListItemsUseCase;
+    private readonly searchItemsUseCaseFactory: () => ISearchItemsUseCase;
 
-    constructor(listItemsUseCase: IListItemsUseCase, searchItemsUseCase: ISearchItemsUseCase) {
-        this.listItemsUseCase = listItemsUseCase;
-        this.searchItemsUseCase = searchItemsUseCase;
+    constructor(
+        listItemsUseCaseFactory: () => IListItemsUseCase,
+        searchItemsUseCaseFactory: () => ISearchItemsUseCase
+    ) {
+        this.listItemsUseCaseFactory = listItemsUseCaseFactory;
+        this.searchItemsUseCaseFactory = searchItemsUseCaseFactory;
     }
 
     async execute(query: string) {
-        await this.searchItemsUseCase.execute(query);
-        await this.listItemsUseCase.execute();
+        const searchItemsUseCase = this.searchItemsUseCaseFactory();
+        const listItemsUseCase = this.listItemsUseCaseFactory();
+
+        await searchItemsUseCase.execute(query);
+        await listItemsUseCase.execute();
     }
 }
