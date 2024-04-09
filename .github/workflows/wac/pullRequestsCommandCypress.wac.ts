@@ -7,7 +7,7 @@ import {
     createGlobalBuildCacheSteps,
     createRunBuildCacheSteps
 } from "./steps";
-import { NODE_OPTIONS, NODE_VERSION } from "./utils";
+import { NODE_OPTIONS, NODE_VERSION, BUILD_PACKAGES_RUNNER } from "./utils";
 import { createJob, createValidateWorkflowsJob } from "./jobs";
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
@@ -283,7 +283,7 @@ export const pullRequestsCommandCypress = createWorkflow({
             name: "Build",
             needs: ["baseBranch", "constants"],
             checkout: { path: DIR_WEBINY_JS },
-            "runs-on": "blacksmith-4vcpu-ubuntu-2204",
+            "runs-on": BUILD_PACKAGES_RUNNER,
             steps: [
                 ...createCheckoutPrSteps(),
                 ...yarnCacheSteps,

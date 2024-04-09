@@ -4,6 +4,9 @@
 # For more information, run "github-actions-wac --help".
 name: Pull Requests
 'on': pull_request
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 jobs:
   validateCommits:
     name: Validate commit messages
@@ -66,7 +69,7 @@ jobs:
   build:
     name: Build
     needs: constants
-    runs-on: blacksmith-8vcpu-ubuntu-2204
+    runs-on: webiny-build-packages
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -136,7 +139,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
-    runs-on: blacksmith-8vcpu-ubuntu-2204
+    runs-on: webiny-build-packages
     steps:
       - uses: actions/setup-node@v4
         with:

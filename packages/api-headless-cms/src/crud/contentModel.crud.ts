@@ -3,6 +3,7 @@ import {
     CmsContext,
     CmsModel,
     CmsModelContext,
+    CmsModelFieldToGraphQLPlugin,
     CmsModelGroup,
     CmsModelManager,
     CmsModelUpdateInput,
@@ -43,6 +44,10 @@ import { ensureTypeTag } from "./contentModel/ensureTypeTag";
 import { listModelsFromDatabase } from "~/crud/contentModel/listModelsFromDatabase";
 import { filterAsync } from "~/utils/filterAsync";
 import { AccessControl } from "./AccessControl/AccessControl";
+import {
+    CmsModelToAstConverter,
+    CmsModelFieldToAstConverterFromPlugins
+} from "~/utils/contentModelAst";
 
 export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
@@ -72,6 +77,16 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         const manager = await contentModelManagerFactory(context, model);
         managers.set(model.modelId, manager);
         return manager;
+    };
+
+    const fieldTypePlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
+        "cms-model-field-to-graphql"
+    );
+
+    const getModelToAstConverter = () => {
+        return new CmsModelToAstConverter(
+            new CmsModelFieldToAstConverterFromPlugins(fieldTypePlugins)
+        );
     };
 
     const listPluginModels = async (tenant: string, locale: string): Promise<CmsModel[]> => {
@@ -631,6 +646,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         onModelInitialize,
         clearModelsCache,
         getModel,
+        getModelToAstConverter,
         listModels,
         async createModel(input) {
             return context.benchmark.measure("headlessCms.crud.models.createModel", async () => {

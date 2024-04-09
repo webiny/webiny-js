@@ -1,6 +1,7 @@
 import { createWorkflow } from "github-actions-wac";
 import { createJob, createValidateWorkflowsJob } from "./jobs";
 import { createRunBuildCacheSteps, createYarnCacheSteps, createInstallBuildSteps } from "./steps";
+import { BUILD_PACKAGES_RUNNER } from "./utils";
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: "" });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: "" });
@@ -34,7 +35,7 @@ export const pushStable = createWorkflow({
         build: createJob({
             name: "Build",
             needs: "constants",
-            "runs-on": "webiny-build-packages",
+            "runs-on": BUILD_PACKAGES_RUNNER,
             steps: [
                 ...yarnCacheSteps,
                 ...installBuildSteps,
