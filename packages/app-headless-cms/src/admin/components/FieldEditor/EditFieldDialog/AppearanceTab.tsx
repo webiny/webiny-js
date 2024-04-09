@@ -4,7 +4,6 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { CmsEditorFieldRendererPlugin, CmsModelField } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
-import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
 import { validation } from "@webiny/validation";
 import { useModel, useModelField } from "~/admin/hooks";
