@@ -24,7 +24,7 @@ import {
     listStyle,
     TitleContent
 } from "./PageTemplatesDialogStyled";
-import * as Styled from "~/pageEditor/config/blockEditing/StyledComponents";
+import * as Styled from "~/templateEditor/config/Content/BlocksBrowser/StyledComponents";
 import { PbPageTemplate } from "~/types";
 
 const leftPanelStyle = css`

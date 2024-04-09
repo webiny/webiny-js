@@ -8,6 +8,7 @@
     { "path": "../app-security" },
     { "path": "../form" },
     { "path": "../plugins" },
+    { "path": "../react-composition" },
     { "path": "../ui" },
     { "path": "../validation" }
   ],
@@ -30,6 +31,8 @@
       "@webiny/form": ["../form/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
       "@webiny/validation/*": ["../validation/src/*"],

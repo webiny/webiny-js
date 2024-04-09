@@ -7,6 +7,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { fieldsWrapperStyle } from "./StyledComponents";
 import { FieldSettings } from "./FieldSettings";
+import { ParentFieldProvider } from "~/admin/components/ContentEntryForm/ParentValue";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -33,22 +34,28 @@ const plugin: CmsModelFieldRendererPlugin = {
             const settings = fieldSettings.getSettings();
 
             return (
-                <Grid>
-                    <Cell span={12}>
-                        <SimpleFormHeader title={field.label} />
-                        {field.helpText && (
-                            <FormElementMessage>{field.helpText}</FormElementMessage>
-                        )}
-                    </Cell>
-                    <Cell span={12} className={fieldsWrapperStyle}>
-                        <Fields
-                            Bind={Bind}
-                            contentModel={contentModel}
-                            fields={settings.fields}
-                            layout={settings.layout}
-                        />
-                    </Cell>
-                </Grid>
+                <Bind>
+                    {bindProps => (
+                        <ParentFieldProvider value={bindProps.value} path={Bind.parentName}>
+                            <Grid>
+                                <Cell span={12}>
+                                    <SimpleFormHeader title={field.label} />
+                                    {field.helpText && (
+                                        <FormElementMessage>{field.helpText}</FormElementMessage>
+                                    )}
+                                </Cell>
+                                <Cell span={12} className={fieldsWrapperStyle}>
+                                    <Fields
+                                        Bind={Bind}
+                                        contentModel={contentModel}
+                                        fields={settings.fields}
+                                        layout={settings.layout}
+                                    />
+                                </Cell>
+                            </Grid>
+                        </ParentFieldProvider>
+                    )}
+                </Bind>
             );
         }
     }

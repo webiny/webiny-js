@@ -51,7 +51,8 @@ export default [
             },
             TenancyQuery: {
                 version: async (_, __, context) => {
-                    return await context.tenancy.getVersion();
+                    const version = await context.tenancy.getVersion();
+                    return version ? "true" : null;
                 }
             },
             TenancyMutation: {

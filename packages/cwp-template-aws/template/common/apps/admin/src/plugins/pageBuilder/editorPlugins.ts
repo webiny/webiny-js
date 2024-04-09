@@ -36,11 +36,6 @@ import codeGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/cod
 import savedGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/saved";
 // Blocks
 import emptyBlock from "@webiny/app-page-builder/pageEditor/plugins/blocks/emptyBlock";
-// Toolbar
-import addElement from "@webiny/app-page-builder/editor/plugins/toolbar/addElement";
-import navigator from "@webiny/app-page-builder/editor/plugins/toolbar/navigator";
-import saving from "@webiny/app-page-builder/editor/plugins/toolbar/saving";
-import { undo, redo } from "@webiny/app-page-builder/editor/plugins/toolbar/undoRedo";
 // Element settings
 import animation from "@webiny/app-page-builder/editor/plugins/elementSettings/animation";
 import deleteElement from "@webiny/app-page-builder/editor/plugins/elementSettings/delete";
@@ -115,12 +110,6 @@ export default [
     socialGroup,
     codeGroup,
     savedGroup,
-    // Toolbar
-    addElement,
-    navigator(),
-    saving,
-    undo,
-    redo,
     // Element settings
     animation,
     background,

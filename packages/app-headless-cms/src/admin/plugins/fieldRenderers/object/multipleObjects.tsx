@@ -119,7 +119,6 @@ const ObjectsRenderer = (props: CmsModelFieldRendererProps) => {
                         <Cell span={12} className={fieldsWrapperStyle}>
                             <Fields
                                 Bind={Bind}
-                                {...bind.index}
                                 contentModel={contentModel}
                                 fields={settings.fields}
                                 layout={settings.layout}

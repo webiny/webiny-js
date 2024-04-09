@@ -30,10 +30,11 @@ import { PbErrorResponse, PbBlockCategory } from "~/types";
 import createBlockCategoryPlugin from "~/admin/utils/createBlockCategoryPlugin";
 import { PageWithContent, RevisionsAtomType } from "~/pageEditor/state";
 import { createStateInitializer } from "./createStateInitializer";
-import { PageEditorConfig } from "./config/PageEditorConfig";
 import elementVariableRendererPlugins from "~/editor/plugins/elementVariables";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
+import { DefaultEditorConfig } from "~/editor";
+import { DefaultPageEditorConfig } from "~/pageEditor/config/DefaultPageEditorConfig";
 
 interface PageDataAndRevisionsState {
     page: PageWithContent | null;
@@ -169,7 +170,8 @@ export const PageEditor = () => {
     return (
         <React.Suspense fallback={<EditorLoadingScreen />}>
             <PageProvider page={page as Page}>
-                <PageEditorConfig />
+                <DefaultEditorConfig />
+                <DefaultPageEditorConfig />
                 <LoadData>
                     <PbEditor stateInitializerFactory={createStateInitializer(page!, revisions)} />
                 </LoadData>

@@ -1,5 +1,6 @@
 import { EventActionCallable } from "~/types";
-import { PageAtomType, TemplateModeAtomType } from "~/pageEditor/state";
+import { PageAtomType } from "~/pageEditor/state";
+import { TemplateModeAtomType } from "~/pageEditor/hooks/useTemplateMode";
 
 export interface PageEditorEventActionCallableState {
     page: PageAtomType;

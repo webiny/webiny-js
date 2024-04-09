@@ -76,7 +76,7 @@ interface RichVariableInputProps {
     variableId: string;
 }
 
-const RichVariableInput = makeDecoratable(
+export const RichVariableInput = makeDecoratable(
     "RichVariableInput",
     ({ variableId }: RichVariableInputProps) => {
         const [element] = useActiveElement();
@@ -135,5 +135,3 @@ const RichVariableInput = makeDecoratable(
         );
     }
 );
-
-export default RichVariableInput;

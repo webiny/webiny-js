@@ -7,6 +7,7 @@ import { ReactComponent as AccountIcon } from "~/assets/icons/round-account_circ
 import { ReactComponent as LogoutIcon } from "~/assets/icons/logout_black_24dp.svg";
 import { useSecurity } from "@webiny/app-security";
 import { useTenancy } from "@webiny/app-tenancy";
+import { useIsDefaultTenant } from "./useIsDefaultTenant";
 
 const linkStyles = css({
     "&:hover": {
@@ -14,18 +15,23 @@ const linkStyles = css({
     }
 });
 
-export const AccountDetails = () => {
+interface AccountDetailsProps {
+    accountRoute: `/${string}`;
+}
+
+export const AccountDetails = ({ accountRoute }: AccountDetailsProps) => {
     const security = useSecurity();
     const tenancy = useTenancy();
+    const isDefaultTenant = useIsDefaultTenant();
 
     if (!security || !security.identity) {
         return null;
     }
 
     // This is only applicable in multi-tenant environments
-    const { currentTenant, defaultTenant } = security.identity;
+    const { defaultTenant } = security.identity;
 
-    if (tenancy && currentTenant && defaultTenant && currentTenant.id !== defaultTenant.id) {
+    if (tenancy && !isDefaultTenant) {
         return (
             <ListItem onClick={() => tenancy.setTenant(defaultTenant.id)}>
                 <ListItemGraphic>
@@ -41,7 +47,7 @@ export const AccountDetails = () => {
     }
 
     return (
-        <Link to={"/account"} className={linkStyles}>
+        <Link to={accountRoute} className={linkStyles}>
             <ListItem>
                 <ListItemGraphic>
                     <Icon icon={<AccountIcon />} />
