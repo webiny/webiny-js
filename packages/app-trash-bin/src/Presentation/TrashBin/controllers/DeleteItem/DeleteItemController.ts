@@ -1,4 +1,4 @@
-import { IDeleteItemUseCase } from "~/Domain";
+import { IDeleteItemUseCase } from "~/UseCases";
 import { IDeleteItemController } from "./IDeleteItemController";
 
 export class DeleteItemController implements IDeleteItemController {

@@ -1,6 +1,6 @@
 import { OnSortingChange } from "@webiny/ui/DataTable";
 import { ColumnSorting, SortingMapper } from "@webiny/app-utils";
-import { IListItemsUseCase, ISortItemsUseCase } from "~/Domain";
+import { IListItemsUseCase, ISortItemsUseCase } from "~/UseCases";
 import { ISortItemsController } from "./ISortItemsController";
 
 export class SortItemsController implements ISortItemsController {

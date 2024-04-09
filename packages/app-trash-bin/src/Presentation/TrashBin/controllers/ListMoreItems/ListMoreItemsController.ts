@@ -1,4 +1,4 @@
-import { IListItemsUseCase, IListMoreItemsUseCase } from "~/Domain";
+import { IListItemsUseCase, IListMoreItemsUseCase } from "~/UseCases";
 import { IListMoreItemsController } from "./IListMoreItemsController";
 
 export class ListMoreItemsController implements IListMoreItemsController {

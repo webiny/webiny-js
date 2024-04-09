@@ -1,4 +1,4 @@
-import { IRestoreItemUseCase } from "~/Domain";
+import { IRestoreItemUseCase } from "~/UseCases";
 import { IRestoreItemController } from "./IRestoreItemController";
 
 export class RestoreItemController implements IRestoreItemController {

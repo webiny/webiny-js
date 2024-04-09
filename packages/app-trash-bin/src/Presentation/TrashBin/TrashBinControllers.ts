@@ -1,18 +1,5 @@
 import { ISortingRepository } from "@webiny/app-utils";
-import {
-    DeleteItemUseCase,
-    ISearchRepository,
-    ISelectedItemsRepository,
-    ITrashBinItemsRepository,
-    ListItemsUseCase,
-    ListItemsUseCaseWithSearch,
-    ListItemsUseCaseWithSorting,
-    ListMoreItemsUseCase,
-    RestoreItemUseCase,
-    SearchItemsUseCase,
-    SelectItemsUseCase,
-    SortItemsUseCase
-} from "~/Domain";
+import { ISearchRepository, ISelectedItemsRepository, ITrashBinItemsRepository } from "~/Domain";
 import {
     DeleteItemController,
     ListItemsController,
@@ -22,12 +9,23 @@ import {
     SelectItemsController,
     SortItemsController
 } from "~/Presentation/TrashBin/controllers";
+import {
+    DeleteItemUseCase,
+    ListItemsUseCase,
+    ListItemsUseCaseWithSearch,
+    ListItemsUseCaseWithSorting,
+    ListMoreItemsUseCase,
+    RestoreItemUseCase,
+    SearchItemsUseCase,
+    SelectItemsUseCase,
+    SortItemsUseCase
+} from "~/UseCases";
 
 export class TrashBinControllers {
-    private itemsRepository: ITrashBinItemsRepository;
-    private selectedRepository: ISelectedItemsRepository;
-    private sortingRepository: ISortingRepository;
-    private searchRepository: ISearchRepository;
+    private readonly itemsRepository: ITrashBinItemsRepository;
+    private readonly selectedRepository: ISelectedItemsRepository;
+    private readonly sortingRepository: ISortingRepository;
+    private readonly searchRepository: ISearchRepository;
 
     constructor(
         itemsRepository: ITrashBinItemsRepository,

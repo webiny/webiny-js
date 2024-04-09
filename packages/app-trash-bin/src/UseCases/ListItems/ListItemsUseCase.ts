@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { ITrashBinItemsRepository } from "../../Repositories";
+import { ITrashBinItemsRepository } from "~/Domain";
 import { IListItemsUseCase } from "./IListItemsUseCase";
 import { TrashBinListQueryVariables } from "@webiny/app-trash-bin-common/types";
 

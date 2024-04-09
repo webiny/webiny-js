@@ -1,4 +1,4 @@
-import { IListItemsUseCase, ISearchItemsUseCase } from "~/Domain";
+import { IListItemsUseCase, ISearchItemsUseCase } from "~/UseCases";
 import { ISearchItemsController } from "./ISearchItemsController";
 
 export class SearchItemsController implements ISearchItemsController {
