@@ -3,6 +3,7 @@ import classNames from "classnames";
 import { ChipSet } from "@rmwc/chip";
 import { Chip } from "./Chip";
 import { chipIconWrapper, disabledChips } from "./styles";
+import "@rmwc/chip/styles";
 
 export interface ChipsProps {
     /**
@@ -30,15 +31,13 @@ export const Chips = (props: ChipsProps) => {
     const { children, className, disabled, ...rest } = props;
 
     return (
-        <React.Fragment>
-            <ChipSet
-                {...rest}
-                className={classNames(className, chipIconWrapper, {
-                    [disabledChips]: disabled
-                })}
-            >
-                {children}
-            </ChipSet>
-        </React.Fragment>
+        <ChipSet
+            {...rest}
+            className={classNames("mdc-evolution-chip-set", className, chipIconWrapper, {
+                [disabledChips]: disabled
+            })}
+        >
+            {children}
+        </ChipSet>
     );
 };
