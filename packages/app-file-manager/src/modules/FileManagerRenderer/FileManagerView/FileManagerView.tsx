@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Files, { FilesRenderChildren } from "react-butterfiles";
 import styled from "@emotion/styled";
 import debounce from "lodash/debounce";
+import omit from "lodash/omit";
 import { positionValues } from "react-custom-scrollbars";
 // @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
@@ -9,7 +10,7 @@ import { observer } from "mobx-react-lite";
 import { ReactComponent as UploadIcon } from "@material-design-icons/svg/filled/cloud_upload.svg";
 import { ReactComponent as AddIcon } from "@material-design-icons/svg/filled/add.svg";
 import { i18n } from "@webiny/app/i18n";
-import { FolderDialogCreate } from "@webiny/app-aco";
+import { useCreateDialog } from "@webiny/app-aco";
 import { OverlayLayout, useSnackbar } from "@webiny/app-admin";
 import { ButtonIcon, ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { Sorting } from "@webiny/ui/DataTable";
@@ -26,7 +27,7 @@ import { Empty } from "~/components/Empty";
 import { FileDetails } from "~/components/FileDetails";
 import { Grid } from "~/components/Grid";
 import { LayoutSwitch } from "~/components/LayoutSwitch";
-import { Entry, Table, TableProps } from "~/components/Table";
+import { Table, TableProps } from "~/components/Table";
 import { Title } from "~/components/Title";
 import { UploadStatus } from "~/components/UploadStatus";
 import { BatchFileUploader } from "~/BatchFileUploader";
@@ -34,6 +35,7 @@ import { SearchWidget } from "./components/SearchWidget";
 import { Filters } from "./components/Filters";
 import { TagsList } from "~/modules/FileManagerRenderer/FileManagerView/components/TagsList";
 import { ListFilesSort, ListFilesSortItem } from "~/modules/FileManagerApiProvider/graphql";
+import { TableItem } from "~/types";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -46,13 +48,6 @@ const FileListWrapper = styled("div")({
     position: "relative",
     ".mdc-data-table": {
         display: "inline-table"
-    },
-    ".mdc-data-table__cell": {
-        width: "250px",
-        maxWidth: "250px",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis"
     }
 });
 
@@ -75,6 +70,8 @@ const FileManagerView = () => {
     const fileManager = useFileManagerApi();
     const { browser } = useFileManagerViewConfig();
     const { showSnackbar } = useSnackbar();
+    const { showDialog: showCreateFolderDialog } = useCreateDialog();
+    const [drawerLoading, setDrawerLoading] = useState<string | null>(null);
 
     const uploader = useMemo<BatchFileUploader>(
         () => new BatchFileUploader(view.uploadFile),
@@ -82,19 +79,18 @@ const FileManagerView = () => {
     );
 
     const [tableSorting, setTableSorting] = useState<Sorting>([]);
-    const [showFoldersDialog, setFoldersDialog] = useState(false);
-    const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
-    const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
     const [currentFile, setCurrentFile] = useState<FileItem>();
 
     useEffect(() => {
         const fetchFileDetails = async () => {
             if (view.showingFileDetails) {
+                setDrawerLoading("Loading file details...");
                 const file = await view.getFile(view.showingFileDetails);
                 setCurrentFile(file);
             } else {
                 setCurrentFile(undefined);
             }
+            setDrawerLoading(null);
         };
 
         // call the function
@@ -188,8 +184,10 @@ const FileManagerView = () => {
         }
 
         if (view.listTable) {
-            const getSelectableRow = (rows: Entry[]) =>
-                rows.filter(row => row.$type === "RECORD").map(row => row.original as FileItem);
+            const getSelectableRow = (rows: TableItem[]) =>
+                rows
+                    .filter(row => row.$type === "RECORD")
+                    .map(row => omit(row, ["$type", "$selectable"]) as FileItem);
 
             const onSelectRow: TableProps["onSelectRow"] = view.hasOnSelectCallback
                 ? rows => {
@@ -223,17 +221,10 @@ const FileManagerView = () => {
 
             return (
                 <Table
-                    folders={view.folders}
-                    records={view.files}
-                    selectedRecords={view.selected}
-                    loading={view.isListLoading}
-                    onRecordClick={view.showFileDetails}
-                    onFolderClick={view.setFolderId}
                     onSelectRow={onSelectRow}
                     onToggleRow={onToggleRow}
                     sorting={tableSorting}
                     onSortingChange={setTableSorting}
-                    settings={view.settings}
                 />
             );
         }
@@ -263,6 +254,22 @@ const FileManagerView = () => {
             }
         }, 200),
         [view.meta, view.loadMoreFiles]
+    );
+
+    const onCreateFolder = useCallback(() => {
+        showCreateFolderDialog({ currentParentId: view.folderId });
+    }, [view.folderId]);
+
+    const updateFile = useCallback(
+        async (data: FileItem) => {
+            const { id, ...fileData } = data;
+            setDrawerLoading("Saving file changes...");
+            await view.updateFile(id, fileData);
+            setDrawerLoading(null);
+            showSnackbar("File updated successfully!");
+            view.hideFileDetails();
+        },
+        [view.updateFile]
     );
 
     return (
@@ -303,7 +310,7 @@ const FileManagerView = () => {
                                 )}
                                 <ButtonSecondary
                                     data-testid={"file-manager.create-folder-button"}
-                                    onClick={openFoldersDialog}
+                                    onClick={onCreateFolder}
                                     small={true}
                                     style={{ margin: "0 8px" }}
                                 >
@@ -316,10 +323,11 @@ const FileManagerView = () => {
                     >
                         <>
                             <FileDetails
-                                loading={view.loadingFileDetails}
+                                loading={drawerLoading}
                                 file={currentFile}
                                 open={Boolean(view.showingFileDetails)}
                                 onClose={view.hideFileDetails}
+                                onSave={updateFile}
                             />
                             <LeftSidebar
                                 currentFolder={view.folderId}
@@ -363,11 +371,6 @@ const FileManagerView = () => {
                     </OverlayLayout>
                 )}
             </Files>
-            <FolderDialogCreate
-                open={showFoldersDialog}
-                onClose={closeFoldersDialog}
-                currentParentId={view.folderId || null}
-            />
         </>
     );
 };

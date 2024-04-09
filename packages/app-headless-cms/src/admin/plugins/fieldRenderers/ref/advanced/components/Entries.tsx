@@ -27,13 +27,13 @@ const ContainerChild = styled("div")({
     margin: "0 2px 25px 2px"
 });
 
-interface Props {
+interface EntriesProps {
     entries: CmsReferenceContentEntry[];
     children: (entry: CmsReferenceContentEntry, index: number) => React.ReactNode;
     loadMore: () => void;
 }
 
-export const Entries: React.VFC<Props> = props => {
+export const Entries = (props: EntriesProps) => {
     const { entries, children, loadMore } = props;
 
     const loadMoreOnScroll = useCallback(

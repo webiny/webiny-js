@@ -1,20 +1,15 @@
 import { ApwContentReviewStorageOperations } from "./types";
-import {
-    baseFields,
-    CreateApwStorageOperationsParams,
-    getFieldValues
-} from "~/storageOperations/index";
+import { CreateApwStorageOperationsParams } from "~/storageOperations";
+import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues";
 import WebinyError from "@webiny/error";
 import { CONTENT_REVIEW_MODEL_ID } from "~/storageOperations/models/contentReview.model";
+import { ApwContentReview } from "~/types";
 
 export const createContentReviewStorageOperations = ({
-    cms,
-    security
+    cms
 }: CreateApwStorageOperationsParams): ApwContentReviewStorageOperations => {
     const getContentReviewModel = async () => {
-        const model = await security.withoutAuthorization(async () => {
-            return cms.getModel(CONTENT_REVIEW_MODEL_ID);
-        });
+        const model = await cms.getModel(CONTENT_REVIEW_MODEL_ID);
         if (!model) {
             throw new WebinyError(
                 `Could not find "${CONTENT_REVIEW_MODEL_ID}" model.`,
@@ -27,10 +22,8 @@ export const createContentReviewStorageOperations = ({
         id
     }) => {
         const model = await getContentReviewModel();
-        const entry = await security.withoutAuthorization(async () => {
-            return cms.getEntryById(model, id);
-        });
-        return getFieldValues(entry, baseFields);
+        const entry = await cms.getEntryById(model, id);
+        return pickEntryFieldValues(entry);
     };
     return {
         getContentReviewModel,
@@ -38,24 +31,20 @@ export const createContentReviewStorageOperations = ({
         async listContentReviews(params) {
             const model = await getContentReviewModel();
 
-            const [entries, meta] = await security.withoutAuthorization(async () => {
-                return cms.listLatestEntries(model, {
-                    ...params,
-                    where: {
-                        ...params.where
-                    }
-                });
+            const [entries, meta] = await cms.listLatestEntries(model, {
+                ...params,
+                where: {
+                    ...params.where
+                }
             });
 
-            return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
+            return [entries.map(pickEntryFieldValues<ApwContentReview>), meta];
         },
         async createContentReview(params) {
             const model = await getContentReviewModel();
 
-            const entry = await security.withoutAuthorization(async () => {
-                return cms.createEntry(model, params.data);
-            });
-            return getFieldValues(entry, baseFields);
+            const entry = await cms.createEntry(model, params.data);
+            return pickEntryFieldValues(entry);
         },
         async updateContentReview(params) {
             const model = await getContentReviewModel();
@@ -65,21 +54,16 @@ export const createContentReviewStorageOperations = ({
              */
             const existingEntry = await getContentReview({ id: params.id });
 
-            const entry = await security.withoutAuthorization(async () => {
-                return cms.updateEntry(model, params.id, {
-                    ...existingEntry,
-                    ...params.data,
-                    savedOn: new Date()
-                });
+            const entry = await cms.updateEntry(model, params.id, {
+                ...existingEntry,
+                ...params.data,
+                savedOn: new Date()
             });
-            return getFieldValues(entry, baseFields);
+            return pickEntryFieldValues(entry);
         },
         async deleteContentReview(params) {
             const model = await getContentReviewModel();
-
-            await security.withoutAuthorization(async () => {
-                return cms.deleteEntry(model, params.id);
-            });
+            await cms.deleteEntry(model, params.id);
 
             return true;
         }

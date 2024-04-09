@@ -13,7 +13,7 @@ const getValidFilterValue = (value: string): string | undefined => {
     return value;
 };
 
-export const FilterByStatus: React.FC = () => {
+export const FilterByStatus = () => {
     const bind = useBind({
         name: "status",
         beforeChange(value, cb) {

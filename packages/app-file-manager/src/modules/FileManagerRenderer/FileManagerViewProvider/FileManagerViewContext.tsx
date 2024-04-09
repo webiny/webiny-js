@@ -102,10 +102,7 @@ type UploadFileOptions = Pick<UploadOptions, "onProgress">;
 export type Loading<T extends string> = { [P in T]?: boolean };
 export type LoadingActions = "INIT" | "LIST" | "LIST_MORE";
 
-export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = ({
-    children,
-    ...props
-}) => {
+export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewProviderProps) => {
     const shiftKeyPressed = useShiftKey();
     const modifiers = { scope: props.scope, own: props.own, accept: props.accept };
     const fileManager = useFileManagerApi();
@@ -179,11 +176,6 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
             return fileInState;
         }
 
-        setState(state => ({
-            ...state,
-            loadingFileDetails: true
-        }));
-
         const file = await fileManager.getFile(id);
 
         if (!file) {
@@ -209,11 +201,6 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
                 ];
             });
         }
-
-        setState(state => ({
-            ...state,
-            loadingFileDetails: false
-        }));
 
         return file;
     };
@@ -424,10 +411,15 @@ export const FileManagerViewProvider: React.VFC<FileManagerViewProviderProps> = 
             }));
         },
         setFilters(data) {
+            // Create filters object excluding entries with `undefined` values
+            const filters = Object.fromEntries(
+                Object.entries(data).filter(([, value]) => value !== undefined)
+            );
+
             setState(state => ({
                 ...state,
                 selected: [],
-                filters: data,
+                filters: Object.keys(filters).length ? filters : undefined,
                 selection: {}
             }));
         },

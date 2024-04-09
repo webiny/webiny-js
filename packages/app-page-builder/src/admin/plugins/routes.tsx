@@ -4,6 +4,7 @@ import Helmet from "react-helmet";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { SecureRoute } from "@webiny/app-security/components";
 import { RoutePlugin } from "@webiny/app/types";
+import { CompositionScope } from "@webiny/react-composition";
 import { EditorPluginsLoader } from "../components/EditorPluginsLoader";
 
 import Categories from "../views/Categories/Categories";
@@ -72,7 +73,9 @@ const plugins: RoutePlugin[] = [
                         <EditorPluginsLoader location={location}>
                             <AdminLayout>
                                 <Helmet title={"Page Builder - Pages"} />
-                                <Pages />
+                                <CompositionScope name={"pb.page"}>
+                                    <Pages />
+                                </CompositionScope>
                             </AdminLayout>
                         </EditorPluginsLoader>
                     </SecureRoute>
@@ -92,7 +95,9 @@ const plugins: RoutePlugin[] = [
                         <SecureRoute permission={ROLE_PB_PAGES}>
                             <EditorPluginsLoader location={location}>
                                 <Helmet title={"Page Builder - Edit page"} />
-                                <PageEditor />
+                                <CompositionScope name={"pb.pageEditor"}>
+                                    <PageEditor />
+                                </CompositionScope>
                             </EditorPluginsLoader>
                         </SecureRoute>
                     );
@@ -134,7 +139,9 @@ const plugins: RoutePlugin[] = [
                         <SecureRoute permission={ROLE_PB_TEMPLATE}>
                             <EditorPluginsLoader location={location}>
                                 <Helmet title={"Page Builder - Edit template"} />
-                                <TemplateEditor />
+                                <CompositionScope name={"pb.templateEditor"}>
+                                    <TemplateEditor />
+                                </CompositionScope>
                             </EditorPluginsLoader>
                         </SecureRoute>
                     );
@@ -192,7 +199,9 @@ const plugins: RoutePlugin[] = [
                         <SecureRoute permission={ROLE_PB_PAGES}>
                             <EditorPluginsLoader location={location}>
                                 <Helmet title={"Page Builder - Edit block"} />
-                                <BlockEditor />
+                                <CompositionScope name={"pb.blockEditor"}>
+                                    <BlockEditor />
+                                </CompositionScope>
                             </EditorPluginsLoader>
                         </SecureRoute>
                     );

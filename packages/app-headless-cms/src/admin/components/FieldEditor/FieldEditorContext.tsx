@@ -131,13 +131,13 @@ interface State {
     field: CmsModelField | null;
     dropTarget: DropTarget;
 }
-export const FieldEditorProvider: React.FC<FieldEditorProviderProps> = ({
+export const FieldEditorProvider = ({
     parent,
     fields,
     layout,
     onChange,
     children
-}) => {
+}: FieldEditorProviderProps) => {
     // We need to determine depth of this provider so we can render drop zones with correct z-indexes.
     let depth = 0;
     try {

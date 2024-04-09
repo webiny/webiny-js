@@ -8,9 +8,9 @@ import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18
 import { activeElementAtom, elementWithChildrenByIdSelector } from "~/editor/recoil/modules";
 import Accordion from "~/editor/plugins/elementSettings/components/Accordion";
 import { moveInPlace, useSortableList } from "~/hooks/useSortableList";
-import { Collapsable } from "~/editor/plugins/toolbar/navigator/StyledComponents";
+import { Collapsable } from "~/editor/defaultConfig/Toolbar/Navigator/StyledComponents";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
-import { ReactComponent as DragIndicatorIcon } from "~/editor/plugins/toolbar/navigator/assets/drag_indicator_24px.svg";
+import { ReactComponent as DragIndicatorIcon } from "~/editor/defaultConfig/Toolbar/Navigator/assets/drag_indicator_24px.svg";
 import { ReactComponent as DeleteIcon } from "~/editor/assets/icons/delete.svg";
 import { createElement } from "~/editor/helpers";
 import { PbEditorElement } from "~/types";
@@ -141,7 +141,7 @@ const ListItem = ({
     );
 };
 
-const AccordionItemsList: React.FC = () => {
+const AccordionItemsList = () => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(
         elementWithChildrenByIdSelector(activeElementId)

@@ -12,7 +12,7 @@ import { WorkflowScopeProps } from "~/views/publishingWorkflows/components/Workf
 
 const t = i18n.ns("app-apw/admin/publishing-workflows/form/cms");
 
-const HeadlessCmsWorkflowScope: React.FC<WorkflowScopeProps> = props => {
+const HeadlessCmsWorkflowScope = (props: WorkflowScopeProps) => {
     const { Bind, workflow } = props;
     const { scope } = workflow;
     const noEntries = isEmpty(dotPropImmutable.get(scope, "data.entries"));

@@ -12,15 +12,37 @@ import { CompositionScope } from "@webiny/react-composition";
 
 const t = i18n.ns("app-headless-cms/admin/routes");
 
-const Loader: React.FC = ({ children, ...props }) => (
+interface LoaderProps {
+    children: React.ReactNode;
+}
+
+const Loader = ({ children, ...props }: LoaderProps) => (
     <Suspense fallback={<CircularProgress />}>
         {React.cloneElement(children as unknown as React.ReactElement, props)}
     </Suspense>
 );
 
-const ContentModelEditor = lazy(() => import("../views/contentModels/ContentModelEditor"));
-const ContentModelsView = lazy(() => import("../views/contentModels/ContentModels"));
-const ContentModelGroupsView = lazy(() => import("../views/contentModelGroups/ContentModelGroups"));
+const ContentModelEditor = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "ViewsContentModelsContentModelEditor" */
+            "../views/contentModels/ContentModelEditor"
+        )
+);
+const ContentModelsView = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "ViewsContentModelsContentModels" */
+            "../views/contentModels/ContentModels"
+        )
+);
+const ContentModelGroupsView = lazy(
+    () =>
+        import(
+            /* webpackChunkName: "ViewsContentModelsContentModelGroups" */
+            "../views/contentModelGroups/ContentModelGroups"
+        )
+);
 
 const plugins: RoutePlugin[] = [
     {

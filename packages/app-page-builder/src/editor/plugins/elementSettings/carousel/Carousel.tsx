@@ -12,8 +12,8 @@ import { ReactComponent as DeleteIcon } from "~/editor/assets/icons/delete.svg";
 import { activeElementAtom, elementWithChildrenByIdSelector } from "~/editor/recoil/modules";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import Accordion from "~/editor/plugins/elementSettings/components/Accordion";
-import { Collapsable } from "~/editor/plugins/toolbar/navigator/StyledComponents";
-import { ReactComponent as DragIndicatorIcon } from "~/editor/plugins/toolbar/navigator/assets/drag_indicator_24px.svg";
+import { Collapsable } from "~/editor/defaultConfig/Toolbar/Navigator/StyledComponents";
+import { ReactComponent as DragIndicatorIcon } from "~/editor/defaultConfig/Toolbar/Navigator/assets/drag_indicator_24px.svg";
 
 const accordionStyles = css`
     .accordion-content {
@@ -139,7 +139,7 @@ const CarouselItem = ({
     );
 };
 
-const CarouselItems: React.FC = () => {
+const CarouselItems = () => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(
         elementWithChildrenByIdSelector(activeElementId)

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as EditIcon } from "../../../../assets/edit.svg";
@@ -8,21 +8,21 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import { useMutation } from "@apollo/react-hooks";
 import { usePagesPermissions } from "~/hooks/permissions";
-import { PbPageData } from "~/types";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
+import { useFolders } from "@webiny/app-aco";
+import { usePage } from "~/admin/views/Pages/PageDetails";
+import { makeDecoratable } from "@webiny/react-composition";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/edit");
 
-interface EditRevisionProps {
-    page: PbPageData;
-}
-const EditRevision: React.FC<EditRevisionProps> = props => {
-    const { page } = props;
-    const { canUpdate } = usePagesPermissions();
+const EditRevision = makeDecoratable("EditRevision", () => {
+    const { canUpdate: pagesCanUpdate } = usePagesPermissions();
+    const { folderLevelPermissions: flp } = useFolders();
     const [inProgress, setInProgress] = useState<boolean>();
     const { showSnackbar } = useSnackbar();
     const [createPageFrom] = useMutation(CREATE_PAGE);
     const { navigateToPageEditor } = useNavigatePage();
+    const { page } = usePage();
 
     const createFromAndEdit = useCallback(async () => {
         setInProgress(true);
@@ -44,7 +44,12 @@ const EditRevision: React.FC<EditRevisionProps> = props => {
         navigateToPageEditor(data.id);
     }, [page, navigateToPageEditor]);
 
-    if (!canUpdate(page?.createdBy?.id)) {
+    const folderId = page.wbyAco_location?.folderId;
+    const canEdit = useMemo(() => {
+        return pagesCanUpdate(page.createdBy?.id) && flp.canManageContent(folderId);
+    }, [flp, folderId]);
+
+    if (!canEdit) {
         return null;
     }
 
@@ -73,6 +78,6 @@ const EditRevision: React.FC<EditRevisionProps> = props => {
             />
         </Tooltip>
     );
-};
+});
 
 export default EditRevision;

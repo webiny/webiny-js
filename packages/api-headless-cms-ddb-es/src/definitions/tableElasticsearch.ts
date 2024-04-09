@@ -1,11 +1,11 @@
 import { TableModifier } from "~/types";
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 import { Table } from "@webiny/db-dynamodb/toolbox";
 import { TableConstructor } from "@webiny/db-dynamodb/toolbox";
 
 export interface CreateElasticsearchTableParams {
     table?: TableModifier;
-    documentClient: DynamoDBClient;
+    documentClient: DynamoDBDocument;
 }
 export const createElasticsearchTable = ({
     table,

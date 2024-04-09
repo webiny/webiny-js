@@ -15,7 +15,7 @@ interface LexicalEditorProps {
     width?: number | string;
 }
 
-export const LexicalEditor: React.FC<LexicalEditorProps> = ({ tag, value, onChange, ...rest }) => {
+export const LexicalEditor = ({ tag, value, onChange, ...rest }: LexicalEditorProps) => {
     const { theme } = usePageElements();
 
     const isHeading = useMemo(() => isHeadingTag(tag), [tag]);

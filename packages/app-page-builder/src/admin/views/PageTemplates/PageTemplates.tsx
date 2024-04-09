@@ -21,7 +21,7 @@ export interface CreatableItem {
     };
 }
 
-const PageTemplates: React.FC = () => {
+const PageTemplates = () => {
     const { history } = useRouter();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();

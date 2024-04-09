@@ -1,11 +1,11 @@
 import React from "react";
-import { makeComposable } from "@webiny/app-admin";
+import { createVoidComponent, makeDecoratable } from "@webiny/app-admin";
 import { EditorProps } from "~/editor/Editor";
 
 export { EditorProps };
 
-export const Editor = makeComposable<EditorProps>("Editor", props => {
+export const Editor = makeDecoratable("Editor", (props: EditorProps) => {
     return <EditorRenderer {...props} />;
 });
 
-export const EditorRenderer = makeComposable<EditorProps>("EditorRenderer");
+export const EditorRenderer = makeDecoratable("EditorRenderer", createVoidComponent<EditorProps>());

@@ -5,7 +5,7 @@ import FormDetails from "./FormDetails";
 import NewFormDialog from "./NewFormDialog";
 import { FormsProvider } from "./FormsContext";
 
-const Forms: React.FC = () => {
+const Forms = () => {
     const [newFormDialogOpened, openNewFormDialog] = React.useState<boolean>(false);
     const onCreateForm = useCallback((): void => openNewFormDialog(true), []);
     const onClose = useCallback((): void => openNewFormDialog(false), []);

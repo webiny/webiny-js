@@ -123,9 +123,9 @@ const updateCells = (
     return target.elements as PbEditorElement[];
 };
 
-export const GridSize: React.FC<PbEditorPageElementSettingsRenderComponentProps> = ({
+export const GridSize = ({
     defaultAccordionValue
-}) => {
+}: PbEditorPageElementSettingsRenderComponentProps) => {
     const handler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(

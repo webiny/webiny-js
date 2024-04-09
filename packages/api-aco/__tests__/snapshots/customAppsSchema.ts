@@ -14,7 +14,7 @@ export const createCustomAppsSchemaSnapshot = () => {
           folderId_startsWith: String
           folderId_not_startsWith: String
         }
-
+        
         type AcoSearchRecordCustomTestingApp_Data_Identity {
           id: String
           displayName: String
@@ -30,7 +30,7 @@ export const createCustomAppsSchemaSnapshot = () => {
           id_not_contains: String
           id_startsWith: String
           id_not_startsWith: String
-
+        
           displayName: String
           displayName_not: String
           displayName_in: [String]
@@ -39,7 +39,7 @@ export const createCustomAppsSchemaSnapshot = () => {
           displayName_not_contains: String
           displayName_startsWith: String
           displayName_not_startsWith: String
-
+        
           type: String
           type_not: String
           type_in: [String]
@@ -49,7 +49,7 @@ export const createCustomAppsSchemaSnapshot = () => {
           type_startsWith: String
           type_not_startsWith: String
         }
-
+        
         type AcoSearchRecordCustomTestingApp_Data {
           someText: String
           identity: AcoSearchRecordCustomTestingApp_Data_Identity
@@ -69,9 +69,9 @@ export const createCustomAppsSchemaSnapshot = () => {
           someText_not_contains: String
           someText_startsWith: String
           someText_not_startsWith: String
-
+        
           identity: AcoSearchRecordCustomTestingApp_Data_IdentityWhereInput
-
+        
           customCreatedOn: DateTime
           customCreatedOn_not: DateTime
           customCreatedOn_in: [DateTime]
@@ -80,7 +80,7 @@ export const createCustomAppsSchemaSnapshot = () => {
           customCreatedOn_lte: DateTime
           customCreatedOn_gt: DateTime
           customCreatedOn_gte: DateTime
-
+        
           customVersion: Number
           customVersion_not: Number
           customVersion_in: [Number]
@@ -93,10 +93,10 @@ export const createCustomAppsSchemaSnapshot = () => {
           customVersion_between: [Number!]
           # there must be two numbers sent in the array
           customVersion_not_between: [Number!]
-
+        
           customLocked: Boolean
           customLocked_not: Boolean
-          
+        
           customWebinyTextField: String
           customWebinyTextField_not: String
           customWebinyTextField_in: [String]
@@ -105,7 +105,7 @@ export const createCustomAppsSchemaSnapshot = () => {
           customWebinyTextField_not_contains: String
           customWebinyTextField_startsWith: String
           customWebinyTextField_not_startsWith: String
-          
+        
           customWebinyNumberField: Number
           customWebinyNumberField_not: Number
           customWebinyNumberField_in: [Number]
@@ -119,12 +119,15 @@ export const createCustomAppsSchemaSnapshot = () => {
           # there must be two numbers sent in the array
           customWebinyNumberField_not_between: [Number!]
         }
-
+        
         type AcoSearchRecordCustomTestingApp {
           id: ID!
-          savedOn: DateTime!
           createdOn: DateTime!
+          modifiedOn: DateTime
+          savedOn: DateTime!
           createdBy: AcoUser!
+          modifiedBy: AcoUser
+          savedBy: AcoUser!
           type: String
           title: String
           content: String
@@ -132,17 +135,17 @@ export const createCustomAppsSchemaSnapshot = () => {
           data: AcoSearchRecordCustomTestingApp_Data
           tags: [String]
         }
-
+        
         input AcoSearchRecordCustomTestingApp_LocationInput {
           folderId: String
         }
-
+        
         input AcoSearchRecordCustomTestingApp_Data_IdentityInput {
           id: String
           displayName: String
           type: String
         }
-
+        
         input AcoSearchRecordCustomTestingApp_DataInput {
           someText: String
           identity: AcoSearchRecordCustomTestingApp_Data_IdentityInput
@@ -152,7 +155,7 @@ export const createCustomAppsSchemaSnapshot = () => {
           customWebinyTextField: String
           customWebinyNumberField: Number
         }
-
+        
         input AcoSearchRecordCustomTestingAppCreateInput {
           id: ID
           type: String
@@ -170,12 +173,12 @@ export const createCustomAppsSchemaSnapshot = () => {
           data: AcoSearchRecordCustomTestingApp_DataInput
           tags: [String!]
         }
-
+        
         type AcoSearchRecordCustomTestingAppResponse {
           data: AcoSearchRecordCustomTestingApp
           error: AcoError
         }
-
+        
         input AcoSearchRecordCustomTestingAppListWhereInput {
           id: ID
           id_not: ID
@@ -192,6 +195,13 @@ export const createCustomAppsSchemaSnapshot = () => {
           createdOn_lte: DateTime
           createdOn_between: [DateTime!]
           createdOn_not_between: [DateTime!]
+          modifiedOn: DateTime
+          modifiedOn_gt: DateTime
+          modifiedOn_gte: DateTime
+          modifiedOn_lt: DateTime
+          modifiedOn_lte: DateTime
+          modifiedOn_between: [DateTime!]
+          modifiedOn_not_between: [DateTime!]
           savedOn: DateTime
           savedOn_gt: DateTime
           savedOn_gte: DateTime
@@ -199,21 +209,117 @@ export const createCustomAppsSchemaSnapshot = () => {
           savedOn_lte: DateTime
           savedOn_between: [DateTime!]
           savedOn_not_between: [DateTime!]
-          publishedOn: DateTime
-          publishedOn_gt: DateTime
-          publishedOn_gte: DateTime
-          publishedOn_lt: DateTime
-          publishedOn_lte: DateTime
-          publishedOn_between: [DateTime!]
-          publishedOn_not_between: [DateTime!]
-          createdBy: String
-          createdBy_not: String
-          createdBy_in: [String!]
-          createdBy_not_in: [String!]
-          ownedBy: String
-          ownedBy_not: String
-          ownedBy_in: [String!]
-          ownedBy_not_in: [String!]
+          deletedOn: DateTime
+          deletedOn_gt: DateTime
+          deletedOn_gte: DateTime
+          deletedOn_lt: DateTime
+          deletedOn_lte: DateTime
+          deletedOn_between: [DateTime!]
+          deletedOn_not_between: [DateTime!]
+          firstPublishedOn: DateTime
+          firstPublishedOn_gt: DateTime
+          firstPublishedOn_gte: DateTime
+          firstPublishedOn_lt: DateTime
+          firstPublishedOn_lte: DateTime
+          firstPublishedOn_between: [DateTime!]
+          firstPublishedOn_not_between: [DateTime!]
+          lastPublishedOn: DateTime
+          lastPublishedOn_gt: DateTime
+          lastPublishedOn_gte: DateTime
+          lastPublishedOn_lt: DateTime
+          lastPublishedOn_lte: DateTime
+          lastPublishedOn_between: [DateTime!]
+          lastPublishedOn_not_between: [DateTime!]
+          createdBy: ID
+          createdBy_not: ID
+          createdBy_in: [ID!]
+          createdBy_not_in: [ID!]
+          modifiedBy: ID
+          modifiedBy_not: ID
+          modifiedBy_in: [ID!]
+          modifiedBy_not_in: [ID!]
+          savedBy: ID
+          savedBy_not: ID
+          savedBy_in: [ID!]
+          savedBy_not_in: [ID!]
+          deletedBy: ID
+          deletedBy_not: ID
+          deletedBy_in: [ID!]
+          deletedBy_not_in: [ID!]
+          firstPublishedBy: ID
+          firstPublishedBy_not: ID
+          firstPublishedBy_in: [ID!]
+          firstPublishedBy_not_in: [ID!]
+          lastPublishedBy: ID
+          lastPublishedBy_not: ID
+          lastPublishedBy_in: [ID!]
+          lastPublishedBy_not_in: [ID!]
+          revisionCreatedOn: DateTime
+          revisionCreatedOn_gt: DateTime
+          revisionCreatedOn_gte: DateTime
+          revisionCreatedOn_lt: DateTime
+          revisionCreatedOn_lte: DateTime
+          revisionCreatedOn_between: [DateTime!]
+          revisionCreatedOn_not_between: [DateTime!]
+          revisionModifiedOn: DateTime
+          revisionModifiedOn_gt: DateTime
+          revisionModifiedOn_gte: DateTime
+          revisionModifiedOn_lt: DateTime
+          revisionModifiedOn_lte: DateTime
+          revisionModifiedOn_between: [DateTime!]
+          revisionModifiedOn_not_between: [DateTime!]
+          revisionSavedOn: DateTime
+          revisionSavedOn_gt: DateTime
+          revisionSavedOn_gte: DateTime
+          revisionSavedOn_lt: DateTime
+          revisionSavedOn_lte: DateTime
+          revisionSavedOn_between: [DateTime!]
+          revisionSavedOn_not_between: [DateTime!]
+          revisionDeletedOn: DateTime
+          revisionDeletedOn_gt: DateTime
+          revisionDeletedOn_gte: DateTime
+          revisionDeletedOn_lt: DateTime
+          revisionDeletedOn_lte: DateTime
+          revisionDeletedOn_between: [DateTime!]
+          revisionDeletedOn_not_between: [DateTime!]
+          revisionFirstPublishedOn: DateTime
+          revisionFirstPublishedOn_gt: DateTime
+          revisionFirstPublishedOn_gte: DateTime
+          revisionFirstPublishedOn_lt: DateTime
+          revisionFirstPublishedOn_lte: DateTime
+          revisionFirstPublishedOn_between: [DateTime!]
+          revisionFirstPublishedOn_not_between: [DateTime!]
+          revisionLastPublishedOn: DateTime
+          revisionLastPublishedOn_gt: DateTime
+          revisionLastPublishedOn_gte: DateTime
+          revisionLastPublishedOn_lt: DateTime
+          revisionLastPublishedOn_lte: DateTime
+          revisionLastPublishedOn_between: [DateTime!]
+          revisionLastPublishedOn_not_between: [DateTime!]
+          revisionCreatedBy: ID
+          revisionCreatedBy_not: ID
+          revisionCreatedBy_in: [ID!]
+          revisionCreatedBy_not_in: [ID!]
+          revisionModifiedBy: ID
+          revisionModifiedBy_not: ID
+          revisionModifiedBy_in: [ID!]
+          revisionModifiedBy_not_in: [ID!]
+          revisionSavedBy: ID
+          revisionSavedBy_not: ID
+          revisionSavedBy_in: [ID!]
+          revisionSavedBy_not_in: [ID!]
+          revisionDeletedBy: ID
+          revisionDeletedBy_not: ID
+          revisionDeletedBy_in: [ID!]
+          revisionDeletedBy_not_in: [ID!]
+          revisionFirstPublishedBy: ID
+          revisionFirstPublishedBy_not: ID
+          revisionFirstPublishedBy_in: [ID!]
+          revisionFirstPublishedBy_not_in: [ID!]
+          revisionLastPublishedBy: ID
+          revisionLastPublishedBy_not: ID
+          revisionLastPublishedBy_in: [ID!]
+          revisionLastPublishedBy_not_in: [ID!]
           status: String
           status_not: String
           status_in: [String!]
@@ -271,10 +377,30 @@ export const createCustomAppsSchemaSnapshot = () => {
         enum AcoSearchRecordCustomTestingAppListSorter {
           id_ASC
           id_DESC
-          savedOn_ASC
-          savedOn_DESC
           createdOn_ASC
           createdOn_DESC
+          modifiedOn_ASC
+          modifiedOn_DESC
+          savedOn_ASC
+          savedOn_DESC
+          deletedOn_ASC
+          deletedOn_DESC
+          firstPublishedOn_ASC
+          firstPublishedOn_DESC
+          lastPublishedOn_ASC
+          lastPublishedOn_DESC
+          revisionCreatedOn_ASC
+          revisionCreatedOn_DESC
+          revisionModifiedOn_ASC
+          revisionModifiedOn_DESC
+          revisionSavedOn_ASC
+          revisionSavedOn_DESC
+          revisionDeletedOn_ASC
+          revisionDeletedOn_DESC
+          revisionFirstPublishedOn_ASC
+          revisionFirstPublishedOn_DESC
+          revisionLastPublishedOn_ASC
+          revisionLastPublishedOn_DESC
           type_ASC
           type_DESC
           title_ASC
@@ -284,7 +410,7 @@ export const createCustomAppsSchemaSnapshot = () => {
           tags_ASC
           tags_DESC
         }
-
+        
         extend type SearchQuery {
           getAcoSearchRecordCustomTestingApp(
             id: ID!
@@ -300,7 +426,7 @@ export const createCustomAppsSchemaSnapshot = () => {
             where: AcoSearchRecordTagListWhereInput
           ): AcoSearchRecordTagListResponse!
         }
-
+        
         extend type SearchMutation {
           createAcoSearchRecordCustomTestingApp(
             data: AcoSearchRecordCustomTestingAppCreateInput!
@@ -315,5 +441,6 @@ export const createCustomAppsSchemaSnapshot = () => {
           ): AcoSearchRecordMoveResponse!
           deleteAcoSearchRecordCustomTestingApp(id: ID!): AcoBooleanResponse!
         }
+
     `;
 };

@@ -22,7 +22,7 @@ const createSkipValidatorEnum = (plugins: PluginsContainer) => {
     }
     return /* GraphQL */ `
         enum SkipValidatorEnum {
-            ${validators.join("\n")}
+        ${validators.join("\n")}
         }
     `;
 };
@@ -54,6 +54,8 @@ const createSchema = (plugins: PluginsContainer): GraphQLSchemaPlugin<CmsContext
                 # force delete an entry that might have some records left behind in the database
                 # see CmsDeleteEntryOptions in types.ts
                 force: Boolean
+                # permanently delete an entry without moving it to the bin
+                permanently: Boolean
             }
 
             type CmsDeleteResponse {
@@ -103,13 +105,6 @@ const createSchema = (plugins: PluginsContainer): GraphQLSchemaPlugin<CmsContext
 
             input UpdateCmsEntryOptionsInput {
                 skipValidators: [SkipValidatorEnum!]
-            }
-
-            input CmsPublishEntryOptionsInput {
-                # By default, updatePublishedOn is true. User can set it to false to skip the publishedOn field update.
-                updatePublishedOn: Boolean
-                # By default, updateSavedOn is true. User can set it to false to skip the publishedOn field update.
-                updateSavedOn: Boolean
             }
 
             input CmsIdentityInput {

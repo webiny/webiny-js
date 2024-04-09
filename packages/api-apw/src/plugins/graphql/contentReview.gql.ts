@@ -8,15 +8,17 @@ import {
     ApwContentReviewContent
 } from "~/types";
 import resolve from "~/utils/resolve";
+import { onByFields, dateTimeFieldsSorters } from "./utils";
 
 const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
-    typeDefs: /* GraphQL */ `
+    // Had to remove /* GraphQL */ because prettier would not format the code correctly.
+    typeDefs: `
         type ApwContentReviewListItem {
             # System generated fields
             id: ID
-            savedOn: DateTime
-            createdOn: DateTime
-            createdBy: ApwIdentity
+            
+            ${onByFields}
+            
             # ContentReview specific fields
             title: String
             steps: [ApwContentReviewStep]
@@ -78,9 +80,9 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         type ApwContentReview {
             # System generated fields
             id: ID
-            savedOn: DateTime
-            createdOn: DateTime
-            createdBy: ApwIdentity
+            
+            ${onByFields}
+            
             # ContentReview specific fields
             title: String
             steps: [ApwContentReviewStep]
@@ -102,10 +104,9 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         enum ApwListContentReviewsSort {
             id_ASC
             id_DESC
-            savedOn_ASC
-            savedOn_DESC
-            createdOn_ASC
-            createdOn_DESC
+
+            ${dateTimeFieldsSorters}
+            
             title_ASC
             title_DESC
         }
@@ -258,7 +259,14 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
                 if (!content) {
                     return null;
                 }
-                return content.publishedOn;
+
+                // In case a page was returned, let's read the `publishedOn` field.
+                if ("publishedOn" in content) {
+                    return content.publishedOn;
+                }
+
+                // In case a CMS entry was returned, let's read the entry-level `lastPublishedOn` field.
+                return content.lastPublishedOn;
             },
             publishedBy: async (parent: ApwContentReviewContent, _, context: ApwContext) => {
                 const id = parent.publishedBy;

@@ -5,7 +5,6 @@ import {
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types";
 import { prepareEntryToIndex } from "~/helpers";
-import lodashCloneDeep from "lodash/cloneDeep";
 
 interface TransformEntryToIndexParams {
     plugins: PluginsContainer;
@@ -19,8 +18,8 @@ export const transformEntryToIndex = (params: TransformEntryToIndexParams) => {
     const result = prepareEntryToIndex({
         plugins,
         model,
-        entry: lodashCloneDeep(entry),
-        storageEntry: lodashCloneDeep(storageEntry)
+        entry: structuredClone(entry),
+        storageEntry: structuredClone(storageEntry)
     });
 
     delete result["PK"];

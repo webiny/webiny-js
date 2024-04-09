@@ -37,7 +37,7 @@ interface MultipleImageVariableInputProps {
     variableId: string;
 }
 
-const MultipleImageVariableInput: React.FC<MultipleImageVariableInputProps> = ({ variableId }) => {
+const MultipleImageVariableInput = ({ variableId }: MultipleImageVariableInputProps) => {
     const { value, onChange } = useVariable(variableId);
 
     // TODO: Update to use the new `render` prop, implemented in 5.33.0.

@@ -61,19 +61,22 @@ interface IconProps {
     model: Pick<CmsModel, "icon">;
 }
 
-const DisplayIcon: React.VFC<IconProps> = ({ model }) => {
+const DisplayIcon = ({ model }: IconProps) => {
     if (!model.icon) {
         return null;
     }
     return <FontAwesomeIcon icon={(model.icon || "").split("/") as IconProp} />;
 };
 
-interface Props {
+interface OptionsModelListItemProps {
     model: Pick<CmsModel, "modelId" | "name" | "description" | "icon">;
     onClick: (modelId: string) => void;
 }
 
-export const OptionsModelListItem: React.VFC<Props> = ({ model, onClick: originalOnClick }) => {
+export const OptionsModelListItem = ({
+    model,
+    onClick: originalOnClick
+}: OptionsModelListItemProps) => {
     const onClick = useCallback(() => {
         originalOnClick(model.modelId);
     }, [originalOnClick]);

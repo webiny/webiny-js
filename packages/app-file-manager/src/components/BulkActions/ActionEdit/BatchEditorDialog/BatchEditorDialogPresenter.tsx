@@ -67,6 +67,87 @@ export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
         };
     }
 
+    addOperation(): void {
+        if (!this.batch) {
+            return;
+        }
+
+        this.batch.operations.push({
+            field: "",
+            operator: "",
+            value: undefined
+        });
+    }
+
+    deleteOperation(operationIndex: number): void {
+        if (!this.batch) {
+            return;
+        }
+
+        this.batch.operations = this.batch.operations.filter(
+            (_, index) => index !== operationIndex
+        );
+
+        // Make sure we always have at least 1 operation!
+        if (this.batch.operations.length === 0) {
+            this.addOperation();
+        }
+    }
+
+    setOperationFieldData(batchIndex: number, data: string) {
+        if (!this.batch) {
+            return;
+        }
+
+        this.batch.operations = [
+            ...this.batch.operations.slice(0, batchIndex),
+            {
+                field: data,
+                operator: "",
+                value: undefined
+            },
+            ...this.batch.operations.slice(batchIndex + 1)
+        ];
+    }
+
+    setBatch(data: BatchEditorFormData): void {
+        if (!this.batch) {
+            return;
+        }
+
+        this.batch = {
+            ...this.batch,
+            operations: data.operations.map(operation => ({
+                field: operation.field,
+                operator: operation.operator,
+                value: operation.value
+            }))
+        };
+
+        if (this.formWasSubmitted) {
+            this.validateBatch(this.batch);
+        }
+    }
+
+    onApply(
+        onSuccess?: (batch: BatchDTO) => void,
+        onError?: (
+            batch: BatchDTO,
+            invalidFields: BatchEditorDialogViewModel["invalidFields"]
+        ) => void
+    ) {
+        if (!this.batch) {
+            return;
+        }
+
+        const result = this.validateBatch(this.batch);
+        if (result.success) {
+            onSuccess && onSuccess(this.batch);
+        } else {
+            onError && onError(this.batch, this.invalidFields);
+        }
+    }
+
     private getOperations = () => {
         return (
             this.batch?.operations.map((operation: OperationDTO, operationIndex) => {
@@ -121,87 +202,6 @@ export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
             .map(operation => operation.field);
 
         return this.fields.filter(field => !existings.includes(field.value));
-    }
-
-    addOperation(): void {
-        if (!this.batch) {
-            return;
-        }
-
-        this.batch.operations.push({
-            field: "",
-            operator: "",
-            value: {}
-        });
-    }
-
-    deleteOperation(operationIndex: number): void {
-        if (!this.batch) {
-            return;
-        }
-
-        this.batch.operations = this.batch.operations.filter(
-            (_, index) => index !== operationIndex
-        );
-
-        // Make sure we always have at least 1 operation!
-        if (this.batch.operations.length === 0) {
-            this.addOperation();
-        }
-    }
-
-    setOperationFieldData(batchIndex: number, data: string) {
-        if (!this.batch) {
-            return;
-        }
-
-        this.batch.operations = [
-            ...this.batch.operations.slice(0, batchIndex),
-            {
-                field: data,
-                operator: "",
-                value: {}
-            },
-            ...this.batch.operations.slice(batchIndex + 1)
-        ];
-    }
-
-    setBatch(data: BatchEditorFormData): void {
-        if (!this.batch) {
-            return;
-        }
-
-        this.batch = {
-            ...this.batch,
-            operations: data.operations.map(operation => ({
-                field: operation.field,
-                operator: operation.operator,
-                value: operation.value
-            }))
-        };
-
-        if (this.formWasSubmitted) {
-            this.validateBatch(this.batch);
-        }
-    }
-
-    onApply(
-        onSuccess?: (batch: BatchDTO) => void,
-        onError?: (
-            batch: BatchDTO,
-            invalidFields: BatchEditorDialogViewModel["invalidFields"]
-        ) => void
-    ) {
-        if (!this.batch) {
-            return;
-        }
-
-        const result = this.validateBatch(this.batch);
-        if (result.success) {
-            onSuccess && onSuccess(this.batch);
-        } else {
-            onError && onError(this.batch, this.invalidFields);
-        }
     }
 
     private validateBatch(data: BatchDTO) {

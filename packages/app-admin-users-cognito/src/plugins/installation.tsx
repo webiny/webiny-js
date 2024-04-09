@@ -51,7 +51,7 @@ export interface InstallProps {
     onInstalled: () => void;
 }
 
-const Install: React.FC<InstallProps> = ({ onInstalled }) => {
+const Install = ({ onInstalled }: InstallProps) => {
     const client = useApolloClient();
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);

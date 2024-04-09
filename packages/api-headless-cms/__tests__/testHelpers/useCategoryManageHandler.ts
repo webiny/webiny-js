@@ -2,33 +2,34 @@ import { GraphQLHandlerParams, useGraphQLHandler } from "./useGraphQLHandler";
 import { CmsEntryListParams, CmsModel } from "~/types";
 import { getCmsModel } from "~tests/contentAPI/mocks/contentModels";
 
+const identityFields = /* GraphQL */ `
+    {
+        id
+        displayName
+        type
+    }
+`;
+
 const categoryFields = `
     id
     entryId
     createdOn
-    createdBy {
-        id
-        displayName
-        type
-    }
-    modifiedBy {
-        id
-        displayName
-        type
-    }
-    ownedBy {
-        id
-        displayName
-        type
-    }
+    modifiedOn
     savedOn
+    firstPublishedOn
+    lastPublishedOn
+    deletedOn
+    createdBy ${identityFields}
+    modifiedBy ${identityFields}
+    savedBy ${identityFields}
+    deletedBy ${identityFields}
     meta {
         title
         modelId
         version
         locked
-        publishedOn
         status
+       
         revisions {
             id
             title
@@ -105,6 +106,29 @@ const listCategoriesQuery = (model: CmsModel) => {
     `;
 };
 
+const listDeletedCategoriesQuery = (model: CmsModel) => {
+    return /* GraphQL */ `
+        query ListDeletedCategories(
+            $where: ${model.singularApiName}ListWhereInput
+            $sort: [${model.singularApiName}ListSorter]
+            $limit: Int
+            $after: String
+        ) {
+            listDeletedCategories: listDeleted${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after) {
+                data {
+                    ${categoryFields}
+                }
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
 const createCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation CreateCategory($data: ${model.singularApiName}Input!) {
@@ -143,10 +167,12 @@ const updateCategoryMutation = (model: CmsModel) => {
         }
     `;
 };
+
 export interface MoveCategoryVariables {
     revision: string;
     folderId: string;
 }
+
 const moveCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation MoveCategory($revision: ID!, $folderId: ID!) {
@@ -160,8 +186,8 @@ const moveCategoryMutation = (model: CmsModel) => {
 
 const deleteCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
-        mutation DeleteCategory($revision: ID!) {
-            deleteCategory: delete${model.singularApiName}(revision: $revision) {
+        mutation DeleteCategory($revision: ID!, $options: CmsDeleteEntryOptions) {
+            deleteCategory: delete${model.singularApiName}(revision: $revision, options: $options) {
                 data
                 ${errorFields}
             }
@@ -184,8 +210,8 @@ const deleteCategoriesMutation = (model: CmsModel) => {
 
 const publishCategoryMutation = (model: CmsModel) => {
     return /* GraphQL */ `
-        mutation PublishCategory($revision: ID!, $options: CmsPublishEntryOptionsInput) {
-            publishCategory: publish${model.singularApiName}(revision: $revision, options: $options) {
+        mutation PublishCategory($revision: ID!) {
+            publishCategory: publish${model.singularApiName}(revision: $revision) {
                 data {
                     ${categoryFields}
                 }
@@ -252,6 +278,15 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
         ) {
             return await contentHandler.invoke({
                 body: { query: listCategoriesQuery(model), variables },
+                headers
+            });
+        },
+        async listDeletedCategories(
+            variables: CmsEntryListParams = {},
+            headers: Record<string, any> = {}
+        ) {
+            return await contentHandler.invoke({
+                body: { query: listDeletedCategoriesQuery(model), variables },
                 headers
             });
         },

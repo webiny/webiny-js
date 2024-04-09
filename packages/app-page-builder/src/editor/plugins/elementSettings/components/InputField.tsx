@@ -7,6 +7,7 @@ import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { COLORS } from "./StyledComponents";
 import { Validation } from "@webiny/form";
 import debounce from "lodash/debounce";
+import { useIsMounted } from "@webiny/app-admin";
 
 const inputStyle = css({
     boxSizing: "border-box",
@@ -80,7 +81,7 @@ interface InputBoxProps {
     [key: string]: any;
 }
 
-const InputField: React.FC<InputBoxProps> = ({
+const InputField = ({
     className,
     value,
     onChange,
@@ -91,7 +92,7 @@ const InputField: React.FC<InputBoxProps> = ({
     },
     defaultValue = "",
     ...props
-}) => {
+}: InputBoxProps) => {
     // We introduced the local value concept in order to fix the cursor positioning issue.
     // Basically, users would type into the field, and the cursor would jump to the end of the input field.
     // This is because the value was being set from the outside, and the component was re-rendering.
@@ -103,10 +104,13 @@ const InputField: React.FC<InputBoxProps> = ({
     // This was mainly because of the async nature of the onChange callback. For example,
     // if we removed the async validation in PropertySettings.tsx, the cursor would no longer jump.
     const [localValue, setLocalValue] = useState<string | number | undefined>();
+    const { isMounted } = useIsMounted();
 
     const debouncedSetLocalValue = useCallback(
         debounce(value => {
-            setLocalValue(value);
+            if (isMounted()) {
+                setLocalValue(value);
+            }
         }, 100),
         []
     );

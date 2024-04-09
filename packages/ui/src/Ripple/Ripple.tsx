@@ -7,12 +7,14 @@ interface Props {
 
     // Makes the ripple disabled.
     disabled?: boolean;
+
+    children: React.ReactNode;
 }
 
 /**
  * Use Ripple component to display a list of choices, once the handler is triggered.
  */
-const Ripple: React.FC<Props> = props => {
+const Ripple = (props: Props) => {
     // Let's pass "unbounded" / "primary" / "accent" flags as "type" prop instead.
     const type = props.type || "surface";
 

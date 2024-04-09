@@ -10,7 +10,7 @@ interface ImportButtonProps {
     disabled: boolean;
 }
 
-export const ImportButton: React.VFC<ImportButtonProps> = ({ onClick, validated, disabled }) => {
+export const ImportButton = ({ onClick, validated, disabled }: ImportButtonProps) => {
     const text = validated ? t`Import` : t`Validate file`;
     return (
         <ButtonPrimary onClick={onClick} disabled={disabled}>

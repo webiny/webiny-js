@@ -50,7 +50,7 @@ export interface ExportTemplatesDialogProps {
     search: { query: string };
 }
 
-const ExportTemplateLoadingDialogMessage: React.FC<ExportTemplatesDialogProps> = props => {
+const ExportTemplateLoadingDialogMessage = (props: ExportTemplatesDialogProps) => {
     const { exportTemplate } = useExportTemplate();
     const {
         exportPageData: { revisionType }
@@ -78,7 +78,7 @@ interface ExportTemplateDialogProps {
     exportUrl: string;
 }
 
-const ExportTemplateDialogMessage: React.FC<ExportTemplateDialogProps> = ({ exportUrl }) => {
+const ExportTemplateDialogMessage = ({ exportUrl }: ExportTemplateDialogProps) => {
     const { showSnackbar } = useSnackbar();
 
     return (

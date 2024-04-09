@@ -23,6 +23,7 @@ import {
 } from "./StyledComponents";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import { FieldSettings } from "./FieldSettings";
+import { ParentFieldProvider } from "~/admin/components/ContentEntryForm/ParentValue";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -35,7 +36,7 @@ interface ActionsProps {
     };
 }
 
-const Actions: React.FC<ActionsProps> = ({ setHighlightIndex, bind, index }) => {
+const Actions = ({ setHighlightIndex, bind, index }: ActionsProps) => {
     const { moveValueDown, moveValueUp } = bind.field;
 
     const onDown = useCallback(
@@ -71,7 +72,7 @@ const Actions: React.FC<ActionsProps> = ({ setHighlightIndex, bind, index }) => 
     ) : null;
 };
 
-const ObjectsRenderer: React.FC<CmsModelFieldRendererProps> = props => {
+const ObjectsRenderer = (props: CmsModelFieldRendererProps) => {
     const [highlightMap, setHighlightIndex] = useState<{ [key: number]: string }>({});
     const { field, contentModel } = props;
 
@@ -111,14 +112,18 @@ const ObjectsRenderer: React.FC<CmsModelFieldRendererProps> = props => {
                                 defaultValue={index === 0}
                             >
                                 <Cell span={12} className={fieldsWrapperStyle}>
-                                    <Fields
-                                        Bind={Bind}
-                                        {...bind.index}
-                                        contentModel={contentModel}
-                                        fields={settings.fields}
-                                        layout={settings.layout}
-                                        gridClassName={fieldsGridStyle}
-                                    />
+                                    <ParentFieldProvider
+                                        value={bind.index.value}
+                                        path={Bind.parentName}
+                                    >
+                                        <Fields
+                                            Bind={Bind}
+                                            contentModel={contentModel}
+                                            fields={settings.fields}
+                                            layout={settings.layout}
+                                            gridClassName={fieldsGridStyle}
+                                        />
+                                    </ParentFieldProvider>
                                 </Cell>
                             </Accordion>
                         </ObjectItem>

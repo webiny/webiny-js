@@ -37,12 +37,7 @@ interface ListCategoriesQueryResponse {
     data: PageBuilderListCategoriesResponse;
     loading?: boolean;
 }
-const CategoriesDialog: React.FC<CategoriesDialogProps> = ({
-    open,
-    onClose,
-    onSelect,
-    children
-}) => {
+const CategoriesDialog = ({ open, onClose, onSelect, children }: CategoriesDialogProps) => {
     const { history } = useRouter();
     return (
         <Dialog

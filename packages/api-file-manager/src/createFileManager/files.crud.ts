@@ -2,7 +2,6 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
 import WebinyError from "@webiny/error";
 import {
-    CreatedBy,
     File,
     FileManagerFilesStorageOperationsListParamsWhere,
     FileManagerFilesStorageOperationsTagsParamsWhere,
@@ -13,6 +12,7 @@ import { FileManagerConfig } from "~/createFileManager/index";
 import { ROOT_FOLDER } from "~/contants";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { getDate } from "@webiny/api-headless-cms/utils/date";
+import { getIdentity as utilsGetIdentity } from "@webiny/api-headless-cms/utils/identity";
 
 export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
     const {
@@ -55,12 +55,12 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
         async createFile(input, meta) {
             await filesPermissions.ensure({ rwd: "w" });
 
-            const identity = getIdentity();
-
             // Extract ID from file key
             const [id] = input.key.split("/");
 
-            const date = new Date();
+            const currentDateTime = new Date();
+            const currentIdentity = getIdentity();
+
             const file: File = {
                 ...input,
                 tags: Array.isArray(input.tags) ? input.tags : [],
@@ -73,12 +73,15 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                     private: false,
                     ...(input.meta || {})
                 },
+
+                createdOn: getDate(input.createdOn, currentDateTime),
+                modifiedOn: getDate(input.modifiedOn, null),
+                savedOn: getDate(input.savedOn, currentDateTime),
+                createdBy: utilsGetIdentity(input.createdBy, currentIdentity),
+                modifiedBy: utilsGetIdentity(input.modifiedBy, null),
+                savedBy: utilsGetIdentity(input.savedBy, currentIdentity),
+
                 tenant: getTenantId(),
-                createdOn: getDate(input.createdOn, date),
-                savedOn: getDate(input.savedOn, date),
-                createdBy: input.createdBy || identity,
-                ownedBy: input.createdBy || identity,
-                modifiedBy: input.modifiedBy,
                 locale: getLocaleCode(),
                 webinyVersion: WEBINY_VERSION
             };
@@ -123,13 +126,20 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
 
             await filesPermissions.ensure({ owns: original.createdBy });
 
+            const currentDateTime = new Date();
+            const currentIdentity = getIdentity();
+
             const file: File = {
                 ...original,
                 ...input,
-                createdBy: input.createdBy || original.createdBy,
-                modifiedBy: input.modifiedBy,
+
                 createdOn: getDate(input.createdOn, original.createdOn),
-                savedOn: getDate(input.savedOn, new Date()),
+                modifiedOn: getDate(input.modifiedOn, currentDateTime),
+                savedOn: getDate(input.savedOn, currentDateTime),
+                createdBy: utilsGetIdentity(input.createdBy, original.createdBy),
+                modifiedBy: utilsGetIdentity(input.modifiedBy, currentIdentity),
+                savedBy: utilsGetIdentity(input.savedBy, currentIdentity),
+
                 tags: Array.isArray(input.tags)
                     ? input.tags
                     : Array.isArray(original.tags)
@@ -216,15 +226,11 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
         async createFilesInBatch(inputs, meta) {
             await filesPermissions.ensure({ rwd: "w" });
 
-            const identity = getIdentity();
             const tenant = getTenantId();
             const locale = getLocaleCode();
 
-            const createdBy: CreatedBy = {
-                id: identity.id,
-                displayName: identity.displayName,
-                type: identity.type
-            };
+            const currentIdentity = getIdentity();
+            const currentDateTime = new Date();
 
             const files: File[] = inputs.map(input => {
                 return {
@@ -238,10 +244,15 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                     location: {
                         folderId: input.location?.folderId ?? ROOT_FOLDER
                     },
+
+                    createdOn: getDate(currentDateTime),
+                    modifiedOn: null,
+                    savedOn: getDate(currentDateTime),
+                    createdBy: utilsGetIdentity(currentIdentity),
+                    modifiedBy: null,
+                    savedBy: utilsGetIdentity(currentIdentity),
+
                     tenant,
-                    createdOn: new Date().toISOString(),
-                    savedOn: new Date().toISOString(),
-                    createdBy,
                     locale,
                     webinyVersion: WEBINY_VERSION
                 };

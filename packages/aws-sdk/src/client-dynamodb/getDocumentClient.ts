@@ -15,7 +15,7 @@ const createKey = (config: DynamoDBClientConfig): string => {
 
 const documentClients: Record<string, DynamoDBDocument> = {};
 
-export const getDocumentClient = (input?: DynamoDBClientConfig) => {
+export const getDocumentClient = (input?: DynamoDBClientConfig): DynamoDBDocument => {
     const config = input || DEFAULT_CONFIG;
     const key = createKey(config);
     if (documentClients[key]) {
@@ -25,9 +25,11 @@ export const getDocumentClient = (input?: DynamoDBClientConfig) => {
     const documentClient = DynamoDBDocument.from(client, {
         marshallOptions: {
             convertEmptyValues: true,
-            removeUndefinedValues: true
+            removeUndefinedValues: true,
+            convertClassInstanceToMap: true
         }
     });
+
     documentClients[key] = documentClient;
     return documentClient;
 };

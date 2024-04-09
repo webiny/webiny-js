@@ -149,12 +149,12 @@ describe("MANAGE - Resolvers", () => {
             savedOn: expect.stringMatching(/^20/),
             title: "Hardware",
             slug: "hardware",
+            lastPublishedOn: null,
             meta: {
                 title: "Hardware",
                 modelId: "category",
                 version: 1,
                 locked: false,
-                publishedOn: null,
                 status: "draft",
                 revisions: [
                     {
@@ -194,7 +194,7 @@ describe("MANAGE - Resolvers", () => {
         expect(response.data.getCategory.error).toEqual({
             code: "SECURITY_NOT_AUTHORIZED",
             data: {
-                reason: 'Not allowed to access model "category".'
+                reason: 'Not allowed to access "category" entries.'
             },
             message: "Not authorized!"
         });
@@ -230,12 +230,12 @@ describe("MANAGE - Resolvers", () => {
             savedOn: expect.stringMatching(/^20/),
             title: "Hardware",
             slug: "hardware",
+            lastPublishedOn: null,
             meta: {
                 title: "Hardware",
                 modelId: "category",
                 version: 1,
                 locked: false,
-                publishedOn: null,
                 status: "draft",
                 revisions: [
                     {
@@ -291,10 +291,10 @@ describe("MANAGE - Resolvers", () => {
                                 type: "admin"
                             },
                             savedOn: publishedCategory.savedOn,
+                            lastPublishedOn: expect.stringMatching(/^20/),
                             meta: {
                                 locked: true,
                                 modelId: "category",
-                                publishedOn: expect.stringMatching(/^20/),
                                 revisions: [
                                     {
                                         id: expect.any(String),
@@ -390,12 +390,12 @@ describe("MANAGE - Resolvers", () => {
             savedOn: expect.stringMatching(/^20/),
             title: "Hardware",
             slug: "hardware",
+            lastPublishedOn: null,
             meta: {
                 title: "Hardware",
                 modelId: "category",
                 version: 1,
                 locked: false,
-                publishedOn: null,
                 status: "draft",
                 revisions: [
                     {
@@ -462,12 +462,12 @@ describe("MANAGE - Resolvers", () => {
             savedOn: expect.stringMatching(/^20/),
             title: "Hardware",
             slug: "hardware",
+            lastPublishedOn: null,
             meta: {
                 title: "Hardware",
                 modelId: "category",
                 version: 1,
                 locked: false,
-                publishedOn: null,
                 status: "draft",
                 revisions: [
                     {
@@ -532,10 +532,10 @@ describe("MANAGE - Resolvers", () => {
                         },
                         title: "Hardware",
                         slug: "hardware",
+                        lastPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "category",
-                            publishedOn: null,
                             revisions: [
                                 {
                                     id: expect.any(String),
@@ -612,10 +612,10 @@ describe("MANAGE - Resolvers", () => {
                         savedOn: expect.stringMatching(/^20/),
                         title: "New title",
                         slug: "hardware-store",
+                        lastPublishedOn: null,
                         meta: {
                             locked: false,
                             modelId: "category",
-                            publishedOn: null,
                             revisions: [
                                 {
                                     id: expect.any(String),
@@ -1064,7 +1064,10 @@ describe("MANAGE - Resolvers", () => {
                         createdBy: expect.any(Object),
                         meta: expect.any(Object),
                         createdOn: expect.stringMatching(/^20/),
+                        modifiedOn: null,
                         savedOn: expect.stringMatching(/^20/),
+                        firstPublishedOn: null,
+                        lastPublishedOn: null,
                         availableOn: "2020-12-25",
                         color: "white",
                         inStock: true,
@@ -1203,11 +1206,18 @@ describe("MANAGE - Resolvers", () => {
                 publishCategory: {
                     data: {
                         ...createdWebinyCategory,
+                        modifiedBy: {
+                            id: "id-12345678",
+                            displayName: "John Doe",
+                            type: "admin"
+                        },
+                        modifiedOn: expect.any(String),
+                        firstPublishedOn: expect.any(String),
+                        lastPublishedOn: expect.any(String),
                         meta: {
                             ...createdWebinyCategory.meta,
                             locked: true,
                             status: "published",
-                            publishedOn: expect.any(String),
                             revisions: createdWebinyCategory.meta.revisions.map((rev: any) => {
                                 return {
                                     ...rev,
@@ -1241,11 +1251,12 @@ describe("MANAGE - Resolvers", () => {
                     createCategoryFrom: {
                         data: {
                             ...webiny,
+                            modifiedOn: expect.stringMatching(/^20/),
+                            lastPublishedOn: expect.stringMatching(/^20/),
                             meta: {
                                 ...webiny.meta,
                                 locked: false,
                                 status: "draft",
-                                publishedOn: expect.stringMatching(/^20/),
                                 version: i + 2,
                                 revisions: expect.any(Array)
                             },
@@ -1272,11 +1283,12 @@ describe("MANAGE - Resolvers", () => {
                     publishCategory: {
                         data: {
                             ...createdCategory,
+                            modifiedOn: expect.any(String),
+                            lastPublishedOn: expect.any(String),
                             meta: {
                                 ...createdCategory.meta,
                                 locked: true,
                                 status: "published",
-                                publishedOn: expect.any(String),
                                 revisions: expect.any(Array)
                             },
                             savedOn: expect.any(String)
@@ -1328,10 +1340,10 @@ describe("MANAGE - Resolvers", () => {
                         entryId: webiny.entryId,
                         createdOn: expect.stringMatching(/^20/),
                         savedOn: expect.stringMatching(/^20/),
+                        lastPublishedOn: expect.stringMatching(/^20/),
                         meta: {
                             locked: true,
                             modelId: "category",
-                            publishedOn: expect.stringMatching(/^20/),
                             revisions: [
                                 {
                                     id: `${webiny.entryId}#0006`,

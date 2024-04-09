@@ -1,5 +1,5 @@
 import { createModelField } from "./utils";
-import { WorkflowModelDefinition } from "~/types";
+import { createPrivateModel } from "@webiny/api-headless-cms";
 
 const idField = () =>
     createModelField({
@@ -61,19 +61,11 @@ const emailField = () =>
 
 export const REVIEWER_MODEL_ID = "apwReviewerModelDefinition";
 
-export const createReviewerModelDefinition = (): WorkflowModelDefinition => {
-    return {
+export const createReviewerModel = () => {
+    return createPrivateModel({
         name: "APW - Reviewer",
-        modelId: REVIEWER_MODEL_ID,
         titleFieldId: "displayName",
-        layout: [
-            ["reviewer_identityId"],
-            ["reviewer_displayName"],
-            ["reviewer_type"],
-            ["reviewer_email"]
-        ],
-        fields: [idField(), displayNameField(), typeField(), emailField()],
-        description: "",
-        isPrivate: true
-    };
+        modelId: REVIEWER_MODEL_ID,
+        fields: [idField(), displayNameField(), typeField(), emailField()]
+    });
 };

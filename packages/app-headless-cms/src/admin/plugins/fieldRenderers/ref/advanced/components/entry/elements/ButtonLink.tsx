@@ -73,7 +73,7 @@ interface PropsWithHref extends Props {
     onClick?: never;
 }
 
-export const ButtonLink: React.VFC<PropsWithClick | PropsWithHref> = props => {
+export const ButtonLink = (props: PropsWithClick | PropsWithHref) => {
     const { children, href, target, onClick, className, ...styles } = props;
     return (
         <Container className={className} {...styles}>

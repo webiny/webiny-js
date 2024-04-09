@@ -28,7 +28,7 @@ import {
     SearchShortcut,
     searchWrapper
 } from "./styled";
-import { makeComposable } from "~/index";
+import { makeDecoratable } from "~/index";
 
 type SearchBarProps = UseRouter;
 
@@ -247,10 +247,10 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     }
 }
 
-const SearchBarContainer: React.FC = () => {
+const SearchBarContainer = () => {
     const routerProps = useRouter();
 
     return <SearchBar {...routerProps} />;
 };
 
-export default makeComposable("SearchBarContainer", SearchBarContainer);
+export default makeDecoratable("SearchBarContainer", SearchBarContainer);

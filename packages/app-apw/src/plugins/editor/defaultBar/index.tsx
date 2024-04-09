@@ -43,7 +43,7 @@ const defaultBaPlugins = [
     }
 ];
 
-export const DefaultBar: React.FC = () => {
+export const DefaultBar = () => {
     useEffect(() => {
         plugins.register(defaultBaPlugins);
     }, []);

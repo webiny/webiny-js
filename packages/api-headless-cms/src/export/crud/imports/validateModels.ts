@@ -156,8 +156,12 @@ const validateModel = (params: CreateModelValidationParams): ValidationResult =>
     };
 };
 
+interface InputGroup extends Pick<CmsGroup, "id" | "slug"> {
+    target: string;
+}
+
 interface Params {
-    groups: Pick<CmsGroup, "id">[];
+    groups: InputGroup[];
     models: CmsModel[];
     input: HeadlessCmsImportStructureParamsDataModel[];
 }
@@ -215,7 +219,7 @@ export const validateModels = async (params: Params): Promise<ValidatedCmsModelR
                 };
             }
             const data = result.data as unknown as ValidatedCmsModel;
-            const group = groups.find(g => g.id === data.group);
+            const group = groups.find(g => g.id === data.group || g.target === data.group);
             if (!group) {
                 return {
                     model: data,
@@ -236,23 +240,28 @@ export const validateModels = async (params: Params): Promise<ValidatedCmsModelR
                 };
             }
 
+            const targetModel: ValidatedCmsModel = {
+                ...data,
+                group: group.id
+            };
+
             const modelValidationResult = validateModel({
-                model: data,
+                model: targetModel,
                 models
             });
 
             if (!modelValidationResult.errors?.length) {
                 return {
-                    model: data,
+                    model: targetModel,
                     related: getRelatedModels({
-                        fields: data.fields,
+                        fields: targetModel.fields,
                         models
                     }),
                     action: modelValidationResult.action
                 };
             }
             return {
-                model: data,
+                model: targetModel,
                 action: modelValidationResult.action,
                 error: modelValidationResult.errors[0]
             };

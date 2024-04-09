@@ -19,14 +19,14 @@ interface ContentModelGroupPermissionProps {
     locales: string[];
     disabled?: boolean;
 }
-const ContentModelGroupPermission: React.FC<ContentModelGroupPermissionProps> = ({
+const ContentModelGroupPermission = ({
     Bind,
     data,
     entity,
     title,
     locales,
     disabled
-}) => {
+}: ContentModelGroupPermissionProps) => {
     const modelsGroups = useCmsData(locales);
 
     const getItems = useCallback(

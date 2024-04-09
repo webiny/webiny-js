@@ -31,7 +31,7 @@ interface PMSettingsPropsType {
     title?: string;
 }
 
-const PMSettings: React.FC<PMSettingsPropsType> = ({ styleAttribute }) => {
+const PMSettings = ({ styleAttribute }: PMSettingsPropsType) => {
     const handler = useEventActionHandler();
 
     const valueKey = `data.settings.${styleAttribute}`;

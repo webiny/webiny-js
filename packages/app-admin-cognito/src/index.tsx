@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Auth } from "@aws-amplify/auth";
-import { AuthOptions, CognitoHostedUIIdentityProvider } from "@aws-amplify/auth/lib-esm/types";
+import { AuthOptions } from "@aws-amplify/auth/lib-esm/types";
 import ApolloClient from "apollo-client";
 import { useApolloClient } from "@apollo/react-hooks";
 import { setContext } from "apollo-link-context";
@@ -9,14 +9,23 @@ import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin";
 import { SecurityPermission } from "@webiny/app-security/types";
 import { CognitoIdToken } from "@webiny/app-cognito-authenticator/types";
 import { Authenticator } from "@webiny/app-cognito-authenticator/Authenticator";
-import SignIn from "~/views/SignIn";
-import RequireNewPassword from "~/views/RequireNewPassword";
-import ForgotPassword from "~/views/ForgotPassword";
-import SetNewPassword from "~/views/SetNewPassword";
-import SignedIn from "~/views/SignedIn";
 import { useSecurity } from "@webiny/app-security";
 import { config as appConfig } from "@webiny/app/config";
-import LoggingIn from "~/views/LoggingIn";
+import { SignIn } from "~/views/SignIn";
+import { RequireNewPassword } from "~/views/RequireNewPassword";
+import { ForgotPassword } from "~/views/ForgotPassword";
+import { SetNewPassword } from "~/views/SetNewPassword";
+import { SignedIn } from "~/views/SignedIn";
+import { LoggingIn } from "~/views/LoggingIn";
+import { FederatedIdentityProvider } from "~/federatedIdentityProviders";
+import { FederatedProviders } from "~/components/FederatedProviders";
+import { View } from "~/components/View";
+
+export const Components = {
+    View,
+    FederatedProviders,
+    SignIn
+};
 
 const createApolloLinkPlugin = (): ApolloLinkPlugin => {
     return new ApolloLinkPlugin(() => {
@@ -63,22 +72,22 @@ export interface AuthenticationProps {
     children: React.ReactNode;
 }
 
-export type CognitoFederatedProvider = keyof typeof CognitoHostedUIIdentityProvider;
-
 export interface AuthenticationFactoryConfig extends AuthOptions {
-    federatedProviders?: CognitoFederatedProvider[];
-    onError?(error: Error): void;
-    getIdentityData(params: {
+    allowSignInWithCredentials?: boolean;
+    federatedProviders?: FederatedIdentityProvider[];
+    onError?: (error: Error) => void;
+    getIdentityData: (params: {
         client: ApolloClient<any>;
         payload: { [key: string]: any };
-    }): Promise<{ [key: string]: any }>;
+    }) => Promise<{ [key: string]: any }>;
 }
 
 interface AuthenticationFactory {
-    (params: AuthenticationFactoryConfig): React.FC<AuthenticationProps>;
+    (params: AuthenticationFactoryConfig): React.ComponentType<AuthenticationProps>;
 }
 
 export const createAuthentication: AuthenticationFactory = ({
+    allowSignInWithCredentials = true,
     getIdentityData,
     onError,
     ...config
@@ -90,7 +99,7 @@ export const createAuthentication: AuthenticationFactory = ({
     Object.keys(config).forEach(key => config[key] === undefined && delete config[key]);
     Auth.configure({ ...defaultOptions, ...config });
 
-    const Authentication: React.FC<AuthenticationProps> = props => {
+    const Authentication = (props: AuthenticationProps) => {
         const { children } = props;
         const [loadingIdentity, setLoadingIdentity] = useState(false);
         const { setIdentity } = useSecurity();
@@ -107,8 +116,6 @@ export const createAuthentication: AuthenticationFactory = ({
                     payload
                 });
 
-                validatePermissions(permissions);
-
                 setIdentity({
                     id,
                     displayName,
@@ -121,6 +128,8 @@ export const createAuthentication: AuthenticationFactory = ({
                             return void 0;
                         })
                 });
+
+                validatePermissions(permissions);
             } catch (err) {
                 console.log("ERROR", err);
                 if (typeof onError === "function") {
@@ -142,7 +151,10 @@ export const createAuthentication: AuthenticationFactory = ({
                 {loadingIdentity ? (
                     <LoggingIn />
                 ) : (
-                    <SignIn federatedProviders={config.federatedProviders} />
+                    <SignIn
+                        federatedProviders={config.federatedProviders}
+                        allowSignInWithCredentials={allowSignInWithCredentials}
+                    />
                 )}
                 <RequireNewPassword />
                 <ForgotPassword />

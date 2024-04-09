@@ -18,7 +18,7 @@ const labelStyle = css({
     }
 });
 
-const VariableSettings: React.FC = () => {
+export const VariableSettings = () => {
     const [element] = useActiveElement();
 
     const variableRenderers = useMemo(() => {
@@ -61,5 +61,3 @@ const VariableSettings: React.FC = () => {
         </div>
     );
 };
-
-export default VariableSettings;

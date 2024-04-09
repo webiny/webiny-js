@@ -13,6 +13,7 @@
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../pubsub/tsconfig.build.json" },
+    { "path": "../tasks/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
     { "path": "../api-authentication/tsconfig.build.json" },

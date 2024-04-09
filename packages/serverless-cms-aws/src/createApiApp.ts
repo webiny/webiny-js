@@ -1,6 +1,7 @@
 import { createApiPulumiApp, CreateApiPulumiAppParams } from "@webiny/pulumi-aws";
 import { PluginCollection } from "@webiny/plugins/types";
 import {
+    ensureCoreDeployed,
     executeDataMigrations,
     generateCommonHandlers,
     generateDdbHandlers,
@@ -16,12 +17,13 @@ export interface CreateApiAppParams extends CreateApiPulumiAppParams {
 
 export function createApiApp(projectAppParams: CreateApiAppParams = {}) {
     const builtInPlugins = [
+        ensureCoreDeployed,
         injectWcpTelemetryClientCode,
         generateCommonHandlers,
         executeDataMigrations
     ];
 
-    if (projectAppParams.elasticSearch) {
+    if (projectAppParams.elasticSearch || projectAppParams.openSearch) {
         builtInPlugins.push(generateDdbEsHandlers);
     } else {
         builtInPlugins.push(generateDdbHandlers);

@@ -17,7 +17,17 @@ export interface PageResponseData {
     locked: boolean;
     status: string;
     revisions: PbPageRevision[];
+    createdBy: {
+        id: string;
+        displayName: string;
+    };
+    savedOn: string;
+    category: {
+        name: string;
+    };
+    content: Record<string, any>;
 }
+
 export const DATA_FIELDS = `
     id
     pid
@@ -26,6 +36,9 @@ export const DATA_FIELDS = `
     version
     locked
     status
+    wbyAco_location {
+        folderId
+    }
     revisions {
         id
         pid
@@ -82,9 +95,9 @@ export const CREATE_PAGE_FROM_TEMPLATE = gql`
 `;
 
 export const DUPLICATE_PAGE = gql`
-    mutation PbDuplicatePage($id: ID!) {
+    mutation PbDuplicatePage($id: ID!, $meta: JSON) {
         pageBuilder {
-            duplicatePage(id: $id) {
+            duplicatePage(id: $id, meta: $meta) {
                 data {
                     ${LIST_PAGES_DATA_FIELDS}
                 }
@@ -134,29 +147,32 @@ export const LIST_PAGES = gql`
         }
     }
 `;
+
 /**
  * ##############################
  * Get Page Query Response
  */
-export interface GetPageQueryResponse {
+export interface GetPageQueryResponse<T extends PageResponseData = PageResponseData> {
     pageBuilder: {
         getPage: {
-            data: PageResponseData | null;
+            data: T | null;
             error: PbErrorResponse | null;
         };
     };
 }
+
 export interface GetPageQueryVariables {
     id: string;
 }
+
 export const GET_PAGE = gql`
-    query PbGetPagePreview($id: ID!) {
+    query PbGetPage($id: ID!) {
         pageBuilder {
             getPage(id: $id) {
                 data {
                     ${DATA_FIELDS}
                     createdBy {
-                        id,
+                        id
                         displayName
                     }
                     savedOn
@@ -196,6 +212,7 @@ export const UNPUBLISH_PAGE = gql`
         }
     }
 `;
+
 /**
  * ##########################
  * Delete Page Mutation
@@ -207,6 +224,7 @@ interface DeletePageMutationResponseData {
         version: number;
     };
 }
+
 export interface DeletePageMutationResponse {
     pageBuilder: {
         deletePage: {
@@ -215,9 +233,11 @@ export interface DeletePageMutationResponse {
         };
     };
 }
+
 export interface DeletePageMutationVariables {
     id: string;
 }
+
 export const DELETE_PAGE = gql`
     mutation PbDeletePage($id: ID!) {
         pageBuilder {
@@ -243,6 +263,7 @@ const PAGE_ELEMENT_FIELDS = /*GraphQL*/ `
         content
     }
 `;
+
 /**
  * ##############################
  * List Page Elements Query
@@ -255,6 +276,7 @@ export interface ListPageElementsQueryResponseDataPreview {
         aspectRatio: number;
     };
 }
+
 export interface ListPageElementsQueryResponseData {
     id: string;
     name: string;
@@ -268,6 +290,7 @@ export interface ListPageElementsQueryResponse {
         error?: PbErrorResponse;
     };
 }
+
 export const LIST_PAGE_ELEMENTS = gql`
     query PbListPageElements {
         pageBuilder {

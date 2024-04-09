@@ -1,4 +1,4 @@
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import {
     FileManagerAliasesStorageOperations,
@@ -15,7 +15,7 @@ import {
 } from "@webiny/db-dynamodb";
 
 interface AliasesStorageOperationsConfig {
-    documentClient: DynamoDBClient;
+    documentClient: DynamoDBDocument;
 }
 
 interface CreatePartitionKeyParams {

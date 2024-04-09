@@ -50,7 +50,7 @@ interface CategoriesFormProps {
     canCreate: boolean;
 }
 
-const CategoriesForm: React.FC<CategoriesFormProps> = ({ canCreate }) => {
+const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
 

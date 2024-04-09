@@ -94,7 +94,7 @@ const createApiApp = (data: CreateApiAppParams | null): AcoApp | null => {
     };
 };
 
-export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
+export const AcoAppProvider = ({
     children,
     id,
     client,
@@ -105,7 +105,7 @@ export const AcoAppProvider: React.VFC<AcoAppProviderProps> = ({
     createNavigateFolderStorageKey,
     folderIdPath: initialFolderIdPath,
     own
-}) => {
+}: AcoAppProviderProps) => {
     const [state, setState] = useState<AcoAppProviderState>({
         loading: false,
         app: null,

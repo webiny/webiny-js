@@ -1,10 +1,13 @@
 import * as React from "react";
-import { Logo } from "@webiny/app-admin";
+import { Logo, makeDecoratable } from "@webiny/app-admin";
 import { Elevation } from "@webiny/ui/Elevation";
 import { LoginContent, LogoWrapper, Wrapper, InnerContent } from "./StyledComponents";
-import { makeComposable } from "@webiny/app-serverless-cms";
 
-export const LoginLayout: React.FC = makeComposable("LoginLayout", ({ children }) => (
+export interface LoginLayoutProps {
+    children: React.ReactNode;
+}
+
+export const LoginLayout = makeDecoratable("LoginLayout", ({ children }: LoginLayoutProps) => (
     <Wrapper>
         <LogoWrapper>
             <Logo />

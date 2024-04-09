@@ -169,6 +169,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                 }
 
                 input PbListPagesWhereInput {
+                    pid_in: [ID!]
                     category: String
                     status: PbPageStatuses
                     tags: PbListPagesWhereTagsInput
@@ -241,7 +242,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     updatePage(id: ID!, data: PbUpdatePageInput!): PbPageResponse
 
                     # Duplicate page by given ID.
-                    duplicatePage(id: ID!): PbPageResponse
+                    duplicatePage(id: ID!, meta: JSON): PbPageResponse
 
                     unlinkPageFromTemplate(id: ID!): PbPageResponse
 
@@ -473,9 +474,11 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
 
                     duplicatePage: async (_, args: any, context) => {
                         try {
-                            const page = await context.pageBuilder.getPage(args.id);
+                            const { id, meta } = args;
+                            const page = await context.pageBuilder.getPage(id);
                             const { id: duplicatedPageId } = await context.pageBuilder.createPage(
-                                page.category
+                                page.category,
+                                meta
                             );
 
                             const duplicatedPageData = {

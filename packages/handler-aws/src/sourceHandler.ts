@@ -1,8 +1,8 @@
 import { SourceHandler, HandlerEvent, HandlerFactoryParams } from "~/types";
 
 export const createSourceHandler = <
-    TEvent extends HandlerEvent,
-    TParams extends HandlerFactoryParams
+    TEvent = HandlerEvent,
+    TParams extends HandlerFactoryParams = HandlerFactoryParams
 >(
     handler: SourceHandler<TEvent, TParams>
 ) => {

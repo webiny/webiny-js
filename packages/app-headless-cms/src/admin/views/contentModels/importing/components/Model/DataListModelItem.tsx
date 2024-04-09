@@ -76,7 +76,7 @@ const ImportedText = styled("div")({
     color: "#FFF"
 });
 
-const Imported: React.VFC = () => {
+const Imported = () => {
     return (
         <CheckboxContainer>
             <ImportedText>Imported.</ImportedText>
@@ -90,7 +90,7 @@ interface CheckboxProps {
     selected: boolean;
 }
 
-const Checkbox: React.VFC<CheckboxProps> = ({ model, toggle, selected }) => {
+const Checkbox = ({ model, toggle, selected }: CheckboxProps) => {
     const onClick = useCallback(() => {
         toggle(model);
     }, [toggle]);
@@ -108,9 +108,10 @@ const Checkbox: React.VFC<CheckboxProps> = ({ model, toggle, selected }) => {
 
 interface ContainerProps {
     model: Pick<ImportModelData, "action" | "error" | "imported">;
+    children: React.ReactNode;
 }
 
-const Container: React.VFC<React.PropsWithChildren<ContainerProps>> = ({ model, children }) => {
+const Container = ({ model, children }: ContainerProps) => {
     if (model.imported) {
         return <ContainerImported>{children}</ContainerImported>;
     } else if (model.action === "create") {
@@ -123,13 +124,13 @@ const Container: React.VFC<React.PropsWithChildren<ContainerProps>> = ({ model, 
     return <ContainerBase>{children}</ContainerBase>;
 };
 
-interface Props {
+interface DataListModelItemProps {
     model: ImportModelData;
     toggle: ToggleModelCb;
     selected: boolean;
 }
 
-export const DataListModelItem: React.VFC<Props> = ({ model, toggle, selected }) => {
+export const DataListModelItem = ({ model, toggle, selected }: DataListModelItemProps) => {
     return (
         <Container model={model}>
             <ModelContainer>

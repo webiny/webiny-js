@@ -26,7 +26,7 @@ interface FormSettingsProps {
     onExited: () => void;
 }
 
-const FormSettings: React.FC<FormSettingsProps> = ({ onExited }) => {
+const FormSettings = ({ onExited }: FormSettingsProps) => {
     const formEditorSettingsPlugins = plugins.byType<FbEditorFormSettingsPlugin>(
         "form-editor-form-settings"
     );

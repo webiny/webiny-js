@@ -6,15 +6,18 @@ import {
     ContentEntryListWithConfig
 } from "~/admin/config/contentEntries";
 import { ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext";
+import { AcoWithConfig } from "@webiny/app-aco";
 
-export const ContentEntries: React.FC = () => {
+export const ContentEntries = () => {
     const { model } = useModel();
 
     return (
         <ContentEntriesProvider contentModel={model} key={model.modelId}>
             <ContentEntryListWithConfig>
                 <ContentEntryEditorWithConfig>
-                    <CmsAcoTable />
+                    <AcoWithConfig>
+                        <CmsAcoTable />
+                    </AcoWithConfig>
                 </ContentEntryEditorWithConfig>
             </ContentEntryListWithConfig>
         </ContentEntriesProvider>

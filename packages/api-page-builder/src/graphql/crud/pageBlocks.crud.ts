@@ -1,5 +1,4 @@
 import WebinyError from "@webiny/error";
-import cloneDeep from "lodash/cloneDeep";
 import {
     OnPageBlockAfterCreateTopicParams,
     OnPageBlockAfterDeleteTopicParams,
@@ -12,7 +11,9 @@ import {
     PageBlock,
     PageBlocksCrud,
     PageBlockStorageOperationsListParams,
-    PbContext
+    PbContext,
+    PageContentElement,
+    PageBlockVariable
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
@@ -22,6 +23,7 @@ import {
 } from "~/graphql/crud/pageBlocks/validation";
 import { createZodError, mdbid, removeUndefinedValues } from "@webiny/utils";
 import { PageBlocksPermissions } from "./permissions/PageBlocksPermissions";
+import { PageElementId } from "~/graphql/crud/pages/PageElementId";
 
 export interface CreatePageBlocksCrudParams {
     context: PbContext;
@@ -288,11 +290,18 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
         ) {
             const blocks = [];
 
-            for (const pageBlock of content?.elements) {
-                const blockId = pageBlock.data?.blockId;
-                // If block has blockId, then it is a reference block, and we need to get elements for it.
+            /**
+             * If the content block has a `blockId`, then it is a referenced block.
+             * For referenced blocks, we need to load the actual block definition, and copy the elements to the current content block.
+             * We also need to determine the appropriate block variable value to use:
+             * - if there's already a block variable value on the content block, use it.
+             * - if not, fall back to the default block variable value, which was defined during the block creation, in the Block Editor.
+             */
+            for (const contentBlock of content?.elements) {
+                const blockId = contentBlock.data?.blockId;
+
                 if (!blockId) {
-                    blocks.push(pageBlock);
+                    blocks.push(contentBlock);
                     continue;
                 }
 
@@ -304,14 +313,24 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                     }
                 });
 
-                // We check if the block has variable values set on the page/template, and use them
-                // in priority over the ones set inline in the block editor.
-                const blockDataVariables = blockData?.content?.data?.variables || [];
-                const variables = blockDataVariables.map((blockDataVariable: any) => {
-                    const value =
-                        pageBlock.data?.variables?.find(
-                            (variable: any) => variable.id === blockDataVariable.id
-                        )?.value || blockDataVariable.value;
+                const blockDataVariables: PageBlockVariable[] =
+                    blockData?.content?.data?.variables || [];
+
+                const contentBlockVariables: PageBlockVariable[] =
+                    contentBlock.data?.variables || [];
+
+                const variables = blockDataVariables.map(blockDataVariable => {
+                    // Check if content block has a value for the given block variable.
+                    const contentBlockVariable = contentBlockVariables.find(variable => {
+                        // We must ignore the prefix before the `#` character, as it will vary between block instances.
+                        const baseVariableId = variable.id.split("#").pop();
+                        return baseVariableId === blockDataVariable.id;
+                    });
+
+                    // Use the content block variable value, or fall back to the default block variable value.
+                    const value = contentBlockVariable
+                        ? contentBlockVariable.value
+                        : blockDataVariable.value;
 
                     return {
                         ...blockDataVariable,
@@ -320,14 +339,17 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
                 });
 
                 blocks.push(
-                    cloneDeep({
-                        ...pageBlock,
+                    structuredClone({
+                        ...contentBlock,
                         data: {
-                            ...pageBlock?.data,
+                            ...contentBlock?.data,
                             ...blockData?.content?.data,
-                            variables
+                            variables: generateBlockVariableIds(variables, contentBlock.id)
                         },
-                        elements: blockData?.content?.elements || []
+                        elements: generateElementIds(
+                            blockData?.content?.elements || [],
+                            contentBlock.id
+                        )
                     })
                 );
             }
@@ -336,3 +358,37 @@ export const createPageBlocksCrud = (params: CreatePageBlocksCrudParams): PageBl
         }
     };
 };
+
+function generateElementIds(elements: PageContentElement[], id: string): PageContentElement[] {
+    return elements.map(element => {
+        return {
+            ...element,
+            id: `${id}#${PageElementId.create(element.id)}`,
+            elements: generateElementIds(element.elements || [], id),
+            data: prefixElementVariableId(element.data, id)
+        };
+    });
+}
+
+function generateBlockVariableIds(variables: PageBlockVariable[], blockId: string) {
+    return variables.map(variable => {
+        const variableId = variable.id.split("#").pop();
+        const newId = [blockId, variableId].join("#");
+
+        return { ...variable, id: newId };
+    });
+}
+
+function prefixElementVariableId(
+    data: PageContentElement["data"],
+    id: string
+): PageContentElement["data"] {
+    if (data?.variableId) {
+        const variableId = data.variableId.split("#").pop();
+        const newId = [id, variableId].join("#");
+
+        return { ...data, variableId: newId };
+    }
+
+    return data;
+}

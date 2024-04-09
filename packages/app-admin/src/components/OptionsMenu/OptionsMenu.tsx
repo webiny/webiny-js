@@ -4,7 +4,7 @@ import { IconButton } from "@webiny/ui/Button";
 
 import { OptionsMenuItemProvider } from "./useOptionsMenuItem";
 
-import { Menu } from "./OptionsMenu.styles";
+import { Menu } from "./OptionsMenu.styled";
 
 export interface OptionsMenuProps {
     actions: {
@@ -14,7 +14,7 @@ export interface OptionsMenuProps {
     ["data-testid"]?: string;
 }
 
-export const OptionsMenu: React.VFC<OptionsMenuProps> = props => {
+export const OptionsMenu = (props: OptionsMenuProps) => {
     if (!props.actions.length) {
         return null;
     }

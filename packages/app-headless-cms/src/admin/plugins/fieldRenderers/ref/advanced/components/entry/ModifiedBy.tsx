@@ -3,12 +3,12 @@ import { CmsIdentity } from "~/types";
 import { Box } from "./Box";
 import { TimeAgo } from "@webiny/ui/TimeAgo";
 
-interface Props {
+interface ModifiedByProps {
     modifiedBy?: CmsIdentity | null;
     savedOn: Date;
 }
 
-export const ModifiedBy: React.VFC<Props> = ({ modifiedBy, savedOn }) => {
+export const ModifiedBy = ({ modifiedBy, savedOn }: ModifiedByProps) => {
     const showInformation = !!(modifiedBy?.displayName && savedOn);
 
     if (!showInformation) {

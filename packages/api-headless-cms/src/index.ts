@@ -2,8 +2,6 @@ import { createGraphQL as baseCreateGraphQL, CreateGraphQLParams } from "~/graph
 import { createDefaultModelManager } from "~/modelManager";
 import { createGraphQLFields } from "~/graphqlFields";
 import { createValidators } from "~/validators";
-import { createDefaultStorageTransform } from "~/storage/default";
-import { createObjectStorageTransform } from "~/storage/object";
 import { createDynamicZoneStorageTransform } from "~/graphqlFields/dynamicZone/dynamicZoneStorage";
 import {
     createContextParameterPlugin,
@@ -18,6 +16,10 @@ import {
 } from "./utils/entryStorage";
 import { createFieldConverters } from "~/fieldConverters";
 import { createExportGraphQL } from "~/export";
+import { createStorageTransform } from "~/storage";
+import { createLexicalHTMLRenderer } from "./htmlRenderer/createLexicalHTMLRenderer";
+export * from "./utils/isHeadlessCmsReady";
+export * from "./utils/createModelField";
 
 export type CreateHeadlessCmsGraphQLParams = CreateGraphQLParams;
 export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams = {}) => {
@@ -32,7 +34,8 @@ export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams 
          * At this point we can create, or not create, CMS GraphQL Schema.
          */
         ...baseCreateGraphQL(params),
-        createExportGraphQL()
+        createExportGraphQL(),
+        createLexicalHTMLRenderer()
     ];
 };
 
@@ -47,14 +50,12 @@ export const createHeadlessCmsContext = (params: ContentContextParams) => {
         createGraphQLFields(),
         createFieldConverters(),
         createValidators(),
-        createDefaultStorageTransform(),
-        createObjectStorageTransform(),
+        ...createStorageTransform(),
         createDynamicZoneStorageTransform()
     ];
 };
 export * from "~/graphqlFields";
 export * from "~/plugins";
 export * from "~/utils/incrementEntryIdVersion";
-export * from "~/utils/access";
 export * from "./graphql/handleRequest";
 export { entryToStorageTransform, entryFieldFromStorageTransform, entryFromStorageTransform };

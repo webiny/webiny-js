@@ -15,7 +15,7 @@ interface DeleteRevisionProps {
     form: FbRevisionModel;
     revision: FbRevisionModel;
 }
-const DeleteForm: React.FC<DeleteRevisionProps> = ({ form, revision }) => {
+const DeleteForm = ({ form, revision }: DeleteRevisionProps) => {
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
     const { history } = useRouter();

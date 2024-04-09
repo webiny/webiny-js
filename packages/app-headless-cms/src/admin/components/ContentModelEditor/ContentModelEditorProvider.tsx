@@ -1,11 +1,4 @@
-import React, {
-    MutableRefObject,
-    useCallback,
-    useEffect,
-    useMemo,
-    useReducer,
-    useRef
-} from "react";
+import React, { useCallback, useEffect, useMemo, useReducer } from "react";
 import get from "lodash/get";
 import pick from "lodash/pick";
 import { ApolloClient } from "apollo-client";
@@ -22,7 +15,6 @@ import {
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql";
 import { CmsModelField, CmsModel } from "~/types";
 import { FetchResult } from "apollo-link";
-import { TabsImperativeApi } from "@webiny/ui/Tabs";
 import { ModelProvider } from "~/admin/components/ModelProvider";
 
 export interface ContentModelEditorProviderContext {
@@ -35,7 +27,6 @@ export interface ContentModelEditorProviderContext {
         data?: CmsModel
     ) => Promise<UpdateCmsModelMutationResponse["updateContentModel"]>;
     setData: (setter: (model: CmsModel) => void, saveContentModel?: boolean) => Promise<any>;
-    tabsRef: MutableRefObject<TabsImperativeApi | undefined>;
     activeTabIndex: number;
     setActiveTabIndex: (index: number) => void;
 }
@@ -110,19 +101,17 @@ interface ContentModelEditorProviderProps {
     children: React.ReactElement;
 }
 
-export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProps> = ({
+export const ContentModelEditorProvider = ({
     children,
     apolloClient,
     modelId
-}) => {
+}: ContentModelEditorProviderProps) => {
     const [state, dispatch] = useReducer<Reducer>(contentModelEditorReducer, {
         modelId: modelId || null,
         isPristine: true,
         data: null as unknown as CmsModel,
         activeTabIndex: 0
     });
-
-    const tabsRef = useRef<TabsImperativeApi>();
 
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -241,7 +230,6 @@ export const ContentModelEditorProvider: React.FC<ContentModelEditorProviderProp
             getContentModel,
             saveContentModel,
             setData,
-            tabsRef,
             activeTabIndex: state.activeTabIndex,
             setActiveTabIndex
         }),

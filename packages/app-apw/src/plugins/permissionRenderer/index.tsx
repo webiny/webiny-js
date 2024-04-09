@@ -24,7 +24,7 @@ const createPermissions = (): AdminAppPermissionRendererPlugin => {
     };
 };
 
-export const ApwPermissions: React.FC = () => {
+export const ApwPermissions = () => {
     useEffect(() => {
         plugins.register(createPermissions());
     }, []);

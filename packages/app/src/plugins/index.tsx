@@ -29,16 +29,18 @@ interface PluginComponentProps {
     name: string;
     params: Record<string, any>;
     fn: string;
+    children: React.ReactNode;
 }
-const PluginComponent: React.FC<PluginComponentProps> = props => {
+const PluginComponent = (props: PluginComponentProps) => {
     return props.children as React.ReactElement;
 };
 interface PluginsComponentProps {
     type: string;
     params: Record<string, any>;
     fn: string;
+    children: React.ReactNode;
 }
-const PluginsComponent: React.FC<PluginsComponentProps> = props => {
+const PluginsComponent = (props: PluginsComponentProps) => {
     return props.children as React.ReactElement;
 };
 

@@ -15,7 +15,6 @@ import { getFolderAndItsAncestors } from "~/utils/getFolderAndItsAncestors";
 import NotAuthorizedError from "@webiny/api-security/NotAuthorizedError";
 import { AdminUser } from "@webiny/api-admin-users/types";
 import { Team } from "@webiny/api-security/types";
-import structuredClone from "@ungap/structured-clone";
 import WError from "@webiny/error";
 
 const FIXED_FOLDER_LISTING_LIMIT = 10_000;
@@ -137,7 +136,15 @@ export const createFolderCrudMethods = ({
             await onFolderBeforeCreate.publish({ input: data });
             const folder = await storageOperations.createFolder({ data });
 
-            folderLevelPermissions.invalidateCache();
+            // We need to add the newly created folder to FLP's internal cache. Note that we're also
+            // invalidating the permissions list cache for the folder type. We cannot rely on the cache
+            // to check if the user has access, because the cache is no longer up to date.
+            folderLevelPermissions.invalidateFoldersPermissionsListCache(folder.type);
+            folderLevelPermissions.updateFoldersCache(folder.type, cachedFolders => {
+                return [...cachedFolders, folder];
+            });
+
+            // With caches updated and invalidated, we can now assign correct permissions to the folder.
             await folderLevelPermissions.assignFolderPermissions(folder);
 
             await onFolderAfterCreate.publish({ folder });
@@ -191,23 +198,26 @@ export const createFolderCrudMethods = ({
                 }
             }
 
-            // Let's prepare a custom folder permissions list, where the folder contains the updated data.
-            const customFoldersList = await folderLevelPermissions
-                .listAllFolders(original.type)
-                .then(folders => {
-                    const foldersClone = structuredClone<Folder[]>(folders);
-                    return foldersClone.map(folder => {
-                        if (folder.id === id) {
-                            Object.assign(folder, data);
-                        }
-                        return folder;
-                    });
+            // Finally, we check if the user would lose access to the folder by making the update.
+            // In order to do this, we need to make a couple of steps. First, we're updating FLP's
+            // internal cache with new folder data. Then, we're invalidating the permissions list
+            // cache for the folder type. We cannot rely on the cache to check if the user still
+            // has access, because the cache might no longer be up-to-date.
+            folderLevelPermissions.updateFoldersCache(original.type, cachedFolders => {
+                return cachedFolders.map(currentFolder => {
+                    if (currentFolder.id !== id) {
+                        return currentFolder;
+                    }
+                    return { ...currentFolder, ...data };
                 });
+            });
+            folderLevelPermissions.invalidateFoldersPermissionsListCache(original.type);
 
+            // With caches updated and invalidated, we can now check if the user still
+            // has access to the folder.
             const stillHasAccess = await folderLevelPermissions.canAccessFolder({
                 folder: { id, type: original.type },
-                rwd: "w",
-                foldersList: customFoldersList
+                rwd: "w"
             });
 
             if (!stillHasAccess) {
@@ -218,11 +228,12 @@ export const createFolderCrudMethods = ({
             }
 
             await onFolderBeforeUpdate.publish({ original, input: { id, data } });
+
             const folder = await storageOperations.updateFolder({ id, data });
+            await folderLevelPermissions.assignFolderPermissions(folder);
+
             await onFolderAfterUpdate.publish({ original, input: { id, data }, folder });
 
-            folderLevelPermissions.invalidateCache();
-            await folderLevelPermissions.assignFolderPermissions(folder);
             return folder;
         },
 

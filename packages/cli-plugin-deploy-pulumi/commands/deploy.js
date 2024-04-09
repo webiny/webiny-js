@@ -1,11 +1,17 @@
-const buildPackages = require("./deploy/buildPackages");
-const { createPulumiCommand, runHook, login, notify } = require("../utils");
+const { createPulumiCommand, runHook, notify } = require("../utils");
+const { BeforeDeployPlugin } = require("../plugins/BeforeDeployPlugin");
+const { PackagesBuilder } = require("./buildPackages/PackagesBuilder");
+const pulumiLoginSelectStack = require("./deploy/pulumiLoginSelectStack");
+const executeDeploy = require("./deploy/executeDeploy");
+const executePreview = require("./deploy/executePreview");
 
 module.exports = (params, context) => {
     const command = createPulumiCommand({
         name: "deploy",
         createProjectApplicationWorkspace: params.build,
-        command: async ({ inputs, context, projectApplication, pulumi, getDuration }) => {
+        telemetry: true,
+        command: async commandParams => {
+            const { inputs, context, projectApplication, pulumi, getDuration } = commandParams;
             const { env, folder, build, deploy } = inputs;
 
             const hookArgs = { context, env, inputs, projectApplication };
@@ -17,7 +23,17 @@ module.exports = (params, context) => {
                     context
                 });
 
-                await buildPackages({ projectApplication, inputs, context });
+                console.log();
+
+                const builder = new PackagesBuilder({
+                    packages: projectApplication.packages,
+                    inputs,
+                    context
+                });
+
+                await builder.build();
+
+                console.log();
 
                 await runHook({
                     hook: "hook-after-build",
@@ -35,80 +51,20 @@ module.exports = (params, context) => {
                 return;
             }
 
-            await login(projectApplication);
-
-            const PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
-            const PULUMI_CONFIG_PASSPHRASE = process.env.PULUMI_CONFIG_PASSPHRASE;
-
-            await pulumi.run({
-                command: ["stack", "select", env],
-                args: {
-                    create: true,
-                    secretsProvider: PULUMI_SECRETS_PROVIDER
-                },
-                execa: {
-                    env: {
-                        PULUMI_CONFIG_PASSPHRASE
-                    }
-                }
-            });
-
             await runHook({
-                hook: "hook-before-deploy",
+                hook: BeforeDeployPlugin.type,
                 args: hookArgs,
                 context
             });
 
-            console.log();
-            const continuing = inputs.preview ? `Previewing deployment...` : `Deploying...`;
-            context.info(continuing);
+            await pulumiLoginSelectStack({ inputs, projectApplication, pulumi });
+
             console.log();
 
             if (inputs.preview) {
-                await pulumi.run({
-                    command: "preview",
-                    args: {
-                        diff: true,
-                        debug: inputs.debug
-                        // Preview command does not accept "--secrets-provider" argument.
-                        // secretsProvider: PULUMI_SECRETS_PROVIDER
-                    },
-                    execa: {
-                        stdio: "inherit",
-                        env: {
-                            WEBINY_ENV: env,
-                            WEBINY_PROJECT_NAME: context.project.name,
-                            PULUMI_CONFIG_PASSPHRASE
-                        }
-                    }
-                });
+                await executePreview(commandParams);
             } else {
-                await pulumi.run({
-                    command: "up",
-                    args: {
-                        yes: true,
-                        skipPreview: true,
-                        secretsProvider: PULUMI_SECRETS_PROVIDER,
-                        debug: inputs.debug
-                    },
-                    execa: {
-                        // We pipe "stderr" so that we can intercept potential received error messages,
-                        // and hopefully, show extra information / help to the user.
-                        stdio: ["inherit", "inherit", "pipe"],
-                        env: {
-                            WEBINY_ENV: env,
-                            WEBINY_PROJECT_NAME: context.project.name,
-                            PULUMI_CONFIG_PASSPHRASE
-                        }
-                    }
-                });
-            }
-
-            const duration = getDuration();
-            if (inputs.preview) {
-                context.success(`Done! Preview finished in ${context.success.hl(duration)}.`);
-            } else {
-                context.success(`Done! Deploy finished in ${context.success.hl(duration)}.`);
+                await executeDeploy(commandParams);
             }
 
             console.log();
@@ -119,7 +75,10 @@ module.exports = (params, context) => {
                 context
             });
 
-            notify({ message: `"${folder}" stack deployed in ${duration}.` });
+            await notify({
+                message: `"${folder}" stack deployed in ${getDuration()}.`,
+                timeout: 1
+            });
         }
     });
 

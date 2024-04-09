@@ -1,5 +1,6 @@
 import { CmsModelFieldToGraphQLPlugin } from "~/types";
 import { createGraphQLInputField } from "./helpers";
+import { createRichTextResolver } from "~/graphqlFields/richText/richTextResolver";
 
 export const createRichTextField = (): CmsModelFieldToGraphQLPlugin => {
     return {
@@ -11,13 +12,16 @@ export const createRichTextField = (): CmsModelFieldToGraphQLPlugin => {
         read: {
             createTypeField({ field }) {
                 if (field.multipleValues) {
-                    return `${field.fieldId}: [JSON]`;
+                    return `${field.fieldId}(format: String): [JSON]`;
                 }
 
-                return `${field.fieldId}: JSON`;
+                return `${field.fieldId}(format: String): JSON`;
             },
             createGetFilters({ field }) {
                 return `${field.fieldId}: JSON`;
+            },
+            createResolver({ field }) {
+                return createRichTextResolver(field);
             }
         },
         manage: {

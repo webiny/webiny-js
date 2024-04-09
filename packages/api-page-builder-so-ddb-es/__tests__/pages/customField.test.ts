@@ -98,6 +98,9 @@ describe("page custom field", () => {
                 },
                 {
                     name: "customViews"
+                },
+                {
+                    name: "wbyAco_location"
                 }
             ]
         });
@@ -212,6 +215,9 @@ describe("page custom field", () => {
             kind: "INPUT_OBJECT",
             name: "PbListPagesWhereInput",
             inputFields: [
+                {
+                    name: "pid_in"
+                },
                 {
                     name: "category"
                 },

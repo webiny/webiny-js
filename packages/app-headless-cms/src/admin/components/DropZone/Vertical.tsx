@@ -62,7 +62,7 @@ interface VerticalProps {
     isVisible?: any;
 }
 
-const Vertical: React.FC<VerticalProps> = ({ depth, last, onDrop, isVisible }) => {
+const Vertical = ({ depth, last, onDrop, isVisible }: VerticalProps) => {
     return (
         <Droppable onDrop={onDrop} isVisible={isVisible}>
             {({ isOver, isDragging, drop }) => (

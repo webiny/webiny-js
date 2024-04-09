@@ -10,10 +10,6 @@ const Text = styled("p")({
     margin: "0"
 });
 
-interface Props {
-    model: ImportModelData;
-}
-
 const getText = (action?: string | null) => {
     if (action === "create") {
         return `Model will be created.`;
@@ -24,7 +20,12 @@ const getText = (action?: string | null) => {
     }
     return `Unknown action: ${action}`;
 };
-export const DataListModelItemInfo: React.VFC<Props> = ({ model }) => {
+
+interface DataListModelItemInfoProps {
+    model: ImportModelData;
+}
+
+export const DataListModelItemInfo = ({ model }: DataListModelItemInfoProps) => {
     const { action } = model;
 
     return <Text>{getText(action)}</Text>;

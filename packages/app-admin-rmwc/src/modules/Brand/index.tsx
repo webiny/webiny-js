@@ -33,7 +33,7 @@ const BrandImpl: HigherOrderComponent = () => {
     };
 };
 
-const WebinyLogo: React.FC = () => {
+const WebinyLogo = () => {
     const { location } = useTags();
     const isLoginScreen = location === "loginScreen";
     const isAppBar = location === "appBar";
@@ -54,7 +54,7 @@ const WebinyLogo: React.FC = () => {
     );
 };
 
-export const Brand: React.FC = () => {
+export const Brand = () => {
     return (
         <Fragment>
             <Compose component={BrandRenderer} with={BrandImpl} />

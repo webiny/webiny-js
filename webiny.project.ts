@@ -1,3 +1,5 @@
+/* We don't need the following rule in this file, as it's not being bundled with Webpack. */
+/* eslint-disable import/dynamic-import-chunkname */
 export default {
     name: "webiny-js",
     cli: {
@@ -11,11 +13,8 @@ export default {
              */
             try {
                 const modules = await Promise.allSettled([
-                    // @ts-expect-error
                     import("@webiny/cli-plugin-workspaces"),
-                    // @ts-expect-error
                     import("@webiny/cli-plugin-deploy-pulumi"),
-                    // @ts-expect-error
                     import("@webiny/cwp-template-aws/cli"),
                     import("@webiny/cli-plugin-scaffold"),
                     import("@webiny/cli-plugin-scaffold-graphql-service"),

@@ -6,7 +6,7 @@ import {
     OUTDENT_CONTENT_COMMAND
 } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { Compose, makeComposable } from "@webiny/react-composition";
+import { Compose, makeDecoratable } from "@webiny/react-composition";
 import { TextAlignmentActionContext } from "~/context/TextAlignmentActionContextProps";
 import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
 import { getSelectedNode } from "~/utils/getSelectedNode";
@@ -15,7 +15,7 @@ import { getSelectedNode } from "~/utils/getSelectedNode";
  * Base text alignment dropdown composable component.
  * Note: To add a custom dropdown component use @see LexicalEditorConfig API.
  */
-export const BaseTextAlignmentDropDown = makeComposable(
+export const BaseTextAlignmentDropDown = makeDecoratable(
     "BaseTextAlignmentDropDown",
     (): JSX.Element | null => {
         useEffect(() => {
@@ -29,15 +29,15 @@ interface TextAlignmentActionDropdownProps {
     element: JSX.Element;
 }
 
-const TextAlignmentActionDropDown: React.FC<TextAlignmentActionDropdownProps> = ({
+const TextAlignmentActionDropDown = ({
     element
-}): JSX.Element => {
+}: TextAlignmentActionDropdownProps): JSX.Element => {
     return <Compose component={BaseTextAlignmentDropDown} with={() => () => element} />;
 };
 
-export interface TextAlignmentAction extends React.FC<unknown> {
+export type TextAlignmentAction = React.ComponentType<unknown> & {
     TextAlignmentDropDown: typeof TextAlignmentActionDropDown;
-}
+};
 
 export const TextAlignmentAction: TextAlignmentAction = () => {
     const [editor] = useLexicalComposerContext();

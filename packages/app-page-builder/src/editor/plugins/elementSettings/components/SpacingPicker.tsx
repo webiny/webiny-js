@@ -66,7 +66,7 @@ interface SpacingPickerFormData {
     value: string | number;
 }
 
-const SpacingPicker: React.FC<SpacingPickerProps> = ({
+const SpacingPicker = ({
     value,
     onChange,
     disabled,
@@ -76,7 +76,7 @@ const SpacingPicker: React.FC<SpacingPickerProps> = ({
     inputClassName,
     selectClassName,
     useDefaultStyle = true
-}) => {
+}: SpacingPickerProps) => {
     const formData = useMemo(() => {
         const parsedValue = parseFloat(value);
         const regx = new RegExp(`[0-9.+-]+`, "g");

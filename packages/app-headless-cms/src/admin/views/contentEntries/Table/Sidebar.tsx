@@ -25,11 +25,11 @@ const disabled = css({
     cursor: "default"
 });
 
-interface Props {
+interface SidebarProps {
     folderId?: string;
 }
 
-export const Sidebar: React.VFC<Props> = ({ folderId }) => {
+export const Sidebar = ({ folderId }: SidebarProps) => {
     const { navigateToFolder } = useNavigateFolder();
 
     const { model } = useModel();

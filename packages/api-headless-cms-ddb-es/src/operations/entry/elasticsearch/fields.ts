@@ -8,6 +8,11 @@ import {
 import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 import { ModelFieldParent, ModelFields } from "./types";
 import { CmsElasticsearchModelFieldPlugin } from "~/plugins";
+import {
+    ENTRY_META_FIELDS,
+    isDateTimeEntryMetaField,
+    isIdentityEntryMetaField
+} from "@webiny/api-headless-cms/constants";
 
 type PartialCmsModelField = Partial<CmsModelField> &
     Pick<CmsModelField, "storageId" | "fieldId" | "type">;
@@ -20,6 +25,55 @@ const createSystemField = (field: PartialCmsModelField): CmsModelField => {
 };
 
 const createSystemFields = (): ModelFields => {
+    const onMetaFields = ENTRY_META_FIELDS.filter(isDateTimeEntryMetaField).reduce(
+        (current, fieldName) => {
+            return {
+                ...current,
+                [fieldName]: {
+                    type: "date",
+                    unmappedType: "date",
+                    keyword: false,
+                    systemField: true,
+                    searchable: true,
+                    sortable: true,
+                    field: createSystemField({
+                        storageId: fieldName,
+                        fieldId: fieldName,
+                        type: "text",
+                        settings: {
+                            type: "dateTimeWithoutTimezone"
+                        }
+                    }),
+                    parents: []
+                }
+            };
+        },
+        {}
+    );
+
+    const byMetaFields = ENTRY_META_FIELDS.filter(isIdentityEntryMetaField).reduce(
+        (current, fieldName) => {
+            return {
+                ...current,
+                [fieldName]: {
+                    type: "text",
+                    unmappedType: undefined,
+                    systemField: true,
+                    searchable: true,
+                    sortable: true,
+                    path: `${fieldName}.id`,
+                    field: createSystemField({
+                        storageId: fieldName,
+                        fieldId: fieldName,
+                        type: "text"
+                    }),
+                    parents: []
+                }
+            };
+        },
+        {}
+    );
+
     return {
         id: {
             type: "text",
@@ -45,68 +99,10 @@ const createSystemFields = (): ModelFields => {
             }),
             parents: []
         },
-        savedOn: {
-            type: "date",
-            unmappedType: "date",
-            keyword: false,
-            systemField: true,
-            searchable: true,
-            sortable: true,
-            field: createSystemField({
-                storageId: "savedOn",
-                fieldId: "savedOn",
-                type: "datetime",
-                settings: {
-                    type: "dateTimeWithoutTimezone"
-                }
-            }),
-            parents: []
-        },
-        createdOn: {
-            type: "date",
-            unmappedType: "date",
-            keyword: false,
-            systemField: true,
-            searchable: true,
-            sortable: true,
-            field: createSystemField({
-                storageId: "createdOn",
-                fieldId: "createdOn",
-                type: "text",
-                settings: {
-                    type: "dateTimeWithoutTimezone"
-                }
-            }),
-            parents: []
-        },
-        createdBy: {
-            type: "text",
-            unmappedType: undefined,
-            systemField: true,
-            searchable: true,
-            sortable: false,
-            path: "createdBy.id",
-            field: createSystemField({
-                storageId: "createdBy",
-                fieldId: "createdBy",
-                type: "text"
-            }),
-            parents: []
-        },
-        ownedBy: {
-            type: "text",
-            unmappedType: undefined,
-            systemField: true,
-            searchable: true,
-            sortable: false,
-            path: "ownedBy.id",
-            field: createSystemField({
-                storageId: "ownedBy",
-                fieldId: "ownedBy",
-                type: "text"
-            }),
-            parents: []
-        },
+
+        ...onMetaFields,
+        ...byMetaFields,
+
         wbyAco_location: {
             type: "object",
             systemField: true,
@@ -175,6 +171,20 @@ const createSystemFields = (): ModelFields => {
                 storageId: "status",
                 fieldId: "status",
                 type: "string"
+            }),
+            parents: []
+        },
+        deleted: {
+            type: "boolean",
+            unmappedType: undefined,
+            keyword: false,
+            systemField: true,
+            searchable: true,
+            sortable: false,
+            field: createSystemField({
+                storageId: "deleted",
+                fieldId: "deleted",
+                type: "boolean"
             }),
             parents: []
         }

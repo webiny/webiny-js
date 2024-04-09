@@ -11,7 +11,6 @@ import upperFirst from "lodash/upperFirst";
 
 const META_FIELDS = `
     title
-    publishedOn
     version
     locked
     status
@@ -33,6 +32,7 @@ const createPublishMutation = (modelId: string): string => {
             content: publish${ucFirstModelId}(revision: $revision) {
                 data {
                     id
+                    lastPublishedOn
                     meta {
                         ${META_FIELDS}
                     }
@@ -50,6 +50,7 @@ const createUnpublishMutation = (modelId: string) => {
             content: unpublish${ucFirstModelId}(revision: $revision) {
                 data {
                     id
+                    lastPublishedOn
                     meta {
                         ${META_FIELDS}
                     }

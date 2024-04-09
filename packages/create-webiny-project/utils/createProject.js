@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { yellow, red, green, gray } = require("chalk");
+const { yellow, red, green, gray, bold } = require("chalk");
 const execa = require("execa");
 const fs = require("fs-extra");
 const Listr = require("listr");
@@ -8,11 +8,20 @@ const writeJson = require("write-json-file");
 const rimraf = require("rimraf");
 const { sendEvent } = require("@webiny/telemetry/cli");
 const getPackageJson = require("./getPackageJson");
-const checkProjectName = require("./checkProjectName");
+const validateProjectName = require("./validateProjectName");
 const yaml = require("js-yaml");
 const findUp = require("find-up");
+const { GracefulError } = require("./GracefulError");
 
 const NOT_APPLICABLE = gray("N/A");
+const HL = bold(gray("—")).repeat(30);
+
+const sleep = () =>
+    new Promise(resolve => {
+        setTimeout(() => {
+            resolve();
+        }, 500);
+    });
 
 module.exports = async function createProject({
     projectName,
@@ -20,6 +29,7 @@ module.exports = async function createProject({
     template,
     tag,
     log,
+    debug,
     cleanup,
     interactive,
     templateOptions,
@@ -91,6 +101,8 @@ module.exports = async function createProject({
         // @webiny/cli is not installed globally
     }
 
+    validateProjectName(projectName);
+
     console.log(`Initializing a new Webiny project in ${green(projectRoot)}...`);
 
     await sendEvent({ event: "create-webiny-project-start" });
@@ -109,7 +121,6 @@ module.exports = async function createProject({
                 // Creates root package.json.
                 title: "Prepare project folder",
                 task: () => {
-                    checkProjectName(projectName);
                     fs.ensureDirSync(projectName);
                     writeJson.sync(
                         path.join(projectRoot, "package.json"),
@@ -119,7 +130,7 @@ module.exports = async function createProject({
             },
             {
                 // Setup yarn
-                title: "Setup yarn",
+                title: "Setup Yarn",
                 task: async () => {
                     const yarnVersion = "3.6.4";
                     const yarnFile = `yarn-${yarnVersion}.cjs`;
@@ -137,22 +148,22 @@ module.exports = async function createProject({
                     if (!fs.existsSync(source)) {
                         throw new Error(`No yarn binary source file: ${source}`);
                     }
+
                     const target = path.join(projectRoot, yarnReleasesFilePath);
                     fs.copyFileSync(source, target);
 
-                    await execa("yarn", ["set", "version", yarnVersion], {
-                        cwd: projectRoot
-                    });
+                    // `.yarnrc.yml` file is created here.
+                    const yarnRcPath = path.join(projectRoot, ".yarnrc.yml");
 
-                    const yamlPath = path.join(projectRoot, ".yarnrc.yml");
-                    if (!fs.existsSync(yamlPath)) {
-                        fs.writeFileSync(yamlPath, `yarnPath: ${yarnReleasesFilePath}`, "utf-8");
+                    let rawYarnRc = `yarnPath: ${yarnReleasesFilePath}`;
+                    if (fs.existsSync(yarnRcPath)) {
+                        rawYarnRc = fs.readFileSync(yarnRcPath, "utf-8");
                     }
 
-                    const parsedYaml = yaml.load(fs.readFileSync(yamlPath, "utf-8"));
+                    const parsedYarnRc = yaml.load(rawYarnRc);
 
-                    // Default settings are applied here. Currently we only apply the `nodeLinker` param.
-                    parsedYaml.nodeLinker = "node-modules";
+                    // Default settings are applied here. Currently, we only apply the `nodeLinker` param.
+                    parsedYarnRc.nodeLinker = "node-modules";
 
                     // Enables adding additional params into the `.yarnrc.yml` file.
                     if (assignToYarnRc) {
@@ -166,15 +177,15 @@ module.exports = async function createProject({
                         }
 
                         if (parsedAssignToYarnRc) {
-                            Object.assign(parsedYaml, parsedAssignToYarnRc);
+                            Object.assign(parsedYarnRc, parsedAssignToYarnRc);
                         }
                     }
 
-                    fs.writeFileSync(yamlPath, yaml.dump(parsedYaml));
+                    fs.writeFileSync(yarnRcPath, yaml.dump(parsedYarnRc));
                 }
             },
             {
-                // "yarn adds" given template which can be either a real package or a path of a local package.
+                // Yarn adds given template which can be either a real package or a path of a local package.
                 title: `Install template package`,
                 task: async context => {
                     let add;
@@ -183,6 +194,7 @@ module.exports = async function createProject({
                     if (template.startsWith(".") || template.startsWith("file:")) {
                         templateName =
                             "file:" + path.relative(projectName, template.replace("file:", ""));
+                        templateName = `@webiny/cwp-template-aws@` + templateName;
                         add = templateName;
                     } else {
                         add = `${templateName}@${tag}`;
@@ -222,10 +234,9 @@ module.exports = async function createProject({
         await tasks.run(context);
 
         let templateName = context.templateName;
-
-        console.log(`Starting ${green(templateName)} template ...`);
-        if (templateName.startsWith("file:")) {
-            templateName = templateName.replace("file:", "");
+        if (templateName.includes("file:")) {
+            const [, templatePath] = templateName.match(/.*?file\:(.*)/);
+            templateName = templatePath;
         }
 
         const templatePath = path.dirname(
@@ -234,11 +245,7 @@ module.exports = async function createProject({
             })
         );
 
-        await new Promise(resolve => {
-            setTimeout(() => {
-                resolve();
-            }, 500);
-        });
+        await sleep();
 
         let parsedTemplateOptions = {};
         if (templateOptions) {
@@ -250,27 +257,50 @@ module.exports = async function createProject({
         }
 
         console.log();
+
         await require(templatePath)({
             log,
             isGitAvailable,
             projectName,
             projectRoot,
             interactive,
+            debug,
             templateOptions: parsedTemplateOptions
         });
 
         await sendEvent({ event: "create-webiny-project-end" });
     } catch (err) {
-        await sendEvent({
-            event: "create-webiny-project-error",
-            properties: {
-                errorMessage: err.message,
-                errorStack: err.stack
-            }
-        });
-
+        if (err instanceof GracefulError) {
+            await sendEvent({
+                event: "create-webiny-project-error-graceful",
+                properties: {
+                    errorMessage: err.message,
+                    errorStack: err.stack
+                }
+            });
+        } else {
+            await sendEvent({
+                event: "create-webiny-project-error",
+                properties: {
+                    errorMessage: err.message,
+                    errorStack: err.stack
+                }
+            });
+        }
         const node = process.versions.node;
         const os = process.platform;
+
+        let npm = NOT_APPLICABLE;
+        try {
+            const subprocess = await execa("npm", ["--version"], { cwd: projectRoot });
+            npm = subprocess.stdout;
+        } catch {}
+
+        let npx = NOT_APPLICABLE;
+        try {
+            const subprocess = await execa("npx", ["--version"], { cwd: projectRoot });
+            npx = subprocess.stdout;
+        } catch {}
 
         let yarn = NOT_APPLICABLE;
         try {
@@ -303,16 +333,18 @@ module.exports = async function createProject({
         console.log(
             [
                 "",
-                `${green("ERROR OUTPUT: ")}`,
-                "----------------------------------------",
+                `${bold("Error Logs")}`,
+                HL,
                 err.message,
                 "",
-                `${green("SYSTEM INFORMATION: ")}`,
-                "----------------------------------------",
+                `${bold("System Information")}`,
+                HL,
+                `create-webiny-project: ${cwp}`,
                 `Operating System: ${os}`,
                 `Node: ${node}`,
                 `Yarn: ${yarn}`,
-                `create-webiny-project: ${cwp}`,
+                `Npm: ${npm}`,
+                `Npx: ${npx}`,
                 `Template: ${cwpTemplate}`,
                 `Template Options: ${templateOptionsJson}`,
                 "",
@@ -322,18 +354,17 @@ module.exports = async function createProject({
             ].join("\n")
         );
 
-        console.log(`Writing log to ${green(path.resolve(log))}...`);
+        console.log(`Writing logs to ${green(path.resolve(log))}...`);
         fs.writeFileSync(path.resolve(log), err.toString());
 
+        console.log();
         if (cleanup) {
-            console.log("Cleaning up generated files and folders...");
+            console.log("Deleting created files and folders...");
             rimraf.sync(projectRoot);
-            console.log("Done.");
         } else {
             console.log("Project cleanup skipped.");
         }
 
-        await sendEvent({ event: "create-webiny-project-end" });
         process.exit(1);
     }
 };

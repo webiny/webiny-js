@@ -1,4 +1,3 @@
-import cloneDeep from "lodash/cloneDeep";
 import { ListPagesParamsWhere, PbContext } from "../../types";
 import { Menu } from "~/types";
 
@@ -59,7 +58,7 @@ const prepareItems = async ({
 };
 
 export default async ({ menu, context }: { menu: Menu; context: PbContext }) => {
-    const items = cloneDeep(menu.items) as Menu["items"];
+    const items = structuredClone(menu.items);
     // Each modifier is recursively applied to all items.
     await prepareItems({
         items,

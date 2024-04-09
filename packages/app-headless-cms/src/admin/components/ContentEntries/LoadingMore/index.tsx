@@ -10,7 +10,7 @@ interface LoadingMoreProps {
     show: boolean;
 }
 
-export const LoadingMore: React.VFC<LoadingMoreProps> = ({ show }) => {
+export const LoadingMore = ({ show }: LoadingMoreProps) => {
     if (!show) {
         return null;
     }

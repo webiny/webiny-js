@@ -1,9 +1,9 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useState } from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { Typography } from "@webiny/ui/Typography";
-import { Tabs, Tab, TabsImperativeApi } from "@webiny/ui/Tabs";
+import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { Icon } from "@webiny/ui/Icon";
 import { EditTab } from "./Tabs/EditTab";
 import { TriggersTab } from "./Tabs/TriggersTab";
@@ -43,15 +43,12 @@ const formTabs = css({
         }
     }
 });
-const EditorContent: React.FC = () => {
-    const tabsRef = useRef<TabsImperativeApi>();
+const EditorContent = () => {
+    const [activeTab, setActiveTab] = useState(0);
 
     const onFieldDragStart = useCallback(() => {
-        if (!tabsRef.current) {
-            return;
-        }
-        tabsRef.current.switchTab(0);
-    }, [tabsRef]);
+        setActiveTab(0);
+    }, []);
 
     return (
         <ContentContainer>
@@ -66,7 +63,7 @@ const EditorContent: React.FC = () => {
                     </LeftBarFieldList>
                 </LeftPanel>
                 <RightPanel span={8}>
-                    <Tabs className={formTabs} ref={tabsRef}>
+                    <Tabs className={formTabs} value={activeTab} onActivate={setActiveTab}>
                         <Tab label={"Edit"}>
                             <EditTab />
                         </Tab>

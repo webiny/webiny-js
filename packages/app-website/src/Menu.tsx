@@ -60,7 +60,7 @@ interface Props {
     component: React.ComponentType<{ data?: PublishedMenuData }>;
 }
 
-export const Menu: React.FC<Props> = ({ slug, component: Component }) => {
+export const Menu = ({ slug, component: Component }: Props) => {
     const { data } = useQuery(GET_PUBLIC_MENU, { variables: { slug } });
     return (
         <>

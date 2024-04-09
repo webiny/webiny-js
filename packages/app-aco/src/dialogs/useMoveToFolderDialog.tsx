@@ -3,7 +3,7 @@ import React, { ReactNode } from "react";
 import { i18n } from "@webiny/app/i18n";
 import { Bind, GenericFormData } from "@webiny/form";
 import { Typography } from "@webiny/ui/Typography";
-import { useDialogsContext } from "~/dialogs/useDialogsContext";
+import { useDialogs } from "~/dialogs/useDialogs";
 import { FolderTree } from "~/components";
 import { DialogFoldersContainer } from "~/dialogs/styled";
 
@@ -29,7 +29,7 @@ interface MessageProps {
     focusedFolderId: string;
 }
 
-export const Message: React.VFC<MessageProps> = ({ helpText, focusedFolderId }) => {
+export const Message = ({ helpText, focusedFolderId }: MessageProps) => {
     return (
         <>
             <Typography use="body1">{helpText}</Typography>
@@ -49,7 +49,7 @@ export const Message: React.VFC<MessageProps> = ({ helpText, focusedFolderId }) 
 };
 
 export const useMoveToFolderDialog = (): UseMoveToFolderDialogResponse => {
-    const context = useDialogsContext();
+    const dialogs = useDialogs();
 
     const showDialog = ({
         title = t`Move item`,
@@ -61,7 +61,7 @@ export const useMoveToFolderDialog = (): UseMoveToFolderDialogResponse => {
         onClose,
         focusedFolderId
     }: ShowDialogParams) => {
-        context.showDialog({
+        dialogs.showDialog({
             title,
             message: <Message helpText={message} focusedFolderId={focusedFolderId} />,
             acceptLabel,

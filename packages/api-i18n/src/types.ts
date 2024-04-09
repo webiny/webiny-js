@@ -19,7 +19,7 @@ interface I18NLocaleDataCreatedBy {
 
 export interface I18NLocaleData extends I18NLocale {
     createdOn: string;
-    createdBy: I18NLocaleDataCreatedBy;
+    createdBy: I18NLocaleDataCreatedBy | null;
     tenant: string;
     webinyVersion: string;
 }
@@ -63,20 +63,6 @@ export interface SystemCRUD {
      * Run the install process for the i18n.
      */
     installSystem(params: SystemInstallParams): Promise<void>;
-    /**
-     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
-     */
-    /**
-     * @deprecated
-     */
-    onBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterInstall: Topic<OnSystemAfterInstallTopicParams>;
-    /**
-     * Introduced in 5.34.0
-     */
     onSystemBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
     onSystemAfterInstall: Topic<OnSystemAfterInstallTopicParams>;
 }
@@ -166,36 +152,6 @@ export interface OnLocaleAfterDeleteTopicParams {
  */
 export interface LocalesCRUD {
     storageOperations: I18NLocalesStorageOperations;
-    /**
-     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
-     */
-    /**
-     * @deprecated
-     */
-    onBeforeCreate: Topic<OnLocaleBeforeCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterCreate: Topic<OnLocaleAfterCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeUpdate: Topic<OnLocaleBeforeUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterUpdate: Topic<OnLocaleAfterUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeDelete: Topic<OnLocaleBeforeDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterDelete: Topic<OnLocaleAfterDeleteTopicParams>;
-    /**
-     * Introduced in 5.34.0
-     */
     onLocaleBeforeCreate: Topic<OnLocaleBeforeCreateTopicParams>;
     onLocaleAfterCreate: Topic<OnLocaleAfterCreateTopicParams>;
     onLocaleBeforeUpdate: Topic<OnLocaleBeforeUpdateTopicParams>;

@@ -3,7 +3,6 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 import { createRawEventHandler } from "@webiny/handler-aws";
 import { blocksHandler } from "~/export/process/blocksHandler";
 import { formsHandler } from "~/export/process/formsHandler";
-import { pagesHandler } from "~/export/process/pagesHandler";
 import { templatesHandler } from "~/export/process/templatesHandler";
 
 export interface Configuration {
@@ -40,7 +39,8 @@ export default (configuration: Configuration) => {
                         return templatesHandler(configuration, payload, context);
                     }
                     default: {
-                        return pagesHandler(configuration, payload, context);
+                        console.log("Export PB process", JSON.stringify(payload));
+                        throw new Error("Invalid type provided: pb process.");
                     }
                 }
             });

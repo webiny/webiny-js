@@ -14,7 +14,7 @@ export const Wrapper = styled.div<{ fullWidth: boolean; type: "primary" | "defau
     }
 `;
 
-interface Props {
+interface ButtonProps {
     fullWidth: boolean;
     disabled: boolean;
     children: React.ReactNode;
@@ -22,13 +22,13 @@ interface Props {
     onClick: FormRenderPropParamsSubmit | (() => void);
 }
 
-export const Button: React.FC<Props> = ({
+export const Button = ({
     fullWidth,
     disabled,
     children,
     type = "default",
     onClick
-}) => {
+}: ButtonProps) => {
     return (
         <Wrapper fullWidth={fullWidth} type={type}>
             <button className={"button-body"} onClick={onClick} disabled={disabled}>

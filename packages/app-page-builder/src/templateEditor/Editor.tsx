@@ -5,7 +5,7 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import get from "lodash/get";
 import { Editor as PbEditor } from "~/admin/components/Editor";
-import { createElement, addElementId } from "~/editor/helpers";
+import { createElement } from "~/editor/helpers";
 import {
     GET_PAGE_TEMPLATE,
     GetPageTemplateQueryResponse,
@@ -20,25 +20,16 @@ import {
 import { ListPageBlocksQueryResponse } from "~/admin/views/PageBlocks/graphql";
 import { LIST_BLOCK_CATEGORIES } from "~/admin/views/BlockCategories/graphql";
 import createElementPlugin from "~/admin/utils/createElementPlugin";
-import { PbErrorResponse, PbBlockCategory, PbEditorElement, PbPageTemplate } from "~/types";
+import { PbErrorResponse, PbBlockCategory, PbPageTemplate } from "~/types";
 import createBlockCategoryPlugin from "~/admin/utils/createBlockCategoryPlugin";
 import { PageTemplateWithContent } from "~/templateEditor/state";
 import { createStateInitializer } from "./createStateInitializer";
-import { TemplateEditorConfig } from "./config/TemplateEditorConfig";
+import { DefaultEditorConfig } from "~/editor/defaultConfig/DefaultEditorConfig";
+import { DefaultTemplateEditorConfig } from "./config/DefaultTemplateEditorConfig";
 import elementVariableRendererPlugins from "~/blockEditor/plugins/elementVariables";
 import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
 
-const getBlocksWithUniqueElementIds = (blocks: PbEditorElement[]): PbEditorElement[] => {
-    return blocks?.map((block: PbEditorElement) => {
-        if (block.data?.blockId) {
-            return addElementId(block);
-        } else {
-            return block;
-        }
-    });
-};
-
-export const TemplateEditor: React.FC = () => {
+export const TemplateEditor = () => {
     plugins.register(elementVariableRendererPlugins());
     const client = useApolloClient();
     const { history, params } = useRouter();
@@ -107,13 +98,9 @@ export const TemplateEditor: React.FC = () => {
 
                 const { content, ...restOfTemplateData } = pageTemplateData;
 
-                const existingContent = content
-                    ? { ...content, elements: getBlocksWithUniqueElementIds(content.elements) }
-                    : null;
-
                 setTemplate({
                     ...restOfTemplateData,
-                    content: existingContent || createElement("document")
+                    content: content || createElement("document")
                 });
             });
 
@@ -126,7 +113,8 @@ export const TemplateEditor: React.FC = () => {
 
     return (
         <React.Suspense fallback={<EditorLoadingScreen />}>
-            <TemplateEditorConfig />
+            <DefaultEditorConfig />
+            <DefaultTemplateEditorConfig />
             <LoadData>
                 <PbEditor
                     stateInitializerFactory={createStateInitializer(

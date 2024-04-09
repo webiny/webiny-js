@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "@webiny/ui/Input";
+import { makeDecoratable } from "@webiny/app-admin";
 import { useVariable } from "~/hooks/useVariable";
-import { makeComposable } from "@webiny/react-composition";
 
 interface TextVariableInputProps {
     variableId: string;
 }
 
-const TextVariableInput = makeComposable<TextVariableInputProps>(
+const TextVariableInput = makeDecoratable(
     "TextVariableInput",
-    ({ variableId }) => {
+    ({ variableId }: TextVariableInputProps) => {
         const { value, onChange, onBlur } = useVariable(variableId);
         const [localValue, setLocalValue] = useState(value);
 

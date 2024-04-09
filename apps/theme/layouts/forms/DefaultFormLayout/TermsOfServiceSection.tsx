@@ -14,10 +14,6 @@ import {
 } from "@webiny/app-page-builder-elements/renderers/form/types";
 import styled from "@emotion/styled";
 
-interface Props {
-    component: TermsOfServiceComponent;
-}
-
 const RteFieldLabel = styled(FieldLabelStyled)`
     .rte-block-paragraph {
         ${props => props.theme.styles.typography.paragraphs.stylesById("paragraph1")};
@@ -59,6 +55,12 @@ export const renderCheckbox: TermsOfServiceChildrenFunction = ({
     );
 };
 
-export const TermsOfServiceSection: React.FC<Props> = ({ component: TermsOfServiceComponent }) => {
+interface TermsOfServiceSectionProps {
+    component: TermsOfServiceComponent;
+}
+
+export const TermsOfServiceSection = ({
+    component: TermsOfServiceComponent
+}: TermsOfServiceSectionProps) => {
     return <TermsOfServiceComponent>{renderCheckbox}</TermsOfServiceComponent>;
 };

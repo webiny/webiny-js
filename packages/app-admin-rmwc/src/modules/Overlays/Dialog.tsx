@@ -4,7 +4,7 @@ import { useUi } from "@webiny/app/hooks/useUi";
 import { Dialog, DialogAccept, DialogActions, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
 import { ButtonPrimary } from "@webiny/ui/Button";
 
-export const DialogContainer: React.FC = () => {
+export const DialogContainer = () => {
     const ui = useUi();
     const [isLoading, setIsLoading] = useState(false);
     const message: React.ReactNode = get(ui, "dialog.message");
@@ -13,11 +13,15 @@ export const DialogContainer: React.FC = () => {
         title,
         loading,
         actions = { cancel: null, accept: { label: "OK" } },
-        style
+        style,
+        onClose
     } = get(ui, "dialog.options", {});
 
     const hideDialog = useCallback(() => {
         ui.setState(ui => ({ ...ui, dialog: null }));
+        if (typeof onClose === "function") {
+            onClose();
+        }
     }, [ui]);
     /**
      * We need this part because message can change while the dialog is opened and in loading state.

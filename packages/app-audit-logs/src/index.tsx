@@ -12,7 +12,7 @@ import { AuditLogsPermissions } from "~/plugins/permissionRenderer";
 import AuditLogsView from "~/views/Logs/Logs";
 import { LOCAL_STORAGE_LATEST_VISITED_FOLDER } from "~/constants";
 
-export const AuditLogs: React.FC = () => {
+export const AuditLogs = () => {
     const client = useApolloClient();
 
     const createNavigateFolderStorageKey = useCallback(() => {

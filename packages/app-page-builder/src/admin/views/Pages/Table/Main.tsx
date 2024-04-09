@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import debounce from "lodash/debounce";
 import { i18n } from "@webiny/app/i18n";
-import { FolderDialogCreate, useFolders } from "@webiny/app-aco";
-import { useHistory, useLocation } from "@webiny/react-router";
+import { useCreateDialog, useFolders } from "@webiny/app-aco";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import CategoriesDialog from "~/admin/views/Categories/CategoriesDialog";
@@ -27,10 +26,7 @@ interface Props {
     folderId?: string;
 }
 
-export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
-    const location = useLocation();
-    const history = useHistory();
-
+export const Main = ({ folderId: initialFolderId }: Props) => {
     const folderId = initialFolderId === undefined ? ROOT_FOLDER : initialFolderId;
 
     const list = usePagesList();
@@ -45,13 +41,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
     const openTemplatesDialog = useCallback(() => setTemplatesDialog(true), []);
     const closeTemplatesDialog = useCallback(() => setTemplatesDialog(false), []);
 
-    const [showFoldersDialog, setFoldersDialog] = useState(false);
-    const openFoldersDialog = useCallback(() => setFoldersDialog(true), []);
-    const closeFoldersDialog = useCallback(() => setFoldersDialog(false), []);
-
-    const [showPreviewDrawer, setPreviewDrawer] = useState(false);
-    const openPreviewDrawer = useCallback(() => setPreviewDrawer(true), []);
-    const closePreviewDrawer = useCallback(() => setPreviewDrawer(false), []);
+    const { showDialog: showCreateFolderDialog } = useCreateDialog();
 
     // We check permissions on two layers - security and folder level permissions.
     const { canCreate } = usePagesPermissions();
@@ -97,15 +87,9 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
         }
     }, 200);
 
-    useEffect(() => {
-        if (!showPreviewDrawer) {
-            const queryParams = new URLSearchParams(location.search);
-            queryParams.delete("id");
-            history.push({
-                search: queryParams.toString()
-            });
-        }
-    }, [showPreviewDrawer]);
+    const onCreateFolder = useCallback(() => {
+        showCreateFolderDialog({ currentParentId: folderId });
+    }, [folderId]);
 
     return (
         <>
@@ -116,7 +100,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     canCreateContent={canCreateContent}
                     onCreatePage={openTemplatesDialog}
                     onImportPage={openCategoriesDialog}
-                    onCreateFolder={openFoldersDialog}
+                    onCreateFolder={onCreateFolder}
                     selected={list.selected}
                     searchValue={list.search}
                     onSearchChange={list.setSearch}
@@ -131,13 +115,13 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                             canCreateFolder={canCreateFolder}
                             canCreateContent={canCreateContent}
                             onCreatePage={openTemplatesDialog}
-                            onCreateFolder={openFoldersDialog}
+                            onCreateFolder={onCreateFolder}
                         />
                     ) : (
                         <>
                             <Preview
-                                open={showPreviewDrawer}
-                                onClose={() => closePreviewDrawer()}
+                                open={list.showPreviewDrawer}
+                                onClose={list.closePreviewDrawer}
                                 canCreate={canCreate()}
                                 onCreatePage={openTemplatesDialog}
                             />
@@ -145,17 +129,7 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                                 data-testid="default-data-list"
                                 onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
                             >
-                                <Table
-                                    ref={tableRef}
-                                    folders={list.folders}
-                                    records={list.records}
-                                    loading={list.isListLoading}
-                                    openPreviewDrawer={openPreviewDrawer}
-                                    onSelectRow={list.onSelectRow}
-                                    selectedRows={list.selected}
-                                    sorting={list.sorting}
-                                    onSortingChange={list.setSorting}
-                                />
+                                <Table ref={tableRef} />
                                 <LoadMoreButton
                                     show={!list.isListLoading && list.meta.hasMoreItems}
                                     disabled={list.isListLoadingMore}
@@ -169,11 +143,6 @@ export const Main: React.VFC<Props> = ({ folderId: initialFolderId }) => {
                     )}
                 </Wrapper>
             </MainContainer>
-            <FolderDialogCreate
-                open={showFoldersDialog}
-                onClose={closeFoldersDialog}
-                currentParentId={folderId || null}
-            />
             <CategoriesDialog
                 open={showCategoriesDialog}
                 onClose={closeCategoriesDialog}

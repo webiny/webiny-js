@@ -8,7 +8,7 @@ interface IconProps {
     element: PbEditorElement;
 }
 
-const Icon: React.FC<IconProps> = props => {
+const Icon = (props: IconProps) => {
     const { element, ...rest } = props;
     return <PeIcon element={element as Element} {...rest} />;
 };

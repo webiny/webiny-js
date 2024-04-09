@@ -1,6 +1,6 @@
 import React from "react";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { RenderFieldElement } from "./RenderFieldElement";
+import { FieldElement } from "./FieldElement";
 import {
     CmsEditorContentModel,
     CmsModelField,
@@ -20,20 +20,14 @@ const getFieldById = (fields: CmsModelField[], id: string): CmsModelField | null
     return fields.find(field => field.id === id) || null;
 };
 
-export const Fields: React.FC<FieldsProps> = ({
-    Bind,
-    fields,
-    layout,
-    contentModel,
-    gridClassName
-}) => {
+export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: FieldsProps) => {
     return (
         <Grid className={gridClassName}>
             {layout.map((row, rowIndex) => (
                 <React.Fragment key={rowIndex}>
                     {row.map(fieldId => (
                         <Cell span={Math.floor(12 / row.length)} key={fieldId}>
-                            <RenderFieldElement
+                            <FieldElement
                                 field={getFieldById(fields, fieldId) as CmsModelField}
                                 Bind={Bind}
                                 contentModel={contentModel}

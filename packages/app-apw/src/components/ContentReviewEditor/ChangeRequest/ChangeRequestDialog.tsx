@@ -42,7 +42,7 @@ interface ChangeRequestMessageProps {
     Bind: BindComponent;
 }
 
-const ChangeRequestMessage: React.FC<ChangeRequestMessageProps> = ({ Bind }) => {
+const ChangeRequestMessage = ({ Bind }: ChangeRequestMessageProps) => {
     return (
         <ChangeRequestColumns space={1}>
             <LeftBox padding={6}>
@@ -125,7 +125,7 @@ const isValidId = (id: string | null) => {
     return id.split("#").length === 2;
 };
 
-export const ChangeRequestDialog: React.FC = () => {
+export const ChangeRequestDialog = () => {
     const { open, setOpen, changeRequestId, setChangeRequestId } = useChangeRequestDialog();
     const { id: stepId } = useCurrentStepId();
     const useContentReviewIdResult = useContentReviewId();

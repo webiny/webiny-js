@@ -1,4 +1,4 @@
-import { CmsContentEntry, CmsFieldValueTransformer, CmsModelField } from "~/types";
+import { CmsFieldValueTransformer, CmsModelField } from "~/types";
 import { plugins } from "@webiny/plugins";
 
 interface AvailableFieldTransformers {
@@ -54,18 +54,20 @@ const createTransformationRunner = (): TransformationRunnerCallable => {
     return transformationRunner;
 };
 
-export const prepareFormData = (
-    input: Partial<CmsContentEntry>,
+export const prepareFormData = <T extends Record<string, any>>(
+    input: T,
     fields: CmsModelField[]
-): CmsContentEntry => {
+): T => {
     const runTransformation = createTransformationRunner();
 
-    return fields.reduce<CmsContentEntry>((output, field) => {
+    return fields.reduce<Record<keyof T, any>>((output, field) => {
         const inputValue = input[field.fieldId];
+
+        const fieldId: keyof T = field.fieldId;
 
         if (field.multipleValues) {
             const values = Array.isArray(inputValue) ? inputValue : undefined;
-            if (!values?.length) {
+            if (!values) {
                 return output;
             }
             /**
@@ -79,14 +81,16 @@ export const prepareFormData = (
             else if (values.length === 1 && (values[0] === null || values[0] === undefined)) {
                 return output;
             }
-            output[field.fieldId] = values.map(value => runTransformation(field, value));
+
+            output[fieldId] = values.map(value => runTransformation(field, value));
+
             return output;
         }
         /**
          * Regular values, single values.
          */
-        output[field.fieldId] = runTransformation(field, inputValue);
+        output[fieldId] = runTransformation(field, inputValue);
 
         return output;
-    }, {} as CmsContentEntry);
+    }, {} as T);
 };

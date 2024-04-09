@@ -1,18 +1,26 @@
 import * as aws from "@pulumi/aws";
 import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import {
-    ApiGateway,
     ApiApwScheduler,
+    ApiBackgroundTask,
     ApiCloudfront,
     ApiFileManager,
+    ApiGateway,
     ApiGraphql,
     ApiMigration,
     ApiPageBuilder,
+    ApiWebsocket,
     CoreOutput,
+    CreateCorePulumiAppParams,
     VpcConfig
 } from "~/apps";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import { tagResources, withCommonLambdaEnvVariables, addDomainsUrlsOutputs } from "~/utils";
+import {
+    addDomainsUrlsOutputs,
+    tagResources,
+    withCommonLambdaEnvVariables,
+    withServiceManifest
+} from "~/utils";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -22,6 +30,18 @@ export interface CreateApiPulumiAppParams {
      * Note that it requires also changes in application code.
      */
     elasticSearch?: PulumiAppParam<
+        | boolean
+        | Partial<{
+              domainName: string;
+              indexPrefix: string;
+          }>
+    >;
+
+    /**
+     * Enables OpenSearch infrastructure.
+     * Note that it requires also changes in application code.
+     */
+    openSearch?: PulumiAppParam<
         | boolean
         | Partial<{
               domainName: string;
@@ -58,20 +78,31 @@ export interface CreateApiPulumiAppParams {
 }
 
 export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = {}) => {
-    const app = createPulumiApp({
+    const baseApp = createPulumiApp({
         name: "api",
         path: "apps/api",
         config: projectAppParams,
         program: async app => {
-            if (projectAppParams.elasticSearch) {
-                const elasticSearch = app.getParam(projectAppParams.elasticSearch);
-                if (typeof elasticSearch === "object") {
-                    if (elasticSearch.domainName) {
-                        process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = elasticSearch.domainName;
+            let searchEngineParams:
+                | CreateCorePulumiAppParams["openSearch"]
+                | CreateCorePulumiAppParams["elasticSearch"]
+                | null = null;
+
+            if (projectAppParams.openSearch) {
+                searchEngineParams = app.getParam(projectAppParams.openSearch);
+            } else if (projectAppParams.elasticSearch) {
+                searchEngineParams = app.getParam(projectAppParams.elasticSearch);
+            }
+
+            if (searchEngineParams) {
+                const params = app.getParam(searchEngineParams);
+                if (typeof params === "object") {
+                    if (params.domainName) {
+                        process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = params.domainName;
                     }
 
-                    if (elasticSearch.indexPrefix) {
-                        process.env.ELASTIC_SEARCH_INDEX_PREFIX = elasticSearch.indexPrefix;
+                    if (params.indexPrefix) {
+                        process.env.ELASTIC_SEARCH_INDEX_PREFIX = params.indexPrefix;
                     }
                 }
             }
@@ -126,12 +157,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 }
             });
 
-            const fileManager = app.addModule(ApiFileManager, {
-                env: {
-                    DB_TABLE: core.primaryDynamodbTableName
-                }
-            });
-
             const apwScheduler = app.addModule(ApiApwScheduler, {
                 primaryDynamodbTableArn: core.primaryDynamodbTableArn,
 
@@ -163,14 +188,19 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     // TODO: move to okta plugin
                     OKTA_ISSUER: process.env["OKTA_ISSUER"],
                     WEBINY_LOGS_FORWARD_URL,
-                    /**
-                     * APW
-                     */
                     APW_SCHEDULER_SCHEDULE_ACTION_HANDLER:
                         apwScheduler.scheduleAction.lambda.output.arn
                 },
                 apwSchedulerEventRule: apwScheduler.eventRule.output,
                 apwSchedulerEventTarget: apwScheduler.eventTarget.output
+            });
+
+            const websocket = app.addModule(ApiWebsocket);
+
+            const fileManager = app.addModule(ApiFileManager, {
+                env: {
+                    DB_TABLE: core.primaryDynamodbTableName
+                }
             });
 
             const apiGateway = app.addModule(ApiGateway, {
@@ -186,6 +216,11 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 },
                 "files-any": {
                     path: "/files/{path+}",
+                    method: "ANY",
+                    function: fileManager.functions.download.output.arn
+                },
+                "private-any": {
+                    path: "/private/{path+}",
                     method: "ANY",
                     function: fileManager.functions.download.output.arn
                 },
@@ -214,6 +249,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 applyCustomDomain(cloudfront, domains);
             }
 
+            const backgroundTask = app.addModule(ApiBackgroundTask);
+
             app.addOutputs({
                 region: aws.config.region,
                 cognitoUserPoolId: core.cognitoUserPoolId,
@@ -226,7 +263,11 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 dynamoDbTable: core.primaryDynamodbTableName,
                 dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
                 migrationLambdaArn: migration.function.output.arn,
-                graphqlLambdaName: graphql.functions.graphql.output.name
+                graphqlLambdaName: graphql.functions.graphql.output.name,
+                backgroundTaskLambdaArn: backgroundTask.backgroundTask.output.arn,
+                backgroundTaskStepFunctionArn: backgroundTask.stepFunction.output.arn,
+                websocketApiId: websocket.websocketApi.output.id,
+                websocketApiUrl: websocket.websocketApiUrl
             });
 
             app.addHandler(() => {
@@ -253,10 +294,24 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apiGateway,
                 cloudfront,
                 apwScheduler,
-                migration
+                migration,
+                backgroundTask
             };
         }
     });
 
-    return withCommonLambdaEnvVariables(app);
+    const app = withServiceManifest(withCommonLambdaEnvVariables(baseApp));
+
+    app.addHandler(() => {
+        app.addServiceManifest({
+            name: "api",
+            manifest: {
+                cloudfront: {
+                    distributionId: baseApp.resources.cloudfront.output.id
+                }
+            }
+        });
+    });
+
+    return app;
 };

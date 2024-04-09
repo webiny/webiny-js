@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { LexicalCommand } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { Compose, makeComposable } from "@webiny/react-composition";
+import { Compose, makeDecoratable } from "@webiny/react-composition";
 import { TypographyValue } from "@webiny/lexical-theme";
 import { TypographyActionContext } from "~/context/TypographyActionContext";
 import {
@@ -27,7 +27,7 @@ import { useCurrentElement } from "~/hooks/useCurrentElement";
  * Base composable action component that is mounted on toolbar action as a placeholder for the custom toolbar action.
  * Note: Toa add custom component access trough @see LexicalEditorConfig API
  * */
-export const BaseTypographyActionDropDown = makeComposable(
+export const BaseTypographyActionDropDown = makeDecoratable(
     "BaseTypographyActionDropDown",
     (): JSX.Element | null => {
         useEffect(() => {
@@ -41,15 +41,13 @@ interface TypographyActionDropdownProps {
     element: JSX.Element;
 }
 
-const TypographyActionDropDown: React.FC<TypographyActionDropdownProps> = ({
-    element
-}): JSX.Element => {
+const TypographyActionDropDown = ({ element }: TypographyActionDropdownProps): JSX.Element => {
     return <Compose component={BaseTypographyActionDropDown} with={() => () => element} />;
 };
 
-export interface TypographyAction extends React.FC<unknown> {
+export type TypographyAction = React.ComponentType<unknown> & {
     TypographyDropDown: typeof TypographyActionDropDown;
-}
+};
 
 export const TypographyAction: TypographyAction = () => {
     const [editor] = useLexicalComposerContext();

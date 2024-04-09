@@ -13,10 +13,7 @@ interface ExportPagesButtonProps extends ExportPagesDialogProps {
     getMultiSelected: any;
 }
 
-export const ExportPagesButton: React.FC<ExportPagesButtonProps> = ({
-    getMultiSelected,
-    ...restProps
-}) => {
+export const ExportPagesButton = ({ getMultiSelected, ...restProps }: ExportPagesButtonProps) => {
     const selected = getMultiSelected();
     const { showExportPageRevisionSelectorDialog } = useExportPageRevisionSelectorDialog();
     const { showExportPageInitializeDialog } = useExportPageDialog();

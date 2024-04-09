@@ -6,11 +6,11 @@ import { Row } from "./Row";
 import { Cell } from "./Cell";
 import { ReCaptchaComponent } from "@webiny/app-page-builder-elements/renderers/form/types";
 
-interface Props {
+interface ReCaptchaSectionProps {
     component: ReCaptchaComponent;
 }
 
-export const ReCaptchaSection: React.FC<Props> = ({ component: ReCaptchaComponent }) => {
+export const ReCaptchaSection = ({ component: ReCaptchaComponent }: ReCaptchaSectionProps) => {
     const bind = useBind({
         name: "reCaptcha",
         validators: validation.create("required")

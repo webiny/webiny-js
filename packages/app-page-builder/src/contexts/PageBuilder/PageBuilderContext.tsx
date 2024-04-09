@@ -10,9 +10,14 @@ export interface ResponsiveDisplayMode {
     setDisplayMode: (value: DisplayMode) => void;
 }
 
+export enum PbRevisionType {
+    published = "published",
+    latest = "latest"
+}
+
 export interface ExportPageData {
-    revisionType: string;
-    setRevisionType: (value: string) => void;
+    revisionType: PbRevisionType;
+    setRevisionType: (value: PbRevisionType) => void;
 }
 
 export interface PageBuilderContext {
@@ -35,9 +40,11 @@ export interface PageBuilderProviderProps {
 
 export const PageBuilderContext = React.createContext<PageBuilderContext | undefined>(undefined);
 
-export const PageBuilderProvider: React.FC<PageBuilderProviderProps> = ({ children }) => {
+export const PageBuilderProvider = ({ children }: PageBuilderProviderProps) => {
     const [displayMode, setDisplayMode] = React.useState(DisplayMode.DESKTOP);
-    const [revisionType, setRevisionType] = React.useState<string>("published");
+    const [revisionType, setRevisionType] = React.useState<PbRevisionType>(
+        PbRevisionType.published
+    );
     const { theme, loadThemeFromPlugins } = useTheme();
 
     return (

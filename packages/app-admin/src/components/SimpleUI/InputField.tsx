@@ -70,7 +70,7 @@ interface InputBoxProps {
     type?: "string" | "number";
     [key: string]: any;
 }
-const InputField: React.FC<InputBoxProps> = ({
+const InputField = ({
     className,
     value,
     onChange,
@@ -80,7 +80,7 @@ const InputField: React.FC<InputBoxProps> = ({
     validation = { isValid: true },
     defaultValue = "",
     ...props
-}) => {
+}: InputBoxProps) => {
     return (
         <React.Fragment>
             {label && (

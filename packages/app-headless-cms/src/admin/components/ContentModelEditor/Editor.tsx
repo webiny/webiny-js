@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Prompt } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { css } from "emotion";
@@ -7,7 +7,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
-import { Tab, Tabs, TabsImperativeApi } from "@webiny/ui/Tabs";
+import { Tab, Tabs } from "@webiny/ui/Tabs";
 import { ReactComponent as FormIcon } from "./icons/round-assignment-24px.svg";
 import { FieldsSidebar } from "./FieldsSidebar";
 import { FieldEditor } from "../FieldEditor";
@@ -16,6 +16,7 @@ import Header from "./Header";
 import DragPreview from "../DragPreview";
 import { useModelEditor } from "./useModelEditor";
 import { CmsModelField, CmsEditorFieldsLayout } from "~/types";
+import { ContentEntryEditorWithConfig } from "~/admin/config/contentEntries";
 
 const t = i18n.ns("app-headless-cms/admin/editor");
 
@@ -63,11 +64,10 @@ interface OnChangeParams {
     layout: CmsEditorFieldsLayout;
 }
 
-export const Editor: React.FC = () => {
+export const Editor = () => {
     const { data, setData, isPristine } = useModelEditor();
 
-    const tabsRef = useRef<TabsImperativeApi>();
-    const [activeTabIndex, setActiveTabIndex] = useState<number>(0);
+    const [activeTabIndex, setActiveTabIndex] = useState(0);
 
     const onChange = ({ fields, layout }: OnChangeParams) => {
         setData(data => ({ ...data, fields, layout }));
@@ -91,18 +91,15 @@ export const Editor: React.FC = () => {
                         <LeftBarFieldList>
                             <FieldsSidebar
                                 onFieldDragStart={() => {
-                                    if (!tabsRef.current) {
-                                        return;
-                                    }
-                                    tabsRef.current.switchTab(0);
+                                    setActiveTabIndex(0);
                                 }}
                             />
                         </LeftBarFieldList>
                     </LeftPanel>
                     <RightPanel span={8}>
                         <Tabs
+                            value={activeTabIndex}
                             className={formTabs}
-                            ref={tabsRef}
                             onActivate={e => setActiveTabIndex(e)}
                         >
                             <Tab label={"Edit"} data-testid={"cms.editor.tab.edit"}>
@@ -115,7 +112,9 @@ export const Editor: React.FC = () => {
                                 </EditContainer>
                             </Tab>
                             <Tab label={"Preview"} data-testid={"cms.editor.tab.preview"}>
-                                <PreviewTab activeTab={activeTabIndex === 1} />
+                                <ContentEntryEditorWithConfig>
+                                    <PreviewTab activeTab={activeTabIndex === 1} />
+                                </ContentEntryEditorWithConfig>
                             </Tab>
                         </Tabs>
                     </RightPanel>

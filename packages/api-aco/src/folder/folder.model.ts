@@ -1,7 +1,5 @@
 import { createModelField } from "~/utils/createModelField";
-import { CmsPrivateModelFull } from "@webiny/api-headless-cms";
-
-export type FolderModelDefinition = Omit<CmsPrivateModelFull, "noValidate" | "group">;
+import { createPrivateModel } from "@webiny/api-headless-cms";
 
 const titleField = () =>
     createModelField({
@@ -117,15 +115,18 @@ const permissionsField = () =>
 
 export const FOLDER_MODEL_ID = "acoFolder";
 
-export const createFolderModelDefinition = (): FolderModelDefinition => {
-    return {
+export const createFolderModel = () => {
+    return createPrivateModel({
         name: "ACO - Folder",
         modelId: FOLDER_MODEL_ID,
-        titleFieldId: "title",
-        layout: [["title"], ["slug"], ["type"], ["parentId"], ["permissions"]],
+        authorization: {
+            // Disables base permission checks, but leaves FLP checks enabled.
+            permissions: false
 
-        fields: [titleField(), slugField(), typeField(), parentIdField(), permissionsField()],
-        description: "ACO - Folder content model",
-        isPrivate: true
-    };
+            // We're leaving FLP enabled (no need to set `flp: true`).
+            // flp: true
+        },
+        titleFieldId: "title",
+        fields: [titleField(), slugField(), typeField(), parentIdField(), permissionsField()]
+    });
 };

@@ -26,7 +26,7 @@ const headerActionsRight = css({
     justifyContent: "flex-start"
 });
 
-export const Header: React.FC = () => {
+export const Header = () => {
     const { buttonActions } = useContentEntryEditorConfig();
 
     return (

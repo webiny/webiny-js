@@ -1,7 +1,5 @@
 import styled from "@emotion/styled";
 
-import { ListItemGraphic as ListItemGraphicBase } from "@webiny/ui/List";
-import { Menu } from "@webiny/ui/Menu";
 import { Typography } from "@webiny/ui/Typography";
 
 export const FolderContainer = styled("div")`
@@ -28,14 +26,6 @@ export const Text = styled(Typography)`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-`;
-
-export const Actions = styled(Menu)`
-    width: 200px;
-`;
-
-export const ListItemGraphic = styled(ListItemGraphicBase)`
-    margin-right: 24px;
 `;
 
 export const Grid = styled("div")`

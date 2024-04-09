@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { ReactComponent as MoveIcon } from "@material-design-icons/svg/outlined/drive_file_move.svg";
-import { useRecords, useMoveToFolderDialog, useNavigateFolder } from "@webiny/app-aco";
+import { useMoveToFolderDialog, useNavigateFolder, useRecords } from "@webiny/app-aco";
 import { FolderItem } from "@webiny/app-aco/types";
 import { observer } from "mobx-react-lite";
 import { PageListConfig } from "~/admin/config/pages";
@@ -31,7 +31,7 @@ export const ActionMove = observer(() => {
                     await worker.processInSeries(async ({ item, report }) => {
                         try {
                             await moveRecord({
-                                id: item.pid,
+                                id: item.data.pid,
                                 location: {
                                     folderId: folder.id
                                 }

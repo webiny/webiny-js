@@ -84,7 +84,7 @@ class Menu extends React.Component<MenuProps, MenuState> {
                 onClose={this.closeMenu}
                 onSelect={this.props.onSelect}
                 renderToPortal={true}
-                style={{ zIndex: 99 }} // Fixes Menu in Drawers
+                style={{ zIndex: 101 }} // Fixes Menu in Drawers
             >
                 {this.props.children}
             </BaseMenu>
@@ -123,7 +123,7 @@ class Menu extends React.Component<MenuProps, MenuState> {
     }
 }
 
-const MenuDivider: React.FC = () => {
+const MenuDivider = () => {
     return <li className="mdc-list-divider" role="separator" />;
 };
 
@@ -134,7 +134,7 @@ interface MenuItemProps extends BaseMenuItemProps {
     "data-testid"?: string;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ disabled, className, ...rest }) => {
+const MenuItem = ({ disabled, className, ...rest }: MenuItemProps) => {
     return (
         <BaseMenuItem
             {...rest}

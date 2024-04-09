@@ -8,7 +8,7 @@ interface HeaderProps {
     onClose: () => void;
 }
 
-export const Header: React.VFC<HeaderProps> = ({ onClose }) => {
+export const Header = ({ onClose }: HeaderProps) => {
     return (
         <SimpleFormHeader title={"Advanced search filter"}>
             <CloseButton icon={<CloseIcon />} onClick={onClose} />

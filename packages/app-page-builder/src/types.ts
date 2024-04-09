@@ -12,6 +12,7 @@ import { SecurityPermission } from "@webiny/app-security/types";
 import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/pagesList/types";
 import { Theme } from "@webiny/app-theme/types";
 import { Renderer } from "@webiny/app-page-builder-elements/types";
+import { FolderTableItem, RecordTableItem, SearchRecordItem } from "@webiny/app-aco/table.types";
 
 export enum PageStatus {
     PUBLISHED = "published",
@@ -22,8 +23,11 @@ export enum PageStatus {
 export enum ImportExportTaskStatus {
     PENDING = "pending",
     PROCESSING = "processing",
+    RUNNING = "running",
     COMPLETED = "completed",
-    FAILED = "failed"
+    SUCCESS = "success",
+    FAILED = "failed",
+    ABORTED = "aborted"
 }
 
 // TODO: for Webiny core team: create this type in the app-file-manager
@@ -114,6 +118,7 @@ export interface PbElementDataImageType {
         src?: string;
     };
     title?: string;
+    htmlTag?: string;
 }
 
 export interface PbElementDataIconType {
@@ -178,6 +183,7 @@ export interface PbElementDataTypeSource {
 
 export type PbElementDataType = {
     blockId?: string;
+    variableId?: string;
     variables?: PbBlockVariable[];
     action?: {
         href: string;
@@ -359,6 +365,9 @@ export interface PbPageData {
     publishedOn: string;
     createdBy: PbIdentity;
     revisions: PbPageRevision[];
+    wbyAco_location: {
+        folderId: string;
+    };
 }
 
 export interface PbPageRevision {
@@ -691,7 +700,7 @@ export type PbEditorGridPresetPluginType = Plugin & {
     name: string;
     type: "pb-editor-grid-preset";
     cellsType: string;
-    icon: React.FC;
+    icon: React.ComponentType;
 };
 // this will run when saving the element for later use
 export type PbEditorPageElementSaveActionPlugin = Plugin & {
@@ -724,7 +733,7 @@ export type PbEditorResponsiveModePlugin = Plugin & {
     type: "pb-editor-responsive-mode";
     config: {
         displayMode: string;
-        toolTip: {
+        tooltip: {
             title: string;
             subTitle: string;
             body: string;
@@ -795,7 +804,14 @@ export interface EventActionHandler<TCallableState = unknown> {
     endBatch: () => void;
     enableHistory: () => void;
     disableHistory: () => void;
+    /**
+     * Get element tree (includes processing with decorators).
+     */
     getElementTree: (props: GetElementTreeProps) => Promise<PbEditorElement>;
+    /**
+     * Get raw element tree (DOES NOT include processing with decorators).
+     */
+    getRawElementTree: (props: GetElementTreeProps) => Promise<PbEditorElement>;
 }
 
 export interface EventActionHandlerTarget {
@@ -1011,3 +1027,7 @@ declare global {
         }
     }
 }
+
+export type PbPageTableItem = SearchRecordItem<PbPageDataItem> & RecordTableItem;
+
+export type TableItem = FolderTableItem | PbPageTableItem;

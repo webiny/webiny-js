@@ -22,7 +22,7 @@ interface InputPropsType {
     containerClassName?: string;
 }
 
-const Input: React.FC<InputPropsType> = ({
+const Input = ({
     label,
     value,
     valueKey,
@@ -32,7 +32,7 @@ const Input: React.FC<InputPropsType> = ({
     inputWidth,
     className,
     containerClassName
-}) => {
+}: InputPropsType) => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementByIdSelector(activeElementId as string));
     const keyValue = valueKey ? get(element, valueKey, defaultValue) : value;

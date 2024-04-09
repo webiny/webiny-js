@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { RenderFieldElement } from "./RenderFieldElement";
+import { FieldElement } from "./FieldElement";
 import styled from "@emotion/styled";
 import { Form } from "@webiny/form";
 import { FormAPI, FormRenderPropParams } from "@webiny/form/types";
@@ -36,7 +36,7 @@ const isDifferent = (value: any, compare: any): boolean => {
     return stringify(value) !== stringify(compare);
 };
 
-export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...props }) => {
+export const ContentEntryForm = ({ onForm, ...props }: ContentEntryFormProps) => {
     const formElementRef = useRef<HTMLDivElement>(null);
     const { model } = useModel();
     const {
@@ -85,7 +85,7 @@ export const ContentEntryForm: React.FC<ContentEntryFormProps> = ({ onForm, ...p
         (formRenderProps: FormRenderPropParams) => {
             const fields = model.fields.reduce((acc, field) => {
                 acc[field.fieldId] = (
-                    <RenderFieldElement
+                    <FieldElement
                         field={field}
                         /**
                          * TODO @ts-refactor

@@ -5,7 +5,8 @@
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-page-builder/tsconfig.build.json" },
-    { "path": "../ui/tsconfig.build.json" }
+    { "path": "../ui/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

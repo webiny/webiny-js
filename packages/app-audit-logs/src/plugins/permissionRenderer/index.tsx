@@ -29,7 +29,7 @@ const createPermissions = (): AdminAppPermissionRendererPlugin => {
     };
 };
 
-export const AuditLogsPermissions: React.FC = () => {
+export const AuditLogsPermissions = () => {
     useEffect(() => {
         plugins.register(createPermissions());
     }, []);

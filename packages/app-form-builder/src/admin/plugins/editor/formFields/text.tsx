@@ -16,6 +16,7 @@ const plugin: FbBuilderFieldPlugin = {
         icon: <TextIcon />,
         createField() {
             return {
+                _id: "",
                 fieldId: "",
                 type: this.type,
                 name: this.name,

@@ -26,6 +26,7 @@ export interface SecurityConfig extends MultiTenancyAppConfig {
 
 export * from "./utils/AppPermissions";
 export * from "./utils/getPermissionsFromSecurityGroupsForLocale";
+export * from "./utils/IdentityValue";
 
 type Context = SecurityContext & TenancyContext & WcpContext;
 

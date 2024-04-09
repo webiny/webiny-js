@@ -2,10 +2,10 @@ import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Tenant } from "@webiny/api-tenancy/types";
+import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { createAcoHooks } from "~/createAcoHooks";
-import { baseFields, createAcoStorageOperations } from "~/createAcoStorageOperations";
-import { isInstallationPending } from "~/utils/isInstallationPending";
-import { AcoContext, CreateAcoParams, IAcoAppRegisterParams } from "~/types";
+import { createAcoStorageOperations } from "~/createAcoStorageOperations";
+import { AcoContext, CreateAcoParams, Folder, IAcoAppRegisterParams } from "~/types";
 import { createFolderCrudMethods } from "~/folder/folder.crud";
 import { createSearchRecordCrudMethods } from "~/record/record.crud";
 import { AcoApps } from "./apps";
@@ -15,7 +15,7 @@ import { FolderLevelPermissions } from "~/utils/FolderLevelPermissions";
 import { CmsEntriesCrudDecorators } from "~/utils/decorators/CmsEntriesCrudDecorators";
 import { FOLDER_MODEL_ID } from "~/folder/folder.model";
 import { createOperationsWrapper } from "~/utils/createOperationsWrapper";
-import { getFolderFieldValues } from "~/utils/getFieldValues";
+import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues";
 import { createFilterCrudMethods } from "~/filter/filter.crud";
 
 interface CreateAcoContextParams {
@@ -89,18 +89,31 @@ const setupAcoContext = async (
             });
 
             return withModel(async model => {
-                const results = await context.cms.storageOperations.entries.list(model, {
-                    limit: 100_000,
-                    where: {
-                        type,
+                try {
+                    const results = await context.cms.storageOperations.entries.list(model, {
+                        limit: 100_000,
+                        where: {
+                            type,
 
-                        // Folders always work with latest entries. We never publish them.
-                        latest: true
-                    },
-                    sort: ["title_ASC"]
-                });
+                            // Folders always work with latest entries. We never publish them.
+                            latest: true
+                        },
+                        sort: ["title_ASC"]
+                    });
 
-                return results.items.map(entry => getFolderFieldValues(entry, baseFields));
+                    return results.items.map(pickEntryFieldValues<Folder>);
+                } catch (ex) {
+                    /**
+                     * Skip throwing an error if the error is related to the search phase execution.
+                     * This is a temporary solution to avoid breaking the entire system when no entries were ever inserted in the index.
+                     *
+                     * TODO: figure out better way to handle this.
+                     */
+                    if (ex.message === "search_phase_execution_exception") {
+                        return [];
+                    }
+                    throw ex;
+                }
             });
         },
         canUseTeams: () => context.wcp.canUseTeams(),
@@ -185,9 +198,10 @@ export const createAcoContext = (params: CreateAcoContextParams = {}) => {
         /**
          * We can skip the ACO initialization if the installation is pending.
          */
-        if (isInstallationPending(context)) {
+        if (!(await isHeadlessCmsReady(context))) {
             return;
         }
+
         await context.benchmark.measure("aco.context.setup", async () => {
             await setupAcoContext(context, params);
         });

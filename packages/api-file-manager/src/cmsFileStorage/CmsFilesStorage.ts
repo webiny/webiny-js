@@ -69,8 +69,9 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
             };
         }
 
-        const entry = await this.security.withoutAuthorization(() => {
-            return this.cms.createEntry(model, { ...file, wbyAco_location: file.location });
+        const entry = await this.cms.createEntry(model, {
+            ...file,
+            wbyAco_location: file.location
         });
 
         await this.aliases.storeAliases(file);
@@ -90,9 +91,7 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
 
     async delete({ file }: FileManagerFilesStorageOperationsDeleteParams): Promise<void> {
         const model = this.modelWithContext(file);
-        await this.security.withoutAuthorization(() => {
-            return this.cms.deleteEntry(model, file.id);
-        });
+        await this.cms.deleteEntry(model, file.id);
 
         await this.aliases.deleteAliases(file);
     }
@@ -100,9 +99,7 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
     async get({ where }: FileManagerFilesStorageOperationsGetParams): Promise<File | null> {
         const { id, tenant, locale } = where;
         const model = this.modelWithContext({ tenant, locale });
-        const entry = await this.security.withoutAuthorization(() => {
-            return this.cms.getEntry(model, { where: { entryId: id, latest: true } });
-        });
+        const entry = await this.cms.getEntry(model, { where: { entryId: id, latest: true } });
         return entry ? this.getFileFieldValues(entry) : null;
     }
 
@@ -113,15 +110,14 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
         const locale = params.where.locale;
 
         const model = this.modelWithContext({ tenant, locale });
-        const [entries, meta] = await this.security.withoutAuthorization(() => {
-            const where = this.filesWhereProcessor.process(params.where);
-            return this.cms.listLatestEntries(model, {
-                after: params.after,
-                limit: params.limit,
-                sort: params.sort,
-                where,
-                search: params.search
-            });
+
+        const where = this.filesWhereProcessor.process(params.where);
+        const [entries, meta] = await this.cms.listLatestEntries(model, {
+            after: params.after,
+            limit: params.limit,
+            sort: params.sort,
+            where,
+            search: params.search
         });
 
         return [entries.map(entry => this.getFileFieldValues(entry)), meta];
@@ -133,14 +129,12 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
         const tenant = params.where.tenant;
         const locale = params.where.locale;
         const model = this.modelWithContext({ tenant, locale });
-        const uniqueValues = await this.security.withoutAuthorization(() => {
-            return this.cms.getUniqueFieldValues(model, {
-                fieldId: "tags",
-                where: {
-                    ...this.tagsWhereProcessor.process(params.where),
-                    latest: true
-                }
-            });
+        const uniqueValues = await this.cms.getUniqueFieldValues(model, {
+            fieldId: "tags",
+            where: {
+                ...this.tagsWhereProcessor.process(params.where),
+                latest: true
+            }
         });
 
         return uniqueValues
@@ -159,31 +153,34 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
     async update({ file }: FileManagerFilesStorageOperationsUpdateParams): Promise<File> {
         const model = this.modelWithContext(file);
 
-        return await this.security.withoutAuthorization(async () => {
-            const entry = await this.cms.getEntry(model, {
-                where: { entryId: file.id, latest: true }
-            });
-
-            const values = omit(file, ["id", "tenant", "locale", "webinyVersion"]);
-
-            const updatedEntry = await this.cms.updateEntry(model, entry.id, {
-                ...values,
-                wbyAco_location: values.location ?? entry.location
-            });
-
-            await this.aliases.storeAliases(file);
-
-            return this.getFileFieldValues(updatedEntry);
+        const entry = await this.cms.getEntry(model, {
+            where: { entryId: file.id, latest: true }
         });
+
+        const values = omit(file, ["id", "tenant", "locale", "webinyVersion"]);
+
+        const updatedEntry = await this.cms.updateEntry(model, entry.id, {
+            ...values,
+            wbyAco_location: values.location ?? entry.location
+        });
+
+        await this.aliases.storeAliases(file);
+
+        return this.getFileFieldValues(updatedEntry);
     }
 
     private getFileFieldValues(entry: CmsEntry) {
         return {
             id: entry.entryId,
+
+            // We're safe to use entry-level meta fields because we don't use revisions with files.
             createdBy: entry.createdBy,
             modifiedBy: entry.modifiedBy || null,
+            savedBy: entry.savedBy,
             createdOn: entry.createdOn,
+            modifiedOn: entry.modifiedOn || null,
             savedOn: entry.savedOn,
+
             locale: entry.locale,
             tenant: entry.tenant,
             webinyVersion: entry.webinyVersion,

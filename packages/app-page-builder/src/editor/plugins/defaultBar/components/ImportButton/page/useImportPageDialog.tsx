@@ -38,7 +38,7 @@ interface ImportPageDialogContentProps {
     onFileLink: (url: string) => void;
 }
 
-export const ImportPageDialogContent: React.FC<ImportPageDialogContentProps> = ({ onFileLink }) => {
+export const ImportPageDialogContent = ({ onFileLink }: ImportPageDialogContentProps) => {
     const ui = useUi();
     const [showLink, setShowLink] = useState<boolean>(false);
 

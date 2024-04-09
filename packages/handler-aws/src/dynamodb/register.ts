@@ -1,5 +1,5 @@
 import { registry } from "~/registry";
-import { DynamoDBStreamEvent } from "aws-lambda";
+import type { DynamoDBStreamEvent } from "aws-lambda";
 import { createSourceHandler } from "~/sourceHandler";
 import { createHandler, HandlerParams } from "~/dynamodb/index";
 

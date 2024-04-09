@@ -31,7 +31,7 @@ const LIST_CATEGORIES = gql`
 `;
 
 type CategoriesAutocompleteProps = Partial<AutoCompleteProps>;
-export const CategoriesAutocomplete: React.FC<CategoriesAutocompleteProps> = props => {
+export const CategoriesAutocomplete = (props: CategoriesAutocompleteProps) => {
     const listCategoriesQuery = useQuery(LIST_CATEGORIES);
     const getCategoryQuery = useQuery(GET_CATEGORY, {
         skip: !props.value,

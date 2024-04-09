@@ -43,7 +43,7 @@ interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "storageId" | "sett
 
 export interface CmsApiModel
     extends Omit<
-        CmsModel,
+        CmsModelPluginModel,
         "isPrivate" | "fields" | "singularApiName" | "pluralApiName" | "isPlugin"
     > {
     isPrivate?: never;
@@ -60,10 +60,18 @@ export interface CmsApiModelFull extends Omit<CmsApiModel, "fields" | "noValidat
 
 interface CmsPrivateModel
     extends Omit<
-        CmsModel,
-        "isPrivate" | "singularApiName" | "pluralApiName" | "fields" | "isPlugin"
+        CmsModelPluginModel,
+        | "isPrivate"
+        | "singularApiName"
+        | "pluralApiName"
+        | "fields"
+        | "isPlugin"
+        | "layout"
+        | "titleFieldId"
+        | "description"
     > {
     noValidate?: never;
+    titleFieldId?: string;
     singularApiName?: never;
     pluralApiName?: never;
     isPrivate: true;
@@ -77,7 +85,8 @@ export interface CmsPrivateModelFull extends Omit<CmsPrivateModel, "fields" | "n
 
 export type CmsModelInput = CmsApiModel | CmsPrivateModel | CmsApiModelFull | CmsPrivateModelFull;
 
-interface CmsModel extends Omit<CmsModelBase, "locale" | "tenant" | "webinyVersion"> {
+export interface CmsModelPluginModel
+    extends Omit<CmsModelBase, "locale" | "tenant" | "webinyVersion"> {
     locale?: string;
     tenant?: string;
 }
@@ -88,7 +97,7 @@ interface CmsModelPluginOptions {
 
 export class CmsModelPlugin extends Plugin {
     public static override readonly type: string = "cms-content-model";
-    public readonly contentModel: CmsModel;
+    public readonly contentModel: CmsModelPluginModel;
 
     private readonly options: CmsModelPluginOptions;
 
@@ -98,14 +107,33 @@ export class CmsModelPlugin extends Plugin {
         this.contentModel = this.buildModel(contentModel);
     }
 
-    private buildModel(input: CmsModelInput): CmsModel {
-        const isPrivate = input.isPrivate || false;
+    private buildModel(input: CmsModelInput): CmsModelPluginModel {
+        const isPrivate = input.isPrivate ?? false;
+
         const singularApiName = input.singularApiName
             ? createApiName(input.singularApiName)
             : createApiName(input.name);
+
         const pluralApiName = input.pluralApiName
             ? createApiName(input.pluralApiName)
             : createPluralApiName(input.name);
+
+        const modelPlugin: CmsModelPluginModel = {
+            group: {
+                id: "",
+                name: ""
+            },
+            description: "",
+            fields: [],
+            isPlugin: true,
+            isPrivate,
+            layout: [],
+            modelId: input.modelId,
+            name: input.name,
+            pluralApiName,
+            singularApiName,
+            titleFieldId: "id"
+        };
 
         if (input.noValidate) {
             /**
@@ -113,21 +141,20 @@ export class CmsModelPlugin extends Plugin {
              */
             // @ts-expect-error
             delete input["noValidate"];
+
             return {
+                ...modelPlugin,
                 ...input,
-                isPlugin: true,
-                isPrivate,
-                singularApiName,
-                pluralApiName
+                pluralApiName,
+                singularApiName
             };
         }
 
-        const model: CmsModel = {
+        const model: CmsModelPluginModel = {
+            ...modelPlugin,
             ...input,
-            isPlugin: true,
-            isPrivate,
-            singularApiName,
             pluralApiName,
+            singularApiName,
             fields: this.buildFields(input, input.fields)
         };
         this.validateLayout(model);
@@ -194,7 +221,7 @@ export class CmsModelPlugin extends Plugin {
             /**
              * ... and fieldId must be unique.
              */
-            if (fieldIdList.includes(fieldId) === true) {
+            if (fieldIdList.includes(fieldId)) {
                 throw new WebinyError(
                     `Field's "fieldId" is not unique in the content model "${model.modelId}".`,
                     "FIELD_ID_NOT_UNIQUE_ERROR",
@@ -229,7 +256,7 @@ export class CmsModelPlugin extends Plugin {
             /**
              * Fields storageId must be unique.
              */
-            if (storageIdList.includes(storageId) === true) {
+            if (storageIdList.includes(storageId)) {
                 throw new WebinyError(
                     `Field's "storageId" is not unique in the content model "${model.modelId}".`,
                     "STORAGE_ID_ERROR",
@@ -269,7 +296,7 @@ export class CmsModelPlugin extends Plugin {
         return fields;
     }
 
-    private validateLayout(model: CmsModel): void {
+    private validateLayout(model: CmsModelPluginModel): void {
         /**
          * Only skip validation if option.validateLayout was set as false, explicitly.
          */
@@ -311,4 +338,19 @@ export const createCmsModel = (
     options?: CmsModelPluginOptions
 ): CmsModelPlugin => {
     return new CmsModelPlugin(model, options);
+};
+
+export const createPrivateModel = (
+    input: Omit<CmsPrivateModelFull, "group" | "isPrivate" | "noValidate">
+): CmsPrivateModelFull => {
+    return {
+        authorization: false,
+        ...input,
+        isPrivate: true,
+        noValidate: true,
+        group: {
+            id: "private",
+            name: "Private Models"
+        }
+    };
 };

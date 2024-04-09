@@ -36,6 +36,10 @@ import { createFields } from "~/operations/entry/filtering/createFields";
 import { filter, sort } from "~/operations/entry/filtering";
 import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
 import { CmsEntryStorageOperations } from "~/types";
+import {
+    isEntryLevelEntryMetaField,
+    pickEntryMetaFields
+} from "@webiny/api-headless-cms/constants";
 
 const createType = (): string => {
     return "cms.entry";
@@ -51,6 +55,7 @@ interface ConvertStorageEntryParams {
     storageEntry: CmsStorageEntry;
     model: StorageOperationsCmsModel;
 }
+
 const convertToStorageEntry = (params: ConvertStorageEntryParams): CmsStorageEntry => {
     const { model, storageEntry } = params;
 
@@ -339,18 +344,59 @@ export const createEntriesStorageOperations = (
          */
         const latestStorageEntry = await getLatestRevisionByEntryId(model, entry);
 
-        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
-            items.push(
-                entity.putBatch({
-                    ...storageEntry,
-                    locked,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    TYPE: createLatestType(),
-                    GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(entry)
-                })
-            );
+        if (latestStorageEntry) {
+            const updatingLatestRevision = latestStorageEntry.id === entry.id;
+            if (updatingLatestRevision) {
+                items.push(
+                    entity.putBatch({
+                        ...storageEntry,
+                        locked,
+                        PK: partitionKey,
+                        SK: createLatestSortKey(),
+                        TYPE: createLatestType(),
+                        GSI1_PK: createGSIPartitionKey(model, "L"),
+                        GSI1_SK: createGSISortKey(entry)
+                    })
+                );
+            } else {
+                /**
+                 * If not updating latest revision, we still want to update the latest revision's
+                 * entry-level meta fields to match the current revision's entry-level meta fields.
+                 */
+                const updatedEntryLevelMetaFields = pickEntryMetaFields(
+                    entry,
+                    isEntryLevelEntryMetaField
+                );
+
+                /**
+                 * First we update the regular DynamoDB table. Two updates are needed:
+                 * - one for the actual revision record
+                 * - one for the latest record
+                 */
+                items.push(
+                    entity.putBatch({
+                        ...latestStorageEntry,
+                        ...updatedEntryLevelMetaFields,
+                        PK: partitionKey,
+                        SK: createRevisionSortKey(latestStorageEntry),
+                        TYPE: createType(),
+                        GSI1_PK: createGSIPartitionKey(model, "A"),
+                        GSI1_SK: createGSISortKey(latestStorageEntry)
+                    })
+                );
+
+                items.push(
+                    entity.putBatch({
+                        ...latestStorageEntry,
+                        ...updatedEntryLevelMetaFields,
+                        PK: partitionKey,
+                        SK: createLatestSortKey(),
+                        TYPE: createLatestType(),
+                        GSI1_PK: createGSIPartitionKey(model, "L"),
+                        GSI1_SK: createGSISortKey(latestStorageEntry)
+                    })
+                );
+            }
         }
 
         try {
@@ -425,6 +471,74 @@ export const createEntriesStorageOperations = (
                     folderId
                 }
             });
+        }
+    };
+
+    const moveToBin: CmsEntryStorageOperations["moveToBin"] = async (initialModel, params) => {
+        const { entry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
+
+        /**
+         * First we need to load all the revisions and published / latest entries.
+         */
+        const queryAllParams: QueryAllParams = {
+            entity,
+            partitionKey: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
+            options: {
+                gte: " "
+            }
+        };
+
+        let records: DbItem<CmsEntry>[] = [];
+        try {
+            records = await queryAll(queryAllParams);
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not load all records.",
+                ex.code || "LOAD_ALL_RECORDS_ERROR",
+                {
+                    error: ex,
+                    id: entry.id
+                }
+            );
+        }
+
+        const storageEntry = convertToStorageEntry({
+            model,
+            storageEntry: initialStorageEntry
+        });
+
+        /**
+         * Then create the batch writes for the DynamoDB, with the updated data.
+         */
+        const items = records.map(record => {
+            return entity.putBatch({
+                ...record,
+                ...storageEntry
+            });
+        });
+        /**
+         * And finally write it...
+         */
+        try {
+            await batchWriteAll({
+                table: entity.table,
+                items
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not move the entry to the bin.",
+                ex.code || "MOVE_ENTRY_TO_BIN_ERROR",
+                {
+                    error: ex,
+                    entry,
+                    storageEntry
+                }
+            );
         }
     };
 
@@ -520,6 +634,7 @@ export const createEntriesStorageOperations = (
                 })
             );
         }
+
         if (initialLatestStorageEntry) {
             const latestStorageEntry = convertToStorageEntry({
                 storageEntry: initialLatestStorageEntry,
@@ -533,6 +648,19 @@ export const createEntriesStorageOperations = (
                     TYPE: createLatestType(),
                     GSI1_PK: createGSIPartitionKey(model, "L"),
                     GSI1_SK: createGSISortKey(latestStorageEntry)
+                })
+            );
+
+            // Do an update on the latest revision. We need to update the latest revision's
+            // entry-level meta fields to match the previous revision's entry-level meta fields.
+            items.push(
+                entity.putBatch({
+                    ...initialLatestStorageEntry,
+                    PK: partitionKey,
+                    SK: createRevisionSortKey(initialLatestStorageEntry),
+                    TYPE: createType(),
+                    GSI1_PK: createGSIPartitionKey(model, "A"),
+                    GSI1_SK: createGSISortKey(initialLatestStorageEntry)
                 })
             );
         }
@@ -688,12 +816,14 @@ export const createEntriesStorageOperations = (
             ids: [params.id]
         });
 
-        return items.map(item => {
-            return convertFromStorageEntry({
-                storageEntry: item,
-                model
+        return items
+            .filter(item => item.deleted !== true)
+            .map(item => {
+                return convertFromStorageEntry({
+                    storageEntry: item,
+                    model
+                });
             });
-        });
     };
 
     const getByIds: CmsEntryStorageOperations["getByIds"] = async (initialModel, params) => {
@@ -989,18 +1119,63 @@ export const createEntriesStorageOperations = (
                 GSI1_SK: createGSISortKey(entry)
             })
         ];
-        if (initialLatestStorageEntry && entry.id === initialLatestStorageEntry.id) {
-            items.push(
-                entity.putBatch({
-                    ...storageEntry,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    TYPE: createLatestType(),
-                    GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(entry)
-                })
-            );
+
+        if (initialLatestStorageEntry) {
+            const publishingLatestRevision = entry.id === initialLatestStorageEntry.id;
+
+            if (publishingLatestRevision) {
+                // We want to update current latest record because of the status (`status: 'published'`) update.
+                items.push(
+                    entity.putBatch({
+                        ...storageEntry,
+                        PK: partitionKey,
+                        SK: createLatestSortKey(),
+                        TYPE: createLatestType(),
+                        GSI1_PK: createGSIPartitionKey(model, "L"),
+                        GSI1_SK: createGSISortKey(entry)
+                    })
+                );
+            } else {
+                const latestStorageEntry = convertToStorageEntry({
+                    storageEntry: initialLatestStorageEntry,
+                    model
+                });
+
+                // If the published revision is not the latest one, we still need to
+                // update the latest record with the new values of entry-level meta fields.
+                const updatedEntryLevelMetaFields = pickEntryMetaFields(
+                    entry,
+                    isEntryLevelEntryMetaField
+                );
+
+                // 1. Update actual revision record.
+                items.push(
+                    entity.putBatch({
+                        ...latestStorageEntry,
+                        ...updatedEntryLevelMetaFields,
+                        PK: partitionKey,
+                        SK: createRevisionSortKey(latestStorageEntry),
+                        TYPE: createType(),
+                        GSI1_PK: createGSIPartitionKey(model, "A"),
+                        GSI1_SK: createGSISortKey(latestStorageEntry)
+                    })
+                );
+
+                // 2. Update latest record.
+                items.push(
+                    entity.putBatch({
+                        ...latestStorageEntry,
+                        ...updatedEntryLevelMetaFields,
+                        PK: partitionKey,
+                        SK: createLatestSortKey(),
+                        TYPE: createLatestType(),
+                        GSI1_PK: createGSIPartitionKey(model, "L"),
+                        GSI1_SK: createGSISortKey(latestStorageEntry)
+                    })
+                );
+            }
         }
+
         if (initialPublishedStorageEntry && initialPublishedStorageEntry.id !== entry.id) {
             const publishedStorageEntry = convertToStorageEntry({
                 storageEntry: initialPublishedStorageEntry,
@@ -1079,19 +1254,60 @@ export const createEntriesStorageOperations = (
         /**
          * We need the latest entry to see if something needs to be updated alongside the unpublishing one.
          */
-        const latestStorageEntry = await getLatestRevisionByEntryId(model, entry);
+        const initialLatestStorageEntry = await getLatestRevisionByEntryId(model, entry);
 
-        if (latestStorageEntry && entry.id === latestStorageEntry.id) {
-            items.push(
-                entity.putBatch({
-                    ...storageEntry,
-                    PK: partitionKey,
-                    SK: createLatestSortKey(),
-                    TYPE: createLatestType(),
-                    GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(entry)
-                })
-            );
+        if (initialLatestStorageEntry) {
+            const unpublishingLatestRevision = entry.id === initialLatestStorageEntry.id;
+            if (unpublishingLatestRevision) {
+                items.push(
+                    entity.putBatch({
+                        ...storageEntry,
+                        PK: partitionKey,
+                        SK: createLatestSortKey(),
+                        TYPE: createLatestType(),
+                        GSI1_PK: createGSIPartitionKey(model, "L"),
+                        GSI1_SK: createGSISortKey(entry)
+                    })
+                );
+            } else {
+                const latestStorageEntry = convertToStorageEntry({
+                    storageEntry: initialLatestStorageEntry,
+                    model
+                });
+
+                // If the unpublished revision is not the latest one, we still need to
+                // update the latest record with the new values of entry-level meta fields.
+                const updatedEntryLevelMetaFields = pickEntryMetaFields(
+                    entry,
+                    isEntryLevelEntryMetaField
+                );
+
+                // 1. Update actual revision record.
+                items.push(
+                    entity.putBatch({
+                        ...latestStorageEntry,
+                        ...updatedEntryLevelMetaFields,
+                        PK: partitionKey,
+                        SK: createRevisionSortKey(latestStorageEntry),
+                        TYPE: createType(),
+                        GSI1_PK: createGSIPartitionKey(model, "A"),
+                        GSI1_SK: createGSISortKey(latestStorageEntry)
+                    })
+                );
+
+                // 2. Update latest record.
+                items.push(
+                    entity.putBatch({
+                        ...latestStorageEntry,
+                        ...updatedEntryLevelMetaFields,
+                        PK: partitionKey,
+                        SK: createLatestSortKey(),
+                        TYPE: createLatestType(),
+                        GSI1_PK: createGSIPartitionKey(model, "L"),
+                        GSI1_SK: createGSISortKey(latestStorageEntry)
+                    })
+                );
+            }
         }
 
         try {
@@ -1166,6 +1382,7 @@ export const createEntriesStorageOperations = (
         update,
         move,
         delete: deleteEntry,
+        moveToBin,
         deleteRevision,
         deleteMultipleEntries,
         getPreviousRevision,

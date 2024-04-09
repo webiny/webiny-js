@@ -72,7 +72,11 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
         return "Migrate PbPage Data -> Create ACO Search Records";
     }
 
-    async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
+    async shouldExecute({ logger, forceExecute }: DataMigrationContext): Promise<boolean> {
+        if (forceExecute) {
+            return true;
+        }
+
         const tenants = await this.listTenants();
         if (tenants.length === 0) {
             logger.info(`No tenants found in the system; skipping migration.`);
@@ -232,6 +236,14 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                                 }
                             });
 
+                            /**
+                             * If the content is `gzip`, it means this page is created with the latest version
+                             * of Webiny, and we don't need to migrate it.
+                             */
+                            if (ddbPage.content?.compression === "gzip") {
+                                continue;
+                            }
+
                             const {
                                 createdBy,
                                 createdOn,
@@ -250,7 +262,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                             const entry = await this.createSearchRecordCommonFields(ddbPage);
                             const content = await getSearchablePageContent(ddbPage);
 
-                            const rawDatas = {
+                            const rawData = {
                                 modelId: ACO_SEARCH_MODEL_ID,
                                 version: 1,
                                 savedOn,
@@ -311,7 +323,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                             const latestDdbEs = {
                                 PK: `T#${pageTenant}#L#${pageLocale}#CMS#CME#wby-aco-${pid}`,
                                 SK: "L",
-                                data: await getCompressedData(rawDatas),
+                                data: await getCompressedData(rawData),
                                 index: esGetIndexName({
                                     tenant: pageTenant,
                                     locale: pageLocale,

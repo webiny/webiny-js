@@ -1,4 +1,4 @@
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 import ddbPlugins from "@webiny/db-dynamodb/plugins";
 import { PluginsContainer } from "@webiny/plugins";
 import { PluginCollection } from "@webiny/plugins/types";
@@ -10,7 +10,7 @@ import { SettingsAttributePlugin, SystemAttributePlugin } from "./plugins";
 import { AliasesStorageOperations } from "~/operations/AliasesStorageOperations";
 
 export interface StorageOperationsConfig {
-    documentClient: DynamoDBClient;
+    documentClient: DynamoDBDocument;
     plugins?: PluginCollection;
 }
 

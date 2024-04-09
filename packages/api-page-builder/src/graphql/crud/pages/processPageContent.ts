@@ -1,8 +1,7 @@
-import cloneDeep from "lodash/cloneDeep";
 import { Page, PageElementProcessor, PbPageElement } from "~/types";
 
 export async function processPageContent(page: Page, processors: PageElementProcessor[]) {
-    const processedContent = cloneDeep(page.content) as PbPageElement;
+    const processedContent = structuredClone(page.content) as PbPageElement;
 
     // Children of the root element of content contain elements of type "block".
     for (const block of processedContent.elements) {

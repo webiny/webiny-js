@@ -29,11 +29,11 @@ const FieldLabel = styled("h3")({
     paddingBottom: "5px"
 });
 
-interface Props extends CmsModelFieldRendererProps {
+interface AdvancedSingleReferenceFieldProps extends CmsModelFieldRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue | null>;
 }
 
-export const AdvancedSingleReferenceField: React.VFC<Props> = props => {
+export const AdvancedSingleReferenceField = (props: AdvancedSingleReferenceFieldProps) => {
     const { bind, field } = props;
     const { showSnackbar } = useSnackbar();
 

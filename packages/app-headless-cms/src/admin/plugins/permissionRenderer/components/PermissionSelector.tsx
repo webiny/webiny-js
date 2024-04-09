@@ -26,16 +26,11 @@ export interface PermissionSelectorProps {
     locales: string[];
     entity: string;
     getItems: (code: string) => PermissionSelectorCmsModel[] | PermissionSelectorCmsGroup[];
-    RenderItems?: React.FC<RenderItemsProps>;
+    RenderItems?: React.ComponentType<RenderItemsProps>;
     disabled?: boolean;
 }
 
-const DefaultRenderItems: React.FC<RenderItemsProps> = ({
-    items,
-    getValue,
-    onChange,
-    disabled
-}) => {
+const DefaultRenderItems = ({ items, getValue, onChange, disabled }: RenderItemsProps) => {
     return (
         <React.Fragment>
             {items.map(({ id, label }) => (
@@ -53,7 +48,7 @@ const DefaultRenderItems: React.FC<RenderItemsProps> = ({
     );
 };
 
-export const PermissionSelector: React.FC<PermissionSelectorProps> = ({
+export const PermissionSelector = ({
     Bind,
     entity,
     locales,
@@ -61,7 +56,7 @@ export const PermissionSelector: React.FC<PermissionSelectorProps> = ({
     getItems,
     RenderItems = DefaultRenderItems,
     disabled
-}) => {
+}: PermissionSelectorProps) => {
     const description = t`Select the {selectorKey} user will be allowed to access.`({
         selectorKey
     });
@@ -104,7 +99,11 @@ export const PermissionSelector: React.FC<PermissionSelectorProps> = ({
     );
 };
 
-export const PermissionSelectorWrapper: React.FC = ({ children }) => (
+interface PermissionSelectorWrapperProps {
+    children: React.ReactNode;
+}
+
+export const PermissionSelectorWrapper = ({ children }: PermissionSelectorWrapperProps) => (
     <Fragment>
         <Cell span={1} />
         <Cell span={11}>{children}</Cell>

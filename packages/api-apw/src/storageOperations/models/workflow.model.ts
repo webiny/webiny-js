@@ -1,6 +1,7 @@
-import { createModelField } from "./utils";
+import { createPrivateModel } from "@webiny/api-headless-cms";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
-import { WorkflowModelDefinition, WorkflowScopeTypes } from "~/types";
+import { createModelField } from "./utils";
+import { WorkflowScopeTypes } from "~/types";
 
 const titleField = () =>
     createModelField({
@@ -207,35 +208,32 @@ interface CreateWorkflowModelDefinitionParams {
 
 export const WORKFLOW_MODEL_ID = "apwWorkflowModelDefinition";
 
-export const createWorkflowModelDefinition = ({
-    reviewerModelId
-}: CreateWorkflowModelDefinitionParams): WorkflowModelDefinition => ({
-    name: "APW - Workflow",
-    /**
-     * Id of the model cannot be appWorkflow because it clashes with the GraphQL types for APW.
-     */
-    modelId: WORKFLOW_MODEL_ID,
-    layout: [["workflow_title"], ["workflow_steps"], ["workflow_scope"], ["workflow_app"]],
-    titleFieldId: "title",
-    description: "",
-    fields: [
-        titleField(),
-        stepsField([
-            stepTitleField(),
-            stepTypeField(),
-            stepIdField(),
-            stepReviewersField(reviewerModelId)
-        ]),
-        scopeField([
-            scopeTypeField(),
-            scopeDataField([
-                scopeDataPbCategories(),
-                scopeDataPbPages(),
-                scopeDataCmsModels(),
-                scopeDataCmsEntries()
-            ])
-        ]),
-        applicationField()
-    ],
-    isPrivate: true
-});
+export const createWorkflowModel = ({ reviewerModelId }: CreateWorkflowModelDefinitionParams) => {
+    return createPrivateModel({
+        name: "APW - Workflow",
+        /**
+         * Id of the model cannot be appWorkflow because it clashes with the GraphQL types for APW.
+         */
+        modelId: WORKFLOW_MODEL_ID,
+        titleFieldId: "title",
+        fields: [
+            titleField(),
+            stepsField([
+                stepTitleField(),
+                stepTypeField(),
+                stepIdField(),
+                stepReviewersField(reviewerModelId)
+            ]),
+            scopeField([
+                scopeTypeField(),
+                scopeDataField([
+                    scopeDataPbCategories(),
+                    scopeDataPbPages(),
+                    scopeDataCmsModels(),
+                    scopeDataCmsEntries()
+                ])
+            ]),
+            applicationField()
+        ]
+    });
+};

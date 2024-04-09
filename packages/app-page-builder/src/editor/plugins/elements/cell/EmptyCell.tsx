@@ -1,13 +1,10 @@
 import React from "react";
 import { SetterOrUpdater } from "recoil";
-import { IconButton } from "@webiny/ui/Button";
-import { ReactComponent as AddCircleOutline } from "~/editor/assets/icons/baseline-add_circle-24px.svg";
-import { TogglePluginActionEvent } from "~/editor/recoil/actions";
-import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import styled from "@emotion/styled";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { useElementById } from "~/editor/hooks/useElementById";
 import { PbEditorElement } from "~/types";
+import { AddElementButton } from "~/editor/plugins/elements/cell/AddElementButton";
 
 const EmptyCellStyled = styled.div<{ isActive: boolean }>`
     box-sizing: border-box;
@@ -33,11 +30,11 @@ const EmptyCellStyled = styled.div<{ isActive: boolean }>`
 
 interface EmptyCellProps {
     element: PbEditorElement;
+    onClick?: (element: PbEditorElement) => void;
 }
 
-const EmptyCell: React.FC<EmptyCellProps> = ({ element }) => {
+const EmptyCell = ({ element }: EmptyCellProps) => {
     const [activeElementId] = useActiveElementId();
-    const handler = useEventActionHandler();
     const isActive = activeElementId === element.id;
 
     const [editorElement] = useElementById(element.id) as [
@@ -47,20 +44,9 @@ const EmptyCell: React.FC<EmptyCellProps> = ({ element }) => {
 
     const dragEntered = editorElement.dragEntered;
 
-    const onAddClick = () => {
-        handler.trigger(
-            new TogglePluginActionEvent({
-                name: "pb-editor-toolbar-add-element",
-                params: { id, path, type },
-                closeOtherInGroup: true
-            })
-        );
-    };
-
-    const { id, path, type } = element;
     return (
         <EmptyCellStyled isActive={isActive || dragEntered}>
-            <IconButton icon={<AddCircleOutline />} onClick={onAddClick} />
+            <AddElementButton element={element} />
         </EmptyCellStyled>
     );
 };

@@ -1,13 +1,13 @@
 import React from "react";
-import { makeComposable } from "@webiny/app";
+import { createVoidComponent, makeDecoratable } from "@webiny/app";
 
 export interface LayoutProps {
     title?: string;
     children: React.ReactNode;
 }
 
-export const Layout = makeComposable<LayoutProps>("Layout", ({ children, ...props }) => {
+export const Layout = makeDecoratable("Layout", ({ children, ...props }: LayoutProps) => {
     return <LayoutRenderer {...props}>{children}</LayoutRenderer>;
 });
 
-export const LayoutRenderer = makeComposable<LayoutProps>("LayoutRenderer");
+export const LayoutRenderer = makeDecoratable("LayoutRenderer", createVoidComponent<LayoutProps>());

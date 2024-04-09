@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { plugins } from "@webiny/plugins";
 import { generateId } from "@webiny/utils";
 import { AddQuerySelectionPlugin } from "@webiny/app/plugins/AddQuerySelectionPlugin";
@@ -10,7 +10,7 @@ interface Props {
     addSelection: DocumentNode;
 }
 
-export const AddGraphQLQuerySelection: React.FC<Props> = props => {
+export const AddGraphQLQuerySelection = (props: Props) => {
     const [name] = useState(`AddGraphQLQuerySelection:${props.operationName}:${generateId()}`);
 
     useEffect(() => {

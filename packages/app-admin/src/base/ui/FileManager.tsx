@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import { makeComposable } from "@webiny/react-composition";
+import { createVoidComponent, makeDecoratable } from "@webiny/react-composition";
 
 export interface FileManagerOnChange<T> {
     (value: T): void;
@@ -92,14 +92,12 @@ type DistributiveOmit<T, K extends keyof T> = T extends unknown ? Omit<T, K> : n
 
 export type FileManagerRendererProps = DistributiveOmit<FileManagerProps, "render" | "children">;
 
-export const FileManagerRenderer = makeComposable<FileManagerRendererProps>("FileManagerRenderer");
+export const FileManagerRenderer = makeDecoratable(
+    "FileManagerRenderer",
+    createVoidComponent<FileManagerRendererProps>()
+);
 
-export const FileManager: React.FC<FileManagerProps> = ({
-    children,
-    render,
-    onChange,
-    ...rest
-}) => {
+export const FileManager = ({ children, render, onChange, ...rest }: FileManagerProps) => {
     const containerRef = useRef<HTMLElement>(getPortalTarget());
     const [show, setShow] = useState(rest.show ?? false);
     const onChangeRef = useRef(onChange);
@@ -125,10 +123,7 @@ export const FileManager: React.FC<FileManagerProps> = ({
                     // @ts-expect-error
                     <FileManagerRenderer
                         onClose={() => setShow(false)}
-                        onChange={
-                            /* TODO: figure out how to create a conditional type based on the value of `rest.multiple` */
-                            onChangeRef.current
-                        }
+                        onChange={onChangeRef.current}
                         {...rest}
                     />,
                     containerRef.current

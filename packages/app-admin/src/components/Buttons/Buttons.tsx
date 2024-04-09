@@ -28,7 +28,7 @@ export interface ButtonsProps {
     }[];
 }
 
-export const Buttons: React.VFC<ButtonsProps> = props => {
+export const Buttons = (props: ButtonsProps) => {
     if (!props.actions.length) {
         return null;
     }
@@ -46,24 +46,19 @@ export const Buttons: React.VFC<ButtonsProps> = props => {
 
 export { ButtonContainer };
 
-export const ButtonDefault: React.VFC<ButtonProps> = ({ onAction, ...other }) => {
+export const ButtonDefault = ({ onAction, ...other }: ButtonProps) => {
     return <BaseButtonDefault {...other} onClick={onAction} />;
 };
 
-export const ButtonPrimary: React.VFC<ButtonProps> = ({ onAction, ...other }) => {
+export const ButtonPrimary = ({ onAction, ...other }: ButtonProps) => {
     return <BaseButtonPrimary {...other} onClick={onAction} />;
 };
 
-export const ButtonSecondary: React.VFC<ButtonProps> = ({ onAction, ...other }) => {
+export const ButtonSecondary = ({ onAction, ...other }: ButtonProps) => {
     return <BaseButtonSecondary {...other} onClick={onAction} />;
 };
 
-export const IconButton: React.VFC<IconButtonProps> = ({
-    label,
-    onAction,
-    tooltipPlacement,
-    ...other
-}) => {
+export const IconButton = ({ label, onAction, tooltipPlacement, ...other }: IconButtonProps) => {
     if (label) {
         return (
             <Tooltip content={label} placement={tooltipPlacement}>

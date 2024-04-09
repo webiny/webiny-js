@@ -10,7 +10,7 @@ const ResponsiveContainer = styled.div`
     container-name: page-canvas;
 `;
 
-export const ResponsiveElementsProvider: React.FC = ({ children }) => {
+export const ResponsiveElementsProvider = ({ children }: { children: React.ReactNode }) => {
     const pageBuilder = usePageBuilder();
 
     // We override all `@media` usages in breakpoints with `@container page-canvas`. This is what

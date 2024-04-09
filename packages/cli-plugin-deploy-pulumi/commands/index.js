@@ -1,10 +1,3 @@
-const { red } = require("chalk");
-const destroy = require("./destroy");
-const deploy = require("./deploy");
-const build = require("./build");
-const watch = require("./watch");
-const output = require("./output");
-
 module.exports = [
     {
         type: "cli-command",
@@ -56,13 +49,17 @@ module.exports = [
                     });
                     yargs.option("logs", {
                         default: undefined,
-                        describe: `Enable base compilation-related logs`,
+                        describe: `Print build logs`,
+                        type: "boolean"
+                    });
+                    yargs.option("deployment-logs", {
+                        default: undefined,
+                        describe: `Print deployment logs`,
                         type: "boolean"
                     });
                 },
                 async argv => {
-                    await deploy(argv, context);
-                    process.exit(0);
+                    return require("./deploy")(argv, context);
                 }
             );
 
@@ -96,8 +93,7 @@ module.exports = [
                     });
                 },
                 async argv => {
-                    await build(argv, context);
-                    process.exit(0);
+                    return require("./build")(argv, context);
                 }
             );
 
@@ -170,7 +166,9 @@ module.exports = [
                         type: "boolean"
                     });
                 },
-                async argv => watch(argv, context)
+                async argv => {
+                    return require("./watch")(argv, context);
+                }
             );
 
             yargs.command(
@@ -194,6 +192,7 @@ module.exports = [
                             type: "string"
                         })
                         .check(args => {
+                            const { red } = require("chalk");
                             const { folder, confirmDestroyEnv } = args;
 
                             // If the folder is not defined, we are destroying the whole project.
@@ -226,8 +225,7 @@ module.exports = [
                     });
                 },
                 async argv => {
-                    await destroy(argv, context);
-                    process.exit(0);
+                    return require("./destroy")(argv, context);
                 }
             );
 
@@ -260,8 +258,7 @@ module.exports = [
                     });
                 },
                 async argv => {
-                    await output(argv, context);
-                    process.exit(0);
+                    return require("./output")(argv, context);
                 }
             );
 
@@ -291,8 +288,7 @@ module.exports = [
                     });
                 },
                 async argv => {
-                    await require("./pulumiRun")(argv, context);
-                    process.exit(0);
+                    return require("./pulumiRun")(argv, context);
                 }
             );
 
@@ -314,10 +310,15 @@ module.exports = [
                         type: "string",
                         required: true
                     });
+
+                    yargs.option("force", {
+                        describe: `!!USE WITH CAUTION!! Force execution of the migrations.`,
+                        type: "boolean",
+                        default: false
+                    });
                 },
                 async argv => {
-                    await require("./executeMigrations")(argv, context);
-                    process.exit(0);
+                    return require("./executeMigrations")(argv, context);
                 }
             );
         }

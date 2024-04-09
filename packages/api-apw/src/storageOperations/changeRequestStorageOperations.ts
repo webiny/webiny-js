@@ -1,5 +1,6 @@
 import { ApwChangeRequestStorageOperations } from "./types";
-import { baseFields, CreateApwStorageOperationsParams } from "~/storageOperations/index";
+import { CreateApwStorageOperationsParams } from "~/storageOperations/index";
+import { baseFields } from "~/utils/pickEntryFieldValues";
 import { getFieldValues, getTransformer } from "~/utils/fieldResolver";
 import WebinyError from "@webiny/error";
 import { ApwChangeRequest } from "~/types";
@@ -9,9 +10,7 @@ export const createChangeRequestStorageOperations = (
 ): ApwChangeRequestStorageOperations => {
     const { cms, getCmsContext, security } = params;
     const getChangeRequestModel = async () => {
-        const model = await security.withoutAuthorization(async () => {
-            return cms.getModel("apwChangeRequestModelDefinition");
-        });
+        const model = await cms.getModel("apwChangeRequestModelDefinition");
         if (!model) {
             throw new WebinyError(
                 "Could not find `apwChangeRequestModelDefinition` model.",
@@ -25,9 +24,8 @@ export const createChangeRequestStorageOperations = (
     }) => {
         const model = await getChangeRequestModel();
 
-        const entry = await security.withoutAuthorization(async () => {
-            return cms.getEntryById(model, id);
-        });
+        const entry = await cms.getEntryById(model, id);
+
         return getFieldValues({
             entry,
             fields: baseFields,
@@ -41,14 +39,13 @@ export const createChangeRequestStorageOperations = (
         async listChangeRequests(params) {
             const model = await getChangeRequestModel();
 
-            const [entries, meta] = await security.withoutAuthorization(async () => {
-                return cms.listLatestEntries(model, {
-                    ...params,
-                    where: {
-                        ...params.where
-                    }
-                });
+            const [entries, meta] = await cms.listLatestEntries(model, {
+                ...params,
+                where: {
+                    ...params.where
+                }
             });
+
             try {
                 const all = await Promise.all(
                     entries.map(entry =>
@@ -67,10 +64,8 @@ export const createChangeRequestStorageOperations = (
         },
         async createChangeRequest(params) {
             const model = await getChangeRequestModel();
+            const entry = await cms.createEntry(model, params.data);
 
-            const entry = await security.withoutAuthorization(async () => {
-                return cms.createEntry(model, params.data);
-            });
             return getFieldValues({
                 entry,
                 fields: baseFields,
@@ -97,13 +92,12 @@ export const createChangeRequestStorageOperations = (
                 );
             }
 
-            const entry = await security.withoutAuthorization(async () => {
-                return cms.updateEntry(model, params.id, {
-                    ...existingEntry,
-                    ...params.data,
-                    savedOn: new Date()
-                });
+            const entry = await cms.updateEntry(model, params.id, {
+                ...existingEntry,
+                ...params.data,
+                savedOn: new Date()
             });
+
             return getFieldValues({
                 entry,
                 fields: baseFields,
@@ -133,9 +127,7 @@ export const createChangeRequestStorageOperations = (
                 );
             }
 
-            await security.withoutAuthorization(async () => {
-                return cms.deleteEntry(model, params.id);
-            });
+            await cms.deleteEntry(model, params.id);
 
             return true;
         }

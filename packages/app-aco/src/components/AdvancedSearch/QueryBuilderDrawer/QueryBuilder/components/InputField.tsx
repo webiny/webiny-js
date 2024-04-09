@@ -1,29 +1,32 @@
 import React from "react";
 
-import { Boolean, DateWithoutTimezone, DateWithTimezone, Input, MultipleValues } from "./fields";
-
-import { FieldDTO, FieldType } from "~/components/AdvancedSearch/domain";
+import { Typography } from "@webiny/ui/Typography";
+import { InputFieldProvider } from "~/components";
+import { FieldDTOWithElement } from "~/components/AdvancedSearch/domain";
 
 interface InputFieldProps {
-    field?: FieldDTO;
+    field?: FieldDTOWithElement;
     name: string;
 }
 
-export const InputField: React.VFC<InputFieldProps> = ({ field, name }) => {
+export const InputField = ({ field, name }: InputFieldProps) => {
     if (!field) {
         return null;
     }
 
-    switch (field.type) {
-        case FieldType.BOOLEAN:
-            return <Boolean name={name} />;
-        case FieldType.DATETIME_WITH_TIMEZONE:
-            return <DateWithTimezone name={name} />;
-        case FieldType.DATETIME_WITHOUT_TIMEZONE:
-            return <DateWithoutTimezone name={name} />;
-        case FieldType.MULTIPLE_VALUES:
-            return <MultipleValues predefined={field.predefined} name={name} />;
-        default:
-            return <Input name={name} type={field.type} />;
+    const { element, ...rest } = field;
+
+    if (!element) {
+        return (
+            <Typography
+                use={"body2"}
+            >{`Cannot render "${field.type}" field: missing field renderer.`}</Typography>
+        );
     }
+
+    return (
+        <InputFieldProvider field={rest} name={name}>
+            {element}
+        </InputFieldProvider>
+    );
 };

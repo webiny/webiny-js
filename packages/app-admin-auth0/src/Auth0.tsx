@@ -1,15 +1,27 @@
-import React, { FC, Fragment, useEffect, useRef, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import gql from "graphql-tag";
+import { useApolloClient } from "@apollo/react-hooks";
 import get from "lodash/get";
-import { LoginScreenRenderer, useTenancy, createComponentPlugin } from "@webiny/app-serverless-cms";
-import { createAuthentication, Auth0Options } from "./createAuthentication";
+import {
+    LoginScreenRenderer,
+    useTenancy,
+    createDecorator,
+    useTags
+} from "@webiny/app-serverless-cms";
+import {
+    createAuthentication,
+    Auth0Options,
+    CreateAuthenticationConfig
+} from "./createAuthentication";
 import { UserMenuModule } from "~/modules/userMenu";
 import { AppClientModule } from "~/modules/appClient";
-import { useApolloClient } from "@apollo/react-hooks";
-import gql from "graphql-tag";
+import { NotAuthorizedError } from "./components";
 
 interface AppClientIdLoaderProps {
     auth0: Auth0Options;
     rootAppClientId: string;
+    children: React.ReactNode;
+    onError?: CreateAuthenticationConfig["onError"];
 }
 
 const GET_CLIENT_ID = gql`
@@ -20,9 +32,14 @@ const GET_CLIENT_ID = gql`
     }
 `;
 
-const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({ auth0, rootAppClientId, children }) => {
+const AppClientIdLoader = ({
+    auth0,
+    rootAppClientId,
+    onError,
+    children
+}: AppClientIdLoaderProps) => {
     const [loaded, setState] = useState<boolean>(false);
-    const authRef = useRef<React.FC | null>(null);
+    const authRef = useRef<React.ComponentType | null>(null);
     const client = useApolloClient();
     const { tenant, setTenant } = useTenancy();
 
@@ -38,6 +55,7 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({ auth0, rootAppClientId,
         if (tenantId === "root") {
             console.info(`Configuring Auth0 with App Client Id "${rootAppClientId}"`);
             authRef.current = createAuthentication({
+                onError,
                 auth0: {
                     ...auth0,
                     clientId: rootAppClientId
@@ -52,6 +70,7 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({ auth0, rootAppClientId,
             if (clientId) {
                 console.info(`Configuring Auth0 with App Client Id "${clientId}"`);
                 authRef.current = createAuthentication({
+                    onError,
                     auth0: {
                         ...auth0,
                         clientId
@@ -64,14 +83,32 @@ const AppClientIdLoader: FC<AppClientIdLoaderProps> = ({ auth0, rootAppClientId,
         });
     }, []);
 
-    return loaded ? React.createElement(authRef.current as React.FC, {}, children) : null;
+    return loaded
+        ? React.createElement(authRef.current as React.ComponentType, {}, children)
+        : null;
 };
 
 const createLoginScreenPlugin = (params: Auth0Props) => {
-    return createComponentPlugin(LoginScreenRenderer, () => {
+    return createDecorator(LoginScreenRenderer, () => {
         return function Auth0LoginScreen({ children }) {
+            const { installer } = useTags();
+
+            const [error, setError] = useState<string | null>(null);
+
+            const onError = useCallback((error: Error) => {
+                setError(error.message);
+            }, []);
+
+            if (error && !installer) {
+                return <NotAuthorizedError />;
+            }
+
             return (
-                <AppClientIdLoader auth0={params.auth0} rootAppClientId={params.rootAppClientId}>
+                <AppClientIdLoader
+                    auth0={params.auth0}
+                    rootAppClientId={params.rootAppClientId}
+                    onError={onError}
+                >
                     {children}
                 </AppClientIdLoader>
             );
@@ -85,7 +122,7 @@ export interface Auth0Props {
     children?: React.ReactNode;
 }
 
-export const Auth0: React.FC<Auth0Props> = props => {
+export const Auth0 = (props: Auth0Props) => {
     const LoginScreenPlugin = createLoginScreenPlugin(props);
     return (
         <Fragment>

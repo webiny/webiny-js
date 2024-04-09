@@ -15,6 +15,10 @@ export interface TenancyContextValue {
     isMultiTenant: boolean;
 }
 
+interface TenancyProviderProps {
+    children: React.ReactNode;
+}
+
 export const TenancyContext = React.createContext<TenancyContextValue>({
     tenant: null,
     setTenant: () => {
@@ -46,7 +50,14 @@ const getInitialTenant = (): string | null => {
     return currentTenant;
 };
 
-export const TenancyProvider: React.FC = props => {
+const goToDashboard = () => {
+    const url = new URL(window.location.toString());
+    url.search = "";
+    url.pathname = "/";
+    window.location.href = url.toString();
+};
+
+export const TenancyProvider = (props: TenancyProviderProps) => {
     const [currentTenant, setTenant] = useState(getInitialTenant);
     const { canUseFeature } = useWcp();
 
@@ -55,7 +66,7 @@ export const TenancyProvider: React.FC = props => {
             if (!tenant) {
                 localStorage.remove(LOCAL_STORAGE_KEY);
 
-                window.location.pathname = "/";
+                goToDashboard();
             }
 
             if (!currentTenant) {
@@ -66,7 +77,7 @@ export const TenancyProvider: React.FC = props => {
             }
 
             storeState(tenant);
-            window.location.pathname = "/";
+            goToDashboard();
         },
         [currentTenant]
     );

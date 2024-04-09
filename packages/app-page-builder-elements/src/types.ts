@@ -28,8 +28,9 @@ export interface PageElementsProviderProps {
         styles: Record<string, ElementStylesModifier>;
         attributes: Record<string, ElementAttributesModifier>;
     };
-    beforeRenderer?: React.VFC | null;
-    afterRenderer?: React.VFC | null;
+    beforeRenderer?: React.ComponentType | null;
+    afterRenderer?: React.ComponentType | null;
+    children?: React.ReactNode;
 }
 
 export type AttributesObject = React.ComponentProps<any>;
@@ -94,8 +95,8 @@ type GetAttributes = () => HTMLAttributes<HTMLElement>;
 export interface RendererContextValue extends PageElementsContextValue {
     getElement: GetElement;
     getAttributes: GetAttributes;
-    beforeRenderer: React.VFC | null;
-    afterRenderer: React.VFC | null;
+    beforeRenderer: React.ComponentType | null;
+    afterRenderer: React.ComponentType | null;
     meta: RendererProviderMeta;
 }
 
@@ -107,6 +108,7 @@ export interface RendererProviderProps {
     element: Element;
     attributes: HTMLAttributes<HTMLElement>;
     meta: RendererProviderMeta;
+    children: React.ReactNode;
 }
 
 export type RendererMeta = Record<string, any>;
@@ -120,6 +122,7 @@ export interface PageProviderProps {
     page: Page;
     layout?: React.ComponentType<{ children: React.ReactNode }>;
     layoutProps?: Record<string, any>;
+    children: React.ReactNode;
 }
 
 export type Renderer<

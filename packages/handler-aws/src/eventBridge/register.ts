@@ -1,6 +1,6 @@
+import type { EventBridgeEvent } from "aws-lambda";
 import { registry } from "~/registry";
 import { HandlerFactoryParams } from "~/types";
-import { EventBridgeEvent } from "aws-lambda";
 import { createSourceHandler } from "~/sourceHandler";
 import { createHandler } from "~/eventBridge/index";
 

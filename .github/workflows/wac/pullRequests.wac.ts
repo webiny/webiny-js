@@ -1,6 +1,21 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
-import { createValidateWorkflowsJob, createJob } from "./jobs";
-import { NODE_VERSION, listPackagesWithJestTests } from "./utils";
+import { createJob } from "./jobs";
+import { NODE_VERSION, BUILD_PACKAGES_RUNNER, listPackagesWithJestTests } from "./utils";
+import {
+    createGlobalBuildCacheSteps,
+    createInstallBuildSteps,
+    createRunBuildCacheSteps,
+    createYarnCacheSteps,
+    withCommonParams
+} from "./steps";
+
+// Will print "next" or "dev". Important for caching (via actions/cache).
+const DIR_WEBINY_JS = "${{ github.base_ref }}";
+
+const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
+const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
+const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
+const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 
 const createJestTestsJob = (storage: string | null) => {
     const env: Record<string, string> = {};
@@ -24,7 +39,7 @@ const createJestTestsJob = (storage: string | null) => {
     });
 
     const job: NormalJob = createJob({
-        needs: "init",
+        needs: ["constants", "build"],
         name: "${{ matrix.package.cmd }}",
         strategy: {
             "fail-fast": false,
@@ -37,32 +52,15 @@ const createJestTestsJob = (storage: string | null) => {
         "runs-on": "${{ matrix.os }}",
         env,
         awsAuth: storage === "ddb-es" || storage === "ddb-os",
+        checkout: { path: DIR_WEBINY_JS },
         steps: [
-            {
-                uses: "actions/cache@v3",
-                with: {
-                    path: ".yarn/cache",
-                    key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-                }
-            },
-            {
-                uses: "actions/cache@v3",
-                with: {
-                    path: ".webiny/cached-packages",
-                    key: "packages-cache-${{ needs.init.outputs.ts }}"
-                }
-            },
-            {
-                name: "Install dependencies",
-                run: "yarn --immutable"
-            },
-            {
-                name: "Build packages",
-                run: "yarn build:quick"
-            },
+            ...yarnCacheSteps,
+            ...runBuildCacheSteps,
+            ...installBuildSteps,
             {
                 name: "Run tests",
-                run: "yarn test ${{ matrix.package.cmd }}"
+                run: "yarn test ${{ matrix.package.cmd }}",
+                "working-directory": DIR_WEBINY_JS
             }
         ]
     });
@@ -70,7 +68,7 @@ const createJestTestsJob = (storage: string | null) => {
     // We prevent running of Jest tests if a PR was created from a fork.
     // This is because we don't want to expose our AWS credentials to forks.
     if (storage === "ddb-es" || storage === "ddb-os") {
-        job.if = "needs.init.outputs.is-fork-pr != 'true'";
+        job.if = "needs.constants.outputs.is-fork-pr != 'true'";
     }
 
     return job;
@@ -79,12 +77,16 @@ const createJestTestsJob = (storage: string | null) => {
 export const pullRequests = createWorkflow({
     name: "Pull Requests",
     on: "pull_request",
+    concurrency: {
+        group: "pr-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": true
+    },
     jobs: {
-        validateWorkflows: createValidateWorkflowsJob(),
+        // validateWorkflows: createValidateWorkflowsJob(),
         validateCommits: createJob({
             name: "Validate commit messages",
             if: "github.base_ref != 'dev'",
-            steps: [{ uses: "webiny/action-conventional-commits@v1.2.0" }]
+            steps: [{ uses: "webiny/action-conventional-commits@v1.3.0" }]
         }),
         // Don't allow "feat" commits to be merged into "dev" branch.
         validateCommitsDev: createJob({
@@ -92,7 +94,7 @@ export const pullRequests = createWorkflow({
             if: "github.base_ref == 'dev'",
             steps: [
                 {
-                    uses: "webiny/action-conventional-commits@v1.2.0",
+                    uses: "webiny/action-conventional-commits@v1.3.0",
                     with: {
                         // If dev, use "dev" commit types, otherwise use "next" commit types.
                         "allowed-commit-types":
@@ -101,185 +103,144 @@ export const pullRequests = createWorkflow({
                 }
             ]
         }),
-        init: createJob({
-            name: "Init",
-            "runs-on": "webiny-build-packages",
+        constants: createJob({
+            name: "Create constants",
             outputs: {
-                ts: "${{ steps.get-timestamp.outputs.ts }}",
+                "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
+                "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}",
                 "is-fork-pr": "${{ steps.is-fork-pr.outputs.is-fork-pr }}"
             },
+            checkout: false,
             steps: [
                 {
-                    name: "Get timestamp",
-                    id: "get-timestamp",
-                    run: 'echo "ts=$(node --eval "console.log(new Date().getTime())")" >> $GITHUB_OUTPUT'
+                    name: "Create global cache key",
+                    id: "global-cache-key",
+                    run: 'echo "global-cache-key=${{ github.base_ref }}-${{ runner.os }}-$(/bin/date -u "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
+                },
+                {
+                    name: "Create workflow run cache key",
+                    id: "run-cache-key",
+                    run: 'echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
                 },
                 {
                     name: "Is a PR from a fork",
                     id: "is-fork-pr",
                     run: 'echo "is-fork-pr=${{ github.event.pull_request.head.repo.fork }}" >> $GITHUB_OUTPUT'
-                },
-                {
-                    uses: "actions/cache@v3",
-                    id: "yarn-cache",
-                    with: {
-                        path: ".yarn/cache",
-                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-                    }
-                },
-                {
-                    uses: "actions/cache@v3",
-                    id: "cached-packages",
-                    with: {
-                        path: ".webiny/cached-packages",
-                        key: "${{ runner.os }}-${{ github.event.number }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}"
-                    }
-                },
-                {
-                    name: "Install dependencies",
-                    run: "yarn --immutable"
-                },
-                {
-                    name: "Build packages",
-                    run: "yarn build:quick"
-                },
-                {
-                    uses: "actions/cache@v3",
-                    id: "packages-cache",
-                    with: {
-                        path: ".webiny/cached-packages",
-                        key: "packages-cache-${{ steps.get-timestamp.outputs.ts }}"
-                    }
                 }
             ]
         }),
-        staticCodeAnalysis: createJob({
-            needs: "init",
-            name: "Static code analysis",
+        build: createJob({
+            name: "Build",
+            needs: "constants",
+            "runs-on": BUILD_PACKAGES_RUNNER,
+            checkout: { path: DIR_WEBINY_JS },
             steps: [
-                {
-                    uses: "actions/cache@v3",
-                    with: {
-                        path: ".yarn/cache",
-                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-                    }
-                },
-                {
-                    uses: "actions/cache@v3",
-                    with: {
-                        path: ".webiny/cached-packages",
-                        key: "packages-cache-${{ needs.init.outputs.ts }}"
-                    }
-                },
-                {
-                    name: "Install dependencies",
-                    run: "yarn --immutable"
-                },
-                {
-                    name: "Check code formatting",
-                    run: "yarn prettier:check"
-                },
-                {
-                    name: "Check dependencies",
-                    run: "yarn adio"
-                },
-                {
-                    name: "Check TS configs",
-                    run: "yarn check-ts-configs"
-                },
-                {
-                    name: "ESLint",
-                    run: "yarn eslint"
-                }
+                ...yarnCacheSteps,
+                ...globalBuildCacheSteps,
+                ...installBuildSteps,
+
+                // Once we've built packages with the help of the global cache, we can now cache
+                // the result for this run. All of the following jobs will use this cache.
+                ...runBuildCacheSteps
+            ]
+        }),
+        staticCodeAnalysis: createJob({
+            needs: ["constants", "build"],
+            name: "Static code analysis",
+            checkout: { path: DIR_WEBINY_JS },
+            steps: [
+                ...yarnCacheSteps,
+                ...runBuildCacheSteps,
+                ...withCommonParams(
+                    [
+                        { name: "Install dependencies", run: "yarn --immutable" },
+                        { name: "Check code formatting", run: "yarn prettier:check" },
+                        { name: "Check dependencies", run: "yarn adio" },
+                        { name: "Check TS configs", run: "yarn check-ts-configs" },
+                        { name: "ESLint", run: "yarn eslint" }
+                    ],
+                    { "working-directory": DIR_WEBINY_JS }
+                )
             ]
         }),
         staticCodeAnalysisTs: createJob({
             name: "Static code analysis (TypeScript)",
-            "runs-on": "webiny-build-packages",
+            "runs-on": BUILD_PACKAGES_RUNNER,
+            checkout: { path: DIR_WEBINY_JS },
             steps: [
-                {
-                    uses: "actions/cache@v3",
-                    with: {
-                        path: ".yarn/cache",
-                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-                    }
-                },
-                {
-                    name: "Install dependencies",
-                    run: "yarn --immutable"
-                },
-                {
-                    name: "Build packages (full)",
-                    run: "yarn build"
-                }
+                ...yarnCacheSteps,
+
+                // We're not using run cache here. We want to build all packages
+                // with TypeScript, to ensure there are no TypeScript errors.
+                // ...runBuildCacheSteps,
+
+                ...withCommonParams(
+                    [
+                        { name: "Install dependencies", run: "yarn --immutable" },
+                        { name: "Build packages (full)", run: "yarn build" },
+                        { name: "Check types for Cypress tests", run: "yarn cy:ts" }
+                    ],
+                    { "working-directory": DIR_WEBINY_JS }
+                )
             ]
         }),
         jestTestsNoStorage: createJestTestsJob(null),
         jestTestsDdb: createJestTestsJob("ddb"),
         jestTestsDdbEs: createJestTestsJob("ddb-es"),
+        jestTestsDdbOs: createJestTestsJob("ddb-os"),
 
         verdaccioPublish: createJob({
             name: "Publish to Verdaccio",
-            needs: "init",
-            if: "needs.init.outputs.is-fork-pr != 'true'",
+            needs: ["constants", "build"],
+            if: "needs.constants.outputs.is-fork-pr != 'true'",
             checkout: {
                 "fetch-depth": 0,
-                ref: "${{ github.event.pull_request.head.ref }}"
+                ref: "${{ github.event.pull_request.head.ref }}",
+                path: DIR_WEBINY_JS
             },
             steps: [
-                {
-                    uses: "actions/cache@v3",
-                    with: {
-                        path: ".yarn/cache",
-                        key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
-                    }
-                },
-                {
-                    uses: "actions/cache@v3",
-                    with: {
-                        path: ".webiny/cached-packages",
-                        key: "packages-cache-${{ needs.init.outputs.ts }}"
-                    }
-                },
-                {
-                    name: "Install dependencies",
-                    run: "yarn --immutable"
-                },
-                {
-                    name: "Build packages",
-                    run: "yarn build:quick"
-                },
-                {
-                    name: "Start Verdaccio local server",
-                    run: "npx pm2 start verdaccio -- -c .verdaccio.yaml"
-                },
-                {
-                    name: "Configure NPM to use local registry",
-                    run: "npm config set registry http://localhost:4873"
-                },
-                {
-                    name: "Set git email",
-                    run: 'git config --global user.email "webiny-bot@webiny.com"'
-                },
-                {
-                    name: "Set git username",
-                    run: 'git config --global user.name "webiny-bot"'
-                },
-                {
-                    name: 'Create ".npmrc" file in the project root, with a dummy auth token',
-                    run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
-                },
-                {
-                    name: "Version and publish to Verdaccio",
-                    run: "yarn release --type=verdaccio"
-                },
+                ...yarnCacheSteps,
+                ...runBuildCacheSteps,
+                ...installBuildSteps,
+                ...withCommonParams(
+                    [
+                        {
+                            name: "Start Verdaccio local server",
+                            run: "npx pm2 start verdaccio -- -c .verdaccio.yaml"
+                        },
+                        {
+                            name: "Configure NPM to use local registry",
+                            run: "npm config set registry http://localhost:4873"
+                        },
+                        {
+                            name: "Set git email",
+                            run: 'git config --global user.email "webiny-bot@webiny.com"'
+                        },
+                        {
+                            name: "Set git username",
+                            run: 'git config --global user.name "webiny-bot"'
+                        },
+                        {
+                            name: 'Create ".npmrc" file in the project root, with a dummy auth token',
+                            run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
+                        },
+                        {
+                            name: "Version and publish to Verdaccio",
+                            run: "yarn release --type=verdaccio"
+                        }
+                    ],
+                    { "working-directory": DIR_WEBINY_JS }
+                ),
                 {
                     name: "Upload verdaccio files",
-                    uses: "actions/upload-artifact@v3",
+                    uses: "actions/upload-artifact@v4",
                     with: {
                         name: "verdaccio-files",
                         "retention-days": 1,
-                        path: ".verdaccio/\n.verdaccio.yaml\n"
+                        path: [
+                            DIR_WEBINY_JS + "/.verdaccio/",
+                            DIR_WEBINY_JS + "/.verdaccio.yaml"
+                        ].join("\n")
                     }
                 }
             ]
@@ -296,15 +257,12 @@ export const pullRequests = createWorkflow({
             },
             "runs-on": "${{ matrix.os }}",
             checkout: false,
+            setupNode: {
+                "node-version": "${{ matrix.node }}"
+            },
             steps: [
                 {
-                    uses: "actions/setup-node@v3",
-                    with: {
-                        "node-version": "${{ matrix.node }}"
-                    }
-                },
-                {
-                    uses: "actions/download-artifact@v3",
+                    uses: "actions/download-artifact@v4",
                     with: {
                         name: "verdaccio-files",
                         path: "verdaccio-files"

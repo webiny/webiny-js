@@ -1,5 +1,4 @@
 import WebinyError from "@webiny/error";
-import structuredClone from "@ungap/structured-clone";
 import {
     AcoContext,
     AcoRequestAction,

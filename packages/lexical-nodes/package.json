@@ -13,7 +13,7 @@
     "@lexical/selection": "^0.12.2",
     "@lexical/utils": "^0.12.2",
     "@webiny/lexical-theme": "0.0.0",
-    "lexical": "^0.12.2"
+    "lexical": "0.12.2"
   },
   "devDependencies": {
     "@webiny/cli": "0.0.0",

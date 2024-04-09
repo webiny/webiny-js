@@ -42,7 +42,11 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
         return "Migrate PbPage Data -> Create ACO Search Records";
     }
 
-    async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
+    async shouldExecute({ logger, forceExecute }: DataMigrationContext): Promise<boolean> {
+        if (forceExecute) {
+            return true;
+        }
+
         const tenants = await this.listTenants();
         if (tenants.length === 0) {
             logger.info(`No tenants found in the system; skipping migration.`);
@@ -126,6 +130,14 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                             async (accumulator: Promise<any>, current) => {
                                 const { pid, tenant, locale } = current;
 
+                                /**
+                                 * If the content is `gzip`, it means this page is created with the latest version
+                                 * of Webiny, and we don't need to migrate it.
+                                 */
+                                if (current.content?.compression === "gzip") {
+                                    return await accumulator;
+                                }
+
                                 const entry = await this.createSearchRecordCommonFields(current);
 
                                 const latestEntry = {
@@ -170,7 +182,7 @@ export class AcoRecords_5_35_0_006_PageData implements DataMigration<PageDataMig
                             }
                         });
 
-                        const cursor = pages[pages.length - 1].id;
+                        const cursor = pages[pages.length - 1]?.id ?? true;
 
                         // Update checkpoint after every batch
                         migrationStatus[groupId] = cursor;

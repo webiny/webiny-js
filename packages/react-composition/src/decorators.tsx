@@ -1,45 +1,103 @@
 import React from "react";
-import { Decorator } from "~/Context";
-import { ComposableFC, Compose } from "~/Compose";
+import { Compose } from "~/Compose";
+import { GetDecoratee, GetDecorateeParams } from "~/createDecorator";
+import {
+    DecoratableComponent,
+    GenericComponent,
+    Decorator,
+    CanReturnNull,
+    GenericHook,
+    DecoratableHook
+} from "~/types";
 
-interface ShouldDecorate<TDecorator = any, TComponent = any> {
+export interface ShouldDecorate<TDecorator = any, TComponent = any> {
     (decoratorProps: TDecorator, componentProps: TComponent): boolean;
 }
 
-export function createConditionalDecorator(
+export function createConditionalDecorator<TDecoratee extends GenericComponent>(
     shouldDecorate: ShouldDecorate,
-    decorator: Decorator,
+    decorator: Decorator<TDecoratee>,
     decoratorProps: unknown
-): Decorator {
-    return (Original: React.FC) => {
-        return function ShouldDecorate(props) {
+): Decorator<TDecoratee> {
+    return (Original => {
+        const DecoratedComponent = decorator(Original);
+
+        return function ShouldDecorate(props: unknown) {
             if (shouldDecorate(decoratorProps, props)) {
-                const Component = decorator(Original);
-                return <Component {...props} />;
+                // @ts-expect-error
+                return <DecoratedComponent {...props} />;
             }
 
+            // @ts-expect-error
             return <Original {...props} />;
+        };
+    }) as Decorator<TDecoratee>;
+}
+
+export function createDecoratorFactory<TDecorator>() {
+    return function from<TDecoratable extends DecoratableComponent>(
+        decoratable: TDecoratable,
+        shouldDecorate?: ShouldDecorate<TDecorator, GetDecorateeParams<GetDecoratee<TDecoratable>>>
+    ) {
+        return function createDecorator(
+            decorator: Decorator<CanReturnNull<GetDecoratee<TDecoratable>>>
+        ) {
+            return function DecoratorPlugin(props: TDecorator) {
+                if (shouldDecorate) {
+                    const componentDecorator = createConditionalDecorator<GenericComponent>(
+                        shouldDecorate,
+                        decorator as unknown as Decorator<GenericComponent>,
+                        props
+                    );
+
+                    return <Compose function={decoratable} with={componentDecorator} />;
+                }
+
+                return (
+                    <Compose
+                        function={decoratable}
+                        with={decorator as unknown as Decorator<GenericHook>}
+                    />
+                );
+            };
         };
     };
 }
 
-export function createDecoratorFactory<TDecorator>() {
-    return function from<TComponent>(
-        Component: ComposableFC<TComponent>,
-        shouldDecorate?: ShouldDecorate<TDecorator, TComponent>
-    ) {
-        return function createDecorator(decorator: Decorator<TComponent>) {
-            return function DecoratorPlugin(props: TDecorator) {
-                if (shouldDecorate) {
-                    return (
-                        <Compose
-                            component={Component}
-                            with={createConditionalDecorator(shouldDecorate, decorator, props)}
-                        />
-                    );
-                }
-                return <Compose component={Component} with={decorator} />;
+export function createHookDecoratorFactory() {
+    return function from<TDecoratable extends DecoratableComponent>(decoratable: TDecoratable) {
+        return function createDecorator(decorator: Decorator<GetDecoratee<TDecoratable>>) {
+            return function DecoratorPlugin() {
+                return (
+                    <Compose
+                        function={decoratable}
+                        with={decorator as unknown as Decorator<GenericHook>}
+                    />
+                );
             };
         };
+    };
+}
+
+export function withDecoratorFactory<TDecorator>() {
+    return function WithDecorator<TDecoratable extends DecoratableComponent>(
+        Component: TDecoratable,
+        shouldDecorate?: ShouldDecorate<TDecorator, GetDecorateeParams<GetDecoratee<TDecoratable>>>
+    ) {
+        const createDecorator = createDecoratorFactory<TDecorator>()(Component, shouldDecorate);
+
+        return Object.assign(Component, { createDecorator }) as unknown as DecoratableComponent<
+            GenericComponent<GetDecorateeParams<GetDecoratee<TDecoratable>>>
+        > & { createDecorator: typeof createDecorator };
+    };
+}
+
+export function withHookDecoratorFactory() {
+    return function WithHookDecorator<TDecoratable extends DecoratableHook>(hook: TDecoratable) {
+        const createDecorator = createHookDecoratorFactory()(hook);
+
+        return Object.assign(hook, { createDecorator }) as unknown as DecoratableHook<
+            GenericHook<GetDecorateeParams<GetDecoratee<TDecoratable>>>
+        > & { createDecorator: typeof createDecorator };
     };
 }

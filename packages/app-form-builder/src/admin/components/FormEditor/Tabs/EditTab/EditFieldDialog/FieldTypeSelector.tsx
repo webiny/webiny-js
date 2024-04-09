@@ -34,10 +34,7 @@ interface FbFormModelFieldSelectorProps {
     fieldType: FbBuilderFieldPlugin["field"];
     onClick: (event: React.MouseEvent) => void;
 }
-const FbFormModelFieldSelector: React.FC<FbFormModelFieldSelectorProps> = ({
-    fieldType,
-    onClick
-}) => {
+const FbFormModelFieldSelector = ({ fieldType, onClick }: FbFormModelFieldSelectorProps) => {
     return (
         <span onClick={onClick} style={{ display: "inline-block" }}>
             <Elevation z={2} className={fieldTypeBox}>

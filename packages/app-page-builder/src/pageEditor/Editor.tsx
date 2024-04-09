@@ -7,7 +7,7 @@ import { PageProvider } from "@webiny/app-page-builder-elements/contexts/Page";
 import { Page } from "@webiny/app-page-builder-elements/types";
 import get from "lodash/get";
 import { Editor as PbEditor } from "~/admin/components/Editor";
-import { createElement, addElementId } from "~/editor/helpers";
+import { createElement } from "~/editor/helpers";
 import {
     GET_PAGE,
     CREATE_PAGE_FROM,
@@ -26,14 +26,15 @@ import { ListPageBlocksQueryResponse } from "~/admin/views/PageBlocks/graphql";
 import { LIST_BLOCK_CATEGORIES } from "~/admin/views/BlockCategories/graphql";
 import createElementPlugin from "~/admin/utils/createElementPlugin";
 import dotProp from "dot-prop-immutable";
-import { PbErrorResponse, PbBlockCategory, PbEditorElement } from "~/types";
+import { PbErrorResponse, PbBlockCategory } from "~/types";
 import createBlockCategoryPlugin from "~/admin/utils/createBlockCategoryPlugin";
 import { PageWithContent, RevisionsAtomType } from "~/pageEditor/state";
 import { createStateInitializer } from "./createStateInitializer";
-import { PageEditorConfig } from "./config/PageEditorConfig";
 import elementVariableRendererPlugins from "~/editor/plugins/elementVariables";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
+import { DefaultEditorConfig } from "~/editor";
+import { DefaultPageEditorConfig } from "~/pageEditor/config/DefaultPageEditorConfig";
 
 interface PageDataAndRevisionsState {
     page: PageWithContent | null;
@@ -54,17 +55,7 @@ const extractPageErrorData = (data: any): any => {
     return getPageData.error || {};
 };
 
-const getBlocksWithUniqueElementIds = (blocks: PbEditorElement[]): PbEditorElement[] => {
-    return blocks?.map((block: PbEditorElement) => {
-        if (block.data?.blockId) {
-            return addElementId(block);
-        } else {
-            return block;
-        }
-    });
-};
-
-export const PageEditor: React.FC = () => {
+export const PageEditor = () => {
     plugins.register(elementVariableRendererPlugins());
     const client = useApolloClient();
     const { history, params } = useRouter();
@@ -135,13 +126,9 @@ export const PageEditor: React.FC = () => {
 
                 const { revisions = [], content, ...restOfPageData } = extractPageData(data);
 
-                const existingContent = content
-                    ? { ...content, elements: getBlocksWithUniqueElementIds(content.elements) }
-                    : null;
-
                 const page: PageWithContent = {
                     ...restOfPageData,
-                    content: existingContent || createElement("document")
+                    content: content || createElement("document")
                 };
 
                 if (page.status === "draft") {
@@ -183,7 +170,8 @@ export const PageEditor: React.FC = () => {
     return (
         <React.Suspense fallback={<EditorLoadingScreen />}>
             <PageProvider page={page as Page}>
-                <PageEditorConfig />
+                <DefaultEditorConfig />
+                <DefaultPageEditorConfig />
                 <LoadData>
                     <PbEditor stateInitializerFactory={createStateInitializer(page!, revisions)} />
                 </LoadData>

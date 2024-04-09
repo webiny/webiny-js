@@ -50,6 +50,9 @@ export interface FoldersApiContext {
             | "createdOn"
             | "createdBy"
             | "savedOn"
+            | "savedBy"
+            | "modifiedOn"
+            | "modifiedBy"
         >
     ) => Promise<FolderItem>;
 
@@ -77,13 +80,21 @@ const rootFolder: FolderItem = {
     createdOn: "",
     createdBy: {
         id: "",
-        displayName: ""
+        displayName: "",
+        type: ""
     },
     hasNonInheritedPermissions: false,
     canManagePermissions: true,
     canManageStructure: true,
     canManageContent: true,
     savedOn: "",
+    savedBy: {
+        id: "",
+        displayName: "",
+        type: ""
+    },
+    modifiedOn: null,
+    modifiedBy: null,
     type: "$ROOT"
 };
 
@@ -91,7 +102,7 @@ interface FoldersByType {
     [type: string]: FolderItem[];
 }
 
-export const FoldersApiProvider: React.VFC<Props> = ({ children }) => {
+export const FoldersApiProvider = ({ children }: Props) => {
     const client = useApolloClient();
     const folderObservers = useRef(new Map<string, Set<OnCacheUpdate>>());
     const [cache, setCache] = useState<FoldersByType>({});

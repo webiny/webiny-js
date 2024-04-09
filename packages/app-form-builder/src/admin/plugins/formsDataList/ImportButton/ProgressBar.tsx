@@ -30,7 +30,7 @@ interface ProgressBarProps {
     width: string;
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ value, max, color, width }) => {
+const ProgressBar = ({ value, max, color, width }: ProgressBarProps) => {
     return (
         <Container color={color} width={width}>
             <progress value={value} max={max} />

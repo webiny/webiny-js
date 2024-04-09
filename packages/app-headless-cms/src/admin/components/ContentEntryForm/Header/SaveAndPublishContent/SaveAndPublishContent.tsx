@@ -1,12 +1,12 @@
 import React from "react";
 
-import { makeComposable } from "@webiny/react-composition";
+import { makeDecoratable } from "@webiny/react-composition";
 import { ContentEntryEditorConfig } from "~/admin/config/contentEntries";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import usePermission from "~/admin/hooks/usePermission";
 import { useSaveAndPublish } from "./useSaveAndPublish";
 
-const SaveAndPublishButtonComponent: React.FC = () => {
+const SaveAndPublishButtonComponent = () => {
     const { loading, entry } = useContentEntry();
     const { showConfirmationDialog } = useSaveAndPublish();
     const { ButtonPrimary } = ContentEntryEditorConfig.Actions.ButtonAction.useButtons();
@@ -28,7 +28,7 @@ const SaveAndPublishButtonComponent: React.FC = () => {
     );
 };
 
-export const SaveAndPublishButton = makeComposable(
+export const SaveAndPublishButton = makeDecoratable(
     "SaveAndPublishButton",
     SaveAndPublishButtonComponent
 );

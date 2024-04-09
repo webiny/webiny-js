@@ -7,7 +7,7 @@ import installation from "./plugins/installation";
 import permissionRenderer from "./plugins/permissionRenderer";
 import { FileManagerSettings } from "./views/FileManagerSettings";
 
-export const SettingsModule: React.FC = () => {
+export const SettingsModule = () => {
     plugins.register(installation, permissionRenderer);
 
     return (

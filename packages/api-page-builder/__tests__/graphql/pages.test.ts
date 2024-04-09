@@ -1,8 +1,10 @@
+import bytes from "bytes";
 import useGqlHandler from "./useGqlHandler";
-
 import { defaultIdentity } from "../tenancySecurity";
 import { expectCompressed } from "~tests/graphql/utils/expectCompressed";
 import { decompress } from "./utils/compression";
+import { calculateSize, createPageContent } from "~tests/graphql/mocks/pageContent";
+import { PageElementId } from "~/graphql/crud/pages/PageElementId";
 
 jest.setTimeout(100000);
 
@@ -16,6 +18,7 @@ describe("CRUD Test", () => {
         createPageBlock,
         createPageElement,
         deletePage,
+        duplicatePage,
         listPages,
         getPage,
         updatePage,
@@ -116,7 +119,11 @@ describe("CRUD Test", () => {
                             src: `https://someimages.com/image-${i}.png`
                         }
                     }
-                }
+                },
+                /**
+                 * This basically creates a page content of 1MB in size
+                 */
+                content: createPageContent("1MB")
             };
 
             await updatePage({
@@ -411,7 +418,12 @@ describe("CRUD Test", () => {
             data: {
                 name: "block-name",
                 blockCategory: "block-category",
-                content: { data: {}, elements: [], type: "block" }
+                content: {
+                    id: PageElementId.create().getValue(),
+                    data: {},
+                    elements: [],
+                    type: "block"
+                }
             }
         });
 
@@ -421,7 +433,12 @@ describe("CRUD Test", () => {
             data: {
                 name: "element-name",
                 type: "element",
-                content: { some: "element-content" }
+                content: {
+                    id: PageElementId.create().getValue(),
+                    type: "paragraph",
+                    data: {},
+                    elements: []
+                }
             }
         });
 
@@ -431,7 +448,7 @@ describe("CRUD Test", () => {
 
         const updatedContent = {
             ...uncompressedBlock,
-            elements: [...uncompressedBlock.content.elements, pageElementData]
+            elements: [...uncompressedBlock.content.elements, pageElementData.content]
         };
         const [updatePageBlockResult] = await updatePageBlock({
             id: blockData.id,
@@ -467,19 +484,26 @@ describe("CRUD Test", () => {
             category: "category-slug"
         });
 
-        const pageId = createPageResponse.data.pageBuilder.createPage.data.id;
+        const { id: pageId, content } = createPageResponse.data.pageBuilder.createPage.data;
 
         // Add block to the page as reference (without elements)
+        const pageBlockElementId = PageElementId.create().getValue();
+
         await updatePage({
             id: pageId,
             data: {
                 content: {
-                    data: {},
+                    ...content,
                     elements: [
-                        { data: { blockId: blockData.id }, elements: [], path: [], type: "block" }
-                    ],
-                    path: [],
-                    type: "document"
+                        ...content.elements,
+                        {
+                            id: pageBlockElementId,
+                            data: { blockId: blockData.id },
+                            elements: [],
+                            path: [],
+                            type: "block"
+                        }
+                    ]
                 }
             }
         });
@@ -494,16 +518,262 @@ describe("CRUD Test", () => {
             data: { blockId: blockData.id },
             elements: [
                 {
-                    id: pageElementData.id,
-                    name: "element-name",
-                    content: { some: "element-content" },
-                    type: "element",
-                    createdOn: expect.stringMatching(/^20/),
-                    createdBy: defaultIdentity
+                    ...pageElementData.content,
+                    id: `${pageBlockElementId}#${pageElementData.content.id}`
                 }
             ],
             path: [],
             type: "block"
         });
+    });
+
+    it("should create a page with large amount of content", async () => {
+        await createCategory({
+            data: {
+                slug: `slug`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const [createPageResponse] = await createPage({
+            category: "slug"
+        });
+        const id = createPageResponse.data.pageBuilder.createPage.data.id;
+        expect(id).toMatch("#0001");
+
+        const content = createPageContent("3.2MB");
+        const size = calculateSize(content);
+
+        expect(size).toBeGreaterThan(bytes("3.19MB"));
+
+        const [updatePageResponse] = await updatePage({
+            id,
+            data: {
+                content
+            }
+        });
+
+        expect(updatePageResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    updatePage: {
+                        data: {
+                            id
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        expect(updatePageResponse.data.pageBuilder.updatePage.data.content).toEqual(content);
+
+        const [getPageResponse] = await getPage({ id });
+        expect(getPageResponse).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        expect(getPageResponse.data.pageBuilder.getPage.data.content).toEqual(content);
+    });
+
+    it("should fail to update a page with above the limit content size", async () => {
+        await createCategory({
+            data: {
+                slug: `slug`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const [createPageResponse] = await createPage({
+            category: "slug"
+        });
+        const id = createPageResponse.data.pageBuilder.createPage.data.id;
+        expect(id).toMatch("#0001");
+
+        const content = createPageContent("4MB");
+        const size = calculateSize(content);
+
+        expect(size).toBeGreaterThan(bytes("3.99MB"));
+
+        const [updatePageResponse] = await updatePage({
+            id,
+            data: {
+                content
+            }
+        });
+
+        expect(updatePageResponse.data.pageBuilder.updatePage.error?.message).toEqual(
+            "Item size has exceeded the maximum allowed size"
+        );
+        expect(updatePageResponse.data.pageBuilder.updatePage.data).toBeNull();
+    });
+
+    it("should list all pages via pid_in condition", async () => {
+        const [categoryResponse] = await createCategory({
+            data: {
+                slug: `category`,
+                name: `Category`,
+                url: `/category-url/`,
+                layout: `layout`
+            }
+        });
+        const category = categoryResponse.data.pageBuilder.createCategory.data;
+
+        const page1 = await createPage({ category: category.slug }).then(([res]) => {
+            return res.data.pageBuilder.createPage.data;
+        });
+        const page2 = await createPage({ category: category.slug }).then(([res]) => {
+            return res.data.pageBuilder.createPage.data;
+        });
+        const page3 = await createPage({ category: category.slug }).then(([res]) => {
+            return res.data.pageBuilder.createPage.data;
+        });
+        const page4 = await createPage({ category: category.slug }).then(([res]) => {
+            return res.data.pageBuilder.createPage.data;
+        });
+        const page5 = await createPage({ category: category.slug }).then(([res]) => {
+            return res.data.pageBuilder.createPage.data;
+        });
+
+        const [result1] = await listPages({
+            where: {
+                pid_in: [page3.pid, page5.pid]
+            }
+        });
+        expect(result1).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            {
+                                pid: page5.pid
+                            },
+                            {
+                                pid: page3.pid
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            totalCount: 2
+                        }
+                    }
+                }
+            }
+        });
+
+        const [result2] = await listPages({
+            where: {
+                pid_in: [page2.pid]
+            }
+        });
+        expect(result2).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            {
+                                pid: page2.pid
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            totalCount: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        const [result3] = await listPages({
+            where: {
+                pid_in: [page1.pid, page2.pid, page3.pid, page4.pid, page5.pid]
+            }
+        });
+        expect(result3).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            {
+                                pid: page5.pid
+                            },
+                            {
+                                pid: page4.pid
+                            },
+                            {
+                                pid: page3.pid
+                            },
+                            {
+                                pid: page2.pid
+                            },
+                            {
+                                pid: page1.pid
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            totalCount: 5
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    it("should duplicate a page", async () => {
+        // Let's create a page and update it with some data
+        await createCategory({
+            data: {
+                slug: `slug`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const [createPageResponse] = await createPage({
+            category: "slug"
+        });
+
+        const id = createPageResponse.data.pageBuilder.createPage.data.id;
+        const content = createPageContent("1MB");
+        const settings = {
+            general: {
+                snippet: "any-snippet"
+            }
+        };
+
+        await updatePage({
+            id,
+            data: {
+                content,
+                settings
+            }
+        });
+
+        // Let's duplicate the page
+        const [duplicatePageResponse] = await duplicatePage({
+            id
+        });
+
+        expect(duplicatePageResponse.data.pageBuilder.duplicatePage.data.title).toContain(
+            " (Copy)"
+        );
+        expect(duplicatePageResponse.data.pageBuilder.duplicatePage.data.path).toContain("-copy");
+        expect(duplicatePageResponse.data.pageBuilder.duplicatePage.data.content).toEqual(content);
+        expect(
+            duplicatePageResponse.data.pageBuilder.duplicatePage.data.settings.general.snippet
+        ).toEqual(settings.general.snippet);
     });
 });

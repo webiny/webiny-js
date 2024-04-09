@@ -38,9 +38,7 @@ interface ImportTemplateDialogContentProps {
     onFileLink: (url: string) => void;
 }
 
-export const ImportTemplateDialogContent: React.FC<ImportTemplateDialogContentProps> = ({
-    onFileLink
-}) => {
+export const ImportTemplateDialogContent = ({ onFileLink }: ImportTemplateDialogContentProps) => {
     const ui = useUi();
     const [showLink, setShowLink] = useState<boolean>(false);
 

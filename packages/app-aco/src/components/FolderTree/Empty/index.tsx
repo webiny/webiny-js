@@ -7,7 +7,7 @@ import { Container } from "./styled";
 
 const t = i18n.ns("app-aco/components/folder-tree/empty");
 
-export const Empty: React.VFC = () => {
+export const Empty = () => {
     return (
         <Container>
             <Typography use={"body2"}>{t`No folders found...`}</Typography>

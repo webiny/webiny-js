@@ -2,16 +2,16 @@ import React, { Fragment, useCallback, useContext, useMemo, useState } from "rea
 import styled from "@emotion/styled";
 import { Drawer, DrawerContent, DrawerHeader } from "@webiny/ui/Drawer";
 import {
-    Compose,
-    Provider,
-    NavigationRenderer as NavigationSpec,
-    MenuItems,
-    MenuItemRenderer,
     Brand as BrandSpec,
-    useNavigation as useAdminNavigation,
+    Compose,
+    HigherOrderComponent,
     MenuData,
+    MenuItemRenderer,
+    MenuItems,
     MenuItemsProps,
-    HigherOrderComponent
+    NavigationRenderer as NavigationSpec,
+    Provider,
+    useNavigation as useAdminNavigation
 } from "@webiny/app-admin";
 import Hamburger from "./Hamburger";
 import { MenuGroupRenderer } from "./renderers/MenuGroupRenderer";
@@ -19,10 +19,9 @@ import { MenuSectionItemRenderer } from "./renderers/MenuSectionItemRenderer";
 import { MenuSectionRenderer } from "./renderers/MenuSectionRenderer";
 import { MenuLinkRenderer } from "./renderers/MenuLinkRenderer";
 import { MenuElementRenderer } from "./renderers/MenuElementRenderer";
-import { List, ListItem } from "@webiny/ui/List";
-import { MenuFooter, subFooter, MenuHeader, navHeader, navContent } from "./Styled";
-import { config as appConfig } from "@webiny/app/config";
-import { Typography } from "@webiny/ui/Typography";
+import { List } from "@webiny/ui/List";
+import { MenuFooter, MenuHeader, navContent, navHeader } from "./Styled";
+import { WebinyVersionListItem } from "./WebinyVersionListItem";
 
 const AutoWidthDrawer = styled(Drawer)`
     width: auto;
@@ -56,8 +55,12 @@ const BrandImpl: HigherOrderComponent = Brand => {
     };
 };
 
-const NavigationProvider = (Component: React.FC): React.FC => {
-    return function NavigationProvider(props) {
+interface NavigationProviderProps {
+    children?: React.ReactNode;
+}
+
+const NavigationProvider = (Component: React.ComponentType) => {
+    return function NavigationProvider(props: NavigationProviderProps) {
         const [visible, setVisible] = useState(false);
 
         const context = useMemo(() => ({ visible, setVisible }), [visible]);
@@ -70,7 +73,7 @@ const NavigationProvider = (Component: React.FC): React.FC => {
     };
 };
 
-export const NavigationImpl = (): React.FC => {
+export const NavigationImpl = () => {
     return function Navigation() {
         const { menuItems } = useAdminNavigation();
         const { visible, setVisible } = useNavigation();
@@ -89,8 +92,6 @@ export const NavigationImpl = (): React.FC => {
             [menuItems]
         );
 
-        const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
-
         return (
             <AutoWidthDrawer modal open={visible} onClose={hideDrawer}>
                 <DrawerHeader className={navHeader}>
@@ -104,9 +105,7 @@ export const NavigationImpl = (): React.FC => {
                 <MenuFooter>
                     <List nonInteractive>
                         <MenuItems menuItems={footerMenu} />
-                        <ListItem ripple={false} className={subFooter}>
-                            <Typography use={"body2"}>Webiny v{wbyVersion}</Typography>
-                        </ListItem>
+                        <WebinyVersionListItem />
                     </List>
                 </MenuFooter>
             </AutoWidthDrawer>
@@ -136,7 +135,7 @@ const SortedMenuItems: HigherOrderComponent<MenuItemsProps> = MenuItems => {
     };
 };
 
-export const Navigation: React.FC = () => {
+export const Navigation = () => {
     return (
         <Fragment>
             <Provider hoc={NavigationProvider} />

@@ -51,7 +51,7 @@ interface TitleProps {
     value: string;
     onChange: (value: string) => void;
 }
-const Title: React.FunctionComponent<TitleProps> = ({ value, onChange }) => {
+const Title: React.ComponentType<TitleProps> = ({ value, onChange }) => {
     const [editTitle, setEdit] = useState<boolean>(false);
     const [stateTitle, setTitle] = useState<string | null>(null);
     let title = stateTitle === null ? value : stateTitle;

@@ -8,7 +8,7 @@ export interface TitleProps {
     title?: string;
 }
 
-export const Title: React.FC<TitleProps> = ({ title }) => {
+export const Title = ({ title }: TitleProps) => {
     return (
         <Name use={"headline6"} tag={"h1"}>
             {title || <Skeleton theme={"dark"} />}

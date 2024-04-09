@@ -5,7 +5,7 @@ import debounce from "lodash/debounce";
 import { useRouter } from "@webiny/react-router";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { useAcoList, createSort } from "@webiny/app-aco";
-import { ListMeta } from "@webiny/app-aco/types";
+import { ListMeta, SearchRecordItem } from "@webiny/app-aco/types";
 
 import {
     Entry,
@@ -57,7 +57,7 @@ export const useAuditLogsList = (hasAccessToUsers: boolean): UseAuditLogs => {
         showFilters,
         hideFilters,
         showingFilters
-    } = useAcoList<AuditLog>();
+    } = useAcoList<SearchRecordItem<AuditLog>>();
 
     const [sorting, setSorting] = useState<Sorting>([]);
     const [search, setSearch] = useState<string>("");

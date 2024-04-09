@@ -33,7 +33,11 @@ import { PbEditorPageElementPlugin } from "~/types";
 import { ElementControls } from "./EditorPageElementsProvider/ElementControls";
 import { mediaToContainer } from "./EditorPageElementsProvider/mediaToContainer";
 
-export const EditorPageElementsProvider: React.FC = ({ children }) => {
+interface EditorPageElementsProviderProps {
+    children: React.ReactNode;
+}
+
+export const EditorPageElementsProvider = ({ children }: EditorPageElementsProviderProps) => {
     const pageBuilder = usePageBuilder();
 
     const renderers = plugins

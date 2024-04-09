@@ -64,7 +64,7 @@ type WebsiteScriptsProps = {
     footerTags?: string;
 };
 
-const WebsiteScripts: React.FC<WebsiteScriptsProps> = ({ headerTags, footerTags }) => {
+const WebsiteScripts = ({ headerTags, footerTags }: WebsiteScriptsProps) => {
     // `WebsiteScripts` component doesn't do anything if we're
     // in the middle of a prerendering process.
     if ("__PS_RENDER__" in window) {

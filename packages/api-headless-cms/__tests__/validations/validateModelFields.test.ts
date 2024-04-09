@@ -369,7 +369,9 @@ describe("Validate model fields", () => {
                 modelId: "test",
                 error: {
                     stack: expect.any(String),
-                    message: `Field "TestListWhereInput.status" can only be defined once.
+                    message: `Field "TestInput.status" can only be defined once.
+
+Field "TestListWhereInput.status" can only be defined once.
 
 Field "TestListWhereInput.status_not" can only be defined once.
 

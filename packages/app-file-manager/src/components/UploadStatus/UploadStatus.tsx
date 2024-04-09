@@ -22,7 +22,7 @@ export interface UploadStatusProps {
     progress: number;
     numberOfFiles: number;
 }
-export const UploadStatus: React.FC<UploadStatusProps> = ({ numberOfFiles, progress }) => {
+export const UploadStatus = ({ numberOfFiles, progress }: UploadStatusProps) => {
     if (!numberOfFiles) {
         return null;
     }

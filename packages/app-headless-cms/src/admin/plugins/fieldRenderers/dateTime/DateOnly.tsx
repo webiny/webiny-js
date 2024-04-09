@@ -7,13 +7,13 @@ import {
 } from "~/admin/plugins/fieldRenderers/dateTime/utils";
 import { BindComponentRenderProp } from "@webiny/form";
 
-export interface Props {
+export interface DateOnlyProps {
     field: CmsModelField;
     bind: BindComponentRenderProp;
     trailingIcon?: TrailingIcon;
 }
 
-export const DateOnly: React.FC<Props> = props => {
+export const DateOnly = (props: DateOnlyProps) => {
     const { field, bind, trailingIcon } = props;
     const date = getDefaultFieldValue(field, bind, () => {
         return getCurrentDate(new Date());

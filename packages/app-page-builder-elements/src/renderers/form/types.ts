@@ -11,7 +11,7 @@ export interface FormDataFieldValidator {
 }
 
 export interface FormDataField {
-    _id?: string;
+    _id: string;
     type: string;
     name: string;
     fieldId: FieldIdType;
@@ -113,7 +113,7 @@ export type ReCaptchaProps = {
     onExpired?: (...args: any[]) => void;
 };
 
-export type ReCaptchaComponent = React.FC<ReCaptchaProps>;
+export type ReCaptchaComponent = React.ComponentType<ReCaptchaProps>;
 
 export type TermsOfServiceChildrenFunction = (params: {
     onChange: (value: boolean) => void;
@@ -129,7 +129,7 @@ export interface TermsOfServiceProps {
     onExpired?: (...args: any[]) => void;
 }
 
-export type TermsOfServiceComponent = React.FC<TermsOfServiceProps>;
+export type TermsOfServiceComponent = React.ComponentType<TermsOfServiceProps>;
 
 export type FormSubmissionFieldValues = Record<string, any>;
 
@@ -189,7 +189,7 @@ export interface CreateFormParams {
         | (() => CreateFormParamsFormLayoutComponent[]);
     fieldValidators?: CreateFormParamsValidator[] | (() => CreateFormParamsValidator[]);
     triggers?: CreateFormParamsTrigger[] | (() => CreateFormParamsTrigger[]);
-    renderFormNotSelected?: React.VFC;
-    renderFormLoading?: React.VFC;
-    renderFormNotFound?: React.VFC;
+    renderFormNotSelected?: React.FC;
+    renderFormLoading?: React.FC;
+    renderFormNotFound?: React.FC;
 }

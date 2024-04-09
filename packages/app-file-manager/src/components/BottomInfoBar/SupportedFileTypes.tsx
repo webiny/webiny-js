@@ -25,7 +25,7 @@ export interface SupportedFileTypesProps {
     accept: string[];
 }
 
-const SupportedFileTypes: React.FC<SupportedFileTypesProps> = ({ accept }) => {
+const SupportedFileTypes = ({ accept }: SupportedFileTypesProps) => {
     if (!accept) {
         return null;
     }

@@ -3,10 +3,11 @@ import styled from "@emotion/styled";
 import { css } from "emotion";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
 import classnames from "classnames";
-import { ChromePicker } from "react-color";
+import { ChromePicker, ColorState } from "react-color";
 
 // Icons
 import { ReactComponent as IconPalette } from "./round-color_lens-24px.svg";
+import { OnChangeHandler } from "react-color/lib/components/common/ColorWrap";
 
 const ColorPickerStyle = styled("div")({
     position: "relative",
@@ -112,11 +113,11 @@ interface LexicalColorPickerProps {
     handlerClassName?: string;
 }
 
-export const LexicalColorPicker: React.FC<LexicalColorPickerProps> = ({
+export const LexicalColorPicker = ({
     value,
     onChange,
     onChangeComplete
-}) => {
+}: LexicalColorPickerProps) => {
     const [showPicker, setShowPicker] = useState(false);
     // Either a custom color or a color coming from the theme object.
     const [actualSelectedColor, setActualSelectedColor] = useState(value || "#fff");
@@ -127,7 +128,7 @@ export const LexicalColorPicker: React.FC<LexicalColorPickerProps> = ({
     }, []);
 
     const onColorChange = useCallback(
-        (color, event) => {
+        (color: ColorState, event: React.SyntheticEvent) => {
             event.preventDefault();
             // controls of the picker are updated as user moves the mouse
             const customColor = getColorValue(color.rgb);
@@ -140,7 +141,7 @@ export const LexicalColorPicker: React.FC<LexicalColorPickerProps> = ({
     );
 
     const onColorChangeComplete = useCallback(
-        ({ rgb }, event) => {
+        ({ rgb }: ColorState, event: React.SyntheticEvent) => {
             setActualSelectedColor(value);
             onChangeComplete(getColorValue(rgb));
             event.preventDefault();
@@ -213,8 +214,9 @@ export const LexicalColorPicker: React.FC<LexicalColorPickerProps> = ({
             {showPicker && (
                 <ChromePicker
                     color={actualSelectedColor}
-                    onChange={onColorChange}
-                    onChangeComplete={onColorChangeComplete}
+                    // TODO figure out types for the props
+                    onChange={onColorChange as OnChangeHandler}
+                    onChangeComplete={onColorChangeComplete as OnChangeHandler}
                 />
             )}
         </ColorPickerStyle>

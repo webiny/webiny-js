@@ -26,6 +26,7 @@ import { FileManagerContext } from "@webiny/api-file-manager/types";
 
 // CRUD types.
 export interface ListPagesParamsWhere {
+    pid_in?: string[];
     category?: string;
     status?: string;
     tags?: { query: string[]; rule?: "any" | "all" };
@@ -223,60 +224,6 @@ export interface PagesCrud {
         render(args: RenderParams): Promise<void>;
         flush(args: FlushParams): Promise<void>;
     };
-    /**
-     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
-     */
-    /**
-     * @deprecated
-     */
-    onBeforePageCreate: Topic<OnPageBeforeCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterPageCreate: Topic<OnPageAfterCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforePageCreateFrom: Topic<OnPageBeforeCreateFromTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterPageCreateFrom: Topic<OnPageAfterCreateFromTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforePageUpdate: Topic<OnPageBeforeUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterPageUpdate: Topic<OnPageAfterUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforePageDelete: Topic<OnPageBeforeDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterPageDelete: Topic<OnPageAfterDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforePagePublish: Topic<OnPageBeforePublishTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterPagePublish: Topic<OnPageAfterPublishTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforePageUnpublish: Topic<OnPageBeforeUnpublishTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterPageUnpublish: Topic<OnPageAfterUnpublishTopicParams>;
-    /**
-     * Lifecycle events introduced in 5.34.0
-     */
     onPageBeforeCreate: Topic<OnPageBeforeCreateTopicParams>;
     onPageAfterCreate: Topic<OnPageAfterCreateTopicParams>;
     onPageBeforeCreateFrom: Topic<OnPageBeforeCreateFromTopicParams>;
@@ -402,39 +349,6 @@ export interface CategoriesCrud {
     createCategory(data: PbCategoryInput): Promise<Category>;
     updateCategory(slug: string, data: PbCategoryInput): Promise<Category>;
     deleteCategory(slug: string): Promise<Category>;
-    /**
-     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
-     */
-    /**
-     * @deprecated
-     */
-    /**
-     * @deprecated
-     */
-    onBeforeCategoryCreate: Topic<OnCategoryBeforeCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterCategoryCreate: Topic<OnCategoryAfterCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeCategoryUpdate: Topic<OnCategoryBeforeUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterCategoryUpdate: Topic<OnCategoryAfterUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeCategoryDelete: Topic<OnCategoryBeforeDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterCategoryDelete: Topic<OnCategoryAfterDeleteTopicParams>;
-    /**
-     * Introduced in 5.34.0
-     */
     onCategoryBeforeCreate: Topic<OnCategoryBeforeCreateTopicParams>;
     onCategoryAfterCreate: Topic<OnCategoryAfterCreateTopicParams>;
     onCategoryBeforeUpdate: Topic<OnCategoryBeforeUpdateTopicParams>;
@@ -508,36 +422,6 @@ export interface MenusCrud {
     createMenu(data: CreateMenuInput): Promise<Menu>;
     updateMenu(slug: string, data: Record<string, any>): Promise<Menu>;
     deleteMenu(slug: string): Promise<Menu>;
-    /**
-     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
-     */
-    /**
-     * @deprecated
-     */
-    onBeforeMenuCreate: Topic<OnMenuBeforeCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterMenuCreate: Topic<OnMenuAfterCreateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeMenuUpdate: Topic<OnMenuBeforeUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterMenuUpdate: Topic<OnMenuAfterUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onBeforeMenuDelete: Topic<OnMenuBeforeDeleteTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterMenuDelete: Topic<OnMenuAfterDeleteTopicParams>;
-    /**
-     * Lifecycle events introduced in 5.34.0
-     */
     onMenuBeforeCreate: Topic<OnMenuBeforeCreateTopicParams>;
     onMenuAfterCreate: Topic<OnMenuAfterCreateTopicParams>;
     onMenuBeforeUpdate: Topic<OnMenuBeforeUpdateTopicParams>;
@@ -589,20 +473,6 @@ export interface SettingsCrud {
         data: Record<string, any>,
         options?: { auth?: boolean } & DefaultSettingsCrudOptions
     ) => Promise<Settings>;
-    /**
-     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
-     */
-    /**
-     * @deprecated
-     */
-    onBeforeSettingsUpdate: Topic<OnSettingsBeforeUpdateTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterSettingsUpdate: Topic<OnSettingsAfterUpdateTopicParams>;
-    /**
-     * Lifecycle events introduced in 5.34.0
-     */
     onSettingsBeforeUpdate: Topic<OnSettingsBeforeUpdateTopicParams>;
     onSettingsAfterUpdate: Topic<OnSettingsAfterUpdateTopicParams>;
 }
@@ -627,17 +497,6 @@ export interface SystemCrud {
     getSystemVersion(): Promise<string | null>;
     setSystemVersion(version: string): Promise<void>;
     installSystem(args: { name: string; insertDemoData: boolean }): Promise<void>;
-    /**
-     * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
-     */
-    /**
-     * @deprecated
-     */
-    onBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
-    /**
-     * @deprecated
-     */
-    onAfterInstall: Topic<OnSystemBeforeInstallTopicParams>;
     /**
      * Lifecycle events
      */

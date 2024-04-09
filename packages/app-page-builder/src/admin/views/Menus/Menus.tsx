@@ -4,7 +4,7 @@ import MenusDataList from "./MenusDataList";
 import MenusForm from "./MenusForm";
 import { useMenusPermissions } from "~/hooks/permissions";
 
-const Menus: React.FC = () => {
+const Menus = () => {
     const { canCreate } = useMenusPermissions();
     return (
         <SplitView>

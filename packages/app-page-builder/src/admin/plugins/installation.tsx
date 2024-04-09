@@ -45,7 +45,7 @@ const INSTALL = gql`
 interface PbInstallerProps {
     onInstalled: () => void;
 }
-const PBInstaller: React.FC<PbInstallerProps> = ({ onInstalled }) => {
+const PBInstaller = ({ onInstalled }: PbInstallerProps) => {
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);

@@ -1,7 +1,7 @@
+import { createPrivateModel } from "@webiny/api-headless-cms";
+import { CmsModelField } from "@webiny/api-headless-cms/types";
 import { createModelField } from "./utils";
 import { stepTitleField, stepTypeField, stepIdField, stepReviewersField } from "./workflow.model";
-import { CmsModelField } from "@webiny/api-headless-cms/types";
-import { WorkflowModelDefinition } from "~/types";
 
 const contentField = (fields: CmsModelField[]) =>
     createModelField({
@@ -279,48 +279,41 @@ interface CreateContentReviewModelDefinitionParams {
 
 export const CONTENT_REVIEW_MODEL_ID = "apwContentReviewModelDefinition";
 
-export const createContentReviewModelDefinition = ({
+export const createContentReviewModel = ({
     reviewerModelId
-}: CreateContentReviewModelDefinitionParams): WorkflowModelDefinition => ({
-    name: "APW - Content Review",
-    modelId: CONTENT_REVIEW_MODEL_ID,
-    titleFieldId: "content",
-    layout: [
-        ["contentReview_title"],
-        ["contentReview_content"],
-        ["contentReview_reviewStatus"],
-        ["contentReview_reviewRequestedBy"],
-        ["contentReview_steps"],
-        ["contentReview_changeRequested"],
-        ["contentReview_latestCommentId"],
-        ["contentReview_workflowId"]
-    ],
-    fields: [
-        titleField(),
-        contentField([
-            contentIdField(),
-            contentTypeField(),
-            contentSettingsField([contentSettingsModelIdField()]),
-            contentScheduledOnField(),
-            contentScheduledByField(),
-            scheduledActionIdField(),
-            contentPublishedByField()
-        ]),
-        contentStatus(),
-        stepsField([
-            stepTitleField(),
-            stepTypeField(),
-            stepIdField(),
-            stepReviewersField(reviewerModelId),
-            stepStatusField(),
-            stepPendingChangeRequests(),
-            stepTotalComments(),
-            stepSignOffProvidedOn(),
-            stepSignOffProvidedBy([stepSignOffProvidedById(), stepSignOffProvidedByDisplayName()])
-        ]),
-        latestCommentId(),
-        workflowIdField()
-    ],
-    description: "",
-    isPrivate: true
-});
+}: CreateContentReviewModelDefinitionParams) => {
+    return createPrivateModel({
+        name: "APW - Content Review",
+        modelId: CONTENT_REVIEW_MODEL_ID,
+        titleFieldId: "content",
+        fields: [
+            titleField(),
+            contentField([
+                contentIdField(),
+                contentTypeField(),
+                contentSettingsField([contentSettingsModelIdField()]),
+                contentScheduledOnField(),
+                contentScheduledByField(),
+                scheduledActionIdField(),
+                contentPublishedByField()
+            ]),
+            contentStatus(),
+            stepsField([
+                stepTitleField(),
+                stepTypeField(),
+                stepIdField(),
+                stepReviewersField(reviewerModelId),
+                stepStatusField(),
+                stepPendingChangeRequests(),
+                stepTotalComments(),
+                stepSignOffProvidedOn(),
+                stepSignOffProvidedBy([
+                    stepSignOffProvidedById(),
+                    stepSignOffProvidedByDisplayName()
+                ])
+            ]),
+            latestCommentId(),
+            workflowIdField()
+        ]
+    });
+};

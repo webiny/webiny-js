@@ -42,7 +42,7 @@ const displayErrors = (errors?: ValidationError[]) => {
     );
 };
 
-export const Settings: React.FC = () => {
+export const Settings = () => {
     const { showSnackbar } = useSnackbar();
 
     const password = useRef<HTMLInputElement>();

@@ -36,7 +36,7 @@ const centeredContent = css({
     }
 });
 
-const ContentModels: React.FC = () => {
+const ContentModels = () => {
     const [newContentModelDialogOpened, openNewContentModelDialog] = React.useState(false);
 
     const [cloneContentModel, setCloneContentModel] = React.useState<CmsModel | null>(null);

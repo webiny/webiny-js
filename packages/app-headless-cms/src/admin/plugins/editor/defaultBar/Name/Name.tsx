@@ -18,7 +18,7 @@ declare global {
     }
 }
 
-export const Name: React.FC = () => {
+export const Name = () => {
     const { data, setData } = useModelEditor();
     const [localName, setLocalName] = useState<string>("");
     const [editingEnabled, setEditing] = useState<boolean>(false);

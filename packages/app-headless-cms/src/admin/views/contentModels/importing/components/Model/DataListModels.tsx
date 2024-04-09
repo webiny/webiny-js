@@ -11,11 +11,11 @@ const Container = styled("div")({
     borderBox: "box-sizing"
 });
 
-interface Props {
+interface DataListModelsProps {
     models: ImportModelData[];
 }
 
-export const DataListModels: React.VFC<Props> = ({ models }) => {
+export const DataListModels = ({ models }: DataListModelsProps) => {
     const { toggleModel, isModelSelected } = useImport();
     return (
         <Container>

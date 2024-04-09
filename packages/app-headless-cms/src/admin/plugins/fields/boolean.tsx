@@ -13,7 +13,7 @@ interface OptionsProps {
     value?: boolean | "true" | "false";
 }
 
-const Options: React.VFC<OptionsProps> = ({ onChange, value: initialValue }) => {
+const Options = ({ onChange, value: initialValue }: OptionsProps) => {
     const value = initialValue === true || initialValue === "true";
 
     return (

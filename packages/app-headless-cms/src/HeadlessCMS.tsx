@@ -13,10 +13,13 @@ import { DefaultOnEntryUnpublish } from "~/admin/plugins/entry/DefaultOnEntryUnp
 import allPlugins from "./allPlugins";
 import { LexicalEditorCmsPlugin } from "~/admin/components/LexicalCmsEditor/LexicalEditorCmsPlugin";
 
+interface HeadlessCMSProvider {
+    children: React.ReactNode;
+}
+
 const createHeadlessCMSProvider =
-    (createApolloClient: CreateApolloClient) =>
-    (Component: React.FC): React.FC => {
-        return function HeadlessCMSProvider({ children }) {
+    (createApolloClient: CreateApolloClient) => (Component: React.ComponentType) => {
+        return function HeadlessCMSProvider({ children }: HeadlessCMSProvider) {
             return (
                 <CmsProvider createApolloClient={createApolloClient}>
                     <Component>{children}</Component>

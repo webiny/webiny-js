@@ -33,6 +33,10 @@ const getRunItemDuration = (runItem: MigrationRunItem) => {
     return new Date(runItem.finishedOn).getTime() - new Date(runItem.startedOn).getTime();
 };
 
+/**
+ * This allows us to force-execute a migration, even if it's not in the list of the applicable migrations.
+ * Example: WEBINY_MIGRATION_FORCE_EXECUTE_5_35_0_006=true
+ */
 const shouldForceExecute = (mig: DataMigration) => {
     const key = `WEBINY_MIGRATION_FORCE_EXECUTE_${mig.getId().replace(/[\.\-]/g, "_")}`;
 
@@ -69,7 +73,12 @@ export class MigrationRunner {
         this.context = context;
     }
 
-    async execute(projectVersion: string, isApplicable?: IsMigrationApplicable) {
+    async execute(
+        projectVersion: string,
+        isApplicable?: IsMigrationApplicable,
+        // Force execute applicable migrations.
+        forceExecute = false
+    ) {
         const lastRun = await this.getOrCreateRun();
 
         try {
@@ -122,6 +131,14 @@ export class MigrationRunner {
 
         const isMigrationApplicable = isApplicable || defaultIsApplicable;
 
+        this.printForceExecuteEnvVars();
+
+        if (forceExecute) {
+            this.logger.info(
+                `ALL APPLICABLE MIGRATIONS WILL BE FORCE-EXECUTED! (via --force flag)`
+            );
+        }
+
         const executableMigrations = this.migrations
             .filter(mig => {
                 if (shouldForceExecute(mig)) {
@@ -165,7 +182,7 @@ export class MigrationRunner {
                 projectVersion,
                 logger,
                 checkpoint,
-                forceExecute: shouldForceExecute(migration),
+                forceExecute: forceExecute || shouldForceExecute(migration),
                 runningOutOfTime: shouldCreateCheckpoint,
                 createCheckpoint: async (data: unknown) => {
                     await this.createCheckpoint(migration, data);
@@ -178,7 +195,7 @@ export class MigrationRunner {
             };
             try {
                 const shouldExecute =
-                    checkpoint || shouldForceExecute(migration)
+                    checkpoint || context.forceExecute
                         ? true
                         : await migration.shouldExecute(context);
 
@@ -364,6 +381,25 @@ export class MigrationRunner {
     private async setRunItemAndSave(run: MigrationRun, item: MigrationRunItem) {
         this.setRunItem(run, item);
         await this.repository.saveRun(run);
+    }
+
+    private printForceExecuteEnvVars() {
+        const forceKeys = Object.keys(process.env).filter(key =>
+            key.startsWith("WEBINY_MIGRATION_FORCE_EXECUTE_")
+        );
+
+        if (!forceKeys.length) {
+            this.logger.info(
+                `No migrations are enforced via WEBINY_MIGRATION_FORCE_EXECUTE environment variable.`
+            );
+
+            return;
+        }
+
+        this.logger.info(`FORCED MIGRATIONS DETECTED!`);
+        for (const key of forceKeys) {
+            this.logger.info(`${key}=${process.env[key]}`);
+        }
     }
 }
 

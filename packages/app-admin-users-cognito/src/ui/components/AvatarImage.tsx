@@ -8,7 +8,7 @@ const getImagePreviewStyles = (round: boolean) => ({
     objectFit: "cover"
 });
 
-const AvatarImage: React.FC<SingleImageUploadProps> = props => {
+const AvatarImage = (props: SingleImageUploadProps) => {
     return (
         <SingleImageUpload
             {...props}

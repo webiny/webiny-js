@@ -44,7 +44,7 @@ const INSTALL = gql`
 interface I18NInstallerProps {
     onInstalled: () => void;
 }
-const I18NInstaller: React.FC<I18NInstallerProps> = ({ onInstalled }) => {
+const I18NInstaller = ({ onInstalled }: I18NInstallerProps) => {
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);

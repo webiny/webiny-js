@@ -29,7 +29,10 @@ ViewCompositionContext.displayName = "ViewCompositionContext";
 interface ViewCompositionProviderState {
     [key: string]: Record<string, any>;
 }
-const ViewCompositionProvider: React.FC = ({ children }) => {
+interface ViewCompositionProviderProps {
+    children: React.ReactNode;
+}
+const ViewCompositionProvider = ({ children }: ViewCompositionProviderProps) => {
     const [state, setState] = useState<ViewCompositionProviderState>({});
 
     const context = useMemo(
@@ -64,14 +67,16 @@ export function useViewComposition() {
     return useContext(ViewCompositionContext);
 }
 
-export const createViewCompositionProvider =
-    () =>
-    (Component: React.ComponentType<unknown>): React.FC => {
-        return function ViewCompositionProviderHOC({ children }) {
-            return (
-                <ViewCompositionProvider>
-                    <Component>{children}</Component>
-                </ViewCompositionProvider>
-            );
-        };
+interface ViewCompositionProviderHOCProps {
+    children: React.ReactNode;
+}
+
+export const createViewCompositionProvider = () => (Component: React.ComponentType<unknown>) => {
+    return function ViewCompositionProviderHOC({ children }: ViewCompositionProviderHOCProps) {
+        return (
+            <ViewCompositionProvider>
+                <Component>{children}</Component>
+            </ViewCompositionProvider>
+        );
     };
+};

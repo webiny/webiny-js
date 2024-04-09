@@ -85,7 +85,7 @@ interface PagePreviewProps {
     getPageQuery?: QueryResult;
 }
 
-const PagePreview: React.FC<PagePreviewProps> = ({ page }) => {
+const PagePreview = ({ page }: PagePreviewProps) => {
     return (
         <Zoom>
             {({ zoom, setZoom }) => (

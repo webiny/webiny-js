@@ -62,7 +62,7 @@ interface EditActionProps {
     file: FileItem;
 }
 
-export const EditAction: React.FC<EditActionProps> = props => {
+export const EditAction = (props: EditActionProps) => {
     const { file } = props;
     const { canEdit } = useFileManagerApi();
     const { uploadFile } = useFileManagerView();
@@ -94,6 +94,7 @@ export const EditAction: React.FC<EditActionProps> = props => {
                     onAccept={src => {
                         const blob = dataURLtoBlob(src);
                         blob.name = file.name;
+                        blob.key = file.key.split("/").pop();
                         uploadFile(blob);
                         dispatch({ type: "hideImageEditor" });
                     }}

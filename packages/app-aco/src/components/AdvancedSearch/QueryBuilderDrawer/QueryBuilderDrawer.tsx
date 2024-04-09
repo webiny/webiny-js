@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { observer } from "mobx-react-lite";
-
 import { FormAPI } from "@webiny/form";
 import { DrawerContent } from "@webiny/ui/Drawer";
 // @ts-expect-error
@@ -9,13 +8,13 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { QueryBuilder } from "./QueryBuilder";
 
-import { FieldRaw, FilterDTO } from "~/components/AdvancedSearch/domain";
+import { FieldDTOWithElement, FilterDTO } from "~/components/AdvancedSearch/domain";
 
 import { DrawerContainer } from "./QueryBuilderDrawer.styled";
 import { QueryBuilderDrawerPresenter, QueryBuilderFormData } from "./QueryBuilderDrawerPresenter";
 
 interface QueryBuilderDrawerProps {
-    fields: FieldRaw[];
+    fields: FieldDTOWithElement[];
     onClose: () => void;
     onSave: (data: FilterDTO) => void;
     onApply: (data: FilterDTO) => void;
@@ -28,8 +27,8 @@ interface QueryBuilderDrawerProps {
 
 export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDrawerProps) => {
     const presenter = useMemo<QueryBuilderDrawerPresenter>(() => {
-        return new QueryBuilderDrawerPresenter(props.fields);
-    }, [props.fields]);
+        return new QueryBuilderDrawerPresenter();
+    }, []);
 
     useEffect(() => {
         presenter.load(filter);
@@ -72,8 +71,8 @@ export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDr
     const ref = useRef<FormAPI | null>(null);
 
     return (
-        <DrawerContainer modal open={props.vm.isOpen} onClose={props.onClose} dir="rtl">
-            <DrawerContent dir="ltr">
+        <DrawerContainer modal open={props.vm.isOpen} onClose={props.onClose}>
+            <DrawerContent>
                 <Header onClose={props.onClose} />
                 <QueryBuilder
                     onForm={form => (ref.current = form)}
@@ -88,6 +87,7 @@ export const QueryBuilderDrawer = observer(({ filter, ...props }: QueryBuilderDr
                     }
                     onAddNewFilterToGroup={groupIndex => presenter.addNewFilterToGroup(groupIndex)}
                     onAddGroup={() => presenter.addGroup()}
+                    fields={props.fields}
                     vm={presenter.vm}
                 />
                 <Footer formRef={ref} onClose={props.onClose} onSave={onSave} />

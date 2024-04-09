@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useState } from "react";
-import { makeComposable } from "@webiny/app";
+import { createVoidComponent, makeDecoratable } from "@webiny/app";
 
 export interface UserMenuItemData {
     label?: string;
@@ -26,8 +26,13 @@ export function useUserMenu() {
     return React.useContext(UserMenuContext);
 }
 
-export const UserMenuProvider = (Component: React.FC): React.FC => {
-    return function UserMenuProvider({ children, ...props }) {
+interface UserMenuProviderProps {
+    children: React.ReactNode;
+    [key: string]: any;
+}
+
+export const UserMenuProvider = (Component: React.ComponentType) => {
+    return function UserMenuProvider({ children, ...props }: UserMenuProviderProps) {
         const [menuItems, setItems] = useState<UserMenuItemData[]>([]);
 
         const addMenuItem = useCallback<UserMenuContext["addMenuItem"]>(
@@ -61,23 +66,26 @@ export const UserMenuProvider = (Component: React.FC): React.FC => {
     };
 };
 
-export const UserMenu = makeComposable("UserMenu", () => {
+export const UserMenu = makeDecoratable("UserMenu", () => {
     return <UserMenuRenderer />;
 });
 
-export const UserMenuRenderer = makeComposable("UserMenuRenderer");
+export const UserMenuRenderer = makeDecoratable("UserMenuRenderer", createVoidComponent());
 
-export const UserMenuHandle = makeComposable("UserMenuHandle", () => {
+export const UserMenuHandle = makeDecoratable("UserMenuHandle", () => {
     return <UserMenuHandleRenderer />;
 });
 
-export const UserMenuHandleRenderer = makeComposable("UserMenuHandleRenderer");
+export const UserMenuHandleRenderer = makeDecoratable(
+    "UserMenuHandleRenderer",
+    createVoidComponent()
+);
 
 export interface UserMenuItemProps {
     menuItem: UserMenuItemData;
 }
 
-export const UserMenuItem = makeComposable<UserMenuItemProps>("UserMenuItem", ({ menuItem }) => {
+export const UserMenuItem = makeDecoratable("UserMenuItem", ({ menuItem }: UserMenuItemProps) => {
     return (
         <UserMenuItemContext.Provider value={menuItem}>
             <UserMenuItemRenderer />
@@ -85,9 +93,9 @@ export const UserMenuItem = makeComposable<UserMenuItemProps>("UserMenuItem", ({
     );
 });
 
-export const UserMenuItemRenderer = makeComposable("UserMenuItemRenderer");
+export const UserMenuItemRenderer = makeDecoratable("UserMenuItemRenderer", createVoidComponent());
 
-export const AddUserMenuItem: React.FC<UserMenuItemProps["menuItem"]> = props => {
+export const AddUserMenuItem = (props: UserMenuItemProps["menuItem"]) => {
     const { addMenuItem } = useUserMenu();
 
     useEffect(() => {
@@ -118,9 +126,9 @@ export interface UserMenuItemsProps {
     menuItems: UserMenuItemData[];
 }
 
-export const UserMenuItems = makeComposable<UserMenuItemsProps>(
+export const UserMenuItems = makeDecoratable(
     "UserMenuItems",
-    ({ menuItems }) => {
+    ({ menuItems }: UserMenuItemsProps) => {
         return (
             <Fragment>
                 {menuItems.map((item, index) => (

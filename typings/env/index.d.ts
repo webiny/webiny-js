@@ -49,6 +49,8 @@ declare namespace NodeJS {
         STAGED_ROLLOUTS_VARIANT?: string;
         ELASTIC_SEARCH_ENDPOINT?: string;
         EVENT_BUS?: string;
+        WEBINY_FUNCTION_TYPE?: string;
+        WEBINY_DEV_DEBUG?: "true" | string;
         /**
          * Okta
          */

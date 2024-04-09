@@ -9,6 +9,7 @@ import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import { IconPicker } from "~/admin/components/IconPicker";
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "~/admin/components/Dialog";
 import { Alert } from "@webiny/ui/Alert";
+import { Tags } from "@webiny/ui/Tags";
 
 const typeNameValidator = (value: string) => {
     const regex = new RegExp("^[A-Z]+[_0-9A-Za-z]+$");
@@ -32,7 +33,7 @@ interface TemplateDialogProps {
     onTemplate: (template: CmsDynamicZoneTemplate) => void;
 }
 
-export const TemplateDialog: React.VFC<TemplateDialogProps> = props => {
+export const TemplateDialog = (props: TemplateDialogProps) => {
     const [showWarning, setWarning] = useState(false);
     const newTemplate = !Boolean(props.template);
     const dialogTitle = newTemplate ? "Add Template" : "Edit Template";
@@ -151,6 +152,11 @@ export const TemplateDialog: React.VFC<TemplateDialogProps> = props => {
                                         validators={[validation.create("required")]}
                                     >
                                         <Input rows={3} label={"Description"} />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind name={"tags"} defaultValue={[]}>
+                                        <Tags label={"Tags"} />
                                     </Bind>
                                 </Cell>
                             </Grid>

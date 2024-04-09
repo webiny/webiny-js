@@ -3,13 +3,16 @@ import {
     FormBuilderSystemStorageOperations as BaseFormBuilderSystemStorageOperations,
     FormBuilderSubmissionStorageOperations as BaseFormBuilderSubmissionStorageOperations,
     FormBuilderSettingsStorageOperations as BaseFormBuilderSettingsStorageOperations,
-    FormBuilderFormStorageOperations as BaseFormBuilderFormStorageOperations
+    FormBuilderFormStorageOperations as BaseFormBuilderFormStorageOperations,
+    FormBuilderContext
 } from "@webiny/api-form-builder/types";
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PluginCollection } from "@webiny/plugins/types";
+
+export { FormBuilderContext };
 
 export type Attributes = Record<string, AttributeDefinition>;
 
@@ -23,7 +26,7 @@ export enum ENTITIES {
 }
 
 export interface FormBuilderStorageOperationsFactoryParams {
-    documentClient: DynamoDBClient;
+    documentClient: DynamoDBDocument;
     elasticsearch: Client;
     table?: string;
     esTable?: string;

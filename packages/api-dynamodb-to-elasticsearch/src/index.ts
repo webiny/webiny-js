@@ -110,7 +110,10 @@ export const createEventHandler = () => {
                 // @ts-expect-error
                 const newImage = unmarshall<RecordDynamoDbImage>(dynamodb.NewImage);
 
-                if (!newImage || newImage.ignore === true) {
+                // Note that with the `REMOVE` event, there is no `NewImage` property. Which means,
+                // if the `newImage` is `undefined`, we are dealing with a `REMOVE` event and we still
+                // need to process it.
+                if (newImage && newImage.ignore === true) {
                     continue;
                 }
                 /**
@@ -134,7 +137,7 @@ export const createEventHandler = () => {
                  * No need to try to decompress if operation is REMOVE since there is no data sent into that operation.
                  */
                 let data: any = undefined;
-                if (operation !== Operations.REMOVE) {
+                if (newImage && operation !== Operations.REMOVE) {
                     /**
                      * We must decompress the data that is going into the Elasticsearch.
                      */
@@ -157,15 +160,17 @@ export const createEventHandler = () => {
                 switch (record.eventName) {
                     case Operations.INSERT:
                     case Operations.MODIFY:
-                        operations.push(
-                            {
-                                index: {
-                                    _id,
-                                    _index: newImage.index
-                                }
-                            },
-                            data
-                        );
+                        if (newImage) {
+                            operations.push(
+                                {
+                                    index: {
+                                        _id,
+                                        _index: newImage.index
+                                    }
+                                },
+                                data
+                            );
+                        }
                         break;
                     case Operations.REMOVE:
                         operations.push({

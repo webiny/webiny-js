@@ -14,7 +14,7 @@ import { useModelEditor } from "~/admin/hooks";
 
 const t = i18n.namespace("app-headless-cms/admin/editor/top-bar/save-button");
 
-const CreateContentButton: React.FC = () => {
+const CreateContentButton = () => {
     const router = useRouter();
     const { data, apolloClient } = useModelEditor();
 

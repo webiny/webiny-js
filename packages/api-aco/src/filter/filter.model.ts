@@ -1,8 +1,6 @@
 import { createModelField } from "~/utils/createModelField";
-import { CmsPrivateModelFull } from "@webiny/api-headless-cms";
+import { createPrivateModel } from "@webiny/api-headless-cms";
 import { CmsModelField } from "@webiny/api-headless-cms/types";
-
-export type FilterModelDefinition = Omit<CmsPrivateModelFull, "noValidate" | "group">;
 
 const name = () =>
     createModelField({
@@ -147,20 +145,17 @@ const value = () =>
 
 export const FILTER_MODEL_ID = "acoFilter";
 
-export const createFilterModelDefinition = (): FilterModelDefinition => {
-    return {
+export const createFilterModel = () => {
+    return createPrivateModel({
         name: "ACO - Filter",
         modelId: FILTER_MODEL_ID,
         titleFieldId: "name",
-        layout: [["name"], ["description"], ["namespace"], ["operation"], ["groups"]],
         fields: [
             name(),
             description(),
             namespace(),
             operation(),
             groups([operation(), filters([field(), condition(), value()])])
-        ],
-        description: "ACO - Filter content model",
-        isPrivate: true
-    };
+        ]
+    });
 };

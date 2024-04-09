@@ -1,7 +1,6 @@
 import React, {
     Dispatch,
     MutableRefObject,
-    RefObject,
     SetStateAction,
     useCallback,
     useEffect,
@@ -17,7 +16,6 @@ import { useQuery } from "~/admin/hooks";
 import { ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntriesContext";
 import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContentEntries";
 import { CmsContentEntry, CmsContentEntryRevision } from "~/types";
-import { TabsImperativeApi } from "@webiny/ui/Tabs";
 import { parseIdentifier } from "@webiny/utils";
 import {
     CmsEntriesListRevisionsQueryResponse,
@@ -46,7 +44,8 @@ export interface ContentEntryContext extends ContentEntriesContext {
     setLoading: Dispatch<SetStateAction<boolean>>;
     revisions: CmsContentEntryRevision[];
     refetchContent: () => void;
-    tabsRef: RefObject<TabsImperativeApi | undefined>;
+    setActiveTab(index: number): void;
+    activeTab: number;
     showEmptyView: boolean;
 }
 
@@ -79,11 +78,12 @@ export const useContentEntryProviderProps = (): UseContentEntryProviderProps => 
     };
 };
 
-export const ContentEntryProvider: React.FC<ContentEntryContextProviderProps> = ({
+export const ContentEntryProvider = ({
     children,
     isNewEntry,
     getContentId
-}) => {
+}: ContentEntryContextProviderProps) => {
+    const [activeTab, setActiveTab] = useState(0);
     const { contentModel, canCreate } = useContentEntries();
 
     const { search } = useRouter();
@@ -115,8 +115,6 @@ export const ContentEntryProvider: React.FC<ContentEntryContextProviderProps> = 
         entryId = result.id;
         version = result.version;
     }
-
-    const tabsRef = useRef<TabsImperativeApi>();
 
     const { READ_CONTENT } = useMemo(() => {
         return {
@@ -211,7 +209,8 @@ export const ContentEntryProvider: React.FC<ContentEntryContextProviderProps> = 
         refetchContent: getEntry.refetch,
         setFormRef,
         setLoading,
-        tabsRef,
+        setActiveTab,
+        activeTab,
         showEmptyView: !newEntry && !loading && isEmpty(entry)
     };
 

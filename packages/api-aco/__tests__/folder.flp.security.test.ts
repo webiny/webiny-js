@@ -370,7 +370,7 @@ describe("Folder Level Permissions - Security Checks", () => {
         });
     });
 
-    it("should not be able to access a folder if its parent is inaccessible", async () => {
+    it("should still be be able to access a folder if its parent is inaccessible", async () => {
         const folderA = await acoIdentityA
             .createFolder({
                 data: {
@@ -432,7 +432,7 @@ describe("Folder Level Permissions - Security Checks", () => {
         });
 
         // Moving folder B to folder A, which is inaccessible to user B.
-        // User B should lose access to folder B.
+        // Still, user B should not lose access to folder B.
         await acoIdentityA.updateFolder({
             id: folderB.id,
             data: { parentId: folderA.id }
@@ -440,12 +440,10 @@ describe("Folder Level Permissions - Security Checks", () => {
 
         await expect(
             acoIdentityB.getFolder({ id: folderB.id }).then(([result]) => {
-                return result.data.aco.getFolder.error;
+                return result.data.aco.getFolder.data;
             })
-        ).resolves.toEqual({
-            code: "SECURITY_NOT_AUTHORIZED",
-            data: null,
-            message: "Not authorized!"
+        ).resolves.toMatchObject({
+            id: folderB.id
         });
 
         await expect(
@@ -454,9 +452,30 @@ describe("Folder Level Permissions - Security Checks", () => {
             })
         ).resolves.toMatchObject([
             {
-                canManagePermissions: false,
-                hasNonInheritedPermissions: false,
+                id: folderB.id,
+                canManagePermissions: true,
+                canManageStructure: true,
+                canManageContent: true,
+                hasNonInheritedPermissions: true,
+                permissions: [
+                    {
+                        target: "admin:2",
+                        level: "owner",
+                        inheritedFrom: null
+                    },
+                    {
+                        inheritedFrom: `parent:${folderA.id}`,
+                        level: "owner",
+                        target: "admin:not-b"
+                    }
+                ]
+            },
+            {
                 id: folderC.id,
+                canManagePermissions: false,
+                canManageStructure: true,
+                canManageContent: true,
+                hasNonInheritedPermissions: false,
                 permissions: [
                     {
                         target: "admin:2",
@@ -466,5 +485,192 @@ describe("Folder Level Permissions - Security Checks", () => {
                 ]
             }
         ]);
+    });
+
+    it("as an owner, I should be able to manage permissions on nested folders", async () => {
+        const folderA = await acoIdentityA
+            .createFolder({
+                data: {
+                    title: "Folder A",
+                    slug: "folder-a",
+                    type: FOLDER_TYPE
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        const folderB = await acoIdentityA
+            .createFolder({
+                data: {
+                    title: "Folder B",
+                    slug: "folder-b",
+                    type: FOLDER_TYPE,
+                    parentId: folderA.id
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        const folderC = await acoIdentityA
+            .createFolder({
+                data: {
+                    title: "Folder C",
+                    slug: "folder-c",
+                    type: FOLDER_TYPE,
+                    parentId: folderB.id
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        const folderD = await acoIdentityA
+            .createFolder({
+                data: {
+                    title: "Folder D",
+                    slug: "folder-d",
+                    type: FOLDER_TYPE,
+                    parentId: folderC.id
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        // We're updating the permissions on folder B. Meaning, identity B should have access to
+        // folders B, C and D.
+        await acoIdentityA.updateFolder({
+            id: folderB.id,
+            data: {
+                permissions: [{ level: "owner", target: `admin:${identityB.id}` }]
+            }
+        });
+
+        // User B should have access to folder B.
+        const [postFlpChangeFolderB] = await acoIdentityB.getFolder({ id: folderB.id });
+        const [postFlpChangeFolderC] = await acoIdentityB.getFolder({ id: folderC.id });
+        const [postFlpChangeFolderD] = await acoIdentityB.getFolder({ id: folderD.id });
+
+        const matchObject = {
+            canManagePermissions: true,
+            canManageStructure: true,
+            canManageContent: true
+        };
+
+        expect(postFlpChangeFolderB.data.aco.getFolder.data).toMatchObject({
+            slug: "folder-b",
+            ...matchObject
+        });
+        expect(postFlpChangeFolderC.data.aco.getFolder.data).toMatchObject({
+            slug: "folder-c",
+            ...matchObject
+        });
+        expect(postFlpChangeFolderD.data.aco.getFolder.data).toMatchObject({
+            slug: "folder-d",
+            ...matchObject
+        });
+
+        // Should not be able to change permissions on a public folder.
+        const [postFlpChangeFolderA] = await acoIdentityB.getFolder({ id: folderA.id });
+        expect(postFlpChangeFolderA.data.aco.getFolder.data).toMatchObject({
+            slug: "folder-a",
+            canManagePermissions: false,
+            canManageStructure: true,
+            canManageContent: true
+        });
+    });
+
+    it("owner access inherited from a full access role should not be overridable", async () => {
+        const folderA = await acoIdentityA
+            .createFolder({
+                data: {
+                    title: "Folder A",
+                    slug: "folder-a",
+                    type: FOLDER_TYPE
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        // Full-access user A gives "owner" access to user B.
+        await acoIdentityA.updateFolder({
+            id: folderA.id,
+            data: { permissions: [{ level: "owner", target: `admin:${identityB.id}` }] }
+        });
+
+        // User B assigns full-access user A as a viewer.
+        await acoIdentityB.updateFolder({
+            id: folderA.id,
+            data: {
+                permissions: [
+                    { level: "owner", target: `admin:${identityB.id}` },
+                    {
+                        level: "viewer",
+                        target: `admin:${identityA.id}`
+                    }
+                ]
+            }
+        });
+
+        const [postFlpChangeFolderAIdentityB] = await acoIdentityB.getFolder({ id: folderA.id });
+        expect(postFlpChangeFolderAIdentityB).toMatchObject({
+            data: {
+                aco: {
+                    getFolder: {
+                        data: {
+                            permissions: [
+                                {
+                                    target: "admin:2",
+                                    level: "owner",
+                                    inheritedFrom: null
+                                },
+                                {
+                                    target: "admin:1",
+                                    level: "viewer",
+                                    inheritedFrom: null
+                                }
+                            ],
+                            hasNonInheritedPermissions: true,
+                            canManagePermissions: true,
+                            canManageStructure: true,
+                            canManageContent: true
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [postFlpChangeFolderAIdentityA] = await acoIdentityA.getFolder({ id: folderA.id });
+        expect(postFlpChangeFolderAIdentityA).toMatchObject({
+            data: {
+                aco: {
+                    getFolder: {
+                        data: {
+                            permissions: [
+                                {
+                                    target: "admin:1",
+                                    level: "owner",
+                                    inheritedFrom: "role:full-access"
+                                },
+                                {
+                                    target: "admin:2",
+                                    level: "owner",
+                                    inheritedFrom: null
+                                }
+                            ],
+                            hasNonInheritedPermissions: true,
+                            canManagePermissions: true,
+                            canManageStructure: true,
+                            canManageContent: true
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
     });
 });

@@ -6,10 +6,11 @@ import {
     CmsModel,
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
+    CmsModelFieldType,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types";
 import { TableConstructor } from "@webiny/db-dynamodb/toolbox";
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
@@ -106,7 +107,7 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
      * fieldType: "myField"
      * ```
      */
-    fieldType: string;
+    fieldType: CmsModelFieldType;
     /**
      * If you need to define a type when building an Elasticsearch query.
      * Check [dateTimeIndexing](https://github.com/webiny/webiny-js/blob/3074165701b8b45e5fc6ac2444caace7d04ada66/packages/api-headless-cms/src/content/plugins/es/indexing/dateTimeIndexing.ts) plugin for usage example.
@@ -158,7 +159,7 @@ export interface TableModifier {
 }
 
 export interface StorageOperationsFactoryParams {
-    documentClient: DynamoDBClient;
+    documentClient: DynamoDBDocument;
     elasticsearch: Client;
     table?: TableModifier;
     esTable?: TableModifier;

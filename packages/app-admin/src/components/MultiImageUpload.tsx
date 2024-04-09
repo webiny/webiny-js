@@ -12,10 +12,10 @@ interface MultiImageUploadProps {
     };
     [key: string]: any;
 }
-const MultiImageUpload: React.FC<MultiImageUploadProps> = ({
+const MultiImageUpload = ({
     imagePreviewProps,
     ...multiImageUploadProps
-}) => {
+}: MultiImageUploadProps) => {
     return (
         <UiMultiImageUpload
             /**

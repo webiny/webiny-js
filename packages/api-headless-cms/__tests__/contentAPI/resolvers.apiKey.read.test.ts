@@ -233,7 +233,7 @@ describe("READ - resolvers - api key", () => {
 
         const [result] = await getCategory(queryArgs, headers);
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             data: {
                 getCategory: {
                     data: null,
@@ -241,7 +241,7 @@ describe("READ - resolvers - api key", () => {
                         code: "SECURITY_NOT_AUTHORIZED",
                         message: `Not authorized!`,
                         data: {
-                            reason: `Not allowed to perform "read" on "cms.contentEntry".`
+                            reason: 'Not allowed to access "category" entries.'
                         }
                     }
                 }
@@ -278,7 +278,7 @@ describe("READ - resolvers - api key", () => {
 
         const [result] = await listCategories(queryArgs, headers);
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             data: {
                 listCategories: {
                     data: null,
@@ -286,7 +286,7 @@ describe("READ - resolvers - api key", () => {
                         code: "SECURITY_NOT_AUTHORIZED",
                         message: `Not authorized!`,
                         data: {
-                            reason: `Not allowed to perform "read" on "cms.contentEntry".`
+                            reason: 'Not allowed to access "category" entries.'
                         }
                     },
                     meta: null
@@ -331,7 +331,7 @@ describe("READ - resolvers - api key", () => {
 
         const [result] = await getCategory(queryArgs, headers);
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             data: {
                 getCategory: {
                     data: null,
@@ -339,7 +339,7 @@ describe("READ - resolvers - api key", () => {
                         code: "SECURITY_NOT_AUTHORIZED",
                         message: `Not authorized!`,
                         data: {
-                            reason: `Not allowed to perform "read" on "cms.contentEntry".`
+                            reason: 'Not allowed to access "category" entries.'
                         }
                     }
                 }
@@ -383,7 +383,7 @@ describe("READ - resolvers - api key", () => {
 
             const [result] = await listCategories(queryArgs, headers);
 
-            expect(result).toEqual({
+            expect(result).toMatchObject({
                 data: {
                     listCategories: {
                         data: null,
@@ -391,7 +391,7 @@ describe("READ - resolvers - api key", () => {
                             code: "SECURITY_NOT_AUTHORIZED",
                             message: `Not authorized!`,
                             data: {
-                                reason: `Not allowed to perform "read" on "cms.contentEntry".`
+                                reason: 'Not allowed to access "category" entries.'
                             }
                         },
                         meta: null

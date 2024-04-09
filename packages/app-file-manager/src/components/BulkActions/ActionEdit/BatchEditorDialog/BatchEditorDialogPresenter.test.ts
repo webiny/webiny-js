@@ -12,7 +12,7 @@ describe("BatchEditorDialogPresenter", () => {
             {
                 field: "",
                 operator: "",
-                value: {}
+                value: undefined
             }
         ]
     };
@@ -104,7 +104,7 @@ describe("BatchEditorDialogPresenter", () => {
                     canDelete: false,
                     field: "",
                     operator: "",
-                    value: {},
+                    value: undefined,
                     fieldOptions: fields,
                     operatorOptions: [],
                     selectedField: undefined
@@ -130,7 +130,7 @@ describe("BatchEditorDialogPresenter", () => {
                 open: true,
                 field: "",
                 operator: "",
-                value: {},
+                value: undefined,
                 canDelete: false,
                 fieldOptions: fields,
                 operatorOptions: [],
@@ -148,7 +148,7 @@ describe("BatchEditorDialogPresenter", () => {
                 open: true,
                 field: "",
                 operator: "",
-                value: {},
+                value: undefined,
                 canDelete: false,
                 fieldOptions: fields,
                 operatorOptions: [],
@@ -159,7 +159,7 @@ describe("BatchEditorDialogPresenter", () => {
                 open: true,
                 field: "",
                 operator: "",
-                value: {},
+                value: undefined,
                 canDelete: true,
                 fieldOptions: fields,
                 operatorOptions: [],
@@ -177,7 +177,7 @@ describe("BatchEditorDialogPresenter", () => {
                 open: true,
                 field: "",
                 operator: "",
-                value: {},
+                value: undefined,
                 canDelete: false,
                 fieldOptions: fields,
                 operatorOptions: [],
@@ -196,7 +196,7 @@ describe("BatchEditorDialogPresenter", () => {
                 open: true,
                 field: "",
                 operator: "",
-                value: {},
+                value: undefined,
                 canDelete: false,
                 fieldOptions: fields,
                 operatorOptions: [],
@@ -238,7 +238,7 @@ describe("BatchEditorDialogPresenter", () => {
             open: true,
             field: "",
             operator: "",
-            value: {},
+            value: undefined,
             canDelete: true,
             fieldOptions: [fields[1]],
             operatorOptions: [],
@@ -266,7 +266,7 @@ describe("BatchEditorDialogPresenter", () => {
                     open: false,
                     field: fields[1].value,
                     operator: OperatorType.REMOVE,
-                    value: {},
+                    value: undefined,
                     canDelete: true,
                     fieldOptions: [fields[1]],
                     operatorOptions: [operators[0], operators[1]],
@@ -339,7 +339,7 @@ describe("BatchEditorDialogPresenter", () => {
             open: true,
             field: "new-field",
             operator: "",
-            value: {},
+            value: undefined,
             canDelete: false,
             fieldOptions: fields,
             operatorOptions: [],
@@ -360,7 +360,7 @@ describe("BatchEditorDialogPresenter", () => {
                     open: true,
                     field: fields[0].value,
                     operator: "", // empty value -> this should trigger the error
-                    value: {},
+                    value: undefined,
                     canDelete: false,
                     fieldOptions: fields,
                     operatorOptions: [operators[0], operators[1]],

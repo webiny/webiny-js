@@ -1,6 +1,6 @@
+import type { Context as LambdaContext, SQSEvent } from "aws-lambda";
 import { Plugin } from "@webiny/plugins/Plugin";
 import { Context, Reply, Request } from "@webiny/handler/types";
-import { Context as LambdaContext, SQSEvent } from "aws-lambda";
 
 export interface SQSEventHandlerCallableParams<Response = Reply> {
     request: Request;

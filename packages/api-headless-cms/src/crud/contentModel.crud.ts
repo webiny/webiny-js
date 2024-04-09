@@ -3,6 +3,7 @@ import {
     CmsContext,
     CmsModel,
     CmsModelContext,
+    CmsModelFieldToGraphQLPlugin,
     CmsModelGroup,
     CmsModelManager,
     CmsModelUpdateInput,
@@ -38,24 +39,27 @@ import {
 } from "~/crud/contentModel/validation";
 import { createZodError, removeUndefinedValues } from "@webiny/utils";
 import { assignModelDefaultFields } from "~/crud/contentModel/defaultFields";
-import { ModelsPermissions } from "~/utils/permissions/ModelsPermissions";
 import { createCacheKey, createMemoryCache } from "~/utils";
 import { ensureTypeTag } from "./contentModel/ensureTypeTag";
 import { listModelsFromDatabase } from "~/crud/contentModel/listModelsFromDatabase";
 import { filterAsync } from "~/utils/filterAsync";
+import { AccessControl } from "./AccessControl/AccessControl";
+import {
+    CmsModelToAstConverter,
+    CmsModelFieldToAstConverterFromPlugins
+} from "~/utils/contentModelAst";
 
 export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     storageOperations: HeadlessCmsStorageOperations;
-    modelsPermissions: ModelsPermissions;
+    accessControl: AccessControl;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
 }
 
 export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContext => {
-    const { getTenant, getIdentity, getLocale, storageOperations, modelsPermissions, context } =
-        params;
+    const { getTenant, getIdentity, getLocale, storageOperations, accessControl, context } = params;
 
     const listPluginModelsCache = createMemoryCache<Promise<CmsModel[]>>();
     const listFilteredModelsCache = createMemoryCache<Promise<CmsModel[]>>();
@@ -75,23 +79,14 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         return manager;
     };
 
-    const checkModelPermissions = async (rwd: string) => {
-        return modelsPermissions.ensure({ rwd });
-    };
+    const fieldTypePlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
+        "cms-model-field-to-graphql"
+    );
 
-    const filterModel = async (model: CmsModel): Promise<boolean> => {
-        const ownsModel = await modelsPermissions.ensure(
-            { owns: model.createdBy },
-            { throw: false }
+    const getModelToAstConverter = () => {
+        return new CmsModelToAstConverter(
+            new CmsModelFieldToAstConverterFromPlugins(fieldTypePlugins)
         );
-
-        if (!ownsModel) {
-            return false;
-        }
-
-        return modelsPermissions.canAccessModel({
-            model
-        });
     };
 
     const listPluginModels = async (tenant: string, locale: string): Promise<CmsModel[]> => {
@@ -132,7 +127,10 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                         webinyVersion: context.WEBINY_VERSION
                     };
                 }) as unknown as CmsModel[];
-            return filterAsync(models, filterModel);
+
+            return filterAsync(models, async model => {
+                return accessControl.canAccessModel({ model });
+            });
         });
     };
 
@@ -183,7 +181,9 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             const filteredModels = await listFilteredModelsCache.getOrSet(
                 filteredCacheKey,
                 async () => {
-                    return filterAsync(databaseModels, filterModel);
+                    return filterAsync(databaseModels, async model => {
+                        return accessControl.canAccessModel({ model });
+                    });
                 }
             );
 
@@ -193,8 +193,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
     const getModel = async (modelId: string): Promise<CmsModel> => {
         return context.benchmark.measure("headlessCms.crud.models.getModel", async () => {
-            await checkModelPermissions("r");
-
             const model = await context.security.withoutAuthorization(async () => {
                 return await getModelFromCache(modelId);
             });
@@ -202,10 +200,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 throw new NotFoundError(`Content model "${modelId}" was not found!`);
             }
 
-            await modelsPermissions.ensure({ owns: model.createdBy });
-            await modelsPermissions.ensureCanAccessModel({
-                model
-            });
+            await accessControl.ensureCanAccessModel({ model });
 
             return model;
         });
@@ -282,7 +277,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
      * CRUD methods
      */
     const createModel: CmsModelContext["createModel"] = async input => {
-        await checkModelPermissions("w");
+        await accessControl.ensureCanAccessModel({ rwd: "w" });
 
         const result = await createModelCreateValidation().safeParseAsync(input);
         if (!result.success) {
@@ -327,6 +322,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
         model.tags = ensureTypeTag(model);
 
+        await accessControl.ensureCanAccessModel({ model, rwd: "w" });
+
         try {
             await onModelBeforeCreate.publish({
                 input: data,
@@ -357,7 +354,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         }
     };
     const updateModel: CmsModelContext["updateModel"] = async (modelId, input) => {
-        await checkModelPermissions("w");
+        await accessControl.ensureCanAccessModel({ rwd: "w" });
 
         // Get a model record; this will also perform ownership validation.
         const original = await getModel(modelId);
@@ -407,6 +404,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             webinyVersion: context.WEBINY_VERSION,
             savedOn: new Date().toISOString()
         };
+
+        await accessControl.ensureCanAccessModel({ model, rwd: "w" });
 
         model.tags = ensureTypeTag(model);
 
@@ -484,7 +483,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         }
     };
     const createModelFrom: CmsModelContext["createModelFrom"] = async (modelId, input) => {
-        await checkModelPermissions("w");
+        await accessControl.ensureCanAccessModel({ rwd: "w" });
+
         /**
          * Get a model record; this will also perform ownership validation.
          */
@@ -541,6 +541,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             webinyVersion: context.WEBINY_VERSION
         };
 
+        await accessControl.ensureCanAccessModel({ model, rwd: "w" });
+
         try {
             await onModelBeforeCreateFrom.publish({
                 input: data,
@@ -574,9 +576,11 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         }
     };
     const deleteModel: CmsModelContext["deleteModel"] = async modelId => {
-        await checkModelPermissions("d");
+        await accessControl.ensureCanAccessModel({ rwd: "d" });
 
         const model = await getModel(modelId);
+
+        await accessControl.ensureCanAccessModel({ model, rwd: "d" });
 
         try {
             await onModelBeforeDelete.publish({
@@ -618,9 +622,9 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
          * We require that users have write permissions to initialize models.
          * Maybe introduce another permission for it?
          */
-        await checkModelPermissions("w");
-
         const model = await getModel(modelId);
+
+        await accessControl.ensureCanAccessModel({ model, rwd: "w" });
 
         await onModelInitialize.publish({ model, data });
 
@@ -642,6 +646,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         onModelInitialize,
         clearModelsCache,
         getModel,
+        getModelToAstConverter,
         listModels,
         async createModel(input) {
             return context.benchmark.measure("headlessCms.crud.models.createModel", async () => {

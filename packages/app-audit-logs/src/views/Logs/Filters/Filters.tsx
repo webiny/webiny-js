@@ -8,11 +8,7 @@ type FiltersProps = {
     hasAccessToUsers: boolean;
 };
 
-export const Filters: React.FC<FiltersProps> = ({
-    showingFilters,
-    setFilters,
-    hasAccessToUsers
-}) => {
+export const Filters = ({ showingFilters, setFilters, hasAccessToUsers }: FiltersProps) => {
     const { browser } = useAuditLogsListConfig();
 
     const applyFilters: FiltersOnSubmit = data => {

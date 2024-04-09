@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 import { useSnackbar } from "@webiny/app-admin";
 import { useMoveToFolderDialog, useRecords } from "@webiny/app-aco";
-import { RecordEntry } from "~/admin/components/ContentEntries/Table/types";
+import { EntryTableItem } from "~/types";
 
 interface UseMoveContentEntryToFolder {
-    record: RecordEntry;
+    record: EntryTableItem;
 }
 
 export function useMoveContentEntryToFolder({ record }: UseMoveContentEntryToFolder) {
@@ -18,7 +18,7 @@ export function useMoveContentEntryToFolder({ record }: UseMoveContentEntryToFol
             message: "Select a new location for this entry:",
             loadingLabel: "Moving entry...",
             acceptLabel: "Move entry",
-            focusedFolderId: record.location.folderId,
+            focusedFolderId: record.wbyAco_location.folderId,
             async onAccept({ folder }) {
                 await moveRecord({
                     id: record.id,

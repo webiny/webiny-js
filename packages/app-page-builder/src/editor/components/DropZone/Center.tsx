@@ -47,7 +47,7 @@ export interface CenterProps {
     isHighlighted: boolean;
 }
 
-const CenterComponent: React.FC<CenterProps> = ({ id, type, onDrop, children, isHighlighted }) => {
+const CenterComponent = ({ id, type, onDrop, children, isHighlighted }: CenterProps) => {
     const [activeElementId] = useActiveElementId();
     const isActive = activeElementId === id;
 

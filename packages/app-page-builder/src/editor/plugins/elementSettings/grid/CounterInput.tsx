@@ -49,14 +49,14 @@ interface CounterInputPropsType {
     maxErrorMessage: string;
     onChange: (value: number) => void;
 }
-const CounterInput: React.FC<CounterInputPropsType> = ({
+const CounterInput = ({
     value,
     label,
     minErrorMessage,
     maxErrorMessage,
     onChange,
     maxAllowed
-}) => {
+}: CounterInputPropsType) => {
     const [errorMessage, setErrorMessage] = useState("");
     // Hide error message after 2s.
     useEffect((): void => {

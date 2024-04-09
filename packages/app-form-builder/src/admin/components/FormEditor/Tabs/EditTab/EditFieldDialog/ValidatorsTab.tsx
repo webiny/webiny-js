@@ -77,7 +77,7 @@ interface ValidatorsTabProps {
     field: FbFormModelField;
     form: FormRenderPropParams;
 }
-const ValidatorsTab: React.FC<ValidatorsTabProps> = props => {
+const ValidatorsTab = (props: ValidatorsTabProps) => {
     const { getFieldPlugin } = useFormEditor();
     const { field, form } = props;
     const { Bind, data: formFieldData } = form;

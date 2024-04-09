@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { TimeAgo } from "@webiny/ui/TimeAgo";
+import { Date } from "@webiny/ui/DateTime";
 import {
     ListItem,
     ListItemText,
@@ -21,7 +21,7 @@ import { ReactComponent as AddIcon } from "~/admin/icons/add.svg";
 import { ReactComponent as EditIcon } from "~/admin/icons/edit.svg";
 import { ReactComponent as UnpublishIcon } from "~/admin/icons/unpublish.svg";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/delete.svg";
-import { CmsContentEntry } from "~/types";
+import { CmsContentEntryRevision } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { useRevision } from "./useRevision";
 import usePermission from "~/admin/hooks/usePermission";
@@ -39,7 +39,7 @@ const revisionsMenu = css({
     left: "auto !important"
 });
 
-const getIcon = (rev: CmsContentEntry) => {
+const getIcon = (rev: CmsContentEntryRevision) => {
     switch (true) {
         case rev.meta.locked && rev.meta.status !== "published":
             return {
@@ -66,10 +66,10 @@ const getIcon = (rev: CmsContentEntry) => {
 };
 
 interface RevisionListItemProps {
-    revision: CmsContentEntry;
+    revision: CmsContentEntryRevision;
 }
 
-const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
+const RevisionListItem = ({ revision }: RevisionListItemProps) => {
     const { createRevision, deleteRevision, publishRevision, unpublishRevision, editRevision } =
         useRevision({
             revision
@@ -87,7 +87,7 @@ const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
             </span>
         )
     });
-    const { entry, tabsRef } = useContentEntry();
+    const { entry, setActiveTab } = useContentEntry();
     const { canEdit, canDelete, canPublish, canUnpublish } = usePermission();
     const { icon, text: tooltipText } = getIcon(revision);
 
@@ -101,8 +101,9 @@ const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
             <ListItemText>
                 <ListItemTextPrimary>{revision.meta.title || t`N/A`}</ListItemTextPrimary>
                 <ListItemTextSecondary>
-                    {t`Last modified {time} (#{version})`({
-                        time: <TimeAgo datetime={revision.savedOn} />,
+                    {t`Last modified by {author} on {time} (#{version})`({
+                        author: revision.revisionCreatedBy.displayName,
+                        time: <Date date={revision.revisionCreatedOn} />,
                         version: revision.meta.version
                     })}
                 </ListItemTextSecondary>
@@ -129,10 +130,7 @@ const RevisionListItem: React.FC<RevisionListItemProps> = ({ revision }) => {
                         <MenuItem
                             onClick={() => {
                                 editRevision();
-                                if (!tabsRef.current) {
-                                    return;
-                                }
-                                tabsRef.current.switchTab(0);
+                                setActiveTab(0);
                             }}
                         >
                             <ListItemGraphic>

@@ -6,6 +6,7 @@ interface Params {
     entityName: string;
     attributes: Attributes;
 }
+
 export const createEntryEntity = (params: Params): Entity<any> => {
     const { table, entityName, attributes } = params;
     return new Entity({
@@ -44,30 +45,45 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             id: {
                 type: "string"
             },
-            createdBy: {
-                type: "map"
-            },
-            ownedBy: {
-                type: "map"
-            },
-            modifiedBy: {
-                type: "map"
-            },
-            createdOn: {
-                type: "string"
-            },
-            savedOn: {
-                type: "string"
-            },
             modelId: {
                 type: "string"
             },
             locale: {
                 type: "string"
             },
-            publishedOn: {
-                type: "string"
-            },
+
+            /**
+             * Revision-level meta fields. 👇
+             */
+            revisionCreatedOn: { type: "string" },
+            revisionModifiedOn: { type: "string" },
+            revisionSavedOn: { type: "string" },
+            revisionDeletedOn: { type: "string" },
+            revisionFirstPublishedOn: { type: "string" },
+            revisionLastPublishedOn: { type: "string" },
+            revisionCreatedBy: { type: "map" },
+            revisionModifiedBy: { type: "map" },
+            revisionSavedBy: { type: "map" },
+            revisionDeletedBy: { type: "map" },
+            revisionFirstPublishedBy: { type: "map" },
+            revisionLastPublishedBy: { type: "map" },
+
+            /**
+             * Entry-level meta fields. 👇
+             */
+            createdOn: { type: "string" },
+            modifiedOn: { type: "string" },
+            savedOn: { type: "string" },
+            deletedOn: { type: "string" },
+            firstPublishedOn: { type: "string" },
+            lastPublishedOn: { type: "string" },
+            createdBy: { type: "map" },
+            modifiedBy: { type: "map" },
+            savedBy: { type: "map" },
+            deletedBy: { type: "map" },
+            firstPublishedBy: { type: "map" },
+            lastPublishedBy: { type: "map" },
+
             version: {
                 type: "number"
             },
@@ -79,6 +95,9 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             },
             location: {
                 type: "map"
+            },
+            deleted: {
+                type: "boolean"
             },
             values: {
                 type: "map"

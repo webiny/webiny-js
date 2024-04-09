@@ -1,10 +1,18 @@
 import React from "react";
 import { css } from "emotion";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
-import { CmsModelFieldRendererPlugin, CmsModelFieldRendererProps } from "~/types";
+import {
+    BindComponent,
+    BindComponentRenderProp,
+    CmsModel,
+    CmsModelField,
+    CmsModelFieldRendererPlugin,
+    CmsModelFieldRendererProps
+} from "~/types";
 import { SingleValueDynamicZone } from "./SingleValueDynamicZone";
 import { MultiValueDynamicZone } from "./MultiValueDynamicZone";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { makeDecoratable } from "@webiny/react-composition";
 
 const noBottomPadding = css`
     > .webiny-ui-accordion-item__content {
@@ -12,11 +20,53 @@ const noBottomPadding = css`
     }
 `;
 
-const DynamicZoneContent: React.VFC<CmsModelFieldRendererProps> = ({
-    field,
-    getBind,
-    contentModel
-}) => {
+export type DynamicZoneContainerProps = {
+    field: CmsModelField;
+    getBind: (index?: number, key?: string) => BindComponent;
+    contentModel: CmsModel;
+    bind: BindComponentRenderProp;
+    children: React.ReactNode;
+    title?: string;
+    description?: string;
+    className?: string;
+};
+
+export const DynamicZoneContainer = makeDecoratable(
+    "DynamicZoneContainer",
+    (props: DynamicZoneContainerProps) => {
+        const {
+            field,
+            bind: {
+                validation: { isValid, message }
+            },
+            title = field.label,
+            description = field.helpText,
+            className,
+            children
+        } = props;
+
+        const defaultClassName = field.multipleValues ? noBottomPadding : undefined;
+
+        return (
+            <>
+                <Accordion>
+                    <AccordionItem
+                        title={title}
+                        description={description}
+                        className={className || defaultClassName}
+                    >
+                        {children}
+                    </AccordionItem>
+                </Accordion>
+                {isValid === false && (
+                    <FormElementMessage error={true}>{message}</FormElementMessage>
+                )}
+            </>
+        );
+    }
+);
+
+const DynamicZoneContent = ({ field, getBind, contentModel }: CmsModelFieldRendererProps) => {
     const templates = field.settings?.templates || [];
     if (!templates.length) {
         console.info(
@@ -25,35 +75,27 @@ const DynamicZoneContent: React.VFC<CmsModelFieldRendererProps> = ({
         return null;
     }
 
-    const isMultipleValues = field.multipleValues === true;
     const Bind = getBind();
 
-    const Component = isMultipleValues ? MultiValueDynamicZone : SingleValueDynamicZone;
+    const Component = field.multipleValues ? MultiValueDynamicZone : SingleValueDynamicZone;
 
     return (
         <Bind>
             {bind => {
-                const { isValid, message } = bind.validation;
                 return (
-                    <>
-                        <Accordion>
-                            <AccordionItem
-                                title={field.label}
-                                description={field.helpText}
-                                className={isMultipleValues ? noBottomPadding : undefined}
-                            >
-                                <Component
-                                    bind={bind}
-                                    field={field}
-                                    getBind={getBind}
-                                    contentModel={contentModel}
-                                />
-                            </AccordionItem>
-                        </Accordion>
-                        {isValid === false && (
-                            <FormElementMessage error={true}>{message}</FormElementMessage>
-                        )}
-                    </>
+                    <DynamicZoneContainer
+                        field={field}
+                        bind={bind}
+                        getBind={getBind}
+                        contentModel={contentModel}
+                    >
+                        <Component
+                            bind={bind}
+                            field={field}
+                            getBind={getBind}
+                            contentModel={contentModel}
+                        />
+                    </DynamicZoneContainer>
                 );
             }}
         </Bind>

@@ -13,17 +13,22 @@ const getElementKey = (
     elementIndex: number,
     parentBlockElement?: ElementType
 ) => {
+    let parts: string[] = [element.id];
+
     if (parentBlockElement) {
-        return `${parentBlockElement.id}-${elementIndex}`;
+        parts = [parentBlockElement.id, elementIndex.toString()];
     }
-    return element.id;
+    // Add element type for easier debugging and more clarity in the profiler.
+    parts.push(element.type);
+
+    return parts.join("-");
 };
 
 export interface ElementsProps {
     element: ElementType;
 }
 
-export const Elements: React.FC<ElementsProps> = props => {
+export const Elements = (props: ElementsProps) => {
     // `Elements` component is used within a renderer, meaning
     // we can always be sure `useRenderer` hook is available.
     const { meta: currentRendererMeta } = useRenderer();
@@ -68,8 +73,7 @@ export const Elements: React.FC<ElementsProps> = props => {
                             parentDocumentElement,
                             isFirstElement: index === 0,
                             isLastElement: index === elements.length - 1,
-                            elementIndex: index,
-                            collection: elements
+                            elementIndex: index
                         }}
                     />
                 );

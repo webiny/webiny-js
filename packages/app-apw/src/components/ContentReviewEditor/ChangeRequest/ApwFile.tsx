@@ -32,7 +32,7 @@ export const DefaultRenderImagePreview = (renderImageProps: any) => (
     <Image {...renderImageProps} {...changeRequestImagePreviewProps} />
 );
 
-export const ApwFile: React.FC<ApwFileProps> = props => {
+export const ApwFile = (props: ApwFileProps) => {
     const { value, onChange, showFileManager } = props;
 
     const removeImage = () => onChange(null);
@@ -74,7 +74,7 @@ const commentFilePreviewProps = {
     style: { width: "100%", height: 140, objectFit: "contain" }
 };
 
-export const CommentFile: React.FC<CommentFileProps> = props => {
+export const CommentFile = (props: CommentFileProps) => {
     const { value } = props;
 
     const isImage = React.useCallback(url => {

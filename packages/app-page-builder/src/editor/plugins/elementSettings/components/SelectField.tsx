@@ -48,7 +48,7 @@ interface SelectProps {
     [key: string]: any;
 }
 
-const SelectField: React.FC<SelectProps> = ({
+const SelectField = ({
     value = "",
     onChange,
     children,
@@ -57,7 +57,7 @@ const SelectField: React.FC<SelectProps> = ({
     description,
     placeholder = "",
     ...props
-}) => {
+}: SelectProps) => {
     return (
         <React.Fragment>
             <select

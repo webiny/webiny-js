@@ -15,7 +15,7 @@ interface ImportTemplatesDetailsProps {
     result: ListTemplateImportExportSubTasksResponse;
 }
 
-const ImportTemplatesDetails: React.FC<ImportTemplatesDetailsProps> = ({ loading, result }) => {
+const ImportTemplatesDetails = ({ loading, result }: ImportTemplatesDetailsProps) => {
     if (loading || !result) {
         return <Typography use={"caption"}> {t`Loading details...`} </Typography>;
     }

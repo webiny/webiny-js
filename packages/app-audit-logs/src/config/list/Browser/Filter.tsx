@@ -1,6 +1,6 @@
 import React from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
-import { makeComposable, createDecoratorFactory } from "@webiny/app-admin";
+import { createDecoratorFactory, makeDecoratable } from "@webiny/app-admin";
 
 export interface FilterConfig {
     name: string;
@@ -15,9 +15,9 @@ export interface FilterProps {
     after?: string;
 }
 
-const BaseFilter = makeComposable<FilterProps>(
+const BaseFilter = makeDecoratable(
     "Filter",
-    ({ name, element, after = undefined, before = undefined, remove = false }) => {
+    ({ name, element, after = undefined, before = undefined, remove = false }: FilterProps) => {
         const getId = useIdGenerator("filter");
 
         const placeAfter = after !== undefined ? getId(after) : undefined;

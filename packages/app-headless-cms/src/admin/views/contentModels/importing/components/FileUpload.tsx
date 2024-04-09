@@ -19,7 +19,7 @@ const Text = styled("p")({
     display: "block"
 });
 
-export const FileUpload: React.VFC = () => {
+export const FileUpload = () => {
     const { onFile, onFileError, file } = useImport();
     const fileName = file?.name;
 

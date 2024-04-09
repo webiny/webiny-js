@@ -15,6 +15,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { LocalesPermissions } from "./permissions/LocalesPermissions";
+import { IdentityValue } from "@webiny/api-security";
 
 export interface CreateLocalesCrudParams {
     context: I18NContext;
@@ -52,18 +53,6 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
     );
 
     return {
-        /**
-         * Deprecated in 5.34.0
-         */
-        onBeforeCreate: onLocaleBeforeCreate,
-        onAfterCreate: onLocaleAfterCreate,
-        onBeforeUpdate: onLocaleBeforeUpdate,
-        onAfterUpdate: onLocaleAfterUpdate,
-        onBeforeDelete: onLocaleBeforeDelete,
-        onAfterDelete: onLocaleAfterDelete,
-        /**
-         * Introduced in 5.34.0
-         */
         onLocaleBeforeCreate,
         onLocaleAfterCreate,
         onLocaleBeforeUpdate,
@@ -159,11 +148,7 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                 ...input,
                 default: input.default === true,
                 createdOn: new Date().toISOString(),
-                createdBy: {
-                    id: identity.id,
-                    displayName: identity.displayName,
-                    type: identity.type
-                },
+                createdBy: IdentityValue.create(identity).getValue(),
                 tenant: getTenantId(),
                 webinyVersion: context.WEBINY_VERSION
             };

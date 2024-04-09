@@ -1,10 +1,7 @@
-import { CreateApwWorkflowParams } from "~/types";
+import { ApwWorkflow, CreateApwWorkflowParams } from "~/types";
 import { ApwStorageOperations, ApwWorkflowStorageOperations } from "./types";
-import {
-    baseFields,
-    CreateApwStorageOperationsParams,
-    getFieldValues
-} from "~/storageOperations/index";
+import { CreateApwStorageOperationsParams } from "~/storageOperations/index";
+import { pickEntryFieldValues } from "~/utils/pickEntryFieldValues";
 import WebinyError from "@webiny/error";
 import { WORKFLOW_MODEL_ID } from "~/storageOperations/models/workflow.model";
 
@@ -29,11 +26,9 @@ const formatReviewersForRefInput = (
 export const createWorkflowStorageOperations = (
     params: CreateApwStorageOperationsParams
 ): ApwWorkflowStorageOperations => {
-    const { cms, security } = params;
+    const { cms } = params;
     const getWorkflowModel = async () => {
-        const model = await security.withoutAuthorization(async () => {
-            return cms.getModel(WORKFLOW_MODEL_ID);
-        });
+        const model = await cms.getModel(WORKFLOW_MODEL_ID);
         if (!model) {
             throw new WebinyError(
                 `Could not find "${WORKFLOW_MODEL_ID}" model.`,
@@ -44,10 +39,8 @@ export const createWorkflowStorageOperations = (
     };
     const getWorkflow: ApwWorkflowStorageOperations["getWorkflow"] = async ({ id }) => {
         const model = await getWorkflowModel();
-        const entry = await security.withoutAuthorization(async () => {
-            return cms.getEntryById(model, id);
-        });
-        return getFieldValues(entry, baseFields);
+        const entry = await cms.getEntryById(model, id);
+        return pickEntryFieldValues(entry);
     };
     return {
         getWorkflowModel,
@@ -55,15 +48,13 @@ export const createWorkflowStorageOperations = (
         async listWorkflows(params) {
             const model = await getWorkflowModel();
 
-            const [entries, meta] = await security.withoutAuthorization(async () => {
-                return cms.listLatestEntries(model, {
-                    ...params,
-                    where: {
-                        ...params.where
-                    }
-                });
+            const [entries, meta] = await cms.listLatestEntries(model, {
+                ...params,
+                where: {
+                    ...params.where
+                }
             });
-            return [entries.map(entry => getFieldValues(entry, baseFields)), meta];
+            return [entries.map(pickEntryFieldValues<ApwWorkflow>), meta];
         },
         async createWorkflow(this: ApwStorageOperations, params) {
             const model = await getWorkflowModel();
@@ -71,11 +62,9 @@ export const createWorkflowStorageOperations = (
 
             const data = formatReviewersForRefInput(params.data, reviewerModel.modelId);
 
-            const entry = await security.withoutAuthorization(async () => {
-                return cms.createEntry(model, data);
-            });
+            const entry = await cms.createEntry(model, data);
 
-            return getFieldValues(entry, baseFields);
+            return pickEntryFieldValues(entry);
         },
         async updateWorkflow(this: ApwStorageOperations, params) {
             const model = await getWorkflowModel();
@@ -95,18 +84,14 @@ export const createWorkflowStorageOperations = (
                 reviewerModel.modelId
             );
 
-            const entry = await security.withoutAuthorization(async () => {
-                return cms.updateEntry(model, params.id, data);
-            });
+            const entry = await cms.updateEntry(model, params.id, data);
 
-            return getFieldValues(entry, baseFields);
+            return pickEntryFieldValues(entry);
         },
         async deleteWorkflow(params) {
             const model = await getWorkflowModel();
 
-            await security.withoutAuthorization(async () => {
-                return cms.deleteEntry(model, params.id);
-            });
+            await cms.deleteEntry(model, params.id);
             return true;
         }
     };

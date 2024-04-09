@@ -18,7 +18,7 @@ import { MainContainer, Wrapper } from "./styled";
 
 const t = i18n.ns("app-audit-logs/views/logs");
 
-const AuditLogsView: React.FC = () => {
+const AuditLogsView = () => {
     const [selectedAuditLog, setSelectedAuditLog] = useState<Entry | null>(null);
     const handleAuditLogSelect = useCallback(
         (auditLog: Entry) => setSelectedAuditLog(auditLog),

@@ -2,6 +2,7 @@ import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
 import { BatchHttpLink } from "apollo-link-batch-http";
 import { InMemoryCache } from "@webiny/app/apollo-client/InMemoryCache";
+import { IntrospectionFragmentMatcher } from "@webiny/app/apollo-client/IntrospectionFragmentMatcher";
 import { ApolloDynamicLink } from "@webiny/app/plugins/ApolloDynamicLink";
 import { plugins } from "@webiny/plugins";
 import { ApolloCacheObjectIdPlugin } from "@webiny/app/plugins/ApolloCacheObjectIdPlugin";
@@ -13,8 +14,17 @@ declare global {
 }
 
 export const createApolloClient = () => {
+    const fragmentMatcher = new IntrospectionFragmentMatcher({
+        introspectionQueryResultData: {
+            __schema: {
+                types: []
+            }
+        }
+    });
+
     const cache = new InMemoryCache({
         addTypename: true,
+        fragmentMatcher,
         dataIdFromObject: obj => {
             /**
              * Since every data type coming from API can have a different data structure,

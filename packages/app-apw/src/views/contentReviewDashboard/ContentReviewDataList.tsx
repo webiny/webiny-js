@@ -54,7 +54,7 @@ const InlineLoaderWrapper = styled("div")({
 
 const CONTENT_REVIEW_LIST_REFRESH_INTERVAL = 10000;
 
-export const ContentReviewDataList: React.FC = () => {
+export const ContentReviewDataList = () => {
     const {
         contentReviews,
         loading,

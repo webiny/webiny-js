@@ -2,12 +2,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { CoreOptions } from "medium-editor";
 import { ReactComponent as ExpandIcon } from "@material-design-icons/svg/filled/fullscreen.svg";
+import { makeDecoratable } from "@webiny/app-admin";
 import { Dialog, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 import { ButtonPrimary, IconButton } from "@webiny/ui/Button";
 import ReactMediumEditor from "~/editor/components/MediumEditor";
 import { useActiveElement } from "~/editor/hooks/useActiveElement";
 import { useVariable } from "~/hooks/useVariable";
-import { makeComposable } from "@webiny/react-composition";
 
 const InputWrapper = styled("div")`
     display: grid;
@@ -76,9 +76,9 @@ interface RichVariableInputProps {
     variableId: string;
 }
 
-const RichVariableInput = makeComposable<RichVariableInputProps>(
+export const RichVariableInput = makeDecoratable(
     "RichVariableInput",
-    ({ variableId }) => {
+    ({ variableId }: RichVariableInputProps) => {
         const [element] = useActiveElement();
         const { value, onChange, onBlur } = useVariable(variableId);
         const [initialValue, setInitialValue] = useState(value);
@@ -135,5 +135,3 @@ const RichVariableInput = makeComposable<RichVariableInputProps>(
         );
     }
 );
-
-export default RichVariableInput;

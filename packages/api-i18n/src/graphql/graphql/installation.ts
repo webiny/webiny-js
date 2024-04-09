@@ -30,7 +30,8 @@ export const createInstallationGraphQL = (): GraphQLSchemaPlugin<I18NContext> =>
                             return null;
                         }
 
-                        return i18n.system.getSystemVersion();
+                        const version = await i18n.system.getSystemVersion();
+                        return version ? "true" : null;
                     }
                 },
                 I18NMutation: {

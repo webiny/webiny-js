@@ -1,6 +1,15 @@
 export { Okta } from "./Okta";
 export type { OktaProps, OktaFactory } from "./Okta";
-export { UserInfo } from "./modules/userMenu/userInfo";
-export { UserImage } from "./modules/userMenu/userImage";
-export { ExitTenant } from "./modules/userMenu/exitTenant";
-export { SignOut } from "./modules/userMenu/signOut";
+import { UserInfo } from "./modules/userMenu/userInfo";
+import { UserImage } from "./modules/userMenu/userImage";
+import { ExitTenant } from "./modules/userMenu/exitTenant";
+import { SignOut } from "./modules/userMenu/signOut";
+import { NotAuthorizedError } from "./components";
+
+export const Components = {
+    UserInfo,
+    UserImage,
+    ExitTenant,
+    SignOut,
+    NotAuthorizedError
+};

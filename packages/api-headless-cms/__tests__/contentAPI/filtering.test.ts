@@ -72,7 +72,7 @@ describe("filtering", () => {
         ...manageOpts
     });
 
-    const filterOutFields = ["meta"];
+    const filterOutFields = ["meta", "deletedOn", "deletedBy"];
 
     const createAndPublishFruit = async (data: any): Promise<Fruit> => {
         const [response] = await createFruit({
@@ -680,10 +680,12 @@ describe("filtering", () => {
                 publishProduct: {
                     data: {
                         ...bananaProductUnpublished,
+                        modifiedOn: expect.toBeDateString(),
+                        firstPublishedOn: expect.toBeDateString(),
+                        lastPublishedOn: expect.toBeDateString(),
                         meta: {
                             ...bananaProductUnpublished.meta,
                             locked: true,
-                            publishedOn: expect.any(String),
                             status: "published"
                         },
                         savedOn: expect.any(String)
@@ -1517,7 +1519,7 @@ describe("filtering", () => {
         });
     });
 
-    test("should filter entries by createdBy", async () => {
+    test("should filter entries by revisionCreatedBy", async () => {
         const articleManager = useArticleManageHandler(manageOpts);
         const articleAnotherManager = useArticleManageHandler({
             ...manageOpts,
@@ -1530,6 +1532,166 @@ describe("filtering", () => {
 
         const group = await setupContentModelGroup(mainManager);
 
+        await setupContentModels(mainManager, group, ["category", "article"]);
+
+        const [createFruitResponse] = await articleManager.createArticle({
+            data: {
+                title: "Fruit 123",
+                body: null,
+                categories: []
+            }
+        });
+
+        const [createAnimalResponse] = await articleAnotherManager.createArticle({
+            data: {
+                title: "Animal 123",
+                body: null,
+                categories: []
+            }
+        });
+
+        const [publishFruitResponse] = await articleManager.publishArticle({
+            revision: createFruitResponse.data.createArticle.data.id
+        });
+        const fruit = publishFruitResponse.data.publishArticle.data;
+        const [publishAnimalResponse] = await articleManager.publishArticle({
+            revision: createAnimalResponse.data.createArticle.data.id
+        });
+        const animal = publishAnimalResponse.data.publishArticle.data;
+
+        const [listEq123Response] = await articleManager.listArticles({
+            where: {
+                createdBy: "id-12345678"
+            }
+        });
+
+        expect(listEq123Response).toEqual({
+            data: {
+                listArticles: {
+                    data: [fruit],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listEq4321Response] = await articleManager.listArticles({
+            where: {
+                revisionCreatedBy: "id-87654321"
+            }
+        });
+
+        expect(listEq4321Response).toEqual({
+            data: {
+                listArticles: {
+                    data: [animal],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listNotEqResponse] = await articleManager.listArticles({
+            where: {
+                createdBy_not: "id-12345678"
+            }
+        });
+
+        expect(listNotEqResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [animal],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listInResponse] = await articleManager.listArticles({
+            where: {
+                createdBy_in: ["id-12345678"]
+            }
+        });
+
+        expect(listInResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [fruit],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listNotInResponse] = await articleManager.listArticles({
+            where: {
+                createdBy_not_in: ["id-87654321"]
+            }
+        });
+
+        expect(listNotInResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [fruit],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listNotInAllResponse] = await articleManager.listArticles({
+            where: {
+                createdBy_not_in: ["id-87654321", "id-12345678"]
+            }
+        });
+
+        expect(listNotInAllResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 0,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    test("should filter entries by createdBy", async () => {
+        const articleManager = useArticleManageHandler(manageOpts);
+        const articleAnotherManager = useArticleManageHandler({
+            ...manageOpts,
+            identity: {
+                id: "id-87654321",
+                displayName: "Jane Doe",
+                type: "admin"
+            }
+        });
+
+        const group = await setupContentModelGroup(mainManager);
         await setupContentModels(mainManager, group, ["category", "article"]);
 
         const [createFruitResponse] = await articleManager.createArticle({
@@ -1660,166 +1822,6 @@ describe("filtering", () => {
         const [listNotInAllResponse] = await articleManager.listArticles({
             where: {
                 createdBy_not_in: ["id-87654321", "id-12345678"]
-            }
-        });
-
-        expect(listNotInAllResponse).toEqual({
-            data: {
-                listArticles: {
-                    data: [],
-                    meta: {
-                        hasMoreItems: false,
-                        totalCount: 0,
-                        cursor: null
-                    },
-                    error: null
-                }
-            }
-        });
-    });
-
-    test("should filter entries by ownedBy", async () => {
-        const articleManager = useArticleManageHandler(manageOpts);
-        const articleAnotherManager = useArticleManageHandler({
-            ...manageOpts,
-            identity: {
-                id: "id-87654321",
-                displayName: "Jane Doe",
-                type: "admin"
-            }
-        });
-
-        const group = await setupContentModelGroup(mainManager);
-        await setupContentModels(mainManager, group, ["category", "article"]);
-
-        const [createFruitResponse] = await articleManager.createArticle({
-            data: {
-                title: "Fruit 123",
-                body: null,
-                categories: []
-            }
-        });
-
-        const [createAnimalResponse] = await articleAnotherManager.createArticle({
-            data: {
-                title: "Animal 123",
-                body: null,
-                categories: []
-            }
-        });
-
-        const [publishFruitResponse] = await articleManager.publishArticle({
-            revision: createFruitResponse.data.createArticle.data.id
-        });
-        const fruit = publishFruitResponse.data.publishArticle.data;
-        const [publishAnimalResponse] = await articleManager.publishArticle({
-            revision: createAnimalResponse.data.createArticle.data.id
-        });
-        const animal = publishAnimalResponse.data.publishArticle.data;
-
-        const [listEq123Response] = await articleManager.listArticles({
-            where: {
-                ownedBy: "id-12345678"
-            }
-        });
-
-        expect(listEq123Response).toEqual({
-            data: {
-                listArticles: {
-                    data: [fruit],
-                    meta: {
-                        hasMoreItems: false,
-                        totalCount: 1,
-                        cursor: null
-                    },
-                    error: null
-                }
-            }
-        });
-
-        const [listEq4321Response] = await articleManager.listArticles({
-            where: {
-                ownedBy: "id-87654321"
-            }
-        });
-
-        expect(listEq4321Response).toEqual({
-            data: {
-                listArticles: {
-                    data: [animal],
-                    meta: {
-                        hasMoreItems: false,
-                        totalCount: 1,
-                        cursor: null
-                    },
-                    error: null
-                }
-            }
-        });
-
-        const [listNotEqResponse] = await articleManager.listArticles({
-            where: {
-                ownedBy_not: "id-12345678"
-            }
-        });
-
-        expect(listNotEqResponse).toEqual({
-            data: {
-                listArticles: {
-                    data: [animal],
-                    meta: {
-                        hasMoreItems: false,
-                        totalCount: 1,
-                        cursor: null
-                    },
-                    error: null
-                }
-            }
-        });
-
-        const [listInResponse] = await articleManager.listArticles({
-            where: {
-                ownedBy_in: ["id-12345678"]
-            }
-        });
-
-        expect(listInResponse).toEqual({
-            data: {
-                listArticles: {
-                    data: [fruit],
-                    meta: {
-                        hasMoreItems: false,
-                        totalCount: 1,
-                        cursor: null
-                    },
-                    error: null
-                }
-            }
-        });
-
-        const [listNotInResponse] = await articleManager.listArticles({
-            where: {
-                ownedBy_not_in: ["id-87654321"]
-            }
-        });
-
-        expect(listNotInResponse).toEqual({
-            data: {
-                listArticles: {
-                    data: [fruit],
-                    meta: {
-                        hasMoreItems: false,
-                        totalCount: 1,
-                        cursor: null
-                    },
-                    error: null
-                }
-            }
-        });
-
-        const [listNotInAllResponse] = await articleManager.listArticles({
-            where: {
-                ownedBy_not_in: ["id-87654321", "id-12345678"]
             }
         });
 

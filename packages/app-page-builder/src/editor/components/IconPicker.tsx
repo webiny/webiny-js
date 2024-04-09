@@ -160,14 +160,14 @@ interface IconPickerPropsType {
     useInSidebar?: boolean;
     removeIcon?: () => void;
 }
-const IconPicker: React.FC<IconPickerPropsType> = ({
+const IconPicker = ({
     value,
     onChange,
     removable = true,
     handlerClassName,
     useInSidebar,
     removeIcon = noop
-}) => {
+}: IconPickerPropsType) => {
     const [filter, setFilter] = useState<string>("");
     const [mustRenderGrid, setMustRenderGrid] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);

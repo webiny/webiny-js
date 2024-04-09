@@ -1,9 +1,11 @@
+import { createJob } from "./createJob";
 import { NormalJob } from "github-actions-wac";
 
-export const createValidateWorkflowsJob = (): NormalJob => {
-    return {
+type CreateValidateWorkflowsJobParams = Partial<NormalJob>;
+
+export const createValidateWorkflowsJob = (params: CreateValidateWorkflowsJobParams = {}) =>
+    createJob({
         name: "Validate workflows",
-        "runs-on": "ubuntu-latest",
         steps: [
             {
                 name: "Install dependencies",
@@ -13,6 +15,6 @@ export const createValidateWorkflowsJob = (): NormalJob => {
                 name: "Validate",
                 run: "npx github-actions-wac validate"
             }
-        ]
-    };
-};
+        ],
+        ...params
+    });

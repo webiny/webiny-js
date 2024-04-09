@@ -13,7 +13,7 @@ import {
 
 const t = i18n.ns("app-admin/file-manager/components/no-permission");
 
-export const NoPermission: React.FC = () => {
+export const NoPermission = () => {
     return (
         <NoPermissionWrapper>
             <NoPermissionOuter>

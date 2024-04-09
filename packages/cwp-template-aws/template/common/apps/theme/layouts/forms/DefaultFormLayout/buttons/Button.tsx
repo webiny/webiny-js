@@ -22,13 +22,7 @@ interface Props {
     onClick: FormRenderPropParamsSubmit | (() => void);
 }
 
-export const Button: React.FC<Props> = ({
-    fullWidth,
-    disabled,
-    children,
-    type = "default",
-    onClick
-}) => {
+export const Button = ({ fullWidth, disabled, children, type = "default", onClick }: Props) => {
     return (
         <Wrapper fullWidth={fullWidth} type={type}>
             <button className={"button-body"} onClick={onClick} disabled={disabled}>

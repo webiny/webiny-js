@@ -22,7 +22,7 @@ const getValidFilterValue = (value: string): Date | undefined => {
     return new Date(value);
 };
 
-export const FilterByTimestamp: React.FC = () => {
+export const FilterByTimestamp = () => {
     const bindFrom = useBind({
         name: "data.timestamp_gte",
         beforeChange(value, cb) {

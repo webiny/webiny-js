@@ -16,6 +16,12 @@ export interface PageElement {
     tenant: string;
     locale: string;
 }
+
+export interface PageContentElement {
+    id: string;
+    data: Record<string, any>;
+    elements: PageContentElement[];
+}
 /**
  * @category RecordModel
  */
@@ -74,7 +80,7 @@ export interface PageSettings {
      */
     [key: string]: any;
 }
-export interface Page {
+export interface Page<T = Record<string, any> | null> {
     id: string;
     pid: string;
     locale: string;
@@ -84,7 +90,7 @@ export interface Page {
     createdFrom: string | null;
     path: string;
     category: string;
-    content: Record<string, any> | null;
+    content: T;
     publishedOn: string | null;
     version: number;
     settings: PageSettings;

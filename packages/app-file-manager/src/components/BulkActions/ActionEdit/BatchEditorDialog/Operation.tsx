@@ -46,11 +46,13 @@ export const Operation = observer((props: OperationProps) => {
                     </Bind>
                 )}
             </Cell>
-            <FieldRenderer
-                operator={props.operation.operator}
-                field={props.operation.selectedField}
-                name={`${props.name}.value`}
-            />
+            {props.operation.selectedField ? (
+                <FieldRenderer
+                    operator={props.operation.operator}
+                    field={props.operation.selectedField}
+                    name={`${props.name}.value`}
+                />
+            ) : null}
         </Grid>
     );
 });

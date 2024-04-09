@@ -34,7 +34,8 @@ module.exports = async (params, context) => {
 
         const result = await runner.runMigration({
             version: process.env.WEBINY_VERSION || context.version,
-            pattern: params.pattern
+            pattern: params.pattern,
+            force: params.force
         });
 
         if (result) {

@@ -4,7 +4,7 @@ import { ReactComponent as TenantIcon } from "~/assets/business_black_24dp.svg";
 import { SettingsDialog } from "./CurrentTenant/SettingsDialog";
 import { ButtonDefault, ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 
-export const CurrentTenant: React.FC = () => {
+export const CurrentTenant = () => {
     const { identity } = useSecurity();
     const [settingsShown, showSettings] = useState(false);
 

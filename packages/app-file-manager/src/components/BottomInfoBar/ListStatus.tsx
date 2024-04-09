@@ -10,7 +10,7 @@ export interface ListStatusProps {
     listing: boolean;
 }
 
-const ListStatus: React.FC<ListStatusProps> = ({ listing }) => {
+const ListStatus = ({ listing }: ListStatusProps) => {
     if (!listing) {
         return null;
     }

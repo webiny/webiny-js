@@ -52,6 +52,7 @@ import {
 } from "@webiny/utils";
 import { createCompression } from "~/graphql/crud/pages/compression";
 import { PagesPermissions } from "./permissions/PagesPermissions";
+import { PageContent } from "./pages/PageContent";
 
 const STATUS_DRAFT = "draft";
 const STATUS_PUBLISHED = "published";
@@ -271,24 +272,6 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
     const pageElementProcessors: PageElementProcessor[] = [];
 
     return {
-        /**
-         * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
-         */
-        onBeforePageCreate: onPageBeforeCreate,
-        onAfterPageCreate: onPageAfterCreate,
-        onBeforePageCreateFrom: onPageBeforeCreateFrom,
-        onAfterPageCreateFrom: onPageAfterCreateFrom,
-        onBeforePageUpdate: onPageBeforeUpdate,
-        onAfterPageUpdate: onPageAfterUpdate,
-        onBeforePageDelete: onPageBeforeDelete,
-        onAfterPageDelete: onPageAfterDelete,
-        onBeforePagePublish: onPageBeforePublish,
-        onAfterPagePublish: onPageAfterPublish,
-        onBeforePageUnpublish: onPageBeforeUnpublish,
-        onAfterPageUnpublish: onPageAfterUnpublish,
-        /**
-         * Introduced in 5.34.0
-         */
         onPageBeforeCreate,
         onPageAfterCreate,
         onPageBeforeCreateFrom,
@@ -405,7 +388,7 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                 createdOn: new Date().toISOString(),
                 ownedBy: owner,
                 createdBy: owner,
-                content: null,
+                content: PageContent.createEmpty().getValue(),
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -640,10 +623,11 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     input
                 });
 
+                const compressedPage = await compressPage(page);
                 await storageOperations.pages.update({
                     input,
                     original: rawOriginal,
-                    page: await compressPage(page)
+                    page: compressedPage
                 });
 
                 await onPageAfterUpdate.publish({

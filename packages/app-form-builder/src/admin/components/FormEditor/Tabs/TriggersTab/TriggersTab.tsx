@@ -16,7 +16,7 @@ const Container = styled("div")({
     color: "var(--mdc-theme-on-surface)"
 });
 
-export const TriggersTab: React.FC = () => {
+export const TriggersTab = () => {
     const { setData, data: formData } = useFormEditor();
     const formEditorTriggerPlugins = plugins.byType<FbEditorTrigger>("form-editor-trigger");
     const { showSnackbar } = useSnackbar();

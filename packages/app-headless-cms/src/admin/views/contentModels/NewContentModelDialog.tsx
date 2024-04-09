@@ -39,7 +39,7 @@ interface CmsModelData {
     group: string;
 }
 
-const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onClose }) => {
+const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) => {
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
@@ -49,12 +49,14 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
         CreateCmsModelMutationResponse,
         CreateCmsModelMutationVariables
     >(GQL.CREATE_CONTENT_MODEL, {
-        update(cache, { data }) {
+        onCompleted(data) {
+            setLoading(false);
+
             if (!data) {
-                setLoading(false);
                 showSnackbar("Missing data on Create Content Model Mutation Response.");
                 return;
             }
+
             const { data: model, error } = data.createContentModel;
 
             if (error) {
@@ -63,10 +65,21 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                 return;
             }
 
+            history.push("/cms/content-models/" + model.modelId);
+        },
+        update(cache, { data }) {
+            if (!data) {
+                return;
+            }
+
+            const { data: model, error } = data.createContentModel;
+
+            if (error) {
+                return;
+            }
+
             addModelToListCache(cache, model);
             addModelToGroupCache(cache, model);
-
-            history.push("/cms/content-models/" + model.modelId);
         }
     });
 

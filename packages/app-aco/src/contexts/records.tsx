@@ -1,6 +1,7 @@
-import React, { ReactNode, useMemo, useState } from "react";
+import React, { ReactNode, useMemo } from "react";
 import sortBy from "lodash/sortBy";
 import unionBy from "lodash/unionBy";
+import lodashMerge from "lodash/merge";
 import { apolloFetchingHandler, loadingHandler } from "~/handlers";
 import {
     createCreateRecord,
@@ -39,6 +40,7 @@ import {
 import { validateOrGetDefaultDbSort } from "~/sorting";
 import { useAcoApp } from "~/hooks";
 import { parseIdentifier } from "@webiny/utils";
+import { useStateIfMounted } from "@webiny/app-admin";
 
 interface ListTagsParams {
     where?: ListTagsWhereQueryVariables;
@@ -106,14 +108,14 @@ const defaultMeta: ListMeta = {
     cursor: null
 };
 
-export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
+export const SearchRecordsProvider = ({ children }: Props) => {
     const { app, client, mode } = useAcoApp();
     const { model } = app;
 
-    const [records, setRecords] = useState<SearchRecordItem[]>([]);
-    const [tags, setTags] = useState<TagItem[]>([]);
-    const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
-    const [meta, setMeta] = useState<ListMeta>(Object.create(defaultMeta));
+    const [records, setRecords] = useStateIfMounted<SearchRecordItem[]>([]);
+    const [tags, setTags] = useStateIfMounted<TagItem[]>([]);
+    const [loading, setLoading] = useStateIfMounted<Loading<LoadingActions>>(defaultLoading);
+    const [meta, setMeta] = useStateIfMounted<ListMeta>(Object.create(defaultMeta));
 
     const {
         GET_RECORD,
@@ -148,22 +150,19 @@ export const SearchRecordsProvider: React.VFC<Props> = ({ children }) => {
             },
             updateRecordInCache: (record: any) => {
                 const { id: recordId } = parseIdentifier(record.id);
-                const index = records.findIndex(item => {
-                    const { id: itemId } = parseIdentifier(item.id);
-                    return itemId === recordId;
-                });
-                if (index === -1) {
-                    return;
-                }
+
                 setRecords(prev => {
-                    const next = [...prev];
+                    const index = prev.findIndex(item => {
+                        const { id: itemId } = parseIdentifier(item.id);
+                        return itemId === recordId;
+                    });
 
-                    next[index] = {
-                        ...prev[index],
-                        ...record
-                    };
-
-                    return next;
+                    if (index >= 0) {
+                        const next = [...prev];
+                        next[index] = lodashMerge({}, prev[index], record);
+                        return next;
+                    }
+                    return [record, ...prev];
                 });
             },
             removeRecordFromCache: (id: string) => {

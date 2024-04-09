@@ -2,12 +2,16 @@
  * Rename file to types.ts when switching the package to Typescript.
  */
 
+import glob from "fast-glob";
+import { dirname, join } from "path";
+
 /**
  * A simplified plugins container interface, used specifically within the Webiny CLI.
  * Not in relation with "@webiny/plugins" package.
  */
 export interface PluginsContainer {
     byType<T extends Plugin>(type: T["type"]): T[];
+
     byName<T extends Plugin>(name: T["name"]): T;
 }
 
@@ -18,6 +22,7 @@ export interface PluginsContainer {
 export interface Plugin {
     type: string;
     name?: string;
+
     [key: string]: any;
 }
 
@@ -36,11 +41,65 @@ interface Project {
     root: string;
 }
 
+export interface ProjectApplication {
+    /**
+     * Unique ID of the project application.
+     */
+    id: string;
+    /**
+     * Name of the project application.
+     */
+    name: string;
+    /**
+     * Description of the project application.
+     */
+    description: string;
+    /**
+     * Type of the project application.
+     */
+    type: string;
+    /**
+     * Root path of the project application.
+     */
+    root: string;
+    /**
+     * Commonly used paths.
+     */
+    paths: {
+        relative: string;
+        absolute: string;
+        workspace: string;
+    };
+    /**
+     * Project application config (exported via `webiny.application.ts` file).
+     */
+    config: Record<string, any>;
+    /**
+     * Project application package.json.
+     */
+    project: Project;
+
+    /**
+     * A list of all the packages in the project application.
+     */
+    get packages(): Array<{
+        name: string;
+        paths: {
+            root: string;
+            packageJson: string;
+            config: string;
+        };
+        packageJson: Record<string, any>;
+        get config(): any;
+    }>;
+}
+
 /**
  * A type that represents the logging method.
  */
 interface Log {
     (...args: any): string;
+
     hl: (...args: any) => string;
     highlight: (...args: any) => string;
 }

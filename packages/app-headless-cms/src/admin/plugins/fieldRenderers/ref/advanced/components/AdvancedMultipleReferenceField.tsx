@@ -91,11 +91,11 @@ const getRecordCountMessage = (count: number) => {
     }
 };
 
-interface Props extends CmsModelFieldRendererProps {
+interface AdvancedMultipleReferenceFieldProps extends CmsModelFieldRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue[] | undefined | null>;
 }
 
-export const AdvancedMultipleReferenceField: React.VFC<Props> = props => {
+export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceFieldProps) => {
     const { bind, field } = props;
     const { showSnackbar } = useSnackbar();
     const requestContext = useModelFieldGraphqlContext();

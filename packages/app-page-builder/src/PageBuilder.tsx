@@ -1,11 +1,7 @@
 import React, { Fragment } from "react";
 import { HasPermission } from "@webiny/app-security";
-import {
-    Plugins,
-    AddMenu as Menu,
-    createProviderPlugin,
-    createComponentPlugin
-} from "@webiny/app-admin";
+import { Plugins, AddMenu as Menu, createProviderPlugin, createDecorator } from "@webiny/app-admin";
+import { Global, css } from "@emotion/react";
 import { PageBuilderProvider as ContextProvider } from "./contexts/PageBuilder";
 import { ReactComponent as PagesIcon } from "./admin/assets/table_chart-24px.svg";
 import { WebsiteSettings } from "./modules/WebsiteSettings/WebsiteSettings";
@@ -18,7 +14,8 @@ import { PagesModule } from "~/admin/views/Pages/PagesModule";
 
 export type { EditorProps };
 export { EditorRenderer };
-export { PageListConfig, usePageListConfig } from "~/admin/config/pages";
+export * from "~/admin/config/pages";
+export * from "~/admin/views/Pages/hooks";
 
 const PageBuilderProviderPlugin = createProviderPlugin(Component => {
     return function PageBuilderProvider({ children }) {
@@ -32,7 +29,7 @@ const PageBuilderProviderPlugin = createProviderPlugin(Component => {
     };
 });
 
-const PageBuilderMenu: React.FC = () => {
+const PageBuilderMenu = () => {
     return (
         <>
             <HasPermission any={["pb.menu", "pb.category", "pb.page", "pb.template", "pb.block"]}>
@@ -99,20 +96,31 @@ const PageBuilderMenu: React.FC = () => {
 };
 
 const EditorLoader = React.lazy(() =>
-    import("./editor/Editor").then(m => ({
+    import(
+        /* webpackChunkName: "PageBuilderEditor" */
+        "./editor/Editor"
+    ).then(m => ({
         default: m.Editor
     }))
 );
 
-const EditorRendererPlugin = createComponentPlugin(EditorRenderer, () => {
+const EditorRendererPlugin = createDecorator(EditorRenderer, () => {
     return function Editor(props) {
         return <EditorLoader {...props} />;
     };
 });
 
-export const PageBuilder: React.FC = () => {
+const displayContents = css`
+    pb-editor-ui-elements,
+    pb-editor-ui-element {
+        display: contents;
+    }
+`;
+
+export const PageBuilder = () => {
     return (
         <Fragment>
+            <Global styles={displayContents} />
             <PagesModule />
             <PageBuilderProviderPlugin />
             <EditorRendererPlugin />

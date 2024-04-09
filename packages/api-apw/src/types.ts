@@ -24,7 +24,6 @@ import { PluginsContainer } from "@webiny/plugins";
 import { WcpContextObject } from "@webiny/api-wcp/types";
 import { MailerContext } from "@webiny/api-mailer/types";
 import { AdminSettingsContext } from "@webiny/api-admin-settings/types";
-import { CmsPrivateModelFull } from "@webiny/api-headless-cms";
 
 export interface ApwCmsEntry extends BaseCmsEntry {
     title: string;
@@ -147,9 +146,13 @@ export interface ApwIdentity {
 export interface ApwBaseFields {
     id: string;
     entryId: string;
+
     createdOn: string;
+    modifiedOn: string | null;
     savedOn: string;
     createdBy: ApwIdentity;
+    modifiedBy: ApwIdentity;
+    savedBy: ApwIdentity;
 }
 
 export interface ApwReviewer extends ApwBaseFields {
@@ -956,8 +959,6 @@ export interface OnWorkflowBeforeDeleteTopicParams {
 export interface OnWorkflowAfterDeleteTopicParams {
     workflow: ApwWorkflow;
 }
-
-export type WorkflowModelDefinition = Omit<CmsPrivateModelFull, "noValidate" | "group">;
 
 /**
  * Headless CMS

@@ -1,7 +1,3 @@
-const { red } = require("chalk");
-const execa = require("execa");
-const semver = require("semver");
-
 module.exports = [
     {
         type: "cli-command",
@@ -29,6 +25,10 @@ module.exports = [
                     });
                 },
                 async argv => {
+                    const { red } = require("chalk");
+                    const execa = require("execa");
+                    const semver = require("semver");
+
                     if (!argv.skipChecks) {
                         // Before doing any upgrading, there must not be any active changes in the current branch.
                         let gitStatus = "";
@@ -70,7 +70,8 @@ module.exports = [
                     const npx = execa("npx", command, {
                         env: {
                             FORCE_COLOR: true
-                        }
+                        },
+                        stdin: process.stdin
                     });
 
                     npx.stdout.on("data", data => {

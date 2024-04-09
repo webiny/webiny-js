@@ -24,10 +24,7 @@ interface PageBuilderPermissionsProps {
     value: SecurityPermission;
     onChange: (value: SecurityPermission[]) => void;
 }
-export const AuditLogsPermissions: React.FC<PageBuilderPermissionsProps> = ({
-    value,
-    onChange
-}) => {
+export const AuditLogsPermissions = ({ value, onChange }: PageBuilderPermissionsProps) => {
     const { getPermission } = useSecurity();
 
     // We disable form elements for custom permissions if AACL cannot be used.

@@ -66,7 +66,7 @@ interface AddTemplateProps {
     onTemplate: UseAddTemplateParams["onTemplate"];
 }
 
-export const AddTemplateButton: React.VFC<AddTemplateProps> = props => {
+export const AddTemplateButton = (props: AddTemplateProps) => {
     const { showGallery, onTemplate, browseTemplates, onGalleryClose } = useAddTemplate({
         onTemplate: props.onTemplate
     });
@@ -81,7 +81,7 @@ export const AddTemplateButton: React.VFC<AddTemplateProps> = props => {
                     <Info>
                         <InfoIcon />
                         <Typography use={"caption"}>
-                            Click here to learn how templates and dynamic zones work
+                            Click here to learn how templates and dynamic zones work.
                         </Typography>
                     </Info>
                 </>
@@ -90,7 +90,7 @@ export const AddTemplateButton: React.VFC<AddTemplateProps> = props => {
     );
 };
 
-export const AddTemplateIcon: React.VFC<AddTemplateProps> = props => {
+export const AddTemplateIcon = (props: AddTemplateProps) => {
     const { showGallery, onTemplate, browseTemplates, onGalleryClose } = useAddTemplate({
         onTemplate: props.onTemplate
     });

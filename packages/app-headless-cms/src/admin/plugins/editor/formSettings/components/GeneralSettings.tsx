@@ -11,7 +11,7 @@ interface GeneralSettingsProps {
     Bind: BindComponent;
 }
 
-const GeneralSettings: React.VFC<GeneralSettingsProps> = ({ Bind }) => {
+const GeneralSettings = ({ Bind }: GeneralSettingsProps) => {
     return (
         <React.Fragment>
             <Grid>

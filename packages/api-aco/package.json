@@ -22,7 +22,6 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@ungap/structured-clone": "^1.2.0",
     "@webiny/api": "0.0.0",
     "@webiny/api-authentication": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
@@ -35,15 +34,14 @@
     "@webiny/pubsub": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
-    "lodash": "^4.4.2"
+    "lodash": "4.17.21"
   },
   "devDependencies": {
-    "@babel/cli": "^7.22.6",
-    "@babel/core": "^7.22.8",
-    "@babel/preset-env": "^7.22.7",
-    "@babel/preset-typescript": "^7.22.5",
-    "@babel/runtime": "^7.22.6",
-    "@types/ungap__structured-clone": "^0.3.0",
+    "@babel/cli": "^7.23.9",
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
+    "@babel/preset-typescript": "^7.23.3",
+    "@babel/runtime": "^7.24.0",
     "@webiny/api-admin-users": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-i18n-ddb": "0.0.0",
@@ -57,7 +55,7 @@
     "@webiny/wcp": "0.0.0",
     "graphql": "^15.8.0",
     "prettier": "^2.8.3",
-    "rimraf": "^3.0.2",
+    "rimraf": "^5.0.5",
     "ttypescript": "^1.5.13",
     "typescript": "^4.7.4"
   }

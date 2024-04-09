@@ -1,18 +1,22 @@
 import React, { useCallback, useEffect, useState } from "react";
-import get from "lodash/get";
-import { useLazyQuery, useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { Typography } from "@webiny/ui/Typography";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import ImportPagesDetails from "./useImportPagesDetails";
 import ProgressBar from "../ProgressBar";
 import { LoadingDialog } from "../styledComponents";
 import {
-    GET_PAGE_IMPORT_EXPORT_TASK,
-    LIST_PAGE_IMPORT_EXPORT_SUB_TASKS
+    GET_PAGES_IMPORT_TASK,
+    GetPagesImportTaskResponse,
+    GetPagesImportTaskResponseDataStats,
+    GetPagesImportTaskVariables,
+    LIST_IMPORTED_PAGES,
+    ListImportedPagesResponse,
+    ListImportedPagesVariables
 } from "~/admin/graphql/pageImportExport.gql";
-import { ImportExportTaskStatus } from "~/types";
+import { PbTaskStatus } from "~/admin/graphql/types";
+import ImportPagesDetails from "./useImportPagesDetails";
 
 const t = i18n.ns("app-page-builder/editor/plugins/defaultBar/importPage");
 
@@ -22,59 +26,69 @@ const completionMessage = t`All pages have been imported`;
 const errorMessage = t`Failed to import pages`;
 const pendingMessage = t`Waiting for operation status`;
 const processingMessage = t`Importing pages`;
+const abortedMessage = t`Importing pages aborted`;
 
-const INTERVAL = 0.5 * 1000;
+const INTERVAL = 1.5 * 1000;
 
-const MESSAGES: Record<string, string> = {
-    [ImportExportTaskStatus.COMPLETED]: completionMessage,
-    [ImportExportTaskStatus.PROCESSING]: processingMessage,
-    [ImportExportTaskStatus.PENDING]: pendingMessage
+const MESSAGES: Record<PbTaskStatus, string> = {
+    [PbTaskStatus.success]: completionMessage,
+    [PbTaskStatus.running]: processingMessage,
+    [PbTaskStatus.pending]: pendingMessage,
+    [PbTaskStatus.failed]: errorMessage,
+    [PbTaskStatus.aborted]: abortedMessage
+};
+
+interface LoadingDialogStatsProps {
+    stats: GetPagesImportTaskResponseDataStats;
+}
+
+const LoadingDialogStats = ({ stats }: LoadingDialogStatsProps) => {
+    if (!stats.total) {
+        return t`Waiting for the information about pages...`;
+    }
+    return t`{completed} of {total} completed`({
+        completed: `${stats.completed}`,
+        total: `${stats.total}`
+    });
 };
 
 interface ImportPageLoadingDialogContentProps {
     taskId: string;
 }
-const ImportPageLoadingDialogContent: React.FC<ImportPageLoadingDialogContentProps> = ({
-    taskId
-}) => {
+const ImportPageLoadingDialogContent = ({ taskId }: ImportPageLoadingDialogContentProps) => {
     const { showSnackbar } = useSnackbar();
     const [completed, setCompleted] = useState<boolean>(false);
-    const [error, setError] = useState<Error | null>(null);
+    const [error, setError] = useState<Partial<Error> | null | undefined>(null);
 
-    const { data } = useQuery(GET_PAGE_IMPORT_EXPORT_TASK, {
-        variables: {
-            id: taskId
-        },
-        skip: taskId === null,
-        fetchPolicy: "network-only",
-        pollInterval: completed ? 0 : INTERVAL,
-        notifyOnNetworkStatusChange: true
-    });
-
-    const [getSubTasks, getSubTasksQuery] = useLazyQuery(LIST_PAGE_IMPORT_EXPORT_SUB_TASKS, {
-        variables: {
-            id: taskId,
-            status: "completed"
+    const { data } = useQuery<GetPagesImportTaskResponse, GetPagesImportTaskVariables>(
+        GET_PAGES_IMPORT_TASK,
+        {
+            variables: {
+                id: taskId
+            },
+            skip: taskId === null,
+            fetchPolicy: "network-only",
+            pollInterval: completed ? 0 : INTERVAL,
+            notifyOnNetworkStatusChange: true
         }
-    });
+    );
 
-    const pollExportPageTaskStatus = useCallback(response => {
-        const { error, data } = get(response, "pageBuilder.getImportExportTask", {});
+    const pollExportPageTaskStatus = useCallback((response: GetPagesImportTaskResponse) => {
+        const { error, data } = response.pageBuilder.getImportPagesTask;
         if (error) {
             return showSnackbar(error.message);
         }
 
         // Handler failed task
-        if (data && data.status === "failed") {
+        if (data?.status === "failed" || data?.data?.error) {
             setCompleted(true);
             showSnackbar("Error: Failed to import pages");
             // TODO: @ashutosh show an informative dialog about error.
-            setError(data.error);
+            setError(data?.data?.error);
         }
 
-        if (data && data.status === "completed") {
+        if (data?.status === "success") {
             setCompleted(true);
-            getSubTasks();
         }
     }, []);
 
@@ -86,10 +100,21 @@ const ImportPageLoadingDialogContent: React.FC<ImportPageLoadingDialogContentPro
         pollExportPageTaskStatus(data);
     }, [data]);
 
-    const { status, stats } = get(data, "pageBuilder.getImportExportTask.data", {
+    const { status, stats } = data?.pageBuilder.getImportPagesTask.data || {
         status: "pending",
         stats: null
-    });
+    };
+
+    const skipListImportedPages = status !== PbTaskStatus.success || !taskId;
+    const listImportedPages = useQuery<ListImportedPagesResponse, ListImportedPagesVariables>(
+        LIST_IMPORTED_PAGES,
+        {
+            skip: skipListImportedPages,
+            variables: {
+                taskId
+            }
+        }
+    );
 
     return (
         <LoadingDialog.Wrapper>
@@ -102,7 +127,7 @@ const ImportPageLoadingDialogContent: React.FC<ImportPageLoadingDialogContentPro
                         <LoadingDialog.CancelIcon />
                         <Typography use={"subtitle1"}>{errorMessage}</Typography>
                     </LoadingDialog.TitleContainer>
-                ) : status === "completed" ? (
+                ) : status === PbTaskStatus.success ? (
                     <LoadingDialog.TitleContainer>
                         <LoadingDialog.CheckMarkIcon />
                         <Typography use={"subtitle1"}>{MESSAGES[status]}</Typography>
@@ -130,10 +155,7 @@ const ImportPageLoadingDialogContent: React.FC<ImportPageLoadingDialogContentPro
                     {stats && (
                         <LoadingDialog.ProgressContainer>
                             <LoadingDialog.StatusTitle use={"body2"}>
-                                {t`{completed} of {total} completed`({
-                                    completed: `${stats.completed}`,
-                                    total: `${stats.total}`
-                                })}
+                                <LoadingDialogStats stats={stats} />
                             </LoadingDialog.StatusTitle>
                             <ProgressBar
                                 value={stats.completed}
@@ -144,10 +166,12 @@ const ImportPageLoadingDialogContent: React.FC<ImportPageLoadingDialogContentPro
                         </LoadingDialog.ProgressContainer>
                     )}
                 </LoadingDialog.StatsContainer>
-                <ImportPagesDetails
-                    loading={getSubTasksQuery.loading}
-                    result={getSubTasksQuery.data}
-                />
+                {!skipListImportedPages && (
+                    <ImportPagesDetails
+                        loading={listImportedPages.loading}
+                        result={listImportedPages.data}
+                    />
+                )}
             </LoadingDialog.WrapperRight>
         </LoadingDialog.Wrapper>
     );
@@ -164,7 +188,15 @@ const useImportPageLoadingDialog = (): UseImportPageLoadingDialogCallableRespons
             showDialog(<ImportPageLoadingDialogContent {...props} />, {
                 title: importPageDialogTitle,
                 actions: {
-                    accept: { label: t`Continue`, onClick: () => window.location.reload() }
+                    accept: {
+                        label: t`Continue`,
+                        onClick: () => {
+                            window.location.reload();
+                        }
+                    }
+                },
+                onClose: () => {
+                    window.location.reload();
                 },
                 dataTestId: "import-pages.loading-dialog"
             });

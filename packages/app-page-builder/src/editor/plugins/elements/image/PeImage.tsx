@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { FileManager, SingleImageUploadProps } from "@webiny/app-admin";
 import { UpdateElementActionEvent } from "~/editor/recoil/actions";
-import pick from "lodash/pick";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { ImageRendererComponent } from "@webiny/app-page-builder-elements/renderers/image";
 import { AddImageIconWrapper, AddImageWrapper } from "@webiny/ui/ImageUpload/styled";
@@ -9,7 +8,6 @@ import { ReactComponent as AddImageIcon } from "@webiny/ui/ImageUpload/icons/rou
 import { Typography } from "@webiny/ui/Typography";
 import { useElementVariableValue } from "~/editor/hooks/useElementVariableValue";
 import { createRenderer, useRenderer } from "@webiny/app-page-builder-elements";
-import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 
 const RenderBlank = (props: { onClick?: () => void }) => {
     return (
@@ -22,32 +20,31 @@ const RenderBlank = (props: { onClick?: () => void }) => {
     );
 };
 
+const emptyLink = { href: "" };
+
 const PeImage = createRenderer(() => {
     const { getElement } = useRenderer();
     const element = getElement();
     const variableValue = useElementVariableValue(element);
-
-    const [activeElementId] = useActiveElementId();
-    const isActive = activeElementId === element.id;
-
     const handler = useEventActionHandler();
 
     const id = element?.id;
 
     const onChange = useCallback<NonNullable<SingleImageUploadProps["onChange"]>>(
         file => {
+            const elementClone = structuredClone(element);
+            if (file) {
+                const { id, src } = file;
+                elementClone.data.image = {
+                    ...elementClone.data.image,
+                    file: { id, src },
+                    htmlTag: "auto"
+                };
+            }
+
             handler.trigger(
                 new UpdateElementActionEvent({
-                    element: {
-                        ...element,
-                        data: {
-                            ...element.data,
-                            image: {
-                                ...(element.data.image || {}),
-                                file: file ? pick(file, ["id", "src"]) : undefined
-                            }
-                        }
-                    },
+                    element: elementClone,
                     history: true
                 })
             );
@@ -55,33 +52,20 @@ const PeImage = createRenderer(() => {
         [id]
     );
 
-    if (isActive) {
-        return (
-            <FileManager
-                onChange={onChange}
-                render={({ showFileManager }) => (
-                    <ImageRendererComponent
-                        onClick={() => showFileManager()}
-                        renderEmpty={<RenderBlank onClick={showFileManager} />}
-                        value={variableValue}
-                        // Even if the link might've been applied via the right sidebar, we still don't
-                        // want to have it rendered in the editor. Because, otherwise, user wouldn't be
-                        // able to click again on the component and bring back the file manager overlay.
-                        link={{ href: "" }}
-                    />
-                )}
-            />
-        );
-    }
-
     return (
-        <ImageRendererComponent
-            renderEmpty={<RenderBlank />}
-            value={variableValue}
-            // Even if the link might've been applied via the right sidebar, we still don't
-            // want to have it rendered in the editor. Because, otherwise, user wouldn't be
-            // able to click again on the component and bring back the file manager overlay.
-            link={{ href: "" }}
+        <FileManager
+            onChange={onChange}
+            render={({ showFileManager }) => (
+                <ImageRendererComponent
+                    onClick={showFileManager}
+                    renderEmpty={<RenderBlank onClick={showFileManager} />}
+                    value={variableValue}
+                    // Even if the link might've been applied via the right sidebar, we still don't
+                    // want to have it rendered in the editor. Because, otherwise, user wouldn't be
+                    // able to click again on the component and bring back the file manager overlay.
+                    link={emptyLink}
+                />
+            )}
         />
     );
 });

@@ -38,7 +38,9 @@ function putPropertyBefore(properties: Property[], property: Property, before: s
     if (existingIndex > -1) {
         const existingProperty = properties[existingIndex];
         const newProperties = properties.filter(p => p.id !== property.id);
-        const targetIndex = newProperties.findIndex(prop => prop.id === before);
+        const targetIndex = before.endsWith("$first")
+            ? 0
+            : newProperties.findIndex(prop => prop.id === before);
         return [
             ...newProperties.slice(0, targetIndex),
             existingProperty,
@@ -56,7 +58,9 @@ function putPropertyAfter(properties: Property[], property: Property, after: str
 
     if (existingIndex > -1) {
         const [removedProperty] = properties.splice(existingIndex, 1);
-        const targetIndex = properties.findIndex(prop => prop.id === after);
+        const targetIndex = after.endsWith("$last")
+            ? properties.length - 1
+            : properties.findIndex(prop => prop.id === after);
         return [
             ...properties.slice(0, targetIndex + 1),
             removedProperty,
@@ -89,9 +93,10 @@ const PropertiesContext = createContext<PropertiesContext | undefined>(undefined
 
 interface PropertiesProps {
     onChange?(properties: Property[]): void;
+    children: React.ReactNode;
 }
 
-export const Properties: React.FC<PropertiesProps> = ({ onChange, children }) => {
+export const Properties = ({ onChange, children }: PropertiesProps) => {
     const [properties, setProperties] = useState<Property[]>([]);
 
     useEffect(() => {
@@ -183,6 +188,7 @@ interface PropertyProps {
     remove?: boolean;
     parent?: string;
     root?: boolean;
+    children?: React.ReactNode;
 }
 
 const PropertyContext = createContext<Property | undefined>(undefined);
@@ -221,7 +227,7 @@ export function useAncestor(params: AncestorMatch) {
     return property ? matchOrGetAncestor(property, params) : undefined;
 }
 
-export const Property: React.FC<PropertyProps> = ({
+export const Property = ({
     id,
     name,
     value,
@@ -233,7 +239,7 @@ export const Property: React.FC<PropertyProps> = ({
     array = false,
     root = false,
     parent = undefined
-}) => {
+}: PropertyProps) => {
     const uniqueId = useMemo(() => id || getUniqueId(), []);
     const parentProperty = useParentProperty();
     const properties = useProperties();

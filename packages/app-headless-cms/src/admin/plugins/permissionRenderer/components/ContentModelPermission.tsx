@@ -24,7 +24,7 @@ interface ContentModelPermissionProps {
     selectedContentModelGroups?: Record<string, string[]>;
     disabled?: boolean;
 }
-export const ContentModelPermission: React.FC<ContentModelPermissionProps> = ({
+export const ContentModelPermission = ({
     Bind,
     data,
     setValue,
@@ -33,7 +33,7 @@ export const ContentModelPermission: React.FC<ContentModelPermissionProps> = ({
     locales,
     selectedContentModelGroups = {},
     disabled
-}) => {
+}: ContentModelPermissionProps) => {
     const modelsGroups = useCmsData(locales);
     // Set "cms.contentModel" access scope to "own" if "cms.contentModelGroup" === "own".
     useEffect(() => {

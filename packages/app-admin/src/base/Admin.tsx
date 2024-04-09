@@ -16,7 +16,7 @@ export interface AdminProps {
     children?: React.ReactNode;
 }
 
-export const Admin: React.FC<AdminProps> = ({ children, createApolloClient }) => {
+export const Admin = ({ children, createApolloClient }: AdminProps) => {
     const ApolloProvider = createApolloProvider(createApolloClient);
     const TelemetryProvider = createTelemetryProvider();
     const UiStateProvider = createUiStateProvider();

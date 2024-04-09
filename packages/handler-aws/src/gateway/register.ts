@@ -1,5 +1,5 @@
+import type { APIGatewayEvent } from "aws-lambda";
 import { registry } from "~/registry";
-import { APIGatewayEvent } from "aws-lambda";
 import { createSourceHandler } from "~/sourceHandler";
 import { createHandler, HandlerParams } from "./index";
 
