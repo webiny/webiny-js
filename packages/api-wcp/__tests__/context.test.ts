@@ -25,6 +25,8 @@ describe("context", () => {
             canUseFolderLevelPermissions: expect.any(Function),
             canUsePrivateFiles: expect.any(Function),
             canUseTeams: expect.any(Function),
+            canUseAuditLogs: expect.any(Function),
+            canUseRecordLocking: expect.any(Function),
             decrementSeats: expect.any(Function),
             incrementTenants: expect.any(Function),
             decrementTenants: expect.any(Function)
