@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 import { autorun } from "mobx";
 import { createGenericContext } from "@webiny/app-admin";
 import { ITrashBinControllers, ITrashBinPresenter } from "~/Presentation/abstractions";
-import { TrashBinItemDTO } from "@webiny/app-trash-bin-common";
+import { TrashBinItemDTO } from "~/Domain";
 
 export interface TrashBinContext {
     controllers: ITrashBinControllers;

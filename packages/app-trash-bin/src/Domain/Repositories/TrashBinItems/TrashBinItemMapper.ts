@@ -1,4 +1,4 @@
-import { ITrashBinItemMapper, TrashBinItem } from "@webiny/app-trash-bin-common";
+import { ITrashBinItemMapper, TrashBinItem } from "~/Domain";
 
 export class TrashBinItemMapper implements ITrashBinItemMapper<TrashBinItem> {
     toDTO(data: TrashBinItem) {

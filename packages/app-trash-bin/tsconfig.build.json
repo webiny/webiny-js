@@ -4,7 +4,6 @@
   "references": [
     { "path": "../app-aco/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
-    { "path": "../app-trash-bin-common/tsconfig.build.json" },
     { "path": "../app-utils/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" },
     { "path": "../react-properties/tsconfig.build.json" },

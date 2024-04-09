@@ -1,21 +1,20 @@
 import { TrashBinPresenter } from "./TrashBinPresenter";
-import { TrashBinIdentity, TrashBinLocation } from "@webiny/app-trash-bin-common/types";
+import { LoadingRepository, MetaRepository, Sorting, SortingRepository } from "@webiny/app-utils";
+import { LoadingActions, TrashBinIdentity, TrashBinLocation } from "~/types";
+import { TrashBinControllers } from "~/Presentation/TrashBin/TrashBinControllers";
 import {
     ITrashBinDeleteItemGateway,
-    ITrashBinItemMapper,
     ITrashBinListGateway,
     ITrashBinRestoreItemGateway
-} from "@webiny/app-trash-bin-common";
-import { LoadingRepository, MetaRepository, Sorting, SortingRepository } from "@webiny/app-utils";
-import { LoadingActions } from "~/types";
+} from "~/Gateways";
+import { ITrashBinItemMapper } from "~/Domain/Models/TrashBinItem";
+import { SearchRepository } from "~/Domain/Repositories/Search";
+import { SelectedItemsRepository } from "~/Domain/Repositories/SelectedItems";
+import { SortingRepositoryWithDefaults } from "~/Domain/Repositories/Sorting";
 import {
-    SearchRepository,
-    SelectedItemsRepository,
     TrashBinItemsRepository,
-    TrashBinItemsRepositoryWithLoading,
-    SortingRepositoryWithDefaults
-} from "~/Domain";
-import { TrashBinControllers } from "~/Presentation/TrashBin/TrashBinControllers";
+    TrashBinItemsRepositoryWithLoading
+} from "~/Domain/Repositories/TrashBinItems";
 
 interface Item {
     id: string;
@@ -162,6 +161,7 @@ describe("TrashBin", () => {
             restoreItemGateway,
             itemMapper
         );
+
         const itemsRepo = new TrashBinItemsRepositoryWithLoading(loadingRepo, trashBinItemsRepo);
 
         return {

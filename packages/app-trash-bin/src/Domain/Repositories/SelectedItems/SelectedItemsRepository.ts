@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { TrashBinItem } from "@webiny/app-trash-bin-common";
+import { TrashBinItem } from "~/Domain";
 import { ISelectedItemsRepository } from "./ISelectedItemsRepository";
 
 export class SelectedItemsRepository implements ISelectedItemsRepository {

@@ -1,14 +1,13 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import uniqBy from "lodash/uniqBy";
+import { ITrashBinItemMapper, TrashBinItem } from "~/Domain";
 import {
-    ITrashBinDeleteItemGateway,
-    ITrashBinItemMapper,
     ITrashBinListGateway,
-    ITrashBinRestoreItemGateway,
-    TrashBinItem
-} from "@webiny/app-trash-bin-common";
+    ITrashBinDeleteItemGateway,
+    ITrashBinRestoreItemGateway
+} from "~/Gateways";
 import { IMetaRepository, Meta } from "@webiny/app-utils";
-import { TrashBinListQueryVariables } from "@webiny/app-trash-bin-common/types";
+import { TrashBinListQueryVariables } from "~/types";
 import { ITrashBinItemsRepository } from "./ITrashBinItemsRepository";
 
 export class TrashBinItemsRepository<TItem extends Record<string, any>>

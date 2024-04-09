@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { ITrashBinItemMapper, TrashBinItem } from "@webiny/app-trash-bin-common";
+import { ITrashBinItemMapper, TrashBinItem } from "~/Domain";
 import { ISortingRepository, MetaMapper, SortingMapper } from "@webiny/app-utils";
 import {
     TrashBinItemMapper,

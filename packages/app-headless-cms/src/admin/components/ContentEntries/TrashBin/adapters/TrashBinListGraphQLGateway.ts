@@ -1,5 +1,5 @@
 import { ApolloClient } from "apollo-client";
-import { ITrashBinListGateway } from "@webiny/app-trash-bin-common";
+import { ITrashBinListGateway } from "@webiny/app-trash-bin";
 import {
     CmsEntriesListQueryResponse,
     CmsEntriesListQueryVariables,

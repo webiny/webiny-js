@@ -4,8 +4,8 @@ import { observer } from "mobx-react-lite";
 import { TrashBinListConfig } from "~/Presentation/configs";
 import { useTrashBin } from "~/Presentation/hooks";
 import { getEntriesLabel } from "../BulkActions";
-import { TrashBinItemDTO } from "@webiny/app-trash-bin-common";
 import { RestoreItemsReportMessage } from "~/Presentation/components/BulkActions/RestoreItems/RestoreItemsReportMessage";
+import { TrashBinItemDTO } from "~/Domain";
 
 export const BulkActionsRestoreItems = observer(() => {
     const { vm, restoreItem, onItemRestore } = useTrashBin();

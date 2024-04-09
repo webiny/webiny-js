@@ -1,7 +1,7 @@
 import React from "react";
 import { CompositionScope } from "@webiny/react-composition";
 import { AcoConfig, TableColumnConfig as ColumnConfig } from "@webiny/app-aco";
-import { TrashBinItemDTO } from "@webiny/app-trash-bin-common";
+import { TrashBinItemDTO } from "~/Domain";
 
 const { Table } = AcoConfig;
 

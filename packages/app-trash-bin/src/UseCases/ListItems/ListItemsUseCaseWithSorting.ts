@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
-import { IListItemsUseCase } from "./IListItemsUseCase";
-import { TrashBinListQueryVariables } from "@webiny/app-trash-bin-common/types";
 import { ISortingRepository, SortingMapper } from "@webiny/app-utils";
+import { IListItemsUseCase } from "./IListItemsUseCase";
+import { TrashBinListQueryVariables } from "~/types";
 
 export class ListItemsUseCaseWithSorting implements IListItemsUseCase {
     private sortingRepository: ISortingRepository;

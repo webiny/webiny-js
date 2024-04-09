@@ -4,7 +4,6 @@
   "references": [
     { "path": "../app-aco" },
     { "path": "../app-admin" },
-    { "path": "../app-trash-bin-common" },
     { "path": "../app-utils" },
     { "path": "../react-composition" },
     { "path": "../react-properties" },
@@ -21,8 +20,6 @@
       "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/app-trash-bin-common/*": ["../app-trash-bin-common/src/*"],
-      "@webiny/app-trash-bin-common": ["../app-trash-bin-common/src"],
       "@webiny/app-utils/*": ["../app-utils/src/*"],
       "@webiny/app-utils": ["../app-utils/src"],
       "@webiny/react-composition/*": ["../react-composition/src/*"],

@@ -15,7 +15,6 @@
     "@material-design-icons/svg": "^0.12.1",
     "@webiny/app-aco": "0.0.0",
     "@webiny/app-admin": "0.0.0",
-    "@webiny/app-trash-bin-common": "0.0.0",
     "@webiny/app-utils": "0.0.0",
     "@webiny/react-composition": "0.0.0",
     "@webiny/react-properties": "0.0.0",

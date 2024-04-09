@@ -1,4 +1,4 @@
-import { TrashBinItem } from "@webiny/app-trash-bin-common";
+import { TrashBinItem } from "~/Domain";
 
 export interface ISelectedItemsRepository {
     selectItems: (items: TrashBinItem[]) => Promise<void>;

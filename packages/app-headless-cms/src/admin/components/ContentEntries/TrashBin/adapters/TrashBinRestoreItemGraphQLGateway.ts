@@ -1,11 +1,11 @@
 import { ApolloClient } from "apollo-client";
-import { ITrashBinRestoreItemGateway } from "@webiny/app-trash-bin-common";
 import { CmsContentEntry, CmsModel } from "@webiny/app-headless-cms-common/types";
 import {
     CmsEntryRestoreMutationResponse,
     CmsEntryRestoreMutationVariables,
     createRestoreMutation
 } from "@webiny/app-headless-cms-common";
+import { ITrashBinRestoreItemGateway } from "@webiny/app-trash-bin";
 
 export class TrashBinRestoreItemGraphQLGateway
     implements ITrashBinRestoreItemGateway<CmsContentEntry>

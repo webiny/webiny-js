@@ -1,6 +1,6 @@
-import { ISelectItemsController } from "./ISelectItemsController";
+import { TrashBinItem, TrashBinItemDTO } from "~/Domain";
 import { ISelectItemsUseCase } from "~/UseCases";
-import { TrashBinItem, TrashBinItemDTO } from "@webiny/app-trash-bin-common";
+import { ISelectItemsController } from "./ISelectItemsController";
 
 export class SelectItemsController implements ISelectItemsController {
     private readonly useCaseFactory: () => ISelectItemsUseCase;

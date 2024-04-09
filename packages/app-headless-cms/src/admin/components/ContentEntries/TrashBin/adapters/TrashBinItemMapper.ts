@@ -1,4 +1,4 @@
-import { TrashBinItemDTO, ITrashBinItemMapper } from "@webiny/app-trash-bin-common";
+import { TrashBinItemDTO, ITrashBinItemMapper } from "@webiny/app-trash-bin";
 import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
 
 export class TrashBinItemMapper implements ITrashBinItemMapper<CmsContentEntry> {

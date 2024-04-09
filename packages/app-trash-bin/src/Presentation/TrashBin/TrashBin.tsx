@@ -1,13 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import {
-    ITrashBinDeleteItemGateway,
-    ITrashBinItemMapper,
-    ITrashBinListGateway,
-    ITrashBinRestoreItemGateway,
-    TrashBinItemDTO
-} from "@webiny/app-trash-bin-common";
-import {
     loadingRepositoryFactory,
     metaRepositoryFactory,
     Sorting,
@@ -21,8 +14,15 @@ import {
     searchRepositoryFactory,
     SortingRepositoryWithDefaults,
     trashBinItemsRepositoryFactory,
-    TrashBinItemsRepositoryWithLoading
+    TrashBinItemsRepositoryWithLoading,
+    ITrashBinItemMapper,
+    TrashBinItemDTO
 } from "~/Domain";
+import {
+    ITrashBinDeleteItemGateway,
+    ITrashBinListGateway,
+    ITrashBinRestoreItemGateway
+} from "~/Gateways";
 import { TrashBinControllers } from "~/Presentation/TrashBin/TrashBinControllers";
 
 export interface TrashBinProps {

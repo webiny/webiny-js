@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useApolloClient, useModel, usePermission } from "~/admin/hooks";
-import { TrashBin as BaseTrashBin } from "@webiny/app-admin";
+import { TrashBin as BaseTrashBin } from "@webiny/app-trash-bin";
 import {
     TrashBinDeleteItemGraphQLGateway,
     TrashBinListGraphQLGateway,
