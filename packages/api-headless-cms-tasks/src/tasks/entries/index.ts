@@ -1,6 +1,6 @@
-import { createDeleteTrashBinEntriesTask } from "./deleteTrashBinEntries";
+import { createDeleteTrashBinEntriesTask } from "./deleteTrashBinEntriesTask";
 import { createEmptyTrashBinByModelTask } from "./emptyTrashBinByModelTask";
-import { createEmptyTrashBinsTask } from "./emptyTrashBins";
+import { createEmptyTrashBinsTask } from "./emptyTrashBinsTask";
 
 export const createEntriesTasks = () => {
     return [

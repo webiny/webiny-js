@@ -25,11 +25,11 @@ export const createEmptyTrashBinByModelTask = () => {
                 }
 
                 const { EmptyTrashBinByModel } = await import(
-                    /* webpackChunkName: "EmptyTrashBinByModel" */ "~/UseCases/entries/EmptyTrashBinByModel"
+                    /* webpackChunkName: "EmptyTrashBinByModel" */ "~/useCases/entries/EmptyTrashBinByModel"
                 );
 
-                const exportPagesController = new EmptyTrashBinByModel();
-                return await exportPagesController.execute(params);
+                const emptyTrashBinByModel = new EmptyTrashBinByModel();
+                return await emptyTrashBinByModel.execute(params);
             } catch (ex) {
                 return response.error(
                     ex.message ?? "Error while executing EmptyTrashBinByModel task"

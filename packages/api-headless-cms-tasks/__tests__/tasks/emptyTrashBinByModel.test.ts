@@ -5,6 +5,7 @@ import { createMockModels } from "~tests/mocks";
 import { EntriesTask, HeadlessCmsTasksContext } from "~/types";
 
 import { createEmptyTrashBinByModelTask } from "~/tasks/entries/emptyTrashBinByModelTask";
+import { createDeleteTrashBinEntriesTask } from "~/tasks/entries/deleteTrashBinEntries";
 
 const createDeletedEntries = async (
     context: HeadlessCmsTasksContext,
@@ -122,9 +123,15 @@ describe("Empty Trash Bin By Model", () => {
     });
 
     it("should delete entries in the trash bin", async () => {
-        const taskDefinition = createEmptyTrashBinByModelTask();
+        const emptyTrashBinByModelTaskDefinition = createEmptyTrashBinByModelTask();
+        const deleteEntriesTaskDefinition = createDeleteTrashBinEntriesTask();
+
         const { handler } = useHandler<HeadlessCmsTasksContext>({
-            plugins: [taskDefinition, ...createMockModels()]
+            plugins: [
+                emptyTrashBinByModelTaskDefinition,
+                deleteEntriesTaskDefinition,
+                ...createMockModels()
+            ]
         });
 
         const context = await handler();
@@ -138,23 +145,31 @@ describe("Empty Trash Bin By Model", () => {
         // Let's check how many deleted entries we have been created
         expect(meta.totalCount).toBe(ENTRIES_COUNT);
 
-        const task = await context.tasks.createTask({
+        const emptyTrashBinTask = await context.tasks.createTask({
             name: "Empty Trash Bin By Model",
-            definitionId: taskDefinition.id,
+            definitionId: emptyTrashBinByModelTaskDefinition.id,
             input: {
                 modelId: MODEL_ID
             }
         });
 
+        await context.tasks.createTask({
+            name: "Delete entries",
+            definitionId: deleteEntriesTaskDefinition.id,
+            input: {
+                demo: "id"
+            }
+        });
+
         const runner = createRunner({
             context,
-            task: taskDefinition
+            task: emptyTrashBinByModelTaskDefinition
         });
 
         console.time("run");
 
         const result = await runner({
-            webinyTaskId: task.id
+            webinyTaskId: emptyTrashBinTask.id
         });
 
         console.timeEnd("run");
@@ -167,7 +182,7 @@ describe("Empty Trash Bin By Model", () => {
 
         expect(result).toMatchObject({
             status: "done",
-            webinyTaskId: task.id,
+            webinyTaskId: emptyTrashBinByModelTaskDefinition.id,
             webinyTaskDefinitionId: EntriesTask.EmptyTrashBinByModel,
             tenant: "root",
             locale: "en-US",

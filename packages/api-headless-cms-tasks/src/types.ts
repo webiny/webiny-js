@@ -15,6 +15,12 @@ export enum EntriesTask {
 }
 
 /**
+ * Empty Trash Bins
+ */
+
+export type IEmptyTrashBins = ITaskRunParams<HeadlessCmsTasksContext>;
+
+/**
  * Empty Trash Bin by Model
  */
 
@@ -28,7 +34,6 @@ export interface IEmptyTrashBinByModelInput {
 }
 
 export interface IEmptyTrashBinByModelOutput extends ITaskResponseDoneResultOutput {
-    totalCount: number;
     done: string[];
     failed: string[];
 }
@@ -54,3 +59,9 @@ export interface IDeleteTrashBinEntriesOutput extends ITaskResponseDoneResultOut
     done: string[];
     failed: string[];
 }
+
+export type IDeleteTrashBinEntriesTaskParams = ITaskRunParams<
+    HeadlessCmsTasksContext,
+    IDeleteTrashBinEntriesInput,
+    IDeleteTrashBinEntriesOutput
+>;
