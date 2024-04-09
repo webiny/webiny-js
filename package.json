@@ -128,6 +128,7 @@
     "cy:run": "yarn cypress:run",
     "cypress:ts": "cd cypress-tests && yarn tsc --noEmit",
     "cy:ts": "yarn cypress:ts",
+    "cy:setup": "yarn setup-cypress",
     "webiny-versions": "node ./scripts/webinyVersions.js",
     "trigger-release": "node ./scripts/release/triggerRelease.js",
     "dispatch-github-event": "node ./scripts/dispatchGitHubEvent.js",
