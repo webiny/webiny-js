@@ -73,7 +73,7 @@ export class FolderLevelPermissions {
         this.canUseFolderLevelPermissions = () => {
             // At the moment, we only want FLP to be used with identities of type "admin".
             // This temporarily addresses the issue of API keys not being able to access content, because
-            // FLPs doesn't work tih them. Once we start adding FLPs to API keys, we can remove this check.
+            // FLPs doesn't work with them. Once we start adding FLPs to API keys, we can remove this check.
             const identity = this.getIdentity();
             if (identity.type !== "admin") {
                 return false;
