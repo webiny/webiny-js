@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { useStateIfMounted } from "@webiny/app-admin";
 import { Input } from "@webiny/ui/Input";
 
 interface TextInputProps {
@@ -9,7 +10,7 @@ interface TextInputProps {
 }
 
 const TextInput = ({ label, value, onChange, onBlur }: TextInputProps) => {
-    const [localValue, setLocalValue] = useState(value);
+    const [localValue, setLocalValue] = useStateIfMounted(value);
 
     useEffect(() => {
         if (localValue !== value) {

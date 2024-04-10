@@ -8,11 +8,13 @@ import { PbElement } from "~/types";
 interface UnlinkBlockActionPropsType {
     children: React.ReactElement;
 }
+
 const UnlinkBlockAction = ({ children }: UnlinkBlockActionPropsType) => {
     const [element] = useActiveElement();
     const { getElementTree } = useEventActionHandler();
     const updateElement = useUpdateElement();
 
+    // TODO: extract block unlinking logic into a dedicated hook
     const onClick = useCallback(async (): Promise<void> => {
         if (!element) {
             return;

@@ -25,15 +25,22 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   constants:
     name: Create constants
-    runs-on: ubuntu-latest
     outputs:
       run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
     steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - uses: actions/checkout@v4
       - name: Create workflow run cache key
         id: run-cache-key
         run: >-
           echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
           vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   build:
     name: Build
     needs: constants
@@ -49,8 +56,10 @@ jobs:
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn --immutable
+        working-directory: ''
       - name: Build packages
         run: yarn build:quick
+        working-directory: ''
       - uses: actions/cache@v4
         with:
           path: .webiny/cached-packages
@@ -86,8 +95,10 @@ jobs:
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
+        working-directory: ''
       - name: Build packages
-        run: yarn build
+        run: yarn build:quick
+        working-directory: ''
       - name: Create ".npmrc" file in the project root
         run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
       - name: Set git email
@@ -127,8 +138,10 @@ jobs:
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
+        working-directory: ''
       - name: Build packages
-        run: yarn build
+        run: yarn build:quick
+        working-directory: ''
       - name: Create ".npmrc" file in the project root
         run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
       - name: Set git email

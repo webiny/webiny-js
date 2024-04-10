@@ -124,6 +124,9 @@ const CUSTOM_HANDLERS = {
     "app-headless-cms": () => {
         return ["packages/app-headless-cms"];
     },
+    "app-trash-bin": () => {
+        return ["packages/app-trash-bin"];
+    },
     tasks: () => {
         return ["packages/tasks --storage=ddb", "packages/tasks --storage=ddb-es,ddb"];
     },

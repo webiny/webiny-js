@@ -25,6 +25,9 @@ export type WcpProjectPackage = {
         auditLogs: {
             enabled: boolean;
         };
+        recordLocking: {
+            enabled: boolean;
+        };
     };
 };
 

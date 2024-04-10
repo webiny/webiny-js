@@ -174,6 +174,27 @@ export const createDynamicZoneField =
                     });
                 }
             },
+            getFieldAst: (field, converter) => {
+                const { templates = [], ...settings } = field.settings;
+
+                return {
+                    type: "field",
+                    field: {
+                        ...field,
+                        settings
+                    },
+                    children: templates.map(({ fields, ...template }) => {
+                        return {
+                            type: "collection",
+                            collection: {
+                                ...template,
+                                discriminator: "_templateId"
+                            },
+                            children: fields.map(field => converter.toAst(field))
+                        };
+                    })
+                };
+            },
             read: {
                 createTypeField({ models, model, field, fieldTypePlugins }) {
                     const templates = getFieldTemplates(field);
