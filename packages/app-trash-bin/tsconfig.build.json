@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../app-aco/tsconfig.build.json" },
+    { "path": "../app-admin/tsconfig.build.json" },
+    { "path": "../app-utils/tsconfig.build.json" },
+    { "path": "../react-composition/tsconfig.build.json" },
+    { "path": "../react-properties/tsconfig.build.json" },
+    { "path": "../ui/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
+    "baseUrl": "."
+  }
+}

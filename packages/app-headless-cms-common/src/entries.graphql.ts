@@ -27,7 +27,8 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
     entryId
     createdOn
     savedOn
-    modifiedOn
+    modifiedOn,
+    deletedOn
     firstPublishedOn
     lastPublishedOn
     createdBy {
@@ -45,6 +46,11 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
         type
         displayName
     }
+    deletedBy {
+        id
+        type
+        displayName
+    }
     firstPublishedBy {
         id
         type
@@ -58,6 +64,7 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
     revisionCreatedOn
     revisionSavedOn
     revisionModifiedOn
+    revisionDeletedOn
     revisionFirstPublishedOn
     revisionLastPublishedOn
     revisionCreatedBy {
@@ -71,6 +78,11 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
         displayName
     }
     revisionModifiedBy {
+        id
+        type
+        displayName
+    }
+    revisionDeletedBy {
         id
         type
         displayName
@@ -213,14 +225,18 @@ export interface CmsEntriesListQueryVariables {
     after?: string;
 }
 
-export const createListQuery = (model: CmsEditorContentModel, fields?: CmsModelField[]) => {
+export const createListQuery = (
+    model: CmsEditorContentModel,
+    fields?: CmsModelField[],
+    deleted?: boolean
+) => {
+    const queryName = deleted ? `Deleted${model.pluralApiName}` : model.pluralApiName;
+
     return gql`
-        query CmsEntriesList${model.pluralApiName}($where: ${
-        model.singularApiName
-    }ListWhereInput, $sort: [${
+        query CmsEntriesList${queryName}($where: ${model.singularApiName}ListWhereInput, $sort: [${
         model.singularApiName
     }ListSorter], $limit: Int, $after: String, $search: String) {
-            content: list${model.pluralApiName}(
+            content: list${queryName}(
             where: $where
             sort: $sort
             limit: $limit
@@ -256,13 +272,43 @@ export interface CmsEntryDeleteMutationResponse {
 
 export interface CmsEntryDeleteMutationVariables {
     revision: string;
+    permanently?: boolean;
 }
 
 export const createDeleteMutation = (model: CmsEditorContentModel) => {
     return gql`
-        mutation CmsEntriesDelete${model.singularApiName}($revision: ID!) {
-            content: delete${model.singularApiName}(revision: $revision) {
+        mutation CmsEntriesDelete${model.singularApiName}($revision: ID!, $permanently: Boolean) {
+            content: delete${model.singularApiName}(revision: $revision, options: {permanently: $permanently}) {
                 data
+                error ${ERROR_FIELD}
+            }
+        }
+    `;
+};
+
+/**
+ * ############################################
+ * Restore Mutation
+ */
+export interface CmsEntryRestoreMutationResponse {
+    content: {
+        data: CmsContentEntry | null;
+        error: CmsErrorResponse | null;
+    };
+}
+
+export interface CmsEntryRestoreMutationVariables {
+    revision: string;
+}
+
+export const createRestoreMutation = (model: CmsEditorContentModel) => {
+    return gql`
+        mutation CmsEntriesRestore${model.singularApiName}($revision: ID!) {
+            content: restore${model.singularApiName}(revision: $revision) {
+                data {
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createFieldsList({ model, fields: model.fields })}
+                }
                 error ${ERROR_FIELD}
             }
         }

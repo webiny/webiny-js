@@ -9,6 +9,8 @@ interface UseWcpHook {
     canUseTeams: () => boolean;
     canUsePrivateFiles: () => boolean;
     canUseFolderLevelPermissions: () => boolean;
+    canUseAuditLogs: () => boolean;
+    canUseRecordLocking: () => boolean;
 }
 
 export function useWcp(): UseWcpHook {
@@ -65,12 +67,22 @@ export function useWcp(): UseWcpHook {
         return advancedAccessControlLayer.options.privateFiles;
     };
 
+    const canUseAuditLogs = () => {
+        return canUseFeature("auditLogs");
+    };
+
+    const canUseRecordLocking = () => {
+        return canUseFeature("recordLocking");
+    };
+
     return {
         getProject,
         canUseFeature,
         canUseAacl,
         canUseTeams,
         canUseFolderLevelPermissions,
-        canUsePrivateFiles
+        canUsePrivateFiles,
+        canUseAuditLogs,
+        canUseRecordLocking
     };
 }
