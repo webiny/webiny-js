@@ -1,5 +1,5 @@
-const { DynamoDBClient, GetItemCommand, QueryCommand } = require("@aws-sdk/client-dynamodb");
-const libDynamodb = require("@aws-sdk/lib-dynamodb");
+const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+const { DynamoDBDocument, QueryCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
 
 // Since Lambda@Edge doesn't support ENV variables, the easiest way to pass
 // config values to it is to inject them into the source code before deploy.
@@ -9,7 +9,8 @@ const DB_TABLE_REGION = "{DB_TABLE_REGION}";
 const client = new DynamoDBClient({
     region: DB_TABLE_REGION
 });
-const documentClient = libDynamodb.DynamoDBDocument.from(client, {
+
+const documentClient = DynamoDBDocument.from(client, {
     marshallOptions: {
         convertEmptyValues: true,
         removeUndefinedValues: true
@@ -43,19 +44,15 @@ function sanitizeRequestURI(uri) {
 }
 
 async function getTenantIdByDomain(domain) {
-    const cmd = new GetItemCommand({
+    const cmd = new GetCommand({
         TableName: DB_TABLE_NAME,
         Key: {
-            PK: {
-                S: `DOMAIN#${domain}`
-            },
-            SK: {
-                S: "A"
-            }
+            PK: `DOMAIN#${domain}`,
+            SK: "A"
         }
     });
-    const { Item } = await documentClient.send(cmd);
 
+    const { Item } = await documentClient.send(cmd);
     return Item ? Item.tenant : undefined;
 }
 
@@ -70,14 +67,11 @@ async function hasMultipleTenants() {
         Select: "COUNT",
         KeyConditionExpression: "GSI1_PK = :GSI1_PK and begins_with(GSI1_SK, :GSI1_SK)",
         ExpressionAttributeValues: {
-            ":GSI1_PK": {
-                S: "TENANTS"
-            },
-            ":GSI1_SK": {
-                S: "T#root#"
-            }
+            ":GSI1_PK": "TENANTS",
+            ":GSI1_SK": "T#root#"
         }
     });
+
     const { Count } = await documentClient.send(cmd);
 
     return Count > 0;
