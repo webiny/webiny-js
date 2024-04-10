@@ -1,4 +1,5 @@
 import { convertWhereCondition } from "~/utils/convertWhereCondition";
+import { createLockRecordDatabaseId } from "~/utils/lockRecordDatabaseId";
 
 describe("it should properly convert where condition from locking mechanism to standard cms where condition", () => {
     it("should return undefined if no where condition is provided", () => {
@@ -36,10 +37,10 @@ describe("it should properly convert where condition from locking mechanism to s
 
         expect(result).toEqual({
             ...constantWhere,
-            entryId: "123",
-            entryId_in: ["123", "456"],
-            entryId_not: "123",
-            entryId_not_in: ["123", "456"]
+            entryId: createLockRecordDatabaseId(`123`),
+            entryId_in: [createLockRecordDatabaseId("123"), createLockRecordDatabaseId("456")],
+            entryId_not: createLockRecordDatabaseId("123"),
+            entryId_not_in: [createLockRecordDatabaseId("123"), createLockRecordDatabaseId("456")]
         });
     });
 
@@ -106,14 +107,67 @@ describe("it should properly convert where condition from locking mechanism to s
 
         const result = convertWhereCondition(where);
 
-        const converted = JSON.parse(JSON.stringify(where).replaceAll("id", "entryId"));
-        /**
-         * Make sure that the root id is converted.
-         */
-        expect(converted.entryId_in).toEqual(["123", "456"]);
-        /**
-         * We can now test the rest of the object.
-         */
-        expect(result).toEqual(converted);
+        expect(result).toEqual({
+            entryId_in: [createLockRecordDatabaseId("123"), createLockRecordDatabaseId("456")],
+            AND: [
+                {
+                    entryId: createLockRecordDatabaseId("123"),
+                    entryId_not: createLockRecordDatabaseId("456"),
+                    somethingElse_gt: 123
+                },
+                {
+                    entryId_in: [
+                        createLockRecordDatabaseId("789"),
+                        createLockRecordDatabaseId("101112")
+                    ],
+                    OR: [
+                        {
+                            entryId: createLockRecordDatabaseId("123")
+                        },
+                        {
+                            entryId: createLockRecordDatabaseId("456")
+                        }
+                    ]
+                },
+                {
+                    OR: [
+                        {
+                            entryId: createLockRecordDatabaseId("123")
+                        },
+                        {
+                            entryId: createLockRecordDatabaseId("456")
+                        },
+                        {
+                            AND: [
+                                {
+                                    entryId: createLockRecordDatabaseId("789")
+                                },
+                                {
+                                    entryId: createLockRecordDatabaseId("101112")
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            OR: [
+                {
+                    entryId: createLockRecordDatabaseId("123")
+                },
+                {
+                    entryId: createLockRecordDatabaseId("456")
+                },
+                {
+                    AND: [
+                        {
+                            entryId: createLockRecordDatabaseId("789")
+                        },
+                        {
+                            entryId: createLockRecordDatabaseId("101112")
+                        }
+                    ]
+                }
+            ]
+        });
     });
 });

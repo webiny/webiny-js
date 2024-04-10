@@ -20,6 +20,7 @@
     "@webiny/ui": "0.0.0",
     "apollo-client": "^2.6.10",
     "apollo-link": "^1.2.14",
+    "crypto-hash": "^3.0.0",
     "graphql-tag": "^2.12.6",
     "react": "17.0.2",
     "react-dom": "17.0.2"

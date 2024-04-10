@@ -1,7 +1,11 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createLockingMechanism } from "~/domain/LockingMechanism";
-import { ILockingMechanismContext, IPossiblyLockingMechanismRecord } from "~/types";
+import {
+    ILockingMechanismContext,
+    ILockingMechanismRecord,
+    IPossiblyLockingMechanismRecord
+} from "~/types";
 
 export interface ILockingMechanismProviderProps {
     children: React.ReactNode;
@@ -30,17 +34,22 @@ export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) 
         });
     }, []);
 
-    const value = useMemo<ILockingMechanismContext>(() => {
-        return {
-            isRecordLocked(record) {
-                return lockingMechanism.isRecordLocked(record);
-            },
-            async setRecords(folderId, type, records, cb) {
-                await lockingMechanism.setRecords(folderId, type, records, cb);
-            },
-            records: lockingMechanism.records
-        };
-    }, []);
+    const [records, setRecords] = useState<IPossiblyLockingMechanismRecord[]>();
+
+    const value: ILockingMechanismContext = {
+        isRecordLocked(record) {
+            return lockingMechanism.isRecordLocked(record);
+        },
+        async setRecords(folderId, type, records) {
+            setRecords(records);
+            const result = await lockingMechanism.setRecords(folderId, type, records);
+            if (!result) {
+                return;
+            }
+            setRecords(result);
+        },
+        records: records || []
+    };
 
     return <LockingMechanismContext.Provider {...props} value={value} />;
 };

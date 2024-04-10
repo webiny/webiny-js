@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useContentEntriesList } from "@webiny/app-headless-cms";
 import { createDecorator } from "@webiny/app";
 import { useLockingMechanism } from "~/hooks";
-import { IPossiblyLockingMechanismRecord } from "~/types";
 
 export const UseContentEntriesListHookDecorator = createDecorator(
     useContentEntriesList,
@@ -11,32 +10,17 @@ export const UseContentEntriesListHookDecorator = createDecorator(
             const value = originalHook();
             const lockingMechanism = useLockingMechanism();
 
-            const [records, setRecords] = useState<IPossiblyLockingMechanismRecord[]>([]);
-
             useEffect(() => {
-                setRecords(value.records);
-            }, [value.records]);
-
-            useEffect(() => {
-                if (records.length === 0) {
+                if (!value.records) {
                     return;
                 }
 
-                lockingMechanism.setRecords(
-                    value.folderId,
-                    value.modelId,
-                    records,
-                    async result => {
-                        setRecords(result);
-                    }
-                );
-            }, [value.modelId, records, setRecords]);
-
-            console.log("records", records);
+                lockingMechanism.setRecords(value.folderId, value.modelId, value.records);
+            }, [value.folderId, value.modelId, value.records, lockingMechanism]);
 
             return {
                 ...value,
-                records
+                records: lockingMechanism.records
             };
         };
     }

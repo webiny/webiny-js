@@ -24,10 +24,8 @@ export class ListLockRecordsUseCase implements IListLockRecordsUseCase {
                 ...input,
                 where: convertWhereCondition(input.where)
             };
-            console.log("listing records", params);
-            const [items, meta] = await manager.listLatest(params);
-            console.log(items);
 
+            const [items, meta] = await manager.listLatest(params);
             return {
                 items: items.map(convertEntryToLockRecord),
                 meta

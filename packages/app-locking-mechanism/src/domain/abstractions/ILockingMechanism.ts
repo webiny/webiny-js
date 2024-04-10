@@ -5,7 +5,7 @@ import {
 } from "~/types";
 
 export interface ILockingMechanismSetRecordsCb {
-    (records: ILockingMechanismRecord[]): Promise<void>;
+    (records: ILockingMechanismRecord[]): void;
 }
 
 export interface ILockingMechanism<
@@ -15,9 +15,8 @@ export interface ILockingMechanism<
     setRecords(
         folderId: string,
         type: string,
-        records: T[],
-        cb: ILockingMechanismSetRecordsCb
-    ): Promise<void>;
+        records: T[]
+    ): Promise<ILockingMechanismRecord[] | undefined>;
     isRecordLocked(record: IIsRecordLockedParams): boolean;
 
     // lockEntry(params: ILockingMechanismLockEntryParams): Promise<ILockingMechanismLockEntryResult>;

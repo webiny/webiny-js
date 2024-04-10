@@ -1,6 +1,16 @@
 import { ILockingMechanismListLockRecordsParams } from "~/types";
+import { createLockRecordDatabaseId } from "~/utils/lockRecordDatabaseId";
 
 type IWhere = ILockingMechanismListLockRecordsParams["where"] | undefined;
+
+const attachPrefix = (value: string | string[] | undefined) => {
+    if (!value) {
+        return value;
+    } else if (Array.isArray(value)) {
+        return value.map(createLockRecordDatabaseId);
+    }
+    return createLockRecordDatabaseId(value);
+};
 
 export const convertWhereCondition = (where: IWhere): IWhere => {
     if (!where) {
@@ -20,7 +30,7 @@ export const convertWhereCondition = (where: IWhere): IWhere => {
             continue;
         }
         const newKey = key.replace("id", "entryId");
-        where[newKey] = where[key];
+        where[newKey] = attachPrefix(where[key] as string | string[] | undefined);
         delete where[key];
     }
     return where;

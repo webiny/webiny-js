@@ -1,4 +1,4 @@
-import { ILockingMechanism, ILockingMechanismSetRecordsCb } from "./abstractions/ILockingMechanism";
+import { ILockingMechanism } from "./abstractions/ILockingMechanism";
 import { ApolloClient } from "apollo-client";
 import { LockingMechanismGetLockRecord } from "./LockingMechanismGetLockRecord";
 import { LockingMechanismIsEntryLocked } from "./LockingMechanismIsEntryLocked";
@@ -25,6 +25,7 @@ import {
 import { ILockingMechanismClient } from "./abstractions/ILockingMechanismClient";
 import { createLockingMechanismError } from "./utils/createLockingMechanismError";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier";
+import { createCacheKey } from "~/utils/createCacheKey";
 
 export interface ICreateLockingMechanismParams {
     client: ApolloClient<any>;
@@ -49,7 +50,8 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
 {
     private currentRecordType?: string;
     private currentFolderId?: string;
-    public loading = false;
+    private currentRecordsCacheKey?: string;
+    private loading = false;
     public records: ILockingMechanismRecord[] = [];
 
     private readonly client: ILockingMechanismClient;
@@ -75,20 +77,66 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
     public async setRecords(
         folderId: string,
         type: string,
-        records: T[],
-        cb: ILockingMechanismSetRecordsCb
-    ): Promise<void> {
+        records: T[]
+    ): Promise<ILockingMechanismRecord[] | undefined> {
+        const result = await this.fetchAndAssignRecords(folderId, type, records);
+        if (!result) {
+            return undefined;
+        }
+
+        return result.map(record => {
+            if (record.entryId) {
+                return {
+                    ...record,
+                    entryId: record.entryId,
+                    $lockingType: type,
+                    $locked: undefined
+                };
+            }
+            const { id: entryId } = parseIdentifier(record.id);
+            return {
+                ...record,
+                $lockingType: type,
+                $locked: undefined,
+                entryId
+            };
+        });
+    }
+
+    public isRecordLocked(record: IIsRecordLockedParams): boolean {
+        return this.records.some(r => {
+            const { id: entryId } = parseIdentifier(record.id);
+            return r.entryId === entryId && !!r.$locked;
+        });
+    }
+
+    public onError(cb: IOnErrorCb): void {
+        this.onErrorCb = cb;
+    }
+
+    public triggerOnError(error: ILockingMechanismError): void {
+        this.setIsLoading(false);
+        if (!this.onErrorCb) {
+            return;
+        }
+        this.onErrorCb(error);
+    }
+
+    private setIsLoading(loading: boolean): void {
+        this.loading = loading;
+    }
+
+    private async fetchAndAssignRecords(
+        folderId: string,
+        type: string,
+        records: T[]
+    ): Promise<IPossiblyLockingMechanismRecord[] | undefined> {
         if (records.length === 0) {
             return;
         } else if (this.loading) {
-            console.log("is loading", {
-                folderId,
-                type,
-                records
-            });
             return;
         }
-        const assignedIdList = this.assignRecords(folderId, type, records);
+        const assignedIdList = await this.assignRecords(folderId, type, records);
         if (assignedIdList.length === 0) {
             return;
         }
@@ -102,7 +150,6 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
                 },
                 limit: 10000
             });
-            console.log(result);
         } catch (ex) {
             console.error(ex);
             this.triggerOnError(ex);
@@ -127,7 +174,8 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
 
         for (const record of result.data) {
             const index = this.records.findIndex(r => {
-                return r.id === record.id;
+                const { id: entryId } = parseIdentifier(record.id);
+                return r.entryId === entryId;
             });
             if (index < 0) {
                 console.error(`There is no record with id ${record.id} in the records array.`);
@@ -143,48 +191,31 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
             };
         }
 
-        await cb(this.records);
-    }
-
-    public isRecordLocked(record: IIsRecordLockedParams): boolean {
-        return this.records.some(r => {
-            return r.id === record.id && !!r.locked;
-        });
-    }
-
-    public onError(cb: IOnErrorCb): void {
-        this.onErrorCb = cb;
-    }
-
-    public triggerOnError(error: ILockingMechanismError): void {
-        this.setIsLoading(false);
-        if (!this.onErrorCb) {
-            return;
-        }
-        this.onErrorCb(error);
-    }
-
-    private setIsLoading(loading: boolean): void {
-        this.loading = loading;
+        return this.records;
     }
     /**
      * Assign records and return the assigned ID list.
      */
-    private assignRecords(
-        folderId: string,
-        type: string,
-        records: IPossiblyLockingMechanismRecord[]
-    ): string[] {
+    private async assignRecords(folderId: string, type: string, records: T[]): Promise<string[]> {
         /**
-         * Reset records if new type is not as same as the old type.
+         * First we check the record keys against ones in the local cache.
          */
-        // console.log("assigning records", {
-        //     folderId,
-        //     type,
-        //     currentRecordType: this.currentRecordType,
-        //     currentFolderId: this.currentFolderId,
-        //     records
-        // });
+        const keys = records.map(record => {
+            if (record.entryId) {
+                return record.entryId;
+            }
+            const { id: entryId } = parseIdentifier(record.id);
+            return entryId;
+        });
+        const cacheKey = await createCacheKey(keys);
+        if (this.currentRecordsCacheKey === cacheKey) {
+            return [];
+        }
+        this.currentRecordsCacheKey = cacheKey;
+
+        /**
+         * Reset records if new type is not as same as the old type / folderId.
+         */
         if (this.currentRecordType !== type || this.currentFolderId !== folderId) {
             this.records = [];
             this.currentRecordType = type;
@@ -203,7 +234,6 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
                 $lockingType: type,
                 $locked: undefined
             });
-
             collection.push(entryId);
             return collection;
         }, []);

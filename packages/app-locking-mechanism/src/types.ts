@@ -32,19 +32,11 @@ export interface ILockingMechanismRecord extends IPossiblyLockingMechanismRecord
 
 export type IIsRecordLockedParams = Pick<ILockingMechanismRecord, "id">;
 
-export interface ILockingMechanismContextSetRecordsCb {
-    (records: ILockingMechanismRecord[]): Promise<void>;
-}
 export interface ILockingMechanismContext<
     T extends IPossiblyLockingMechanismRecord = IPossiblyLockingMechanismRecord
 > {
-    records: ILockingMechanismRecord[];
-    setRecords(
-        folderId: string,
-        type: string,
-        records: T[],
-        cb: ILockingMechanismContextSetRecordsCb
-    ): void;
+    records: IPossiblyLockingMechanismRecord[];
+    setRecords(folderId: string, type: string, records: T[]): void;
     isRecordLocked(params: IIsRecordLockedParams): boolean;
 }
 

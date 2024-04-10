@@ -15239,6 +15239,7 @@ __metadata:
     "@webiny/ui": 0.0.0
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
+    crypto-hash: ^3.0.0
     graphql-tag: ^2.12.6
     react: 17.0.2
     react-dom: 17.0.2
@@ -21398,6 +21399,13 @@ __metadata:
     randombytes: ^2.0.0
     randomfill: ^1.0.3
   checksum: c1609af82605474262f3eaa07daa0b2140026bd264ab316d4bf1170272570dbe02f0c49e29407fe0d3634f96c507c27a19a6765fb856fed854a625f9d15618e2
+  languageName: node
+  linkType: hard
+
+"crypto-hash@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "crypto-hash@npm:3.0.0"
+  checksum: 90ad0488b1ce58ca9b22cefa83e789d95cfe9eef91e40b9601bc79b60f6bd74ba9f3e0449b5ba62efc1539aad932553e7b96918cccb7cf31260d34d80c3ec887
   languageName: node
   linkType: hard
 
