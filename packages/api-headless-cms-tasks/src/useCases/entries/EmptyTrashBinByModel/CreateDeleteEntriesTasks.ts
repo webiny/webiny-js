@@ -62,8 +62,6 @@ export class CreateDeleteEntriesTasks {
 
                 const entryIds = entries.map(entry => entry.entryId);
 
-                console.log("batch", currentBatch, JSON.stringify(entryIds));
-
                 if (entryIds.length > 0) {
                     await context.tasks.trigger<IDeleteTrashBinEntriesInput>({
                         definition: EntriesTask.DeleteTrashBinEntries,
