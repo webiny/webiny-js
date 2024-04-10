@@ -85,6 +85,7 @@ export const createGraphQLSchema = async (
                 id: ID!
                 lockedBy: CmsIdentity!
                 lockedOn: DateTime!
+                updatedOn: DateTime!
                 ${lockingMechanismFields.map(f => f.fields).join("\n")}
             }
 
@@ -104,6 +105,11 @@ export const createGraphQLSchema = async (
             }
 
             type LockingMechanismLockEntryResponse {
+                data: LockingMechanismRecord
+                error: LockingMechanismError
+            }
+            
+            type LockingMechanismUpdateLockResponse {
                 data: LockingMechanismRecord
                 error: LockingMechanismError
             }
@@ -137,6 +143,13 @@ export const createGraphQLSchema = async (
             extend type LockingMechanismQuery {
                 isEntryLocked(id: ID!, type: String!): LockingMechanismIsEntryLockedResponse!
                 getLockRecord(id: ID!): LockingMechanismGetLockRecordResponse!
+                listAllLockRecords(
+                    where: LockingMechanismListWhereInput
+                    sort: [LockingMechanismListSorter!]
+                    limit: Int
+                    after: String
+                ): LockingMechanismListLockRecordsResponse!
+                # Basically same as listAllLockRecords except this one will filter out records with expired lock.
                 listLockRecords(
                     where: LockingMechanismListWhereInput
                     sort: [LockingMechanismListSorter!]
@@ -147,6 +160,7 @@ export const createGraphQLSchema = async (
 
             extend type LockingMechanismMutation {
                 lockEntry(id: ID!, type: String!): LockingMechanismLockEntryResponse!
+                updateEntryLock(id: ID!, type: String!): LockingMechanismUpdateLockResponse!
                 unlockEntry(id: ID!, type: String!): LockingMechanismUnlockEntryResponse!
                 unlockEntryRequest(
                     id: ID!
@@ -191,12 +205,25 @@ export const createGraphQLSchema = async (
                     return resolveList(async () => {
                         return await context.lockingMechanism.listLockRecords(args);
                     });
+                },
+                listAllLockRecords(_, args, context) {
+                    return resolveList(async () => {
+                        return await context.lockingMechanism.listAllLockRecords(args);
+                    });
                 }
             },
             LockingMechanismMutation: {
                 async lockEntry(_, args, context) {
                     return resolve(async () => {
                         return context.lockingMechanism.lockEntry({
+                            id: args.id,
+                            type: args.type
+                        });
+                    });
+                },
+                async updateEntryLock(_, args, context) {
+                    return resolve(async () => {
+                        return context.lockingMechanism.updateEntryLock({
                             id: args.id,
                             type: args.type
                         });

@@ -1,4 +1,4 @@
-import { ILockingMechanismIsLockedParams } from "~/types";
+import { ILockingMechanismIsLockedParams, ILockingMechanismLockRecord } from "~/types";
 
 export type IIsEntryLockedUseCaseExecuteParams = ILockingMechanismIsLockedParams;
 

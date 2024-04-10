@@ -103,6 +103,13 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
         });
     }
 
+    public getLockRecordEntry(id: string): ILockingMechanismRecord | undefined {
+        return this.records.find(record => {
+            const { id: entryId } = parseIdentifier(id);
+            return record.entryId === entryId && !!record.$locked;
+        });
+    }
+
     public isRecordLocked(record: IIsRecordLockedParams): boolean {
         return this.records.some(r => {
             const { id: entryId } = parseIdentifier(record.id);

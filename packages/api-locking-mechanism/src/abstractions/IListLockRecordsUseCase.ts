@@ -1,11 +1,9 @@
-import {
-    ILockingMechanismListLockRecordsParams,
-    ILockingMechanismListLockRecordsResponse
-} from "~/types";
+import { IListAllLockRecordsUseCaseExecuteParams } from "./IListAllLockRecordsUseCase";
+import { ILockingMechanismListAllLockRecordsResponse } from "~/types";
 
-export type IListLockRecordsUseCaseExecuteParams = ILockingMechanismListLockRecordsParams;
+export type IListLockRecordsUseCaseExecuteParams = IListAllLockRecordsUseCaseExecuteParams;
 
-export type IListLockRecordsUseCaseExecuteResponse = ILockingMechanismListLockRecordsResponse;
+export type IListLockRecordsUseCaseExecuteResponse = ILockingMechanismListAllLockRecordsResponse;
 
 export interface IListLockRecordsUseCaseExecute {
     (params: IListLockRecordsUseCaseExecuteParams): Promise<IListLockRecordsUseCaseExecuteResponse>;

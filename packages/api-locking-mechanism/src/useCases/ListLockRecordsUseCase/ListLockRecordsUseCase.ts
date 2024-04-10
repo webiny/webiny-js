@@ -1,37 +1,31 @@
 import {
     IListLockRecordsUseCase,
-    IListLockRecordsUseCaseExecuteParams
+    IListLockRecordsUseCaseExecuteParams,
+    IListLockRecordsUseCaseExecuteResponse
 } from "~/abstractions/IListLockRecordsUseCase";
-import { ILockingMechanismListLockRecordsResponse, ILockingMechanismModelManager } from "~/types";
-import { convertEntryToLockRecord } from "~/utils/convertEntryToLockRecord";
-import { convertWhereCondition } from "~/utils/convertWhereCondition";
 
 export interface IListLockRecordsUseCaseParams {
-    getManager(): Promise<ILockingMechanismModelManager>;
+    listAllLockRecordsUseCase: IListLockRecordsUseCase;
+    timeout: number;
 }
 
 export class ListLockRecordsUseCase implements IListLockRecordsUseCase {
-    private readonly getManager: () => Promise<ILockingMechanismModelManager>;
+    private readonly listAllLockRecordsUseCase: IListLockRecordsUseCase;
+    private readonly timeout: number;
+
     public constructor(params: IListLockRecordsUseCaseParams) {
-        this.getManager = params.getManager;
+        this.listAllLockRecordsUseCase = params.listAllLockRecordsUseCase;
+        this.timeout = params.timeout;
     }
     public async execute(
         input: IListLockRecordsUseCaseExecuteParams
-    ): Promise<ILockingMechanismListLockRecordsResponse> {
-        try {
-            const manager = await this.getManager();
-            const params: IListLockRecordsUseCaseExecuteParams = {
-                ...input,
-                where: convertWhereCondition(input.where)
-            };
-
-            const [items, meta] = await manager.listLatest(params);
-            return {
-                items: items.map(convertEntryToLockRecord),
-                meta
-            };
-        } catch (ex) {
-            throw ex;
-        }
+    ): Promise<IListLockRecordsUseCaseExecuteResponse> {
+        return this.listAllLockRecordsUseCase.execute({
+            ...input,
+            where: {
+                ...input.where,
+                savedOn_gte: new Date(new Date().getTime() - this.timeout)
+            }
+        });
     }
 }

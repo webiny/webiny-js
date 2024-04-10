@@ -19,6 +19,7 @@ export const LOCK_RECORD = /* GraphQL */ `
         type
     }
     lockedOn
+    updatedOn
     actions {
         type
         createdOn
@@ -138,10 +139,37 @@ export const LOCK_ENTRY_MUTATION = /* GraphQL */ `
     }
 `;
 
+export interface IUpdateEntryLockGraphQlVariables {
+    id: string;
+    type: string;
+}
+
+export interface IUpdateEntryLockGraphQlResponse {
+    lockingMechanism: {
+        updateEntryLock: {
+            data?: ILockingMechanismLockRecord;
+            error?: CmsError;
+        };
+    };
+}
+
 export interface IUnlockEntryGraphQlVariables {
     id: string;
     type: string;
 }
+
+export const UPDATE_ENTRY_LOCK_MUTATION = /* GraphQL */ `
+    mutation UpdateEntryLock($id: ID!, $type: String!) {
+        lockingMechanism {
+            updateEntryLock(id: $id, type: $type) {
+                data {
+                    ${LOCK_RECORD}
+                }
+                ${LOCK_ERROR}
+            }
+        }
+    }
+`;
 
 export interface IUnlockEntryGraphQlResponse {
     lockingMechanism: {

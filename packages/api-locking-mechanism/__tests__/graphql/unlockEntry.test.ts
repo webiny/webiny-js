@@ -47,6 +47,7 @@ describe("unlock entry", () => {
                                 type: "admin"
                             },
                             lockedOn: expect.toBeDateString(),
+                            updatedOn: expect.toBeDateString(),
                             targetId: "someId#0001",
                             type: "cms#author"
                         },
@@ -67,6 +68,7 @@ describe("unlock entry", () => {
                             id: "someId",
                             lockedBy: getSecurityIdentity(),
                             lockedOn: expect.toBeDateString(),
+                            updatedOn: expect.toBeDateString(),
                             targetId: "someId#0001",
                             type: "cms#author",
                             actions: []
@@ -105,6 +107,7 @@ describe("unlock entry", () => {
                             id: "someId",
                             lockedBy: getSecurityIdentity(),
                             lockedOn: expect.toBeDateString(),
+                            updatedOn: expect.toBeDateString(),
                             targetId: "someId#0001",
                             type: "cms#author"
                         },

@@ -3,33 +3,22 @@ import {
     IIsEntryLockedUseCaseExecuteParams
 } from "~/abstractions/IsEntryLocked";
 import { IGetLockRecordUseCase } from "~/abstractions/IGetLockRecordUseCase";
-import { ILockingMechanismLockRecord } from "~/types";
 import { createLockRecordDatabaseId } from "~/utils/lockRecordDatabaseId";
 import { NotFoundError } from "@webiny/handler-graphql";
-
-const defaultTimeoutInSeconds = 600;
-/**
- * In milliseconds.
- */
-const getTimeout = () => {
-    const userDefined = process.env.WEBINY_RECORD_LOCK_TIMEOUT
-        ? parseInt(process.env.WEBINY_RECORD_LOCK_TIMEOUT)
-        : undefined;
-    if (!userDefined || isNaN(userDefined) || userDefined <= 0) {
-        return defaultTimeoutInSeconds * 1000;
-    }
-    return userDefined * 1000;
-};
+import { IIsLocked } from "~/utils/isLockedFactory";
 
 export interface IIsEntryLockedParams {
     getLockRecordUseCase: IGetLockRecordUseCase;
+    isLocked: IIsLocked;
 }
 
 export class IsEntryLockedUseCase implements IIsEntryLockedUseCase {
     private readonly getLockRecordUseCase: IGetLockRecordUseCase;
+    private readonly isLocked: IIsLocked;
 
     public constructor(params: IIsEntryLockedParams) {
         this.getLockRecordUseCase = params.getLockRecordUseCase;
+        this.isLocked = params.isLocked;
     }
 
     public async execute(params: IIsEntryLockedUseCaseExecuteParams): Promise<boolean> {
@@ -44,15 +33,5 @@ export class IsEntryLockedUseCase implements IIsEntryLockedUseCase {
             }
             return false;
         }
-    }
-
-    private isLocked(record?: ILockingMechanismLockRecord | null): boolean {
-        if (!record || record.lockedOn instanceof Date === false) {
-            return false;
-        }
-        const timeout = getTimeout();
-        const now = new Date().getTime();
-        const lockedOn = record.lockedOn.getTime();
-        return lockedOn + timeout >= now;
     }
 }

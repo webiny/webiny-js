@@ -1,11 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createLockingMechanism } from "~/domain/LockingMechanism";
-import {
-    ILockingMechanismContext,
-    ILockingMechanismRecord,
-    IPossiblyLockingMechanismRecord
-} from "~/types";
+import { ILockingMechanismContext, IPossiblyLockingMechanismRecord } from "~/types";
 
 export interface ILockingMechanismProviderProps {
     children: React.ReactNode;
@@ -39,6 +35,9 @@ export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) 
     const value: ILockingMechanismContext = {
         isRecordLocked(record) {
             return lockingMechanism.isRecordLocked(record);
+        },
+        getLockRecordEntry(id: string) {
+            return lockingMechanism.getLockRecordEntry(id);
         },
         async setRecords(folderId, type, records) {
             setRecords(records);

@@ -59,6 +59,7 @@ export interface ILockingMechanismLockRecordObject {
     type: ILockingMechanismLockRecordEntryType;
     lockedBy: CmsIdentity;
     lockedOn: Date;
+    updatedOn: Date;
     actions?: ILockingMechanismLockRecordAction[];
 }
 
@@ -75,15 +76,19 @@ export interface ILockingMechanismLockRecord extends ILockingMechanismLockRecord
  */
 export type ILockingMechanismLockRecordEntryType = string;
 
-export type ILockingMechanismListLockRecordsParams = Pick<
+export type ILockingMechanismListAllLockRecordsParams = Pick<
     CmsEntryListParams,
     "where" | "limit" | "sort" | "after"
 >;
 
-export interface ILockingMechanismListLockRecordsResponse {
+export type ILockingMechanismListLockRecordsParams = ILockingMechanismListAllLockRecordsParams;
+
+export interface ILockingMechanismListAllLockRecordsResponse {
     items: ILockingMechanismLockRecord[];
     meta: ILockingMechanismMeta;
 }
+
+export type ILockingMechanismListLockRecordsResponse = ILockingMechanismListAllLockRecordsResponse;
 
 export interface ILockingMechanismIsLockedParams {
     id: string;
@@ -91,6 +96,11 @@ export interface ILockingMechanismIsLockedParams {
 }
 
 export interface ILockingMechanismLockEntryParams {
+    id: string;
+    type: ILockingMechanismLockRecordEntryType;
+}
+
+export interface ILockingMechanismUpdateEntryLockParams {
     id: string;
     type: ILockingMechanismLockRecordEntryType;
 }
@@ -168,12 +178,21 @@ export interface ILockingMechanism {
     onEntryAfterUnlockRequest: Topic<OnEntryAfterUnlockRequestTopicParams>;
     onEntryUnlockRequestError: Topic<OnEntryUnlockRequestErrorTopicParams>;
     getModel(): Promise<CmsModel>;
+    listAllLockRecords(
+        params?: ILockingMechanismListAllLockRecordsParams
+    ): Promise<ILockingMechanismListAllLockRecordsResponse>;
+    /**
+     * Same call as listAllLockRecords, except this one will filter out records with expired lock.
+     */
     listLockRecords(
         params?: ILockingMechanismListLockRecordsParams
     ): Promise<ILockingMechanismListLockRecordsResponse>;
     getLockRecord(id: string): Promise<ILockingMechanismLockRecord | null>;
     isEntryLocked(params: ILockingMechanismIsLockedParams): Promise<boolean>;
     lockEntry(params: ILockingMechanismLockEntryParams): Promise<ILockingMechanismLockRecord>;
+    updateEntryLock(
+        params: ILockingMechanismUpdateEntryLockParams
+    ): Promise<ILockingMechanismLockRecord>;
     unlockEntry(params: ILockingMechanismUnlockEntryParams): Promise<ILockingMechanismLockRecord>;
     unlockEntryRequest(
         params: ILockingMechanismUnlockEntryRequestParams

@@ -18,6 +18,7 @@ export interface ILockingMechanism<
         records: T[]
     ): Promise<ILockingMechanismRecord[] | undefined>;
     isRecordLocked(record: IIsRecordLockedParams): boolean;
+    getLockRecordEntry(id: string): ILockingMechanismRecord | undefined;
 
     // lockEntry(params: ILockingMechanismLockEntryParams): Promise<ILockingMechanismLockEntryResult>;
     // unlockEntry(

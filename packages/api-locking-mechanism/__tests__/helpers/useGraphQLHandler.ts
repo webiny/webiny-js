@@ -19,10 +19,13 @@ import {
     IUnlockEntryGraphQlVariables,
     IUnlockEntryRequestGraphQlResponse,
     IUnlockEntryRequestGraphQlVariables,
+    IUpdateEntryLockGraphQlResponse,
+    IUpdateEntryLockGraphQlVariables,
     LIST_LOCK_RECORDS_QUERY,
     LOCK_ENTRY_MUTATION,
     UNLOCK_ENTRY_MUTATION,
-    UNLOCK_ENTRY_REQUEST_MUTATION
+    UNLOCK_ENTRY_REQUEST_MUTATION,
+    UPDATE_ENTRY_LOCK_MUTATION
 } from "./graphql/lockingMechanism";
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
@@ -107,6 +110,11 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         async lockEntryMutation(variables: ILockEntryGraphQlVariables) {
             return invoke<ILockEntryGraphQlResponse>({
                 body: { query: LOCK_ENTRY_MUTATION, variables }
+            });
+        },
+        async updateEntryLockMutation(variables: IUpdateEntryLockGraphQlVariables) {
+            return invoke<IUpdateEntryLockGraphQlResponse>({
+                body: { query: UPDATE_ENTRY_LOCK_MUTATION, variables }
             });
         },
         async unlockEntryMutation(variables: IUnlockEntryGraphQlVariables) {

@@ -38,6 +38,7 @@ export interface ILockingMechanismContext<
     records: IPossiblyLockingMechanismRecord[];
     setRecords(folderId: string, type: string, records: T[]): void;
     isRecordLocked(params: IIsRecordLockedParams): boolean;
+    getLockRecordEntry(id: string): ILockingMechanismRecord | undefined;
 }
 
 export interface ILockingMechanismLockRecordAction {

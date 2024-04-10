@@ -4,23 +4,31 @@ import { ReactComponent as LockedIcon } from "./assets/lock.svg";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useLockingMechanism } from "~/hooks";
 import { UseContentEntriesListHookDecorator } from "./decorators/UseContentEntriesListHookDecorator";
+import { ILockingMechanismRecord } from "~/types";
 
 const { Browser } = ContentEntryListConfig;
 
 const CellLocked = () => {
-    const { isRecordLocked } = useLockingMechanism();
+    const { getLockRecordEntry } = useLockingMechanism();
 
     const { useTableRow, isFolderRow } = ContentEntryListConfig.Browser.Table.Column;
     const { row } = useTableRow();
 
     if (isFolderRow(row)) {
         return null;
-    } else if (!isRecordLocked(row)) {
+    }
+
+    const entry = getLockRecordEntry(row.id);
+
+    if (!entry?.$locked) {
         return null;
     }
 
     return (
-        <Tooltip placement={"top"} content={"This entry is currently locked by another user."}>
+        <Tooltip
+            placement={"top"}
+            content={`This entry is currently locked by ${entry.$locked.lockedBy.displayName}.`}
+        >
             <LockedIcon />
         </Tooltip>
     );
@@ -31,7 +39,6 @@ export const HeadlessCmsAcoCell = () => {
         <ContentEntryListConfig>
             <UseContentEntriesListHookDecorator />
             <Browser.Table.Column
-                before={"name"}
                 name={"locked"}
                 header={<LockedIcon />}
                 cell={<CellLocked />}

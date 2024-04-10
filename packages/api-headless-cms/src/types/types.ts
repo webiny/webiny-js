@@ -1022,6 +1022,7 @@ export interface CmsEntryListWhere {
         | string
         | number
         | boolean
+        | Date
         | undefined
         | string[]
         | number[]

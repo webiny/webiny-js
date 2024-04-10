@@ -20,7 +20,7 @@ export const convertEntryToLockRecord = (
 
 export type IHeadlessCmsLockRecordParams = Pick<
     CmsEntry<ILockingMechanismLockRecordValues>,
-    "entryId" | "values" | "createdBy" | "createdOn"
+    "entryId" | "values" | "createdBy" | "createdOn" | "savedOn"
 >;
 
 export class HeadlessCmsLockRecord implements ILockingMechanismLockRecord {
@@ -29,6 +29,7 @@ export class HeadlessCmsLockRecord implements ILockingMechanismLockRecord {
     private readonly _type: ILockingMechanismLockRecordEntryType;
     private readonly _lockedBy: CmsIdentity;
     private readonly _lockedOn: Date;
+    private readonly _updatedOn: Date;
     private _actions?: ILockingMechanismLockRecordAction[];
 
     public get id(): string {
@@ -51,6 +52,10 @@ export class HeadlessCmsLockRecord implements ILockingMechanismLockRecord {
         return this._lockedOn;
     }
 
+    public get updatedOn(): Date {
+        return this._updatedOn;
+    }
+
     public get actions(): ILockingMechanismLockRecordAction[] | undefined {
         return this._actions;
     }
@@ -61,6 +66,7 @@ export class HeadlessCmsLockRecord implements ILockingMechanismLockRecord {
         this._type = input.values.type;
         this._lockedBy = input.createdBy;
         this._lockedOn = new Date(input.createdOn);
+        this._updatedOn = new Date(input.savedOn);
         this._actions = input.values.actions;
     }
 
@@ -71,6 +77,7 @@ export class HeadlessCmsLockRecord implements ILockingMechanismLockRecord {
             type: this._type,
             lockedBy: this._lockedBy,
             lockedOn: this._lockedOn,
+            updatedOn: this._updatedOn,
             actions: this._actions
         };
     }

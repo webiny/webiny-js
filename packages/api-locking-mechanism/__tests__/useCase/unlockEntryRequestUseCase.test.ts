@@ -75,9 +75,9 @@ describe("unlock entry request use case", () => {
         expect.assertions(1);
         const useCase = new UnlockEntryRequestUseCase({
             getLockRecordUseCase: {
-                execute: async (params: IGetLockRecordUseCaseExecuteParams) => {
+                execute: async (id: IGetLockRecordUseCaseExecuteParams) => {
                     return {
-                        id: typeof params === "object" ? params.id : params,
+                        id,
                         getUnlockRequested() {
                             return {
                                 createdBy: getSecurityIdentity()
