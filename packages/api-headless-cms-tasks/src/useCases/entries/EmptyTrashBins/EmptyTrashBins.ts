@@ -32,9 +32,7 @@ export class EmptyTrashBins {
                 });
             }
 
-            return response.done(`Task done: emptying the trash bin for ${models.length} models.`, {
-                models
-            });
+            return response.done(`Task done: emptying the trash bin for ${models.length} models.`);
         } catch (ex) {
             return response.error(ex.message ?? "Error while executing EmptyTrashBins");
         }

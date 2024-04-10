@@ -1,8 +1,8 @@
-import { createTaskDefinition } from "@webiny/tasks";
+import { createPrivateTaskDefinition } from "@webiny/tasks";
 import { EntriesTask, HeadlessCmsTasksContext } from "~/types";
 
 export const createEmptyTrashBinsTask = () => {
-    return createTaskDefinition<HeadlessCmsTasksContext>({
+    return createPrivateTaskDefinition<HeadlessCmsTasksContext>({
         id: EntriesTask.EmptyTrashBins,
         title: "Headless CMS - Empty all trash bins",
         description:

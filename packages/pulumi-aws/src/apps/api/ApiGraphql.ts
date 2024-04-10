@@ -93,8 +93,7 @@ export const ApiGraphql = createAppModule({
             name: EMPTY_TRASH_BIN_EVENT_RULE_NAME,
             config: {
                 description: "Enable us to empty the trash-bin ever day",
-                scheduleExpression: "rate(1 day)",
-                isEnabled: false
+                scheduleExpression: "rate(1 day)"
             }
         });
 
@@ -114,7 +113,11 @@ export const ApiGraphql = createAppModule({
             name: EMPTY_TRASH_BIN_EVENT_RULE_TARGET,
             config: {
                 rule: eventRule.output.name,
-                arn: graphql.output.arn
+                arn: graphql.output.arn,
+                input: JSON.stringify({
+                    source: "webiny.events",
+                    "detail-type": "WebinyEmptyTrashBin"
+                })
             }
         });
 

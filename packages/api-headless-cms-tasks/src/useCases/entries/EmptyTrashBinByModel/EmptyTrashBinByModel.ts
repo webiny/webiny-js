@@ -1,18 +1,15 @@
 import { ITaskResponseResult } from "@webiny/tasks";
-import { taskRepositoryFactory } from "./TaskRepositoryFactory";
 import { ProcessDeleteEntriesTasks } from "./ProcessDeleteEntriesTasks";
 import { CreateDeleteEntriesTasks } from "./CreateDeleteEntriesTasks";
 import { IEmptyTrashBinByModelTaskParams } from "~/types";
 
 export class EmptyTrashBinByModel {
     public async execute(params: IEmptyTrashBinByModelTaskParams): Promise<ITaskResponseResult> {
-        const { input, response, store } = params;
+        const { input, response } = params;
 
         try {
-            const taskRepository = taskRepositoryFactory.getRepository(store.getTask().id);
-
             if (input.processing) {
-                const processDeleteEntriesTasks = new ProcessDeleteEntriesTasks(taskRepository);
+                const processDeleteEntriesTasks = new ProcessDeleteEntriesTasks();
                 return await processDeleteEntriesTasks.execute(params);
             }
 

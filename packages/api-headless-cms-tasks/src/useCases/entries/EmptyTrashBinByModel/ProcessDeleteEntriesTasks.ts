@@ -1,17 +1,9 @@
 import { ITaskResponseResult, TaskDataStatus } from "@webiny/tasks";
-import { TaskRepository } from "./TaskRepository";
-import { CombineDeleteEntriesTasks } from "./CombineDeleteEntriesTasks";
 import { EntriesTask, IEmptyTrashBinByModelTaskParams } from "~/types";
 
 export const ZIP_PAGES_WAIT_TIME = 10;
 
 export class ProcessDeleteEntriesTasks {
-    private combineDeleteEntriesTasks: CombineDeleteEntriesTasks;
-
-    constructor(repository: TaskRepository) {
-        this.combineDeleteEntriesTasks = new CombineDeleteEntriesTasks(repository);
-    }
-
     public async execute(params: IEmptyTrashBinByModelTaskParams): Promise<ITaskResponseResult> {
         const { response, input, isAborted, isCloseToTimeout, context, store } = params;
 
@@ -44,7 +36,9 @@ export class ProcessDeleteEntriesTasks {
                 );
             }
 
-            return this.combineDeleteEntriesTasks.execute(params);
+            return response.done(
+                `Task done: The trash bin has been emptied for the ${input.modelId} model.`
+            );
         } catch (ex) {
             return response.error(ex.message ?? "Error while executing ProcessDeleteEntriesTasks");
         }

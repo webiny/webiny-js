@@ -21,6 +21,7 @@
     "@webiny/api-i18n-content": "latest",
     "@webiny/api-headless-cms": "latest",
     "@webiny/api-headless-cms-ddb-es": "latest",
+    "@webiny/api-headless-cms-tasks": "latest",
     "@webiny/api-page-builder": "latest",
     "@webiny/api-page-builder-aco": "latest",
     "@webiny/api-page-builder-so-ddb-es": "latest",

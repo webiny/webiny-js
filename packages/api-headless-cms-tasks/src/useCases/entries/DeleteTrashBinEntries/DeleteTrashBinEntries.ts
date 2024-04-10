@@ -26,7 +26,7 @@ export class DeleteTrashBinEntries {
             }
 
             if (!input.entryIds || input.entryIds.length === 0) {
-                return response.done("No entries to delete.");
+                return response.done("Task done: No entries to delete.");
             }
 
             const taskRepository = taskRepositoryFactory.getRepository(store.getTask().id);

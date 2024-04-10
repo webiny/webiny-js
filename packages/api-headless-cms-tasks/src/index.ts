@@ -1,4 +1,7 @@
-import { createEntriesTasks } from "~/tasks/entries";
+import { createTasks } from "~/tasks";
 import { createGraphQL } from "~/graphql";
+import { createEventHandler } from "~/event";
 
-export const createHeadlessCmsTasks = () => [createEntriesTasks(), createGraphQL()];
+export * from "./useCases";
+
+export const createHeadlessCmsTasks = () => [createTasks(), createGraphQL(), createEventHandler()];

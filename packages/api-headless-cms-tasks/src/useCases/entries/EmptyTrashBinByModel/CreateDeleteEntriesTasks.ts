@@ -16,8 +16,8 @@ export class CreateDeleteEntriesTasks {
                 return response.error(`Model with ${input.modelId} not found!`);
             }
 
-            let currentBatch = input.currentBatch || 1;
             const totalCount = input.totalCount || 0;
+            let currentBatch = input.currentBatch || 1;
             let hasMoreEntries = true;
 
             while (hasMoreEntries) {
@@ -57,10 +57,12 @@ export class CreateDeleteEntriesTasks {
                         );
                     }
 
-                    return response.done("No entries to delete.");
+                    return response.done("Task done: No entries to delete.");
                 }
 
                 const entryIds = entries.map(entry => entry.entryId);
+
+                console.log("batch", currentBatch, JSON.stringify(entryIds));
 
                 if (entryIds.length > 0) {
                     await context.tasks.trigger<IDeleteTrashBinEntriesInput>({
