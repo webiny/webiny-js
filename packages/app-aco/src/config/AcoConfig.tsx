@@ -9,6 +9,7 @@ export { FieldRendererConfig as AdvancedSearchFieldRendererConfig } from "./adva
 export { ActionConfig as RecordActionConfig } from "./record/Action";
 export { ActionConfig as FolderActionConfig } from "./folder/Action";
 export { ColumnConfig as TableColumnConfig } from "./table/Column";
+export { SortingConfig as TableSortingConfig } from "./table/Sorting";
 
 const base = createConfigurableComponent<AcoConfig>("AcoConfig");
 
@@ -46,7 +47,8 @@ export function useAcoConfig() {
             },
             table: {
                 ...table,
-                columns: [...(table.columns || [])]
+                columns: [...(table.columns || [])],
+                sorting: [...(table.sorting || [])]
             }
         }),
         [config]

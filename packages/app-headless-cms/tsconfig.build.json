@@ -10,6 +10,7 @@
     { "path": "../app-i18n/tsconfig.build.json" },
     { "path": "../app-plugin-admin-welcome-screen/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
+    { "path": "../app-trash-bin/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../feature-flags/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
