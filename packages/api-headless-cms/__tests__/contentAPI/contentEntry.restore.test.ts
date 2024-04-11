@@ -176,13 +176,13 @@ describe("restore entries", () => {
         /**
          * Let's try to restore an entry from the bin, we should get the success response...
          */
-        const [restoreBinItemResponse] = await manager.restoreCategory({
+        const [restoreBinItemResponse] = await manager.restoreCategoryFromBin({
             revision: categoryToRestore.entryId
         });
 
         expect(restoreBinItemResponse).toMatchObject({
             data: {
-                restoreCategory: {
+                restoreCategoryFromBin: {
                     data: {
                         ...categoryToRestore,
                         deletedOn: expect.any(String),
@@ -206,12 +206,12 @@ describe("restore entries", () => {
         /**
          * ...but, if we try to repeat the operation, it should fail.
          */
-        const [restoreAgainBinItemResponse] = await manager.restoreCategory({
+        const [restoreAgainBinItemResponse] = await manager.restoreCategoryFromBin({
             revision: categoryToRestore.entryId
         });
         expect(restoreAgainBinItemResponse).toMatchObject({
             data: {
-                restoreCategory: {
+                restoreCategoryFromBin: {
                     data: null,
                     error: {
                         code: "NOT_FOUND",
@@ -289,12 +289,12 @@ describe("restore entries", () => {
         /**
          * We should NOT be able to restore an entry tha has not been moved to the trash bin.
          */
-        const [restoreItemNotInTrashResponse] = await manager.restoreCategory({
+        const [restoreItemNotInTrashResponse] = await manager.restoreCategoryFromBin({
             revision: categoryToRestore.entryId
         });
         expect(restoreItemNotInTrashResponse).toMatchObject({
             data: {
-                restoreCategory: {
+                restoreCategoryFromBin: {
                     data: null,
                     error: {
                         code: "NOT_FOUND",

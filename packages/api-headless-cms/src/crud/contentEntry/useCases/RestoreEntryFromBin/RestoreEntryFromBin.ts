@@ -1,22 +1,22 @@
 import { NotFoundError } from "@webiny/handler-graphql";
 import {
     IGetLatestRevisionByEntryId,
-    IRestoreEntry,
-    IRestoreEntryOperation
+    IRestoreEntryFromBin,
+    IRestoreEntryFromBinOperation
 } from "~/crud/contentEntry/abstractions";
 import { TransformEntryRestore } from "./TransformEntryRestore";
 import { CmsModel } from "~/types";
 import { parseIdentifier } from "@webiny/utils";
 
-export class RestoreEntry implements IRestoreEntry {
+export class RestoreEntryFromBin implements IRestoreEntryFromBin {
     private getEntry: IGetLatestRevisionByEntryId;
     private transformEntry: TransformEntryRestore;
-    private restoreEntry: IRestoreEntryOperation;
+    private restoreEntry: IRestoreEntryFromBinOperation;
 
     constructor(
         getEntry: IGetLatestRevisionByEntryId,
         transformEntry: TransformEntryRestore,
-        restoreEntry: IRestoreEntryOperation
+        restoreEntry: IRestoreEntryFromBinOperation
     ) {
         this.getEntry = getEntry;
         this.transformEntry = transformEntry;

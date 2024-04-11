@@ -875,7 +875,10 @@ export const createEntriesStorageOperations = (
         }
     };
 
-    const restore: CmsEntryStorageOperations["restore"] = async (initialModel, params) => {
+    const restoreFromBin: CmsEntryStorageOperations["restoreFromBin"] = async (
+        initialModel,
+        params
+    ) => {
         const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 
@@ -2120,7 +2123,7 @@ export const createEntriesStorageOperations = (
         move,
         delete: deleteEntry,
         moveToBin,
-        restore,
+        restoreFromBin,
         deleteRevision,
         deleteMultipleEntries,
         get,

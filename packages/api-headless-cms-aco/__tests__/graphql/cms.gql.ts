@@ -74,8 +74,8 @@ export const RESTORE_ENTRY = (model: CmsModel) => {
     const Entry = model.singularApiName;
 
     return /* GraphQL */ `
-        mutation Restore${Entry}($revision: ID!) {
-            restore${Entry}: restore${Entry}(revision: $revision) {
+        mutation Restore${Entry}FromBin($revision: ID!) {
+            restore${Entry}FromBin: restore${Entry}FromBin(revision: $revision) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }

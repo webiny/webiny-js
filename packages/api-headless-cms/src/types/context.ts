@@ -22,7 +22,7 @@ import {
     OnEntryAfterMoveTopicParams,
     OnEntryAfterPublishTopicParams,
     OnEntryAfterRepublishTopicParams,
-    OnEntryAfterRestoreTopicParams,
+    OnEntryAfterRestoreFromBinTopicParams,
     OnEntryAfterUnpublishTopicParams,
     OnEntryAfterUpdateTopicParams,
     OnEntryBeforeCreateTopicParams,
@@ -31,7 +31,7 @@ import {
     OnEntryBeforeMoveTopicParams,
     OnEntryBeforePublishTopicParams,
     OnEntryBeforeRepublishTopicParams,
-    OnEntryBeforeRestoreTopicParams,
+    OnEntryBeforeRestoreFromBinTopicParams,
     OnEntryBeforeUnpublishTopicParams,
     OnEntryBeforeUpdateTopicParams,
     OnEntryCreateErrorTopicParams,
@@ -40,7 +40,7 @@ import {
     OnEntryMoveErrorTopicParams,
     OnEntryPublishErrorTopicParams,
     OnEntryRepublishErrorTopicParams,
-    OnEntryRestoreErrorTopicParams,
+    OnEntryRestoreFromBinErrorTopicParams,
     OnEntryRevisionAfterCreateTopicParams,
     OnEntryRevisionAfterDeleteTopicParams,
     OnEntryRevisionBeforeCreateTopicParams,
@@ -167,7 +167,7 @@ export interface CmsEntryContext {
     /**
      * Restore entry from trash bin with all its revisions.
      */
-    restoreEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
+    restoreEntryFromBin: (model: CmsModel, id: string) => Promise<CmsEntry>;
     /**
      * Delete multiple entries
      */
@@ -219,9 +219,9 @@ export interface CmsEntryContext {
     onEntryAfterDelete: Topic<OnEntryAfterDeleteTopicParams>;
     onEntryDeleteError: Topic<OnEntryDeleteErrorTopicParams>;
 
-    onEntryBeforeRestore: Topic<OnEntryBeforeRestoreTopicParams>;
-    onEntryAfterRestore: Topic<OnEntryAfterRestoreTopicParams>;
-    onEntryRestoreError: Topic<OnEntryRestoreErrorTopicParams>;
+    onEntryBeforeRestoreFromBin: Topic<OnEntryBeforeRestoreFromBinTopicParams>;
+    onEntryAfterRestoreFromBin: Topic<OnEntryAfterRestoreFromBinTopicParams>;
+    onEntryRestoreFromBinError: Topic<OnEntryRestoreFromBinErrorTopicParams>;
 
     onEntryRevisionBeforeDelete: Topic<OnEntryRevisionBeforeDeleteTopicParams>;
     onEntryRevisionAfterDelete: Topic<OnEntryRevisionAfterDeleteTopicParams>;

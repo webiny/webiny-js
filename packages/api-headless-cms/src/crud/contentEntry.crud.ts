@@ -20,7 +20,7 @@ import {
     OnEntryAfterMoveTopicParams,
     OnEntryAfterPublishTopicParams,
     OnEntryAfterRepublishTopicParams,
-    OnEntryAfterRestoreTopicParams,
+    OnEntryAfterRestoreFromBinTopicParams,
     OnEntryAfterUnpublishTopicParams,
     OnEntryAfterUpdateTopicParams,
     OnEntryBeforeCreateTopicParams,
@@ -30,7 +30,7 @@ import {
     OnEntryBeforeMoveTopicParams,
     OnEntryBeforePublishTopicParams,
     OnEntryBeforeRepublishTopicParams,
-    OnEntryBeforeRestoreTopicParams,
+    OnEntryBeforeRestoreFromBinTopicParams,
     OnEntryBeforeUnpublishTopicParams,
     OnEntryBeforeUpdateTopicParams,
     OnEntryCreateErrorTopicParams,
@@ -40,7 +40,7 @@ import {
     OnEntryMoveErrorTopicParams,
     OnEntryPublishErrorTopicParams,
     OnEntryRepublishErrorTopicParams,
-    OnEntryRestoreErrorTopicParams,
+    OnEntryRestoreFromBinErrorTopicParams,
     OnEntryRevisionAfterCreateTopicParams,
     OnEntryRevisionAfterDeleteTopicParams,
     OnEntryRevisionBeforeCreateTopicParams,
@@ -82,7 +82,7 @@ import {
     getPreviousRevisionByEntryIdUseCases,
     getPublishedRevisionByEntryIdUseCases,
     deleteEntryUseCases,
-    restoreEntryUseCases
+    restoreEntryFromBinUseCases
 } from "~/crud/contentEntry/useCases";
 import { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser";
 
@@ -189,15 +189,17 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const onEntryDeleteError = createTopic<OnEntryDeleteErrorTopicParams>("cms.onEntryDeleteError");
 
     /**
-     * Restore
+     * Restore from bin
      */
-    const onEntryBeforeRestore = createTopic<OnEntryBeforeRestoreTopicParams>(
-        "cms.onEntryBeforeRestore"
+    const onEntryBeforeRestoreFromBin = createTopic<OnEntryBeforeRestoreFromBinTopicParams>(
+        "cms.onEntryBeforeRestoreFromBin"
     );
-    const onEntryAfterRestore =
-        createTopic<OnEntryAfterRestoreTopicParams>("cms.onEntryAfterRestore");
-    const onEntryRestoreError =
-        createTopic<OnEntryRestoreErrorTopicParams>("cms.onEntryRestoreError");
+    const onEntryAfterRestoreFromBin = createTopic<OnEntryAfterRestoreFromBinTopicParams>(
+        "cms.onEntryAfterRestoreFromBin"
+    );
+    const onEntryRestoreFromBinError = createTopic<OnEntryRestoreFromBinErrorTopicParams>(
+        "cms.onEntryRestoreFromBinError"
+    );
 
     /**
      * Delete revision
@@ -348,13 +350,17 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     );
 
     /**
-     * Restore entry
+     * Restore entry from bin
      */
-    const { restoreEntryUseCase } = restoreEntryUseCases({
-        restoreOperation: storageOperations.entries.restore,
+    const { restoreEntryFromBinUseCase } = restoreEntryFromBinUseCases({
+        restoreOperation: storageOperations.entries.restoreFromBin,
         getEntry: getLatestRevisionByEntryIdDeletedUseCase,
         getIdentity: getSecurityIdentity,
-        topics: { onEntryBeforeRestore, onEntryAfterRestore, onEntryRestoreError },
+        topics: {
+            onEntryBeforeRestoreFromBin,
+            onEntryAfterRestoreFromBin,
+            onEntryRestoreFromBinError
+        },
         accessControl,
         context
     });
@@ -1225,9 +1231,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         onEntryAfterDelete,
         onEntryDeleteError,
 
-        onEntryBeforeRestore,
-        onEntryAfterRestore,
-        onEntryRestoreError,
+        onEntryBeforeRestoreFromBin,
+        onEntryAfterRestoreFromBin,
+        onEntryRestoreFromBinError,
 
         onEntryRevisionBeforeDelete,
         onEntryRevisionAfterDelete,
@@ -1407,10 +1413,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 return deleteEntry(model, entryId, options);
             });
         },
-        async restoreEntry(model, entryId) {
-            return context.benchmark.measure("headlessCms.crud.entries.restoreEntry", async () => {
-                return await restoreEntryUseCase.execute(model, entryId);
-            });
+        async restoreEntryFromBin(model, entryId) {
+            return context.benchmark.measure(
+                "headlessCms.crud.entries.restoreEntryFromBin",
+                async () => {
+                    return await restoreEntryFromBinUseCase.execute(model, entryId);
+                }
+            );
         },
         async deleteMultipleEntries(model, ids) {
             return context.benchmark.measure(

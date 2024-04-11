@@ -12,5 +12,5 @@ export * from "./IGetRevisionsByEntryId";
 export * from "./IListEntries";
 export * from "./IListEntriesOperation";
 export * from "./IMoveEntryToBinOperation";
-export * from "./IRestoreEntry";
-export * from "./IRestoreEntryOperation";
+export * from "./IRestoreEntryFromBin";
+export * from "./IRestoreEntryFromBinOperation";

@@ -6,10 +6,10 @@ export const tracker = new LifecycleEventTracker();
 
 export const assignCmsLifecycleEvents = () => {
     return new ContextPlugin<HcmsAcoContext>(async context => {
-        context.cms.onEntryBeforeRestore.subscribe(async params => {
+        context.cms.onEntryBeforeRestoreFromBin.subscribe(async params => {
             tracker.track("entry:beforeRestore", params);
         });
-        context.cms.onEntryAfterRestore.subscribe(async params => {
+        context.cms.onEntryBeforeRestoreFromBin.subscribe(async params => {
             tracker.track("entry:afterRestore", params);
         });
     });

@@ -2,10 +2,10 @@ import { HcmsAcoContext } from "~/types";
 import WebinyError from "@webiny/error";
 import { ROOT_FOLDER } from "@webiny/api-headless-cms/constants";
 
-export const onEntryBeforeRestoreHook = (context: HcmsAcoContext) => {
+export const onEntryBeforeRestoreFromBinHook = (context: HcmsAcoContext) => {
     const { aco, cms } = context;
 
-    cms.onEntryBeforeRestore.subscribe(async ({ entry }) => {
+    cms.onEntryBeforeRestoreFromBin.subscribe(async ({ entry }) => {
         /**
          * Skip further execution if folderId is falsy or equals ROOT_FOLDER.
          */
@@ -29,8 +29,8 @@ export const onEntryBeforeRestoreHook = (context: HcmsAcoContext) => {
             }
 
             throw WebinyError.from(error, {
-                message: "Error while executing onEntryBeforeRestoreHook hook",
-                code: "HCMS_ACO_BEFORE_RESTORE_HOOK"
+                message: "Error while executing onEntryBeforeRestoreFromBin hook",
+                code: "HCMS_ACO_BEFORE_RESTORE_FROM_BIN_HOOK"
             });
         }
     });

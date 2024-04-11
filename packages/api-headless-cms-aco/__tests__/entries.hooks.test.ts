@@ -2,7 +2,7 @@ import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { assignCmsLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
 import { ROOT_FOLDER } from "@webiny/api-headless-cms/constants";
 
-describe("HCMS Entries -> onEntryBeforeRestore", () => {
+describe("HCMS Entries -> onEntryBeforeRestoreFromBin", () => {
     beforeEach(async () => {
         tracker.reset();
     });
@@ -44,7 +44,7 @@ describe("HCMS Entries -> onEntryBeforeRestore", () => {
 
         expect(restoreEntryResponse).toMatchObject({
             data: {
-                [`restore${model.singularApiName}`]: {
+                [`restore${model.singularApiName}FromBin`]: {
                     data: entry
                 }
             }
@@ -111,7 +111,7 @@ describe("HCMS Entries -> onEntryBeforeRestore", () => {
 
         expect(restoreEntryResponse).toMatchObject({
             data: {
-                [`restore${model.singularApiName}`]: {
+                [`restore${model.singularApiName}FromBin`]: {
                     data: entry
                 }
             }
@@ -183,7 +183,7 @@ describe("HCMS Entries -> onEntryBeforeRestore", () => {
 
         expect(restoreEntryResponse).toMatchObject({
             data: {
-                [`restore${model.singularApiName}`]: {
+                [`restore${model.singularApiName}FromBin`]: {
                     data: {
                         ...entry,
                         wbyAco_location: {

@@ -1,12 +1,12 @@
-import { IRestoreEntry } from "~/crud/contentEntry/abstractions";
+import { IRestoreEntryFromBin } from "~/crud/contentEntry/abstractions";
 import { AccessControl } from "~/crud/AccessControl/AccessControl";
 import { CmsModel } from "~/types";
 
-export class RestoreEntrySecure implements IRestoreEntry {
+export class RestoreEntryFromBinSecure implements IRestoreEntryFromBin {
     private accessControl: AccessControl;
-    private useCase: IRestoreEntry;
+    private useCase: IRestoreEntryFromBin;
 
-    constructor(accessControl: AccessControl, useCase: IRestoreEntry) {
+    constructor(accessControl: AccessControl, useCase: IRestoreEntryFromBin) {
         this.accessControl = accessControl;
         this.useCase = useCase;
     }

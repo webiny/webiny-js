@@ -197,10 +197,10 @@ const deleteCategoryMutation = (model: CmsModel) => {
     `;
 };
 
-const restoreCategoryMutation = (model: CmsModel) => {
+const restoreCategoryFromBinMutation = (model: CmsModel) => {
     return /* GraphQL */ `
-        mutation RestoreCategory($revision: ID!) {
-            restoreCategory: restore${model.singularApiName}(revision: $revision) {
+        mutation RestoreCategoryFromBin($revision: ID!) {
+            restoreCategoryFromBin: restore${model.singularApiName}FromBin(revision: $revision) {
                 data {
                     ${categoryFields}
                 }
@@ -347,9 +347,12 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
                 headers
             });
         },
-        async restoreCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
+        async restoreCategoryFromBin(
+            variables: Record<string, any>,
+            headers: Record<string, any> = {}
+        ) {
             return await contentHandler.invoke({
-                body: { query: restoreCategoryMutation(model), variables },
+                body: { query: restoreCategoryFromBinMutation(model), variables },
                 headers
             });
         },

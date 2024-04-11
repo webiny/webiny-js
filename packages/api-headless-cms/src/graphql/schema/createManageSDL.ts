@@ -204,7 +204,7 @@ export const createManageSDL: CreateManageSDL = ({
 
             delete${singularName}(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
             
-            restore${singularName}(revision: ID!): ${singularName}Response
+            restore${singularName}FromBin(revision: ID!): ${singularName}Response
 
             deleteMultiple${pluralName}(entries: [ID!]!): CmsDeleteMultipleResponse!
     

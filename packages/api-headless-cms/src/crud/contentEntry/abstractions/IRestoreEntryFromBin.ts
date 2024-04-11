@@ -1,5 +1,5 @@
 import { CmsEntry, CmsModel } from "~/types";
 
-export interface IRestoreEntry {
+export interface IRestoreEntryFromBin {
     execute: (model: CmsModel, id: string) => Promise<CmsEntry>;
 }

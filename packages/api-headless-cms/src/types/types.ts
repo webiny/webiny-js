@@ -1245,20 +1245,20 @@ export interface OnEntryDeleteErrorTopicParams {
 }
 
 /**
- * Restore
+ * Restore from bin
  */
-export interface OnEntryBeforeRestoreTopicParams {
+export interface OnEntryBeforeRestoreFromBinTopicParams {
     entry: CmsEntry;
     model: CmsModel;
 }
 
-export interface OnEntryAfterRestoreTopicParams {
+export interface OnEntryAfterRestoreFromBinTopicParams {
     entry: CmsEntry;
     model: CmsModel;
     storageEntry: CmsEntry;
 }
 
-export interface OnEntryRestoreErrorTopicParams {
+export interface OnEntryRestoreFromBinErrorTopicParams {
     error: Error;
     entry: CmsEntry;
     model: CmsModel;
@@ -1803,7 +1803,7 @@ export interface CmsEntryStorageOperationsMoveToBinParams<
     storageEntry: T;
 }
 
-export interface CmsEntryStorageOperationsRestoreParams<
+export interface CmsEntryStorageOperationsRestoreFromBinParams<
     T extends CmsStorageEntry = CmsStorageEntry
 > {
     /**
@@ -2018,7 +2018,10 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
     /**
      * Restore the entry from the bin.
      */
-    restore: (model: CmsModel, params: CmsEntryStorageOperationsRestoreParams<T>) => Promise<T>;
+    restoreFromBin: (
+        model: CmsModel,
+        params: CmsEntryStorageOperationsRestoreFromBinParams<T>
+    ) => Promise<T>;
     /**
      * Delete multiple entries, with a limit on how much can be deleted in one call.
      */
