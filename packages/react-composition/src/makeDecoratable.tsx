@@ -1,12 +1,7 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { useComponent } from "./Context";
-import {
-    CanReturnNull,
-    DecoratableComponent,
-    DecoratableHook,
-    GenericComponent,
-    GenericHook
-} from "~/types";
+import { DecoratableComponent, DecoratableHook, GenericComponent, GenericHook } from "~/types";
+import { withDecoratorFactory, withHookDecoratorFactory } from "~/decorators";
 
 const ComposableContext = createContext<string[]>([]);
 ComposableContext.displayName = "ComposableContext";
@@ -22,11 +17,20 @@ function useComposableParents() {
 
 const nullRenderer = () => null;
 
+// Maybe there's a better way to mark props as non-existent, but for now I left it as `any`.
+type NoProps = any;
+
+type GetProps<T extends (...args: any) => any> = Parameters<T> extends [infer First]
+    ? undefined extends First
+        ? NoProps
+        : First
+    : NoProps;
+
 function makeDecoratableComponent<T extends GenericComponent>(
     name: string,
     Component: T = nullRenderer as unknown as T
 ) {
-    const Decoratable = (props: Parameters<T>[0]): JSX.Element | null => {
+    const Decoratable = (props: GetProps<T>): JSX.Element | null => {
         const parents = useComposableParents();
         const ComposedComponent = useComponent(Component);
 
@@ -43,10 +47,10 @@ function makeDecoratableComponent<T extends GenericComponent>(
     Decoratable.originalName = name;
     Decoratable.displayName = `Decoratable<${name}>`;
 
-    return Decoratable;
+    return withDecoratorFactory()(Decoratable as DecoratableComponent<typeof Decoratable>);
 }
 
-function makeDecoratableHook<T extends GenericHook>(hook: T) {
+export function makeDecoratableHook<T extends GenericHook>(hook: T) {
     const decoratableHook = (params: Parameters<T>) => {
         const composedHook = useComponent(hook);
 
@@ -55,7 +59,7 @@ function makeDecoratableHook<T extends GenericHook>(hook: T) {
 
     decoratableHook.original = hook;
 
-    return decoratableHook as DecoratableHook<T>;
+    return withHookDecoratorFactory()(decoratableHook as DecoratableHook<T>);
 }
 
 export function createVoidComponent<T>() {
@@ -65,15 +69,17 @@ export function createVoidComponent<T>() {
     };
 }
 
-export function makeDecoratable<T extends GenericHook>(hook: T): DecoratableHook<T>;
+export function makeDecoratable<T extends GenericHook>(
+    hook: T
+): ReturnType<typeof makeDecoratableHook<T>>;
 export function makeDecoratable<T extends GenericComponent>(
     name: string,
     Component: T
-): DecoratableComponent<CanReturnNull<T>>;
+): ReturnType<typeof makeDecoratableComponent<T>>;
 export function makeDecoratable(hookOrName: any, Component?: any) {
-    if (!Component) {
-        return makeDecoratableHook(hookOrName);
+    if (Component) {
+        return makeDecoratableComponent(hookOrName, Component);
     }
 
-    return makeDecoratableComponent(hookOrName, Component);
+    return makeDecoratableHook(hookOrName);
 }

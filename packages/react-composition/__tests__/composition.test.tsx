@@ -7,7 +7,8 @@ import {
     CompositionProvider,
     createDecorator,
     createDecoratorFactory,
-    makeDecoratable
+    makeDecoratable,
+    makeDecoratableHook
 } from "~/index";
 
 interface UseLabelParams {
@@ -68,7 +69,7 @@ describe("Decoration of Hooks and Components", () => {
     });
 
     it("should decorate hook", async () => {
-        const useLabel = makeDecoratable((params?: UseLabelParams) => {
+        const useLabel = makeDecoratableHook((params?: UseLabelParams) => {
             const label = "Base Label";
 
             return { label: params?.lowercase ? label.toLowerCase() : label };

@@ -27,7 +27,7 @@ export const ElementLinkStatusWrapper = styled("div")({
     }
 });
 
-const ElementNotLinked = () => {
+export const ElementNotLinked = () => {
     return (
         <ElementLinkStatusWrapper>
             <strong>Element not linked</strong>
@@ -44,5 +44,3 @@ const ElementNotLinked = () => {
         </ElementLinkStatusWrapper>
     );
 };
-
-export default ElementNotLinked;

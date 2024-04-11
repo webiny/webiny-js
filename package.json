@@ -105,6 +105,8 @@
   "scripts": {
     "awp": "yarn add-webiny-package",
     "add-webiny-package": "node scripts/addWebinyPackage.js",
+    "ci-workflows:build": "yarn ghawac build",
+    "ci-workflows:watch": "yarn ghawac watch",
     "check-ts-configs": "node scripts/checkTsConfigs.js",
     "check-package-dependencies": "node scripts/checkPackageNodeModules.js",
     "deploy": "yarn webiny deploy",
@@ -126,6 +128,7 @@
     "cy:run": "yarn cypress:run",
     "cypress:ts": "cd cypress-tests && yarn tsc --noEmit",
     "cy:ts": "yarn cypress:ts",
+    "cy:setup": "yarn setup-cypress",
     "webiny-versions": "node ./scripts/webinyVersions.js",
     "trigger-release": "node ./scripts/release/triggerRelease.js",
     "dispatch-github-event": "node ./scripts/dispatchGitHubEvent.js",

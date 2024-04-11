@@ -95,7 +95,9 @@ const plugins: RoutePlugin[] = [
                         <SecureRoute permission={ROLE_PB_PAGES}>
                             <EditorPluginsLoader location={location}>
                                 <Helmet title={"Page Builder - Edit page"} />
-                                <PageEditor />
+                                <CompositionScope name={"pb.pageEditor"}>
+                                    <PageEditor />
+                                </CompositionScope>
                             </EditorPluginsLoader>
                         </SecureRoute>
                     );
@@ -137,7 +139,9 @@ const plugins: RoutePlugin[] = [
                         <SecureRoute permission={ROLE_PB_TEMPLATE}>
                             <EditorPluginsLoader location={location}>
                                 <Helmet title={"Page Builder - Edit template"} />
-                                <TemplateEditor />
+                                <CompositionScope name={"pb.templateEditor"}>
+                                    <TemplateEditor />
+                                </CompositionScope>
                             </EditorPluginsLoader>
                         </SecureRoute>
                     );
@@ -195,7 +199,9 @@ const plugins: RoutePlugin[] = [
                         <SecureRoute permission={ROLE_PB_PAGES}>
                             <EditorPluginsLoader location={location}>
                                 <Helmet title={"Page Builder - Edit block"} />
-                                <BlockEditor />
+                                <CompositionScope name={"pb.blockEditor"}>
+                                    <BlockEditor />
+                                </CompositionScope>
                             </EditorPluginsLoader>
                         </SecureRoute>
                     );

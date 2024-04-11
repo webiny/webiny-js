@@ -1,0 +1,1 @@
+export { useTemplate } from "./useTemplate";

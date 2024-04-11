@@ -10,7 +10,7 @@ import {
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types";
 import { TableConstructor } from "@webiny/db-dynamodb/toolbox";
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
@@ -159,7 +159,7 @@ export interface TableModifier {
 }
 
 export interface StorageOperationsFactoryParams {
-    documentClient: DynamoDBClient;
+    documentClient: DynamoDBDocument;
     elasticsearch: Client;
     table?: TableModifier;
     esTable?: TableModifier;

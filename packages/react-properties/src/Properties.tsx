@@ -38,7 +38,9 @@ function putPropertyBefore(properties: Property[], property: Property, before: s
     if (existingIndex > -1) {
         const existingProperty = properties[existingIndex];
         const newProperties = properties.filter(p => p.id !== property.id);
-        const targetIndex = newProperties.findIndex(prop => prop.id === before);
+        const targetIndex = before.endsWith("$first")
+            ? 0
+            : newProperties.findIndex(prop => prop.id === before);
         return [
             ...newProperties.slice(0, targetIndex),
             existingProperty,
@@ -56,7 +58,9 @@ function putPropertyAfter(properties: Property[], property: Property, after: str
 
     if (existingIndex > -1) {
         const [removedProperty] = properties.splice(existingIndex, 1);
-        const targetIndex = properties.findIndex(prop => prop.id === after);
+        const targetIndex = after.endsWith("$last")
+            ? properties.length - 1
+            : properties.findIndex(prop => prop.id === after);
         return [
             ...properties.slice(0, targetIndex + 1),
             removedProperty,

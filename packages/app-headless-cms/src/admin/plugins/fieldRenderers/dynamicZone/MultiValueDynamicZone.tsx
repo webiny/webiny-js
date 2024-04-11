@@ -8,7 +8,7 @@ import { ReactComponent as ArrowUpIcon } from "@material-design-icons/svg/round/
 import { ReactComponent as ArrowDownIcon } from "@material-design-icons/svg/round/expand_more.svg";
 import { AddTemplateButton, AddTemplateIcon } from "./AddTemplate";
 import { TemplateIcon } from "./TemplateIcon";
-import { useModelField } from "~/admin/hooks";
+import { ParentFieldProvider, useModelField } from "~/admin/hooks";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
 import {
     BindComponent,
@@ -19,6 +19,7 @@ import {
     CmsModelField
 } from "~/types";
 import { makeDecoratable } from "@webiny/react-composition";
+import { TemplateProvider } from "~/admin/plugins/fieldRenderers/dynamicZone/TemplateProvider";
 
 const BottomMargin = styled.div`
     margin-bottom: 20px;
@@ -66,12 +67,14 @@ export const MultiValueItem = makeDecoratable(
         const { template, Bind, contentModel } = props;
 
         return (
-            <Fields
-                fields={template.fields}
-                layout={template.layout || []}
-                contentModel={contentModel}
-                Bind={Bind}
-            />
+            <TemplateProvider template={template}>
+                <Fields
+                    fields={template.fields}
+                    layout={template.layout || []}
+                    contentModel={contentModel}
+                    Bind={Bind}
+                />
+            </TemplateProvider>
         );
     }
 );
@@ -156,15 +159,16 @@ export interface MultiValueContainerProps extends MultiValueDynamicZoneProps {
     children: React.ReactNode;
 }
 
-export const MultiValueContainer = makeDecoratable<
-    React.FunctionComponent<MultiValueContainerProps>
->("MultiValueContainer", ({ children }) => {
-    return (
-        <Accordion>
-            <>{children}</>
-        </Accordion>
-    );
-});
+export const MultiValueContainer = makeDecoratable(
+    "MultiValueContainer",
+    ({ children }: MultiValueContainerProps) => {
+        return (
+            <Accordion>
+                <>{children}</>
+            </Accordion>
+        );
+    }
+);
 
 interface MultiValueDynamicZoneProps {
     // TODO: this prop might be useless, because we now have a `useModelField` hook.
@@ -188,25 +192,38 @@ export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
     const values: TemplateValue[] = bind.value || [];
     const hasValues = values.length > 0;
 
+    const Bind = getBind();
+
     return (
         <>
             {hasValues ? (
-                <MultiValueContainer {...props}>
-                    {values.map((value, index) => (
-                        <TemplateValueForm
-                            key={index}
-                            value={value}
-                            contentModel={contentModel}
-                            Bind={getBind(index)}
-                            isFirst={index === 0}
-                            isLast={index === values.length - 1}
-                            onMoveUp={() => bind.moveValueUp(index)}
-                            onMoveDown={() => bind.moveValueDown(index)}
-                            onDelete={() => bind.removeValue(index)}
-                            onClone={() => cloneValue(index)}
-                        />
-                    ))}
-                </MultiValueContainer>
+                <ParentFieldProvider value={bind.value} path={Bind.parentName}>
+                    <MultiValueContainer {...props}>
+                        {values.map((value, index) => {
+                            const Bind = getBind(index);
+
+                            return (
+                                <ParentFieldProvider
+                                    value={value}
+                                    key={index}
+                                    path={Bind.parentName}
+                                >
+                                    <TemplateValueForm
+                                        value={value}
+                                        contentModel={contentModel}
+                                        Bind={Bind}
+                                        isFirst={index === 0}
+                                        isLast={index === values.length - 1}
+                                        onMoveUp={() => bind.moveValueUp(index)}
+                                        onMoveDown={() => bind.moveValueDown(index)}
+                                        onDelete={() => bind.removeValue(index)}
+                                        onClone={() => cloneValue(index)}
+                                    />
+                                </ParentFieldProvider>
+                            );
+                        })}
+                    </MultiValueContainer>
+                </ParentFieldProvider>
             ) : null}
             {hasValues ? (
                 <AddTemplateIcon onTemplate={onTemplate} />

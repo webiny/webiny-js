@@ -128,10 +128,7 @@ export const FileManager = ({ children, render, onChange, ...rest }: FileManager
                     // @ts-expect-error
                     <FileManagerRenderer
                         onClose={() => setShow(false)}
-                        onChange={
-                            /* TODO: figure out how to create a conditional type based on the value of `rest.multiple` */
-                            onChangeRef.current
-                        }
+                        onChange={onChangeRef.current}
                         {...rest}
                     />,
                     containerRef.current

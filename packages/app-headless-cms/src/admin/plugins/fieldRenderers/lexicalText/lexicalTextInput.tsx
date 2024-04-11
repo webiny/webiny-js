@@ -5,6 +5,7 @@ import { CmsContentEntry, CmsEditorFieldRendererPlugin, CmsModelField } from "~/
 import { BindComponentRenderProp } from "@webiny/form";
 import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor";
 import { modelHasLegacyRteField } from "~/admin/plugins/fieldRenderers/richText/utils";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -35,19 +36,23 @@ const plugin: CmsEditorFieldRendererPlugin = {
 
             return canUse;
         },
-        render({ field, getBind }) {
+        render({ field, getBind, Label }) {
             const Bind = getBind<string, CmsContentEntry>();
             return (
                 <Bind>
                     {bind => {
                         return (
-                            <LexicalCmsEditor
-                                value={bind.value}
-                                onChange={bind.onChange}
-                                key={getKey(field, bind)}
-                                placeholder={field.placeholderText}
-                                data-testid={`fr.input.lexical.${field.label}`}
-                            />
+                            <>
+                                <Label>{field.label}</Label>
+                                <LexicalCmsEditor
+                                    value={bind.value}
+                                    onChange={bind.onChange}
+                                    key={getKey(field, bind)}
+                                    placeholder={field.placeholderText}
+                                    data-testid={`fr.input.lexical.${field.label}`}
+                                />
+                                <FormElementMessage>{field.helpText}</FormElementMessage>
+                            </>
                         );
                     }}
                 </Bind>

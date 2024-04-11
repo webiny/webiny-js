@@ -157,10 +157,7 @@ const Install = ({ onInstalled }: InstallProps) => {
                                 <Bind name="subscribed">
                                     <Checkbox
                                         label={
-                                            <span>
-                                                I want to receive updates on product improvements
-                                                and new features.
-                                            </span>
+                                            "I want to receive updates on product improvements and new features."
                                         }
                                     />
                                 </Bind>

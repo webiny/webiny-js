@@ -1,7 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { useRecoilValue } from "recoil";
 import {
-    uiAtom,
     setDisplayModeMutation,
     setPagePreviewDimensionMutation,
     PagePreviewDimension
@@ -9,27 +7,44 @@ import {
 import { plugins } from "@webiny/plugins";
 import { useUI } from "~/editor/hooks/useUI";
 import { DisplayMode, PbEditorResponsiveModePlugin } from "~/types";
+import { usePageBuilder } from "~/hooks/usePageBuilder";
+
+export type DisplayModeConfig = PbEditorResponsiveModePlugin["config"];
 
 export interface UseDisplayMode {
     displayMode: DisplayMode;
+    displayModes: DisplayModeConfig[];
     config: PbEditorResponsiveModePlugin["config"];
     setDisplayMode: (mode: DisplayMode) => void;
     setPagePreviewDimensions: (dimensions: PagePreviewDimension) => void;
 }
 
 export function useDisplayMode(): UseDisplayMode {
-    // Get current displayMode (string value)
-    const { displayMode } = useRecoilValue(uiAtom);
-    const [, setUiValue] = useUI();
+    const {
+        responsiveDisplayMode: { setDisplayMode: pbSetDisplayMode }
+    } = usePageBuilder();
 
-    const memoizedDisplayMode = useMemo(() => {
+    // Get current displayMode (string value)
+    const [{ displayMode }, setUiValue] = useUI();
+
+    const editorDisplayModes = useMemo(() => {
         return plugins
             .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
-            .find(pl => pl.config.displayMode === displayMode);
-    }, [displayMode]);
+            .map(pl => pl.config);
+    }, []);
+
+    const memoizedDisplayMode = useMemo(() => {
+        return editorDisplayModes.find(dp => dp.displayMode === displayMode);
+    }, [editorDisplayModes, displayMode]);
 
     const setDisplayMode = useCallback(
         (mode: DisplayMode) => {
+            /**
+             * We are updating the "displayMode" in PageBuilder context.
+             * Because "ElementRoot" needs its value to apply "visibility" element style setting.
+             */
+            pbSetDisplayMode(mode);
+
             setUiValue(prev => setDisplayModeMutation(prev, mode));
         },
         [displayMode]
@@ -45,7 +60,7 @@ export function useDisplayMode(): UseDisplayMode {
         return {
             config: {
                 displayMode,
-                toolTip: {
+                tooltip: {
                     title: "",
                     subTitle: "",
                     body: ""
@@ -53,11 +68,17 @@ export function useDisplayMode(): UseDisplayMode {
                 icon: <></>
             },
             displayMode,
+            displayModes: editorDisplayModes,
             setDisplayMode,
             setPagePreviewDimensions
         };
     }
-    const { config } = memoizedDisplayMode;
 
-    return { displayMode, config, setDisplayMode, setPagePreviewDimensions };
+    return {
+        displayMode,
+        displayModes: editorDisplayModes,
+        config: memoizedDisplayMode,
+        setDisplayMode,
+        setPagePreviewDimensions
+    };
 }

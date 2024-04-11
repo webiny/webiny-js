@@ -1,2 +1,2 @@
-export { EventActionHandlerPlugin } from "./EventActionHandlerPlugin";
-export { EventActionPlugins } from "./EventActionPlugins";
+export { EventActionHandlerDecorator } from "./EventActionHandlerDecorator";
+export { EventActionHandlers } from "./EventActionHandlers";

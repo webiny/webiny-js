@@ -87,7 +87,8 @@ export const createBaseSchema = () => {
                         return null;
                     }
 
-                    return await fileManager.getVersion();
+                    const version = await fileManager.getVersion();
+                    return version ? "true" : null;
                 },
                 async getSettings(_, __, context) {
                     return resolve(() => context.fileManager.getSettings());
