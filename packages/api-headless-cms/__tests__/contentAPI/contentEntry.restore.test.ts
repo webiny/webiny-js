@@ -287,7 +287,7 @@ describe("restore entries", () => {
         });
 
         /**
-         * We should NOT be able to restore an entry tha has not been moved to the trash bin.
+         * We should NOT be able to restore an entry that has not been moved to the trash bin.
          */
         const [restoreItemNotInTrashResponse] = await manager.restoreCategoryFromBin({
             revision: categoryToRestore.entryId
