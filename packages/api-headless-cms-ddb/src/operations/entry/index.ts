@@ -526,7 +526,9 @@ export const createEntriesStorageOperations = (
             return entity.putBatch({
                 ...record,
                 ...updatedDeletedMetaFields,
-                deleted: storageEntry.deleted
+                deleted: storageEntry.deleted,
+                location: storageEntry.location,
+                binOriginalFolderId: storageEntry.binOriginalFolderId
             });
         });
         /**
@@ -661,7 +663,9 @@ export const createEntriesStorageOperations = (
             return entity.putBatch({
                 ...record,
                 ...updatedRestoredMetaFields,
-                deleted: storageEntry.deleted
+                deleted: storageEntry.deleted,
+                location: storageEntry.location,
+                binOriginalFolderId: storageEntry.binOriginalFolderId
             });
         });
         /**
@@ -907,14 +911,12 @@ export const createEntriesStorageOperations = (
             ids: [params.id]
         });
 
-        return items
-            .filter(item => item.deleted !== true)
-            .map(item => {
-                return convertFromStorageEntry({
-                    storageEntry: item,
-                    model
-                });
+        return items.map(item => {
+            return convertFromStorageEntry({
+                storageEntry: item,
+                model
             });
+        });
     };
 
     const getByIds: CmsEntryStorageOperations["getByIds"] = async (initialModel, params) => {

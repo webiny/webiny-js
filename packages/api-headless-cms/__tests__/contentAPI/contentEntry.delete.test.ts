@@ -3,6 +3,7 @@ import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHa
 import { CmsEntry } from "~/types";
 import { toSlug } from "~/utils/toSlug";
 import { useCategoryReadHandler } from "~tests/testHelpers/useCategoryReadHandler";
+import { ROOT_FOLDER } from "~/constants";
 
 jest.setTimeout(100000);
 
@@ -252,8 +253,8 @@ describe("delete entries", () => {
         const [getAfterDeleteManageResponse] = await manager.getCategory({
             revision: categoryToDelete.id
         });
-        const [getAfterDeleteReadResponse] = await manager.getCategory({
-            revision: categoryToDelete.id
+        const [getAfterDeleteReadResponse] = await reader.getCategory({
+            where: { id: categoryToDelete.id }
         });
         expect(getAfterDeleteManageResponse).toMatchObject({
             data: {
@@ -401,7 +402,10 @@ describe("delete entries", () => {
                         expect.objectContaining({
                             entryId: categoryToDelete.entryId,
                             deletedBy: expect.any(Object),
-                            deletedOn: expect.any(String)
+                            deletedOn: expect.any(String),
+                            wbyAco_location: {
+                                folderId: ROOT_FOLDER
+                            }
                         })
                     ]),
                     error: null,
@@ -475,6 +479,99 @@ describe("delete entries", () => {
                         code: "NOT_FOUND",
                         data: null,
                         message: `Entry "${categoryToDelete.entryId}" was not found!`
+                    }
+                }
+            }
+        });
+    });
+
+    it("should delete an entry, moving it to the ROOT_FOLDER placed inside the bin", async () => {
+        const categories = await setupCategories();
+
+        const [listManageResponse] = await manager.listCategories();
+        expect(listManageResponse.data.listCategories.data).toHaveLength(titles.length);
+
+        const categoryToDelete = categories[0];
+        const newFolderId = "anotherFolder";
+
+        /**
+         * Let's now move the entry into a different folder
+         */
+        const [moveResponse] = await manager.moveCategory({
+            revision: categoryToDelete.id,
+            folderId: newFolderId
+        });
+
+        expect(moveResponse).toMatchObject({
+            data: {
+                moveCategory: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
+
+        /**
+         * ...let's check the new location.
+         */
+        const [getAfterMoveManageResponse] = await manager.getCategory({
+            revision: categoryToDelete.id
+        });
+
+        expect(getAfterMoveManageResponse).toMatchObject({
+            data: {
+                getCategory: {
+                    data: {
+                        ...categoryToDelete,
+                        wbyAco_location: {
+                            folderId: newFolderId
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        /**
+         * Let's now delete one entry, marking it as deleted.
+         */
+        const [deleteResponse] = await manager.deleteCategory({
+            revision: categoryToDelete.entryId,
+            options: {
+                permanently: false
+            }
+        });
+        expect(deleteResponse).toMatchObject({
+            data: {
+                deleteCategory: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
+
+        /**
+         * Let's list the deleted items found in the bin, we should find it inside ROOT_FOLDER
+         */
+        const [listDeletedManageResponse] = await manager.listDeletedCategories();
+        expect(listDeletedManageResponse).toEqual({
+            data: {
+                listDeletedCategories: {
+                    data: expect.arrayContaining([
+                        expect.objectContaining({
+                            entryId: categoryToDelete.entryId,
+                            deletedBy: expect.any(Object),
+                            deletedOn: expect.any(String),
+                            wbyAco_location: {
+                                folderId: ROOT_FOLDER
+                            }
+                        })
+                    ]),
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
                     }
                 }
             }

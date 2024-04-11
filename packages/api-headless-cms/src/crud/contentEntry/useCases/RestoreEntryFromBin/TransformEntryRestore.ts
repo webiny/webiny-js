@@ -43,6 +43,14 @@ export class TransformEntryRestore {
             deleted: false,
 
             /**
+             * Entry location fields. 👇
+             */
+            location: {
+                folderId: originalEntry.binOriginalFolderId
+            },
+            binOriginalFolderId: null,
+
+            /**
              * Entry-level meta fields. 👇
              */
             restoredOn: getDate(currentDateTime, null),

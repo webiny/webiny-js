@@ -760,7 +760,9 @@ export const createEntriesStorageOperations = (
                 entity.putBatch({
                     ...record,
                     ...updatedDeletedMetaFields,
-                    deleted: storageEntry.deleted
+                    deleted: storageEntry.deleted,
+                    location: storageEntry.location,
+                    binOriginalFolderId: storageEntry.binOriginalFolderId
                 })
             );
             /**
@@ -855,7 +857,9 @@ export const createEntriesStorageOperations = (
                     data: await compress(plugins, {
                         ...item.data,
                         ...updatedEntryMetaFields,
-                        deleted: entry.deleted
+                        deleted: entry.deleted,
+                        location: entry.location,
+                        binOriginalFolderId: entry.binOriginalFolderId
                     })
                 })
             );

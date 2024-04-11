@@ -3,6 +3,7 @@ import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHa
 import { useCategoryReadHandler } from "~tests/testHelpers/useCategoryReadHandler";
 import { CmsEntry } from "~/types";
 import { toSlug } from "~/utils/toSlug";
+import { ROOT_FOLDER } from "~/constants";
 
 jest.setTimeout(100000);
 
@@ -301,6 +302,134 @@ describe("restore entries", () => {
                         data: null,
                         message: `Entry "${categoryToRestore.entryId}" was not found!`
                     }
+                }
+            }
+        });
+    });
+
+    it("should restore an entry inside the original location", async () => {
+        const categories = await setupCategories();
+
+        const [listManageResponse] = await manager.listCategories();
+        expect(listManageResponse.data.listCategories.data).toHaveLength(titles.length);
+
+        const categoryToRestore = categories[0];
+        const newFolderId = "anotherFolder";
+
+        /**
+         * Let's now move the entry into a different folder.
+         */
+        const [moveResponse] = await manager.moveCategory({
+            revision: categoryToRestore.id,
+            folderId: newFolderId
+        });
+
+        expect(moveResponse).toMatchObject({
+            data: {
+                moveCategory: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
+
+        /**
+         * ...let's check the new location.
+         */
+        const [getAfterMoveManageResponse] = await manager.getCategory({
+            revision: categoryToRestore.id
+        });
+
+        expect(getAfterMoveManageResponse).toMatchObject({
+            data: {
+                getCategory: {
+                    data: {
+                        ...categoryToRestore,
+                        wbyAco_location: {
+                            folderId: newFolderId
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        /**
+         * Let's now move the entry into the bin.
+         */
+        const [deleteResponse] = await manager.deleteCategory({
+            revision: categoryToRestore.entryId,
+            options: {
+                permanently: false
+            }
+        });
+        expect(deleteResponse).toMatchObject({
+            data: {
+                deleteCategory: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
+
+        /**
+         * Let's list the deleted items found in the bin, we should find it inside ROOT_FOLDER
+         */
+        const [listDeletedManageResponse] = await manager.listDeletedCategories();
+        expect(listDeletedManageResponse).toEqual({
+            data: {
+                listDeletedCategories: {
+                    data: expect.arrayContaining([
+                        expect.objectContaining({
+                            entryId: categoryToRestore.entryId,
+                            deletedBy: expect.any(Object),
+                            deletedOn: expect.any(String),
+                            wbyAco_location: {
+                                folderId: ROOT_FOLDER
+                            }
+                        })
+                    ]),
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    }
+                }
+            }
+        });
+
+        /**
+         * Let's try to restore an entry from the bin, we should get it with the original location
+         */
+        const [restoreBinItemResponse] = await manager.restoreCategoryFromBin({
+            revision: categoryToRestore.entryId
+        });
+
+        console.log("restoreBinItemResponse", JSON.stringify(restoreBinItemResponse));
+
+        expect(restoreBinItemResponse).toMatchObject({
+            data: {
+                restoreCategoryFromBin: {
+                    data: {
+                        ...categoryToRestore,
+                        deletedOn: expect.any(String),
+                        deletedBy: {
+                            id: "id-12345678",
+                            displayName: "John Doe",
+                            type: "admin"
+                        },
+                        restoredOn: expect.any(String),
+                        restoredBy: {
+                            id: "id-12345678",
+                            displayName: "John Doe",
+                            type: "admin"
+                        },
+                        wbyAco_location: {
+                            folderId: newFolderId
+                        }
+                    },
+                    error: null
                 }
             }
         });
