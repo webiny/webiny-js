@@ -47,7 +47,9 @@ import { batchReadAll, BatchReadItem, put } from "@webiny/db-dynamodb";
 import { createTransformer } from "./transformations";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys";
 import {
+    isDeletedEntryMetaField,
     isEntryLevelEntryMetaField,
+    isRestoredEntryMetaField,
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants";
 
@@ -742,6 +744,11 @@ export const createEntriesStorageOperations = (
         const records = await queryAll<CmsEntry>(queryAllParams);
 
         /**
+         * Let's pick the `deleted` meta fields from the storage entry.
+         */
+        const updatedDeletedMetaFields = pickEntryMetaFields(storageEntry, isDeletedEntryMetaField);
+
+        /**
          * Then update all the records with data received.
          */
         let latestRecord: CmsEntry | undefined = undefined;
@@ -752,7 +759,8 @@ export const createEntriesStorageOperations = (
             items.push(
                 entity.putBatch({
                     ...record,
-                    ...storageEntry
+                    ...updatedDeletedMetaFields,
+                    deleted: storageEntry.deleted
                 })
             );
             /**
@@ -838,7 +846,7 @@ export const createEntriesStorageOperations = (
         /**
          * We update all ES records with data received.
          */
-        const updatedEntryLevelMetaFields = pickEntryMetaFields(entry, isEntryLevelEntryMetaField);
+        const updatedEntryMetaFields = pickEntryMetaFields(entry, isDeletedEntryMetaField);
         const esUpdateItems: BatchWriteItem[] = [];
         for (const item of esItems) {
             esUpdateItems.push(
@@ -846,8 +854,8 @@ export const createEntriesStorageOperations = (
                     ...item,
                     data: await compress(plugins, {
                         ...item.data,
-                        deleted: true,
-                        ...updatedEntryLevelMetaFields
+                        ...updatedEntryMetaFields,
+                        deleted: entry.deleted
                     })
                 })
             );
@@ -913,6 +921,14 @@ export const createEntriesStorageOperations = (
         const records = await queryAll<CmsEntry>(queryAllParams);
 
         /**
+         * Let's pick the `restored` meta fields from the storage entry.
+         */
+        const updatedRestoredMetaFields = pickEntryMetaFields(
+            storageEntry,
+            isRestoredEntryMetaField
+        );
+
+        /**
          * Then update all the records with data received.
          */
         let latestRecord: CmsEntry | undefined = undefined;
@@ -923,7 +939,8 @@ export const createEntriesStorageOperations = (
             items.push(
                 entity.putBatch({
                     ...record,
-                    ...storageEntry
+                    ...updatedRestoredMetaFields,
+                    deleted: storageEntry.deleted
                 })
             );
             /**
@@ -1006,7 +1023,7 @@ export const createEntriesStorageOperations = (
         /**
          * We update all ES records with data received.
          */
-        const updatedEntryLevelMetaFields = pickEntryMetaFields(entry, isEntryLevelEntryMetaField);
+        const updatedEntryMetaFields = pickEntryMetaFields(entry, isRestoredEntryMetaField);
         const esUpdateItems: BatchWriteItem[] = [];
         for (const item of esItems) {
             esUpdateItems.push(
@@ -1014,8 +1031,8 @@ export const createEntriesStorageOperations = (
                     ...item,
                     data: await compress(plugins, {
                         ...item.data,
-                        deleted: false,
-                        ...updatedEntryLevelMetaFields
+                        ...updatedEntryMetaFields,
+                        deleted: entry.deleted
                     })
                 })
             );

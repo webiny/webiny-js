@@ -37,7 +37,9 @@ import { filter, sort } from "~/operations/entry/filtering";
 import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
 import { CmsEntryStorageOperations } from "~/types";
 import {
+    isDeletedEntryMetaField,
     isEntryLevelEntryMetaField,
+    isRestoredEntryMetaField,
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants";
 
@@ -513,12 +515,18 @@ export const createEntriesStorageOperations = (
         });
 
         /**
+         * Let's pick the `deleted` meta fields from the storage entry.
+         */
+        const updatedDeletedMetaFields = pickEntryMetaFields(storageEntry, isDeletedEntryMetaField);
+
+        /**
          * Then create the batch writes for the DynamoDB, with the updated data.
          */
         const items = records.map(record => {
             return entity.putBatch({
                 ...record,
-                ...storageEntry
+                ...updatedDeletedMetaFields,
+                deleted: storageEntry.deleted
             });
         });
         /**
@@ -642,12 +650,18 @@ export const createEntriesStorageOperations = (
         });
 
         /**
-         * Then create the batch writes for the DynamoDB, with the updated data.
+         * Let's pick the `restored` meta fields from the storage entry.
          */
+        const updatedRestoredMetaFields = pickEntryMetaFields(
+            storageEntry,
+            isRestoredEntryMetaField
+        );
+
         const items = records.map(record => {
             return entity.putBatch({
                 ...record,
-                ...storageEntry
+                ...updatedRestoredMetaFields,
+                deleted: storageEntry.deleted
             });
         });
         /**

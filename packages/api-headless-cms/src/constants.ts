@@ -125,3 +125,16 @@ export const isEntryLevelEntryMetaField = (fieldName: string) => {
         !fieldName.startsWith("revision")
     );
 };
+
+export const isDeletedEntryMetaField = (fieldName: string) => {
+    return (
+        ENTRY_META_FIELDS.includes(fieldName as EntryMetaFieldName) && fieldName.includes("deleted")
+    );
+};
+
+export const isRestoredEntryMetaField = (fieldName: string) => {
+    return (
+        ENTRY_META_FIELDS.includes(fieldName as EntryMetaFieldName) &&
+        fieldName.includes("restored")
+    );
+};
