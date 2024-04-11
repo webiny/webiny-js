@@ -9,7 +9,7 @@ import { WebinyError } from "@webiny/error";
 import { convertEntryToLockRecord } from "~/utils/convertEntryToLockRecord";
 import { createLockRecordDatabaseId } from "~/utils/lockRecordDatabaseId";
 import { createIdentifier } from "@webiny/utils";
-import { NotAuthorizedError } from "@webiny/api-security";
+import { validateSameIdentity } from "~/utils/validateSameIdentity";
 
 export interface IUpdateEntryLockUseCaseParams {
     readonly getLockRecordUseCase: IGetLockRecordUseCase;
@@ -31,23 +31,20 @@ export class UpdateEntryLockUseCase implements IUpdateEntryLockUseCase {
     public async execute(
         params: IUpdateEntryLockUseCaseExecuteParams
     ): Promise<ILockingMechanismLockRecord> {
-        const entry = await this.getLockRecordUseCase.execute(params.id);
-        if (!entry) {
+        const record = await this.getLockRecordUseCase.execute(params.id);
+        if (!record) {
             throw new NotFoundError("Lock Record not found.");
         }
 
-        const identity = this.getIdentity();
-        if (identity.id !== entry.lockedBy.id) {
-            throw new WebinyError({
-                message: "Cannot update lock record. Record is locked by another user.",
-                code: "LOCK_UPDATE_ERROR"
-            });
-        }
+        validateSameIdentity({
+            getIdentity: this.getIdentity,
+            target: record.lockedBy
+        });
 
         try {
             const manager = await this.getManager();
 
-            const entryId = createLockRecordDatabaseId(entry.id);
+            const entryId = createLockRecordDatabaseId(record.id);
             const id = createIdentifier({
                 id: entryId,
                 version: 1

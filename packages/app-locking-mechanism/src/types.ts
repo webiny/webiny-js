@@ -30,12 +30,13 @@ export interface ILockingMechanismRecord extends IPossiblyLockingMechanismRecord
     $lockingType: string;
 }
 
-export type IIsRecordLockedParams = Pick<ILockingMechanismRecord, "id">;
+export type IIsRecordLockedParams = Pick<ILockingMechanismRecord, "id" | "$lockingType">;
 
 export interface ILockingMechanismContext<
     T extends IPossiblyLockingMechanismRecord = IPossiblyLockingMechanismRecord
 > {
-    records: IPossiblyLockingMechanismRecord[];
+    readonly loading: boolean;
+    readonly records: IPossiblyLockingMechanismRecord[];
     setRecords(folderId: string, type: string, records: T[]): void;
     isRecordLocked(params: IIsRecordLockedParams): boolean;
     getLockRecordEntry(id: string): ILockingMechanismRecord | undefined;

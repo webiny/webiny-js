@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createLockingMechanism } from "~/domain/LockingMechanism";
 import { ILockingMechanismContext, IPossiblyLockingMechanismRecord } from "~/types";
+import { useStateIfMounted } from "@webiny/app-admin";
 
 export interface ILockingMechanismProviderProps {
     children: React.ReactNode;
@@ -10,6 +11,18 @@ export interface ILockingMechanismProviderProps {
 export const LockingMechanismContext = React.createContext(
     {} as unknown as ILockingMechanismContext
 );
+
+const isSameArray = (
+    existingRecords: Pick<IPossiblyLockingMechanismRecord, "id">[],
+    newRecords: Pick<IPossiblyLockingMechanismRecord, "id">[]
+): boolean => {
+    if (existingRecords.length !== newRecords.length) {
+        return false;
+    }
+    return existingRecords.every(record => {
+        return newRecords.some(newRecord => newRecord.id === record.id);
+    });
+};
 
 export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) => {
     // const websockets = useWebsockets();
@@ -29,8 +42,18 @@ export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) 
             client
         });
     }, []);
+    const [records, setRecords] = useStateIfMounted<IPossiblyLockingMechanismRecord[]>([]);
 
-    const [records, setRecords] = useState<IPossiblyLockingMechanismRecord[]>();
+    const setRecordsIfNeeded = useCallback(
+        (newRecords: IPossiblyLockingMechanismRecord[]) => {
+            const sameArray = isSameArray(records, newRecords);
+            if (sameArray) {
+                return;
+            }
+            setRecords(newRecords);
+        },
+        [records]
+    );
 
     const value: ILockingMechanismContext = {
         isRecordLocked(record) {
@@ -39,15 +62,17 @@ export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) 
         getLockRecordEntry(id: string) {
             return lockingMechanism.getLockRecordEntry(id);
         },
-        async setRecords(folderId, type, records) {
-            setRecords(records);
-            const result = await lockingMechanism.setRecords(folderId, type, records);
+        async setRecords(folderId, type, newRecords) {
+            setRecordsIfNeeded(newRecords);
+            // console.log("in setRecords before load", newRecords);
+            const result = await lockingMechanism.setRecords(folderId, type, newRecords);
             if (!result) {
                 return;
             }
             setRecords(result);
         },
-        records: records || []
+        records,
+        loading: lockingMechanism.loading
     };
 
     return <LockingMechanismContext.Provider {...props} value={value} />;

@@ -51,7 +51,7 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
     private currentRecordType?: string;
     private currentFolderId?: string;
     private currentRecordsCacheKey?: string;
-    private loading = false;
+    public loading = false;
     public records: ILockingMechanismRecord[] = [];
 
     private readonly client: ILockingMechanismClient;
@@ -85,19 +85,11 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
         }
 
         return result.map(record => {
-            if (record.entryId) {
-                return {
-                    ...record,
-                    entryId: record.entryId,
-                    $lockingType: type,
-                    $locked: undefined
-                };
-            }
             const { id: entryId } = parseIdentifier(record.id);
             return {
                 ...record,
                 $lockingType: type,
-                $locked: undefined,
+                $locked: record.$locked,
                 entryId
             };
         });
@@ -113,7 +105,9 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
     public isRecordLocked(record: IIsRecordLockedParams): boolean {
         return this.records.some(r => {
             const { id: entryId } = parseIdentifier(record.id);
-            return r.entryId === entryId && !!r.$locked;
+            console.log("r", r);
+            console.log("record", record);
+            return r.entryId === entryId && !!r.$locked && r.$lockingType === record.$lockingType;
         });
     }
 

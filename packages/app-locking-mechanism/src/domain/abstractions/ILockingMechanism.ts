@@ -11,6 +11,7 @@ export interface ILockingMechanismSetRecordsCb {
 export interface ILockingMechanism<
     T extends IPossiblyLockingMechanismRecord = IPossiblyLockingMechanismRecord
 > {
+    loading: boolean;
     records: ILockingMechanismRecord[];
     setRecords(
         folderId: string,

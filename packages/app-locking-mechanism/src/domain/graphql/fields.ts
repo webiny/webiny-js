@@ -6,6 +6,7 @@ export const LOCK_RECORD_FIELDS = /* GraphQL */ `
         type
     }
     lockedOn
+    updatedOn
     targetId
     type
     actions {

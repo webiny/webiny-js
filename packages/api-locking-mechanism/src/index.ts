@@ -7,6 +7,10 @@ import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 
 const createContextPlugin = () => {
     const plugin = new ContextPlugin<Context>(async context => {
+        if (!context.wcp.canUseRecordLocking()) {
+            return;
+        }
+
         const ready = await isHeadlessCmsReady(context);
         if (!ready) {
             return;

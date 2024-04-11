@@ -1,9 +1,11 @@
+import { ILockingMechanismRecord } from "~/types";
+
 export interface ILockingMechanismGetLockRecordParams {
     id: string;
     type: string;
 }
 
-export interface ILockingMechanismGetLockRecordResult {}
+export interface ILockingMechanismGetLockRecordResult extends ILockingMechanismRecord {}
 
 export interface ILockingMechanismGetLockRecord {
     execute(

@@ -4,7 +4,6 @@ import { ReactComponent as LockedIcon } from "./assets/lock.svg";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useLockingMechanism } from "~/hooks";
 import { UseContentEntriesListHookDecorator } from "./decorators/UseContentEntriesListHookDecorator";
-import { ILockingMechanismRecord } from "~/types";
 
 const { Browser } = ContentEntryListConfig;
 

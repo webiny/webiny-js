@@ -1,6 +1,7 @@
 import { UnlockEntryUseCase } from "~/useCases/UnlockEntryUseCase/UnlockEntryUseCase";
 import { IGetLockRecordUseCase } from "~/abstractions/IGetLockRecordUseCase";
 import { WebinyError } from "@webiny/error";
+import { createIdentity } from "~tests/helpers/identity";
 
 describe("unlock entry use case", () => {
     it("should throw an error on unlocking an entry", async () => {
@@ -9,12 +10,15 @@ describe("unlock entry use case", () => {
         const useCase = new UnlockEntryUseCase({
             getLockRecordUseCase: {
                 execute: async () => {
-                    return {};
+                    return {
+                        lockedBy: createIdentity()
+                    };
                 }
             } as unknown as IGetLockRecordUseCase,
             async getManager() {
                 throw new WebinyError("Testing error.", "TESTING_ERROR");
-            }
+            },
+            getIdentity: createIdentity
         });
 
         try {

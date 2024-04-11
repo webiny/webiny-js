@@ -38,7 +38,8 @@ export const createUseCases = (params: CreateUseCasesParams) => {
 
     const listLockRecordsUseCase = new ListLockRecordsUseCase({
         listAllLockRecordsUseCase,
-        timeout
+        timeout,
+        getIdentity: params.getIdentity
     });
 
     const getLockRecordUseCase = new GetLockRecordUseCase({
@@ -47,7 +48,8 @@ export const createUseCases = (params: CreateUseCasesParams) => {
 
     const isEntryLockedUseCase = new IsEntryLockedUseCase({
         getLockRecordUseCase,
-        isLocked
+        isLocked,
+        getIdentity: params.getIdentity
     });
 
     const lockEntryUseCase = new LockEntryUseCase({
@@ -63,7 +65,8 @@ export const createUseCases = (params: CreateUseCasesParams) => {
 
     const unlockEntryUseCase = new UnlockEntryUseCase({
         getLockRecordUseCase,
-        getManager: params.getManager
+        getManager: params.getManager,
+        getIdentity: params.getIdentity
     });
 
     const unlockEntryRequestUseCase = new UnlockEntryRequestUseCase({
