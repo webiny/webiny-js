@@ -2016,7 +2016,7 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
      */
     moveToBin: (model: CmsModel, params: CmsEntryStorageOperationsMoveToBinParams) => Promise<void>;
     /**
-     * Move the entry to bin.
+     * Restore the entry from the bin.
      */
     restore: (model: CmsModel, params: CmsEntryStorageOperationsRestoreParams<T>) => Promise<T>;
     /**

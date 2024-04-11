@@ -24,8 +24,8 @@ export class RestoreEntry implements IRestoreEntry {
     }
 
     async execute(model: CmsModel, id: string) {
-        const { id: entryid } = parseIdentifier(id);
-        const entryToRestore = await this.getEntry.execute(model, { id: entryid });
+        const { id: entryId } = parseIdentifier(id);
+        const entryToRestore = await this.getEntry.execute(model, { id: entryId });
 
         if (!entryToRestore) {
             throw new NotFoundError(`Entry "${id}" was not found!`);
