@@ -142,6 +142,13 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             }
         ];
     },
+    "api-headless-cms-aco": () => {
+        return [
+            { cmd: "packages/api-headless-cms-aco --storage=ddb", storage: "ddb" },
+            { cmd: "packages/api-headless-cms-aco --storage=ddb-es,ddb", storage: "ddb-es" },
+            { cmd: "packages/api-headless-cms-aco --storage=ddb-os,ddb", storage: "ddb-os" }
+        ];
+    },
     "api-apw": () => {
         return [
             { cmd: "packages/api-apw --storage=ddb", storage: "ddb" }
@@ -250,7 +257,7 @@ function hasTestFiles(packageFolderPath: string) {
     }
 
     const files = fs.readdirSync(packageFolderPath);
-    for (let filename of files) {
+    for (const filename of files) {
         const filepath = path.join(packageFolderPath, filename);
         if (fs.statSync(filepath).isDirectory()) {
             const hasTFiles = hasTestFiles(filepath);

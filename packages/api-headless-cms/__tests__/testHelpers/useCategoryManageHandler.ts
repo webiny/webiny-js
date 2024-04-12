@@ -19,10 +19,12 @@ const categoryFields = `
     firstPublishedOn
     lastPublishedOn
     deletedOn
+    restoredOn
     createdBy ${identityFields}
     modifiedBy ${identityFields}
     savedBy ${identityFields}
     deletedBy ${identityFields}
+    restoredBy ${identityFields}
     meta {
         title
         modelId
@@ -195,6 +197,19 @@ const deleteCategoryMutation = (model: CmsModel) => {
     `;
 };
 
+const restoreCategoryFromBinMutation = (model: CmsModel) => {
+    return /* GraphQL */ `
+        mutation RestoreCategoryFromBin($revision: ID!) {
+            restoreCategoryFromBin: restore${model.singularApiName}FromBin(revision: $revision) {
+                data {
+                    ${categoryFields}
+                }
+                ${errorFields}
+            }
+        }
+    `;
+};
+
 const deleteCategoriesMutation = (model: CmsModel) => {
     return /* GraphQL */ `
         mutation DeleteCategories($entries: [ID!]!) {
@@ -329,6 +344,15 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
                     query: deleteCategoryMutation(model),
                     variables
                 },
+                headers
+            });
+        },
+        async restoreCategoryFromBin(
+            variables: Record<string, any>,
+            headers: Record<string, any> = {}
+        ) {
+            return await contentHandler.invoke({
+                body: { query: restoreCategoryFromBinMutation(model), variables },
                 headers
             });
         },

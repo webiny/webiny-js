@@ -27,6 +27,7 @@ import { createStorageOperations as createHeadlessCmsStorageOperations } from "@
 import { createHeadlessCmsTasks } from "@webiny/api-headless-cms-tasks";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
+import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
 import { createAuditLogs } from "@webiny/api-audit-logs";
@@ -97,6 +98,7 @@ export const handler = createHandler({
         }),
         createAco(),
         createAcoPageBuilderContext(),
+        createAcoHcmsContext(),
         createAuditLogs(),
         createHeadlessCmsTasks(),
         scaffoldsPlugins()

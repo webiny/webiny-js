@@ -288,23 +288,23 @@ export const createDeleteMutation = (model: CmsEditorContentModel) => {
 
 /**
  * ############################################
- * Restore Mutation
+ * Restore from bin Mutation
  */
-export interface CmsEntryRestoreMutationResponse {
+export interface CmsEntryRestoreFromBinMutationResponse {
     content: {
         data: CmsContentEntry | null;
         error: CmsErrorResponse | null;
     };
 }
 
-export interface CmsEntryRestoreMutationVariables {
+export interface CmsEntryRestoreFromBinMutationVariables {
     revision: string;
 }
 
-export const createRestoreMutation = (model: CmsEditorContentModel) => {
+export const createRestoreFromBinMutation = (model: CmsEditorContentModel) => {
     return gql`
-        mutation CmsEntriesRestore${model.singularApiName}($revision: ID!) {
-            content: restore${model.singularApiName}(revision: $revision) {
+        mutation CmsEntriesRestore${model.singularApiName}FromBin($revision: ID!) {
+            content: restore${model.singularApiName}FromBin(revision: $revision) {
                 data {
                     ${CONTENT_ENTRY_SYSTEM_FIELDS}
                     ${createFieldsList({ model, fields: model.fields })}

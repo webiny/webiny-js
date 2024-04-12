@@ -1,9 +1,9 @@
 import { ApolloClient } from "apollo-client";
 import { CmsContentEntry, CmsModel } from "@webiny/app-headless-cms-common/types";
 import {
-    CmsEntryRestoreMutationResponse,
-    CmsEntryRestoreMutationVariables,
-    createRestoreMutation
+    CmsEntryRestoreFromBinMutationResponse,
+    CmsEntryRestoreFromBinMutationVariables,
+    createRestoreFromBinMutation
 } from "@webiny/app-headless-cms-common";
 import { ITrashBinRestoreItemGateway } from "@webiny/app-trash-bin";
 
@@ -20,17 +20,17 @@ export class TrashBinRestoreItemGraphQLGateway
 
     async execute(id: string) {
         const { data: response } = await this.client.mutate<
-            CmsEntryRestoreMutationResponse,
-            CmsEntryRestoreMutationVariables
+            CmsEntryRestoreFromBinMutationResponse,
+            CmsEntryRestoreFromBinMutationVariables
         >({
-            mutation: createRestoreMutation(this.model),
+            mutation: createRestoreFromBinMutation(this.model),
             variables: {
                 revision: id
             }
         });
 
         if (!response) {
-            throw new Error("Network error while restoring entry.");
+            throw new Error("Network error while restoring entry from trash bin.");
         }
 
         const { data, error } = response.content;

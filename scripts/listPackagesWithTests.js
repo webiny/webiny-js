@@ -90,6 +90,12 @@ const CUSTOM_HANDLERS = {
             "packages/api-headless-cms --storage=ddb-es,ddb"
         ];
     },
+    "api-headless-cms-aco": () => {
+        return [
+            "packages/api-headless-cms-aco --storage=ddb",
+            "packages/api-headless-cms-aco --storage=ddb-es,ddb"
+        ];
+    },
     "api-headless-cms-ddb-es": () => {
         return ["packages/api-headless-cms-ddb-es --storage=ddb-es,ddb"];
     },

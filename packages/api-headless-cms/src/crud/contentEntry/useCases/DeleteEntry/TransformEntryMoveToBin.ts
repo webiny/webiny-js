@@ -4,6 +4,7 @@ import { getDate } from "~/utils/date";
 import { getIdentity } from "~/utils/identity";
 import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataValidation";
 import { CmsContext, CmsEntry, CmsEntryStorageOperationsMoveToBinParams, CmsModel } from "~/types";
+import { ROOT_FOLDER } from "~/constants";
 
 export class TransformEntryMoveToBin {
     private context: CmsContext;
@@ -41,6 +42,14 @@ export class TransformEntryMoveToBin {
         const entry: CmsEntry = {
             ...originalEntry,
             deleted: true,
+
+            /**
+             * Entry location fields. 👇
+             */
+            location: {
+                folderId: ROOT_FOLDER
+            },
+            binOriginalFolderId: originalEntry.location?.folderId,
 
             /**
              * Entry-level meta fields. 👇

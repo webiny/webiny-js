@@ -187,6 +187,20 @@ const createSystemFields = (): ModelFields => {
                 type: "boolean"
             }),
             parents: []
+        },
+        binOriginalFolderId: {
+            type: "text",
+            unmappedType: undefined,
+            keyword: false,
+            systemField: true,
+            searchable: true,
+            sortable: false,
+            field: createSystemField({
+                storageId: "binOriginalFolderId",
+                fieldId: "binOriginalFolderId",
+                type: "text"
+            }),
+            parents: []
         }
     };
 };
