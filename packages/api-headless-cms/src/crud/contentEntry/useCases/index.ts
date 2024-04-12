@@ -8,3 +8,4 @@ export * from "./GetPublishedRevisionByEntryId";
 export * from "./GetRevisionById";
 export * from "./GetRevisionsByEntryId";
 export * from "./ListEntries";
+export * from "./RestoreEntryFromBin";

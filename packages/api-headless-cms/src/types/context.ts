@@ -22,6 +22,7 @@ import {
     OnEntryAfterMoveTopicParams,
     OnEntryAfterPublishTopicParams,
     OnEntryAfterRepublishTopicParams,
+    OnEntryAfterRestoreFromBinTopicParams,
     OnEntryAfterUnpublishTopicParams,
     OnEntryAfterUpdateTopicParams,
     OnEntryBeforeCreateTopicParams,
@@ -30,6 +31,7 @@ import {
     OnEntryBeforeMoveTopicParams,
     OnEntryBeforePublishTopicParams,
     OnEntryBeforeRepublishTopicParams,
+    OnEntryBeforeRestoreFromBinTopicParams,
     OnEntryBeforeUnpublishTopicParams,
     OnEntryBeforeUpdateTopicParams,
     OnEntryCreateErrorTopicParams,
@@ -38,6 +40,7 @@ import {
     OnEntryMoveErrorTopicParams,
     OnEntryPublishErrorTopicParams,
     OnEntryRepublishErrorTopicParams,
+    OnEntryRestoreFromBinErrorTopicParams,
     OnEntryRevisionAfterCreateTopicParams,
     OnEntryRevisionAfterDeleteTopicParams,
     OnEntryRevisionBeforeCreateTopicParams,
@@ -162,6 +165,10 @@ export interface CmsEntryContext {
      */
     deleteEntry: (model: CmsModel, id: string, options?: CmsDeleteEntryOptions) => Promise<void>;
     /**
+     * Restore entry from trash bin with all its revisions.
+     */
+    restoreEntryFromBin: (model: CmsModel, id: string) => Promise<CmsEntry>;
+    /**
      * Delete multiple entries
      */
     deleteMultipleEntries: (
@@ -211,6 +218,10 @@ export interface CmsEntryContext {
     onEntryBeforeDelete: Topic<OnEntryBeforeDeleteTopicParams>;
     onEntryAfterDelete: Topic<OnEntryAfterDeleteTopicParams>;
     onEntryDeleteError: Topic<OnEntryDeleteErrorTopicParams>;
+
+    onEntryBeforeRestoreFromBin: Topic<OnEntryBeforeRestoreFromBinTopicParams>;
+    onEntryAfterRestoreFromBin: Topic<OnEntryAfterRestoreFromBinTopicParams>;
+    onEntryRestoreFromBinError: Topic<OnEntryRestoreFromBinErrorTopicParams>;
 
     onEntryRevisionBeforeDelete: Topic<OnEntryRevisionBeforeDeleteTopicParams>;
     onEntryRevisionAfterDelete: Topic<OnEntryRevisionAfterDeleteTopicParams>;
