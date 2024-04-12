@@ -16,6 +16,7 @@ export interface ILockingMechanismIdentity {
 export interface ILockingMechanismRecordLocked {
     lockedBy: ILockingMechanismIdentity;
     lockedOn: string;
+    expiresOn: string;
     actions: ILockingMechanismLockRecordAction[];
 }
 
@@ -32,13 +33,16 @@ export interface ILockingMechanismRecord extends IPossiblyLockingMechanismRecord
 
 export type IIsRecordLockedParams = Pick<ILockingMechanismRecord, "id" | "$lockingType">;
 
+export type IUpdateEntryLockParams = Pick<ILockingMechanismRecord, "id" | "$lockingType">;
+
 export interface ILockingMechanismContext<
     T extends IPossiblyLockingMechanismRecord = IPossiblyLockingMechanismRecord
 > {
     readonly loading: boolean;
     readonly records: IPossiblyLockingMechanismRecord[];
     setRecords(folderId: string, type: string, records: T[]): void;
-    isRecordLocked(params: IIsRecordLockedParams): boolean;
+    updateEntryLock(params: IUpdateEntryLockParams): void;
+    isRecordLocked(params?: IIsRecordLockedParams): boolean;
     getLockRecordEntry(id: string): ILockingMechanismRecord | undefined;
 }
 
@@ -52,6 +56,7 @@ export interface ILockingMechanismLockRecordAction {
 export interface ILockingMechanismLockRecord {
     id: string;
     lockedOn: string;
+    expiresOn: string;
     lockedBy: ILockingMechanismIdentity;
     targetId: string;
     type: string;

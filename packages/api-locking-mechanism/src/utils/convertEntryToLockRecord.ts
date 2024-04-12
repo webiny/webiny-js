@@ -11,6 +11,7 @@ import {
     ILockingMechanismLockRecordValues
 } from "~/types";
 import { removeLockRecordDatabasePrefix } from "~/utils/lockRecordDatabaseId";
+import { calculateExpiresOn } from "~/utils/calculateExpiresOn";
 
 export const convertEntryToLockRecord = (
     entry: CmsEntry<ILockingMechanismLockRecordValues>
@@ -30,6 +31,7 @@ export class HeadlessCmsLockRecord implements ILockingMechanismLockRecord {
     private readonly _lockedBy: CmsIdentity;
     private readonly _lockedOn: Date;
     private readonly _updatedOn: Date;
+    private readonly _expiresOn: Date;
     private _actions?: ILockingMechanismLockRecordAction[];
 
     public get id(): string {
@@ -56,6 +58,10 @@ export class HeadlessCmsLockRecord implements ILockingMechanismLockRecord {
         return this._updatedOn;
     }
 
+    public get expiresOn(): Date {
+        return this._expiresOn;
+    }
+
     public get actions(): ILockingMechanismLockRecordAction[] | undefined {
         return this._actions;
     }
@@ -67,6 +73,7 @@ export class HeadlessCmsLockRecord implements ILockingMechanismLockRecord {
         this._lockedBy = input.createdBy;
         this._lockedOn = new Date(input.createdOn);
         this._updatedOn = new Date(input.savedOn);
+        this._expiresOn = calculateExpiresOn(input);
         this._actions = input.values.actions;
     }
 
@@ -78,6 +85,7 @@ export class HeadlessCmsLockRecord implements ILockingMechanismLockRecord {
             lockedBy: this._lockedBy,
             lockedOn: this._lockedOn,
             updatedOn: this._updatedOn,
+            expiresOn: this._expiresOn,
             actions: this._actions
         };
     }

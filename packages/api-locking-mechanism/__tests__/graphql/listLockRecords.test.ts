@@ -1,10 +1,19 @@
+import { createIdentity } from "~tests/helpers/identity";
 import { useGraphQLHandler } from "~tests/helpers/useGraphQLHandler";
 
 describe("list lock records", () => {
     const { listLockRecordsQuery, lockEntryMutation } = useGraphQLHandler();
 
+    const anotherUserGraphQL = useGraphQLHandler({
+        identity: createIdentity({
+            displayName: "Jane Doe",
+            id: "id-87654321",
+            type: "admin"
+        })
+    });
+
     it("should list lock records - none found", async () => {
-        const [result] = await listLockRecordsQuery();
+        const [result] = await anotherUserGraphQL.listLockRecordsQuery();
 
         expect(result).toEqual({
             data: {
@@ -29,7 +38,7 @@ describe("list lock records", () => {
             type: "cms#author"
         });
 
-        const [result] = await listLockRecordsQuery();
+        const [result] = await anotherUserGraphQL.listLockRecordsQuery();
 
         expect(result.data.lockingMechanism.listLockRecords.data).toHaveLength(2);
         expect(result).toMatchObject({
@@ -62,7 +71,7 @@ describe("list lock records", () => {
             type: "cms#author"
         });
 
-        const [resultIdIn] = await listLockRecordsQuery({
+        const [resultIdIn] = await anotherUserGraphQL.listLockRecordsQuery({
             where: {
                 id_in: ["someId"],
                 type: "cms#author"

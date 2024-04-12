@@ -49,6 +49,18 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
         plugins: [
             topPlugins,
             createWcpContext(),
+            new ContextPlugin<Context>(async context => {
+                const wcp = context.wcp;
+                context.wcp.ensureCanUseFeature = featureId => {
+                    if (featureId !== "recordLocking") {
+                        return wcp.ensureCanUseFeature(featureId);
+                    }
+                    return true;
+                };
+                context.wcp.canUseRecordLocking = () => {
+                    return true;
+                };
+            }),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: setupTenancyAndSecurityGraphQL,

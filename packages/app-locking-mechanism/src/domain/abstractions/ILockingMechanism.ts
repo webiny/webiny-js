@@ -1,11 +1,15 @@
 import {
     IIsRecordLockedParams,
+    IUpdateEntryLockParams,
     ILockingMechanismRecord,
-    IPossiblyLockingMechanismRecord
+    IPossiblyLockingMechanismRecord,
+    ILockingMechanismError,
+    ILockingMechanismLockRecord
 } from "~/types";
 
-export interface ILockingMechanismSetRecordsCb {
-    (records: ILockingMechanismRecord[]): void;
+export interface ILockingMechanismUpdateEntryLockResult {
+    data: ILockingMechanismLockRecord | null;
+    error: ILockingMechanismError | null;
 }
 
 export interface ILockingMechanism<
@@ -20,6 +24,9 @@ export interface ILockingMechanism<
     ): Promise<ILockingMechanismRecord[] | undefined>;
     isRecordLocked(record: IIsRecordLockedParams): boolean;
     getLockRecordEntry(id: string): ILockingMechanismRecord | undefined;
+    updateEntryLock(
+        params: IUpdateEntryLockParams
+    ): Promise<ILockingMechanismUpdateEntryLockResult>;
 
     // lockEntry(params: ILockingMechanismLockEntryParams): Promise<ILockingMechanismLockEntryResult>;
     // unlockEntry(

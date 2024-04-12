@@ -85,22 +85,22 @@ describe("update entry lock", () => {
         });
     });
 
-    it("should return an error if lock record is not found", async () => {
+    it("should return a new lock if no existing lock record", async () => {
         const [result] = await updateEntryLockMutation({
             id: "aTestId#0001",
             type: "aTestType"
         });
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             data: {
                 lockingMechanism: {
                     updateEntryLock: {
-                        data: null,
-                        error: {
-                            code: "NOT_FOUND",
-                            data: null,
-                            message: "Lock Record not found."
-                        }
+                        data: {
+                            id: "aTestId",
+                            lockedOn: expect.toBeDateString(),
+                            updatedOn: expect.toBeDateString()
+                        },
+                        error: null
                     }
                 }
             }

@@ -8,20 +8,7 @@ import { ListAllLockRecordsUseCase } from "./ListAllLockRecordsUseCase/ListAllLo
 import { ListLockRecordsUseCase } from "./ListLockRecordsUseCase/ListLockRecordsUseCase";
 import { isLockedFactory } from "~/utils/isLockedFactory";
 import { UpdateEntryLockUseCase } from "~/useCases/UpdateEntryLock/UpdateEntryLockUseCase";
-
-const defaultTimeoutInSeconds = 600;
-/**
- * In milliseconds.
- */
-const getTimeout = () => {
-    const userDefined = process.env.WEBINY_RECORD_LOCK_TIMEOUT
-        ? parseInt(process.env.WEBINY_RECORD_LOCK_TIMEOUT)
-        : undefined;
-    if (!userDefined || isNaN(userDefined) || userDefined <= 0) {
-        return defaultTimeoutInSeconds * 1000;
-    }
-    return userDefined * 1000;
-};
+import { getTimeout } from "~/utils/getTimeout";
 
 export interface CreateUseCasesParams {
     getIdentity: () => CmsIdentity;
@@ -59,6 +46,7 @@ export const createUseCases = (params: CreateUseCasesParams) => {
 
     const updateEntryLockUseCase = new UpdateEntryLockUseCase({
         getLockRecordUseCase,
+        lockEntryUseCase,
         getManager: params.getManager,
         getIdentity: params.getIdentity
     });

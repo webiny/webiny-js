@@ -1,9 +1,16 @@
 import { useGraphQLHandler } from "~tests/helpers/useGraphQLHandler";
-import { getSecurityIdentity } from "~tests/helpers/identity";
+import { createIdentity, getSecurityIdentity } from "~tests/helpers/identity";
 
 describe("unlock entry", () => {
-    const { getLockRecordQuery, unlockEntryMutation, isEntryLockedQuery, lockEntryMutation } =
-        useGraphQLHandler();
+    const { getLockRecordQuery, unlockEntryMutation, lockEntryMutation } = useGraphQLHandler();
+
+    const anotherUserGraphQL = useGraphQLHandler({
+        identity: createIdentity({
+            displayName: "Jane Doe",
+            id: "id-87654321",
+            type: "admin"
+        })
+    });
 
     it("should unlock a locked entry", async () => {
         /**
@@ -48,6 +55,7 @@ describe("unlock entry", () => {
                             },
                             lockedOn: expect.toBeDateString(),
                             updatedOn: expect.toBeDateString(),
+                            expiresOn: expect.toBeDateString(),
                             targetId: "someId#0001",
                             type: "cms#author"
                         },
@@ -69,6 +77,7 @@ describe("unlock entry", () => {
                             lockedBy: getSecurityIdentity(),
                             lockedOn: expect.toBeDateString(),
                             updatedOn: expect.toBeDateString(),
+                            expiresOn: expect.toBeDateString(),
                             targetId: "someId#0001",
                             type: "cms#author",
                             actions: []
@@ -79,7 +88,7 @@ describe("unlock entry", () => {
             }
         });
 
-        const [isEntryLockedResponse] = await isEntryLockedQuery({
+        const [isEntryLockedResponse] = await anotherUserGraphQL.isEntryLockedQuery({
             id: "someId#0001",
             type: "cms#author"
         });
@@ -108,6 +117,7 @@ describe("unlock entry", () => {
                             lockedBy: getSecurityIdentity(),
                             lockedOn: expect.toBeDateString(),
                             updatedOn: expect.toBeDateString(),
+                            expiresOn: expect.toBeDateString(),
                             targetId: "someId#0001",
                             type: "cms#author"
                         },

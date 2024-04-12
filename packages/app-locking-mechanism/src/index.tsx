@@ -1,7 +1,7 @@
 import React from "react";
 import { Provider } from "@webiny/app";
 import { LockingMechanismProvider as LockingMechanismProviderComponent } from "~/components/LockingMechanismProvider";
-import { HeadlessCmsAcoCell } from "~/components/HeadlessCmsAcoCell";
+import { HeadlessCmsActionsAcoCell } from "~/components/HeadlessCmsActionsAcoCell";
 import { HeadlessCmsContentEntry } from "~/components/HeadlessCmsContentEntry";
 import { useWcp } from "@webiny/app-wcp";
 
@@ -22,7 +22,7 @@ const LockingMechanismHoc = (Component: React.ComponentType) => {
             <Component>
                 <LockingMechanismProviderComponent>
                     {children}
-                    <HeadlessCmsAcoCell />
+                    <HeadlessCmsActionsAcoCell />
                     <HeadlessCmsContentEntry />
                 </LockingMechanismProviderComponent>
             </Component>

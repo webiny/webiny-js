@@ -86,6 +86,7 @@ export const createGraphQLSchema = async (
                 lockedBy: CmsIdentity!
                 lockedOn: DateTime!
                 updatedOn: DateTime!
+                expiresOn: DateTime!
                 ${lockingMechanismFields.map(f => f.fields).join("\n")}
             }
 

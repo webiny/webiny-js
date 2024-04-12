@@ -20,6 +20,7 @@ export const LOCK_RECORD = /* GraphQL */ `
     }
     lockedOn
     updatedOn
+    expiresOn
     actions {
         type
         createdOn

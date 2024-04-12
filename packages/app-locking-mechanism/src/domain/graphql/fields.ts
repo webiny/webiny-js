@@ -7,6 +7,7 @@ export const LOCK_RECORD_FIELDS = /* GraphQL */ `
     }
     lockedOn
     updatedOn
+    expiresOn
     targetId
     type
     actions {

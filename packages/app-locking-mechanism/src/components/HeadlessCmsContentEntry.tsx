@@ -1,7 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ContentEntry } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry";
 import { useContentEntry } from "@webiny/app-headless-cms";
 import { useLockingMechanism } from "~/hooks";
+import { LockedRecord } from "./LockedRecord";
+import { IIsRecordLockedParams, IUpdateEntryLockParams } from "~/types";
+
+export interface IContentEntryLockerProps {
+    record: IUpdateEntryLockParams;
+    savedOn: string;
+    children: React.ReactElement;
+}
+
+const ContentEntryLocker = ({ children, record, savedOn }: IContentEntryLockerProps) => {
+    const { updateEntryLock } = useLockingMechanism();
+
+    useEffect(() => {
+        updateEntryLock(record);
+    }, [record.id, savedOn]);
+
+    return children;
+};
 
 export const HeadlessCmsContentEntry = ContentEntry.createDecorator(Original => {
     return function LockingMechanismContentEntry(props) {
@@ -14,15 +32,19 @@ export const HeadlessCmsContentEntry = ContentEntry.createDecorator(Original => 
         } else if (lockingMechanismLoading) {
             return <div>Loading locking mechanism...</div>;
         }
-        const record = {
+        const record: IIsRecordLockedParams = {
             id: entry.id,
             $lockingType: contentModel.modelId
         };
 
         if (isRecordLocked(record)) {
-            return <div>Record is locked!</div>;
+            return <LockedRecord id={record.id} />;
         }
 
-        return <Original {...props} />;
+        return (
+            <ContentEntryLocker record={record} savedOn={entry.revisionSavedOn}>
+                <Original {...props} />
+            </ContentEntryLocker>
+        );
     };
 });

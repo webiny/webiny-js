@@ -1,4 +1,7 @@
-import { ILockingMechanism } from "./abstractions/ILockingMechanism";
+import {
+    ILockingMechanism,
+    ILockingMechanismUpdateEntryLockResult
+} from "./abstractions/ILockingMechanism";
 import { ApolloClient } from "apollo-client";
 import { LockingMechanismGetLockRecord } from "./LockingMechanismGetLockRecord";
 import { LockingMechanismIsEntryLocked } from "./LockingMechanismIsEntryLocked";
@@ -20,12 +23,15 @@ import {
     IIsRecordLockedParams,
     ILockingMechanismError,
     ILockingMechanismRecord,
-    IPossiblyLockingMechanismRecord
+    IPossiblyLockingMechanismRecord,
+    IUpdateEntryLockParams
 } from "~/types";
 import { ILockingMechanismClient } from "./abstractions/ILockingMechanismClient";
 import { createLockingMechanismError } from "./utils/createLockingMechanismError";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier";
 import { createCacheKey } from "~/utils/createCacheKey";
+import { LockingMechanismUpdateEntryLock } from "~/domain/LockingMechanismUpdateEntryLock";
+import { ILockingMechanismUpdateEntryLock } from "~/domain/abstractions/ILockingMechanismUpdateEntryLock";
 
 export interface ICreateLockingMechanismParams {
     client: ApolloClient<any>;
@@ -39,6 +45,7 @@ export interface ILockingMechanismParams {
     lockEntry: ILockingMechanismLockEntry;
     unlockEntry: ILockingMechanismUnlockEntry;
     unlockEntryRequest: ILockingMechanismUnlockEntryRequest;
+    updateEntryLock: ILockingMechanismUpdateEntryLock;
 }
 
 export interface IOnErrorCb {
@@ -55,23 +62,25 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
     public records: ILockingMechanismRecord[] = [];
 
     private readonly client: ILockingMechanismClient;
-    private readonly getLockRecord: ILockingMechanismGetLockRecord;
-    private readonly isEntryLocked: ILockingMechanismIsEntryLocked;
-    private readonly listLockRecords: ILockingMechanismListLockRecords;
-    private readonly lockEntry: ILockingMechanismLockEntry;
-    private readonly unlockEntry: ILockingMechanismUnlockEntry;
-    private readonly unlockEntryRequest: ILockingMechanismUnlockEntryRequest;
+    private readonly _getLockRecord: ILockingMechanismGetLockRecord;
+    private readonly _isEntryLocked: ILockingMechanismIsEntryLocked;
+    private readonly _listLockRecords: ILockingMechanismListLockRecords;
+    private readonly _lockEntry: ILockingMechanismLockEntry;
+    private readonly _unlockEntry: ILockingMechanismUnlockEntry;
+    private readonly _unlockEntryRequest: ILockingMechanismUnlockEntryRequest;
+    private readonly _updateEntryLock: ILockingMechanismUpdateEntryLock;
 
     private onErrorCb: IOnErrorCb | null = null;
 
     public constructor(params: ILockingMechanismParams) {
         this.client = params.client;
-        this.getLockRecord = params.getLockRecord;
-        this.isEntryLocked = params.isEntryLocked;
-        this.listLockRecords = params.listLockRecords;
-        this.lockEntry = params.lockEntry;
-        this.unlockEntry = params.unlockEntry;
-        this.unlockEntryRequest = params.unlockEntryRequest;
+        this._getLockRecord = params.getLockRecord;
+        this._isEntryLocked = params.isEntryLocked;
+        this._listLockRecords = params.listLockRecords;
+        this._lockEntry = params.lockEntry;
+        this._unlockEntry = params.unlockEntry;
+        this._unlockEntryRequest = params.unlockEntryRequest;
+        this._updateEntryLock = params.updateEntryLock;
     }
 
     public async setRecords(
@@ -90,6 +99,7 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
                 ...record,
                 $lockingType: type,
                 $locked: record.$locked,
+                $selectable: record.$locked ? false : record.$selectable,
                 entryId
             };
         });
@@ -103,12 +113,33 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
     }
 
     public isRecordLocked(record: IIsRecordLockedParams): boolean {
-        return this.records.some(r => {
+        const result = this.records.find(r => {
             const { id: entryId } = parseIdentifier(record.id);
-            console.log("r", r);
-            console.log("record", record);
+
             return r.entryId === entryId && !!r.$locked && r.$lockingType === record.$lockingType;
         });
+        if (!result?.$locked?.expiresOn) {
+            return false;
+        }
+        const expiresOn = new Date(result.$locked.expiresOn);
+        return expiresOn > new Date();
+    }
+
+    public async updateEntryLock(
+        params: IUpdateEntryLockParams
+    ): Promise<ILockingMechanismUpdateEntryLockResult> {
+        try {
+            return await this._updateEntryLock.execute({
+                id: params.id,
+                type: params.$lockingType
+            });
+        } catch (ex) {
+            this.triggerOnError(ex);
+            return {
+                data: null,
+                error: ex
+            };
+        }
     }
 
     public onError(cb: IOnErrorCb): void {
@@ -144,7 +175,7 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
         this.setIsLoading(true);
         let result: ILockingMechanismListLockRecordsResult;
         try {
-            result = await this.listLockRecords.execute({
+            result = await this._listLockRecords.execute({
                 where: {
                     id_in: assignedIdList,
                     type
@@ -186,6 +217,7 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
                 ...this.records[index],
                 $locked: {
                     lockedBy: record.lockedBy,
+                    expiresOn: record.expiresOn,
                     lockedOn: record.lockedOn,
                     actions: record.actions
                 }
@@ -271,11 +303,16 @@ export const createLockingMechanism = <T extends ILockingMechanismRecord>(
         client
     });
 
+    const updateEntryLock = new LockingMechanismUpdateEntryLock({
+        client
+    });
+
     return new LockingMechanism<T>({
         client,
         getLockRecord,
         isEntryLocked,
         listLockRecords,
+        updateEntryLock,
         lockEntry,
         unlockEntry,
         unlockEntryRequest

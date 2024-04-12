@@ -60,6 +60,7 @@ export interface ILockingMechanismLockRecordObject {
     lockedBy: CmsIdentity;
     lockedOn: Date;
     updatedOn: Date;
+    expiresOn: Date;
     actions?: ILockingMechanismLockRecordAction[];
 }
 

@@ -1,7 +1,12 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createLockingMechanism } from "~/domain/LockingMechanism";
-import { ILockingMechanismContext, IPossiblyLockingMechanismRecord } from "~/types";
+import {
+    ILockingMechanismContext,
+    ILockingMechanismError,
+    IPossiblyLockingMechanismRecord,
+    IUpdateEntryLockParams
+} from "~/types";
 import { useStateIfMounted } from "@webiny/app-admin";
 
 export interface ILockingMechanismProviderProps {
@@ -42,6 +47,9 @@ export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) 
             client
         });
     }, []);
+
+    const [error, setError] = useStateIfMounted<ILockingMechanismError | null>(null);
+
     const [records, setRecords] = useStateIfMounted<IPossiblyLockingMechanismRecord[]>([]);
 
     const setRecordsIfNeeded = useCallback(
@@ -56,7 +64,37 @@ export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) 
     );
 
     const value: ILockingMechanismContext = {
+        async updateEntryLock(params: IUpdateEntryLockParams) {
+            const result = await lockingMechanism.updateEntryLock(params);
+            if (result.error) {
+                setError(result.error);
+                return;
+            }
+            const target = result.data;
+            if (!target?.id) {
+                setError({
+                    message: "No data returned from server.",
+                    code: "NO_DATA"
+                });
+                return;
+            }
+
+            setRecords(prev => {
+                return prev.map(item => {
+                    if (item.entryId === target.id) {
+                        return {
+                            ...item,
+                            $locked: result.data
+                        };
+                    }
+                    return item;
+                });
+            });
+        },
         isRecordLocked(record) {
+            if (!record) {
+                return false;
+            }
             return lockingMechanism.isRecordLocked(record);
         },
         getLockRecordEntry(id: string) {
@@ -64,7 +102,7 @@ export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) 
         },
         async setRecords(folderId, type, newRecords) {
             setRecordsIfNeeded(newRecords);
-            // console.log("in setRecords before load", newRecords);
+
             const result = await lockingMechanism.setRecords(folderId, type, newRecords);
             if (!result) {
                 return;
