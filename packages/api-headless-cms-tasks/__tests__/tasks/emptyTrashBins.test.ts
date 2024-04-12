@@ -1,15 +1,15 @@
-import { createEmptyTrashBinsTask } from "~/tasks/entries/emptyTrashBins";
 import { useHandler } from "~tests/context/useHandler";
-import { EntriesTask, HeadlessCmsTasksContext } from "~/types";
+import { EntriesTask, HcmsTasksContext } from "~/types";
 import { createMockModels, createPrivateMockModels } from "~tests/mocks";
 import { createRunner } from "@webiny/project-utils/testing/tasks";
 import { ResponseDoneResult } from "@webiny/tasks";
-import { createEmptyTrashBinByModelTask } from "~/tasks/entries/emptyTrashBinByModel";
+
+import { createEmptyTrashBinsTask } from "~/tasks/entries/emptyTrashBinsTask";
 
 describe("Empty Trash Bins", () => {
     it("should execute and return a `Done` response in case of no found models in the system", async () => {
         const taskDefinition = createEmptyTrashBinsTask();
-        const { handler } = useHandler<HeadlessCmsTasksContext>({
+        const { handler } = useHandler<HcmsTasksContext>({
             plugins: [taskDefinition]
         });
 
@@ -44,7 +44,7 @@ describe("Empty Trash Bins", () => {
 
     it("should execute and return a `Done` response in case of no public models found in the system", async () => {
         const taskDefinition = createEmptyTrashBinsTask();
-        const { handler } = useHandler<HeadlessCmsTasksContext>({
+        const { handler } = useHandler<HcmsTasksContext>({
             plugins: [taskDefinition, ...createPrivateMockModels()]
         });
 
@@ -77,19 +77,15 @@ describe("Empty Trash Bins", () => {
         });
     });
 
-    it("should execute and return a `Done` response in case of models registered", async () => {
+    // TODO: Add test for when multiple task definitions are supported.
+    it.skip("should execute and return a `Done` response in case of models registered", async () => {
         const taskDefinition = createEmptyTrashBinsTask();
-        const byModelTaskDefinition = createEmptyTrashBinByModelTask();
         const models = createMockModels();
-        const { handler } = useHandler<HeadlessCmsTasksContext>({
-            plugins: [taskDefinition, byModelTaskDefinition, ...models]
+        const { handler } = useHandler<HcmsTasksContext>({
+            plugins: [taskDefinition, ...models]
         });
 
         const context = await handler();
-
-        const definitions = context.tasks.listDefinitions();
-
-        console.log("definitions", definitions);
 
         const task = await context.tasks.createTask({
             name: "Empty Trash Bins",
@@ -105,8 +101,6 @@ describe("Empty Trash Bins", () => {
         const result = await runner({
             webinyTaskId: task.id
         });
-
-        console.log("result", result);
 
         expect(result).toBeInstanceOf(ResponseDoneResult);
 

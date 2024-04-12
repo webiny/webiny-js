@@ -4,7 +4,7 @@ import { useHandler } from "~tests/context/useHandler";
 import { createMockModels } from "~tests/mocks";
 import { EntriesTask, HcmsTasksContext } from "~/types";
 
-import { createEmptyTrashBinByModelTask } from "~/tasks/entries/emptyTrashBinByModelTask";
+import { createDeleteTrashBinEntriesTask } from "~/tasks/entries/deleteTrashBinEntriesTask";
 
 const createDeletedEntries = async (context: HcmsTasksContext, modelId: string, total = 100) => {
     const model = await context.cms.getModel(modelId);
@@ -36,11 +36,9 @@ const listDeletedEntries = async (context: HcmsTasksContext, modelId: string) =>
     };
 };
 
-jest.setTimeout(720000);
-
-describe("Empty Trash Bin By Model", () => {
+describe("Delete Trash Bin Entries", () => {
     it("should fail in case of not existing model", async () => {
-        const taskDefinition = createEmptyTrashBinByModelTask();
+        const taskDefinition = createDeleteTrashBinEntriesTask();
         const { handler } = useHandler<HcmsTasksContext>({
             plugins: [taskDefinition, ...createMockModels()]
         });
@@ -48,7 +46,7 @@ describe("Empty Trash Bin By Model", () => {
         const context = await handler();
 
         const task = await context.tasks.createTask({
-            name: "Empty Trash Bin By Model",
+            name: "Delete Trash Bin Entries",
             definitionId: taskDefinition.id,
             input: {
                 modelId: "any-non-existing-modelId"
@@ -72,14 +70,14 @@ describe("Empty Trash Bin By Model", () => {
                 message: `Content model "any-non-existing-modelId" was not found!`
             },
             webinyTaskId: task.id,
-            webinyTaskDefinitionId: EntriesTask.EmptyTrashBinByModel,
+            webinyTaskDefinitionId: EntriesTask.DeleteTrashBinEntries,
             tenant: "root",
             locale: "en-US"
         });
     });
 
     it("should return success in case of no entries to delete", async () => {
-        const taskDefinition = createEmptyTrashBinByModelTask();
+        const taskDefinition = createDeleteTrashBinEntriesTask();
         const { handler } = useHandler<HcmsTasksContext>({
             plugins: [taskDefinition, ...createMockModels()]
         });
@@ -89,7 +87,7 @@ describe("Empty Trash Bin By Model", () => {
         const MODEL_ID = "car";
 
         const task = await context.tasks.createTask({
-            name: "Empty Trash Bin By Model",
+            name: "Delete Trash Bin Entries",
             definitionId: taskDefinition.id,
             input: {
                 modelId: MODEL_ID
@@ -111,74 +109,14 @@ describe("Empty Trash Bin By Model", () => {
             status: "done",
             message: "Task done: No entries to delete.",
             webinyTaskId: task.id,
-            webinyTaskDefinitionId: EntriesTask.EmptyTrashBinByModel,
+            webinyTaskDefinitionId: EntriesTask.DeleteTrashBinEntries,
             tenant: "root",
             locale: "en-US"
         });
     });
 
-    // TODO: Add test for when multiple task definitions are supported.
-    it.skip("should delete entries in the trash bin", async () => {
-        const emptyTrashBinByModelTaskDefinition = createEmptyTrashBinByModelTask();
-
-        const { handler } = useHandler<HcmsTasksContext>({
-            plugins: [emptyTrashBinByModelTaskDefinition, ...createMockModels()]
-        });
-
-        const context = await handler();
-
-        const MODEL_ID = "car";
-        const ENTRIES_COUNT = 200;
-
-        await createDeletedEntries(context, MODEL_ID, ENTRIES_COUNT);
-        const { entries, meta } = await listDeletedEntries(context, MODEL_ID);
-
-        // Let's check how many deleted entries we have been created
-        expect(meta.totalCount).toBe(ENTRIES_COUNT);
-
-        const emptyTrashBinTask = await context.tasks.createTask({
-            name: "Empty Trash Bin By Model",
-            definitionId: emptyTrashBinByModelTaskDefinition.id,
-            input: {
-                modelId: MODEL_ID
-            }
-        });
-
-        const runner = createRunner({
-            context,
-            task: emptyTrashBinByModelTaskDefinition
-        });
-
-        console.time("run");
-
-        const result = await runner({
-            webinyTaskId: emptyTrashBinTask.id
-        });
-
-        console.timeEnd("run");
-
-        // Let's check we just delete all the entries in the trash-bin
-        const entriesAfterDeleteResponse = await listDeletedEntries(context, MODEL_ID);
-        expect(entriesAfterDeleteResponse.meta.totalCount).toBe(0);
-
-        expect(result).toBeInstanceOf(ResponseDoneResult);
-
-        expect(result).toMatchObject({
-            status: "done",
-            webinyTaskId: emptyTrashBinByModelTaskDefinition.id,
-            webinyTaskDefinitionId: EntriesTask.EmptyTrashBinByModel,
-            tenant: "root",
-            locale: "en-US",
-            output: {
-                done: entries,
-                failed: []
-            }
-        });
-    });
-
-    // TODO: Add test for when multiple task definitions are supported.
-    it.skip("should delete entries in the trash bin, with a custom `where` condition", async () => {
-        const taskDefinition = createEmptyTrashBinByModelTask();
+    it("should delete entries multiple entries", async () => {
+        const taskDefinition = createDeleteTrashBinEntriesTask();
         const { handler } = useHandler<HcmsTasksContext>({
             plugins: [taskDefinition, ...createMockModels()]
         });
@@ -186,22 +124,23 @@ describe("Empty Trash Bin By Model", () => {
         const context = await handler();
 
         const MODEL_ID = "car";
-        const ENTRIES_COUNT = 10;
+        const ENTRIES_COUNT = 50;
 
         await createDeletedEntries(context, MODEL_ID, ENTRIES_COUNT);
         const { entries, meta } = await listDeletedEntries(context, MODEL_ID);
+
+        // Let's save the entryIds
+        const entryIds = entries.map(entry => entry.entryId);
 
         // Let's check how many deleted entries we have been created
         expect(meta.totalCount).toBe(ENTRIES_COUNT);
 
         const task = await context.tasks.createTask({
-            name: "Empty Trash Bin By Model",
+            name: "Delete Trash Bin Entries",
             definitionId: taskDefinition.id,
             input: {
                 modelId: MODEL_ID,
-                where: {
-                    title: "Entry-0"
-                }
+                entryIds
             }
         });
 
@@ -216,18 +155,18 @@ describe("Empty Trash Bin By Model", () => {
 
         // Let's check we just delete all the entries in the trash-bin
         const entriesAfterDeleteResponse = await listDeletedEntries(context, MODEL_ID);
-        expect(entriesAfterDeleteResponse.meta.totalCount).toBe(ENTRIES_COUNT - 1);
+        expect(entriesAfterDeleteResponse.meta.totalCount).toBe(0);
 
         expect(result).toBeInstanceOf(ResponseDoneResult);
 
         expect(result).toMatchObject({
             status: "done",
             webinyTaskId: task.id,
-            webinyTaskDefinitionId: EntriesTask.EmptyTrashBinByModel,
+            webinyTaskDefinitionId: EntriesTask.DeleteTrashBinEntries,
             tenant: "root",
             locale: "en-US",
             output: {
-                done: entries.filter(entry => entry.values.title === "Entry-0"),
+                done: entryIds,
                 failed: []
             }
         });
