@@ -11,7 +11,7 @@ import { AccessControl } from "~/crud/AccessControl/AccessControl";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { RestoreEntryFromBinOperation } from "./RestoreEntryFromBinOperation";
 import { RestoreEntryFromBinOperationWithEvents } from "./RestoreEntryFromBinOperationWithEvents";
-import { TransformEntryRestore } from "./TransformEntryRestore";
+import { TransformEntryRestoreFromBin } from "./TransformEntryRestoreFromBin";
 import { RestoreEntryFromBin } from "./RestoreEntryFromBin";
 import { RestoreEntryFromBinSecure } from "./RestoreEntryFromBinSecure";
 
@@ -36,7 +36,7 @@ export const restoreEntryFromBinUseCases = (params: RestoreEntryFromBinUseCasesP
         params.topics,
         restoreEntryOperation
     );
-    const restoreTransform = new TransformEntryRestore(params.context, params.getIdentity);
+    const restoreTransform = new TransformEntryRestoreFromBin(params.context, params.getIdentity);
     const restoreEntry = new RestoreEntryFromBin(
         params.getEntry,
         restoreTransform,

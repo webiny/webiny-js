@@ -5,7 +5,7 @@ import { getIdentity } from "~/utils/identity";
 import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataValidation";
 import { CmsContext, CmsEntry, CmsEntryStorageOperationsMoveToBinParams, CmsModel } from "~/types";
 
-export class TransformEntryRestore {
+export class TransformEntryRestoreFromBin {
     private context: CmsContext;
     private getIdentity: () => SecurityIdentity;
 
@@ -18,7 +18,7 @@ export class TransformEntryRestore {
         initialEntry: CmsEntry
     ): Promise<CmsEntryStorageOperationsMoveToBinParams> {
         const originalEntry = await entryFromStorageTransform(this.context, model, initialEntry);
-        const entry = await this.createRestoreEntryData(model, originalEntry);
+        const entry = await this.createRestoreFromBinEntryData(model, originalEntry);
         const storageEntry = await entryToStorageTransform(this.context, model, entry);
 
         return {
@@ -27,7 +27,7 @@ export class TransformEntryRestore {
         };
     }
 
-    private async createRestoreEntryData(model: CmsModel, originalEntry: CmsEntry) {
+    private async createRestoreFromBinEntryData(model: CmsModel, originalEntry: CmsEntry) {
         await validateModelEntryDataOrThrow({
             context: this.context,
             model,
