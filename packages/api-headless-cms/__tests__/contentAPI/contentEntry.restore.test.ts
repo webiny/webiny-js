@@ -406,8 +406,6 @@ describe("restore entries", () => {
             revision: categoryToRestore.entryId
         });
 
-        console.log("restoreBinItemResponse", JSON.stringify(restoreBinItemResponse));
-
         expect(restoreBinItemResponse).toMatchObject({
             data: {
                 restoreCategoryFromBin: {

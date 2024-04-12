@@ -744,9 +744,9 @@ export const createEntriesStorageOperations = (
         const records = await queryAll<CmsEntry>(queryAllParams);
 
         /**
-         * Let's pick the `deleted` meta fields from the storage entry.
+         * Let's pick the `deleted` meta fields from the entry.
          */
-        const updatedDeletedMetaFields = pickEntryMetaFields(storageEntry, isDeletedEntryMetaField);
+        const updatedEntryMetaFields = pickEntryMetaFields(entry, isDeletedEntryMetaField);
 
         /**
          * Then update all the records with data received.
@@ -759,7 +759,7 @@ export const createEntriesStorageOperations = (
             items.push(
                 entity.putBatch({
                     ...record,
-                    ...updatedDeletedMetaFields,
+                    ...updatedEntryMetaFields,
                     deleted: storageEntry.deleted,
                     location: storageEntry.location,
                     binOriginalFolderId: storageEntry.binOriginalFolderId
@@ -848,7 +848,6 @@ export const createEntriesStorageOperations = (
         /**
          * We update all ES records with data received.
          */
-        const updatedEntryMetaFields = pickEntryMetaFields(entry, isDeletedEntryMetaField);
         const esUpdateItems: BatchWriteItem[] = [];
         for (const item of esItems) {
             esUpdateItems.push(
@@ -903,6 +902,11 @@ export const createEntriesStorageOperations = (
 
         const { entry, storageEntry } = transformer.transformEntryKeys();
 
+        /**
+         * Let's pick the `restored` meta fields from the storage entry.
+         */
+        const updatedEntryMetaFields = pickEntryMetaFields(entry, isRestoredEntryMetaField);
+
         const partitionKey = createPartitionKey({
             id: entry.id,
             locale: model.locale,
@@ -925,14 +929,6 @@ export const createEntriesStorageOperations = (
         const records = await queryAll<CmsEntry>(queryAllParams);
 
         /**
-         * Let's pick the `restored` meta fields from the storage entry.
-         */
-        const updatedRestoredMetaFields = pickEntryMetaFields(
-            storageEntry,
-            isRestoredEntryMetaField
-        );
-
-        /**
          * Then update all the records with data received.
          */
         let latestRecord: CmsEntry | undefined = undefined;
@@ -943,8 +939,10 @@ export const createEntriesStorageOperations = (
             items.push(
                 entity.putBatch({
                     ...record,
-                    ...updatedRestoredMetaFields,
-                    deleted: storageEntry.deleted
+                    ...updatedEntryMetaFields,
+                    deleted: storageEntry.deleted,
+                    location: storageEntry.location,
+                    binOriginalFolderId: storageEntry.binOriginalFolderId
                 })
             );
             /**
@@ -1027,7 +1025,6 @@ export const createEntriesStorageOperations = (
         /**
          * We update all ES records with data received.
          */
-        const updatedEntryMetaFields = pickEntryMetaFields(entry, isRestoredEntryMetaField);
         const esUpdateItems: BatchWriteItem[] = [];
         for (const item of esItems) {
             esUpdateItems.push(
@@ -1036,7 +1033,9 @@ export const createEntriesStorageOperations = (
                     data: await compress(plugins, {
                         ...item.data,
                         ...updatedEntryMetaFields,
-                        deleted: entry.deleted
+                        deleted: entry.deleted,
+                        location: entry.location,
+                        binOriginalFolderId: entry.binOriginalFolderId
                     })
                 })
             );

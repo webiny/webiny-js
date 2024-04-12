@@ -4,18 +4,18 @@ import {
     IRestoreEntryFromBin,
     IRestoreEntryFromBinOperation
 } from "~/crud/contentEntry/abstractions";
-import { TransformEntryRestore } from "./TransformEntryRestore";
+import { TransformEntryRestoreFromBin } from "./TransformEntryRestoreFromBin";
 import { CmsModel } from "~/types";
 import { parseIdentifier } from "@webiny/utils";
 
 export class RestoreEntryFromBin implements IRestoreEntryFromBin {
     private getEntry: IGetLatestRevisionByEntryId;
-    private transformEntry: TransformEntryRestore;
+    private transformEntry: TransformEntryRestoreFromBin;
     private restoreEntry: IRestoreEntryFromBinOperation;
 
     constructor(
         getEntry: IGetLatestRevisionByEntryId,
-        transformEntry: TransformEntryRestore,
+        transformEntry: TransformEntryRestoreFromBin,
         restoreEntry: IRestoreEntryFromBinOperation
     ) {
         this.getEntry = getEntry;
