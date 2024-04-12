@@ -28,6 +28,7 @@ import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
+import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
@@ -42,7 +43,6 @@ import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
 import { createCountDynamoDbTask } from "~/plugins/countDynamoDbTask";
 import { createContinuingTask } from "~/plugins/continuingTask";
 import { createWebsockets } from "@webiny/api-websockets";
-import { createHeadlessCmsTasks } from "@webiny/api-headless-cms-tasks";
 
 const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
@@ -103,7 +103,8 @@ export const handler = createHandler({
         }),
         createAco(),
         createAcoPageBuilderContext(),
-        createHeadlessCmsTasks(),
+        createAcoHcmsContext(),
+        createHcmsTasks(),
         scaffoldsPlugins(),
         createFileModelModifier(({ modifier }) => {
             modifier.addField({
@@ -131,8 +132,7 @@ export const handler = createHandler({
         }),
         createAuditLogs(),
         createCountDynamoDbTask(),
-        createContinuingTask(),
-        createAcoHcmsContext()
+        createContinuingTask()
     ],
     debug
 });

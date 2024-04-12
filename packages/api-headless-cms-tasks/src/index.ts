@@ -4,4 +4,4 @@ import { createHandlers } from "~/handlers";
 
 export * from "./tasks/entries/useCases";
 
-export const createHeadlessCmsTasks = () => [createTasks(), createGraphQL(), createHandlers()];
+export const createHcmsTasks = () => [createTasks(), createGraphQL(), createHandlers()];

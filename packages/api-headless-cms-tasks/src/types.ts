@@ -6,7 +6,7 @@ import {
     ITaskRunParams
 } from "@webiny/tasks/types";
 
-export interface HeadlessCmsTasksContext extends BaseContext, CmsContext, TasksContext {}
+export interface HcmsTasksContext extends BaseContext, CmsContext, TasksContext {}
 
 export enum EntriesTask {
     EmptyTrashBins = "emptyTrashBins",
@@ -18,7 +18,7 @@ export enum EntriesTask {
  * Empty Trash Bins
  */
 
-export type IEmptyTrashBins = ITaskRunParams<HeadlessCmsTasksContext>;
+export type IEmptyTrashBins = ITaskRunParams<HcmsTasksContext>;
 
 /**
  * Empty Trash Bin by Model
@@ -39,7 +39,7 @@ export interface IEmptyTrashBinByModelOutput extends ITaskResponseDoneResultOutp
 }
 
 export type IEmptyTrashBinByModelTaskParams = ITaskRunParams<
-    HeadlessCmsTasksContext,
+    HcmsTasksContext,
     IEmptyTrashBinByModelInput,
     IEmptyTrashBinByModelOutput
 >;
@@ -61,7 +61,7 @@ export interface IDeleteTrashBinEntriesOutput extends ITaskResponseDoneResultOut
 }
 
 export type IDeleteTrashBinEntriesTaskParams = ITaskRunParams<
-    HeadlessCmsTasksContext,
+    HcmsTasksContext,
     IDeleteTrashBinEntriesInput,
     IDeleteTrashBinEntriesOutput
 >;

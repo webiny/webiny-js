@@ -1,14 +1,14 @@
 import { createPrivateTaskDefinition } from "@webiny/tasks";
 import {
     EntriesTask,
-    HeadlessCmsTasksContext,
+    HcmsTasksContext,
     IEmptyTrashBinByModelInput,
     IEmptyTrashBinByModelOutput
 } from "~/types";
 
 export const createEmptyTrashBinByModelTask = () => {
     return createPrivateTaskDefinition<
-        HeadlessCmsTasksContext,
+        HcmsTasksContext,
         IEmptyTrashBinByModelInput,
         IEmptyTrashBinByModelOutput
     >({

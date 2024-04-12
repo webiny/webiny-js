@@ -1,5 +1,5 @@
 import { createEventBridgeEventHandler } from "@webiny/handler-aws";
-import { EntriesTask, HeadlessCmsTasksContext } from "~/types";
+import { EntriesTask, HcmsTasksContext } from "~/types";
 
 const DETAIL_TYPE = "WebinyEmptyTrashBin";
 
@@ -14,7 +14,7 @@ export const createEventBridgeHandler = () => {
                     return;
                 }
 
-                const context = ctx as unknown as HeadlessCmsTasksContext;
+                const context = ctx as unknown as HcmsTasksContext;
 
                 if (!context.tasks || !context.tenancy) {
                     console.error("Missing tasks or tenancy definition on context.");

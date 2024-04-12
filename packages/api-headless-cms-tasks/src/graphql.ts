@@ -1,10 +1,10 @@
 import { CmsGraphQLSchemaPlugin, isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { ContextPlugin } from "@webiny/handler-aws";
-import { EntriesTask, HeadlessCmsTasksContext } from "~/types";
+import { EntriesTask, HcmsTasksContext } from "~/types";
 import { Response } from "@webiny/handler-graphql";
 
 export const createGraphQL = () => {
-    return new ContextPlugin<HeadlessCmsTasksContext>(async context => {
+    return new ContextPlugin<HcmsTasksContext>(async context => {
         if (!(await isHeadlessCmsReady(context))) {
             return;
         }
@@ -28,7 +28,7 @@ export const createGraphQL = () => {
 
         genericTypePlugin.name = "headless-cms.graphql.schema.trashBin.types";
 
-        const modelsPlugins: CmsGraphQLSchemaPlugin<HeadlessCmsTasksContext>[] = [];
+        const modelsPlugins: CmsGraphQLSchemaPlugin<HcmsTasksContext>[] = [];
 
         models.forEach(model => {
             const plugin = new CmsGraphQLSchemaPlugin({
