@@ -25,7 +25,7 @@ export const createEmptyTrashBinByModelTask = () => {
                 }
 
                 const { EmptyTrashBinByModel } = await import(
-                    /* webpackChunkName: "EmptyTrashBinByModel" */ "~/useCases/entries/EmptyTrashBinByModel"
+                    /* webpackChunkName: "EmptyTrashBinByModel" */ "~/tasks/entries/useCases/EmptyTrashBinByModel"
                 );
 
                 const emptyTrashBinByModel = new EmptyTrashBinByModel();

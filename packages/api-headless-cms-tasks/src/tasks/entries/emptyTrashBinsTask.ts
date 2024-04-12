@@ -17,7 +17,7 @@ export const createEmptyTrashBinsTask = () => {
                 }
 
                 const { EmptyTrashBins } = await import(
-                    /* webpackChunkName: "EmptyTrashBins" */ "~/useCases/entries/EmptyTrashBins"
+                    /* webpackChunkName: "EmptyTrashBins" */ "~/tasks/entries/useCases/EmptyTrashBins"
                 );
 
                 const emptyTrashBins = new EmptyTrashBins();

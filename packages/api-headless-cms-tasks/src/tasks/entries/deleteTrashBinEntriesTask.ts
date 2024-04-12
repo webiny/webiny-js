@@ -25,7 +25,7 @@ export const createDeleteTrashBinEntriesTask = () => {
                 }
 
                 const { DeleteTrashBinEntries } = await import(
-                    /* webpackChunkName: "EmptyTrashBinByModel" */ "~/useCases/entries/DeleteTrashBinEntries"
+                    /* webpackChunkName: "DeleteTrashBinEntries" */ "~/tasks/entries/useCases/DeleteTrashBinEntries"
                 );
 
                 const deleteTrashBinEntries = new DeleteTrashBinEntries();

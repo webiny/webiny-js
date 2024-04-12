@@ -87,12 +87,7 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
         return execute({
             app,
             url,
-            payload: {
-                ...payload,
-                headers: {
-                    ["x-tenant"]: "root"
-                }
-            }
+            payload
         });
     };
 };
