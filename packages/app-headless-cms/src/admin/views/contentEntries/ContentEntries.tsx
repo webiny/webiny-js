@@ -1,4 +1,6 @@
 import React from "react";
+import { DialogsProvider } from "@webiny/app-admin";
+import { AcoWithConfig } from "@webiny/app-aco";
 import { Table as CmsAcoTable } from "./Table";
 import { useModel } from "~/admin/components/ModelProvider";
 import {
@@ -6,7 +8,6 @@ import {
     ContentEntryListWithConfig
 } from "~/admin/config/contentEntries";
 import { ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext";
-import { AcoWithConfig } from "@webiny/app-aco";
 
 export const ContentEntries = () => {
     const { model } = useModel();
@@ -16,7 +17,9 @@ export const ContentEntries = () => {
             <ContentEntryListWithConfig>
                 <ContentEntryEditorWithConfig>
                     <AcoWithConfig>
-                        <CmsAcoTable />
+                        <DialogsProvider>
+                            <CmsAcoTable />
+                        </DialogsProvider>
                     </AcoWithConfig>
                 </ContentEntryEditorWithConfig>
             </ContentEntryListWithConfig>

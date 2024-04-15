@@ -4,10 +4,16 @@ import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components
 import { useContentModels } from "./useContentModels";
 import { useReferences } from "./useReferences";
 import { AddItemParams, SimpleItems } from "./SimpleItems";
+import styled from "@emotion/styled";
+
+const Loading = styled.div`
+    height: 50px;
+`;
 
 interface SimpleSingleRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue | undefined | null>;
     field: CmsModelField;
+    loadingElement?: JSX.Element;
 }
 
 export const SimpleSingleRenderer = (props: SimpleSingleRendererProps) => {
@@ -34,6 +40,10 @@ export const SimpleSingleRenderer = (props: SimpleSingleRendererProps) => {
     const removeItem = useCallback(() => {
         bind.onChange(null);
     }, [bind, value]);
+
+    if (references.loading && props.loadingElement) {
+        return props.loadingElement;
+    }
 
     return (
         <SimpleItems

@@ -344,6 +344,7 @@ export type CmsEditorContentEntry = CmsContentEntry;
 
 export interface CmsContentEntry {
     id: string;
+    entryId: string;
     modelId: string;
     createdOn: string;
     createdBy: CmsIdentity;

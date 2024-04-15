@@ -142,13 +142,13 @@ export const NavigationProvider = (Component: React.ComponentType<unknown>) => {
     };
 };
 
-export const Navigation = () => {
+export const Navigation = makeDecoratable("Navigation", () => {
     return (
         <Tags tags={{ location: "navigation" }}>
             <NavigationRenderer />
         </Tags>
     );
-};
+});
 
 export const NavigationRenderer = makeDecoratable("NavigationRenderer", createVoidComponent());
 

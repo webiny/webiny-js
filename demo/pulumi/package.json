@@ -1,0 +1,9 @@
+{
+  "name": "@demo/pulumi",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@pulumi/aws": "^5.42.0",
+    "@pulumi/pulumi": "^3.99.0",
+    "@webiny/pulumi-aws": "0.0.0"
+  }
+}

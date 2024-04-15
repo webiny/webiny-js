@@ -213,6 +213,17 @@ export interface CmsEntriesListQueryVariables {
     after?: string;
 }
 
+export const createListQueryDataSelection = (
+    model: CmsEditorContentModel,
+    fields?: CmsModelField[]
+) => {
+    return `
+        ${CONTENT_ENTRY_SYSTEM_FIELDS}
+        ${fields ? createFieldsList({ model, fields }) : ""}
+        ${!fields ? getModelTitleFieldId(model) : ""}
+    `;
+};
+
 export const createListQuery = (model: CmsEditorContentModel, fields?: CmsModelField[]) => {
     return gql`
         query CmsEntriesList${model.pluralApiName}($where: ${
@@ -228,9 +239,7 @@ export const createListQuery = (model: CmsEditorContentModel, fields?: CmsModelF
             search: $search
             ) {
                 data {
-                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
-                    ${fields ? createFieldsList({ model, fields }) : ""}
-                    ${!fields ? getModelTitleFieldId(model) : ""}
+                    ${createListQueryDataSelection(model, fields)}   
                 }
                 meta {
                     cursor

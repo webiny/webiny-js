@@ -1,0 +1,10 @@
+{
+  "name": "@demo/admin",
+  "main": "src/index.tsx",
+  "dependencies": {
+    "@demo/shared": "0.0.0",
+    "@webiny/app-headless-cms": "0.0.0",
+    "@webiny/ui": "0.0.0",
+    "openai": "^4.33.0"
+  }
+}

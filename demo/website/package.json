@@ -1,0 +1,11 @@
+{
+  "name": "@demo/website",
+  "version": "0.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@aws-amplify/ui-react": "^4.3.6",
+    "aws-amplify": "^5.0.12",
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
+  }
+}

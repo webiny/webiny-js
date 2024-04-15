@@ -8,7 +8,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { validation } from "@webiny/validation";
 
 import { FolderTree } from "~/components";
-import { useDialogs } from "~/dialogs/useDialogs";
+import { useDialogs } from "@webiny/app-admin";
 import { DialogFoldersContainer } from "~/dialogs/styled";
 import { useFolders } from "~/hooks";
 import { ROOT_FOLDER } from "~/constants";
@@ -103,7 +103,7 @@ export const useCreateDialog = (): UseCreateDialogResponse => {
 
         dialogs.showDialog({
             title: "Create a new folder",
-            message: <FormComponent currentParentId={currentParentId} />,
+            content: <FormComponent currentParentId={currentParentId} />,
             acceptLabel: "Create folder",
             cancelLabel: "Cancel",
             loadingLabel: "Creating folder",

@@ -1,11 +1,13 @@
 import React from "react";
-import { Link } from "@webiny/react-router";
 import styled from "@emotion/styled";
+import { UserInfo } from "@demo/website";
 import { usePage } from "@webiny/app-page-builder-elements";
+import { Link } from "@webiny/react-router";
 import { Menu } from "@webiny/app-website";
+import { fonts, breakpoints } from "theme/theme";
 import { Navigation } from "./Navigation";
 
-export const HeaderDesktop = () => {
+export const HeaderDesktop: React.FC = () => {
     const { layoutProps } = usePage();
     const { settings } = layoutProps;
     const { name, logo } = settings;
@@ -21,6 +23,7 @@ export const HeaderDesktop = () => {
             <nav>
                 <Menu slug={"main-menu"} component={Navigation} />
             </nav>
+            <UserInfo />
         </HeaderDesktopWrapper>
     );
 };
@@ -28,12 +31,12 @@ export const HeaderDesktop = () => {
 const HeaderDesktopWrapper = styled.div`
     align-items: center;
     display: flex;
-    height: 35px;
+    height: 48px;
     justify-content: space-between;
     margin: 0 auto;
     max-width: 1200px;
 
-    ${props => props.theme.breakpoints["tablet"]} {
+    ${breakpoints.tablet} {
         display: none;
     }
 
@@ -47,5 +50,6 @@ const HeaderDesktopWrapper = styled.div`
         -moz-osx-font-smoothing: grayscale;
         -webkit-font-smoothing: antialiased;
         flex: 1;
+        font-family: ${fonts.font1};
     }
 `;

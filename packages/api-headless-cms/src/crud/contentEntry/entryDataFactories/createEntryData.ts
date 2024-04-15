@@ -183,7 +183,7 @@ export const createEntryData = async ({
         }
     }
 
-    return { entry, input };
+    return { entry, input: structuredClone(input) };
 };
 
 /**

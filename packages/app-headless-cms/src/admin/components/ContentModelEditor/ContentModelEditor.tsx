@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { CompositionScope, makeDecoratable } from "@webiny/app-admin";
 import { Prompt } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { css } from "emotion";
@@ -64,7 +65,7 @@ interface OnChangeParams {
     layout: CmsEditorFieldsLayout;
 }
 
-export const Editor = () => {
+export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
     const { data, setData, isPristine } = useModelEditor();
 
     const [activeTabIndex, setActiveTabIndex] = useState(0);
@@ -112,9 +113,11 @@ export const Editor = () => {
                                 </EditContainer>
                             </Tab>
                             <Tab label={"Preview"} data-testid={"cms.editor.tab.preview"}>
-                                <ContentEntryEditorWithConfig>
-                                    <PreviewTab activeTab={activeTabIndex === 1} />
-                                </ContentEntryEditorWithConfig>
+                                <CompositionScope name={"cms.preview"}>
+                                    <ContentEntryEditorWithConfig>
+                                        <PreviewTab activeTab={activeTabIndex === 1} />
+                                    </ContentEntryEditorWithConfig>
+                                </CompositionScope>
                             </Tab>
                         </Tabs>
                     </RightPanel>
@@ -123,4 +126,4 @@ export const Editor = () => {
             <DragPreview />
         </div>
     );
-};
+});

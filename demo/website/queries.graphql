@@ -1,0 +1,46 @@
+query ListArticles {
+  demo {
+    listArticles {
+      data
+      error {
+        code
+        message
+      }
+    }
+  }
+}
+
+query GetArticle {
+  demo {
+    getArticle(
+      where: {
+        slug: "/article-1"
+        region: "661adc693fee930008bcc529"
+        language: "661adc2a35d8e200088871f6"
+      }
+    ) {
+      data
+      error {
+        code
+        message
+      }
+    }
+  }
+}
+
+query ContentRegions {
+  demo {
+    getContentRegions {
+      data {
+        id
+        title
+        slug
+        languages {
+          id
+          name
+          slug
+        }
+      }
+    }
+  }
+}

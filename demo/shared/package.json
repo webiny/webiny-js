@@ -1,0 +1,8 @@
+{
+  "name": "@demo/shared",
+  "version": "0.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@demo/shared": "0.0.0"
+  }
+}

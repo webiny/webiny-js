@@ -46,7 +46,7 @@ export class Dialog extends React.Component<DialogProps> {
             this.container = document.createElement("div");
             this.container.setAttribute("id", "dialog-container");
             const container = this.container;
-            document.body && document.body.appendChild(container);
+            document.getElementById("root")?.appendChild(container);
         }
     }
 

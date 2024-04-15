@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@demo/website": "0.0.0",
     "@emotion/react": "^11.10.6",
     "@types/react": "17.0.39",
     "@webiny/app": "0.0.0",

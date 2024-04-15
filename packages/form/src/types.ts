@@ -20,6 +20,7 @@ export interface FormAPI<T extends GenericFormData = GenericFormData> {
     data: T;
     submit: (event?: React.SyntheticEvent<any, any>, options?: FormSubmitOptions) => Promise<void>;
     setValue: FormSetValue;
+    getValue: (name: string) => any;
     validate: () => Promise<boolean>;
     validateInput: (name: string) => Promise<boolean | any>;
     options: FormSubmitOptions;

@@ -76,6 +76,18 @@ export default ({ documentClient }: { documentClient: DynamoDBDocument }) => [
         identityType: "admin"
     }),
 
+    cognitoAuthentication({
+        region: String(process.env.WEBSITE_COGNITO_REGION),
+        userPoolId: String(process.env.WEBSITE_COGNITO_USER_POOL_ID),
+        identityType: "employee",
+        getIdentity({ identity, token }) {
+            return {
+                ...identity,
+                id: token["custom:wby_user_id"]
+            };
+        }
+    }),
+
     /**
      * Authorization plugin to fetch permissions for a verified API key.
      * The "identityType" must match the authentication plugin used to load the identity.

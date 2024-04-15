@@ -1,6 +1,6 @@
 import { useSnackbar } from "@webiny/app-admin";
 
-import { useDialogs } from "~/dialogs/useDialogs";
+import { useDialogs } from "@webiny/app-admin";
 import { useFolders } from "~/hooks";
 import { FolderItem } from "~/types";
 import { useCallback } from "react";
@@ -35,7 +35,7 @@ export const useDeleteDialog = (): UseDeleteDialogResponse => {
     const showDialog = ({ folder }: ShowDialogParams) => {
         dialogs.showDialog({
             title: "Delete folder",
-            message: `You are about to delete the folder "${folder.title}"! Are you sure you want to continue?`,
+            content: `You are about to delete the folder "${folder.title}"! Are you sure you want to continue?`,
             acceptLabel: "Delete folder",
             cancelLabel: "Cancel",
             loadingLabel: "Deleting folder",

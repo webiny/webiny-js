@@ -2,6 +2,8 @@ import React, { useMemo } from "react";
 import { useRouter } from "@webiny/react-router";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { makeDecoratable } from "@webiny/app-admin";
+import { useRecords } from "@webiny/app-aco";
 import { CmsContentEntry } from "~/types";
 import {
     CmsEntryCreateFromMutationResponse,
@@ -11,23 +13,23 @@ import {
 import { useApolloClient, useCms } from "~/admin/hooks";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
-import { useRecords } from "@webiny/app-aco";
+import { OnEntryPublishResponse } from "~/admin/contexts/Cms";
 
-interface CreateRevisionHandler {
+export interface CreateRevisionHandler {
     (id?: string): Promise<void>;
 }
 
-interface EditRevisionHandler {
+export interface EditRevisionHandler {
     (id?: string): void;
 }
 
-interface DeleteRevisionHandler {
+export interface DeleteRevisionHandler {
     (id?: string): Promise<void>;
 }
-interface PublishRevisionHandler {
-    (id?: string): Promise<void>;
+export interface PublishRevisionHandler {
+    (id?: string): Promise<OnEntryPublishResponse>;
 }
-interface UnpublishRevisionHandler {
+export interface UnpublishRevisionHandler {
     (id?: string): Promise<void>;
 }
 interface UseRevisionHandlers {
@@ -44,7 +46,7 @@ export interface UseRevisionProps {
     };
 }
 
-export const useRevision = ({ revision }: UseRevisionProps) => {
+export const useRevision = makeDecoratable(({ revision }: UseRevisionProps) => {
     const { publishEntryRevision, unpublishEntryRevision, deleteEntry } = useCms();
     const { contentModel, entry, setLoading } = useContentEntry();
 
@@ -149,20 +151,21 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
 
                         setLoading(false);
 
-                        const { error, entry: entryResult } = response;
-                        if (error) {
-                            showSnackbar(error.message);
-                            return;
+                        if (response.error) {
+                            showSnackbar(response.error.message);
+                            return response;
                         }
 
-                        updateRecordInCache(entryResult);
+                        updateRecordInCache(response.entry);
 
                         showSnackbar(
                             <span>
                                 Successfully published revision{" "}
-                                <strong>#{response.entry!.meta.version}</strong>!
+                                <strong>#{response.entry.meta.version}</strong>!
                             </span>
                         );
+
+                        return response;
                     },
                 unpublishRevision:
                     ({ entry }): UnpublishRevisionHandler =>
@@ -203,4 +206,4 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
         publishRevision,
         unpublishRevision
     };
-};
+});

@@ -9,15 +9,16 @@ import { CmsContentEntry, CmsContentFormRendererPlugin } from "~/types";
 import { useContentEntryForm, UseContentEntryFormParams } from "./useContentEntryForm";
 import { Fields } from "./Fields";
 import { Prompt } from "@webiny/react-router";
-import { useSnackbar } from "@webiny/app-admin";
+import { makeDecoratable, useSnackbar } from "@webiny/app-admin";
 import { ModelProvider, useModel } from "~/admin/components/ModelProvider";
+import { Header } from "~/admin/components/ContentEntryForm/Header";
 
 const FormWrapper = styled("div")({
     height: "calc(100vh - 260px)",
     overflow: "auto"
 });
 
-interface ContentEntryFormProps extends UseContentEntryFormParams {
+export interface ContentEntryFormProps extends UseContentEntryFormParams {
     onForm?: (form: FormAPI) => void;
 }
 
@@ -36,139 +37,143 @@ const isDifferent = (value: any, compare: any): boolean => {
     return stringify(value) !== stringify(compare);
 };
 
-export const ContentEntryForm = ({ onForm, ...props }: ContentEntryFormProps) => {
-    const formElementRef = useRef<HTMLDivElement>(null);
-    const { model } = useModel();
-    const {
-        loading,
-        data: initialData,
-        onChange,
-        onSubmit,
-        invalidFields
-    } = useContentEntryForm(props);
+export const ContentEntryForm = makeDecoratable(
+    "ContentEntryForm",
+    ({ onForm, ...props }: ContentEntryFormProps) => {
+        const formElementRef = useRef<HTMLDivElement>(null);
+        const { model } = useModel();
+        const {
+            loading,
+            data: initialData,
+            onChange,
+            onSubmit,
+            invalidFields
+        } = useContentEntryForm(props);
 
-    const [isDirty, setIsDirty] = React.useState<boolean>(false);
-    /**
-     * Reset isDirty when the loaded data changes.
-     */
-    useEffect(() => {
-        if (!isDirty) {
-            return;
-        }
-        setIsDirty(false);
-    }, [initialData]);
-
-    const { showSnackbar } = useSnackbar();
-
-    const ref = useRef<FormAPI | null>(null);
-
-    useEffect(() => {
-        if (typeof onForm !== "function" || !ref.current) {
-            return;
-        }
-        onForm(ref.current);
-    }, []);
-
-    useEffect(() => {
-        if (!formElementRef.current) {
-            return;
-        }
-
-        formElementRef.current.scrollTo(0, 0);
-    }, [initialData.id, formElementRef.current]);
-
-    const formRenderer = plugins
-        .byType<CmsContentFormRendererPlugin>("cms-content-form-renderer")
-        .find(pl => pl.modelId === model.modelId);
-
-    const renderCustomLayout = useCallback(
-        (formRenderProps: FormRenderPropParams) => {
-            const fields = model.fields.reduce((acc, field) => {
-                acc[field.fieldId] = (
-                    <FieldElement
-                        field={field}
-                        /**
-                         * TODO @ts-refactor
-                         * Figure out type for Bind.
-                         */
-                        // @ts-expect-error
-                        Bind={formRenderProps.Bind}
-                        contentModel={model}
-                    />
-                );
-
-                return acc;
-            }, {} as Record<string, React.ReactElement>);
-            if (!formRenderer) {
-                return <>{`Missing form renderer for modelId "${model.modelId}".`}</>;
+        const [isDirty, setIsDirty] = React.useState<boolean>(false);
+        /**
+         * Reset isDirty when the loaded data changes.
+         */
+        useEffect(() => {
+            if (!isDirty) {
+                return;
             }
-            return formRenderer.render({
-                ...formRenderProps,
-                contentModel: model,
-                fields,
-                /**
-                 * TODO @ts-refactor
-                 * Figure out type for Bind.
-                 */
-                // @ts-expect-error
-                Bind: formRenderProps.Bind
-            });
-        },
-        [formRenderer]
-    );
+            setIsDirty(false);
+        }, [initialData]);
 
-    return (
-        <Form<CmsContentEntry>
-            onChange={(data, form) => {
-                const different = isDifferent(data, initialData);
-                if (isDirty !== different) {
-                    setIsDirty(different);
-                }
-                return onChange(data, form);
-            }}
-            onSubmit={(data, form) => {
-                setIsDirty(false);
-                return onSubmit(data, form);
-            }}
-            data={initialData}
-            ref={ref}
-            invalidFields={invalidFields}
-            onInvalid={() => {
-                setIsDirty(true);
-                showSnackbar("Some fields did not pass the validation. Please check the form.");
-            }}
-        >
-            {formProps => {
-                return (
-                    <ModelProvider model={model}>
-                        <Prompt
-                            when={isDirty}
-                            message={
-                                "There are some unsaved changes! Are you sure you want to navigate away and discard all changes?"
-                            }
+        const { showSnackbar } = useSnackbar();
+
+        const ref = useRef<FormAPI | null>(null);
+
+        useEffect(() => {
+            if (typeof onForm !== "function" || !ref.current) {
+                return;
+            }
+            onForm(ref.current);
+        }, []);
+
+        useEffect(() => {
+            if (!formElementRef.current) {
+                return;
+            }
+
+            formElementRef.current.scrollTo(0, 0);
+        }, [initialData.id, formElementRef.current]);
+
+        const formRenderer = plugins
+            .byType<CmsContentFormRendererPlugin>("cms-content-form-renderer")
+            .find(pl => pl.modelId === model.modelId);
+
+        const renderCustomLayout = useCallback(
+            (formRenderProps: FormRenderPropParams) => {
+                const fields = model.fields.reduce((acc, field) => {
+                    acc[field.fieldId] = (
+                        <FieldElement
+                            field={field}
+                            /**
+                             * TODO @ts-refactor
+                             * Figure out type for Bind.
+                             */
+                            // @ts-expect-error
+                            Bind={formRenderProps.Bind}
+                            contentModel={model}
                         />
-                        <FormWrapper data-testid={"cms-content-form"} ref={formElementRef}>
-                            {loading && <CircularProgress />}
-                            {formRenderer ? (
-                                renderCustomLayout(formProps)
-                            ) : (
-                                <Fields
-                                    contentModel={model}
-                                    fields={model.fields || []}
-                                    layout={model.layout || []}
-                                    {...formProps}
-                                    /**
-                                     * TODO @ts-refactor
-                                     * Figure out type for Bind.
-                                     */
-                                    // @ts-expect-error
-                                    Bind={formProps.Bind}
-                                />
-                            )}
-                        </FormWrapper>
-                    </ModelProvider>
-                );
-            }}
-        </Form>
-    );
-};
+                    );
+
+                    return acc;
+                }, {} as Record<string, React.ReactElement>);
+                if (!formRenderer) {
+                    return <>{`Missing form renderer for modelId "${model.modelId}".`}</>;
+                }
+                return formRenderer.render({
+                    ...formRenderProps,
+                    contentModel: model,
+                    fields,
+                    /**
+                     * TODO @ts-refactor
+                     * Figure out type for Bind.
+                     */
+                    // @ts-expect-error
+                    Bind: formRenderProps.Bind
+                });
+            },
+            [formRenderer]
+        );
+
+        return (
+            <Form<CmsContentEntry>
+                onChange={(data, form) => {
+                    const different = isDifferent(data, initialData);
+                    if (isDirty !== different) {
+                        setIsDirty(different);
+                    }
+                    return onChange(data, form);
+                }}
+                onSubmit={(data, form) => {
+                    setIsDirty(false);
+                    return onSubmit(data, form);
+                }}
+                data={initialData}
+                ref={ref}
+                invalidFields={invalidFields}
+                onInvalid={() => {
+                    setIsDirty(true);
+                    showSnackbar("Some fields did not pass the validation. Please check the form.");
+                }}
+            >
+                {formProps => {
+                    return (
+                        <ModelProvider model={model}>
+                            <Prompt
+                                when={isDirty}
+                                message={
+                                    "There are some unsaved changes! Are you sure you want to navigate away and discard all changes?"
+                                }
+                            />
+                            <Header />
+                            <FormWrapper data-testid={"cms-content-form"} ref={formElementRef}>
+                                {loading && <CircularProgress />}
+                                {formRenderer ? (
+                                    renderCustomLayout(formProps)
+                                ) : (
+                                    <Fields
+                                        contentModel={model}
+                                        fields={model.fields || []}
+                                        layout={model.layout || []}
+                                        {...formProps}
+                                        /**
+                                         * TODO @ts-refactor
+                                         * Figure out type for Bind.
+                                         */
+                                        // @ts-expect-error
+                                        Bind={formProps.Bind}
+                                    />
+                                )}
+                            </FormWrapper>
+                        </ModelProvider>
+                    );
+                }}
+            </Form>
+        );
+    }
+);

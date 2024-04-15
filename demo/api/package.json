@@ -1,0 +1,10 @@
+{
+  "name": "@demo/api",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@demo/shared": "0.0.0",
+    "@webiny/api": "0.0.0",
+    "@webiny/handler-graphql": "0.0.0",
+    "api-graphql": "*"
+  }
+}

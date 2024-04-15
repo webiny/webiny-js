@@ -19,7 +19,8 @@
       "apps/api/pageBuilder/import/*",
       "apps/api/pageBuilder/export/*",
       "scripts/buildPackages",
-      "scripts/prepublishOnly"
+      "scripts/prepublishOnly",
+      "demo/*"
     ]
   },
   "author": "Webiny Ltd.",

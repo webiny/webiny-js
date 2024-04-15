@@ -1,17 +1,22 @@
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import ApolloClient from "apollo-client";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { config as appConfig } from "@webiny/app/config";
-import { CmsContentEntry, CmsModel } from "~/types";
+import { CmsContentEntry, CmsErrorResponse, CmsModel } from "~/types";
 import { MutationHookOptions } from "@apollo/react-hooks";
 import { AsyncProcessor, composeAsync } from "@webiny/utils";
+import { DocumentNode } from "graphql";
+import {
+    CmsEntryPublishMutationResponse,
+    CmsEntryPublishMutationVariables,
+    createPublishMutation
+} from "@webiny/app-headless-cms-common";
 
 interface MutationEntryOptions {
     mutationOptions?: MutationHookOptions;
 }
 
-type PublishEntryOptions = MutationEntryOptions;
 type UnpublishEntryOptions = MutationEntryOptions;
 type DeleteEntryOptions = MutationEntryOptions;
 
@@ -21,20 +26,15 @@ interface EntryError {
     data?: Record<string, any>;
 }
 
-export interface OnEntryPublishRequest {
-    model: CmsModel;
-    entry: CmsContentEntry;
-    id: string;
-    options: PublishEntryOptions;
-    // TODO: Maybe a different input and output type for compose.
-    error?: EntryError | null;
-    locale: string;
-    client: ApolloClient<any>;
-}
-
-export interface OnEntryPublishResponse extends Omit<OnEntryPublishRequest, "entry"> {
-    entry: CmsContentEntry | undefined;
-}
+export type OnEntryPublishResponse =
+    | {
+          entry: CmsContentEntry;
+          error?: never;
+      }
+    | {
+          entry?: never;
+          error: EntryError;
+      };
 
 export interface OnEntryDeleteRequest {
     model: CmsModel;
@@ -66,10 +66,6 @@ export interface OnEntryUnpublishResponse extends Omit<OnEntryUnpublishRequest, 
     entry: CmsContentEntry | undefined;
 }
 
-type OnEntryRevisionPublishSubscriber = AsyncProcessor<
-    OnEntryPublishRequest,
-    OnEntryPublishResponse
->;
 type OnEntryDeleteSubscriber = AsyncProcessor<OnEntryDeleteRequest, OnEntryDeleteResponse>;
 type OnEntryRevisionUnpublishSubscriber = AsyncProcessor<
     OnEntryUnpublishRequest,
@@ -79,7 +75,6 @@ type OnEntryRevisionUnpublishSubscriber = AsyncProcessor<
 interface PublishEntryRevisionParams {
     model: CmsModel;
     entry: CmsContentEntry;
-    options?: PublishEntryOptions;
     id: string;
 }
 interface DeleteEntryParams {
@@ -101,7 +96,6 @@ export interface CmsContext {
     createApolloClient: CmsProviderProps["createApolloClient"];
     apolloClient: ApolloClient<any>;
     publishEntryRevision: (params: PublishEntryRevisionParams) => Promise<OnEntryPublishResponse>;
-    onEntryRevisionPublish: (fn: OnEntryRevisionPublishSubscriber) => () => void;
     unpublishEntryRevision: (
         params: UnpublishEntryRevisionParams
     ) => Promise<OnEntryUnpublishResponse>;
@@ -127,6 +121,20 @@ interface ApolloClientsCache {
     [locale: string]: ApolloClient<any>;
 }
 
+interface Mutations {
+    [key: string]: DocumentNode;
+}
+
+interface CreateMutationKeyParams {
+    model: CmsModel;
+    locale: string;
+}
+
+const createMutationKey = (params: CreateMutationKeyParams): string => {
+    const { model, locale } = params;
+    return `${model.modelId}_${locale}_${model.savedOn}`;
+};
+
 const apolloClientsCache: ApolloClientsCache = {};
 
 export interface CmsProviderProps {
@@ -137,10 +145,20 @@ export interface CmsProviderProps {
 export const CmsProvider = (props: CmsProviderProps) => {
     const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
     const { getCurrentLocale } = useI18N();
-
-    const onEntryRevisionPublish = useRef<OnEntryRevisionPublishSubscriber[]>([]);
+    const mutations = useRef<Mutations>({});
     const onEntryRevisionUnpublish = useRef<OnEntryRevisionUnpublishSubscriber[]>([]);
     const onEntryDelete = useRef<OnEntryDeleteSubscriber[]>([]);
+
+    const getMutation = useCallback(
+        (model: CmsModel, locale: string): DocumentNode => {
+            const key = createMutationKey({ model, locale });
+            if (!mutations.current[key]) {
+                mutations.current[key] = createPublishMutation(model);
+            }
+            return mutations.current[key];
+        },
+        [mutations.current]
+    );
 
     const currentLocale = getCurrentLocale("content");
 
@@ -168,18 +186,34 @@ export const CmsProvider = (props: CmsProviderProps) => {
         createApolloClient: props.createApolloClient,
         apolloClient: getApolloClient(currentLocale),
         publishEntryRevision: async params => {
-            return await composeAsync([...onEntryRevisionPublish.current].reverse())({
-                locale: currentLocale,
-                ...params,
-                client: getApolloClient(currentLocale),
-                options: params.options || {}
+            const mutation = getMutation(params.model, currentLocale);
+            const response = await value.apolloClient.mutate<
+                CmsEntryPublishMutationResponse,
+                CmsEntryPublishMutationVariables
+            >({
+                mutation,
+                variables: {
+                    revision: params.id
+                }
             });
-        },
-        onEntryRevisionPublish: fn => {
-            onEntryRevisionPublish.current.push(fn);
-            return () => {
-                const index = onEntryRevisionPublish.current.length;
-                onEntryRevisionPublish.current.splice(index, 1);
+
+            if (!response.data) {
+                const error: CmsErrorResponse = {
+                    message: "Missing response data on Publish Entry Mutation.",
+                    code: "MISSING_RESPONSE_DATA",
+                    data: {}
+                };
+                return { error };
+            }
+
+            const { data, error } = response.data.content;
+
+            if (error) {
+                return { error };
+            }
+
+            return {
+                entry: data as CmsContentEntry
             };
         },
         unpublishEntryRevision: async params => {

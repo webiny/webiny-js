@@ -6,6 +6,7 @@ import { Page } from "./Page";
 import { createApolloClient, createEmotionCache } from "~/utils";
 import { ThemeProvider } from "@webiny/app-theme";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
+import { RouteProps } from "@webiny/react-router";
 
 export interface WebsiteProps extends AppProps {
     apolloClient?: ReturnType<typeof createApolloClient>;
@@ -21,6 +22,8 @@ const PageBuilderProviderHOC: HigherOrderComponent = PreviousProvider => {
     };
 };
 
+const defaultRoute: RouteProps = { path: "*", element: <Page /> };
+
 export const Website = ({ children, routes = [], providers = [], ...props }: WebsiteProps) => {
     const apolloClient = props.apolloClient || createApolloClient();
     const emotionCache = createEmotionCache();
@@ -28,13 +31,17 @@ export const Website = ({ children, routes = [], providers = [], ...props }: Web
     // In development, debounce render by 1ms, to avoid router warnings about missing routes.
     const debounceMs = Number(process.env.NODE_ENV !== "production");
 
+    const wildcardRoute = routes.find(route => route.path === "*");
+
+    const appRoutes = wildcardRoute ? routes : [...routes, defaultRoute];
+
     return (
         <CacheProvider value={emotionCache}>
             <ApolloProvider client={apolloClient}>
                 <ThemeProvider>
                     <App
                         debounceRender={debounceMs}
-                        routes={[...routes, { path: "*", element: <Page /> }]}
+                        routes={appRoutes}
                         providers={[PageBuilderProviderHOC, ...providers]}
                     >
                         {children}

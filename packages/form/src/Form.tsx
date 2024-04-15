@@ -14,6 +14,9 @@ import lodashNoop from "lodash/noop";
 import lodashEach from "lodash/each";
 import lodashHas from "lodash/has";
 import set from "lodash/fp/set";
+import camelCase from "lodash/camelCase";
+import { Validator } from "@webiny/validation/types";
+import { makeDecoratable } from "@webiny/react-composition";
 import { Bind } from "./Bind";
 import ValidationError from "./ValidationError";
 import {
@@ -25,8 +28,6 @@ import {
     UseBindHook,
     Validation
 } from "~/types";
-import { Validator } from "@webiny/validation/types";
-import camelCase from "lodash/camelCase";
 import { useBindPrefix } from "~/BindPrefix";
 
 interface State<T extends GenericFormData = GenericFormData> {
@@ -56,7 +57,9 @@ export const useForm = <T extends GenericFormData = GenericFormData>() => {
     return useContext(FormContext) as FormAPI<T>;
 };
 
-export function useBind<T = any>(props: BindComponentProps<T>): UseBindHook<T> {
+export type UseBind = (props: BindComponentProps) => UseBindHook;
+
+export const useBind = makeDecoratable((props: BindComponentProps): UseBindHook => {
     const form = useForm();
     const bindPrefix = useBindPrefix();
 
@@ -70,7 +73,7 @@ export function useBind<T = any>(props: BindComponentProps<T>): UseBindHook<T> {
 
     // @ts-expect-error
     return form.createField({ ...props, name: bindName });
-}
+});
 
 interface InputRecord {
     defaultValue: unknown;
@@ -436,6 +439,10 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         onChangeFns.current[name](value);
     };
 
+    const getValue = (name: string) => {
+        return lodashGet(state.data, name);
+    };
+
     const __onKeyDown = (e: React.KeyboardEvent<any>) => {
         const { submitOnEnter = false } = props;
         if (
@@ -518,6 +525,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         options: state.options || {},
         data: state.data,
         setValue,
+        getValue,
         validate,
         validateInput,
         submit

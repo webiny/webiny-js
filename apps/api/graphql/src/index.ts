@@ -41,6 +41,7 @@ import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
 import { createCountDynamoDbTask } from "~/plugins/countDynamoDbTask";
 import { createContinuingTask } from "~/plugins/continuingTask";
 import { createWebsockets } from "@webiny/api-websockets";
+import { createDemoPlugins } from "@demo/api";
 
 const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
@@ -128,7 +129,9 @@ export const handler = createHandler({
         }),
         createAuditLogs(),
         createCountDynamoDbTask(),
-        createContinuingTask()
+        createContinuingTask(),
+        // Demo system
+        createDemoPlugins()
     ],
     debug
 });
