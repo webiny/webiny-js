@@ -10,7 +10,7 @@ export default () => [
     /**
      * Append `x-tenant` header from URL query (necessary for prerendering service).
      */
-    new TenantHeaderLinkPlugin(),
+    new TenantHeaderLinkPlugin("root"),
     /**
      * Append `x-i18n-locale` header from URL query (necessary for prerendering service).
      */

@@ -36,7 +36,6 @@ export const ArticleEntryForm = () => {
                             <Cell span={12}>{fields.companyExclusionLists}</Cell>
                         </Grid>
                     </Tab>
-                    {/* Hide the Recipe tab if the user doesn't have the required permission. */}
                     <Tab label="Content">
                         <Grid>
                             <Cell span={12}>{fields.content}</Cell>

@@ -7,18 +7,20 @@ import { useContentSlug } from "../ContentSettings";
 export const Router = () => {
     const { slug } = useContentSlug();
 
-    switch (slug) {
-        case "/":
+    switch (true) {
+        case slug === "/":
             return (
                 <Layout>
                     <ArticlesListView />
                 </Layout>
             );
-        default:
+        case slug.length > 1:
             return (
                 <Layout>
                     <ArticleView />
                 </Layout>
             );
+        default:
+            return null;
     }
 };
