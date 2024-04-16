@@ -12,7 +12,9 @@ export const HeroBlockComponent = ({ block }: { block: HeroBlock }) => {
             <h3>{block.title}</h3>
             <p>{block.subtitle}</p>
             <p>{block.description}</p>
-            <Link to={block.callToActionButtonUrl}>{block.callToActionButtonLabel}</Link>
+            {block.callToActionButtonUrl ? (
+                <Link to={block.callToActionButtonUrl}>{block.callToActionButtonLabel}</Link>
+            ) : null}
         </div>
     );
 };

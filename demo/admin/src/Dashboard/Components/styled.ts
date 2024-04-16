@@ -12,7 +12,6 @@ export const Wrapper = styled("div")`
     bottom: 0;
     left: 0;
     border-radius: 4px;
-    //overflow: hidden;
 
     .mdc-data-table {
         display: inline-table;

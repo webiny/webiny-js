@@ -1,0 +1,37 @@
+import { useSecurity } from "@webiny/app-security";
+import { useCallback } from "react";
+import { ReadonlyArticle } from "@demo/shared";
+
+const getStorageKey = (...keys: string[]) => {
+    return `CognitoIdentityServiceProvider.${
+        process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID
+    }.${keys.join(".")}`;
+};
+
+const PREVIEW_DOMAIN = `https://druexxzabmhs4.cloudfront.net`;
+// const PREVIEW_DOMAIN = `http://localhost:3000`;
+
+export function usePreviewUrl() {
+    const { identity } = useSecurity();
+
+    return useCallback((article: ReadonlyArticle) => {
+        if (!identity) {
+            return "";
+        }
+
+        const pathname = `/${article.region?.slug}-${article.language?.slug}${article.slug}`;
+        const email = identity.profile!.email!;
+
+        const idToken = localStorage.getItem(getStorageKey(email, "idToken"));
+        const accessToken = localStorage.getItem(getStorageKey(email, "accessToken"));
+        const refreshToken = localStorage.getItem(getStorageKey(email, "refreshToken"));
+        const search = [
+            `preview=true`,
+            `idToken=${idToken}`,
+            `accessToken=${accessToken}`,
+            `refreshToken=${refreshToken}`
+        ];
+
+        return [PREVIEW_DOMAIN, pathname, `?${search.join("&")}`].join("");
+    }, []);
+}

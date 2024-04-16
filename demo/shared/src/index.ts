@@ -70,6 +70,7 @@ export interface ReadonlyArticle {
     description: string;
     region?: {
         id: string;
+        slug: string;
         title: string;
     };
     language?: {

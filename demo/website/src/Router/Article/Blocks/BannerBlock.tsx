@@ -11,7 +11,7 @@ export const BannerBlockComponent = ({ block }: { block: BannerBlock }) => {
         <div>
             <h3>{block.title}</h3>
             <img src={block.image} alt={block.title} />
-            <Link to={block.actionUrl}>{block.actionLabel}</Link>
+            {block.actionUrl ? <Link to={block.actionUrl}>{block.actionLabel}</Link> : null}
         </div>
     );
 };

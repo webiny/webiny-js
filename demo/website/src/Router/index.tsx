@@ -3,9 +3,13 @@ import { ArticleView } from "./Article/ArticleView";
 import { ArticlesListView } from "./Articles/ArticlesListView";
 import { Layout } from "./Layout/Layout";
 import { useContentSlug } from "../ContentSettings";
+import { useRouter } from "@webiny/react-router";
 
 export const Router = () => {
+    const { search } = useRouter();
     const { slug } = useContentSlug();
+
+    const isPreview = search[0].has("preview");
 
     switch (true) {
         case slug === "/":
@@ -16,7 +20,7 @@ export const Router = () => {
             );
         case slug.length > 1:
             return (
-                <Layout>
+                <Layout preview={isPreview}>
                     <ArticleView />
                 </Layout>
             );

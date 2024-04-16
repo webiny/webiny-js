@@ -87,6 +87,7 @@ const LIST_ARTICLES = /* GraphQL */ `
                 description
                 region {
                     id
+                    slug
                     title
                 }
                 language {

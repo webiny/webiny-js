@@ -59,6 +59,11 @@ export const ContentSettings = ({ children }: ContentSettingsProps) => {
         if (location.pathname !== "/") {
             const [regionSlug, langSlug] = location.pathname.slice(1).split("/")[0].split("-");
             const region = regions.find(region => region.slug === regionSlug);
+            if (!region) {
+                history.push("/");
+                return;
+            }
+
             const language = region!.languages.find(lang => lang.slug === langSlug);
 
             const regionPrefix = region && language ? `/${region.slug}-${language.slug}` : "";

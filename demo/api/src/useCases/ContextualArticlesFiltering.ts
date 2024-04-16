@@ -25,6 +25,11 @@ export class ContextualArticlesFiltering implements IListArticlesUseCase {
 
         let company: Company;
 
+        // This is necessary for "preview" mode, where we have an "admin" identity on "root" tenant.
+        if (this.context.tenancy.getCurrentTenant().id === "root") {
+            return this.listArticles.execute(params);
+        }
+
         if (identity.type === Identity.Employee) {
             const getEmployee = new GetEmployeeFromIdentity(this.context);
             const employee = await getEmployee.execute();

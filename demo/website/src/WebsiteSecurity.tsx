@@ -10,6 +10,7 @@ import { plugins } from "@webiny/plugins";
 import { createApolloLinkPlugin } from "./createApolloLinkPlugin";
 import { LoginScreen } from "./Login/LoginScreen";
 import { ContentSettings } from "./ContentSettings";
+import { useCredentialsFromUrl } from "./useCredentialsFromUrl";
 
 Amplify.configure({
     Auth: {
@@ -56,6 +57,7 @@ export const configureWebsiteSecurity = (): Decorator<
     return Original => {
         return function WebsiteSecurity({ children }) {
             plugins.register(new ConsoleLinkPlugin(), createApolloLinkPlugin());
+            useCredentialsFromUrl();
 
             return (
                 <>

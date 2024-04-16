@@ -2,6 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import { useContentSettings } from "../../ContentSettings";
 import { Link } from "@webiny/react-router";
+import { Profile } from "./Profile";
 
 const HeaderContainer = styled.div`
     padding: 10px;
@@ -63,6 +64,7 @@ export const Header = () => {
                     })}
                 </ul>
             </div>
+            <Profile/>
         </HeaderContainer>
     );
 };

@@ -6,6 +6,8 @@ import { DashboardPresenter } from "./DashboardPresenter";
 import { Table } from "@webiny/app-aco";
 import { ReadonlyArticle } from "@demo/shared";
 import debounce from "lodash/debounce";
+import { DashboardPresenterProvider } from "./DashboardPresenterProvider";
+import { ArticlePreview } from "./ArticlePreview";
 
 interface DashboardViewProps {
     presenter: DashboardPresenter;
@@ -13,6 +15,7 @@ interface DashboardViewProps {
 
 export const DashboardView = observer(({ presenter }: DashboardViewProps) => {
     const [search, setSearch] = useState("");
+
     useEffect(() => {
         presenter.init();
     }, []);
@@ -29,8 +32,9 @@ export const DashboardView = observer(({ presenter }: DashboardViewProps) => {
     }, []);
 
     return (
-        <>
+        <DashboardPresenterProvider presenter={presenter}>
             <MainContainer>
+                <ArticlePreview />
                 <Header title={"Articles"} searchValue={search} onSearchChange={setSearchQuery} />
                 <Wrapper>
                     <Table<ReadonlyArticle>
@@ -44,6 +48,6 @@ export const DashboardView = observer(({ presenter }: DashboardViewProps) => {
                     />
                 </Wrapper>
             </MainContainer>
-        </>
+        </DashboardPresenterProvider>
     );
 });

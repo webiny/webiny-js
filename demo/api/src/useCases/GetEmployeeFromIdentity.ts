@@ -10,7 +10,6 @@ export class GetEmployeeFromIdentity {
 
     async execute(): Promise<Employee> {
         const identity = this.context.security.getIdentity();
-        console.log("identity", identity);
         const employeeModel = await this.getEmployeeModel();
 
         const employeeEntry = await this.context.cms.getEntry(employeeModel, {
