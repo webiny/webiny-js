@@ -36,11 +36,11 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         const { type, locale } = await getParameters(context);
 
         const getLocale = () => {
-            const systemLocale = context.i18n.getLocale(locale);
-            if (!systemLocale) {
-                throw new WebinyError(`There is no locale "${locale}" in the system.`);
+            const locale = context.i18n.getContentLocale();
+            if (!locale) {
+                throw new WebinyError("Missing content locale in cms context.ts.", "LOCALE_ERROR");
             }
-            return systemLocale;
+            return locale;
         };
 
         const getIdentity = () => {

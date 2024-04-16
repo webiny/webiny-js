@@ -34,7 +34,7 @@ describe("Empty Trash Bins", () => {
 
         expect(result).toMatchObject({
             status: "done",
-            message: "Task done: no public models found in the system.",
+            message: "Task done: emptying the trash bin for all registered models.",
             webinyTaskId: task.id,
             webinyTaskDefinitionId: EntriesTask.EmptyTrashBins,
             tenant: "root",
@@ -69,7 +69,7 @@ describe("Empty Trash Bins", () => {
 
         expect(result).toMatchObject({
             status: "done",
-            message: "Task done: no public models found in the system.",
+            message: "Task done: emptying the trash bin for all registered models.",
             webinyTaskId: task.id,
             webinyTaskDefinitionId: EntriesTask.EmptyTrashBins,
             tenant: "root",

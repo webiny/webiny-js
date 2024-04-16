@@ -10,43 +10,49 @@ export class EmptyTrashBins {
                 return response.aborted();
             }
 
-            const models = await context.security.withoutAuthorization(async () => {
-                return (await context.cms.listModels()).filter(model => !model.isPrivate);
+            const locales = context.i18n.getLocales();
+
+            await context.i18n.withEachLocale(locales, async () => {
+                const models = await context.security.withoutAuthorization(async () => {
+                    return (await context.cms.listModels()).filter(model => !model.isPrivate);
+                });
+
+                for (const model of models) {
+                    await context.tasks.trigger<IEmptyTrashBinByModelInput>({
+                        name: `Headless CMS - Empty trash bin for "${model.name}" model.`,
+                        definition: EntriesTask.EmptyTrashBinByModel,
+                        parent: params.store.getTask(),
+                        input: {
+                            modelId: model.modelId,
+                            where: {
+                                deletedOn_lt: this.calculateDateTimeString()
+                            }
+                        }
+                    });
+                }
+                return;
             });
 
-            if (models.length === 0) {
-                return response.done("Task done: no public models found in the system.");
-            }
-
-            for (const model of models) {
-                await context.tasks.trigger<IEmptyTrashBinByModelInput>({
-                    name: `Headless CMS - Empty trash bin for "${model.name}" model.`,
-                    definition: EntriesTask.EmptyTrashBinByModel,
-                    parent: params.store.getTask(),
-                    input: {
-                        modelId: model.modelId,
-                        where: {
-                            deletedOn_lt: this.calculateDateTimeString()
-                        }
-                    }
-                });
-            }
-
-            return response.done(`Task done: emptying the trash bin for ${models.length} models.`);
+            return response.done(`Task done: emptying the trash bin for all registered models.`);
         } catch (ex) {
             return response.error(ex.message ?? "Error while executing EmptyTrashBins");
         }
     }
 
     private calculateDateTimeString() {
+        // Retrieve the retention period from the environment variable WEBINY_TRASH_BIN_RETENTION_PERIOD_DAYS,
+        // or default to 90 days if not set or set to 0.
         const retentionPeriodFromEnv = process.env["WEBINY_TRASH_BIN_RETENTION_PERIOD_DAYS"];
         const retentionPeriod =
             retentionPeriodFromEnv && Number(retentionPeriodFromEnv) !== 0
                 ? Number(retentionPeriodFromEnv)
                 : 90;
 
+        // Calculate the date-time by subtracting the retention period (in days) from the current date.
         const currentDate = new Date();
         currentDate.setDate(currentDate.getDate() - retentionPeriod);
+
+        // Return the calculated date-time string in ISO 8601 format.
         return currentDate.toISOString();
     }
 }

@@ -64,6 +64,11 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
             });
         }
 
+        /**
+         * Here we set the context locale, using the value receive from the event.
+         */
+        this.setLocale(event);
+
         const control = new TaskControl(this, response, this.context);
 
         try {
@@ -79,5 +84,16 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         const value = parseInt(process.env["WEBINY_TASKS_TIMEOUT_CLOSE_MINUTES"] || "");
         const result = value > 0 ? value : DEFAULT_TASKS_TIMEOUT_CLOSE_MINUTES;
         return transformMinutesIntoMilliseconds(result);
+    }
+
+    private setLocale(event: ITaskEvent) {
+        const { locale: localeCode } = event;
+        const locale = this.context.i18n.getLocale(localeCode);
+
+        if (!locale) {
+            return;
+        }
+
+        this.context.i18n.setContentLocale(locale);
     }
 }
