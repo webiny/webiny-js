@@ -24,7 +24,6 @@ function MenuContainer({
 
     const handleContainerClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.preventDefault();
-        console.log("click", e);
     };
 
     return (
@@ -85,7 +84,6 @@ export const ToolbarActionDialog = ({
              if (!button.contains(target as Node)) {
                 setShowDropDown(false);
             }*/
-            console.log("handle", event);
         };
         document.addEventListener("click", handle);
 
