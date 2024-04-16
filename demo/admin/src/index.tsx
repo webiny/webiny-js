@@ -13,6 +13,7 @@ import { HideMenuItems } from "./HideMenuItems";
 import { SmartSeo } from "./ContentEntryForm/SmartSeo";
 import { Layout } from "./Layout";
 import { ArticleEntryList } from "./ArticleEntryList";
+import { ArticleEntryForm } from "./ArticleEntryForm";
 
 const RegisterFieldRenderers = () => {
     plugins.register(hiddenFieldRenderer);
@@ -37,6 +38,7 @@ export const AdminPlugins = () => {
                 <DecorateContentEntryFormHook />
                 <DecorateContentEntryFormBind />
             </ContentEntryEditorConfig>
+            <ArticleEntryForm />
         </>
     );
 };
