@@ -13,6 +13,7 @@ import { ContextualArticlesFiltering } from "../useCases/ContextualArticlesFilte
 import { CloneArticle } from "../useCases/CloneArticle";
 import { GetArticleTranslations } from "../useCases/GetArticleTranslations";
 import { ReadonlyArticle } from "@demo/shared";
+import { ContextPlugin } from "@webiny/api";
 
 export const createArticlesSchema = () => {
     const demoGraphQL = new GraphQLSchemaPlugin<Context>({
@@ -119,5 +120,12 @@ export const createArticlesSchema = () => {
     });
     demoGraphQL.name = "demo.cms.graphql.articles";
 
-    return [demoGraphQL, demoCmsGraphQL];
+    return new ContextPlugin<Context>(context => {
+        if (context.tenancy.getCurrentTenant().id !== "root") {
+            context.plugins.register(demoGraphQL);
+            return;
+        }
+
+        context.plugins.register(demoGraphQL, demoCmsGraphQL);
+    });
 };
