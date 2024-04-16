@@ -9,9 +9,9 @@ import {
 export interface HcmsTasksContext extends BaseContext, CmsContext, TasksContext {}
 
 export enum EntriesTask {
-    EmptyTrashBins = "emptyTrashBins",
-    EmptyTrashBinByModel = "emptyTrashBinByModel",
-    DeleteTrashBinEntries = "deleteTrashBinEntries"
+    EmptyTrashBins = "hcmsEntriesEmptyTrashBins",
+    EmptyTrashBinByModel = "hcmsEntriesEmptyTrashBinByModel",
+    DeleteTrashBinEntries = "hcmsEntriesDeleteTrashBinEntries"
 }
 
 /**

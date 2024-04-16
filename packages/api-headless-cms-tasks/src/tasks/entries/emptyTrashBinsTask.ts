@@ -1,8 +1,9 @@
-import { createPrivateTaskDefinition } from "@webiny/tasks";
+import { createTaskDefinition } from "@webiny/tasks";
+import { ChildTasksCleanup } from "~/tasks/common";
 import { EntriesTask, HcmsTasksContext } from "~/types";
 
 export const createEmptyTrashBinsTask = () => {
-    return createPrivateTaskDefinition<HcmsTasksContext>({
+    return createTaskDefinition<HcmsTasksContext>({
         id: EntriesTask.EmptyTrashBins,
         title: "Headless CMS - Empty all trash bins",
         description:
@@ -24,6 +25,20 @@ export const createEmptyTrashBinsTask = () => {
                 return await emptyTrashBins.execute(params);
             } catch (ex) {
                 return response.error(ex.message ?? "Error while executing EmptyTrashBins task");
+            }
+        },
+        onDone: async ({ context, task }) => {
+            /**
+             * We want to clean all child tasks and logs, which have no errors.
+             */
+            const childTasksCleanup = new ChildTasksCleanup();
+            try {
+                await childTasksCleanup.execute({
+                    context,
+                    task
+                });
+            } catch (ex) {
+                console.error("Error while cleaning `EmptyTrashBins` child tasks.", ex);
             }
         }
     });

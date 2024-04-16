@@ -1,4 +1,5 @@
 import { createPrivateTaskDefinition } from "@webiny/tasks";
+import { ChildTasksCleanup } from "~/tasks/common";
 import {
     EntriesTask,
     HcmsTasksContext,
@@ -34,6 +35,20 @@ export const createEmptyTrashBinByModelTask = () => {
                 return response.error(
                     ex.message ?? "Error while executing EmptyTrashBinByModel task"
                 );
+            }
+        },
+        onDone: async ({ context, task }) => {
+            /**
+             * We want to clean all child tasks and logs, which have no errors.
+             */
+            const childTasksCleanup = new ChildTasksCleanup();
+            try {
+                await childTasksCleanup.execute({
+                    context,
+                    task
+                });
+            } catch (ex) {
+                console.error("Error while cleaning `EmptyTrashBinByModel` child tasks.", ex);
             }
         }
     });
