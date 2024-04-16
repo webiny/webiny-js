@@ -144,6 +144,9 @@ const LIST_ARTICLES = /* GraphQL */ `
                     tagName
                     tagValue
                 }
+                translationBase {
+                    id
+                }
             }
             meta {
                 cursor

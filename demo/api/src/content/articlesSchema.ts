@@ -11,6 +11,8 @@ import { ArticleCloneOpts, ArticlesListOpts, Context } from "../types";
 import { ListArticles } from "../useCases/ListArticles";
 import { ContextualArticlesFiltering } from "../useCases/ContextualArticlesFiltering";
 import { CloneArticle } from "../useCases/CloneArticle";
+import { GetArticleTranslations } from "../useCases/GetArticleTranslations";
+import { ReadonlyArticle } from "@demo/shared";
 
 export const createArticlesSchema = () => {
     const demoGraphQL = new GraphQLSchemaPlugin<Context>({
@@ -83,7 +85,11 @@ export const createArticlesSchema = () => {
                                 });
                             }
 
-                            return new Response(data[0]);
+                            const article = data[0] as ReadonlyArticle;
+                            const getTranslations = new GetArticleTranslations(context);
+                            const translations = await getTranslations.execute(article);
+
+                            return new Response({ ...article, translations });
                         });
                     } catch (e) {
                         return new ErrorResponse(e);

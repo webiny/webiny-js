@@ -1,5 +1,5 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { ContentLanguage, ContentRegion } from "@demo/shared";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { ContentLanguage, ContentRegion, Translation } from "@demo/shared";
 import { useRouter } from "@webiny/react-router";
 import { useContentRegions } from "./useContentRegions";
 import { LoadingContentSettings } from "./LoadingContentSettings";
@@ -8,32 +8,46 @@ interface ContentSettingsProps {
     children: React.ReactNode;
 }
 
-interface ContentSettingsContext {
-    regions: Array<ContentRegion>;
+interface ContentSettingsContext extends ContentState {
+    regions: ContentRegion[];
     currentRegion: ContentRegion;
     currentLanguage: ContentLanguage;
     getLink: (slug: string) => string;
+    setTranslations: (translations: Translation[]) => void;
 }
 
 const ContentSettingsContext = React.createContext<ContentSettingsContext | undefined>(undefined);
 
+export interface ContentState {
+    slug: string;
+    regionPrefix: string;
+    currentRegion?: ContentRegion;
+    currentLanguage?: ContentLanguage;
+    translations: Translation[];
+}
+
 export const ContentSettings = ({ children }: ContentSettingsProps) => {
     const { location, history } = useRouter();
     const { regions, loading } = useContentRegions();
-    const [currentLanguage, setLanguage] = useState<ContentLanguage | undefined>();
-    const [currentRegion, setRegion] = useState<ContentRegion | undefined>();
+    const [state, setState] = useState<ContentState>({
+        currentLanguage: undefined,
+        currentRegion: undefined,
+        slug: "",
+        translations: [],
+        regionPrefix: ""
+    });
 
     const getLink = useCallback(
         (slug: string) => {
-            if (!currentRegion || !currentLanguage) {
+            if (!state.currentRegion || !state.currentLanguage) {
                 return slug;
             }
 
-            const regionPrefix = `/${currentRegion.slug}-${currentLanguage.slug}`;
+            const regionPrefix = `/${state.currentRegion.slug}-${state.currentLanguage.slug}`;
 
             return `${regionPrefix}${slug}`;
         },
-        [currentLanguage, currentRegion]
+        [state.currentLanguage?.slug, state.currentRegion?.slug]
     );
 
     useEffect(() => {
@@ -46,21 +60,37 @@ export const ContentSettings = ({ children }: ContentSettingsProps) => {
             const [regionSlug, langSlug] = location.pathname.slice(1).split("/")[0].split("-");
             const region = regions.find(region => region.slug === regionSlug);
             const language = region!.languages.find(lang => lang.slug === langSlug);
-            setRegion(region);
-            setLanguage(language);
+
+            const regionPrefix = region && language ? `/${region.slug}-${language.slug}` : "";
+            const slug = location.pathname.replace(regionPrefix, "") || "/";
+
+            setState(state => ({
+                ...state,
+                slug,
+                regionPrefix,
+                currentRegion: region,
+                currentLanguage: language
+            }));
         } else {
             history.push(`/${defaultRegion.slug}-${defaultRegion.languages[0].slug}`);
         }
     }, [regions, location.pathname]);
 
-    const context = useMemo(() => {
-        return {
-            regions,
-            currentLanguage: currentLanguage!,
-            currentRegion: currentRegion!,
-            getLink
-        };
-    }, [regions, currentRegion, currentLanguage]);
+    const setTranslations = useCallback((translations: Translation[]) => {
+        setState(state => ({
+            ...state,
+            translations
+        }));
+    }, []);
+
+    const context = {
+        ...state,
+        regions,
+        currentRegion: state.currentRegion!,
+        currentLanguage: state.currentLanguage!,
+        getLink,
+        setTranslations
+    };
 
     return (
         <ContentSettingsContext.Provider value={context}>
@@ -79,31 +109,6 @@ export const useContentSettings = () => {
 };
 
 export const useContentSlug = () => {
-    const { currentRegion, currentLanguage } = useContentSettings();
-    const { location } = useRouter();
-
-    const regionPrefix = `/${currentRegion.slug}-${currentLanguage.slug}`;
-    const slug = location.pathname.replace(regionPrefix, "");
-
-    return { slug: slug || "/", regionPrefix };
-};
-
-export const useChangeRegion = () => {
-    const { currentLanguage } = useContentSettings();
-    const { history, location } = useRouter();
-    const { regionPrefix } = useContentSlug();
-
-    return (slug: string) => {
-        history.push(location.pathname.replace(regionPrefix, `/${slug}-${currentLanguage.slug}`));
-    };
-};
-
-export const useChangeLanguage = () => {
-    const { currentRegion } = useContentSettings();
-    const { history, location } = useRouter();
-    const { regionPrefix } = useContentSlug();
-
-    return (slug: string) => {
-        history.push(location.pathname.replace(regionPrefix, `/${currentRegion.slug}-${slug}`));
-    };
+    const { slug, regionPrefix } = useContentSettings();
+    return { slug, regionPrefix };
 };

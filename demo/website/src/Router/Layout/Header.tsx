@@ -13,7 +13,16 @@ const HeaderContainer = styled.div`
 `;
 
 export const Header = () => {
-    const { regions, currentRegion, currentLanguage } = useContentSettings();
+    const { regions, currentRegion, currentLanguage, translations } = useContentSettings();
+
+    const getTranslatedPath = (basePath: string, languageId: string) => {
+        const translation = translations.find(t => t.languageId === languageId);
+        if (!translation) {
+            return basePath;
+        }
+
+        return [basePath, translation.articleSlug].join("");
+    };
 
     return (
         <HeaderContainer>
@@ -40,7 +49,12 @@ export const Header = () => {
                         const activeLang = lang.id === currentLanguage.id;
                         return (
                             <li key={lang.id}>
-                                <Link to={`/${currentRegion.slug}-${lang.slug}`}>
+                                <Link
+                                    to={getTranslatedPath(
+                                        `/${currentRegion.slug}-${lang.slug}`,
+                                        lang.id
+                                    )}
+                                >
                                     {activeLang ? "> " : null}
                                     {lang.name}
                                 </Link>

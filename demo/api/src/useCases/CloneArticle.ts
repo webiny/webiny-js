@@ -22,10 +22,22 @@ export class CloneArticle implements ICloneArticleUseCase {
         const originalEntry = await this.context.cms.getEntryById(model, id);
 
         // `translationBase` links related articles.
-        const translationBase = originalEntry.values["translationBase"] || {
+        const translationBase = {
             modelId: "article",
             id: id
         };
+
+        if (originalEntry.values["translationBase"]) {
+            try {
+                const originalBase = await this.context.cms.getEntryById(
+                    model,
+                    originalEntry.values["translationBase"].id
+                );
+                translationBase.id = originalBase.id;
+            } catch {
+                // Existing translation base no longer exists. Continue with the current `translationBase`.
+            }
+        }
 
         const input = {
             ...originalEntry.values,

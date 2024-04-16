@@ -85,6 +85,18 @@ export interface ReadonlyArticle {
         tagName: string;
         tagValue: string;
     }>;
+    translationBase?: {
+        id: string;
+    };
+}
+
+export type Translation = {
+    languageId: string;
+    articleSlug: string;
+};
+
+export interface ReadonlyArticleWithTranslations extends ReadonlyArticle {
+    translations: Array<Translation>;
 }
 
 export interface ArticleHeroImage {
