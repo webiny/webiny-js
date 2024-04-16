@@ -93,7 +93,7 @@ export const ApiGraphql = createAppModule({
             name: EMPTY_TRASH_BIN_EVENT_RULE_NAME,
             config: {
                 description: "Enable us to empty the trash-bin ever day",
-                scheduleExpression: "rate(1 day)"
+                scheduleExpression: "cron(0 3 * * ? *)"
             }
         });
 
