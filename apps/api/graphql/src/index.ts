@@ -42,6 +42,8 @@ import { createCountDynamoDbTask } from "~/plugins/countDynamoDbTask";
 import { createContinuingTask } from "~/plugins/continuingTask";
 import { createWebsockets } from "@webiny/api-websockets";
 import { createDemoPlugins } from "@demo/api";
+import { ContextPlugin } from "@webiny/api";
+import { Context } from "./types";
 
 const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
@@ -131,7 +133,12 @@ export const handler = createHandler({
         createCountDynamoDbTask(),
         createContinuingTask(),
         // Demo system
-        createDemoPlugins()
+        createDemoPlugins(),
+        new ContextPlugin<Context>(context => {
+            context.cms.onEntryBeforeUpdate.subscribe(async ({ entry }) => {
+                entry.values["titleField"] = `${entry.values["bodyType"]} ${entry.values["class"]}`;
+            });
+        })
     ],
     debug
 });

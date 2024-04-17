@@ -1,10 +1,8 @@
 import React from "react";
-import { plugins } from "@webiny/plugins";
 import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
 import { Plugins } from "@webiny/app-admin";
 import { CompanyEntryList } from "./CompanyEntryList";
 import { EmployeeEntryList } from "./EmployeeEntryList";
-import { hiddenFieldRenderer } from "./fieldRenderers/hiddenFieldRenderer";
 import { DecorateContentEntryFormHook } from "./ContentEntryForm/DecorateContentEntryFormHook";
 import { DecorateContentEntryFormBind } from "./ContentEntryForm/DecorateContentEntryFormBind";
 import { DecorateContentEntryForm } from "./ContentEntryForm/DecorateContentEntryForm";
@@ -15,16 +13,10 @@ import { Layout } from "./Layout";
 import { ArticleEntryList } from "./ArticleEntryList";
 import { ArticleEntryForm } from "./ArticleEntryForm";
 
-const RegisterFieldRenderers = () => {
-    plugins.register(hiddenFieldRenderer);
-    return null;
-};
-
 export const AdminPlugins = () => {
     return (
         <>
             <Plugins>
-                <RegisterFieldRenderers />
                 <HideMenuItems />
             </Plugins>
             <Layout />
