@@ -48,7 +48,7 @@ export interface UseRevisionProps {
 
 export const useRevision = makeDecoratable(({ revision }: UseRevisionProps) => {
     const { publishEntryRevision, unpublishEntryRevision, deleteEntry } = useCms();
-    const { contentModel, entry, setLoading } = useContentEntry();
+    const { contentModel, entry, setEntry, setLoading } = useContentEntry();
 
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -156,6 +156,7 @@ export const useRevision = makeDecoratable(({ revision }: UseRevisionProps) => {
                             return response;
                         }
 
+                        setEntry(response.entry);
                         updateRecordInCache(response.entry);
 
                         showSnackbar(
