@@ -27,6 +27,14 @@ export const createContentRegionsSchema = () => {
                 },
                 async getCompany(_, args, context) {
                     try {
+                        const identity = context.security.getIdentity();
+                        if (identity.type === "admin") {
+                            return new Response({
+                                id: "previw",
+                                name: "Preview",
+                                logo: ""
+                            });
+                        }
                         // NOTE: this assumes current identity is an "employee"!
                         return context.security.withoutAuthorization(async () => {
                             const getEmployee = new GetEmployeeFromIdentity(context);

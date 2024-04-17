@@ -26,6 +26,7 @@ const ContentSettingsContext = React.createContext<ContentSettingsContext | unde
 
 export interface ContentState {
     slug: string;
+    isPreview: boolean;
     regionPrefix: string;
     currentRegion?: ContentRegion;
     currentLanguage?: ContentLanguage;
@@ -33,9 +34,10 @@ export interface ContentState {
 }
 
 export const ContentSettings = ({ children }: ContentSettingsProps) => {
-    const { location, history } = useRouter();
+    const { location, history, search } = useRouter();
     const { company, regions, loading } = useContentRegions();
     const [state, setState] = useState<ContentState>({
+        isPreview: search[0].has("preview"),
         currentLanguage: undefined,
         currentRegion: undefined,
         slug: "",

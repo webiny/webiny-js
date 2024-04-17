@@ -6,7 +6,11 @@ import { DrawerRight, DrawerContent } from "@webiny/ui/Drawer";
 import styled from "@emotion/styled";
 
 const PreviewDrawer = styled(DrawerRight)`
-    width: 50vw;
+    width: calc(100vw / 3 * 2);
+`;
+
+const PreviewDrawerContent = styled(DrawerContent)`
+    padding: 0 50px;
 `;
 
 export const ArticlePreview = observer(() => {
@@ -22,9 +26,9 @@ export const ArticlePreview = observer(() => {
             onClose={() => presenter.hideArticlePreview()}
             open={Boolean(previewArticle)}
         >
-            <DrawerContent>
+            <PreviewDrawerContent>
                 <iframe src={previewUrl} width="100%" height="100%" />
-            </DrawerContent>
+            </PreviewDrawerContent>
         </PreviewDrawer>
     );
 });
