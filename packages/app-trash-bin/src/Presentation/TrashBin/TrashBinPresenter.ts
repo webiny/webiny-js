@@ -42,6 +42,7 @@ export class TrashBinPresenter {
             sorting: this.sortingRepository.get().map(sort => SortingMapper.fromDTOtoColumn(sort)),
             loading: this.itemsRepository.getLoading(),
             isEmptyView: this.getIsEmptyView(),
+            isSearchView: this.getIsSearchView(),
             searchQuery: this.searchRepository.get(),
             searchLabel: "Search all items",
             nameColumnId: this.nameColumnId || "id"
@@ -56,5 +57,12 @@ export class TrashBinPresenter {
         const loading = this.itemsRepository.getLoading();
         const items = this.itemsRepository.getItems();
         return !loading[LoadingActions.list] && !items.length;
+    }
+
+    private getIsSearchView() {
+        const loading = this.itemsRepository.getLoading();
+        const items = this.itemsRepository.getItems();
+        const searchQuery = this.searchRepository.get();
+        return !loading[LoadingActions.list] && !items.length && !!searchQuery;
     }
 }
