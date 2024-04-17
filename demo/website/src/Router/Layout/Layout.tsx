@@ -16,9 +16,9 @@ export const Layout = ({ children, preview = false }: LayoutProps) => {
         return <>{children}</>;
     }
     return (
-        <>
+        <div className="font-sans">
             <Header />
             <ContentWrapper>{children}</ContentWrapper>
-        </>
+        </div>
     );
 };

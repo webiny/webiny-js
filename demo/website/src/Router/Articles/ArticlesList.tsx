@@ -28,7 +28,7 @@ export const ArticlesList = ({ articles }: ArticlesListProps) => {
                         className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
                     >
                         <ArticleLink to={getLink(article.slug)}>
-                            <img className="rounded-t-lg" src={article.heroImage[0].image} alt="" />
+                            <img className="rounded-t-lg" src={article.heroImage[0].image || "https://flowbite.com/docs/images/examples/image-1@2x.jpg"} alt="" />
                         </ArticleLink>
                         <div className="p-5">
                             <ArticleLink to={getLink(article.slug)}>
