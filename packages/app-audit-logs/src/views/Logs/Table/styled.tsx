@@ -10,7 +10,12 @@ export const ActionWrapper = styled("div")<{ value: string }>`
     border-radius: 5px;
 
     ${({ value, theme }) => {
-        if (value === "CREATE" || value === "PUBLISH" || value === "SUCCESS") {
+        if (
+            value === "CREATE" ||
+            value === "PUBLISH" ||
+            value === "SUCCESS" ||
+            value === "RESTORE_FROM_TRASH"
+        ) {
             return `
                 background-color: ${theme.styles.colors.color2}10;
                 border-color: ${theme.styles.colors.color2};
@@ -26,7 +31,12 @@ export const ActionWrapper = styled("div")<{ value: string }>`
             `;
         }
 
-        if (value === "DELETE" || value === "UNPUBLISH" || value === "UNSUCCESS") {
+        if (
+            value === "DELETE" ||
+            value === "UNPUBLISH" ||
+            value === "UNSUCCESS" ||
+            value === "MOVE_TO_TRASH"
+        ) {
             return `
                 background-color: #ff000010;
                 border-color: #ff0000;
