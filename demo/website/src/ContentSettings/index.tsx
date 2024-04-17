@@ -2,13 +2,19 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { ContentLanguage, ContentRegion, Translation } from "@demo/shared";
 import { useRouter } from "@webiny/react-router";
 import { useContentRegions } from "./useContentRegions";
-import { LoadingContentSettings } from "./LoadingContentSettings";
+import { LoadingSkeleton } from "../LoadingSkeleton";
 
 interface ContentSettingsProps {
     children: React.ReactNode;
 }
 
+interface Company {
+    name: string;
+    logo: string;
+}
+
 interface ContentSettingsContext extends ContentState {
+    company: Company;
     regions: ContentRegion[];
     currentRegion: ContentRegion;
     currentLanguage: ContentLanguage;
@@ -28,7 +34,7 @@ export interface ContentState {
 
 export const ContentSettings = ({ children }: ContentSettingsProps) => {
     const { location, history } = useRouter();
-    const { regions, loading } = useContentRegions();
+    const { company, regions, loading } = useContentRegions();
     const [state, setState] = useState<ContentState>({
         currentLanguage: undefined,
         currentRegion: undefined,
@@ -90,6 +96,7 @@ export const ContentSettings = ({ children }: ContentSettingsProps) => {
 
     const context = {
         ...state,
+        company: company!,
         regions,
         currentRegion: state.currentRegion!,
         currentLanguage: state.currentLanguage!,
@@ -99,7 +106,7 @@ export const ContentSettings = ({ children }: ContentSettingsProps) => {
 
     return (
         <ContentSettingsContext.Provider value={context}>
-            {loading ? <LoadingContentSettings /> : children}
+            {loading ? <LoadingSkeleton /> : children}
         </ContentSettingsContext.Provider>
     );
 };

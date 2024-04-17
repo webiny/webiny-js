@@ -5,6 +5,12 @@ import { ContentRegion } from "@demo/shared";
 const GET_CONTENT_REGIONS = gql`
     query ContentRegions {
         demo {
+            getCompany {
+                data {
+                    name
+                    logo
+                }
+            }
             getContentRegions {
                 data {
                     id
@@ -23,6 +29,12 @@ const GET_CONTENT_REGIONS = gql`
 
 interface ContentRegionsResponse {
     demo: {
+        getCompany: {
+            data: {
+                name: string;
+                logo: string;
+            };
+        };
         getContentRegions: {
             data: Array<ContentRegion>;
         };
@@ -36,5 +48,9 @@ export const useContentRegions = () => {
         return { loading: true, regions: [] };
     }
 
-    return { loading: false, regions: data?.demo.getContentRegions.data || [] };
+    return {
+        loading: false,
+        regions: data?.demo.getContentRegions.data || [],
+        company: data?.demo.getCompany.data
+    };
 };

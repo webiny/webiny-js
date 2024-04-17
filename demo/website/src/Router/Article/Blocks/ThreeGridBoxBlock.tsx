@@ -12,7 +12,7 @@ export const ThreeGridBoxBlockComponent = ({ block }: { block: ThreeGridBoxBlock
                 <div className="space-y-8 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-12 md:space-y-0">
                 {block.boxes.map((box, index) => {
                     return (
-                        <div>
+                        <div key={index}>
                             <div className="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
                                 {box.icon ? <img src={box.icon} alt={box.title} /> : null}
                             </div>

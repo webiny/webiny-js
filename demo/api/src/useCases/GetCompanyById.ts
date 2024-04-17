@@ -1,6 +1,7 @@
 import { Company } from "@demo/shared";
 import Error from "@webiny/error";
 import { Context } from "../types";
+import { getEntryId } from "../getEntryId";
 
 export class GetCompanyById {
     private context: Context;
@@ -14,7 +15,7 @@ export class GetCompanyById {
             const companyModel = await this.getCompanyModel();
 
             const companyEntry = await this.context.cms.getEntry(companyModel, {
-                where: { entryId: id, latest: true }
+                where: { entryId: getEntryId(id), latest: true }
             });
 
             return { id, ...companyEntry.values } as Company;
