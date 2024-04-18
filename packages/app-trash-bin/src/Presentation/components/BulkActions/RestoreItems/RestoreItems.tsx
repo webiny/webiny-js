@@ -8,7 +8,7 @@ import { RestoreItemsReportMessage } from "~/Presentation/components/BulkActions
 import { TrashBinItemDTO } from "~/Domain";
 
 export const BulkActionsRestoreItems = observer(() => {
-    const { vm, restoreItem, onNavigateAfterRestoreItem } = useTrashBin();
+    const { restoreItem, onNavigateAfterRestoreItem, getRestoredItemById } = useTrashBin();
 
     const { useWorker, useButtons, useDialog } = TrashBinListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
@@ -36,10 +36,7 @@ export const BulkActionsRestoreItems = observer(() => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
                         await restoreItem(item.id);
-
-                        const restoredItem = vm.restoredItems.find(
-                            restored => restored.id === item.id
-                        );
+                        const restoredItem = getRestoredItemById(item.id);
 
                         report.success({
                             title: `${item.title}`,

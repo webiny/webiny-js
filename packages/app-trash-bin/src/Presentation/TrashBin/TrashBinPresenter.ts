@@ -49,6 +49,12 @@ export class TrashBinPresenter {
         };
     }
 
+    getRestoredItemById(id: string) {
+        const items = this.itemsRepository.getRestoredItems();
+        const restoredItem = items.find(item => item.id === id);
+        return restoredItem ? this.itemMapper.toDTO(restoredItem) : undefined;
+    }
+
     private mapItemsToDTOs(items: TrashBinItem[]) {
         return items.map(item => this.itemMapper.toDTO(item));
     }

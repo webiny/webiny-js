@@ -9,7 +9,7 @@ interface UseRestoreItemParams {
 }
 
 export const useRestoreTrashBinItem = ({ item }: UseRestoreItemParams) => {
-    const { restoreItem, onNavigateAfterRestoreItem, vm } = useTrashBin();
+    const { restoreItem, onNavigateAfterRestoreItem, getRestoredItemById } = useTrashBin();
     const { showSnackbar } = useSnackbar();
 
     const { showConfirmation } = useConfirmationDialog({
@@ -28,8 +28,7 @@ export const useRestoreTrashBinItem = ({ item }: UseRestoreItemParams) => {
             showConfirmation(async () => {
                 try {
                     await restoreItem(item.id);
-
-                    const restoredItem = vm.restoredItems.find(restored => restored.id === item.id);
+                    const restoredItem = getRestoredItemById(item.id);
 
                     showSnackbar(`${item.title} was restored successfully!`, {
                         action: restoredItem && (

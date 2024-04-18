@@ -18,4 +18,5 @@ export interface TrashBinPresenterViewModel {
 
 export interface ITrashBinPresenter {
     get vm(): TrashBinPresenterViewModel;
+    getRestoredItemById(id: string): TrashBinItemDTO | undefined;
 }

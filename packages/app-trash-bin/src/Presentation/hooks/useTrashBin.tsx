@@ -63,6 +63,11 @@ export const useTrashBin = () => {
         [context.controllers.sortItems]
     );
 
+    const getRestoredItemById = useCallback(
+        (id: string) => context.presenter.getRestoredItemById(id),
+        [context.presenter.getRestoredItemById]
+    );
+
     return {
         vm,
         onNavigateAfterRestoreItem,
@@ -72,7 +77,8 @@ export const useTrashBin = () => {
         listMoreItems,
         searchItems,
         selectItems,
-        sortItems
+        sortItems,
+        getRestoredItemById
     };
 };
 

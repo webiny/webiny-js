@@ -755,5 +755,19 @@ describe("TrashBin", () => {
                 }
             ]
         });
+
+        // We should be able to get the restored item by id
+        const restoredItem = presenter.getRestoredItemById("item-1");
+        expect(restoredItem).toMatchObject({
+            id: "item-1",
+            $selectable: true,
+            title: "Item 1",
+            location: {
+                folderId: "folder-a"
+            },
+            createdBy: identity1,
+            deletedBy: identity2,
+            deletedOn: expect.any(String)
+        });
     });
 });
