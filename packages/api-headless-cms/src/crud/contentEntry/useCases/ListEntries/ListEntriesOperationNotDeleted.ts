@@ -9,7 +9,7 @@ export class ListEntriesOperationNotDeleted implements IListEntriesOperation {
     }
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsListParams) {
-        const where = { ...params.where, deleted_not: true };
+        const where = { ...params.where, wbyDeleted_not: true };
 
         return await this.listEntries.execute(model, {
             ...params,

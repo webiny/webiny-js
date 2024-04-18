@@ -10,6 +10,6 @@ export class GetPublishedEntriesByIdsNotDeleted implements IGetPublishedEntriesB
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsGetPublishedByIdsParams) {
         const entries = await this.getPublishedEntriesByIds.execute(model, params);
-        return entries.filter(entry => !entry.deleted);
+        return entries.filter(entry => !entry.wbyDeleted);
     }
 }

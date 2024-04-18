@@ -526,7 +526,7 @@ export const createEntriesStorageOperations = (
             return entity.putBatch({
                 ...record,
                 ...updatedDeletedMetaFields,
-                deleted: storageEntry.deleted,
+                wbyDeleted: storageEntry.wbyDeleted,
                 location: storageEntry.location,
                 binOriginalFolderId: storageEntry.binOriginalFolderId
             });
@@ -663,7 +663,7 @@ export const createEntriesStorageOperations = (
             return entity.putBatch({
                 ...record,
                 ...updatedRestoredMetaFields,
-                deleted: storageEntry.deleted,
+                wbyDeleted: storageEntry.wbyDeleted,
                 location: storageEntry.location,
                 binOriginalFolderId: storageEntry.binOriginalFolderId
             });
