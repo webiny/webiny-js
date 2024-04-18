@@ -26,7 +26,7 @@ export type TrashBinProps = {
     restoreGateway: ITrashBinRestoreItemGateway<any>;
     itemMapper: ITrashBinItemMapper<any>;
     onClose?: () => void;
-    onItemRestore?: (item: TrashBinItemDTO) => Promise<void>;
+    onNavigateAfterRestoreItem?: (item: TrashBinItemDTO) => Promise<void>;
     show?: boolean;
     nameColumnId?: string;
     title?: string;
@@ -47,15 +47,15 @@ export const TrashBin = ({ render, ...rest }: TrashBinProps) => {
         setShow(false);
     }, [rest.onClose]);
 
-    const onItemRestore = useCallback(
+    const onNavigateAfterRestoreItem = useCallback(
         async (item: any) => {
-            if (typeof rest.onItemRestore === "function") {
-                rest.onItemRestore(item);
+            if (typeof rest.onNavigateAfterRestoreItem === "function") {
+                rest.onNavigateAfterRestoreItem(item);
             }
 
             onClose();
         },
-        [rest.onItemRestore, onClose]
+        [rest.onNavigateAfterRestoreItem, onClose]
     );
 
     return (
@@ -67,7 +67,7 @@ export const TrashBin = ({ render, ...rest }: TrashBinProps) => {
                             <TrashBinRenderer
                                 {...rest}
                                 onClose={onClose}
-                                onItemRestore={onItemRestore}
+                                onNavigateAfterRestoreItem={onNavigateAfterRestoreItem}
                             />
                         </TrashBinListWithConfig>
                     </AcoWithConfig>

@@ -3,18 +3,20 @@ import { useApolloClient, useModel, usePermission } from "~/admin/hooks";
 import { TrashBin as BaseTrashBin } from "@webiny/app-trash-bin";
 import {
     TrashBinDeleteItemGraphQLGateway,
+    TrashBinItemMapper,
     TrashBinListGraphQLGateway,
     TrashBinRestoreItemGraphQLGateway,
-    TrashBinItemMapper
+    TrashBinRestoreItemGraphQLGatewayWithCallback
 } from "../adapters";
 
 import { TrashBinButton } from "./TrashBinButton";
-import { useNavigateFolder } from "@webiny/app-aco";
+import { useNavigateFolder, useRecords } from "@webiny/app-aco";
 
 export const TrashBin = () => {
     const client = useApolloClient();
     const { canDeleteEntries } = usePermission();
     const { navigateToFolder } = useNavigateFolder();
+    const { getRecord } = useRecords();
     const { model } = useModel();
 
     const listGateway = useMemo(() => {
@@ -26,7 +28,8 @@ export const TrashBin = () => {
     }, [client, model]);
 
     const restoreGateway = useMemo(() => {
-        return new TrashBinRestoreItemGraphQLGateway(client, model);
+        const restoreGateway = new TrashBinRestoreItemGraphQLGateway(client, model);
+        return new TrashBinRestoreItemGraphQLGatewayWithCallback(getRecord, restoreGateway);
     }, [client, model]);
 
     const itemMapper = useMemo(() => {
@@ -46,7 +49,7 @@ export const TrashBin = () => {
             deleteGateway={deleteGateway}
             restoreGateway={restoreGateway}
             itemMapper={itemMapper}
-            onItemRestore={async item => navigateToFolder(item.location.folderId)}
+            onNavigateAfterRestoreItem={async item => navigateToFolder(item.location.folderId)}
             nameColumnId={model.titleFieldId || "id"}
             title={`Trash - ${model.name}`}
         />

@@ -249,7 +249,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                     () =>
                         client.query<GetSearchRecordResponse, GetSearchRecordQueryVariables>({
                             query: GET_RECORD,
-                            variables: { id: recordId },
+                            variables: { entryId: recordId },
                             fetchPolicy: "network-only"
                         })
                 );

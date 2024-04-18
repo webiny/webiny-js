@@ -31,7 +31,7 @@ export interface TrashBinProps {
     restoreGateway: ITrashBinRestoreItemGateway<any>;
     itemMapper: ITrashBinItemMapper<any>;
     onClose: () => void;
-    onItemRestore: (item: TrashBinItemDTO) => Promise<void>;
+    onNavigateAfterRestoreItem: (item: TrashBinItemDTO) => Promise<void>;
     sorting: Sorting[];
     title: string;
     nameColumnId?: string;
@@ -117,7 +117,7 @@ export const TrashBin = observer((props: TrashBinProps) => {
         <TrashBinProvider
             controllers={controllers}
             presenter={presenter}
-            onItemRestore={props.onItemRestore}
+            onNavigateAfterRestoreItem={props.onNavigateAfterRestoreItem}
         >
             <TrashBinOverlay onExited={props.onClose} title={props.title} />
         </TrashBinProvider>
