@@ -19,6 +19,9 @@ const createDeletedEntries = async (context: HcmsTasksContext, modelId: string, 
             permanently: false
         });
     }
+
+    // Let's wait a little bit...we need the ES index to settle down.
+    await new Promise(res => setTimeout(res, 5000));
 };
 
 const listDeletedEntries = async (context: HcmsTasksContext, modelId: string) => {
@@ -115,7 +118,7 @@ describe("Delete Trash Bin Entries", () => {
         });
     });
 
-    it("should delete entries multiple entries", async () => {
+    it("should delete multiple entries", async () => {
         const taskDefinition = createDeleteTrashBinEntriesTask();
         const { handler } = useHandler<HcmsTasksContext>({
             plugins: [taskDefinition, ...createMockModels()]
