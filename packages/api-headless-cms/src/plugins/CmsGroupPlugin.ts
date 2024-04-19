@@ -35,4 +35,3 @@ export const createCmsGroup = (group: CmsGroup): CmsGroupPlugin => {
 export const createCmsGroupPlugin = (group: CmsGroup): CmsGroupPlugin => {
     return new CmsGroupPlugin(group);
 };
-
