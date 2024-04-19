@@ -10,6 +10,7 @@ import {
     CmsModelFieldSettings as BaseCmsModelFieldSettings
 } from "~/types";
 import { createFieldStorageId } from "~/crud/contentModel/createFieldStorageId";
+import { validateStorageId } from "~/crud/contentModel/validateStorageId";
 
 const createApiName = (name: string) => {
     return upperFirst(camelCase(name));
@@ -232,24 +233,16 @@ export class CmsModelPlugin extends Plugin {
                 );
             }
 
-            let storageId = input.storageId ? lodashCamelCase(input.storageId) : null;
-            /**
-             * If defined, storageId MUST be camel cased string - for backward compatibility.
-             */
-            if (
-                storageId &&
-                (storageId.match(/^([a-zA-Z-0-9]+)$/) === null || storageId !== input.storageId)
-            ) {
-                throw new WebinyError(
-                    `Field's "storageId" of the field with "fieldId" ${input.fieldId} is not camel cased string in the content model "${model.modelId}".`,
-                    "STORAGE_ID_NOT_CAMEL_CASED_ERROR",
-                    {
-                        model,
-                        storageId,
-                        field: input
-                    }
-                );
-            } else if (!storageId) {
+            let storageId = input.storageId;
+            if (storageId) {
+                try {
+                    validateStorageId(storageId);
+                } catch (e) {
+                    throw WebinyError.from(e, {
+                        data: { model, storageId, field: input }
+                    });
+                }
+            } else {
                 storageId = createFieldStorageId(input);
             }
 
@@ -333,7 +326,17 @@ export class CmsModelPlugin extends Plugin {
     }
 }
 
+/**
+ * @deprecated Use `createCmsModelPlugin` instead.
+ */
 export const createCmsModel = (
+    model: CmsModelInput,
+    options?: CmsModelPluginOptions
+): CmsModelPlugin => {
+    return new CmsModelPlugin(model, options);
+};
+
+export const createCmsModelPlugin = (
     model: CmsModelInput,
     options?: CmsModelPluginOptions
 ): CmsModelPlugin => {
