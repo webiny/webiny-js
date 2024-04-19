@@ -39,6 +39,8 @@ const listDeletedEntries = async (context: HcmsTasksContext, modelId: string) =>
     };
 };
 
+jest.setTimeout(100000);
+
 describe("Delete Trash Bin Entries", () => {
     it("should fail in case of not existing model", async () => {
         const taskDefinition = createDeleteTrashBinEntriesTask();

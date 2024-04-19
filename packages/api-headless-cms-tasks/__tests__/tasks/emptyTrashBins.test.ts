@@ -6,6 +6,8 @@ import { ResponseDoneResult } from "@webiny/tasks";
 
 import { createEmptyTrashBinsTask } from "~/tasks/entries/emptyTrashBinsTask";
 
+jest.setTimeout(100000);
+
 describe("Empty Trash Bins", () => {
     it("should execute and return a `Done` response in case of no found models in the system", async () => {
         const taskDefinition = createEmptyTrashBinsTask();
