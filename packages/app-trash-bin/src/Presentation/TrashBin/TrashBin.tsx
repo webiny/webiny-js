@@ -34,6 +34,7 @@ export interface TrashBinProps {
     onNavigateAfterRestoreItem: (item: TrashBinItemDTO) => Promise<void>;
     sorting: Sorting[];
     title: string;
+    retentionPeriod: number;
     nameColumnId?: string;
 }
 
@@ -99,6 +100,7 @@ export const TrashBin = observer((props: TrashBinProps) => {
             selectedRepository,
             sortingRepository,
             searchRepository,
+            props.retentionPeriod,
             props.nameColumnId
         );
     }, [
@@ -106,6 +108,7 @@ export const TrashBin = observer((props: TrashBinProps) => {
         selectedRepository,
         sortingRepository,
         searchRepository,
+        props.retentionPeriod,
         props.nameColumnId
     ]);
 

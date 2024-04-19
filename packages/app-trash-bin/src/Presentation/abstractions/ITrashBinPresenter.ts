@@ -14,6 +14,7 @@ export interface TrashBinPresenterViewModel {
     searchQuery: string | undefined;
     searchLabel: string;
     nameColumnId: string;
+    retentionPeriod: string;
 }
 
 export interface ITrashBinPresenter {

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { AcoWithConfig } from "@webiny/app-aco";
 import {
     ITrashBinDeleteItemGateway,
@@ -58,6 +58,15 @@ export const TrashBin = ({ render, ...rest }: TrashBinProps) => {
         [rest.onNavigateAfterRestoreItem, onClose]
     );
 
+    const retentionPeriod = useMemo(() => {
+        // Retrieve the retention period from the environment variable WEBINY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS,
+        // or default to 90 days if not set or set to 0.
+        const retentionPeriodFromEnv = process.env["WEBINY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS"];
+        return retentionPeriodFromEnv && Number(retentionPeriodFromEnv) !== 0
+            ? Number(retentionPeriodFromEnv)
+            : 90;
+    }, []);
+
     return (
         <>
             {show && (
@@ -68,6 +77,7 @@ export const TrashBin = ({ render, ...rest }: TrashBinProps) => {
                                 {...rest}
                                 onClose={onClose}
                                 onNavigateAfterRestoreItem={onNavigateAfterRestoreItem}
+                                retentionPeriod={retentionPeriod}
                             />
                         </TrashBinListWithConfig>
                     </AcoWithConfig>

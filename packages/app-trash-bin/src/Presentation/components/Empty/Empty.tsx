@@ -14,7 +14,11 @@ export const Empty = () => {
                 {vm.isSearchView ? (
                     <EmptyView icon={<SearchIcon />} title={"No items found."} action={null} />
                 ) : (
-                    <EmptyView icon={<TrashIcon />} title={`No items in trash.`} action={null} />
+                    <EmptyView
+                        icon={<TrashIcon />}
+                        title={`Nothing found in the trash: items left in the trash are automatically deleted after ${vm.retentionPeriod}.`}
+                        action={null}
+                    />
                 )}
             </EmptyOuter>
         </EmptyWrapper>
