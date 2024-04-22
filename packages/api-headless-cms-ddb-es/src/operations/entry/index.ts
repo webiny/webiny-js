@@ -760,7 +760,7 @@ export const createEntriesStorageOperations = (
                 entity.putBatch({
                     ...record,
                     ...updatedEntryMetaFields,
-                    deleted: storageEntry.deleted,
+                    wbyDeleted: storageEntry.wbyDeleted,
                     location: storageEntry.location,
                     binOriginalFolderId: storageEntry.binOriginalFolderId
                 })
@@ -856,7 +856,7 @@ export const createEntriesStorageOperations = (
                     data: await compress(plugins, {
                         ...item.data,
                         ...updatedEntryMetaFields,
-                        deleted: entry.deleted,
+                        wbyDeleted: entry.wbyDeleted,
                         location: entry.location,
                         binOriginalFolderId: entry.binOriginalFolderId
                     })
@@ -940,7 +940,7 @@ export const createEntriesStorageOperations = (
                 entity.putBatch({
                     ...record,
                     ...updatedEntryMetaFields,
-                    deleted: storageEntry.deleted,
+                    wbyDeleted: storageEntry.wbyDeleted,
                     location: storageEntry.location,
                     binOriginalFolderId: storageEntry.binOriginalFolderId
                 })
@@ -1033,7 +1033,7 @@ export const createEntriesStorageOperations = (
                     data: await compress(plugins, {
                         ...item.data,
                         ...updatedEntryMetaFields,
-                        deleted: entry.deleted,
+                        wbyDeleted: entry.wbyDeleted,
                         location: entry.location,
                         binOriginalFolderId: entry.binOriginalFolderId
                     })

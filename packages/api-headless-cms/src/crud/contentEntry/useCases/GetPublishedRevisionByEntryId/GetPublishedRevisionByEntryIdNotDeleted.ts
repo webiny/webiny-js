@@ -11,7 +11,7 @@ export class GetPublishedRevisionByEntryIdNotDeleted implements IGetPublishedRev
     async execute(model: CmsModel, params: CmsEntryStorageOperationsGetPublishedRevisionParams) {
         const entry = await this.getPublishedRevisionByEntryId.execute(model, params);
 
-        if (!entry || entry.deleted) {
+        if (!entry || entry.wbyDeleted) {
             return null;
         }
 

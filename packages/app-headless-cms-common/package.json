@@ -19,6 +19,7 @@
     "@webiny/app-security": "0.0.0",
     "@webiny/form": "0.0.0",
     "@webiny/plugins": "0.0.0",
+    "@webiny/validation": "0.0.0",
     "graphql": "^15.7.2",
     "graphql-tag": "^2.12.6",
     "prop-types": "^15.7.2",
