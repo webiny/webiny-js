@@ -7643,13 +7643,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-design-icons/svg@npm:^0.12.1":
-  version: 0.12.1
-  resolution: "@material-design-icons/svg@npm:0.12.1"
-  checksum: c0e482fd0be54d3cc5aa84ab12bc4286443acb22bb6e0be3c5ec8e4405977031b4559a4ffbc892e59cd25f5694f65e61af647666926c0768766bfa6acd218f33
-  languageName: node
-  linkType: hard
-
 "@material-design-icons/svg@npm:^0.14.2":
   version: 0.14.2
   resolution: "@material-design-icons/svg@npm:0.14.2"
@@ -14438,7 +14431,7 @@ __metadata:
     "@babel/runtime": ^7.24.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
-    "@material-design-icons/svg": ^0.12.1
+    "@material-design-icons/svg": ^0.14.2
     "@material-symbols/svg-400": ^0.4.1
     "@minoru/react-dnd-treeview": 3.2.1
     "@types/react": 17.0.39
@@ -14608,7 +14601,7 @@ __metadata:
     "@babel/runtime": ^7.24.0
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/styled": ^11.10.6
-    "@material-design-icons/svg": ^0.12.1
+    "@material-design-icons/svg": ^0.14.2
     "@rmwc/base": 7.0.3
     "@rmwc/provider": 7.0.3
     "@types/react": 17.0.39
@@ -15512,7 +15505,7 @@ __metadata:
     "@babel/preset-typescript": ^7.23.3
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/styled": ^11.10.6
-    "@material-design-icons/svg": ^0.12.1
+    "@material-design-icons/svg": ^0.14.2
     "@types/react-helmet": ^6.1.5
     "@webiny/app": 0.0.0
     "@webiny/app-admin": 0.0.0
@@ -15766,7 +15759,7 @@ __metadata:
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.24.0
     "@emotion/styled": ^11.10.6
-    "@material-design-icons/svg": ^0.12.1
+    "@material-design-icons/svg": ^0.14.2
     "@types/react": 17.0.39
     "@webiny/app-aco": 0.0.0
     "@webiny/app-admin": 0.0.0
