@@ -14976,6 +14976,7 @@ __metadata:
     "@webiny/form": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/validation": 0.0.0
     babel-plugin-module-resolver: ^5.0.0
     graphql: ^15.7.2
     graphql-tag: ^2.12.6

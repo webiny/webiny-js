@@ -32,7 +32,7 @@ interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "storageId" | "sett
      * This is for backwards compatibility - before fields had storageId.
      *
      * This should only be populated in old model fields.
-     * News ones must have this empty.
+     * New ones must have this empty.
      */
     storageId?: string;
     /**
@@ -47,14 +47,13 @@ export interface CmsApiModel
         "isPrivate" | "fields" | "singularApiName" | "pluralApiName" | "isPlugin"
     > {
     isPrivate?: never;
-    noValidate?: never;
+    noValidate?: boolean;
     singularApiName?: string;
     pluralApiName?: string;
     fields: CmsModelFieldInput[];
 }
 
-export interface CmsApiModelFull extends Omit<CmsApiModel, "fields" | "noValidate"> {
-    noValidate: true;
+export interface CmsApiModelFull extends Omit<CmsApiModel, "fields"> {
     fields: CmsModelFieldBase[];
 }
 
@@ -70,7 +69,7 @@ interface CmsPrivateModel
         | "titleFieldId"
         | "description"
     > {
-    noValidate?: never;
+    noValidate?: boolean;
     titleFieldId?: string;
     singularApiName?: never;
     pluralApiName?: never;
@@ -78,9 +77,9 @@ interface CmsPrivateModel
     fields: CmsModelFieldInput[];
 }
 
-export interface CmsPrivateModelFull extends Omit<CmsPrivateModel, "fields" | "noValidate"> {
+export interface CmsPrivateModelFull
+    extends Omit<CmsPrivateModel, "fields" | "createdBy" | "createdOn" | "savedOn"> {
     fields: CmsModelFieldBase[];
-    noValidate: true;
 }
 
 export type CmsModelInput = CmsApiModel | CmsPrivateModel | CmsApiModelFull | CmsPrivateModelFull;
@@ -139,12 +138,13 @@ export class CmsModelPlugin extends Plugin {
             /**
              * We can safely ignore this error, because we are sure noValidate is not a model field.
              */
-            // @ts-expect-error
             delete input["noValidate"];
 
             return {
                 ...modelPlugin,
                 ...input,
+                // Since `noValidate` is set, we trust the input, and cast to `CmsModelFieldBase`.
+                fields: input.fields as CmsModelFieldBase[],
                 pluralApiName,
                 singularApiName
             };
@@ -341,16 +341,16 @@ export const createCmsModel = (
 };
 
 export const createPrivateModel = (
-    input: Omit<CmsPrivateModelFull, "group" | "isPrivate" | "noValidate">
+    input: Omit<CmsPrivateModelFull, "group" | "isPrivate">
 ): CmsPrivateModelFull => {
     return {
         authorization: false,
-        ...input,
-        isPrivate: true,
         noValidate: true,
+        isPrivate: true,
         group: {
             id: "private",
             name: "Private Models"
-        }
+        },
+        ...input
     };
 };
