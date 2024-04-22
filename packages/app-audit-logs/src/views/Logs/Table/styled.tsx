@@ -1,9 +1,10 @@
 import styled from "@emotion/styled";
 import { css } from "emotion";
+import { ActionType } from "@webiny/api-audit-logs";
 
 import { Text } from "~/components/Text";
 
-export const ActionWrapper = styled("div")<{ value: string }>`
+export const ActionWrapper = styled("div")<{ value: ActionType }>`
     padding: 0px 8px;
     width: fit-content;
     border: 1px solid;
@@ -11,10 +12,7 @@ export const ActionWrapper = styled("div")<{ value: string }>`
 
     ${({ value, theme }) => {
         if (
-            value === "CREATE" ||
-            value === "PUBLISH" ||
-            value === "SUCCESS" ||
-            value === "RESTORE_FROM_TRASH"
+            [ActionType.CREATE, ActionType.PUBLISH, ActionType.RESTORE_FROM_TRASH].includes(value)
         ) {
             return `
                 background-color: ${theme.styles.colors.color2}10;
@@ -23,7 +21,7 @@ export const ActionWrapper = styled("div")<{ value: string }>`
             `;
         }
 
-        if (value === "UPDATE") {
+        if (ActionType.UPDATE) {
             return `
                 background-color: #fac42810;
                 border-color: #fac428;
@@ -31,12 +29,7 @@ export const ActionWrapper = styled("div")<{ value: string }>`
             `;
         }
 
-        if (
-            value === "DELETE" ||
-            value === "UNPUBLISH" ||
-            value === "UNSUCCESS" ||
-            value === "MOVE_TO_TRASH"
-        ) {
+        if ([ActionType.DELETE, ActionType.UNPUBLISH, ActionType.MOVE_TO_TRASH].includes(value)) {
             return `
                 background-color: #ff000010;
                 border-color: #ff0000;

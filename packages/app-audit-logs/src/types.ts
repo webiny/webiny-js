@@ -1,10 +1,12 @@
+import { ActionType } from "@webiny/api-audit-logs";
+
 export interface AuditLog {
     id: string;
     message: string;
     app: string;
     entity: string;
     entityId: string;
-    action: string;
+    action: ActionType;
     data: string;
     timestamp: Date;
     initiator: string;

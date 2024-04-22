@@ -1,5 +1,5 @@
 import { SearchRecordItem } from "@webiny/app-aco/types";
-import { auditLogsApps } from "@webiny/api-audit-logs/config";
+import { ActionType, auditLogsApps } from "@webiny/api-audit-logs/config";
 
 import { AuditLog, User } from "~/types";
 
@@ -15,7 +15,7 @@ export type Entry = {
     entityId: string;
     action: {
         label: string;
-        value: string;
+        value: ActionType;
     };
     data: string;
     savedOn: Date;

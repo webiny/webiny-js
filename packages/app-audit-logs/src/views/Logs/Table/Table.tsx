@@ -2,6 +2,7 @@ import React, { forwardRef, useMemo } from "react";
 import { format, addMinutes } from "date-fns";
 
 import { ReactComponent as PreviewIcon } from "@material-design-icons/svg/outlined/visibility.svg";
+import { ActionType } from "@webiny/api-audit-logs";
 import { DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
@@ -19,7 +20,7 @@ import {
 
 type ActionProps = {
     label: string;
-    value: string;
+    value: ActionType;
 };
 
 export const Action = ({ label, value }: ActionProps) => {
