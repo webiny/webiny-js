@@ -40,7 +40,7 @@ export class TransformEntryRestoreFromBin {
 
         const entry: CmsEntry = {
             ...originalEntry,
-            deleted: false,
+            wbyDeleted: false,
 
             /**
              * Entry location fields. 👇

@@ -41,7 +41,7 @@ export class TransformEntryMoveToBin {
 
         const entry: CmsEntry = {
             ...originalEntry,
-            deleted: true,
+            wbyDeleted: true,
 
             /**
              * Entry location fields. 👇

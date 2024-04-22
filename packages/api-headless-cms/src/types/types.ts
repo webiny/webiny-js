@@ -621,7 +621,7 @@ export interface CmsEntry<T = CmsEntryValues> {
     /**
      * Is the entry in the bin?
      */
-    deleted?: boolean | null;
+    wbyDeleted?: boolean | null;
     /**
      * This field preserves the original folderId value, as the ROOT_FOLDER is set upon deletion.
      * The value is utilized when restoring the entry from the trash bin.

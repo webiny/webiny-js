@@ -10,6 +10,6 @@ export class GetLatestEntriesByIdsNotDeleted implements IGetLatestEntriesByIds {
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsGetLatestByIdsParams) {
         const entries = await this.getLatestEntriesByIds.execute(model, params);
-        return entries.filter(entry => !entry.deleted);
+        return entries.filter(entry => !entry.wbyDeleted);
     }
 }
