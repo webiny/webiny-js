@@ -4,7 +4,6 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-aco" },
-    { "path": "../app-bin" },
     { "path": "../app-admin" },
     { "path": "../app-graphql-playground" },
     { "path": "../app-headless-cms-common" },

@@ -4,10 +4,10 @@
   "references": [
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-aco/tsconfig.build.json" },
+    { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../api-admin-users/tsconfig.build.json" },
-    { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../api-i18n/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
