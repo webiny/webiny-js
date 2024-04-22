@@ -19,16 +19,6 @@ describe("onEntryBeforePublish", () => {
                             entry.values["articleEmbargoDate"] = entry.values["desiredEmbargoDate"];
                         }
                     });
-
-                    context.cms.onEntryAfterPublish.subscribe(async ({ model, entry }) => {
-                        if (model.modelId !== "article") {
-                            return;
-                        }
-
-                        if (entry.values["desiredEmbargoDate"]) {
-                            entry.values["articleEmbargoDate"] = entry.values["desiredEmbargoDate"];
-                        }
-                    });
                 })
             ]
         });
