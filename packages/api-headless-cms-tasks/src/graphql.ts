@@ -9,11 +9,7 @@ export const createGraphQL = () => {
             return;
         }
 
-        const models = await context.security.withoutAuthorization(async () => {
-            return (await context.cms.listModels()).filter(model => !model.isPrivate);
-        });
-
-        const genericTypePlugin = new CmsGraphQLSchemaPlugin({
+        const plugin = new CmsGraphQLSchemaPlugin({
             typeDefs: /* GraphQL */ `
                 type EmptyTrashBinResponseData {
                     id: String
@@ -23,52 +19,31 @@ export const createGraphQL = () => {
                     data: EmptyTrashBinResponseData
                     error: CmsError
                 }
-            `
-        });
 
-        genericTypePlugin.name = "headless-cms.graphql.schema.trashBin.types";
+                extend type Mutation {
+                    emptyTrashBin(modelId: String!): EmptyTrashBinResponse
+                }
+            `,
+            resolvers: {
+                Mutation: {
+                    emptyTrashBin: async (_, args) => {
+                        const response = await context.tasks.trigger({
+                            definition: EntriesTask.EmptyTrashBinByModel,
+                            input: {
+                                modelId: args.modelId
+                            }
+                        });
 
-        const modelsPlugins: CmsGraphQLSchemaPlugin<HcmsTasksContext>[] = [];
-
-        models.forEach(model => {
-            const plugin = new CmsGraphQLSchemaPlugin({
-                typeDefs: /* GraphQL */ `
-                        type ${model.singularApiName}EmptyTrashBinResponseData {
-                            id: String
-                        }
-                
-                        type ${model.singularApiName}EmptyTrashBinResponse {
-                            data: ${model.singularApiName}EmptyTrashBinResponseData
-                            error: CmsError
-                        }
-                        
-                        extend type Mutation {
-                            empty${model.singularApiName}TrashBin: EmptyTrashBinResponse
-                        }
-                    `,
-                resolvers: {
-                    Mutation: {
-                        [`empty${model.singularApiName}TrashBin`]: async () => {
-                            // Implement the logic for emptying the recycle bin.
-                            const response = await context.tasks.trigger({
-                                definition: EntriesTask.EmptyTrashBinByModel,
-                                input: {
-                                    modelId: model.modelId
-                                }
-                            });
-
-                            return new Response({
-                                id: response.id
-                            });
-                        }
+                        return new Response({
+                            id: response.id
+                        });
                     }
                 }
-            });
-
-            plugin.name = `headless-cms.graphql.schema.trashBin.${model.modelId}`;
-            modelsPlugins.push(plugin);
+            }
         });
 
-        context.plugins.register([genericTypePlugin, ...modelsPlugins]);
+        plugin.name = "headless-cms.graphql.schema.trashBin.types";
+
+        context.plugins.register([plugin]);
     });
 };
