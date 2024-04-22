@@ -49,7 +49,7 @@ export const TrashBin = () => {
             deleteGateway={deleteGateway}
             restoreGateway={restoreGateway}
             itemMapper={itemMapper}
-            onNavigateAfterRestoreItem={async item => navigateToFolder(item.location.folderId)}
+            onAfterRestoreItem={async item => navigateToFolder(item.location.folderId)}
             nameColumnId={model.titleFieldId || "id"}
             title={`Trash - ${model.name}`}
         />
