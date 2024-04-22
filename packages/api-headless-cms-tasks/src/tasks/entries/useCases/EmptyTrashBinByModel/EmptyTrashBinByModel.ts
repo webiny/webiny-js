@@ -2,9 +2,12 @@ import { ITaskResponseResult } from "@webiny/tasks";
 import { ProcessDeleteEntriesTasks } from "./ProcessDeleteEntriesTasks";
 import { CreateDeleteEntriesTasks } from "./CreateDeleteEntriesTasks";
 import { IEmptyTrashBinByModelTaskParams } from "~/types";
+import { IUseCase } from "~/tasks/IUseCase";
 
-export class EmptyTrashBinByModel {
-    public async execute(params: IEmptyTrashBinByModelTaskParams): Promise<ITaskResponseResult> {
+export class EmptyTrashBinByModel
+    implements IUseCase<IEmptyTrashBinByModelTaskParams, ITaskResponseResult>
+{
+    public async execute(params: IEmptyTrashBinByModelTaskParams) {
         const { input, response } = params;
 
         try {

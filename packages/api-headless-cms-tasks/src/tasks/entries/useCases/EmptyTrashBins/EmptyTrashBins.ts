@@ -1,8 +1,9 @@
 import { ITaskResponseResult } from "@webiny/tasks";
 import { EntriesTask, IEmptyTrashBinByModelInput, IEmptyTrashBins } from "~/types";
+import { IUseCase } from "~/tasks/IUseCase";
 
-export class EmptyTrashBins {
-    public async execute(params: IEmptyTrashBins): Promise<ITaskResponseResult> {
+export class EmptyTrashBins implements IUseCase<IEmptyTrashBins, ITaskResponseResult> {
+    public async execute(params: IEmptyTrashBins) {
         const { response, isAborted, context } = params;
 
         try {

@@ -1,14 +1,16 @@
-/**
- * Cleanup of the child tasks.
- * This code will remove all the child tasks and their logs, which have no errors in them.
- */
 import { ITask, Context, ITaskLogItemType } from "@webiny/tasks";
+import { IUseCase } from "~/tasks/IUseCase";
 
 export interface IChildTasksCleanupExecuteParams {
     context: Context;
     task: ITask;
 }
-export class ChildTasksCleanup {
+
+/**
+ * Cleanup of the child tasks.
+ * This code will remove all the child tasks and their logs, which have no errors in them.
+ */
+export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecuteParams, void> {
     public async execute(params: IChildTasksCleanupExecuteParams): Promise<void> {
         const { context, task } = params;
 
@@ -19,6 +21,7 @@ export class ChildTasksCleanup {
             // Really doubtful there will be more than 10k of child tasks.
             limit: 10000
         });
+
         if (childTasks.length === 0) {
             return;
         }

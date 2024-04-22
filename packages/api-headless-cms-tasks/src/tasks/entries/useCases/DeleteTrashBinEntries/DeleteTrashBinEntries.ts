@@ -1,9 +1,12 @@
 import { ITaskResponseResult } from "@webiny/tasks";
 import { taskRepositoryFactory } from "./TaskRepositoryFactory";
 import { IDeleteTrashBinEntriesTaskParams } from "~/types";
+import { IUseCase } from "~/tasks/IUseCase";
 
-export class DeleteTrashBinEntries {
-    public async execute(params: IDeleteTrashBinEntriesTaskParams): Promise<ITaskResponseResult> {
+export class DeleteTrashBinEntries
+    implements IUseCase<IDeleteTrashBinEntriesTaskParams, ITaskResponseResult>
+{
+    public async execute(params: IDeleteTrashBinEntriesTaskParams) {
         const { input, response, isAborted, isCloseToTimeout, context, store } = params;
 
         try {
