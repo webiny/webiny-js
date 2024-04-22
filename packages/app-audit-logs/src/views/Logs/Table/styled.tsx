@@ -1,8 +1,7 @@
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { ActionType } from "@webiny/api-audit-logs";
-
 import { Text } from "~/components/Text";
+import { ActionType } from "~/types";
 
 export const ActionWrapper = styled("div")<{ value: ActionType }>`
     padding: 0px 8px;

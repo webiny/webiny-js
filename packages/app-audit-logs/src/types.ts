@@ -1,4 +1,14 @@
-import { ActionType } from "@webiny/api-audit-logs";
+export enum ActionType {
+    CREATE = "CREATE",
+    UPDATE = "UPDATE",
+    DELETE = "DELETE",
+    MOVE_TO_TRASH = "MOVE_TO_TRASH",
+    RESTORE_FROM_TRASH = "RESTORE_FROM_TRASH",
+    PUBLISH = "PUBLISH",
+    UNPUBLISH = "UNPUBLISH",
+    IMPORT = "IMPORT",
+    EXPORT = "EXPORT"
+}
 
 export interface AuditLog {
     id: string;
