@@ -14,7 +14,7 @@ export const createDeleteTrashBinEntriesTask = () => {
         IDeleteTrashBinEntriesOutput
     >({
         id: EntriesTask.DeleteTrashBinEntries,
-        title: "Headless CMS - Delete Trash Bin Entries",
+        title: "Headless CMS - Delete trash bin entries",
         description: "Delete trash bin entries.",
         maxIterations: 2,
         run: async params => {
