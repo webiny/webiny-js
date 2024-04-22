@@ -9,7 +9,7 @@ export class ListEntriesOperationDeleted implements IListEntriesOperation {
     }
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsListParams) {
-        const where = { ...params.where, deleted: true };
+        const where = { ...params.where, wbyDeleted: true };
 
         return await this.listEntries.execute(model, {
             ...params,
