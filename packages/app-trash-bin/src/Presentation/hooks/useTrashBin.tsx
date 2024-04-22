@@ -64,8 +64,8 @@ export const useTrashBin = () => {
     );
 
     const getRestoredItemById = useCallback(
-        (id: string) => context.presenter.getRestoredItemById(id),
-        [context.presenter.getRestoredItemById]
+        (id: string) => context.controllers.getRestoredItemById.execute(id),
+        [context.controllers.getRestoredItemById]
     );
 
     return {

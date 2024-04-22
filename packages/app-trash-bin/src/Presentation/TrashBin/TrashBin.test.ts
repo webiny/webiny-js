@@ -759,7 +759,7 @@ describe("TrashBin", () => {
         });
 
         // We should be able to get the restored item by id
-        const restoredItem = presenter.getRestoredItemById("item-1");
+        const restoredItem = await controllers.getRestoredItemById.execute("item-1");
         expect(restoredItem).toMatchObject({
             id: "item-1",
             $selectable: true,

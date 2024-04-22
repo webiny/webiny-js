@@ -28,7 +28,7 @@ export const useRestoreTrashBinItem = ({ item }: UseRestoreItemParams) => {
             showConfirmation(async () => {
                 try {
                     await restoreItem(item.id);
-                    const restoredItem = getRestoredItemById(item.id);
+                    const restoredItem = await getRestoredItemById(item.id);
 
                     showSnackbar(`${item.title} was restored successfully!`, {
                         action: restoredItem && (

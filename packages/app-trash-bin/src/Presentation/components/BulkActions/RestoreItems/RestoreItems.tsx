@@ -36,7 +36,7 @@ export const BulkActionsRestoreItems = observer(() => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
                         await restoreItem(item.id);
-                        const restoredItem = getRestoredItemById(item.id);
+                        const restoredItem = await getRestoredItemById(item.id);
 
                         report.success({
                             title: `${item.title}`,
