@@ -4,11 +4,6 @@ import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components
 import { useContentModels } from "./useContentModels";
 import { useReferences } from "./useReferences";
 import { AddItemParams, SimpleItems } from "./SimpleItems";
-import styled from "@emotion/styled";
-
-const Loading = styled.div`
-    height: 50px;
-`;
 
 interface SimpleSingleRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue | undefined | null>;

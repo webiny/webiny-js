@@ -19,12 +19,8 @@ export const useTemplateTypename = () => {
         const parents: string[] = [];
         while (currentParent) {
             parents.push(createTypeName(currentParent.field.fieldId));
-            const nextParent = currentParent.getParentField(0);
-            if (nextParent && nextParent.field !== currentParent.field) {
-                currentParent = nextParent;
-            } else {
-                currentParent = currentParent.getParentField(1);
-            }
+
+            currentParent = currentParent.getParentField(0);
         }
 
         return [

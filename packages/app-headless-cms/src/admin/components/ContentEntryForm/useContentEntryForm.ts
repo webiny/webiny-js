@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useMemo, useState } from "react";
 import pick from "lodash/pick";
 import { useRouter } from "@webiny/react-router";
 import { makeDecoratable, useSnackbar } from "@webiny/app-admin";

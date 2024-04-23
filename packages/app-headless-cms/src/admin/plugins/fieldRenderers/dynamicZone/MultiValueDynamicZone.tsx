@@ -21,6 +21,7 @@ import {
 } from "~/types";
 import { makeDecoratable } from "@webiny/react-composition";
 import { TemplateProvider } from "~/admin/plugins/fieldRenderers/dynamicZone/TemplateProvider";
+import { ParentValueIndexProvider } from "~/admin/components/ModelFieldProvider";
 
 const BottomMargin = styled.div`
     margin-bottom: 20px;
@@ -204,11 +205,7 @@ export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
                             const Bind = getBind(index);
 
                             return (
-                                <ParentFieldProvider
-                                    value={value}
-                                    key={index}
-                                    path={Bind.parentName}
-                                >
+                                <ParentValueIndexProvider key={index} index={index}>
                                     <TemplateValueForm
                                         value={value}
                                         contentModel={contentModel}
@@ -220,7 +217,7 @@ export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
                                         onDelete={() => bind.removeValue(index)}
                                         onClone={() => cloneValue(index)}
                                     />
-                                </ParentFieldProvider>
+                                </ParentValueIndexProvider>
                             );
                         })}
                     </MultiValueContainer>

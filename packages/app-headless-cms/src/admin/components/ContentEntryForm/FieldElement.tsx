@@ -6,27 +6,20 @@ import { CmsModelField, CmsEditorContentModel, BindComponent } from "~/types";
 import Label from "./Label";
 import { useBind } from "./useBind";
 import { useRenderPlugins } from "./useRenderPlugins";
-import { ModelFieldProvider } from "../ModelFieldProvider";
+import { ModelFieldProvider, useModelField } from "../ModelFieldProvider";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-form");
 
-export interface FieldElementProps {
-    field: CmsModelField;
-    Bind: BindComponent;
-    contentModel: CmsEditorContentModel;
-}
+type RenderFieldProps = Omit<FieldElementProps, "field">;
 
-export const FieldElement = makeDecoratable("FieldElement", (props: FieldElementProps) => {
+const RenderField = (props: RenderFieldProps) => {
     const renderPlugins = useRenderPlugins();
-    const { field, Bind, contentModel } = props;
+    const { Bind, contentModel } = props;
+    const { field } = useModelField();
     const getBind = useBind({ Bind, field });
 
     if (typeof field.renderer === "function") {
-        return (
-            <ModelFieldProvider field={field}>
-                {field.renderer({ field, getBind, Label, contentModel })}
-            </ModelFieldProvider>
-        );
+        return <>{field.renderer({ field, getBind, Label, contentModel })}</>;
     }
 
     const renderPlugin = renderPlugins.find(
@@ -39,12 +32,25 @@ export const FieldElement = makeDecoratable("FieldElement", (props: FieldElement
         });
     }
 
-    return (
-        <ModelFieldProvider field={field}>
-            {renderPlugin.renderer.render({ field, getBind, Label, contentModel })}
-        </ModelFieldProvider>
-    );
-});
+    return <>{renderPlugin.renderer.render({ field, getBind, Label, contentModel })}</>;
+};
+
+export interface FieldElementProps {
+    field: CmsModelField;
+    Bind: BindComponent;
+    contentModel: CmsEditorContentModel;
+}
+
+export const FieldElement = makeDecoratable(
+    "FieldElement",
+    ({ field, ...props }: FieldElementProps) => {
+        return (
+            <ModelFieldProvider field={field}>
+                <RenderField {...props} />
+            </ModelFieldProvider>
+        );
+    }
+);
 
 /**
  * @deprecated Use `FieldElement` instead.
