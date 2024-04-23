@@ -26,7 +26,12 @@ export const Dashboard = React.memo(() => {
                     header={"Description"}
                     cell={<DescriptionCell />}
                 />
-                <Table.Column name={"region"} header={"Region / Language"} cell={<RegionCell />} size={100}/>
+                <Table.Column
+                    name={"region"}
+                    header={"Region / Language"}
+                    cell={<RegionCell />}
+                    size={100}
+                />
                 <Table.Column
                     name={"actions"}
                     header={"Actions"}

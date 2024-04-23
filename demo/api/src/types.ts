@@ -25,7 +25,7 @@ export interface ArticlesListOpts {
     search?: string;
     limit?: number;
     after?: string;
-    where?: Record<string, any>
+    where?: Record<string, any>;
 }
 
 export interface ArticleCloneOpts {

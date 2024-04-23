@@ -29,7 +29,12 @@ export const createArticlesTypeDefs = (): string => {
 
         extend type DemoQuery {
             getArticle(where: DemoGetArticleWhereInput): DemoArticleResponse!
-            listArticles(search: String, limit: Int, after: String, where: DemoListArticlesWhereInput): DemoArticleListResponse!
+            listArticles(
+                search: String
+                limit: Int
+                after: String
+                where: DemoListArticlesWhereInput
+            ): DemoArticleListResponse!
         }
     `;
 };
