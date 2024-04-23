@@ -5,7 +5,7 @@ export interface ILockingMechanismGetLockRecordParams {
     type: string;
 }
 
-export type ILockingMechanismGetLockRecordResult = ILockingMechanismRecord
+export type ILockingMechanismGetLockRecordResult = ILockingMechanismRecord;
 
 export interface ILockingMechanismGetLockRecord {
     execute(

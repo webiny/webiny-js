@@ -29,12 +29,9 @@ export class LockingMechanismUpdateEntryLock implements ILockingMechanismUpdateE
             ILockingMechanismUpdateEntryLockVariables
         >({
             mutation: UPDATE_ENTRY_LOCK,
-            variables: {
-                id: params.id,
-                type: params.type
-            }
+            variables: params
         });
-        if (!result.data?.lockingMechanism?.updateEntryLock?.data) {
+        if (!result.data?.lockingMechanism?.updateEntryLock) {
             throw new Error("No data returned from server.");
         }
         return result.data.lockingMechanism.updateEntryLock;

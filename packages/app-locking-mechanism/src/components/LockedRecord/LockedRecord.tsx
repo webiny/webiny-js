@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { Elevation as BaseElevation } from "@webiny/ui/Elevation";
 import { useLockingMechanism } from "~/hooks";
 import { useContentEntry } from "@webiny/app-headless-cms";
+import { LockedRecordForceUnlock } from "./LockedRecordForceUnlock";
 
 const StyledWrapper = styled("div")({
     width: "50%",
@@ -61,7 +62,13 @@ export const LockedRecord = ({ id }: ILockedRecordProps) => {
     const { getLockRecordEntry } = useLockingMechanism();
 
     const record = getLockRecordEntry(id);
-    if (!record?.$locked?.lockedBy) {
+    if (!record) {
+        return (
+            <Wrapper>
+                <Text>Could not find the lock record. Please refresh the Admin UI.</Text>
+            </Wrapper>
+        );
+    } else if (!record.$locked?.lockedBy) {
         return (
             <Wrapper>
                 <Title />
@@ -70,6 +77,7 @@ export const LockedRecord = ({ id }: ILockedRecordProps) => {
                     be wrong - use the GraphQL API in the API Playground to find out what is wrong,
                     and unlock the entry manually.
                 </Text>
+                <LockedRecordForceUnlock record={record} />
             </Wrapper>
         );
     }
@@ -83,6 +91,7 @@ export const LockedRecord = ({ id }: ILockedRecordProps) => {
                 You can either contact the user and ask them to unlock the record, or you can wait
                 for the lock to expire.
             </Details>
+            <LockedRecordForceUnlock record={record} />
         </Wrapper>
     );
 };

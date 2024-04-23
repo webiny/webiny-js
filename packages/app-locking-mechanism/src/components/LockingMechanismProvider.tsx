@@ -1,10 +1,11 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createLockingMechanism } from "~/domain/LockingMechanism";
 import {
     ILockingMechanismContext,
     ILockingMechanismError,
     IPossiblyLockingMechanismRecord,
+    IUnlockEntryParams,
     IUpdateEntryLockParams
 } from "~/types";
 import { useStateIfMounted } from "@webiny/app-admin";
@@ -42,9 +43,12 @@ export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) 
     // TODO events
     // request access
 
+    const [loading, setLoading] = useState(false);
+
     const lockingMechanism = useMemo(() => {
         return createLockingMechanism({
-            client
+            client,
+            setLoading
         });
     }, []);
 
@@ -91,6 +95,21 @@ export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) 
                 });
             });
         },
+        async unlockEntry(params: IUnlockEntryParams) {
+            const result = await lockingMechanism.unlockEntry(params);
+            if (result.error) {
+                setError(result.error);
+                return;
+            }
+            const target = result.data;
+            if (!target?.id) {
+                setError({
+                    message: "No data returned from server.",
+                    code: "NO_DATA"
+                });
+                return;
+            }
+        },
         isRecordLocked(record) {
             if (!record) {
                 return false;
@@ -109,8 +128,9 @@ export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) 
             }
             setRecords(result);
         },
+        error,
         records,
-        loading: lockingMechanism.loading
+        loading
     };
 
     return <LockingMechanismContext.Provider {...props} value={value} />;

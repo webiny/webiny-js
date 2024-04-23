@@ -1,4 +1,4 @@
-import { CmsIdentity, ILockingMechanismLockRecord } from "~/types";
+import { CmsIdentity } from "~/types";
 import { WebinyError } from "@webiny/error";
 
 export interface IValidateSameIdentityParams {

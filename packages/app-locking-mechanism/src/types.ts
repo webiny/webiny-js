@@ -35,15 +35,19 @@ export type IIsRecordLockedParams = Pick<ILockingMechanismRecord, "id" | "$locki
 
 export type IUpdateEntryLockParams = Pick<ILockingMechanismRecord, "id" | "$lockingType">;
 
+export type IUnlockEntryParams = Pick<ILockingMechanismRecord, "id" | "$lockingType">;
+
 export interface ILockingMechanismContext<
     T extends IPossiblyLockingMechanismRecord = IPossiblyLockingMechanismRecord
 > {
     readonly loading: boolean;
     readonly records: IPossiblyLockingMechanismRecord[];
-    setRecords(folderId: string, type: string, records: T[]): void;
-    updateEntryLock(params: IUpdateEntryLockParams): void;
+    readonly error?: ILockingMechanismError | null;
+    setRecords(folderId: string, type: string, records: T[]): Promise<void>;
+    updateEntryLock(params: IUpdateEntryLockParams): Promise<void>;
     isRecordLocked(params?: IIsRecordLockedParams): boolean;
     getLockRecordEntry(id: string): ILockingMechanismRecord | undefined;
+    unlockEntry(params: IUnlockEntryParams): Promise<void>;
 }
 
 export interface ILockingMechanismLockRecordAction {

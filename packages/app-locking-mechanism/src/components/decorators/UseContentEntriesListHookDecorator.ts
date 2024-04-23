@@ -1,12 +1,10 @@
 import { useEffect } from "react";
 import { useContentEntriesList } from "@webiny/app-headless-cms";
-import { createDecorator } from "@webiny/app";
 import { useLockingMechanism } from "~/hooks";
 
-export const UseContentEntriesListHookDecorator = createDecorator(
-    useContentEntriesList,
+export const UseContentEntriesListHookDecorator = useContentEntriesList.createDecorator(
     originalHook => {
-        return function () {
+        return function LockingMechanismUseContentEntriesList() {
             const value = originalHook();
             const lockingMechanism = useLockingMechanism();
 

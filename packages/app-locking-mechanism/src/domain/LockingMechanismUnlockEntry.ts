@@ -4,6 +4,11 @@ import {
     ILockingMechanismUnlockEntryResult
 } from "~/domain/abstractions/ILockingMechanismUnlockEntry";
 import { ILockingMechanismClient } from "./abstractions/ILockingMechanismClient";
+import {
+    ILockingMechanismUnlockEntryResponse,
+    ILockingMechanismUnlockEntryVariables,
+    UNLOCK_ENTRY_MUTATION
+} from "~/domain/graphql/unlockEntry";
 
 interface Params {
     client: ILockingMechanismClient;
@@ -18,6 +23,16 @@ export class LockingMechanismUnlockEntry implements ILockingMechanismUnlockEntry
     public async execute(
         params: ILockingMechanismUnlockEntryParams
     ): Promise<ILockingMechanismUnlockEntryResult> {
-        throw new Error("Method not implemented.");
+        const result = await this.client.mutation<
+            ILockingMechanismUnlockEntryResponse,
+            ILockingMechanismUnlockEntryVariables
+        >({
+            mutation: UNLOCK_ENTRY_MUTATION,
+            variables: params
+        });
+        if (!result.data?.lockingMechanism?.unlockEntry) {
+            throw new Error("No data returned from server.");
+        }
+        return result.data.lockingMechanism.unlockEntry;
     }
 }

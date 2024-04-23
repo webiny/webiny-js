@@ -17,13 +17,17 @@ import {
     ILockingMechanismListLockRecordsResult
 } from "./abstractions/ILockingMechanismListLockRecords";
 import { ILockingMechanismLockEntry } from "./abstractions/ILockingMechanismLockEntry";
-import { ILockingMechanismUnlockEntry } from "./abstractions/ILockingMechanismUnlockEntry";
+import {
+    ILockingMechanismUnlockEntry,
+    ILockingMechanismUnlockEntryResult
+} from "./abstractions/ILockingMechanismUnlockEntry";
 import { ILockingMechanismUnlockEntryRequest } from "./abstractions/ILockingMechanismUnlockEntryRequest";
 import {
     IIsRecordLockedParams,
     ILockingMechanismError,
     ILockingMechanismRecord,
     IPossiblyLockingMechanismRecord,
+    IUnlockEntryParams,
     IUpdateEntryLockParams
 } from "~/types";
 import { ILockingMechanismClient } from "./abstractions/ILockingMechanismClient";
@@ -35,10 +39,12 @@ import { ILockingMechanismUpdateEntryLock } from "~/domain/abstractions/ILocking
 
 export interface ICreateLockingMechanismParams {
     client: ApolloClient<any>;
+    setLoading: (loading: boolean) => void;
 }
 
 export interface ILockingMechanismParams {
     client: ILockingMechanismClient;
+    setLoading: (loading: boolean) => void;
     getLockRecord: ILockingMechanismGetLockRecord;
     isEntryLocked: ILockingMechanismIsEntryLocked;
     listLockRecords: ILockingMechanismListLockRecords;
@@ -58,6 +64,7 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
     private currentRecordType?: string;
     private currentFolderId?: string;
     private currentRecordsCacheKey?: string;
+    private readonly _setLoading: (loading: boolean) => void;
     public loading = false;
     public records: ILockingMechanismRecord[] = [];
 
@@ -74,6 +81,7 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
 
     public constructor(params: ILockingMechanismParams) {
         this.client = params.client;
+        this._setLoading = params.setLoading;
         this._getLockRecord = params.getLockRecord;
         this._isEntryLocked = params.isEntryLocked;
         this._listLockRecords = params.listLockRecords;
@@ -142,6 +150,23 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
         }
     }
 
+    public async unlockEntry(
+        params: IUnlockEntryParams
+    ): Promise<ILockingMechanismUnlockEntryResult> {
+        try {
+            return await this._unlockEntry.execute({
+                id: params.id,
+                type: params.$lockingType
+            });
+        } catch (ex) {
+            this.triggerOnError(ex);
+            return {
+                data: null,
+                error: ex
+            };
+        }
+    }
+
     public onError(cb: IOnErrorCb): void {
         this.onErrorCb = cb;
     }
@@ -155,6 +180,7 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
     }
 
     private setIsLoading(loading: boolean): void {
+        this._setLoading(loading);
         this.loading = loading;
     }
 
@@ -267,6 +293,9 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
                 $lockingType: type,
                 $locked: undefined
             });
+            if (record.$type !== "RECORD") {
+                return collection;
+            }
             collection.push(entryId);
             return collection;
         }, []);
@@ -309,6 +338,7 @@ export const createLockingMechanism = <T extends ILockingMechanismRecord>(
 
     return new LockingMechanism<T>({
         client,
+        setLoading: config.setLoading,
         getLockRecord,
         isEntryLocked,
         listLockRecords,

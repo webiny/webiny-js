@@ -1,6 +1,6 @@
 import { IsEntryLockedUseCase } from "~/useCases/IsEntryLocked/IsEntryLockedUseCase";
 import { WebinyError } from "@webiny/error";
-import { CmsIdentity, ILockingMechanismLockRecord } from "~/types";
+import { ILockingMechanismLockRecord } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { isLockedFactory } from "~/utils/isLockedFactory";
 import { createIdentity } from "~tests/helpers/identity";

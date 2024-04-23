@@ -1,9 +1,11 @@
+import { GenericRecord } from "@webiny/app/types";
+
 export interface ILockingMechanismIsEntryLockedParams {
     id: string;
     type: string;
 }
 
-export interface ILockingMechanismIsEntryLockedResult {}
+export type ILockingMechanismIsEntryLockedResult = GenericRecord;
 
 export interface ILockingMechanismIsEntryLocked {
     execute(

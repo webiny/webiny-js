@@ -2,7 +2,7 @@ import { createIdentity } from "~tests/helpers/identity";
 import { useGraphQLHandler } from "~tests/helpers/useGraphQLHandler";
 
 describe("list lock records", () => {
-    const { listLockRecordsQuery, lockEntryMutation } = useGraphQLHandler();
+    const { lockEntryMutation } = useGraphQLHandler();
 
     const anotherUserGraphQL = useGraphQLHandler({
         identity: createIdentity({

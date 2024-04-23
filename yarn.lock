@@ -13319,7 +13319,7 @@ __metadata:
     "@webiny/validation": 0.0.0
     jest: ^29.7.0
     lodash: 4.17.21
-    object-hash: ^2.1.1
+    object-hash: ^3.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -14094,7 +14094,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/utils": 0.0.0
     lodash: 4.17.21
-    object-hash: ^2.1.1
+    object-hash: ^3.0.0
     pluralize: ^8.0.0
     posthtml: ^0.15.0
     posthtml-noopener: ^1.0.5
@@ -15224,12 +15224,15 @@ __metadata:
     "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
+    "@emotion/styled": ^11.10.6
     "@webiny/app": 0.0.0
+    "@webiny/app-admin": 0.0.0
     "@webiny/app-headless-cms": 0.0.0
-    "@webiny/app-websockets": 0.0.0
+    "@webiny/app-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/ui": 0.0.0
+    "@webiny/utils": 0.0.0
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
     crypto-hash: ^3.0.0
@@ -31175,13 +31178,6 @@ __metadata:
   version: 4.1.1
   resolution: "object-assign@npm:4.1.1"
   checksum: fcc6e4ea8c7fe48abfbb552578b1c53e0d194086e2e6bbbf59e0a536381a292f39943c6e9628af05b5528aa5e3318bb30d6b2e53cadaf5b8fe9e12c4b69af23f
-  languageName: node
-  linkType: hard
-
-"object-hash@npm:^2.1.1":
-  version: 2.2.0
-  resolution: "object-hash@npm:2.2.0"
-  checksum: 55ba841e3adce9c4f1b9b46b41983eda40f854e0d01af2802d3ae18a7085a17168d6b81731d43fdf1d6bcbb3c9f9c56d22c8fea992203ad90a38d7d919bc28f1
   languageName: node
   linkType: hard
 

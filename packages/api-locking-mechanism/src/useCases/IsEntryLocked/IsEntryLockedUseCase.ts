@@ -1,7 +1,7 @@
 import {
     IIsEntryLockedUseCase,
     IIsEntryLockedUseCaseExecuteParams
-} from "~/abstractions/IsEntryLocked";
+} from "~/abstractions/IIsEntryLocked";
 import { IGetLockRecordUseCase } from "~/abstractions/IGetLockRecordUseCase";
 import { createLockRecordDatabaseId } from "~/utils/lockRecordDatabaseId";
 import { NotFoundError } from "@webiny/handler-graphql";

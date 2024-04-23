@@ -1,7 +1,6 @@
 import React from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
-import { i18n } from "@webiny/app/i18n";
 import { Tab, Tabs } from "@webiny/ui/Tabs";
 import { Elevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -9,8 +8,6 @@ import RevisionsList from "./ContentEntry/RevisionsList";
 import { useContentEntry } from "./hooks/useContentEntry";
 import { ContentEntryForm } from "~/admin/components/ContentEntryForm/ContentEntryForm";
 import { makeDecoratable } from "@webiny/app";
-
-const t = i18n.namespace("app-headless-cms/admin/content-model-entries/details");
 
 const DetailsContainer = styled("div")({
     height: "calc(100% - 10px)",

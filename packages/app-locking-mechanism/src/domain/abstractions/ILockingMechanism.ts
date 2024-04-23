@@ -4,8 +4,10 @@ import {
     ILockingMechanismRecord,
     IPossiblyLockingMechanismRecord,
     ILockingMechanismError,
-    ILockingMechanismLockRecord
+    ILockingMechanismLockRecord,
+    IUnlockEntryParams
 } from "~/types";
+import { ILockingMechanismUnlockEntryResult } from "./ILockingMechanismUnlockEntry";
 
 export interface ILockingMechanismUpdateEntryLockResult {
     data: ILockingMechanismLockRecord | null;
@@ -29,9 +31,7 @@ export interface ILockingMechanism<
     ): Promise<ILockingMechanismUpdateEntryLockResult>;
 
     // lockEntry(params: ILockingMechanismLockEntryParams): Promise<ILockingMechanismLockEntryResult>;
-    // unlockEntry(
-    //     params: ILockingMechanismUnlockEntryParams
-    // ): Promise<ILockingMechanismUnlockEntryResult>;
+    unlockEntry(params: IUnlockEntryParams): Promise<ILockingMechanismUnlockEntryResult>;
     // unlockEntryRequest(
     //     params: ILockingMechanismUnlockEntryRequestParams
     // ): Promise<ILockingMechanismUnlockEntryRequestResult>;

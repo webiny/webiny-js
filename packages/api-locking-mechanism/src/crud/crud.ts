@@ -17,7 +17,7 @@ import {
 } from "~/types";
 import { RECORD_LOCKING_MODEL_ID } from "./model";
 import { IGetLockRecordUseCaseExecute } from "~/abstractions/IGetLockRecordUseCase";
-import { IIsEntryLockedUseCaseExecute } from "~/abstractions/IsEntryLocked";
+import { IIsEntryLockedUseCaseExecute } from "~/abstractions/IIsEntryLocked";
 import { ILockEntryUseCaseExecute } from "~/abstractions/ILockEntryUseCase";
 import { IUnlockEntryUseCaseExecute } from "~/abstractions/IUnlockEntryUseCase";
 import { createUseCases } from "~/useCases";

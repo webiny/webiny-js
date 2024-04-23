@@ -291,7 +291,8 @@ export const usePermission = () => {
         canReadContentModelGroups,
         canCreateContentModels,
         canCreateContentModelGroups,
-        canAccessManageEndpoint
+        canAccessManageEndpoint,
+        hasFullAccess
     };
 };
 /**
