@@ -18,9 +18,9 @@ import {
 import { Breadcrumbs } from "./Breadcrumbs";
 
 const ArticlesContainer = styled.div`
-    margin: 50px auto;
+    margin: 0 auto;
     display: flex;
-    width: 1100px;
+    max-width: 1100px;
     flex-direction: column;
 `;
 
@@ -69,7 +69,7 @@ export const Article = ({ article }: ArticleProps) => {
                 if (isThreeGridBoxBlock(block)) {
                     return <ThreeGridBoxBlockComponent key={index} block={block} />;
                 }
-                return null;
+                return <pre key={index}>{JSON.stringify(block)}</pre>;
             })}
         </ArticlesContainer>
     );

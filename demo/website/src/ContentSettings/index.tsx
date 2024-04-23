@@ -64,6 +64,17 @@ export const ContentSettings = ({ children }: ContentSettingsProps) => {
             return;
         }
 
+        if (location.pathname === "/live-preview") {
+            setState(state => ({
+                ...state,
+                slug: "/live-preview",
+                regionPrefix: "",
+                currentRegion: undefined,
+                currentLanguage: undefined
+            }));
+            return;
+        }
+
         if (location.pathname !== "/") {
             const [regionSlug, langSlug] = location.pathname.slice(1).split("/")[0].split("-");
             const region = regions.find(region => region.slug === regionSlug);

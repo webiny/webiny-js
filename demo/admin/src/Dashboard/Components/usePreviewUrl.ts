@@ -8,8 +8,13 @@ const getStorageKey = (...keys: string[]) => {
     }.${keys.join(".")}`;
 };
 
-const PREVIEW_DOMAIN = `https://druexxzabmhs4.cloudfront.net`;
-// const PREVIEW_DOMAIN = `http://localhost:3000`;
+const getPreviewDomain = () => {
+    if (window.location.origin.includes("localhost")) {
+        return `http://localhost:3000`;
+    }
+
+    return `https://druexxzabmhs4.cloudfront.net`;
+};
 
 export function usePreviewUrl() {
     const { identity } = useSecurity();
@@ -32,6 +37,6 @@ export function usePreviewUrl() {
             `refreshToken=${refreshToken}`
         ];
 
-        return [PREVIEW_DOMAIN, pathname, `?${search.join("&")}`].join("");
+        return [getPreviewDomain(), pathname, `?${search.join("&")}`].join("");
     }, []);
 }

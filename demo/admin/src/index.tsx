@@ -12,6 +12,7 @@ import { SmartSeo } from "./ContentEntryForm/SmartSeo";
 import { Layout } from "./Layout";
 import { ArticleEntryList } from "./ArticleEntryList";
 import { ArticleEntryForm } from "./ArticleEntryForm";
+import { LivePreview } from "./LivePreview";
 
 export const AdminPlugins = () => {
     return (
@@ -31,6 +32,7 @@ export const AdminPlugins = () => {
                 <DecorateContentEntryFormBind />
             </ContentEntryEditorConfig>
             <ArticleEntryForm />
+            <LivePreview />
         </>
     );
 };

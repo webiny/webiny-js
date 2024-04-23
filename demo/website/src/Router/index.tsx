@@ -3,6 +3,7 @@ import { ArticleView } from "./Article/ArticleView";
 import { ArticlesListView } from "./Articles/ArticlesListView";
 import { Layout } from "./Layout/Layout";
 import { useContentSlug } from "../ContentSettings";
+import { LivePreview } from "./Article/LivePreview";
 
 export const Router = () => {
     const { slug } = useContentSlug();
@@ -14,6 +15,8 @@ export const Router = () => {
                     <ArticlesListView />
                 </Layout>
             );
+        case slug.startsWith("/live-preview"):
+            return <LivePreview />;
         case slug.length > 1:
             return (
                 <Layout>
