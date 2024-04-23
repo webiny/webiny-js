@@ -1,5 +1,7 @@
 const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
 const { getProjectApplication } = require("@webiny/cli/utils");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = async options => {
     const { overrides, logs, cwd, debug } = options;
@@ -21,6 +23,22 @@ module.exports = async options => {
     if (typeof overrides.webpack === "function") {
         webpackConfig = overrides.webpack(webpackConfig);
     }
+
+    if (!fs.existsSync(webpackConfig.output.path)) {
+        fs.mkdirSync(webpackConfig.output.path, { force: true });
+    }
+
+    fs.copyFileSync(
+        path.join(__dirname, "wrappers", "watchCommand", "handler.js"),
+        path.join(webpackConfig.output.path, webpackConfig.output.filename)
+    );
+
+    fs.copyFileSync(
+        path.join(__dirname, "wrappers", "watchCommand", "mqtt.js"),
+        path.join(webpackConfig.output.path, "mqtt.js")
+    );
+
+    webpackConfig.output.filename = `_${webpackConfig.output.filename}`;
 
     const webpack = require("webpack");
 
