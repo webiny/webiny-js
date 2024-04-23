@@ -11,7 +11,7 @@ export class GetPreviousRevisionByEntryIdNotDeleted implements IGetPreviousRevis
     async execute(model: CmsModel, params: CmsEntryStorageOperationsGetPreviousRevisionParams) {
         const entry = await this.getPreviousRevisionByEntryId.execute(model, params);
 
-        if (!entry || entry.deleted) {
+        if (!entry || entry.wbyDeleted) {
             return null;
         }
 

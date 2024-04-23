@@ -455,12 +455,12 @@ const expectedSystemFields: Record<string, Field> = {
         transform: expect.any(Function),
         label: "Status"
     },
-    deleted: {
-        id: "deleted",
+    wbyDeleted: {
+        id: "wbyDeleted",
         parents: [],
         type: "boolean",
-        storageId: "deleted",
-        fieldId: "deleted",
+        storageId: "wbyDeleted",
+        fieldId: "wbyDeleted",
         createPath: expect.any(Function),
         system: true,
         transform: expect.any(Function),

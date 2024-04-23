@@ -174,7 +174,7 @@ const createSystemFields = (): ModelFields => {
             }),
             parents: []
         },
-        deleted: {
+        wbyDeleted: {
             type: "boolean",
             unmappedType: undefined,
             keyword: false,
@@ -182,8 +182,8 @@ const createSystemFields = (): ModelFields => {
             searchable: true,
             sortable: false,
             field: createSystemField({
-                storageId: "deleted",
-                fieldId: "deleted",
+                storageId: "wbyDeleted",
+                fieldId: "wbyDeleted",
                 type: "boolean"
             }),
             parents: []
