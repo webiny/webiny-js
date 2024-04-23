@@ -9,7 +9,8 @@ import {
     CmsDynamicZoneTemplate,
     CmsModelFieldRendererProps,
     CmsModel,
-    CmsModelField
+    CmsModelField,
+    CmsDynamicZoneTemplateWithTypename
 } from "~/types";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
 import { ParentFieldProvider } from "~/admin/components/ContentEntryForm/ParentValue";
@@ -29,8 +30,8 @@ export const SingleValueDynamicZone = ({
     contentModel,
     getBind
 }: SingleValueDynamicZoneProps) => {
-    const onTemplate = (template: CmsDynamicZoneTemplate) => {
-        bind.onChange({ _templateId: template.id });
+    const onTemplate = (template: CmsDynamicZoneTemplateWithTypename) => {
+        bind.onChange({ _templateId: template.id, __typename: template.__typename });
     };
 
     const templates = field.settings?.templates || [];

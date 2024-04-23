@@ -16,7 +16,8 @@ import {
     CmsDynamicZoneTemplate,
     CmsModelFieldRendererProps,
     CmsModel,
-    CmsModelField
+    CmsModelField,
+    CmsDynamicZoneTemplateWithTypename
 } from "~/types";
 import { makeDecoratable } from "@webiny/react-composition";
 import { TemplateProvider } from "~/admin/plugins/fieldRenderers/dynamicZone/TemplateProvider";
@@ -180,8 +181,8 @@ interface MultiValueDynamicZoneProps {
 
 export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
     const { bind, getBind, contentModel } = props;
-    const onTemplate = (template: CmsDynamicZoneTemplate) => {
-        bind.appendValue({ _templateId: template.id });
+    const onTemplate = (template: CmsDynamicZoneTemplateWithTypename) => {
+        bind.appendValue({ _templateId: template.id, __typename: template.__typename });
     };
 
     const cloneValue = (index: number) => {

@@ -335,6 +335,10 @@ export interface CmsDynamicZoneTemplate {
     tags?: string[];
 }
 
+export interface CmsDynamicZoneTemplateWithTypename extends CmsDynamicZoneTemplate {
+    __typename: string;
+}
+
 export type CmsContentEntryStatusType = "draft" | "published" | "unpublished";
 
 /**
