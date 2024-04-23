@@ -13,6 +13,12 @@ export function getStackOutput<TStackOutput = Record<string, any>>(options: {
     cwd?: string;
 }): TStackOutput;
 
+export function getStackExport<TStackOutput = Record<string, any>>(options: {
+    folder: string;
+    env: string;
+    cwd?: string;
+}): TStackOutput;
+
 interface GetPulumiParams {
     projectApplication?: Record<string, unknown>;
     pulumi?: Options

@@ -140,6 +140,7 @@ const createPulumiCommand = ({
                 message += ` Alternatively, try running the same command with the ${debugFlag} flag to get more detailed information.`;
             }
 
+            // NEED THIS TODO console.log('eee', e)
             throw new Error(message, {
                 cause: {
                     error: e,
