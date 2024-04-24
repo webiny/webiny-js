@@ -5,7 +5,10 @@ import {
     IPossiblyLockingMechanismRecord,
     ILockingMechanismError,
     ILockingMechanismLockRecord,
-    IUnlockEntryParams
+    IUnlockEntryParams,
+    IFetchLockRecordParams,
+    IFetchLockRecordResult,
+    IFetchIsEntryLockedParams
 } from "~/types";
 import { ILockingMechanismUnlockEntryResult } from "./ILockingMechanismUnlockEntry";
 
@@ -24,8 +27,11 @@ export interface ILockingMechanism<
         type: string,
         records: T[]
     ): Promise<ILockingMechanismRecord[] | undefined>;
+    isLockExpired(input: Date | string): boolean;
     isRecordLocked(record: IIsRecordLockedParams): boolean;
     getLockRecordEntry(id: string): ILockingMechanismRecord | undefined;
+    fetchLockRecord(params: IFetchLockRecordParams): Promise<IFetchLockRecordResult>;
+    fetchIsEntryLocked(params: IFetchIsEntryLockedParams): Promise<boolean>;
     updateEntryLock(
         params: IUpdateEntryLockParams
     ): Promise<ILockingMechanismUpdateEntryLockResult>;

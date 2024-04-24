@@ -23,6 +23,9 @@ import {
 } from "./abstractions/ILockingMechanismUnlockEntry";
 import { ILockingMechanismUnlockEntryRequest } from "./abstractions/ILockingMechanismUnlockEntryRequest";
 import {
+    IFetchIsEntryLockedParams,
+    IFetchLockRecordParams,
+    IFetchLockRecordResult,
     IIsRecordLockedParams,
     ILockingMechanismError,
     ILockingMechanismRecord,
@@ -113,10 +116,43 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
         });
     }
 
+    public async fetchLockRecord(params: IFetchLockRecordParams): Promise<IFetchLockRecordResult> {
+        const { id, $lockingType } = params;
+
+        const { id: entryId } = parseIdentifier(id);
+
+        try {
+            const result = await this._getLockRecord.execute({
+                id: entryId,
+                type: $lockingType
+            });
+
+            return {
+                data: result.data,
+                error: result.error
+            };
+        } catch (ex) {
+            return {
+                data: null,
+                error: ex
+            };
+        }
+    }
+
+    public async fetchIsEntryLocked(params: IFetchIsEntryLockedParams): Promise<boolean> {
+        const { id, $lockingType } = params;
+
+        const { id: entryId } = parseIdentifier(id);
+        return await this._isEntryLocked.execute({
+            id: entryId,
+            type: $lockingType
+        });
+    }
+
     public getLockRecordEntry(id: string): ILockingMechanismRecord | undefined {
         return this.records.find(record => {
             const { id: entryId } = parseIdentifier(id);
-            return record.entryId === entryId && !!record.$locked;
+            return record.entryId === entryId;
         });
     }
 
@@ -129,8 +165,8 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
         if (!result?.$locked?.expiresOn) {
             return false;
         }
-        const expiresOn = new Date(result.$locked.expiresOn);
-        return expiresOn > new Date();
+        const isExpired = this.isLockExpired(result.$locked.expiresOn);
+        return !isExpired;
     }
 
     public async updateEntryLock(
@@ -154,10 +190,21 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
         params: IUnlockEntryParams
     ): Promise<ILockingMechanismUnlockEntryResult> {
         try {
-            return await this._unlockEntry.execute({
+            const result = await this._unlockEntry.execute({
                 id: params.id,
                 type: params.$lockingType
             });
+            const id = result.data?.id;
+            if (id) {
+                const index = this.records.findIndex(r => r.entryId === id);
+                if (index >= 0) {
+                    this.records[index] = {
+                        ...this.records[index],
+                        $locked: undefined
+                    };
+                }
+            }
+            return result;
         } catch (ex) {
             this.triggerOnError(ex);
             return {
@@ -177,6 +224,11 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
             return;
         }
         this.onErrorCb(error);
+    }
+
+    public isLockExpired(input: Date | string): boolean {
+        const expiresOn = new Date(input);
+        return expiresOn <= new Date();
     }
 
     private setIsLoading(loading: boolean): void {

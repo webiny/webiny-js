@@ -16,6 +16,10 @@ export type ILockingMechanismModelManager = CmsModelManager<ILockingMechanismLoc
 
 export type ILockingMechanismMeta = CmsEntryMeta;
 
+export interface IHasFullAccess {
+    (): Promise<boolean>;
+}
+
 export interface ILockingMechanismLockRecordValues {
     targetId: string;
     type: ILockingMechanismLockRecordEntryType;

@@ -1,14 +1,17 @@
-import { ILockingMechanismRecord } from "~/types";
+import { ILockingMechanismError, ILockingMechanismLockRecord } from "~/types";
 
-export interface ILockingMechanismGetLockRecordParams {
+export interface ILockingMechanismGetLockRecordExecuteParams {
     id: string;
     type: string;
 }
 
-export type ILockingMechanismGetLockRecordResult = ILockingMechanismRecord;
+export interface ILockingMechanismGetLockRecordExecuteResult {
+    data: ILockingMechanismLockRecord | null;
+    error: ILockingMechanismError | null;
+}
 
 export interface ILockingMechanismGetLockRecord {
     execute(
-        params: ILockingMechanismGetLockRecordParams
-    ): Promise<ILockingMechanismGetLockRecordResult>;
+        params: ILockingMechanismGetLockRecordExecuteParams
+    ): Promise<ILockingMechanismGetLockRecordExecuteResult>;
 }

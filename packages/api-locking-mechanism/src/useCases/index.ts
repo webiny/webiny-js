@@ -1,4 +1,4 @@
-import { CmsIdentity, ILockingMechanismModelManager } from "~/types";
+import { CmsIdentity, IHasFullAccess, ILockingMechanismModelManager } from "~/types";
 import { GetLockRecordUseCase } from "./GetLockRecord/GetLockRecordUseCase";
 import { IsEntryLockedUseCase } from "./IsEntryLocked/IsEntryLockedUseCase";
 import { LockEntryUseCase } from "./LockEntryUseCase/LockEntryUseCase";
@@ -13,6 +13,7 @@ import { getTimeout } from "~/utils/getTimeout";
 export interface CreateUseCasesParams {
     getIdentity: () => CmsIdentity;
     getManager(): Promise<ILockingMechanismModelManager>;
+    hasFullAccess: IHasFullAccess;
 }
 
 export const createUseCases = (params: CreateUseCasesParams) => {
@@ -54,7 +55,8 @@ export const createUseCases = (params: CreateUseCasesParams) => {
     const unlockEntryUseCase = new UnlockEntryUseCase({
         getLockRecordUseCase,
         getManager: params.getManager,
-        getIdentity: params.getIdentity
+        getIdentity: params.getIdentity,
+        hasFullAccess: params.hasFullAccess
     });
 
     const unlockEntryRequestUseCase = new UnlockEntryRequestUseCase({

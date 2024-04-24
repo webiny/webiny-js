@@ -2,6 +2,8 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createLockingMechanism } from "~/domain/LockingMechanism";
 import {
+    IFetchIsEntryLockedParams,
+    IFetchLockRecordParams,
     ILockingMechanismContext,
     ILockingMechanismError,
     IPossiblyLockingMechanismRecord,
@@ -96,19 +98,10 @@ export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) 
             });
         },
         async unlockEntry(params: IUnlockEntryParams) {
-            const result = await lockingMechanism.unlockEntry(params);
-            if (result.error) {
-                setError(result.error);
-                return;
-            }
-            const target = result.data;
-            if (!target?.id) {
-                setError({
-                    message: "No data returned from server.",
-                    code: "NO_DATA"
-                });
-                return;
-            }
+            return await lockingMechanism.unlockEntry(params);
+        },
+        isLockExpired(input: Date | string): boolean {
+            return lockingMechanism.isLockExpired(input);
         },
         isRecordLocked(record) {
             if (!record) {
@@ -118,6 +111,19 @@ export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) 
         },
         getLockRecordEntry(id: string) {
             return lockingMechanism.getLockRecordEntry(id);
+        },
+        async fetchLockRecord(params: IFetchLockRecordParams) {
+            try {
+                return await lockingMechanism.fetchLockRecord(params);
+            } catch (ex) {
+                return {
+                    data: null,
+                    error: ex
+                };
+            }
+        },
+        async fetchIsEntryLocked(params: IFetchIsEntryLockedParams) {
+            return lockingMechanism.fetchIsEntryLocked(params);
         },
         async setRecords(folderId, type, newRecords) {
             setRecordsIfNeeded(newRecords);

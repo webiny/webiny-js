@@ -14,17 +14,15 @@ export interface ILockingMechanismIsEntryLockedResponse {
     };
 }
 
-export const createIsEntryLockedGraphQL = () => {
-    return gql`
-        mutation LockingMechanismIsEntryLocked($id: ID!, $type: String!) {
-            lockingMechanism {
-                isEntryLocked(id: $id, type: $type) {
-                    data
-                    error {
-                        ${ERROR_FIELDS}
-                    }
+export const IS_ENTRY_LOCKED_QUERY = gql`
+    query LockingMechanismIsEntryLocked($id: ID!, $type: String!) {
+        lockingMechanism {
+            isEntryLocked(id: $id, type: $type) {
+                data
+                error {
+                    ${ERROR_FIELDS}
                 }
             }
         }
-    `;
-};
+    }
+`;

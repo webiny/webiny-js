@@ -1,5 +1,6 @@
 import { EntryTableItem } from "@webiny/app-headless-cms/types";
 import { GenericRecord } from "@webiny/app/types";
+import { ILockingMechanismUnlockEntryResult } from "~/domain/abstractions/ILockingMechanismUnlockEntry";
 
 // export interface ILockingMechanismContextRecord {
 //     id: string;
@@ -37,6 +38,15 @@ export type IUpdateEntryLockParams = Pick<ILockingMechanismRecord, "id" | "$lock
 
 export type IUnlockEntryParams = Pick<ILockingMechanismRecord, "id" | "$lockingType">;
 
+export type IFetchLockRecordParams = Pick<ILockingMechanismRecord, "id" | "$lockingType">;
+
+export type IFetchIsEntryLockedParams = Pick<ILockingMechanismRecord, "id" | "$lockingType">;
+
+export interface IFetchLockRecordResult {
+    data: ILockingMechanismLockRecord | null;
+    error: ILockingMechanismError | null;
+}
+
 export interface ILockingMechanismContext<
     T extends IPossiblyLockingMechanismRecord = IPossiblyLockingMechanismRecord
 > {
@@ -47,7 +57,10 @@ export interface ILockingMechanismContext<
     updateEntryLock(params: IUpdateEntryLockParams): Promise<void>;
     isRecordLocked(params?: IIsRecordLockedParams): boolean;
     getLockRecordEntry(id: string): ILockingMechanismRecord | undefined;
-    unlockEntry(params: IUnlockEntryParams): Promise<void>;
+    fetchLockRecord(params: IFetchLockRecordParams): Promise<IFetchLockRecordResult>;
+    fetchIsEntryLocked(params: IFetchIsEntryLockedParams): Promise<boolean>;
+    unlockEntry(params: IUnlockEntryParams): Promise<ILockingMechanismUnlockEntryResult>;
+    isLockExpired(input: Date | string): boolean;
 }
 
 export interface ILockingMechanismLockRecordAction {

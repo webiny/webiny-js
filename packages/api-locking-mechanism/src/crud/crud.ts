@@ -2,6 +2,7 @@ import { WebinyError } from "@webiny/error";
 import {
     CmsIdentity,
     Context,
+    IHasFullAccess,
     ILockingMechanism,
     ILockingMechanismLockRecordValues,
     ILockingMechanismModelManager,
@@ -62,6 +63,10 @@ export const createLockingMechanismCrud = async ({
         };
     };
 
+    const hasFullAccess: IHasFullAccess = async () => {
+        return await context.security.hasFullAccess();
+    };
+
     const onEntryBeforeLock = createTopic<OnEntryBeforeLockTopicParams>(
         "cms.lockingMechanism.onEntryBeforeLock"
     );
@@ -103,7 +108,8 @@ export const createLockingMechanismCrud = async ({
         unlockEntryRequestUseCase
     } = createUseCases({
         getIdentity,
-        getManager
+        getManager,
+        hasFullAccess
     });
 
     const listAllLockRecords: IListAllLockRecordsUseCaseExecute = async params => {

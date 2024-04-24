@@ -1,5 +1,5 @@
 import { CmsIdentity } from "~/types";
-import { WebinyError } from "@webiny/error";
+import { NotAuthorizedError } from "@webiny/api-security";
 
 export interface IValidateSameIdentityParams {
     getIdentity: () => Pick<CmsIdentity, "id">;
@@ -12,7 +12,7 @@ export const validateSameIdentity = (params: IValidateSameIdentityParams): void 
     if (identity.id === target.id) {
         return;
     }
-    throw new WebinyError({
+    throw new NotAuthorizedError({
         message: "Cannot update lock record. Record is locked by another user.",
         code: "LOCK_UPDATE_ERROR"
     });

@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect } from "react";
-import { ILockingMechanismRecord } from "~/types";
+import React, { useCallback, useEffect, useState } from "react";
+import { ILockingMechanismError, ILockingMechanismRecord } from "~/types";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import styled from "@emotion/styled";
-import { usePermission } from "@webiny/app-headless-cms";
-import { useLockingMechanism } from "~/hooks";
+import { useLockingMechanism, usePermission } from "~/hooks";
 
 const Wrapper = styled("div")({
     padding: "20px",
@@ -19,12 +18,14 @@ export interface ILockedRecordForceUnlock {
 }
 
 export const LockedRecordForceUnlock = ({ record }: ILockedRecordForceUnlock) => {
-    const { unlockEntry, error } = useLockingMechanism();
+    const { unlockEntry } = useLockingMechanism();
     const { showConfirmation: showForceUnlockConfirmation } = useConfirmationDialog({
         title: "Force unlock an entry",
         message: `You are about to forcefully unlock the "${record.meta.title}" entry. Are you sure you want to continue?`
     });
     const { showSnackbar } = useSnackbar();
+
+    const [error, setError] = useState<ILockingMechanismError>();
 
     useEffect(() => {
         if (!error?.message) {
@@ -36,7 +37,11 @@ export const LockedRecordForceUnlock = ({ record }: ILockedRecordForceUnlock) =>
 
     const onClick = useCallback(() => {
         showForceUnlockConfirmation(async () => {
-            await unlockEntry(record);
+            const result = await unlockEntry(record);
+            if (!result.error) {
+                return;
+            }
+            setError(result.error);
         });
     }, [record.id]);
 

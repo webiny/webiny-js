@@ -4,9 +4,9 @@ import {
     ILockEntryUseCaseExecuteParams
 } from "~/abstractions/ILockEntryUseCase";
 import {
-    ILockingMechanismModelManager,
     ILockingMechanismLockRecord,
-    ILockingMechanismLockRecordValues
+    ILockingMechanismLockRecordValues,
+    ILockingMechanismModelManager
 } from "~/types";
 import { IIsEntryLockedUseCase } from "~/abstractions/IIsEntryLocked";
 import { convertEntryToLockRecord } from "~/utils/convertEntryToLockRecord";
