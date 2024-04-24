@@ -149,6 +149,13 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             { cmd: "packages/api-headless-cms-aco --storage=ddb-os,ddb", storage: "ddb-os" }
         ];
     },
+    "api-headless-cms-tasks": () => {
+        return [
+            { cmd: "packages/api-headless-cms-tasks --storage=ddb", storage: "ddb" },
+            { cmd: "packages/api-headless-cms-tasks --storage=ddb-es,ddb", storage: "ddb-es" },
+            { cmd: "packages/api-headless-cms-tasks --storage=ddb-os,ddb", storage: "ddb-os" }
+        ];
+    },
     "api-apw": () => {
         return [
             { cmd: "packages/api-apw --storage=ddb", storage: "ddb" }
