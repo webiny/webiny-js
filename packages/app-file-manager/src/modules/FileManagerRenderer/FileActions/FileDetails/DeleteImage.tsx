@@ -1,11 +1,11 @@
 import React from "react";
 import mime from "mime";
-import { Tooltip } from "@webiny/ui/Tooltip";
-import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { FileItem } from "@webiny/app-admin/types";
-import { useFile, useFileDetails, useFileManagerApi } from "~/index";
+import { FileManagerViewConfig, useFile, useFileDetails, useFileManagerApi } from "~/index";
 import { useDeleteFile } from "~/hooks/useDeleteFile";
+
+const { FileDetails } = FileManagerViewConfig;
 
 const isImage = (file: FileItem) => {
     const fileType = mime.getType(file && file.name);
@@ -31,15 +31,11 @@ export const DeleteImage = () => {
     }
 
     return (
-        <Tooltip
-            content={isImage(file) ? <span>Delete image</span> : <span>Delete file</span>}
-            placement={"bottom"}
-        >
-            <IconButton
-                data-testid={"fm-delete-file-button"}
-                icon={<DeleteIcon style={{ margin: "0 8px 0 0" }} />}
-                onClick={openDialogDeleteFile}
-            />
-        </Tooltip>
+        <FileDetails.Action.IconButton
+            label={isImage(file) ? "Delete image" : "Delete file"}
+            onAction={openDialogDeleteFile}
+            icon={<DeleteIcon style={{ margin: "0 8px 0 0" }} />}
+            data-testid={"fm-delete-file-button"}
+        />
     );
 };
