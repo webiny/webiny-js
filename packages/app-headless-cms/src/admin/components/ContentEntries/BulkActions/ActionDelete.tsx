@@ -24,7 +24,7 @@ export const ActionDelete = observer(() => {
     const openDeleteEntriesDialog = () =>
         showConfirmationDialog({
             title: "Trash entries",
-            message: `You are about to trash ${entriesLabel}. Are you sure you want to continue?`,
+            message: `You are about to move ${entriesLabel} to trash. Are you sure you want to continue?`,
             loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
                 await worker.processInSeries(async ({ item, report }) => {
@@ -44,7 +44,7 @@ export const ActionDelete = observer(() => {
 
                         if (error) {
                             throw new Error(
-                                error.message || "Unknown error while trashing the entry."
+                                error.message || "Unknown error while moving the entry to trash."
                             );
                         }
 
@@ -52,7 +52,7 @@ export const ActionDelete = observer(() => {
 
                         report.success({
                             title: `${item.meta.title}`,
-                            message: "Entry successfully trashed."
+                            message: "Entry successfully moved to trash."
                         });
                     } catch (e) {
                         report.error({
@@ -67,7 +67,7 @@ export const ActionDelete = observer(() => {
                 showResultsDialog({
                     results: worker.results,
                     title: "Trash entries",
-                    message: "Finished trashing entries! See full report below:"
+                    message: "Finished moving entries to trash! See full report below:"
                 });
             }
         });

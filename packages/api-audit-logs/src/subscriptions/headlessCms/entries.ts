@@ -46,18 +46,39 @@ export const onEntryAfterUpdateHook = (context: AuditLogsContext) => {
 };
 
 export const onEntryAfterDeleteHook = (context: AuditLogsContext) => {
-    context.cms.onEntryAfterDelete.subscribe(async ({ model, entry }) => {
+    context.cms.onEntryAfterDelete.subscribe(async ({ model, entry, permanent }) => {
         if (model.isPrivate || isSearchModelEntry(entry.modelId)) {
             return;
         }
         try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY.DELETE);
-
-            await createAuditLog("Entry deleted", entry, entry.entryId, context);
+            if (permanent) {
+                const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY.DELETE);
+                await createAuditLog("Entry deleted", entry, entry.entryId, context);
+            } else {
+                const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY.MOVE_TO_TRASH);
+                await createAuditLog("Entry moved to trash", entry, entry.entryId, context);
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onEntryAfterDeleteHook hook",
                 code: "AUDIT_LOGS_AFTER_ENTRY_DELETE_HOOK"
+            });
+        }
+    });
+};
+
+export const onEntryAfterRestoreFromTrashHook = (context: AuditLogsContext) => {
+    context.cms.onEntryAfterRestoreFromBin.subscribe(async ({ model, entry }) => {
+        if (model.isPrivate || isSearchModelEntry(entry.modelId)) {
+            return;
+        }
+        try {
+            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY.RESTORE_FROM_TRASH);
+            await createAuditLog("Entry restored from trash", entry, entry.entryId, context);
+        } catch (error) {
+            throw WebinyError.from(error, {
+                message: "Error while executing onEntryAfterRestoreFromTrashHook hook",
+                code: "AUDIT_LOGS_AFTER_ENTRY_RESTORE_FROM_TRASH_HOOK"
             });
         }
     });

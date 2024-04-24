@@ -15,6 +15,7 @@ export class TrashBinPresenter {
     private sortingRepository: ISortingRepository;
     private searchRepository: ISearchRepository;
     private itemMapper: ITrashBinItemMapper<TrashBinItem>;
+    private readonly retentionPeriod: number;
     private readonly nameColumnId: string | undefined;
 
     constructor(
@@ -22,6 +23,7 @@ export class TrashBinPresenter {
         selectedRepository: ISelectedItemsRepository,
         sortingRepository: ISortingRepository,
         searchRepository: ISearchRepository,
+        retentionPeriod: number,
         nameColumnId?: string
     ) {
         this.itemsRepository = itemsRepository;
@@ -29,6 +31,7 @@ export class TrashBinPresenter {
         this.sortingRepository = sortingRepository;
         this.searchRepository = searchRepository;
         this.itemMapper = new TrashBinItemMapper();
+        this.retentionPeriod = retentionPeriod;
         this.nameColumnId = nameColumnId;
         makeAutoObservable(this);
     }
@@ -42,9 +45,11 @@ export class TrashBinPresenter {
             sorting: this.sortingRepository.get().map(sort => SortingMapper.fromDTOtoColumn(sort)),
             loading: this.itemsRepository.getLoading(),
             isEmptyView: this.getIsEmptyView(),
+            isSearchView: this.getIsSearchView(),
             searchQuery: this.searchRepository.get(),
             searchLabel: "Search all items",
-            nameColumnId: this.nameColumnId || "id"
+            nameColumnId: this.nameColumnId || "id",
+            retentionPeriod: this.getRetentionPeriod()
         };
     }
 
@@ -56,5 +61,19 @@ export class TrashBinPresenter {
         const loading = this.itemsRepository.getLoading();
         const items = this.itemsRepository.getItems();
         return !loading[LoadingActions.list] && !items.length;
+    }
+
+    private getIsSearchView() {
+        const loading = this.itemsRepository.getLoading();
+        const items = this.itemsRepository.getItems();
+        const searchQuery = this.searchRepository.get();
+        return !loading[LoadingActions.list] && !items.length && !!searchQuery;
+    }
+
+    private getRetentionPeriod() {
+        if (this.retentionPeriod === 1) {
+            return "1 day";
+        }
+        return `${this.retentionPeriod} days`;
     }
 }

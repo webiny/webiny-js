@@ -9,10 +9,12 @@ export interface TrashBinPresenterViewModel {
     sorting: ColumnSorting[];
     loading: Record<string, boolean>;
     isEmptyView: boolean;
+    isSearchView: boolean;
     meta: TrashBinMetaResponse;
     searchQuery: string | undefined;
     searchLabel: string;
     nameColumnId: string;
+    retentionPeriod: string;
 }
 
 export interface ITrashBinPresenter {

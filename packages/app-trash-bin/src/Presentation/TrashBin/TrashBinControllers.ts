@@ -2,6 +2,7 @@ import { ISortingRepository } from "@webiny/app-utils";
 import { ISearchRepository, ISelectedItemsRepository, ITrashBinItemsRepository } from "~/Domain";
 import {
     DeleteItemController,
+    GetRestoredItemByIdController,
     ListItemsController,
     ListMoreItemsController,
     RestoreItemController,
@@ -11,6 +12,7 @@ import {
 } from "~/Presentation/TrashBin/controllers";
 import {
     DeleteItemUseCase,
+    GetRestoredItemUseCase,
     ListItemsUseCase,
     ListItemsUseCaseWithSearch,
     ListItemsUseCaseWithSorting,
@@ -68,6 +70,9 @@ export class TrashBinControllers {
         // Restore Item UseCase
         const restoreItemUseCase = () => new RestoreItemUseCase(this.itemsRepository);
 
+        // Get RestoredItem UseCase
+        const getRestoredItemUseCase = () => new GetRestoredItemUseCase(this.itemsRepository);
+
         // Create controllers
         const listItems = new ListItemsController(listItemsUseCase);
         const listMoreItems = new ListMoreItemsController(listMoreItemsUseCase);
@@ -76,6 +81,7 @@ export class TrashBinControllers {
         const selectItems = new SelectItemsController(selectItemsUseCase);
         const sortItems = new SortItemsController(listItemsUseCase, sortItemsUseCase);
         const searchItems = new SearchItemsController(listItemsUseCase, searchItemsUseCase);
+        const getRestoredItemById = new GetRestoredItemByIdController(getRestoredItemUseCase);
 
         return {
             listItems,
@@ -84,7 +90,8 @@ export class TrashBinControllers {
             restoreItem,
             selectItems,
             sortItems,
-            searchItems
+            searchItems,
+            getRestoredItemById
         };
     }
 }

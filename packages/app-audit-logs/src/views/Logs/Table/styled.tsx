@@ -1,16 +1,18 @@
 import styled from "@emotion/styled";
 import { css } from "emotion";
-
 import { Text } from "~/components/Text";
+import { ActionType } from "~/types";
 
-export const ActionWrapper = styled("div")<{ value: string }>`
+export const ActionWrapper = styled("div")<{ value: ActionType }>`
     padding: 0px 8px;
     width: fit-content;
     border: 1px solid;
     border-radius: 5px;
 
     ${({ value, theme }) => {
-        if (value === "CREATE" || value === "PUBLISH" || value === "SUCCESS") {
+        if (
+            [ActionType.CREATE, ActionType.PUBLISH, ActionType.RESTORE_FROM_TRASH].includes(value)
+        ) {
             return `
                 background-color: ${theme.styles.colors.color2}10;
                 border-color: ${theme.styles.colors.color2};
@@ -18,7 +20,7 @@ export const ActionWrapper = styled("div")<{ value: string }>`
             `;
         }
 
-        if (value === "UPDATE") {
+        if (ActionType.UPDATE) {
             return `
                 background-color: #fac42810;
                 border-color: #fac428;
@@ -26,7 +28,7 @@ export const ActionWrapper = styled("div")<{ value: string }>`
             `;
         }
 
-        if (value === "DELETE" || value === "UNPUBLISH" || value === "UNSUCCESS") {
+        if ([ActionType.DELETE, ActionType.UNPUBLISH, ActionType.MOVE_TO_TRASH].includes(value)) {
             return `
                 background-color: #ff000010;
                 border-color: #ff0000;

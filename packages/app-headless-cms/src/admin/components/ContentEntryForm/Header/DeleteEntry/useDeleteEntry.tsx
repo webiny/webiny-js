@@ -24,12 +24,12 @@ export const useDeleteEntry = (): UseDeleteEntryDialogResponse => {
 
     const title = get(entry, "meta.title");
     const { showConfirmation } = useConfirmationDialog({
-        title: "Delete content entry",
+        title: "Trash entry",
         message: (
             <p>
-                You are about to delete this content entry and all of its revisions!
+                Are you sure you want to move <strong>{title}</strong> to trash?
                 <br />
-                Are you sure you want to permanently delete <strong>{title}</strong>?
+                This action will include all of its revisions?
             </p>
         ),
         dataTestId: "cms.content-form.header.delete-dialog"
@@ -46,11 +46,11 @@ export const useDeleteEntry = (): UseDeleteEntryDialogResponse => {
                 });
 
                 if (error) {
-                    showDialog(error.message, { title: "Could not delete content!" });
+                    showDialog(error.message, { title: `Could not move ${title} to trash!` });
                     return;
                 }
 
-                showSnackbar(`${title} was deleted successfully!`);
+                showSnackbar(`${title} has been moved to trash successfully!`);
                 removeRecordFromCache(entry.id);
                 navigateToLatestFolder();
 
