@@ -1,11 +1,19 @@
 import React, { useMemo } from "react";
+import { css } from "emotion";
 import styled from "@emotion/styled";
-import { useWcp } from "@webiny/app-admin";
 import { ListItem } from "@webiny/ui/List";
-import { subFooter } from "./Styled";
 import { config as appConfig } from "@webiny/app/config";
 import { Typography } from "@webiny/ui/Typography";
 import { Tooltip } from "@webiny/ui/Tooltip";
+import { useWcp } from "~/index";
+
+export const subFooter = css`
+    .mdc-drawer &.mdc-list-item {
+        border-top: 1px solid var(--mdc-theme-on-background);
+        padding: 10px 16px;
+        margin: 10px 0 0;
+    }
+`;
 
 const WcpBadge = styled.div`
     background-color: var(--mdc-theme-primary, #6200ee);
@@ -19,7 +27,7 @@ const WcpBadge = styled.div`
     margin-left: 5px;
 `;
 
-export const WebinyVersionListItem = () => {
+export const Version = () => {
     const wbyVersion = appConfig.getKey("WEBINY_VERSION", process.env.REACT_APP_WEBINY_VERSION);
     const wcp = useWcp();
 
