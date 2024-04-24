@@ -7,7 +7,7 @@ import { TrashBinItemDTO } from "~/Domain";
 export interface TrashBinContext {
     controllers: ITrashBinControllers;
     presenter: ITrashBinPresenter;
-    onAfterRestoreItem: (item: TrashBinItemDTO) => Promise<void>;
+    onItemAfterRestore: (item: TrashBinItemDTO) => Promise<void>;
 }
 
 const { Provider, useHook } = createGenericContext<TrashBinContext>("TrashBinContext");
@@ -23,9 +23,9 @@ export const useTrashBin = () => {
         });
     }, [context.presenter]);
 
-    const onAfterRestoreItem = useCallback(
-        (item: TrashBinItemDTO) => context.onAfterRestoreItem(item),
-        [context.onAfterRestoreItem]
+    const onItemAfterRestore = useCallback(
+        (item: TrashBinItemDTO) => context.onItemAfterRestore(item),
+        [context.onItemAfterRestore]
     );
 
     const deleteItem = useCallback(
@@ -70,7 +70,7 @@ export const useTrashBin = () => {
 
     return {
         vm,
-        onAfterRestoreItem,
+        onItemAfterRestore,
         deleteItem,
         restoreItem,
         listItems,

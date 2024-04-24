@@ -7,7 +7,7 @@ import { TrashBin } from "../TrashBin";
 
 export type TrashBinRendererProps = Omit<TrashBinProps, "render"> & {
     onClose: () => void;
-    onAfterRestoreItem: (item: TrashBinItemDTO) => void;
+    onItemAfterRestore: (item: TrashBinItemDTO) => void;
     retentionPeriod: number;
 };
 

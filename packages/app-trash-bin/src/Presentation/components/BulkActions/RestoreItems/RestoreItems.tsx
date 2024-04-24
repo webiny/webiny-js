@@ -8,7 +8,7 @@ import { RestoreItemsReportMessage } from "~/Presentation/components/BulkActions
 import { TrashBinItemDTO } from "~/Domain";
 
 export const BulkActionsRestoreItems = observer(() => {
-    const { restoreItem, onAfterRestoreItem, getRestoredItemById } = useTrashBin();
+    const { restoreItem, onItemAfterRestore, getRestoredItemById } = useTrashBin();
 
     const { useWorker, useButtons, useDialog } = TrashBinListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
@@ -22,9 +22,9 @@ export const BulkActionsRestoreItems = observer(() => {
     const onLocationClick = useCallback(
         async (item: TrashBinItemDTO) => {
             hideResultsDialog();
-            await onAfterRestoreItem(item);
+            await onItemAfterRestore(item);
         },
-        [onAfterRestoreItem]
+        [onItemAfterRestore]
     );
 
     const openRestoreEntriesDialog = () =>

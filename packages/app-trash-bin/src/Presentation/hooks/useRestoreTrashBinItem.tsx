@@ -9,7 +9,7 @@ interface UseRestoreItemParams {
 }
 
 export const useRestoreTrashBinItem = ({ item }: UseRestoreItemParams) => {
-    const { restoreItem, onAfterRestoreItem, getRestoredItemById } = useTrashBin();
+    const { restoreItem, onItemAfterRestore, getRestoredItemById } = useTrashBin();
     const { showSnackbar } = useSnackbar();
 
     const { showConfirmation } = useConfirmationDialog({
@@ -34,7 +34,7 @@ export const useRestoreTrashBinItem = ({ item }: UseRestoreItemParams) => {
                         action: restoredItem && (
                             <SnackbarAction
                                 label="Show location"
-                                onClick={() => onAfterRestoreItem(restoredItem)}
+                                onClick={() => onItemAfterRestore(restoredItem)}
                             />
                         )
                     });
