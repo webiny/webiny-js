@@ -100,7 +100,7 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             location: {
                 type: "map"
             },
-            deleted: {
+            wbyDeleted: {
                 type: "boolean"
             },
             binOriginalFolderId: {

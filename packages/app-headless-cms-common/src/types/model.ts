@@ -1,3 +1,4 @@
+import { Validator } from "@webiny/validation/types";
 import { CmsModelFieldValidator } from "~/types/validation";
 import {
     CmsDynamicZoneTemplate,
@@ -31,7 +32,7 @@ export type CmsModelField<T = unknown> = T & {
     label: string;
     helpText?: string;
     placeholderText?: string;
-    validation?: CmsModelFieldValidator[];
+    validation?: (CmsModelFieldValidator | Validator)[];
     listValidation?: CmsModelFieldValidator[];
     multipleValues?: boolean;
     predefinedValues?: CmsEditorFieldPredefinedValues;
