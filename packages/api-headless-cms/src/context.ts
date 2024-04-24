@@ -33,14 +33,21 @@ export interface CrudParams {
 
 export const createContextPlugin = ({ storageOperations }: CrudParams) => {
     const plugin = new ContextPlugin<CmsContext>(async context => {
-        const { type, locale } = await getParameters(context);
+        const { type, locale: localeCode } = await getParameters(context);
+
+        if (localeCode) {
+            const locale = context.i18n.getLocale(localeCode);
+            if (locale) {
+                context.i18n.setContentLocale(locale);
+            }
+        }
 
         const getLocale = () => {
-            const systemLocale = context.i18n.getLocale(locale);
-            if (!systemLocale) {
-                throw new WebinyError(`There is no locale "${locale}" in the system.`);
+            const locale = context.i18n.getContentLocale();
+            if (!locale) {
+                throw new WebinyError("Missing content locale in cms context.ts.", "LOCALE_ERROR");
             }
-            return systemLocale;
+            return locale;
         };
 
         const getIdentity = () => {
@@ -75,7 +82,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
 
             context.cms = {
                 type,
-                locale,
+                locale: localeCode,
                 getLocale,
                 READ: type === "read",
                 PREVIEW: type === "preview",
