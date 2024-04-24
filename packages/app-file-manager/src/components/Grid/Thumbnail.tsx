@@ -7,9 +7,9 @@ import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileMana
  */
 export const Thumbnail = () => {
     const { file } = useFile();
-    const { fileDetails, getThumbnailRenderer } = useFileManagerViewConfig();
+    const { browser, getThumbnailRenderer } = useFileManagerViewConfig();
 
-    const renderer = getThumbnailRenderer(fileDetails.thumbnails, file);
+    const renderer = getThumbnailRenderer(browser.grid.itemThumbnails, file);
 
     return <>{renderer?.element || null}</>;
 };

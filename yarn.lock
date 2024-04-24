@@ -14869,7 +14869,6 @@ __metadata:
     emotion: ^10.0.17
     graphql: ^15.7.2
     graphql-tag: ^2.12.6
-    invariant: ^2.2.4
     lodash: 4.17.21
     mime: ^2.4.2
     minimatch: ^5.1.0

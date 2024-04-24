@@ -90,7 +90,7 @@ const FileDetailsInner = ({ file, actions, ...props }: FileDetailsInnerProps) =>
                     <Content>
                         <Content.Panel flex={parseFloat(leftPanel)}>
                             <Elevation z={2} style={{ margin: 20 }}>
-                                <Actions file={file} actions={actions} />
+                                <Actions actions={actions} />
                                 <Preview />
                                 <PreviewMeta />
                             </Elevation>
