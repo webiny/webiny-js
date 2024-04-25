@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
+import styled from "@emotion/styled";
 import { ILockingMechanismError, ILockingMechanismRecord } from "~/types";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
-import styled from "@emotion/styled";
 import { useLockingMechanism, usePermission } from "~/hooks";
 import { useRouter } from "@webiny/react-router";
 import { useContentEntriesList } from "@webiny/app-headless-cms";
@@ -41,18 +41,7 @@ export const LockedRecordForceUnlock = ({ record }: ILockedRecordForceUnlock) =>
         showSnackbar(error.message);
     }, [error?.message]);
 
-    const onClickReload = useCallback(() => {
-        showForceUnlockConfirmation(async () => {
-            const result = await unlockEntryForce(record);
-            if (!result.error) {
-                window.location.reload();
-                return;
-            }
-            setError(result.error);
-        });
-    }, [record.id]);
-
-    const onClickGoBack = useCallback(() => {
+    const onClick = useCallback(() => {
         showForceUnlockConfirmation(async () => {
             const result = await unlockEntryForce(record);
             if (!result.error) {
@@ -73,8 +62,7 @@ export const LockedRecordForceUnlock = ({ record }: ILockedRecordForceUnlock) =>
             <Text>
                 Because you have a full access to the system, you can force unlock the record.
             </Text>
-            <Button onClick={onClickReload}>Unlock and reload</Button>
-            <Button onClick={onClickGoBack}>Unlock and go back</Button>
+            <Button onClick={onClick}>Unlock and go back</Button>
         </Wrapper>
     );
 };

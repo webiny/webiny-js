@@ -196,16 +196,22 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
                 type: params.$lockingType,
                 force
             });
+
             const id = result.data?.id;
-            if (id) {
-                const index = this.records.findIndex(r => r.entryId === id);
-                if (index >= 0) {
-                    this.records[index] = {
-                        ...this.records[index],
-                        $locked: undefined
-                    };
-                }
+            if (!id) {
+                return result;
             }
+            const index = this.records.findIndex(r => r.entryId === id);
+            if (index === -1) {
+                return result;
+            }
+
+            this.records[index] = {
+                ...this.records[index],
+                $locked: undefined,
+                $selectable: true
+            };
+
             return result;
         } catch (ex) {
             this.triggerOnError(ex);

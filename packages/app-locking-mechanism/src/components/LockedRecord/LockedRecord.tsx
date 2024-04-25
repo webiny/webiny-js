@@ -62,6 +62,7 @@ export const LockedRecord = ({ id }: ILockedRecordProps) => {
     const { getLockRecordEntry } = useLockingMechanism();
 
     const record = getLockRecordEntry(id);
+
     if (!record) {
         return (
             <Wrapper>
