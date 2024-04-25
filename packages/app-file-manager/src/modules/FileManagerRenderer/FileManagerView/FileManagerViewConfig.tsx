@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { createConfigurableComponent } from "@webiny/react-properties";
 import { Browser, BrowserConfig } from "./configComponents/Browser";
 import { FileDetails, FileDetailsConfig } from "./configComponents/FileDetails";
+import { getThumbnailRenderer } from "./getThumbnailRenderer";
 
 const base = createConfigurableComponent<FileManagerViewConfigData>("FileManagerView");
 
@@ -18,10 +19,18 @@ export function useFileManagerViewConfig() {
 
     const browser = config.browser || {};
 
+    const fileDetailsActions = [...(config.fileDetails?.actions || [])];
+    const fileDetailsThumbnails = [...(config.fileDetails?.thumbnails || [])];
+
     return useMemo(
         () => ({
+            getThumbnailRenderer,
             browser: {
                 ...browser,
+                grid: {
+                    itemActions: [...(browser.grid?.itemActions || [])],
+                    itemThumbnails: [...(browser.grid?.itemThumbnails || [])]
+                },
                 bulkActions: [...(browser.bulkActions || [])],
                 bulkEditFields: [...(browser.bulkEditFields || [])],
                 filterByTags: browser.filterByTags ?? false,
@@ -29,6 +38,8 @@ export function useFileManagerViewConfig() {
                 filtersToWhere: [...(browser.filtersToWhere || [])]
             },
             fileDetails: {
+                actions: fileDetailsActions,
+                thumbnails: fileDetailsThumbnails,
                 groupFields: config.fileDetails?.groupFields ?? false,
                 width: config.fileDetails?.width ?? "1000px",
                 fields: config.fileDetails?.fields ?? []
