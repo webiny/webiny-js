@@ -12,7 +12,8 @@ import {
     LexicalEditor,
     NodeSelection,
     RangeSelection,
-    SELECTION_CHANGE_COMMAND
+    SELECTION_CHANGE_COMMAND,
+    BLUR_COMMAND
 } from "lexical";
 
 import { $isAutoLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND } from "@webiny/lexical-nodes";
@@ -21,6 +22,7 @@ import { getSelectedNode } from "~/utils/getSelectedNode";
 import { sanitizeUrl } from "~/utils/sanitizeUrl";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
 import { isUrlLinkReference } from "~/utils/isUrlLinkReference";
+import { isChildOfLinkEditor } from "./isChildOfLinkEditor";
 
 function FloatingLinkEditor({
     editor,
@@ -241,7 +243,7 @@ function useFloatingLinkEditorToolbar(
 
     const updateToolbar = useCallback(() => {
         const selection = $getSelection();
-        if ($isRangeSelection(selection)) {
+        if ($isRangeSelection(selection) && selection.dirty) {
             const node = getSelectedNode(selection);
             const linkParent = $findMatchingParent(node, $isLinkNode);
             const autoLinkParent = $findMatchingParent(node, $isAutoLinkNode);
@@ -252,11 +254,13 @@ function useFloatingLinkEditorToolbar(
             } else {
                 setIsLink(false);
             }
+        } else {
+            setIsLink(false);
         }
     }, []);
 
     useEffect(() => {
-        return editor.registerCommand(
+        const offSelectionChange = editor.registerCommand(
             SELECTION_CHANGE_COMMAND,
             (_payload, newEditor) => {
                 updateToolbar();
@@ -265,6 +269,23 @@ function useFloatingLinkEditorToolbar(
             },
             COMMAND_PRIORITY_CRITICAL
         );
+
+        const offBlur = editor.registerCommand(
+            BLUR_COMMAND,
+            _payload => {
+                if (!isChildOfLinkEditor(_payload.relatedTarget as HTMLElement)) {
+                    setIsLink(false);
+                }
+
+                return false;
+            },
+            COMMAND_PRIORITY_LOW
+        );
+
+        return () => {
+            offSelectionChange();
+            offBlur();
+        };
     }, [editor, updateToolbar]);
 
     return isLink
