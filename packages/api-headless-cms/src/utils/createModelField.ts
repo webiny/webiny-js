@@ -23,7 +23,10 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         predefinedValues = {
             values: [],
             enabled: false
-        }
+        },
+        helpText,
+        placeholderText,
+        renderer
     } = params;
 
     const fieldId = initialFieldId ? camelCase(initialFieldId) : camelCase(label);
@@ -39,6 +42,9 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         listValidation,
         validation,
         multipleValues,
-        predefinedValues
+        predefinedValues,
+        helpText,
+        placeholderText,
+        renderer
     };
 };
