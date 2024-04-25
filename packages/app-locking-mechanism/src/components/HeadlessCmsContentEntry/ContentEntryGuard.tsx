@@ -41,7 +41,7 @@ export const ContentEntryGuard = (props: IContentEntryGuardProps) => {
     const [locked, setLocked] = useState<boolean | undefined>();
 
     useEffect(() => {
-        if (!entry.id) {
+        if (!entry.id || loading || locked !== undefined) {
             return;
         }
         (async () => {
@@ -68,40 +68,4 @@ export const ContentEntryGuard = (props: IContentEntryGuardProps) => {
     }
 
     return children;
-
-    /*
-    const contentEntriesList = useContentEntriesList();
-
-    useEffect(() => {
-        setRecords(contentEntriesList.folderId, model.modelId, contentEntriesList.records);
-    }, [entry.id, model.modelId, contentEntriesList.records]);
-
-    const record = useMemo(() => {
-        return getLockRecordEntry(entry.id);
-    }, [entry.id, records]);
-
-    const isLocked = useMemo(() => {
-        if (!record) {
-            return false;
-        }
-        return isRecordLocked(record);
-    }, [record?.id]);
-
-    if (lockingMechanismLoading || loading || !record || records.length === 0) {
-        return (
-            <DetailsContainer>
-                <RenderBlock>
-                    <Elevation z={2} className={elevationStyles}>
-                        <CircularProgress />
-                    </Elevation>
-                </RenderBlock>
-            </DetailsContainer>
-        );
-    } else if (isLocked) {
-        return <LockedRecord id={entry.id} />;
-    }
-
-    return children;
-    
-    */
 };

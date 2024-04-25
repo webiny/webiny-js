@@ -6,6 +6,8 @@ import { useLockingMechanism } from "~/hooks";
 import { UseContentEntriesListHookDecorator } from "./decorators/UseContentEntriesListHookDecorator";
 import { CellActions } from "@webiny/app-headless-cms/admin/components/ContentEntries/Table/Cells";
 import styled from "@emotion/styled";
+import { UseSaveAndPublishHookDecorator } from "~/components/decorators/UseSaveAndPublishHookDecorator";
+import { UseSaveHookDecorator } from "~/components/decorators/UseSaveHookDecorator";
 
 const CenterAlignment = styled("div")({
     display: "block",
@@ -46,6 +48,8 @@ export const HeadlessCmsActionsAcoCell = () => {
     return (
         <ContentEntryListConfig>
             <UseContentEntriesListHookDecorator />
+            <UseSaveAndPublishHookDecorator />
+            <UseSaveHookDecorator />
             <LockingMechanismCellActions />
         </ContentEntryListConfig>
     );

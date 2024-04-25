@@ -1,5 +1,4 @@
-// TODO change to 600 before commit
-const defaultTimeoutInSeconds = 60000;
+const defaultTimeoutInSeconds = 600;
 /**
  * In milliseconds.
  */
