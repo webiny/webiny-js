@@ -13715,6 +13715,7 @@ __metadata:
     "@webiny/api-security": 0.0.0
     "@webiny/api-tenancy": 0.0.0
     "@webiny/api-wcp": 0.0.0
+    "@webiny/api-websockets": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/handler": 0.0.0
@@ -15230,6 +15231,7 @@ __metadata:
     "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/app-wcp": 0.0.0
+    "@webiny/app-websockets": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/project-utils": 0.0.0

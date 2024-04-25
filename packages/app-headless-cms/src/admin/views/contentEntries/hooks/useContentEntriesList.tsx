@@ -166,8 +166,8 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
     }, [sorting]);
 
     const navigateTo = useCallback(
-        (input: string = ROOT_FOLDER) => {
-            const folderId = encodeURIComponent(input || ROOT_FOLDER);
+        (input?: string) => {
+            const folderId = encodeURIComponent(input || currentFolderId || ROOT_FOLDER);
 
             history.push(`${baseUrl}?folderId=${folderId}`);
         },

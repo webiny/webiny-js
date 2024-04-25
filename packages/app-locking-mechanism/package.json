@@ -20,6 +20,7 @@
     "@webiny/app-headless-cms": "0.0.0",
     "@webiny/app-security": "0.0.0",
     "@webiny/app-wcp": "0.0.0",
+    "@webiny/app-websockets": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/react-router": "0.0.0",
     "@webiny/ui": "0.0.0",

@@ -5,7 +5,7 @@ import {
 } from "~/abstractions/IUnlockEntryUseCase";
 import {
     CmsIdentity,
-    IHasFullAccess,
+    IHasFullAccessCallable,
     ILockingMechanismLockRecord,
     ILockingMechanismModelManager
 } from "~/types";
@@ -13,22 +13,26 @@ import { createLockRecordDatabaseId } from "~/utils/lockRecordDatabaseId";
 import { IGetLockRecordUseCase } from "~/abstractions/IGetLockRecordUseCase";
 import { validateSameIdentity } from "~/utils/validateSameIdentity";
 import { NotAuthorizedError } from "@webiny/api-security";
+import { IKickOutCurrentUserUseCase } from "~/abstractions/IKickOutCurrentUserUseCase";
 
 export interface IUnlockEntryUseCaseParams {
     readonly getLockRecordUseCase: IGetLockRecordUseCase;
+    readonly kickOutCurrentUserUseCase: IKickOutCurrentUserUseCase;
     getManager(): Promise<ILockingMechanismModelManager>;
     getIdentity: () => CmsIdentity;
-    hasFullAccess: IHasFullAccess;
+    hasFullAccess: IHasFullAccessCallable;
 }
 
 export class UnlockEntryUseCase implements IUnlockEntryUseCase {
     private readonly getLockRecordUseCase: IGetLockRecordUseCase;
+    private readonly kickOutCurrentUserUseCase: IKickOutCurrentUserUseCase;
     private readonly getManager: () => Promise<ILockingMechanismModelManager>;
     private readonly getIdentity: () => CmsIdentity;
-    private readonly hasFullAccess: IHasFullAccess;
+    private readonly hasFullAccess: IHasFullAccessCallable;
 
     public constructor(params: IUnlockEntryUseCaseParams) {
         this.getLockRecordUseCase = params.getLockRecordUseCase;
+        this.kickOutCurrentUserUseCase = params.kickOutCurrentUserUseCase;
         this.getManager = params.getManager;
         this.getIdentity = params.getIdentity;
         this.hasFullAccess = params.hasFullAccess;
@@ -49,10 +53,8 @@ export class UnlockEntryUseCase implements IUnlockEntryUseCase {
          * In case it is not the same user, there is a possibility that it is a user which has full access,
          * and at that point, we allow unlocking, but we also need to message the user who locked the entry.
          *
-         * TODO implement websockets
          */
-        // eslint-disable-next-line
-        let sendMessage = false;
+        let kickOutCurrentUser = false;
         try {
             validateSameIdentity({
                 getIdentity: this.getIdentity,
@@ -66,13 +68,18 @@ export class UnlockEntryUseCase implements IUnlockEntryUseCase {
             if (ex instanceof NotAuthorizedError === false || !hasFullAccess) {
                 throw ex;
             }
-            // eslint-disable-next-line
-            sendMessage = true;
+
+            kickOutCurrentUser = true;
         }
 
         try {
             const manager = await this.getManager();
             await manager.delete(createLockRecordDatabaseId(params.id));
+
+            if (!kickOutCurrentUser) {
+                return record;
+            }
+            await this.kickOutCurrentUserUseCase.execute(record);
             return record;
         } catch (ex) {
             throw new WebinyError(

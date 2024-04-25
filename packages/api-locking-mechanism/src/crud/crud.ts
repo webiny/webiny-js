@@ -2,7 +2,8 @@ import { WebinyError } from "@webiny/error";
 import {
     CmsIdentity,
     Context,
-    IHasFullAccess,
+    IGetWebsocketsContextCallable,
+    IHasFullAccessCallable,
     ILockingMechanism,
     ILockingMechanismLockRecordValues,
     ILockingMechanismModelManager,
@@ -29,7 +30,7 @@ import { IListLockRecordsUseCaseExecute } from "~/abstractions/IListLockRecordsU
 import { IUpdateEntryLockUseCaseExecute } from "~/abstractions/IUpdateEntryLockUseCase";
 
 interface Params {
-    context: Pick<Context, "plugins" | "cms" | "benchmark" | "security">;
+    context: Pick<Context, "plugins" | "cms" | "benchmark" | "security" | "websockets">;
 }
 
 export const createLockingMechanismCrud = async ({
@@ -63,7 +64,7 @@ export const createLockingMechanismCrud = async ({
         };
     };
 
-    const hasFullAccess: IHasFullAccess = async () => {
+    const hasFullAccess: IHasFullAccessCallable = async () => {
         return await context.security.hasFullAccess();
     };
 
@@ -97,6 +98,10 @@ export const createLockingMechanismCrud = async ({
         "cms.lockingMechanism.onEntryUnlockRequestError"
     );
 
+    const getWebsockets: IGetWebsocketsContextCallable = () => {
+        return context.websockets;
+    };
+
     const {
         listLockRecordsUseCase,
         listAllLockRecordsUseCase,
@@ -109,7 +114,8 @@ export const createLockingMechanismCrud = async ({
     } = createUseCases({
         getIdentity,
         getManager,
-        hasFullAccess
+        hasFullAccess,
+        getWebsockets
     });
 
     const listAllLockRecords: IListAllLockRecordsUseCaseExecute = async params => {

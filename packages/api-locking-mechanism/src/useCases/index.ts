@@ -1,4 +1,9 @@
-import { CmsIdentity, IHasFullAccess, ILockingMechanismModelManager } from "~/types";
+import {
+    CmsIdentity,
+    IGetWebsocketsContextCallable,
+    IHasFullAccessCallable,
+    ILockingMechanismModelManager
+} from "~/types";
 import { GetLockRecordUseCase } from "./GetLockRecord/GetLockRecordUseCase";
 import { IsEntryLockedUseCase } from "./IsEntryLocked/IsEntryLockedUseCase";
 import { LockEntryUseCase } from "./LockEntryUseCase/LockEntryUseCase";
@@ -9,11 +14,13 @@ import { ListLockRecordsUseCase } from "./ListLockRecordsUseCase/ListLockRecords
 import { isLockedFactory } from "~/utils/isLockedFactory";
 import { UpdateEntryLockUseCase } from "~/useCases/UpdateEntryLock/UpdateEntryLockUseCase";
 import { getTimeout } from "~/utils/getTimeout";
+import { KickOutCurrentUserUseCase } from "./KickOutCurrentUser/KickOutCurrentUserUseCase";
 
 export interface CreateUseCasesParams {
     getIdentity: () => CmsIdentity;
     getManager(): Promise<ILockingMechanismModelManager>;
-    hasFullAccess: IHasFullAccess;
+    hasFullAccess: IHasFullAccessCallable;
+    getWebsockets: IGetWebsocketsContextCallable;
 }
 
 export const createUseCases = (params: CreateUseCasesParams) => {
@@ -52,8 +59,13 @@ export const createUseCases = (params: CreateUseCasesParams) => {
         getIdentity: params.getIdentity
     });
 
+    const kickOutCurrentUserUseCase = new KickOutCurrentUserUseCase({
+        getWebsockets: params.getWebsockets
+    });
+
     const unlockEntryUseCase = new UnlockEntryUseCase({
         getLockRecordUseCase,
+        kickOutCurrentUserUseCase,
         getManager: params.getManager,
         getIdentity: params.getIdentity,
         hasFullAccess: params.hasFullAccess

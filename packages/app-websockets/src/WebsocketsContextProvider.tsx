@@ -121,12 +121,6 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
         [socketsRef.current]
     );
 
-    // TODO remove when finished with development
-    (window as any).webinySockets = socketsRef.current;
-    (window as any).send = send;
-    (window as any).createAction = createAction;
-    (window as any).onMessage = onMessage;
-
     if (!socketsRef.current) {
         return props.loader || null;
     }

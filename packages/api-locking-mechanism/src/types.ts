@@ -9,6 +9,10 @@ import {
     CmsModelManager
 } from "@webiny/api-headless-cms/types";
 import { Topic } from "@webiny/pubsub/types";
+import {
+    Context as IWebsocketsContext,
+    IWebsocketsContextObject
+} from "@webiny/api-websockets/types";
 
 export { CmsIdentity, CmsError, CmsEntry };
 
@@ -16,8 +20,12 @@ export type ILockingMechanismModelManager = CmsModelManager<ILockingMechanismLoc
 
 export type ILockingMechanismMeta = CmsEntryMeta;
 
-export interface IHasFullAccess {
+export interface IHasFullAccessCallable {
     (): Promise<boolean>;
+}
+
+export interface IGetWebsocketsContextCallable {
+    (): IWebsocketsContextObject;
 }
 
 export interface ILockingMechanismLockRecordValues {
@@ -205,6 +213,6 @@ export interface ILockingMechanism {
     ): Promise<ILockingMechanismLockRecord>;
 }
 
-export interface Context extends CmsContext {
+export interface Context extends CmsContext, IWebsocketsContext {
     lockingMechanism: ILockingMechanism;
 }
