@@ -1,7 +1,8 @@
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { Context } from "@webiny/api/types";
-import { GraphQLFieldResolver, Resolvers } from "@webiny/handler-graphql/types";
+import { GraphQLFieldResolver, GraphQLRequestBody, Resolvers } from "@webiny/handler-graphql/types";
+import { processRequestBody } from "@webiny/handler-graphql";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { Topic } from "@webiny/pubsub/types";
@@ -62,7 +63,16 @@ export interface HeadlessCms
      */
     export: HeadlessCmsExport;
     importing: HeadlessCmsImport;
+    getExecutableSchema: GetExecutableSchema;
 }
+
+export type GetExecutableSchema = (
+    type: ApiEndpoint
+) => Promise<
+    <TData = Record<string, any>, TExtensions = Record<string, any>>(
+        input: GraphQLRequestBody | GraphQLRequestBody[]
+    ) => ReturnType<typeof processRequestBody<TData, TExtensions>>
+>;
 
 /**
  * @description This combines all contexts used in the CMS into a single one.
