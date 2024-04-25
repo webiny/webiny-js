@@ -34,7 +34,8 @@ export const createElasticsearchIndex = async (
         },
         onError: (ex: Error) => {
             console.error(
-                `Could not create the Page Builder Pages Elasticsearch index "${index}".`
+                `Could not create the Page Builder Pages Elasticsearch index "${index}".`,
+                ex
             );
             return ex;
         }
