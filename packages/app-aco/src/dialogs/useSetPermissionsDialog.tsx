@@ -8,7 +8,7 @@ import { UsersTeamsMultiAutocomplete } from "./DialogSetPermissions/UsersTeamsMu
 import { UsersTeamsSelection } from "./DialogSetPermissions/UsersTeamsSelection";
 import { LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS } from "./DialogSetPermissions/graphql";
 
-import { useDialogs } from "~/dialogs/useDialogs";
+import { useDialogs } from "@webiny/app-admin";
 import { useFolders } from "~/hooks";
 import { FolderItem, FolderLevelPermissionsTarget, FolderPermission } from "~/types";
 
@@ -116,7 +116,7 @@ export const useSetPermissionsDialog = (): UseSetPermissionsDialogResponse => {
     const showDialog = ({ folder }: ShowDialogParams) => {
         dialogs.showDialog({
             title: `Manage permissions - ${folder.title}`,
-            message: <FormComponent folder={folder} />,
+            content: <FormComponent folder={folder} />,
             acceptLabel: "Save",
             cancelLabel: "Cancel",
             loadingLabel: "Updating permissions",

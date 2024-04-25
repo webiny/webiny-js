@@ -24,12 +24,13 @@ export const useSaveAndPublish = (): UseSaveAndPublishResponse => {
     });
 
     const showConfirmationDialog = useCallback(
-        ({ ev, onAccept, onCancel }) => {
+        async ({ ev, onAccept, onCancel }) => {
+            const entry = await form.current.submit(ev);
+            if (!entry || !entry.id) {
+                return;
+            }
+
             showConfirmation(async () => {
-                const entry = await form.current.submit(ev);
-                if (!entry || !entry.id) {
-                    return;
-                }
                 await publishRevision(entry.id);
 
                 if (typeof onAccept === "function") {

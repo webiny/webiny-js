@@ -1,7 +1,8 @@
 import { useContext } from "react";
-import { ModelFieldContext } from "./ModelFieldContext";
 import { plugins } from "@webiny/plugins";
-import { CmsModelFieldTypePlugin } from "~/types";
+import { makeDecoratable } from "@webiny/react-composition";
+import { ModelFieldContext, useParentValueIndex } from "./ModelFieldContext";
+import { CmsModelField, CmsModelFieldTypePlugin } from "~/types";
 
 interface GetFieldPlugin {
     (type: string): CmsModelFieldTypePlugin;
@@ -19,11 +20,19 @@ const getFieldPlugin: GetFieldPlugin = type => {
     return plugin;
 };
 
+export interface UseModelField {
+    field: CmsModelField;
+    parentValueIndex: number;
+    fieldPlugin: CmsModelFieldTypePlugin;
+}
+
 /**
  * Get model field from the current context.
  */
-export function useModelField() {
+export const useModelField = makeDecoratable((): UseModelField => {
     const field = useContext(ModelFieldContext);
+    const parentValueIndex = useParentValueIndex();
+
     if (!field) {
         throw Error(
             `Missing "ModelFieldProvider" in the component tree. Are you using the "useModelField()" hook in the right place?`
@@ -32,5 +41,5 @@ export function useModelField() {
 
     const fieldPlugin = getFieldPlugin(field.type);
 
-    return { field, fieldPlugin };
-}
+    return { field, fieldPlugin, parentValueIndex };
+});

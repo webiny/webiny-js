@@ -8,6 +8,7 @@ import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { fieldsWrapperStyle } from "./StyledComponents";
 import { FieldSettings } from "./FieldSettings";
 import { ParentFieldProvider } from "~/admin/components/ContentEntryForm/ParentValue";
+import { ParentValueIndexProvider } from "~/admin/components/ModelFieldProvider";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -37,22 +38,26 @@ const plugin: CmsModelFieldRendererPlugin = {
                 <Bind>
                     {bindProps => (
                         <ParentFieldProvider value={bindProps.value} path={Bind.parentName}>
-                            <Grid>
-                                <Cell span={12}>
-                                    <SimpleFormHeader title={field.label} />
-                                    {field.helpText && (
-                                        <FormElementMessage>{field.helpText}</FormElementMessage>
-                                    )}
-                                </Cell>
-                                <Cell span={12} className={fieldsWrapperStyle}>
-                                    <Fields
-                                        Bind={Bind}
-                                        contentModel={contentModel}
-                                        fields={settings.fields}
-                                        layout={settings.layout}
-                                    />
-                                </Cell>
-                            </Grid>
+                            <ParentValueIndexProvider index={-1}>
+                                <Grid>
+                                    <Cell span={12}>
+                                        <SimpleFormHeader title={field.label} />
+                                        {field.helpText && (
+                                            <FormElementMessage>
+                                                {field.helpText}
+                                            </FormElementMessage>
+                                        )}
+                                    </Cell>
+                                    <Cell span={12} className={fieldsWrapperStyle}>
+                                        <Fields
+                                            Bind={Bind}
+                                            contentModel={contentModel}
+                                            fields={settings.fields}
+                                            layout={settings.layout}
+                                        />
+                                    </Cell>
+                                </Grid>
+                            </ParentValueIndexProvider>
                         </ParentFieldProvider>
                     )}
                 </Bind>

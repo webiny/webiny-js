@@ -25,15 +25,19 @@ export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: Fi
         <Grid className={gridClassName}>
             {layout.map((row, rowIndex) => (
                 <React.Fragment key={rowIndex}>
-                    {row.map(fieldId => (
-                        <Cell span={Math.floor(12 / row.length)} key={fieldId}>
-                            <FieldElement
-                                field={getFieldById(fields, fieldId) as CmsModelField}
-                                Bind={Bind}
-                                contentModel={contentModel}
-                            />
-                        </Cell>
-                    ))}
+                    {row.map(fieldId => {
+                        const field = getFieldById(fields, fieldId) as CmsModelField;
+
+                        return (
+                            <Cell span={Math.floor(12 / row.length)} key={fieldId}>
+                                <FieldElement
+                                    field={field}
+                                    Bind={Bind}
+                                    contentModel={contentModel}
+                                />
+                            </Cell>
+                        );
+                    })}
                 </React.Fragment>
             ))}
         </Grid>

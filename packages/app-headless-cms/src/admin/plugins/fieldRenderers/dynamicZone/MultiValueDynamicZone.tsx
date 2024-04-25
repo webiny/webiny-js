@@ -16,10 +16,12 @@ import {
     CmsDynamicZoneTemplate,
     CmsModelFieldRendererProps,
     CmsModel,
-    CmsModelField
+    CmsModelField,
+    CmsDynamicZoneTemplateWithTypename
 } from "~/types";
 import { makeDecoratable } from "@webiny/react-composition";
 import { TemplateProvider } from "~/admin/plugins/fieldRenderers/dynamicZone/TemplateProvider";
+import { ParentValueIndexProvider } from "~/admin/components/ModelFieldProvider";
 
 const BottomMargin = styled.div`
     margin-bottom: 20px;
@@ -180,8 +182,8 @@ interface MultiValueDynamicZoneProps {
 
 export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
     const { bind, getBind, contentModel } = props;
-    const onTemplate = (template: CmsDynamicZoneTemplate) => {
-        bind.appendValue({ _templateId: template.id });
+    const onTemplate = (template: CmsDynamicZoneTemplateWithTypename) => {
+        bind.appendValue({ _templateId: template.id, __typename: template.__typename });
     };
 
     const cloneValue = (index: number) => {
@@ -203,11 +205,7 @@ export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
                             const Bind = getBind(index);
 
                             return (
-                                <ParentFieldProvider
-                                    value={value}
-                                    key={index}
-                                    path={Bind.parentName}
-                                >
+                                <ParentValueIndexProvider key={index} index={index}>
                                     <TemplateValueForm
                                         value={value}
                                         contentModel={contentModel}
@@ -219,7 +217,7 @@ export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
                                         onDelete={() => bind.removeValue(index)}
                                         onClone={() => cloneValue(index)}
                                     />
-                                </ParentFieldProvider>
+                                </ParentValueIndexProvider>
                             );
                         })}
                     </MultiValueContainer>

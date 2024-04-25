@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import { useApp } from "~/App";
 import { Route, RouteProps } from "@webiny/react-router";
+import { useApp } from "~/App";
+import { makeDecoratable } from "@webiny/react-composition";
 
-export const AddRoute = (props: RouteProps) => {
+export const AddRoute = makeDecoratable("AddRoute", (props: RouteProps) => {
     const { addRoute } = useApp();
 
     useEffect(() => {
@@ -10,4 +11,4 @@ export const AddRoute = (props: RouteProps) => {
     }, []);
 
     return null;
-};
+});

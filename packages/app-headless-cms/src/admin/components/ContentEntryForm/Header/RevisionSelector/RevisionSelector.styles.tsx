@@ -4,6 +4,7 @@ import { Menu as DefaultMenu } from "@webiny/ui/Menu";
 
 export const Button = styled(DefaultButtonDefault)`
     color: var(--mdc-theme-text-primary-on-background) !important;
+    text-wrap: nowrap;
 `;
 
 export const Menu = styled(DefaultMenu)`

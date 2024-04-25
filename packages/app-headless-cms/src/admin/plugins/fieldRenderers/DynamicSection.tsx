@@ -8,6 +8,7 @@ import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { GetBindCallable } from "~/admin/components/ContentEntryForm/useBind";
 import { ParentFieldProvider } from "~/admin/hooks";
+import { ParentValueIndexProvider } from "~/admin/components/ModelFieldProvider";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -74,10 +75,7 @@ const DynamicSection = ({
 
                                 <FirstFieldBind>
                                     {bindProps => (
-                                        <ParentFieldProvider
-                                            value={bindProps.value}
-                                            path={FirstFieldBind.parentName}
-                                        >
+                                        <ParentValueIndexProvider index={0}>
                                             {/* We bind it to index "0", so when you start typing, that index in parent array will be populated */}
                                             {children({
                                                 Bind: FirstFieldBind,
@@ -90,7 +88,7 @@ const DynamicSection = ({
                                                 },
                                                 index: 0 // Binds to "items.0" in the <Form>.
                                             })}
-                                        </ParentFieldProvider>
+                                        </ParentValueIndexProvider>
                                     )}
                                 </FirstFieldBind>
                             </Cell>
@@ -104,10 +102,7 @@ const DynamicSection = ({
                                     <Cell span={12} key={realIndex}>
                                         <BindField>
                                             {bindProps => (
-                                                <ParentFieldProvider
-                                                    value={bindProps.value}
-                                                    path={BindField.parentName}
-                                                >
+                                                <ParentValueIndexProvider index={realIndex}>
                                                     {children({
                                                         Bind: BindField,
                                                         field,
@@ -117,7 +112,7 @@ const DynamicSection = ({
                                                         },
                                                         index: realIndex
                                                     })}
-                                                </ParentFieldProvider>
+                                                </ParentValueIndexProvider>
                                             )}
                                         </BindField>
                                     </Cell>

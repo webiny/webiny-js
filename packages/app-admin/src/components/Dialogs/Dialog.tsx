@@ -9,10 +9,10 @@ import { DialogContainer } from "./styled";
 
 interface DialogProps {
     title: ReactNode;
-    message: ReactNode;
-    acceptLabel: ReactNode;
-    cancelLabel: ReactNode;
-    loadingLabel: ReactNode;
+    content: ReactNode;
+    acceptLabel?: ReactNode;
+    cancelLabel?: ReactNode;
+    loadingLabel?: ReactNode;
     onSubmit: (data: GenericFormData) => void;
     closeDialog: () => void;
     loading: boolean;
@@ -23,10 +23,10 @@ export const Dialog = ({
     open,
     loading,
     title,
-    message,
+    content,
     acceptLabel,
     cancelLabel,
-    loadingLabel,
+    loadingLabel = "Loading...",
     closeDialog,
     onSubmit
 }: DialogProps) => {
@@ -40,12 +40,18 @@ export const Dialog = ({
                 <Form onSubmit={handleSubmit}>
                     {({ submit }) => (
                         <>
-                            <DialogTitle>{title}</DialogTitle>
                             {loading && <CircularProgress label={loadingLabel} />}
-                            <DialogContent>{message}</DialogContent>
+                            <DialogTitle>{title}</DialogTitle>
+                            <DialogContent>{content}</DialogContent>
                             <DialogActions>
-                                <ButtonDefault onClick={closeDialog}>{cancelLabel}</ButtonDefault>
-                                <ButtonPrimary onClick={submit}>{acceptLabel}</ButtonPrimary>
+                                {cancelLabel ? (
+                                    <ButtonDefault onClick={closeDialog}>
+                                        {cancelLabel}
+                                    </ButtonDefault>
+                                ) : null}
+                                {acceptLabel ? (
+                                    <ButtonPrimary onClick={submit}>{acceptLabel}</ButtonPrimary>
+                                ) : null}
                             </DialogActions>
                         </>
                     )}

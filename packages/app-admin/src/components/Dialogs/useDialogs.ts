@@ -1,9 +1,9 @@
 import { useContext } from "react";
 
-import { Dialogs } from "~/dialogs/dialogs";
+import { DialogsContext } from "./DialogsContext";
 
 export const useDialogs = () => {
-    const context = useContext(Dialogs);
+    const context = useContext(DialogsContext);
 
     if (!context) {
         throw new Error("useDialogs must be used within a DialogsContext.Provider");
@@ -11,3 +11,5 @@ export const useDialogs = () => {
 
     return context;
 };
+
+export { useCustomDialog } from "./CustomDialog";
