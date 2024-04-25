@@ -146,7 +146,8 @@ describe("TrashBin", () => {
     const init = (
         listGateway: ITrashBinListGateway<Item>,
         deleteItemGateway: ITrashBinDeleteItemGateway,
-        restoreItemGateway: ITrashBinRestoreItemGateway<Item>
+        restoreItemGateway: ITrashBinRestoreItemGateway<Item>,
+        retentionPeriod = 90
     ) => {
         const selectedRepo = new SelectedItemsRepository();
         const loadingRepo = new LoadingRepository();
@@ -169,7 +170,8 @@ describe("TrashBin", () => {
                 itemsRepo,
                 selectedRepo,
                 sortRepoWithDefaults,
-                searchRepo
+                searchRepo,
+                retentionPeriod
             ),
             controllers: new TrashBinControllers(
                 itemsRepo,
@@ -754,6 +756,32 @@ describe("TrashBin", () => {
                     deletedOn: expect.any(String)
                 }
             ]
+        });
+
+        // We should be able to get the restored item by id
+        const restoredItem = await controllers.getRestoredItemById.execute("item-1");
+        expect(restoredItem).toMatchObject({
+            id: "item-1",
+            $selectable: true,
+            title: "Item 1",
+            location: {
+                folderId: "folder-a"
+            },
+            createdBy: identity1,
+            deletedBy: identity2,
+            deletedOn: expect.any(String)
+        });
+    });
+
+    it.each([
+        [0, "0 days"],
+        [1, "1 day"],
+        [2, "2 days"]
+    ])("should set the retention period to `%s` when input is `%i`", (input, output) => {
+        const { presenter } = init(listGateway, deleteItemGateway, restoreItemGateway, input);
+
+        expect(presenter.vm).toMatchObject({
+            retentionPeriod: output
         });
     });
 });

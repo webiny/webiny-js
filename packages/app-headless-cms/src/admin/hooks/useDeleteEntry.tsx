@@ -25,7 +25,7 @@ export const useDeleteEntry = ({ entry, onAccept, onCancel }: UseDeleteEntryPara
         title: "Trash entry",
         message: (
             <p>
-                Are you sure you want to trash <strong>{title}</strong>?
+                Are you sure you want to move <strong>{title}</strong> to trash?
                 <br />
                 This action will include all of its revisions?
             </p>
@@ -44,11 +44,11 @@ export const useDeleteEntry = ({ entry, onAccept, onCancel }: UseDeleteEntryPara
                 });
 
                 if (error) {
-                    showDialog(error.message, { title: `Could not trash ${title}!` });
+                    showDialog(error.message, { title: `Could not move ${title} to trash!` });
                     return;
                 }
 
-                showSnackbar(`${title} has been trashed successfully!`);
+                showSnackbar(`${title} has been moved to trash successfully!`);
                 removeRecordFromCache(entry.id);
                 navigateToLatestFolder();
 

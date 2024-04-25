@@ -1,5 +1,6 @@
 import {
     IDeleteItemController,
+    IGetRestoredItemByIdController,
     IListItemsController,
     IListMoreItemsController,
     IRestoreItemController,
@@ -10,6 +11,7 @@ import {
 
 export interface ITrashBinControllers {
     deleteItem: IDeleteItemController;
+    getRestoredItemById: IGetRestoredItemByIdController;
     restoreItem: IRestoreItemController;
     listMoreItems: IListMoreItemsController;
     listItems: IListItemsController;

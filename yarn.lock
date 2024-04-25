@@ -13526,6 +13526,36 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-headless-cms-tasks@0.0.0, @webiny/api-headless-cms-tasks@workspace:packages/api-headless-cms-tasks":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-headless-cms-tasks@workspace:packages/api-headless-cms-tasks"
+  dependencies:
+    "@babel/cli": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/preset-typescript": ^7.23.3
+    "@babel/runtime": ^7.24.0
+    "@webiny/api": 0.0.0
+    "@webiny/api-admin-users": 0.0.0
+    "@webiny/api-headless-cms": 0.0.0
+    "@webiny/api-i18n": 0.0.0
+    "@webiny/api-security": 0.0.0
+    "@webiny/api-tenancy": 0.0.0
+    "@webiny/api-wcp": 0.0.0
+    "@webiny/cli": 0.0.0
+    "@webiny/handler": 0.0.0
+    "@webiny/handler-aws": 0.0.0
+    "@webiny/handler-graphql": 0.0.0
+    "@webiny/plugins": 0.0.0
+    "@webiny/project-utils": 0.0.0
+    "@webiny/tasks": 0.0.0
+    "@webiny/wcp": 0.0.0
+    graphql: ^15.8.0
+    ttypescript: ^1.5.13
+    typescript: ^4.7.4
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-headless-cms@0.0.0, @webiny/api-headless-cms@workspace:packages/api-headless-cms":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms@workspace:packages/api-headless-cms"
@@ -17987,6 +18017,7 @@ __metadata:
     "@webiny/api-headless-cms": 0.0.0
     "@webiny/api-headless-cms-aco": 0.0.0
     "@webiny/api-headless-cms-ddb": 0.0.0
+    "@webiny/api-headless-cms-tasks": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-content": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0

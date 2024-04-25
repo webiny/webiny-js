@@ -4,7 +4,6 @@ import { Typography } from "@webiny/ui/Typography";
 export const RowTitle = styled("div")`
     display: flex;
     align-items: center;
-    cursor: pointer;
 `;
 
 export const RowIcon = styled("div")`

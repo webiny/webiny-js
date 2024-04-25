@@ -7,7 +7,8 @@ import { TrashBin } from "../TrashBin";
 
 export type TrashBinRendererProps = Omit<TrashBinProps, "render"> & {
     onClose: () => void;
-    onItemRestore: (item: TrashBinItemDTO) => void;
+    onItemAfterRestore: (item: TrashBinItemDTO) => void;
+    retentionPeriod: number;
 };
 
 export const TrashBinRenderer = ({ title = "Trash Bin", ...props }: TrashBinRendererProps) => {
