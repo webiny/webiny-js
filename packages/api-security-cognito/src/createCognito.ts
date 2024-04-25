@@ -81,6 +81,8 @@ export const createCognito = <
                             createGroupAuthorizer(context, customIdentity.group)
                         );
                     }
+
+                    return customIdentity;
                 }
 
                 return defaultIdentity;
