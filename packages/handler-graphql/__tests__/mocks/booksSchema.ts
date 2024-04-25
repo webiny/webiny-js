@@ -1,6 +1,6 @@
-import { GraphQLSchemaPlugin } from "~/types";
-import { ContextPlugin } from "@webiny/api";
+import { createContextPlugin } from "@webiny/handler";
 import { Book, Context } from "~tests/types";
+import { createGraphQLSchemaPlugin } from "~/plugins";
 
 export const books: Book[] = [
     {
@@ -11,7 +11,7 @@ export const books: Book[] = [
     }
 ];
 
-export const booksCrudPlugin = new ContextPlugin<Context>(async context => {
+export const booksCrudPlugin = createContextPlugin<Context>(async context => {
     context.getBooks = async () => {
         console.log("getBooks");
         console.table(books);
@@ -20,47 +20,44 @@ export const booksCrudPlugin = new ContextPlugin<Context>(async context => {
     };
 });
 
-export const booksSchema: GraphQLSchemaPlugin = {
-    type: "graphql-schema",
-    schema: {
-        typeDefs: /* GraphQL */ `
-            type Book {
-                name: String
-            }
+export const booksSchema = createGraphQLSchemaPlugin<Context>({
+    typeDefs: /* GraphQL */ `
+        type Book {
+            name: String
+        }
 
-            extend type Query {
-                books: [Book]
-                book(name: String!): Book
-            }
+        extend type Query {
+            books: [Book]
+            book(name: String!): Book
+        }
 
-            extend type Mutation {
-                createBook: Boolean
-            }
-        `,
-        resolvers: {
-            Query: {
-                async books(_, __, context: any) {
-                    console.group("books resolver");
-                    const books = await context.getBooks();
-                    console.groupEnd();
-                    return books;
-                },
-                async book(_, { name }) {
-                    console.log("Find book by name");
-                    const book = books.find(b => b.name === name);
-                    if (book) {
-                        console.log(`Found book "${book.name}"`);
-                        return book;
-                    }
-                    console.log(`Book not found!`);
-                    return null;
-                }
+        extend type Mutation {
+            createBook: Boolean
+        }
+    `,
+    resolvers: {
+        Query: {
+            async books(_, __, context: any) {
+                console.group("books resolver");
+                const books = await context.getBooks();
+                console.groupEnd();
+                return books;
             },
-            Mutation: {
-                async createBook() {
-                    return true;
+            async book(_, { name }) {
+                console.log("Find book by name");
+                const book = books.find(b => b.name === name);
+                if (book) {
+                    console.log(`Found book "${book.name}"`);
+                    return book;
                 }
+                console.log(`Book not found!`);
+                return null;
+            }
+        },
+        Mutation: {
+            async createBook() {
+                return true;
             }
         }
     }
-};
+});
