@@ -16353,6 +16353,7 @@ __metadata:
     "@types/lodash": ^4.14.190
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/react-composition": 0.0.0
     "@webiny/validation": 0.0.0
     lodash: 4.17.21
     rimraf: ^5.0.5
