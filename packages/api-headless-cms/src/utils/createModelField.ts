@@ -9,42 +9,16 @@ export interface CreateModelFieldParams
 }
 
 export const createModelField = (params: CreateModelFieldParams): CmsModelField => {
-    const {
-        id,
-        label,
-        fieldId: initialFieldId,
-        storageId,
-        type,
-        tags,
-        settings = {},
-        listValidation = [],
-        validation = [],
-        multipleValues = false,
-        predefinedValues = {
-            values: [],
-            enabled: false
-        },
-        helpText,
-        placeholderText,
-        renderer
-    } = params;
+    const { id, label, fieldId: initialFieldId, storageId, type } = params;
 
     const fieldId = initialFieldId ? camelCase(initialFieldId) : camelCase(label);
 
     return {
+        ...params,
         id: id ?? fieldId,
         storageId: storageId ?? `${type}@${fieldId}`,
         fieldId,
         label,
-        type,
-        settings,
-        tags,
-        listValidation,
-        validation,
-        multipleValues,
-        predefinedValues,
-        helpText,
-        placeholderText,
-        renderer
+        type
     };
 };
