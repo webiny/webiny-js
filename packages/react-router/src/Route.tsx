@@ -5,8 +5,9 @@
 import React from "react";
 import { Route as BaseRoute, RouteProps as BaseRouteProps, useLocation } from "react-router-dom";
 import { Location } from "history";
+import { makeDecoratable } from "@webiny/react-composition";
 
-interface RoutePropsRenderParams {
+export interface RoutePropsRenderParams {
     location: Location;
 }
 
@@ -25,7 +26,7 @@ export type RouteProps = BaseRouteProps & {
     component?: React.ComponentType;
 };
 
-export const Route = (props: RouteProps) => {
+export const Route = makeDecoratable("Route", (props: RouteProps) => {
     const newProps = {
         ...props
     };
@@ -47,4 +48,4 @@ export const Route = (props: RouteProps) => {
     delete newProps["component"];
 
     return <BaseRoute {...newProps} />;
-};
+});
