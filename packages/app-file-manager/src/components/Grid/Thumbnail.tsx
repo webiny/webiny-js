@@ -1,10 +1,7 @@
 import React from "react";
 import { useFile } from "~/hooks/useFile";
-import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
+import { useFileManagerViewConfig } from "~/index";
 
-/**
- * This component is used in the file grid to render thumbnails, as well as in the File Details preview.
- */
 export const Thumbnail = () => {
     const { file } = useFile();
     const { browser, getThumbnailRenderer } = useFileManagerViewConfig();
