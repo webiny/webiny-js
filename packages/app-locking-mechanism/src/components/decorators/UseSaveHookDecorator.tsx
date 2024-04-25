@@ -8,11 +8,14 @@ export const UseSaveHookDecorator = useSave.createDecorator(originalHook => {
     return function useLockingMechanismUseSave() {
         const values = originalHook();
         const { entry, contentModel: model } = useContentEntry();
-        const { fetchIsEntryLocked } = useLockingMechanism();
+        const { fetchIsEntryLocked, updateEntryLock } = useLockingMechanism();
         const { showSnackbar } = useSnackbar();
 
         const saveEntry = useCallback(
             async (ev: React.SyntheticEvent) => {
+                if (!entry.id) {
+                    return values.saveEntry(ev);
+                }
                 const result = await fetchIsEntryLocked({
                     id: entry.id,
                     $lockingType: model.modelId
@@ -24,9 +27,13 @@ export const UseSaveHookDecorator = useSave.createDecorator(originalHook => {
                     );
                     return;
                 }
-                values.saveEntry(ev);
+                await values.saveEntry(ev);
+                await updateEntryLock({
+                    id: entry.id,
+                    $lockingType: model.modelId
+                });
             },
-            [values.saveEntry, entry?.id, model.modelId]
+            [values.saveEntry, entry?.id, model.modelId, updateEntryLock]
         );
 
         return {

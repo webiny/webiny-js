@@ -8,6 +8,7 @@
     { "path": "../app-security" },
     { "path": "../app-wcp" },
     { "path": "../error" },
+    { "path": "../react-router" },
     { "path": "../ui" },
     { "path": "../utils" }
   ],
@@ -30,6 +31,8 @@
       "@webiny/app-wcp": ["../app-wcp/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/react-router/*": ["../react-router/src/*"],
+      "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
       "@webiny/utils/*": ["../utils/src/*"],

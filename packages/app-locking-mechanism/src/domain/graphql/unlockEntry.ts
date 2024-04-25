@@ -15,9 +15,9 @@ export interface ILockingMechanismUnlockEntryResponse {
 }
 
 export const UNLOCK_ENTRY_MUTATION = gql`
-    mutation LockingMechanismUnlockEntry($id: ID!, $type: String!) {
+    mutation LockingMechanismUnlockEntry($id: ID!, $type: String!, $force: Boolean) {
         lockingMechanism {
-            unlockEntry(id: $id, type: $type) {
+            unlockEntry(id: $id, type: $type, force: $force) {
                 data {
                     ${LOCK_RECORD_FIELDS}
                 }

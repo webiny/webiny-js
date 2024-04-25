@@ -15233,6 +15233,7 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/react-router": 0.0.0
     "@webiny/ui": 0.0.0
     "@webiny/utils": 0.0.0
     apollo-client: ^2.6.10

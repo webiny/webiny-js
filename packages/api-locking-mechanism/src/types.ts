@@ -113,6 +113,7 @@ export interface ILockingMechanismUpdateEntryLockParams {
 export interface ILockingMechanismUnlockEntryParams {
     id: string;
     type: ILockingMechanismLockRecordEntryType;
+    force?: boolean;
 }
 
 export interface ILockingMechanismUnlockEntryRequestParams {

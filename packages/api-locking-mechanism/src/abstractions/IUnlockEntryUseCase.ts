@@ -3,6 +3,7 @@ import { ILockingMechanismLockRecord, ILockingMechanismLockRecordEntryType } fro
 export interface IUnlockEntryUseCaseExecuteParams {
     id: string;
     type: ILockingMechanismLockRecordEntryType;
+    force?: boolean;
 }
 
 export interface IUnlockEntryUseCaseExecute {

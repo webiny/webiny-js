@@ -9,7 +9,7 @@ export interface IContentEntryLockerProps {
 
 export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
     const { entry, contentModel: model } = useContentEntry();
-    const { updateEntryLock, unlockEntry } = useLockingMechanism();
+    const { updateEntryLock, unlockEntry, fetchIsEntryLocked } = useLockingMechanism();
 
     useEffect(() => {
         if (!entry.id) {
@@ -23,9 +23,15 @@ export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
         updateEntryLock(record);
 
         return () => {
-            unlockEntry(record);
+            (async () => {
+                const result = await fetchIsEntryLocked(record);
+                if (result) {
+                    return;
+                }
+                unlockEntry(record);
+            })();
         };
-    }, [entry.id, entry.savedOn]);
+    }, [entry.id]);
 
     return children;
 };

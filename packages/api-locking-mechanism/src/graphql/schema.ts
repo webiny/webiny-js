@@ -162,7 +162,7 @@ export const createGraphQLSchema = async (
             extend type LockingMechanismMutation {
                 lockEntry(id: ID!, type: String!): LockingMechanismLockEntryResponse!
                 updateEntryLock(id: ID!, type: String!): LockingMechanismUpdateLockResponse!
-                unlockEntry(id: ID!, type: String!): LockingMechanismUnlockEntryResponse!
+                unlockEntry(id: ID!, type: String!, force: Boolean): LockingMechanismUnlockEntryResponse!
                 unlockEntryRequest(
                     id: ID!
                     type: String!
@@ -234,7 +234,8 @@ export const createGraphQLSchema = async (
                     return resolve(async () => {
                         return await context.lockingMechanism.unlockEntry({
                             id: args.id,
-                            type: args.type
+                            type: args.type,
+                            force: args.force
                         });
                     });
                 },

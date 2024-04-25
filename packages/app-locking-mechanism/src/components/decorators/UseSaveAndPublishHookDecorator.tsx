@@ -11,12 +11,15 @@ export const UseSaveAndPublishHookDecorator = useSaveAndPublish.createDecorator(
     return function useLockingMechanismUseSaveAndPublish() {
         const values = originalHook();
         const { entry, contentModel: model } = useContentEntry();
-        const { fetchIsEntryLocked } = useLockingMechanism();
+        const { fetchIsEntryLocked, updateEntryLock } = useLockingMechanism();
         const { showSnackbar } = useSnackbar();
 
         const showConfirmationDialog = useCallback(
             (params: ShowConfirmationDialogParams) => {
                 (async () => {
+                    if (!entry.id) {
+                        return values.showConfirmationDialog(params);
+                    }
                     const result = await fetchIsEntryLocked({
                         id: entry.id,
                         $lockingType: model.modelId
@@ -29,6 +32,10 @@ export const UseSaveAndPublishHookDecorator = useSaveAndPublish.createDecorator(
                         return;
                     }
                     values.showConfirmationDialog(params);
+                    updateEntryLock({
+                        id: entry.id,
+                        $lockingType: model.modelId
+                    });
                 })();
             },
             [values.showConfirmationDialog, entry?.id, model.modelId]

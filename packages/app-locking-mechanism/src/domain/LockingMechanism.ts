@@ -187,12 +187,14 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
     }
 
     public async unlockEntry(
-        params: IUnlockEntryParams
+        params: IUnlockEntryParams,
+        force?: boolean
     ): Promise<ILockingMechanismUnlockEntryResult> {
         try {
             const result = await this._unlockEntry.execute({
                 id: params.id,
-                type: params.$lockingType
+                type: params.$lockingType,
+                force
             });
             const id = result.data?.id;
             if (id) {

@@ -59,6 +59,9 @@ export class UnlockEntryUseCase implements IUnlockEntryUseCase {
                 target: record.lockedBy
             });
         } catch (ex) {
+            if (!params.force) {
+                throw ex;
+            }
             const hasFullAccess = await this.hasFullAccess();
             if (ex instanceof NotAuthorizedError === false || !hasFullAccess) {
                 throw ex;

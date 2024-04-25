@@ -100,6 +100,9 @@ export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) 
         async unlockEntry(params: IUnlockEntryParams) {
             return await lockingMechanism.unlockEntry(params);
         },
+        async unlockEntryForce(params: IUnlockEntryParams) {
+            return await lockingMechanism.unlockEntry(params, true);
+        },
         isLockExpired(input: Date | string): boolean {
             return lockingMechanism.isLockExpired(input);
         },

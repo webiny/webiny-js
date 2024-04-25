@@ -60,6 +60,7 @@ export interface ILockingMechanismContext<
     fetchLockRecord(params: IFetchLockRecordParams): Promise<IFetchLockRecordResult>;
     fetchIsEntryLocked(params: IFetchIsEntryLockedParams): Promise<boolean>;
     unlockEntry(params: IUnlockEntryParams): Promise<ILockingMechanismUnlockEntryResult>;
+    unlockEntryForce(params: IUnlockEntryParams): Promise<ILockingMechanismUnlockEntryResult>;
     isLockExpired(input: Date | string): boolean;
 }
 

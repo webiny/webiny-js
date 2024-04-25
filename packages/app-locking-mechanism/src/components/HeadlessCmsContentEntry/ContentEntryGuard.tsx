@@ -53,7 +53,7 @@ export const ContentEntryGuard = (props: IContentEntryGuardProps) => {
         })();
     }, [entry.id, loading]);
 
-    if (locked === undefined || loading) {
+    if (locked === undefined) {
         return (
             <DetailsContainer>
                 <RenderBlock>

@@ -3,6 +3,7 @@ import { ILockingMechanismError, ILockingMechanismLockRecord } from "~/types";
 export interface ILockingMechanismUnlockEntryParams {
     id: string;
     type: string;
+    force?: boolean;
 }
 
 export interface ILockingMechanismUnlockEntryResult {

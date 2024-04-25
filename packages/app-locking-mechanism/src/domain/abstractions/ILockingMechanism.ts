@@ -37,7 +37,10 @@ export interface ILockingMechanism<
     ): Promise<ILockingMechanismUpdateEntryLockResult>;
 
     // lockEntry(params: ILockingMechanismLockEntryParams): Promise<ILockingMechanismLockEntryResult>;
-    unlockEntry(params: IUnlockEntryParams): Promise<ILockingMechanismUnlockEntryResult>;
+    unlockEntry(
+        params: IUnlockEntryParams,
+        force?: boolean
+    ): Promise<ILockingMechanismUnlockEntryResult>;
     // unlockEntryRequest(
     //     params: ILockingMechanismUnlockEntryRequestParams
     // ): Promise<ILockingMechanismUnlockEntryRequestResult>;
