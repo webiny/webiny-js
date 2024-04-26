@@ -172,6 +172,12 @@ export const createLocalesCrud = (params: CreateLocalesCrudParams): LocalesCRUD 
                 // We want to reload the internally cached locales after a new locale is created.
                 await context.i18n.reloadLocales();
 
+                // If the new locale is the only locale in the system, make it the current request locale.
+                if (context.i18n.getLocales().length === 1) {
+                    context.i18n.setCurrentLocale("default", locale);
+                    context.i18n.setCurrentLocale("content", locale);
+                }
+
                 await onLocaleAfterCreate.publish({
                     context,
                     locale: result,
