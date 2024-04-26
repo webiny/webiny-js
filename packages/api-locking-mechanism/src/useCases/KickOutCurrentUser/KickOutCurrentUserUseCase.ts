@@ -2,26 +2,31 @@ import {
     IKickOutCurrentUserUseCase,
     IKickOutCurrentUserUseCaseExecuteParams
 } from "~/abstractions/IKickOutCurrentUserUseCase";
-import { IGetWebsocketsContextCallable } from "~/types";
+import { IGetIdentity, IGetWebsocketsContextCallable } from "~/types";
 import { parseIdentifier } from "@webiny/utils";
 
 export interface IKickOutCurrentUserUseCaseParams {
     getWebsockets: IGetWebsocketsContextCallable;
+    getIdentity: IGetIdentity;
 }
 
 export class KickOutCurrentUserUseCase implements IKickOutCurrentUserUseCase {
     private readonly getWebsockets: IGetWebsocketsContextCallable;
+    private readonly getIdentity: IGetIdentity;
 
     public constructor(params: IKickOutCurrentUserUseCaseParams) {
         this.getWebsockets = params.getWebsockets;
+        this.getIdentity = params.getIdentity;
     }
 
-    public async execute(params: IKickOutCurrentUserUseCaseExecuteParams): Promise<void> {
-        const { lockedBy, id } = params;
+    public async execute(record: IKickOutCurrentUserUseCaseExecuteParams): Promise<void> {
+        const { lockedBy, id } = record;
 
         const websockets = this.getWebsockets();
 
         const { id: entryId } = parseIdentifier(id);
+
+        const identity = this.getIdentity();
 
         /**
          * We do not want any errors to leak out of this method.
@@ -31,7 +36,11 @@ export class KickOutCurrentUserUseCase implements IKickOutCurrentUserUseCase {
             await websockets.send(
                 { id: lockedBy.id },
                 {
-                    action: `lockingMechanism.entry.kickOut.${entryId}`
+                    action: `lockingMechanism.entry.kickOut.${entryId}`,
+                    data: {
+                        record: record.toObject(),
+                        user: identity
+                    }
                 }
             );
         } catch (ex) {

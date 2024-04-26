@@ -88,7 +88,8 @@ export const createUseCases = (params: ICreateUseCasesParams): ICreateUseCasesRe
     });
 
     const kickOutCurrentUserUseCase = new KickOutCurrentUserUseCase({
-        getWebsockets: params.getWebsockets
+        getWebsockets: params.getWebsockets,
+        getIdentity: params.getIdentity
     });
 
     const unlockEntryUseCase = new UnlockEntryUseCase({

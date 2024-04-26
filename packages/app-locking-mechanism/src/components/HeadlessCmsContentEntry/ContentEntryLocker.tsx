@@ -1,13 +1,28 @@
 import { useContentEntriesList, useContentEntry } from "@webiny/app-headless-cms";
 import React, { useEffect, useRef } from "react";
 import { useLockingMechanism } from "~/hooks";
-import { IIsRecordLockedParams } from "~/types";
-import { IWebsocketsSubscription, useWebsockets } from "@webiny/app-websockets";
+import {
+    IIsRecordLockedParams,
+    ILockingMechanismIdentity,
+    ILockingMechanismLockRecord
+} from "~/types";
+import {
+    IncomingGenericData,
+    IWebsocketsSubscription,
+    useWebsockets
+} from "@webiny/app-websockets";
 import { parseIdentifier } from "@webiny/utils";
 import { useDialogs } from "@webiny/app-admin";
 
 export interface IContentEntryLockerProps {
     children: React.ReactElement;
+}
+
+export interface IKickOutWebsocketsMessage extends IncomingGenericData {
+    data: {
+        record: ILockingMechanismLockRecord;
+        user: ILockingMechanismIdentity;
+    };
 }
 
 export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
@@ -30,9 +45,12 @@ export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
         }
         const { id: entryId } = parseIdentifier(entry.id);
 
-        subscription.current = websockets.onMessage(
+        subscription.current = websockets.onMessage<IKickOutWebsocketsMessage>(
             `lockingMechanism.entry.kickOut.${entryId}`,
-            async () => {
+            async incoming => {
+                // TODO @sven you can use the user object
+                // eslint-disable-next-line
+                const { user } = incoming.data;
                 showDialog({
                     title: "Forceful unlock of the entry",
                     content: `The entry you were editing was forcefully unlocked.`,

@@ -1,9 +1,6 @@
-import { ILockingMechanismIdentity } from "~/types";
+import { ILockingMechanismLockRecord } from "~/types";
 
-export interface IKickOutCurrentUserUseCaseExecuteParams {
-    lockedBy: ILockingMechanismIdentity;
-    id: string;
-}
+export type IKickOutCurrentUserUseCaseExecuteParams = ILockingMechanismLockRecord;
 
 export interface IKickOutCurrentUserUseCase {
     execute(params: IKickOutCurrentUserUseCaseExecuteParams): Promise<void>;
