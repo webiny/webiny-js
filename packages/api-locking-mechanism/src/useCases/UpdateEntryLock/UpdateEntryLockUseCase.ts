@@ -2,7 +2,7 @@ import {
     IUpdateEntryLockUseCase,
     IUpdateEntryLockUseCaseExecuteParams
 } from "~/abstractions/IUpdateEntryLockUseCase";
-import { CmsIdentity, ILockingMechanismLockRecord, ILockingMechanismModelManager } from "~/types";
+import { IGetIdentity, ILockingMechanismLockRecord, ILockingMechanismModelManager } from "~/types";
 import { IGetLockRecordUseCase } from "~/abstractions/IGetLockRecordUseCase";
 import { WebinyError } from "@webiny/error";
 import { convertEntryToLockRecord } from "~/utils/convertEntryToLockRecord";
@@ -15,14 +15,14 @@ export interface IUpdateEntryLockUseCaseParams {
     readonly getLockRecordUseCase: IGetLockRecordUseCase;
     readonly lockEntryUseCase: ILockEntryUseCase;
     getManager(): Promise<ILockingMechanismModelManager>;
-    getIdentity(): CmsIdentity;
+    getIdentity: IGetIdentity;
 }
 
 export class UpdateEntryLockUseCase implements IUpdateEntryLockUseCase {
     private readonly getLockRecordUseCase: IGetLockRecordUseCase;
     private readonly lockEntryUseCase: ILockEntryUseCase;
     private readonly getManager: () => Promise<ILockingMechanismModelManager>;
-    private readonly getIdentity: () => CmsIdentity;
+    private readonly getIdentity: IGetIdentity;
 
     public constructor(params: IUpdateEntryLockUseCaseParams) {
         this.getLockRecordUseCase = params.getLockRecordUseCase;
@@ -34,7 +34,7 @@ export class UpdateEntryLockUseCase implements IUpdateEntryLockUseCase {
     public async execute(
         params: IUpdateEntryLockUseCaseExecuteParams
     ): Promise<ILockingMechanismLockRecord> {
-        const record = await this.getLockRecordUseCase.execute(params.id);
+        const record = await this.getLockRecordUseCase.execute(params);
         if (!record) {
             return this.lockEntryUseCase.execute(params);
         }

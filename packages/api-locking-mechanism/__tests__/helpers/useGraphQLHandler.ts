@@ -6,6 +6,9 @@ import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { defaultIdentity } from "./tenancySecurity";
 import {
     GET_LOCK_RECORD_QUERY,
+    GET_LOCKED_ENTRY_LOCK_RECORD_QUERY,
+    IGetLockedEntryLockRecordGraphQlResponse,
+    IGetLockedEntryLockRecordGraphQlVariables,
     IGetLockRecordGraphQlResponse,
     IGetLockRecordGraphQlVariables,
     IIsEntryLockedGraphQlResponse,
@@ -100,6 +103,11 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         async getLockRecordQuery(variables: IGetLockRecordGraphQlVariables) {
             return invoke<IGetLockRecordGraphQlResponse>({
                 body: { query: GET_LOCK_RECORD_QUERY, variables }
+            });
+        },
+        async getLockedEntryLockRecordQuery(variables: IGetLockedEntryLockRecordGraphQlVariables) {
+            return invoke<IGetLockedEntryLockRecordGraphQlResponse>({
+                body: { query: GET_LOCKED_ENTRY_LOCK_RECORD_QUERY, variables }
             });
         },
         async isEntryLockedQuery(variables: IIsEntryLockedGraphQlVariables) {

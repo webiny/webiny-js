@@ -8,7 +8,7 @@ import {
     IUnlockEntryParams,
     IFetchLockRecordParams,
     IFetchLockRecordResult,
-    IFetchIsEntryLockedParams
+    IFetchLockedEntryLockRecordParams
 } from "~/types";
 import { ILockingMechanismUnlockEntryResult } from "./ILockingMechanismUnlockEntry";
 
@@ -31,16 +31,18 @@ export interface ILockingMechanism<
     isRecordLocked(record: IIsRecordLockedParams): boolean;
     getLockRecordEntry(id: string): ILockingMechanismRecord | undefined;
     fetchLockRecord(params: IFetchLockRecordParams): Promise<IFetchLockRecordResult>;
-    fetchIsEntryLocked(params: IFetchIsEntryLockedParams): Promise<boolean>;
+    fetchLockedEntryLockRecord(
+        params: IFetchLockedEntryLockRecordParams
+    ): Promise<ILockingMechanismLockRecord | null>;
     updateEntryLock(
         params: IUpdateEntryLockParams
     ): Promise<ILockingMechanismUpdateEntryLockResult>;
 
-    // lockEntry(params: ILockingMechanismLockEntryParams): Promise<ILockingMechanismLockEntryResult>;
     unlockEntry(
         params: IUnlockEntryParams,
         force?: boolean
     ): Promise<ILockingMechanismUnlockEntryResult>;
+    // lockEntry(params: ILockingMechanismLockEntryParams): Promise<ILockingMechanismLockEntryResult>;
     // unlockEntryRequest(
     //     params: ILockingMechanismUnlockEntryRequestParams
     // ): Promise<ILockingMechanismUnlockEntryRequestResult>;

@@ -1,9 +1,9 @@
-import { CmsIdentity } from "~/types";
 import { NotAuthorizedError } from "@webiny/api-security";
+import { ILockingMechanismIdentity } from "~/types";
 
 export interface IValidateSameIdentityParams {
-    getIdentity: () => Pick<CmsIdentity, "id">;
-    target: Pick<CmsIdentity, "id">;
+    getIdentity: () => Pick<ILockingMechanismIdentity, "id">;
+    target: Pick<ILockingMechanismIdentity, "id">;
 }
 
 export const validateSameIdentity = (params: IValidateSameIdentityParams): void => {

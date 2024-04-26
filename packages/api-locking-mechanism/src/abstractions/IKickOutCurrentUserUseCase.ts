@@ -1,7 +1,7 @@
-import { CmsIdentity } from "@webiny/api-headless-cms/types";
+import { ILockingMechanismIdentity } from "~/types";
 
 export interface IKickOutCurrentUserUseCaseExecuteParams {
-    lockedBy: CmsIdentity;
+    lockedBy: ILockingMechanismIdentity;
     id: string;
 }
 

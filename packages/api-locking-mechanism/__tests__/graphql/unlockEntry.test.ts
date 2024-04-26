@@ -66,7 +66,8 @@ describe("unlock entry", () => {
         });
 
         const [getResponse] = await getLockRecordQuery({
-            id: "someId"
+            id: "someId",
+            type: "cms#author"
         });
         expect(getResponse).toEqual({
             data: {
@@ -128,7 +129,8 @@ describe("unlock entry", () => {
         });
 
         const [getResponseAfterUnlock] = await getLockRecordQuery({
-            id: "someId"
+            id: "someId",
+            type: "cms#author"
         });
         expect(getResponseAfterUnlock).toMatchObject({
             data: {

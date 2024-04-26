@@ -11,7 +11,7 @@ export const UseSaveAndPublishHookDecorator = useSaveAndPublish.createDecorator(
     return function useLockingMechanismUseSaveAndPublish() {
         const values = originalHook();
         const { entry, contentModel: model } = useContentEntry();
-        const { fetchIsEntryLocked, updateEntryLock } = useLockingMechanism();
+        const { fetchLockedEntryLockRecord, updateEntryLock } = useLockingMechanism();
         const { showSnackbar } = useSnackbar();
 
         const showConfirmationDialog = useCallback(
@@ -20,14 +20,17 @@ export const UseSaveAndPublishHookDecorator = useSaveAndPublish.createDecorator(
                     if (!entry.id) {
                         return values.showConfirmationDialog(params);
                     }
-                    const result = await fetchIsEntryLocked({
+                    const result = await fetchLockedEntryLockRecord({
                         id: entry.id,
                         $lockingType: model.modelId
                     });
 
-                    if (result) {
+                    if (result?.lockedBy) {
+                        const lockedBy = result.lockedBy;
                         showSnackbar(
-                            "It seems that the entry is locked by someone. You cannot save the values you changed."
+                            `It seems that the entry is locked by ${
+                                lockedBy.displayName || lockedBy.id
+                            }. You cannot save the values you changed.`
                         );
                         return;
                     }

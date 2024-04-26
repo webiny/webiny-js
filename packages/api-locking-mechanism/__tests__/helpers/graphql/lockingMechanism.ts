@@ -89,6 +89,7 @@ export const LIST_LOCK_RECORDS_QUERY = /* GraphQL */ `
 
 export interface IGetLockRecordGraphQlVariables {
     id: string;
+    type: string;
 }
 
 export interface IGetLockRecordGraphQlResponse {
@@ -101,9 +102,36 @@ export interface IGetLockRecordGraphQlResponse {
 }
 
 export const GET_LOCK_RECORD_QUERY = /* GraphQL */ `
-    query GetLockRecord($id: ID!) {
+    query GetLockRecord($id: ID!, $type: String!) {
         lockingMechanism {
-            getLockRecord(id: $id) {
+            getLockRecord(id: $id, type: $type) {
+                data {
+                    ${LOCK_RECORD}
+                }
+                ${LOCK_ERROR}
+            }
+        }
+    }
+`;
+
+export interface IGetLockedEntryLockRecordGraphQlVariables {
+    id: string;
+    type: string;
+}
+
+export interface IGetLockedEntryLockRecordGraphQlResponse {
+    lockingMechanism: {
+        getLockRecord: {
+            data?: ILockingMechanismLockRecord;
+            error?: CmsError;
+        };
+    };
+}
+
+export const GET_LOCKED_ENTRY_LOCK_RECORD_QUERY = /* GraphQL */ `
+    query GetLockedEntryLockRecord($id: ID!, $type: String!) {
+        lockingMechanism {
+            getLockedEntryLockRecord(id: $id, type: $type) {
                 data {
                     ${LOCK_RECORD}
                 }

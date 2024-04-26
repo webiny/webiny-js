@@ -3,18 +3,18 @@ import {
     IListLockRecordsUseCaseExecuteParams,
     IListLockRecordsUseCaseExecuteResponse
 } from "~/abstractions/IListLockRecordsUseCase";
-import { CmsIdentity } from "@webiny/api-headless-cms/types";
+import { IGetIdentity } from "~/types";
 
 export interface IListLockRecordsUseCaseParams {
     listAllLockRecordsUseCase: IListLockRecordsUseCase;
     timeout: number;
-    getIdentity(): CmsIdentity;
+    getIdentity: IGetIdentity;
 }
 
 export class ListLockRecordsUseCase implements IListLockRecordsUseCase {
     private readonly listAllLockRecordsUseCase: IListLockRecordsUseCase;
     private readonly timeout: number;
-    private readonly getIdentity: () => CmsIdentity;
+    private readonly getIdentity: IGetIdentity;
 
     public constructor(params: IListLockRecordsUseCaseParams) {
         this.listAllLockRecordsUseCase = params.listAllLockRecordsUseCase;

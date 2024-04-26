@@ -1,3 +1,4 @@
+import { WebinyError } from "@webiny/error";
 import {
     ILockingMechanismUnlockEntry,
     ILockingMechanismUnlockEntryParams,
@@ -31,7 +32,7 @@ export class LockingMechanismUnlockEntry implements ILockingMechanismUnlockEntry
             variables: params
         });
         if (!result.data?.lockingMechanism?.unlockEntry) {
-            throw new Error("No data returned from server.");
+            throw new WebinyError("No data returned from server.");
         }
         return result.data.lockingMechanism.unlockEntry;
     }

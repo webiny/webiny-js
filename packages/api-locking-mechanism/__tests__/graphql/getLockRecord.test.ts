@@ -5,7 +5,8 @@ describe("get lock record", () => {
 
     it("should throw an error on non-existing lock - getLockRecord", async () => {
         const [response] = await getLockRecordQuery({
-            id: "nonExistingId"
+            id: "nonExistingId",
+            type: "author"
         });
 
         expect(response).toMatchObject({

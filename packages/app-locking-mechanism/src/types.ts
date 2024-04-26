@@ -40,7 +40,10 @@ export type IUnlockEntryParams = Pick<ILockingMechanismRecord, "id" | "$lockingT
 
 export type IFetchLockRecordParams = Pick<ILockingMechanismRecord, "id" | "$lockingType">;
 
-export type IFetchIsEntryLockedParams = Pick<ILockingMechanismRecord, "id" | "$lockingType">;
+export type IFetchLockedEntryLockRecordParams = Pick<
+    ILockingMechanismRecord,
+    "id" | "$lockingType"
+>;
 
 export interface IFetchLockRecordResult {
     data: ILockingMechanismLockRecord | null;
@@ -58,7 +61,9 @@ export interface ILockingMechanismContext<
     isRecordLocked(params?: IIsRecordLockedParams): boolean;
     getLockRecordEntry(id: string): ILockingMechanismRecord | undefined;
     fetchLockRecord(params: IFetchLockRecordParams): Promise<IFetchLockRecordResult>;
-    fetchIsEntryLocked(params: IFetchIsEntryLockedParams): Promise<boolean>;
+    fetchLockedEntryLockRecord(
+        params: IFetchLockedEntryLockRecordParams
+    ): Promise<ILockingMechanismLockRecord | null>;
     unlockEntry(params: IUnlockEntryParams): Promise<ILockingMechanismUnlockEntryResult>;
     unlockEntryForce(params: IUnlockEntryParams): Promise<ILockingMechanismUnlockEntryResult>;
     isLockExpired(input: Date | string): boolean;

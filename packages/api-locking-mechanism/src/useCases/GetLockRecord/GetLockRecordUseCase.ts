@@ -22,7 +22,7 @@ export class GetLockRecordUseCase implements IGetLockRecordUseCase {
     public async execute(
         input: IGetLockRecordUseCaseExecuteParams
     ): Promise<ILockingMechanismLockRecord | null> {
-        const recordId = createLockRecordDatabaseId(input);
+        const recordId = createLockRecordDatabaseId(input.id);
         const id = createIdentifier({
             id: recordId,
             version: 1

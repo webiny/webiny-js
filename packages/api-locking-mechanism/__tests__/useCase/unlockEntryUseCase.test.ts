@@ -18,7 +18,15 @@ describe("unlock entry use case", () => {
             async getManager() {
                 throw new WebinyError("Testing error.", "TESTING_ERROR");
             },
-            getIdentity: createIdentity
+            getIdentity: createIdentity,
+            hasFullAccess: async () => {
+                return true;
+            },
+            kickOutCurrentUserUseCase: {
+                async execute(): Promise<void> {
+                    return;
+                }
+            }
         });
 
         try {

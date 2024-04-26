@@ -11,7 +11,7 @@ export interface IContentEntryLockerProps {
 
 export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
     const { entry, contentModel: model } = useContentEntry();
-    const { updateEntryLock, unlockEntry, fetchIsEntryLocked } = useLockingMechanism();
+    const { updateEntryLock, unlockEntry, fetchLockedEntryLockRecord } = useLockingMechanism();
 
     const { navigateTo } = useContentEntriesList();
 
@@ -55,7 +55,7 @@ export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
 
         return () => {
             (async () => {
-                const result = await fetchIsEntryLocked(record);
+                const result = await fetchLockedEntryLockRecord(record);
                 if (result) {
                     return;
                 }

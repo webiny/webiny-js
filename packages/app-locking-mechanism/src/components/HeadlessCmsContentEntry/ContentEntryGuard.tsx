@@ -36,7 +36,7 @@ export interface IContentEntryGuardProps {
 export const ContentEntryGuard = (props: IContentEntryGuardProps) => {
     const { loading, entry, contentModel: model } = useContentEntry();
     const { children } = props;
-    const { fetchIsEntryLocked } = useLockingMechanism();
+    const { fetchLockedEntryLockRecord } = useLockingMechanism();
 
     const [locked, setLocked] = useState<boolean | undefined>();
 
@@ -45,11 +45,11 @@ export const ContentEntryGuard = (props: IContentEntryGuardProps) => {
             return;
         }
         (async () => {
-            const result = await fetchIsEntryLocked({
+            const result = await fetchLockedEntryLockRecord({
                 id: entry.id,
                 $lockingType: model.modelId
             });
-            setLocked(result);
+            setLocked(!!result);
         })();
     }, [entry.id, loading]);
 

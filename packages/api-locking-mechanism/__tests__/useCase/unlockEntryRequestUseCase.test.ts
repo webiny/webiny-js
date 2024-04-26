@@ -1,8 +1,5 @@
 import { UnlockEntryRequestUseCase } from "~/useCases/UnlockRequestUseCase/UnlockEntryRequestUseCase";
-import {
-    IGetLockRecordUseCase,
-    IGetLockRecordUseCaseExecuteParams
-} from "~/abstractions/IGetLockRecordUseCase";
+import { IGetLockRecordUseCase } from "~/abstractions/IGetLockRecordUseCase";
 import { getSecurityIdentity } from "~tests/helpers/identity";
 import { ILockingMechanismModelManager } from "~/types";
 import { WebinyError } from "@webiny/error";
@@ -75,9 +72,9 @@ describe("unlock entry request use case", () => {
         expect.assertions(1);
         const useCase = new UnlockEntryRequestUseCase({
             getLockRecordUseCase: {
-                execute: async (id: IGetLockRecordUseCaseExecuteParams) => {
+                execute: async () => {
                     return {
-                        id,
+                        id: "wby-lm-aTestIdValue",
                         getUnlockRequested() {
                             return {
                                 createdBy: getSecurityIdentity()

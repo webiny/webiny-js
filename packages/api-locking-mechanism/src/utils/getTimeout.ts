@@ -1,4 +1,4 @@
-const defaultTimeoutInSeconds = 600;
+const defaultTimeoutInSeconds = 1800;
 /**
  * In milliseconds.
  */

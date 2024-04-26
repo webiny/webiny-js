@@ -1,4 +1,4 @@
-import { CmsEntry, CmsIdentity } from "~/types";
+import { CmsEntry, ILockingMechanismIdentity } from "~/types";
 import {
     ILockingMechanismLockRecord,
     ILockingMechanismLockRecordAction,
@@ -28,7 +28,7 @@ export class HeadlessCmsLockRecord implements ILockingMechanismLockRecord {
     private readonly _id: string;
     private readonly _targetId: string;
     private readonly _type: ILockingMechanismLockRecordEntryType;
-    private readonly _lockedBy: CmsIdentity;
+    private readonly _lockedBy: ILockingMechanismIdentity;
     private readonly _lockedOn: Date;
     private readonly _updatedOn: Date;
     private readonly _expiresOn: Date;
@@ -46,7 +46,7 @@ export class HeadlessCmsLockRecord implements ILockingMechanismLockRecord {
         return this._type;
     }
 
-    public get lockedBy(): CmsIdentity {
+    public get lockedBy(): ILockingMechanismIdentity {
         return this._lockedBy;
     }
 

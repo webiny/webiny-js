@@ -1,6 +1,6 @@
-import { ILockingMechanismLockRecord } from "~/types";
+import { ILockingMechanismGetLockRecordParams, ILockingMechanismLockRecord } from "~/types";
 
-export type IGetLockRecordUseCaseExecuteParams = string;
+export type IGetLockRecordUseCaseExecuteParams = ILockingMechanismGetLockRecordParams;
 
 export interface IGetLockRecordUseCaseExecute {
     (params: IGetLockRecordUseCaseExecuteParams): Promise<ILockingMechanismLockRecord | null>;

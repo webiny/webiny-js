@@ -14,7 +14,9 @@ import {
     IWebsocketsContextObject
 } from "@webiny/api-websockets/types";
 
-export { CmsIdentity, CmsError, CmsEntry };
+export { CmsError, CmsEntry };
+
+export type ILockingMechanismIdentity = CmsIdentity;
 
 export type ILockingMechanismModelManager = CmsModelManager<ILockingMechanismLockRecordValues>;
 
@@ -26,6 +28,10 @@ export interface IHasFullAccessCallable {
 
 export interface IGetWebsocketsContextCallable {
     (): IWebsocketsContextObject;
+}
+
+export interface IGetIdentity {
+    (): ILockingMechanismIdentity;
 }
 
 export interface ILockingMechanismLockRecordValues {
@@ -43,21 +49,21 @@ export interface ILockingMechanismLockRecordRequestedAction {
     type: ILockingMechanismLockRecordActionType.requested;
     message?: string;
     createdOn: Date;
-    createdBy: CmsIdentity;
+    createdBy: ILockingMechanismIdentity;
 }
 
 export interface ILockingMechanismLockRecordApprovedAction {
     type: ILockingMechanismLockRecordActionType.approved;
     message?: string;
     createdOn: Date;
-    createdBy: CmsIdentity;
+    createdBy: ILockingMechanismIdentity;
 }
 
 export interface ILockingMechanismLockRecordDeniedAction {
     type: ILockingMechanismLockRecordActionType.denied;
     message?: string;
     createdOn: Date;
-    createdBy: CmsIdentity;
+    createdBy: ILockingMechanismIdentity;
 }
 
 export type ILockingMechanismLockRecordAction =
@@ -69,7 +75,7 @@ export interface ILockingMechanismLockRecordObject {
     id: string;
     targetId: string;
     type: ILockingMechanismLockRecordEntryType;
-    lockedBy: CmsIdentity;
+    lockedBy: ILockingMechanismIdentity;
     lockedOn: Date;
     updatedOn: Date;
     expiresOn: Date;
@@ -103,7 +109,17 @@ export interface ILockingMechanismListAllLockRecordsResponse {
 
 export type ILockingMechanismListLockRecordsResponse = ILockingMechanismListAllLockRecordsResponse;
 
+export interface ILockingMechanismGetLockRecordParams {
+    id: string;
+    type: ILockingMechanismLockRecordEntryType;
+}
+
 export interface ILockingMechanismIsLockedParams {
+    id: string;
+    type: ILockingMechanismLockRecordEntryType;
+}
+
+export interface ILockingMechanismGetLockedEntryLockRecordParams {
     id: string;
     type: ILockingMechanismLockRecordEntryType;
 }
@@ -149,7 +165,7 @@ export interface OnEntryLockErrorTopicParams {
 export interface OnEntryBeforeUnlockTopicParams {
     id: string;
     type: ILockingMechanismLockRecordEntryType;
-    getIdentity(): CmsIdentity;
+    getIdentity: IGetIdentity;
 }
 
 export interface OnEntryAfterUnlockTopicParams {
@@ -201,8 +217,13 @@ export interface ILockingMechanism {
     listLockRecords(
         params?: ILockingMechanismListLockRecordsParams
     ): Promise<ILockingMechanismListLockRecordsResponse>;
-    getLockRecord(id: string): Promise<ILockingMechanismLockRecord | null>;
+    getLockRecord(
+        params: ILockingMechanismGetLockRecordParams
+    ): Promise<ILockingMechanismLockRecord | null>;
     isEntryLocked(params: ILockingMechanismIsLockedParams): Promise<boolean>;
+    getLockedEntryLockRecord(
+        params: ILockingMechanismGetLockedEntryLockRecordParams
+    ): Promise<ILockingMechanismLockRecord | null>;
     lockEntry(params: ILockingMechanismLockEntryParams): Promise<ILockingMechanismLockRecord>;
     updateEntryLock(
         params: ILockingMechanismUpdateEntryLockParams

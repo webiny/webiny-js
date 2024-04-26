@@ -1,5 +1,5 @@
 import {
-    CmsIdentity,
+    IGetIdentity,
     IGetWebsocketsContextCallable,
     IHasFullAccessCallable,
     ILockingMechanismModelManager
@@ -15,15 +15,37 @@ import { isLockedFactory } from "~/utils/isLockedFactory";
 import { UpdateEntryLockUseCase } from "~/useCases/UpdateEntryLock/UpdateEntryLockUseCase";
 import { getTimeout } from "~/utils/getTimeout";
 import { KickOutCurrentUserUseCase } from "./KickOutCurrentUser/KickOutCurrentUserUseCase";
+import { GetLockedEntryLockRecordUseCase } from "~/useCases/GetLockedEntryLockRecord/GetLockedEntryLockRecordUseCase";
+import { IListAllLockRecordsUseCase } from "~/abstractions/IListAllLockRecordsUseCase";
+import { IListLockRecordsUseCase } from "~/abstractions/IListLockRecordsUseCase";
+import { IGetLockRecordUseCase } from "~/abstractions/IGetLockRecordUseCase";
+import { IIsEntryLockedUseCase } from "~/abstractions/IIsEntryLocked";
+import { IGetLockedEntryLockRecordUseCase } from "~/abstractions/IGetLockedEntryLockRecordUseCase";
+import { ILockEntryUseCase } from "~/abstractions/ILockEntryUseCase";
+import { IUpdateEntryLockUseCase } from "~/abstractions/IUpdateEntryLockUseCase";
+import { IUnlockEntryUseCase } from "~/abstractions/IUnlockEntryUseCase";
+import { IUnlockEntryRequestUseCase } from "~/abstractions/IUnlockEntryRequestUseCase";
 
-export interface CreateUseCasesParams {
-    getIdentity: () => CmsIdentity;
+export interface ICreateUseCasesParams {
+    getIdentity: IGetIdentity;
     getManager(): Promise<ILockingMechanismModelManager>;
     hasFullAccess: IHasFullAccessCallable;
     getWebsockets: IGetWebsocketsContextCallable;
 }
 
-export const createUseCases = (params: CreateUseCasesParams) => {
+export interface ICreateUseCasesResponse {
+    listAllLockRecordsUseCase: IListAllLockRecordsUseCase;
+    listLockRecordsUseCase: IListLockRecordsUseCase;
+    getLockRecordUseCase: IGetLockRecordUseCase;
+    isEntryLockedUseCase: IIsEntryLockedUseCase;
+    getLockedEntryLockRecordUseCase: IGetLockedEntryLockRecordUseCase;
+    lockEntryUseCase: ILockEntryUseCase;
+    updateEntryLockUseCase: IUpdateEntryLockUseCase;
+    unlockEntryUseCase: IUnlockEntryUseCase;
+    unlockEntryRequestUseCase: IUnlockEntryRequestUseCase;
+}
+
+export const createUseCases = (params: ICreateUseCasesParams): ICreateUseCasesResponse => {
     const timeout = getTimeout();
     const isLocked = isLockedFactory(timeout);
 
@@ -42,6 +64,12 @@ export const createUseCases = (params: CreateUseCasesParams) => {
     });
 
     const isEntryLockedUseCase = new IsEntryLockedUseCase({
+        getLockRecordUseCase,
+        isLocked,
+        getIdentity: params.getIdentity
+    });
+
+    const getLockedEntryLockRecordUseCase = new GetLockedEntryLockRecordUseCase({
         getLockRecordUseCase,
         isLocked,
         getIdentity: params.getIdentity
@@ -82,6 +110,7 @@ export const createUseCases = (params: CreateUseCasesParams) => {
         listLockRecordsUseCase,
         getLockRecordUseCase,
         isEntryLockedUseCase,
+        getLockedEntryLockRecordUseCase,
         lockEntryUseCase,
         updateEntryLockUseCase,
         unlockEntryUseCase,

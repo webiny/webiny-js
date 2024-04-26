@@ -1,3 +1,4 @@
+import { WebinyError } from "@webiny/error";
 import {
     ILockingMechanismUnlockEntryRequest,
     ILockingMechanismUnlockEntryRequestParams,
@@ -20,6 +21,6 @@ export class LockingMechanismUnlockEntryRequest implements ILockingMechanismUnlo
         // eslint-disable-next-line
         params: ILockingMechanismUnlockEntryRequestParams
     ): Promise<ILockingMechanismUnlockEntryRequestResult> {
-        throw new Error("Method not implemented.");
+        throw new WebinyError("Method not implemented.");
     }
 }

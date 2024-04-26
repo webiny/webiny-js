@@ -23,11 +23,12 @@ import {
 } from "./abstractions/ILockingMechanismUnlockEntry";
 import { ILockingMechanismUnlockEntryRequest } from "./abstractions/ILockingMechanismUnlockEntryRequest";
 import {
-    IFetchIsEntryLockedParams,
+    IFetchLockedEntryLockRecordParams,
     IFetchLockRecordParams,
     IFetchLockRecordResult,
     IIsRecordLockedParams,
     ILockingMechanismError,
+    ILockingMechanismLockRecord,
     ILockingMechanismRecord,
     IPossiblyLockingMechanismRecord,
     IUnlockEntryParams,
@@ -39,6 +40,8 @@ import { parseIdentifier } from "@webiny/utils/parseIdentifier";
 import { createCacheKey } from "~/utils/createCacheKey";
 import { LockingMechanismUpdateEntryLock } from "~/domain/LockingMechanismUpdateEntryLock";
 import { ILockingMechanismUpdateEntryLock } from "~/domain/abstractions/ILockingMechanismUpdateEntryLock";
+import { LockingMechanismGetLockedEntryLockRecord } from "~/domain/LockingMechanismGetLockedEntryLockRecord";
+import { ILockingMechanismGetLockedEntryLockRecord } from "./abstractions/ILockingMechanismGetLockedEntryLockRecord";
 
 export interface ICreateLockingMechanismParams {
     client: ApolloClient<any>;
@@ -49,6 +52,7 @@ export interface ILockingMechanismParams {
     client: ILockingMechanismClient;
     setLoading: (loading: boolean) => void;
     getLockRecord: ILockingMechanismGetLockRecord;
+    getLockedEntryLockRecord: ILockingMechanismGetLockedEntryLockRecord;
     isEntryLocked: ILockingMechanismIsEntryLocked;
     listLockRecords: ILockingMechanismListLockRecords;
     lockEntry: ILockingMechanismLockEntry;
@@ -74,6 +78,7 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
     private readonly client: ILockingMechanismClient;
     private readonly _getLockRecord: ILockingMechanismGetLockRecord;
     private readonly _isEntryLocked: ILockingMechanismIsEntryLocked;
+    private readonly _getLockedEntryLockRecord: ILockingMechanismGetLockedEntryLockRecord;
     private readonly _listLockRecords: ILockingMechanismListLockRecords;
     private readonly _lockEntry: ILockingMechanismLockEntry;
     private readonly _unlockEntry: ILockingMechanismUnlockEntry;
@@ -86,6 +91,7 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
         this.client = params.client;
         this._setLoading = params.setLoading;
         this._getLockRecord = params.getLockRecord;
+        this._getLockedEntryLockRecord = params.getLockedEntryLockRecord;
         this._isEntryLocked = params.isEntryLocked;
         this._listLockRecords = params.listLockRecords;
         this._lockEntry = params.lockEntry;
@@ -139,14 +145,17 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
         }
     }
 
-    public async fetchIsEntryLocked(params: IFetchIsEntryLockedParams): Promise<boolean> {
+    public async fetchLockedEntryLockRecord(
+        params: IFetchLockedEntryLockRecordParams
+    ): Promise<ILockingMechanismLockRecord | null> {
         const { id, $lockingType } = params;
 
         const { id: entryId } = parseIdentifier(id);
-        return await this._isEntryLocked.execute({
+        const result = await this._getLockedEntryLockRecord.execute({
             id: entryId,
             type: $lockingType
         });
+        return result.data;
     }
 
     public getLockRecordEntry(id: string): ILockingMechanismRecord | undefined {
@@ -373,6 +382,10 @@ export const createLockingMechanism = <T extends ILockingMechanismRecord>(
         client
     });
 
+    const getLockedEntryLockRecord = new LockingMechanismGetLockedEntryLockRecord({
+        client
+    });
+
     const isEntryLocked = new LockingMechanismIsEntryLocked({
         client
     });
@@ -400,6 +413,7 @@ export const createLockingMechanism = <T extends ILockingMechanismRecord>(
         client,
         setLoading: config.setLoading,
         getLockRecord,
+        getLockedEntryLockRecord,
         isEntryLocked,
         listLockRecords,
         updateEntryLock,

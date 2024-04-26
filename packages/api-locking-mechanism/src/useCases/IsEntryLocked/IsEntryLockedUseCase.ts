@@ -3,21 +3,20 @@ import {
     IIsEntryLockedUseCaseExecuteParams
 } from "~/abstractions/IIsEntryLocked";
 import { IGetLockRecordUseCase } from "~/abstractions/IGetLockRecordUseCase";
-import { createLockRecordDatabaseId } from "~/utils/lockRecordDatabaseId";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { IIsLocked } from "~/utils/isLockedFactory";
-import { CmsIdentity } from "@webiny/api-headless-cms/types";
+import { IGetIdentity } from "~/types";
 
 export interface IIsEntryLockedParams {
     getLockRecordUseCase: IGetLockRecordUseCase;
     isLocked: IIsLocked;
-    getIdentity(): CmsIdentity;
+    getIdentity: IGetIdentity;
 }
 
 export class IsEntryLockedUseCase implements IIsEntryLockedUseCase {
     private readonly getLockRecordUseCase: IGetLockRecordUseCase;
     private readonly isLocked: IIsLocked;
-    public readonly getIdentity: () => CmsIdentity;
+    private readonly getIdentity: IGetIdentity;
 
     public constructor(params: IIsEntryLockedParams) {
         this.getLockRecordUseCase = params.getLockRecordUseCase;
@@ -26,9 +25,8 @@ export class IsEntryLockedUseCase implements IIsEntryLockedUseCase {
     }
 
     public async execute(params: IIsEntryLockedUseCaseExecuteParams): Promise<boolean> {
-        const id = createLockRecordDatabaseId(params.id);
         try {
-            const result = await this.getLockRecordUseCase.execute(id);
+            const result = await this.getLockRecordUseCase.execute(params);
             if (!result) {
                 return false;
             }

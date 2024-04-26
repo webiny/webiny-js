@@ -51,7 +51,8 @@ describe("lock entry", () => {
         });
 
         const [getResponse] = await getLockRecordQuery({
-            id: "someId"
+            id: "someId",
+            type: "cms#author"
         });
         expect(getResponse).toEqual({
             data: {

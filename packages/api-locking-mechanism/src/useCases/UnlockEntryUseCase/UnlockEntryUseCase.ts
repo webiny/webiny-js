@@ -4,7 +4,7 @@ import {
     IUnlockEntryUseCaseExecuteParams
 } from "~/abstractions/IUnlockEntryUseCase";
 import {
-    CmsIdentity,
+    IGetIdentity,
     IHasFullAccessCallable,
     ILockingMechanismLockRecord,
     ILockingMechanismModelManager
@@ -19,7 +19,7 @@ export interface IUnlockEntryUseCaseParams {
     readonly getLockRecordUseCase: IGetLockRecordUseCase;
     readonly kickOutCurrentUserUseCase: IKickOutCurrentUserUseCase;
     getManager(): Promise<ILockingMechanismModelManager>;
-    getIdentity: () => CmsIdentity;
+    getIdentity: IGetIdentity;
     hasFullAccess: IHasFullAccessCallable;
 }
 
@@ -27,7 +27,7 @@ export class UnlockEntryUseCase implements IUnlockEntryUseCase {
     private readonly getLockRecordUseCase: IGetLockRecordUseCase;
     private readonly kickOutCurrentUserUseCase: IKickOutCurrentUserUseCase;
     private readonly getManager: () => Promise<ILockingMechanismModelManager>;
-    private readonly getIdentity: () => CmsIdentity;
+    private readonly getIdentity: IGetIdentity;
     private readonly hasFullAccess: IHasFullAccessCallable;
 
     public constructor(params: IUnlockEntryUseCaseParams) {
@@ -41,7 +41,7 @@ export class UnlockEntryUseCase implements IUnlockEntryUseCase {
     public async execute(
         params: IUnlockEntryUseCaseExecuteParams
     ): Promise<ILockingMechanismLockRecord> {
-        const record = await this.getLockRecordUseCase.execute(params.id);
+        const record = await this.getLockRecordUseCase.execute(params);
         if (!record) {
             throw new WebinyError("Lock Record not found.", "LOCK_RECORD_NOT_FOUND", {
                 ...params

@@ -1,3 +1,4 @@
+import { WebinyError } from "@webiny/error";
 import { ApolloClient } from "apollo-client";
 import {
     ILockingMechanismListLockRecords,
@@ -40,7 +41,7 @@ export class LockingMechanismListLockRecords implements ILockingMechanismListLoc
             }
         });
         if (!result.data?.lockingMechanism?.listLockRecords) {
-            throw new Error("No data returned from server.");
+            throw new WebinyError("No data returned from server.");
         }
         return result.data.lockingMechanism.listLockRecords;
     }

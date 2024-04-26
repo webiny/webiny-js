@@ -1,3 +1,4 @@
+import { WebinyError } from "@webiny/error";
 import { useContext } from "react";
 import { LockingMechanismContext } from "~/components/LockingMechanismProvider";
 import { ILockingMechanismContext, IPossiblyLockingMechanismRecord } from "~/types";
@@ -7,7 +8,7 @@ export const useLockingMechanism = <
 >() => {
     const context = useContext(LockingMechanismContext);
     if (!context) {
-        throw new Error("useLockingMechanism must be used within a LockingMechanismProvider");
+        throw new WebinyError("useLockingMechanism must be used within a LockingMechanismProvider");
     }
     return context as ILockingMechanismContext<T>;
 };

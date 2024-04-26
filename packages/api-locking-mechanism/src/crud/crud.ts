@@ -1,7 +1,7 @@
 import { WebinyError } from "@webiny/error";
 import {
-    CmsIdentity,
     Context,
+    IGetIdentity,
     IGetWebsocketsContextCallable,
     IHasFullAccessCallable,
     ILockingMechanism,
@@ -28,6 +28,7 @@ import { createTopic } from "@webiny/pubsub";
 import { IListAllLockRecordsUseCaseExecute } from "~/abstractions/IListAllLockRecordsUseCase";
 import { IListLockRecordsUseCaseExecute } from "~/abstractions/IListLockRecordsUseCase";
 import { IUpdateEntryLockUseCaseExecute } from "~/abstractions/IUpdateEntryLockUseCase";
+import { IGetLockedEntryLockRecordUseCaseExecute } from "~/abstractions/IGetLockedEntryLockRecordUseCase";
 
 interface Params {
     context: Pick<Context, "plugins" | "cms" | "benchmark" | "security" | "websockets">;
@@ -52,7 +53,7 @@ export const createLockingMechanismCrud = async ({
         );
     };
 
-    const getIdentity = (): CmsIdentity => {
+    const getIdentity: IGetIdentity = () => {
         const identity = context.security.getIdentity();
         if (!identity) {
             throw new WebinyError("Identity missing.");
@@ -107,6 +108,7 @@ export const createLockingMechanismCrud = async ({
         listAllLockRecordsUseCase,
         getLockRecordUseCase,
         isEntryLockedUseCase,
+        getLockedEntryLockRecordUseCase,
         lockEntryUseCase,
         updateEntryLockUseCase,
         unlockEntryUseCase,
@@ -130,15 +132,21 @@ export const createLockingMechanismCrud = async ({
         });
     };
 
-    const getLockRecord: IGetLockRecordUseCaseExecute = async id => {
+    const getLockRecord: IGetLockRecordUseCaseExecute = async params => {
         return context.benchmark.measure("lockingMechanism.getLockRecord", async () => {
-            return getLockRecordUseCase.execute(id);
+            return getLockRecordUseCase.execute(params);
         });
     };
 
     const isEntryLocked: IIsEntryLockedUseCaseExecute = async params => {
         return context.benchmark.measure("lockingMechanism.isEntryLocked", async () => {
             return isEntryLockedUseCase.execute(params);
+        });
+    };
+
+    const getLockedEntryLockRecord: IGetLockedEntryLockRecordUseCaseExecute = async params => {
+        return context.benchmark.measure("lockingMechanism.getLockedEntryLockRecord", async () => {
+            return getLockedEntryLockRecordUseCase.execute(params);
         });
     };
 
@@ -232,6 +240,7 @@ export const createLockingMechanismCrud = async ({
         listAllLockRecords,
         getLockRecord,
         isEntryLocked,
+        getLockedEntryLockRecord,
         lockEntry,
         updateEntryLock,
         unlockEntry,

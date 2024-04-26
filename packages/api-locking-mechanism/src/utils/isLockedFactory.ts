@@ -4,7 +4,8 @@ export interface IIsLocked {
     (record?: Pick<ILockingMechanismLockRecord, "lockedOn"> | null): boolean;
 }
 
-export const isLockedFactory = (timeout: number): IIsLocked => {
+export const isLockedFactory = (timeoutInput: number): IIsLocked => {
+    const timeout = timeoutInput * 1000;
     return record => {
         if (!record || record.lockedOn instanceof Date === false) {
             return false;

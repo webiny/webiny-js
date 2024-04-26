@@ -1,3 +1,4 @@
+import { WebinyError } from "@webiny/error";
 import {
     ILockingMechanismUpdateEntryLock,
     ILockingMechanismUpdateEntryLockExecuteParams,
@@ -32,7 +33,7 @@ export class LockingMechanismUpdateEntryLock implements ILockingMechanismUpdateE
             variables: params
         });
         if (!result.data?.lockingMechanism?.updateEntryLock) {
-            throw new Error("No data returned from server.");
+            throw new WebinyError("No data returned from server.");
         }
         return result.data.lockingMechanism.updateEntryLock;
     }

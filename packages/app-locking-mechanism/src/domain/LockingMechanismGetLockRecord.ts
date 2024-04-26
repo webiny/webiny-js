@@ -34,7 +34,7 @@ export class LockingMechanismGetLockRecord implements ILockingMechanismGetLockRe
         if (result.data.lockingMechanism.getLockRecord.error) {
             throw new WebinyError(result.data.lockingMechanism.getLockRecord.error);
         } else if (!result.data.lockingMechanism.getLockRecord.data) {
-            throw new Error("No data returned from server.");
+            throw new WebinyError("No data returned from server.");
         }
         return result.data.lockingMechanism.getLockRecord;
     }

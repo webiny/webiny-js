@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createLockingMechanism } from "~/domain/LockingMechanism";
 import {
-    IFetchIsEntryLockedParams,
+    IFetchLockedEntryLockRecordParams,
     IFetchLockRecordParams,
     ILockingMechanismContext,
     ILockingMechanismError,
@@ -125,8 +125,8 @@ export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) 
                 };
             }
         },
-        async fetchIsEntryLocked(params: IFetchIsEntryLockedParams) {
-            return lockingMechanism.fetchIsEntryLocked(params);
+        async fetchLockedEntryLockRecord(params: IFetchLockedEntryLockRecordParams) {
+            return lockingMechanism.fetchLockedEntryLockRecord(params);
         },
         async setRecords(folderId, type, newRecords) {
             setRecordsIfNeeded(newRecords);
