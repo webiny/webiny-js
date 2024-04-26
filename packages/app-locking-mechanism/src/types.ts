@@ -23,7 +23,7 @@ export interface ILockingMechanismRecordLocked {
 
 export interface IPossiblyLockingMechanismRecord extends EntryTableItem {
     $lockingType?: string;
-    entryId?: string;
+    entryId: string;
     $locked?: ILockingMechanismRecordLocked | null;
 }
 
