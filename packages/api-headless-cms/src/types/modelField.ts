@@ -154,7 +154,7 @@ export interface CmsModelFieldInput {
     /**
      * Renderer options for the field. Check the reference for more information.
      */
-    renderer?: CmsModelFieldRenderer;
+    renderer?: CmsModelFieldRenderer | null;
     /**
      * List of validations for the field.
      */
