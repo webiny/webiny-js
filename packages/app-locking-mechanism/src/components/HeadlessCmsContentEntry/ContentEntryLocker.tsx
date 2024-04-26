@@ -24,6 +24,16 @@ export interface IKickOutWebsocketsMessage extends IncomingGenericData {
         user: ILockingMechanismIdentity;
     };
 }
+// @ts-ignore Bruno to add type defnition :)
+const ForceUnlocked = ({ user }) => {
+    return (
+        <>
+            The entry you were editing was forcefully unlocked by $
+            {user.displayName || "Unknown user"}. You will now be redirected back to the list of
+            entries.
+        </>
+    );
+};
 
 export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
     const { entry, contentModel: model } = useContentEntry();
@@ -48,12 +58,10 @@ export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
         subscription.current = websockets.onMessage<IKickOutWebsocketsMessage>(
             `lockingMechanism.entry.kickOut.${entryId}`,
             async incoming => {
-                // TODO @sven you can use the user object
-                // eslint-disable-next-line
                 const { user } = incoming.data;
                 showDialog({
-                    title: "Forceful unlock of the entry",
-                    content: `The entry you were editing was forcefully unlocked.`,
+                    title: "Entry was forcefully unlocked",
+                    content: <ForceUnlocked user={user} />,
                     acceptLabel: "Ok",
                     onClose: undefined,
                     cancelLabel: undefined

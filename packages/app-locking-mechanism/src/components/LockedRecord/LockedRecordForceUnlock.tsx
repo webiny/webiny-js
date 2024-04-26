@@ -5,27 +5,50 @@ import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { useLockingMechanism, usePermission } from "~/hooks";
 import { useRouter } from "@webiny/react-router";
 import { useContentEntriesList } from "@webiny/app-headless-cms";
+import { Alert } from "@webiny/ui/Alert";
+import { ButtonPrimary } from "@webiny/ui/Button";
 
 const Wrapper = styled("div")({
-    padding: "20px",
+    padding: "0",
     backgroundColor: "white"
 });
 
-const Text = styled("p")({});
+const Text = styled("p")({
+    lineHeight: "125%"
+});
 
-const Button = styled("button")({});
+const Bold = styled("span")({
+    fontWeight: 600
+});
 
 export interface ILockedRecordForceUnlock {
     record: ILockingMechanismRecord;
 }
+
+const ErrorMessage = ({ record }: ILockedRecordForceUnlock) => {
+    return (
+        <div>
+            <Alert type="warning" title="Warning">
+                <Bold>{record.$locked?.lockedBy.displayName || "Unknown user"}</Bold> is currently
+                editing this record.
+                <br /> If you force unlock it, they could potentially lose their changes.
+            </Alert>
+            <br />
+            <p>
+                You are about to forcefully unlock the <Bold>{record.title}</Bold> entry.
+            </p>
+            <p>Are you sure you want to continue?</p>
+        </div>
+    );
+};
 
 export const LockedRecordForceUnlock = ({ record }: ILockedRecordForceUnlock) => {
     const { unlockEntryForce } = useLockingMechanism();
 
     const { navigateTo } = useContentEntriesList();
     const { showConfirmation: showForceUnlockConfirmation } = useConfirmationDialog({
-        title: "Force unlock an entry",
-        message: `You are about to forcefully unlock the "${record.meta.title}" entry. Are you sure you want to continue?`
+        title: "Force unlock the entry",
+        message: <ErrorMessage record={record} />
     });
     const { showSnackbar } = useSnackbar();
 
@@ -62,7 +85,8 @@ export const LockedRecordForceUnlock = ({ record }: ILockedRecordForceUnlock) =>
             <Text>
                 Because you have a full access to the system, you can force unlock the record.
             </Text>
-            <Button onClick={onClick}>Unlock and go back</Button>
+            <br />
+            <ButtonPrimary onClick={onClick}>Unlock and go back</ButtonPrimary>
         </Wrapper>
     );
 };

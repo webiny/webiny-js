@@ -7643,6 +7643,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material-design-icons/svg@npm:^0.14.13":
+  version: 0.14.13
+  resolution: "@material-design-icons/svg@npm:0.14.13"
+  checksum: 80815e94a7b4a9775a4afe2af1b24c3b55270e09ad7cbebf669d7cea2d8c31050c371e435257bfb6289c782f672b82c73873c5d4d5bd15b12ec7d9b8b58909d4
+  languageName: node
+  linkType: hard
+
 "@material-design-icons/svg@npm:^0.14.2":
   version: 0.14.2
   resolution: "@material-design-icons/svg@npm:0.14.2"
@@ -15226,6 +15233,7 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@emotion/styled": ^11.10.6
+    "@material-design-icons/svg": ^0.14.13
     "@webiny/app": 0.0.0
     "@webiny/app-admin": 0.0.0
     "@webiny/app-headless-cms": 0.0.0
