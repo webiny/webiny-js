@@ -1,10 +1,10 @@
 import { ITaskResponseResult, TaskDataStatus } from "@webiny/tasks";
-import { EntriesTask, IEmptyTrashBinByModelTaskParams } from "~/types";
+import { EntriesTask, IPublishEntriesByModelTaskParams } from "~/types";
 
-export const DELETE_ENTRIES_WAIT_TIME = 10;
+export const PUBLISH_ENTRIES_WAIT_TIME = 10;
 
-export class ProcessDeleteEntriesTasks {
-    public async execute(params: IEmptyTrashBinByModelTaskParams): Promise<ITaskResponseResult> {
+export class ProcessPublishEntriesTasks {
+    public async execute(params: IPublishEntriesByModelTaskParams): Promise<ITaskResponseResult> {
         const { response, input, isAborted, isCloseToTimeout, context, store } = params;
 
         try {
@@ -19,7 +19,7 @@ export class ProcessDeleteEntriesTasks {
             const result = await context.tasks.listTasks({
                 where: {
                     parentId: store.getTask().id,
-                    definitionId: EntriesTask.DeleteTrashBinEntries,
+                    definitionId: EntriesTask.PublishEntries,
                     taskStatus_in: [TaskDataStatus.RUNNING, TaskDataStatus.PENDING]
                 },
                 limit: 1
@@ -31,16 +31,16 @@ export class ProcessDeleteEntriesTasks {
                         ...input
                     },
                     {
-                        seconds: DELETE_ENTRIES_WAIT_TIME
+                        seconds: PUBLISH_ENTRIES_WAIT_TIME
                     }
                 );
             }
 
             return response.done(
-                `Task done: The trash bin has been emptied for the ${input.modelId} model.`
+                `Task done: all entries has been published for ${input.modelId} model.`
             );
         } catch (ex) {
-            return response.error(ex.message ?? "Error while executing ProcessDeleteEntriesTasks");
+            return response.error(ex.message ?? "Error while executing ProcessPublishEntriesTasks");
         }
     }
 }

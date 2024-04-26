@@ -5,13 +5,16 @@ import {
     ITaskResponseDoneResultOutput,
     ITaskRunParams
 } from "@webiny/tasks/types";
+import { SecurityIdentity } from "@webiny/api-security/types";
 
 export interface HcmsTasksContext extends BaseContext, CmsContext, TasksContext {}
 
 export enum EntriesTask {
     EmptyTrashBins = "hcmsEntriesEmptyTrashBins",
     EmptyTrashBinByModel = "hcmsEntriesEmptyTrashBinByModel",
-    DeleteTrashBinEntries = "hcmsEntriesDeleteTrashBinEntries"
+    DeleteTrashBinEntries = "hcmsEntriesDeleteTrashBinEntries",
+    PublishEntriesByModel = "hcmsEntriesPublishEntriesByModel",
+    PublishEntries = "hcmsEntriesPublishEntries"
 }
 
 /**
@@ -64,4 +67,52 @@ export type IDeleteTrashBinEntriesTaskParams = ITaskRunParams<
     HcmsTasksContext,
     IDeleteTrashBinEntriesInput,
     IDeleteTrashBinEntriesOutput
+>;
+
+/**
+ * Publish Entries by Model
+ */
+
+export interface IPublishEntriesByModelInput {
+    modelId: string;
+    identity: SecurityIdentity;
+    where?: Record<string, any>;
+    after?: string | null;
+    currentBatch?: number;
+    processing?: boolean;
+    totalCount?: number;
+}
+
+export interface IPublishEntriesByModelOutput extends ITaskResponseDoneResultOutput {
+    done: string[];
+    failed: string[];
+}
+
+export type IPublishEntriesByModelTaskParams = ITaskRunParams<
+    HcmsTasksContext,
+    IPublishEntriesByModelInput,
+    IPublishEntriesByModelOutput
+>;
+
+/**
+ * Publish Entries
+ */
+
+export interface IPublishEntriesInput {
+    modelId: string;
+    ids: string[];
+    identity: SecurityIdentity;
+    done?: string[];
+    failed?: string[];
+}
+
+export interface IPublishEntriesOutput extends ITaskResponseDoneResultOutput {
+    done: string[];
+    failed: string[];
+}
+
+export type IPublishEntriesTaskParams = ITaskRunParams<
+    HcmsTasksContext,
+    IPublishEntriesInput,
+    IPublishEntriesOutput
 >;

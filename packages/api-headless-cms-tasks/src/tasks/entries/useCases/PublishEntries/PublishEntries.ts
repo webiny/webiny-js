@@ -1,12 +1,10 @@
 import { ITaskResponseResult } from "@webiny/tasks";
-import { IDeleteTrashBinEntriesTaskParams } from "~/types";
+import { IPublishEntriesTaskParams } from "~/types";
 import { taskRepositoryFactory } from "~/tasks/entries/domain";
 import { IUseCase } from "~/tasks/IUseCase";
 
-export class DeleteTrashBinEntries
-    implements IUseCase<IDeleteTrashBinEntriesTaskParams, ITaskResponseResult>
-{
-    public async execute(params: IDeleteTrashBinEntriesTaskParams) {
+export class PublishEntries implements IUseCase<IPublishEntriesTaskParams, ITaskResponseResult> {
+    public async execute(params: IPublishEntriesTaskParams) {
         const { input, response, isAborted, isCloseToTimeout, context, store } = params;
 
         try {
@@ -22,26 +20,29 @@ export class DeleteTrashBinEntries
                 return response.error(`Missing "modelId" in the input.`);
             }
 
+            if (!input.identity) {
+                return response.error(`Missing "identity" in the input.`);
+            }
+
             const model = await context.cms.getModel(input.modelId);
 
             if (!model) {
-                return response.error(`Model with ${input.modelId} not found!`);
+                return response.error(`Content model "${input.modelId}" was not found!`);
             }
 
-            if (!input.entryIds || input.entryIds.length === 0) {
-                return response.done("Task done: No entries to delete.");
+            if (!input.ids || input.ids.length === 0) {
+                return response.done("Task done: no entries to publish.");
             }
 
             const taskRepository = taskRepositoryFactory.getRepository(store.getTask().id);
 
-            for (const entryId of input.entryIds) {
+            for (const id of input.ids) {
                 try {
-                    await context.cms.deleteEntry(model, entryId, {
-                        permanently: true
-                    });
-                    taskRepository.addDone(entryId);
+                    context.security.setIdentity(input.identity);
+                    await context.cms.publishEntry(model, id);
+                    taskRepository.addDone(id);
                 } catch (ex) {
-                    const message = ex.message || `Failed to delete entry with entryId ${entryId}.`;
+                    const message = ex.message || `Failed to publish entry with id ${id}.`;
 
                     try {
                         await store.addErrorLog({
@@ -51,7 +52,7 @@ export class DeleteTrashBinEntries
                     } catch {
                         console.error(`Failed to add error log: "${message}"`);
                     } finally {
-                        taskRepository.addFailed(entryId);
+                        taskRepository.addFailed(id);
                     }
                 }
             }
@@ -62,8 +63,7 @@ export class DeleteTrashBinEntries
             });
         } catch (ex) {
             return response.error(
-                ex.message ??
-                    `Error while deleting entries found in the trash bin for model ${input.modelId}.`
+                ex.message ?? `Error while publishing entries for model ${input.modelId}.`
             );
         }
     }

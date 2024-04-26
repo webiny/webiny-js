@@ -20,8 +20,26 @@ export const createGraphQL = () => {
                     error: CmsError
                 }
 
+                type BulkActionResponseData {
+                    id: String
+                }
+
+                type BulkActionResponse {
+                    data: EmptyTrashBinResponseData
+                    error: CmsError
+                }
+
+                input BulkActionWhereInput {
+                    entryId_in: [String!]
+                    wbyAco_location: WbyAcoLocationWhereInput
+                }
+
                 extend type Mutation {
                     emptyTrashBin(modelId: String!): EmptyTrashBinResponse
+                    bulkPublishEntries(
+                        modelId: String!
+                        where: BulkActionWhereInput
+                    ): BulkActionResponse
                 }
             `,
             resolvers: {
@@ -31,6 +49,21 @@ export const createGraphQL = () => {
                             definition: EntriesTask.EmptyTrashBinByModel,
                             input: {
                                 modelId: args.modelId
+                            }
+                        });
+
+                        return new Response({
+                            id: response.id
+                        });
+                    },
+                    bulkPublishEntries: async (_, args) => {
+                        const identity = context.security.getIdentity();
+                        const response = await context.tasks.trigger({
+                            definition: EntriesTask.PublishEntriesByModel,
+                            input: {
+                                modelId: args.modelId,
+                                where: args.where,
+                                identity
                             }
                         });
 

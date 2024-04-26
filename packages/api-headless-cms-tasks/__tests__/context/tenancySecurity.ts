@@ -8,7 +8,7 @@ import {
 } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import { HeadlessCmsTasksContext } from "~/types";
+import { HcmsTasksContext } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { TenancyStorageOperations, Tenant } from "@webiny/api-tenancy/types";
 
@@ -37,7 +37,7 @@ export const createTenancyAndSecurity = ({
         setupGraphQL ? createTenancyGraphQL() : null,
         createSecurityContext({ storageOperations: securityStorage.storageOperations }),
         setupGraphQL ? createSecurityGraphQL() : null,
-        new ContextPlugin<HeadlessCmsTasksContext>(context => {
+        new ContextPlugin<HcmsTasksContext>(context => {
             context.tenancy.setCurrentTenant({
                 id: "root",
                 name: "Root",
@@ -57,7 +57,7 @@ export const createTenancyAndSecurity = ({
                 return permissions || [{ name: "*" }];
             });
         }),
-        new BeforeHandlerPlugin<HeadlessCmsTasksContext>(context => {
+        new BeforeHandlerPlugin<HcmsTasksContext>(context => {
             const { headers = {} } = context.request || {};
             if (headers["authorization"]) {
                 return context.security.authenticate(headers["authorization"]);
