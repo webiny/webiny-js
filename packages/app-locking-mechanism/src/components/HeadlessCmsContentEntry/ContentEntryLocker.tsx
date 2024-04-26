@@ -4,6 +4,7 @@ import { useLockingMechanism } from "~/hooks";
 import { IIsRecordLockedParams } from "~/types";
 import { IWebsocketsSubscription, useWebsockets } from "@webiny/app-websockets";
 import { parseIdentifier } from "@webiny/utils";
+import { useDialogs } from "@webiny/app-admin";
 
 export interface IContentEntryLockerProps {
     children: React.ReactElement;
@@ -19,6 +20,8 @@ export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
 
     const websockets = useWebsockets();
 
+    const { showDialog } = useDialogs();
+
     useEffect(() => {
         if (!entry.id) {
             return;
@@ -30,6 +33,13 @@ export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
         subscription.current = websockets.onMessage(
             `lockingMechanism.entry.kickOut.${entryId}`,
             async () => {
+                showDialog({
+                    title: "Forceful unlock of the entry",
+                    content: `The entry you were editing was forcefully unlocked.`,
+                    acceptLabel: "Ok",
+                    onClose: undefined,
+                    cancelLabel: undefined
+                });
                 navigateTo();
             }
         );
