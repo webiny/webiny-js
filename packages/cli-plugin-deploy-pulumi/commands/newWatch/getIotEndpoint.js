@@ -1,10 +1,9 @@
 const getIotEndpoint = () => {
-    const IoT = require("aws-sdk/clients/iot");
-    const iotClient = new IoT();
+    const { IoTClient, DescribeEndpointCommand } = require("@webiny/aws-sdk/client-iot");
+    const iotClient = new IoTClient();
 
     return iotClient
-        .describeEndpoint()
-        .promise()
+        .send(new DescribeEndpointCommand({}))
         .then(({ endpointAddress }) => {
             const [endpointId, ...remainingEndpointParts] = endpointAddress.split(".");
 
@@ -14,10 +13,10 @@ const getIotEndpoint = () => {
             // for browser-based IoT applications because many browsers restrict direct access to MQTT ports.
             // So, AWS IoT Core provides an alternate endpoint with the '-ats' suffix that supports MQTT over
             // WebSocket, allowing browsers to securely connect to AWS IoT Core.
-
             return endpointId + "-ats." + remainingEndpointParts.join(".");
         })
         .then(endpointAddress => {
+            console.log('endpointAddress', endpointAddress)
             return `wss://${endpointAddress}/mqtt?x-amz-customauthorizer-name=Authorizer`;
         });
 };
