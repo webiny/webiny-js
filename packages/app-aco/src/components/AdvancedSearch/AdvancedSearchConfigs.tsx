@@ -6,7 +6,7 @@ import {
     DateWithoutTimezone,
     DateWithTimezone,
     Input,
-    MultipleValues
+    PredefinedValues
 } from "~/components/AdvancedSearch/fields";
 
 const { AdvancedSearch } = AcoConfig;
@@ -38,9 +38,9 @@ export const AdvancedSearchConfigs = () => {
                 element={<DateWithoutTimezone />}
             />
             <AdvancedSearch.FieldRenderer
-                name={"multipleValues"}
-                type={FieldType.MULTIPLE_VALUES}
-                element={<MultipleValues />}
+                name={"predefinedValues"}
+                type={FieldType.PREDEFINED_VALUES}
+                element={<PredefinedValues />}
             />
         </AcoConfig>
     );

@@ -4,7 +4,7 @@ import { Bind } from "@webiny/form";
 import { Select } from "@webiny/ui/Select";
 import { useInputField } from "~/components";
 
-export const MultipleValues = () => {
+export const PredefinedValues = () => {
     const { name, field } = useInputField();
 
     return (
