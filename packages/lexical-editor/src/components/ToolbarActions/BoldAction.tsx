@@ -1,10 +1,10 @@
 import React from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { FORMAT_TEXT_COMMAND } from "lexical";
 import { useCurrentSelection } from "~/hooks/useCurrentSelection";
+import { useRichTextEditor } from "~/hooks";
 
 export const BoldAction = () => {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
     const { rangeSelection } = useCurrentSelection();
     const isBoldSelected = rangeSelection ? rangeSelection.hasFormat("bold") : false;
 

@@ -5,11 +5,11 @@ import {
     INDENT_CONTENT_COMMAND,
     OUTDENT_CONTENT_COMMAND
 } from "lexical";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Compose, makeDecoratable } from "@webiny/react-composition";
 import { TextAlignmentActionContext } from "~/context/TextAlignmentActionContextProps";
 import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
 import { getSelectedNode } from "~/utils/getSelectedNode";
+import { useRichTextEditor } from "~/hooks";
 
 /*
  * Base text alignment dropdown composable component.
@@ -40,7 +40,7 @@ export type TextAlignmentAction = React.ComponentType<unknown> & {
 };
 
 export const TextAlignmentAction: TextAlignmentAction = () => {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
     const alignmentValue: ElementFormatType = useDeriveValueFromSelection(({ rangeSelection }) => {
         const node = rangeSelection ? getSelectedNode(rangeSelection) : null;
         if (node) {

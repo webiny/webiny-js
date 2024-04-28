@@ -1,52 +1,40 @@
-import React, { createContext, useState } from "react";
+import React, { createContext } from "react";
 import { LexicalEditor } from "lexical";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import type { ThemeEmotionMap, WebinyTheme } from "@webiny/lexical-theme";
-import { ToolbarActionPlugin, ToolbarType } from "~/types";
+import { ToolbarActionPlugin } from "~/types";
 
 export interface RichTextEditorContext {
-    toolbarType?: ToolbarType;
-    setToolbarType: (type: ToolbarType) => void;
+    editor: LexicalEditor;
     theme?: WebinyTheme;
-    setTheme: (theme: WebinyTheme) => void;
     themeEmotionMap?: ThemeEmotionMap;
-    setThemeEmotionMap: (themeEmotionMap?: ThemeEmotionMap) => void;
     toolbarActionPlugins: ToolbarActionPlugin[];
-    setToolbarActionPlugins: (actionPlugins: ToolbarActionPlugin[]) => void;
-    activeEditor?: LexicalEditor;
-    setActiveEditor: (editor: LexicalEditor) => void;
-    isEditable: boolean;
-    setIsEditable: (isEditable: boolean) => void;
 }
 
 export const RichTextEditorContext = createContext<RichTextEditorContext | undefined>(undefined);
 
 interface RichTextEditorProviderProps {
+    theme: WebinyTheme;
+    themeEmotionMap?: ThemeEmotionMap;
+    toolbarActionPlugins?: ToolbarActionPlugin[];
     children?: React.ReactNode | React.ReactNode[];
 }
 
-export const RichTextEditorProvider = ({ children }: RichTextEditorProviderProps) => {
-    const [toolbarType, setToolbarType] = useState<ToolbarType | undefined>();
-    const [theme, setTheme] = useState<WebinyTheme | undefined>(undefined);
-    const [themeEmotionMap, setThemeEmotionMap] = useState<ThemeEmotionMap | undefined>(undefined);
-    const [toolbarActionPlugins, setToolbarActionPlugins] = useState<ToolbarActionPlugin[]>([]);
-    const [activeEditor, setActiveEditor] = useState<LexicalEditor>();
-    const [isEditable, setIsEditable] = useState<boolean>(false);
+export const RichTextEditorProvider = ({
+    themeEmotionMap,
+    theme,
+    toolbarActionPlugins = [],
+    children
+}: RichTextEditorProviderProps) => {
+    const [editor] = useLexicalComposerContext();
 
     return (
         <RichTextEditorContext.Provider
             value={{
-                toolbarType,
-                setToolbarType,
+                editor,
                 theme,
-                setTheme,
                 themeEmotionMap,
-                setThemeEmotionMap,
-                activeEditor,
-                setActiveEditor,
-                isEditable,
-                setIsEditable,
-                toolbarActionPlugins,
-                setToolbarActionPlugins
+                toolbarActionPlugins
             }}
         >
             {children}

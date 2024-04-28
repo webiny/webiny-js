@@ -6,7 +6,6 @@
  *
  */
 import { useEffect } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import {
     $createRangeSelection,
@@ -25,6 +24,7 @@ import { $isImageNode, ImageNode } from "@webiny/lexical-nodes";
 import { ImagePayload, INSERT_IMAGE_COMMAND } from "~/commands";
 import { CAN_USE_DOM } from "~/utils/canUseDOM";
 import { insertImage } from "~/utils/insertImage";
+import { useRichTextEditor } from "~/hooks";
 
 export type InsertImagePayload = Readonly<ImagePayload>;
 
@@ -36,11 +36,11 @@ export function ImagesPlugin({
 }: {
     captionsEnabled?: boolean;
 }): JSX.Element | null {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
 
     useEffect(() => {
         if (!editor.hasNodes([ImageNode])) {
-            throw new Error("ImagesPlugin: ImageNode not registered on editor");
+            throw new Error("ImagesPlugin: ImageNode not registered in the editor!");
         }
 
         return mergeRegister(
