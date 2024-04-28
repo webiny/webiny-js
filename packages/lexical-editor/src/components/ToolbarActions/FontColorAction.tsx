@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { LexicalCommand } from "lexical";
 import { Compose, makeDecoratable } from "@webiny/react-composition";
 import { FontColorActionContext } from "~/context/FontColorActionContext";
 import { $isFontColorNode, ADD_FONT_COLOR_COMMAND, FontColorPayload } from "@webiny/lexical-nodes";
 import { getSelectedNode } from "~/utils/getSelectedNode";
 import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
+import { useRichTextEditor } from "~/hooks";
 
 export const FontColorPicker = makeDecoratable("FontColorPicker", (): JSX.Element | null => {
     useEffect(() => {
@@ -27,7 +27,7 @@ export type FontColorAction = React.ComponentType<unknown> & {
 };
 
 export const FontColorAction: FontColorAction = () => {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
     const fontColor = useDeriveValueFromSelection(({ rangeSelection }) => {
         if (!rangeSelection) {
             return "#000";

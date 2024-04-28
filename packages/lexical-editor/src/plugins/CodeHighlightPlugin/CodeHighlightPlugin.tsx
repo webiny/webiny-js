@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { registerCodeHighlighting } from "@lexical/code";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useRichTextEditor } from "~/hooks";
 
 export function CodeHighlightPlugin() {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
     useEffect(() => {
         return registerCodeHighlighting(editor);
     }, [editor]);

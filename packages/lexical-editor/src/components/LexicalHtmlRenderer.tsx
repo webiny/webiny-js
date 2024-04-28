@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { Klass, LexicalNode } from "lexical";
-import { ClassNames, CSSObject } from "@emotion/react";
+import { css } from "emotion";
+import { CSSObject } from "@emotion/react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -16,6 +17,7 @@ import { isValidLexicalData } from "~/utils/isValidLexicalData";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 import { LexicalValue } from "~/types";
 import { UpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
+import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
 
 interface LexicalHtmlRendererProps {
     nodes?: Klass<LexicalNode>[];
@@ -25,12 +27,14 @@ interface LexicalHtmlRendererProps {
     themeStylesTransformer?: (cssObject: Record<string, any>) => CSSObject;
 }
 
-export const BaseLexicalHtmlRenderer = ({
+export const LexicalHtmlRenderer = ({
     nodes,
     value,
     theme,
-    themeEmotionMap
+    ...props
 }: LexicalHtmlRendererProps) => {
+    const themeEmotionMap =
+        props?.themeEmotionMap ?? toTypographyEmotionMap(css, theme, props.themeStylesTransformer);
     const editorTheme = useRef(createTheme());
     const editorValue = isValidLexicalData(value) ? value : generateInitialLexicalValue();
 
@@ -49,32 +53,18 @@ export const BaseLexicalHtmlRenderer = ({
 
     return (
         <LexicalComposer initialConfig={initialConfig} key={initialConfig.nodes.length}>
-            <RichTextPlugin
-                contentEditable={
-                    <div className="editor">
-                        <ContentEditable />
-                    </div>
-                }
-                ErrorBoundary={LexicalErrorBoundary}
-                placeholder={null}
-            />
-            <UpdateStatePlugin value={editorValue} />
+            <RichTextEditorProvider theme={theme} themeEmotionMap={themeEmotionMap}>
+                <RichTextPlugin
+                    contentEditable={
+                        <div className="editor">
+                            <ContentEditable />
+                        </div>
+                    }
+                    ErrorBoundary={LexicalErrorBoundary}
+                    placeholder={null}
+                />
+                <UpdateStatePlugin value={editorValue} />
+            </RichTextEditorProvider>
         </LexicalComposer>
-    );
-};
-
-/**
- * @description Main editor container
- */
-export const LexicalHtmlRenderer = (props: LexicalHtmlRendererProps) => {
-    return (
-        <ClassNames>
-            {({ css }) => {
-                const themeEmotionMap =
-                    props?.themeEmotionMap ??
-                    toTypographyEmotionMap(css, props.theme, props.themeStylesTransformer);
-                return <BaseLexicalHtmlRenderer {...props} themeEmotionMap={themeEmotionMap} />;
-            }}
-        </ClassNames>
     );
 };

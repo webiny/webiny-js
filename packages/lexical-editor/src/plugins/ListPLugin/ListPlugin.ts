@@ -1,14 +1,15 @@
 import { useEffect } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ListNode, ListItemNode } from "@webiny/lexical-nodes";
-import { useList } from "~/hooks/useList";
+import { useList, useRichTextEditor } from "~/hooks";
 
 export function ListPlugin(): null {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
 
     useEffect(() => {
         if (!editor.hasNodes([ListNode, ListItemNode])) {
-            throw new Error("ListPlugin: ListNode and/or ListItemNode not registered on editor");
+            throw new Error(
+                "ListPlugin: ListNode and/or ListItemNode not registered in the editor!"
+            );
         }
     }, [editor]);
 
