@@ -9,13 +9,13 @@ import {
 import { createPortal } from "react-dom";
 import { mergeRegister } from "@lexical/utils";
 import { $isLinkNode } from "@webiny/lexical-nodes";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import "./Toolbar.css";
 import { getDOMRangeRect } from "~/utils/getDOMRangeRect";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
 import { useLexicalEditorConfig } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
 import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
 import { getSelectedNode } from "~/utils/getSelectedNode";
+import { useRichTextEditor } from "~/hooks";
 
 interface FloatingToolbarProps {
     anchorElem: HTMLElement;
@@ -166,7 +166,7 @@ export interface ToolbarProps {
 }
 
 export const Toolbar = ({ anchorElem = document.body }: ToolbarProps) => {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
     const showToolbar = useDeriveValueFromSelection(({ rangeSelection }) => {
         if (!rangeSelection) {
             return false;
