@@ -15,3 +15,6 @@ export * from "./MoveEntriesToFolder";
 
 // Bulk Action - Move Entries to Trash Bin
 export * from "./MoveEntriesToTrash";
+
+// Bulk Action - Restore Entries from Trash Bin
+export * from "./RestoreEntriesFromTrash";

@@ -17,7 +17,8 @@ export enum EntriesTask {
     PublishEntries = "hcmsEntriesPublishEntries",
     UnpublishEntries = "hcmsEntriesUnpublishEntries",
     MoveEntriesToFolder = "hcmsEntriesMoveEntriesToFolder",
-    MoveEntriesToTrash = "hcmsEntriesMoveEntriesToTrash"
+    MoveEntriesToTrash = "hcmsEntriesMoveEntriesToTrash",
+    RestoreEntriesFromTrash = "hcmsEntriesRestoreEntriesFromTrash"
 }
 
 /**
@@ -264,4 +265,52 @@ export type IMoveEntriesToTrashTaskParams = ITaskRunParams<
     HcmsTasksContext,
     IMoveEntriesToTrashInput,
     IMoveEntriesToTrashOutput
+>;
+
+/**
+ * Restore Entries from Trash Bin by Model
+ */
+
+export interface IRestoreEntriesFromTrashByModelInput {
+    modelId: string;
+    identity: SecurityIdentity;
+    where?: Record<string, any>;
+    after?: string | null;
+    currentBatch?: number;
+    processing?: boolean;
+    totalCount?: number;
+}
+
+export interface IRestoreEntriesFromTrashByModelOutput extends ITaskResponseDoneResultOutput {
+    done: string[];
+    failed: string[];
+}
+
+export type IRestoreEntriesFromTrashByModelTaskParams = ITaskRunParams<
+    HcmsTasksContext,
+    IRestoreEntriesFromTrashByModelInput,
+    IRestoreEntriesFromTrashByModelOutput
+>;
+
+/**
+ * Restore Entries from Trash
+ */
+
+export interface IRestoreEntriesFromTrashInput {
+    modelId: string;
+    entryIds: string[];
+    identity: SecurityIdentity;
+    done?: string[];
+    failed?: string[];
+}
+
+export interface IRestoreEntriesFromTrashOutput extends ITaskResponseDoneResultOutput {
+    done: string[];
+    failed: string[];
+}
+
+export type IRestoreEntriesFromTrashTaskParams = ITaskRunParams<
+    HcmsTasksContext,
+    IRestoreEntriesFromTrashInput,
+    IRestoreEntriesFromTrashOutput
 >;
