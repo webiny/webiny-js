@@ -17,7 +17,8 @@ const createEntries = async (context: HcmsTasksContext, modelId: string, total =
     }
 
     for (let i = 0; i < total; i++) {
-        await context.cms.createEntry(model, { title: `Entry-${i}` });
+        const entry = await context.cms.createEntry(model, { title: `Entry-${i}` });
+        await context.cms.publishEntry(model, entry.id);
     }
 
     // Let's wait a little bit...we need the ES index to settle down.
@@ -44,7 +45,7 @@ const listLatestEntries = async (context: HcmsTasksContext, modelId: string) => 
     };
 };
 
-const listPublishedEntries = async (context: HcmsTasksContext, modelId: string) => {
+const listUnpublishedEntries = async (context: HcmsTasksContext, modelId: string) => {
     const model = await context.cms.getModel(modelId);
 
     if (!model) {
@@ -53,7 +54,8 @@ const listPublishedEntries = async (context: HcmsTasksContext, modelId: string) 
 
     const [entries, meta] = await context.cms.listEntries(model, {
         where: {
-            published: true
+            latest: true,
+            published: false
         },
         limit: 10000
     });
@@ -276,7 +278,7 @@ describe("Unpublish Entries", () => {
         });
 
         // Let's check that we unpublish all entries
-        const { meta: publishedMeta } = await listPublishedEntries(context, MODEL_ID);
-        expect(publishedMeta.totalCount).toBe(latestMeta.totalCount);
+        const { meta: unpublishedMeta } = await listUnpublishedEntries(context, MODEL_ID);
+        expect(unpublishedMeta.totalCount).toBe(latestMeta.totalCount);
     });
 });
