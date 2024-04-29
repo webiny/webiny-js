@@ -5,6 +5,7 @@ import { useLockingMechanism } from "~/hooks";
 import { useContentEntry } from "@webiny/app-headless-cms";
 import { LockedRecordForceUnlock } from "./LockedRecordForceUnlock";
 import { ReactComponent as LockIcon } from "@material-design-icons/svg/outlined/lock.svg";
+import { ILockingMechanismLockRecord } from "~/types";
 
 const StyledWrapper = styled("div")({
     width: "50%",
@@ -88,13 +89,13 @@ const Elevation = styled(BaseElevation)({
 });
 
 export interface ILockedRecordProps {
-    id: string;
+    record: ILockingMechanismLockRecord;
 }
 
-export const LockedRecord = ({ id }: ILockedRecordProps) => {
+export const LockedRecord = ({ record: lockRecordEntry }: ILockedRecordProps) => {
     const { getLockRecordEntry } = useLockingMechanism();
 
-    const record = getLockRecordEntry(id);
+    const record = getLockRecordEntry(lockRecordEntry.id);
 
     if (!record) {
         return (
@@ -102,7 +103,7 @@ export const LockedRecord = ({ id }: ILockedRecordProps) => {
                 <Text>Could not find the lock record. Please refresh the Admin UI.</Text>
             </Wrapper>
         );
-    } else if (!record.$locked?.lockedBy) {
+    } else if (!lockRecordEntry?.lockedBy) {
         return (
             <Wrapper>
                 <Title />
@@ -111,7 +112,11 @@ export const LockedRecord = ({ id }: ILockedRecordProps) => {
                     record lock.
                 </Text>
                 <Text>A force-unlock is required to regain edit capabilities for this record.</Text>
-                <LockedRecordForceUnlock record={record} />
+                <LockedRecordForceUnlock
+                    id={lockRecordEntry.id}
+                    type={record.$lockingType}
+                    title={record.meta.title}
+                />
             </Wrapper>
         );
     }
@@ -119,14 +124,19 @@ export const LockedRecord = ({ id }: ILockedRecordProps) => {
         <Wrapper>
             <Title />
             <Text>
-                It is locked because <Bold>{record.$locked.lockedBy.displayName}</Bold> is currently
-                editing this record.
+                It is locked because <Bold>{lockRecordEntry.lockedBy.displayName}</Bold> is
+                currently editing this record.
             </Text>
             <Text>
                 You can either contact the user and ask them to unlock the record, or you can wait
                 for the lock to expire.
             </Text>
-            <LockedRecordForceUnlock record={record} />
+            <LockedRecordForceUnlock
+                id={lockRecordEntry.id}
+                type={record.$lockingType}
+                lockedBy={lockRecordEntry.lockedBy}
+                title={record.meta.title}
+            />
         </Wrapper>
     );
 };

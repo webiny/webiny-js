@@ -6,6 +6,7 @@ import { css } from "emotion";
 import styled from "@emotion/styled";
 import React, { useEffect, useState } from "react";
 import { LockedRecord } from "../LockedRecord";
+import { ILockingMechanismLockRecord } from "~/types";
 
 const DetailsContainer = styled("div")({
     height: "calc(100% - 10px)",
@@ -38,7 +39,7 @@ export const ContentEntryGuard = (props: IContentEntryGuardProps) => {
     const { children } = props;
     const { fetchLockedEntryLockRecord } = useLockingMechanism();
 
-    const [locked, setLocked] = useState<boolean | undefined>();
+    const [locked, setLocked] = useState<ILockingMechanismLockRecord | null | undefined>(undefined);
 
     useEffect(() => {
         if (!entry.id || loading || locked !== undefined) {
@@ -49,7 +50,7 @@ export const ContentEntryGuard = (props: IContentEntryGuardProps) => {
                 id: entry.id,
                 $lockingType: model.modelId
             });
-            setLocked(!!result);
+            setLocked(result);
         })();
     }, [entry.id, loading]);
 
@@ -64,7 +65,7 @@ export const ContentEntryGuard = (props: IContentEntryGuardProps) => {
             </DetailsContainer>
         );
     } else if (locked) {
-        return <LockedRecord id={entry.id} />;
+        return <LockedRecord record={locked} />;
     }
 
     return children;
