@@ -13,7 +13,7 @@ export enum FieldType {
     TIME = "time",
     DATETIME_WITH_TIMEZONE = "dateTimeWithTimezone",
     DATETIME_WITHOUT_TIMEZONE = "dateTimeWithoutTimezone",
-    MULTIPLE_VALUES = "multipleValues",
+    PREDEFINED_VALUES = "predefinedValues",
     REF = "ref"
 }
 
@@ -207,8 +207,8 @@ export class Type {
             return new Type(FieldType.DATETIME_WITHOUT_TIMEZONE);
         }
 
-        if (rawData?.multipleValues && rawData.predefinedValues?.enabled) {
-            return new Type(FieldType.MULTIPLE_VALUES);
+        if (rawData.predefinedValues?.enabled) {
+            return new Type(FieldType.PREDEFINED_VALUES);
         }
 
         if (rawData.type === "datetime") {
