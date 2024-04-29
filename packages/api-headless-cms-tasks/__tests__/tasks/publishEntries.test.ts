@@ -238,10 +238,10 @@ describe("Publish Entries", () => {
             MODEL_ID
         );
 
-        // Let's save the entryIds
+        // Let's save the ids
         const ids = latestEntries.map(entry => entry.id);
 
-        // Let's check how many deleted entries we have been created
+        // Let's check how many entries we have just created
         expect(latestMeta.totalCount).toBe(ENTRIES_COUNT);
 
         const task = await context.tasks.createTask({

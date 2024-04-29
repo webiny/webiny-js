@@ -233,7 +233,7 @@ describe("Move Entries to Trash Bin", () => {
         // Let's save the entryIds
         const entryIds = latestEntries.map(entry => entry.entryId);
 
-        // Let's check how many deleted entries we have been created
+        // Let's check how many entries we have just created
         expect(latestMeta.totalCount).toBe(ENTRIES_COUNT);
 
         const task = await context.tasks.createTask({
@@ -267,7 +267,7 @@ describe("Move Entries to Trash Bin", () => {
             }
         });
 
-        // Let's check that we moved all entries into new folder
+        // Let's check that we moved all entries into the trash bin
         const { meta: deletedMeta } = await listDeletedEntries(context, MODEL_ID);
         expect(deletedMeta.totalCount).toBe(latestMeta.totalCount);
     });

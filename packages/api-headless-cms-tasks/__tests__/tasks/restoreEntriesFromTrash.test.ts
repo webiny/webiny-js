@@ -239,7 +239,7 @@ describe("Restore Entries from Trash Bin", () => {
         // Let's save the entryIds
         const entryIds = deletedEntries.map(entry => entry.entryId);
 
-        // Let's check how many deleted entries we have just created
+        // Let's check how many entries we have just created
         expect(deletedMeta.totalCount).toBe(ENTRIES_COUNT);
 
         const task = await context.tasks.createTask({
