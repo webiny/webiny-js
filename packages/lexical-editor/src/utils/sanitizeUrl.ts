@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-import { isUrlLinkReference } from "~/utils/isUrlLinkReference";
+import { isAnchorLink } from "~/utils/isAnchorLink";
 
 export const sanitizeUrl = (url: string): string => {
     /** A pattern that matches safe  URLs. */
@@ -17,7 +17,7 @@ export const sanitizeUrl = (url: string): string => {
 
     url = String(url).trim();
 
-    if (isUrlLinkReference(url)) {
+    if (isAnchorLink(url)) {
         return url;
     }
 
