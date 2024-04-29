@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { LexicalCommand } from "lexical";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import { FileManagerFileItem, fileToImagePayload } from "~/utils/files";
 import { ImagePayload, INSERT_IMAGE_COMMAND } from "~/commands";
 import { ToolbarActionPlugin } from "~/types";
 
 export const ImageAction = () => {
-    const [editor] = useLexicalComposerContext();
-    const { toolbarActionPlugins } = useRichTextEditor();
+    const { editor, toolbarActionPlugins } = useRichTextEditor();
     const [imageActionPlugin, setImageActionPlugin] = useState<ToolbarActionPlugin | undefined>();
 
     useEffect(() => {

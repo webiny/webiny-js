@@ -24,7 +24,7 @@ import { ReactComponent as DeleteIcon } from "~/admin/icons/delete.svg";
 import { CmsContentEntryRevision } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { useRevision } from "./useRevision";
-import usePermission from "~/admin/hooks/usePermission";
+import { usePermission } from "~/admin/hooks/usePermission";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { PublishEntryRevisionListItem } from "./PublishEntryRevisionListItem";
 import { useConfirmationDialog } from "@webiny/app-admin";

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import debounce from "lodash/debounce";
 import "./FloatingLinkEditorPlugin.css";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import {
     $getSelection,
@@ -12,7 +12,8 @@ import {
     LexicalEditor,
     NodeSelection,
     RangeSelection,
-    SELECTION_CHANGE_COMMAND
+    SELECTION_CHANGE_COMMAND,
+    BLUR_COMMAND
 } from "lexical";
 
 import { $isAutoLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND } from "@webiny/lexical-nodes";
@@ -21,14 +22,16 @@ import { getSelectedNode } from "~/utils/getSelectedNode";
 import { sanitizeUrl } from "~/utils/sanitizeUrl";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
 import { isUrlLinkReference } from "~/utils/isUrlLinkReference";
+import { isChildOfLinkEditor } from "./isChildOfLinkEditor";
+import { useRichTextEditor } from "~/hooks";
 
-function FloatingLinkEditor({
-    editor,
-    anchorElem
-}: {
+interface FloatingLinkEditorProps {
     editor: LexicalEditor;
+    isVisible: boolean;
     anchorElem: HTMLElement;
-}): JSX.Element {
+}
+
+function FloatingLinkEditor({ editor, isVisible, anchorElem }: FloatingLinkEditorProps) {
     const editorRef = useRef<HTMLDivElement | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const [linkUrl, setLinkUrl] = useState<{ url: string; target: string | null }>({
@@ -156,7 +159,11 @@ function FloatingLinkEditor({
     }, [isEditMode]);
 
     return (
-        <div ref={editorRef} className="link-editor">
+        <div
+            ref={editorRef}
+            className="link-editor"
+            style={{ display: isVisible ? "block" : "none" }}
+        >
             {isEditMode ? (
                 <>
                     <div className={"link-editor-target-checkbox"}>
@@ -232,47 +239,75 @@ function FloatingLinkEditor({
     );
 }
 
-function useFloatingLinkEditorToolbar(
-    editor: LexicalEditor,
-    anchorElem: HTMLElement
-): JSX.Element | null {
-    const [activeEditor, setActiveEditor] = useState(editor);
+function useFloatingLinkEditorToolbar(anchorElem: HTMLElement): JSX.Element | null {
+    const { editor } = useRichTextEditor();
     const [isLink, setIsLink] = useState(false);
+
+    const debounceSetIsLink = useCallback(debounce(setIsLink, 50), []);
 
     const updateToolbar = useCallback(() => {
         const selection = $getSelection();
-        if ($isRangeSelection(selection)) {
-            const node = getSelectedNode(selection);
-            const linkParent = $findMatchingParent(node, $isLinkNode);
-            const autoLinkParent = $findMatchingParent(node, $isAutoLinkNode);
+        if (!$isRangeSelection(selection)) {
+            return;
+        }
 
+        const node = getSelectedNode(selection);
+        const linkParent = $findMatchingParent(node, $isLinkNode);
+        const autoLinkParent = $findMatchingParent(node, $isAutoLinkNode);
+        const isLinkOrChildOfLink = Boolean($isLinkNode(node) || linkParent);
+
+        if (!isLinkOrChildOfLink) {
+            // When hiding the toolbar, we want to hide immediately.
+            setIsLink(false);
+        }
+
+        if (selection.dirty) {
             // We don't want this menu to open for auto links.
             if (linkParent != null && autoLinkParent == null) {
-                setIsLink(true);
-            } else {
-                setIsLink(false);
+                // When showing the toolbar, we want to debounce it, because sometimes selection gets updated
+                // multiple times, and the `selection.dirty` flag goes from true to false multiple times,
+                // eventually settling on `false`, which we want to set once it has settled.
+                debounceSetIsLink(true);
             }
         }
     }, []);
 
     useEffect(() => {
-        return editor.registerCommand(
-            SELECTION_CHANGE_COMMAND,
-            (_payload, newEditor) => {
-                updateToolbar();
-                setActiveEditor(newEditor);
-                return false;
-            },
-            COMMAND_PRIORITY_CRITICAL
+        return mergeRegister(
+            editor.registerCommand(
+                SELECTION_CHANGE_COMMAND,
+                () => {
+                    updateToolbar();
+                    return false;
+                },
+                COMMAND_PRIORITY_CRITICAL
+            ),
+            editor.registerCommand(
+                BLUR_COMMAND,
+                payload => {
+                    if (!isChildOfLinkEditor(payload.relatedTarget as HTMLElement)) {
+                        setIsLink(false);
+                    }
+
+                    return false;
+                },
+                COMMAND_PRIORITY_LOW
+            ),
+            editor.registerCommand(
+                TOGGLE_LINK_COMMAND,
+                payload => {
+                    setIsLink(!!payload);
+                    return false;
+                },
+                COMMAND_PRIORITY_CRITICAL
+            )
         );
     }, [editor, updateToolbar]);
 
-    return isLink
-        ? createPortal(
-              <FloatingLinkEditor editor={activeEditor} anchorElem={anchorElem} />,
-              anchorElem
-          )
-        : null;
+    return createPortal(
+        <FloatingLinkEditor isVisible={isLink} editor={editor} anchorElem={anchorElem} />,
+        anchorElem
+    );
 }
 
 export function FloatingLinkEditorPlugin({
@@ -280,6 +315,5 @@ export function FloatingLinkEditorPlugin({
 }: {
     anchorElem?: HTMLElement;
 }): JSX.Element | null {
-    const [editor] = useLexicalComposerContext();
-    return useFloatingLinkEditorToolbar(editor, anchorElem);
+    return useFloatingLinkEditorToolbar(anchorElem);
 }

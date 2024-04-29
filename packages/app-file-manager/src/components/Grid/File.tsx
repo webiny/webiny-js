@@ -1,15 +1,12 @@
-import React, { useCallback } from "react";
+import React, { Fragment } from "react";
 /**
  * Package react-lazy-load has no types.
  */
 // @ts-expect-error
 import LazyLoad from "react-lazy-load";
 import { TimeAgo } from "@webiny/ui/TimeAgo";
-import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
-import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/filled/settings.svg";
-import { ReactComponent as DownloadIcon } from "@material-design-icons/svg/filled/download.svg";
-import { ReactComponent as MoveIcon } from "@material-design-icons/svg/filled/drive_file_move.svg";
+
 import { ReactComponent as SelectedMarker } from "@material-design-icons/svg/filled/check_circle.svg";
 
 import { FileItem } from "@webiny/app-admin/types";
@@ -24,7 +21,7 @@ import {
     FilePreview,
     FileWrapper
 } from "./styled";
-import { useMoveFileToFolder } from "~/hooks/useMoveFileToFolder";
+import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
 
 export interface FileOptions {
     label: string;
@@ -39,36 +36,21 @@ export interface FileProps {
     options?: FileOptions[];
     multiple?: boolean;
     children: React.ReactNode;
-    showFileDetails: (id: string) => void;
 }
 
-export const FileThumbnail = ({
-    file,
-    selected,
-    onSelect,
-    children,
-    showFileDetails
-}: FileProps) => {
-    const showDetails = useCallback(() => {
-        showFileDetails(file.id);
-    }, [file.id]);
+export const FileThumbnail = ({ file, selected, onSelect, children }: FileProps) => {
+    const { browser } = useFileManagerViewConfig();
 
-    const moveToFolder = useMoveFileToFolder(file);
+    const { itemActions } = browser.grid;
 
     return (
         <FileWrapper data-testid={"fm-list-wrapper-file"}>
             <FileBody>
                 <FileControls>
                     <FileInfoIcon>
-                        <a rel="noreferrer" target={"_blank"} href={`${file.src}?original`}>
-                            <IconButton icon={<DownloadIcon />} />
-                        </a>
-                        <IconButton icon={<MoveIcon />} onClick={moveToFolder} />
-                        <IconButton
-                            icon={<SettingsIcon />}
-                            onClick={showDetails}
-                            data-testid={"fm-file-wrapper-file-info-icon"}
-                        />
+                        {itemActions.map(action => {
+                            return <Fragment key={action.name}>{action.element}</Fragment>;
+                        })}
                     </FileInfoIcon>
                     {onSelect ? (
                         <FileSelectedMarker

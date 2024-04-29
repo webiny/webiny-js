@@ -1,11 +1,11 @@
 import React, { useCallback } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@webiny/lexical-nodes";
 import { getNodeFromSelection } from "~/hooks/useCurrentElement";
 import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
+import { useRichTextEditor } from "~/hooks";
 
 export const LinkAction = () => {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
     const isLink = useDeriveValueFromSelection(({ rangeSelection }) => {
         if (!rangeSelection) {
             return false;

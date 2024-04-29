@@ -3,11 +3,11 @@ import { GraphQLSchema } from "graphql";
 import { RoutePlugin } from "@webiny/handler";
 import WebinyError from "@webiny/error";
 import { PluginCollection } from "@webiny/plugins/types";
+import { Context } from "@webiny/handler";
 import { GraphQLRequestBody, HandlerGraphQLOptions } from "./types";
 import { createGraphQLSchema, getSchemaPlugins } from "./createGraphQLSchema";
 import debugPlugins from "./debugPlugins";
-import processRequestBody from "./processRequestBody";
-import { Context } from "@webiny/handler";
+import { processRequestBody } from "./processRequestBody";
 
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 

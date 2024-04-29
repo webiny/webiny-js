@@ -21,7 +21,6 @@ import { MenuLinkRenderer } from "./renderers/MenuLinkRenderer";
 import { MenuElementRenderer } from "./renderers/MenuElementRenderer";
 import { List } from "@webiny/ui/List";
 import { MenuFooter, MenuHeader, navContent, navHeader } from "./Styled";
-import { WebinyVersionListItem } from "./WebinyVersionListItem";
 
 const AutoWidthDrawer = styled(Drawer)`
     width: auto;
@@ -105,7 +104,6 @@ export const NavigationImpl = () => {
                 <MenuFooter>
                     <List nonInteractive>
                         <MenuItems menuItems={footerMenu} />
-                        <WebinyVersionListItem />
                     </List>
                 </MenuFooter>
             </AutoWidthDrawer>

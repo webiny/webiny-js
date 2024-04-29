@@ -1,8 +1,8 @@
 import React from "react";
 import { CompositionScope } from "@webiny/react-composition";
 import { AcoConfig, TableColumnConfig as ColumnConfig } from "@webiny/app-aco";
-import { useModel } from "~/admin/components/ModelProvider";
 import { TableItem } from "~/types";
+import { IsApplicableToCurrentModel } from "~/admin/config/IsApplicableToCurrentModel";
 
 const { Table } = AcoConfig;
 
@@ -13,22 +13,18 @@ export interface ColumnProps extends React.ComponentProps<typeof AcoConfig.Table
 }
 
 const BaseColumn = ({ modelIds = [], ...props }: ColumnProps) => {
-    const { model } = useModel();
-
-    if (modelIds.length > 0 && !modelIds.includes(model.modelId)) {
-        return null;
-    }
-
     return (
         <CompositionScope name={"cms"}>
             <AcoConfig>
-                <Table.Column {...props} />
+                <IsApplicableToCurrentModel modelIds={modelIds}>
+                    <Table.Column {...props} />
+                </IsApplicableToCurrentModel>
             </AcoConfig>
         </CompositionScope>
     );
 };
 
 export const Column = Object.assign(BaseColumn, {
-    useTableRow: Table.Column.useTableRow<TableItem>,
+    useTableRow: Table.Column.createUseTableRow<TableItem>(),
     isFolderRow: Table.Column.isFolderRow
 });

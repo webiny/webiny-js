@@ -24,7 +24,7 @@ export default [
         async loadEditorPlugins() {
             return (
                 await import(
-                    /* webpackChunkName: "appsAdminPluginsPageBuilderEditorPlugins" */
+                    /* webpackChunkName: "editorPlugins" */
                     "./pageBuilder/editorPlugins"
                 )
             ).default;
@@ -32,7 +32,7 @@ export default [
         async loadRenderPlugins() {
             return (
                 await import(
-                    /* webpackChunkName: "appsAdminPluginsPageBuilderRenderPlugins" */
+                    /* webpackChunkName: "renderPlugins" */
                     "./pageBuilder/renderPlugins"
                 )
             ).default;

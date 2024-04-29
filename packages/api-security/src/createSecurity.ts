@@ -43,10 +43,6 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         }
 
         permissionsLoader = new Promise<SecurityPermission[]>(async resolve => {
-            // Authorizers often need to query business-related data, and since the identity is not yet
-            // authorized, these operations can easily trigger a NOT_AUTHORIZED error.
-            // To avoid this, we disable permission checks (assume `full-access` permissions) for
-            // the duration of the authorization process.
             for (const authorizer of authorizers) {
                 const result = await authorizer();
                 if (Array.isArray(result)) {
@@ -65,11 +61,12 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
     return {
         ...authentication,
         config,
-        async authenticate(token: string): Promise<void> {
+        async authenticate(this: Security, token: string): Promise<void> {
             await authentication.authenticate(token);
             if (authentication.getIdentity()) {
                 authenticationToken = token;
             }
+            await this.withoutAuthorization(() => loadPermissions());
         },
         onBeforeLogin: createTopic("security.onBeforeLogin"),
         onLogin: createTopic("security.onLogin"),

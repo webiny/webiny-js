@@ -11,6 +11,7 @@ import { ReactComponent as GithubIcon } from "~/assets/icons/github-brands.svg";
 import { FileManager } from "~/base/ui/FileManager";
 import { globalSearchHotkey } from "~/plugins/globalSearch";
 import { uiLayoutPlugin } from "~/plugins/uiLayoutRenderer";
+import { Version } from "~/base/Version";
 
 const BaseExtension = () => {
     plugins.register([globalSearchHotkey, uiLayoutPlugin]);
@@ -59,6 +60,7 @@ const BaseExtension = () => {
                 target={"_blank"}
                 tags={["footer"]}
             />
+            <AddMenu name={"version"} tags={["footer"]} element={<Version />} pin={"last"} />
             <AddRoute path={"/"}>
                 <Layout title={"Welcome!"}>
                     <Dashboard />

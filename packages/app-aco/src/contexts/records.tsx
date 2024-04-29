@@ -175,7 +175,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 const { after, limit, sort: sorting, search, where } = params;
 
                 /**
-                 * Avoiding to fetch records in case they have already been fetched.
+                 * Avoiding fetching records in case they have already been fetched.
                  * This happens when visiting a list with all records loaded and receives "after" param.
                  */
                 const totalCount = meta?.totalCount || 0;
@@ -249,7 +249,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                     () =>
                         client.query<GetSearchRecordResponse, GetSearchRecordQueryVariables>({
                             query: GET_RECORD,
-                            variables: { id: recordId },
+                            variables: { entryId: recordId },
                             fetchPolicy: "network-only"
                         })
                 );

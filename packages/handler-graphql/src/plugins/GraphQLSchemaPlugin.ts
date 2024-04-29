@@ -23,3 +23,9 @@ export class GraphQLSchemaPlugin<TContext = Context> extends Plugin {
         };
     }
 }
+
+export const createGraphQLSchemaPlugin = <TContext = Context>(
+    params: GraphQLSchemaPluginConfig<TContext>
+) => {
+    return new GraphQLSchemaPlugin<TContext>(params);
+};

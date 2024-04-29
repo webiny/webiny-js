@@ -23,7 +23,6 @@ import {
 } from "./StyledComponents";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import { FieldSettings } from "./FieldSettings";
-import { ParentFieldProvider } from "~/admin/components/ContentEntryForm/ParentValue";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -112,18 +111,13 @@ const ObjectsRenderer = (props: CmsModelFieldRendererProps) => {
                                 defaultValue={index === 0}
                             >
                                 <Cell span={12} className={fieldsWrapperStyle}>
-                                    <ParentFieldProvider
-                                        value={bind.index.value}
-                                        path={Bind.parentName}
-                                    >
-                                        <Fields
-                                            Bind={Bind}
-                                            contentModel={contentModel}
-                                            fields={settings.fields}
-                                            layout={settings.layout}
-                                            gridClassName={fieldsGridStyle}
-                                        />
-                                    </ParentFieldProvider>
+                                    <Fields
+                                        Bind={Bind}
+                                        contentModel={contentModel}
+                                        fields={settings.fields}
+                                        layout={settings.layout}
+                                        gridClassName={fieldsGridStyle}
+                                    />
                                 </Cell>
                             </Accordion>
                         </ObjectItem>

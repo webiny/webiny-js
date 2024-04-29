@@ -23,6 +23,8 @@ import { CmsEntriesInitNewMetaFields_5_39_0_001 } from "~/migrations/5.39.0/001/
 import { FileManager_5_39_0_002 } from "~/migrations/5.39.0/002/ddb-es";
 // 5.39.2
 import { CmsEntriesInitNewMetaFields_5_39_2_001 } from "~/migrations/5.39.2/001/ddb-es";
+// Page Blocks storage is the same for both DDB abd DDB-ES projects.
+import { PbUniqueBlockElementIds_5_40_0_001 } from "~/migrations/5.40.0/001/ddb";
 
 export const migrations = () => {
     return [
@@ -49,6 +51,8 @@ export const migrations = () => {
         CmsEntriesInitNewMetaFields_5_39_0_001,
         FileManager_5_39_0_002,
         // 5.39.2
-        CmsEntriesInitNewMetaFields_5_39_2_001
+        CmsEntriesInitNewMetaFields_5_39_2_001,
+        // 5.40.0
+        PbUniqueBlockElementIds_5_40_0_001
     ];
 };

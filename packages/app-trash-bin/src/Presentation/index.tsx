@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { AcoWithConfig } from "@webiny/app-aco";
 import {
     ITrashBinDeleteItemGateway,
@@ -26,7 +26,7 @@ export type TrashBinProps = {
     restoreGateway: ITrashBinRestoreItemGateway<any>;
     itemMapper: ITrashBinItemMapper<any>;
     onClose?: () => void;
-    onItemRestore?: (item: TrashBinItemDTO) => Promise<void>;
+    onItemAfterRestore?: (item: TrashBinItemDTO) => Promise<void>;
     show?: boolean;
     nameColumnId?: string;
     title?: string;
@@ -47,16 +47,25 @@ export const TrashBin = ({ render, ...rest }: TrashBinProps) => {
         setShow(false);
     }, [rest.onClose]);
 
-    const onItemRestore = useCallback(
+    const onItemAfterRestore = useCallback(
         async (item: any) => {
-            if (typeof rest.onItemRestore === "function") {
-                rest.onItemRestore(item);
+            if (typeof rest.onItemAfterRestore === "function") {
+                rest.onItemAfterRestore(item);
             }
 
             onClose();
         },
-        [rest.onItemRestore, onClose]
+        [rest.onItemAfterRestore, onClose]
     );
+
+    const retentionPeriod = useMemo(() => {
+        // Retrieve the retention period from the environment variable WEBINY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS,
+        // or default to 90 days if not set or set to 0.
+        const retentionPeriodFromEnv = process.env["WEBINY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS"];
+        return retentionPeriodFromEnv && Number(retentionPeriodFromEnv) !== 0
+            ? Number(retentionPeriodFromEnv)
+            : 90;
+    }, []);
 
     return (
         <>
@@ -67,7 +76,8 @@ export const TrashBin = ({ render, ...rest }: TrashBinProps) => {
                             <TrashBinRenderer
                                 {...rest}
                                 onClose={onClose}
-                                onItemRestore={onItemRestore}
+                                onItemAfterRestore={onItemAfterRestore}
+                                retentionPeriod={retentionPeriod}
                             />
                         </TrashBinListWithConfig>
                     </AcoWithConfig>

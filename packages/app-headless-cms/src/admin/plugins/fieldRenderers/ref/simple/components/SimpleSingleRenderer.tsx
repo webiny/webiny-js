@@ -8,6 +8,7 @@ import { AddItemParams, SimpleItems } from "./SimpleItems";
 interface SimpleSingleRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue | undefined | null>;
     field: CmsModelField;
+    loadingElement?: JSX.Element;
 }
 
 export const SimpleSingleRenderer = (props: SimpleSingleRendererProps) => {
@@ -34,6 +35,10 @@ export const SimpleSingleRenderer = (props: SimpleSingleRendererProps) => {
     const removeItem = useCallback(() => {
         bind.onChange(null);
     }, [bind, value]);
+
+    if (references.loading && props.loadingElement) {
+        return props.loadingElement;
+    }
 
     return (
         <SimpleItems

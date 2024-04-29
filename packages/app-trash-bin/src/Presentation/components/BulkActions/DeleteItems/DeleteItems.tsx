@@ -20,7 +20,7 @@ export const BulkActionsDeleteItems = observer(() => {
     const openDeleteEntriesDialog = () =>
         showConfirmationDialog({
             title: "Delete items",
-            message: `You are about to permanent delete ${entriesLabel}. Are you sure you want to continue?`,
+            message: `You are about to permanently delete ${entriesLabel}. Are you sure you want to continue?`,
             loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
                 await worker.processInSeries(async ({ item, report }) => {
@@ -33,7 +33,7 @@ export const BulkActionsDeleteItems = observer(() => {
                     } catch (e) {
                         report.error({
                             title: `${item.title}`,
-                            message: e.message || "Unknown error while deleting the item"
+                            message: e.message || "Unknown error while deleting the item."
                         });
                     }
                 });

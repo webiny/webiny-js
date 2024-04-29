@@ -1,11 +1,11 @@
 import React, { Fragment } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import "./StaticToolbar.css";
 import { useLexicalEditorConfig } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
+import { useRichTextEditor } from "~/hooks";
 
 export const StaticToolbar = () => {
-    const [editor] = useLexicalComposerContext();
     const { toolbarElements } = useLexicalEditorConfig();
+    const { editor } = useRichTextEditor();
 
     return (
         <div className="static-toolbar">

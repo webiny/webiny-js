@@ -8,7 +8,6 @@ import React, {
     useRef,
     useState
 } from "react";
-import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -38,6 +37,7 @@ type ContentEntryContextFormRef = MutableRefObject<ContentEntryContextForm>;
 export interface ContentEntryContext extends ContentEntriesContext {
     createEntry: () => void;
     entry: CmsContentEntry;
+    setEntry: (entry: CmsContentEntry) => void;
     form: ContentEntryContextFormRef;
     setFormRef: (form: Pick<FormAPI, "submit">) => void;
     loading: boolean;
@@ -84,6 +84,7 @@ export const ContentEntryProvider = ({
     getContentId
 }: ContentEntryContextProviderProps) => {
     const [activeTab, setActiveTab] = useState(0);
+    const [entry, setEntry] = useState<CmsContentEntry>();
     const { contentModel, canCreate } = useContentEntries();
 
     const { search } = useRouter();
@@ -115,6 +116,12 @@ export const ContentEntryProvider = ({
         entryId = result.id;
         version = result.version;
     }
+
+    useEffect(() => {
+        if (!revisionId && entry) {
+            setEntry(undefined);
+        }
+    }, [revisionId]);
 
     const { READ_CONTENT } = useMemo(() => {
         return {
@@ -162,13 +169,14 @@ export const ContentEntryProvider = ({
         variables,
         skip: !revisionId,
         fetchPolicy: getFetchPolicy(contentModel),
-        onCompleted: data => {
-            if (!data) {
+        onCompleted: response => {
+            if (!response) {
                 return;
             }
 
-            const { error } = data.content;
+            const { data, error } = response.content;
             if (!error) {
+                setEntry(data);
                 return;
             }
             history.push(`/cms/content-entries/${contentModel.modelId}`);
@@ -196,13 +204,13 @@ export const ContentEntryProvider = ({
     }, [revisionId, getRevisions]);
 
     const loading = isLoading || getEntry.loading || getRevisions.loading;
-    const entry = (get(getEntry, "data.content.data") as unknown as CmsContentEntry) || {};
 
     const value: ContentEntryContext = {
         canCreate,
         contentModel,
         createEntry,
-        entry,
+        entry: (entry || {}) as CmsContentEntry,
+        setEntry,
         form: formRef,
         loading,
         revisions: get(getRevisions, "data.revisions.data") || [],
@@ -211,7 +219,7 @@ export const ContentEntryProvider = ({
         setLoading,
         setActiveTab,
         activeTab,
-        showEmptyView: !newEntry && !loading && isEmpty(entry)
+        showEmptyView: !newEntry && !loading && !revisionId
     };
 
     return <Context.Provider value={value}>{children}</Context.Provider>;

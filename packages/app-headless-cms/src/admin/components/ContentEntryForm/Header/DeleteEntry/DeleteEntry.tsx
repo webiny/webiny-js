@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/filled/delete.svg";
+import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { useRouter } from "@webiny/react-router";
 
 import { usePermission } from "~/admin/hooks/usePermission";
@@ -27,7 +27,7 @@ export const DeleteEntry = () => {
     return (
         <OptionsMenuItem
             icon={<DeleteIcon />}
-            label={"Delete"}
+            label={"Trash"}
             onAction={() =>
                 showConfirmationDialog({
                     onAccept: navigateBacktoList

@@ -688,7 +688,7 @@ describe("content model plugins", () => {
                         fieldId: "something",
                         id: "something",
                         label: "Something",
-                        storageId: "text@something",
+                        storageId: "text@something!",
                         settings: {}
                     }
                 ],
@@ -707,7 +707,7 @@ describe("content model plugins", () => {
         }
         expect(error).toBeInstanceOf(Error);
         expect(error?.message).toEqual(
-            `Field's "storageId" of the field with "fieldId" something is not camel cased string in the content model "test".`
+            `Invalid storageId provided ("text@something!"). Only alphanumeric characters and "@" are allowed.`
         );
     });
 

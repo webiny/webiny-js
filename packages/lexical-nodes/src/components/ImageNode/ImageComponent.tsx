@@ -92,6 +92,20 @@ function LazyImage({
     );
 }
 
+interface ImageComponentProps {
+    id: string;
+    altText: string;
+    caption: LexicalEditor;
+    height: "inherit" | number;
+    maxWidth: number;
+    nodeKey: NodeKey;
+    resizable: boolean;
+    showCaption: boolean;
+    src: string;
+    width: "inherit" | number;
+    captionsEnabled: boolean;
+}
+
 export default function ImageComponent({
     id,
     src,
@@ -104,19 +118,7 @@ export default function ImageComponent({
     showCaption,
     caption,
     captionsEnabled
-}: {
-    id: string;
-    altText: string;
-    caption: LexicalEditor;
-    height: "inherit" | number;
-    maxWidth: number;
-    nodeKey: NodeKey;
-    resizable: boolean;
-    showCaption: boolean;
-    src: string;
-    width: "inherit" | number;
-    captionsEnabled: boolean;
-}): JSX.Element {
+}: ImageComponentProps): JSX.Element {
     const imageRef = useRef<null | HTMLImageElement>(null);
     const buttonRef = useRef<HTMLButtonElement | null>(null);
     const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(nodeKey);

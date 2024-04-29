@@ -97,7 +97,10 @@ export function withHookDecoratorFactory() {
         const createDecorator = createHookDecoratorFactory()(hook);
 
         return Object.assign(hook, { createDecorator }) as unknown as DecoratableHook<
-            GenericHook<GetDecorateeParams<GetDecoratee<TDecoratable>>>
+            GenericHook<
+                GetDecorateeParams<GetDecoratee<TDecoratable>>,
+                ReturnType<GetDecoratee<TDecoratable>>
+            >
         > & { createDecorator: typeof createDecorator };
     };
 }

@@ -10,7 +10,6 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
 import RevisionsList from "./ContentEntry/RevisionsList";
 import { useContentEntry } from "./hooks/useContentEntry";
-import { Header } from "~/admin/components/ContentEntryForm/Header";
 import { ContentEntryForm } from "~/admin/components/ContentEntryForm/ContentEntryForm";
 
 const t = i18n.namespace("app-headless-cms/admin/content-model-entries/details");
@@ -90,7 +89,6 @@ export const ContentEntry = () => {
                         <RenderBlock>
                             <Elevation z={2} className={elevationStyles}>
                                 {loading && <CircularProgress />}
-                                <Header />
                                 <ContentEntryForm
                                     entry={entry}
                                     onForm={form => setFormRef(form)}
