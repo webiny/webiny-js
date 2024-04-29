@@ -65,6 +65,7 @@ export interface ILockingMechanismContext<
         params: IFetchLockedEntryLockRecordParams
     ): Promise<ILockingMechanismLockRecord | null>;
     unlockEntry(params: IUnlockEntryParams): Promise<ILockingMechanismUnlockEntryResult>;
+    removeEntryLock(params: IUnlockEntryParams): void;
     unlockEntryForce(params: IUnlockEntryParams): Promise<ILockingMechanismUnlockEntryResult>;
     isLockExpired(input: Date | string): boolean;
 }

@@ -24,11 +24,13 @@ export interface IKickOutWebsocketsMessage extends IncomingGenericData {
         user: ILockingMechanismIdentity;
     };
 }
-// @ts-ignore Bruno to add type defnition :)
-const ForceUnlocked = ({ user }) => {
+interface IForceUnlockedProps {
+    user: ILockingMechanismIdentity;
+}
+const ForceUnlocked = ({ user }: IForceUnlockedProps) => {
     return (
         <>
-            The entry you were editing was forcefully unlocked by $
+            The entry you were editing was forcefully unlocked by
             {user.displayName || "Unknown user"}. You will now be redirected back to the list of
             entries.
         </>
@@ -37,7 +39,8 @@ const ForceUnlocked = ({ user }) => {
 
 export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
     const { entry, contentModel: model } = useContentEntry();
-    const { updateEntryLock, unlockEntry, fetchLockedEntryLockRecord } = useLockingMechanism();
+    const { updateEntryLock, unlockEntry, fetchLockedEntryLockRecord, removeEntryLock } =
+        useLockingMechanism();
 
     const { navigateTo } = useContentEntriesList();
 
@@ -59,6 +62,11 @@ export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
             `lockingMechanism.entry.kickOut.${entryId}`,
             async incoming => {
                 const { user } = incoming.data;
+                const record: IIsRecordLockedParams = {
+                    id: entryId,
+                    $lockingType: model.modelId
+                };
+                removeEntryLock(record);
                 showDialog({
                     title: "Entry was forcefully unlocked",
                     content: <ForceUnlocked user={user} />,
@@ -76,7 +84,7 @@ export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
             }
             subscription.current.off();
         };
-    }, [entry.id, navigateTo]);
+    }, [entry.id, navigateTo, model.modelId]);
 
     useEffect(() => {
         if (!entry.id) {

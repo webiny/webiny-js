@@ -195,6 +195,20 @@ class LockingMechanism<T extends IPossiblyLockingMechanismRecord = IPossiblyLock
         }
     }
 
+    public removeEntryLock(params: IUnlockEntryParams): void {
+        const index = this.records.findIndex(record => {
+            return record.entryId === params.id && record.$lockingType === params.$lockingType;
+        });
+        if (index === -1) {
+            return;
+        }
+        this.records[index] = {
+            ...this.records[index],
+            $locked: null,
+            $selectable: true
+        };
+    }
+
     public async unlockEntry(
         params: IUnlockEntryParams,
         force?: boolean

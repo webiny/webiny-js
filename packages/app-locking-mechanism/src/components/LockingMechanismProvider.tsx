@@ -33,17 +33,7 @@ const isSameArray = (
 };
 
 export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) => {
-    // const websockets = useWebsockets();
     const client = useApolloClient();
-    // TODO methods
-    // check if entry is locked
-    // lock entry - enter entry
-    // unlock entry - exit entry
-    // reject access
-    // accept access request
-
-    // TODO events
-    // request access
 
     const [loading, setLoading] = useState(false);
 
@@ -114,6 +104,9 @@ export const LockingMechanismProvider = (props: ILockingMechanismProviderProps) 
         },
         getLockRecordEntry(id: string) {
             return lockingMechanism.getLockRecordEntry(id);
+        },
+        removeEntryLock(params: IUnlockEntryParams) {
+            return lockingMechanism.removeEntryLock(params);
         },
         async fetchLockRecord(params: IFetchLockRecordParams) {
             try {

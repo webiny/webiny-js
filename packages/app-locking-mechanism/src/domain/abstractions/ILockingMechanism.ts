@@ -37,7 +37,7 @@ export interface ILockingMechanism<
     updateEntryLock(
         params: IUpdateEntryLockParams
     ): Promise<ILockingMechanismUpdateEntryLockResult>;
-
+    removeEntryLock(params: IUnlockEntryParams): void;
     unlockEntry(
         params: IUnlockEntryParams,
         force?: boolean
