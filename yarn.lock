@@ -7643,10 +7643,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-design-icons/svg@npm:^0.12.1":
-  version: 0.12.1
-  resolution: "@material-design-icons/svg@npm:0.12.1"
-  checksum: c0e482fd0be54d3cc5aa84ab12bc4286443acb22bb6e0be3c5ec8e4405977031b4559a4ffbc892e59cd25f5694f65e61af647666926c0768766bfa6acd218f33
+"@material-design-icons/svg@npm:^0.14.13":
+  version: 0.14.13
+  resolution: "@material-design-icons/svg@npm:0.14.13"
+  checksum: 80815e94a7b4a9775a4afe2af1b24c3b55270e09ad7cbebf669d7cea2d8c31050c371e435257bfb6289c782f672b82c73873c5d4d5bd15b12ec7d9b8b58909d4
   languageName: node
   linkType: hard
 
@@ -13326,7 +13326,7 @@ __metadata:
     "@webiny/validation": 0.0.0
     jest: ^29.7.0
     lodash: 4.17.21
-    object-hash: ^2.1.1
+    object-hash: ^3.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -13722,6 +13722,7 @@ __metadata:
     "@webiny/api-security": 0.0.0
     "@webiny/api-tenancy": 0.0.0
     "@webiny/api-wcp": 0.0.0
+    "@webiny/api-websockets": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/handler": 0.0.0
@@ -14101,7 +14102,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/utils": 0.0.0
     lodash: 4.17.21
-    object-hash: ^2.1.1
+    object-hash: ^3.0.0
     pluralize: ^8.0.0
     posthtml: ^0.15.0
     posthtml-noopener: ^1.0.5
@@ -14438,7 +14439,7 @@ __metadata:
     "@babel/runtime": ^7.24.0
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
-    "@material-design-icons/svg": ^0.12.1
+    "@material-design-icons/svg": ^0.14.2
     "@material-symbols/svg-400": ^0.4.1
     "@minoru/react-dnd-treeview": 3.2.1
     "@types/react": 17.0.39
@@ -14608,7 +14609,7 @@ __metadata:
     "@babel/runtime": ^7.24.0
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/styled": ^11.10.6
-    "@material-design-icons/svg": ^0.12.1
+    "@material-design-icons/svg": ^0.14.2
     "@rmwc/base": 7.0.3
     "@rmwc/provider": 7.0.3
     "@types/react": 17.0.39
@@ -15221,6 +15222,43 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/app-locking-mechanism@0.0.0, @webiny/app-locking-mechanism@workspace:packages/app-locking-mechanism":
+  version: 0.0.0-use.local
+  resolution: "@webiny/app-locking-mechanism@workspace:packages/app-locking-mechanism"
+  dependencies:
+    "@apollo/react-hooks": ^3.1.5
+    "@babel/cli": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/preset-react": ^7.23.3
+    "@babel/preset-typescript": ^7.23.3
+    "@emotion/styled": ^11.10.6
+    "@material-design-icons/svg": ^0.14.13
+    "@webiny/app": 0.0.0
+    "@webiny/app-admin": 0.0.0
+    "@webiny/app-headless-cms": 0.0.0
+    "@webiny/app-security": 0.0.0
+    "@webiny/app-wcp": 0.0.0
+    "@webiny/app-websockets": 0.0.0
+    "@webiny/cli": 0.0.0
+    "@webiny/error": 0.0.0
+    "@webiny/project-utils": 0.0.0
+    "@webiny/react-router": 0.0.0
+    "@webiny/ui": 0.0.0
+    "@webiny/utils": 0.0.0
+    apollo-client: ^2.6.10
+    apollo-link: ^1.2.14
+    crypto-hash: ^3.0.0
+    emotion: ^10.0.27
+    graphql-tag: ^2.12.6
+    react: 17.0.2
+    react-dom: 17.0.2
+    rimraf: ^5.0.5
+    ttypescript: ^1.5.12
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
 "@webiny/app-mailer@0.0.0, @webiny/app-mailer@workspace:packages/app-mailer":
   version: 0.0.0-use.local
   resolution: "@webiny/app-mailer@workspace:packages/app-mailer"
@@ -15484,7 +15522,7 @@ __metadata:
     "@babel/preset-typescript": ^7.23.3
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/styled": ^11.10.6
-    "@material-design-icons/svg": ^0.12.1
+    "@material-design-icons/svg": ^0.14.2
     "@types/react-helmet": ^6.1.5
     "@webiny/app": 0.0.0
     "@webiny/app-admin": 0.0.0
@@ -15558,6 +15596,7 @@ __metadata:
     "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-i18n": 0.0.0
     "@webiny/app-i18n-content": 0.0.0
+    "@webiny/app-locking-mechanism": 0.0.0
     "@webiny/app-mailer": 0.0.0
     "@webiny/app-page-builder": 0.0.0
     "@webiny/app-security": 0.0.0
@@ -15737,7 +15776,7 @@ __metadata:
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.24.0
     "@emotion/styled": ^11.10.6
-    "@material-design-icons/svg": ^0.12.1
+    "@material-design-icons/svg": ^0.14.2
     "@types/react": 17.0.39
     "@webiny/app-aco": 0.0.0
     "@webiny/app-admin": 0.0.0
@@ -21370,6 +21409,13 @@ __metadata:
     randombytes: ^2.0.0
     randomfill: ^1.0.3
   checksum: c1609af82605474262f3eaa07daa0b2140026bd264ab316d4bf1170272570dbe02f0c49e29407fe0d3634f96c507c27a19a6765fb856fed854a625f9d15618e2
+  languageName: node
+  linkType: hard
+
+"crypto-hash@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "crypto-hash@npm:3.0.0"
+  checksum: 90ad0488b1ce58ca9b22cefa83e789d95cfe9eef91e40b9601bc79b60f6bd74ba9f3e0449b5ba62efc1539aad932553e7b96918cccb7cf31260d34d80c3ec887
   languageName: node
   linkType: hard
 
@@ -31146,13 +31192,6 @@ __metadata:
   version: 4.1.1
   resolution: "object-assign@npm:4.1.1"
   checksum: fcc6e4ea8c7fe48abfbb552578b1c53e0d194086e2e6bbbf59e0a536381a292f39943c6e9628af05b5528aa5e3318bb30d6b2e53cadaf5b8fe9e12c4b69af23f
-  languageName: node
-  linkType: hard
-
-"object-hash@npm:^2.1.1":
-  version: 2.2.0
-  resolution: "object-hash@npm:2.2.0"
-  checksum: 55ba841e3adce9c4f1b9b46b41983eda40f854e0d01af2802d3ae18a7085a17168d6b81731d43fdf1d6bcbb3c9f9c56d22c8fea992203ad90a38d7d919bc28f1
   languageName: node
   linkType: hard
 

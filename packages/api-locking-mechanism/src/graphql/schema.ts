@@ -73,18 +73,26 @@ export const createGraphQLSchema = async (
                 denied
             }
 
+            type LockingMechanismIdentity {
+                id: String!
+                displayName: String
+                type: String
+            }
+
             type LockingMechanismRecordAction {
                 id: ID!
                 type: LockingMechanismRecordActionType!
                 message: String
-                createdBy: CmsIdentity!
+                createdBy: LockingMechanismIdentity!
                 createdOn: DateTime!
             }
 
             type LockingMechanismRecord {
                 id: ID!
-                lockedBy: CmsIdentity!
+                lockedBy: LockingMechanismIdentity!
                 lockedOn: DateTime!
+                updatedOn: DateTime!
+                expiresOn: DateTime!
                 ${lockingMechanismFields.map(f => f.fields).join("\n")}
             }
 
@@ -98,12 +106,22 @@ export const createGraphQLSchema = async (
                 error: LockingMechanismError
             }
 
+            type LockingMechanismGetLockedEntryLockRecordResponse {
+                data: LockingMechanismRecord
+                error: LockingMechanismError
+            }
+
             type LockingMechanismListLockRecordsResponse {
                 data: [LockingMechanismRecord!]
                 error: LockingMechanismError
             }
 
             type LockingMechanismLockEntryResponse {
+                data: LockingMechanismRecord
+                error: LockingMechanismError
+            }
+            
+            type LockingMechanismUpdateLockResponse {
                 data: LockingMechanismRecord
                 error: LockingMechanismError
             }
@@ -136,7 +154,16 @@ export const createGraphQLSchema = async (
 
             extend type LockingMechanismQuery {
                 isEntryLocked(id: ID!, type: String!): LockingMechanismIsEntryLockedResponse!
-                getLockRecord(id: ID!): LockingMechanismGetLockRecordResponse!
+                getLockRecord(id: ID!, type: String!): LockingMechanismGetLockRecordResponse!
+                # Returns lock record or null - if entry is locked in context of the current user, does not throw an error like getLockRecord if no record in the DB
+                getLockedEntryLockRecord(id: ID!, type: String!): LockingMechanismGetLockedEntryLockRecordResponse!
+                listAllLockRecords(
+                    where: LockingMechanismListWhereInput
+                    sort: [LockingMechanismListSorter!]
+                    limit: Int
+                    after: String
+                ): LockingMechanismListLockRecordsResponse!
+                # Basically same as listAllLockRecords except this one will filter out records with expired lock.
                 listLockRecords(
                     where: LockingMechanismListWhereInput
                     sort: [LockingMechanismListSorter!]
@@ -147,7 +174,8 @@ export const createGraphQLSchema = async (
 
             extend type LockingMechanismMutation {
                 lockEntry(id: ID!, type: String!): LockingMechanismLockEntryResponse!
-                unlockEntry(id: ID!, type: String!): LockingMechanismUnlockEntryResponse!
+                updateEntryLock(id: ID!, type: String!): LockingMechanismUpdateLockResponse!
+                unlockEntry(id: ID!, type: String!, force: Boolean): LockingMechanismUnlockEntryResponse!
                 unlockEntryRequest(
                     id: ID!
                     type: String!
@@ -180,16 +208,33 @@ export const createGraphQLSchema = async (
                 },
                 async getLockRecord(_, args, context) {
                     return resolve(async () => {
-                        const result = await context.lockingMechanism.getLockRecord(args.id);
+                        const result = await context.lockingMechanism.getLockRecord({
+                            id: args.id,
+                            type: args.type
+                        });
                         if (result) {
                             return result;
                         }
                         throw new NotFoundError("Lock record not found.");
                     });
                 },
+                async getLockedEntryLockRecord(_, args, context) {
+                    return resolve(async () => {
+                        return await context.lockingMechanism.getLockedEntryLockRecord({
+                            id: args.id,
+                            type: args.type
+                        });
+                    });
+                },
+
                 async listLockRecords(_, args, context) {
                     return resolveList(async () => {
                         return await context.lockingMechanism.listLockRecords(args);
+                    });
+                },
+                listAllLockRecords(_, args, context) {
+                    return resolveList(async () => {
+                        return await context.lockingMechanism.listAllLockRecords(args);
                     });
                 }
             },
@@ -202,11 +247,20 @@ export const createGraphQLSchema = async (
                         });
                     });
                 },
+                async updateEntryLock(_, args, context) {
+                    return resolve(async () => {
+                        return context.lockingMechanism.updateEntryLock({
+                            id: args.id,
+                            type: args.type
+                        });
+                    });
+                },
                 async unlockEntry(_, args, context) {
                     return resolve(async () => {
                         return await context.lockingMechanism.unlockEntry({
                             id: args.id,
-                            type: args.type
+                            type: args.type,
+                            force: args.force
                         });
                     });
                 },

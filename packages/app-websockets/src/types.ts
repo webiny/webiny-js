@@ -18,12 +18,11 @@ export interface IWebsocketsContextCreateActionCallable<
     (name: string): IWebsocketsAction<T, R>;
 }
 
-export interface ISocketsContextOnMessageCallable<
-    T extends IncomingGenericData = IncomingGenericData
-> {
-    (action: string, cb: (data: T) => void): IWebsocketsSubscription<
-        IWebsocketsManagerMessageEvent<T>
-    >;
+export interface ISocketsContextOnMessageCallable {
+    <T extends IncomingGenericData = IncomingGenericData>(
+        action: string,
+        cb: (data: T) => void
+    ): IWebsocketsSubscription<IWebsocketsManagerMessageEvent<T>>;
 }
 
 export interface IWebsocketsContext {

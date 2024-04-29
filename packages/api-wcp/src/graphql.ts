@@ -18,6 +18,7 @@ export const createWcpGraphQL = () => {
                 advancedPublishingWorkflow: WcpProjectPackageFeaturesFeature
                 advancedAccessControlLayer: WcpProjectPackageFeaturesFeature
                 auditLogs: WcpProjectPackageFeaturesFeature
+                recordLocking: WcpProjectPackageFeaturesFeature
             }
 
             type WcpProjectPackage {

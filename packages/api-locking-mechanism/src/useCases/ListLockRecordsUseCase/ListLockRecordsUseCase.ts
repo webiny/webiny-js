@@ -1,32 +1,37 @@
 import {
     IListLockRecordsUseCase,
-    IListLockRecordsUseCaseExecuteParams
+    IListLockRecordsUseCaseExecuteParams,
+    IListLockRecordsUseCaseExecuteResponse
 } from "~/abstractions/IListLockRecordsUseCase";
-import { ILockingMechanismListLockRecordsResponse, ILockingMechanismModelManager } from "~/types";
-import { convertEntryToLockRecord } from "~/utils/convertEntryToLockRecord";
+import { IGetIdentity } from "~/types";
 
 export interface IListLockRecordsUseCaseParams {
-    getManager(): Promise<ILockingMechanismModelManager>;
+    listAllLockRecordsUseCase: IListLockRecordsUseCase;
+    timeout: number;
+    getIdentity: IGetIdentity;
 }
 
 export class ListLockRecordsUseCase implements IListLockRecordsUseCase {
-    private readonly getManager: () => Promise<ILockingMechanismModelManager>;
+    private readonly listAllLockRecordsUseCase: IListLockRecordsUseCase;
+    private readonly timeout: number;
+    private readonly getIdentity: IGetIdentity;
+
     public constructor(params: IListLockRecordsUseCaseParams) {
-        this.getManager = params.getManager;
+        this.listAllLockRecordsUseCase = params.listAllLockRecordsUseCase;
+        this.timeout = params.timeout;
+        this.getIdentity = params.getIdentity;
     }
     public async execute(
-        params: IListLockRecordsUseCaseExecuteParams
-    ): Promise<ILockingMechanismListLockRecordsResponse> {
-        try {
-            const manager = await this.getManager();
-            const [items, meta] = await manager.listLatest(params);
-
-            return {
-                items: items.map(convertEntryToLockRecord),
-                meta
-            };
-        } catch (ex) {
-            throw ex;
-        }
+        input: IListLockRecordsUseCaseExecuteParams
+    ): Promise<IListLockRecordsUseCaseExecuteResponse> {
+        const identity = this.getIdentity();
+        return this.listAllLockRecordsUseCase.execute({
+            ...input,
+            where: {
+                ...input.where,
+                createdBy_not: identity.id,
+                savedOn_gte: new Date(new Date().getTime() - this.timeout)
+            }
+        });
     }
 }

@@ -1,6 +1,6 @@
 import { LockEntryUseCase } from "~/useCases/LockEntryUseCase/LockEntryUseCase";
 import { WebinyError } from "@webiny/error";
-import { IIsEntryLockedUseCase } from "~/abstractions/IsEntryLocked";
+import { IIsEntryLockedUseCase } from "~/abstractions/IIsEntryLocked";
 import { ILockingMechanismModelManager } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 

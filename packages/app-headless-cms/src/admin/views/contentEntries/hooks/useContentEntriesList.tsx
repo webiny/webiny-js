@@ -7,13 +7,13 @@ import { useContentEntries } from "./useContentEntries";
 import { CmsContentEntry, EntryTableItem, TableItem } from "~/types";
 import { OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import {
-    useAcoList,
-    createSort,
-    useNavigateFolder,
+    createFoldersData,
     createRecordsData,
-    createFoldersData
+    createSort,
+    useAcoList,
+    useNavigateFolder
 } from "@webiny/app-aco";
-import { CMS_ENTRY_LIST_LINK } from "~/admin/constants";
+import { CMS_ENTRY_LIST_LINK, ROOT_FOLDER } from "~/admin/constants";
 import { FolderTableItem, ListMeta } from "@webiny/app-aco/types";
 
 interface UpdateSearchCallableParams {
@@ -25,6 +25,9 @@ interface UpdateSearchCallable {
 }
 
 export interface ContentEntriesListProviderContext {
+    modelId: string;
+    folderId: string;
+    navigateTo: (folderId?: string) => void;
     folders: FolderTableItem[];
     getEntryEditUrl: (item: EntryTableItem) => string;
     hideFilters: () => void;
@@ -162,7 +165,19 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         setListSort(sort);
     }, [sorting]);
 
+    const navigateTo = useCallback(
+        (input?: string) => {
+            const folderId = encodeURIComponent(input || currentFolderId || ROOT_FOLDER);
+
+            history.push(`${baseUrl}?folderId=${folderId}`);
+        },
+        [currentFolderId, baseUrl]
+    );
+
     const context: ContentEntriesListProviderContext = {
+        modelId: contentModel.modelId,
+        folderId: currentFolderId || ROOT_FOLDER,
+        navigateTo,
         folders,
         getEntryEditUrl,
         isListLoading,

@@ -11,7 +11,7 @@
   "dependencies": {
     "@babel/runtime": "^7.24.0",
     "@emotion/styled": "^11.10.6",
-    "@material-design-icons/svg": "^0.12.1",
+    "@material-design-icons/svg": "^0.14.2",
     "@rmwc/base": "7.0.3",
     "@rmwc/provider": "7.0.3",
     "@types/react": "17.0.39",

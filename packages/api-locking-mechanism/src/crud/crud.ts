@@ -1,9 +1,12 @@
 import { WebinyError } from "@webiny/error";
-import { Context, CmsIdentity } from "~/types";
 import {
-    ILockingMechanismModelManager,
+    Context,
+    IGetIdentity,
+    IGetWebsocketsContextCallable,
+    IHasFullAccessCallable,
     ILockingMechanism,
     ILockingMechanismLockRecordValues,
+    ILockingMechanismModelManager,
     OnEntryAfterLockTopicParams,
     OnEntryAfterUnlockRequestTopicParams,
     OnEntryAfterUnlockTopicParams,
@@ -16,16 +19,19 @@ import {
 } from "~/types";
 import { RECORD_LOCKING_MODEL_ID } from "./model";
 import { IGetLockRecordUseCaseExecute } from "~/abstractions/IGetLockRecordUseCase";
-import { IIsEntryLockedUseCaseExecute } from "~/abstractions/IsEntryLocked";
+import { IIsEntryLockedUseCaseExecute } from "~/abstractions/IIsEntryLocked";
 import { ILockEntryUseCaseExecute } from "~/abstractions/ILockEntryUseCase";
 import { IUnlockEntryUseCaseExecute } from "~/abstractions/IUnlockEntryUseCase";
 import { createUseCases } from "~/useCases";
 import { IUnlockEntryRequestUseCaseExecute } from "~/abstractions/IUnlockEntryRequestUseCase";
 import { createTopic } from "@webiny/pubsub";
+import { IListAllLockRecordsUseCaseExecute } from "~/abstractions/IListAllLockRecordsUseCase";
 import { IListLockRecordsUseCaseExecute } from "~/abstractions/IListLockRecordsUseCase";
+import { IUpdateEntryLockUseCaseExecute } from "~/abstractions/IUpdateEntryLockUseCase";
+import { IGetLockedEntryLockRecordUseCaseExecute } from "~/abstractions/IGetLockedEntryLockRecordUseCase";
 
 interface Params {
-    context: Pick<Context, "plugins" | "cms" | "benchmark" | "security">;
+    context: Pick<Context, "plugins" | "cms" | "benchmark" | "security" | "websockets">;
 }
 
 export const createLockingMechanismCrud = async ({
@@ -47,7 +53,7 @@ export const createLockingMechanismCrud = async ({
         );
     };
 
-    const getIdentity = (): CmsIdentity => {
+    const getIdentity: IGetIdentity = () => {
         const identity = context.security.getIdentity();
         if (!identity) {
             throw new WebinyError("Identity missing.");
@@ -57,6 +63,10 @@ export const createLockingMechanismCrud = async ({
             displayName: identity.displayName,
             type: identity.type
         };
+    };
+
+    const hasFullAccess: IHasFullAccessCallable = async () => {
+        return await context.security.hasFullAccess();
     };
 
     const onEntryBeforeLock = createTopic<OnEntryBeforeLockTopicParams>(
@@ -89,17 +99,32 @@ export const createLockingMechanismCrud = async ({
         "cms.lockingMechanism.onEntryUnlockRequestError"
     );
 
+    const getWebsockets: IGetWebsocketsContextCallable = () => {
+        return context.websockets;
+    };
+
     const {
         listLockRecordsUseCase,
+        listAllLockRecordsUseCase,
         getLockRecordUseCase,
         isEntryLockedUseCase,
+        getLockedEntryLockRecordUseCase,
         lockEntryUseCase,
+        updateEntryLockUseCase,
         unlockEntryUseCase,
         unlockEntryRequestUseCase
     } = createUseCases({
         getIdentity,
-        getManager
+        getManager,
+        hasFullAccess,
+        getWebsockets
     });
+
+    const listAllLockRecords: IListAllLockRecordsUseCaseExecute = async params => {
+        return context.benchmark.measure("lockingMechanism.listAllLockRecords", async () => {
+            return listAllLockRecordsUseCase.execute(params);
+        });
+    };
 
     const listLockRecords: IListLockRecordsUseCaseExecute = async params => {
         return context.benchmark.measure("lockingMechanism.listLockRecords", async () => {
@@ -107,15 +132,21 @@ export const createLockingMechanismCrud = async ({
         });
     };
 
-    const getLockRecord: IGetLockRecordUseCaseExecute = async id => {
+    const getLockRecord: IGetLockRecordUseCaseExecute = async params => {
         return context.benchmark.measure("lockingMechanism.getLockRecord", async () => {
-            return getLockRecordUseCase.execute(id);
+            return getLockRecordUseCase.execute(params);
         });
     };
 
     const isEntryLocked: IIsEntryLockedUseCaseExecute = async params => {
         return context.benchmark.measure("lockingMechanism.isEntryLocked", async () => {
             return isEntryLockedUseCase.execute(params);
+        });
+    };
+
+    const getLockedEntryLockRecord: IGetLockedEntryLockRecordUseCaseExecute = async params => {
+        return context.benchmark.measure("lockingMechanism.getLockedEntryLockRecord", async () => {
+            return getLockedEntryLockRecordUseCase.execute(params);
         });
     };
 
@@ -136,6 +167,12 @@ export const createLockingMechanismCrud = async ({
                 });
                 throw ex;
             }
+        });
+    };
+
+    const updateEntryLock: IUpdateEntryLockUseCaseExecute = async params => {
+        return context.benchmark.measure("lockingMechanism.updateEntryLock", async () => {
+            return updateEntryLockUseCase.execute(params);
         });
     };
 
@@ -200,9 +237,12 @@ export const createLockingMechanismCrud = async ({
          */
         getModel,
         listLockRecords,
+        listAllLockRecords,
         getLockRecord,
         isEntryLocked,
+        getLockedEntryLockRecord,
         lockEntry,
+        updateEntryLock,
         unlockEntry,
         unlockEntryRequest
     };

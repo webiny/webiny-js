@@ -6,6 +6,9 @@ import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { defaultIdentity } from "./tenancySecurity";
 import {
     GET_LOCK_RECORD_QUERY,
+    GET_LOCKED_ENTRY_LOCK_RECORD_QUERY,
+    IGetLockedEntryLockRecordGraphQlResponse,
+    IGetLockedEntryLockRecordGraphQlVariables,
     IGetLockRecordGraphQlResponse,
     IGetLockRecordGraphQlVariables,
     IIsEntryLockedGraphQlResponse,
@@ -19,13 +22,20 @@ import {
     IUnlockEntryGraphQlVariables,
     IUnlockEntryRequestGraphQlResponse,
     IUnlockEntryRequestGraphQlVariables,
+    IUpdateEntryLockGraphQlResponse,
+    IUpdateEntryLockGraphQlVariables,
     LIST_LOCK_RECORDS_QUERY,
     LOCK_ENTRY_MUTATION,
     UNLOCK_ENTRY_MUTATION,
-    UNLOCK_ENTRY_REQUEST_MUTATION
+    UNLOCK_ENTRY_REQUEST_MUTATION,
+    UPDATE_ENTRY_LOCK_MUTATION
 } from "./graphql/lockingMechanism";
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
+
+export interface IInvokeResult<T = any> {
+    data: T;
+}
 
 export interface InvokeParams {
     httpMethod?: "POST" | "GET" | "OPTIONS";
@@ -53,7 +63,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         body,
         headers = {},
         ...rest
-    }: InvokeParams): Promise<[T, any]> => {
+    }: InvokeParams): Promise<[IInvokeResult<T>, any]> => {
         const response = await handler(
             {
                 path: "/graphql",
@@ -95,6 +105,11 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
                 body: { query: GET_LOCK_RECORD_QUERY, variables }
             });
         },
+        async getLockedEntryLockRecordQuery(variables: IGetLockedEntryLockRecordGraphQlVariables) {
+            return invoke<IGetLockedEntryLockRecordGraphQlResponse>({
+                body: { query: GET_LOCKED_ENTRY_LOCK_RECORD_QUERY, variables }
+            });
+        },
         async isEntryLockedQuery(variables: IIsEntryLockedGraphQlVariables) {
             return invoke<IIsEntryLockedGraphQlResponse>({
                 body: { query: IS_ENTRY_LOCKED_QUERY, variables }
@@ -103,6 +118,11 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         async lockEntryMutation(variables: ILockEntryGraphQlVariables) {
             return invoke<ILockEntryGraphQlResponse>({
                 body: { query: LOCK_ENTRY_MUTATION, variables }
+            });
+        },
+        async updateEntryLockMutation(variables: IUpdateEntryLockGraphQlVariables) {
+            return invoke<IUpdateEntryLockGraphQlResponse>({
+                body: { query: UPDATE_ENTRY_LOCK_MUTATION, variables }
             });
         },
         async unlockEntryMutation(variables: IUnlockEntryGraphQlVariables) {

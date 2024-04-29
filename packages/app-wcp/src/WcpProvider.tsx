@@ -31,6 +31,9 @@ export const GET_WCP_PROJECT = gql`
                             auditLogs {
                                 enabled
                             }
+                            recordLocking {
+                                enabled
+                            }
                         }
                     }
                 }

@@ -47,15 +47,13 @@ export class WebsocketsConnection implements IWebsocketsConnection {
         this.connection = this.factory(this.url, this.protocol);
 
         this.connection.addEventListener("open", event => {
-            console.info(`Opened the Websocket connection.`);
             return this.subscriptionManager.triggerOnOpen(event);
         });
         this.connection.addEventListener("close", event => {
-            console.info(`Closed the Websocket connection.`);
             return this.subscriptionManager.triggerOnClose(event);
         });
         this.connection.addEventListener("error", event => {
-            console.info(`Error in the Websocket connection.`);
+            console.info(`Error in the Websocket connection.`, event);
             return this.subscriptionManager.triggerOnError(event);
         });
         this.connection.addEventListener(

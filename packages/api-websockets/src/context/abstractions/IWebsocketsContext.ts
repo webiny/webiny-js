@@ -18,11 +18,11 @@ export interface IWebsocketsContextListConnectionsParams {
 
 export type IWebsocketsContextDisconnectConnectionsParams = IWebsocketsContextListConnectionsParams;
 
-export interface IWebsocketsContext {
+export interface IWebsocketsContextObject {
     readonly registry: IWebsocketsConnectionRegistry;
 
     send<T extends GenericRecord = GenericRecord>(
-        identity: IWebsocketsIdentity,
+        identity: Pick<IWebsocketsIdentity, "id">,
         data: IWebsocketsTransportSendData<T>
     ): Promise<void>;
     sendToConnections<T extends GenericRecord = GenericRecord>(

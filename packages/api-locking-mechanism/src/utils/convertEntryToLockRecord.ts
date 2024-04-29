@@ -1,4 +1,4 @@
-import { CmsEntry, CmsIdentity } from "~/types";
+import { CmsEntry, ILockingMechanismIdentity } from "~/types";
 import {
     ILockingMechanismLockRecord,
     ILockingMechanismLockRecordAction,
@@ -11,6 +11,7 @@ import {
     ILockingMechanismLockRecordValues
 } from "~/types";
 import { removeLockRecordDatabasePrefix } from "~/utils/lockRecordDatabaseId";
+import { calculateExpiresOn } from "~/utils/calculateExpiresOn";
 
 export const convertEntryToLockRecord = (
     entry: CmsEntry<ILockingMechanismLockRecordValues>
@@ -20,15 +21,17 @@ export const convertEntryToLockRecord = (
 
 export type IHeadlessCmsLockRecordParams = Pick<
     CmsEntry<ILockingMechanismLockRecordValues>,
-    "entryId" | "values" | "createdBy" | "createdOn"
+    "entryId" | "values" | "createdBy" | "createdOn" | "savedOn"
 >;
 
 export class HeadlessCmsLockRecord implements ILockingMechanismLockRecord {
     private readonly _id: string;
     private readonly _targetId: string;
     private readonly _type: ILockingMechanismLockRecordEntryType;
-    private readonly _lockedBy: CmsIdentity;
+    private readonly _lockedBy: ILockingMechanismIdentity;
     private readonly _lockedOn: Date;
+    private readonly _updatedOn: Date;
+    private readonly _expiresOn: Date;
     private _actions?: ILockingMechanismLockRecordAction[];
 
     public get id(): string {
@@ -43,12 +46,20 @@ export class HeadlessCmsLockRecord implements ILockingMechanismLockRecord {
         return this._type;
     }
 
-    public get lockedBy(): CmsIdentity {
+    public get lockedBy(): ILockingMechanismIdentity {
         return this._lockedBy;
     }
 
     public get lockedOn(): Date {
         return this._lockedOn;
+    }
+
+    public get updatedOn(): Date {
+        return this._updatedOn;
+    }
+
+    public get expiresOn(): Date {
+        return this._expiresOn;
     }
 
     public get actions(): ILockingMechanismLockRecordAction[] | undefined {
@@ -61,6 +72,8 @@ export class HeadlessCmsLockRecord implements ILockingMechanismLockRecord {
         this._type = input.values.type;
         this._lockedBy = input.createdBy;
         this._lockedOn = new Date(input.createdOn);
+        this._updatedOn = new Date(input.savedOn);
+        this._expiresOn = calculateExpiresOn(input);
         this._actions = input.values.actions;
     }
 
@@ -71,6 +84,8 @@ export class HeadlessCmsLockRecord implements ILockingMechanismLockRecord {
             type: this._type,
             lockedBy: this._lockedBy,
             lockedOn: this._lockedOn,
+            updatedOn: this._updatedOn,
+            expiresOn: this._expiresOn,
             actions: this._actions
         };
     }

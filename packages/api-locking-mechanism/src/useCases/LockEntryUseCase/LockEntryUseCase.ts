@@ -4,11 +4,11 @@ import {
     ILockEntryUseCaseExecuteParams
 } from "~/abstractions/ILockEntryUseCase";
 import {
-    ILockingMechanismModelManager,
     ILockingMechanismLockRecord,
-    ILockingMechanismLockRecordValues
+    ILockingMechanismLockRecordValues,
+    ILockingMechanismModelManager
 } from "~/types";
-import { IIsEntryLockedUseCase } from "~/abstractions/IsEntryLocked";
+import { IIsEntryLockedUseCase } from "~/abstractions/IIsEntryLocked";
 import { convertEntryToLockRecord } from "~/utils/convertEntryToLockRecord";
 import { createLockRecordDatabaseId } from "~/utils/lockRecordDatabaseId";
 import { NotFoundError } from "@webiny/handler-graphql";

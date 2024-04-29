@@ -4,26 +4,26 @@ import {
     IUnlockEntryRequestUseCaseExecuteParams
 } from "~/abstractions/IUnlockEntryRequestUseCase";
 import {
-    ILockingMechanismModelManager,
+    IGetIdentity,
     ILockingMechanismLockRecord,
-    ILockingMechanismLockRecordActionType
+    ILockingMechanismLockRecordActionType,
+    ILockingMechanismModelManager
 } from "~/types";
 import { IGetLockRecordUseCase } from "~/abstractions/IGetLockRecordUseCase";
 import { createLockRecordDatabaseId } from "~/utils/lockRecordDatabaseId";
-import { CmsIdentity } from "~/types";
 import { createIdentifier } from "@webiny/utils";
 import { convertEntryToLockRecord } from "~/utils/convertEntryToLockRecord";
 
 export interface IUnlockEntryRequestUseCaseParams {
     getLockRecordUseCase: IGetLockRecordUseCase;
     getManager: () => Promise<ILockingMechanismModelManager>;
-    getIdentity: () => CmsIdentity;
+    getIdentity: IGetIdentity;
 }
 
 export class UnlockEntryRequestUseCase implements IUnlockEntryRequestUseCase {
     private readonly getLockRecordUseCase: IGetLockRecordUseCase;
     private readonly getManager: () => Promise<ILockingMechanismModelManager>;
-    private readonly getIdentity: () => CmsIdentity;
+    private readonly getIdentity: IGetIdentity;
 
     public constructor(params: IUnlockEntryRequestUseCaseParams) {
         this.getLockRecordUseCase = params.getLockRecordUseCase;
@@ -34,8 +34,7 @@ export class UnlockEntryRequestUseCase implements IUnlockEntryRequestUseCase {
     public async execute(
         params: IUnlockEntryRequestUseCaseExecuteParams
     ): Promise<ILockingMechanismLockRecord> {
-        const id = createLockRecordDatabaseId(params.id);
-        const record = await this.getLockRecordUseCase.execute(id);
+        const record = await this.getLockRecordUseCase.execute(params);
         if (!record) {
             throw new WebinyError("Entry is not locked.", "ENTRY_NOT_LOCKED", {
                 ...params

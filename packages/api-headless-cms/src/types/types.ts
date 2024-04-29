@@ -24,6 +24,13 @@ export interface CmsError {
     stack?: string;
 }
 
+export interface CmsError {
+    message: string;
+    code: string;
+    data: GenericRecord;
+    stack?: string;
+}
+
 export type ApiEndpoint = "manage" | "preview" | "read";
 
 export interface HeadlessCms
@@ -1015,6 +1022,7 @@ export interface CmsEntryListWhere {
         | string
         | number
         | boolean
+        | Date
         | undefined
         | string[]
         | number[]

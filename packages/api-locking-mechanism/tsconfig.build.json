@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
+    { "path": "../api-websockets/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },

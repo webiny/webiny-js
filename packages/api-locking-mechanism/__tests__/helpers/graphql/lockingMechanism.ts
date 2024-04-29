@@ -19,6 +19,8 @@ export const LOCK_RECORD = /* GraphQL */ `
         type
     }
     lockedOn
+    updatedOn
+    expiresOn
     actions {
         type
         createdOn
@@ -87,6 +89,7 @@ export const LIST_LOCK_RECORDS_QUERY = /* GraphQL */ `
 
 export interface IGetLockRecordGraphQlVariables {
     id: string;
+    type: string;
 }
 
 export interface IGetLockRecordGraphQlResponse {
@@ -99,9 +102,36 @@ export interface IGetLockRecordGraphQlResponse {
 }
 
 export const GET_LOCK_RECORD_QUERY = /* GraphQL */ `
-    query GetLockRecord($id: ID!) {
+    query GetLockRecord($id: ID!, $type: String!) {
         lockingMechanism {
-            getLockRecord(id: $id) {
+            getLockRecord(id: $id, type: $type) {
+                data {
+                    ${LOCK_RECORD}
+                }
+                ${LOCK_ERROR}
+            }
+        }
+    }
+`;
+
+export interface IGetLockedEntryLockRecordGraphQlVariables {
+    id: string;
+    type: string;
+}
+
+export interface IGetLockedEntryLockRecordGraphQlResponse {
+    lockingMechanism: {
+        getLockRecord: {
+            data?: ILockingMechanismLockRecord;
+            error?: CmsError;
+        };
+    };
+}
+
+export const GET_LOCKED_ENTRY_LOCK_RECORD_QUERY = /* GraphQL */ `
+    query GetLockedEntryLockRecord($id: ID!, $type: String!) {
+        lockingMechanism {
+            getLockedEntryLockRecord(id: $id, type: $type) {
                 data {
                     ${LOCK_RECORD}
                 }
@@ -138,10 +168,37 @@ export const LOCK_ENTRY_MUTATION = /* GraphQL */ `
     }
 `;
 
+export interface IUpdateEntryLockGraphQlVariables {
+    id: string;
+    type: string;
+}
+
+export interface IUpdateEntryLockGraphQlResponse {
+    lockingMechanism: {
+        updateEntryLock: {
+            data?: ILockingMechanismLockRecord;
+            error?: CmsError;
+        };
+    };
+}
+
 export interface IUnlockEntryGraphQlVariables {
     id: string;
     type: string;
 }
+
+export const UPDATE_ENTRY_LOCK_MUTATION = /* GraphQL */ `
+    mutation UpdateEntryLock($id: ID!, $type: String!) {
+        lockingMechanism {
+            updateEntryLock(id: $id, type: $type) {
+                data {
+                    ${LOCK_RECORD}
+                }
+                ${LOCK_ERROR}
+            }
+        }
+    }
+`;
 
 export interface IUnlockEntryGraphQlResponse {
     lockingMechanism: {

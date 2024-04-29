@@ -32,6 +32,8 @@ describe("request entry unlock", () => {
                                 type: "admin"
                             },
                             lockedOn: expect.toBeDateString(),
+                            updatedOn: expect.toBeDateString(),
+                            expiresOn: expect.toBeDateString(),
                             targetId: "someId#0001",
                             type: "cms#author",
                             actions: []
@@ -59,6 +61,8 @@ describe("request entry unlock", () => {
                                 type: "admin"
                             },
                             lockedOn: expect.toBeDateString(),
+                            updatedOn: expect.toBeDateString(),
+                            expiresOn: expect.toBeDateString(),
                             targetId: "someId#0001",
                             type: "cms#author",
                             actions: [

@@ -1,4 +1,5 @@
 import { useGraphQLHandler } from "~tests/helpers/useGraphQLHandler";
+import { createIdentity } from "~tests/helpers/identity";
 
 describe("lock entry", () => {
     const { getLockRecordQuery, isEntryLockedQuery, lockEntryMutation } = useGraphQLHandler();
@@ -37,6 +38,8 @@ describe("lock entry", () => {
                                 type: "admin"
                             },
                             lockedOn: expect.toBeDateString(),
+                            updatedOn: expect.toBeDateString(),
+                            expiresOn: expect.toBeDateString(),
                             targetId: "someId#0001",
                             type: "cms#author",
                             actions: []
@@ -48,7 +51,8 @@ describe("lock entry", () => {
         });
 
         const [getResponse] = await getLockRecordQuery({
-            id: "someId"
+            id: "someId",
+            type: "cms#author"
         });
         expect(getResponse).toEqual({
             data: {
@@ -62,6 +66,8 @@ describe("lock entry", () => {
                                 type: "admin"
                             },
                             lockedOn: expect.toBeDateString(),
+                            updatedOn: expect.toBeDateString(),
+                            expiresOn: expect.toBeDateString(),
                             targetId: "someId#0001",
                             type: "cms#author",
                             actions: []
@@ -74,6 +80,13 @@ describe("lock entry", () => {
     });
 
     it("should return error if entry is already locked", async () => {
+        const anotherUserGraphQL = useGraphQLHandler({
+            identity: createIdentity({
+                displayName: "Jane Doe",
+                id: "id-87654321",
+                type: "admin"
+            })
+        });
         const [firstLockResponse] = await lockEntryMutation({
             id: "someId#0001",
             type: "cms#author"
@@ -91,6 +104,8 @@ describe("lock entry", () => {
                                 type: "admin"
                             },
                             lockedOn: expect.toBeDateString(),
+                            updatedOn: expect.toBeDateString(),
+                            expiresOn: expect.toBeDateString(),
                             targetId: "someId#0001",
                             type: "cms#author",
                             actions: []
@@ -101,7 +116,7 @@ describe("lock entry", () => {
             }
         });
 
-        const [response] = await lockEntryMutation({
+        const [response] = await anotherUserGraphQL.lockEntryMutation({
             id: "someId#0001",
             type: "cms#author"
         });

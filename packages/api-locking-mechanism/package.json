@@ -16,6 +16,7 @@
     "@types/aws-lambda": "^8.10.131",
     "@webiny/api": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-websockets": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
