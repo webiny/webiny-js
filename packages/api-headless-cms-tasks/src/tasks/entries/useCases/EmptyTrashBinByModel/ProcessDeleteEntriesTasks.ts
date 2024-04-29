@@ -19,7 +19,7 @@ export class ProcessDeleteEntriesTasks {
             const result = await context.tasks.listTasks({
                 where: {
                     parentId: store.getTask().id,
-                    definitionId: EntriesTask.DeleteTrashBinEntries,
+                    definitionId: EntriesTask.DeleteEntries,
                     taskStatus_in: [TaskDataStatus.RUNNING, TaskDataStatus.PENDING]
                 },
                 limit: 1

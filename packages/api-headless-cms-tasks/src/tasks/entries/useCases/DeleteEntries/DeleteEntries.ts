@@ -1,12 +1,10 @@
 import { ITaskResponseResult } from "@webiny/tasks";
-import { IDeleteTrashBinEntriesTaskParams } from "~/types";
+import { IDeleteEntriesTaskParams } from "~/types";
 import { taskRepositoryFactory } from "~/tasks/entries/domain";
 import { IUseCase } from "~/tasks/IUseCase";
 
-export class DeleteTrashBinEntries
-    implements IUseCase<IDeleteTrashBinEntriesTaskParams, ITaskResponseResult>
-{
-    public async execute(params: IDeleteTrashBinEntriesTaskParams) {
+export class DeleteEntries implements IUseCase<IDeleteEntriesTaskParams, ITaskResponseResult> {
+    public async execute(params: IDeleteEntriesTaskParams) {
         const { input, response, isAborted, isCloseToTimeout, context, store } = params;
 
         try {
@@ -29,7 +27,7 @@ export class DeleteTrashBinEntries
             }
 
             if (!input.entryIds || input.entryIds.length === 0) {
-                return response.done("Task done: No entries to delete.");
+                return response.done("Task done: no entries to delete.");
             }
 
             const taskRepository = taskRepositoryFactory.getRepository(store.getTask().id);

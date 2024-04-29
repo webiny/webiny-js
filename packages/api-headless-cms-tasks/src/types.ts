@@ -12,7 +12,7 @@ export interface HcmsTasksContext extends BaseContext, CmsContext, TasksContext 
 export enum EntriesTask {
     EmptyTrashBins = "hcmsEntriesEmptyTrashBins",
     EmptyTrashBinByModel = "hcmsEntriesEmptyTrashBinByModel",
-    DeleteTrashBinEntries = "hcmsEntriesDeleteTrashBinEntries",
+    DeleteEntries = "hcmsEntriesDeleteEntries",
     PublishEntriesByModel = "hcmsEntriesPublishEntriesByModel",
     PublishEntries = "hcmsEntriesPublishEntries",
     UnpublishEntries = "hcmsEntriesUnpublishEntries",
@@ -55,22 +55,22 @@ export type IEmptyTrashBinByModelTaskParams = ITaskRunParams<
  * Delete Trash Bin Entries
  */
 
-export interface IDeleteTrashBinEntriesInput {
+export interface IDeleteEntriesInput {
     modelId: string;
     entryIds: string[];
     done?: string[];
     failed?: string[];
 }
 
-export interface IDeleteTrashBinEntriesOutput extends ITaskResponseDoneResultOutput {
+export interface IDeleteEntriesOutput extends ITaskResponseDoneResultOutput {
     done: string[];
     failed: string[];
 }
 
-export type IDeleteTrashBinEntriesTaskParams = ITaskRunParams<
+export type IDeleteEntriesTaskParams = ITaskRunParams<
     HcmsTasksContext,
-    IDeleteTrashBinEntriesInput,
-    IDeleteTrashBinEntriesOutput
+    IDeleteEntriesInput,
+    IDeleteEntriesOutput
 >;
 
 /**

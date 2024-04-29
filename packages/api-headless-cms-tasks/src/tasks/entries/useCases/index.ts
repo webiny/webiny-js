@@ -1,7 +1,9 @@
 // Trash Bin
-export * from "./DeleteTrashBinEntries";
 export * from "./EmptyTrashBinByModel";
 export * from "./EmptyTrashBins";
+
+// Bulk Action - Delete Entries
+export * from "./DeleteEntries";
 
 // Bulk Action - Publish Entries
 export * from "./PublishEntriesByModel";
