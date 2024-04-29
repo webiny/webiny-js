@@ -37,7 +37,24 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
     const [current, setCurrent] = useState<ICurrentData>({});
 
     const subscriptionManager = useMemo(() => {
-        return createWebsocketsSubscriptionManager();
+        const manager = createWebsocketsSubscriptionManager();
+
+        let currentIteration = 0;
+        manager.onClose(event => {
+            if (currentIteration > 5 || event.code !== 1001) {
+                return;
+            }
+            currentIteration++;
+            setTimeout(() => {
+                if (!socketsRef.current) {
+                    return;
+                }
+                console.log("Running auto-reconnect.");
+                socketsRef.current.connect();
+            }, 1000);
+        });
+
+        return manager;
     }, []);
 
     useEffect(() => {
@@ -124,6 +141,12 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
     if (!socketsRef.current) {
         return props.loader || null;
     }
+
+    // TODO remove when finished with development
+    (window as any).webinySockets = socketsRef.current;
+    (window as any).send = send;
+    (window as any).createAction = createAction;
+    (window as any).onMessage = onMessage;
 
     const value: IWebsocketsContext = {
         send,
