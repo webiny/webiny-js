@@ -9,7 +9,7 @@ export class FieldsMapper {
             id: "status",
             type: "text",
             label: "Status",
-            multipleValues: true,
+            multipleValues: false,
             predefinedValues: {
                 enabled: true,
                 values: [
