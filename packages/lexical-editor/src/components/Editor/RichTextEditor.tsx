@@ -1,5 +1,6 @@
-import React, { Fragment, useEffect, useRef, useState } from "react";
-import { ClassNames, CSSObject } from "@emotion/react";
+import React, { Fragment, useRef, useState } from "react";
+import { css } from "emotion";
+import { CSSObject } from "@emotion/react";
 import { Klass, LexicalEditor, LexicalNode } from "lexical";
 import { EditorState } from "lexical/LexicalEditorState";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -26,7 +27,6 @@ import {
 } from "@webiny/lexical-theme";
 import { allNodes } from "@webiny/lexical-nodes";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
-import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import {
     LexicalEditorWithConfig,
     useLexicalEditorConfig
@@ -48,9 +48,9 @@ export interface RichTextEditorProps {
     tag?: string;
     theme: WebinyTheme;
     themeEmotionMap?: ThemeEmotionMap;
+    toolbarActionPlugins?: ToolbarActionPlugin[];
     themeStylesTransformer?: (cssObject: Record<string, any>) => CSSObject;
     toolbar?: React.ReactNode;
-    toolbarActionPlugins?: ToolbarActionPlugin[];
     value: LexicalValue | null;
     width?: number | string;
 }
@@ -68,12 +68,14 @@ const BaseRichTextEditor = ({
     styles,
     width,
     height,
-    theme,
-    themeEmotionMap,
-    toolbarActionPlugins,
     contentEditableStyles,
-    placeholderStyles
+    placeholderStyles,
+    ...props
 }: RichTextEditorProps) => {
+    const themeEmotionMap =
+        props.themeEmotionMap ??
+        toTypographyEmotionMap(css, props.theme, props.themeStylesTransformer);
+
     const editorTheme = useRef(createTheme());
     const config = useLexicalEditorConfig();
     const { historyState } = useSharedHistoryContext();
@@ -84,19 +86,6 @@ const BaseRichTextEditor = ({
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(
         undefined
     );
-    const { setTheme, setThemeEmotionMap, setToolbarActionPlugins } = useRichTextEditor();
-
-    useEffect(() => {
-        setTheme(theme);
-        setThemeEmotionMap(themeEmotionMap);
-    }, [themeEmotionMap, theme]);
-
-    useEffect(() => {
-        if (toolbarActionPlugins) {
-            setToolbarActionPlugins(toolbarActionPlugins || []);
-        }
-    }, [toolbarActionPlugins]);
-
     const onRef = (_floatingAnchorElem: HTMLDivElement) => {
         if (_floatingAnchorElem !== null) {
             setFloatingAnchorElem(_floatingAnchorElem);
@@ -144,44 +133,50 @@ const BaseRichTextEditor = ({
          *
          * To bypass this issue, we generate a naive `key` based on the number of Nodes.
          */
-        <LexicalComposer initialConfig={initialConfig} key={initialConfig.nodes.length}>
-            <>
-                {staticToolbar && staticToolbar}
-                <div
-                    /* This className is necessary for targeting of editor container from CSS files. */
-                    className={"editor-shell"}
-                    ref={scrollRef}
-                    style={{ ...styles, ...sizeStyle, overflow: "auto", position: "relative" }}
+        <SharedHistoryContext>
+            <LexicalComposer initialConfig={initialConfig} key={initialConfig.nodes.length}>
+                <RichTextEditorProvider
+                    theme={props.theme}
+                    themeEmotionMap={themeEmotionMap}
+                    toolbarActionPlugins={props.toolbarActionPlugins}
                 >
-                    {/* data */}
-                    <OnChangePlugin onChange={handleOnChange} />
-                    <UpdateStatePlugin value={editorValue} />
-                    <ClearEditorPlugin />
-                    <HistoryPlugin externalHistoryState={historyState} />
-                    {/* Events */}
-                    {onBlur && <BlurEventPlugin onBlur={onBlur} />}
-                    {focus && <AutoFocusPlugin />}
-                    {/* External plugins and components */}
-                    {configPlugins}
-                    {children}
-                    <RichTextPlugin
-                        contentEditable={
-                            <div className="editor-scroller" style={{ ...sizeStyle }}>
-                                <div className="editor" ref={onRef}>
-                                    <ContentEditable
-                                        style={{ outline: 0, ...contentEditableStyles }}
-                                    />
+                    {staticToolbar && staticToolbar}
+                    <div
+                        /* This className is necessary for targeting of editor container from CSS files. */
+                        className={"editor-shell"}
+                        ref={scrollRef}
+                        style={{ ...styles, ...sizeStyle, overflow: "auto", position: "relative" }}
+                    >
+                        {/* State plugins. */}
+                        <OnChangePlugin onChange={handleOnChange} />
+                        <UpdateStatePlugin value={editorValue} />
+                        <ClearEditorPlugin />
+                        <HistoryPlugin externalHistoryState={historyState} />
+                        {/* Event plugins. */}
+                        {onBlur && <BlurEventPlugin onBlur={onBlur} />}
+                        {focus && <AutoFocusPlugin />}
+                        {/* External plugins and components. */}
+                        {configPlugins}
+                        {children}
+                        <RichTextPlugin
+                            contentEditable={
+                                <div className="editor-scroller" style={{ ...sizeStyle }}>
+                                    <div className="editor" ref={onRef}>
+                                        <ContentEditable
+                                            style={{ outline: 0, ...contentEditableStyles }}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        }
-                        placeholder={placeholderElem}
-                        ErrorBoundary={LexicalErrorBoundary}
-                    />
-                    {/* Toolbar */}
-                    {floatingAnchorElem && toolbar}
-                </div>
-            </>
-        </LexicalComposer>
+                            }
+                            placeholder={placeholderElem}
+                            ErrorBoundary={LexicalErrorBoundary}
+                        />
+                        {/* Toolbar. */}
+                        {floatingAnchorElem && toolbar}
+                    </div>
+                </RichTextEditorProvider>
+            </LexicalComposer>
+        </SharedHistoryContext>
     );
 };
 
@@ -191,20 +186,7 @@ const BaseRichTextEditor = ({
 export const RichTextEditor = makeDecoratable("RichTextEditor", (props: RichTextEditorProps) => {
     return (
         <LexicalEditorWithConfig>
-            <RichTextEditorProvider>
-                <ClassNames>
-                    {({ css }) => {
-                        const themeEmotionMap =
-                            props?.themeEmotionMap ??
-                            toTypographyEmotionMap(css, props.theme, props.themeStylesTransformer);
-                        return (
-                            <SharedHistoryContext>
-                                <BaseRichTextEditor {...props} themeEmotionMap={themeEmotionMap} />
-                            </SharedHistoryContext>
-                        );
-                    }}
-                </ClassNames>
-            </RichTextEditorProvider>
+            <BaseRichTextEditor {...props} />
         </LexicalEditorWithConfig>
     );
 });

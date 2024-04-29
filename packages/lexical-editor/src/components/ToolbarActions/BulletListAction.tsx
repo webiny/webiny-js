@@ -1,5 +1,4 @@
 import React from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { INSERT_UNORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND } from "~/commands";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 import { findTypographyStyleByHtmlTag } from "@webiny/lexical-theme";
@@ -7,7 +6,7 @@ import { $isListNode, ListNode } from "@webiny/lexical-nodes";
 import { useCurrentElement } from "~/hooks/useCurrentElement";
 
 export const BulletListAction = () => {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
     const { element } = useCurrentElement();
     const { themeEmotionMap } = useRichTextEditor();
     const isList = $isListNode(element);

@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { LexicalCommand } from "lexical";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Compose, makeDecoratable } from "@webiny/react-composition";
 import { TypographyValue } from "@webiny/lexical-theme";
 import { TypographyActionContext } from "~/context/TypographyActionContext";
@@ -50,9 +49,8 @@ export type TypographyAction = React.ComponentType<unknown> & {
 };
 
 export const TypographyAction: TypographyAction = () => {
-    const [editor] = useLexicalComposerContext();
     const [typography, setTypography] = useState<TypographyValue>();
-    const { themeEmotionMap } = useRichTextEditor();
+    const { editor, themeEmotionMap } = useRichTextEditor();
     const { element } = useCurrentElement();
     const isTypographySelected = $isTypographyNode(element);
     const isParagraphSelected = $isParagraphNode(element);
