@@ -5,6 +5,7 @@ import { createPublishEntriesTask } from "./publishEntriesTask";
 import { createPublishEntriesByModelTask } from "./publishEntriesByModelTask";
 import { createUnpublishEntriesTask } from "./unpublishEntriesTask";
 import { createMoveEntriesToFolderTask } from "./moveEntriesToFolderTask";
+import { createMoveEntriesToTrashTask } from "./moveEntriesToTrashTask";
 
 export * from "./useCases";
 export * from "./domain";
@@ -17,6 +18,7 @@ export const createEntriesTasks = () => {
         createPublishEntriesByModelTask(),
         createPublishEntriesTask(),
         createUnpublishEntriesTask(),
-        createMoveEntriesToFolderTask()
+        createMoveEntriesToFolderTask(),
+        createMoveEntriesToTrashTask()
     ];
 };
