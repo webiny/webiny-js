@@ -9,3 +9,6 @@ export * from "./PublishEntries";
 
 // Bulk Action - Unpublish Entries
 export * from "./UnpublishEntries";
+
+// Bulk Action - Move Entries to Folder
+export * from "./MoveEntriesToFolder";
