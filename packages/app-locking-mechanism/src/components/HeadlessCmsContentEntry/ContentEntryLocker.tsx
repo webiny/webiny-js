@@ -30,7 +30,7 @@ interface IForceUnlockedProps {
 const ForceUnlocked = ({ user }: IForceUnlockedProps) => {
     return (
         <>
-            The entry you were editing was forcefully unlocked by
+            The entry you were editing was forcefully unlocked by{" "}
             {user.displayName || "Unknown user"}. You will now be redirected back to the list of
             entries.
         </>
