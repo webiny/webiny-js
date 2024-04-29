@@ -3,6 +3,7 @@ import { createEmptyTrashBinByModelTask } from "./emptyTrashBinByModelTask";
 import { createEmptyTrashBinsTask } from "./emptyTrashBinsTask";
 import { createPublishEntriesTask } from "./publishEntriesTask";
 import { createPublishEntriesByModelTask } from "./publishEntriesByModelTask";
+import { createUnpublishEntriesTask } from "./unpublishEntriesTask";
 
 export * from "./useCases";
 export * from "./domain";
@@ -13,6 +14,7 @@ export const createEntriesTasks = () => {
         createEmptyTrashBinByModelTask(),
         createEmptyTrashBinsTask(),
         createPublishEntriesByModelTask(),
-        createPublishEntriesTask()
+        createPublishEntriesTask(),
+        createUnpublishEntriesTask()
     ];
 };

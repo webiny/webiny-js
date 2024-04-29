@@ -14,7 +14,8 @@ export enum EntriesTask {
     EmptyTrashBinByModel = "hcmsEntriesEmptyTrashBinByModel",
     DeleteTrashBinEntries = "hcmsEntriesDeleteTrashBinEntries",
     PublishEntriesByModel = "hcmsEntriesPublishEntriesByModel",
-    PublishEntries = "hcmsEntriesPublishEntries"
+    PublishEntries = "hcmsEntriesPublishEntries",
+    UnpublishEntries = "hcmsEntriesUnpublishEntries"
 }
 
 /**
@@ -115,4 +116,52 @@ export type IPublishEntriesTaskParams = ITaskRunParams<
     HcmsTasksContext,
     IPublishEntriesInput,
     IPublishEntriesOutput
+>;
+
+/**
+ * Unpublish Entries by Model
+ */
+
+export interface IUnpublishEntriesByModelInput {
+    modelId: string;
+    identity: SecurityIdentity;
+    where?: Record<string, any>;
+    after?: string | null;
+    currentBatch?: number;
+    processing?: boolean;
+    totalCount?: number;
+}
+
+export interface IUnpublishEntriesByModelOutput extends ITaskResponseDoneResultOutput {
+    done: string[];
+    failed: string[];
+}
+
+export type IUnpublishEntriesByModelTaskParams = ITaskRunParams<
+    HcmsTasksContext,
+    IUnpublishEntriesByModelInput,
+    IUnpublishEntriesByModelOutput
+>;
+
+/**
+ * Unpublish Entries
+ */
+
+export interface IUnpublishEntriesInput {
+    modelId: string;
+    ids: string[];
+    identity: SecurityIdentity;
+    done?: string[];
+    failed?: string[];
+}
+
+export interface IUnpublishEntriesOutput extends ITaskResponseDoneResultOutput {
+    done: string[];
+    failed: string[];
+}
+
+export type IUnpublishEntriesTaskParams = ITaskRunParams<
+    HcmsTasksContext,
+    IUnpublishEntriesInput,
+    IUnpublishEntriesOutput
 >;
