@@ -1,9 +1,9 @@
 import { ITaskResponseResult, TaskDataStatus } from "@webiny/tasks";
 import { EntriesTask, IPublishEntriesByModelTaskParams } from "~/types";
 
-export const PUBLISH_ENTRIES_WAIT_TIME = 10;
+export const WAITING_TIME = 10;
 
-export class ProcessPublishEntriesTasks {
+export class ProcessTasks {
     public async execute(params: IPublishEntriesByModelTaskParams): Promise<ITaskResponseResult> {
         const { response, input, isAborted, isCloseToTimeout, context, store } = params;
 
@@ -31,7 +31,7 @@ export class ProcessPublishEntriesTasks {
                         ...input
                     },
                     {
-                        seconds: PUBLISH_ENTRIES_WAIT_TIME
+                        seconds: WAITING_TIME
                     }
                 );
             }
@@ -40,7 +40,9 @@ export class ProcessPublishEntriesTasks {
                 `Task done: all entries has been published for ${input.modelId} model.`
             );
         } catch (ex) {
-            return response.error(ex.message ?? "Error while executing ProcessPublishEntriesTasks");
+            return response.error(
+                ex.message ?? "Error while executing PublishEntriesByModel/ProcessTasks"
+            );
         }
     }
 }

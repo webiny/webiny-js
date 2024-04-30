@@ -1,6 +1,6 @@
 import { ITaskResponseResult } from "@webiny/tasks";
-import { ProcessPublishEntriesTasks } from "./ProcessPublishEntriesTasks";
-import { CreatePublishEntriesTasks } from "./CreatePublishEntriesTasks";
+import { ProcessTasks } from "./ProcessTasks";
+import { CreateTasks } from "./CreateTasks";
 import { IPublishEntriesByModelTaskParams } from "~/types";
 import { IUseCase } from "~/tasks/IUseCase";
 
@@ -16,12 +16,12 @@ export class PublishEntriesByModel
             }
 
             if (input.processing) {
-                const processPublishEntriesTasks = new ProcessPublishEntriesTasks();
-                return await processPublishEntriesTasks.execute(params);
+                const processTasks = new ProcessTasks();
+                return await processTasks.execute(params);
             }
 
-            const createPublishEntriesTasks = new CreatePublishEntriesTasks();
-            return await createPublishEntriesTasks.execute(params);
+            const createTasks = new CreateTasks();
+            return await createTasks.execute(params);
         } catch (ex) {
             return response.error(ex.message ?? "Error while executing PublishEntriesByModel");
         }
