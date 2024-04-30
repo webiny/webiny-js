@@ -22,7 +22,7 @@
     "lodash": "4.17.21",
     "node-fetch": "^2.6.9",
     "semver": "^7.3.5",
-    "tar": "^6.0.5"
+    "tar": "^6.2.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
