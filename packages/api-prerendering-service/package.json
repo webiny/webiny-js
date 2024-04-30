@@ -25,7 +25,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "lodash": "4.17.21",
-    "object-hash": "^2.1.1",
+    "object-hash": "^3.0.0",
     "pluralize": "^8.0.0",
     "posthtml": "^0.15.0",
     "posthtml-noopener": "^1.0.5",

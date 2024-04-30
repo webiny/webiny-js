@@ -1,7 +1,7 @@
 import WebinyError from "@webiny/error";
 import { IWebsocketsConnectionRegistry, IWebsocketsConnectionRegistryData } from "~/registry";
 import {
-    IWebsocketsContext,
+    IWebsocketsContextObject,
     IWebsocketsContextDisconnectConnectionsParams,
     IWebsocketsContextListConnectionsParams,
     IWebsocketsIdentity
@@ -13,7 +13,7 @@ import {
 } from "~/transport";
 import { GenericRecord } from "@webiny/api/types";
 
-export class WebsocketsContext implements IWebsocketsContext {
+export class WebsocketsContext implements IWebsocketsContextObject {
     public readonly registry: IWebsocketsConnectionRegistry;
     private readonly transport: IWebsocketsTransport;
 
@@ -23,7 +23,7 @@ export class WebsocketsContext implements IWebsocketsContext {
     }
 
     public async send<T extends GenericRecord = GenericRecord>(
-        identity: IWebsocketsIdentity,
+        identity: Pick<IWebsocketsIdentity, "id">,
         data: IWebsocketsTransportSendData<T>
     ): Promise<void> {
         const connections = await this.listConnections({

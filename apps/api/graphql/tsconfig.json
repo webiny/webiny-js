@@ -18,6 +18,9 @@
       "path": "../../../packages/api-audit-logs/tsconfig.build.json"
     },
     {
+      "path": "../../../packages/api-locking-mechanism/tsconfig.build.json"
+    },
+    {
       "path": "../../../packages/api-file-manager/tsconfig.build.json"
     },
     {
@@ -153,6 +156,8 @@
       "@webiny/api-headless-cms-aco": ["../../../packages/api-headless-cms-aco/src"],
       "@webiny/api-headless-cms-ddb/*": ["../../../packages/api-headless-cms-ddb/src/*"],
       "@webiny/api-headless-cms-ddb": ["../../../packages/api-headless-cms-ddb/src"],
+      "@webiny/api-locking-mechanism/*": ["../../../packages/api-locking-mechanism/src/*"],
+      "@webiny/api-locking-mechanism": ["../../../packages/api-locking-mechanism/src"],
       "@webiny/api-headless-cms-tasks/*": ["../../../packages/api-headless-cms-tasks/src/*"],
       "@webiny/api-headless-cms-tasks": ["../../../packages/api-headless-cms-tasks/src"],
       "@webiny/api-i18n/*": ["../../../packages/api-i18n/src/*"],

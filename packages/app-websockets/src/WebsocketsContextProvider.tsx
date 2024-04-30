@@ -7,19 +7,19 @@ import { IncomingGenericData, IWebsocketsContext, IWebsocketsContextSendCallable
 import {
     createWebsocketsAction,
     createWebsocketsActions,
-    createWebsocketsBlackHoleManager,
     createWebsocketsConnection,
     createWebsocketsManager,
     createWebsocketsSubscriptionManager
 } from "./domain";
 import { IGenericData, IWebsocketsManager } from "./domain/types";
 
-export interface IWebsocketsProviderProps {
+export interface IWebsocketsContextProviderProps {
+    loader?: React.ReactElement;
     children: React.ReactNode;
 }
 
 export const WebsocketsContext = React.createContext<IWebsocketsContext>(
-    {} as unknown as IWebsocketsContext
+    undefined as unknown as IWebsocketsContext
 );
 
 interface ICurrentData {
@@ -27,17 +27,34 @@ interface ICurrentData {
     locale?: string;
 }
 
-export const WebsocketsProvider = (props: IWebsocketsProviderProps) => {
+export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps) => {
     const { tenant } = useTenancy();
     const { getCurrentLocale } = useI18N();
     const locale = getCurrentLocale("default");
 
-    const socketsRef = useRef<IWebsocketsManager>(createWebsocketsBlackHoleManager());
+    const socketsRef = useRef<IWebsocketsManager>();
 
     const [current, setCurrent] = useState<ICurrentData>({});
 
     const subscriptionManager = useMemo(() => {
-        return createWebsocketsSubscriptionManager();
+        const manager = createWebsocketsSubscriptionManager();
+
+        let currentIteration = 0;
+        manager.onClose(event => {
+            if (currentIteration > 5 || event.code !== 1001) {
+                return;
+            }
+            currentIteration++;
+            setTimeout(() => {
+                if (!socketsRef.current) {
+                    return;
+                }
+                console.log("Running auto-reconnect.");
+                socketsRef.current.connect();
+            }, 1000);
+        });
+
+        return manager;
     }, []);
 
     useEffect(() => {
@@ -61,11 +78,6 @@ export const WebsocketsProvider = (props: IWebsocketsProviderProps) => {
                 return;
             }
 
-            setCurrent({
-                tenant,
-                locale
-            });
-
             socketsRef.current = createWebsocketsManager(
                 createWebsocketsConnection({
                     subscriptionManager,
@@ -74,12 +86,17 @@ export const WebsocketsProvider = (props: IWebsocketsProviderProps) => {
                 })
             );
             socketsRef.current.connect();
+
+            setCurrent({
+                tenant,
+                locale
+            });
         })();
     }, [tenant, locale, subscriptionManager]);
 
     const websocketActions = useMemo(() => {
         return createWebsocketsActions({
-            manager: socketsRef.current,
+            manager: socketsRef.current!,
             tenant,
             locale,
             getToken
@@ -111,7 +128,7 @@ export const WebsocketsProvider = (props: IWebsocketsProviderProps) => {
             action: string,
             cb: (data: T) => void
         ) => {
-            return socketsRef.current.onMessage<T>(async event => {
+            return socketsRef.current!.onMessage<T>(async event => {
                 if (event.data.action !== action) {
                     return;
                 }
@@ -120,6 +137,10 @@ export const WebsocketsProvider = (props: IWebsocketsProviderProps) => {
         },
         [socketsRef.current]
     );
+
+    if (!socketsRef.current) {
+        return props.loader || null;
+    }
 
     // TODO remove when finished with development
     (window as any).webinySockets = socketsRef.current;

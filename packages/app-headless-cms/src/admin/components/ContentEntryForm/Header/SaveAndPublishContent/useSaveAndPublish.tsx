@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
-import { useConfirmationDialog } from "@webiny/app-admin";
+import { makeDecoratableHook, useConfirmationDialog } from "@webiny/app-admin";
 import { useRevision } from "~/admin/views/contentEntries/ContentEntry/useRevision";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks";
 
-interface ShowConfirmationDialogParams {
+export interface ShowConfirmationDialogParams {
     ev: React.MouseEvent;
     onAccept?: () => void;
     onCancel?: () => void;
@@ -13,7 +13,7 @@ interface UseSaveAndPublishResponse {
     showConfirmationDialog: (params: ShowConfirmationDialogParams) => void;
 }
 
-export const useSaveAndPublish = (): UseSaveAndPublishResponse => {
+const useSaveAndPublishDefault = (): UseSaveAndPublishResponse => {
     const { form, entry } = useContentEntry();
     const { publishRevision } = useRevision({ revision: entry });
 
@@ -24,7 +24,7 @@ export const useSaveAndPublish = (): UseSaveAndPublishResponse => {
     });
 
     const showConfirmationDialog = useCallback(
-        async ({ ev, onAccept, onCancel }) => {
+        async ({ ev, onAccept, onCancel }: ShowConfirmationDialogParams) => {
             const entry = await form.current.submit(ev);
             if (!entry || !entry.id) {
                 return;
@@ -43,3 +43,5 @@ export const useSaveAndPublish = (): UseSaveAndPublishResponse => {
 
     return { showConfirmationDialog };
 };
+
+export const useSaveAndPublish = makeDecoratableHook(useSaveAndPublishDefault);

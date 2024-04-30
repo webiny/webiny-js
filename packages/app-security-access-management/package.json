@@ -15,7 +15,7 @@
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
     "@emotion/styled": "^11.10.6",
-    "@material-design-icons/svg": "^0.12.1",
+    "@material-design-icons/svg": "^0.14.2",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-security": "0.0.0",

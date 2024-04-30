@@ -1,11 +1,12 @@
 import React, { useCallback } from "react";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks";
+import { makeDecoratableHook } from "@webiny/react-composition";
 
 interface UseSaveResponse {
     saveEntry: (ev: React.SyntheticEvent) => Promise<void>;
 }
 
-export const useSave = (): UseSaveResponse => {
+const useSaveDefault = (): UseSaveResponse => {
     const { form, entry } = useContentEntry();
 
     const saveEntry = useCallback(
@@ -24,3 +25,5 @@ export const useSave = (): UseSaveResponse => {
         saveEntry
     };
 };
+
+export const useSave = makeDecoratableHook(useSaveDefault);

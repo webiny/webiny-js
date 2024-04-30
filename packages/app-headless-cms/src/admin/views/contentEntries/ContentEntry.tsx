@@ -1,18 +1,13 @@
 import React from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
-import EmptyView from "@webiny/app-admin/components/EmptyView";
-import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
-import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
-import { i18n } from "@webiny/app/i18n";
 import { Tab, Tabs } from "@webiny/ui/Tabs";
 import { Elevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
 import RevisionsList from "./ContentEntry/RevisionsList";
 import { useContentEntry } from "./hooks/useContentEntry";
 import { ContentEntryForm } from "~/admin/components/ContentEntryForm/ContentEntryForm";
-
-const t = i18n.namespace("app-headless-cms/admin/content-model-entries/details");
+import { makeDecoratable } from "@webiny/app";
 
 const DetailsContainer = styled("div")({
     height: "calc(100% - 10px)",
@@ -47,35 +42,8 @@ declare global {
     }
 }
 
-export const ContentEntry = () => {
-    const {
-        loading,
-        entry,
-        showEmptyView,
-        canCreate,
-        createEntry,
-        activeTab,
-        setActiveTab,
-        setFormRef
-    } = useContentEntry();
-
-    // Render "No content selected" view.
-    if (showEmptyView) {
-        return (
-            <EmptyView
-                title={t`Click on the left side list to display entry details {message}`({
-                    message: canCreate ? "or create a..." : ""
-                })}
-                action={
-                    canCreate ? (
-                        <ButtonDefault data-testid="new-record-button" onClick={createEntry}>
-                            <ButtonIcon icon={<AddIcon />} /> {t`New Entry`}
-                        </ButtonDefault>
-                    ) : null
-                }
-            />
-        );
-    }
+const DefaultContentEntry = () => {
+    const { loading, entry, activeTab, setActiveTab, setFormRef } = useContentEntry();
 
     return (
         <DetailsContainer>
@@ -109,3 +77,5 @@ export const ContentEntry = () => {
         </DetailsContainer>
     );
 };
+
+export const ContentEntry = makeDecoratable("ContentEntry", DefaultContentEntry);
