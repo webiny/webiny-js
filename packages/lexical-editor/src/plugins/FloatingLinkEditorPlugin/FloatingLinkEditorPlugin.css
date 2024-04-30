@@ -47,8 +47,8 @@
 }
 
 .link-editor .link-editor-popup-title {
-  margin: 0 15px 10px;;
-  color: #fa5723;
+  margin: 0 15px 10px;
+  color: var(--mdc-theme-primary);
 }
 
 .link-editor .link-editor-section .header {
@@ -65,7 +65,7 @@
 .link-editor .link-editor-section .header_title {
   font-size: 16px;
   font-width: bold;
-  color: #fa5723;
+  color: var(--mdc-theme-primary);
 }
 
 .link-editor .link-editor-section .section-desc {
@@ -172,9 +172,4 @@
   height: 20px;
   width: 20px;
   vertical-align: -0.25em;
-}
-
-
-.link-preview-form {
-
 }
