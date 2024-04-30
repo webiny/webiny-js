@@ -3,15 +3,15 @@ import { ChildTasksCleanup } from "~/tasks/common";
 import {
     EntriesTask,
     HcmsTasksContext,
-    IRestoreEntriesFromTrashInput,
-    IRestoreEntriesFromTrashOutput
+    IBulkActionOperationInput,
+    IBulkActionOperationOutput
 } from "~/types";
 
 export const createRestoreEntriesFromTrashTask = () => {
     return createPrivateTaskDefinition<
         HcmsTasksContext,
-        IRestoreEntriesFromTrashInput,
-        IRestoreEntriesFromTrashOutput
+        IBulkActionOperationInput,
+        IBulkActionOperationOutput
     >({
         id: EntriesTask.RestoreEntriesFromTrash,
         title: "Headless CMS - Restore entries from trash bin",

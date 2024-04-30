@@ -3,15 +3,15 @@ import { ChildTasksCleanup } from "~/tasks/common";
 import {
     EntriesTask,
     HcmsTasksContext,
-    IMoveEntriesToFolderInput,
-    IMoveEntriesToFolderOutput
+    IBulkActionMoveEntriesToFolderOperationInput,
+    IBulkActionOperationOutput
 } from "~/types";
 
 export const createMoveEntriesToFolderTask = () => {
     return createPrivateTaskDefinition<
         HcmsTasksContext,
-        IMoveEntriesToFolderInput,
-        IMoveEntriesToFolderOutput
+        IBulkActionMoveEntriesToFolderOperationInput,
+        IBulkActionOperationOutput
     >({
         id: EntriesTask.MoveEntriesToFolder,
         title: "Headless CMS - Move entries to folder",

@@ -1,6 +1,6 @@
 import { ITaskResponseResult } from "@webiny/tasks";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
-import { EntriesTask, IDeleteEntriesInput, IDeleteEntriesByModelTaskParams } from "~/types";
+import { EntriesTask, IBulkActionOperationInput, IDeleteEntriesByModelTaskParams } from "~/types";
 
 const BATCH_SIZE = 50;
 const WAITING_TIME = 5;
@@ -63,12 +63,13 @@ export class CreateTasks {
                 const entryIds = entries.map(entry => entry.entryId);
 
                 if (entryIds.length > 0) {
-                    await context.tasks.trigger<IDeleteEntriesInput>({
+                    await context.tasks.trigger<IBulkActionOperationInput>({
                         definition: EntriesTask.DeleteEntries,
                         name: `Headless CMS - Delete Entries - ${model.name} - #${currentBatch}`,
                         parent: store.getTask(),
                         input: {
                             modelId: input.modelId,
+                            identity: input.identity,
                             entryIds
                         }
                     });

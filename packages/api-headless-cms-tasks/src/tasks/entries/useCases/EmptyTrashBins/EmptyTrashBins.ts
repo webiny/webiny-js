@@ -18,6 +18,8 @@ export class EmptyTrashBins implements IUseCase<IEmptyTrashBins, ITaskResponseRe
                     return (await context.cms.listModels()).filter(model => !model.isPrivate);
                 });
 
+                const identity = context.security.getIdentity();
+
                 for (const model of models) {
                     await context.tasks.trigger<IDeleteEntriesByModelInput>({
                         name: `Headless CMS - Empty trash bin for "${model.name}" model.`,
@@ -25,6 +27,7 @@ export class EmptyTrashBins implements IUseCase<IEmptyTrashBins, ITaskResponseRe
                         parent: params.store.getTask(),
                         input: {
                             modelId: model.modelId,
+                            identity,
                             where: {
                                 deletedOn_lt: this.calculateDateTimeString()
                             }

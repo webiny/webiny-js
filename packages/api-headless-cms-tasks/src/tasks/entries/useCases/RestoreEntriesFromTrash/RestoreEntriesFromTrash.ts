@@ -1,12 +1,12 @@
 import { ITaskResponseResult } from "@webiny/tasks";
-import { IRestoreEntriesFromTrashTaskParams } from "~/types";
+import { IBulkActionOperationTaskParams } from "~/types";
 import { taskRepositoryFactory } from "~/tasks/entries/domain";
 import { IUseCase } from "~/tasks/IUseCase";
 
 export class RestoreEntriesFromTrash
-    implements IUseCase<IRestoreEntriesFromTrashTaskParams, ITaskResponseResult>
+    implements IUseCase<IBulkActionOperationTaskParams, ITaskResponseResult>
 {
-    public async execute(params: IRestoreEntriesFromTrashTaskParams) {
+    public async execute(params: IBulkActionOperationTaskParams) {
         const { input, response, isAborted, isCloseToTimeout, context, store } = params;
 
         try {

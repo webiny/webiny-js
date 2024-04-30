@@ -37,6 +37,7 @@ export type IEmptyTrashBins = ITaskRunParams<HcmsTasksContext>;
 
 export interface IDeleteEntriesByModelInput {
     modelId: string;
+    identity: SecurityIdentity;
     where?: Record<string, any>;
     after?: string | null;
     currentBatch?: number;
@@ -53,28 +54,6 @@ export type IDeleteEntriesByModelTaskParams = ITaskRunParams<
     HcmsTasksContext,
     IDeleteEntriesByModelInput,
     IDeleteEntriesByModelOutput
->;
-
-/**
- * Delete Entries
- */
-
-export interface IDeleteEntriesInput {
-    modelId: string;
-    entryIds: string[];
-    done?: string[];
-    failed?: string[];
-}
-
-export interface IDeleteEntriesOutput extends ITaskResponseDoneResultOutput {
-    done: string[];
-    failed: string[];
-}
-
-export type IDeleteEntriesTaskParams = ITaskRunParams<
-    HcmsTasksContext,
-    IDeleteEntriesInput,
-    IDeleteEntriesOutput
 >;
 
 /**
@@ -103,29 +82,6 @@ export type IPublishEntriesByModelTaskParams = ITaskRunParams<
 >;
 
 /**
- * Publish Entries
- */
-
-export interface IPublishEntriesInput {
-    modelId: string;
-    ids: string[];
-    identity: SecurityIdentity;
-    done?: string[];
-    failed?: string[];
-}
-
-export interface IPublishEntriesOutput extends ITaskResponseDoneResultOutput {
-    done: string[];
-    failed: string[];
-}
-
-export type IPublishEntriesTaskParams = ITaskRunParams<
-    HcmsTasksContext,
-    IPublishEntriesInput,
-    IPublishEntriesOutput
->;
-
-/**
  * Unpublish Entries by Model
  */
 
@@ -148,29 +104,6 @@ export type IUnpublishEntriesByModelTaskParams = ITaskRunParams<
     HcmsTasksContext,
     IUnpublishEntriesByModelInput,
     IUnpublishEntriesByModelOutput
->;
-
-/**
- * Unpublish Entries
- */
-
-export interface IUnpublishEntriesInput {
-    modelId: string;
-    ids: string[];
-    identity: SecurityIdentity;
-    done?: string[];
-    failed?: string[];
-}
-
-export interface IUnpublishEntriesOutput extends ITaskResponseDoneResultOutput {
-    done: string[];
-    failed: string[];
-}
-
-export type IUnpublishEntriesTaskParams = ITaskRunParams<
-    HcmsTasksContext,
-    IUnpublishEntriesInput,
-    IUnpublishEntriesOutput
 >;
 
 /**
@@ -200,30 +133,6 @@ export type IMoveEntriesToFolderByModelTaskParams = ITaskRunParams<
 >;
 
 /**
- * Move Entries to Folder
- */
-
-export interface IMoveEntriesToFolderInput {
-    modelId: string;
-    ids: string[];
-    folderId: string;
-    identity: SecurityIdentity;
-    done?: string[];
-    failed?: string[];
-}
-
-export interface IMoveEntriesToFolderOutput extends ITaskResponseDoneResultOutput {
-    done: string[];
-    failed: string[];
-}
-
-export type IMoveEntriesToFolderTaskParams = ITaskRunParams<
-    HcmsTasksContext,
-    IMoveEntriesToFolderInput,
-    IMoveEntriesToFolderOutput
->;
-
-/**
  * Move Entries to Trash by Model
  */
 
@@ -246,29 +155,6 @@ export type IMoveEntriesToTrashByModelTaskParams = ITaskRunParams<
     HcmsTasksContext,
     IMoveEntriesToTrashByModelInput,
     IMoveEntriesToTrashByModelOutput
->;
-
-/**
- * Move Entries to Trash
- */
-
-export interface IMoveEntriesToTrashInput {
-    modelId: string;
-    entryIds: string[];
-    identity: SecurityIdentity;
-    done?: string[];
-    failed?: string[];
-}
-
-export interface IMoveEntriesToTrashOutput extends ITaskResponseDoneResultOutput {
-    done: string[];
-    failed: string[];
-}
-
-export type IMoveEntriesToTrashTaskParams = ITaskRunParams<
-    HcmsTasksContext,
-    IMoveEntriesToTrashInput,
-    IMoveEntriesToTrashOutput
 >;
 
 /**
@@ -297,10 +183,10 @@ export type IRestoreEntriesFromTrashByModelTaskParams = ITaskRunParams<
 >;
 
 /**
- * Restore Entries from Trash
+ * Bulk Action Operation
  */
 
-export interface IRestoreEntriesFromTrashInput {
+export interface IBulkActionOperationInput {
     modelId: string;
     entryIds: string[];
     identity: SecurityIdentity;
@@ -308,13 +194,27 @@ export interface IRestoreEntriesFromTrashInput {
     failed?: string[];
 }
 
-export interface IRestoreEntriesFromTrashOutput extends ITaskResponseDoneResultOutput {
+export interface IBulkActionOperationOutput extends ITaskResponseDoneResultOutput {
     done: string[];
     failed: string[];
 }
 
-export type IRestoreEntriesFromTrashTaskParams = ITaskRunParams<
+export type IBulkActionOperationTaskParams = ITaskRunParams<
     HcmsTasksContext,
-    IRestoreEntriesFromTrashInput,
-    IRestoreEntriesFromTrashOutput
+    IBulkActionOperationInput,
+    IBulkActionOperationOutput
+>;
+
+/**
+ * Bulk Action Operation // Move Entries to Folder
+ */
+
+export interface IBulkActionMoveEntriesToFolderOperationInput extends IBulkActionOperationInput {
+    folderId: string;
+}
+
+export type IBulkActionMoveEntriesToFolderOperationTaskParams = ITaskRunParams<
+    HcmsTasksContext,
+    IBulkActionMoveEntriesToFolderOperationInput,
+    IBulkActionOperationOutput
 >;

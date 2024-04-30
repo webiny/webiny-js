@@ -1,10 +1,13 @@
 import { ITaskResponseResult } from "@webiny/tasks";
-import { IPublishEntriesTaskParams } from "~/types";
+import { parseIdentifier } from "@webiny/utils";
+import { IBulkActionOperationTaskParams } from "~/types";
 import { taskRepositoryFactory } from "~/tasks/entries/domain";
 import { IUseCase } from "~/tasks/IUseCase";
 
-export class PublishEntries implements IUseCase<IPublishEntriesTaskParams, ITaskResponseResult> {
-    public async execute(params: IPublishEntriesTaskParams) {
+export class PublishEntries
+    implements IUseCase<IBulkActionOperationTaskParams, ITaskResponseResult>
+{
+    public async execute(params: IBulkActionOperationTaskParams) {
         const { input, response, isAborted, isCloseToTimeout, context, store } = params;
 
         try {
@@ -30,13 +33,15 @@ export class PublishEntries implements IUseCase<IPublishEntriesTaskParams, ITask
                 return response.error(`Content model "${input.modelId}" was not found!`);
             }
 
-            if (!input.ids || input.ids.length === 0) {
+            if (!input.entryIds || input.entryIds.length === 0) {
                 return response.done("Task done: no entries to publish.");
             }
 
             const taskRepository = taskRepositoryFactory.getRepository(store.getTask().id);
 
-            for (const id of input.ids) {
+            for (const entryId of input.entryIds) {
+                const { id } = parseIdentifier(entryId);
+
                 try {
                     context.security.setIdentity(input.identity);
                     await context.cms.publishEntry(model, id);

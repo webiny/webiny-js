@@ -2,8 +2,8 @@ import { ITaskResponseResult } from "@webiny/tasks";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 import {
     EntriesTask,
-    IMoveEntriesToFolderByModelTaskParams,
-    IMoveEntriesToFolderInput
+    IBulkActionMoveEntriesToFolderOperationInput,
+    IMoveEntriesToFolderByModelTaskParams
 } from "~/types";
 
 const BATCH_SIZE = 50;
@@ -68,10 +68,10 @@ export class CreateTasks {
                     );
                 }
 
-                const ids = entries.map(entry => entry.id);
+                const entryIds = entries.map(entry => entry.entryId);
 
-                if (ids.length > 0) {
-                    await context.tasks.trigger<IMoveEntriesToFolderInput>({
+                if (entryIds.length > 0) {
+                    await context.tasks.trigger<IBulkActionMoveEntriesToFolderOperationInput>({
                         definition: EntriesTask.MoveEntriesToFolder,
                         name: `Headless CMS - Move entries to folder "${input.folderId}" - ${model.name} - #${currentBatch}`,
                         parent: store.getTask(),
@@ -79,7 +79,7 @@ export class CreateTasks {
                             modelId: input.modelId,
                             identity: input.identity,
                             folderId: input.folderId,
-                            ids
+                            entryIds
                         }
                     });
                 }

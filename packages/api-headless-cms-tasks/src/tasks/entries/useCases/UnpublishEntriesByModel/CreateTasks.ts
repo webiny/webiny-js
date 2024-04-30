@@ -1,6 +1,10 @@
 import { ITaskResponseResult } from "@webiny/tasks";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
-import { EntriesTask, IUnpublishEntriesByModelTaskParams, IUnpublishEntriesInput } from "~/types";
+import {
+    EntriesTask,
+    IBulkActionOperationInput,
+    IUnpublishEntriesByModelTaskParams
+} from "~/types";
 
 const BATCH_SIZE = 50;
 const WAITING_TIME = 5;
@@ -64,17 +68,17 @@ export class CreateTasks {
                     return response.done("Task done: no entries to unpublish.");
                 }
 
-                const ids = entries.map(entry => entry.id);
+                const entryIds = entries.map(entry => entry.entryId);
 
-                if (ids.length > 0) {
-                    await context.tasks.trigger<IUnpublishEntriesInput>({
+                if (entryIds.length > 0) {
+                    await context.tasks.trigger<IBulkActionOperationInput>({
                         definition: EntriesTask.UnpublishEntries,
                         name: `Headless CMS - Unpublish entries - ${model.name} - #${currentBatch}`,
                         parent: store.getTask(),
                         input: {
                             modelId: input.modelId,
                             identity: input.identity,
-                            ids
+                            entryIds
                         }
                     });
                 }

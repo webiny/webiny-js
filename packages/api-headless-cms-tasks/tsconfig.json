@@ -14,6 +14,7 @@
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
     { "path": "../tasks" },
+    { "path": "../utils" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -47,6 +48,8 @@
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/tasks": ["../tasks/src"],
       "@webiny/tasks/*": ["../tasks/src/*"],
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/wcp": ["../wcp/src"],
       "@webiny/wcp/*": ["../wcp/src/*"]
     },

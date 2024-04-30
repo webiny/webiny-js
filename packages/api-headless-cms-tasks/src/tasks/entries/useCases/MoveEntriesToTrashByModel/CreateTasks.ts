@@ -2,8 +2,8 @@ import { ITaskResponseResult } from "@webiny/tasks";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 import {
     EntriesTask,
-    IMoveEntriesToTrashByModelTaskParams,
-    IMoveEntriesToTrashInput
+    IBulkActionOperationInput,
+    IMoveEntriesToTrashByModelTaskParams
 } from "~/types";
 
 const BATCH_SIZE = 50;
@@ -69,7 +69,7 @@ export class CreateTasks {
                 const entryIds = entries.map(entry => entry.entryId);
 
                 if (entryIds.length > 0) {
-                    await context.tasks.trigger<IMoveEntriesToTrashInput>({
+                    await context.tasks.trigger<IBulkActionOperationInput>({
                         definition: EntriesTask.MoveEntriesToTrash,
                         name: `Headless CMS - Move entries to trash bin - ${model.name} - #${currentBatch}`,
                         parent: store.getTask(),

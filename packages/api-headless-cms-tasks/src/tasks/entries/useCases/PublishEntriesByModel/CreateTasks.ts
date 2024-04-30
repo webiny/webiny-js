@@ -1,6 +1,6 @@
 import { ITaskResponseResult } from "@webiny/tasks";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
-import { EntriesTask, IPublishEntriesByModelTaskParams, IPublishEntriesInput } from "~/types";
+import { EntriesTask, IBulkActionOperationInput, IPublishEntriesByModelTaskParams } from "~/types";
 
 const BATCH_SIZE = 50;
 const WAITING_TIME = 5;
@@ -64,17 +64,17 @@ export class CreateTasks {
                     return response.done("Task done: no entries to publish.");
                 }
 
-                const ids = entries.map(entry => entry.id);
+                const entryIds = entries.map(entry => entry.entryId);
 
-                if (ids.length > 0) {
-                    await context.tasks.trigger<IPublishEntriesInput>({
+                if (entryIds.length > 0) {
+                    await context.tasks.trigger<IBulkActionOperationInput>({
                         definition: EntriesTask.PublishEntries,
                         name: `Headless CMS - Publish entries - ${model.name} - #${currentBatch}`,
                         parent: store.getTask(),
                         input: {
                             modelId: input.modelId,
                             identity: input.identity,
-                            ids
+                            entryIds
                         }
                     });
                 }

@@ -13568,6 +13568,7 @@ __metadata:
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/tasks": 0.0.0
+    "@webiny/utils": 0.0.0
     "@webiny/wcp": 0.0.0
     graphql: ^15.8.0
     ttypescript: ^1.5.13
