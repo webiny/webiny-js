@@ -1,0 +1,4 @@
+{
+  "extends": "BASE_TSCONFIG_PATH",
+  "include": ["src"]
+}

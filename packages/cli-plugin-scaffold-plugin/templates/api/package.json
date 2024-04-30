@@ -1,0 +1,4 @@
+{
+  "name": "PACKAGE_NAME",
+  "main": "src/index.ts"
+}
