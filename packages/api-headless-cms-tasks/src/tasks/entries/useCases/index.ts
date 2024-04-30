@@ -13,10 +13,11 @@ export * from "./PublishEntries";
 export * from "./UnpublishEntries";
 
 // Bulk Action - Move Entries to Folder
-export * from "./MoveEntriesToTrashByModel";
+export * from "./MoveEntriesToFolderByModel";
 export * from "./MoveEntriesToFolder";
 
 // Bulk Action - Move Entries to Trash Bin
+export * from "./MoveEntriesToTrashByModel";
 export * from "./MoveEntriesToTrash";
 
 // Bulk Action - Restore Entries from Trash Bin

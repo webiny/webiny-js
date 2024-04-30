@@ -4,6 +4,7 @@ import { createEmptyTrashBinsTask } from "./emptyTrashBinsTask";
 import { createPublishEntriesTask } from "./publishEntriesTask";
 import { createPublishEntriesByModelTask } from "./publishEntriesByModelTask";
 import { createUnpublishEntriesTask } from "./unpublishEntriesTask";
+import { createMoveEntriesToFolderByModelTask } from "./moveEntriesToFolderByModelTask";
 import { createMoveEntriesToFolderTask } from "./moveEntriesToFolderTask";
 import { createMoveEntriesToTrashTask } from "./moveEntriesToTrashTask";
 import { createMoveEntriesToTrashByModelTask } from "./moveEntriesToTrashByModelTask";
@@ -21,6 +22,7 @@ export const createEntriesTasks = () => {
         createPublishEntriesTask(),
         createUnpublishEntriesTask(),
         createMoveEntriesToFolderTask(),
+        createMoveEntriesToFolderByModelTask(),
         createMoveEntriesToTrashTask(),
         createMoveEntriesToTrashByModelTask(),
         createRestoreEntriesFromTrashTask()
