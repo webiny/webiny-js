@@ -10,6 +10,7 @@ export * from "./PublishEntriesByModel";
 export * from "./PublishEntries";
 
 // Bulk Action - Unpublish Entries
+export * from "./UnpublishEntriesByModel";
 export * from "./UnpublishEntries";
 
 // Bulk Action - Move Entries to Folder

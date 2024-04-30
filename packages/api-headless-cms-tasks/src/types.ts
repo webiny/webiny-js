@@ -15,6 +15,7 @@ export enum EntriesTask {
     DeleteEntries = "hcmsEntriesDeleteEntries",
     PublishEntriesByModel = "hcmsEntriesPublishEntriesByModel",
     PublishEntries = "hcmsEntriesPublishEntries",
+    UnpublishEntriesByModel = "hcmsEntriesUnpublishEntriesByModel",
     UnpublishEntries = "hcmsEntriesUnpublishEntries",
     MoveEntriesToFolderByModel = "hcmsEntriesMoveEntriesToFolderByModel",
     MoveEntriesToFolder = "hcmsEntriesMoveEntriesToFolder",
