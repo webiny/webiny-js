@@ -9,6 +9,7 @@ import { renderFields } from "@webiny/api-headless-cms/utils/renderFields";
 import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields";
 import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum";
+import { checkPermissions } from "~/utils/checkPermissions";
 
 interface Params {
     context: Pick<Context, "plugins" | "lockingMechanism" | "security" | "cms">;
@@ -200,6 +201,7 @@ export const createGraphQLSchema = async (
             LockingMechanismQuery: {
                 async isEntryLocked(_, args, context) {
                     return resolve(async () => {
+                        await checkPermissions(context);
                         return context.lockingMechanism.isEntryLocked({
                             id: args.id,
                             type: args.type
@@ -208,6 +210,7 @@ export const createGraphQLSchema = async (
                 },
                 async getLockRecord(_, args, context) {
                     return resolve(async () => {
+                        await checkPermissions(context);
                         const result = await context.lockingMechanism.getLockRecord({
                             id: args.id,
                             type: args.type
@@ -220,6 +223,7 @@ export const createGraphQLSchema = async (
                 },
                 async getLockedEntryLockRecord(_, args, context) {
                     return resolve(async () => {
+                        await checkPermissions(context);
                         return await context.lockingMechanism.getLockedEntryLockRecord({
                             id: args.id,
                             type: args.type
@@ -229,11 +233,13 @@ export const createGraphQLSchema = async (
 
                 async listLockRecords(_, args, context) {
                     return resolveList(async () => {
+                        await checkPermissions(context);
                         return await context.lockingMechanism.listLockRecords(args);
                     });
                 },
                 listAllLockRecords(_, args, context) {
                     return resolveList(async () => {
+                        await checkPermissions(context);
                         return await context.lockingMechanism.listAllLockRecords(args);
                     });
                 }
@@ -241,6 +247,7 @@ export const createGraphQLSchema = async (
             LockingMechanismMutation: {
                 async lockEntry(_, args, context) {
                     return resolve(async () => {
+                        await checkPermissions(context);
                         return context.lockingMechanism.lockEntry({
                             id: args.id,
                             type: args.type
@@ -249,6 +256,7 @@ export const createGraphQLSchema = async (
                 },
                 async updateEntryLock(_, args, context) {
                     return resolve(async () => {
+                        await checkPermissions(context);
                         return context.lockingMechanism.updateEntryLock({
                             id: args.id,
                             type: args.type
@@ -257,6 +265,7 @@ export const createGraphQLSchema = async (
                 },
                 async unlockEntry(_, args, context) {
                     return resolve(async () => {
+                        await checkPermissions(context);
                         return await context.lockingMechanism.unlockEntry({
                             id: args.id,
                             type: args.type,
@@ -266,6 +275,7 @@ export const createGraphQLSchema = async (
                 },
                 async unlockEntryRequest(_, args, context) {
                     return resolve(async () => {
+                        await checkPermissions(context);
                         return await context.lockingMechanism.unlockEntryRequest({
                             id: args.id,
                             type: args.type
