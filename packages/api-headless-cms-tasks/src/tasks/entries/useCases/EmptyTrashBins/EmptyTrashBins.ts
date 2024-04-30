@@ -1,5 +1,5 @@
 import { ITaskResponseResult } from "@webiny/tasks";
-import { EntriesTask, IDeleteEntriesByModelInput, IEmptyTrashBins } from "~/types";
+import { EntriesTask, IBulkActionOperationByModelInput, IEmptyTrashBins } from "~/types";
 import { IUseCase } from "~/tasks/IUseCase";
 
 export class EmptyTrashBins implements IUseCase<IEmptyTrashBins, ITaskResponseResult> {
@@ -21,7 +21,7 @@ export class EmptyTrashBins implements IUseCase<IEmptyTrashBins, ITaskResponseRe
                 const identity = context.security.getIdentity();
 
                 for (const model of models) {
-                    await context.tasks.trigger<IDeleteEntriesByModelInput>({
+                    await context.tasks.trigger<IBulkActionOperationByModelInput>({
                         name: `Headless CMS - Empty trash bin for "${model.name}" model.`,
                         definition: EntriesTask.DeleteEntriesByModel,
                         parent: params.store.getTask(),

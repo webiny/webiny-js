@@ -1,13 +1,13 @@
 import { ITaskResponseResult } from "@webiny/tasks";
 import { ProcessTasks } from "./ProcessTasks";
 import { CreateTasks } from "./CreateTasks";
-import { IPublishEntriesByModelTaskParams } from "~/types";
+import { IBulkActionOperationByModelTaskParams } from "~/types";
 import { IUseCase } from "~/tasks/IUseCase";
 
 export class PublishEntriesByModel
-    implements IUseCase<IPublishEntriesByModelTaskParams, ITaskResponseResult>
+    implements IUseCase<IBulkActionOperationByModelTaskParams, ITaskResponseResult>
 {
-    public async execute(params: IPublishEntriesByModelTaskParams) {
+    public async execute(params: IBulkActionOperationByModelTaskParams) {
         const { input, response } = params;
 
         try {

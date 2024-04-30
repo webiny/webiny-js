@@ -3,15 +3,15 @@ import { ChildTasksCleanup } from "~/tasks/common";
 import {
     EntriesTask,
     HcmsTasksContext,
-    IUnpublishEntriesByModelInput,
-    IUnpublishEntriesByModelOutput
+    IBulkActionOperationByModelInput,
+    IBulkActionOperationByModelOutput
 } from "~/types";
 
 export const createUnpublishEntriesByModelTask = () => {
     return createTaskDefinition<
         HcmsTasksContext,
-        IUnpublishEntriesByModelInput,
-        IUnpublishEntriesByModelOutput
+        IBulkActionOperationByModelInput,
+        IBulkActionOperationByModelOutput
     >({
         id: EntriesTask.UnpublishEntriesByModel,
         title: "Headless CMS - Unpublish entries by model",

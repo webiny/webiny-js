@@ -3,15 +3,15 @@ import { ChildTasksCleanup } from "~/tasks/common";
 import {
     EntriesTask,
     HcmsTasksContext,
-    IDeleteEntriesByModelInput,
-    IDeleteEntriesByModelOutput
+    IBulkActionOperationByModelInput,
+    IBulkActionOperationByModelOutput
 } from "~/types";
 
 export const createDeleteEntriesByModelTask = () => {
     return createPrivateTaskDefinition<
         HcmsTasksContext,
-        IDeleteEntriesByModelInput,
-        IDeleteEntriesByModelOutput
+        IBulkActionOperationByModelInput,
+        IBulkActionOperationByModelOutput
     >({
         id: EntriesTask.DeleteEntriesByModel,
         title: "Headless CMS - Delete entries by model",

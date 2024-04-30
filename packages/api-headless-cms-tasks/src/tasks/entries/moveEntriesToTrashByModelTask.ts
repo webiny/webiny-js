@@ -3,15 +3,15 @@ import { ChildTasksCleanup } from "~/tasks/common";
 import {
     EntriesTask,
     HcmsTasksContext,
-    IMoveEntriesToTrashByModelInput,
-    IMoveEntriesToTrashByModelOutput
+    IBulkActionOperationByModelInput,
+    IBulkActionOperationByModelOutput
 } from "~/types";
 
 export const createMoveEntriesToTrashByModelTask = () => {
     return createTaskDefinition<
         HcmsTasksContext,
-        IMoveEntriesToTrashByModelInput,
-        IMoveEntriesToTrashByModelOutput
+        IBulkActionOperationByModelInput,
+        IBulkActionOperationByModelOutput
     >({
         id: EntriesTask.MoveEntriesToTrashByModel,
         title: "Headless CMS - Move entries to trash bin by model",

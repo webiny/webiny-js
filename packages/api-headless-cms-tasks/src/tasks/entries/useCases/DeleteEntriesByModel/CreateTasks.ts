@@ -1,12 +1,18 @@
 import { ITaskResponseResult } from "@webiny/tasks";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
-import { EntriesTask, IBulkActionOperationInput, IDeleteEntriesByModelTaskParams } from "~/types";
+import {
+    EntriesTask,
+    IBulkActionOperationByModelTaskParams,
+    IBulkActionOperationInput
+} from "~/types";
 
 const BATCH_SIZE = 50;
 const WAITING_TIME = 5;
 
 export class CreateTasks {
-    public async execute(params: IDeleteEntriesByModelTaskParams): Promise<ITaskResponseResult> {
+    public async execute(
+        params: IBulkActionOperationByModelTaskParams
+    ): Promise<ITaskResponseResult> {
         const { input, response, isAborted, isCloseToTimeout, context, store } = params;
 
         try {

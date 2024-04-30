@@ -3,15 +3,15 @@ import { ChildTasksCleanup } from "~/tasks/common";
 import {
     EntriesTask,
     HcmsTasksContext,
-    IPublishEntriesByModelInput,
-    IPublishEntriesByModelOutput
+    IBulkActionOperationByModelInput,
+    IBulkActionOperationByModelOutput
 } from "~/types";
 
 export const createPublishEntriesByModelTask = () => {
     return createTaskDefinition<
         HcmsTasksContext,
-        IPublishEntriesByModelInput,
-        IPublishEntriesByModelOutput
+        IBulkActionOperationByModelInput,
+        IBulkActionOperationByModelOutput
     >({
         id: EntriesTask.PublishEntriesByModel,
         title: "Headless CMS - Publish entries by model",

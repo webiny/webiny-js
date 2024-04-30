@@ -1,11 +1,11 @@
 import { ITaskResponseResult, TaskDataStatus } from "@webiny/tasks";
-import { EntriesTask, IMoveEntriesToTrashByModelTaskParams } from "~/types";
+import { EntriesTask, IBulkActionOperationByModelTaskParams } from "~/types";
 
 export const WAITING_TIME = 10;
 
 export class ProcessTasks {
     public async execute(
-        params: IMoveEntriesToTrashByModelTaskParams
+        params: IBulkActionOperationByModelTaskParams
     ): Promise<ITaskResponseResult> {
         const { response, input, isAborted, isCloseToTimeout, context, store } = params;
 
