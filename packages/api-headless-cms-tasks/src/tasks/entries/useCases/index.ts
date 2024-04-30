@@ -21,4 +21,5 @@ export * from "./MoveEntriesToTrashByModel";
 export * from "./MoveEntriesToTrash";
 
 // Bulk Action - Restore Entries from Trash Bin
+export * from "./RestoreEntriesFromTrashByModel";
 export * from "./RestoreEntriesFromTrash";

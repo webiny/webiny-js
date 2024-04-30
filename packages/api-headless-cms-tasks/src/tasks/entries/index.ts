@@ -9,6 +9,7 @@ import { createMoveEntriesToFolderTask } from "./moveEntriesToFolderTask";
 import { createMoveEntriesToTrashTask } from "./moveEntriesToTrashTask";
 import { createMoveEntriesToTrashByModelTask } from "./moveEntriesToTrashByModelTask";
 import { createRestoreEntriesFromTrashTask } from "./restoreEntriesFromTrashTask";
+import { createRestoreEntriesFromTrashByModelTask } from "./restoreEntriesFromTrashByModelTask";
 
 export * from "./useCases";
 export * from "./domain";
@@ -25,6 +26,7 @@ export const createEntriesTasks = () => {
         createMoveEntriesToFolderByModelTask(),
         createMoveEntriesToTrashTask(),
         createMoveEntriesToTrashByModelTask(),
-        createRestoreEntriesFromTrashTask()
+        createRestoreEntriesFromTrashTask(),
+        createRestoreEntriesFromTrashByModelTask()
     ];
 };

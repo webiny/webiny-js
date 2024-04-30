@@ -20,6 +20,7 @@ export enum EntriesTask {
     MoveEntriesToFolder = "hcmsEntriesMoveEntriesToFolder",
     MoveEntriesToTrashByModel = "hcmsEntriesMoveEntriesToTrashByModel",
     MoveEntriesToTrash = "hcmsEntriesMoveEntriesToTrash",
+    RestoreEntriesFromTrashByModel = "hcmsEntriesRestoreEntriesFromTrashByModel",
     RestoreEntriesFromTrash = "hcmsEntriesRestoreEntriesFromTrash"
 }
 
