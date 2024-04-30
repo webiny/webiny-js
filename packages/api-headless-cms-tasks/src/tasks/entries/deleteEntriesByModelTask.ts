@@ -3,19 +3,19 @@ import { ChildTasksCleanup } from "~/tasks/common";
 import {
     EntriesTask,
     HcmsTasksContext,
-    IEmptyTrashBinByModelInput,
-    IEmptyTrashBinByModelOutput
+    IDeleteEntriesByModelInput,
+    IDeleteEntriesByModelOutput
 } from "~/types";
 
-export const createEmptyTrashBinByModelTask = () => {
+export const createDeleteEntriesByModelTask = () => {
     return createPrivateTaskDefinition<
         HcmsTasksContext,
-        IEmptyTrashBinByModelInput,
-        IEmptyTrashBinByModelOutput
+        IDeleteEntriesByModelInput,
+        IDeleteEntriesByModelOutput
     >({
-        id: EntriesTask.EmptyTrashBinByModel,
-        title: "Headless CMS - Empty trash bin by model",
-        description: "Delete all entries found in the trash bin, by model.",
+        id: EntriesTask.DeleteEntriesByModel,
+        title: "Headless CMS - Delete entries by model",
+        description: "Delete entries found for a particular query, by model.",
         maxIterations: 500,
         run: async params => {
             const { response, isAborted } = params;
@@ -25,15 +25,15 @@ export const createEmptyTrashBinByModelTask = () => {
                     return response.aborted();
                 }
 
-                const { EmptyTrashBinByModel } = await import(
-                    /* webpackChunkName: "EmptyTrashBinByModel" */ "~/tasks/entries/useCases/EmptyTrashBinByModel"
+                const { DeleteEntriesByModel } = await import(
+                    /* webpackChunkName: "DeleteEntriesByModel" */ "~/tasks/entries/useCases/DeleteEntriesByModel"
                 );
 
-                const emptyTrashBinByModel = new EmptyTrashBinByModel();
-                return await emptyTrashBinByModel.execute(params);
+                const deleteEntriesByModel = new DeleteEntriesByModel();
+                return await deleteEntriesByModel.execute(params);
             } catch (ex) {
                 return response.error(
-                    ex.message ?? "Error while executing EmptyTrashBinByModel task"
+                    ex.message ?? "Error while executing DeleteEntriesByModel task"
                 );
             }
         },
@@ -48,7 +48,7 @@ export const createEmptyTrashBinByModelTask = () => {
                     task
                 });
             } catch (ex) {
-                console.error("Error while cleaning `EmptyTrashBinByModel` child tasks.", ex);
+                console.error("Error while cleaning `DeleteEntriesByModel` child tasks.", ex);
             }
         }
     });

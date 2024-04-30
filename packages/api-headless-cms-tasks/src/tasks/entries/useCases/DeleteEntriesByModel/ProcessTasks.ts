@@ -1,10 +1,10 @@
 import { ITaskResponseResult, TaskDataStatus } from "@webiny/tasks";
-import { EntriesTask, IEmptyTrashBinByModelTaskParams } from "~/types";
+import { EntriesTask, IDeleteEntriesByModelTaskParams } from "~/types";
 
-export const DELETE_ENTRIES_WAIT_TIME = 10;
+const WAITING_TIME = 10;
 
-export class ProcessDeleteEntriesTasks {
-    public async execute(params: IEmptyTrashBinByModelTaskParams): Promise<ITaskResponseResult> {
+export class ProcessTasks {
+    public async execute(params: IDeleteEntriesByModelTaskParams): Promise<ITaskResponseResult> {
         const { response, input, isAborted, isCloseToTimeout, context, store } = params;
 
         try {
@@ -31,16 +31,18 @@ export class ProcessDeleteEntriesTasks {
                         ...input
                     },
                     {
-                        seconds: DELETE_ENTRIES_WAIT_TIME
+                        seconds: WAITING_TIME
                     }
                 );
             }
 
             return response.done(
-                `Task done: The trash bin has been emptied for the ${input.modelId} model.`
+                `Task done: entries from "${input.modelId}" model has been deleted.`
             );
         } catch (ex) {
-            return response.error(ex.message ?? "Error while executing ProcessDeleteEntriesTasks");
+            return response.error(
+                ex.message ?? "Error while executing DeleteEntriesByModel/ProcessTasks"
+            );
         }
     }
 }

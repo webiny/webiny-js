@@ -1,12 +1,12 @@
 import { ITaskResponseResult } from "@webiny/tasks";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
-import { EntriesTask, IDeleteEntriesInput, IEmptyTrashBinByModelTaskParams } from "~/types";
+import { EntriesTask, IDeleteEntriesInput, IDeleteEntriesByModelTaskParams } from "~/types";
 
-const DELETE_ENTRIES_IN_BATCH = 50;
-const DELETE_ENTRIES_WAIT_TIME = 5;
+const BATCH_SIZE = 50;
+const WAITING_TIME = 5;
 
-export class CreateDeleteEntriesTasks {
-    public async execute(params: IEmptyTrashBinByModelTaskParams): Promise<ITaskResponseResult> {
+export class CreateTasks {
+    public async execute(params: IDeleteEntriesByModelTaskParams): Promise<ITaskResponseResult> {
         const { input, response, isAborted, isCloseToTimeout, context, store } = params;
 
         try {
@@ -24,7 +24,7 @@ export class CreateDeleteEntriesTasks {
                 const listEntriesParams: CmsEntryListParams = {
                     where: input.where,
                     after: input.after,
-                    limit: DELETE_ENTRIES_IN_BATCH
+                    limit: BATCH_SIZE
                 };
 
                 const [entries, meta] = await context.cms.listDeletedEntries(
@@ -52,7 +52,7 @@ export class CreateDeleteEntriesTasks {
                                 processing: true
                             },
                             {
-                                seconds: DELETE_ENTRIES_WAIT_TIME
+                                seconds: WAITING_TIME
                             }
                         );
                     }
@@ -86,11 +86,13 @@ export class CreateDeleteEntriesTasks {
                     currentBatch
                 },
                 {
-                    seconds: DELETE_ENTRIES_WAIT_TIME
+                    seconds: WAITING_TIME
                 }
             );
         } catch (ex) {
-            return response.error(ex.message ?? "Error while executing CreateDeleteEntriesTasks");
+            return response.error(
+                ex.message ?? "Error while executing DeleteEntriesByModel/CreateTasks"
+            );
         }
     }
 }

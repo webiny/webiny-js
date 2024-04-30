@@ -4,7 +4,7 @@ import { useHandler } from "~tests/context/useHandler";
 import { createMockModels } from "~tests/mocks";
 import { EntriesTask, HcmsTasksContext } from "~/types";
 
-import { createEmptyTrashBinByModelTask } from "~/tasks/entries/emptyTrashBinByModelTask";
+import { createDeleteEntriesByModelTask } from "~/tasks/entries/deleteEntriesByModelTask";
 
 const createDeletedEntries = async (context: HcmsTasksContext, modelId: string, total = 100) => {
     const model = await context.cms.getModel(modelId);
@@ -40,7 +40,7 @@ jest.setTimeout(720000);
 
 describe("Empty Trash Bin By Model", () => {
     it("should fail in case of not existing model", async () => {
-        const taskDefinition = createEmptyTrashBinByModelTask();
+        const taskDefinition = createDeleteEntriesByModelTask();
         const { handler } = useHandler<HcmsTasksContext>({
             plugins: [taskDefinition, ...createMockModels()]
         });
@@ -72,14 +72,14 @@ describe("Empty Trash Bin By Model", () => {
                 message: `Content model "any-non-existing-modelId" was not found!`
             },
             webinyTaskId: task.id,
-            webinyTaskDefinitionId: EntriesTask.EmptyTrashBinByModel,
+            webinyTaskDefinitionId: EntriesTask.DeleteEntriesByModel,
             tenant: "root",
             locale: "en-US"
         });
     });
 
     it("should return success in case of no entries to delete", async () => {
-        const taskDefinition = createEmptyTrashBinByModelTask();
+        const taskDefinition = createDeleteEntriesByModelTask();
         const { handler } = useHandler<HcmsTasksContext>({
             plugins: [taskDefinition, ...createMockModels()]
         });
@@ -111,7 +111,7 @@ describe("Empty Trash Bin By Model", () => {
             status: "done",
             message: "Task done: No entries to delete.",
             webinyTaskId: task.id,
-            webinyTaskDefinitionId: EntriesTask.EmptyTrashBinByModel,
+            webinyTaskDefinitionId: EntriesTask.DeleteEntriesByModel,
             tenant: "root",
             locale: "en-US"
         });
@@ -119,7 +119,7 @@ describe("Empty Trash Bin By Model", () => {
 
     // TODO: Add test for when multiple task definitions are supported.
     it.skip("should delete entries in the trash bin", async () => {
-        const emptyTrashBinByModelTaskDefinition = createEmptyTrashBinByModelTask();
+        const emptyTrashBinByModelTaskDefinition = createDeleteEntriesByModelTask();
 
         const { handler } = useHandler<HcmsTasksContext>({
             plugins: [emptyTrashBinByModelTaskDefinition, ...createMockModels()]
@@ -166,7 +166,7 @@ describe("Empty Trash Bin By Model", () => {
         expect(result).toMatchObject({
             status: "done",
             webinyTaskId: emptyTrashBinByModelTaskDefinition.id,
-            webinyTaskDefinitionId: EntriesTask.EmptyTrashBinByModel,
+            webinyTaskDefinitionId: EntriesTask.DeleteEntriesByModel,
             tenant: "root",
             locale: "en-US",
             output: {
@@ -178,7 +178,7 @@ describe("Empty Trash Bin By Model", () => {
 
     // TODO: Add test for when multiple task definitions are supported.
     it.skip("should delete entries in the trash bin, with a custom `where` condition", async () => {
-        const taskDefinition = createEmptyTrashBinByModelTask();
+        const taskDefinition = createDeleteEntriesByModelTask();
         const { handler } = useHandler<HcmsTasksContext>({
             plugins: [taskDefinition, ...createMockModels()]
         });
@@ -223,7 +223,7 @@ describe("Empty Trash Bin By Model", () => {
         expect(result).toMatchObject({
             status: "done",
             webinyTaskId: task.id,
-            webinyTaskDefinitionId: EntriesTask.EmptyTrashBinByModel,
+            webinyTaskDefinitionId: EntriesTask.DeleteEntriesByModel,
             tenant: "root",
             locale: "en-US",
             output: {

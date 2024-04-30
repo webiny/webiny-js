@@ -28,7 +28,7 @@ export const createGraphQL = () => {
                 Mutation: {
                     emptyTrashBin: async (_, args) => {
                         const response = await context.tasks.trigger({
-                            definition: EntriesTask.EmptyTrashBinByModel,
+                            definition: EntriesTask.DeleteEntriesByModel,
                             input: {
                                 modelId: args.modelId
                             }
