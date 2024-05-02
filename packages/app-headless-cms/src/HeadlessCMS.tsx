@@ -1,15 +1,13 @@
 import React, { Fragment, memo } from "react";
+import { ApolloClient } from "apollo-client";
 import { plugins } from "@webiny/plugins";
 import { Plugins, Provider } from "@webiny/app-admin";
 import { ApolloCacheObjectIdPlugin } from "@webiny/app";
-import { ApolloClient } from "apollo-client";
-import { CmsProvider } from "./admin/contexts/Cms";
+import { CmsProvider } from "~/admin/contexts/Cms";
 import { CmsMenuLoader } from "~/admin/menus/CmsMenuLoader";
-import apiInformation from "./admin/plugins/apiInformation";
+import apiInformation from "~/admin/plugins/apiInformation";
 import { ContentEntriesModule } from "~/admin/views/contentEntries/ContentEntriesModule";
-import { DefaultOnEntryDelete } from "./admin/plugins/entry/DefaultOnEntryDelete";
-import { DefaultOnEntryUnpublish } from "~/admin/plugins/entry/DefaultOnEntryUnpublish";
-import allPlugins from "./allPlugins";
+import allPlugins from "~/allPlugins";
 import { LexicalEditorCmsPlugin } from "~/admin/components/LexicalCmsEditor/LexicalEditorCmsPlugin";
 
 interface HeadlessCMSProvider {
@@ -67,8 +65,6 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
             <Provider hoc={createHeadlessCMSProvider(createApolloClient)} />
             <Plugins>
                 <CmsMenuLoader />
-                <DefaultOnEntryDelete />
-                <DefaultOnEntryUnpublish />
             </Plugins>
             <LexicalEditorCmsPlugin />
         </Fragment>

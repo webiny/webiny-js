@@ -67,7 +67,6 @@ const ContentEntriesAutocomplete = ({ bind, field }: ContentEntriesAutocompleteP
                         onClose={() => setShowNewEntryModal(false)}
                         model={model}
                         onChange={entry => {
-                            /* TODO: The `any` argument is wrong, and needs revision. */
                             return onChange(entry, entry);
                         }}
                     />

@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import { Tab, Tabs } from "@webiny/ui/Tabs";
 import { Elevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
-import RevisionsList from "./ContentEntry/RevisionsList";
+import { RevisionsList } from "./ContentEntry/RevisionsList/RevisionsList";
 import { useContentEntry } from "./hooks/useContentEntry";
 import { ContentEntryForm } from "~/admin/components/ContentEntryForm/ContentEntryForm";
 import { makeDecoratable } from "@webiny/app";
@@ -43,7 +43,7 @@ declare global {
 }
 
 const DefaultContentEntry = () => {
-    const { loading, entry, activeTab, setActiveTab, setFormRef } = useContentEntry();
+    const { loading, entry, activeTab, setActiveTab } = useContentEntry();
 
     return (
         <DetailsContainer>
@@ -57,11 +57,7 @@ const DefaultContentEntry = () => {
                         <RenderBlock>
                             <Elevation z={2} className={elevationStyles}>
                                 {loading && <CircularProgress />}
-                                <ContentEntryForm
-                                    entry={entry}
-                                    onForm={form => setFormRef(form)}
-                                    addEntryToListCache={true}
-                                />
+                                <ContentEntryForm entry={entry} addEntryToListCache={true} />
                             </Elevation>
                         </RenderBlock>
                     </Tab>

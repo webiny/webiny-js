@@ -1,19 +1,10 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useRouter } from "@webiny/react-router";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { makeDecoratable } from "@webiny/app-admin";
-import { useRecords } from "@webiny/app-aco";
 import { CmsContentEntry } from "~/types";
-import {
-    CmsEntryCreateFromMutationResponse,
-    CmsEntryCreateFromMutationVariables,
-    createCreateFromMutation
-} from "@webiny/app-headless-cms-common";
-import { useApolloClient, useCms } from "~/admin/hooks";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
-import { getFetchPolicy } from "~/utils/getFetchPolicy";
-import { OnEntryPublishResponse } from "~/admin/contexts/Cms";
+import { PublishEntryRevisionResponse } from "~/admin/contexts/Cms";
 
 export interface CreateRevisionHandler {
     (id?: string): Promise<void>;
@@ -27,7 +18,7 @@ export interface DeleteRevisionHandler {
     (id?: string): Promise<void>;
 }
 export interface PublishRevisionHandler {
-    (id?: string): Promise<OnEntryPublishResponse>;
+    (id?: string): Promise<PublishEntryRevisionResponse>;
 }
 export interface UnpublishRevisionHandler {
     (id?: string): Promise<void>;
@@ -46,22 +37,12 @@ export interface UseRevisionProps {
     };
 }
 
-export const useRevision = makeDecoratable(({ revision }: UseRevisionProps) => {
-    const { publishEntryRevision, unpublishEntryRevision, deleteEntry } = useCms();
-    const { contentModel, entry, setEntry, setLoading } = useContentEntry();
-
+export const useRevision = ({ revision }: UseRevisionProps) => {
+    const contentEntry = useContentEntry();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const client = useApolloClient();
+    const { entry, contentModel } = contentEntry;
     const { modelId } = contentModel;
-
-    const { updateRecordInCache } = useRecords();
-
-    const { CREATE_REVISION } = useMemo(() => {
-        return {
-            CREATE_REVISION: createCreateFromMutation(contentModel)
-        };
-    }, [modelId]);
 
     const { createRevision, editRevision, deleteRevision, publishRevision, unpublishRevision } =
         useHandlers<UseRevisionHandlers>(
@@ -70,39 +51,17 @@ export const useRevision = makeDecoratable(({ revision }: UseRevisionProps) => {
                 createRevision:
                     (): CreateRevisionHandler =>
                     async (id): Promise<void> => {
-                        setLoading(true);
-                        const createResponse = await client.mutate<
-                            CmsEntryCreateFromMutationResponse,
-                            CmsEntryCreateFromMutationVariables
-                        >({
-                            mutation: CREATE_REVISION,
-                            variables: {
-                                revision: id || revision.id
-                            },
-                            fetchPolicy: getFetchPolicy(contentModel)
+                        const { entry, error } = await contentEntry.createEntryRevisionFrom({
+                            id: id || revision.id
                         });
-
-                        setLoading(false);
-
-                        if (!createResponse || !createResponse.data) {
-                            showSnackbar(`Missing response data in Create Revision Callable.`);
-                            return;
-                        }
-
-                        const { data, error } = createResponse.data.content;
 
                         if (error) {
                             showSnackbar(error.message);
                             return;
-                        } else if (!data) {
-                            showSnackbar(`Missing data in Create Revision callable.`);
-                            return;
                         }
 
-                        updateRecordInCache(data);
-
                         history.push(
-                            `/cms/content-entries/${modelId}?id=${encodeURIComponent(data.id)}`
+                            `/cms/content-entries/${modelId}?id=${encodeURIComponent(entry.id)}`
                         );
                     },
                 editRevision:
@@ -117,47 +76,36 @@ export const useRevision = makeDecoratable(({ revision }: UseRevisionProps) => {
                 deleteRevision:
                     ({ entry }): DeleteRevisionHandler =>
                     async (id): Promise<void> => {
-                        setLoading(true);
-
-                        const { error, entry: targetRevision } = await deleteEntry({
-                            model: contentModel,
-                            entry,
-                            id: id || entry.id
+                        const revisionId = id || entry.id;
+                        const response = await contentEntry.deleteEntry({
+                            id: revisionId
                         });
 
-                        setLoading(false);
-
-                        if (error) {
-                            showSnackbar(error.message);
+                        if (typeof response === "boolean") {
+                            // Redirect to the first revision in the list of all entry revisions.
+                            const targetRevision = contentEntry.revisions.filter(
+                                rev => rev.id !== revisionId
+                            )[0];
+                            history.push(
+                                `/cms/content-entries/${modelId}?id=` +
+                                    encodeURIComponent(targetRevision!.id)
+                            );
                             return;
                         }
 
-                        // Redirect to the first revision in the list of all entry revisions.
-                        history.push(
-                            `/cms/content-entries/${modelId}?id=` +
-                                encodeURIComponent(targetRevision!.id)
-                        );
+                        showSnackbar(response.error.message);
                     },
                 publishRevision:
                     ({ entry }): PublishRevisionHandler =>
                     async id => {
-                        setLoading(true);
-
-                        const response = await publishEntryRevision({
-                            model: contentModel,
-                            entry,
+                        const response = await contentEntry.publishEntryRevision({
                             id: id || entry.id
                         });
-
-                        setLoading(false);
 
                         if (response.error) {
                             showSnackbar(response.error.message);
                             return response;
                         }
-
-                        setEntry(response.entry);
-                        updateRecordInCache(response.entry);
 
                         showSnackbar(
                             <span>
@@ -171,24 +119,14 @@ export const useRevision = makeDecoratable(({ revision }: UseRevisionProps) => {
                 unpublishRevision:
                     ({ entry }): UnpublishRevisionHandler =>
                     async id => {
-                        setLoading(true);
-
-                        const response = await unpublishEntryRevision({
-                            model: contentModel,
-                            entry,
+                        const { error } = await contentEntry.unpublishEntryRevision({
                             id: id || entry.id
                         });
-
-                        setLoading(false);
-
-                        const { error, entry: entryResult } = response;
 
                         if (error) {
                             showSnackbar(error.message);
                             return;
                         }
-
-                        updateRecordInCache(entryResult);
 
                         showSnackbar(
                             <span>
@@ -207,4 +145,4 @@ export const useRevision = makeDecoratable(({ revision }: UseRevisionProps) => {
         publishRevision,
         unpublishRevision
     };
-});
+};

@@ -31,7 +31,7 @@ const style = {
     })
 };
 
-const RevisionsList = () => {
+export const RevisionsList = () => {
     const { entry, revisions, loading } = useContentEntry();
 
     return (
@@ -49,5 +49,3 @@ const RevisionsList = () => {
         </Elevation>
     );
 };
-
-export default RevisionsList;

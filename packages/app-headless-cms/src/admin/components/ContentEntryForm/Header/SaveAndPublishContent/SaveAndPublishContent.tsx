@@ -1,15 +1,22 @@
 import React from "react";
 
-import { makeDecoratable } from "@webiny/react-composition";
 import { ContentEntryEditorConfig } from "~/admin/config/contentEntries";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import usePermission from "~/admin/hooks/usePermission";
-import { useSaveAndPublish } from "./useSaveAndPublish";
+import { useContentEntryForm } from "~/admin/components/ContentEntryForm/useContentEntryForm";
 
 const SaveAndPublishButtonComponent = () => {
-    const { loading, entry } = useContentEntry();
-    const { showConfirmationDialog } = useSaveAndPublish();
+    const { loading, entry, publishEntryRevision } = useContentEntry();
+    const { saveEntry } = useContentEntryForm();
     const { ButtonPrimary } = ContentEntryEditorConfig.Actions.ButtonAction.useButtons();
+
+    const saveAndPublish = async () => {
+        const entry = await saveEntry();
+        if (!entry || !entry.id) {
+            return;
+        }
+        await publishEntryRevision({ id: entry.id });
+    };
 
     const { canEdit, canPublish } = usePermission();
 
@@ -19,7 +26,7 @@ const SaveAndPublishButtonComponent = () => {
 
     return (
         <ButtonPrimary
-            onAction={showConfirmationDialog}
+            onAction={saveAndPublish}
             disabled={loading}
             data-testid="cms-content-save-publish-content-button"
         >
@@ -28,7 +35,8 @@ const SaveAndPublishButtonComponent = () => {
     );
 };
 
-export const SaveAndPublishButton = makeDecoratable(
-    "SaveAndPublishButton",
-    SaveAndPublishButtonComponent
-);
+const { Actions } = ContentEntryEditorConfig;
+
+export const SaveAndPublishButton = () => {
+    return <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButtonComponent />} />;
+};

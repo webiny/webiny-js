@@ -1,4 +1,3 @@
-// TODO: implement this without relying on the `ui` package
 import React from "react";
 import { css } from "emotion";
 import { List, ListItem } from "@webiny/ui/List";
