@@ -138,6 +138,12 @@ const CUSTOM_HANDLERS = {
     },
     "api-elasticsearch-tasks": () => {
         return ["packages/api-elasticsearch-tasks --storage=ddb-es,ddb"];
+    },
+    "api-record-locking": () => {
+        return [
+            "packages/api-record-locking --storage=ddb",
+            "packages/api-record-locking --storage=ddb-es,ddb"
+        ];
     }
 };
 
