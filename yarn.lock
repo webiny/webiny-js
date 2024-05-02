@@ -7643,13 +7643,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-design-icons/svg@npm:^0.14.13":
-  version: 0.14.13
-  resolution: "@material-design-icons/svg@npm:0.14.13"
-  checksum: 80815e94a7b4a9775a4afe2af1b24c3b55270e09ad7cbebf669d7cea2d8c31050c371e435257bfb6289c782f672b82c73873c5d4d5bd15b12ec7d9b8b58909d4
-  languageName: node
-  linkType: hard
-
 "@material-design-icons/svg@npm:^0.14.2":
   version: 0.14.2
   resolution: "@material-design-icons/svg@npm:0.14.2"
@@ -13706,40 +13699,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-locking-mechanism@0.0.0, @webiny/api-locking-mechanism@workspace:packages/api-locking-mechanism":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-locking-mechanism@workspace:packages/api-locking-mechanism"
-  dependencies:
-    "@babel/cli": ^7.23.9
-    "@babel/core": ^7.24.0
-    "@babel/preset-env": ^7.24.0
-    "@babel/preset-typescript": ^7.23.3
-    "@babel/runtime": ^7.24.0
-    "@types/aws-lambda": ^8.10.131
-    "@webiny/api": 0.0.0
-    "@webiny/api-headless-cms": 0.0.0
-    "@webiny/api-i18n": 0.0.0
-    "@webiny/api-security": 0.0.0
-    "@webiny/api-tenancy": 0.0.0
-    "@webiny/api-wcp": 0.0.0
-    "@webiny/api-websockets": 0.0.0
-    "@webiny/cli": 0.0.0
-    "@webiny/error": 0.0.0
-    "@webiny/handler": 0.0.0
-    "@webiny/handler-aws": 0.0.0
-    "@webiny/handler-graphql": 0.0.0
-    "@webiny/plugins": 0.0.0
-    "@webiny/project-utils": 0.0.0
-    "@webiny/pubsub": 0.0.0
-    "@webiny/utils": 0.0.0
-    graphql: ^15.8.0
-    rimraf: ^5.0.5
-    ttypescript: ^1.5.13
-    type-fest: ^2.19.0
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-mailer@0.0.0, @webiny/api-mailer@workspace:packages/api-mailer":
   version: 0.0.0-use.local
   resolution: "@webiny/api-mailer@workspace:packages/api-mailer"
@@ -14113,6 +14072,40 @@ __metadata:
     shortid: ^2.2.16
     srcset: ^4.0.0
     ttypescript: ^1.5.12
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-record-locking@0.0.0, @webiny/api-record-locking@workspace:packages/api-record-locking":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-record-locking@workspace:packages/api-record-locking"
+  dependencies:
+    "@babel/cli": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/preset-typescript": ^7.23.3
+    "@babel/runtime": ^7.24.0
+    "@types/aws-lambda": ^8.10.131
+    "@webiny/api": 0.0.0
+    "@webiny/api-headless-cms": 0.0.0
+    "@webiny/api-i18n": 0.0.0
+    "@webiny/api-security": 0.0.0
+    "@webiny/api-tenancy": 0.0.0
+    "@webiny/api-wcp": 0.0.0
+    "@webiny/api-websockets": 0.0.0
+    "@webiny/cli": 0.0.0
+    "@webiny/error": 0.0.0
+    "@webiny/handler": 0.0.0
+    "@webiny/handler-aws": 0.0.0
+    "@webiny/handler-graphql": 0.0.0
+    "@webiny/plugins": 0.0.0
+    "@webiny/project-utils": 0.0.0
+    "@webiny/pubsub": 0.0.0
+    "@webiny/utils": 0.0.0
+    graphql: ^15.8.0
+    rimraf: ^5.0.5
+    ttypescript: ^1.5.13
+    type-fest: ^2.19.0
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
@@ -15222,43 +15215,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-locking-mechanism@0.0.0, @webiny/app-locking-mechanism@workspace:packages/app-locking-mechanism":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-locking-mechanism@workspace:packages/app-locking-mechanism"
-  dependencies:
-    "@apollo/react-hooks": ^3.1.5
-    "@babel/cli": ^7.23.9
-    "@babel/core": ^7.24.0
-    "@babel/preset-env": ^7.24.0
-    "@babel/preset-react": ^7.23.3
-    "@babel/preset-typescript": ^7.23.3
-    "@emotion/styled": ^11.10.6
-    "@material-design-icons/svg": ^0.14.13
-    "@webiny/app": 0.0.0
-    "@webiny/app-admin": 0.0.0
-    "@webiny/app-headless-cms": 0.0.0
-    "@webiny/app-security": 0.0.0
-    "@webiny/app-wcp": 0.0.0
-    "@webiny/app-websockets": 0.0.0
-    "@webiny/cli": 0.0.0
-    "@webiny/error": 0.0.0
-    "@webiny/project-utils": 0.0.0
-    "@webiny/react-router": 0.0.0
-    "@webiny/ui": 0.0.0
-    "@webiny/utils": 0.0.0
-    apollo-client: ^2.6.10
-    apollo-link: ^1.2.14
-    crypto-hash: ^3.0.0
-    emotion: ^10.0.27
-    graphql-tag: ^2.12.6
-    react: 17.0.2
-    react-dom: 17.0.2
-    rimraf: ^5.0.5
-    ttypescript: ^1.5.12
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
 "@webiny/app-mailer@0.0.0, @webiny/app-mailer@workspace:packages/app-mailer":
   version: 0.0.0-use.local
   resolution: "@webiny/app-mailer@workspace:packages/app-mailer"
@@ -15509,6 +15465,43 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/app-record-locking@0.0.0, @webiny/app-record-locking@workspace:packages/app-record-locking":
+  version: 0.0.0-use.local
+  resolution: "@webiny/app-record-locking@workspace:packages/app-record-locking"
+  dependencies:
+    "@apollo/react-hooks": ^3.1.5
+    "@babel/cli": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/preset-react": ^7.23.3
+    "@babel/preset-typescript": ^7.23.3
+    "@emotion/styled": ^11.10.6
+    "@material-design-icons/svg": ^0.14.2
+    "@webiny/app": 0.0.0
+    "@webiny/app-admin": 0.0.0
+    "@webiny/app-headless-cms": 0.0.0
+    "@webiny/app-security": 0.0.0
+    "@webiny/app-wcp": 0.0.0
+    "@webiny/app-websockets": 0.0.0
+    "@webiny/cli": 0.0.0
+    "@webiny/error": 0.0.0
+    "@webiny/project-utils": 0.0.0
+    "@webiny/react-router": 0.0.0
+    "@webiny/ui": 0.0.0
+    "@webiny/utils": 0.0.0
+    apollo-client: ^2.6.10
+    apollo-link: ^1.2.14
+    crypto-hash: ^3.0.0
+    emotion: ^10.0.27
+    graphql-tag: ^2.12.6
+    react: 17.0.2
+    react-dom: 17.0.2
+    rimraf: ^5.0.5
+    ttypescript: ^1.5.12
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
 "@webiny/app-security-access-management@0.0.0, @webiny/app-security-access-management@workspace:packages/app-security-access-management":
   version: 0.0.0-use.local
   resolution: "@webiny/app-security-access-management@workspace:packages/app-security-access-management"
@@ -15596,9 +15589,9 @@ __metadata:
     "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-i18n": 0.0.0
     "@webiny/app-i18n-content": 0.0.0
-    "@webiny/app-locking-mechanism": 0.0.0
     "@webiny/app-mailer": 0.0.0
     "@webiny/app-page-builder": 0.0.0
+    "@webiny/app-record-locking": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/app-security-access-management": 0.0.0
     "@webiny/app-tenancy": 0.0.0
@@ -18116,7 +18109,6 @@ __metadata:
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-i18n-content": 0.0.0
     "@webiny/api-i18n-ddb": 0.0.0
-    "@webiny/api-locking-mechanism": 0.0.0
     "@webiny/api-page-builder": 0.0.0
     "@webiny/api-page-builder-aco": 0.0.0
     "@webiny/api-page-builder-import-export": 0.0.0
@@ -18124,6 +18116,7 @@ __metadata:
     "@webiny/api-page-builder-so-ddb": 0.0.0
     "@webiny/api-prerendering-service": 0.0.0
     "@webiny/api-prerendering-service-aws": 0.0.0
+    "@webiny/api-record-locking": 0.0.0
     "@webiny/api-security": 0.0.0
     "@webiny/api-security-cognito": 0.0.0
     "@webiny/api-security-so-ddb": 0.0.0
