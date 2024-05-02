@@ -154,12 +154,13 @@ interface DialogsProviderProps {
     children: React.ReactNode;
 }
 
-export const createDialogsProvider = () => (Component: React.ComponentType) => {
-    return function DialogsProviderDecorator({ children }: DialogsProviderProps) {
-        return (
-            <DialogsProvider>
-                <Component>{children}</Component>
-            </DialogsProvider>
-        );
+export const createDialogsProvider =
+    () => (Component: React.ComponentType<React.PropsWithChildren>) => {
+        return function DialogsProviderDecorator({ children }: DialogsProviderProps) {
+            return (
+                <DialogsProvider>
+                    <Component>{children}</Component>
+                </DialogsProvider>
+            );
+        };
     };
-};

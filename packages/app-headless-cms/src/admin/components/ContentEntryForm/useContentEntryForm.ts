@@ -221,7 +221,11 @@ export const useContentEntryForm = makeDecoratable(
         );
 
         const createContentFrom = useCallback(
-            async (revision: string, formData: Record<string, any>, form) => {
+            async (
+                revision: string,
+                formData: Record<string, any>,
+                form: FormAPI<CmsContentEntry>
+            ) => {
                 setLoading(true);
                 const response = await createFromMutation({
                     variables: {
@@ -270,12 +274,12 @@ export const useContentEntryForm = makeDecoratable(
 
         const onSubmit: FormOnSubmit<CmsContentEntry> = async (data, form) => {
             const fieldsIds = model.fields.map(item => item.fieldId);
-            const formData = pick(data, [...fieldsIds]);
-            
+            const formData = pick(data, [...fieldsIds]) as CmsContentEntry;
+
             const gqlData = prepareFormData<CmsContentEntry>(formData, model.fields);
 
             if (!entry.id) {
-                return createContent(gqlData as CmsContentEntry, form);
+                return createContent(gqlData, form);
             }
 
             const { meta } = entry;

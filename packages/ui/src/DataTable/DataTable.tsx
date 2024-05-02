@@ -20,6 +20,7 @@ import {
     Cell,
     Column as DefaultColumn,
     ColumnDef,
+    ColumnSort,
     flexRender,
     getCoreRowModel,
     getSortedRowModel,
@@ -27,12 +28,8 @@ import {
     Row,
     RowSelectionState,
     SortingState,
-    ColumnSort,
-    VisibilityState,
-    flexRender,
-    getCoreRowModel,
-    getSortedRowModel,
-    useReactTable
+    useReactTable,
+    VisibilityState
 } from "@tanstack/react-table";
 
 import { Checkbox } from "~/Checkbox";

@@ -18,7 +18,7 @@
     "@editorjs/editorjs": "^2.24.3",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
-    "@material-design-icons/svg": "^0.14.2",
+    "@material-design-icons/svg": "^0.14.3",
     "@rmwc/button": "^14.1.2",
     "@rmwc/checkbox": "^14.1.2",
     "@rmwc/chip": "^14.1.2",
