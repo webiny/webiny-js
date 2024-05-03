@@ -98,7 +98,9 @@ context("Page Builder - Menu Items", () => {
         cy.findByTestId("pb.menu.new.listitem.button.save").click();
 
         // Edit previously created page list items.
-        cy.findByTestId("pb-edit-icon-button").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("pb-edit-icon-button")` if issue is fixed.
+        cy.get('button[data-testid="pb-edit-icon-button"]').click();
         cy.findByTestId("pb.menu.new.listitem.title").clear().type(pageListNameEdit);
         cy.findByTestId("pb.menu.new.listitem.sortby").select("Published on");
         cy.findByTestId("pb.menu.new.listitem.sortdirection").select("Ascending");
@@ -114,14 +116,18 @@ context("Page Builder - Menu Items", () => {
         cy.findByTestId(`pb-menu-item-render-${pageListNameEdit}`)
             .contains(pageListNameEdit)
             .should("exist");
-        cy.findByTestId("pb-edit-icon-button").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("pb-edit-icon-button")` if issue is fixed.
+        cy.get('button[data-testid="pb-edit-icon-button"]').click();
         cy.findByTestId("pb.menu.new.listitem.title").should("have.value", pageListNameEdit);
         cy.findByTestId("pb.menu.new.listitem.sortby").should("have.value", "publishedOn");
         cy.findByTestId("pb.menu.new.listitem.sortdirection").should("have.value", "asc");
         cy.findByTestId("pb.menu.new.listitem.button.save").click();
 
         // Delete the previously created menu item.
-        cy.findByTestId("pb-delete-icon-button").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("pb-delete-icon-button")` if issue is fixed.
+        cy.get('button[data-testid="pb-delete-icon-button"]').click();
         cy.wait(500);
         cy.findByTestId(`pb-menu-item-render-${pageListNameEdit}`).should("not.exist");
 
@@ -136,7 +142,9 @@ context("Page Builder - Menu Items", () => {
 
         // Edit the link menu item and assert everything is properly displayed.
         cy.findByTestId(`pb-menu-item-render-${linkName}`).contains(linkName).should("exist");
-        cy.findByTestId("pb-edit-icon-button").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("pb-edit-icon-button")` if issue is fixed.
+        cy.get('button[data-testid="pb-edit-icon-button"]').click();
         cy.findByTestId("pb.menu.new.link.title").should("have.value", linkName);
         cy.findByTestId("pb.menu.new.link.url").should("have.value", linkURL);
         cy.findByTestId("pb.menu.new.link.title").clear().type(linkNameEdit);
@@ -147,7 +155,9 @@ context("Page Builder - Menu Items", () => {
             .should("exist");
 
         // Delete the link menu item and assert it's no longer being displayed.
-        cy.findByTestId("pb-delete-icon-button").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("pb-delete-icon-button")` if issue is fixed.
+        cy.get('button[data-testid="pb-delete-icon-button"]').click();
         cy.findByTestId(`pb-menu-item-render-${linkNameEdit}`).should("not.exist");
 
         // Create folder menu item.
@@ -160,7 +170,9 @@ context("Page Builder - Menu Items", () => {
         cy.findByTestId(`pb-menu-item-render-${folderName}`).contains(folderName).should("exist");
 
         // Edit folder menu item and assert the changes have been made.
-        cy.findByTestId("pb-edit-icon-button").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("pb-edit-icon-button")` if issue is fixed.
+        cy.get('button[data-testid="pb-edit-icon-button"]').click();
         cy.findByTestId("pb.menu.new.folder.title").should("have.value", folderName);
         cy.findByTestId("pb.menu.new.folder.title").clear().type(folderNameEdit);
         cy.findByTestId("pb.menu.new.folder.button.save").click();
@@ -170,7 +182,9 @@ context("Page Builder - Menu Items", () => {
             .should("exist");
 
         // Delete folder menu item and assert it's no longer being displayed.
-        cy.findByTestId("pb-delete-icon-button").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("pb-delete-icon-button")` if issue is fixed.
+        cy.get('button[data-testid="pb-delete-icon-button"]').click();
         cy.findByTestId(`pb-menu-item-render-${folderNameEdit}`).should("not.exist");
 
         // Create page menu item.
@@ -190,7 +204,9 @@ context("Page Builder - Menu Items", () => {
             .should("exist");
 
         // Edit folder menu item and assert the changes have been made.
-        cy.findByTestId("pb-edit-icon-button").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("pb-edit-icon-button")` if issue is fixed.
+        cy.get('button[data-testid="pb-edit-icon-button"]').click();
         cy.findByTestId("pb.menu.new.pageitem.page").clear();
         cy.findByTestId("pb.menu.new.pageitem.title").clear({ force: true });
         cy.findByTestId("pb.menu.new.pageitem.page").clear().type(pageNameNewEdit);
@@ -202,7 +218,9 @@ context("Page Builder - Menu Items", () => {
             .should("exist");
 
         // Delete folder menu item and assert it's no longer being displayed.
-        cy.findByTestId("pb-delete-icon-button").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("pb-delete-icon-button")` if issue is fixed.
+        cy.get('button[data-testid="pb-delete-icon-button"]').click();
         cy.findByTestId(`pb-menu-item-render-${pageNameNewEdit}`).should("not.exist");
     });
 });

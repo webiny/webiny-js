@@ -103,7 +103,10 @@ export type ListItemGraphicProps = { children: React.ReactNode; className?: stri
  */
 export const ListItemGraphic = (props: ListItemGraphicProps) => {
     return (
-        <div {...props} className={classNames("mdc-list-item__graphic", props.className)}>
+        <div
+            {...props}
+            className={classNames("mdc-deprecated-list-item__graphic", props.className)}
+        >
             {props.children}
         </div>
     );
@@ -119,7 +122,7 @@ export type ListItemMetaProps = { children: React.ReactNode; className?: string 
  */
 export const ListItemMeta = (props: ListItemMetaProps) => {
     return (
-        <span {...props} className={classNames("mdc-list-item__meta", props.className)}>
+        <span {...props} className={classNames("mdc-deprecated-list-item__meta", props.className)}>
             {props.children}
         </span>
     );

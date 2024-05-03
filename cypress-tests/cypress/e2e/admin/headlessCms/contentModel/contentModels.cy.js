@@ -87,7 +87,9 @@ context("Headless CMS - Content Models CRUD", () => {
         });
         cy.findByText(`Your content model was saved successfully!`).should("exist");
         // Get back to the list view
-        cy.findByTestId("cms-editor-back-button").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("cms-editor-back-button")` if issue is fixed.
+        cy.get('button[data-testid="cms-editor-back-button"]').click();
         cy.wait(1000);
         // 3.3 Check newly created model in data list
         cy.findByTestId("default-data-list").within(() => {
@@ -106,7 +108,11 @@ context("Headless CMS - Content Models CRUD", () => {
                 .first()
                 .within(() => {
                     cy.findByText(`Book - ${uniqueId}`).should("exist");
-                    cy.findByTestId("cms-edit-content-model-button").click({ force: true });
+                    // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                    // Now targeting <button> directly. Revert to `.findByTestId("cms-edit-content-model-button")` if issue is fixed.
+                    cy.get('button[data-testid="cms-edit-content-model-button"]').click({
+                        force: true
+                    });
                 });
         });
         // 4.2 Add field validations
@@ -114,7 +120,9 @@ context("Headless CMS - Content Models CRUD", () => {
         cy.findAllByTestId("cms.editor.field-row")
             .first()
             .within(() => {
-                cy.findByTestId("cms.editor.edit-field").click();
+                // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                // Now targeting <button> directly. Revert to `.findByTestId("cms.editor.edit-field")` if issue is fixed.
+                cy.get('button[data-testid="cms.editor.edit-field"]').click();
             });
         cy.findByTestId("cms-editor-edit-fields-dialog").within(() => {
             // b) Select validation tab from dialog
@@ -123,7 +131,7 @@ context("Headless CMS - Content Models CRUD", () => {
             cy.findByTestId("cms.editor.field-validator.required")
                 .parent()
                 .within(() => {
-                    cy.findByLabelText("Enabled").check();
+                    cy.findByLabelText("Enabled").click();
                     cy.findByTestId("cms.editfield.validators.required").clear();
                     cy.findByTestId("cms.editfield.validators.required")
                         .type("Title is required.")
@@ -145,7 +153,9 @@ context("Headless CMS - Content Models CRUD", () => {
         cy.findByTestId("fr.input.number.Edition").type("2");
         cy.findByText("Title is required.").should("exist");
         // Get back to the list view
-        cy.findByTestId("cms-editor-back-button").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("cms-editor-back-button")` if issue is fixed.
+        cy.get('button[data-testid="cms-editor-back-button"]').click();
         cy.wait(1000);
 
         // Delete new model
@@ -155,7 +165,9 @@ context("Headless CMS - Content Models CRUD", () => {
                 .within(() => {
                     cy.findByText(`Book - ${uniqueId}`).should("exist");
                     // a. Click on delete button
-                    cy.findByTestId("cms-delete-content-model-button").click({
+                    // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                    // Now targeting <button> directly. Revert to `.findByTestId("cms-delete-content-model-button")` if issue is fixed.
+                    cy.get('button[data-testid="cms-delete-content-model-button"]').click({
                         force: true
                     });
                     cy.wait(1000);
@@ -223,7 +235,9 @@ context("Headless CMS - Content Models CRUD", () => {
         //cy.findByTestId("fr.input.file.Image").should("exist");
 
         // Get back to the list view
-        cy.findByTestId("cms-editor-back-button").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("cms-editor-back-button")` if issue is fixed.
+        cy.get('button[data-testid="cms-editor-back-button"]').click();
         cy.wait(1000);
 
         // Delete new model
@@ -233,7 +247,9 @@ context("Headless CMS - Content Models CRUD", () => {
                 .within(() => {
                     cy.findByText(`Book - ${uniqueId}`).should("exist");
                     // a. Click on delete button
-                    cy.findByTestId("cms-delete-content-model-button").click({
+                    // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                    // Now targeting <button> directly. Revert to `.findByTestId("cms-delete-content-model-button")` if issue is fixed.
+                    cy.get('button[data-testid="cms-delete-content-model-button"]').click({
                         force: true
                     });
                     cy.wait(1000);

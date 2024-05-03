@@ -46,7 +46,7 @@ const InnerImageFieldWrapper = styled("div")({
 
 interface FieldRendererProps {
     getBind: GetBindCallable;
-    Label: React.ComponentType;
+    Label: React.ComponentType<React.PropsWithChildren>;
     field: CmsModelField;
 }
 const FieldRenderer = ({ getBind, Label, field }: FieldRendererProps) => {

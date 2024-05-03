@@ -12,7 +12,7 @@ export interface RecordLockingProviderProps {
     children: React.ReactNode;
 }
 
-const RecordLockingHoc = (Component: React.ComponentType) => {
+const RecordLockingHoc = (Component: React.ComponentType<RecordLockingProviderProps>) => {
     return function RecordLockingProvider({ children }: RecordLockingProviderProps) {
         return (
             <Component>

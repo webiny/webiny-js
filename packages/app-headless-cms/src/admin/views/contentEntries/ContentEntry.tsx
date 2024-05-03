@@ -13,7 +13,7 @@ const DetailsContainer = styled("div")({
     height: "calc(100% - 10px)",
     overflow: "hidden",
     position: "relative",
-    nav: {
+    ".mdc-tab-bar": {
         backgroundColor: "var(--mdc-theme-surface)"
     }
 });

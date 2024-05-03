@@ -15,7 +15,7 @@ export const subFooter = css`
     }
 `;
 
-const WcpBadge = styled.div`
+const WcpBadge = styled.span`
     background-color: var(--mdc-theme-primary, #6200ee);
     display: inline-block;
     color: white;
