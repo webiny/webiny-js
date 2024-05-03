@@ -19,7 +19,7 @@
     "@webiny/handler-aws": "0.0.0",
     "@webiny/handler-client": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "lodash": "4.17.21"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",

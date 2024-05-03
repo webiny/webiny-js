@@ -35,7 +35,7 @@ const DetailsContainer = styled("div")`
     overflow: hidden;
     position: relative;
 
-    nav {
+    .mdc-tab-bar {
         background: var(--mdc-theme-surface);
     }
 `;

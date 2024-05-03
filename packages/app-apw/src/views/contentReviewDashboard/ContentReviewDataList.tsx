@@ -16,7 +16,7 @@ import { useFetchInterval } from "~/hooks/useFetchInterval";
 const t = i18n.ns("app-apw/admin/content-reviews/datalist");
 
 const DataListItem = styled(ListItem)`
-    &.mdc-list-item {
+    &.mdc-deprecated-list-item {
         padding: 0;
     }
 `;

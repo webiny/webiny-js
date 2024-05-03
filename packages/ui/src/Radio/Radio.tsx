@@ -5,7 +5,7 @@ import { FormElementMessage } from "~/FormElementMessage";
 
 type Props = FormComponentProps & {
     // Component label.
-    label?: React.ReactNode;
+    label?: string;
 
     // Is radio disabled?
     disabled?: boolean;

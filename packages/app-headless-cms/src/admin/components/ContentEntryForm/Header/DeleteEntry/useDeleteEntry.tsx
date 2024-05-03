@@ -36,7 +36,7 @@ export const useDeleteEntry = (): UseDeleteEntryDialogResponse => {
     });
 
     const showConfirmationDialog = useCallback(
-        ({ onAccept, onCancel }) =>
+        ({ onAccept, onCancel }: ShowConfirmationDialogParams) =>
             showConfirmation(async () => {
                 const { id: entryId } = parseIdentifier(entry.id);
                 const { error } = await deleteEntry({

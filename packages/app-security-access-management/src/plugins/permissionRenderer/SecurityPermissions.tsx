@@ -46,7 +46,7 @@ export const SecurityPermissions = ({ value, onChange }: SecurityPermissionsProp
     }
 
     const onFormChange = useCallback(
-        data => {
+        (formData: SecurityPermission) => {
             let newValue: SecurityPermission[] = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `security*` permission objects, it's easier to build new ones from scratch.
@@ -54,18 +54,18 @@ export const SecurityPermissions = ({ value, onChange }: SecurityPermissionsProp
             }
 
             const permissions = [];
-            if (data.accessLevel === FULL_ACCESS) {
+            if (formData.accessLevel === FULL_ACCESS) {
                 permissions.push({ name: SECURITY_FULL_ACCESS });
-            } else if (data.accessLevel === CUSTOM_ACCESS) {
-                if (data.groupAccessScope === FULL_ACCESS) {
+            } else if (formData.accessLevel === CUSTOM_ACCESS) {
+                if (formData.groupAccessScope === FULL_ACCESS) {
                     permissions.push({ name: SECURITY_GROUP_ACCESS });
                 }
 
-                if (data.teamAccessScope === FULL_ACCESS) {
+                if (formData.teamAccessScope === FULL_ACCESS) {
                     permissions.push({ name: SECURITY_TEAM_ACCESS });
                 }
 
-                if (data.apiKeyAccessScope === FULL_ACCESS) {
+                if (formData.apiKeyAccessScope === FULL_ACCESS) {
                     permissions.push({ name: SECURITY_API_KEY_ACCESS });
                 }
             }

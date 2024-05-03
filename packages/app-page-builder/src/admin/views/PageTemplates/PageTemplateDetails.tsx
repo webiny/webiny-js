@@ -26,7 +26,7 @@ const DetailsContainer = styled.div`
     overflow: hidden;
     position: relative;
 
-    nav {
+    .mdc-tab-bar {
         background-color: var(--mdc-theme-surface);
     }
 `;

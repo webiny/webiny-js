@@ -20,11 +20,11 @@ const Wrapper = styled(Elevation)`
     overflow: auto;
     max-height: calc(100vh - 100px);
 
-    .mdc-list .mdc-list-item {
+    .mdc-deprecated-list .mdc-deprecated-list-item {
         border-bottom: 1px solid var(--mdc-theme-on-background);
     }
 
-    .mdc-list .mdc-list-item:last-child {
+    .mdc-deprecated-list .mdc-deprecated-list-item:last-child {
         border-bottom: none;
     }
 `;

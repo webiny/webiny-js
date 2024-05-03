@@ -31,6 +31,8 @@ type Props = FormComponentProps & {
 
     // Function that gets triggered on each input.
     onInput?: (value: any) => void;
+
+    readOnly?: boolean;
 };
 
 // wrapper fixes a bug in slider where the slider handle is rendered outside the bounds of the slider box
@@ -73,6 +75,8 @@ class Slider extends React.Component<Props> {
 
                 <Wrapper>
                     <RmwcSlider
+                        // Had to add readOnly so the warning does not appear in the console.
+                        readOnly={true}
                         {...this.props}
                         value={sliderValue}
                         onChange={this.onChange}

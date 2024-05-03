@@ -10,6 +10,11 @@ import {
 } from "@webiny/form/types";
 import { ApolloClient } from "apollo-client";
 import { SecurityPermission } from "@webiny/app-security/types";
+import type { SourceType } from "dnd-core";
+
+export type DragObjectWithType = {
+    type: SourceType;
+};
 
 export type DropTargetType = "field" | "row" | "conditionGroup" | "step";
 

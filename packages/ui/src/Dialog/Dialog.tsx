@@ -2,16 +2,16 @@ import React from "react";
 import ReactDOM from "react-dom";
 import {
     Dialog as RmwcDialog,
-    DialogProps as RmwcDialogProps,
-    DialogOnCloseEventT,
-    DialogContent as RmwcDialogContent,
-    DialogContentProps as RmwcDialogContentProps,
-    DialogTitle as RmwcDialogTitle,
-    DialogTitleProps as RmwcDialogTitleProps,
     DialogActions as RmwcDialogActions,
     DialogActionsProps as RmwcDialogActionsProps,
     DialogButton as RmwcDialogButton,
-    DialogButtonProps as RmwcDialogButtonProps
+    DialogButtonProps as RmwcDialogButtonProps,
+    DialogContent as RmwcDialogContent,
+    DialogContentProps as RmwcDialogContentProps,
+    DialogOnCloseEventT,
+    DialogProps as RmwcDialogProps,
+    DialogTitle as RmwcDialogTitle,
+    DialogTitleProps as RmwcDialogTitleProps
 } from "@rmwc/dialog";
 import { css } from "emotion";
 import { getClasses } from "~/Helpers";
@@ -24,12 +24,11 @@ export interface DialogProps extends RmwcDialogProps {
     // Component's custom in-line styles.
     style?: React.CSSProperties;
 
-    // If true, dialog will be permanently fixed inside of a view (works for temporary and persistent modes).
-    open?: boolean;
-
     onClose?: (evt: DialogOnCloseEventT) => void;
 
     preventOutsideDismiss?: boolean;
+
+    children?: React.ReactNode;
 }
 
 export class Dialog extends React.Component<DialogProps> {
@@ -73,7 +72,10 @@ export interface DialogTitleProps extends RmwcDialogTitleProps {
  * Dialog's header, which can accept DialogHeaderTitle component or any other set of components.
  */
 export const DialogTitle = (props: DialogTitleProps) => (
-    <RmwcDialogTitle {...getClasses(props, "webiny-ui-dialog__title")} />
+    <RmwcDialogTitle
+        {...getClasses(props, "webiny-ui-dialog__title")}
+        style={{ marginBottom: "0" }}
+    />
 );
 
 export type DialogContentProps = RmwcDialogContentProps & {

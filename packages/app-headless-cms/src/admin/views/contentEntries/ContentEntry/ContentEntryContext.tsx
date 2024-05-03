@@ -136,7 +136,12 @@ export const ContentEntryProvider = ({
     }, [contentModel.modelId]);
 
     const setFormRef = useCallback(
-        form => {
+        (form: Pick<FormAPI, "submit">) => {
+            /**
+             * Unfortunately we need to cast as there is no generic available for the form.
+             * This will break when form gets fixed and can be removed.
+             */
+            // @ts-expect-error
             formRef.current = form;
         },
         [formRef]

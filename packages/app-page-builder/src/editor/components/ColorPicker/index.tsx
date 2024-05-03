@@ -3,7 +3,7 @@ import classnames from "classnames";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import isEqual from "lodash/isEqual";
-import { ChromePicker } from "react-color";
+import { ChromePicker, ColorState, RGBColor } from "react-color";
 import { Menu } from "@webiny/ui/Menu";
 import { usePageBuilder } from "../../../hooks/usePageBuilder";
 import { ReactComponent as IconPalette } from "../../assets/icons/round-color_lens-24px.svg";
@@ -127,19 +127,19 @@ const ColorPicker = ({
 }: ColorPickerProps) => {
     const [showPicker, setShowPicker] = useState(false);
 
-    const getColorValue = useCallback(rgb => {
+    const getColorValue = useCallback((rgb: RGBColor) => {
         return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${rgb.a})`;
     }, []);
 
     const onColorChange = useCallback(
-        color => {
+        (color: ColorState) => {
             onChange(getColorValue(color.rgb));
         },
         [onChange]
     );
 
     const onColorChangeComplete = useCallback(
-        ({ rgb }) => {
+        ({ rgb }: ColorState) => {
             onChangeComplete(getColorValue(rgb));
         },
         [onChangeComplete]
@@ -150,7 +150,7 @@ const ColorPicker = ({
     }, [setShowPicker]);
 
     const togglePicker = useCallback(
-        e => {
+        (e: React.MouseEvent) => {
             e.stopPropagation();
             setShowPicker(!showPicker);
         },

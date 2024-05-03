@@ -52,7 +52,8 @@ export const SuccessDialog = styled("div")({
     padding: 40,
     textAlign: "center",
     p: {
-        paddingBottom: 40
+        paddingTop: 20,
+        paddingBottom: 30
     }
 });
 

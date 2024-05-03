@@ -6,6 +6,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { SplitView, LeftPanel, RightPanel } from "../SplitView";
 import { Elevation } from "@webiny/ui/Elevation";
+import { Typography } from "@webiny/ui/Typography";
 import { useInstaller } from "./useInstaller";
 import Sidebar from "./Sidebar";
 
@@ -107,7 +108,8 @@ export const AppInstaller = ({ children }: AppInstallerProps) => {
         renderBody(
             <Elevation z={1}>
                 <SuccessDialog>
-                    <p>You have successfully installed all new applications!</p>
+                    <Typography use={"headline4"}>You&apos;re ready!</Typography>
+                    <p>All applications were successfully installed.</p>
                     {!isCypressTest && isRootTenant && isFirstInstall ? (
                         <iframe
                             height="0"

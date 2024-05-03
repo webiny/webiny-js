@@ -7,7 +7,7 @@ yargs.help(false);
 // Loads environment variables from multiple sources.
 require("./utils/loadEnvVariables");
 
-const { blue, red } = require("chalk");
+const { blue, red, bold, bgYellow } = require("chalk");
 const context = require("./context");
 const { createCommands } = require("./commands");
 
@@ -58,23 +58,29 @@ yargs
             process.exit(1);
         }
 
-        if (error) {
-            // Unfortunately, yargs doesn't provide passed args here, so we had to do it via process.argv.
-            console.log();
-            if (process.argv.includes("--debug")) {
-                context.debug(error);
-            } else {
-                context.error(error.message);
-            }
+        console.log();
+        // Unfortunately, yargs doesn't provide passed args here, so we had to do it via process.argv.
+        const debugEnabled = process.argv.includes("--debug");
+        if (debugEnabled) {
+            context.debug(error);
+        } else {
+            context.error(error.message);
+        }
 
-            const plugins = context.plugins.byType("cli-command-error");
-            for (let i = 0; i < plugins.length; i++) {
-                const plugin = plugins[i];
-                plugin.handle({
-                    error,
-                    context
-                });
-            }
+        const gracefulError = error.cause?.gracefulError;
+        if (gracefulError instanceof Error) {
+            console.log();
+            console.log(bgYellow(bold("💡 How can I resolve this?")));
+            console.log(gracefulError.message);
+        }
+
+        const plugins = context.plugins.byType("cli-command-error");
+        for (let i = 0; i < plugins.length; i++) {
+            const plugin = plugins[i];
+            plugin.handle({
+                error,
+                context
+            });
         }
 
         process.exit(1);

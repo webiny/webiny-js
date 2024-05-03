@@ -8,6 +8,13 @@ import { useWcp } from "@webiny/app-admin";
 
 export type UseUserForm = ReturnType<typeof useUserForm>;
 
+interface SubmitUserCallableParams {
+    id?: string;
+}
+interface SubmitUserCallable {
+    (data: SubmitUserCallableParams): Promise<void>;
+}
+
 export function useUserForm() {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -49,7 +56,7 @@ export function useUserForm() {
 
     const loading = userLoading || createLoading || updateLoading;
 
-    const onSubmit = useCallback(
+    const onSubmit = useCallback<SubmitUserCallable>(
         async data => {
             const { id, ...rest } = data;
             const [operation, args] = !newUser
