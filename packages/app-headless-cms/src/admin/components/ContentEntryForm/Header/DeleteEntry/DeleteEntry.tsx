@@ -6,8 +6,8 @@ import { ContentEntryEditorConfig } from "~/admin/config/contentEntries";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 
 export const DeleteEntry = () => {
-    const { navigateToLatestFolder } = useNavigateFolder();
-    const { entry, contentModel, loading, ...contentEntry } = useContentEntry();
+    const { navigateToFolder } = useNavigateFolder();
+    const { entry, loading, ...contentEntry } = useContentEntry();
     const { canDelete } = usePermission();
 
     const { OptionsMenuItem } =
@@ -16,7 +16,7 @@ export const DeleteEntry = () => {
     const deleteEntry = async () => {
         const response = await contentEntry.deleteEntry({ id: entry.entryId });
         if (typeof response === "boolean") {
-            navigateToLatestFolder();
+            navigateToFolder(entry.wbyAco_location.folderId);
         }
     };
 

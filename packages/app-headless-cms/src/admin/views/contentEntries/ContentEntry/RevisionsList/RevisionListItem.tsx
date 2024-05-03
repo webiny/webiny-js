@@ -27,7 +27,6 @@ import { useRevision } from "./useRevision";
 import { usePermission } from "~/admin/hooks/usePermission";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { PublishEntryRevisionListItem } from "./PublishEntryRevisionListItem";
-import { useConfirmationDialog } from "@webiny/app-admin";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/content-revisions");
 
@@ -75,18 +74,6 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
             revision
         });
 
-    const { showConfirmation } = useConfirmationDialog({
-        title: t`Delete content entry revision`,
-        message: (
-            <span>
-                {t`You are about to delete revision {revision}. Are you sure you want to continue?`(
-                    {
-                        revision: <strong>#{revision.meta.version}</strong>
-                    }
-                )}
-            </span>
-        )
-    });
     const { entry, setActiveTab } = useContentEntry();
     const { canEdit, canDelete, canPublish, canUnpublish } = usePermission();
     const { icon, text: tooltipText } = getIcon(revision);
@@ -116,7 +103,7 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                 >
                     {canEdit(entry, "cms.contentEntry") && (
                         <MenuItem
-                            onClick={() => createRevision(revision.id)}
+                            onClick={() => createRevision()}
                             data-testid={"cms.revision.create-revision"}
                         >
                             <ListItemGraphic>
@@ -141,14 +128,14 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                     )}
 
                     {revision.meta.status !== "published" && canPublish("cms.contentEntry") && (
-                        <MenuItem onClick={() => publishRevision(revision.id)}>
+                        <MenuItem onClick={() => publishRevision()}>
                             <PublishEntryRevisionListItem />
                         </MenuItem>
                     )}
 
                     {revision.meta.status === "published" && canUnpublish("cms.contentEntry") && (
                         <MenuItem
-                            onClick={() => unpublishRevision(revision.id)}
+                            onClick={() => unpublishRevision()}
                             data-testid={"cms.revision.unpublish"}
                         >
                             <ListItemGraphic>
@@ -161,7 +148,7 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                     {!revision.meta.locked && canDelete(entry, "cms.contentEntry") && (
                         <div>
                             <MenuDivider />
-                            <MenuItem onClick={() => showConfirmation(deleteRevision)}>
+                            <MenuItem onClick={() => deleteRevision()}>
                                 <ListItemGraphic>
                                     <Icon icon={<DeleteIcon />} />
                                 </ListItemGraphic>

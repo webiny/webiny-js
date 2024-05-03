@@ -136,6 +136,7 @@ export const ContentEntryProvider = ({
         if (!revisionId && entry) {
             setEntry(undefined);
         }
+        setActiveTab(0);
     }, [revisionId]);
 
     const { READ_CONTENT } = useMemo(() => {
@@ -244,17 +245,13 @@ export const ContentEntryProvider = ({
     };
 
     const deleteEntry: ContentEntryCrud["deleteEntry"] = async params => {
-        setLoading(true);
         const response = await cms.deleteEntry({ model, ...params });
-        setLoading(false);
         removeRecordFromCache(params.id);
         return response;
     };
 
     const publishEntryRevision: ContentEntryCrud["publishEntryRevision"] = async params => {
-        setLoading(true);
         const response = await cms.publishEntryRevision({ model, ...params });
-        setLoading(false);
         if (response.entry) {
             setEntry(response.entry);
             updateRecordInCache(response.entry);
@@ -263,9 +260,7 @@ export const ContentEntryProvider = ({
     };
 
     const unpublishEntryRevision: ContentEntryCrud["unpublishEntryRevision"] = async params => {
-        setLoading(true);
         const response = await cms.unpublishEntryRevision({ model, ...params });
-        setLoading(false);
         if (response.entry) {
             setEntry(response.entry);
             updateRecordInCache(response.entry);

@@ -33,6 +33,7 @@ export type DecoratableHook<T extends GenericHook = GenericHook> = T & {
 export type DecoratableComponent<T = GenericComponent> = T & {
     original: T;
     originalName: string;
+    displayName: string;
 };
 
 export type Decoratable = DecoratableComponent | DecoratableHook;

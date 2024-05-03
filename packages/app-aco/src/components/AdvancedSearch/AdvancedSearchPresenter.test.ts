@@ -312,7 +312,7 @@ describe("AdvancedSearchPresenter", () => {
         expect(presenter.vm.saverVm).toMatchObject({
             isOpen: true,
             isLoading: true,
-            loadingLabel: "Creating filter"
+            loadingLabel: "Creating filter..."
         });
 
         await persistPromise;
@@ -418,7 +418,7 @@ describe("AdvancedSearchPresenter", () => {
         expect(presenter.vm.saverVm).toMatchObject({
             isOpen: true,
             isLoading: true,
-            loadingLabel: "Updating filter"
+            loadingLabel: "Updating filter..."
         });
 
         await persistPromise;
@@ -497,7 +497,7 @@ describe("AdvancedSearchPresenter", () => {
         expect(presenter.vm.saverVm).toMatchObject({
             isOpen: true,
             isLoading: true,
-            loadingLabel: "Updating filter"
+            loadingLabel: "Updating filter..."
         });
 
         await persistPromise;
@@ -593,7 +593,7 @@ describe("AdvancedSearchPresenter", () => {
         expect(presenter.vm.saverVm).toMatchObject({
             isOpen: true,
             isLoading: true,
-            loadingLabel: "Creating filter"
+            loadingLabel: "Creating filter..."
         });
 
         await persistPromise;

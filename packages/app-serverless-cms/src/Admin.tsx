@@ -22,7 +22,7 @@ import fileStorageS3Plugin from "@webiny/app-file-manager-s3";
 import { createApolloClient as defaultApolloClientFactory } from "./apolloClientFactory";
 import apolloLinks from "./apolloLinks";
 import { createViewCompositionProvider } from "@webiny/app-admin/base/providers/ViewCompositionProvider";
-// import { AdvancedPublishingWorkflow } from "@webiny/app-apw";
+import { AdvancedPublishingWorkflow } from "@webiny/app-apw";
 import { TenantManager } from "@webiny/app-tenant-manager";
 import { AuditLogs } from "@webiny/app-audit-logs";
 import { LexicalEditorPlugin } from "@webiny/lexical-editor-pb-element";
@@ -30,7 +30,7 @@ import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Module as MailerSettings } from "@webiny/app-mailer";
 import { Folders } from "@webiny/app-aco";
 import { Websockets } from "@webiny/app-websockets";
-// import { RecordLocking } from "@webiny/app-record-locking";
+import { RecordLocking } from "@webiny/app-record-locking";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
     createApolloClient?: BaseAdminProps["createApolloClient"];
@@ -57,13 +57,13 @@ const App = (props: AdminProps) => {
             <I18NContent />
             <Provider hoc={ViewCompositionProvider} />
             <Websockets />
-            {/*<RecordLocking />*/}
+            <RecordLocking />
             <PageBuilder />
             <LexicalEditorPlugin />
             <LexicalEditorActions />
             <FormBuilder />
             <HeadlessCMS createApolloClient={createApolloClient} />
-            {/*<AdvancedPublishingWorkflow />*/}
+            <AdvancedPublishingWorkflow />
             <TenantManager />
             <AuditLogs />
             <MailerSettings />

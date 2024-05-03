@@ -147,14 +147,19 @@ export const ContentEntryFormProvider = ({
         }
 
         setInvalidFields({});
+        setIsDirty(false);
 
         const isNewRevision = !isNewEntry && data.id !== entry.id;
 
         if ((isNewEntry || isNewRevision) && onAfterCreate) {
-            onAfterCreate(entry);
+            // We need a timeout to let the Prompt component update.
+            await new Promise<void>(resolve => {
+                setTimeout(() => {
+                    onAfterCreate(entry);
+                    resolve();
+                }, 10);
+            });
         }
-
-        setIsDirty(false);
 
         return entry;
     };

@@ -29,8 +29,9 @@ import {
     CellStatus
 } from "~/admin/components/ContentEntries/Table/Cells";
 import { Ref } from "~/admin/components/ContentEntries/Filters/RefFieldRenderer";
-import { ShowConfirmationOnDelete } from "~/admin/components/ContentEntryForm/Header/DeleteEntry/ShowConfirmationOnDelete";
-import { ShowConfirmationOnPublish } from "~/admin/components/ContentEntryForm/Header/SaveAndPublishContent/ShowConfirmationOnPublish";
+import { ShowConfirmationOnDelete } from "~/admin/components/Decorators/ShowConfirmationOnDelete";
+import { ShowConfirmationOnPublish } from "~/admin/components/Decorators/ShowConfirmationOnPublish";
+import { ShowConfirmationOnUnpublish } from "~/admin/components/Decorators/ShowConfirmationOnUnpublish";
 
 const { Browser } = ContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
@@ -103,10 +104,11 @@ export const ContentEntriesModule = () => {
             </ContentEntryListConfig>
             <ContentEntryEditorConfig>
                 <Actions.ButtonAction name={"save"} element={<SaveContentButton />} />
-                <SaveAndPublishButton />
+                <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
                 <Actions.MenuItemAction name={"delete"} element={<DeleteEntryMenuItem />} />
             </ContentEntryEditorConfig>
             <ShowConfirmationOnPublish />
+            <ShowConfirmationOnUnpublish />
             <ShowConfirmationOnDelete />
         </>
     );

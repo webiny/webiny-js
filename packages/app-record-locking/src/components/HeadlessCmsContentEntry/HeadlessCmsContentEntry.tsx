@@ -1,12 +1,13 @@
 import React from "react";
-import { ContentEntry } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry";
+import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
 import { ContentEntryGuard } from "./ContentEntryGuard";
 import { ContentEntryLocker } from "./ContentEntryLocker";
-import { useContentEntry } from "@webiny/app-headless-cms";
+
+const { ContentEntry } = ContentEntryEditorConfig;
 
 export const HeadlessCmsContentEntry = ContentEntry.createDecorator(Original => {
     return function RecordLockingContentEntry(props) {
-        const { entry } = useContentEntry();
+        const { entry } = ContentEntry.useContentEntry();
         /**
          * New entry does not have ID yet.
          */

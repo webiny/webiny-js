@@ -14,28 +14,26 @@ export interface RecordLockingProviderProps {
 
 const RecordLockingHoc = (Component: React.ComponentType) => {
     return function RecordLockingProvider({ children }: RecordLockingProviderProps) {
-        const { canUseRecordLocking } = useWcp();
-        if (!canUseRecordLocking()) {
-            return <Component>{children}</Component>;
-        }
         return (
             <Component>
-                <RecordLockingProviderComponent>
-                    {children}
-                    <HeadlessCmsActionsAcoCell />
-                    <HeadlessCmsContentEntry />
-                </RecordLockingProviderComponent>
+                <RecordLockingProviderComponent>{children}</RecordLockingProviderComponent>
             </Component>
         );
     };
 };
 
-const RecordLockingExtension = () => {
+export const RecordLocking = () => {
+    const { canUseRecordLocking } = useWcp();
+
+    if (!canUseRecordLocking()) {
+        return null;
+    }
+
     return (
         <>
             <Provider hoc={RecordLockingHoc} />
+            <HeadlessCmsActionsAcoCell />
+            <HeadlessCmsContentEntry />
         </>
     );
 };
-
-export const RecordLocking = React.memo(RecordLockingExtension);

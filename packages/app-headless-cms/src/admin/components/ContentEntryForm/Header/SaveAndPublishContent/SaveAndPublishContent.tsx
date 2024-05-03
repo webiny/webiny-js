@@ -5,7 +5,7 @@ import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEn
 import usePermission from "~/admin/hooks/usePermission";
 import { useContentEntryForm } from "~/admin/components/ContentEntryForm/useContentEntryForm";
 
-const SaveAndPublishButtonComponent = () => {
+export const SaveAndPublishButton = () => {
     const { loading, entry, publishEntryRevision } = useContentEntry();
     const { saveEntry } = useContentEntryForm();
     const { ButtonPrimary } = ContentEntryEditorConfig.Actions.ButtonAction.useButtons();
@@ -33,10 +33,4 @@ const SaveAndPublishButtonComponent = () => {
             {"Save & Publish"}
         </ButtonPrimary>
     );
-};
-
-const { Actions } = ContentEntryEditorConfig;
-
-export const SaveAndPublishButton = () => {
-    return <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButtonComponent />} />;
 };

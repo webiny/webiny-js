@@ -42,7 +42,7 @@ declare global {
     }
 }
 
-const DefaultContentEntry = () => {
+export const ContentEntry = makeDecoratable("ContentEntry", () => {
     const { loading, entry, activeTab, setActiveTab } = useContentEntry();
 
     return (
@@ -72,6 +72,4 @@ const DefaultContentEntry = () => {
             </test-id>
         </DetailsContainer>
     );
-};
-
-export const ContentEntry = makeDecoratable("ContentEntry", DefaultContentEntry);
+});

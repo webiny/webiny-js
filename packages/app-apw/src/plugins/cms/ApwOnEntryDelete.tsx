@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import dotPropImmutable from "dot-prop-immutable";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
@@ -9,81 +9,93 @@ import {
 } from "~/graphql/contentReview.gql";
 import { ApwContentTypes } from "~/types";
 import { IS_REVIEW_REQUIRED_QUERY } from "../graphql";
-import { useCms } from "@webiny/app-headless-cms/admin/hooks";
+import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
 import { FetchResult } from "apollo-link";
 import { useApolloClient } from "@apollo/react-hooks";
 
 const t = i18n.ns("app-apw/cms/dialog");
 
-export const ApwOnEntryDelete = () => {
-    const client = useApolloClient();
-    const { onEntryDelete } = useCms();
-    const { showSnackbar } = useSnackbar();
+const { ContentEntry } = ContentEntryEditorConfig;
 
-    const { showConfirmation: showDeleteReviewConfirmation } = useConfirmationDialog({
-        title: t`Delete review`,
-        message: (
-            <p>
-                {t`Before deleting the CMS Entry you first need to delete the ongoing review.
+export const ApwOnEntryDelete = ContentEntry.useContentEntry.createDecorator(baseHook => {
+    return () => {
+        const hook = baseHook();
+        const client = useApolloClient();
+        const { showSnackbar } = useSnackbar();
+
+        const { showConfirmation } = useConfirmationDialog({
+            title: t`Delete review`,
+            message: (
+                <p>
+                    {t`Before deleting this entry, you must delete the ongoing review.
                 {separator}
                  Do you wish to continue and delete the review?`({ separator: <br /> })}
-            </p>
-        )
-    });
+                </p>
+            )
+        });
 
-    useEffect(() => {
-        return onEntryDelete(next => async params => {
-            const { entry } = params;
-            const input = {
-                id: entry.id,
-                type: ApwContentTypes.CMS_ENTRY,
-                settings: {
-                    modelId: params.model.modelId
-                }
-            };
-            const { data } = await client.query({
-                query: IS_REVIEW_REQUIRED_QUERY,
-                variables: {
-                    data: input
-                },
-                fetchPolicy: "network-only"
-            });
-            const contentReviewId = dotPropImmutable.get(
-                data,
-                "apw.isReviewRequired.data.contentReviewId"
-            );
-            const error = dotPropImmutable.get(data, "apw.isReviewRequired.error", null);
-            if (error) {
-                return next({ ...params, error });
-            } else if (contentReviewId) {
-                const response = await new Promise<
-                    FetchResult<DeleteApwContentReviewMutationResponse>
-                >(resolve => {
-                    showDeleteReviewConfirmation(async () => {
-                        const response = await client.mutate<
-                            DeleteApwContentReviewMutationResponse,
-                            DeleteApwContentReviewMutationVariables
-                        >({
-                            mutation: DELETE_CONTENT_REVIEW_MUTATION,
-                            variables: {
-                                id: contentReviewId
-                            }
-                        });
-
-                        resolve(response);
-                    });
+        return {
+            ...hook,
+            deleteEntry: async params => {
+                const input = {
+                    id: params.id,
+                    type: ApwContentTypes.CMS_ENTRY,
+                    settings: {
+                        modelId: hook.contentModel.modelId
+                    }
+                };
+                const { data } = await client.query({
+                    query: IS_REVIEW_REQUIRED_QUERY,
+                    variables: {
+                        data: input
+                    },
+                    fetchPolicy: "network-only"
                 });
-
-                const error = dotPropImmutable.get(response, "data.apw.deleteContentReview.error");
+                const contentReviewId = dotPropImmutable.get(
+                    data,
+                    "apw.isReviewRequired.data.contentReviewId"
+                );
+                const error = dotPropImmutable.get(data, "apw.isReviewRequired.error", null);
                 if (error) {
                     showSnackbar(error.message);
-                    return next({ ...params, error });
-                }
-                showSnackbar(`Content review deleted successfully!`);
-            }
-            return next(params);
-        });
-    }, []);
 
-    return null;
-};
+                    return { error };
+                }
+
+                if (contentReviewId) {
+                    const response = await new Promise<
+                        FetchResult<DeleteApwContentReviewMutationResponse>
+                    >(resolve => {
+                        showConfirmation(async () => {
+                            // TODO: create an SDK for APW
+                            const response = await client.mutate<
+                                DeleteApwContentReviewMutationResponse,
+                                DeleteApwContentReviewMutationVariables
+                            >({
+                                mutation: DELETE_CONTENT_REVIEW_MUTATION,
+                                variables: {
+                                    id: contentReviewId
+                                }
+                            });
+
+                            resolve(response);
+                        });
+                    });
+
+                    const error = dotPropImmutable.get(
+                        response,
+                        "data.apw.deleteContentReview.error"
+                    );
+
+                    if (error) {
+                        showSnackbar(error.message);
+                        return { error };
+                    }
+                    showSnackbar(`Content review deleted successfully!`);
+                }
+
+                return hook.deleteEntry(params);
+            }
+        };
+    };
+});

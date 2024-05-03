@@ -1,16 +1,13 @@
 import React, { useMemo } from "react";
 import { ReactComponent as UnpublishIcon } from "@material-design-icons/svg/outlined/settings_backup_restore.svg";
 import { observer } from "mobx-react-lite";
-import { useRecords } from "@webiny/app-aco";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
-import { useCms, useContentEntry, usePermission } from "~/admin/hooks";
+import { useContentEntry, usePermission } from "~/admin/hooks";
 import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
 
 export const ActionUnpublish = observer(() => {
     const { canUnpublish } = usePermission();
-    const { unpublishEntryRevision } = useCms();
-    const { contentModel } = useContentEntry();
-    const { updateRecordInCache } = useRecords();
+    const { unpublishEntryRevision } = useContentEntry();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
@@ -30,20 +27,16 @@ export const ActionUnpublish = observer(() => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
                         const response = await unpublishEntryRevision({
-                            model: contentModel,
-                            entry: item,
                             id: item.id
                         });
 
-                        const { error, entry } = response;
+                        const { error } = response;
 
                         if (error) {
                             throw new Error(
                                 error.message || "Unknown error while unpublishing the entry"
                             );
                         }
-
-                        updateRecordInCache(entry);
 
                         report.success({
                             title: `${item.meta.title}`,

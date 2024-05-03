@@ -127,7 +127,7 @@ const PageRevisionListItemGraphicDecorator = createDecorator(
     }
 );
 
-export const DecoratePublishActions = () => {
+export const DecoratePagePublishActions = () => {
     return (
         <>
             <PublishRevisionDecorator />

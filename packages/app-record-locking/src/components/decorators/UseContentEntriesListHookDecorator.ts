@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { useContentEntriesList } from "@webiny/app-headless-cms";
+import { ContentEntryListConfig } from "@webiny/app-headless-cms";
 import { useRecordLocking } from "~/hooks";
 
-export const UseContentEntriesListHookDecorator = useContentEntriesList.createDecorator(
-    originalHook => {
+export const UseContentEntriesListHookDecorator =
+    ContentEntryListConfig.ContentEntries.useContentEntriesList.createDecorator(originalHook => {
         return function RecordLockingUseContentEntriesList() {
             const value = originalHook();
             const recordLocking = useRecordLocking();
@@ -21,5 +21,4 @@ export const UseContentEntriesListHookDecorator = useContentEntriesList.createDe
                 records: recordLocking.records
             };
         };
-    }
-);
+    });

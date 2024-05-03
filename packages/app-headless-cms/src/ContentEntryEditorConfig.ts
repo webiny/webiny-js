@@ -10,15 +10,17 @@ import { ContentEntryForm as BaseContentEntryForm } from "./admin/components/Con
 import { ContentEntryFormPreview } from "./admin/components/ContentEntryForm/ContentEntryFormPreview";
 import { useContentEntryForm } from "./admin/components/ContentEntryForm/useContentEntryForm";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks";
+import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
+import { ContentEntryEditorConfig as BaseContentEntryEditorConfig } from "./admin/config/contentEntries";
 
-export const Components = {
-    ContentEntry: {
+export const ContentEntryEditorConfig = Object.assign(BaseContentEntryEditorConfig, {
+    ContentEntry: Object.assign(ContentEntry, {
         useContentEntry,
         ContentEntryForm: Object.assign(BaseContentEntryForm, {
-            useContentEntryForm,
+            useContentEntryForm
         }),
         ContentEntryFormPreview
-    },
+    }),
     FieldRenderers: {
         DynamicZone: {
             Template: {
@@ -38,4 +40,4 @@ export const Components = {
             TemplateGallery
         }
     }
-};
+});

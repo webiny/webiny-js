@@ -41,12 +41,12 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
     const contentEntry = useContentEntry();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const { entry, contentModel } = contentEntry;
+    const { contentModel } = contentEntry;
     const { modelId } = contentModel;
 
     const { createRevision, editRevision, deleteRevision, publishRevision, unpublishRevision } =
         useHandlers<UseRevisionHandlers>(
-            { entry },
+            { entry: revision },
             {
                 createRevision:
                     (): CreateRevisionHandler =>

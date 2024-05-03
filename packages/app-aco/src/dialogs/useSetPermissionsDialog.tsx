@@ -119,7 +119,7 @@ export const useSetPermissionsDialog = (): UseSetPermissionsDialogResponse => {
             content: <FormComponent folder={folder} />,
             acceptLabel: "Save",
             cancelLabel: "Cancel",
-            loadingLabel: "Updating permissions",
+            loadingLabel: "Updating permissions...",
             onAccept: (data: GenericFormData) => onAccept(folder, data)
         });
     };

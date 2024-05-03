@@ -106,7 +106,7 @@ export const useCreateDialog = (): UseCreateDialogResponse => {
             content: <FormComponent currentParentId={currentParentId} />,
             acceptLabel: "Create folder",
             cancelLabel: "Cancel",
-            loadingLabel: "Creating folder",
+            loadingLabel: "Creating folder...",
             onAccept
         });
     };

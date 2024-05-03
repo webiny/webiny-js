@@ -14,7 +14,8 @@ export const useContentReviewId = (id: string, model: CmsModel): string | null =
                 }
             }
         },
-        skip: !id
+        skip: !id,
+        fetchPolicy: "network-only"
     });
 
     return dotPropImmutable.get(data, "apw.isReviewRequired.data.contentReviewId", null);

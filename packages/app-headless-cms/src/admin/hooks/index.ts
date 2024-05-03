@@ -10,7 +10,6 @@ export { useModelEditor } from "../components/ContentModelEditor";
 export { useParentField, ParentFieldProvider } from "../components/ContentEntryForm/ParentValue";
 export { useModelField } from "../components/ModelFieldProvider";
 export { useModelFieldEditor } from "../components/FieldEditor";
-export { useChangeEntryStatus } from "~/admin/hooks/useChangeEntryStatus";
 export { useEntry } from "~/admin/hooks/useEntry";
 export * from "./useContentModels";
 export * from "~/admin/views/contentEntries/hooks";

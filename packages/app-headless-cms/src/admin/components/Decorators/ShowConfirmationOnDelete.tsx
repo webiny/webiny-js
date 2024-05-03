@@ -4,6 +4,7 @@ import { useBind } from "@webiny/form";
 import { useDialogs, useSnackbar } from "@webiny/app-admin";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
 
 type GetEntry = ReturnType<typeof useContentEntry>["getEntry"];
 type DeleteEntry = ReturnType<typeof useContentEntry>["deleteEntry"];
@@ -26,7 +27,7 @@ const EntryMessage = ({ id, getEntry }: { id: string; getEntry: GetEntry }) => {
     }, []);
 
     if (!entryBind.value) {
-        return <CircularProgress label={"Fetching entry information..."} />;
+        return <CircularProgress label={"Checking entry..."} />;
     }
 
     return (
@@ -44,6 +45,21 @@ export const ShowConfirmationOnDelete = useContentEntry.createDecorator(baseHook
         const dialogs = useDialogs();
         const { showSnackbar } = useSnackbar();
 
+        const onAccept = async (entry: CmsContentEntry) => {
+            const response = await hook.deleteEntry({ id: entry.entryId });
+
+            if (typeof response !== "boolean") {
+                showSnackbar(
+                    `Could not move ${entry.meta.title} to trash! (${response.error.message})`
+                );
+
+                return response;
+            }
+
+            showSnackbar(`${entry.meta.title} has been moved to trash successfully!`);
+            return response;
+        };
+
         const showConfirmation = (params: DeleteEntryParams) => {
             return new Promise<DeleteEntryResponse>(resolve => {
                 dialogs.showDialog({
@@ -52,23 +68,7 @@ export const ShowConfirmationOnDelete = useContentEntry.createDecorator(baseHook
                     acceptLabel: "Confirm",
                     cancelLabel: "Cancel",
                     loadingLabel: "Moving entry to trash...",
-                    onAccept: async ({ entry }) => {
-                        const response = await hook.deleteEntry(params);
-
-                        if (typeof response !== "boolean") {
-                            showSnackbar(
-                                <>
-                                    Could not move {entry.meta.title} to trash! (
-                                    {response.error.message})
-                                </>
-                            );
-
-                            return resolve(response);
-                        }
-
-                        showSnackbar(`${entry.meta.title} has been moved to trash successfully!`);
-                        resolve(response);
-                    },
+                    onAccept: async ({ entry }) => resolve(await onAccept(entry)),
                     onClose: () => resolve({ error: { message: "Cancelled" } })
                 });
             });
