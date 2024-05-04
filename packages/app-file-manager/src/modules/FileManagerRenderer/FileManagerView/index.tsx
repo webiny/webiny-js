@@ -79,7 +79,7 @@ export function FileManagerProvider({
     );
 }
 
-export const FileManagerRenderer = createDecorator(BaseFileManagerRenderer, _ => {
+export const FileManagerRenderer = createDecorator(BaseFileManagerRenderer, () => {
     return function FileManagerRenderer(props) {
         const { onChange, ...forwardProps } = props;
 

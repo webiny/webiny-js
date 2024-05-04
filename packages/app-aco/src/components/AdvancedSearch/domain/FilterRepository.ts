@@ -88,7 +88,7 @@ export class FilterRepository {
 
         const response = await this.runWithLoading<FilterDTO>(
             this.gateway.create({ ...filterStorage, id, namespace: this.namespace }),
-            "Creating filter",
+            "Creating filter...",
             `Filter "${filterStorage.name}" was successfully created.`
         );
 
@@ -108,7 +108,7 @@ export class FilterRepository {
         const filterStorage = FilterMapper.toStorage(filter);
         const response = await this.runWithLoading<FilterDTO>(
             this.gateway.update(filterStorage),
-            "Updating filter",
+            "Updating filter...",
             `Filter "${filterStorage.name}" was successfully updated.`
         );
 
@@ -142,7 +142,7 @@ export class FilterRepository {
 
         const response = await this.runWithLoading<boolean>(
             this.gateway.delete(id),
-            "Deleting filter",
+            "Deleting filter...",
             `Filter "${filter.name}" was successfully deleted.`
         );
 
