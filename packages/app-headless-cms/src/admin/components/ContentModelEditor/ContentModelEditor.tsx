@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CompositionScope, makeDecoratable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 import { Prompt } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { css } from "emotion";
