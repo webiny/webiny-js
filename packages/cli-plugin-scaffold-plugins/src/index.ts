@@ -1,8 +1,4 @@
-import {
-    CliCommandScaffoldTemplate,
-    TsConfigJson,
-    PackageJson
-} from "@webiny/cli-plugin-scaffold/types";
+import { CliCommandScaffoldTemplate, PackageJson } from "@webiny/cli-plugin-scaffold/types";
 import fs from "fs";
 import path from "path";
 import util from "util";
@@ -12,8 +8,6 @@ import writeJson from "write-json-file";
 import execa from "execa";
 import Case from "case";
 import { replaceInPath } from "replace-in-path";
-import chalk from "chalk";
-import indentString from "indent-string";
 import WebinyError from "@webiny/error";
 import validateNpmPackageName from "validate-npm-package-name";
 /**
@@ -21,12 +15,13 @@ import validateNpmPackageName from "validate-npm-package-name";
  */
 // @ts-expect-error
 import { getProject } from "@webiny/cli/utils";
-import { updateScaffoldsIndexFile } from "@webiny/cli-plugin-scaffold/utils";
+import { generators } from "./generators";
 
 const ncp = util.promisify(ncpBase.ncp);
 
 interface Input {
     pluginName: string;
+    packageName: string;
     location: string;
     pluginType: string;
 }
@@ -51,14 +46,34 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "pluginName",
                     message: "Enter the plugin name:",
+                    default: "myCustomPlugin",
                     validate: pluginName => {
                         if (!pluginName) {
                             return "Missing plugin name.";
                         }
 
-                        const isValidNpmPackageName = validateNpmPackageName(pluginName);
-                        if (!isValidNpmPackageName) {
-                            return `Package name must look something like "myCustomPlugin".`;
+                        const isValidName = pluginName === Case.camel(pluginName);
+                        if (!isValidName) {
+                            return `Please use camel case when providing the name of the plugin (for example "myCustomPlugin").`;
+                        }
+
+                        return true;
+                    }
+                },
+                {
+                    name: "packageName",
+                    message: "Enter the package name:",
+                    default: (answers: Input) => {
+                        return Case.kebab(answers.pluginName);
+                    },
+                    validate: pkgName => {
+                        if (!pkgName) {
+                            return "Missing package name.";
+                        }
+
+                        const isValidName = validateNpmPackageName(pkgName);
+                        if (!isValidName) {
+                            return `Package name must look something like "my-custom-plugin".`;
                         }
 
                         return true;
@@ -68,7 +83,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "location",
                     message: `Enter the plugin location:`,
                     default: (answers: Input) => {
-                        return `plugins/${Case.kebab(answers.pluginName)}`;
+                        return `plugins/${answers.pluginName}`;
                     },
                     validate: location => {
                         if (!location) {
@@ -93,7 +108,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             ora.start(`Creating plugin...`);
 
             try {
-                const { pluginName, location, pluginType } = input;
+                const { pluginType, pluginName, packageName, location } = input;
 
                 const sourcePath = path.join(__dirname, "templates", pluginType);
 
@@ -103,7 +118,6 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
                 const project = getProject();
 
-                //
                 const baseTsConfigFullPath = path.resolve(project.root, "tsconfig.json");
                 const baseTsConfigRelativePath = path.relative(location, baseTsConfigFullPath);
 
@@ -113,7 +127,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 await ncp(sourcePath, location);
 
                 const codeReplacements = [
-                    { find: "PACKAGE_NAME", replaceWith: pluginName },
+                    { find: "PACKAGE_NAME", replaceWith: packageName },
                     {
                         find: "BASE_TSCONFIG_PATH",
                         replaceWith: baseTsConfigRelativePath
@@ -121,22 +135,6 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 ];
 
                 replaceInPath(path.join(location, "**/*.*"), codeReplacements);
-
-                const apiScaffoldsIndexTsPath = path.join(
-                    "apps",
-                    "api",
-                    "graphql",
-                    "src",
-                    "plugins",
-                    "scaffolds",
-                    "index.ts"
-                );
-
-                await updateScaffoldsIndexFile({
-                    scaffoldsIndexPath: apiScaffoldsIndexTsPath,
-                    importName: pluginName,
-                    importPath: pluginName
-                });
 
                 // Add package to workspaces
                 const rootPackageJsonPath = path.join(project.root, "package.json");
@@ -146,12 +144,17 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     await writeJson(rootPackageJsonPath, rootPackageJson);
                 }
 
+                if (typeof generators[pluginType] === "function") {
+                    await generators[pluginType]({ input });
+                }
+
                 // Once everything is done, run `yarn` so the new packages are automatically installed.
                 await execa("yarn");
 
                 ora.succeed("New plugin created.");
             } catch (err) {
                 ora.fail("Could not create plugin. Please check the logs below.");
+                console.log();
                 console.log(err);
             }
         }
