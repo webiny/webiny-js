@@ -1,6 +1,6 @@
 import React from "react";
+import { createDecorator } from "@webiny/react-composition";
 import {
-    createDecorator,
     DialogsProvider,
     FileManagerFileItem,
     FileManagerOnChange,
@@ -79,7 +79,7 @@ export function FileManagerProvider({
     );
 }
 
-export const FileManagerRenderer = createDecorator(BaseFileManagerRenderer, () => {
+export const FileManagerRenderer = createDecorator(BaseFileManagerRenderer, _ => {
     return function FileManagerRenderer(props) {
         const { onChange, ...forwardProps } = props;
 

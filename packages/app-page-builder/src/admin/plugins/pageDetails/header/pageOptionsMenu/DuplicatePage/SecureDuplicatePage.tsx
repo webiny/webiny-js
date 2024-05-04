@@ -1,11 +1,10 @@
 import React, { useMemo } from "react";
 import { useFolders } from "@webiny/app-aco";
-import { createDecorator } from "@webiny/react-composition";
 import { usePage } from "~/admin/views/Pages/PageDetails";
 import { usePagesPermissions } from "~/hooks/permissions";
 import { DuplicatePage } from "./DuplicatePage";
 
-export const SecureDuplicatePage = createDecorator(DuplicatePage, Original => {
+export const SecureDuplicatePage = DuplicatePage.createDecorator(Original => {
     return function SecurePageDetailsDuplicatePageRenderer() {
         const { page } = usePage();
         const { folderLevelPermissions: flp } = useFolders();
