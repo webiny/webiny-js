@@ -7,7 +7,7 @@ export const useGoToRevision = () => {
     const { history, search } = useRouter();
 
     const goToRevision = useCallback(
-        id => {
+        (id: string) => {
             const fId = search[0].get("folderId");
             const folderId = fId ? `&folderId=${encodeURIComponent(fId)}` : "";
             history.push(
