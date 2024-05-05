@@ -8,6 +8,21 @@
   },
   "description": "Core package for all of our API packages.",
   "license": "MIT",
+  "dependencies": {
+    "@webiny/handler-client": "0.0.0",
+    "@webiny/api-tenancy": "0.0.0",
+    "@webiny/api-security": "0.0.0",
+    "@webiny/api-i18n": "0.0.0",
+    "@webiny/api-i18n-content": "0.0.0",
+    "@webiny/api-page-builder": "0.0.0",
+    "@webiny/api-prerendering-service": "0.0.0",
+    "@webiny/api-file-manager": "0.0.0",
+    "@webiny/api-form-builder": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-aco": "0.0.0",
+    "@webiny/api-page-builder-aco": "0.0.0",
+    "@webiny/api": "0.0.0"
+  },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
     "@babel/core": "^7.24.0",

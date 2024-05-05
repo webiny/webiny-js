@@ -1,6 +1,6 @@
 import { Project, Node, JsxFragment } from "ts-morph";
 import path from "path";
-import {formatCode} from "@webiny/cli-plugin-scaffold/utils";
+import { formatCode } from "@webiny/cli-plugin-scaffold/utils";
 
 interface Params {
     pluginName: string;

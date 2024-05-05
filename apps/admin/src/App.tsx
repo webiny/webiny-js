@@ -8,7 +8,7 @@ export const App = () => {
     return (
         <Admin>
             <Cognito />
-            <Scaffolds/>
+            <Scaffolds />
         </Admin>
     );
 };

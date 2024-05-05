@@ -18,7 +18,7 @@ export default {
                     import("@webiny/cwp-template-aws/cli"),
                     import("@webiny/cli-plugin-scaffold"),
                     import("@webiny/cli-plugin-scaffold-plugins"),
-                    import("@webiny/cli-plugin-scaffold-ci"),
+                    import("@webiny/cli-plugin-scaffold-ci")
                 ]);
 
                 return modules

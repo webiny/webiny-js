@@ -37,7 +37,7 @@ export const App = () => {
         <Admin>
             <Cognito />
             <CustomFileManager />
-            <Scaffolds/>
+            <Scaffolds />
         </Admin>
     );
 };
