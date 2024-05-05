@@ -105,10 +105,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             ];
         },
         generate: async ({ input, ora }) => {
-            ora.start(`Creating plugin...`);
+            const { pluginType, pluginName, packageName, location } = input;
 
             try {
-                const { pluginType, pluginName, packageName, location } = input;
+                ora.start(`Creating ${pluginName} plugin...`);
 
                 const sourcePath = path.join(__dirname, "templates", pluginType);
 
@@ -151,7 +151,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 // Once everything is done, run `yarn` so the new packages are automatically installed.
                 await execa("yarn");
 
-                ora.succeed("New plugin created.");
+                ora.succeed(`New plugin created in ${location}.`);
             } catch (err) {
                 ora.fail("Could not create plugin. Please check the logs below.");
                 console.log();
