@@ -1,5 +1,5 @@
 import React from "react";
 
-export const Scaffolds = () => {
+export const AdminPlugins = () => {
     return <></>;
 };

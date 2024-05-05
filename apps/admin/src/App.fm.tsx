@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Admin, createComponentPlugin } from "@webiny/app-serverless-cms";
 import { FileManagerFileItem, FileManagerRenderer, OverlayLayout } from "@webiny/app-admin";
 import { Cognito } from "@webiny/app-admin-users-cognito";
-import { Scaffolds } from "./plugins/Scaffolds";
+import { AdminPlugins } from "./plugins/scaffolds/AdminPlugins";
 import "./App.scss";
 
 const CustomFileManager = createComponentPlugin(FileManagerRenderer, () => {
@@ -37,7 +37,7 @@ export const App = () => {
         <Admin>
             <Cognito />
             <CustomFileManager />
-            <Scaffolds />
+            <AdminPlugins />
         </Admin>
     );
 };
