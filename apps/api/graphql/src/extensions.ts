@@ -1,2 +1,4 @@
 // This file is automatically updated via scaffolding utilities.
-export const extensions = () => [];
+export const extensions = () => {
+    return [];
+};
