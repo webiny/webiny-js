@@ -9,7 +9,6 @@
 			"apps/custom",
 			"apps/website",
 			"apps/website/prerendering/*",
-			"apps/theme",
 			"apps/core/dynamoToElastic",
 			"apps/api/apw/*",
 			"apps/api/fileManager/*",
@@ -18,9 +17,9 @@
 			"apps/api/pageBuilder/updateSettings",
 			"apps/api/pageBuilder/import/*",
 			"apps/api/pageBuilder/export/*",
+			"extensions/theme",
 			"scripts/buildPackages",
 			"scripts/prepublishOnly",
-			"plugins/myCustomPlugin"
 		]
 	},
 	"author": "Webiny Ltd.",
