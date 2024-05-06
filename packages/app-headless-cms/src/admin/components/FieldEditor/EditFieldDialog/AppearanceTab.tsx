@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { plugins } from "@webiny/plugins";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { CmsEditorFieldRendererPlugin, CmsModelField } from "~/types";
+import { CmsModelFieldRendererPlugin, CmsModelField } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { css } from "emotion";
@@ -28,14 +28,32 @@ const style = {
     })
 };
 
+/**
+ * We want the "hidden" renderer to always be the last one in the list.
+ * @param a
+ * @param b
+ */
+const hiddenLast = (a: CmsModelFieldRendererPlugin, b: CmsModelFieldRendererPlugin) => {
+    if (a.renderer.rendererName === "hidden") {
+        return 1;
+    }
+
+    if (b.renderer.rendererName === "hidden") {
+        return -1;
+    }
+
+    return 0;
+};
+
 const AppearanceTab = () => {
     const form = useForm<CmsModelField>();
     const { model } = useModel();
     const { field, fieldPlugin } = useModelField();
 
     const renderPlugins = plugins
-        .byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer")
-        .filter(item => item.renderer.canUse({ field, fieldPlugin, model }));
+        .byType<CmsModelFieldRendererPlugin>("cms-editor-field-renderer")
+        .filter(item => item.renderer.canUse({ field, fieldPlugin, model }))
+        .sort(hiddenLast);
 
     useEffect((): void => {
         // If the currently selected render plugin is no longer available, select the first available one.
