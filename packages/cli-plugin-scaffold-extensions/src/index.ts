@@ -23,13 +23,13 @@ interface Input {
     extensionName: string;
     packageName: string;
     location: string;
-    pluginType: string;
+    extensionType: string;
 }
 
 const EXTENSIONS_ROOT_FOLDER = 'extensions';
 
 export default (): CliCommandScaffoldTemplate<Input> => ({
-    name: "cli-plugin-scaffold-template-plugin",
+    name: "cli-plugin-scaffold-template-extensions",
     type: "cli-plugin-scaffold-template",
     scaffold: {
         name: "New Extension",
@@ -37,7 +37,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
         questions: () => {
             return [
                 {
-                    name: "pluginType",
+                    name: "extensionType",
                     message: "What type of an extension do you want to create?",
                     type: "list",
                     choices: [
@@ -48,7 +48,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "extensionName",
                     message: "Enter the extension name:",
-                    default: "myCustomPlugin",
+                    default: "myCustomExtension",
                     validate: extensionName => {
                         if (!extensionName) {
                             return "Missing extension name.";
@@ -56,7 +56,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
                         const isValidName = extensionName === Case.camel(extensionName);
                         if (!isValidName) {
-                            return `Please use camel case when providing the name of the extension (for example "myCustomPlugin").`;
+                            return `Please use camel case when providing the name of the extension (for example "myCustomExtension").`;
                         }
 
                         return true;
@@ -75,7 +75,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
                         const isValidName = validateNpmPackageName(pkgName);
                         if (!isValidName) {
-                            return `Package name must look something like "my-custom-plugin".`;
+                            return `Package name must look something like "my-custom-extension".`;
                         }
 
                         return true;
@@ -83,7 +83,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 },
                 {
                     name: "location",
-                    message: `Enter the plugin location:`,
+                    message: `Enter the extension location:`,
                     default: (answers: Input) => {
                         return `${EXTENSIONS_ROOT_FOLDER}/${answers.extensionName}`;
                     },
@@ -107,12 +107,12 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             ];
         },
         generate: async ({ input, ora }) => {
-            const { pluginType, extensionName, packageName, location } = input;
+            const { extensionType, extensionName, packageName, location } = input;
 
             try {
-                ora.start(`Creating ${extensionName} plugin...`);
+                ora.start(`Creating ${extensionName} extension...`);
 
-                const sourcePath = path.join(__dirname, "templates", pluginType);
+                const sourcePath = path.join(__dirname, "templates", extensionType);
 
                 if (fs.existsSync(location)) {
                     throw new WebinyError(`The target location already exists "${location}"`);
@@ -146,16 +146,16 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     await writeJson(rootPackageJsonPath, rootPackageJson);
                 }
 
-                if (typeof generators[pluginType] === "function") {
-                    await generators[pluginType]({ input });
+                if (typeof generators[extensionType] === "function") {
+                    await generators[extensionType]({ input });
                 }
 
                 // Once everything is done, run `yarn` so the new packages are automatically installed.
                 await execa("yarn");
 
-                ora.succeed(`New plugin created in ${log.success.hl(location)}.`);
+                ora.succeed(`New extension created in ${log.success.hl(location)}.`);
             } catch (err) {
-                ora.fail("Could not create plugin. Please check the logs below.");
+                ora.fail("Could not create extension. Please check the logs below.");
                 console.log();
                 console.log(err);
             }
