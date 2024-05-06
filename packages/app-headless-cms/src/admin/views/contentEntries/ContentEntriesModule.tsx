@@ -103,13 +103,13 @@ export const ContentEntriesModule = () => {
                 />
             </ContentEntryListConfig>
             <ContentEntryEditorConfig>
+                <ShowConfirmationOnPublish />
+                <ShowConfirmationOnUnpublish />
+                <ShowConfirmationOnDelete />
                 <Actions.ButtonAction name={"save"} element={<SaveContentButton />} />
                 <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
                 <Actions.MenuItemAction name={"delete"} element={<DeleteEntryMenuItem />} />
             </ContentEntryEditorConfig>
-            <ShowConfirmationOnPublish />
-            <ShowConfirmationOnUnpublish />
-            <ShowConfirmationOnDelete />
         </>
     );
 };
