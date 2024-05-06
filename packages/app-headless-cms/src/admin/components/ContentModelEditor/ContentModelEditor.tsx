@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CompositionScope, makeDecoratable } from "@webiny/app-admin";
+import { makeDecoratable } from "@webiny/app-admin";
 import { Prompt } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { css } from "emotion";
@@ -18,6 +18,8 @@ import DragPreview from "../DragPreview";
 import { useModelEditor } from "./useModelEditor";
 import { CmsModelField, CmsEditorFieldsLayout } from "~/types";
 import { ContentEntryEditorWithConfig } from "~/admin/config/contentEntries";
+import { ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/ContentEntryContext";
+import { ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext";
 
 const t = i18n.ns("app-headless-cms/admin/editor");
 
@@ -113,11 +115,13 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                                 </EditContainer>
                             </Tab>
                             <Tab label={"Preview"} data-testid={"cms.editor.tab.preview"}>
-                                <CompositionScope name={"cms.preview"}>
-                                    <ContentEntryEditorWithConfig>
-                                        <PreviewTab activeTab={activeTabIndex === 1} />
-                                    </ContentEntryEditorWithConfig>
-                                </CompositionScope>
+                                <ContentEntryEditorWithConfig>
+                                    <ContentEntriesProvider contentModel={data}>
+                                        <ContentEntryProvider readonly={true}>
+                                            <PreviewTab activeTab={activeTabIndex === 1} />
+                                        </ContentEntryProvider>
+                                    </ContentEntriesProvider>
+                                </ContentEntryEditorWithConfig>
                             </Tab>
                         </Tabs>
                     </RightPanel>

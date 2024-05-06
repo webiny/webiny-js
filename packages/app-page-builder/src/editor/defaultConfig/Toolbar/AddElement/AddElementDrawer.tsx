@@ -1,8 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { css } from "emotion";
 import isEqual from "lodash/isEqual";
+import { ReactComponent as AddIcon } from "@material-design-icons/svg/round/add.svg";
 import { Typography } from "@webiny/ui/Typography";
+import { useSnackbar } from "@webiny/app-admin";
 import { ButtonFloating } from "@webiny/ui/Button";
+import { plugins } from "@webiny/plugins";
 import * as Styled from "./StyledComponents";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import {
@@ -11,13 +14,14 @@ import {
     DropElementActionEvent
 } from "~/editor/recoil/actions";
 import Draggable from "~/editor/components/Draggable";
-import { plugins } from "@webiny/plugins";
 import { usePageBuilder } from "~/hooks/usePageBuilder";
-import { ReactComponent as AddIcon } from "~/editor/assets/icons/add.svg";
-import { PbEditorPageElementGroupPlugin, PbEditorPageElementPlugin } from "~/types";
+import {
+    PbEditorElement,
+    PbEditorPageElementGroupPlugin,
+    PbEditorPageElementPlugin
+} from "~/types";
 import { DropElementActionArgsType } from "~/editor/recoil/actions/dropElement/types";
 import Accordion from "~/editor/plugins/elementSettings/components/Accordion";
-import { useSnackbar } from "@webiny/app-admin";
 import { AddElementButton } from "~/editor/plugins/elements/cell/AddElementButton";
 import { useDrawer } from "~/editor/config/Toolbar/Drawers/DrawerProvider";
 
@@ -31,7 +35,7 @@ const accordionStyle = css`
 type ElementsListProps = {
     groupPlugin: PbEditorPageElementGroupPlugin;
     elements: PbEditorPageElementPlugin[];
-    renderDraggable: (element: any, plugin: any) => JSX.Element;
+    renderDraggable: (element: React.ReactNode, plugin: PbEditorPageElementPlugin) => JSX.Element;
     refresh: () => void;
 };
 
@@ -72,6 +76,15 @@ const ElementsList = ({ groupPlugin, elements, renderDraggable, refresh }: Eleme
     );
 };
 
+interface RenderOverlayCb {
+    (
+        element: React.ReactNode,
+        onClick: ((event: React.MouseEvent<any, MouseEvent>) => any) | undefined,
+        label: string,
+        plugin: PbEditorPageElementPlugin
+    ): React.ReactNode;
+}
+
 export const AddElementDrawer = () => {
     const drawer = useDrawer();
     const [params, setParams] = useState<DropElementActionArgsType["target"] | undefined>(
@@ -82,7 +95,7 @@ export const AddElementDrawer = () => {
     const [elements, setElements] = useState(elementPlugins);
     const { showSnackbar } = useSnackbar();
 
-    const onAddElement = useCallback(element => {
+    const onAddElement = useCallback((element: PbEditorElement) => {
         setParams({
             id: element.id,
             type: element.type,
@@ -159,8 +172,8 @@ export const AddElementDrawer = () => {
         el.classList.remove("pb-editor-dragging");
     }, []);
 
-    const renderOverlay = useCallback(
-        (element, onClick = null, label, plugin) => {
+    const renderOverlay = useCallback<RenderOverlayCb>(
+        (element, onClick, label, plugin) => {
             return (
                 <Styled.ElementPreview>
                     <Styled.Overlay>
@@ -183,7 +196,7 @@ export const AddElementDrawer = () => {
         [enableDragOverlay, disableDragOverlay]
     );
 
-    const renderDraggable = useCallback(
+    const renderDraggable = useCallback<ElementsListProps["renderDraggable"]>(
         (element, plugin) => {
             const { elementType } = plugin;
 
@@ -246,9 +259,8 @@ export const AddElementDrawer = () => {
                                               },
                                               target: params as DropElementActionArgsType["target"]
                                           });
-                                          // setTimeout(deactivatePlugin, 20);
                                       }
-                                    : null,
+                                    : undefined,
                                 params ? "Click to Add" : "Drag to Add",
                                 plugin
                             )}

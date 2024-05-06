@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import slugify from "slugify";
 import { useSnackbar } from "@webiny/app-admin";
-import { Bind, FormAPI } from "@webiny/form";
+import { Bind, FormAPI, GenericFormData } from "@webiny/form";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Typography } from "@webiny/ui/Typography";
@@ -12,6 +12,7 @@ import { useDialogs } from "@webiny/app-admin";
 import { DialogFoldersContainer } from "~/dialogs/styled";
 import { useFolders } from "~/hooks";
 import { ROOT_FOLDER } from "~/constants";
+import { FolderItem } from "~/types";
 
 interface ShowDialogParams {
     currentParentId?: string | null;
@@ -86,7 +87,7 @@ export const useCreateDialog = (): UseCreateDialogResponse => {
     const { createFolder } = useFolders();
     const { showSnackbar } = useSnackbar();
 
-    const onAccept = useCallback(async data => {
+    const onAccept = useCallback(async (data: FolderItem) => {
         try {
             await createFolder({
                 ...data,
@@ -106,8 +107,11 @@ export const useCreateDialog = (): UseCreateDialogResponse => {
             content: <FormComponent currentParentId={currentParentId} />,
             acceptLabel: "Create folder",
             cancelLabel: "Cancel",
-            loadingLabel: "Creating folder",
-            onAccept
+            loadingLabel: "Creating folder...",
+            /**
+             * We need to cast as there are no generics to pass for the onAccept function.
+             */
+            onAccept: onAccept as (data: GenericFormData) => Promise<void>
         });
     };
 

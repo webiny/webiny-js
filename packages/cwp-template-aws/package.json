@@ -21,7 +21,7 @@
     "get-yarn-workspaces": "1.0.2",
     "inquirer": "7.3.3",
     "load-json-file": "6.2.0",
-    "lodash": "4.17.21",
+    "lodash": "^4.17.21",
     "open": "^8.4.0",
     "ora": "4.1.1",
     "write-json-file": "4.3.0",

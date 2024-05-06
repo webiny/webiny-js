@@ -167,7 +167,9 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             },
             removeRecordFromCache: (id: string) => {
                 setRecords(prev => {
-                    return prev.filter(record => record.id !== id);
+                    return prev.filter(
+                        record => record.id !== id && !record.id.startsWith(`${id}#`)
+                    );
                 });
             },
 

@@ -1,9 +1,9 @@
 import React from "react";
 import {
     Menu as BaseMenu,
-    MenuProps as RmwcMenuProps,
     MenuItem as BaseMenuItem,
     MenuItemProps as BaseMenuItemProps,
+    MenuProps as RmwcMenuProps,
     MenuSurface,
     MenuSurfaceAnchor
 } from "@rmwc/menu";
@@ -17,9 +17,19 @@ const style = {
     })
 };
 
-type MenuProps = RmwcMenuProps & {
+export type MenuChildrenFunctionProps = {
+    closeMenu: () => void;
+};
+
+export interface RenderableMenuChildren {
+    (props: MenuChildrenFunctionProps): React.ReactElement;
+}
+export type MenuProps = RmwcMenuProps & {
     // One or more MenuItem components.
-    children: React.ReactNode;
+    children: React.ReactNode | RenderableMenuChildren;
+
+    // Custom render function for MenuItem content, prioritized over 'children'.
+    render?: (props: MenuChildrenFunctionProps) => React.ReactNode;
 
     // A handler which triggers the menu, eg. button or link.
     handle?: React.ReactElement;
@@ -92,16 +102,18 @@ class Menu extends React.Component<MenuProps, MenuState> {
     };
 
     private readonly renderCustomContent = () => {
-        const { children } = this.props;
+        const { children, render } = this.props;
+
+        const renderer = render || children;
         return (
             <MenuSurface
                 open={this.state.menuIsOpen}
                 onClose={this.closeMenu}
                 renderToPortal={this.props.renderToPortal}
             >
-                {typeof children === "function"
-                    ? children({ closeMenu: this.closeMenu })
-                    : children}
+                {typeof renderer === "function"
+                    ? renderer({ closeMenu: this.closeMenu })
+                    : renderer}
             </MenuSurface>
         );
     };

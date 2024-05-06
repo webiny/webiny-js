@@ -4,13 +4,13 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { CmsEditorFieldRendererPlugin, CmsModelField } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
-import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
 import { validation } from "@webiny/validation";
 import { useModel, useModelField } from "~/admin/hooks";
 import { useForm, Bind } from "@webiny/form";
 import { Alert } from "@webiny/ui/Alert";
 import { allowCmsLegacyRichTextInput } from "~/utils/allowCmsLegacyRichTextInput";
+import { Typography } from "@webiny/ui/Typography";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-editor/tabs/appearance-tab");
 
@@ -23,7 +23,8 @@ const style = {
         padding: 25
     }),
     radioContainer: css({
-        marginBottom: 10
+        marginBottom: 10,
+        display: "flex"
     })
 };
 
@@ -93,28 +94,28 @@ const AppearanceTab = () => {
                 >{t`Choose a component that will render the field:`}</div>
                 <Bind name={"renderer.name"} validate={validation.create("required")}>
                     <RadioGroup>
-                        {({ onChange, getValue }) => (
-                            <React.Fragment>
-                                {renderPlugins.map(item => (
+                        {({ onChange, getValue }) =>
+                            renderPlugins.map(item => {
+                                const setValue = onChange(item.renderer.rendererName);
+                                return (
                                     <div key={item.name} className={style.radioContainer}>
                                         <Radio
                                             value={getValue(item.renderer.rendererName)}
-                                            onChange={onChange(item.renderer.rendererName)}
-                                            label={
-                                                <>
-                                                    <div>{item.renderer.name}</div>
-                                                    <div>
-                                                        <Typography use={"caption"}>
-                                                            {item.renderer.description}
-                                                        </Typography>
-                                                    </div>
-                                                </>
-                                            }
+                                            onChange={setValue}
                                         />
+
+                                        <div onClick={setValue}>
+                                            <div>{item.renderer.name}</div>
+                                            <div>
+                                                <Typography use={"caption"}>
+                                                    {item.renderer.description}
+                                                </Typography>
+                                            </div>
+                                        </div>
                                     </div>
-                                ))}
-                            </React.Fragment>
-                        )}
+                                );
+                            })
+                        }
                     </RadioGroup>
                 </Bind>
             </Cell>

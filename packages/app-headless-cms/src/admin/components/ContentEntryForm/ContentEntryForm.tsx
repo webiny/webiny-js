@@ -1,179 +1,98 @@
-import React, { useCallback, useEffect, useRef } from "react";
-import { FieldElement } from "./FieldElement";
+import React, { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
-import { Form } from "@webiny/form";
-import { FormAPI, FormRenderPropParams } from "@webiny/form/types";
-import { plugins } from "@webiny/plugins";
-import { CircularProgress } from "@webiny/ui/Progress";
-import { CmsContentEntry, CmsContentFormRendererPlugin } from "~/types";
-import { useContentEntryForm, UseContentEntryFormParams } from "./useContentEntryForm";
-import { Fields } from "./Fields";
-import { Prompt } from "@webiny/react-router";
-import { makeDecoratable, useSnackbar } from "@webiny/app-admin";
+import { CmsContentEntry } from "~/types";
+import { makeDecoratable } from "@webiny/app-admin";
 import { ModelProvider, useModel } from "~/admin/components/ModelProvider";
 import { Header } from "~/admin/components/ContentEntryForm/Header";
+import { useDefaultValues } from "~/admin/components/ContentEntryForm/useDefaultValues";
+import { useFormRenderer } from "~/admin/components/ContentEntryForm/useFormRenderer";
+import { ContentEntryFormContext, ContentEntryFormProvider } from "./ContentEntryFormProvider";
+import { CustomLayout } from "./CustomLayout";
+import { DefaultLayout } from "./DefaultLayout";
+import { useGoToRevision } from "~/admin/components/ContentEntryForm/useGoToRevision";
 
 const FormWrapper = styled("div")({
     height: "calc(100vh - 260px)",
     overflow: "auto"
 });
 
-export interface ContentEntryFormProps extends UseContentEntryFormParams {
-    onForm?: (form: FormAPI) => void;
+export interface ContentEntryFormProps {
+    entry: Partial<CmsContentEntry>;
+    /**
+     * This callback is executed when an entry, or a revision, are created.
+     * @param entry
+     */
+    onAfterCreate?: (entry: CmsContentEntry) => void;
+    header?: boolean;
+    /**
+     * This prop is used to get a reference to `saveEntry` callback, so it can be triggered by components
+     * outside the ContentEntryForm context.
+     * TODO: introduce a `layout` prop to be able to mount arbitrary components around the entry form, within the context.
+     */
+    setSaveEntry?: (cb: ContentEntryFormContext["saveEntry"]) => void;
+    /**
+     * This flag exists for a lack of better Apollo cache control, at the moment.
+     * We use this flag when we need to tell the system to add new entries to apollo cache.
+     * Why would you want to NOT add entries to cache? When using a `ref` field, which usually points to
+     * a different model than the main entry you're working on. Example: Book -> Author, you don't want
+     * an Author created via a `ref` field dialog to be added to the list of Books.
+     * TODO: revisit this, and look for a better solution.
+     */
+    addEntryToListCache?: boolean;
 }
-
-function omitTypename(key: string, value: string): string | undefined {
-    return key === "__typename" ? undefined : value;
-}
-
-const stringify = (value: any): string => {
-    return JSON.stringify(value || {}, omitTypename);
-};
-
-const isDifferent = (value: any, compare: any): boolean => {
-    if (!value && !compare) {
-        return false;
-    }
-    return stringify(value) !== stringify(compare);
-};
 
 export const ContentEntryForm = makeDecoratable(
     "ContentEntryForm",
-    ({ onForm, ...props }: ContentEntryFormProps) => {
+    ({
+        entry,
+        onAfterCreate,
+        addEntryToListCache,
+        setSaveEntry,
+        header = true
+    }: ContentEntryFormProps) => {
         const formElementRef = useRef<HTMLDivElement>(null);
         const { model } = useModel();
-        const {
-            loading,
-            data: initialData,
-            onChange,
-            onSubmit,
-            invalidFields
-        } = useContentEntryForm(props);
+        const { goToRevision } = useGoToRevision();
+        const defaultValues = useDefaultValues(model);
+        const formRenderer = useFormRenderer(model);
 
-        const [isDirty, setIsDirty] = React.useState<boolean>(false);
-        /**
-         * Reset isDirty when the loaded data changes.
-         */
-        useEffect(() => {
-            if (!isDirty) {
-                return;
-            }
-            setIsDirty(false);
-        }, [initialData]);
+        const defaultOnAfterCreate = (entry: CmsContentEntry) => {
+            goToRevision(entry.id);
+        };
 
-        const { showSnackbar } = useSnackbar();
+        // Determine initial entry.
+        const initialData = entry && entry.id ? entry : defaultValues;
 
-        const ref = useRef<FormAPI | null>(null);
-
-        useEffect(() => {
-            if (typeof onForm !== "function" || !ref.current) {
-                return;
-            }
-            onForm(ref.current);
-        }, []);
-
+        // When entry changes, scroll to the top of the form.
         useEffect(() => {
             if (!formElementRef.current) {
                 return;
             }
 
-            formElementRef.current.scrollTo(0, 0);
+            setTimeout(() => {
+                formElementRef.current?.scrollTo(0, 0);
+            }, 20);
         }, [initialData.id, formElementRef.current]);
 
-        const formRenderer = plugins
-            .byType<CmsContentFormRendererPlugin>("cms-content-form-renderer")
-            .find(pl => pl.modelId === model.modelId);
-
-        const renderCustomLayout = useCallback(
-            (formRenderProps: FormRenderPropParams) => {
-                const fields = model.fields.reduce((acc, field) => {
-                    acc[field.fieldId] = (
-                        <FieldElement
-                            field={field}
-                            /**
-                             * TODO @ts-refactor
-                             * Figure out type for Bind.
-                             */
-                            // @ts-expect-error
-                            Bind={formRenderProps.Bind}
-                            contentModel={model}
-                        />
-                    );
-
-                    return acc;
-                }, {} as Record<string, React.ReactElement>);
-                if (!formRenderer) {
-                    return <>{`Missing form renderer for modelId "${model.modelId}".`}</>;
-                }
-                return formRenderer.render({
-                    ...formRenderProps,
-                    contentModel: model,
-                    fields,
-                    /**
-                     * TODO @ts-refactor
-                     * Figure out type for Bind.
-                     */
-                    // @ts-expect-error
-                    Bind: formRenderProps.Bind
-                });
-            },
-            [formRenderer]
-        );
-
         return (
-            <Form<CmsContentEntry>
-                onChange={(data, form) => {
-                    const different = isDifferent(data, initialData);
-                    if (isDirty !== different) {
-                        setIsDirty(different);
-                    }
-                    return onChange(data, form);
-                }}
-                onSubmit={(data, form) => {
-                    setIsDirty(false);
-                    return onSubmit(data, form);
-                }}
-                data={initialData}
-                ref={ref}
-                invalidFields={invalidFields}
-                onInvalid={() => {
-                    setIsDirty(true);
-                    showSnackbar("Some fields did not pass the validation. Please check the form.");
-                }}
+            <ContentEntryFormProvider
+                model={model}
+                entry={initialData}
+                onAfterCreate={onAfterCreate || defaultOnAfterCreate}
+                setSaveEntry={setSaveEntry}
+                addItemToListCache={addEntryToListCache}
             >
-                {formProps => {
-                    return (
-                        <ModelProvider model={model}>
-                            <Prompt
-                                when={isDirty}
-                                message={
-                                    "There are some unsaved changes! Are you sure you want to navigate away and discard all changes?"
-                                }
-                            />
-                            <Header />
-                            <FormWrapper data-testid={"cms-content-form"} ref={formElementRef}>
-                                {loading && <CircularProgress />}
-                                {formRenderer ? (
-                                    renderCustomLayout(formProps)
-                                ) : (
-                                    <Fields
-                                        contentModel={model}
-                                        fields={model.fields || []}
-                                        layout={model.layout || []}
-                                        {...formProps}
-                                        /**
-                                         * TODO @ts-refactor
-                                         * Figure out type for Bind.
-                                         */
-                                        // @ts-expect-error
-                                        Bind={formProps.Bind}
-                                    />
-                                )}
-                            </FormWrapper>
-                        </ModelProvider>
-                    );
-                }}
-            </Form>
+                <ModelProvider model={model}>
+                    {header ? <Header /> : null}
+                    <FormWrapper data-testid={"cms-content-form"} ref={formElementRef}>
+                        {formRenderer ? (
+                            <CustomLayout model={model} formRenderer={formRenderer} />
+                        ) : (
+                            <DefaultLayout model={model} />
+                        )}
+                    </FormWrapper>
+                </ModelProvider>
+            </ContentEntryFormProvider>
         );
     }
 );

@@ -2,11 +2,12 @@ import { useCallback, useState } from "react";
 import orderBy from "lodash/orderBy";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import { LIST_TENANTS, DELETE_TENANT } from "~/graphql";
+import { DELETE_TENANT, LIST_TENANTS } from "~/graphql";
 import { useCurrentTenantId } from "./useCurrentTenantId";
+import { TenantItem } from "~/types";
 
 const t = i18n.ns("app-tenant-manager/tenants/data-list");
 
@@ -28,14 +29,18 @@ interface Config {
     sorters: Sorter[];
 }
 
+interface DeleteTenantCallable {
+    (item: Pick<TenantItem, "id" | "name">): void;
+}
+
 interface UseTenantsListHook {
     (config: Config): {
         loading: boolean;
         tenants: Array<{
             id: string;
-            name: boolean;
+            name: string;
             description: string;
-            parent: string;
+            parent: string | null;
             [key: string]: any;
         }>;
         currentTenantId: string | null;
@@ -45,7 +50,7 @@ interface UseTenantsListHook {
         sort: string | null;
         setSort: (sort: string) => void;
         editTenant: (id: string) => void;
-        deleteTenant: (id: string) => void;
+        deleteTenant: DeleteTenantCallable;
     };
 }
 
@@ -66,14 +71,14 @@ export const useTenantsList: UseTenantsListHook = (config: Config) => {
     });
 
     const filterTenants = useCallback(
-        ({ name }) => {
+        ({ name }: Pick<TenantItem, "name">) => {
             return name.toLowerCase().includes(filter);
         },
         [filter]
     );
 
     const sortTenantList = useCallback(
-        tenants => {
+        (tenants: TenantItem[]): TenantItem[] => {
             if (!sort) {
                 return tenants;
             }
@@ -85,7 +90,7 @@ export const useTenantsList: UseTenantsListHook = (config: Config) => {
 
     const data = listQuery.loading ? [] : listQuery.data.tenancy.listTenants.data;
 
-    const deleteTenant = useCallback(
+    const deleteTenant = useCallback<DeleteTenantCallable>(
         item => {
             showConfirmation(async () => {
                 const response = await deleteIt({
@@ -113,7 +118,7 @@ export const useTenantsList: UseTenantsListHook = (config: Config) => {
 
     const createTenant = useCallback(() => history.push("/tenants?new=true"), []);
 
-    const editTenant = useCallback(id => {
+    const editTenant = useCallback((id: string) => {
         history.push(`/tenants?id=${id}`);
     }, []);
 

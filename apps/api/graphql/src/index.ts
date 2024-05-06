@@ -42,7 +42,7 @@ import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
 import { createCountDynamoDbTask } from "~/plugins/countDynamoDbTask";
 import { createContinuingTask } from "~/plugins/continuingTask";
 import { createWebsockets } from "@webiny/api-websockets";
-import { createLockingMechanism } from "@webiny/api-locking-mechanism";
+import { createRecordLocking } from "@webiny/api-record-locking";
 
 import scaffoldsPlugins from "./plugins/scaffolds";
 import { extensions } from "./extensions";
@@ -73,7 +73,7 @@ export const handler = createHandler({
             })
         }),
         createHeadlessCmsGraphQL(),
-        createLockingMechanism(),
+        createRecordLocking(),
         createBackgroundTasks(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({

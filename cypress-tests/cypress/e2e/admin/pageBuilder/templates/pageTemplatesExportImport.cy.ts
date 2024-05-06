@@ -51,7 +51,9 @@ context("Page Builder - Template Export&Import", () => {
 
     it("Should be able to export templates and then import them again", () => {
         cy.visit("/page-builder/page-templates");
-        cy.findByTestId("export-template-button").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("export-template-button")` if issue is fixed.
+        cy.get('button[data-testid="export-template-button"]').click();
         cy.findByTestId("pb-templates-export-dialog-export-url")
             .invoke("text")
             .then(text => {
@@ -60,7 +62,9 @@ context("Page Builder - Template Export&Import", () => {
 
                 cy.visit("/page-builder/page-templates");
                 cy.findByPlaceholderText("Search templates").should("exist");
-                cy.findByTestId("pb-templates-list-options-btn").click();
+                // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                // Now targeting <button> directly. Revert to `.findByTestId("pb-templates-list-options-btn")` if issue is fixed.
+                cy.get('button[data-testid="pb-templates-list-options-btn"]').click();
                 cy.findByRole("menuitem", { name: "Import Templates" }).click();
                 cy.contains("Paste File URL").should("exist").click();
                 cy.contains("File URL").type(url);

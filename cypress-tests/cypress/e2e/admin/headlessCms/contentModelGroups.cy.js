@@ -46,7 +46,9 @@ context("Headless CMS - Content Model Groups", () => {
                 .within(() => {
                     cy.findByText(newGroup2).should("exist");
                     // Initiate delete
-                    cy.findByTestId("cms.contentModelGroup.list-item.delete").click({
+                    // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                    // Now targeting <button> directly. Revert to `.findByTestId("cms.contentModelGroup.list-item.delete")` if issue is fixed.
+                    cy.get('button[data-testid="cms.contentModelGroup.list-item.delete"]').click({
                         force: true
                     });
                 });
@@ -143,11 +145,15 @@ context("Headless CMS - Content Model Groups", () => {
         });
 
         // Sort groups by "Name A->Z"
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select("name_ASC");
         });
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
 
         // Group1 should be at the top of the list
         cy.findByTestId("default-data-list").within(() => {
@@ -158,11 +164,15 @@ context("Headless CMS - Content Model Groups", () => {
                 });
         });
         // Sort groups by "Name Z->A"
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select("name_DESC");
         });
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
 
         // Group2 should be at the top of the list
         cy.findByTestId("default-data-list").within(() => {
@@ -174,11 +184,15 @@ context("Headless CMS - Content Model Groups", () => {
         });
 
         // Sort groups by "Newest to Oldest"
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select("createdOn_DESC");
         });
-        cy.findByTestId("default-data-list.filter").click();
+        // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+        // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.filter")` if issue is fixed.
+        cy.get('button[data-testid="default-data-list.filter"]').click();
 
         // Finally, delete group2
         cy.findByTestId("default-data-list").within(() => {
@@ -187,7 +201,9 @@ context("Headless CMS - Content Model Groups", () => {
                 .within(() => {
                     cy.findByText(newGroup2).should("exist");
                     // Initiate delete
-                    cy.findByTestId("cms.contentModelGroup.list-item.delete").click({
+                    // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                    // Now targeting <button> directly. Revert to `.findByTestId("cms.contentModelGroup.list-item.delete")` if issue is fixed.
+                    cy.get('button[data-testid="cms.contentModelGroup.list-item.delete"]').click({
                         force: true
                     });
                 });
@@ -209,7 +225,9 @@ context("Headless CMS - Content Model Groups", () => {
                 .within(() => {
                     cy.findByText(newGroup1).should("exist");
                     // Initiate delete
-                    cy.findByTestId("cms.contentModelGroup.list-item.delete").click({
+                    // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                    // Now targeting <button> directly. Revert to `.findByTestId("cms.contentModelGroup.list-item.delete")` if issue is fixed.
+                    cy.get('button[data-testid="cms.contentModelGroup.list-item.delete"]').click({
                         force: true
                     });
                 });

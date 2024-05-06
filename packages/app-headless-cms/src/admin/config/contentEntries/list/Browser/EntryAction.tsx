@@ -1,7 +1,7 @@
 import React from "react";
-import { CompositionScope } from "@webiny/react-composition";
+import { CompositionScope, makeDecoratable } from "@webiny/react-composition";
 import { AcoConfig, RecordActionConfig } from "@webiny/app-aco";
-import { useModel } from "~/admin/hooks";
+import { IsApplicableToCurrentModel } from "~/admin/config/IsApplicableToCurrentModel";
 
 const { Record } = AcoConfig;
 
@@ -11,21 +11,20 @@ export interface EntryActionProps extends React.ComponentProps<typeof AcoConfig.
     modelIds?: string[];
 }
 
-const BaseEntryAction = ({ modelIds = [], ...props }: EntryActionProps) => {
-    const { model } = useModel();
-
-    if (modelIds.length > 0 && !modelIds.includes(model.modelId)) {
-        return null;
+const BaseEntryAction = makeDecoratable(
+    "EntryAction",
+    ({ modelIds = [], ...props }: EntryActionProps) => {
+        return (
+            <CompositionScope name={"cms"}>
+                <AcoConfig>
+                    <IsApplicableToCurrentModel modelIds={modelIds}>
+                        <Record.Action {...props} />
+                    </IsApplicableToCurrentModel>
+                </AcoConfig>
+            </CompositionScope>
+        );
     }
-
-    return (
-        <CompositionScope name={"cms"}>
-            <AcoConfig>
-                <Record.Action {...props} />
-            </AcoConfig>
-        </CompositionScope>
-    );
-};
+);
 
 export const EntryAction = Object.assign(BaseEntryAction, {
     OptionsMenuItem: Record.Action.OptionsMenuItem,

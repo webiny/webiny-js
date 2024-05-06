@@ -6,7 +6,7 @@ export interface WebsocketsProviderProps {
     children: React.ReactNode;
 }
 
-const WebsocketsHoc = (Component: React.ComponentType) => {
+const WebsocketsHoc = (Component: React.ComponentType<React.PropsWithChildren>) => {
     return function WebsocketsProvider(props: WebsocketsProviderProps) {
         return (
             <WebsocketsContextProvider>

@@ -28,12 +28,12 @@ export const leftPanel = css({
     ">.webiny-data-list": {
         display: "flex",
         flexDirection: "column",
-        height: "calc(100vh - 64px)",
-        ".mdc-list": {
+        height: "calc(100vh - 70px)",
+        ".mdc-deprecated-list": {
             overflow: "auto"
         }
     },
-    ">.mdc-list": {
+    ">.mdc-deprecated-list": {
         display: "flex",
         flexDirection: "column",
         maxHeight: "calc(100vh - 64px)",

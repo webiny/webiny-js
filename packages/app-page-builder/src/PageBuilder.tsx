@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { HasPermission } from "@webiny/app-security";
-import { Plugins, AddMenu as Menu, createProviderPlugin, createDecorator } from "@webiny/app-admin";
+import { Plugins, AddMenu as Menu, createProviderPlugin } from "@webiny/app-admin";
 import { Global, css } from "@emotion/react";
 import { PageBuilderProvider as ContextProvider } from "./contexts/PageBuilder";
 import { ReactComponent as PagesIcon } from "./admin/assets/table_chart-24px.svg";
@@ -104,7 +104,7 @@ const EditorLoader = React.lazy(() =>
     }))
 );
 
-const EditorRendererPlugin = createDecorator(EditorRenderer, () => {
+const EditorRendererPlugin = EditorRenderer.createDecorator(() => {
     return function Editor(props) {
         return <EditorLoader {...props} />;
     };

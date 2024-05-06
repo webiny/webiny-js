@@ -50,7 +50,7 @@ const style = {
         }),
         list: css({
             padding: "0 0 5px 0 !important",
-            ".mdc-list-item": {
+            ".mdc-deprecated-list-item": {
                 borderBottom: "1px solid var(--mdc-theme-on-background)"
             }
         }),

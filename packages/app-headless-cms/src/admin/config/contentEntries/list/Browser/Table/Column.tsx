@@ -1,5 +1,5 @@
 import React from "react";
-import { CompositionScope } from "@webiny/react-composition";
+import { CompositionScope, makeDecoratable } from "@webiny/react-composition";
 import { AcoConfig, TableColumnConfig as ColumnConfig } from "@webiny/app-aco";
 import { TableItem } from "~/types";
 import { IsApplicableToCurrentModel } from "~/admin/config/IsApplicableToCurrentModel";
@@ -12,7 +12,7 @@ export interface ColumnProps extends React.ComponentProps<typeof AcoConfig.Table
     modelIds?: string[];
 }
 
-const BaseColumn = ({ modelIds = [], ...props }: ColumnProps) => {
+const BaseColumnComponent = ({ modelIds = [], ...props }: ColumnProps) => {
     return (
         <CompositionScope name={"cms"}>
             <AcoConfig>
@@ -23,6 +23,8 @@ const BaseColumn = ({ modelIds = [], ...props }: ColumnProps) => {
         </CompositionScope>
     );
 };
+
+const BaseColumn = makeDecoratable("Column", BaseColumnComponent);
 
 export const Column = Object.assign(BaseColumn, {
     useTableRow: Table.Column.createUseTableRow<TableItem>(),

@@ -6,6 +6,7 @@ import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
 import { usePage } from "~/pageEditor/hooks/usePage";
 import { UpdatedPage } from "~/pageEditor/config/eventActions/saveRevision/types";
 import { usePageSettings as usePageSettingsState } from "~/pageEditor/config/TopBar/PageSettings/usePageSettings";
+import { PbPageData } from "~/types";
 
 export type UsePageSettings = ReturnType<typeof usePageSettings>;
 
@@ -18,7 +19,7 @@ export function usePageSettings() {
     const { showSnackbar } = useSnackbar();
     const { removeKeyHandler, addKeyHandler } = useKeyHandler();
 
-    const savePage = useCallback(pageValue => {
+    const savePage = useCallback((pageValue: Partial<PbPageData>) => {
         eventActionHandler.trigger(
             new UpdateDocumentActionEvent({
                 document: pageValue,

@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import dotPropImmutable from "dot-prop-immutable";
 import { useNavigate } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
-import { ContentEntryEditorConfig, useContentEntry } from "@webiny/app-headless-cms";
+import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
 import { useApolloClient } from "@apollo/react-hooks";
 import { ShowConfirmationOnAccept, useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { ApwContentReviewContent, ApwContentTypes } from "~/types";
@@ -24,10 +24,9 @@ type CreateContentReviewInput = Pick<ApwContentReviewContent, "id" | "type">;
 
 const { ContentEntry } = ContentEntryEditorConfig;
 
-export const ApwOnEntryPublish = ContentEntry.useRevision.createDecorator(baseHook => {
-    return hookParams => {
-        const hook = baseHook(hookParams);
-        const { contentModel, entry } = useContentEntry();
+export const ApwOnEntryPublish = ContentEntry.useContentEntry.createDecorator(baseHook => {
+    return () => {
+        const hook = baseHook();
         const client = useApolloClient();
         const { showSnackbar } = useSnackbar();
         const navigate = useNavigate();
@@ -85,12 +84,12 @@ export const ApwOnEntryPublish = ContentEntry.useRevision.createDecorator(baseHo
 
         return {
             ...hook,
-            publishRevision: async id => {
+            publishEntryRevision: async ({ id }) => {
                 const inputData = {
-                    id: id || entry.id,
+                    id,
                     type: ApwContentTypes.CMS_ENTRY,
                     settings: {
-                        modelId: contentModel.modelId
+                        modelId: hook.contentModel.modelId
                     }
                 };
                 const { data } = await client.query({
@@ -121,7 +120,7 @@ export const ApwOnEntryPublish = ContentEntry.useRevision.createDecorator(baseHo
                 );
 
                 if (!isReviewRequired) {
-                    return hook.publishRevision(id);
+                    return hook.publishEntryRevision({ id });
                 }
 
                 /**

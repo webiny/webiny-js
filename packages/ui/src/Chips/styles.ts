@@ -1,16 +1,14 @@
 import { css } from "emotion";
 
 export const chipIconWrapper = css({
-    ".mdc-chip__icon": {
-        "&.mdc-chip__icon--trailing": {
-            boxSizing: "border-box",
-            display: "flex",
-            marginLeft: "4px",
-            marginRight: "0px"
-        },
-        svg: {
-            width: 18,
-            height: 18
+    ".mdc-evolution-chip__text-label": {
+        display: "flex",
+        alignItems: "center",
+        ".mdc-chip__icon": {
+            svg: {
+                width: 18,
+                height: 18
+            }
         }
     }
 });

@@ -1,5 +1,11 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { CallbackParams, useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
+import {
+    CallbackParams,
+    makeDecoratable,
+    useButtons,
+    useDialogWithReport,
+    Worker
+} from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 import { useContentEntriesList, useModel } from "~/admin/hooks";
 import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
@@ -18,42 +24,45 @@ export interface BulkActionProps {
     element?: React.ReactElement;
 }
 
-export const BaseBulkAction = ({
-    name,
-    after = undefined,
-    before = undefined,
-    remove = false,
-    modelIds = [],
-    element
-}: BulkActionProps) => {
-    const { model } = useModel();
-    const getId = useIdGenerator("bulkAction");
+export const BaseBulkAction = makeDecoratable(
+    "BulkAction",
+    ({
+        name,
+        after = undefined,
+        before = undefined,
+        remove = false,
+        modelIds = [],
+        element
+    }: BulkActionProps) => {
+        const { model } = useModel();
+        const getId = useIdGenerator("bulkAction");
 
-    if (modelIds.length > 0 && !modelIds.includes(model.modelId)) {
-        return null;
-    }
+        if (modelIds.length > 0 && !modelIds.includes(model.modelId)) {
+            return null;
+        }
 
-    const placeAfter = after !== undefined ? getId(after) : undefined;
-    const placeBefore = before !== undefined ? getId(before) : undefined;
+        const placeAfter = after !== undefined ? getId(after) : undefined;
+        const placeBefore = before !== undefined ? getId(before) : undefined;
 
-    return (
-        <Property id="browser" name={"browser"}>
-            <Property
-                id={getId(name)}
-                name={"bulkActions"}
-                remove={remove}
-                array={true}
-                before={placeBefore}
-                after={placeAfter}
-            >
-                <Property id={getId(name, "name")} name={"name"} value={name} />
-                {element ? (
-                    <Property id={getId(name, "element")} name={"element"} value={element} />
-                ) : null}
+        return (
+            <Property id="browser" name={"browser"}>
+                <Property
+                    id={getId(name)}
+                    name={"bulkActions"}
+                    remove={remove}
+                    array={true}
+                    before={placeBefore}
+                    after={placeAfter}
+                >
+                    <Property id={getId(name, "name")} name={"name"} value={name} />
+                    {element ? (
+                        <Property id={getId(name, "element")} name={"element"} value={element} />
+                    ) : null}
+                </Property>
             </Property>
-        </Property>
-    );
-};
+        );
+    }
+);
 
 const useWorker = () => {
     const { selected, setSelected } = useContentEntriesList();

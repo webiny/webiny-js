@@ -13,9 +13,9 @@ export const ResultDialogMessage = ({ results, message }: ResultDialogMessagePro
     return (
         <>
             {message && <MessageContainer>{message}</MessageContainer>}
-            <List nonInteractive={true}>
+            <List nonInteractive={true} twoLine={true}>
                 {results.map((result, index) => (
-                    <ListItem key={`item-${index}`}>
+                    <ListItem key={`item-${index}`} ripple={false}>
                         <ListItemGraphic status={result.status}>
                             <Icon
                                 icon={result.status === "success" ? <SuccessIcon /> : <ErrorIcon />}
