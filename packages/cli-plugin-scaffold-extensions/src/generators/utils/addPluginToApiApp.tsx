@@ -3,28 +3,28 @@ import path from "path";
 import { formatCode } from "@webiny/cli-plugin-scaffold/utils";
 
 interface Params {
-    pluginName: string;
+    extensionName: string;
     packageName: string;
 }
 
 export const addPluginToApiApp = async (params: Params): Promise<void> => {
-    const { pluginName, packageName } = params;
+    const { extensionName, packageName } = params;
 
-    const scaffoldsFilePath = path.join("apps", "api", "graphql", "src", "extensions.ts");
+    const extensionsFilePath = path.join("apps", "api", "graphql", "src", "extensions.ts");
 
-    const pluginsFactory = pluginName + "PluginsFactory";
+    const pluginsFactory = extensionName + "PluginsFactory";
     const importName = "{ createPlugins as " + pluginsFactory + " }";
     const importPath = packageName;
 
     const project = new Project();
-    project.addSourceFileAtPath(scaffoldsFilePath);
+    project.addSourceFileAtPath(extensionsFilePath);
 
-    const source = project.getSourceFileOrThrow(scaffoldsFilePath);
+    const source = project.getSourceFileOrThrow(extensionsFilePath);
 
     const existingImportDeclaration = source.getImportDeclaration(importPath);
     if (existingImportDeclaration) {
         throw new Error(
-            `Could not import  "${importPath}" in "${scaffoldsFilePath}" as it already exists.`
+            `Could not import  "${importPath}" in "${extensionsFilePath}" as it already exists.`
         );
     }
 
@@ -45,9 +45,9 @@ export const addPluginToApiApp = async (params: Params): Promise<void> => {
         Node.isArrayLiteralExpression(node)
     ) as ArrayLiteralExpression;
 
-    pluginsArray.addElement(pluginsFactory);
+    pluginsArray.addElement(`${pluginsFactory}()`);
 
     await source.save();
 
-    await formatCode(scaffoldsFilePath, {});
+    await formatCode(extensionsFilePath, {});
 };

@@ -14,47 +14,49 @@ import validateNpmPackageName from "validate-npm-package-name";
  * TODO: rewrite cli into typescript
  */
 // @ts-expect-error
-import { getProject } from "@webiny/cli/utils";
+import { getProject, log } from "@webiny/cli/utils";
 import { generators } from "./generators";
 
 const ncp = util.promisify(ncpBase.ncp);
 
 interface Input {
-    pluginName: string;
+    extensionName: string;
     packageName: string;
     location: string;
     pluginType: string;
 }
 
+const EXTENSIONS_ROOT_FOLDER = 'extensions';
+
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-plugin",
     type: "cli-plugin-scaffold-template",
     scaffold: {
-        name: "New Plugin",
-        description: "Scaffolds essential files for creating a new plugin.",
+        name: "New Extension",
+        description: "Scaffolds essential files for creating a new extension.",
         questions: () => {
             return [
                 {
                     name: "pluginType",
-                    message: "What type of a plugin you want to create?",
+                    message: "What type of an extension do you want to create?",
                     type: "list",
                     choices: [
-                        { name: "Admin plugin", value: "admin" },
-                        { name: "API plugin", value: "api" }
+                        { name: "Admin extension", value: "admin" },
+                        { name: "API extension", value: "api" }
                     ]
                 },
                 {
-                    name: "pluginName",
-                    message: "Enter the plugin name:",
+                    name: "extensionName",
+                    message: "Enter the extension name:",
                     default: "myCustomPlugin",
-                    validate: pluginName => {
-                        if (!pluginName) {
-                            return "Missing plugin name.";
+                    validate: extensionName => {
+                        if (!extensionName) {
+                            return "Missing extension name.";
                         }
 
-                        const isValidName = pluginName === Case.camel(pluginName);
+                        const isValidName = extensionName === Case.camel(extensionName);
                         if (!isValidName) {
-                            return `Please use camel case when providing the name of the plugin (for example "myCustomPlugin").`;
+                            return `Please use camel case when providing the name of the extension (for example "myCustomPlugin").`;
                         }
 
                         return true;
@@ -64,7 +66,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "packageName",
                     message: "Enter the package name:",
                     default: (answers: Input) => {
-                        return Case.kebab(answers.pluginName);
+                        return Case.kebab(answers.extensionName);
                     },
                     validate: pkgName => {
                         if (!pkgName) {
@@ -83,15 +85,15 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "location",
                     message: `Enter the plugin location:`,
                     default: (answers: Input) => {
-                        return `plugins/${answers.pluginName}`;
+                        return `${EXTENSIONS_ROOT_FOLDER}/${answers.extensionName}`;
                     },
                     validate: location => {
                         if (!location) {
                             return "Please enter the package location.";
                         }
 
-                        if (!location.startsWith("plugins/")) {
-                            return 'Package location must start with "plugins/".';
+                        if (!location.startsWith(`${EXTENSIONS_ROOT_FOLDER}/`)) {
+                            return `Package location must start with "${EXTENSIONS_ROOT_FOLDER}/".`;
                         }
 
                         const locationPath = path.resolve(location);
@@ -105,10 +107,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             ];
         },
         generate: async ({ input, ora }) => {
-            const { pluginType, pluginName, packageName, location } = input;
+            const { pluginType, extensionName, packageName, location } = input;
 
             try {
-                ora.start(`Creating ${pluginName} plugin...`);
+                ora.start(`Creating ${extensionName} plugin...`);
 
                 const sourcePath = path.join(__dirname, "templates", pluginType);
 
@@ -151,7 +153,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 // Once everything is done, run `yarn` so the new packages are automatically installed.
                 await execa("yarn");
 
-                ora.succeed(`New plugin created in ${location}.`);
+                ora.succeed(`New plugin created in ${log.success.hl(location)}.`);
             } catch (err) {
                 ora.fail("Could not create plugin. Please check the logs below.");
                 console.log();
