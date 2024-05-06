@@ -43,6 +43,7 @@ import { createCountDynamoDbTask } from "~/plugins/countDynamoDbTask";
 import { createContinuingTask } from "~/plugins/continuingTask";
 import { createWebsockets } from "@webiny/api-websockets";
 import { createLockingMechanism } from "@webiny/api-locking-mechanism";
+
 import scaffoldsPlugins from "./plugins/scaffolds";
 import { extensions } from "./extensions";
 
