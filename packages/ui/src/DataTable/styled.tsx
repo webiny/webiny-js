@@ -91,6 +91,11 @@ export const ColumnCellWrapper = styled.div`
     .rmwc-data-table__cell--align-end & {
         justify-content: flex-end;
     }
+
+    // Needed to solve skeleton width equal to 0 (https://github.com/dvtng/react-loading-skeleton#troubleshooting)
+    .table-skeleton-container {
+        flex: 1;
+    }
 `;
 
 interface ColumnHeaderWrapperProps {

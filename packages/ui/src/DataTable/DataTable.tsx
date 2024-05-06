@@ -262,9 +262,6 @@ const defineColumns = <T,>(
                               />
                           );
                       },
-                      meta: {
-                          hasFormControl: true
-                      },
                       enableSorting: false,
                       enableResizing: false,
                       enableHiding: false,
@@ -277,7 +274,7 @@ const defineColumns = <T,>(
             if (loadingInitial) {
                 return {
                     ...column,
-                    cell: () => <Skeleton />
+                    cell: () => <Skeleton containerClassName="table-skeleton-container" />
                 };
             }
 
