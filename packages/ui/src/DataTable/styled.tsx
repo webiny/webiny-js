@@ -74,6 +74,25 @@ export const DataTableCell = styled(RmwcDataTableCell)<DataTableCell>`
     text-overflow: ellipsis;
 `;
 
+export const ColumnCellWrapper = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: start;
+
+    // TODO: refactor in case of RMWC removal
+    .rmwc-data-table__cell--align-start & {
+        justify-content: start;
+    }
+
+    .rmwc-data-table__cell--align-middle & {
+        justify-content: center;
+    }
+
+    .rmwc-data-table__cell--align-end & {
+        justify-content: flex-end;
+    }
+`;
+
 interface ColumnHeaderWrapperProps {
     sortable: boolean;
     isLastCell: boolean;
@@ -84,6 +103,19 @@ export const ColumnHeaderWrapper = styled("div")<ColumnHeaderWrapperProps>`
     display: flex;
     align-items: center;
     justify-content: ${props => (props.isLastCell ? "flex-end" : "start")};
+
+    // TODO: refactor in case of RMWC removal
+    .rmwc-data-table__cell--align-start & {
+        justify-content: start;
+    }
+
+    .rmwc-data-table__cell--align-middle & {
+        justify-content: center;
+    }
+
+    .rmwc-data-table__cell--align-end & {
+        justify-content: flex-end;
+    }
 `;
 
 export const ColumnDirectionWrapper = styled("span")`
