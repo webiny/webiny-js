@@ -5,7 +5,7 @@ import { Compose, MenuItemRenderer, Plugins, useWcp } from "@webiny/app-admin";
  */
 import { ApwOnPublish } from "./plugins/pageBuilder/ApwOnPublish";
 import { ApwOnPageDelete } from "./plugins/pageBuilder/ApwOnDelete";
-import { DecoratePublishActions } from "./plugins/pageBuilder/DecoratePublishActions";
+import { DecoratePagePublishActions } from "./plugins/pageBuilder/DecoratePagePublishActions";
 
 import { ApwPageBuilderWorkflowScope } from "~/views/publishingWorkflows/components/pageBuilder/ApwPageBuilderWorkflowScope";
 /**
@@ -13,13 +13,9 @@ import { ApwPageBuilderWorkflowScope } from "~/views/publishingWorkflows/compone
  */
 import { ApwOnEntryDelete } from "~/plugins/cms/ApwOnEntryDelete";
 import { ApwOnEntryPublish } from "~/plugins/cms/ApwOnEntryPublish";
-import { SaveAndPublishButton as HeadlessCmsEntrySaveAndPublishButton } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/Header";
-import { PublishEntryRevisionListItem } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/PublishEntryRevisionListItem";
+import { PublishEntryRevisionListItem } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/RevisionsList/PublishEntryRevisionListItem";
 import { ApwHeadlessCmsWorkflowScope } from "~/views/publishingWorkflows/components/cms/ApwHeadlessCmsWorkflowScope";
-import {
-    EntryRevisionListItemGraphicHoc,
-    PublishEntryButtonHoc
-} from "~/plugins/cms/PublishEntryHocs";
+import { DecoratePublishEntryAction, EntryRevisionListItem } from "~/plugins/cms/PublishEntryHocs";
 /**
  *
  */
@@ -28,35 +24,33 @@ import { WorkflowScope } from "~/views/publishingWorkflows/components/WorkflowSc
 import { DefaultBar } from "~/plugins/editor/defaultBar";
 import { MenuGroupRenderer } from "~/plugins/cms/MenuGroupRenderer";
 import { ApwPermissions } from "~/plugins/permissionRenderer";
+import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
 
 export const AdvancedPublishingWorkflow = () => {
     const { canUseFeature } = useWcp();
+
     if (!canUseFeature("advancedPublishingWorkflow")) {
         return null;
     }
     return (
         <>
-            <DecoratePublishActions />
             <Compose
                 with={[ApwPageBuilderWorkflowScope, ApwHeadlessCmsWorkflowScope]}
                 component={WorkflowScope}
             />
-            <Compose
-                with={PublishEntryButtonHoc}
-                component={HeadlessCmsEntrySaveAndPublishButton}
-            />
-            <Compose
-                with={EntryRevisionListItemGraphicHoc}
-                component={PublishEntryRevisionListItem}
-            />
             <Compose with={MenuGroupRenderer} component={MenuItemRenderer} />
+            <ContentEntryEditorConfig>
+                <DecoratePublishEntryAction />
+                <Compose with={EntryRevisionListItem} component={PublishEntryRevisionListItem} />
+                <ApwOnEntryDelete />
+                <ApwOnEntryPublish />
+            </ContentEntryEditorConfig>
             <Plugins>
                 <DefaultBar />
                 <Module />
+                <DecoratePagePublishActions />
                 <ApwOnPublish />
                 <ApwOnPageDelete />
-                <ApwOnEntryDelete />
-                <ApwOnEntryPublish />
                 <ApwPermissions />
             </Plugins>
         </>

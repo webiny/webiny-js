@@ -53,7 +53,9 @@ context("I18N app", () => {
             cy.get("li")
                 .first()
                 .within(() => {
-                    cy.findByTestId("default-data-list.delete").click({ force: true });
+                    // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                    // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.delete")` if issue is fixed.
+                    cy.get('button[data-testid="default-data-list.delete"]').click({ force: true });
                 });
         });
         cy.findByTestId("default-data-list.delete-dialog").within(() => {
@@ -99,7 +101,7 @@ context("I18N app", () => {
         cy.findByTestId("app-i18n-content.menu").click();
         cy.findByTestId(`app-i18n-content.menu-item.${newCode}`).should("exist");
         // Set it as "Default locale"
-        cy.findByLabelText("Default").check();
+        cy.findByLabelText("Default").click();
         cy.findByTestId("l18n.locale.save").click();
         // Wait for loading to complete
         cy.get(".react-spinner-material").should("not.exist");
@@ -129,7 +131,7 @@ context("I18N app", () => {
         // Wait for loading to complete
         cy.get(".react-spinner-material").should("not.exist");
         // Update it as "default"
-        cy.findByLabelText("Default").check();
+        cy.findByLabelText("Default").click();
         cy.findByTestId("l18n.locale.save").click();
         // Wait for loading to complete
         cy.get(".react-spinner-material").should("not.exist");
@@ -139,7 +141,9 @@ context("I18N app", () => {
             cy.get("li")
                 .first()
                 .within(() => {
-                    cy.findByTestId("default-data-list.delete").click({ force: true });
+                    // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                    // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.delete")` if issue is fixed.
+                    cy.get('button[data-testid="default-data-list.delete"]').click({ force: true });
                 });
         });
         cy.findByTestId("default-data-list.delete-dialog").within(() => {

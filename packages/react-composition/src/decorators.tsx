@@ -20,7 +20,8 @@ export function createConditionalDecorator<TDecoratee extends GenericComponent>(
     decoratorProps: unknown
 ): Decorator<TDecoratee> {
     return (Original => {
-        const DecoratedComponent = decorator(Original);
+        const DecoratedComponent = React.memo(decorator(Original));
+        DecoratedComponent.displayName = Original.displayName;
 
         return function ShouldDecorate(props: unknown) {
             if (shouldDecorate(decoratorProps, props)) {
@@ -33,6 +34,12 @@ export function createConditionalDecorator<TDecoratee extends GenericComponent>(
         };
     }) as Decorator<TDecoratee>;
 }
+
+const memoizedComponent = <T extends GenericComponent>(decorator: Decorator<T>) => {
+    return (decoratee: T) => {
+        return React.memo(decorator(decoratee));
+    };
+};
 
 export function createDecoratorFactory<TDecorator>() {
     return function from<TDecoratable extends DecoratableComponent>(
@@ -56,7 +63,9 @@ export function createDecoratorFactory<TDecorator>() {
                 return (
                     <Compose
                         function={decoratable}
-                        with={decorator as unknown as Decorator<GenericHook>}
+                        with={memoizedComponent(
+                            decorator as unknown as Decorator<GenericComponent>
+                        )}
                     />
                 );
             };
@@ -65,7 +74,7 @@ export function createDecoratorFactory<TDecorator>() {
 }
 
 export function createHookDecoratorFactory() {
-    return function from<TDecoratable extends DecoratableComponent>(decoratable: TDecoratable) {
+    return function from<TDecoratable extends DecoratableHook>(decoratable: TDecoratable) {
         return function createDecorator(decorator: Decorator<GetDecoratee<TDecoratable>>) {
             return function DecoratorPlugin() {
                 return (

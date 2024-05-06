@@ -4,6 +4,7 @@ import { i18n } from "@webiny/app/i18n";
 import { ButtonIcon, ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { Container } from "./styled";
 import { Tooltip } from "@webiny/ui/Tooltip";
+import { useModel } from "~/admin/hooks";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-entries/header/buttons/create");
 
@@ -20,6 +21,8 @@ export const ButtonsCreate = ({
     canCreateContent,
     canCreateFolder
 }: ButtonsCreateProps) => {
+    const { model } = useModel();
+
     let newFolderButton = (
         <ButtonSecondary
             data-testid="new-folder-button"
@@ -49,7 +52,7 @@ export const ButtonsCreate = ({
             disabled={!canCreateContent}
         >
             <ButtonIcon icon={<Add />} />
-            {t`New Entry`}
+            New {model.name}
         </ButtonPrimary>
     );
 

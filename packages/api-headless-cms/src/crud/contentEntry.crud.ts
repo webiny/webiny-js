@@ -12,7 +12,6 @@ import {
     CmsModel,
     CmsStorageEntry,
     EntryBeforeListTopicParams,
-    HeadlessCms,
     HeadlessCmsStorageOperations,
     OnEntryAfterCreateTopicParams,
     OnEntryAfterDeleteMultipleTopicParams,
@@ -1303,8 +1302,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         },
         /**
-         * TODO determine if this method is required at all.
-         *
          * @internal
          */
         async getEntry(model, params) {
@@ -1326,7 +1323,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         },
         async listLatestEntries<T = CmsEntryValues>(
-            this: HeadlessCms,
             model: CmsModel,
             params?: CmsEntryListParams
         ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
@@ -1338,7 +1334,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         },
         async listDeletedEntries<T = CmsEntryValues>(
-            this: HeadlessCms,
             model: CmsModel,
             params?: CmsEntryListParams
         ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {

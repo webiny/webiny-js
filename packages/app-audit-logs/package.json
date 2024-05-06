@@ -26,10 +26,10 @@
     "date-fns": "^2.22.1",
     "emotion": "^10.0.17",
     "graphql-tag": "^2.12.6",
-    "lodash": "4.17.21"
+    "lodash": "^4.17.21"
   },
   "peerDependencies": {
-    "react": "^17.0.2"
+    "react": "18.20"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
@@ -39,7 +39,7 @@
     "@babel/preset-typescript": "^7.23.3",
     "@material-design-icons/svg": "^0.14.3",
     "@material-symbols/svg-400": "^0.4.1",
-    "@types/react": "17.0.39",
+    "@types/react": "18.2.65",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "execa": "^5.0.0",

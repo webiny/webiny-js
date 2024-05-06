@@ -8,7 +8,9 @@ export interface ContentEntriesContext {
     insideDialog?: boolean;
 }
 
-export const Context = React.createContext<ContentEntriesContext | undefined>(undefined);
+export const ContentEntriesContext = React.createContext<ContentEntriesContext | undefined>(
+    undefined
+);
 
 export interface ContentEntriesContextProviderProps {
     contentModel: CmsModel;
@@ -42,7 +44,9 @@ export const ContentEntriesProvider = ({
         canCreate
     };
 
-    return <Context.Provider value={value}>{children}</Context.Provider>;
+    return (
+        <ContentEntriesContext.Provider value={value}>{children}</ContentEntriesContext.Provider>
+    );
 };
 
 ContentEntriesProvider.displayName = "ContentEntriesProvider";

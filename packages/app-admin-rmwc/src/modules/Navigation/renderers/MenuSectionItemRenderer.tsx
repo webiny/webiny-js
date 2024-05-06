@@ -21,7 +21,7 @@ const linkStyle = css({
 });
 
 const submenuItems = css({
-    ".mdc-drawer &.mdc-list-item": {
+    ".mdc-drawer &.mdc-deprecated-list-item": {
         paddingLeft: 0,
         margin: 0,
         padding: 0
@@ -29,7 +29,7 @@ const submenuItems = css({
 });
 
 const submenuList = css({
-    "&.mdc-list": {
+    "&.mdc-deprecated-list": {
         padding: 0
     }
 });

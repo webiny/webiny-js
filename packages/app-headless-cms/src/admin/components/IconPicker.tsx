@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { css } from "emotion";
-import { Global, css as reactCss } from "@emotion/react";
+import { css as reactCss, Global } from "@emotion/react";
 import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid } from "react-virtualized";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import DelayedOnChange from "./DelayedOnChange";
-import { Menu } from "@webiny/ui/Menu";
+import DelayedOnChange, { OnChangeCbCallable } from "./DelayedOnChange";
+import { Menu, RenderableMenuChildren } from "@webiny/ui/Menu";
 import { Input } from "@webiny/ui/Input";
 import { CmsIcon, CmsIconsPlugin } from "~/types";
 import { FormComponentProps } from "@webiny/ui/types";
@@ -103,6 +103,10 @@ export interface IconPickerProps extends FormComponentProps {
     description?: React.ReactNode;
 }
 
+interface RenderCellParams {
+    closeMenu: () => void;
+}
+
 export const IconPicker = ({
     value,
     onChange,
@@ -123,9 +127,11 @@ export const IconPicker = ({
     }, [mustRenderGrid]);
 
     const onFilterChange = useCallback(
-        (value, cb) => {
+        (value: string, cb?: OnChangeCbCallable) => {
             setFilter(value);
-            cb();
+            if (cb) {
+                cb(value);
+            }
         },
         [filter]
     );
@@ -142,7 +148,7 @@ export const IconPicker = ({
     }, [filter]);
 
     const renderCell = useCallback(
-        ({ closeMenu }) => {
+        ({ closeMenu }: RenderCellParams) => {
             return function renderCell({
                 columnIndex,
                 key,
@@ -175,7 +181,7 @@ export const IconPicker = ({
         [icons]
     );
 
-    const renderGrid = useCallback(
+    const renderGrid = useCallback<RenderableMenuChildren>(
         ({ closeMenu }) => {
             return (
                 <>
@@ -238,7 +244,15 @@ export const IconPicker = ({
                     </div>
                 }
             >
-                {mustRenderGrid && renderGrid}
+                {
+                    /**
+                     * Unfortunately we need to cast for build to pass.
+                     *
+                     * real type is RenderableMenuChildren, but the TS is complaining.
+                     * @TODO bruno fix
+                     */
+                    mustRenderGrid && (renderGrid as unknown as React.ReactNode)
+                }
             </Menu>
 
             {validationIsValid === false && (

@@ -13,16 +13,16 @@
   opacity: 1;
 }
 
-.rmwc-collapsible-list__handle .mdc-list-item__meta {
+.rmwc-collapsible-list__handle .mdc-deprecated-list-item__meta {
   transition: transform 0.3s;
   user-select: none;
 }
 
-.rmwc-collapsible-list--open > .rmwc-collapsible-list__handle .mdc-list-item__meta {
+.rmwc-collapsible-list--open > .rmwc-collapsible-list__handle .mdc-deprecated-list-item__meta {
   transform: rotate(90deg);
 }
 
-.rmwc-collapsible-list__children .mdc-list-item {
+.rmwc-collapsible-list__children .mdc-deprecated-list-item {
   padding-left: 2rem;
 }
 

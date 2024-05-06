@@ -1,8 +1,8 @@
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { CmsGraphQLSchemaPlugin } from "~/plugins";
+import { ICmsGraphQLSchemaPlugin } from "~/plugins";
 
 interface Params {
-    plugins: CmsGraphQLSchemaPlugin[];
+    plugins: ICmsGraphQLSchemaPlugin[];
 }
 
 export const createExecutableSchema = (params: Params) => {

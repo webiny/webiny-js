@@ -1,4 +1,3 @@
-// TODO: implement this without relying on the `ui` package
 import React from "react";
 import { css } from "emotion";
 import { List, ListItem } from "@webiny/ui/List";
@@ -19,14 +18,14 @@ const linkStyle = css({
 });
 
 const submenuItems = css({
-    ".mdc-drawer &.mdc-list-item": {
+    ".mdc-drawer &.mdc-deprecated-list-item": {
         margin: 0,
         paddingLeft: 0
     }
 });
 
 const submenuList = css({
-    "&.mdc-list": {
+    "&.mdc-deprecated-list": {
         padding: 0
     }
 });

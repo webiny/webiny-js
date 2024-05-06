@@ -1,20 +1,20 @@
 import gql from "graphql-tag";
 import { css } from "emotion";
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { Form } from "@webiny/form";
 import { Alert } from "@webiny/ui/Alert";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";
 import { Checkbox } from "@webiny/ui/Checkbox";
-import { Grid, Cell } from "@webiny/ui/Grid";
+import { Cell, Grid } from "@webiny/ui/Grid";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
 import {
     SimpleForm,
-    SimpleFormHeader,
+    SimpleFormContent,
     SimpleFormFooter,
-    SimpleFormContent
+    SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { View } from "@webiny/app/components/View";
 import { AdminInstallationPlugin } from "@webiny/app-admin/types";
@@ -47,6 +47,16 @@ const INSTALL = gql`
     }
 `;
 
+interface InstallCallableParams {
+    subscribed: boolean;
+    email: string;
+    [key: string]: string | boolean;
+}
+
+interface InstallCallable {
+    (data: InstallCallableParams): Promise<void>;
+}
+
 export interface InstallProps {
     onInstalled: () => void;
 }
@@ -56,7 +66,7 @@ const Install = ({ onInstalled }: InstallProps) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const onSubmit = useCallback(async ({ subscribed, ...form }) => {
+    const onSubmit = useCallback<InstallCallable>(async ({ subscribed, ...form }) => {
         setLoading(true);
         setError(null);
 
@@ -147,10 +157,7 @@ const Install = ({ onInstalled }: InstallProps) => {
                                 <Bind name="subscribed">
                                     <Checkbox
                                         label={
-                                            <span>
-                                                I want to receive updates on product improvements
-                                                and new features.
-                                            </span>
+                                            "I want to receive updates on product improvements and new features."
                                         }
                                     />
                                 </Bind>

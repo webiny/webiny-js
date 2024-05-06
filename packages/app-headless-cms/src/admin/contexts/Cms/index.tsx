@@ -1,24 +1,33 @@
-import React, { useCallback, useRef } from "react";
+import React from "react";
 import ApolloClient from "apollo-client";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { config as appConfig } from "@webiny/app/config";
 import { CmsContentEntry, CmsErrorResponse, CmsModel } from "~/types";
-import { MutationHookOptions } from "@apollo/react-hooks";
-import { AsyncProcessor, composeAsync } from "@webiny/utils";
-import { DocumentNode } from "graphql";
 import {
     CmsEntryPublishMutationResponse,
     CmsEntryPublishMutationVariables,
-    createPublishMutation
+    createReadQuery,
+    createCreateMutation,
+    createCreateFromMutation,
+    createUpdateMutation,
+    createDeleteMutation,
+    createPublishMutation,
+    createUnpublishMutation,
+    CmsEntryCreateMutationResponse,
+    CmsEntryCreateMutationVariables,
+    CmsEntryUpdateMutationResponse,
+    CmsEntryUpdateMutationVariables,
+    CmsEntryDeleteMutationResponse,
+    CmsEntryDeleteMutationVariables,
+    CmsEntryUnpublishMutationResponse,
+    CmsEntryUnpublishMutationVariables,
+    CmsEntryCreateFromMutationResponse,
+    CmsEntryCreateFromMutationVariables,
+    CmsEntryGetQueryResponse,
+    CmsEntryGetQueryVariables
 } from "@webiny/app-headless-cms-common";
-
-interface MutationEntryOptions {
-    mutationOptions?: MutationHookOptions;
-}
-
-type UnpublishEntryOptions = MutationEntryOptions;
-type DeleteEntryOptions = MutationEntryOptions;
+import { getFetchPolicy } from "~/utils/getFetchPolicy";
 
 interface EntryError {
     message: string;
@@ -26,114 +35,95 @@ interface EntryError {
     data?: Record<string, any>;
 }
 
-export type OnEntryPublishResponse =
-    | {
-          entry: CmsContentEntry;
-          error?: never;
-      }
-    | {
-          entry?: never;
-          error: EntryError;
-      };
-
-export interface OnEntryDeleteRequest {
-    model: CmsModel;
-    entry: Pick<CmsContentEntry, "id">;
-    id: string;
-    options: DeleteEntryOptions;
-    // TODO: Maybe a different input and output type for compose.
-    error?: EntryError | null;
-    locale: string;
-    client: ApolloClient<any>;
-}
-
-export interface OnEntryDeleteResponse extends Omit<OnEntryDeleteRequest, "entry"> {
-    entry: Pick<CmsContentEntry, "id"> | undefined;
-}
-
-export interface OnEntryUnpublishRequest {
-    model: CmsModel;
-    entry: Pick<CmsContentEntry, "id">;
-    id: string;
-    options: UnpublishEntryOptions;
-    // TODO: Maybe a different input and output type for compose.
-    error?: EntryError | null;
-    locale: string;
-    client: ApolloClient<any>;
-}
-
-export interface OnEntryUnpublishResponse extends Omit<OnEntryUnpublishRequest, "entry"> {
-    entry: CmsContentEntry | undefined;
-}
-
-type OnEntryDeleteSubscriber = AsyncProcessor<OnEntryDeleteRequest, OnEntryDeleteResponse>;
-type OnEntryRevisionUnpublishSubscriber = AsyncProcessor<
-    OnEntryUnpublishRequest,
-    OnEntryUnpublishResponse
->;
-
-interface PublishEntryRevisionParams {
-    model: CmsModel;
+interface OperationSuccess {
     entry: CmsContentEntry;
-    id: string;
-}
-interface DeleteEntryParams {
-    model: CmsModel;
-    entry: Pick<CmsContentEntry, "id">;
-    id: string;
-    options?: DeleteEntryOptions;
+    error?: never;
 }
 
-interface UnpublishEntryRevisionParams {
+interface OperationError {
+    entry?: never;
+    error: EntryError;
+}
+
+export type PartialCmsContentEntryWithId = Partial<CmsContentEntry> & { id: string };
+export type GetEntryResponse = OperationSuccess | OperationError;
+export type CreateEntryResponse = OperationSuccess | OperationError;
+export type CreateEntryRevisionFromResponse = OperationSuccess | OperationError;
+export type UpdateEntryRevisionResponse = OperationSuccess | OperationError;
+export type DeleteEntryResponse = boolean | OperationError;
+export type PublishEntryRevisionResponse = OperationSuccess | OperationError;
+export type UnpublishEntryRevisionResponse = OperationSuccess | OperationError;
+
+export interface CreateEntryParams {
     model: CmsModel;
-    entry: Pick<CmsContentEntry, "id">;
+    entry: PartialCmsContentEntryWithId;
+    options?: {
+        skipValidators?: string[];
+    };
+}
+
+export interface CreateEntryRevisionFromParams {
+    model: CmsModel;
     id: string;
-    options?: UnpublishEntryOptions;
+    input?: Record<string, any>;
+    options?: {
+        skipValidators?: string[];
+    };
+}
+
+export interface UpdateEntryRevisionParams {
+    model: CmsModel;
+    entry: PartialCmsContentEntryWithId;
+    options?: {
+        skipValidators?: string[];
+    };
+}
+
+export interface PublishEntryRevisionParams {
+    model: CmsModel;
+    id: string;
+}
+export interface DeleteEntryParams {
+    model: CmsModel;
+    id: string;
+}
+
+export interface UnpublishEntryRevisionParams {
+    model: CmsModel;
+    id: string;
+}
+
+export interface GetEntryParams {
+    model: CmsModel;
+    id: string;
 }
 
 export interface CmsContext {
     getApolloClient(locale: string): ApolloClient<any>;
     createApolloClient: CmsProviderProps["createApolloClient"];
     apolloClient: ApolloClient<any>;
-    publishEntryRevision: (params: PublishEntryRevisionParams) => Promise<OnEntryPublishResponse>;
+    getEntry: (params: GetEntryParams) => Promise<GetEntryResponse>;
+    createEntry: (params: CreateEntryParams) => Promise<CreateEntryResponse>;
+    createEntryRevisionFrom: (
+        params: CreateEntryRevisionFromParams
+    ) => Promise<CreateEntryRevisionFromResponse>;
+    updateEntryRevision: (
+        params: UpdateEntryRevisionParams
+    ) => Promise<UpdateEntryRevisionResponse>;
+    publishEntryRevision: (
+        params: PublishEntryRevisionParams
+    ) => Promise<PublishEntryRevisionResponse>;
     unpublishEntryRevision: (
         params: UnpublishEntryRevisionParams
-    ) => Promise<OnEntryUnpublishResponse>;
-    onEntryRevisionUnpublish: (fn: OnEntryRevisionUnpublishSubscriber) => () => void;
-    deleteEntry: (params: DeleteEntryParams) => Promise<OnEntryDeleteResponse>;
-    onEntryDelete: (fn: OnEntryDeleteSubscriber) => () => void;
+    ) => Promise<UnpublishEntryRevisionResponse>;
+    deleteEntry: (params: DeleteEntryParams) => Promise<DeleteEntryResponse>;
 }
 
-export const CmsContext = React.createContext<CmsContext>({
-    getApolloClient: () => {
-        return null;
-    },
-    createApolloClient: () => {
-        return null;
-    },
-    apolloClient: null
-    /**
-     * Safe to cast.
-     */
-} as unknown as CmsContext);
+export const CmsContext = React.createContext<CmsContext | undefined>(undefined);
 
 interface ApolloClientsCache {
     [locale: string]: ApolloClient<any>;
 }
-
-interface Mutations {
-    [key: string]: DocumentNode;
-}
-
-interface CreateMutationKeyParams {
-    model: CmsModel;
-    locale: string;
-}
-
-const createMutationKey = (params: CreateMutationKeyParams): string => {
-    const { model, locale } = params;
-    return `${model.modelId}_${locale}_${model.savedOn}`;
-};
 
 const apolloClientsCache: ApolloClientsCache = {};
 
@@ -145,20 +135,6 @@ export interface CmsProviderProps {
 export const CmsProvider = (props: CmsProviderProps) => {
     const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
     const { getCurrentLocale } = useI18N();
-    const mutations = useRef<Mutations>({});
-    const onEntryRevisionUnpublish = useRef<OnEntryRevisionUnpublishSubscriber[]>([]);
-    const onEntryDelete = useRef<OnEntryDeleteSubscriber[]>([]);
-
-    const getMutation = useCallback(
-        (model: CmsModel, locale: string): DocumentNode => {
-            const key = createMutationKey({ model, locale });
-            if (!mutations.current[key]) {
-                mutations.current[key] = createPublishMutation(model);
-            }
-            return mutations.current[key];
-        },
-        [mutations.current]
-    );
 
     const currentLocale = getCurrentLocale("content");
 
@@ -185,21 +161,159 @@ export const CmsProvider = (props: CmsProviderProps) => {
         getApolloClient,
         createApolloClient: props.createApolloClient,
         apolloClient: getApolloClient(currentLocale),
-        publishEntryRevision: async params => {
-            const mutation = getMutation(params.model, currentLocale);
+        getEntry: async ({ model, id }) => {
+            const query = createReadQuery(model);
+            const isRevisionId = id.includes("#");
+
+            const response = await value.apolloClient.query<
+                CmsEntryGetQueryResponse,
+                CmsEntryGetQueryVariables
+            >({
+                query,
+                variables: isRevisionId ? { revision: id } : { entryId: id },
+                fetchPolicy: getFetchPolicy(model)
+            });
+
+            if (!response.data) {
+                return {
+                    error: {
+                        message: "Missing response data on Get Entry query.",
+                        code: "MISSING_RESPONSE_DATA",
+                        data: {}
+                    }
+                };
+            }
+
+            const { data, error } = response.data.content;
+
+            if (error) {
+                return { error };
+            }
+
+            return {
+                entry: data as CmsContentEntry
+            };
+        },
+        createEntry: async ({ model, entry, options }) => {
+            const mutation = createCreateMutation(model);
+            const response = await value.apolloClient.mutate<
+                CmsEntryCreateMutationResponse,
+                CmsEntryCreateMutationVariables
+            >({
+                mutation,
+                variables: {
+                    data: entry,
+                    options
+                },
+                fetchPolicy: getFetchPolicy(model)
+            });
+
+            if (!response.data) {
+                return {
+                    error: {
+                        message: "Missing response data on Create Entry mutation.",
+                        code: "MISSING_RESPONSE_DATA",
+                        data: {}
+                    }
+                };
+            }
+
+            const { data, error } = response.data.content;
+
+            if (error) {
+                return { error };
+            }
+
+            return {
+                entry: data as CmsContentEntry
+            };
+        },
+        createEntryRevisionFrom: async ({ model, id, input, options }) => {
+            const mutation = createCreateFromMutation(model);
+            const response = await value.apolloClient.mutate<
+                CmsEntryCreateFromMutationResponse,
+                CmsEntryCreateFromMutationVariables
+            >({
+                mutation,
+                variables: {
+                    revision: id,
+                    data: input,
+                    options
+                },
+                fetchPolicy: getFetchPolicy(model)
+            });
+
+            if (!response.data) {
+                return {
+                    error: {
+                        message: "Missing response data on Create Entry mutation.",
+                        code: "MISSING_RESPONSE_DATA",
+                        data: {}
+                    }
+                };
+            }
+
+            const { data, error } = response.data.content;
+
+            if (error) {
+                return { error };
+            }
+
+            return {
+                entry: data as CmsContentEntry
+            };
+        },
+        updateEntryRevision: async ({ model, entry, options }) => {
+            const mutation = createUpdateMutation(model);
+            const { id, ...input } = entry;
+            const response = await value.apolloClient.mutate<
+                CmsEntryUpdateMutationResponse,
+                CmsEntryUpdateMutationVariables
+            >({
+                mutation,
+                variables: {
+                    revision: id,
+                    data: input,
+                    options
+                },
+                fetchPolicy: getFetchPolicy(model)
+            });
+
+            if (!response.data) {
+                return {
+                    error: {
+                        message: "Missing response data on Update Entry mutation.",
+                        code: "MISSING_RESPONSE_DATA",
+                        data: {}
+                    }
+                };
+            }
+
+            const { data, error } = response.data.content;
+
+            if (error) {
+                return { error };
+            }
+
+            return {
+                entry: data as CmsContentEntry
+            };
+        },
+        publishEntryRevision: async ({ model, id }) => {
+            const mutation = createPublishMutation(model);
             const response = await value.apolloClient.mutate<
                 CmsEntryPublishMutationResponse,
                 CmsEntryPublishMutationVariables
             >({
                 mutation,
                 variables: {
-                    revision: params.id
+                    revision: id
                 }
             });
 
             if (!response.data) {
                 const error: CmsErrorResponse = {
-                    message: "Missing response data on Publish Entry Mutation.",
+                    message: "Missing response data on Publish Entry mutation.",
                     code: "MISSING_RESPONSE_DATA",
                     data: {}
                 };
@@ -216,35 +330,68 @@ export const CmsProvider = (props: CmsProviderProps) => {
                 entry: data as CmsContentEntry
             };
         },
-        unpublishEntryRevision: async params => {
-            return await composeAsync([...onEntryRevisionUnpublish.current].reverse())({
-                locale: currentLocale,
-                ...params,
-                client: getApolloClient(currentLocale),
-                options: params.options || {}
+        unpublishEntryRevision: async ({ model, id }) => {
+            const mutation = createUnpublishMutation(model);
+
+            const response = await value.apolloClient.mutate<
+                CmsEntryUnpublishMutationResponse,
+                CmsEntryUnpublishMutationVariables
+            >({
+                mutation,
+                variables: {
+                    revision: id
+                }
             });
-        },
-        onEntryRevisionUnpublish: fn => {
-            onEntryRevisionUnpublish.current.push(fn);
-            return () => {
-                const index = onEntryRevisionUnpublish.current.length;
-                onEntryRevisionUnpublish.current.splice(index, 1);
+
+            if (!response.data) {
+                return {
+                    error: {
+                        message: "Missing response data on Unpublish Entry mutation.",
+                        code: "MISSING_RESPONSE_DATA",
+                        data: {}
+                    }
+                };
+            }
+            const { data, error } = response.data.content;
+            if (error) {
+                return {
+                    error
+                };
+            }
+
+            return {
+                entry: data as CmsContentEntry
             };
         },
-        deleteEntry: async params => {
-            return await composeAsync([...onEntryDelete.current].reverse())({
-                locale: currentLocale,
-                ...params,
-                client: getApolloClient(currentLocale),
-                options: params.options || {}
+        deleteEntry: async ({ model, id }) => {
+            const mutation = createDeleteMutation(model);
+            const response = await value.apolloClient.mutate<
+                CmsEntryDeleteMutationResponse,
+                CmsEntryDeleteMutationVariables
+            >({
+                mutation,
+                variables: {
+                    revision: id,
+                    permanently: false
+                }
             });
-        },
-        onEntryDelete: fn => {
-            onEntryDelete.current.push(fn);
-            return () => {
-                const index = onEntryDelete.current.length;
-                onEntryDelete.current.splice(index, 1);
-            };
+
+            if (!response.data) {
+                const error: CmsErrorResponse = {
+                    message: "Missing response data on Delete Entry mutation.",
+                    code: "MISSING_RESPONSE_DATA",
+                    data: {}
+                };
+                return { error };
+            }
+
+            const { error } = response.data.content;
+
+            if (error) {
+                return { error };
+            }
+
+            return true;
         }
     };
 

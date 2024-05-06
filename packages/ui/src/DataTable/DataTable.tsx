@@ -1,6 +1,6 @@
 import React, {
-    ReactElement,
     memo,
+    ReactElement,
     useCallback,
     useEffect,
     useMemo,
@@ -20,16 +20,16 @@ import {
     Cell,
     Column as DefaultColumn,
     ColumnDef,
+    ColumnSort,
+    flexRender,
+    getCoreRowModel,
+    getSortedRowModel,
     OnChangeFn,
     Row,
     RowSelectionState,
     SortingState,
-    ColumnSort,
-    VisibilityState,
-    flexRender,
-    getCoreRowModel,
-    getSortedRowModel,
-    useReactTable
+    useReactTable,
+    VisibilityState
 } from "@tanstack/react-table";
 
 import { Checkbox } from "~/Checkbox";
@@ -285,16 +285,6 @@ const defineColumns = <T,>(
     }, [columns, onSelectRow, onToggleRow, loadingInitial]);
 };
 
-const defineData = <T,>(
-    data: Props<T>["data"],
-    loadingInitial: Props<T>["loadingInitial"]
-): T[] => {
-    if (loadingInitial) {
-        return Array(10).fill({});
-    }
-    return data;
-};
-
 const ColumnDirection = ({ direction }: ColumnDirectionProps): ReactElement | null => {
     if (direction) {
         return (
@@ -350,9 +340,14 @@ const TableRow = <T,>({ selected, cells, getColumnWidth }: TableRowProps<T>) => 
 
 const MemoTableRow = typedMemo(TableRow);
 
+/**
+ * Empty array must be defined outside of the React component so it does not force rerendering of the DataTable
+ */
+const emptyArray = Array(10).fill({});
+
 export const DataTable = <T extends Record<string, any> & DefaultData>({
-    data,
-    columns,
+    data: initialData,
+    columns: initialColumns,
     onSelectRow,
     onToggleRow,
     loadingInitial,
@@ -370,6 +365,8 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
 }: Props<T>) => {
     const tableRef = useRef<HTMLDivElement>(null);
     const [tableWidth, setTableWidth] = useState(1);
+
+    const data = loadingInitial ? emptyArray : initialData;
 
     useEffect(() => {
         const updateElementWidth = () => {
@@ -429,14 +426,16 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
         return sorting;
     }, [sorting]);
 
-    const table = useReactTable({
-        data: defineData(data, loadingInitial),
-        columns: defineColumns(columns, {
-            canSelectAllRows,
-            onSelectRow,
-            onToggleRow,
-            loadingInitial
-        }),
+    const columns = defineColumns(initialColumns, {
+        canSelectAllRows,
+        onSelectRow,
+        onToggleRow,
+        loadingInitial
+    });
+
+    const table = useReactTable<T>({
+        data,
+        columns,
         enableColumnResizing: true,
         columnResizeMode: "onChange",
         getCoreRowModel: getCoreRowModel(),
@@ -469,6 +468,12 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
         },
         [table, tableWidth]
     );
+    /**
+     * Had to memoize the rows to avoid browser freeze.
+     */
+    const tableRows = useMemo(() => {
+        return table.getRowModel().rows;
+    }, [table, data, columns]);
 
     return (
         <div ref={tableRef}>
@@ -524,14 +529,17 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
                         ))}
                     </DataTableHead>
                     <DataTableBody>
-                        {table.getRowModel().rows.map(row => (
-                            <MemoTableRow<T>
-                                key={row.original.id || row.id}
-                                cells={row.getVisibleCells()}
-                                selected={row.getIsSelected()}
-                                getColumnWidth={getColumnWidth}
-                            />
-                        ))}
+                        {tableRows.map(row => {
+                            const id = row.original.id || row.id;
+                            return (
+                                <MemoTableRow<T>
+                                    key={id}
+                                    cells={row.getVisibleCells()}
+                                    selected={row.getIsSelected()}
+                                    getColumnWidth={getColumnWidth}
+                                />
+                            );
+                        })}
                     </DataTableBody>
                 </DataTableContent>
             </Table>

@@ -51,7 +51,8 @@ export function useDisplayMode(): UseDisplayMode {
     );
 
     const setPagePreviewDimensions = useCallback(
-        dimensions => setUiValue(prev => setPagePreviewDimensionMutation(prev, dimensions)),
+        (dimensions: PagePreviewDimension) =>
+            setUiValue(prev => setPagePreviewDimensionMutation(prev, dimensions)),
         [displayMode]
     );
 
