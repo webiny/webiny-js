@@ -11,7 +11,7 @@ import {
 
 const { AdvancedSearch } = AcoConfig;
 
-export const AdvancedSearchConfigs = () => {
+export const AdvancedSearchConfigs = React.memo(() => {
     return (
         <AcoConfig>
             <AdvancedSearch.FieldRenderer name={"text"} type={FieldType.TEXT} element={<Input />} />
@@ -44,4 +44,6 @@ export const AdvancedSearchConfigs = () => {
             />
         </AcoConfig>
     );
-};
+});
+
+AdvancedSearchConfigs.displayName = "AdvancedSearchConfigs";
