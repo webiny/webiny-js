@@ -69,7 +69,9 @@ export const ContentEntryForm = makeDecoratable(
                 return;
             }
 
-            formElementRef.current.scrollTo(0, 0);
+            setTimeout(() => {
+                formElementRef.current?.scrollTo(0, 0);
+            }, 20);
         }, [initialData.id, formElementRef.current]);
 
         return (
