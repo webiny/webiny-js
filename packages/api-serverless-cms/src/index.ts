@@ -10,15 +10,12 @@ import { FormBuilderContext } from "@webiny/api-form-builder/types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 import { AcoContext } from "@webiny/api-aco/types";
 import { PbAcoContext } from "@webiny/api-page-builder-aco/types";
-
 import { createContextPlugin as baseCreateContextPlugin, ContextPluginCallable } from "@webiny/api";
+import {
+    createGraphQLSchemaPlugin as baseCreateGraphQLSchemaPlugin,
+    GraphQLSchemaPluginConfig
+} from "@webiny/handler-graphql";
 
-// When working with the `context` object (for example while defining a new GraphQL resolver function),
-// you can import this interface and assign it to it. This will give you full autocomplete functionality
-// and type safety. The easiest way to import it would be via the following import statement:
-// import { Context } from "~/types";
-// Feel free to extend it with additional context interfaces, if needed. Also, please do not change the
-// name of the interface, as existing scaffolding utilities may rely on it during the scaffolding process.
 export interface Context
     extends ClientContext,
         TenancyContext,
@@ -37,4 +34,10 @@ export const createContextPlugin = <T extends Context = Context>(
     callable: ContextPluginCallable<T>
 ) => {
     return baseCreateContextPlugin<T>(callable);
+};
+
+export const createGraphQLSchemaPlugin = <T extends Context = Context>(
+    config: GraphQLSchemaPluginConfig<T>
+) => {
+    return baseCreateGraphQLSchemaPlugin<T>(config);
 };
