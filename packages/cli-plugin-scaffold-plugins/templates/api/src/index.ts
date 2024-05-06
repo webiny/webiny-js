@@ -1,3 +1,5 @@
-export const createPlugins = () => [
-    // Your plugins here.
-];
+export const createPlugins = () => {
+    return [
+        // Your plugins here.
+    ];
+};
