@@ -16117,6 +16117,34 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/cli-plugin-scaffold-extensions@workspace:packages/cli-plugin-scaffold-extensions":
+  version: 0.0.0-use.local
+  resolution: "@webiny/cli-plugin-scaffold-extensions@workspace:packages/cli-plugin-scaffold-extensions"
+  dependencies:
+    "@babel/cli": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@types/inquirer": ^7.3.1
+    "@types/ncp": ^2.0.4
+    "@types/pluralize": ^0.0.29
+    "@types/validate-npm-package-name": ^3.0.3
+    "@webiny/cli": 0.0.0
+    "@webiny/cli-plugin-scaffold": 0.0.0
+    "@webiny/error": 0.0.0
+    "@webiny/project-utils": 0.0.0
+    case: ^1.6.3
+    execa: ^5.0.0
+    load-json-file: ^6.2.0
+    ncp: ^2.0.0
+    replace-in-path: ^1.1.0
+    rimraf: ^5.0.5
+    ts-morph: ^11.0.0
+    typescript: 4.7.4
+    validate-npm-package-name: ^3.0.0
+    write-json-file: ^4.3.0
+  languageName: unknown
+  linkType: soft
+
 "@webiny/cli-plugin-scaffold-full-stack-app@workspace:packages/cli-plugin-scaffold-full-stack-app":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold-full-stack-app@workspace:packages/cli-plugin-scaffold-full-stack-app"
@@ -16197,34 +16225,6 @@ __metadata:
     terminal-link: ^2.1.1
     ts-morph: ^11.0.0
     typescript: 4.7.4
-    write-json-file: ^4.3.0
-  languageName: unknown
-  linkType: soft
-
-"@webiny/cli-plugin-scaffold-plugins@workspace:packages/cli-plugin-scaffold-plugins":
-  version: 0.0.0-use.local
-  resolution: "@webiny/cli-plugin-scaffold-plugins@workspace:packages/cli-plugin-scaffold-plugins"
-  dependencies:
-    "@babel/cli": ^7.23.9
-    "@babel/core": ^7.24.0
-    "@babel/preset-env": ^7.24.0
-    "@types/inquirer": ^7.3.1
-    "@types/ncp": ^2.0.4
-    "@types/pluralize": ^0.0.29
-    "@types/validate-npm-package-name": ^3.0.3
-    "@webiny/cli": 0.0.0
-    "@webiny/cli-plugin-scaffold": 0.0.0
-    "@webiny/error": 0.0.0
-    "@webiny/project-utils": 0.0.0
-    case: ^1.6.3
-    execa: ^5.0.0
-    load-json-file: ^6.2.0
-    ncp: ^2.0.0
-    replace-in-path: ^1.1.0
-    rimraf: ^5.0.5
-    ts-morph: ^11.0.0
-    typescript: 4.7.4
-    validate-npm-package-name: ^3.0.0
     write-json-file: ^4.3.0
   languageName: unknown
   linkType: soft
@@ -30505,12 +30505,6 @@ __metadata:
   checksum: 59d4b5ebff6c265b452d6630ae8873d573c82e36fdc1ed9c34c7901a0bf2d3d357022f49db8e9bded127b743f709c7ef7befec249a2b3967578d649a8029aa06
   languageName: node
   linkType: hard
-
-"my-custom-plugin@workspace:plugins/myCustomPlugin":
-  version: 0.0.0-use.local
-  resolution: "my-custom-plugin@workspace:plugins/myCustomPlugin"
-  languageName: unknown
-  linkType: soft
 
 "nanoclone@npm:^0.2.1":
   version: 0.2.1

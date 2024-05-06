@@ -39,6 +39,7 @@ import { createLockingMechanism } from "@webiny/api-locking-mechanism";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
+import { extensions } from "./extensions";
 
 const debug = process.env.DEBUG === "true";
 
@@ -103,7 +104,8 @@ export const handler = createHandler({
         createAuditLogs(),
         createAcoHcmsContext(),
         createHcmsTasks(),
-        scaffoldsPlugins()
+        scaffoldsPlugins(),
+        extensions()
     ],
     debug
 });
