@@ -54,9 +54,8 @@
     "packages": [
       "apps/admin",
       "apps/website",
-      "apps/theme",
       "apps/api/graphql",
-      "apps/api/headlessCMS",
+      "extensions/theme",
       "packages/*"
     ]
   },
