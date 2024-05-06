@@ -52,7 +52,7 @@ export const scaffold = async (context: CliContext, args: Record<string, any>) =
             choices
         });
 
-        const { scaffold } = context.plugins.byName<CliCommandScaffoldTemplate>(selectedPluginName);
+        ({ scaffold } = context.plugins.byName<CliCommandScaffoldTemplate>(selectedPluginName));
 
         const questions =
             typeof scaffold.questions === "function"

@@ -38,7 +38,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
         questions: () => {
             return [
                 {
-                    name: "extensionType",
+                    name: "type",
                     message: "What type of an extension do you want to create?",
                     type: "list",
                     choices: [
@@ -47,15 +47,15 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     ]
                 },
                 {
-                    name: "extensionName",
+                    name: "name",
                     message: "Enter the extension name:",
                     default: "myCustomExtension",
-                    validate: extensionName => {
-                        if (!extensionName) {
+                    validate: name => {
+                        if (!name) {
                             return "Missing extension name.";
                         }
 
-                        const isValidName = extensionName === Case.camel(extensionName);
+                        const isValidName = name === Case.camel(name);
                         if (!isValidName) {
                             return `Please use camel case when providing the name of the extension (for example "myCustomExtension").`;
                         }
