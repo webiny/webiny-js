@@ -3,16 +3,16 @@ import path from "path";
 import { formatCode } from "@webiny/cli-plugin-scaffold/utils";
 
 interface Params {
-    extensionName: string;
+    name: string;
     packageName: string;
 }
 
 export const addPluginToReactApp = async (params: Params): Promise<void> => {
-    const { extensionName, packageName } = params;
+    const { name, packageName } = params;
 
     const extensionsFilePath = path.join("apps", "admin", "src", "Extensions.tsx");
 
-    const extensionFactory = extensionName + "ExtensionFactory";
+    const extensionFactory = name + "ExtensionFactory";
     const importName = "{ createExtension as " + extensionFactory + " }";
     const importPath = packageName;
 
@@ -75,7 +75,7 @@ export const addPluginToReactApp = async (params: Params): Promise<void> => {
         .trim();
 
     extensionsArrowFnFragment.replaceWithText(
-        `<>{${extensionName}ExtensionFactory()}${extensionsArrowFnFragmentChildrenText}</>`
+        `<>{${name}ExtensionFactory()}${extensionsArrowFnFragmentChildrenText}</>`
     );
 
     await source.save();

@@ -3,16 +3,16 @@ import path from "path";
 import { formatCode } from "@webiny/cli-plugin-scaffold/utils";
 
 interface Params {
-    extensionName: string;
+    name: string;
     packageName: string;
 }
 
 export const addPluginToApiApp = async (params: Params): Promise<void> => {
-    const { extensionName, packageName } = params;
+    const { name, packageName } = params;
 
     const extensionsFilePath = path.join("apps", "api", "graphql", "src", "extensions.ts");
 
-    const extensionFactory = extensionName + "ExtensionFactory";
+    const extensionFactory = name + "ExtensionFactory";
     const importName = "{ createExtension as " + extensionFactory + " }";
     const importPath = packageName;
 

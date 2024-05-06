@@ -1,6 +1,6 @@
 interface PluginGeneratorParams {
     input: {
-        extensionName: string;
+        name: string;
         packageName: string;
     };
 }

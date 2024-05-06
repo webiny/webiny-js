@@ -20,10 +20,10 @@ import { generators } from "./generators";
 const ncp = util.promisify(ncpBase.ncp);
 
 interface Input {
-    extensionName: string;
+    type: string;
+    name: string;
     packageName: string;
     location: string;
-    extensionType: string;
 }
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
@@ -31,6 +31,7 @@ const EXTENSIONS_ROOT_FOLDER = "extensions";
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-extensions",
     type: "cli-plugin-scaffold-template",
+    templateName: "new-extension",
     scaffold: {
         name: "New Extension",
         description: "Scaffolds essential files for creating a new extension.",
@@ -66,7 +67,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "packageName",
                     message: "Enter the package name:",
                     default: (answers: Input) => {
-                        return Case.kebab(answers.extensionName);
+                        return Case.kebab(answers.name);
                     },
                     validate: pkgName => {
                         if (!pkgName) {
@@ -85,7 +86,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "location",
                     message: `Enter the extension location:`,
                     default: (answers: Input) => {
-                        return `${EXTENSIONS_ROOT_FOLDER}/${answers.extensionName}`;
+                        return `${EXTENSIONS_ROOT_FOLDER}/${answers.name}`;
                     },
                     validate: location => {
                         if (!location) {
@@ -107,26 +108,45 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             ];
         },
         generate: async ({ input, ora }) => {
-            const { extensionType, extensionName, packageName, location } = input;
+            const { type, name } = input;
+            if (!type) {
+                throw new Error("Missing extension type.");
+            }
+
+            const templatePath = path.join(__dirname, "templates", type);
+            const templateExists = fs.existsSync(templatePath);
+            if (!templateExists) {
+                throw new Error("Unknown extension type.");
+            }
+
+            if (!name) {
+                throw new Error("Missing extension name.");
+            }
+
+            let { packageName, location } = input;
+            if (!packageName) {
+                packageName = Case.kebab(name);
+            }
+
+            if (!location) {
+                location = `${EXTENSIONS_ROOT_FOLDER}/${name}`;
+            }
+
+            if (fs.existsSync(location)) {
+                throw new WebinyError(`The target location already exists "${location}"`);
+            }
 
             try {
-                ora.start(`Creating ${extensionName} extension...`);
+                ora.start(`Creating ${log.success.hl(name)} extension...`);
 
-                const sourcePath = path.join(__dirname, "templates", extensionType);
-
-                if (fs.existsSync(location)) {
-                    throw new WebinyError(`The target location already exists "${location}"`);
-                }
+                // Copy template files
+                fs.mkdirSync(location, { recursive: true });
+                await ncp(templatePath, location);
 
                 const project = getProject();
 
                 const baseTsConfigFullPath = path.resolve(project.root, "tsconfig.json");
                 const baseTsConfigRelativePath = path.relative(location, baseTsConfigFullPath);
-
-                fs.mkdirSync(location, { recursive: true });
-
-                // Copy template files
-                await ncp(sourcePath, location);
 
                 const codeReplacements = [
                     { find: "PACKAGE_NAME", replaceWith: packageName },
@@ -146,8 +166,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     await writeJson(rootPackageJsonPath, rootPackageJson);
                 }
 
-                if (typeof generators[extensionType] === "function") {
-                    await generators[extensionType]({ input });
+                if (typeof generators[type] === "function") {
+                    await generators[type]({ input: { name, packageName } });
                 }
 
                 // Once everything is done, run `yarn` so the new packages are automatically installed.
