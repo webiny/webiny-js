@@ -7,7 +7,7 @@ interface Params {
     packageName: string;
 }
 
-export const addReactPluginToReactApp = async (params: Params): Promise<void> => {
+export const addPluginToReactApp = async (params: Params): Promise<void> => {
     const { pluginName, packageName } = params;
 
     const scaffoldsFilePath = path.join("apps", "admin", "src", "plugins", "Scaffolds.tsx");
