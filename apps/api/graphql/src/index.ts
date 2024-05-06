@@ -38,12 +38,13 @@ import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 import { createAuditLogs } from "@webiny/api-audit-logs";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-ddb";
-import scaffoldsPlugins from "./plugins/scaffolds";
 import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
 import { createCountDynamoDbTask } from "~/plugins/countDynamoDbTask";
 import { createContinuingTask } from "~/plugins/continuingTask";
 import { createWebsockets } from "@webiny/api-websockets";
 import { createLockingMechanism } from "@webiny/api-locking-mechanism";
+import scaffoldsPlugins from "./plugins/scaffolds";
+import { extensions } from "./extensions";
 
 const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
@@ -107,7 +108,6 @@ export const handler = createHandler({
         createAcoPageBuilderContext(),
         createAcoHcmsContext(),
         createHcmsTasks(),
-        scaffoldsPlugins(),
         createFileModelModifier(({ modifier }) => {
             modifier.addField({
                 id: "customField1",
@@ -134,7 +134,11 @@ export const handler = createHandler({
         }),
         createAuditLogs(),
         createCountDynamoDbTask(),
-        createContinuingTask()
+        createContinuingTask(),
+
+        // Leave this at the end.
+        scaffoldsPlugins(),
+        extensions()
     ],
     debug
 });

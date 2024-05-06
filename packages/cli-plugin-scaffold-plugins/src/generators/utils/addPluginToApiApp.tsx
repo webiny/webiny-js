@@ -10,15 +10,7 @@ interface Params {
 export const addPluginToApiApp = async (params: Params): Promise<void> => {
     const { pluginName, packageName } = params;
 
-    const scaffoldsFilePath = path.join(
-        "apps",
-        "api",
-        "graphql",
-        "src",
-        "plugins",
-        "scaffolds",
-        "index.ts"
-    );
+    const scaffoldsFilePath = path.join("apps", "api", "graphql", "src", "extensions.ts");
 
     const pluginsFactory = pluginName + "PluginsFactory";
     const importName = "{ createPlugins as " + pluginsFactory + " }";

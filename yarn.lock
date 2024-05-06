@@ -14280,6 +14280,7 @@ __metadata:
     "@webiny/api-tenancy": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/handler-client": 0.0.0
+    "@webiny/handler-graphql": 0.0.0
     "@webiny/project-utils": 0.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
@@ -30504,6 +30505,12 @@ __metadata:
   checksum: 59d4b5ebff6c265b452d6630ae8873d573c82e36fdc1ed9c34c7901a0bf2d3d357022f49db8e9bded127b743f709c7ef7befec249a2b3967578d649a8029aa06
   languageName: node
   linkType: hard
+
+"my-custom-plugin@workspace:plugins/myCustomPlugin":
+  version: 0.0.0-use.local
+  resolution: "my-custom-plugin@workspace:plugins/myCustomPlugin"
+  languageName: unknown
+  linkType: soft
 
 "nanoclone@npm:^0.2.1":
   version: 0.2.1
