@@ -1,5 +1,5 @@
-export const createPlugins = () => {
+export const createExtension = () => {
     return [
-        // Your plugins here.
+        // Your code here.
     ];
 };

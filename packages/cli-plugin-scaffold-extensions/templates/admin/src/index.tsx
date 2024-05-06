@@ -1,5 +1,5 @@
 import React from "react";
 
-export const createPlugins = () => {
-    return <>{/*Your plugins here.*/}</>;
+export const createExtension = () => {
+    return <>{/* Your code here. */}</>;
 };

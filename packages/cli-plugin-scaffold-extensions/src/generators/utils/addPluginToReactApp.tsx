@@ -12,8 +12,8 @@ export const addPluginToReactApp = async (params: Params): Promise<void> => {
 
     const extensionsFilePath = path.join("apps", "admin", "src", "Extensions.tsx");
 
-    const pluginsFactory = extensionName + "PluginsFactory";
-    const importName = "{ createPlugins as " + pluginsFactory + " }";
+    const extensionFactory = extensionName + "ExtensionFactory";
+    const importName = "{ createExtension as " + extensionFactory + " }";
     const importPath = packageName;
 
     const project = new Project();
@@ -73,7 +73,7 @@ export const addPluginToReactApp = async (params: Params): Promise<void> => {
         .trim();
 
     extensionsArrowFnFragment.replaceWithText(
-        `<>{${extensionName}PluginsFactory()}${extensionsArrowFnFragmentChildrenText}</>`
+        `<>{${extensionName}ExtensionFactory()}${extensionsArrowFnFragmentChildrenText}</>`
     );
 
     await source.save();

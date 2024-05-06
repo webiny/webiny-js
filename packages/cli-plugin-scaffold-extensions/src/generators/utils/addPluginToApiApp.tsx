@@ -12,8 +12,8 @@ export const addPluginToApiApp = async (params: Params): Promise<void> => {
 
     const extensionsFilePath = path.join("apps", "api", "graphql", "src", "extensions.ts");
 
-    const pluginsFactory = extensionName + "PluginsFactory";
-    const importName = "{ createPlugins as " + pluginsFactory + " }";
+    const extensionFactory = extensionName + "ExtensionFactory";
+    const importName = "{ createExtension as " + extensionFactory + " }";
     const importPath = packageName;
 
     const project = new Project();
@@ -45,7 +45,7 @@ export const addPluginToApiApp = async (params: Params): Promise<void> => {
         Node.isArrayLiteralExpression(node)
     ) as ArrayLiteralExpression;
 
-    pluginsArray.addElement(`${pluginsFactory}()`);
+    pluginsArray.addElement(`${extensionFactory}()`);
 
     await source.save();
 
