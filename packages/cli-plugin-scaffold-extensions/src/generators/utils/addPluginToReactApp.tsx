@@ -55,7 +55,9 @@ export const addPluginToReactApp = async (params: Params): Promise<void> => {
         );
     }
 
-    const extensionsArrowFn = extensionsIdentifier.getNextSibling(node => Node.isArrowFunction(node));
+    const extensionsArrowFn = extensionsIdentifier.getNextSibling(node =>
+        Node.isArrowFunction(node)
+    );
     if (!extensionsArrowFn) {
         throw new Error(
             `Could not find the "Extensions" React component in "${extensionsFilePath}". Did you maybe change its definition? It should be an arrow function.`

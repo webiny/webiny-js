@@ -9,7 +9,6 @@ import cliScaffoldAdminModule from "@webiny/cli-plugin-scaffold-admin-app-module
 import cliScaffoldExtensions from "@webiny/cli-plugin-scaffold-extensions";
 import cliScaffoldCiCd from "@webiny/cli-plugin-scaffold-ci";
 
-
 export default {
     template: "[TEMPLATE_VERSION]",
     name: "[PROJECT_NAME]",

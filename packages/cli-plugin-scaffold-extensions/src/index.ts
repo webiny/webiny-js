@@ -26,7 +26,7 @@ interface Input {
     extensionType: string;
 }
 
-const EXTENSIONS_ROOT_FOLDER = 'extensions';
+const EXTENSIONS_ROOT_FOLDER = "extensions";
 
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-extensions",
