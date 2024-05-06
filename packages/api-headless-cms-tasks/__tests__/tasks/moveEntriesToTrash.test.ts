@@ -230,8 +230,8 @@ describe("Move Entries to Trash Bin", () => {
         await createEntries(context, MODEL_ID, ENTRIES_COUNT);
         const { entries: latestEntries, meta: latestMeta } = await listEntries(context, MODEL_ID);
 
-        // Let's save the entryIds
-        const entryIds = latestEntries.map(entry => entry.entryId);
+        // Let's save the ids
+        const ids = latestEntries.map(entry => entry.id);
 
         // Let's check how many entries we have just created
         expect(latestMeta.totalCount).toBe(ENTRIES_COUNT);
@@ -242,7 +242,7 @@ describe("Move Entries to Trash Bin", () => {
             input: {
                 modelId: MODEL_ID,
                 identity,
-                entryIds
+                ids
             }
         });
 
@@ -262,7 +262,7 @@ describe("Move Entries to Trash Bin", () => {
             tenant: "root",
             locale: "en-US",
             output: {
-                done: entryIds,
+                done: ids,
                 failed: []
             }
         });

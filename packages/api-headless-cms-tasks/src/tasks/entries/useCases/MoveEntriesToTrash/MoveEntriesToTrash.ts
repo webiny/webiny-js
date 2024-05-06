@@ -1,4 +1,5 @@
 import { ITaskResponseResult } from "@webiny/tasks";
+import { parseIdentifier } from "@webiny/utils";
 import { IBulkActionOperationTaskParams } from "~/types";
 import { taskRepositoryFactory } from "~/tasks/entries/domain";
 import { IUseCase } from "~/tasks/IUseCase";
@@ -32,17 +33,19 @@ export class MoveEntriesToTrash
                 return response.error(`Content model "${input.modelId}" was not found!`);
             }
 
-            if (!input.entryIds || input.entryIds.length === 0) {
+            if (!input.ids || input.ids.length === 0) {
                 return response.done(`Task done: no entries to move into trash bin.`);
             }
 
             const taskRepository = taskRepositoryFactory.getRepository(store.getTask().id);
 
-            for (const entryId of input.entryIds) {
+            for (const id of input.ids) {
+                const { id: entryId } = parseIdentifier(id);
+
                 try {
                     context.security.setIdentity(input.identity);
                     await context.cms.deleteEntry(model, entryId, { permanently: false });
-                    taskRepository.addDone(entryId);
+                    taskRepository.addDone(id);
                 } catch (ex) {
                     const message =
                         ex.message ||
@@ -56,7 +59,7 @@ export class MoveEntriesToTrash
                     } catch {
                         console.error(`Failed to add error log: "${message}"`);
                     } finally {
-                        taskRepository.addFailed(entryId);
+                        taskRepository.addFailed(id);
                     }
                 }
             }

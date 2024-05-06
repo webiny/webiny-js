@@ -68,9 +68,9 @@ export class CreateTasks {
                     );
                 }
 
-                const entryIds = entries.map(entry => entry.entryId);
+                const ids = entries.map(entry => entry.id);
 
-                if (entryIds.length > 0) {
+                if (ids.length > 0) {
                     await context.tasks.trigger<IBulkActionMoveEntriesToFolderOperationInput>({
                         definition: EntriesTask.MoveEntriesToFolder,
                         name: `Headless CMS - Move entries to folder "${input.folderId}" - ${model.name} - #${currentBatch}`,
@@ -79,7 +79,7 @@ export class CreateTasks {
                             modelId: input.modelId,
                             identity: input.identity,
                             folderId: input.folderId,
-                            entryIds
+                            ids
                         }
                     });
                 }

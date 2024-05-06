@@ -1,5 +1,4 @@
 import { ITaskResponseResult } from "@webiny/tasks";
-import { parseIdentifier } from "@webiny/utils";
 import { IBulkActionMoveEntriesToFolderOperationTaskParams } from "~/types";
 import { taskRepositoryFactory } from "~/tasks/entries/domain";
 import { IUseCase } from "~/tasks/IUseCase";
@@ -37,7 +36,7 @@ export class MoveEntriesToFolder
                 return response.error(`Content model "${input.modelId}" was not found!`);
             }
 
-            if (!input.entryIds || input.entryIds.length === 0) {
+            if (!input.ids || input.ids.length === 0) {
                 return response.done(
                     `Task done: no entries to move into folder ${input.folderId}.`
                 );
@@ -45,9 +44,7 @@ export class MoveEntriesToFolder
 
             const taskRepository = taskRepositoryFactory.getRepository(store.getTask().id);
 
-            for (const entryId of input.entryIds) {
-                const { id } = parseIdentifier(entryId);
-
+            for (const id of input.ids) {
                 try {
                     context.security.setIdentity(input.identity);
                     await context.cms.moveEntry(model, id, input.folderId);

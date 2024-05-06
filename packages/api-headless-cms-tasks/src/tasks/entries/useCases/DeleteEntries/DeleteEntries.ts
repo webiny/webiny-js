@@ -1,4 +1,5 @@
 import { ITaskResponseResult } from "@webiny/tasks";
+import { parseIdentifier } from "@webiny/utils";
 import { IBulkActionOperationTaskParams } from "~/types";
 import { taskRepositoryFactory } from "~/tasks/entries/domain";
 import { IUseCase } from "~/tasks/IUseCase";
@@ -28,18 +29,20 @@ export class DeleteEntries
                 return response.error(`Model with ${input.modelId} not found!`);
             }
 
-            if (!input.entryIds || input.entryIds.length === 0) {
+            if (!input.ids || input.ids.length === 0) {
                 return response.done("Task done: no entries to delete.");
             }
 
             const taskRepository = taskRepositoryFactory.getRepository(store.getTask().id);
 
-            for (const entryId of input.entryIds) {
+            for (const id of input.ids) {
+                const { id: entryId } = parseIdentifier(id);
+
                 try {
                     await context.cms.deleteEntry(model, entryId, {
                         permanently: true
                     });
-                    taskRepository.addDone(entryId);
+                    taskRepository.addDone(id);
                 } catch (ex) {
                     const message = ex.message || `Failed to delete entry with entryId ${entryId}.`;
 
@@ -51,7 +54,7 @@ export class DeleteEntries
                     } catch {
                         console.error(`Failed to add error log: "${message}"`);
                     } finally {
-                        taskRepository.addFailed(entryId);
+                        taskRepository.addFailed(id);
                     }
                 }
             }

@@ -236,8 +236,8 @@ describe("Restore Entries from Trash Bin", () => {
             MODEL_ID
         );
 
-        // Let's save the entryIds
-        const entryIds = deletedEntries.map(entry => entry.entryId);
+        // Let's save the ids
+        const ids = deletedEntries.map(entry => entry.id);
 
         // Let's check how many entries we have just created
         expect(deletedMeta.totalCount).toBe(ENTRIES_COUNT);
@@ -248,7 +248,7 @@ describe("Restore Entries from Trash Bin", () => {
             input: {
                 modelId: MODEL_ID,
                 identity,
-                entryIds
+                ids
             }
         });
 
@@ -268,7 +268,7 @@ describe("Restore Entries from Trash Bin", () => {
             tenant: "root",
             locale: "en-US",
             output: {
-                done: entryIds,
+                done: ids,
                 failed: []
             }
         });

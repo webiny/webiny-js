@@ -66,9 +66,9 @@ export class CreateTasks {
                     return response.done("Task done: no entries to move to trash bin.");
                 }
 
-                const entryIds = entries.map(entry => entry.entryId);
+                const ids = entries.map(entry => entry.id);
 
-                if (entryIds.length > 0) {
+                if (ids.length > 0) {
                     await context.tasks.trigger<IBulkActionOperationInput>({
                         definition: EntriesTask.MoveEntriesToTrash,
                         name: `Headless CMS - Move entries to trash bin - ${model.name} - #${currentBatch}`,
@@ -76,7 +76,7 @@ export class CreateTasks {
                         input: {
                             modelId: input.modelId,
                             identity: input.identity,
-                            entryIds
+                            ids
                         }
                     });
                 }

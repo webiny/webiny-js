@@ -63,7 +63,7 @@ export type IMoveEntriesToFolderByModelTaskParams = ITaskRunParams<
 
 export interface IBulkActionOperationInput {
     modelId: string;
-    entryIds: string[];
+    ids: string[];
     identity: SecurityIdentity;
     done?: string[];
     failed?: string[];

@@ -169,8 +169,8 @@ describe("Delete Entries", () => {
         await createEntries(context, MODEL_ID, ENTRIES_COUNT);
         const { entries, meta } = await listLatestEntries(context, MODEL_ID);
 
-        // Let's save the entryIds
-        const entryIds = entries.map(entry => entry.entryId);
+        // Let's save the ids
+        const ids = entries.map(entry => entry.id);
 
         // Let's check how many entries we have been created
         expect(meta.totalCount).toBe(ENTRIES_COUNT);
@@ -180,7 +180,7 @@ describe("Delete Entries", () => {
             definitionId: taskDefinition.id,
             input: {
                 modelId: MODEL_ID,
-                entryIds
+                ids
             }
         });
 
@@ -206,7 +206,7 @@ describe("Delete Entries", () => {
             tenant: "root",
             locale: "en-US",
             output: {
-                done: entryIds,
+                done: ids,
                 failed: []
             }
         });
@@ -226,8 +226,8 @@ describe("Delete Entries", () => {
         await createDeletedEntries(context, MODEL_ID, ENTRIES_COUNT);
         const { entries, meta } = await listDeletedEntries(context, MODEL_ID);
 
-        // Let's save the entryIds
-        const entryIds = entries.map(entry => entry.entryId);
+        // Let's save the ids
+        const ids = entries.map(entry => entry.id);
 
         // Let's check how many deleted entries we have been created
         expect(meta.totalCount).toBe(ENTRIES_COUNT);
@@ -237,7 +237,7 @@ describe("Delete Entries", () => {
             definitionId: taskDefinition.id,
             input: {
                 modelId: MODEL_ID,
-                entryIds
+                ids
             }
         });
 
@@ -263,7 +263,7 @@ describe("Delete Entries", () => {
             tenant: "root",
             locale: "en-US",
             output: {
-                done: entryIds,
+                done: ids,
                 failed: []
             }
         });
