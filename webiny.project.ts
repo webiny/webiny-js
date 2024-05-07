@@ -19,6 +19,7 @@ export default {
                     import("@webiny/cli-plugin-scaffold"),
                     import("@webiny/cli-plugin-scaffold-graphql-service"),
                     import("@webiny/cli-plugin-scaffold-admin-app-module"),
+                    import("@webiny/cli-plugin-scaffold-extensions"),
                     import("@webiny/cli-plugin-scaffold-ci")
                 ]);
 

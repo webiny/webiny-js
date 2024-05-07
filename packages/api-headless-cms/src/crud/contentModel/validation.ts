@@ -83,7 +83,9 @@ const fieldSchema = zod.object({
         .object({
             name: shortString
         })
-        .optional(),
+        .optional()
+        .nullable()
+        .default(null),
     validation: zod
         .array(
             zod.object({

@@ -4,9 +4,10 @@ interface Params {
     scaffoldsIndexPath: string;
     importName: string;
     importPath: string;
+    pluginsArrayElement?: string;
 }
 export default async (params: Params): Promise<void> => {
-    const { scaffoldsIndexPath, importName, importPath } = params;
+    const { scaffoldsIndexPath, importName, importPath, pluginsArrayElement } = params;
     const project = new Project();
     project.addSourceFileAtPath(scaffoldsIndexPath);
 
@@ -34,7 +35,7 @@ export default async (params: Params): Promise<void> => {
         Node.isArrayLiteralExpression(node)
     ) as ArrayLiteralExpression;
 
-    pluginsArray.addElement(importName);
+    pluginsArray.addElement(pluginsArrayElement || importName);
 
     await source.save();
 };
