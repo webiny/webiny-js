@@ -1,16 +1,13 @@
 import React, { useMemo } from "react";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
-import { useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
-import { useCms, useContentEntry } from "~/admin/hooks";
+import { useContentEntry } from "~/admin/hooks";
 import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier";
 
 export const ActionDelete = observer(() => {
-    const { deleteEntry } = useCms();
-    const { contentModel } = useContentEntry();
-    const { removeRecordFromCache } = useRecords();
+    const { deleteEntry } = useContentEntry();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
@@ -34,21 +31,14 @@ export const ActionDelete = observer(() => {
                          * By sending an entryId (id without #version), we are telling to the API to delete all revisions.
                          */
                         const { id } = parseIdentifier(item.id);
-                        const response = await deleteEntry({
-                            model: contentModel,
-                            entry: item,
-                            id
-                        });
+                        const response = await deleteEntry({ id });
 
-                        const { error } = response;
-
-                        if (error) {
+                        if (typeof response !== "boolean") {
                             throw new Error(
-                                error.message || "Unknown error while moving the entry to trash."
+                                response.error.message ||
+                                    "Unknown error while moving the entry to trash."
                             );
                         }
-
-                        removeRecordFromCache(item.id);
 
                         report.success({
                             title: `${item.meta.title}`,

@@ -1,7 +1,8 @@
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
-import { Context } from "@webiny/api/types";
-import { GraphQLFieldResolver, Resolvers } from "@webiny/handler-graphql/types";
+import { Context, GenericRecord } from "@webiny/api/types";
+import { GraphQLFieldResolver, GraphQLRequestBody, Resolvers } from "@webiny/handler-graphql/types";
+import { processRequestBody } from "@webiny/handler-graphql";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { Topic } from "@webiny/pubsub/types";
@@ -15,6 +16,20 @@ import { CmsModelField, CmsModelFieldValidation, CmsModelUpdateInput } from "./m
 import { CmsModel, CmsModelCreateFromInput, CmsModelCreateInput } from "./model";
 import { CmsGroup } from "./modelGroup";
 import { CmsIdentity } from "./identity";
+
+export interface CmsError {
+    message: string;
+    code: string;
+    data: GenericRecord;
+    stack?: string;
+}
+
+export interface CmsError {
+    message: string;
+    code: string;
+    data: GenericRecord;
+    stack?: string;
+}
 
 export type ApiEndpoint = "manage" | "preview" | "read";
 
@@ -62,7 +77,16 @@ export interface HeadlessCms
      */
     export: HeadlessCmsExport;
     importing: HeadlessCmsImport;
+    getExecutableSchema: GetExecutableSchema;
 }
+
+export type GetExecutableSchema = (
+    type: ApiEndpoint
+) => Promise<
+    <TData = Record<string, any>, TExtensions = Record<string, any>>(
+        input: GraphQLRequestBody | GraphQLRequestBody[]
+    ) => ReturnType<typeof processRequestBody<TData, TExtensions>>
+>;
 
 /**
  * @description This combines all contexts used in the CMS into a single one.
@@ -414,7 +438,7 @@ export interface ModelManagerPlugin extends Plugin {
      * Create a CmsModelManager for specific type - or new default one.
      * For reference in how is this plugin run check [contentModelManagerFactory](https://github.com/webiny/webiny-js/blob/f15676/packages/api-headless-cms/src/content/plugins/CRUD/contentModel/contentModelManagerFactory.ts)
      */
-    create: (context: CmsContext, model: CmsModel) => Promise<CmsModelManager>;
+    create<T = any>(context: CmsContext, model: CmsModel): Promise<CmsModelManager<T>>;
 }
 
 /**
@@ -648,39 +672,39 @@ export interface CmsEntryUniqueValue {
  * @category CmsEntry
  * @category CmsModel
  */
-export interface CmsModelManager {
+export interface CmsModelManager<T = CmsEntryValues> {
     /**
      * List only published entries in the content model.
      */
-    listPublished: (params: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
+    listPublished(params: CmsEntryListParams): Promise<[CmsEntry<T>[], CmsEntryMeta]>;
     /**
      * List latest entries in the content model. Used for administration.
      */
-    listLatest: (params: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
+    listLatest(params: CmsEntryListParams): Promise<[CmsEntry<T>[], CmsEntryMeta]>;
     /**
      * Get a list of published entries by the ID list.
      */
-    getPublishedByIds: (ids: string[]) => Promise<CmsEntry[]>;
+    getPublishedByIds(ids: string[]): Promise<CmsEntry<T>[]>;
     /**
      * Get a list of the latest entries by the ID list.
      */
-    getLatestByIds: (ids: string[]) => Promise<CmsEntry[]>;
+    getLatestByIds(ids: string[]): Promise<CmsEntry<T>[]>;
     /**
      * Get an entry filtered by given params. Will always get one.
      */
-    get: (id: string) => Promise<CmsEntry>;
+    get(id: string): Promise<CmsEntry<T>>;
     /**
      * Create an entry.
      */
-    create: (data: CreateCmsEntryInput) => Promise<CmsEntry>;
+    create<I>(data: CreateCmsEntryInput & I): Promise<CmsEntry<T>>;
     /**
      * Update an entry.
      */
-    update: (id: string, data: UpdateCmsEntryInput) => Promise<CmsEntry>;
+    update(id: string, data: UpdateCmsEntryInput): Promise<CmsEntry<T>>;
     /**
      * Delete an entry.
      */
-    delete: (id: string) => Promise<void>;
+    delete(id: string): Promise<void>;
 }
 
 /**
@@ -788,7 +812,7 @@ export interface CmsModelContext {
     /**
      * Get a single content model.
      */
-    getModel: (modelId: string) => Promise<CmsModel | null>;
+    getModel(modelId: string): Promise<CmsModel | null>;
     /**
      * Get model to AST converter.
      */
@@ -796,50 +820,50 @@ export interface CmsModelContext {
     /**
      * Get all content models.
      */
-    listModels: () => Promise<CmsModel[]>;
+    listModels(): Promise<CmsModel[]>;
     /**
      * Create a content model.
      */
-    createModel: (data: CmsModelCreateInput) => Promise<CmsModel>;
+    createModel(data: CmsModelCreateInput): Promise<CmsModel>;
     /**
      * Create a content model from the given model - clone.
      */
-    createModelFrom: (modelId: string, data: CmsModelCreateFromInput) => Promise<CmsModel>;
+    createModelFrom(modelId: string, data: CmsModelCreateFromInput): Promise<CmsModel>;
     /**
      * Update content model without data validation. Used internally.
      * @hidden
      */
-    updateModelDirect: (params: CmsModelUpdateDirectParams) => Promise<CmsModel>;
+    updateModelDirect(params: CmsModelUpdateDirectParams): Promise<CmsModel>;
     /**
      * Update content model.
      */
-    updateModel: (modelId: string, data: CmsModelUpdateInput) => Promise<CmsModel>;
+    updateModel(modelId: string, data: CmsModelUpdateInput): Promise<CmsModel>;
     /**
      * Delete content model. Should not allow deletion if there are entries connected to it.
      */
-    deleteModel: (modelId: string) => Promise<void>;
+    deleteModel(modelId: string): Promise<void>;
     /**
      * Possibility for users to trigger the model initialization.
      * They can hook into it and do what ever they want to.
      *
      * Primary idea behind this is creating the index, for the code models, in the ES.
      */
-    initializeModel: (modelId: string, data: Record<string, any>) => Promise<boolean>;
+    initializeModel(modelId: string, data: Record<string, any>): Promise<boolean>;
     /**
      * Get an instance of CmsModelManager for given content modelId.
      *
      * @see CmsModelManager
      */
-    getEntryManager: (model: CmsModel | string) => Promise<CmsModelManager>;
+    getEntryManager<T = any>(model: CmsModel | string): Promise<CmsModelManager<T>>;
     /**
      * Get all content model managers mapped by modelId.
      * @see CmsModelManager
      */
-    getEntryManagers: () => Map<string, CmsModelManager>;
+    getEntryManagers(): Map<string, CmsModelManager>;
     /**
      * Clear all the model caches.
      */
-    clearModelsCache: () => void;
+    clearModelsCache(): void;
     /**
      * Lifecycle Events
      */
@@ -998,6 +1022,7 @@ export interface CmsEntryListWhere {
         | string
         | number
         | boolean
+        | Date
         | undefined
         | string[]
         | number[]

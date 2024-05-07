@@ -1,6 +1,7 @@
 import React from "react";
+import { createDecorator } from "@webiny/react-composition";
 import {
-    createDecorator,
+    DialogsProvider,
     FileManagerFileItem,
     FileManagerOnChange,
     FileManagerRenderer as BaseFileManagerRenderer
@@ -15,7 +16,7 @@ import { FM_ACO_APP } from "~/constants";
 import { FileManagerViewWithConfig } from "./FileManagerViewConfig";
 import { FoldersProvider } from "@webiny/app-aco/contexts/folders";
 import { NavigateFolderProvider } from "./NavigateFolderProvider";
-import { AcoWithConfig, DialogsProvider } from "@webiny/app-aco";
+import { AcoWithConfig } from "@webiny/app-aco";
 import { CompositionScope } from "@webiny/react-composition";
 
 /**
@@ -65,13 +66,13 @@ export function FileManagerProvider({
         <CompositionScope name={"fm"}>
             <FoldersProvider type={FM_ACO_APP}>
                 <NavigateFolderProvider>
-                    <DialogsProvider>
-                        <AcoWithConfig>
-                            <FileManagerViewProvider {...props} accept={mimeTypes}>
+                    <AcoWithConfig>
+                        <FileManagerViewProvider {...props} accept={mimeTypes}>
+                            <DialogsProvider>
                                 <FileManagerViewWithConfig>{children}</FileManagerViewWithConfig>
-                            </FileManagerViewProvider>
-                        </AcoWithConfig>
-                    </DialogsProvider>
+                            </DialogsProvider>
+                        </FileManagerViewProvider>
+                    </AcoWithConfig>
                 </NavigateFolderProvider>
             </FoldersProvider>
         </CompositionScope>

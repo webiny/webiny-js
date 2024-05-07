@@ -16,7 +16,11 @@ import {
 } from "./validation";
 import { CmsModel, CmsModelField } from "./model";
 import { CmsIdentity } from "~/types/shared";
-import { DragObjectWithType } from "react-dnd";
+import type { SourceType } from "dnd-core";
+
+export type DragObjectWithType = {
+    type: SourceType;
+};
 
 export * from "./validation";
 export * from "./model";
@@ -225,7 +229,7 @@ export interface CmsModelFieldTypePlugin extends Plugin {
 
 export interface CmsModelFieldRendererProps {
     field: CmsModelField;
-    Label: React.ComponentType;
+    Label: React.ComponentType<React.PropsWithChildren>;
     getBind: <T = any, F = any>(index?: number, key?: string) => BindComponent<T, F>;
     contentModel: CmsModel;
 }
@@ -335,6 +339,10 @@ export interface CmsDynamicZoneTemplate {
     tags?: string[];
 }
 
+export interface CmsDynamicZoneTemplateWithTypename extends CmsDynamicZoneTemplate {
+    __typename: string;
+}
+
 export type CmsContentEntryStatusType = "draft" | "published" | "unpublished";
 
 /**
@@ -344,6 +352,7 @@ export type CmsEditorContentEntry = CmsContentEntry;
 
 export interface CmsContentEntry {
     id: string;
+    entryId: string;
     modelId: string;
     createdOn: string;
     createdBy: CmsIdentity;

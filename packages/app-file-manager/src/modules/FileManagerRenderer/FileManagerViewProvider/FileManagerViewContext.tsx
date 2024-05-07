@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import omit from "lodash/omit";
-import { useShiftKey } from "@webiny/app-admin";
+import { useShiftKey, useStateIfMounted } from "@webiny/app-admin";
 import { FileItem } from "@webiny/app-admin/types";
 import { FileTag } from "~/types";
 import { useFileManagerApi } from "~/index";
@@ -109,7 +109,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
     const { folders: originalFolders, loading: foldersLoading } = useFolders();
     const { currentFolderId = ROOT_FOLDER, navigateToFolder } = useNavigateFolder();
     const tags = useTags(modifiers);
-    const [state, setState] = useState(initializeState());
+    const [state, setState] = useStateIfMounted(initializeState());
 
     const { loading, files, meta, listFiles, setFiles, getListVariables } = useListFiles({
         folderId: currentFolderId,

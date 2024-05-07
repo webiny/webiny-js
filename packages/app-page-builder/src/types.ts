@@ -13,6 +13,11 @@ import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/
 import { Theme } from "@webiny/app-theme/types";
 import { Renderer } from "@webiny/app-page-builder-elements/types";
 import { FolderTableItem, RecordTableItem, SearchRecordItem } from "@webiny/app-aco/table.types";
+import type { SourceType } from "dnd-core";
+
+export type DragObjectWithType = {
+    type: SourceType;
+};
 
 export enum PageStatus {
     PUBLISHED = "published",
@@ -218,6 +223,11 @@ export type PbElementDataType = {
     width?: number;
     [key: string]: any;
 };
+
+export interface CollectedProps {
+    handlerId: string | symbol | null;
+    isOver: boolean;
+}
 
 export interface PbEditorElement {
     id: string;
@@ -732,7 +742,7 @@ export enum DisplayMode {
 export type PbEditorResponsiveModePlugin = Plugin & {
     type: "pb-editor-responsive-mode";
     config: {
-        displayMode: string;
+        displayMode: DisplayMode;
         tooltip: {
             title: string;
             subTitle: string;
@@ -878,6 +888,7 @@ export interface PbMenu {
     url: string;
     slug: string;
     description: string;
+    createdOn: string;
     createdBy: PbIdentity;
 }
 
@@ -1008,6 +1019,10 @@ export interface PageBuilderFormDataSettings {
 }
 
 export interface PageBuilderSecurityPermission extends SecurityPermission {
+    accessLevel?: string;
+    settingsAccessLevel?: string;
+    templateUnlink?: boolean;
+    blockUnlink?: boolean;
     own?: boolean;
     rwd?: string;
     pw?: string | boolean;

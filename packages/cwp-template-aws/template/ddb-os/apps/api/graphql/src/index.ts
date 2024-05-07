@@ -39,6 +39,7 @@ import { createBackgroundTasks } from "@webiny/api-background-tasks-os";
 import { createApwGraphQL, createApwPageBuilderContext } from "@webiny/api-apw";
 import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 import { createWebsockets } from "@webiny/api-websockets";
+import { createRecordLocking } from "@webiny/api-record-locking";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
@@ -76,6 +77,7 @@ export const handler = createHandler({
             })
         }),
         createHeadlessCmsGraphQL(),
+        createRecordLocking(),
         createBackgroundTasks(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({

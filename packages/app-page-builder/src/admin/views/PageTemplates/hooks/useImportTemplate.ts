@@ -12,7 +12,7 @@ const useImportTemplate = () => {
     const { showImportTemplateDialog } = useImportTemplateDialog();
     const { showImportTemplateLoadingDialog } = useImportTemplateLoadingDialog();
 
-    const importTemplateMutation = useCallback(async zipFileUrl => {
+    const importTemplateMutation = useCallback(async (zipFileUrl: string) => {
         try {
             const res = await importTemplate({
                 variables: {

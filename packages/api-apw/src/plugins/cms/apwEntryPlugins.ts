@@ -12,7 +12,9 @@ export const apwEntryPlugins = (params: ApwEntryPlugins) => {
     apw.addContentGetter(ApwContentTypes.CMS_ENTRY, async (id, settings) => {
         const model = await fetchModel(cms, id, settings);
 
-        const item = await cms.getEntryById(model, id);
+        const item = await cms.getEntry(model, {
+            where: { OR: [{ id }, { entryId: id }], latest: true }
+        });
 
         if (!item) {
             return null;

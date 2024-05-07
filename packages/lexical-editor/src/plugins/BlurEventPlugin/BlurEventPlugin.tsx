@@ -1,14 +1,14 @@
 import { FC, useEffect } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { BLUR_COMMAND, COMMAND_PRIORITY_LOW } from "lexical";
 import { LexicalValue } from "~/types";
+import { useRichTextEditor } from "~/hooks";
 
 interface BlurEventPlugin {
     onBlur?: (editorState: LexicalValue) => void;
 }
 
 export const BlurEventPlugin: FC<BlurEventPlugin> = ({ onBlur }) => {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
 
     useEffect(
         () =>

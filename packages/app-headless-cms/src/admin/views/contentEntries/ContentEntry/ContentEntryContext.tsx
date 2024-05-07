@@ -1,18 +1,8 @@
-import React, {
-    Dispatch,
-    MutableRefObject,
-    SetStateAction,
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState
-} from "react";
-import isEmpty from "lodash/isEmpty";
+import React, { useEffect, useMemo, useState } from "react";
 import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useQuery } from "~/admin/hooks";
+import { useSnackbar, useIsMounted } from "@webiny/app-admin";
+import { useCms, useQuery } from "~/admin/hooks";
 import { ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntriesContext";
 import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContentEntries";
 import { CmsContentEntry, CmsContentEntryRevision } from "~/types";
@@ -26,22 +16,45 @@ import {
     createRevisionsQuery
 } from "@webiny/app-headless-cms-common";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
-import { FormAPI, FormSubmitOptions } from "@webiny/form";
+import { useRecords } from "@webiny/app-aco";
+import * as Cms from "~/admin/contexts/Cms";
+import { useMockRecords } from "./useMockRecords";
 
-interface ContentEntryContextForm {
-    submit: (
-        ev: React.SyntheticEvent,
-        options?: FormSubmitOptions
-    ) => Promise<CmsContentEntry | null>;
+interface UpdateListCacheOptions {
+    options?: {
+        addItemToListCache?: boolean;
+    };
 }
-type ContentEntryContextFormRef = MutableRefObject<ContentEntryContextForm>;
-export interface ContentEntryContext extends ContentEntriesContext {
-    createEntry: () => void;
+
+export type GetEntryParams = Omit<Cms.GetEntryParams, "model">;
+export type CreateEntryParams = Omit<Cms.CreateEntryParams, "model"> & UpdateListCacheOptions;
+export type CreateEntryRevisionFromParams = Omit<Cms.CreateEntryRevisionFromParams, "model">;
+export type UpdateEntryRevisionParams = Omit<Cms.UpdateEntryRevisionParams, "model">;
+export type PublishEntryRevisionParams = Omit<Cms.PublishEntryRevisionParams, "model">;
+export type UnpublishEntryRevisionParams = Omit<Cms.UnpublishEntryRevisionParams, "model">;
+export type DeleteEntryParams = Omit<Cms.DeleteEntryParams, "model">;
+
+export interface ContentEntryCrud {
+    getEntry: (params: GetEntryParams) => Promise<Cms.GetEntryResponse>;
+    createEntry: (params: CreateEntryParams) => Promise<Cms.CreateEntryResponse>;
+    createEntryRevisionFrom: (
+        params: CreateEntryRevisionFromParams
+    ) => Promise<Cms.CreateEntryRevisionFromResponse>;
+    updateEntryRevision: (
+        params: UpdateEntryRevisionParams
+    ) => Promise<Cms.UpdateEntryRevisionResponse>;
+    publishEntryRevision: (
+        params: PublishEntryRevisionParams
+    ) => Promise<Cms.PublishEntryRevisionResponse>;
+    unpublishEntryRevision: (
+        params: UnpublishEntryRevisionParams
+    ) => Promise<Cms.UnpublishEntryRevisionResponse>;
+    deleteEntry: (params: DeleteEntryParams) => Promise<Cms.DeleteEntryResponse>;
+}
+
+export interface ContentEntryContext extends ContentEntriesContext, ContentEntryCrud {
     entry: CmsContentEntry;
-    form: ContentEntryContextFormRef;
-    setFormRef: (form: Pick<FormAPI, "submit">) => void;
     loading: boolean;
-    setLoading: Dispatch<SetStateAction<boolean>>;
     revisions: CmsContentEntryRevision[];
     refetchContent: () => void;
     setActiveTab(index: number): void;
@@ -49,9 +62,14 @@ export interface ContentEntryContext extends ContentEntriesContext {
     showEmptyView: boolean;
 }
 
-export const Context = React.createContext<ContentEntryContext | undefined>(undefined);
+export const ContentEntryContext = React.createContext<ContentEntryContext | undefined>(undefined);
 
 export interface ContentEntryContextProviderProps extends Partial<UseContentEntryProviderProps> {
+    /**
+     * This prop is used when you need to mount this provider outside the main content entry view, with limited features.
+     * Example: Model Editor "preview" tab.
+     */
+    readonly?: boolean;
     children: React.ReactNode;
 }
 
@@ -81,21 +99,19 @@ export const useContentEntryProviderProps = (): UseContentEntryProviderProps => 
 export const ContentEntryProvider = ({
     children,
     isNewEntry,
+    readonly,
     getContentId
 }: ContentEntryContextProviderProps) => {
+    const { isMounted } = useIsMounted();
     const [activeTab, setActiveTab] = useState(0);
-    const { contentModel, canCreate } = useContentEntries();
-
-    const { search } = useRouter();
-    const [query] = search;
-
-    const formRef = useRef<ContentEntryContextForm>({
-        submit: async () => {
-            return null;
-        }
-    });
+    const [entry, setEntry] = useState<CmsContentEntry>();
+    const { contentModel: model, canCreate } = useContentEntries();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
+    const cms = useCms();
+    const { addRecordToCache, updateRecordInCache, removeRecordFromCache } = readonly
+        ? useMockRecords()
+        : useRecords();
     const [isLoading, setLoading] = useState<boolean>(false);
 
     const contentEntryProviderProps = useContentEntryProviderProps();
@@ -116,36 +132,24 @@ export const ContentEntryProvider = ({
         version = result.version;
     }
 
+    useEffect(() => {
+        if (!revisionId && entry) {
+            setEntry(undefined);
+        }
+        setActiveTab(0);
+    }, [revisionId]);
+
     const { READ_CONTENT } = useMemo(() => {
         return {
-            READ_CONTENT: createReadQuery(contentModel)
+            READ_CONTENT: createReadQuery(model)
         };
-    }, [contentModel.modelId]);
+    }, [model.modelId]);
 
     const { GET_REVISIONS } = useMemo(() => {
         return {
-            GET_REVISIONS: createRevisionsQuery(contentModel)
+            GET_REVISIONS: createRevisionsQuery(model)
         };
-    }, [contentModel.modelId]);
-
-    const setFormRef = useCallback(
-        form => {
-            formRef.current = form;
-        },
-        [formRef]
-    );
-
-    const folderIdPath = useMemo(() => {
-        const folderId = query.get("folderId");
-        if (!folderId) {
-            return "";
-        }
-        return `&folderId=${encodeURIComponent(folderId)}`;
-    }, [query]);
-
-    const createEntry = useCallback((): void => {
-        history.push(`/cms/content-entries/${contentModel.modelId}?new=true${folderIdPath}`);
-    }, [contentModel.modelId, folderIdPath]);
+    }, [model.modelId]);
 
     let variables: CmsEntryGetQueryVariables | undefined;
     if (version === null && entryId) {
@@ -158,20 +162,22 @@ export const ContentEntryProvider = ({
         };
     }
 
-    const getEntry = useQuery<CmsEntryGetQueryResponse, CmsEntryGetQueryVariables>(READ_CONTENT, {
+    // TODO: refactor to use `getEntry` from useCms()
+    const loadEntry = useQuery<CmsEntryGetQueryResponse, CmsEntryGetQueryVariables>(READ_CONTENT, {
         variables,
         skip: !revisionId,
-        fetchPolicy: getFetchPolicy(contentModel),
-        onCompleted: data => {
-            if (!data) {
+        fetchPolicy: getFetchPolicy(model),
+        onCompleted: response => {
+            if (!response || !isMounted()) {
                 return;
             }
 
-            const { error } = data.content;
+            const { data, error } = response.content;
             if (!error) {
+                setEntry(data);
                 return;
             }
-            history.push(`/cms/content-entries/${contentModel.modelId}`);
+            history.push(`/cms/content-entries/${model.modelId}`);
             showSnackbar(error.message);
         }
     });
@@ -186,6 +192,8 @@ export const ContentEntryProvider = ({
         skip: !entryId
     });
 
+    const loading = isLoading || loadEntry.loading || getRevisions.loading;
+
     useEffect(() => {
         if (getRevisions.loading || !entryId) {
             return;
@@ -195,26 +203,91 @@ export const ContentEntryProvider = ({
         });
     }, [revisionId, getRevisions]);
 
-    const loading = isLoading || getEntry.loading || getRevisions.loading;
-    const entry = (get(getEntry, "data.content.data") as unknown as CmsContentEntry) || {};
-
-    const value: ContentEntryContext = {
-        canCreate,
-        contentModel,
-        createEntry,
-        entry,
-        form: formRef,
-        loading,
-        revisions: get(getRevisions, "data.revisions.data") || [],
-        refetchContent: getEntry.refetch,
-        setFormRef,
-        setLoading,
-        setActiveTab,
-        activeTab,
-        showEmptyView: !newEntry && !loading && isEmpty(entry)
+    // CRUD methods
+    const getEntry: ContentEntryCrud["getEntry"] = async ({ id }) => {
+        return await cms.getEntry({ model, id });
     };
 
-    return <Context.Provider value={value}>{children}</Context.Provider>;
+    const createEntry: ContentEntryCrud["createEntry"] = async ({ entry, options }) => {
+        setLoading(true);
+        const response = await cms.createEntry({
+            model,
+            entry,
+            options: { skipValidators: options?.skipValidators }
+        });
+        setLoading(false);
+        if (response.entry && options?.addItemToListCache) {
+            addRecordToCache(response.entry);
+        }
+        return response;
+    };
+
+    const createEntryRevisionFrom: ContentEntryCrud["createEntryRevisionFrom"] = async params => {
+        setLoading(true);
+        const response = await cms.createEntryRevisionFrom({ model, ...params });
+        setLoading(false);
+        if (response.entry) {
+            setEntry(response.entry);
+            updateRecordInCache(response.entry);
+        }
+        return response;
+    };
+
+    const updateEntryRevision: ContentEntryCrud["updateEntryRevision"] = async params => {
+        setLoading(true);
+        const response = await cms.updateEntryRevision({ model, ...params });
+        setLoading(false);
+        if (response.entry) {
+            setEntry(response.entry);
+            updateRecordInCache(response.entry);
+        }
+        return response;
+    };
+
+    const deleteEntry: ContentEntryCrud["deleteEntry"] = async params => {
+        const response = await cms.deleteEntry({ model, ...params });
+        removeRecordFromCache(params.id);
+        return response;
+    };
+
+    const publishEntryRevision: ContentEntryCrud["publishEntryRevision"] = async params => {
+        const response = await cms.publishEntryRevision({ model, ...params });
+        if (response.entry) {
+            setEntry(response.entry);
+            updateRecordInCache(response.entry);
+        }
+        return response;
+    };
+
+    const unpublishEntryRevision: ContentEntryCrud["unpublishEntryRevision"] = async params => {
+        const response = await cms.unpublishEntryRevision({ model, ...params });
+        if (response.entry) {
+            setEntry(response.entry);
+            updateRecordInCache(response.entry);
+        }
+        return response;
+    };
+
+    const value: ContentEntryContext = {
+        activeTab,
+        canCreate,
+        contentModel: model,
+        getEntry,
+        createEntry,
+        createEntryRevisionFrom,
+        deleteEntry,
+        entry: (entry || {}) as CmsContentEntry,
+        loading,
+        publishEntryRevision,
+        refetchContent: loadEntry.refetch,
+        revisions: get(getRevisions, "data.revisions.data") || [],
+        setActiveTab,
+        showEmptyView: !newEntry && !loading && !revisionId,
+        unpublishEntryRevision,
+        updateEntryRevision
+    };
+
+    return <ContentEntryContext.Provider value={value}>{children}</ContentEntryContext.Provider>;
 };
 
 ContentEntryProvider.displayName = "ContentEntryProvider";

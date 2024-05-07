@@ -116,7 +116,7 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
     const loading = [getQuery, createMutation, updateMutation].find(item => item.loading);
 
     const onSubmit = useCallback(
-        async formData => {
+        async (formData: PbBlockCategory) => {
             const isUpdate = loadedBlockCategory.slug;
             const data = pick(formData, ["slug", "name", "icon", "description"]);
 
@@ -204,7 +204,7 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
                                         blockCategorySlugValidator
                                     ]}
                                 >
-                                    <Input disabled={data.createdOn} label={t`Slug`} />
+                                    <Input disabled={Boolean(data.createdOn)} label={t`Slug`} />
                                 </Bind>
                             </Cell>
                             <Cell span={12}>

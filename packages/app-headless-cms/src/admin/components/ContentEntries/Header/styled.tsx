@@ -11,6 +11,9 @@ export const Container = styled("div")`
     z-index: 3;
     background: var(--mdc-theme-surface);
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 `;
 
 export const WrapperActions = styled("div")`

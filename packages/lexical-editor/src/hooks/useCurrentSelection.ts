@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
     $getSelection,
     $isRangeSelection,
@@ -8,6 +7,7 @@ import {
     NodeSelection
 } from "lexical";
 import { useIsMounted } from "./useIsMounted";
+import { useRichTextEditor } from "~/hooks/useRichTextEditor";
 
 export interface CurrentSelection {
     selection: ReturnType<typeof $getSelection>;
@@ -28,7 +28,7 @@ function getOutput(selection: ReturnType<typeof $getSelection>) {
 }
 
 export function useCurrentSelection() {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
     const [selection, setSelection] = useState<CurrentSelection>(getOutput(null));
     const isMounted = useIsMounted();
 
@@ -52,7 +52,7 @@ export function useCurrentSelection() {
 }
 
 export function useDeriveValueFromSelection<T>(generator: Generator<T>) {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
     const [value, setValue] = useState<T>(generator(getOutput(null)));
     const isMounted = useIsMounted();
 

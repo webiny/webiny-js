@@ -11,13 +11,13 @@ import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import { LambdaContext } from "@webiny/handler-aws/types";
 import { PluginCollection } from "@webiny/plugins/types";
 import { createBackgroundTaskContext } from "@webiny/tasks";
-import { HeadlessCmsTasksContext } from "~/types";
+import { HcmsTasksContext } from "~/types";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
 }
 
-export const useHandler = <C extends HeadlessCmsTasksContext = HeadlessCmsTasksContext>(
+export const useHandler = <C extends HcmsTasksContext = HcmsTasksContext>(
     params?: UseHandlerParams
 ) => {
     const { plugins = [] } = params || {};

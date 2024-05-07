@@ -1,11 +1,4 @@
-import React, {
-    useContext,
-    useEffect,
-    useImperativeHandle,
-    useMemo,
-    useRef,
-    useState
-} from "react";
+import React, { useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import lodashGet from "lodash/get";
 import lodashCloneDeep from "lodash/cloneDeep";
 import lodashIsPlainObject from "lodash/isPlainObject";
@@ -13,7 +6,9 @@ import lodashIsEqual from "lodash/isEqual";
 import lodashNoop from "lodash/noop";
 import lodashEach from "lodash/each";
 import lodashHas from "lodash/has";
-import set from "lodash/fp/set";
+import lodashSet from "lodash/fp/set";
+import lodashCamelCase from "lodash/camelCase";
+import { Validator } from "@webiny/validation/types";
 import { Bind } from "./Bind";
 import ValidationError from "./ValidationError";
 import {
@@ -22,12 +17,9 @@ import {
     FormProps,
     FormSubmitOptions,
     GenericFormData,
-    UseBindHook,
     Validation
 } from "~/types";
-import { Validator } from "@webiny/validation/types";
-import camelCase from "lodash/camelCase";
-import { useBindPrefix } from "~/BindPrefix";
+import { FormContext } from "./FormContext";
 
 interface State<T extends GenericFormData = GenericFormData> {
     data: T;
@@ -48,28 +40,6 @@ interface OnChangeCallable {
 
 interface OnValidateCallable {
     (): void;
-}
-
-export const FormContext = React.createContext<FormAPI>(undefined as unknown as FormAPI);
-
-export const useForm = <T extends GenericFormData = GenericFormData>() => {
-    return useContext(FormContext) as FormAPI<T>;
-};
-
-export function useBind<T = any>(props: BindComponentProps<T>): UseBindHook<T> {
-    const form = useForm();
-    const bindPrefix = useBindPrefix();
-
-    const bindName = [bindPrefix, props.name].filter(Boolean).join(".");
-
-    useEffect(() => {
-        if (props.defaultValue !== undefined && lodashGet(form.data, bindName) === undefined) {
-            form.setValue(bindName, props.defaultValue);
-        }
-    }, []);
-
-    // @ts-expect-error
-    return form.createField({ ...props, name: bindName });
 }
 
 interface InputRecord {
@@ -160,7 +130,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
                 return new Promise(resolve => {
                     afterChange.current[name] = true;
                     setState(state => {
-                        const next = set(
+                        const next = lodashSet(
                             `validation.${name}`,
                             {
                                 isValid: undefined,
@@ -169,7 +139,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
                             },
                             state
                         );
-                        return set(`data.${name}`, value, next);
+                        return lodashSet(`data.${name}`, value, next);
                     });
                     if (typeof inlineCallback === "function") {
                         inlineCallback(value);
@@ -287,7 +257,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     /**
      * MAIN FORM ACTION METHODS
      */
-    const submit = (
+    const submit = async (
         event?: React.SyntheticEvent<any, any>,
         options?: FormSubmitOptions
     ): Promise<any> => {
@@ -298,26 +268,27 @@ function FormInner<T extends GenericFormData = GenericFormData>(
 
         setState(state => ({ ...state, wasSubmitted: true, options }));
 
-        return validate(options).then(valid => {
-            if (valid) {
-                let { data } = state;
+        const valid = await validate(options);
 
-                // Make sure all current inputs have a value in the model (defaultValues do not exist in form data)
-                const inputNames = Object.keys(inputs.current);
-                inputNames.forEach(name => {
-                    const defaultValue = inputs.current[name].defaultValue;
-                    if (!lodashHas(data, name) && typeof defaultValue !== "undefined") {
-                        data = set(name, defaultValue, data);
-                    }
-                });
+        if (valid) {
+            let { data } = state;
 
-                if (props.onSubmit) {
-                    return props.onSubmit(data as T, formRef.current);
+            // Make sure all current inputs have a value in the model (defaultValues do not exist in form data)
+            const inputNames = Object.keys(inputs.current);
+            inputNames.forEach(name => {
+                const defaultValue = inputs.current[name].defaultValue;
+                if (!lodashHas(data, name) && typeof defaultValue !== "undefined") {
+                    data = lodashSet(name, defaultValue, data);
                 }
-                return;
+            });
+
+            if (props.onSubmit) {
+                return props.onSubmit(data as T, formRef.current);
             }
-            return onInvalid();
-        });
+            return;
+        }
+
+        return onInvalid();
     };
 
     const validate = async (options?: FormSubmitOptions) => {
@@ -375,7 +346,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
              */
             return !(
                 skipValidators.includes(validator.validatorName) ||
-                skipValidators.includes(camelCase(validator.validatorName))
+                skipValidators.includes(lodashCamelCase(validator.validatorName))
             );
         });
 
@@ -434,6 +405,10 @@ function FormInner<T extends GenericFormData = GenericFormData>(
 
     const setValue = (name: string, value: any) => {
         onChangeFns.current[name](value);
+    };
+
+    const getValue = (name: string) => {
+        return lodashGet(state.data, name);
     };
 
     const __onKeyDown = (e: React.KeyboardEvent<any>) => {
@@ -518,6 +493,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         options: state.options || {},
         data: state.data,
         setValue,
+        getValue,
         validate,
         validateInput,
         submit

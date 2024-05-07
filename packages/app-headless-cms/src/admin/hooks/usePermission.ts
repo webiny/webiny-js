@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useSecurity } from "@webiny/app-security";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
-import { CmsIdentity, CmsGroup, CmsModel, CmsSecurityPermission } from "~/types";
+import { CmsGroup, CmsIdentity, CmsModel, CmsSecurityPermission } from "~/types";
 
 export interface CreatableItem {
     createdBy?: Pick<CmsIdentity, "id">;

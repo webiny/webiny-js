@@ -43,6 +43,7 @@ import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
 import { createCountDynamoDbTask } from "~/plugins/countDynamoDbTask";
 import { createContinuingTask } from "~/plugins/continuingTask";
 import { createWebsockets } from "@webiny/api-websockets";
+import { createRecordLocking } from "@webiny/api-record-locking";
 
 const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
@@ -70,6 +71,7 @@ export const handler = createHandler({
             })
         }),
         createHeadlessCmsGraphQL(),
+        createRecordLocking(),
         createBackgroundTasks(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({

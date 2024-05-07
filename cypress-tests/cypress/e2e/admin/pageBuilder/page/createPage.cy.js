@@ -30,7 +30,7 @@
 //         cy.findAllByTestId("new-record-button").first().should("exist");
 //
 //         cy.findByTestId("default-data-list").within(() => {
-//             cy.get(".mdc-list-item")
+//             cy.get(".mdc-deprecated-list-item")
 //                 .first()
 //                 .within(() => {
 //                     cy.findByText(newPageTitle).should("exist");
@@ -50,7 +50,7 @@
 //         cy.findAllByTestId("new-record-button").first().should("exist");
 //
 //         cy.findByTestId("default-data-list").within(() => {
-//             cy.get(".mdc-list-item")
+//             cy.get(".mdc-deprecated-list-item")
 //                 .first()
 //                 .within(() => {
 //                     cy.findByText(newPageTitle).should("exist");
@@ -67,7 +67,7 @@
 //         });
 //
 //         cy.findByTestId("default-data-list").within(() => {
-//             cy.get(".mdc-list-item")
+//             cy.get(".mdc-deprecated-list-item")
 //                 .first()
 //                 .within(() => {
 //                     cy.findByText(newPageTitle).should("not.exist");

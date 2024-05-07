@@ -8,7 +8,7 @@ import { UsersTeamsMultiAutocomplete } from "./DialogSetPermissions/UsersTeamsMu
 import { UsersTeamsSelection } from "./DialogSetPermissions/UsersTeamsSelection";
 import { LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS } from "./DialogSetPermissions/graphql";
 
-import { useDialogs } from "~/dialogs/useDialogs";
+import { useDialogs } from "@webiny/app-admin";
 import { useFolders } from "~/hooks";
 import { FolderItem, FolderLevelPermissionsTarget, FolderPermission } from "~/types";
 
@@ -22,6 +22,22 @@ interface UseSetPermissionsDialogResponse {
 
 interface FormComponentProps {
     folder: FolderItem;
+}
+
+interface UpdatePermissionCallableParams {
+    permission: FolderPermission;
+}
+
+interface UpdatePermissionCallable {
+    (params: UpdatePermissionCallableParams): void;
+}
+
+interface RemoveUserTeamCallableParams {
+    permission: FolderPermission;
+}
+
+interface RemoveUserTeamCallable {
+    (params: RemoveUserTeamCallableParams): void;
 }
 
 const FormComponent = ({ folder }: FormComponentProps) => {
@@ -39,7 +55,7 @@ const FormComponent = ({ folder }: FormComponentProps) => {
     }, [permissions]);
 
     const addPermission = useCallback(
-        value => {
+        (value: FolderPermission[]) => {
             const selectedUserOrTeam = value[value.length - 1];
             const newPermission: FolderPermission = {
                 target: selectedUserOrTeam.target,
@@ -53,7 +69,7 @@ const FormComponent = ({ folder }: FormComponentProps) => {
         [permissions]
     );
 
-    const updatePermission = useCallback(
+    const updatePermission = useCallback<UpdatePermissionCallable>(
         ({ permission: updatedPermission }) => {
             setPermissions(
                 permissions.map(permission => {
@@ -67,7 +83,7 @@ const FormComponent = ({ folder }: FormComponentProps) => {
         [permissions]
     );
 
-    const removeUserTeam = useCallback(
+    const removeUserTeam = useCallback<RemoveUserTeamCallable>(
         item => {
             setPermissions(
                 permissions.filter(permission => permission.target !== item.permission.target)
@@ -102,7 +118,7 @@ export const useSetPermissionsDialog = (): UseSetPermissionsDialogResponse => {
     const { updateFolder } = useFolders();
     const { showSnackbar } = useSnackbar();
 
-    const onAccept = useCallback(async (folder, data) => {
+    const onAccept = useCallback(async (folder: FolderItem, data: Partial<FolderItem>) => {
         const updateData = { ...folder, ...data };
 
         try {
@@ -116,10 +132,10 @@ export const useSetPermissionsDialog = (): UseSetPermissionsDialogResponse => {
     const showDialog = ({ folder }: ShowDialogParams) => {
         dialogs.showDialog({
             title: `Manage permissions - ${folder.title}`,
-            message: <FormComponent folder={folder} />,
+            content: <FormComponent folder={folder} />,
             acceptLabel: "Save",
             cancelLabel: "Cancel",
-            loadingLabel: "Updating permissions",
+            loadingLabel: "Updating permissions...",
             onAccept: (data: GenericFormData) => onAccept(folder, data)
         });
     };

@@ -13,6 +13,7 @@ import { AddMenu as Menu, createEmptyMenu, MenuData, MenuProps, MenuUpdater, Tag
 import { plugins } from "@webiny/plugins";
 import { AdminMenuPlugin } from "~/types";
 import { ItemProps, SectionProps } from "~/plugins/MenuPlugin";
+import { ComponentWithChildren } from "~/types";
 
 export interface NavigationContext {
     menuItems: MenuData[];
@@ -88,7 +89,7 @@ interface NavigationProviderProps {
     children: React.ReactNode;
 }
 
-export const NavigationProvider = (Component: React.ComponentType<unknown>) => {
+export const NavigationProvider = (Component: ComponentWithChildren) => {
     return function NavigationProvider({ children }: NavigationProviderProps) {
         const [menuItems, setState] = useState<MenuData[]>([]);
 
@@ -110,7 +111,7 @@ export const NavigationProvider = (Component: React.ComponentType<unknown>) => {
             });
         };
         const removeMenu = useCallback(
-            id => {
+            (id: string) => {
                 setState(state => {
                     const index = state.findIndex(m => m.name === id);
 
@@ -142,13 +143,13 @@ export const NavigationProvider = (Component: React.ComponentType<unknown>) => {
     };
 };
 
-export const Navigation = () => {
+export const Navigation = makeDecoratable("Navigation", () => {
     return (
         <Tags tags={{ location: "navigation" }}>
             <NavigationRenderer />
         </Tags>
     );
-};
+});
 
 export const NavigationRenderer = makeDecoratable("NavigationRenderer", createVoidComponent());
 

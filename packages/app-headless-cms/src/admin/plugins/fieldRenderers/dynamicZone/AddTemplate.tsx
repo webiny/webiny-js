@@ -3,9 +3,10 @@ import styled from "@emotion/styled";
 import { ReactComponent as InfoIcon } from "@material-design-icons/svg/outlined/info.svg";
 import { ReactComponent as AddIcon } from "@material-design-icons/svg/round/add_circle_outline.svg";
 import { Typography } from "@webiny/ui/Typography";
-import { CmsDynamicZoneTemplate } from "~/types";
+import { CmsDynamicZoneTemplate, CmsDynamicZoneTemplateWithTypename } from "~/types";
 import { TemplateGallery } from "./TemplateGallery";
 import { IconButton, ButtonSecondary } from "@webiny/ui/Button";
+import { useTemplateTypename } from "~/admin/plugins/fieldRenderers/dynamicZone/useTemplateTypename";
 
 const AddIconContainer = styled.div`
     text-align: center;
@@ -34,18 +35,19 @@ const Info = styled.div`
 `;
 
 interface UseAddTemplateParams {
-    onTemplate: (template: CmsDynamicZoneTemplate) => void;
+    onTemplate: (template: CmsDynamicZoneTemplateWithTypename) => void;
 }
 
 function useAddTemplate(params: UseAddTemplateParams) {
     const [showGallery, setShowGallery] = useState(false);
+    const { getFullTypename } = useTemplateTypename();
 
     const browseTemplates = () => {
         setShowGallery(true);
     };
 
     const onTemplate = (template: CmsDynamicZoneTemplate) => {
-        params.onTemplate(template);
+        params.onTemplate({ ...template, __typename: getFullTypename(template) });
         onGalleryClose();
     };
 

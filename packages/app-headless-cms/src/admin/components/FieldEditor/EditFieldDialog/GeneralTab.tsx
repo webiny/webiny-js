@@ -43,7 +43,7 @@ const GeneralTab = () => {
         []
     );
 
-    const fieldIdValidator = useCallback(fieldId => {
+    const fieldIdValidator = useCallback((fieldId: string) => {
         if (fieldId.trim().toLowerCase() !== "id") {
             return true;
         }

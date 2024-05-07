@@ -14,6 +14,7 @@ export interface WcpContextObject {
     canUseTeams: () => boolean;
     canUsePrivateFiles: () => boolean;
     canUseFolderLevelPermissions: () => boolean;
+    canUseRecordLocking: () => boolean;
     ensureCanUseFeature: (featureId: keyof typeof WCP_FEATURE_LABEL) => void;
     incrementSeats: () => Promise<void>;
     decrementSeats: () => Promise<void>;

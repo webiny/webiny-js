@@ -10,7 +10,7 @@ import {
 export type IWebsocketManagerEvent = "open" | "close" | "error" | "message";
 
 export interface IWebsocketsSubscriptionCallback<T> {
-    (data: T): Promise<void>;
+    (data: T): Promise<void> | void;
 }
 
 export interface IWebsocketsSubscription<T> {

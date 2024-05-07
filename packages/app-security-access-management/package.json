@@ -15,7 +15,7 @@
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
     "@emotion/styled": "^11.10.6",
-    "@material-design-icons/svg": "^0.12.1",
+    "@material-design-icons/svg": "^0.14.3",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-security": "0.0.0",
@@ -27,9 +27,9 @@
     "@webiny/validation": "0.0.0",
     "emotion": "^10.0.17",
     "graphql-tag": "^2.12.6",
-    "lodash": "4.17.21",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
+    "lodash": "^4.17.21",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "react-helmet": "^6.1.0"
   },
   "devDependencies": {

@@ -62,7 +62,7 @@ const useBlocker = (blocker: BlockerCallable, when = true) => {
  */
 export const usePrompt = (message: string, when = true) => {
     const blocker = useCallback(
-        tx => {
+        (tx: Transition) => {
             if (window.confirm(message)) {
                 tx.retry();
             }

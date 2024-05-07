@@ -1,16 +1,13 @@
 import React, { useMemo } from "react";
 import { ReactComponent as PublishIcon } from "@material-design-icons/svg/outlined/publish.svg";
-import { useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
-import { usePermission, useCms, useContentEntry } from "~/admin/hooks";
+import { usePermission, useContentEntry } from "~/admin/hooks";
 import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
 
 export const ActionPublish = observer(() => {
     const { canPublish } = usePermission();
-    const { publishEntryRevision } = useCms();
-    const { contentModel } = useContentEntry();
-    const { updateRecordInCache } = useRecords();
+    const { publishEntryRevision } = useContentEntry();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
@@ -29,21 +26,15 @@ export const ActionPublish = observer(() => {
             execute: async () => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
-                        const response = await publishEntryRevision({
-                            model: contentModel,
-                            entry: item,
-                            id: item.id
-                        });
+                        const response = await publishEntryRevision({ id: item.id });
 
-                        const { error, entry } = response;
+                        const { error } = response;
 
                         if (error) {
                             throw new Error(
                                 error.message || "Unknown error while publishing the entry"
                             );
                         }
-
-                        updateRecordInCache(entry);
 
                         report.success({
                             title: `${item.meta.title}`,
