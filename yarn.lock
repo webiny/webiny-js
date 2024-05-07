@@ -9949,7 +9949,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/base@npm:14.2.2, @rmwc/base@npm:^14.1.2":
+"@rmwc/base@npm:14.2.2, @rmwc/base@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/base@npm:14.2.2"
   dependencies:
@@ -9966,7 +9966,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/button@npm:14.2.2, @rmwc/button@npm:^14.1.2":
+"@rmwc/button@npm:14.2.2, @rmwc/button@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/button@npm:14.2.2"
   dependencies:
@@ -9983,7 +9983,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/checkbox@npm:14.2.2, @rmwc/checkbox@npm:^14.1.2":
+"@rmwc/checkbox@npm:14.2.2, @rmwc/checkbox@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/checkbox@npm:14.2.2"
   dependencies:
@@ -10001,7 +10001,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/chip@npm:^14.1.2":
+"@rmwc/chip@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/chip@npm:14.2.2"
   dependencies:
@@ -10017,7 +10017,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/data-table@npm:^14.1.2":
+"@rmwc/data-table@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/data-table@npm:14.2.2"
   dependencies:
@@ -10035,7 +10035,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/dialog@npm:^14.1.2":
+"@rmwc/dialog@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/dialog@npm:14.2.2"
   dependencies:
@@ -10051,7 +10051,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/drawer@npm:^14.1.2":
+"@rmwc/drawer@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/drawer@npm:14.2.2"
   dependencies:
@@ -10065,7 +10065,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/elevation@npm:^14.1.2":
+"@rmwc/elevation@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/elevation@npm:14.2.2"
   dependencies:
@@ -10079,7 +10079,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/fab@npm:^14.1.2":
+"@rmwc/fab@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/fab@npm:14.2.2"
   dependencies:
@@ -10124,7 +10124,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/grid@npm:^14.1.2":
+"@rmwc/grid@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/grid@npm:14.2.2"
   dependencies:
@@ -10138,7 +10138,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/icon-button@npm:14.2.2, @rmwc/icon-button@npm:^14.1.2":
+"@rmwc/icon-button@npm:14.2.2, @rmwc/icon-button@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/icon-button@npm:14.2.2"
   dependencies:
@@ -10182,7 +10182,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/list@npm:14.2.2, @rmwc/list@npm:^14.1.2":
+"@rmwc/list@npm:14.2.2, @rmwc/list@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/list@npm:14.2.2"
   dependencies:
@@ -10199,7 +10199,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/menu@npm:14.2.2, @rmwc/menu@npm:^14.1.2":
+"@rmwc/menu@npm:14.2.2, @rmwc/menu@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/menu@npm:14.2.2"
   dependencies:
@@ -10230,7 +10230,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/provider@npm:14.2.2, @rmwc/provider@npm:^14.1.2":
+"@rmwc/provider@npm:14.2.2, @rmwc/provider@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/provider@npm:14.2.2"
   dependencies:
@@ -10243,7 +10243,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/radio@npm:^14.1.2":
+"@rmwc/radio@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/radio@npm:14.2.2"
   dependencies:
@@ -10260,7 +10260,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/ripple@npm:14.2.2, @rmwc/ripple@npm:^14.1.2":
+"@rmwc/ripple@npm:14.2.2, @rmwc/ripple@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/ripple@npm:14.2.2"
   dependencies:
@@ -10275,7 +10275,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/select@npm:14.2.2, @rmwc/select@npm:^14.1.2":
+"@rmwc/select@npm:14.2.2, @rmwc/select@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/select@npm:14.2.2"
   dependencies:
@@ -10296,7 +10296,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/slider@npm:^14.1.2":
+"@rmwc/slider@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/slider@npm:14.2.2"
   dependencies:
@@ -10310,7 +10310,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/snackbar@npm:^14.1.2":
+"@rmwc/snackbar@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/snackbar@npm:14.2.2"
   dependencies:
@@ -10327,7 +10327,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/switch@npm:14.2.2, @rmwc/switch@npm:^14.1.2":
+"@rmwc/switch@npm:14.2.2, @rmwc/switch@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/switch@npm:14.2.2"
   dependencies:
@@ -10344,7 +10344,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/tabs@npm:^14.1.2":
+"@rmwc/tabs@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/tabs@npm:14.2.2"
   dependencies:
@@ -10363,7 +10363,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/textfield@npm:14.2.2, @rmwc/textfield@npm:^14.1.2":
+"@rmwc/textfield@npm:14.2.2, @rmwc/textfield@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/textfield@npm:14.2.2"
   dependencies:
@@ -10396,7 +10396,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/top-app-bar@npm:^14.1.2":
+"@rmwc/top-app-bar@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/top-app-bar@npm:14.2.2"
   dependencies:
@@ -10412,7 +10412,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/touch-target@npm:^14.1.2":
+"@rmwc/touch-target@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/touch-target@npm:14.2.2"
   dependencies:
@@ -10432,7 +10432,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/typography@npm:^14.1.2":
+"@rmwc/typography@npm:^14.2.2":
   version: 14.2.2
   resolution: "@rmwc/typography@npm:14.2.2"
   dependencies:
@@ -15080,8 +15080,8 @@ __metadata:
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/styled": ^11.10.6
     "@material-design-icons/svg": ^0.14.3
-    "@rmwc/base": ^14.1.2
-    "@rmwc/provider": ^14.1.2
+    "@rmwc/base": ^14.2.2
+    "@rmwc/provider": ^14.2.2
     "@types/react": 18.2.65
     "@types/react-helmet": ^6.1.5
     "@webiny/app": 0.0.0
@@ -17799,29 +17799,29 @@ __metadata:
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@material-design-icons/svg": ^0.14.3
-    "@rmwc/button": ^14.1.2
-    "@rmwc/checkbox": ^14.1.2
-    "@rmwc/chip": ^14.1.2
-    "@rmwc/data-table": ^14.1.2
-    "@rmwc/dialog": ^14.1.2
-    "@rmwc/drawer": ^14.1.2
-    "@rmwc/elevation": ^14.1.2
-    "@rmwc/fab": ^14.1.2
-    "@rmwc/grid": ^14.1.2
-    "@rmwc/icon-button": ^14.1.2
-    "@rmwc/list": ^14.1.2
-    "@rmwc/menu": ^14.1.2
-    "@rmwc/radio": ^14.1.2
-    "@rmwc/ripple": ^14.1.2
-    "@rmwc/select": ^14.1.2
-    "@rmwc/slider": ^14.1.2
-    "@rmwc/snackbar": ^14.1.2
-    "@rmwc/switch": ^14.1.2
-    "@rmwc/tabs": ^14.1.2
-    "@rmwc/textfield": ^14.1.2
-    "@rmwc/top-app-bar": ^14.1.2
-    "@rmwc/touch-target": ^14.1.2
-    "@rmwc/typography": ^14.1.2
+    "@rmwc/button": ^14.2.2
+    "@rmwc/checkbox": ^14.2.2
+    "@rmwc/chip": ^14.2.2
+    "@rmwc/data-table": ^14.2.2
+    "@rmwc/dialog": ^14.2.2
+    "@rmwc/drawer": ^14.2.2
+    "@rmwc/elevation": ^14.2.2
+    "@rmwc/fab": ^14.2.2
+    "@rmwc/grid": ^14.2.2
+    "@rmwc/icon-button": ^14.2.2
+    "@rmwc/list": ^14.2.2
+    "@rmwc/menu": ^14.2.2
+    "@rmwc/radio": ^14.2.2
+    "@rmwc/ripple": ^14.2.2
+    "@rmwc/select": ^14.2.2
+    "@rmwc/slider": ^14.2.2
+    "@rmwc/snackbar": ^14.2.2
+    "@rmwc/switch": ^14.2.2
+    "@rmwc/tabs": ^14.2.2
+    "@rmwc/textfield": ^14.2.2
+    "@rmwc/top-app-bar": ^14.2.2
+    "@rmwc/touch-target": ^14.2.2
+    "@rmwc/typography": ^14.2.2
     "@svgr/webpack": ^6.1.1
     "@tanstack/react-table": ^8.5.22
     "@testing-library/react": ^12.1.2
