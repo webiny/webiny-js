@@ -81,7 +81,8 @@ const fieldSchema = zod.object({
         .optional(),
     renderer: zod
         .object({
-            name: shortString
+            name: shortString,
+            settings: zod.object({}).passthrough().nullable().optional()
         })
         .optional()
         .nullable()

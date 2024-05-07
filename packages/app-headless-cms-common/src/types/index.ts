@@ -227,6 +227,10 @@ export interface CmsModelFieldTypePlugin extends Plugin {
     };
 }
 
+export interface CmsModelFieldRendererSettingsProps {
+    field: CmsModelField;
+}
+
 export interface CmsModelFieldRendererProps {
     field: CmsModelField;
     Label: React.ComponentType<React.PropsWithChildren>;
@@ -313,6 +317,7 @@ export interface CmsModelFieldRendererPlugin extends Plugin {
          * ```
          */
         render(props: CmsModelFieldRendererProps): React.ReactNode;
+        renderSettings?: (props: CmsModelFieldRendererSettingsProps) => React.ReactNode;
     };
 }
 

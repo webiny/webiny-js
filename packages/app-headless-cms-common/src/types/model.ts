@@ -40,6 +40,7 @@ export type CmsModelField<T = unknown> = T & {
     renderer:
         | {
               name: string;
+              settings?: Record<string, any>;
           }
         /**
          * Use this only for programmatic assignment of renderers.
