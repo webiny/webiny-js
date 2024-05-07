@@ -8,6 +8,7 @@
     "@webiny/cli-plugin-scaffold-admin-app-module": "latest",
     "@webiny/cli-plugin-scaffold-graphql-service": "latest",
     "@webiny/cli-plugin-scaffold-ci": "latest",
+    "@webiny/cli-plugin-scaffold-extensions": "latest",
     "@webiny/cli-plugin-workspaces": "latest",
     "@webiny/cli-plugin-deploy-pulumi": "latest",
     "@webiny/project-utils": "latest",
@@ -50,14 +51,7 @@
     "typescript": "4.7.4"
   },
   "workspaces": {
-    "packages": [
-      "apps/admin",
-      "apps/website",
-      "apps/theme",
-      "apps/api/graphql",
-      "apps/api/headlessCMS",
-      "packages/*"
-    ]
+    "packages": ["apps/admin", "apps/website", "apps/api/graphql", "extensions/theme", "packages/*"]
   },
   "scripts": {
     "test": "jest --config jest.config.js --passWithNoTests",

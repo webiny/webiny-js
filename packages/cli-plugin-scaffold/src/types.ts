@@ -79,7 +79,7 @@ export interface CliCommandScaffoldCallableWithErrorArgs<T extends Record<string
  * @category Scaffold
  * @category Template
  */
-interface CliCommandScaffold<T extends Record<string, any>> {
+export interface CliCommandScaffold<T extends Record<string, any>> {
     /**
      * Name of the scaffold to be picked from list of choices.
      */
@@ -123,6 +123,13 @@ export interface CliCommandScaffoldTemplate<T extends Record<string, any> = Reco
      * A type of the plugin.
      */
     type: "cli-plugin-scaffold-template";
+
+    /**
+     * Template name. Can be used when running the scaffold command in
+     * non-interactive mode (for example: `webiny scaffold new-template`).
+     */
+    templateName?: string;
+
     /**
      * The scaffold definition.
      */
