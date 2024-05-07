@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import pick from "lodash/pick";
 import debounce from "lodash/debounce";
 import { Prompt } from "@webiny/react-router";
-import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
+import { Form, FormAPI, FormOnSubmit, FormValidation } from "@webiny/form";
 import { CmsContentEntry, CmsModel } from "@webiny/app-headless-cms-common/types";
 import { useSnackbar } from "@webiny/app-admin";
 import { prepareFormData } from "@webiny/app-headless-cms-common";
@@ -32,7 +32,7 @@ export interface ContentEntryFormContext {
     entry: Partial<CmsContentEntry>;
     isDirty: boolean;
     saveEntry: (options?: SaveEntryOptions) => Promise<CmsContentEntry | null>;
-    invalidFields: Record<string, any>;
+    invalidFields: FormValidation;
 }
 
 export const ContentEntryFormContext = React.createContext<ContentEntryFormContext | undefined>(
@@ -61,6 +61,13 @@ interface ContentEntryFormProviderProps {
     addItemToListCache?: boolean;
     children: React.ReactNode;
 }
+
+const formValidationToMap = (invalidFields: FormValidation) => {
+    return Object.keys(invalidFields).reduce(
+        (acc, key) => ({ ...acc, [key]: invalidFields[key].message }),
+        {} as Record<string, string | undefined>
+    );
+};
 
 export const ContentEntryFormProvider = ({
     model,
@@ -177,8 +184,9 @@ export const ContentEntryFormProvider = ({
             data={entry}
             ref={ref}
             invalidFields={invalidFields}
-            onInvalid={() => {
+            onInvalid={invalidFields => {
                 setIsDirty(true);
+                setInvalidFields(formValidationToMap(invalidFields));
                 showSnackbar("Some fields did not pass the validation. Please check the form.");
             }}
         >

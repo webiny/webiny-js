@@ -72,10 +72,16 @@ export type GenericFormData = {
     [key: string]: any;
 };
 
+export interface FormValidation {
+    [name: string]: Validation;
+}
+
 export interface Validation {
     isValid?: boolean;
     message?: string;
-    [key: string]: any;
+    results?: {
+        [key: string]: any;
+    };
 }
 
 export interface FormOnSubmit<T = GenericFormData> {
@@ -92,7 +98,7 @@ export interface FormProps<T extends GenericFormData = GenericFormData> {
     validateOnFirstSubmit?: boolean;
     submitOnEnter?: boolean;
     onSubmit?: FormOnSubmit<T>;
-    onInvalid?: () => void;
+    onInvalid?: (validation: FormValidation) => void;
     onChange?: FormOnSubmit<T>;
     children(params: FormRenderPropParams<T>): React.ReactElement;
     ref?: React.MutableRefObject<any>;

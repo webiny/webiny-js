@@ -4,7 +4,7 @@ import { CmsModelFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
 import { FileManager } from "@webiny/app-admin/components";
 import { Typography } from "@webiny/ui/Typography";
-import File from "./File";
+import { File } from "./File";
 import { EditFileUsingUrl } from "~/components/EditFileUsingUrl";
 
 const ImageFieldWrapper = styled("div")({

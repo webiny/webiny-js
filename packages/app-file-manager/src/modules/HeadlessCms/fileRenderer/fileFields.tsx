@@ -7,7 +7,7 @@ import { Cell, GridInner } from "@webiny/ui/Grid";
 import { FileManager } from "@webiny/app-admin/components";
 import styled from "@emotion/styled";
 import { imageWrapperStyles } from "./utils";
-import File from "./File";
+import { File } from "./File";
 import { EditFileUsingUrl } from "~/components/EditFileUsingUrl";
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");
