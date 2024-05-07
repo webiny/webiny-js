@@ -7,7 +7,7 @@ import { useFormEditor } from "~/admin/components/FormEditor/Context";
 
 interface EditTabStepRowProps {
     dragRef: ConnectDragSource;
-    setIsEditStep: (params: { isOpened: boolean; id: string }) => void;
+    setIsEditStep: (params: { isOpened: boolean; step: FbFormStep }) => void;
     formStep: FbFormStep;
     index: number;
 }
@@ -31,7 +31,7 @@ export const EditTabStepRow = ({
                     onEdit={() => {
                         setIsEditStep({
                             isOpened: true,
-                            id: formStep.id
+                            step: formStep
                         });
                     }}
                     deleteStepDisabled={data.steps.length <= 1}

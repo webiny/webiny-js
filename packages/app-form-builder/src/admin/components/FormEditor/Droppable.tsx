@@ -24,6 +24,7 @@ export interface IsVisibleCallableParams {
     type: string;
     isDragging: boolean;
     ui: DropTargetType;
+    name?: string;
     id?: string;
     pos: FieldLayoutPositionType;
     container?: Container;

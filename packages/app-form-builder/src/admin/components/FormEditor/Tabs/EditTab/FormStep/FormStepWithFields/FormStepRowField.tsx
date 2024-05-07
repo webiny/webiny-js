@@ -8,6 +8,7 @@ import { Vertical } from "~/admin/components/FormEditor/DropZone";
 import { useFormStep } from "~/admin/components/FormEditor/Tabs/EditTab/FormStep/useFormStep";
 import { DragObjectWithFieldInfo } from "~/admin/components/FormEditor/Droppable";
 import { useFormEditor } from "~/admin/components/FormEditor";
+import ConditionalGroupField from "../ConditionGroupField/ConditionGroup";
 
 export interface FormStepFieldRowFieldProps {
     formStep: FbFormStep;
@@ -20,7 +21,7 @@ export interface FormStepFieldRowFieldProps {
 export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
     const { formStep, row, rowIndex, field, fieldIndex } = props;
     const { handleDrop, editField } = useFormStep();
-    const { deleteField } = useFormEditor();
+    const { deleteField, deleteConditionGroup } = useFormEditor();
 
     const fieldBeginDragParams: BeginDragProps = useMemo(() => {
         return {
@@ -70,12 +71,16 @@ export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
         [handleDrop, formStep, rowIndex, fieldIndex]
     );
 
+    const onDeleteField = useCallback(() => {
+        deleteField({ field, containerId: formStep.id });
+    }, [field, formStep]);
+
     const isLastField = fieldIndex === row.length - 1;
 
     return (
         <Draggable key={`step-field-${fieldIndex}`} beginDrag={fieldBeginDragParams}>
             {({ drag }) => (
-                <FieldContainer ref={drag}>
+                <FieldContainer ref={drag} noPadding={field.name === "conditionGroup"}>
                     <Vertical
                         onDrop={onFieldVerticalZoneDrop}
                         isVisible={item =>
@@ -84,11 +89,22 @@ export const FormStepRowField = (props: FormStepFieldRowFieldProps) => {
                     />
 
                     <FieldHandle>
-                        <Field
-                            field={field}
-                            onEdit={editField}
-                            onDelete={() => deleteField(field, formStep.id)}
-                        />
+                        {field.name === "conditionGroup" ? (
+                            <ConditionalGroupField
+                                field={field}
+                                onDelete={deleteField}
+                                formStep={formStep}
+                                deleteConditionGroup={deleteConditionGroup}
+                                targetStepId={formStep.id}
+                                onEdit={editField}
+                            />
+                        ) : (
+                            <Field
+                                field={field}
+                                onEdit={editField}
+                                onDelete={() => onDeleteField()}
+                            />
+                        )}
                     </FieldHandle>
 
                     {isLastField && (

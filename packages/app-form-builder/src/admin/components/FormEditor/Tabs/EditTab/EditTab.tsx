@@ -3,7 +3,7 @@ import { EditContainer } from "./Styled";
 import { useFormEditor } from "~/admin/components/FormEditor";
 import { FbFormStep } from "~/types";
 
-import { EditFormStepDialog } from "./FormStep/EditFormStepDialog";
+import { EditFormStepDialog } from "./FormStep/EditFormStepDialog/EditFormStepDialog";
 
 import { FieldErrors } from "./FieldErrors";
 import { EditTabStep } from "./EditTabStep";
@@ -11,12 +11,15 @@ import { EditTabStep } from "./EditTabStep";
 export const EditTab = () => {
     const { data, errors, updateStep } = useFormEditor();
 
-    const [isEditStep, setIsEditStep] = useState<{ isOpened: boolean; id: string | null }>({
+    const [editStep, setIsEditStep] = useState<{
+        isOpened: boolean;
+        step: FbFormStep;
+    }>({
         isOpened: false,
-        id: null
+        step: {} as FbFormStep
     });
 
-    const stepTitle = data.steps.find(step => step.id === isEditStep.id)?.title || "";
+    const stepTitle = data.steps.find(step => step.id === editStep.step.id)?.title || "";
 
     return (
         <EditContainer>
@@ -29,12 +32,15 @@ export const EditTab = () => {
                     setIsEditStep={setIsEditStep}
                 />
             ))}
-            <EditFormStepDialog
-                isEditStep={isEditStep}
-                setIsEditStep={setIsEditStep}
-                updateStep={updateStep}
-                stepTitle={stepTitle}
-            />
+            {editStep.isOpened && (
+                <EditFormStepDialog
+                    editStep={editStep}
+                    setEditStep={setIsEditStep}
+                    updateStep={updateStep}
+                    stepTitle={stepTitle}
+                    formData={data}
+                />
+            )}
         </EditContainer>
     );
 };

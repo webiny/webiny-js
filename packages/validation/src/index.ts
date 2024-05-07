@@ -23,6 +23,8 @@ import dateLte from "./validators/dateLte";
 import timeGte from "./validators/timeGte";
 import timeLte from "./validators/timeLte";
 import slug from "./validators/slug";
+import startsWith from "./validators/startsWith";
+import endsWith from "./validators/endsWith";
 
 const validation = new Validation();
 validation.setValidator("creditCard", creditCard);
@@ -48,5 +50,7 @@ validation.setValidator("dateLte", dateLte);
 validation.setValidator("timeGte", timeGte);
 validation.setValidator("timeLte", timeLte);
 validation.setValidator("slug", slug);
+validation.setValidator("starts", startsWith);
+validation.setValidator("ends", endsWith);
 
 export { validation, Validation, ValidationError };

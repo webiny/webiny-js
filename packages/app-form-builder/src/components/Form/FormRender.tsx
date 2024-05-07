@@ -1,6 +1,6 @@
+import React, { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { plugins } from "@webiny/plugins";
 import cloneDeep from "lodash/cloneDeep";
-import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";
 import {
@@ -8,8 +8,12 @@ import {
     handleFormTriggers,
     onFormMounted,
     reCaptchaEnabled,
-    termsOfServiceEnabled
+    termsOfServiceEnabled,
+    getNextStepIndex,
+    onFormDataChange
 } from "./functions";
+
+import { checkIfConditionsMet } from "./functions/getNextStepIndex";
 
 import {
     FormRenderPropsType,
@@ -20,7 +24,8 @@ import {
     FbFormModelField,
     FormRenderFbFormModelField,
     FbFormModel,
-    FbFormLayout
+    FbFormLayout,
+    FbFormRule
 } from "~/types";
 import { FbFormLayoutPlugin } from "~/plugins";
 import { ReCaptchaComponent } from "./components/createReCaptchaComponent";
@@ -45,11 +50,19 @@ const FormRender = (props: FbFormRenderComponentProps) => {
     const client = useApolloClient();
     const data = props.data || ({} as FbFormModel);
     const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
+    const [formState, setFormState] = useState<Record<string, any>>({});
 
     const [layoutRenderKey, setLayoutRenderKey] = useState<string>(new Date().getTime().toString());
     const resetLayoutRenderKey = useCallback(() => {
         setLayoutRenderKey(new Date().getTime().toString());
     }, []);
+
+    // We need to add index to every step so we can properly,
+    // add or remove step from array of steps based on step rules.
+    data.steps = data.steps.map((formStep, index) => ({
+        ...formStep,
+        index
+    }));
 
     useEffect((): void => {
         if (!data.id) {
@@ -62,12 +75,19 @@ const FormRender = (props: FbFormRenderComponentProps) => {
         });
     }, [data.id]);
 
+    const [modifiedSteps, setModifiedSteps] = useState(data.steps);
+
+    // This variable will trigger update of "modifiedSteps",
+    // when we modify rules of the step.
+    const shouldUpdateModifiedSteps = onFormDataChange(data);
+
     // We need this useEffect in case when user has deleted a step and he was on that step on the preview tab,
     // so it won't trigger an error when we trying to view the step that we have deleted,
-    // we will simpy change currentStep to the first step.
+    // we will simply change currentStep to the first step.
     useEffect(() => {
         setCurrentStepIndex(0);
-    }, [data.steps.length]);
+        setModifiedSteps(data.steps);
+    }, [data.steps.length, data.fields.length, shouldUpdateModifiedSteps]);
 
     const reCaptchaResponseToken = useRef("");
     const termsOfServiceAccepted = useRef(false);
@@ -77,7 +97,11 @@ const FormRender = (props: FbFormRenderComponentProps) => {
     }
 
     const goToNextStep = () => {
-        setCurrentStepIndex(prevStep => (prevStep += 1));
+        setCurrentStepIndex(prevStep => {
+            const nextStep = (prevStep += 1);
+            validateStepConditions(formState, nextStep);
+            return nextStep;
+        });
     };
 
     const goToPreviousStep = () => {
@@ -85,19 +109,24 @@ const FormRender = (props: FbFormRenderComponentProps) => {
     };
 
     const formData: FbFormModel = cloneDeep(data);
+
     const { fields, settings, steps } = formData;
+
+    const resolvedSteps = useMemo(() => {
+        return modifiedSteps || steps;
+    }, [steps, modifiedSteps]);
 
     // Check if the form is a multi step.
     const isMultiStepForm = formData.steps.length > 1;
 
     const isFirstStep = currentStepIndex === 0;
-    const isLastStep = currentStepIndex === steps.length - 1;
+    const isLastStep = currentStepIndex === resolvedSteps.length - 1;
 
     // We need this check in case we deleted last step and at the same time we were previewing it.
     const currentStep =
-        steps[currentStepIndex] === undefined
-            ? steps[formData.steps.length - 1]
-            : steps[currentStepIndex];
+        resolvedSteps[currentStepIndex] === undefined
+            ? resolvedSteps[resolvedSteps.length - 1]
+            : resolvedSteps[currentStepIndex];
 
     const getFieldById = (id: string): FbFormModelField | null => {
         return fields.find(field => field._id === id) || null;
@@ -107,11 +136,70 @@ const FormRender = (props: FbFormRenderComponentProps) => {
         return fields.find(field => field.fieldId === id) || null;
     };
 
+    const validateStepConditions = (formData: Record<string, any>, stepIndex: number) => {
+        const currentStep = resolvedSteps[stepIndex];
+
+        const action = getNextStepIndex({
+            formData,
+            rules: currentStep.rules
+        });
+
+        if (action.type === "submit") {
+            setModifiedSteps([...modifiedSteps.slice(0, stepIndex + 1)]);
+        } else if (action.type === "goToStep") {
+            setModifiedSteps([
+                ...modifiedSteps.slice(0, stepIndex + 1),
+                ...steps.slice(+action.value)
+            ]);
+        } else {
+            setModifiedSteps([
+                ...modifiedSteps.slice(0, stepIndex + 1),
+                ...steps.slice(currentStep.index + 1)
+            ]);
+        }
+    };
+
     // We need to have "stepIndex" prop in order to get corresponding fields for the current step.
     const getFields = (stepIndex = 0): FormRenderFbFormModelField[][] => {
         const stepFields =
-            steps[stepIndex] === undefined ? steps[steps.length - 1] : steps[stepIndex];
+            resolvedSteps[stepIndex] === undefined
+                ? resolvedSteps[resolvedSteps.length - 1]
+                : resolvedSteps[stepIndex];
         const fieldLayout = cloneDeep(stepFields.layout.filter(Boolean));
+
+        // Here we are adding condition group fields into step layout.
+        fieldLayout.forEach((row, fieldIndex) => {
+            row.forEach(fieldId => {
+                const field = getFieldById(fieldId);
+                if (!field) {
+                    return;
+                }
+                if (field.settings.rules !== undefined) {
+                    if (field.settings?.rules.length) {
+                        field.settings.rules.forEach((rule: FbFormRule) => {
+                            if (checkIfConditionsMet({ formData: formState, rule })) {
+                                if (rule.action.value === "show") {
+                                    fieldLayout.splice(fieldIndex, 1, ...field.settings.layout);
+                                } else {
+                                    fieldLayout.splice(fieldIndex, field.settings.layout.length, [
+                                        field._id
+                                    ]);
+                                }
+                            } else {
+                                if (field.settings.defaultBehaviour === "show") {
+                                    fieldLayout.splice(fieldIndex, 1, ...field.settings.layout);
+                                }
+                            }
+                        });
+                    } else {
+                        if (field.settings.defaultBehaviour === "show") {
+                            fieldLayout.splice(fieldIndex, 1, ...field.settings.layout);
+                        }
+                    }
+                }
+            });
+        });
+
         const validatorPlugins =
             plugins.byType<FbFormFieldValidatorPlugin>("fb-form-field-validator");
 
@@ -252,6 +340,8 @@ const FormRender = (props: FbFormRenderComponentProps) => {
         submit,
         goToNextStep,
         goToPreviousStep,
+        validateStepConditions,
+        setFormState,
         isLastStep,
         isFirstStep,
         currentStepIndex,

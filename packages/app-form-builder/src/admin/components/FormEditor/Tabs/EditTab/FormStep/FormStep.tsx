@@ -1,7 +1,7 @@
 import React from "react";
 
 import { FbFormModelField, FbFormStep } from "~/types";
-import { RowHandle, StyledAccordion, StyledAccordionItem, Wrapper } from "../Styled";
+import { RowHandle, StyledAccordion, StyledAccordionItem, Wrapper, RulesTag } from "../Styled";
 
 import { Icon } from "@webiny/ui/Icon";
 import { AccordionItem } from "@webiny/ui/Accordion";
@@ -13,6 +13,7 @@ import { FormStepWithFields } from "./FormStepWithFields";
 
 import EditFieldDialog from "../EditFieldDialog";
 import { useFormStep } from "./useFormStep";
+import { DeleteFieldParams } from "../../../Context/useFormEditorFactory";
 
 export interface FormStepProps {
     title: string;
@@ -22,7 +23,7 @@ export interface FormStepProps {
     onEdit: () => void;
     getStepFields: (stepId: string) => FbFormModelField[][];
     updateField: (field: FbFormModelField) => void;
-    deleteField: (field: FbFormModelField, stepId: string) => void;
+    deleteField: (params: DeleteFieldParams) => void;
 }
 
 export const FormStep = (props: FormStepProps) => {
@@ -44,6 +45,11 @@ export const FormStep = (props: FormStepProps) => {
                     open={true}
                     actions={
                         <AccordionItem.Actions>
+                            {formStep.rules.length ? (
+                                <RulesTag isValid={true}>{"Rules Attached"}</RulesTag>
+                            ) : (
+                                <></>
+                            )}
                             <AccordionItem.Action icon={<EditIcon />} onClick={onEdit} />
                             <AccordionItem.Action
                                 icon={<DeleteIcon />}

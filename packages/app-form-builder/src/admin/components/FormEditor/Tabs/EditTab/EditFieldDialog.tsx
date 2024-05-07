@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import cloneDeep from "lodash/cloneDeep";
-import { css } from "emotion";
 import styled from "@emotion/styled";
 import {
-    Dialog,
+    Dialog as BaseDialog,
     DialogContent,
     DialogTitle,
     DialogCancel,
@@ -20,13 +19,20 @@ import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormEditor.EditFieldDialog");
 import { useFormEditor } from "../../Context";
 import { FbBuilderFieldPlugin, FbFormModelField } from "~/types";
+import { RulesTab } from "./EditFieldDialog/RulesTab/RulesTab";
 
-const dialogBody = css({
+const DialogBody = styled(DialogContent)({
     "&.webiny-ui-dialog__content": {
-        width: 875,
-        height: 450
+        width: 975,
+        maxWidth: 975
     }
 });
+
+const Dialog = styled(BaseDialog)`
+    & .mdc-dialog__surface {
+        max-width: 975px;
+    }
+`;
 
 const FbFormModelFieldList = styled("div")({
     display: "flex",
@@ -57,8 +63,38 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
         }
         setCurrent(cloneDeep(field));
         setIsNewField(!field._id);
-        setScreen(field.type ? "fieldOptions" : "fieldType");
+        setScreen(
+            field?.settings?.isConditionGroup
+                ? "conditionGroup"
+                : field?.type
+                ? "fieldOptions"
+                : "fieldType"
+        );
     }, [field]);
+
+    // In case we dragged "Condition Group" we want to render Settings Dialog for "Condition Group" field,
+    // instead of dialog that we render when we drag "Custom Field".
+    useEffect(() => {
+        if (screen === "conditionGroup") {
+            plugins
+                .byType<FbBuilderFieldPlugin>("form-editor-field-type")
+                .filter(pl => !pl.field.group)
+                .map(pl => {
+                    const newCurrent = pl.field.createField();
+                    if (current) {
+                        // User edited existing field, that's why we still want to
+                        // keep a couple of previous values.
+                        const { _id, label, fieldId, helpText } = current;
+                        newCurrent._id = _id;
+                        newCurrent.label = label;
+                        newCurrent.fieldId = fieldId;
+                        newCurrent.helpText = helpText;
+                    }
+                    setCurrent(newCurrent);
+                    setScreen("fieldOptions");
+                });
+        }
+    }, [screen]);
 
     const onClose = useCallback(() => {
         setCurrent(null);
@@ -86,7 +122,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                     <Form data={current} onSubmit={onSubmit}>
                         {form => (
                             <>
-                                <DialogContent className={dialogBody}>
+                                <DialogBody>
                                     <Tabs>
                                         <Tab label={t`General`}>
                                             <GeneralTab form={form} field={current} />
@@ -96,8 +132,13 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                                 <ValidatorsTab form={form} field={current} />
                                             </Tab>
                                         )}
+                                        {field?.type === "condition-group" && (
+                                            <Tab label={"Rules"}>
+                                                <RulesTab form={form} field={current} />
+                                            </Tab>
+                                        )}
                                     </Tabs>
-                                </DialogContent>
+                                </DialogBody>
                                 <DialogActions
                                     style={{
                                         justifyContent: isNewField ? "space-between" : "flex-end"
@@ -122,7 +163,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
             default:
                 render = (
                     <>
-                        <DialogContent className={dialogBody}>
+                        <DialogBody>
                             <FbFormModelFieldList>
                                 {plugins
                                     .byType<FbBuilderFieldPlugin>("form-editor-field-type")
@@ -149,7 +190,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                         />
                                     ))}
                             </FbFormModelFieldList>
-                        </DialogContent>
+                        </DialogBody>
                         <DialogActions>
                             <DialogCancel onClick={onClose}>{t`Cancel`}</DialogCancel>
                         </DialogActions>

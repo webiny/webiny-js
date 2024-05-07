@@ -14,17 +14,18 @@ export default ({ data, field, target, source, destination }: HandleMoveField) =
     if (source.containerId === destination.containerId) {
         // This condition should cover:
         // 1. When we move field in scope of one Step;
-        // 2. When we move field in scope of one Condition Group (Condition Group yet to be implemented).
+        // 2. When we move field in scope of one Condition Group.
         moveField({
             field,
             data,
             target,
-            destination
+            destination,
+            source
         });
     } else {
         // This condition should cover:
         // 1. When we move field in scope of two different Steps;
-        // 2. When we move field in scope of two different Condition Groups (Condition Group yet to be implemented).
+        // 2. When we move field in scope of two different Condition Groups.
         moveFieldBetween({
             data,
             field,

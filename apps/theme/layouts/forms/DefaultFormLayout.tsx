@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form } from "@webiny/form";
 import { FormLayoutComponent } from "@webiny/app-form-builder/types";
 import styled from "@emotion/styled";
@@ -48,6 +48,8 @@ const DefaultFormLayout: FormLayoutComponent = ({
     submit,
     goToNextStep,
     goToPreviousStep,
+    validateStepConditions,
+    setFormState,
     isLastStep,
     isFirstStep,
     isMultiStepForm,
@@ -64,6 +66,12 @@ const DefaultFormLayout: FormLayoutComponent = ({
 
     // Is the form successfully submitted?
     const [formSuccess, setFormSuccess] = useState(false);
+
+    const [defData, setDefData] = useState(getDefaultValues());
+
+    useEffect(() => {
+        setDefData(getDefaultValues());
+    }, [formData.fields]);
 
     // All form fields - an array of rows where each row is an array that contain fields.
     const fields = getFields(currentStepIndex);
@@ -89,7 +97,14 @@ const DefaultFormLayout: FormLayoutComponent = ({
     return (
         /* "onSubmit" callback gets triggered once all the fields are valid. */
         /* We also pass the default values for all fields via the getDefaultValues callback. */
-        <Form onSubmit={submitForm} data={getDefaultValues()}>
+        <Form
+            onSubmit={submitForm}
+            data={defData}
+            onChange={data => {
+                validateStepConditions(data, currentStepIndex);
+                setFormState(data);
+            }}
+        >
             {({ submit }) => (
                 <Wrapper>
                     {isMultiStepForm && <StepTitle>{currentStep?.title}</StepTitle>}

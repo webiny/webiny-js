@@ -153,7 +153,30 @@ export interface FbFormStep {
     id: string;
     title: string;
     layout: FbFormModelFieldsLayout;
+    rules: FbFormRule[];
+    index: number;
 }
+
+export type FbFormRuleAction = {
+    type: string;
+    value: string;
+};
+
+export type FbFormRule = {
+    action: FbFormRuleAction;
+    matchAll: boolean;
+    id: string;
+    title: string;
+    conditions: FbFormCondition[];
+    isValid: boolean;
+};
+
+export type FbFormCondition = {
+    id: string;
+    fieldName: string;
+    filterType: string;
+    filterValue: string;
+};
 
 export interface MoveStepParams {
     source: Omit<DropSource, "containerType">;
@@ -350,6 +373,8 @@ export type FormRenderPropsType<T = Record<string, any>> = {
     getDefaultValues: () => { [key: string]: any };
     goToNextStep: () => void;
     goToPreviousStep: () => void;
+    validateStepConditions: (formData: Record<string, any>, stepIndex: number) => void;
+    setFormState: (formData: Record<string, any>) => void;
     isLastStep: boolean;
     isFirstStep: boolean;
     isMultiStepForm: boolean;

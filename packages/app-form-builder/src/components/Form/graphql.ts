@@ -28,6 +28,22 @@ export const DATA_FIELDS = `
     steps {
         title
         layout
+        rules {
+            title
+            action {
+                type
+                value
+            }
+            matchAll
+            id
+            conditions {
+                id
+                fieldName
+                filterType
+                filterValue
+            }
+            isValid
+        }
     }
     triggers
     settings {
