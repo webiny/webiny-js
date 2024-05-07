@@ -1,10 +1,33 @@
 import gql from "graphql-tag";
+import { I18NLocaleItem } from "~/types";
 
 const BASE_FIELDS = `
     code
     default
     createdOn
 `;
+
+interface I18NLocaleResponseError {
+    message: string;
+    code: string;
+    data: Record<string, any>;
+}
+
+interface ListI18NLocalesResponseMeta {
+    hasMoreItems: boolean;
+    totalCount: number;
+    cursor: string | null;
+}
+
+export interface ListI18NLocalesResponse {
+    i18n: {
+        listI18NLocales: {
+            data: I18NLocaleItem[];
+            meta: ListI18NLocalesResponseMeta;
+            error?: I18NLocaleResponseError;
+        };
+    };
+}
 
 export const LIST_LOCALES = gql`
     query listI18NLocales {

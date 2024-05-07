@@ -1,6 +1,5 @@
 const execa = require("execa");
-const fs = require("fs");
-const path = require("path");
+const { WebinyConfigFile } = require("./WebinyConfigFile");
 
 const listPackages = async ({ inputs }) => {
     let packagesList = [];
@@ -41,9 +40,11 @@ const listPackages = async ({ inputs }) => {
         const packages = [];
         for (const packageName in result) {
             const root = result[packageName];
-            const configPath = fs.existsSync(path.join(root, "webiny.config.ts"))
-                ? path.join(root, "webiny.config.ts")
-                : path.join(root, "webiny.config.js");
+            const configPath = WebinyConfigFile.forWorkspace(root).getAbsolutePath();
+
+            if (!configPath) {
+                continue;
+            }
 
             packages.push({
                 name: packageName,

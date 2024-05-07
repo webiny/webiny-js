@@ -17,3 +17,4 @@ export * from "./core/AddRoute";
 export * from "./core/DebounceRender";
 export * from "./core/createProvider";
 export * from "./core/createProviderPlugin";
+export * from "./renderApp";

@@ -29,6 +29,7 @@ import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as CopyIcon } from "@material-design-icons/svg/outlined/content_copy.svg";
 import { featureFlags } from "@webiny/feature-flags";
+import { Group } from "~/types";
 
 const t = i18n.ns("app-security/admin/roles/form");
 
@@ -80,8 +81,8 @@ export const GroupsForm = () => {
     const loading = [getQuery, createMutation, updateMutation].find(item => item.loading);
 
     const onSubmit = useCallback(
-        async data => {
-            if (!data.permissions || !data.permissions.length) {
+        async (formData: Group) => {
+            if (!formData.permissions || !formData.permissions.length) {
                 showSnackbar(t`You must configure permissions before saving!`, {
                     timeout: 60000,
                     dismissesOnAction: true,
@@ -90,14 +91,14 @@ export const GroupsForm = () => {
                 return;
             }
 
-            const isUpdate = data.createdOn;
+            const isUpdate = formData.createdOn;
             const [operation, args] = isUpdate
                 ? [
                       update,
                       {
                           variables: {
-                              id: data.id,
-                              data: pick(data, ["name", "description", "permissions"])
+                              id: formData.id,
+                              data: pick(formData, ["name", "description", "permissions"])
                           }
                       }
                   ]
@@ -105,7 +106,7 @@ export const GroupsForm = () => {
                       create,
                       {
                           variables: {
-                              data: pick(data, ["name", "slug", "description", "permissions"])
+                              data: pick(formData, ["name", "slug", "description", "permissions"])
                           }
                       }
                   ];
@@ -123,7 +124,7 @@ export const GroupsForm = () => {
         [id]
     );
 
-    const data = loading ? {} : get(getQuery, "data.security.group.data", {});
+    const data: Group = loading ? {} : get(getQuery, "data.security.group.data", {});
 
     const systemGroup = data.slug === "full-access";
 

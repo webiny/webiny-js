@@ -1,12 +1,12 @@
 import React, { useMemo } from "react";
 import { createAuthentication, CreateAuthenticationConfig } from "~/createAuthentication";
-import { AddUserMenuItem, createDecorator, LoginScreenRenderer, Plugin } from "@webiny/app-admin";
+import { AddUserMenuItem, LoginScreenRenderer, Plugin } from "@webiny/app-admin";
 import { UserInfo } from "~/plugins/userMenu/userInfo";
 import { SignOut } from "~/plugins/userMenu/signOut";
 
 const createLoginScreenDecorator = (config?: CreateAuthenticationConfig) => {
     const LoginComponent = createAuthentication(config);
-    return createDecorator(LoginScreenRenderer, () => {
+    return LoginScreenRenderer.createDecorator(() => {
         return function LoginScreen({ children }) {
             return <LoginComponent>{children}</LoginComponent>;
         };

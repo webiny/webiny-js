@@ -110,7 +110,9 @@ describe("Page Builder - List Menu Item Types", () => {
         cy.findByTestId(`pb-menu-item-render-added-menu-${id}`)
             .eq(0)
             .within(() => {
-                cy.findByTestId("pb-edit-icon-button").click();
+                // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                // Now targeting <button> directly. Revert to `.findByTestId("pb-edit-icon-button")` if issue is fixed.
+                cy.get('button[data-testid="pb-edit-icon-button"]').click();
             });
 
         cy.findByTestId("pb.menu.new.listitem.sortdirection").select("Ascending");
@@ -146,7 +148,9 @@ describe("Page Builder - List Menu Item Types", () => {
         });
 
         cy.findByTestId(`pb-menu-item-render-added-menu-${idEdited}`).within(() => {
-            cy.findByTestId("pb-delete-icon-button").click();
+            // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+            // Now targeting <button> directly. Revert to `.findByTestId("pb-delete-icon-button")` if issue is fixed.
+            cy.get('button[data-testid="pb-delete-icon-button"]').click();
         });
 
         cy.findByTestId("pb.menu.save.button").click();

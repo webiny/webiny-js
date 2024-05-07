@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useDrag, useDrop, DropTargetMonitor, DragSourceMonitor } from "react-dnd";
 import { DraggableItem } from "~/editor/components/Draggable";
+import { CollectedProps } from "~/types";
 
 export const moveInPlace = (arr: any[], from: number, to: number): any[] => {
     const newArray = [...arr];
@@ -24,23 +25,16 @@ interface UseSortableListArgs {
     id: string;
     type: string;
     move: (current: number, next: number) => void;
-    beginDrag?: (monitor: DragSourceMonitor) => void;
+    beginDrag?: (monitor: DragSourceMonitor) => DragItem;
     endDrag?: (item: DraggableItem | undefined, monitor: DragSourceMonitor) => void;
 }
 
-export const useSortableList = ({
-    index,
-    move,
-    id,
-    type,
-    beginDrag,
-    endDrag
-}: UseSortableListArgs) => {
+export const useSortableList = ({ index, move, type, beginDrag, endDrag }: UseSortableListArgs) => {
     const ref = useRef<HTMLDivElement>(null);
     const [dropItemAbove, setDropItemAbove] = useState(false);
     const isDraggingDownwardsRef = useRef<boolean>(false);
 
-    const [dropData, drop] = useDrop({
+    const [dropData, drop] = useDrop<DragItem, unknown, CollectedProps>({
         accept: type,
         collect(monitor) {
             return {
@@ -110,16 +104,17 @@ export const useSortableList = ({
         }
     });
 
-    const [{ isDragging }, drag, preview] = useDrag({
-        item: { type, target: [type], id, index, dragInNavigator: true } as DraggableItem,
-        collect: monitor => ({
-            isDragging: monitor.isDragging()
-        }),
-        begin(monitor) {
+    const [{ isDragging }, drag, preview] = useDrag<DragItem, unknown, { isDragging: boolean }>({
+        type,
+        item(monitor) {
             if (typeof beginDrag === "function") {
                 return beginDrag(monitor);
             }
+            return null;
         },
+        collect: monitor => ({
+            isDragging: monitor.isDragging()
+        }),
         end(item, monitor) {
             if (typeof endDrag === "function") {
                 return endDrag(item, monitor);

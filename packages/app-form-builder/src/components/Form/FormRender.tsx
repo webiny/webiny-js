@@ -23,6 +23,7 @@ import {
     FbFormLayout
 } from "~/types";
 import { FbFormLayoutPlugin } from "~/plugins";
+import { ReCaptchaComponent } from "./components/createReCaptchaComponent";
 
 declare global {
     // eslint-disable-next-line
@@ -235,7 +236,7 @@ const FormRender = (props: FbFormRenderComponentProps) => {
         props,
         formData,
         setResponseToken: value => (reCaptchaResponseToken.current = value)
-    });
+    }) as ReCaptchaComponent;
 
     const TermsOfService = createTermsOfServiceComponent({
         props,

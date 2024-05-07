@@ -1,6 +1,6 @@
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
-import { HeadlessCmsTasksContext } from "~/types";
+import { HcmsTasksContext } from "~/types";
 
 export interface PermissionsArg {
     name: string;
@@ -47,7 +47,7 @@ export const createIdentity = (identity?: SecurityIdentity) => {
 };
 
 export const createDummyLocales = () => {
-    return new ContextPlugin<HeadlessCmsTasksContext>(async context => {
+    return new ContextPlugin<HcmsTasksContext>(async context => {
         const { i18n, security } = context;
 
         await security.authenticate("");

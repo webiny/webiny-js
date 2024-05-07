@@ -13,8 +13,8 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@pulumi/aws": "^5.42.0",
-    "@pulumi/pulumi": "^3.99.0",
+    "@pulumi/aws": "^6.32.0",
+    "@pulumi/pulumi": "^3.113.3",
     "@pulumi/random": "^3.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/cli-plugin-deploy-pulumi": "0.0.0",
@@ -33,7 +33,7 @@
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "chalk": "^4.1.0",
-    "lodash": "4.17.21",
+    "lodash": "^4.17.21",
     "mime": "^2.5.2",
     "rimraf": "^5.0.5",
     "ttypescript": "^1.5.12",

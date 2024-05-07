@@ -100,23 +100,24 @@ export class PbUniqueBlockElementIds_5_40_0_001 implements DataMigration {
                         );
 
                         const items = await Promise.all(
-                            blocks
-                                .map(async block => {
-                                    const newContent = await this.generateElementIds(block);
-                                    if (!newContent) {
-                                        return null;
-                                    }
+                            blocks.map(async block => {
+                                const newContent = await this.generateElementIds(block);
+                                if (!newContent) {
+                                    return null;
+                                }
 
-                                    return this.blockEntity.putBatch({
-                                        ...block,
-                                        content: newContent
-                                    });
-                                })
-                                .filter(Boolean) as Promise<BatchWriteItem>[]
+                                return this.blockEntity.putBatch({
+                                    ...block,
+                                    content: newContent
+                                });
+                            })
                         );
 
                         const execute = () => {
-                            return batchWriteAll({ table: this.blockEntity.table, items });
+                            return batchWriteAll({
+                                table: this.blockEntity.table,
+                                items: items.filter(Boolean) as BatchWriteItem[]
+                            });
                         };
 
                         await executeWithRetry(execute, {
@@ -124,7 +125,8 @@ export class PbUniqueBlockElementIds_5_40_0_001 implements DataMigration {
                                 logger.error(
                                     `"batchWriteAll" attempt #${error.attemptNumber} failed.`
                                 );
-                                logger.error(error.message);
+                                console.log(items);
+                                console.log(error);
                             }
                         });
 

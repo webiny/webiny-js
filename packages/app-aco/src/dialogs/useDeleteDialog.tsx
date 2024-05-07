@@ -38,7 +38,7 @@ export const useDeleteDialog = (): UseDeleteDialogResponse => {
             content: `You are about to delete the folder "${folder.title}"! Are you sure you want to continue?`,
             acceptLabel: "Delete folder",
             cancelLabel: "Cancel",
-            loadingLabel: "Deleting folder",
+            loadingLabel: "Deleting folder...",
             onAccept: () => onAccept(folder)
         });
     };

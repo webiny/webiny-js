@@ -109,7 +109,7 @@ const BoxInputs = ({
     }));
 
     const toggleLinked = useCallback(
-        e => {
+        (e: React.MouseEvent) => {
             e.stopPropagation();
             getUpdateValue(`${valueKey}.advanced`)(!advanced);
         },

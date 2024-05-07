@@ -98,7 +98,7 @@ export const useEditDialog = (): UseEditDialogResponse => {
             content: <FormComponent folder={folder} />,
             acceptLabel: "Edit folder",
             cancelLabel: "Cancel",
-            loadingLabel: "Editing folder",
+            loadingLabel: "Editing folder...",
             onAccept: (data: GenericFormData) => onAccept(folder, data)
         });
     };

@@ -5,6 +5,7 @@ import { i18n } from "@webiny/app/i18n";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Buttons, Icon } from "./styled";
 import { Tooltip } from "@webiny/ui/Tooltip";
+import { useModel } from "~/admin/components/ModelProvider";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-entries/empty");
 
@@ -23,6 +24,8 @@ export const Empty = ({
     canCreateContent,
     canCreateFolder
 }: EmptyProps) => {
+    const { model } = useModel();
+
     if (isSearch) {
         return <EmptyView icon={<SearchIcon />} title={t`No results found.`} action={null} />;
     }
@@ -33,7 +36,7 @@ export const Empty = ({
             onClick={onCreateEntry}
             disabled={!canCreateContent}
         >
-            <Icon /> {t`New Entry`}
+            <Icon /> {`New ${model.name}`}
         </ButtonDefault>
     );
 

@@ -52,6 +52,18 @@ interface CreateApolloClientParams {
 interface PlaygroundProps {
     createApolloClient: (params: CreateApolloClientParams) => ApolloClient<any>;
 }
+
+interface CreateApolloLinkCallableParams {
+    endpoint: string;
+    headers: Record<string, string>;
+}
+interface CreateApolloLinkCallableResult {
+    link: ApolloLink;
+}
+interface CreateApolloLinkCallable {
+    (params: CreateApolloLinkCallableParams): CreateApolloLinkCallableResult;
+}
+
 const Playground = ({ createApolloClient }: PlaygroundProps) => {
     const [loading, setLoading] = useState(true);
     const { getCurrentLocale } = useI18N();
@@ -70,10 +82,10 @@ const Playground = ({ createApolloClient }: PlaygroundProps) => {
         )
         .filter(Boolean);
 
-    const createApolloLink = useCallback(({ endpoint, headers }) => {
+    const createApolloLink = useCallback<CreateApolloLinkCallable>(({ endpoint, headers }) => {
         const current = links.current;
         // If the request endpoint is not know to us, return the first available
-        const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
+        const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL) as string;
         if (!endpoint.includes(apiUrl)) {
             return { link: withHeaders(Object.values(current)[0], headers) };
         }

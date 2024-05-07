@@ -1,6 +1,6 @@
 import React from "react";
+import { createDecorator } from "@webiny/react-composition";
 import {
-    createDecorator,
     DialogsProvider,
     FileManagerFileItem,
     FileManagerOnChange,

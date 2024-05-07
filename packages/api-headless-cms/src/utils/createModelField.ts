@@ -9,6 +9,8 @@ export interface CreateModelFieldParams
 }
 
 export const createModelField = (params: CreateModelFieldParams): CmsModelField => {
+    // We are not just spreading `params` because we want to ensure
+    // a default value is set for every property of the model field.
     const {
         id,
         label,
@@ -23,7 +25,10 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         predefinedValues = {
             values: [],
             enabled: false
-        }
+        },
+        helpText = null,
+        placeholderText = null,
+        renderer = null
     } = params;
 
     const fieldId = initialFieldId ? camelCase(initialFieldId) : camelCase(label);
@@ -39,6 +44,9 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         listValidation,
         validation,
         multipleValues,
-        predefinedValues
+        predefinedValues,
+        helpText,
+        placeholderText,
+        renderer
     };
 };
