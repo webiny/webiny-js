@@ -180,7 +180,7 @@ export class CmsEntriesInitNewMetaFields_5_39_6_001 implements DataMigration {
             async result => {
                 currentDdbScanIteration++;
 
-                logger.trace(`Primary DynamoDB table scan iteration:  ${currentDdbScanIteration}.`);
+                logger.trace(`Primary DynamoDB table scan iteration: ${currentDdbScanIteration}.`);
                 logger.trace(`Analyzing ${result.items.length} record(s)...`);
 
                 const ddbItems: BatchWriteItem[] = [];
@@ -388,7 +388,7 @@ export class CmsEntriesInitNewMetaFields_5_39_6_001 implements DataMigration {
                     });
                 };
 
-                logger.trace("Storing the DynamoDB records...");
+                logger.trace("Storing records in primary DynamoDB table...");
                 await executeWithRetry(execute, {
                     onFailedAttempt: error => {
                         logger.error(
@@ -406,11 +406,11 @@ export class CmsEntriesInitNewMetaFields_5_39_6_001 implements DataMigration {
                     });
                 };
 
-                logger.trace("Storing the DynamoDB Elasticsearch records...");
+                logger.trace("Storing records in DDB-ES DynamoDB table...");
                 await executeWithRetry(executeDdbEs, {
                     onFailedAttempt: error => {
                         logger.error(
-                            `"batchWriteAll ddb + es" attempt #${error.attemptNumber} failed: ${error.message}`
+                            `"batchWriteAll ddb-es" attempt #${error.attemptNumber} failed: ${error.message}`
                         );
                     }
                 });
