@@ -29,10 +29,13 @@ import { getDecompressedData } from "~/migrations/5.39.0/001/utils/getDecompress
 import { getCompressedData } from "~/migrations/5.39.0/001/utils/getCompressedData";
 import { assignNewMetaFields } from "~/migrations/5.39.0/001/utils/assignNewMetaFields";
 import { fixTypeFieldValue } from "~/migrations/5.39.0/001/utils/fixTypeFieldValue";
-import { isMigratedEntry } from "~/migrations/5.39.0/001/utils/isMigratedEntry";
 import { getOldestRevisionCreatedOn } from "~/migrations/5.39.0/001/utils/getOldestRevisionCreatedOn";
 import { getFirstLastPublishedOnBy } from "~/migrations/5.39.0/001/utils/getFirstLastPublishedOn";
 import { hasValidTypeFieldValue } from "~/migrations/5.39.0/001/utils/hasValidTypeFieldValue";
+import { hasAllNonNullableValues } from "~/migrations/5.39.0/001/utils/hasAllNonNullableValues";
+import { isMigratedEntry } from "~/migrations/5.39.0/001/utils/isMigratedEntry";
+import { getFallbackIdentity } from "~/migrations/5.39.0/001/utils/getFallbackIdentity";
+import { ensureAllNonNullableValues } from "~/migrations/5.39.0/001/utils/ensureAllNonNullableValues";
 import { ScanDbItem } from "@webiny/db-dynamodb";
 
 interface LastEvaluatedKey {
@@ -60,7 +63,7 @@ interface DynamoDbElasticsearchRecord {
     data: string;
 }
 
-export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
+export class CmsEntriesInitNewMetaFields_5_39_6_001 implements DataMigration {
     private readonly elasticsearchClient: Client;
     private readonly ddbEntryEntity: ReturnType<typeof createDdbEntryEntity>;
     private readonly ddbEsEntryEntity: ReturnType<typeof createDdbEsEntryEntity>;
@@ -76,11 +79,11 @@ export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
     }
 
     getId() {
-        return "5.39.2-001";
+        return "5.39.6-001";
     }
 
     getDescription() {
-        return "Write new revision and entry-level on/by meta fields (second pass).";
+        return "Write new revision and entry-level on/by meta fields.";
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
@@ -90,7 +93,6 @@ export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
             {
                 entity: this.ddbEntryEntity,
                 options: {
-                    attributes: ["TYPE", "SK"],
                     filters: [
                         {
                             attr: "_et",
@@ -107,7 +109,12 @@ export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
                 }
 
                 for (const item of result.items) {
-                    if (!hasValidTypeFieldValue(item)) {
+                    const isFullyMigrated =
+                        isMigratedEntry(item) &&
+                        hasValidTypeFieldValue(item) &&
+                        hasAllNonNullableValues(item);
+
+                    if (!isFullyMigrated) {
                         shouldExecute = true;
 
                         // Stop further scanning.
@@ -150,7 +157,12 @@ export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
             usingKey = JSON.stringify(migrationStatus.lastEvaluatedKey);
         }
 
-        logger.debug(`Scanning DynamoDB Elasticsearch table... ${usingKey}`);
+        logger.trace(`Scanning primary DynamoDB table.`, {
+            usingKey
+        });
+
+        let currentDdbScanIteration = 0;
+
         await ddbScanWithCallback<CmsEntry>(
             {
                 entity: this.ddbEntryEntity,
@@ -166,19 +178,20 @@ export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
                 }
             },
             async result => {
-                logger.debug(`Processing ${result.items.length} items...`);
+                currentDdbScanIteration++;
+
+                logger.trace(`Primary DynamoDB table scan iteration: ${currentDdbScanIteration}.`);
+                logger.trace(`Analyzing ${result.items.length} record(s)...`);
+
                 const ddbItems: BatchWriteItem[] = [];
                 const ddbEsItems: BatchWriteItem[] = [];
-
                 const ddbEsGetItems: Record<string, BatchReadItem> = {};
-                /**
-                 * Update the DynamoDB part of the records.
-                 */
-                for (const item of result.items) {
-                    if (hasValidTypeFieldValue(item) && isMigratedEntry(item)) {
-                        continue;
-                    }
 
+                const fallbackDateTime = new Date().toISOString();
+
+                // Update records in primary DynamoDB table. Also do preparations for
+                // subsequent updates on DDB-ES DynamoDB table, and in Elasticsearch.
+                for (const item of result.items) {
                     const index = esGetIndexName({
                         tenant: item.tenant,
                         locale: item.locale,
@@ -186,7 +199,7 @@ export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
                         isHeadlessCmsModel: true
                     });
 
-                    // Check for the elasticsearch index settings
+                    // Check ES index settings.
                     if (!migrationStatus.indexes || migrationStatus.indexes[index] === undefined) {
                         // We need to fetch the index settings first
                         const settings = await fetchOriginalElasticsearchSettings({
@@ -208,6 +221,7 @@ export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
                         });
                     }
 
+                    // 1. Check if the data migration was ever performed. If not, let's perform it.
                     if (!isMigratedEntry(item)) {
                         // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
                         const createdOn = await getOldestRevisionCreatedOn({
@@ -226,8 +240,40 @@ export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
                         });
                     }
 
-                    // Fixes the value of the `TYPE` field, if it's not valid.
-                    fixTypeFieldValue(item);
+                    // 2. We've noticed some of the records had an invalid `TYPE` field value
+                    //    in the database. This step addresses this issue.
+                    if (!hasValidTypeFieldValue(item)) {
+                        // Fixes the value of the `TYPE` field, if it's not valid.
+                        fixTypeFieldValue(item);
+                    }
+
+                    // 3. Finally, once both of the steps were performed, ensure that all
+                    //    new non-nullable meta fields have a value and nothing is missing.
+                    if (!hasAllNonNullableValues(item)) {
+                        logger.trace(
+                            `Detected an entry with missing values for non-nullable meta fields (${item.modelId}/${item.id}).`
+                        );
+
+                        try {
+                            const fallbackIdentity = await getFallbackIdentity({
+                                entity: this.ddbEntryEntity,
+                                tenant: item.tenant
+                            });
+
+                            ensureAllNonNullableValues(item, {
+                                dateTime: fallbackDateTime,
+                                identity: fallbackIdentity
+                            });
+
+                            logger.trace(
+                                `Successfully ensured all non-nullable meta fields have values (${item.modelId}/${item.id}). Will be saving into the database soon.`
+                            );
+                        } catch (e) {
+                            logger.debug(
+                                `Failed to ensure all non-nullable meta fields have values (${item.modelId}/${item.id}): ${e.message}`
+                            );
+                        }
+                    }
 
                     ddbItems.push(this.ddbEntryEntity.putBatch(item));
 
@@ -254,56 +300,87 @@ export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
                 /**
                  * Get all the records from DynamoDB Elasticsearch.
                  */
-                const esRecords = await batchReadAll<DynamoDbElasticsearchRecord>({
+                const ddbEsRecords = await batchReadAll<DynamoDbElasticsearchRecord>({
                     table: this.ddbEsEntryEntity.table,
                     items: Object.values(ddbEsGetItems)
                 });
 
-                for (const esRecord of esRecords) {
-                    const decompressedData = await getDecompressedData<CmsEntry>(esRecord.data);
+                for (const ddbEsRecord of ddbEsRecords) {
+                    const decompressedData = await getDecompressedData<CmsEntry>(ddbEsRecord.data);
                     if (!decompressedData) {
                         logger.trace(
-                            `Skipping record "${esRecord.PK}" as it is not a valid CMS entry...`
+                            `[DDB-ES Table] Skipping record "${ddbEsRecord.PK}" as it is not a valid CMS entry...`
                         );
                         continue;
                     }
 
-                    if (isMigratedEntry(decompressedData)) {
-                        const forceExecute = context.forceExecute;
-                        if (!forceExecute) {
-                            logger.trace(
-                                `Skipping record "${decompressedData.entryId}" as it already has meta fields defined...`
-                            );
-                            continue;
-                        }
+                    // 1. Check if the data migration was ever performed. If not, let's perform it.
+                    if (!isMigratedEntry(decompressedData)) {
+                        // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
+                        const createdOn = await getOldestRevisionCreatedOn({
+                            entry: { ...decompressedData, PK: ddbEsRecord.PK },
+                            entryEntity: this.ddbEntryEntity
+                        });
+
+                        const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
+                            entry: { ...decompressedData, PK: ddbEsRecord.PK },
+                            entryEntity: this.ddbEntryEntity
+                        });
+
+                        assignNewMetaFields(decompressedData, {
+                            createdOn,
+                            ...firstLastPublishedOnByFields
+                        });
                     }
 
-                    // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
-                    const createdOn = await getOldestRevisionCreatedOn({
-                        entry: { ...decompressedData, PK: esRecord.PK },
-                        entryEntity: this.ddbEntryEntity
-                    });
+                    // 2. Ensure new non-nullable meta fields have a value and nothing is missing.
+                    if (!hasAllNonNullableValues(decompressedData)) {
+                        logger.trace(
+                            [
+                                "[DDB-ES Table] Detected an entry with missing values for non-nullable meta fields",
+                                `(${decompressedData.modelId}/${decompressedData.id}).`
+                            ].join(" ")
+                        );
 
-                    const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
-                        entry: { ...decompressedData, PK: esRecord.PK },
-                        entryEntity: this.ddbEntryEntity
-                    });
+                        try {
+                            const fallbackIdentity = await getFallbackIdentity({
+                                entity: this.ddbEntryEntity,
+                                tenant: decompressedData.tenant
+                            });
 
-                    assignNewMetaFields(decompressedData, {
-                        createdOn,
-                        ...firstLastPublishedOnByFields
-                    });
+                            ensureAllNonNullableValues(decompressedData, {
+                                dateTime: fallbackDateTime,
+                                identity: fallbackIdentity
+                            });
+
+                            logger.trace(
+                                [
+                                    "[DDB-ES Table] Successfully ensured all non-nullable meta fields",
+                                    `have values (${decompressedData.modelId}/${decompressedData.id}).`,
+                                    "Will be saving the changes soon."
+                                ].join(" ")
+                            );
+                        } catch (e) {
+                            logger.debug(
+                                [
+                                    "[DDB-ES Table] Failed to ensure all non-nullable meta fields have values",
+                                    `(${decompressedData.modelId}/${decompressedData.id}): ${e.message}`
+                                ].join(" ")
+                            );
+                        }
+                    }
 
                     const compressedData = await getCompressedData(decompressedData);
 
                     ddbEsItems.push(
                         this.ddbEsEntryEntity.putBatch({
-                            ...esRecord,
+                            ...ddbEsRecord,
                             data: compressedData
                         })
                     );
                 }
 
+                // Store data in primary DynamoDB table.
                 const execute = () => {
                     return batchWriteAll({
                         table: this.ddbEntryEntity.table,
@@ -311,14 +388,7 @@ export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
                     });
                 };
 
-                const executeDdbEs = () => {
-                    return batchWriteAll({
-                        table: this.ddbEsEntryEntity.table,
-                        items: ddbEsItems
-                    });
-                };
-
-                logger.trace("Storing the DynamoDB records...");
+                logger.trace("Storing records in primary DynamoDB table...");
                 await executeWithRetry(execute, {
                     onFailedAttempt: error => {
                         logger.error(
@@ -328,17 +398,25 @@ export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
                 });
                 logger.trace("...stored.");
 
-                logger.trace("Storing the DynamoDB Elasticsearch records...");
+                // Store data in DDB-ES DynamoDB table.
+                const executeDdbEs = () => {
+                    return batchWriteAll({
+                        table: this.ddbEsEntryEntity.table,
+                        items: ddbEsItems
+                    });
+                };
+
+                logger.trace("Storing records in DDB-ES DynamoDB table...");
                 await executeWithRetry(executeDdbEs, {
                     onFailedAttempt: error => {
                         logger.error(
-                            `"batchWriteAll ddb + es" attempt #${error.attemptNumber} failed: ${error.message}`
+                            `"batchWriteAll ddb-es" attempt #${error.attemptNumber} failed: ${error.message}`
                         );
                     }
                 });
                 logger.trace("...stored.");
 
-                // Update checkpoint after every batch
+                // Update checkpoint after every batch.
                 migrationStatus.lastEvaluatedKey = result.lastEvaluatedKey?.PK
                     ? (result.lastEvaluatedKey as unknown as LastEvaluatedKey)
                     : true;
@@ -367,7 +445,7 @@ export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
     }
 }
 
-makeInjectable(CmsEntriesInitNewMetaFields_5_39_2_001, [
+makeInjectable(CmsEntriesInitNewMetaFields_5_39_6_001, [
     inject(PrimaryDynamoTableSymbol),
     inject(ElasticsearchDynamoTableSymbol),
     inject(ElasticsearchClientSymbol)

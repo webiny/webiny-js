@@ -75,18 +75,22 @@ export const pickEntryMetaFields = (
     return pickedEntryMetaFields;
 };
 
-export const isNullableEntryMetaField = (fieldName: EntryMetaFieldName) => {
-    // Only modifiedX and publishedX fields are nullable.
+export const isNullableEntryMetaField = (fieldName: string) => {
+    // Only `modifiedX` and `publishedX` fields are nullable.
     const lcFieldName = fieldName.toLowerCase();
     return lcFieldName.includes("modified") || lcFieldName.includes("published");
 };
 
-export const isDateTimeEntryMetaField = (fieldName: EntryMetaFieldName) => {
+export const isNonNullableEntryMetaField = (fieldName: string) => {
+    return !isNullableEntryMetaField(fieldName);
+};
+
+export const isDateTimeEntryMetaField = (fieldName: string) => {
     // Only field ending with "On" are date/time fields.
     return fieldName.endsWith("On");
 };
 
-export const isIdentityEntryMetaField = (fieldName: EntryMetaFieldName) => {
+export const isIdentityEntryMetaField = (fieldName: string) => {
     // Only field ending with "On" are date/time fields.
     return fieldName.endsWith("By");
 };
