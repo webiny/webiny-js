@@ -33,7 +33,8 @@ export class TransformEntryMoveToBin {
             context: this.context,
             model,
             data: originalEntry.values,
-            entry: originalEntry
+            entry: originalEntry,
+            skipValidators: ["required"]
         });
 
         const currentDateTime = new Date().toISOString();
