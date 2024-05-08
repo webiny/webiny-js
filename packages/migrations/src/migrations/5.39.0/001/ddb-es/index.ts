@@ -15,8 +15,7 @@ import {
     disableElasticsearchIndexing,
     esGetIndexName,
     fetchOriginalElasticsearchSettings,
-    restoreOriginalElasticsearchSettings,
-    scan
+    restoreOriginalElasticsearchSettings
 } from "~/utils";
 import { inject, makeInjectable } from "@webiny/ioc";
 import { Client } from "@elastic/elasticsearch";
@@ -30,6 +29,7 @@ import { fixTypeFieldValue } from "../utils/fixTypeFieldValue";
 import { isMigratedEntry } from "../utils/isMigratedEntry";
 import { getOldestRevisionCreatedOn } from "../utils/getOldestRevisionCreatedOn";
 import { getFirstLastPublishedOnBy } from "~/migrations/5.39.0/001/utils/getFirstLastPublishedOn";
+import { ScanDbItem } from "@webiny/db-dynamodb";
 
 interface LastEvaluatedKey {
     PK: string;
@@ -80,38 +80,46 @@ export class CmsEntriesInitNewMetaFields_5_39_0_001 implements DataMigration {
     }
 
     async shouldExecute({ logger }: DataMigrationContext): Promise<boolean> {
-        const result = await scan<DynamoDbElasticsearchRecord>({
-            entity: this.ddbEsEntryEntity,
-            options: {
-                filters: [
-                    {
-                        attr: "_et",
-                        eq: "CmsEntriesElasticsearch"
+        let shouldExecute = false;
+
+        await ddbScanWithCallback<ScanDbItem<CmsEntry>>(
+            {
+                entity: this.ddbEntryEntity,
+                options: {
+                    filters: [
+                        {
+                            attr: "_et",
+                            eq: "CmsEntries"
+                        }
+                    ],
+                    limit: 100
+                }
+            },
+            async result => {
+                if (result.error) {
+                    logger.error(result.error);
+                    throw new Error(result.error);
+                }
+
+                for (const item of result.items) {
+                    if (!isMigratedEntry(item)) {
+                        shouldExecute = true;
+
+                        // Stop further scanning.
+                        return false;
                     }
-                ],
-                limit: 100
-            }
-        });
+                }
 
-        if (result.items.length === 0) {
-            logger.info(`No CMS entries found in the system; skipping migration.`);
-            return false;
-        } else if (result.error) {
-            logger.error(result.error);
-            throw new Error(result.error);
-        }
-
-        for (const item of result.items) {
-            const data = await getDecompressedData<CmsEntry>(item.data);
-            if (!data) {
-                continue;
-            }
-
-            if (!isMigratedEntry(data)) {
+                // Continue further scanning.
                 return true;
             }
+        );
+
+        if (shouldExecute) {
+            return true;
         }
-        logger.info(`CMS entries already upgraded. skipping...`);
+
+        logger.info(`CMS entries already upgraded. Skipping...`);
         return false;
     }
 
