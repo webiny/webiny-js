@@ -46,7 +46,8 @@ export interface FileProps {
     };
     description?: string;
 }
-const File = (props: FileProps) => {
+
+export const File = (props: FileProps) => {
     const { url, onRemove, onEdit, placeholder, showFileManager, description } = props;
 
     const styles = props.styles || defaultStyles;
@@ -104,5 +105,3 @@ const File = (props: FileProps) => {
         </>
     );
 };
-
-export default File;

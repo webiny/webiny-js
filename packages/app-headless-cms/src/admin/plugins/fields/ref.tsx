@@ -4,7 +4,6 @@ import { LIST_CONTENT_MODELS, ListCmsModelsQueryResponse } from "../../viewsGrap
 import { validation, ValidationError } from "@webiny/validation";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
-import { CircularProgress } from "@webiny/ui/Progress";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CmsModelFieldTypePlugin, CmsModel } from "~/types";
 import { ReactComponent as RefIcon } from "./icons/round-link-24px.svg";
@@ -50,7 +49,6 @@ const RefFieldSettings = () => {
 
     return (
         <Grid>
-            {loading && <CircularProgress />}
             <Cell span={12}>
                 <Bind name={"settings.models"} validators={atLeastOneItem}>
                     {(bind: BindComponentRenderProp<CmsModel[]>) => {
@@ -66,10 +64,10 @@ const RefFieldSettings = () => {
                                 onChange={(values: CmsModel[]) => {
                                     bind.onChange(values.map(value => ({ modelId: value.id })));
                                 }}
-                                label={t`Content Models`}
+                                label={loading ? t`Loading models...` : t`Content models`}
                                 description={t`Cannot be changed later`}
                                 options={options}
-                                disabled={isFieldLocked}
+                                disabled={isFieldLocked || loading}
                             />
                         );
                     }}

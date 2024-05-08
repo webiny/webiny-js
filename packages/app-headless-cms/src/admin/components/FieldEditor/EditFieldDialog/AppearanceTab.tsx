@@ -1,23 +1,20 @@
-import React, { useEffect } from "react";
-import { plugins } from "@webiny/plugins";
+import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { CmsEditorFieldRendererPlugin, CmsModelField } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
 import { css } from "emotion";
 import { validation } from "@webiny/validation";
-import { useModel, useModelField } from "~/admin/hooks";
-import { useForm, Bind } from "@webiny/form";
-import { Alert } from "@webiny/ui/Alert";
+import { useBind } from "@webiny/form";
 import { allowCmsLegacyRichTextInput } from "~/utils/allowCmsLegacyRichTextInput";
 import { Typography } from "@webiny/ui/Typography";
+import { RendererOptions } from "./AppearanceTab/RendererOptions";
+import { LegacyRichTextInput } from "./AppearanceTab/LegacyRichTextInput";
+import { useRendererPlugins } from "./AppearanceTab/useRendererPlugins";
+import { useSelectFirstAvailableRenderer } from "./AppearanceTab/useSelectFirstAvailableRenderer";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-editor/tabs/appearance-tab");
 
 const style = {
-    topLabel: css({
-        marginBottom: 25
-    }),
     noComponentsMessage: css({
         textAlign: "center",
         padding: 25
@@ -29,33 +26,20 @@ const style = {
 };
 
 const AppearanceTab = () => {
-    const form = useForm<CmsModelField>();
-    const { model } = useModel();
-    const { field, fieldPlugin } = useModelField();
+    const renderers = useRendererPlugins();
 
-    const renderPlugins = plugins
-        .byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer")
-        .filter(item => item.renderer.canUse({ field, fieldPlugin, model }));
+    const rendererName = useBind({
+        name: "renderer.name",
+        validate: validation.create("required")
+    });
 
-    useEffect((): void => {
-        // If the currently selected render plugin is no longer available, select the first available one.
-        const currentlySelectedRenderAvailable = renderPlugins.find(
-            item => item.renderer.rendererName === field.renderer.name
-        );
+    useSelectFirstAvailableRenderer(rendererName);
 
-        if (currentlySelectedRenderAvailable) {
-            return;
-        }
+    const selectedPlugin = rendererName.value
+        ? renderers.find(pl => pl.renderer.rendererName === rendererName.value)
+        : undefined;
 
-        if (renderPlugins[0]) {
-            form.setValue("renderer.name", renderPlugins[0].renderer.rendererName);
-            return;
-        }
-
-        console.info(`No renderers for field ${field.fieldId} found.`, field);
-    }, [field.id, field.multipleValues, field.predefinedValues?.enabled]);
-
-    if (renderPlugins.length === 0) {
+    if (renderers.length === 0) {
         return (
             <Grid>
                 <Cell
@@ -67,35 +51,18 @@ const AppearanceTab = () => {
     }
 
     return (
-        <Grid>
-            {allowCmsLegacyRichTextInput && (
-                <Cell span={6}>
-                    <Alert title={"You have legacy editor enabled"} type={"info"}>
-                        Your project has been upgraded from an older Webiny version, with EditorJS
-                        as the default rich text editor. We recommend switching to the new Lexical
-                        rich text editor, where possible.
-                        <br />
-                        <br />
-                        Read more about this in our{" "}
-                        <a
-                            href={"https://webiny.link/hcms-legacy-rte-support"}
-                            rel="noreferrer"
-                            target={"_blank"}
-                        >
-                            upgrade guide
-                        </a>
-                        .
-                    </Alert>
-                </Cell>
-            )}
-            <Cell span={12}>
-                <div
-                    className={style.topLabel}
-                >{t`Choose a component that will render the field:`}</div>
-                <Bind name={"renderer.name"} validate={validation.create("required")}>
-                    <RadioGroup>
+        <>
+            <Grid>
+                {allowCmsLegacyRichTextInput && (
+                    <Cell span={6}>
+                        <LegacyRichTextInput />
+                    </Cell>
+                )}
+                <Cell span={12}>Choose a component that will render the field:</Cell>
+                <Cell span={12}>
+                    <RadioGroup {...rendererName}>
                         {({ onChange, getValue }) =>
-                            renderPlugins.map(item => {
+                            renderers.map(item => {
                                 const setValue = onChange(item.renderer.rendererName);
                                 return (
                                     <div key={item.name} className={style.radioContainer}>
@@ -117,9 +84,10 @@ const AppearanceTab = () => {
                             })
                         }
                     </RadioGroup>
-                </Bind>
-            </Cell>
-        </Grid>
+                </Cell>
+            </Grid>
+            <RendererOptions plugin={selectedPlugin} />
+        </>
     );
 };
 

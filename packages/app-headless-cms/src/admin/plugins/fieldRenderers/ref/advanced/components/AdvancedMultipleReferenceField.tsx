@@ -331,6 +331,7 @@ export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceF
                     {linkEntryDialogModel && (
                         <ReferencesDialog
                             {...props}
+                            field={field}
                             multiple={true}
                             values={values}
                             contentModel={linkEntryDialogModel}
