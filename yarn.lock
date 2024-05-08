@@ -16486,6 +16486,7 @@ __metadata:
     express: 4.18.2
     fast-glob: ^3.2.7
     humanize-duration: ^3.31.0
+    is-ci: ^3.0.0
     listr: ^0.14.3
     localtunnel: 2.0.2
     lodash: ^4.17.21
