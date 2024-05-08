@@ -262,7 +262,7 @@ Fix the width of input components when inside grids
           .mdc-tab {
             @include tab.text-label-color($mdc-theme-on-secondary);
             @include tab.icon-color($mdc-theme-on-secondary);
-            @include tab.fixed-width(100px);
+            @include tab.fixed-width(auto);
             justify-content: flex-start;
             font-weight: 600;
           }
