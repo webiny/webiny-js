@@ -261,7 +261,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventRule: apwScheduler.eventRule.output.name,
                 apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
-                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
                 migrationLambdaArn: migration.function.output.arn,
                 graphqlLambdaName: graphql.functions.graphql.output.name,
                 backgroundTaskLambdaArn: backgroundTask.backgroundTask.output.arn,
@@ -269,6 +268,13 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 websocketApiId: websocket.websocketApi.output.id,
                 websocketApiUrl: websocket.websocketApiUrl
             });
+
+            // Only add `dynamoDbElasticsearchTable` output if using search engine (ES/OS).
+            if (searchEngineParams) {
+                app.addOutputs({
+                    dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
+                });
+            }
 
             app.addHandler(() => {
                 addDomainsUrlsOutputs({
