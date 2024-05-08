@@ -20,7 +20,7 @@ export const UseSaveEntryDecorator = ContentEntryForm.useContentEntryForm.create
             const saveEntry: SaveEntry = useCallback(
                 async (...params) => {
                     if (!entry.id) {
-                        return hook.saveEntry();
+                        return hook.saveEntry(...params);
                     }
 
                     const result = await fetchLockedEntryLockRecord({

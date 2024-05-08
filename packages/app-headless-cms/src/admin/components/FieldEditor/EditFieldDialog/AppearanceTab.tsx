@@ -9,8 +9,7 @@ import { allowCmsLegacyRichTextInput } from "~/utils/allowCmsLegacyRichTextInput
 import { Typography } from "@webiny/ui/Typography";
 import { RendererOptions } from "./AppearanceTab/RendererOptions";
 import { LegacyRichTextInput } from "./AppearanceTab/LegacyRichTextInput";
-import { useRendererPlugins } from "./AppearanceTab/useRendererPlugins";
-import { useSelectFirstAvailableRenderer } from "./AppearanceTab/useSelectFirstAvailableRenderer";
+import { useRendererPlugins } from "./useRendererPlugins";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-editor/tabs/appearance-tab");
 
@@ -32,8 +31,6 @@ const AppearanceTab = () => {
         name: "renderer.name",
         validate: validation.create("required")
     });
-
-    useSelectFirstAvailableRenderer(rendererName);
 
     const selectedPlugin = rendererName.value
         ? renderers.find(pl => pl.renderer.rendererName === rendererName.value)

@@ -1,14 +1,16 @@
 import React from "react";
 import dotProp from "dot-prop-immutable";
-import { CmsModelField, CmsModelFieldRendererPlugin } from "@webiny/app-headless-cms/types";
-import { GetBindCallable } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/useBind";
+import {
+    CmsModelFieldRendererPlugin,
+    CmsModelFieldRendererProps
+} from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
-import { Cell, GridInner } from "@webiny/ui/Grid";
 import { FileManager } from "@webiny/app-admin/components";
 import styled from "@emotion/styled";
 import { imageWrapperStyles } from "./utils";
 import { File } from "./File";
 import { EditFileUsingUrl } from "~/components/EditFileUsingUrl";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
@@ -25,31 +27,31 @@ const FileUploadWrapper = styled("div")({
 
 const InnerImageFieldWrapper = styled("div")({
     background: "repeating-conic-gradient(#efefef 0% 25%, transparent 0% 50%) 50%/25px 25px",
-    height: "100%",
-    width: "100%",
     boxSizing: "border-box",
-    backgroundColor: "#fff",
     border: "1px solid var(--mdc-theme-background)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     flexBasis: "100%",
-    maxHeight: "180px",
     padding: "30px",
-    ">div": {
-        maxHeight: "180px",
-        img: {
-            padding: "15px"
-        }
-    }
+    height: "220px"
 });
 
-interface FieldRendererProps {
-    getBind: GetBindCallable;
-    Label: React.ComponentType<React.PropsWithChildren>;
-    field: CmsModelField;
-}
-const FieldRenderer = ({ getBind, Label, field }: FieldRendererProps) => {
+const Gallery = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 10px;
+    > div {
+        flex: 1 1 21%;
+        max-width: 25%;
+        > img {
+            padding: 15px;
+        }
+    }
+`;
+
+const FieldRenderer = ({ getBind, Label, field }: CmsModelFieldRendererProps) => {
     const Bind = getBind();
 
     const imagesOnly = field.settings && field.settings.imagesOnly;
@@ -59,7 +61,7 @@ const FieldRenderer = ({ getBind, Label, field }: FieldRendererProps) => {
             {({ editFile }) => (
                 <Bind>
                     {bind => {
-                        const { onChange } = bind;
+                        const { onChange, validation } = bind;
 
                         // We need to make sure the value is an array, since this is a multi-value component.
                         const value: string[] = (
@@ -87,38 +89,28 @@ const FieldRenderer = ({ getBind, Label, field }: FieldRendererProps) => {
                                             });
                                         };
                                         return (
-                                            <GridInner>
-                                                <Cell span={12}>
-                                                    <Label>{field.label}</Label>
-                                                </Cell>
+                                            <>
+                                                <Label>{field.label}</Label>
 
-                                                <>
+                                                <Gallery>
                                                     {value.map((url: string, index: number) => (
-                                                        <Cell span={3} key={url}>
-                                                            <InnerImageFieldWrapper>
-                                                                <File
-                                                                    url={url}
-                                                                    showFileManager={() =>
-                                                                        selectFiles(index)
-                                                                    }
-                                                                    onEdit={() => editFile(url)}
-                                                                    onRemove={() =>
-                                                                        onChange(
-                                                                            dotProp.delete(
-                                                                                value,
-                                                                                index
-                                                                            )
-                                                                        )
-                                                                    }
-                                                                    placeholder={t`Select a file"`}
-                                                                    data-testid={`fr.input.file.${field.label}.${index}`}
-                                                                />
-                                                            </InnerImageFieldWrapper>
-                                                        </Cell>
+                                                        <InnerImageFieldWrapper key={url}>
+                                                            <File
+                                                                url={url}
+                                                                showFileManager={() =>
+                                                                    selectFiles(index)
+                                                                }
+                                                                onEdit={() => editFile(url)}
+                                                                onRemove={() =>
+                                                                    onChange(
+                                                                        dotProp.delete(value, index)
+                                                                    )
+                                                                }
+                                                                placeholder={t`Select a file"`}
+                                                                data-testid={`fr.input.file.${field.label}.${index}`}
+                                                            />
+                                                        </InnerImageFieldWrapper>
                                                     ))}
-                                                </>
-
-                                                <Cell span={3}>
                                                     <InnerImageFieldWrapper>
                                                         <File
                                                             url={""}
@@ -131,8 +123,19 @@ const FieldRenderer = ({ getBind, Label, field }: FieldRendererProps) => {
                                                             data-testid={`fr.input.file.${field.label}`}
                                                         />
                                                     </InnerImageFieldWrapper>
-                                                </Cell>
-                                            </GridInner>
+                                                </Gallery>
+
+                                                {validation.isValid === false && (
+                                                    <FormElementMessage error>
+                                                        {validation.message || "Invalid value."}
+                                                    </FormElementMessage>
+                                                )}
+                                                {validation.isValid !== false && field.helpText && (
+                                                    <FormElementMessage>
+                                                        {field.helpText}
+                                                    </FormElementMessage>
+                                                )}
+                                            </>
                                         );
                                     }}
                                 />
@@ -155,8 +158,8 @@ export const multipleFiles: CmsModelFieldRendererPlugin = {
         canUse({ field }) {
             return field.type === "file" && !!field.multipleValues;
         },
-        render({ field, getBind, Label }) {
-            return <FieldRenderer field={field} getBind={getBind} Label={Label} />;
+        render(props) {
+            return <FieldRenderer {...props} />;
         }
     }
 };
