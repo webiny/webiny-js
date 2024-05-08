@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@apollo/react-components": "^3.1.5",
-    "@types/react": "18.3.1",
+    "@types/react": "18.2.79",
     "@webiny/app": "^WEBINY_VERSION",
     "@webiny/plugins": "^WEBINY_VERSION",
     "@webiny/react-router": "^WEBINY_VERSION",
@@ -17,8 +17,8 @@
     "core-js": "^3.0.1",
     "cross-fetch": "^3.0.4",
     "graphql-tag": "^2.10.1",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "regenerator-runtime": "^0.13.5"
   },
   "devDependencies": {
