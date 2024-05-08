@@ -62,13 +62,16 @@ export const pickEntryMetaFields = (
 ) => {
     const pickedEntryMetaFields: Partial<RecordWithEntryMetaFields> = {};
     for (const entryMetaFieldName of ENTRY_META_FIELDS) {
-        if (entryMetaFieldName in object) {
-            const mustPick = !filter || filter(entryMetaFieldName);
-            if (mustPick) {
-                Object.assign(pickedEntryMetaFields, {
-                    [entryMetaFieldName]: object[entryMetaFieldName]
-                });
-            }
+        const fieldExists = entryMetaFieldName in object;
+        if (!fieldExists) {
+            object[entryMetaFieldName] = undefined;
+        }
+
+        const mustPick = !filter || filter(entryMetaFieldName);
+        if (mustPick) {
+            Object.assign(pickedEntryMetaFields, {
+                [entryMetaFieldName]: object[entryMetaFieldName]
+            });
         }
     }
 
