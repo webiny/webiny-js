@@ -8,6 +8,7 @@ export const webinySelect = css`
     background-color: transparent;
     border-color: transparent;
     color: var(--webiny-theme-color-primary);
+    min-width: 200px;
 
     .rmwc-select__native-control {
         opacity: 0;
@@ -26,24 +27,8 @@ export const webinySelect = css`
         &.mdc-select,
         .mdc-select__anchor {
             height: 40px;
-            .mdc-select__native-control {
-                paddingtop: 0;
-            }
-            .mdc-select__dropdown-icon {
-                bottom: 8px;
-            }
             .mdc-select__selected-text {
-                padding-top: 6px !important;
-                padding-left: 10px;
                 font-size: 0.95rem;
-                height: 40px;
-            }
-
-            &.mdc-select--box {
-                .mdc-select__native-control {
-                    height: 40px;
-                    paddingtop: 5px;
-                }
             }
         }
     }
@@ -53,22 +38,10 @@ export const webinySelect = css`
         .mdc-select__anchor {
             height: 30px;
             .mdc-select__native-control {
-                paddingtop: 0;
-            }
-            .mdc-select__dropdown-icon {
-                bottom: 3px;
+                padding-top: 0;
             }
             .mdc-select__selected-text {
-                padding-top: 1px !important;
-                padding-left: 10px;
                 font-size: 0.9rem;
-                height: 30px;
-            }
-            &.mdc-select--box {
-                .mdc-select__native-control {
-                    height: 30px;
-                    paddingtop: 5px;
-                }
             }
         }
     }
@@ -81,12 +54,12 @@ export const noLabel = css`
     &.mdc-select {
         height: 35px;
         .mdc-select__native-control {
-            paddingTop: 0;
+            padding-top: 0;
         }
     &.mdc-select--box {
         .mdc-select__native-control {
             height: 35px;
-            paddingTop: 5px;
+            padding-top: 5px;
         }
     }
 `;

@@ -3,7 +3,7 @@ import { Search } from "@webiny/app-aco";
 import { ButtonFilters } from "./ButtonFilters";
 import { ButtonsCreate } from "./ButtonsCreate";
 import { Title } from "./Title";
-import { Container, WrapperActions } from "./styled";
+import { ActionsColumn, Container, TitleColumn, WrapperActions } from "./styled";
 
 interface HeaderProps {
     title?: string;
@@ -28,19 +28,21 @@ export const Header = (props: HeaderProps) => {
 
     return (
         <Container>
-            <div>
+            <TitleColumn>
                 <Title title={title} />
-            </div>
-            <WrapperActions>
-                <Search value={searchValue} onChange={onSearchChange} />
-                <ButtonFilters />
-                <ButtonsCreate
-                    canCreateFolder={canCreateFolder}
-                    canCreateContent={canCreateContent}
-                    onCreateFolder={onCreateFolder}
-                    onCreateEntry={onCreateEntry}
-                />
-            </WrapperActions>
+            </TitleColumn>
+            <ActionsColumn>
+                <WrapperActions>
+                    <Search value={searchValue} onChange={onSearchChange} />
+                    <ButtonFilters />
+                    <ButtonsCreate
+                        canCreateFolder={canCreateFolder}
+                        canCreateContent={canCreateContent}
+                        onCreateFolder={onCreateFolder}
+                        onCreateEntry={onCreateEntry}
+                    />
+                </WrapperActions>
+            </ActionsColumn>
         </Container>
     );
 };
