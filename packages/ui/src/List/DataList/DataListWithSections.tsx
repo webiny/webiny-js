@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "@emotion/styled";
 import classNames from "classnames";
 import Loader from "./Loader";
@@ -368,8 +368,44 @@ const Search = (props: DataListWithSectionsProps) => {
     return <Cell span={7}>{React.cloneElement(props.search, props)}</Cell>;
 };
 
-export const DataListWithSections = (props: DataListWithSectionsProps) => {
-    let render: React.ReactNode = null;
+const dataListWithSectionsDefaultProps = {
+    children: null,
+    title: null,
+    data: null,
+    meta: null,
+    loading: false,
+    refresh: () => {
+        return void 0;
+    },
+    setPage: null,
+    setPerPage: null,
+    perPageOptions: [10, 25, 50],
+    filters: null,
+    sorters: null,
+    setSorters: null,
+    actions: null,
+    multiSelectAll: noop,
+    isAllMultiSelected: () => false,
+    isNoneMultiSelected: () => false,
+    loader: <Loader />,
+    noData: <NoData />,
+    showOptions: {
+        refresh: true,
+        pagination: true,
+        sorters: true,
+        filters: true
+    }
+};
+
+export const DataListWithSections = (propsInput: DataListWithSectionsProps) => {
+    let render: React.ReactNode | null;
+
+    const props = useMemo(() => {
+        return {
+            ...dataListWithSectionsDefaultProps,
+            ...propsInput
+        };
+    }, [propsInput]);
 
     if (props.loading) {
         render = props.loader;
@@ -426,35 +462,6 @@ export const DataListWithSections = (props: DataListWithSectionsProps) => {
             </ListContainer>
         </DataListModalOverlayProvider>
     );
-};
-
-DataListWithSections.defaultProps = {
-    children: null,
-    title: null,
-    data: null,
-    meta: null,
-    loading: false,
-    refresh: () => {
-        return void 0;
-    },
-    setPage: null,
-    setPerPage: null,
-    perPageOptions: [10, 25, 50],
-    filters: null,
-    sorters: null,
-    setSorters: null,
-    actions: null,
-    multiSelectAll: noop,
-    isAllMultiSelected: () => false,
-    isNoneMultiSelected: () => false,
-    loader: <Loader />,
-    noData: <NoData />,
-    showOptions: {
-        refresh: true,
-        pagination: true,
-        sorters: true,
-        filters: true
-    }
 };
 
 interface ScrollListWithSectionsProps extends ListProps {

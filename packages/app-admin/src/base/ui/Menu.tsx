@@ -174,5 +174,3 @@ export const AddMenu = makeDecoratable("AddMenu", ({ children, ...props }: AddMe
 
     return <MenuContext.Provider value={context}>{children}</MenuContext.Provider>;
 });
-
-AddMenu.defaultProps = { tags: [] };
