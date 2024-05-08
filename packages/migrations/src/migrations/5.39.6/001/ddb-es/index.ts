@@ -189,7 +189,7 @@ export class CmsEntriesInitNewMetaFields_5_39_6_001 implements DataMigration {
 
                 const fallbackDateTime = new Date().toISOString();
 
-                // 1. Update records in primary DynamoDB table. Also do preparations for
+                // Update records in primary DynamoDB table. Also do preparations for
                 // subsequent updates on DDB-ES DynamoDB table, and in Elasticsearch.
                 for (const item of result.items) {
                     const index = esGetIndexName({
