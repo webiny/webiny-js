@@ -17,7 +17,7 @@ const GeneralTab = () => {
     const { data: contentModel } = useModelEditor();
     const { getField } = useModelFieldEditor();
 
-    // Had problems with auto-focusing the "label" field. A couple of comments on this.
+    // Had problems with autofocusing the "label" field. A couple of comments on this.
     // 1. It's probably caused by the Tabs component which wraps this component.
     // 2. It seems that the "autoFocus" prop on the Input doesn't work. I can't see it attached in the actual DOM.
     // 3. This works, but it's not 100%. Visually, the cursor is frozen, and that's probably caused by a bug / design
