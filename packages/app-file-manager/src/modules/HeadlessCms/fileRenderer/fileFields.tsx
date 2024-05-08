@@ -38,17 +38,10 @@ const InnerImageFieldWrapper = styled("div")({
 });
 
 const Gallery = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 10px;
-    > div {
-        flex: 1 1 21%;
-        max-width: 25%;
-        > img {
-            padding: 15px;
-        }
-    }
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-rows: auto;
+    gap: 15px;
 `;
 
 const FieldRenderer = ({ getBind, Label, field }: CmsModelFieldRendererProps) => {

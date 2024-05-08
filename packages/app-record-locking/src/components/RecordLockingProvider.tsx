@@ -4,9 +4,9 @@ import { createRecordLocking } from "~/domain/RecordLocking";
 import {
     IFetchLockedEntryLockRecordParams,
     IFetchLockRecordParams,
+    IPossiblyRecordLockingRecord,
     IRecordLockingContext,
     IRecordLockingError,
-    IPossiblyRecordLockingRecord,
     IUnlockEntryParams,
     IUpdateEntryLockParams
 } from "~/types";
@@ -19,14 +19,16 @@ export interface IRecordLockingProviderProps {
 export const RecordLockingContext = React.createContext({} as unknown as IRecordLockingContext);
 
 const isSameArray = (
-    existingRecords: Pick<IPossiblyRecordLockingRecord, "id">[],
-    newRecords: Pick<IPossiblyRecordLockingRecord, "id">[]
+    existingRecords: Pick<IPossiblyRecordLockingRecord, "id" | "savedOn">[],
+    newRecords: Pick<IPossiblyRecordLockingRecord, "id" | "savedOn">[]
 ): boolean => {
     if (existingRecords.length !== newRecords.length) {
         return false;
     }
     return existingRecords.every(record => {
-        return newRecords.some(newRecord => newRecord.id === record.id);
+        return newRecords.some(
+            newRecord => newRecord.id === record.id && newRecord.savedOn === record.savedOn
+        );
     });
 };
 

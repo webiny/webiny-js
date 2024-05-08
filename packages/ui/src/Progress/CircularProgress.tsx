@@ -39,7 +39,14 @@ const Label = styled("div")({
 });
 
 const CircularProgress = (props: CircularProgressProps) => {
-    const { label, size, spinnerWidth, spinnerColor, visible, style } = props;
+    const {
+        label,
+        size = 45,
+        spinnerWidth = 4,
+        spinnerColor = "var(--mdc-theme-primary)",
+        visible = true,
+        style
+    } = props;
     /**
      * We can safely cast because we have default props
      */
@@ -60,13 +67,6 @@ const CircularProgress = (props: CircularProgressProps) => {
             </div>
         </SpinnerWrapper>
     );
-};
-
-CircularProgress.defaultProps = {
-    size: 45,
-    spinnerColor: "var(--mdc-theme-primary)",
-    spinnerWidth: 4,
-    visible: true
 };
 
 export default CircularProgress;
