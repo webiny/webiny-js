@@ -3,46 +3,13 @@ import { ContextPlugin } from "@webiny/handler-aws";
 import { EntriesTask, HcmsTasksContext } from "~/types";
 import { Response } from "@webiny/handler-graphql";
 
+export const EntriesTaskActionName = Object.values(EntriesTask).join("\n");
+
 export const createGraphQL = () => {
     return new ContextPlugin<HcmsTasksContext>(async context => {
         if (!(await isHeadlessCmsReady(context))) {
             return;
         }
-
-        const trashBinPlugin = new CmsGraphQLSchemaPlugin({
-            typeDefs: /* GraphQL */ `
-                type EmptyTrashBinResponseData {
-                    id: String
-                }
-
-                type EmptyTrashBinResponse {
-                    data: EmptyTrashBinResponseData
-                    error: CmsError
-                }
-
-                extend type Mutation {
-                    emptyTrashBin(modelId: String!): EmptyTrashBinResponse
-                }
-            `,
-            resolvers: {
-                Mutation: {
-                    emptyTrashBin: async (_, args) => {
-                        const response = await context.tasks.trigger({
-                            definition: EntriesTask.DeleteEntriesByModel,
-                            input: {
-                                modelId: args.modelId
-                            }
-                        });
-
-                        return new Response({
-                            id: response.id
-                        });
-                    }
-                }
-            }
-        });
-
-        trashBinPlugin.name = "headless-cms.graphql.schema.trashBin";
 
         const models = await context.security.withoutAuthorization(async () => {
             return (await context.cms.listModels()).filter(model => !model.isPrivate);
@@ -56,6 +23,10 @@ export const createGraphQL = () => {
                     type ${model.singularApiName}BulkActionResponseData {
                         id: String
                     }
+                    
+                    enum ${model.singularApiName}BulkActionActionName {
+                        ${EntriesTaskActionName}
+                    }
     
                     type ${model.singularApiName}BulkActionResponse {
                         data: ${model.singularApiName}BulkActionResponseData
@@ -63,15 +34,15 @@ export const createGraphQL = () => {
                     }
                 
                     extend type Mutation {
-                        bulk${model.singularApiName}Action(
-                            action: String!
+                        bulkAction${model.singularApiName}(
+                            action: ${model.singularApiName}BulkActionActionName!
                             where: ${model.singularApiName}ListWhereInput
                         ): ${model.singularApiName}BulkActionResponse
                     }
                 `,
                 resolvers: {
                     Mutation: {
-                        [`bulk${model.singularApiName}Action`]: async (_, args) => {
+                        [`bulkAction${model.singularApiName}`]: async (_, args) => {
                             const identity = context.security.getIdentity();
                             const response = await context.tasks.trigger({
                                 definition: args.action,
@@ -94,6 +65,6 @@ export const createGraphQL = () => {
             bulkActionPlugins.push(plugin);
         });
 
-        context.plugins.register([trashBinPlugin, ...bulkActionPlugins]);
+        context.plugins.register(bulkActionPlugins);
     });
 };
