@@ -32,10 +32,7 @@ export class CreateTasks {
 
             while (hasMoreEntries) {
                 const listEntriesParams: CmsEntryListParams = {
-                    where: {
-                        latest: true,
-                        ...input.where
-                    },
+                    where: input.where,
                     after: input.after,
                     limit: BATCH_SIZE
                 };
