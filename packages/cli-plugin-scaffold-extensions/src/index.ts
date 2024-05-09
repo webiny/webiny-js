@@ -213,7 +213,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     setTimeout(resolve, 1000);
                 });
 
-                // Once everything is done, run `yarn` so the new packages are automatically installed.
+                // Once everything is done, run `yarn` so the new packages are installed.
                 await execa("yarn");
 
                 ora.succeed(`New extension created in ${log.success.hl(location)}.`);
