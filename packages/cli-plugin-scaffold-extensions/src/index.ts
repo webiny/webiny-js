@@ -100,7 +100,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
                         const isValidName = validateNpmPackageName(pkgName);
                         if (!isValidName) {
-                            return `Package name must look something like "my-custom-extension".`;
+                            return `Package name must be a valid NPM package name, for example "my-custom-extension".`;
                         }
 
                         return true;
