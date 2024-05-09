@@ -185,7 +185,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                             packageJson.dependencies[packageName] = `^${stdout}`;
                         } catch (e) {
                             throw new Error(
-                                `Could not find ${log.red.hl(packageName)} NPM package. Please double-check the package name and try again.`,
+                                `Could not find ${log.red.hl(
+                                    packageName
+                                )} NPM package. Please double-check the package name and try again.`,
                                 { cause: e }
                             );
                         }
@@ -205,6 +207,11 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 if (typeof generators[type] === "function") {
                     await generators[type]({ input: { name, packageName } });
                 }
+
+                // Sleep for 1 second before proceeding with yarn installation.
+                await new Promise(resolve => {
+                    setTimeout(resolve, 1000);
+                });
 
                 // Once everything is done, run `yarn` so the new packages are automatically installed.
                 await execa("yarn");
