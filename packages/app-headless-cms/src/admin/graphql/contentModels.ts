@@ -26,6 +26,7 @@ export const FIELDS_FIELDS = `
     multipleValues
     renderer {
         name
+        settings
     }
     validation {
         name

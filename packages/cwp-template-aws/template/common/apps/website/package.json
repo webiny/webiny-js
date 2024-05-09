@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.6",
-    "@types/react": "18.2.45",
+    "@types/react": "18.2.79",
     "@webiny/app": "latest",
     "@webiny/app-form-builder": "latest",
     "@webiny/app-page-builder": "latest",

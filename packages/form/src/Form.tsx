@@ -16,6 +16,7 @@ import {
     FormAPI,
     FormProps,
     FormSubmitOptions,
+    FormValidation,
     GenericFormData,
     Validation
 } from "~/types";
@@ -25,7 +26,7 @@ interface State<T extends GenericFormData = GenericFormData> {
     data: T;
     originalData: T;
     wasSubmitted: boolean;
-    validation: Validation;
+    validation: FormValidation;
     options?: FormSubmitOptions;
 }
 
@@ -135,7 +136,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
                             {
                                 isValid: undefined,
                                 message: undefined,
-                                results: false
+                                results: undefined
                             },
                             state
                         );
@@ -170,7 +171,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     const stateRef = useRef<State<T>>({
         data: {} as T,
         originalData: {} as T,
-        validation: [],
+        validation: {},
         wasSubmitted: false
     });
 
@@ -250,7 +251,10 @@ function FormInner<T extends GenericFormData = GenericFormData>(
 
     const onInvalid = () => {
         if (typeof props.onInvalid === "function") {
-            props.onInvalid();
+            const { onInvalid } = props;
+            setTimeout(() => {
+                onInvalid(stateRef.current.validation);
+            });
         }
     };
 
@@ -266,7 +270,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
             event.preventDefault();
         }
 
-        setState(state => ({ ...state, wasSubmitted: true, options }));
+        setState(state => ({ ...state, wasSubmitted: true, validation: {}, options }));
 
         const valid = await validate(options);
 
@@ -367,7 +371,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
 
         return await Promise.resolve(executeValidators(value, validators))
             .then(validationResults => {
-                const isValid = hasValidators ? (value === null ? null : true) : null;
+                const isValid = hasValidators ? (value === null ? undefined : true) : undefined;
 
                 if (isMounted.current) {
                     setState(state => ({
@@ -376,7 +380,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
                             ...state.validation,
                             [name]: {
                                 isValid,
-                                message: null,
+                                message: undefined,
                                 results: validationResults
                             }
                         }
@@ -394,7 +398,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
                         [name]: {
                             isValid: false,
                             message: validationError.getMessage(),
-                            results: false
+                            results: undefined
                         }
                     }
                 }));
@@ -445,10 +449,10 @@ function FormInner<T extends GenericFormData = GenericFormData>(
 
     const getValidationState = (name: string): Validation => {
         return (
-            state.validation[name] || {
-                isValid: null,
-                message: null,
-                results: null
+            stateRef.current.validation[name] || {
+                isValid: undefined,
+                message: undefined,
+                results: undefined
             }
         );
     };

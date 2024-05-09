@@ -5,22 +5,17 @@ import { Dialog, DialogContent, DialogTitle, DialogActions } from "~/admin/compo
 import { Form, FormOnSubmit } from "@webiny/form";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { i18n } from "@webiny/app/i18n";
-import {
-    CmsEditorContentModel,
-    CmsModelField,
-    CmsEditorFieldRendererPlugin,
-    CmsEditorFieldTypePlugin
-} from "~/types";
-import { plugins } from "@webiny/plugins";
+import { CmsEditorContentModel, CmsModelField } from "~/types";
 import GeneralTab from "./EditFieldDialog/GeneralTab";
 import AppearanceTab from "./EditFieldDialog/AppearanceTab";
 import PredefinedValues from "./EditFieldDialog/PredefinedValues";
 import { ValidatorsList } from "./EditFieldDialog/ValidatorsList";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
-import { useModelField, useModelEditor, useModel } from "~/admin/hooks";
+import { useModelField, useModelEditor } from "~/admin/hooks";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider";
 import { ValidationsSection } from "~/admin/components/FieldEditor/EditFieldDialog/ValidationsSection";
 import { getFieldValidators, getListValidators } from "./EditFieldDialog/getValidators";
+import { useRendererPlugins } from "~/admin/components/FieldEditor/EditFieldDialog/useRendererPlugins";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -41,18 +36,11 @@ const FullScreenDialog = styled(Dialog)`
     }
 `;
 
-function setupState(
-    field: CmsModelField,
-    fieldPlugin: CmsEditorFieldTypePlugin,
-    contentModel: CmsEditorContentModel
-): EditFieldState {
+function setupState(field: CmsModelField, contentModel: CmsEditorContentModel): EditFieldState {
     const clonedField = cloneDeep(field);
-    const { model } = useModel();
 
     if (!clonedField.renderer || !clonedField.renderer.name) {
-        const [renderPlugin] = plugins
-            .byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer")
-            .filter(item => item.renderer.canUse({ field, fieldPlugin, model }));
+        const [renderPlugin] = useRendererPlugins();
 
         if (renderPlugin) {
             clonedField.renderer = { name: renderPlugin.renderer.rendererName };
@@ -78,9 +66,7 @@ interface EditFieldDialogProps {
 const EditFieldDialog = (props: EditFieldDialogProps) => {
     const { field, fieldPlugin } = useModelField();
     const { data: contentModel, setData: setContentModelData } = useModelEditor();
-    const [{ shadowField, isTitleField }] = useState<EditFieldState>(
-        setupState(field, fieldPlugin, contentModel)
-    );
+    const [{ shadowField, isTitleField }] = useState(setupState(field, contentModel));
 
     const headerTitle = t`Field Settings - {fieldTypeLabel}`({
         fieldTypeLabel: fieldPlugin.field.label

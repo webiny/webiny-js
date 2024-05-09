@@ -7,7 +7,7 @@
     "@editorjs/list": "^1.6.0",
     "@editorjs/quote": "^2.4.0",
     "@editorjs/underline": "^1.0.0",
-    "@types/react": "18.2.45",
+    "@types/react": "18.2.79",
     "@webiny/app-admin": "latest",
     "@webiny/app-admin-users-cognito": "latest",
     "@webiny/app-form-builder": "latest",

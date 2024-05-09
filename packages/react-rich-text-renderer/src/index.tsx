@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import classNames from "classnames";
 import { OutputBlockData as BaseOutputBlockData } from "@editorjs/editorjs";
 import sanitize from "sanitize-html";
@@ -13,7 +13,7 @@ export function configureSanitization(sanitizeOptions?: sanitize.IOptions) {
     sanitizeGlobalOptions = sanitizeOptions;
 }
 
-interface OutputBlockData extends BaseOutputBlockData {
+export interface OutputBlockData extends BaseOutputBlockData {
     data: {
         className?: string;
         textAlign?: string;
@@ -257,9 +257,13 @@ export const RichTextRenderer = (props: RichTextRendererProps) => {
     // Combine default renderers with custom renderers
     const renderers = Object.assign({}, defaultRenderers, props.renderers);
 
+    const data = useMemo(() => {
+        return props.data || [];
+    }, [props.data]);
+
     return (
         <React.Fragment>
-            {props.data.map((block, index) => {
+            {data.map((block, index) => {
                 const renderer = renderers[block.type];
                 if (!renderer) {
                     return null;

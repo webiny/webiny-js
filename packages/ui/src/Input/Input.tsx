@@ -173,5 +173,3 @@ export const Input = (props: InputProps) => {
         </React.Fragment>
     );
 };
-
-Input.defaultProps = { rawOnChange: false };

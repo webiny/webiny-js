@@ -129,6 +129,7 @@ export const createModelsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
             }
             input CmsFieldRendererInput {
                 name: String
+                settings: JSON
             }
 
             input CmsFieldValidationInput {
@@ -235,6 +236,7 @@ export const createModelsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
 
             type CmsFieldRenderer {
                 name: String
+                settings: JSON
             }
 
             type CmsPredefinedValue {

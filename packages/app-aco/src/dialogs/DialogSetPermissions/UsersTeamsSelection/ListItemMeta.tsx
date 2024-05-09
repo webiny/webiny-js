@@ -40,7 +40,7 @@ const StyledMenuItem = styled(MenuItem)`
     padding-top: 5px;
     padding-bottom: 5px;
 
-    div:first-of-type {
+    div.selected {
         margin-right: 15px;
         width: 20px;
         height: 20px;
@@ -50,7 +50,7 @@ const StyledMenuItem = styled(MenuItem)`
         }
     }
 
-    div:last-of-type {
+    div.info {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -138,8 +138,10 @@ export const ListItemMeta = ({
                                 }, 75);
                             }}
                         >
-                            <div>{currentLevel.id === level.id && <Check />}</div>
-                            <div>
+                            <div className="selected">
+                                {currentLevel.id === level.id && <Check />}
+                            </div>
+                            <div className="info">
                                 <Typography use="body1">{level.label}</Typography>
                                 <Typography use="caption">{level.description}</Typography>
                             </div>

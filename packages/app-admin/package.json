@@ -19,7 +19,7 @@
     "@material-design-icons/svg": "^0.14.3",
     "@svgr/webpack": "^6.1.1",
     "@types/mime": "^2.0.3",
-    "@types/react": "18.2.65",
+    "@types/react": "18.2.79",
     "@webiny/app": "0.0.0",
     "@webiny/app-security": "0.0.0",
     "@webiny/app-theme": "0.0.0",

@@ -39,6 +39,7 @@ import { ColumnsVisibility } from "~/DataTable/ColumnsVisibility";
 
 import "@rmwc/data-table/data-table.css";
 import {
+    ColumnCellWrapper,
     ColumnDirectionIcon,
     ColumnDirectionWrapper,
     ColumnHeaderWrapper,
@@ -261,9 +262,6 @@ const defineColumns = <T,>(
                               />
                           );
                       },
-                      meta: {
-                          hasFormControl: true
-                      },
                       enableSorting: false,
                       enableResizing: false,
                       enableHiding: false,
@@ -276,7 +274,7 @@ const defineColumns = <T,>(
             if (loadingInitial) {
                 return {
                     ...column,
-                    cell: () => <Skeleton />
+                    cell: () => <Skeleton containerClassName="table-skeleton-container" />
                 };
             }
 
@@ -310,7 +308,9 @@ const TableCell = <T,>({ cell, getColumnWidth }: TableCellProps<T>) => {
 
     return (
         <DataTableCell {...cell.column.columnDef.meta} style={{ width, maxWidth: width }}>
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            <ColumnCellWrapper>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </ColumnCellWrapper>
         </DataTableCell>
     );
 };

@@ -13,7 +13,7 @@ import {
 } from "@rmwc/list";
 import { Typography } from "~/Typography";
 import classNames from "classnames";
-import styled from "@emotion/styled";
+import { SelectBoxWrapper, webinyList } from "./styled";
 
 export type ListItemProps = RmwcListItemProps & {
     children: React.ReactNode;
@@ -45,7 +45,11 @@ export type ListProps = RmwcListProps & {
  */
 export class List extends React.Component<ListProps> {
     public override render() {
-        return <RmwcList {...this.props}>{this.props.children}</RmwcList>;
+        return (
+            <RmwcList {...this.props} className={classNames(webinyList, this.props.className)}>
+                {this.props.children}
+            </RmwcList>
+        );
     }
 }
 
@@ -199,16 +203,6 @@ export const ListActions = (props: ListActionsProps) => {
         </span>
     );
 };
-
-const SelectBoxWrapper = styled("div")({
-    overflow: "hidden",
-    width: 25,
-    height: 25,
-    display: "flex",
-    position: "relative",
-    alignItems: "center",
-    justifyContent: "center"
-});
 
 export type ListSelectBoxProps = {
     children: React.ReactNode;
