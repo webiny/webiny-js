@@ -1,4 +1,7 @@
-const getIotEndpoint = () => {
+const getDeploymentId = require("../../utils/getDeploymentId");
+const getStackExport = require("../../utils/getStackExport");
+
+const getIotEndpoint = (params = {}) => {
     const { IoTClient, DescribeEndpointCommand } = require("@webiny/aws-sdk/client-iot");
     const iotClient = new IoTClient();
 
@@ -16,8 +19,17 @@ const getIotEndpoint = () => {
             return endpointId + "-ats." + remainingEndpointParts.join(".");
         })
         .then(endpointAddress => {
-            console.log('endpointAddress', endpointAddress)
-            return `wss://${endpointAddress}/mqtt?x-amz-customauthorizer-name=Authorizer`;
+            const deploymentId = getDeploymentId(params);
+            const stackExport = getStackExport(params)
+
+            const iotEndpointAuthorizerName = 'Authorizer';
+
+            const queryParams = [
+                `x-amz-customauthorizer-name=${iotEndpointAuthorizerName}`,
+                `x-webiny-watch-iot-endpoint-secret=${deploymentId}`
+            ].join("&");
+
+            return `wss://${endpointAddress}/mqtt?${queryParams}`;
         });
 };
 

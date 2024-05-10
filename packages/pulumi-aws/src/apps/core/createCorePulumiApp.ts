@@ -10,6 +10,8 @@ import { CoreVpc } from "./CoreVpc";
 import { tagResources } from "~/utils";
 import { withServiceManifest } from "~/utils/withServiceManifest";
 import { addServiceManifestTableItem, TableDefinition } from "~/utils/addServiceManifestTableItem";
+import * as random from "@pulumi/random";
+
 
 export type CorePulumiApp = ReturnType<typeof createCorePulumiApp>;
 
@@ -84,6 +86,8 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
         path: "apps/core",
         config: projectAppParams,
         program: async app => {
+            const deploymentId = new random.RandomId("deploymentId", { byteLength: 8 });
+
             let searchEngineType: "openSearch" | "elasticSearch" | null = null;
             let searchEngineParams:
                 | CreateCorePulumiAppParams["openSearch"]
@@ -164,6 +168,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
             }
 
             app.addOutputs({
+                deploymentId: deploymentId.hex,
                 region: aws.config.region,
                 fileManagerBucketId: fileManagerBucket.output.id,
                 primaryDynamodbTableArn: dynamoDbTable.output.arn,

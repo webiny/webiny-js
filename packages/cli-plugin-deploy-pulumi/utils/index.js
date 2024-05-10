@@ -2,6 +2,7 @@ const createProjectApplicationWorkspace = require("./createProjectApplicationWor
 const getPulumi = require("./getPulumi");
 const getStackOutput = require("./getStackOutput");
 const getStackExport = require("./getStackExport");
+const getDeploymentId = require("./getDeploymentId");
 const { GracefulError } = require("./GracefulError");
 const { GracefulPulumiError } = require("./GracefulPulumiError");
 const createPulumiCommand = require("./createPulumiCommand");
@@ -18,6 +19,7 @@ module.exports = {
     getPulumi,
     getStackOutput,
     getStackExport,
+    getDeploymentId,
     GracefulError,
     GracefulPulumiError,
     createPulumiCommand,

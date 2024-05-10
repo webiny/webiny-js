@@ -146,7 +146,7 @@ module.exports = [
                         });
                     },
                     async argv => {
-                        return require("./watch")(argv, context);
+                        return require("./newWatch")(argv, context);
                     }
                 );
             } else {
