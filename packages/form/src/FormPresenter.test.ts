@@ -35,9 +35,7 @@ describe("FormPresenter", () => {
         presenter.registerField({
             name: "firstName",
             validators: [validation.create("required")],
-            beforeChange: async (value, cb) => {
-                // Simulate an async callback
-                await new Promise(resolve => setTimeout(resolve, 100));
+            beforeChange: (value, cb) => {
                 beforeChangeSpy(value);
                 cb(value);
             },
@@ -56,8 +54,8 @@ describe("FormPresenter", () => {
         // Assert
         expect(vm.formFields.get("firstName")).toBeInstanceOf(FormField);
 
-        await presenter.setFieldValue("firstName", "John");
-        await presenter.setFieldValue("settings.email", "test@example.com");
+        presenter.setFieldValue("firstName", "John");
+        presenter.setFieldValue("settings.email", "test@example.com");
 
         expect(presenter.vm.data).toEqual({
             firstName: "John",

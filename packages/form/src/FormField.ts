@@ -1,3 +1,4 @@
+import lodashNoop from "lodash/noop";
 import { BindComponentProps, FormAPI, FormValidationOptions } from "~/types";
 import { Validator } from "@webiny/validation/types";
 import { FieldValidationResult, FormFieldValidator } from "./FormFieldValidator";
@@ -5,6 +6,10 @@ import { FieldValidationResult, FormFieldValidator } from "./FormFieldValidator"
 interface BeforeChange {
     (value: unknown, cb: (value: unknown) => void): void;
 }
+
+const defaultBeforeChange: BeforeChange = (value, cb) => cb(value);
+
+const defaultAfterChange = lodashNoop;
 
 export class FormField {
     private readonly name: string;
@@ -14,7 +19,7 @@ export class FormField {
     private readonly afterChange?: (value: unknown, form: FormAPI) => void;
     private validation: FieldValidationResult | undefined = undefined;
 
-    constructor(props: BindComponentProps) {
+    private constructor(props: BindComponentProps) {
         this.name = props.name;
         this.defaultValue = props.defaultValue;
         this.beforeChange = props.beforeChange;
@@ -38,16 +43,16 @@ export class FormField {
         return newField;
     }
 
+    static create(props: BindComponentProps) {
+        return new FormField(props);
+    }
+
     async validate(
         value: unknown,
         options?: FormValidationOptions
     ): Promise<FieldValidationResult> {
         this.validation = await this.validator.validate(value, options || { skipValidators: [] });
         return this.validation;
-    }
-
-    resetValidation() {
-        this.validation = undefined;
     }
 
     isValid() {
@@ -63,14 +68,24 @@ export class FormField {
     }
 
     getBeforeChange() {
-        return this.beforeChange;
+        return this.beforeChange ?? defaultBeforeChange;
     }
 
     getAfterChange() {
-        return this.afterChange;
+        return this.afterChange ?? defaultAfterChange;
     }
 
     getValidation() {
         return this.validation;
+    }
+
+    setValue(value: unknown, cb: (value: unknown) => void) {
+        const beforeChange = this.getBeforeChange();
+        const afterChange = this.getAfterChange();
+
+        beforeChange(value, value => {
+            cb(value);
+            afterChange(value);
+        });
     }
 }

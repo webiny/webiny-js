@@ -7,10 +7,6 @@ import { FormField } from "./FormField";
 import { FormValidator } from "./FormValidator";
 import { FieldValidationResult } from "./FormFieldValidator";
 
-interface BeforeChange {
-    (value: unknown, cb: (value: unknown) => void): void;
-}
-
 interface FormInvalidFields {
     [name: string]: string;
 }
@@ -32,9 +28,6 @@ interface FormInit<T> {
 export interface InvalidFormFields {
     [name: string]: FieldValidationResult;
 }
-
-const defaultBeforeChange: BeforeChange = (value, cb) => cb(value);
-const defaultAfterChange = lodashNoop;
 
 export class FormPresenter<T extends GenericFormData = GenericFormData> {
     /* Holds the current form data. */
@@ -100,31 +93,19 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
         );
     }
 
-    async setFieldValue(name: string, value: unknown) {
+    setFieldValue(name: string, value: unknown) {
         const field = this.formFields.get(name);
         if (!field) {
             return;
         }
 
-        const beforeChange = field.getBeforeChange() ?? defaultBeforeChange;
-        const afterChange = field.getAfterChange() ?? defaultAfterChange;
-
-        const newValue = await new Promise(resolve => {
-            beforeChange(value, value => {
-                resolve(value);
-            });
-        });
-
-        runInAction(() => {
-            this.commitValueToData(name, newValue);
-            afterChange(newValue);
+        /**
+         * We delegate field value handling to the FormField class.
+         */
+        field.setValue(value, value => {
+            this.commitValueToData(name, value);
         });
     }
-
-    private commitValueToData = (name: string, value: unknown) => {
-        lodashSet(this.data, name, value);
-        this.onFormChange(toJS(this.data));
-    };
 
     async validateField(name: string, options?: FormValidationOptions) {
         const field = this.formFields.get(name);
@@ -160,21 +141,32 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
     }
 
     registerField(props: BindComponentProps) {
-        let field = this.formFields.get(props.name);
-        if (field) {
-            field = FormField.createFrom(field, props);
+        const existingField = this.formFields.get(props.name);
+
+        let field;
+        if (existingField) {
+            field = FormField.createFrom(existingField, props);
         } else {
-            field = new FormField(props);
+            field = FormField.create(props);
         }
 
         this.formFields.set(props.name, field);
 
-        // Set field's default value
+        // We only want to handle default field value for new fields.
+        if (existingField) {
+            return;
+        }
+
+        // Set field's default value.
         const fieldName = field.getName();
         const currentFieldValue = lodashGet(this.data, fieldName);
         const defaultValue = field.getDefaultValue();
-        if (!currentFieldValue && defaultValue) {
-            this.setFieldValue(fieldName, defaultValue);
+        if (currentFieldValue === undefined && defaultValue !== undefined) {
+            // We need to postpone the state update, because `registerField` is called within a render cycle.
+            // You can't set a new state, while the previous state is being rendered.
+            requestAnimationFrame(() => {
+                this.setFieldValue(fieldName, defaultValue);
+            });
         }
     }
 
@@ -195,4 +187,9 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
 
         return isValid;
     }
+
+    private commitValueToData = (name: string, value: unknown) => {
+        lodashSet(this.data, name, value);
+        this.onFormChange(toJS(this.data));
+    };
 }

@@ -53,10 +53,10 @@ export class FormAPI<T> {
             value: this.presenter.getFieldValue(props.name),
             form: this as FormAPI<any>,
             onChange: async (value: unknown) => {
-                await this.presenter.setFieldValue(props.name, value);
+                this.presenter.setFieldValue(props.name, value);
 
                 if (this.shouldValidate()) {
-                    await this.presenter.validateField(props.name);
+                    this.presenter.validateField(props.name);
                 }
             }
         };
