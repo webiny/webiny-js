@@ -55,10 +55,6 @@ class Tooltip extends React.Component<TooltipProps, State> {
     public override render() {
         return (
             <RcTooltip
-                /**
-                 * rc-tooltip types do not have animation as prop, but the rc-tooltip lib has.
-                 */
-                // @ts-expect-error
                 animation={"fade"}
                 onVisibleChange={this.onVisibleChange}
                 overlay={this.props.content}

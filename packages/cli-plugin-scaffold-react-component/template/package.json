@@ -8,14 +8,14 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
-    "react": "18.3.1"
+    "react": "18.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
     "@babel/core": "^7.23.9",
     "@babel/preset-react": "^7.23.3",
     "@babel/preset-typescript": "^7.23.3",
-    "@types/react": "18.3.1",
+    "@types/react": "18.2.79",
     "@webiny/cli": "^5.0.0",
     "@webiny/project-utils": "^5.0.0",
     "rimraf": "^3.0.2",
