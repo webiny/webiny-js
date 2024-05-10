@@ -14,10 +14,7 @@ import {
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
-const getKey = (
-    field: CmsModelField,
-    bind: BindComponentRenderProp<string>
-): string => {
+const getKey = (field: CmsModelField, bind: BindComponentRenderProp<string>): string => {
     const formId = bind.form.data.id || "new";
     return `${formId}.${field.fieldId}`;
 };

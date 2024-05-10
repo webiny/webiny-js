@@ -567,8 +567,7 @@ export interface CmsMetaResponse {
 /***
  * ###### FORM ########
  */
-export interface BindComponentRenderProp<T = any>
-    extends BaseBindComponentRenderProp<T> {
+export interface BindComponentRenderProp<T = any> extends BaseBindComponentRenderProp<T> {
     parentName: string;
     appendValue: (value: any, index?: number) => void;
     prependValue: (value: any) => void;
@@ -578,8 +577,7 @@ export interface BindComponentRenderProp<T = any>
     moveValueDown: (index: number) => void;
 }
 
-interface BindComponentProps<T = any>
-    extends Omit<BaseBindComponentProps, "children" | "name"> {
+interface BindComponentProps<T = any> extends Omit<BaseBindComponentProps, "children" | "name"> {
     name?: string;
     children?: ((props: BindComponentRenderProp<T>) => React.ReactElement) | React.ReactElement;
 }

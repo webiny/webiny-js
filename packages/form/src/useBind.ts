@@ -20,7 +20,7 @@ export const useBind = makeDecoratable((props: BindComponentProps): UseBindHook 
 
         return () => {
             form.unregisterField(props.name);
-        }
+        };
     }, []);
 
     return form.registerField({ ...props, name: bindName });

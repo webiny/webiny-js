@@ -63,12 +63,8 @@ function FormInner<T extends GenericFormData = GenericFormData>(
             !e.isDefaultPrevented()
         ) {
             // Need to blur current target in case of input fields to trigger validation
-            // @ts-expect-error
-            e.target && e.target.blur();
             e.preventDefault();
             e.stopPropagation();
-            // Fire submit with a small delay to allow input validation to complete.
-            // Not an ideal solution but works fine at this point. Will revisit this later.
             formApi.submit();
         }
     };
@@ -94,7 +90,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
                     data: formApi.data,
                     setValue: formApi.setValue,
                     form: formApi,
-                    submit: (...args) => formApi.submit(...args),
+                    submit: formApi.submit,
                     Bind
                 })
             )}

@@ -56,7 +56,7 @@ export class FormAPI<T> {
                 await this.presenter.setFieldValue(props.name, value);
 
                 if (this.shouldValidate()) {
-                    this.presenter.validateField(props.name);
+                    await this.presenter.validateField(props.name);
                 }
             }
         };

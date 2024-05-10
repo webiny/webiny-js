@@ -10,4 +10,3 @@ export const useForm = <T extends GenericFormData = GenericFormData>() => {
     }
     return context;
 };
-
