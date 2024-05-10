@@ -17,8 +17,11 @@ export const useBind = makeDecoratable((props: BindComponentProps): UseBindHook 
         if (props.defaultValue !== undefined && lodashGet(form.data, bindName) === undefined) {
             form.setValue(bindName, props.defaultValue);
         }
+
+        return () => {
+            form.unregisterField(props.name);
+        };
     }, []);
 
-    // @ts-expect-error
-    return form.createField({ ...props, name: bindName });
+    return form.registerField({ ...props, name: bindName });
 });
