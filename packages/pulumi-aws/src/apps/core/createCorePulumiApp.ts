@@ -10,6 +10,7 @@ import { CoreVpc } from "./CoreVpc";
 import { tagResources } from "~/utils";
 import { withServiceManifest } from "~/utils/withServiceManifest";
 import { addServiceManifestTableItem, TableDefinition } from "~/utils/addServiceManifestTableItem";
+import { DEFAULT_PROD_ENV_NAMES } from "~/constants";
 
 export type CorePulumiApp = ReturnType<typeof createCorePulumiApp>;
 
@@ -131,7 +132,8 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 });
             }
 
-            const productionEnvironments = app.params.create.productionEnvironments || ["prod"];
+            const productionEnvironments =
+                app.params.create.productionEnvironments || DEFAULT_PROD_ENV_NAMES;
             const isProduction = productionEnvironments.includes(app.params.run.env);
 
             const protect = app.getParam(projectAppParams.protect) ?? isProduction;

@@ -21,6 +21,7 @@ import {
     withCommonLambdaEnvVariables,
     withServiceManifest
 } from "~/utils";
+import { DEFAULT_PROD_ENV_NAMES } from "~/constants";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -126,7 +127,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 });
             }
 
-            const productionEnvironments = app.params.create.productionEnvironments || ["prod"];
+            const productionEnvironments =
+                app.params.create.productionEnvironments || DEFAULT_PROD_ENV_NAMES;
             const isProduction = productionEnvironments.includes(app.params.run.env);
 
             // Enables logs forwarding.
