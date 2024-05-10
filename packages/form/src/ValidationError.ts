@@ -1,4 +1,4 @@
-class ValidationError extends Error {
+export class ValidationError extends Error {
     public value: unknown | null;
 
     constructor(message: string, value: unknown | null = null) {
@@ -15,5 +15,3 @@ class ValidationError extends Error {
         return this.value;
     }
 }
-
-export default ValidationError;

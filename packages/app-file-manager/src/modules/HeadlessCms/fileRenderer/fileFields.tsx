@@ -87,7 +87,9 @@ const FieldRenderer = ({ getBind, Label, field }: CmsModelFieldRendererProps) =>
 
                                                 <Gallery>
                                                     {value.map((url: string, index: number) => (
-                                                        <InnerImageFieldWrapper key={url}>
+                                                        <InnerImageFieldWrapper
+                                                            key={url + "-" + index}
+                                                        >
                                                             <File
                                                                 url={url}
                                                                 showFileManager={() =>
