@@ -1,8 +1,7 @@
 {
   "name": "theme",
-  "version": "0.1.0",
-  "main": "index.js",
-  "license": "MIT",
+  "version": "1.0.0",
+  "main": "src/index.ts",
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
     "@emotion/react": "^11.10.6",
