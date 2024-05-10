@@ -1,8 +1,13 @@
 import React, { useContext } from "react";
 import { FormAPI, GenericFormData } from "~/types";
 
-export const FormContext = React.createContext<FormAPI>(undefined as unknown as FormAPI);
+export const FormContext = React.createContext<FormAPI | undefined>(undefined);
 
 export const useForm = <T extends GenericFormData = GenericFormData>() => {
-    return useContext(FormContext) as FormAPI<T>;
+    const context = useContext(FormContext) as FormAPI<T>;
+    if (!context) {
+        throw new Error("Missing Form component in the component hierarchy!");
+    }
+    return context;
 };
+

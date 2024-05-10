@@ -9,7 +9,7 @@ import {
 } from "~/types";
 import { createFieldsList } from "./createFieldsList";
 import { getModelTitleFieldId } from "./getModelTitleFieldId";
-import { FormSubmitOptions } from "@webiny/form";
+import { FormValidationOptions } from "@webiny/form";
 
 const CONTENT_META_FIELDS = /* GraphQL */ `
     meta {
@@ -340,7 +340,7 @@ export interface CmsEntryCreateMutationVariables {
      * We have any here because we do not know which fields does entry have
      */
     data: Record<string, any>;
-    options?: FormSubmitOptions;
+    options?: FormValidationOptions;
 }
 
 export const createCreateMutation = (model: CmsEditorContentModel) => {
@@ -376,7 +376,7 @@ export interface CmsEntryCreateFromMutationVariables {
      * We have any here because we do not know which fields does entry have
      */
     data?: Record<string, any>;
-    options?: FormSubmitOptions;
+    options?: FormValidationOptions;
 }
 
 export const createCreateFromMutation = (model: CmsEditorContentModel) => {
@@ -413,7 +413,7 @@ export interface CmsEntryUpdateMutationVariables {
      * We have any here because we do not know which fields does entry have
      */
     data: Record<string, any>;
-    options?: FormSubmitOptions;
+    options?: FormValidationOptions;
 }
 
 export const createUpdateMutation = (model: CmsEditorContentModel) => {

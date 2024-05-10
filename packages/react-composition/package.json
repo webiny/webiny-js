@@ -24,7 +24,7 @@
     "@babel/core": "^7.24.0",
     "@babel/preset-env": "^7.24.0",
     "@babel/preset-typescript": "^7.23.3",
-    "@testing-library/react": "^12.1.5",
+    "@testing-library/react": "^15.0.7",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "ttypescript": "^1.5.13",
