@@ -3,7 +3,6 @@ import classNames from "classnames";
 import { ChipSet } from "@rmwc/chip";
 import { Chip } from "./Chip";
 import { chipIconWrapper, disabledChips } from "./styles";
-import "@rmwc/chip/styles";
 
 export interface ChipsProps {
     /**
