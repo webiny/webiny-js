@@ -1,4 +1,3 @@
-const { red } = require("chalk");
 module.exports = [
     {
         type: "cli-command",
@@ -55,7 +54,7 @@ module.exports = [
                     });
                     yargs.option("deployment-logs", {
                         default: undefined,
-                        describe: `Print deployment logs`,
+                        describe: `Print deployment logs (automatically enabled in CI environments)`,
                         type: "boolean"
                     });
 
