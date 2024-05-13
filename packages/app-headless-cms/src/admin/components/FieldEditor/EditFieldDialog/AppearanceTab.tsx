@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { i18n } from "@webiny/app/i18n";
 import { Radio, RadioGroup } from "@webiny/ui/Radio";
@@ -10,6 +10,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { RendererOptions } from "./AppearanceTab/RendererOptions";
 import { LegacyRichTextInput } from "./AppearanceTab/LegacyRichTextInput";
 import { useRendererPlugins } from "./useRendererPlugins";
+import { useModelField } from "~/admin/components/ModelFieldProvider";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-editor/tabs/appearance-tab");
 
@@ -26,6 +27,7 @@ const style = {
 
 const AppearanceTab = () => {
     const renderers = useRendererPlugins();
+    const { field } = useModelField();
 
     const rendererName = useBind({
         name: "renderer.name",
@@ -46,6 +48,20 @@ const AppearanceTab = () => {
             </Grid>
         );
     }
+
+    useEffect(() => {
+        // If the currently selected render plugin is no longer available, select the first available one.
+        if (selectedPlugin) {
+            return;
+        }
+
+        if (renderers[0]) {
+            rendererName.onChange(renderers[0].renderer.rendererName);
+            return;
+        }
+
+        console.info(`No renderers for field ${field.fieldId} found.`, field);
+    }, [field.id, field.multipleValues, field.predefinedValues?.enabled, selectedPlugin]);
 
     return (
         <>
