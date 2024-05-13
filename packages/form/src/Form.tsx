@@ -1,6 +1,5 @@
-import React, { useEffect, useImperativeHandle, useMemo, useRef } from "react";
+import React, { useEffect, useImperativeHandle, useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import isEqual from "lodash/isEqual";
 import lodashNoop from "lodash/noop";
 import { Bind } from "./Bind";
 import { FormProps, GenericFormData } from "~/types";
@@ -12,8 +11,6 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     props: FormProps<T>,
     ref: React.ForwardedRef<any>
 ) {
-    const refData = useRef<Partial<T> | undefined>(props.data);
-
     const presenter = useMemo(() => new FormPresenter<T>(), []);
     const formApi = useMemo(() => {
         return new FormAPI(presenter, {
@@ -48,22 +45,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     }, [props.invalidFields]);
 
     useEffect(() => {
-        // Check if the current props.data is equal to the data stored in refData.current
-        if (isEqual(refData.current, props.data)) {
-            // If they are equal, return early without performing any further action
-            return;
-        }
-
-        // Update the presenter's data with the new props.data
         presenter.setData(props.data as T);
-
-        // Update refData.current to store the latest props.data
-        refData.current = props.data;
-
-        // Clean-up function: reset presenter's data when the component unmounts
-        return () => {
-            presenter.setData({} as T);
-        };
     }, [props.data]);
 
     useImperativeHandle(ref, () => ({
