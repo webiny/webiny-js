@@ -12,11 +12,12 @@ export const ensureCoreDeployed = new BeforeDeployPlugin(({ env }, ctx) => {
     const coreAppName = ctx.error.hl("Core");
     const apiAppName = ctx.error.hl("API");
     const cmd = ctx.error.hl(`yarn webiny deploy core --env ${env}`);
+    ctx.error(`Cannot deploy ${apiAppName} project application before deploying ${coreAppName}.`);
 
     throw new GracefulError(
         [
-            `Cannot deploy ${apiAppName} project application before deploying ${coreAppName}.`,
-            `Please deploy ${coreAppName} project application first by running: ${cmd}.`
+            `Before deploying ${apiAppName} project application, please`,
+            `deploy ${coreAppName} first by running: ${cmd}.`
         ].join(" ")
     );
 });
