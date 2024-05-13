@@ -1,6 +1,7 @@
 import { useApolloClient } from "@apollo/react-hooks";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
+import noop from "lodash/noop";
 import { useSnackbar } from "@webiny/app-admin";
 import { FileItem } from "@webiny/app-admin/types";
 import { FileManagerProvider } from "~/modules/FileManagerRenderer/FileManagerView";
@@ -18,15 +19,12 @@ interface EditFileRenderProp {
 
 interface EditFileUsingUrlProps {
     onUpdate?: (file: FileItem) => void;
+    onSetFile?: (file: FileItem) => void;
     children: (params: EditFileRenderProp) => React.ReactNode;
 }
 
-const voidOnUpdate = () => {
-    // Do nothing.
-};
-
 export const EditFileUsingUrl = observer(
-    ({ children, onUpdate = voidOnUpdate }: EditFileUsingUrlProps) => {
+    ({ children, onSetFile = noop, onUpdate = noop }: EditFileUsingUrlProps) => {
         const client = useApolloClient();
         const { showSnackbar } = useSnackbar();
         const fileManagerApi = useFileManagerApi();
@@ -65,6 +63,7 @@ export const EditFileUsingUrl = observer(
             <>
                 <FileManagerProvider>
                     <FileDetails
+                        onSetFile={onSetFile}
                         loading={vm.loadingMessage}
                         file={vm.file}
                         onClose={presenter.closeDrawer}
