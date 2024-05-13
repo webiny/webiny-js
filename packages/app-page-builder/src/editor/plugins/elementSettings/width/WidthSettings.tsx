@@ -174,7 +174,7 @@ const Settings = ({ defaultAccordionValue }: PbEditorPageElementSettingsRenderCo
                         <Bind name={"value"} validators={validateWidth}>
                             {({ value, onChange, validation }) => (
                                 <SpacingPicker
-                                    value={value}
+                                    value={value || ""}
                                     onChange={onChange}
                                     validation={validation}
                                     options={widthUnitOptions}

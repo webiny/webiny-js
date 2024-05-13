@@ -114,17 +114,11 @@ export class BlocksRepository {
     }
 
     async createPageBlock(input: { name: string; category: string; content?: unknown }) {
-        const pageBlock = await this.runWithLoading(
-            () => {
-                return this.gateway.create({
-                    name: input.name,
-                    blockCategory: input.category,
-                    content: input.content ?? getDefaultBlockContent()
-                });
-            },
-            "Creating page block",
-            `Page block "${input.name}" was created successfully.`
-        );
+        const pageBlock = await this.gateway.create({
+            name: input.name,
+            blockCategory: input.category,
+            content: input.content ?? getDefaultBlockContent()
+        });
 
         const processedBlock = this.processBlockFromApi(pageBlock);
 
@@ -189,11 +183,7 @@ export class BlocksRepository {
             return;
         }
 
-        await this.runWithLoading(
-            () => this.gateway.delete(id),
-            "Deleting page block",
-            `Filter "${block.name}" was deleted successfully.`
-        );
+        await this.gateway.delete(id);
 
         runInAction(() => {
             this.pageBlocks = this.pageBlocks.filter(block => block.id !== id);
