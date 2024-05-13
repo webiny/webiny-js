@@ -234,7 +234,7 @@ export interface CmsModelFieldRendererSettingsProps {
 export interface CmsModelFieldRendererProps {
     field: CmsModelField;
     Label: React.ComponentType<React.PropsWithChildren>;
-    getBind: <T = any, F = any>(index?: number, key?: string) => BindComponent<T, F>;
+    getBind: <T = any>(index?: number, key?: string) => BindComponent<T>;
     contentModel: CmsModel;
 }
 
@@ -567,8 +567,7 @@ export interface CmsMetaResponse {
 /***
  * ###### FORM ########
  */
-export interface BindComponentRenderProp<T = any, F = Record<string, any>>
-    extends BaseBindComponentRenderProp<T, F> {
+export interface BindComponentRenderProp<T = any> extends BaseBindComponentRenderProp<T> {
     parentName: string;
     appendValue: (value: any, index?: number) => void;
     prependValue: (value: any) => void;
@@ -578,13 +577,12 @@ export interface BindComponentRenderProp<T = any, F = Record<string, any>>
     moveValueDown: (index: number) => void;
 }
 
-interface BindComponentProps<T = any, F = any>
-    extends Omit<BaseBindComponentProps, "children" | "name"> {
+interface BindComponentProps<T = any> extends Omit<BaseBindComponentProps, "children" | "name"> {
     name?: string;
-    children?: ((props: BindComponentRenderProp<T, F>) => React.ReactElement) | React.ReactElement;
+    children?: ((props: BindComponentRenderProp<T>) => React.ReactElement) | React.ReactElement;
 }
 
-export type BindComponent<T = any, F = any> = React.ComponentType<BindComponentProps<T, F>> & {
+export type BindComponent<T = any> = React.ComponentType<BindComponentProps<T>> & {
     parentName: string;
 };
 

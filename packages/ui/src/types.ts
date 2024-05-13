@@ -1,9 +1,9 @@
 export interface FormComponentProps<TValue = any> {
     validation?: {
         /* Is form element's value valid? */
-        isValid: boolean;
+        isValid: boolean | null;
         /* Error message if value is not valid. */
-        message: string;
+        message?: string;
         /* Any validation result returned by the validator. */
         results?: { [key: string]: any };
     };
