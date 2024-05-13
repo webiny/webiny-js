@@ -64,7 +64,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         return () => {
             presenter.setData({} as T);
         };
-    }, [props.data, refData.current]);
+    }, [props.data]);
 
     useImperativeHandle(ref, () => ({
         validate: () => formApi.validate(),
