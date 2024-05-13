@@ -17493,7 +17493,7 @@ __metadata:
     node-fetch: ^2.6.9
     rimraf: ^5.0.5
     semver: ^7.3.5
-    tar: ^6.2.1
+    tar: ^7.1.0
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
