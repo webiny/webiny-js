@@ -12,12 +12,14 @@ import { useContentEntryForm } from "./admin/components/ContentEntryForm/useCont
 import { useContentEntry } from "~/admin/views/contentEntries/hooks";
 import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
 import { ContentEntryEditorConfig as BaseContentEntryEditorConfig } from "./admin/config/contentEntries";
+import { useRevision } from "~/admin/views/contentEntries/ContentEntry/RevisionsList/useRevision";
 
 export const ContentEntryEditorConfig = Object.assign(BaseContentEntryEditorConfig, {
     ContentEntry: Object.assign(ContentEntry, {
         useContentEntry,
         ContentEntryForm: Object.assign(BaseContentEntryForm, {
-            useContentEntryForm
+            useContentEntryForm,
+            useRevision
         }),
         ContentEntryFormPreview
     }),
