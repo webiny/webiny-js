@@ -79,7 +79,7 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch",
-    "prepublishOnly": "yarn webiny run buildHandlers"
+    "prepublishOnly": "WEBINY_DISABLE_TS_CHECKS=true yarn webiny run buildHandlers"
   },
   "adio": {
     "ignoreDirs": [
