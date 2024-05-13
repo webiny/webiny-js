@@ -14,7 +14,7 @@ const ImageFieldWrapper = styled("div")({
     background: "var(--mdc-theme-on-background)",
     borderBottom: "1px solid rgba(0, 0, 0, 0.42)",
     height: "100%",
-    padding: "25px 15px",
+    padding: "16px",
     boxSizing: "border-box",
     display: "flex",
     flexDirection: "column",
@@ -35,6 +35,7 @@ const InnerImageFieldWrapper = styled("div")({
     alignItems: "center",
     flexBasis: "100%",
     maxHeight: "180px",
+    margin: "16px 0 0",
     "> div": {
         minWidth: "200px",
         maxHeight: "180px",
@@ -42,7 +43,7 @@ const InnerImageFieldWrapper = styled("div")({
     }
 });
 
-const FieldRenderer = ({ field, getBind, Label }: CmsModelFieldRendererProps) => {
+const FieldRenderer = ({ field, getBind }: CmsModelFieldRendererProps) => {
     const Bind = getBind();
 
     const imagesOnly = field.settings && field.settings.imagesOnly;
@@ -55,11 +56,9 @@ const FieldRenderer = ({ field, getBind, Label }: CmsModelFieldRendererProps) =>
                         return (
                             <div>
                                 <ImageFieldWrapper>
-                                    <Label>
-                                        <Typography use="body1" tag={"span"}>
-                                            {field.label}
-                                        </Typography>
-                                    </Label>
+                                    <Typography use="body2" tag={"span"}>
+                                        {field.label}
+                                    </Typography>
                                     <InnerImageFieldWrapper>
                                         <FileManager
                                             images={imagesOnly}
