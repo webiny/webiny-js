@@ -48,12 +48,12 @@ const FieldRenderer = ({ field, getBind }: CmsModelFieldRendererProps) => {
 
     const imagesOnly = field.settings && field.settings.imagesOnly;
     return (
-        <EditFileUsingUrl>
-            {({ editFile }) => (
-                <Bind>
-                    {bind => {
-                        const { value, onChange, validation } = bind;
-                        return (
+        <Bind>
+            {bind => {
+                const { value, onChange, validation } = bind;
+                return (
+                    <EditFileUsingUrl onSetFile={file => bind.onChange(file.src)}>
+                        {({ editFile }) => (
                             <div>
                                 <ImageFieldWrapper>
                                     <Typography use="body2" tag={"span"}>
@@ -90,11 +90,11 @@ const FieldRenderer = ({ field, getBind }: CmsModelFieldRendererProps) => {
                                     <FormElementMessage>{field.helpText}</FormElementMessage>
                                 )}
                             </div>
-                        );
-                    }}
-                </Bind>
-            )}
-        </EditFileUsingUrl>
+                        )}
+                    </EditFileUsingUrl>
+                );
+            }}
+        </Bind>
     );
 };
 
