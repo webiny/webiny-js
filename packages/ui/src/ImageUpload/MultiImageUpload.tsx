@@ -4,7 +4,7 @@ import { css } from "emotion";
 import classNames from "classnames";
 import { FormElementMessage } from "../FormElementMessage";
 import Image from "./Image";
-import ImageEditorDialog from "./ImageEditorDialog";
+import { ImageEditorDialog } from "./ImageEditorDialog";
 import { FormComponentProps } from "../types";
 
 const imagesStyle = css({
