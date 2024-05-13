@@ -20,10 +20,9 @@ module.exports = options => {
     const sourceMaps = options.sourceMaps !== false;
 
     const definitions = overrides.define ? JSON.parse(overrides.define) : {};
-    const tsChecksEnabled = process.env.WEBINY_DISABLE_TS_CHECKS !== "true";
+    const tsChecksEnabled = process.env.WEBINY_ENABLE_TS_CHECKS === "true";
 
     return {
-        context: cwd,
         entry: [
             sourceMaps && require.resolve("source-map-support/register"),
             path.resolve(entry)
@@ -60,17 +59,10 @@ module.exports = options => {
             tsChecksEnabled &&
                 new ForkTsCheckerWebpackPlugin({
                     typescript: {
-                        typescriptPath: require.resolve("typescript"),
-                        configOverwrite: {
-                            skipLibCheck: true,
-                            references: []
-                        },
-                        diagnosticOptions: {
-                            semantic: true,
-                            syntactic: true
-                        }
+                        configFile: path.resolve(cwd, "./tsconfig.json"),
+                        typescriptPath: require.resolve("typescript")
                     },
-                    async: false
+                    async: !production
                 }),
             options.logs && new WebpackBar({ name: path.basename(cwd) })
         ].filter(Boolean),

@@ -78,7 +78,7 @@
     "url": "0.11.0",
     "url-loader": "4.1.1",
     "vm-browserify": "^1.1.2",
-    "webpack": "5.90.0",
+    "webpack": "^5.91.0",
     "webpack-dev-server": "^4.6.0",
     "webpack-manifest-plugin": "^4.0.2",
     "webpackbar": "^6.0.0"
