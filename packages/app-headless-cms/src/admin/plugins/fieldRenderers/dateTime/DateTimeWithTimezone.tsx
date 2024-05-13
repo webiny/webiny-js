@@ -129,7 +129,7 @@ export const DateTimeWithTimezone = ({ bind, trailingIcon, field }: DateTimeWith
                         label: `${field.label} time`
                     }}
                     type={"time"}
-                    step={5}
+                    step={60}
                 />
             </Cell>
             <Cell span={cellSize}>
