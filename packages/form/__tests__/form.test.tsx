@@ -1,10 +1,17 @@
 /**
  * @jest-environment jsdom
  */
-import React, { useState } from "react";
+import React from "react";
 import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Form, useBind, FormProps as BaseFormProps, BindComponentProps, FormAPI } from "~/index";
+import {
+    Form,
+    useBind,
+    FormProps as BaseFormProps,
+    BindComponentProps,
+    FormAPI,
+    Bind
+} from "~/index";
 import { validation } from "@webiny/validation";
 
 type FormProps = Omit<BaseFormProps, "children" | "onSubmit"> & {
@@ -13,8 +20,28 @@ type FormProps = Omit<BaseFormProps, "children" | "onSubmit"> & {
     children?: React.ReactNode;
 };
 
+const EmptyForm = ({ children, data, onSubmit, imperativeHandle, ...props }: FormProps) => {
+    const formData = data;
+
+    return (
+        <Form
+            ref={imperativeHandle}
+            data={formData}
+            onSubmit={data => onSubmit && onSubmit(data)}
+            {...props}
+        >
+            {({ form }) => (
+                <div>
+                    {children}
+                    <button onClick={form.submit}>Submit</button>
+                </div>
+            )}
+        </Form>
+    );
+};
+
 const FormViewWithBind = ({ children, data, onSubmit, imperativeHandle, ...props }: FormProps) => {
-    const [formData] = useState(data || { name: "empty name" });
+    const formData = data || { name: "empty name" };
 
     return (
         <Form
@@ -289,18 +316,40 @@ describe("Form", () => {
         const user = userEvent.setup();
         const onSubmit = jest.fn();
 
-        const { rerender } = render(<FormViewWithHooks onSubmit={onSubmit} data={{}} />);
+        const { rerender } = render(<EmptyForm onSubmit={onSubmit} data={{}} />);
 
         const submitBtn = screen.getByRole("button", { name: /submit/i });
         await user.click(submitBtn);
 
         expect(onSubmit).toHaveBeenLastCalledWith({});
 
-        rerender(<FormViewWithHooks onSubmit={onSubmit} data={{ email: "test@example.com" }} />);
+        rerender(<EmptyForm onSubmit={onSubmit} data={{ email: "test@example.com" }} />);
         await user.click(submitBtn);
 
         await waitFor(() => onSubmit.mock.calls.length > 0);
         expect(onSubmit).toHaveBeenLastCalledWith({ email: "test@example.com" });
+    });
+
+    test("should set default field value on first render cycle", async () => {
+        const ref = React.createRef<FormAPI>();
+        const onSubmit = jest.fn();
+
+        render(
+            <EmptyForm onSubmit={onSubmit} imperativeHandle={ref}>
+                <Bind name={"folder"} defaultValue={{ id: "root" }}>
+                    {({ value }) => <div data-testid={"folderId"}>{value.id}</div>}
+                </Bind>
+            </EmptyForm>
+        );
+
+        // Assert
+        await act(() => ref.current?.submit());
+        await waitFor(() => onSubmit.mock.calls.length > 0);
+        expect(onSubmit).toHaveBeenLastCalledWith({ folder: { id: "root" } });
+
+        const folderDiv = screen.getByTestId("folderId");
+        expect(folderDiv).toBeTruthy();
+        expect(folderDiv.innerHTML).toEqual("root");
     });
 
     test("should submit the form using imperative handle", async () => {

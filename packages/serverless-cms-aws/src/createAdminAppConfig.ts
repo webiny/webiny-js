@@ -5,7 +5,12 @@ export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {
     return createReactAppConfig(baseParams => {
         const { config } = baseParams;
 
-        config.customEnv(env => ({ ...env, PORT: 3001 }));
+        config.customEnv(env => ({
+            ...env,
+            WEBINY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS: process.env
+                .WEBINY_TRASH_BIN_RETENTION_PERIOD_DAYS as string,
+            PORT: 3001
+        }));
 
         config.pulumiOutputToEnv<ApiOutput>("apps/api", ({ output, env }) => {
             return {

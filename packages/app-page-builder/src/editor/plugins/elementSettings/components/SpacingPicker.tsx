@@ -67,7 +67,7 @@ interface SpacingPickerFormData {
 }
 
 const SpacingPicker = ({
-    value,
+    value = "",
     onChange,
     disabled,
     options = [],
