@@ -2,12 +2,15 @@ import React, { useMemo } from "react";
 import { ReactComponent as PublishIcon } from "@material-design-icons/svg/outlined/publish.svg";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
-import { usePermission, useContentEntry } from "~/admin/hooks";
+import { usePermission, useCms, useModel } from "~/admin/hooks";
 import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
+import { useRecords } from "@webiny/app-aco";
 
 export const ActionPublish = observer(() => {
+    const { model } = useModel();
     const { canPublish } = usePermission();
-    const { publishEntryRevision } = useContentEntry();
+    const { publishEntryRevision } = useCms();
+    const { updateRecordInCache } = useRecords();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
@@ -26,7 +29,7 @@ export const ActionPublish = observer(() => {
             execute: async () => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
-                        const response = await publishEntryRevision({ id: item.id });
+                        const response = await publishEntryRevision({ model, id: item.id });
 
                         const { error } = response;
 
@@ -35,6 +38,8 @@ export const ActionPublish = observer(() => {
                                 error.message || "Unknown error while publishing the entry"
                             );
                         }
+
+                        updateRecordInCache(response.entry);
 
                         report.success({
                             title: `${item.meta.title}`,

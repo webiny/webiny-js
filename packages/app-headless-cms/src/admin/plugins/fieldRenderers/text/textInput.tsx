@@ -1,12 +1,12 @@
 import React from "react";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsModelFieldRendererPlugin } from "~/types";
 import { Input } from "@webiny/ui/Input";
 import get from "lodash/get";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
-const plugin: CmsEditorFieldRendererPlugin = {
+const plugin: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-text",
     renderer: {

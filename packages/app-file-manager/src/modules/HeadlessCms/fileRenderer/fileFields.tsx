@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useRef } from "react";
 import dotProp from "dot-prop-immutable";
 import {
+    BindComponentRenderProp,
     CmsModelFieldRendererPlugin,
     CmsModelFieldRendererProps
 } from "@webiny/app-headless-cms/types";
@@ -11,6 +12,7 @@ import { imageWrapperStyles } from "./utils";
 import { File } from "./File";
 import { EditFileUsingUrl } from "~/components/EditFileUsingUrl";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { FileItem } from "@webiny/app-admin/types";
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
@@ -46,22 +48,40 @@ const Gallery = styled.div`
 
 const FieldRenderer = ({ getBind, Label, field }: CmsModelFieldRendererProps) => {
     const Bind = getBind();
+    const editFileRef = useRef<{ index: number; url: string } | undefined>();
 
     const imagesOnly = field.settings && field.settings.imagesOnly;
 
+    const onSetFile = (bind: BindComponentRenderProp) => {
+        return (file: FileItem) => {
+            if (!editFileRef.current) {
+                return;
+            }
+
+            const newValue = [...bind.value];
+            bind.onChange([
+                ...newValue.slice(0, editFileRef.current.index),
+                file.src,
+                ...newValue.slice(editFileRef.current.index + 1)
+            ]);
+
+            editFileRef.current = undefined;
+        };
+    };
+
     return (
-        <EditFileUsingUrl>
-            {({ editFile }) => (
-                <Bind>
-                    {bind => {
-                        const { onChange, validation } = bind;
+        <Bind>
+            {bind => {
+                const { onChange, validation } = bind;
 
-                        // We need to make sure the value is an array, since this is a multi-value component.
-                        const value: string[] = (
-                            Array.isArray(bind.value) ? bind.value : [bind.value]
-                        ).filter(Boolean);
+                // We need to make sure the value is an array, since this is a multi-value component.
+                const value: string[] = (
+                    Array.isArray(bind.value) ? bind.value : [bind.value]
+                ).filter(Boolean);
 
-                        return (
+                return (
+                    <EditFileUsingUrl onSetFile={onSetFile(bind)}>
+                        {({ editFile }) => (
                             <FileUploadWrapper className={imageWrapperStyles}>
                                 <FileManager
                                     multiple
@@ -87,13 +107,22 @@ const FieldRenderer = ({ getBind, Label, field }: CmsModelFieldRendererProps) =>
 
                                                 <Gallery>
                                                     {value.map((url: string, index: number) => (
-                                                        <InnerImageFieldWrapper key={url}>
+                                                        <InnerImageFieldWrapper
+                                                            key={url + "-" + index}
+                                                        >
                                                             <File
                                                                 url={url}
                                                                 showFileManager={() =>
                                                                     selectFiles(index)
                                                                 }
-                                                                onEdit={() => editFile(url)}
+                                                                onEdit={() => {
+                                                                    editFileRef.current = {
+                                                                        index,
+                                                                        url
+                                                                    };
+
+                                                                    editFile(url);
+                                                                }}
                                                                 onRemove={() =>
                                                                     onChange(
                                                                         dotProp.delete(value, index)
@@ -133,11 +162,11 @@ const FieldRenderer = ({ getBind, Label, field }: CmsModelFieldRendererProps) =>
                                     }}
                                 />
                             </FileUploadWrapper>
-                        );
-                    }}
-                </Bind>
-            )}
-        </EditFileUsingUrl>
+                        )}
+                    </EditFileUsingUrl>
+                );
+            }}
+        </Bind>
     );
 };
 

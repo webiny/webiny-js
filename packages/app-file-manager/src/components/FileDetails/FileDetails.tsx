@@ -1,5 +1,6 @@
 import React, { useMemo, useRef } from "react";
 import ReactDOM from "react-dom";
+import noop from "lodash/noop";
 // @ts-expect-error This package has no types.
 import { useHotkeys } from "react-hotkeyz";
 import styled from "@emotion/styled";
@@ -141,9 +142,17 @@ export interface FileDetailsProps {
     loading: string | null;
     onClose: () => void;
     onSave: (file: FileItem) => void;
+    onSetFile?: (file: FileItem) => void;
 }
 
-export const FileDetails = ({ open, onClose, onSave, loading, file }: FileDetailsProps) => {
+export const FileDetails = ({
+    open,
+    onClose,
+    onSave,
+    loading,
+    file,
+    onSetFile = noop
+}: FileDetailsProps) => {
     useHotkeys({
         zIndex: 55,
         disabled: !open,
@@ -169,7 +178,7 @@ export const FileDetails = ({ open, onClose, onSave, loading, file }: FileDetail
                     {loading && <CircularProgress label={loading} />}
                     {file && (
                         <FileProvider file={file}>
-                            <FileDetailsProvider hideFileDetails={onClose}>
+                            <FileDetailsProvider hideFileDetails={onClose} onSetFile={onSetFile}>
                                 <FileDetailsInner file={file} onClose={onClose} onSubmit={onSave} />
                             </FileDetailsProvider>
                         </FileProvider>
