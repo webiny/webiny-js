@@ -1,6 +1,8 @@
-import React, { useEffect, useImperativeHandle, useMemo } from "react";
+import React, { useEffect, useImperativeHandle, useMemo, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import lodashNoop from "lodash/noop";
+import isEqual from "lodash/isEqual";
+
 import { Bind } from "./Bind";
 import { FormProps, GenericFormData } from "~/types";
 import { FormContext } from "./FormContext";
@@ -11,7 +13,22 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     props: FormProps<T>,
     ref: React.ForwardedRef<any>
 ) {
-    const presenter = useMemo(() => new FormPresenter<T>(), []);
+    const dataRef = useRef(props.data);
+
+    const presenter = useMemo(() => {
+        const presenter = new FormPresenter<T>();
+        presenter.init({
+            data: (props.data || {}) as T,
+            onChange: data => {
+                if (typeof props.onChange === "function") {
+                    props.onChange(data, formApi);
+                }
+            },
+            onInvalid: props.onInvalid
+        });
+        return presenter;
+    }, []);
+
     const formApi = useMemo(() => {
         return new FormAPI(presenter, {
             onSubmit: props.onSubmit ?? lodashNoop,
@@ -29,23 +46,20 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     }, [props.onSubmit, props.disabled, props.validateOnFirstSubmit]);
 
     useEffect(() => {
-        presenter.init({
-            data: (props.data || {}) as T,
-            onChange: data => {
-                if (typeof props.onChange === "function") {
-                    props.onChange(data, formApi);
-                }
-            },
-            onInvalid: props.onInvalid
-        });
-    }, []);
-
-    useEffect(() => {
         presenter.setInvalidFields(props.invalidFields || {});
     }, [props.invalidFields]);
 
     useEffect(() => {
+        // We only set form's data if props.data has changed.
+        if (isEqual(dataRef.current, props.data)) {
+            return;
+        }
+
+        // Set the new form data.
         presenter.setData(props.data as T);
+
+        // Keep the new props.data for future comparison.
+        dataRef.current = props.data;
     }, [props.data]);
 
     useImperativeHandle(ref, () => ({
