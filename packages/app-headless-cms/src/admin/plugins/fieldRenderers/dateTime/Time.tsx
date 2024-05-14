@@ -37,7 +37,7 @@ export const Time = (props: InputProps) => {
                 }
             }}
             type={"time"}
-            step={5}
+            step={60}
         />
     );
 };

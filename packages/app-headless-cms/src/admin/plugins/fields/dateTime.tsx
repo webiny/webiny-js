@@ -2,7 +2,6 @@ import React from "react";
 import get from "lodash/get";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
-import { Input } from "@webiny/ui/Input";
 import { CmsModelField, CmsModelFieldTypePlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as DateTimeIcon } from "./icons/schedule-black-24px.svg";
@@ -24,16 +23,6 @@ const DateTimeSettings = () => {
 
     return (
         <>
-            <Grid>
-                <Cell span={12}>
-                    <Bind name={"placeholderText"}>
-                        <Input
-                            label={t`Placeholder text`}
-                            description={t`Placeholder text (optional)`}
-                        />
-                    </Bind>
-                </Cell>
-            </Grid>
             <Grid>
                 <Cell span={6}>
                     <Bind name={"settings.type"}>

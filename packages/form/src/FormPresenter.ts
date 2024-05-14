@@ -143,31 +143,24 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
     registerField(props: BindComponentProps) {
         const existingField = this.formFields.get(props.name);
 
-        let field;
+        let field: FormField;
         if (existingField) {
             field = FormField.createFrom(existingField, props);
         } else {
             field = FormField.create(props);
         }
 
-        this.formFields.set(props.name, field);
-
         // We only want to handle default field value for new fields.
-        if (existingField) {
-            return;
+        if (!existingField) {
+            const fieldName = field.getName();
+            const currentFieldValue = lodashGet(this.data, fieldName);
+            const defaultValue = field.getDefaultValue();
+            if (currentFieldValue === undefined && defaultValue !== undefined) {
+                lodashSet(this.data, fieldName, defaultValue);
+            }
         }
 
-        // Set field's default value.
-        const fieldName = field.getName();
-        const currentFieldValue = lodashGet(this.data, fieldName);
-        const defaultValue = field.getDefaultValue();
-        if (currentFieldValue === undefined && defaultValue !== undefined) {
-            // We need to postpone the state update, because `registerField` is called within a render cycle.
-            // You can't set a new state, while the previous state is being rendered.
-            requestAnimationFrame(() => {
-                this.setFieldValue(fieldName, defaultValue);
-            });
-        }
+        this.formFields.set(props.name, field);
     }
 
     unregisterField(name: string) {
