@@ -3,7 +3,7 @@ import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import {
     CmsEditorFieldPredefinedValuesEntry as Option,
-    CmsEditorFieldRendererPlugin
+    CmsModelFieldRendererPlugin
 } from "~/types";
 import { Select } from "@webiny/ui/Select";
 
@@ -19,7 +19,7 @@ const getDefaultValue = (initialValue?: string | null, options?: Option[]): stri
     return selected ? selected.value : undefined;
 };
 
-const plugin: CmsEditorFieldRendererPlugin = {
+const plugin: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-select-box",
     renderer: {

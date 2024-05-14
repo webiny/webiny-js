@@ -20,7 +20,7 @@ module.exports = options => {
     const sourceMaps = options.sourceMaps !== false;
 
     const definitions = overrides.define ? JSON.parse(overrides.define) : {};
-    const tsChecksEnabled = process.env.WEBINY_DISABLE_TS_CHECKS !== "true";
+    const tsChecksEnabled = process.env.WEBINY_ENABLE_TS_CHECKS === "true";
 
     return {
         entry: [

@@ -1,13 +1,16 @@
 import React, { useMemo } from "react";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { observer } from "mobx-react-lite";
-import { ContentEntryListConfig } from "~/admin/config/contentEntries";
-import { useContentEntry } from "~/admin/hooks";
-import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier";
+import { useRecords } from "@webiny/app-aco";
+import { ContentEntryListConfig } from "~/admin/config/contentEntries";
+import { useCms, useModel } from "~/admin/hooks";
+import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
 
 export const ActionDelete = observer(() => {
-    const { deleteEntry } = useContentEntry();
+    const { model } = useModel();
+    const { deleteEntry } = useCms();
+    const { removeRecordFromCache } = useRecords();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
@@ -31,7 +34,7 @@ export const ActionDelete = observer(() => {
                          * By sending an entryId (id without #version), we are telling to the API to delete all revisions.
                          */
                         const { id } = parseIdentifier(item.id);
-                        const response = await deleteEntry({ id });
+                        const response = await deleteEntry({ model, id });
 
                         if (typeof response !== "boolean") {
                             throw new Error(
@@ -39,6 +42,8 @@ export const ActionDelete = observer(() => {
                                     "Unknown error while moving the entry to trash."
                             );
                         }
+
+                        removeRecordFromCache(id);
 
                         report.success({
                             title: `${item.meta.title}`,
