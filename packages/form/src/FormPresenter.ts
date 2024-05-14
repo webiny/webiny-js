@@ -29,6 +29,8 @@ export interface InvalidFormFields {
     [name: string]: FieldValidationResult;
 }
 
+const emptyValues = [undefined, null];
+
 export class FormPresenter<T extends GenericFormData = GenericFormData> {
     /* Holds the current form data. */
     private data: T;
@@ -155,7 +157,7 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
             const fieldName = field.getName();
             const currentFieldValue = lodashGet(this.data, fieldName);
             const defaultValue = field.getDefaultValue();
-            if (currentFieldValue === undefined && defaultValue !== undefined) {
+            if (emptyValues.includes(currentFieldValue) && defaultValue !== undefined) {
                 lodashSet(this.data, fieldName, defaultValue);
             }
         }
