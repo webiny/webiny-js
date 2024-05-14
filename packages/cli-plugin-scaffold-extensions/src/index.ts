@@ -185,7 +185,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                             packageJson.dependencies[packageName] = `^${stdout}`;
                         } catch (e) {
                             throw new Error(
-                                `Could not find ${log.red.hl(
+                                `Could not find ${log.error.hl(
                                     packageName
                                 )} NPM package. Please double-check the package name and try again.`,
                                 { cause: e }
