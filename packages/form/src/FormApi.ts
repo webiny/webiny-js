@@ -44,14 +44,11 @@ export class FormAPI<T> {
     registerField = (props: BindComponentProps) => {
         this.presenter.registerField(props);
 
-        const validation = this.presenter.getFieldValidation(props.name);
-
         return {
             disabled: this.isDisabled(),
             validate: () => this.validateInput(props.name),
-            validation,
+            validation: this.presenter.getFieldValidation(props.name),
             value: this.presenter.getFieldValue(props.name),
-            form: this as FormAPI<any>,
             onChange: async (value: unknown) => {
                 this.presenter.setFieldValue(props.name, value);
 

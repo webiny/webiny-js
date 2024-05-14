@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import slugify from "slugify";
 import { useSnackbar } from "@webiny/app-admin";
-import { Bind, FormAPI, GenericFormData } from "@webiny/form";
+import { Bind, GenericFormData, useForm } from "@webiny/form";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Typography } from "@webiny/ui/Typography";
@@ -28,37 +28,34 @@ interface FormComponentProps {
 
 const FormComponent = ({ currentParentId = null }: FormComponentProps) => {
     const [parentId, setParentId] = useState<string | null>(currentParentId);
+    const form = useForm();
 
-    const generateSlug = (form: FormAPI) => {
-        return () => {
-            if (form.data.slug || !form.data.title) {
-                return;
-            }
+    const generateSlug = () => {
+        if (form.data.slug || !form.data.title) {
+            return;
+        }
 
-            // We want to update slug only when the folder is first being created.
-            form.setValue(
-                "slug",
-                slugify(form.data.title, {
-                    replacement: "-",
-                    lower: true,
-                    remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
-                    trim: false
-                })
-            );
-        };
+        // We want to update slug only when the folder is first being created.
+        form.setValue(
+            "slug",
+            slugify(form.data.title, {
+                replacement: "-",
+                lower: true,
+                remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
+                trim: false
+            })
+        );
     };
 
     return (
         <Grid>
             <Cell span={12}>
-                <Bind name={"title"} validators={[validation.create("required")]}>
-                    {({ form, ...bind }) => (
-                        <Input {...bind} label={"Title"} onBlur={generateSlug(form)} />
-                    )}
+                <Bind name={"title"} validators={validation.create("required")}>
+                    {bind => <Input {...bind} label={"Title"} onBlur={generateSlug} />}
                 </Bind>
             </Cell>
             <Cell span={12}>
-                <Bind name={"slug"} validators={[validation.create("required,slug")]}>
+                <Bind name={"slug"} validators={validation.create("required,slug")}>
                     <Input label={"Slug"} />
                 </Bind>
             </Cell>
