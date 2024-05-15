@@ -16,9 +16,10 @@ import {
     createRevisionsQuery
 } from "@webiny/app-headless-cms-common";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
-import { useRecords } from "@webiny/app-aco";
+import { useNavigateFolder, useRecords } from "@webiny/app-aco";
 import * as Cms from "~/admin/contexts/Cms";
 import { useMockRecords } from "./useMockRecords";
+import { ROOT_FOLDER } from "~/admin/constants";
 
 interface UpdateListCacheOptions {
     options?: {
@@ -113,8 +114,8 @@ export const ContentEntryProvider = ({
         ? useMockRecords()
         : useRecords();
     const [isLoading, setLoading] = useState<boolean>(false);
-
     const contentEntryProviderProps = useContentEntryProviderProps();
+    const { currentFolderId } = useNavigateFolder();
 
     const newEntry =
         typeof isNewEntry === "function" ? isNewEntry() : contentEntryProviderProps.isNewEntry();
@@ -212,7 +213,12 @@ export const ContentEntryProvider = ({
         setLoading(true);
         const response = await cms.createEntry({
             model,
-            entry,
+            entry: {
+                ...entry,
+                wbyAco_location: {
+                    folderId: currentFolderId || ROOT_FOLDER
+                }
+            },
             options: { skipValidators: options?.skipValidators }
         });
         setLoading(false);
