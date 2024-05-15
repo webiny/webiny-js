@@ -9,6 +9,7 @@ import { CoreOutput, VpcConfig } from "~/apps";
 import { addDomainsUrlsOutputs, tagResources, withCommonLambdaEnvVariables } from "~/utils";
 import { applyTenantRouter } from "~/apps/tenantRouter";
 import { withServiceManifest } from "~/utils/withServiceManifest";
+import { DEFAULT_PROD_ENV_NAMES } from "~/constants";
 
 export type WebsitePulumiApp = ReturnType<typeof createWebsitePulumiApp>;
 
@@ -73,7 +74,8 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 });
             }
 
-            const productionEnvironments = app.params.create.productionEnvironments || ["prod"];
+            const productionEnvironments =
+                app.params.create.productionEnvironments || DEFAULT_PROD_ENV_NAMES;
             const isProduction = productionEnvironments.includes(app.params.run.env);
 
             // Register core output as a module available for all other modules
