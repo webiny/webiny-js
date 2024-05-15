@@ -16488,6 +16488,7 @@ __metadata:
     express: ^4.19.2
     fast-glob: ^3.2.7
     humanize-duration: ^3.31.0
+    is-ci: ^3.0.0
     listr: ^0.14.3
     localtunnel: 2.0.2
     lodash: ^4.17.21
@@ -18233,7 +18234,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     regenerator-runtime: ^0.13.5
-    theme: ^0.1.0
+    theme: ^1.0.0
     tslib: ^2.4.0
   languageName: unknown
   linkType: soft
@@ -38297,7 +38298,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"theme@^0.1.0, theme@workspace:extensions/theme":
+"theme@^1.0.0, theme@workspace:extensions/theme":
   version: 0.0.0-use.local
   resolution: "theme@workspace:extensions/theme"
   dependencies:
@@ -39930,7 +39931,7 @@ __metadata:
     react-dom: 18.2.0
     regenerator-runtime: ^0.13.5
     source-map-explorer: ^2.5.3
-    theme: ^0.1.0
+    theme: ^1.0.0
   languageName: unknown
   linkType: soft
 

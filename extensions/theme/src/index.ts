@@ -2,6 +2,9 @@ import { PbPageLayoutPlugin } from "@webiny/app-page-builder";
 import { FbFormLayoutPlugin } from "@webiny/app-form-builder";
 import { ThemePlugin } from "@webiny/app-website";
 
+// Global styles.
+import "./global.scss";
+
 // The central theme object which defines different visual aspects of your website,
 // for example the default set of colors, typography, breakpoints, and more.
 import theme from "./theme";

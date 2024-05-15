@@ -1,5 +1,6 @@
 const { measureDuration } = require("../../utils");
 const ora = require("ora");
+const isCI = require("is-ci");
 
 const spinnerMessages = [
     [60, "Still deploying..."],
@@ -22,7 +23,7 @@ const spinnerMessages = [
 
 module.exports = async ({ inputs, context, pulumi }) => {
     // We always show deployment logs when doing previews.
-    const showDeploymentLogs = inputs.deploymentLogs;
+    const showDeploymentLogs = isCI || inputs.deploymentLogs;
 
     const PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
     const PULUMI_CONFIG_PASSPHRASE = process.env.PULUMI_CONFIG_PASSPHRASE;
