@@ -1454,12 +1454,21 @@ export const createEntriesStorageOperations = (
             })
         ];
         /**
-         * If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
+         * If we are unpublishing the latest revision, let's also update the latest revision entry's status in both DynamoDB tables.
          */
         if (latestStorageEntry?.id === entry.id) {
             const { index } = configurations.es({
                 model
             });
+
+            items.push(
+                entity.putBatch({
+                    ...storageEntry,
+                    PK: partitionKey,
+                    SK: createLatestSortKey(),
+                    TYPE: createLatestRecordType()
+                })
+            );
 
             const esLatestData = await transformer.getElasticsearchLatestEntryData();
             esItems.push(
