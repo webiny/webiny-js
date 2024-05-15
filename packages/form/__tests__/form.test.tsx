@@ -147,6 +147,14 @@ const assert = async (view: React.ReactElement, onSubmit: jest.MockedFunction<an
 };
 
 describe("Form", () => {
+    // beforeEach(() => {
+    //     jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => cb());
+    // });
+    //
+    // afterEach(() => {
+    //     window.requestAnimationFrame.mockRestore();
+    // });
+
     test("should call `onSubmit` callback with correct field values using `<Bind>`", async () => {
         const onSubmit = jest.fn();
         await assert(<FormViewWithBind onSubmit={onSubmit} />, onSubmit);

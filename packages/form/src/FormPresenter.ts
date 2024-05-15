@@ -73,7 +73,7 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
     }
 
     getFieldValue(name: string) {
-        return lodashGet(this.data, name);
+        return lodashGet(this.data, name) as unknown;
     }
 
     getFieldValidation(name: string): FieldValidationResult {
@@ -145,24 +145,27 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
     registerField(props: BindComponentProps) {
         const existingField = this.formFields.get(props.name);
 
-        let field: FormField;
         if (existingField) {
-            field = FormField.createFrom(existingField, props);
-        } else {
-            field = FormField.create(props);
+            existingField.setValidators(props.validators);
+            existingField.setBeforeChange(props.beforeChange);
+            existingField.setAfterChange(props.afterChange);
+            return;
         }
 
+        const field = FormField.create(props);
+
         // We only want to handle default field value for new fields.
-        if (!existingField) {
-            const fieldName = field.getName();
-            const currentFieldValue = lodashGet(this.data, fieldName);
-            const defaultValue = field.getDefaultValue();
+        const fieldName = field.getName();
+        const currentFieldValue = lodashGet(this.data, fieldName);
+        const defaultValue = field.getDefaultValue();
+
+        requestAnimationFrame(() => {
             if (emptyValues.includes(currentFieldValue) && defaultValue !== undefined) {
                 lodashSet(this.data, fieldName, defaultValue);
             }
-        }
 
-        this.formFields.set(props.name, field);
+            this.formFields.set(props.name, field);
+        });
     }
 
     unregisterField(name: string) {
