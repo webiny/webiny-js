@@ -48,12 +48,7 @@ export const Filters = () => {
     }
 
     return (
-        <BaseFilters
-            filters={browser.filters}
-            show={list.showingFilters}
-            data={{}}
-            onChange={applyFilters}
-        >
+        <BaseFilters filters={browser.filters} show={list.showingFilters} onChange={applyFilters}>
             <AdvancedSearch
                 fields={fields}
                 repository={repository}

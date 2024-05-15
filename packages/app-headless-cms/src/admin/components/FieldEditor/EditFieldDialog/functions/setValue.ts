@@ -1,4 +1,4 @@
-import set from "lodash/set";
+import { set } from "dot-prop-immutable";
 import { BindComponentRenderProp } from "@webiny/form";
 
 interface Params {
@@ -7,16 +7,13 @@ interface Params {
     index: number;
     name: string;
 }
-const setValue = (params: Params): void => {
+
+export const setValue = (params: Params): void => {
     const { value, bind, index, name } = params;
-    let newValue = [...(bind.value || [])];
+    const currentValue = [...(bind.value || [])];
     if (index >= 0) {
-        set(newValue, `${index}.${name}`, value);
+        bind.onChange(set(currentValue, `${index}.${name}`, value));
     } else {
-        newValue = value;
+        bind.onChange(value);
     }
-
-    bind.onChange(newValue);
 };
-
-export default setValue;

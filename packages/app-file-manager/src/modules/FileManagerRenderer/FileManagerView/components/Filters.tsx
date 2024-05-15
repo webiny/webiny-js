@@ -18,12 +18,5 @@ export const Filters = () => {
         setFilters(convertedFilters);
     };
 
-    return (
-        <BaseFilters
-            filters={browser.filters}
-            show={showingFilters}
-            data={{}}
-            onChange={applyFilters}
-        />
-    );
+    return <BaseFilters filters={browser.filters} show={showingFilters} onChange={applyFilters} />;
 };

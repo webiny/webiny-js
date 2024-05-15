@@ -32,7 +32,5 @@ export const Filters = ({ showingFilters, setFilters, hasAccessToUsers }: Filter
         return browser.filters.filter(filter => filter.name !== "initiator");
     }, [browser, hasAccessToUsers]);
 
-    return (
-        <BaseFilters filters={filters} show={showingFilters} data={{}} onChange={applyFilters} />
-    );
+    return <BaseFilters filters={filters} show={showingFilters} onChange={applyFilters} />;
 };

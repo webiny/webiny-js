@@ -19,6 +19,7 @@ import { getFetchPolicy } from "~/utils/getFetchPolicy";
 import { useRecords } from "@webiny/app-aco";
 import * as Cms from "~/admin/contexts/Cms";
 import { useMockRecords } from "./useMockRecords";
+import { ROOT_FOLDER } from "~/admin/constants";
 
 interface UpdateListCacheOptions {
     options?: {
@@ -71,6 +72,7 @@ export interface ContentEntryContextProviderProps extends Partial<UseContentEntr
      */
     readonly?: boolean;
     children: React.ReactNode;
+    currentFolderId?: string;
 }
 
 interface UseContentEntryProviderProps {
@@ -100,7 +102,8 @@ export const ContentEntryProvider = ({
     children,
     isNewEntry,
     readonly,
-    getContentId
+    getContentId,
+    currentFolderId
 }: ContentEntryContextProviderProps) => {
     const { isMounted } = useIsMounted();
     const [activeTab, setActiveTab] = useState(0);
@@ -113,7 +116,6 @@ export const ContentEntryProvider = ({
         ? useMockRecords()
         : useRecords();
     const [isLoading, setLoading] = useState<boolean>(false);
-
     const contentEntryProviderProps = useContentEntryProviderProps();
 
     const newEntry =
@@ -212,7 +214,12 @@ export const ContentEntryProvider = ({
         setLoading(true);
         const response = await cms.createEntry({
             model,
-            entry,
+            entry: {
+                ...entry,
+                wbyAco_location: {
+                    folderId: currentFolderId || ROOT_FOLDER
+                }
+            },
             options: { skipValidators: options?.skipValidators }
         });
         setLoading(false);

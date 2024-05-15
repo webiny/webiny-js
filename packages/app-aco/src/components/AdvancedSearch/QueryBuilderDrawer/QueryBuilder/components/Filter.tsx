@@ -37,7 +37,15 @@ export const Filter = ({ name, onDelete, onFieldSelectChange, fields, filter }: 
                                         label={"Field"}
                                         options={options}
                                         value={options.find(option => option.id === value)}
-                                        onChange={data => onFieldSelectChange(data)}
+                                        onChange={selected => {
+                                            /**
+                                             * Update the selected value only if it's different from the current value.
+                                             * When the value is populated from data, onChange might trigger re-rendering of the form and clear related fields.
+                                             */
+                                            if (selected !== value) {
+                                                onFieldSelectChange(selected);
+                                            }
+                                        }}
                                         validation={validation}
                                     />
                                 );

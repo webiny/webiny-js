@@ -122,7 +122,6 @@ export const NewReferencedEntryDialog = ({
 }: NewReferencedEntryDialogProps) => {
     const { apolloClient } = useCms();
     const [model, setModel] = useState<CmsModel | undefined>(undefined);
-    const saveEntryRef = useRef<SaveEntry>();
 
     useEffect(() => {
         (async () => {
@@ -166,25 +165,11 @@ export const NewReferencedEntryDialog = ({
         <ContentEntriesProvider contentModel={model} key={model.modelId} insideDialog={true}>
             <FoldersProvider type={`cms:${model.modelId}`}>
                 <NavigateFolderProvider modelId={model.modelId}>
-                    <ContentEntryProvider isNewEntry={() => true} getContentId={() => null}>
-                        <ModalFullWidthDialog open={true} onClose={onClose}>
-                            <DialogTitle>
-                                {t`New {modelName} Entry`({ modelName: model.name })}
-                            </DialogTitle>
-                            <DialogContent>
-                                <EntryForm
-                                    onCreate={onCreate}
-                                    setSaveEntry={cb => (saveEntryRef.current = cb)}
-                                />
-                            </DialogContent>
-                            <DialogActions>
-                                <DialogCancel>{t`Cancel`}</DialogCancel>
-                                <ButtonPrimary
-                                    onClick={() => saveEntryRef.current && saveEntryRef.current()}
-                                >{t`Create Entry`}</ButtonPrimary>
-                            </DialogActions>
-                        </ModalFullWidthDialog>
-                    </ContentEntryProvider>
+                    <ContentEntryProviderWithCurrentFolderId
+                        model={model}
+                        onClose={onClose}
+                        onCreate={onCreate}
+                    />
                 </NavigateFolderProvider>
             </FoldersProvider>
         </ContentEntriesProvider>
@@ -218,5 +203,44 @@ const NavigateFolderProvider = ({
         >
             {children}
         </AbstractNavigateFolderProvider>
+    );
+};
+
+interface ContentEntryProviderWithCurrentFolderIdProps {
+    model: CmsModel;
+    onClose: () => void;
+    onCreate: (entry: CmsContentEntry) => void;
+}
+
+const ContentEntryProviderWithCurrentFolderId = ({
+    model,
+    onClose,
+    onCreate
+}: ContentEntryProviderWithCurrentFolderIdProps) => {
+    const saveEntryRef = useRef<SaveEntry>();
+    const { currentFolderId } = useNavigateFolder();
+
+    return (
+        <ContentEntryProvider
+            isNewEntry={() => true}
+            getContentId={() => null}
+            currentFolderId={currentFolderId}
+        >
+            <ModalFullWidthDialog open={true} onClose={onClose}>
+                <DialogTitle>{t`New {modelName} Entry`({ modelName: model.name })}</DialogTitle>
+                <DialogContent>
+                    <EntryForm
+                        onCreate={onCreate}
+                        setSaveEntry={cb => (saveEntryRef.current = cb)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <DialogCancel>{t`Cancel`}</DialogCancel>
+                    <ButtonPrimary
+                        onClick={() => saveEntryRef.current && saveEntryRef.current()}
+                    >{t`Create Entry`}</ButtonPrimary>
+                </DialogActions>
+            </ModalFullWidthDialog>
+        </ContentEntryProvider>
     );
 };
