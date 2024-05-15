@@ -35,6 +35,7 @@ const ForceUnlocked = ({ user }: IForceUnlockedProps) => {
 };
 
 export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
+    const disablePrompt = useRef(false);
     const { entry, contentModel: model } = useContentEntry();
     const { updateEntryLock, unlockEntry, fetchLockedEntryLockRecord, removeEntryLock } =
         useRecordLocking();
@@ -50,9 +51,8 @@ export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
     const PromptDecorator = useMemo(() => {
         return Prompt.createDecorator(Original => {
             return function Prompt(props) {
-                return <Original {...props} />;
-                // const when = disablePrompt.current === true ? false : props.when;
-                // return <Original message={props.message} when={when} />;
+                const when = disablePrompt.current === true ? false : props.when;
+                return <Original message={props.message} when={when} />;
             };
         });
     }, []);
@@ -74,6 +74,7 @@ export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
                     $lockingType: model.modelId
                 };
                 removeEntryLock(record);
+                disablePrompt.current = true;
                 showDialog({
                     title: "Entry was forcefully unlocked",
                     content: <ForceUnlocked user={user} />,
