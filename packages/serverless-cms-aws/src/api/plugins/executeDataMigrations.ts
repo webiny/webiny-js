@@ -6,7 +6,8 @@ import {
     InteractiveCliStatusReporter,
     NonInteractiveCliStatusReporter,
     MigrationRunner,
-    CliMigrationRunReporter
+    CliMigrationRunReporter,
+    MigrationStatusReporter
 } from "@webiny/data-migration/cli";
 
 /**
@@ -43,10 +44,14 @@ export const executeDataMigrations = {
             const functionName = apiOutput["migrationLambdaArn"];
 
             const logReporter = new LogReporter(functionName);
-            const statusReporter =
-                !process.stdout.isTTY || "CI" in process.env
+
+            let statusReporter: MigrationStatusReporter | undefined;
+            if (inputs.dataMigrationReporter) {
+                const useNonInteractiveReporter = !process.stdout.isTTY || "CI" in process.env;
+                statusReporter = useNonInteractiveReporter
                     ? new NonInteractiveCliStatusReporter(logReporter)
                     : new InteractiveCliStatusReporter(logReporter);
+            }
 
             const runner = MigrationRunner.create({
                 lambdaClient,

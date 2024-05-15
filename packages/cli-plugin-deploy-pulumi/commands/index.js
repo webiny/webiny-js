@@ -59,6 +59,11 @@ module.exports = [
                         describe: `Enable base compilation-related logs`,
                         type: "boolean"
                     });
+                    yargs.option("data-migration-reporter", {
+                        default: true,
+                        describe: `Enable data migration reporting during the deployment process`,
+                        type: "boolean"
+                    });
                 },
                 async argv => {
                     await deploy(argv, context);
