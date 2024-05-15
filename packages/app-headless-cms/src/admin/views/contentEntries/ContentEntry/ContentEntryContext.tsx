@@ -16,7 +16,7 @@ import {
     createRevisionsQuery
 } from "@webiny/app-headless-cms-common";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
-import { useNavigateFolder, useRecords } from "@webiny/app-aco";
+import { useRecords } from "@webiny/app-aco";
 import * as Cms from "~/admin/contexts/Cms";
 import { useMockRecords } from "./useMockRecords";
 import { ROOT_FOLDER } from "~/admin/constants";
@@ -72,6 +72,7 @@ export interface ContentEntryContextProviderProps extends Partial<UseContentEntr
      */
     readonly?: boolean;
     children: React.ReactNode;
+    currentFolderId?: string;
 }
 
 interface UseContentEntryProviderProps {
@@ -101,7 +102,8 @@ export const ContentEntryProvider = ({
     children,
     isNewEntry,
     readonly,
-    getContentId
+    getContentId,
+    currentFolderId
 }: ContentEntryContextProviderProps) => {
     const { isMounted } = useIsMounted();
     const [activeTab, setActiveTab] = useState(0);
@@ -115,7 +117,6 @@ export const ContentEntryProvider = ({
         : useRecords();
     const [isLoading, setLoading] = useState<boolean>(false);
     const contentEntryProviderProps = useContentEntryProviderProps();
-    const { currentFolderId } = useNavigateFolder();
 
     const newEntry =
         typeof isNewEntry === "function" ? isNewEntry() : contentEntryProviderProps.isNewEntry();
