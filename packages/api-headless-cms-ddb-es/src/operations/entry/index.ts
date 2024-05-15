@@ -1461,6 +1461,15 @@ export const createEntriesStorageOperations = (
                 model
             });
 
+            items.push(
+                entity.putBatch({
+                    ...storageEntry,
+                    PK: partitionKey,
+                    SK: createLatestSortKey(),
+                    TYPE: createRecordType()
+                })
+            );
+
             const esLatestData = await transformer.getElasticsearchLatestEntryData();
             esItems.push(
                 esEntity.putBatch({
