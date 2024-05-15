@@ -46,7 +46,7 @@ export const executeDataMigrations = {
             const logReporter = new LogReporter(functionName);
 
             let statusReporter: MigrationStatusReporter | undefined;
-            if (inputs.dataMigrationLogs) {
+            if (inputs.dataMigrationReporter) {
                 const useNonInteractiveReporter = !process.stdout.isTTY || "CI" in process.env;
                 statusReporter = useNonInteractiveReporter
                     ? new NonInteractiveCliStatusReporter(logReporter)
