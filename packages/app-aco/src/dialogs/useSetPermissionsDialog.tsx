@@ -51,7 +51,7 @@ const FormComponent = ({ folder }: FormComponentProps) => {
     });
 
     useEffect(() => {
-        bind.form.setValue("permissions", permissions);
+        bind.onChange(permissions);
     }, [permissions]);
 
     const addPermission = useCallback(

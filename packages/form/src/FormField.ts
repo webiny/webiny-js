@@ -7,6 +7,10 @@ interface BeforeChange {
     (value: unknown, cb: (value: unknown) => void): void;
 }
 
+interface AfterChange {
+    (value: unknown, form: FormAPI): void;
+}
+
 const defaultBeforeChange: BeforeChange = (value, cb) => cb(value);
 
 const defaultAfterChange = lodashNoop;
@@ -14,9 +18,9 @@ const defaultAfterChange = lodashNoop;
 export class FormField {
     private readonly name: string;
     private readonly defaultValue: unknown;
-    private validator: FormFieldValidator;
-    private readonly beforeChange?: BeforeChange;
-    private readonly afterChange?: (value: unknown, form: FormAPI) => void;
+    private validator: FormFieldValidator | undefined;
+    private beforeChange?: BeforeChange;
+    private afterChange?: AfterChange;
     private validation: FieldValidationResult | undefined = undefined;
 
     private constructor(props: BindComponentProps) {
@@ -24,23 +28,7 @@ export class FormField {
         this.defaultValue = props.defaultValue;
         this.beforeChange = props.beforeChange;
         this.afterChange = props.afterChange;
-
-        let validators: Validator[] = [];
-        if (!props.validators) {
-            validators = [];
-        } else if (!Array.isArray(props.validators)) {
-            validators = [props.validators as Validator];
-        } else {
-            validators = props.validators;
-        }
-
-        this.validator = new FormFieldValidator(validators);
-    }
-
-    static createFrom(field: FormField, props: BindComponentProps) {
-        const newField = new FormField(props);
-        newField.validation = field.validation;
-        return newField;
+        this.setValidators(props.validators);
     }
 
     static create(props: BindComponentProps) {
@@ -51,7 +39,7 @@ export class FormField {
         value: unknown,
         options?: FormValidationOptions
     ): Promise<FieldValidationResult> {
-        this.validation = await this.validator.validate(value, options || { skipValidators: [] });
+        this.validation = await this.validator!.validate(value, options || { skipValidators: [] });
         return this.validation;
     }
 
@@ -77,6 +65,27 @@ export class FormField {
 
     getValidation() {
         return this.validation;
+    }
+
+    setBeforeChange(cb: BeforeChange | undefined) {
+        this.beforeChange = cb;
+    }
+
+    setAfterChange(cb: AfterChange | undefined) {
+        this.afterChange = cb;
+    }
+
+    setValidators(validators: Validator | Validator[] | undefined) {
+        let normalized: Validator[] = [];
+        if (!validators) {
+            normalized = [];
+        } else if (!Array.isArray(validators)) {
+            normalized = [validators as Validator];
+        } else {
+            normalized = validators;
+        }
+
+        this.validator = new FormFieldValidator(normalized);
     }
 
     setValue(value: unknown, cb: (value: unknown) => void) {

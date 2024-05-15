@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect } from "react";
-import { observer } from "mobx-react-lite";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete_outline.svg";
 
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
@@ -33,7 +32,7 @@ export interface QueryBuilderProps {
     vm: QueryBuilderViewModel;
 }
 
-export const QueryBuilder = observer((props: QueryBuilderProps) => {
+export const QueryBuilder = (props: QueryBuilderProps) => {
     const formRef = React.createRef<FormAPI>();
 
     useEffect(() => {
@@ -123,4 +122,4 @@ export const QueryBuilder = observer((props: QueryBuilderProps) => {
             )}
         </Form>
     );
-});
+};

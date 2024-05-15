@@ -14,7 +14,9 @@ export const DateWithoutTimezone = () => {
     });
 
     useEffect(() => {
-        setDateTime(value.slice(0, -5));
+        if (value) {
+            setDateTime(value.slice(0, -5));
+        }
     }, [value]);
 
     const handleOnChange = (value: string) => {

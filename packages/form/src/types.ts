@@ -35,7 +35,6 @@ export interface UseBindHook extends BindComponentRenderProp {
 }
 
 export interface BindComponentRenderProp<T = any> {
-    form: FormAPI;
     onChange: BindComponentRenderPropOnChange;
     value: T;
     validate: () => Promise<boolean | any>;

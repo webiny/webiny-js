@@ -1,7 +1,8 @@
 import React, { useRef, useCallback, cloneElement } from "react";
+import { Validator } from "@webiny/validation/types";
+import { useForm } from "@webiny/form";
 import { createValidators } from "~/utils/createValidators";
 import { BindComponent, CmsModelField } from "~/types";
-import { Validator } from "@webiny/validation/types";
 
 interface UseBindProps {
     field: CmsModelField;
@@ -30,6 +31,7 @@ export interface GetBindCallable {
 export function useBind({ Bind, field }: UseBindProps) {
     const memoizedBindComponents = useRef<Record<string, BindComponent>>({});
     const cacheKey = createFieldCacheKey(field);
+    const form = useForm();
 
     return useCallback(
         (index = -1) => {
@@ -93,7 +95,7 @@ export function useBind({ Bind, field }: UseBindProps) {
                                     bind.onChange(value);
 
                                     // To make sure the field is still valid, we must trigger validation.
-                                    bind.form.validateInput(field.fieldId);
+                                    form.validateInput(field.fieldId);
                                 };
 
                                 props.moveValueUp = (index: number) => {

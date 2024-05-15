@@ -59,12 +59,21 @@ export const TrashBin = ({ render, ...rest }: TrashBinProps) => {
     );
 
     const retentionPeriod = useMemo(() => {
-        // Retrieve the retention period from the environment variable WEBINY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS,
-        // or default to 90 days if not set or set to 0.
+        // Default retention period if no valid environment variable is found
+        const defaultRetentionPeriod = 90;
+
+        // Retrieve the retention period from the environment variable
         const retentionPeriodFromEnv = process.env["WEBINY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS"];
-        return retentionPeriodFromEnv && Number(retentionPeriodFromEnv) !== 0
-            ? Number(retentionPeriodFromEnv)
-            : 90;
+
+        // Parse the environment variable value to an integer (or use default if not valid or not set)
+        const parsedRetentionPeriod = retentionPeriodFromEnv
+            ? parseInt(retentionPeriodFromEnv, 10)
+            : defaultRetentionPeriod;
+
+        // Return the parsed retention period if valid and not zero, otherwise return the default
+        return isNaN(parsedRetentionPeriod) || parsedRetentionPeriod === 0
+            ? defaultRetentionPeriod
+            : parsedRetentionPeriod;
     }, []);
 
     return (
