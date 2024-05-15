@@ -1,4 +1,4 @@
-import { addPluginToReactApp } from "./utils/addPluginToReactApp";
+import { addPluginToAdminApp } from "./utils/addPluginToAdminApp";
 import { PluginGenerator } from "~/types";
 import path from "path";
 import readJson from "load-json-file";
@@ -6,7 +6,7 @@ import { PackageJson } from "@webiny/cli-plugin-scaffold/types";
 import writeJson from "write-json-file";
 
 export const adminGenerator: PluginGenerator = async ({ input }) => {
-    await addPluginToReactApp(input);
+    await addPluginToAdminApp(input);
 
     // Update dependencies list in package.json.
     const packageJsonPath = path.join("apps", "admin", "package.json");

@@ -1,5 +1,5 @@
 import React from "react";
 
-export const createExtension = () => {
+export const Extension = () => {
     return <>{/* Your code here. */}</>;
 };
