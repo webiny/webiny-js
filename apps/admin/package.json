@@ -25,7 +25,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "regenerator-runtime": "^0.13.5",
-    "theme": "^0.1.0",
+    "theme": "^1.0.0",
     "tslib": "^2.4.0"
   },
   "devDependencies": {

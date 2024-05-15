@@ -19,7 +19,7 @@ export const colors = {
     color6: "#ffffff" // White background.
 };
 
-// Fonts.
+// Fonts (imported in global.scss).
 export const fonts = {
     font1: "'IBM Plex Sans', sans-serif;", // Primary.
     font2: "'Lato', sans-serif;" // Secondary.
