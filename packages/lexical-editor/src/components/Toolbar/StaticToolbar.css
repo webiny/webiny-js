@@ -4,9 +4,9 @@
   padding: 4px;
   vertical-align: middle;
   border: 1px solid #eee;
-  height: 35px;
   will-change: transform;
   background: #fff;
+  flex-wrap: wrap;
   z-index: 1;
 }
 
