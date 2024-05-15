@@ -7,6 +7,8 @@ export interface FormApiOptions<T> {
     validateOnFirstSubmit: boolean;
 }
 
+const emptyValues: unknown[] = [undefined, null];
+
 export class FormAPI<T> {
     private presenter: FormPresenter<T>;
     private readonly options: FormApiOptions<T>;
@@ -48,7 +50,7 @@ export class FormAPI<T> {
             disabled: this.isDisabled(),
             validate: () => this.validateInput(props.name),
             validation: this.presenter.getFieldValidation(props.name),
-            value: this.presenter.getFieldValue(props.name),
+            value: this.valueOrDefault(props),
             onChange: async (value: unknown) => {
                 this.presenter.setFieldValue(props.name, value);
 
@@ -100,5 +102,20 @@ export class FormAPI<T> {
         const { validateOnFirstSubmit } = this.options;
 
         return !validateOnFirstSubmit || (validateOnFirstSubmit && this.wasSubmitted);
+    }
+
+    /**
+     * We need to use the `defaultValue` from props on the first render, because default value is only available in the
+     * form data on the next render cycle (we set it in the `requestAnimationFrame()`). This one render cycle is enough
+     * to cause problems, so to avoid issues, we use the immediate props to ensure the correct value is returned.
+     * On the second render cycle, the `getFieldValue` will contain the default value, and that's what will be returned.
+     * @private
+     */
+    private valueOrDefault(props: BindComponentProps) {
+        const value = this.presenter.getFieldValue(props.name);
+        if (emptyValues.includes(value) && props.defaultValue !== undefined) {
+            return props.defaultValue;
+        }
+        return value;
     }
 }
