@@ -9,22 +9,32 @@ import { FormContext } from "./FormContext";
 import { FormPresenter } from "./FormPresenter";
 import { FormAPI } from "./FormApi";
 
+type Callbacks<T> = Pick<FormProps<T>, "onChange" | "onInvalid">;
+
 function FormInner<T extends GenericFormData = GenericFormData>(
     props: FormProps<T>,
     ref: React.ForwardedRef<any>
 ) {
     const dataRef = useRef(props.data);
+    const callbacksRef = useRef<Callbacks<T>>({
+        onChange: props.onChange,
+        onInvalid: props.onInvalid
+    });
 
     const presenter = useMemo(() => {
         const presenter = new FormPresenter<T>();
         presenter.init({
             data: (props.data || {}) as T,
             onChange: data => {
-                if (typeof props.onChange === "function") {
-                    props.onChange(data, formApi);
+                if (typeof callbacksRef.current.onChange === "function") {
+                    callbacksRef.current.onChange(data, formApi);
                 }
             },
-            onInvalid: props.onInvalid
+            onInvalid: (...args) => {
+                if (typeof callbacksRef.current.onInvalid === "function") {
+                    callbacksRef.current.onInvalid(...args);
+                }
+            }
         });
         return presenter;
     }, []);
@@ -44,6 +54,13 @@ function FormInner<T extends GenericFormData = GenericFormData>(
             validateOnFirstSubmit: props.validateOnFirstSubmit ?? true
         });
     }, [props.onSubmit, props.disabled, props.validateOnFirstSubmit]);
+
+    useEffect(() => {
+        callbacksRef.current = {
+            onChange: props.onChange,
+            onInvalid: props.onInvalid
+        };
+    }, [props.onChange, props.onInvalid]);
 
     useEffect(() => {
         presenter.setInvalidFields(props.invalidFields || {});
