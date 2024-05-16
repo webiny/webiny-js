@@ -134,3 +134,5 @@ export const Form = observer(
         props: FormProps<T> & { ref?: React.ForwardedRef<any> }
     ) => ReturnType<typeof FormInner<T>>
 );
+
+Form.displayName = "Form";
