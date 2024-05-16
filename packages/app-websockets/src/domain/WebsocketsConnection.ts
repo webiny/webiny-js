@@ -9,12 +9,20 @@ import {
     WebsocketsReadyState
 } from "./types";
 
+interface ICreateUrlResult {
+    token: string;
+    url: string;
+}
+
 const defaultFactory: IWebsocketsConnectionFactory = (url, protocol) => {
     return new WebSocket(url, protocol);
 };
 
 export interface IWebsocketsConnectionParams {
     url: string;
+    tenant: string;
+    locale: string;
+    getToken(): Promise<string | null>;
     subscriptionManager: IWebsocketsSubscriptionManager;
     protocol?: IWebsocketsConnectProtocol;
     factory?: IWebsocketsConnectionFactory;
@@ -22,31 +30,56 @@ export interface IWebsocketsConnectionParams {
 
 export class WebsocketsConnection implements IWebsocketsConnection {
     private connection: WebSocket | null = null;
-    private url: string;
-    private protocol: IWebsocketsConnectProtocol;
+    private readonly url: string;
+    private readonly getToken: () => Promise<string | null>;
+    private tenant: string;
+    private locale: string;
+    private readonly protocol: IWebsocketsConnectProtocol;
     public readonly subscriptionManager: IWebsocketsSubscriptionManager;
     private readonly factory: IWebsocketsConnectionFactory;
 
     public constructor(params: IWebsocketsConnectionParams) {
         this.url = params.url;
+        this.tenant = params.tenant;
+        this.locale = params.locale;
+        this.getToken = params.getToken;
         this.protocol = params.protocol;
         this.subscriptionManager = params.subscriptionManager;
         this.factory = params.factory || defaultFactory;
     }
 
-    public init(): void {
-        this.connect(this.url, this.protocol);
+    public setTenant(tenant: string): void {
+        this.tenant = tenant;
     }
 
-    public connect(url: string, protocol?: IWebsocketsConnectProtocol): void {
+    public setLocale(locale: string): void {
+        this.locale = locale;
+    }
+
+    public init(): void {
+        this.connect();
+    }
+
+    public async connect(): Promise<void> {
         if (this.connection && this.connection.readyState !== WebsocketsReadyState.CLOSED) {
             return;
         }
-        this.url = url;
-        this.protocol = protocol || this.protocol;
-        this.connection = this.factory(this.url, this.protocol);
+
+        const result = await this.createUrl();
+        if (!result) {
+            return;
+        }
+        const { url } = result;
+
+        this.connection = this.factory(url, this.protocol);
+
+        const start = new Date().getTime();
+
+        console.log(`Websockets connecting to ${this.url}...`);
 
         this.connection.addEventListener("open", event => {
+            const end = new Date().getTime();
+            console.log(`...connected in ${end - start}ms.`);
             return this.subscriptionManager.triggerOnOpen(event);
         });
         this.connection.addEventListener("close", event => {
@@ -76,13 +109,13 @@ export class WebsocketsConnection implements IWebsocketsConnection {
         return true;
     }
 
-    public reconnect(url?: string, protocol?: IWebsocketsConnectProtocol): void {
-        if (!this.close(WebsocketsCloseCode.RECONNECT, "Trying to reconnect.")) {
+    public async reconnect(): Promise<void> {
+        if (!this.close(WebsocketsCloseCode.NORMAL, "Trying to reconnect.")) {
             console.error("Failed to close the connection before reconnecting.");
             return;
         }
 
-        this.connect(url || this.url, protocol || this.protocol);
+        await this.connect();
     }
 
     public send<T extends IGenericData = IGenericData>(data: T): void {
@@ -91,6 +124,26 @@ export class WebsocketsConnection implements IWebsocketsConnection {
             return;
         }
         this.connection.send(JSON.stringify(data));
+    }
+
+    public isConnected(): boolean {
+        return this.connection?.readyState === WebsocketsReadyState.OPEN;
+    }
+
+    public isClosed(): boolean {
+        return this.connection?.readyState === WebsocketsReadyState.CLOSED;
+    }
+
+    private async createUrl(): Promise<ICreateUrlResult | null> {
+        const token = await this.getToken();
+        if (!token) {
+            console.error(`Missing token to connect to websockets.`);
+            return null;
+        }
+        return {
+            token,
+            url: `${this.url}?token=${token}&tenant=${this.tenant}&locale=${this.locale}`
+        };
     }
 }
 

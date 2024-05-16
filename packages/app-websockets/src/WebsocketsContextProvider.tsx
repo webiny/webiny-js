@@ -2,8 +2,12 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTenancy } from "@webiny/app-tenancy";
 import { useI18N } from "@webiny/app-i18n";
 import { getToken } from "./utils/getToken";
-import { getUrl } from "./utils/getUrl";
-import { IncomingGenericData, IWebsocketsContext, IWebsocketsContextSendCallable } from "~/types";
+import {
+    IncomingGenericData,
+    IWebsocketsContext,
+    IWebsocketsContextSendCallable,
+    WebsocketsCloseCode
+} from "~/types";
 import {
     createWebsocketsAction,
     createWebsocketsActions,
@@ -12,6 +16,7 @@ import {
     createWebsocketsSubscriptionManager
 } from "./domain";
 import { IGenericData, IWebsocketsManager } from "./domain/types";
+import { getUrl } from "./utils/getUrl";
 
 export interface IWebsocketsContextProviderProps {
     loader?: React.ReactElement;
@@ -41,7 +46,7 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
 
         let currentIteration = 0;
         manager.onClose(event => {
-            if (currentIteration > 5 || event.code !== 1001) {
+            if (currentIteration > 5 || event.code !== WebsocketsCloseCode.GOING_AWAY) {
                 return;
             }
             currentIteration++;
@@ -52,6 +57,17 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
                 console.log("Running auto-reconnect.");
                 socketsRef.current.connect();
             }, 1000);
+        });
+        /**
+         * We want to add a window event listener which will check if the connection is closed, and if its - it will connect again.
+         */
+        window.addEventListener("focus", () => {
+            if (!socketsRef.current) {
+                return;
+            } else if (socketsRef.current.isClosed()) {
+                console.log("Running auto-reconnect on focus.");
+                socketsRef.current!.connect();
+            }
         });
 
         return manager;
@@ -67,7 +83,7 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
             } else if (socketsRef.current) {
                 socketsRef.current.close();
             }
-            const url = getUrl({ tenant, locale, token });
+            const url = getUrl();
 
             if (!url) {
                 console.error("Not possible to connect to the websocket without a valid URL.", {
@@ -82,10 +98,13 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
                 createWebsocketsConnection({
                     subscriptionManager,
                     url,
+                    tenant,
+                    locale,
+                    getToken,
                     protocol: ["webiny-ws-v1"]
                 })
             );
-            socketsRef.current.connect();
+            await socketsRef.current.connect();
 
             setCurrent({
                 tenant,

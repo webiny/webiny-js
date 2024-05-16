@@ -43,8 +43,8 @@ export class WebsocketsManager implements IWebsocketsManager {
         return this.connection.subscriptionManager.onError(cb);
     }
 
-    public connect(): void {
-        this.connection.reconnect();
+    public async connect(): Promise<void> {
+        return this.connection.reconnect();
     }
 
     public close(code?: WebsocketsCloseCode, reason?: string): void {
@@ -53,6 +53,14 @@ export class WebsocketsManager implements IWebsocketsManager {
 
     public send<T extends IWebsocketManagerSendData = IWebsocketManagerSendData>(data: T): void {
         return this.connection.send<T>(data);
+    }
+
+    public isConnected(): boolean {
+        return this.connection.isConnected();
+    }
+
+    public isClosed(): boolean {
+        return this.connection.isClosed();
     }
 }
 
