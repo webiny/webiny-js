@@ -23,15 +23,15 @@ export const executeDataMigrations = {
             return;
         }
 
-        // if (inputs.build === false) {
-        //     context.info(`"--no-build" argument detected - skipping data migrations.`);
-        //     return;
-        // }
-        //
-        // // No need to run migrations if we're doing a preview.
-        // if (inputs.preview) {
-        //     return;
-        // }
+        if (inputs.build === false) {
+            context.info(`"--no-build" argument detected - skipping data migrations.`);
+            return;
+        }
+
+        // No need to run migrations if we're doing a preview.
+        if (inputs.preview) {
+            return;
+        }
 
         const apiOutput = getStackOutput({ folder: "apps/api", env });
 
