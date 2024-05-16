@@ -79,7 +79,7 @@ context("I18N app", () => {
         // Create new locale
         cy.findAllByTestId("new-record-button").first().click();
 
-        const formContainer = cy.get("webiny-form-container");
+        const formContainer = cy.findByTestId("i18n-locale-form");
 
         formContainer.within(() => {
             cy.findByTestId("l18n.locale.code").focus().type(newCode);
