@@ -97,7 +97,7 @@ export class WebsocketsConnection implements IWebsocketsConnection {
         );
     }
 
-    public close(code?: WebsocketsCloseCode, reason?: string): boolean {
+    public async close(code: WebsocketsCloseCode, reason: string): Promise<boolean> {
         if (!this.connection || this.connection.readyState === WebsocketsReadyState.CLOSED) {
             this.connection = null;
             return true;
@@ -107,15 +107,6 @@ export class WebsocketsConnection implements IWebsocketsConnection {
         this.connection.close(code, reason);
         this.connection = null;
         return true;
-    }
-
-    public async reconnect(): Promise<void> {
-        if (!this.close(WebsocketsCloseCode.NORMAL, "Trying to reconnect.")) {
-            console.error("Failed to close the connection before reconnecting.");
-            return;
-        }
-
-        await this.connect();
     }
 
     public send<T extends IGenericData = IGenericData>(data: T): void {

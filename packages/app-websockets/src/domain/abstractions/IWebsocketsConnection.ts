@@ -20,8 +20,7 @@ export interface IWebsocketsConnection {
     isConnected(): boolean;
     isClosed(): boolean;
 
-    connect(url: string, protocol?: IWebsocketsConnectProtocol): Promise<void>;
-    reconnect(url?: string, protocol?: IWebsocketsConnectProtocol): Promise<void>;
-    close(code?: WebsocketsCloseCode, reason?: string): boolean;
+    connect(): Promise<void>;
+    close(code: WebsocketsCloseCode, reason: string): Promise<boolean>;
     send<T extends IGenericData = IGenericData>(data: T): void;
 }

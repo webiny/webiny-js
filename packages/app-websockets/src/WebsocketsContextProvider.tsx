@@ -53,24 +53,44 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
             setTimeout(() => {
                 if (!socketsRef.current) {
                     return;
+                } else if (socketsRef.current.isClosed()) {
+                    console.log("Running auto-reconnect.");
+
+                    socketsRef.current.connect();
                 }
-                console.log("Running auto-reconnect.");
-                socketsRef.current.connect();
             }, 1000);
         });
+
+        return manager;
+    }, []);
+    /**
+     * We need this useEffect to close the websocket connection and remove window focus event in case component is unmounted.
+     * This will, probably, happen only during the development phase.
+     *
+     * If we did not disconnect on component unmount, we would have a memory leak - multiple connections would be opened.
+     */
+    useEffect(() => {
         /**
          * We want to add a window event listener which will check if the connection is closed, and if its - it will connect again.
          */
-        window.addEventListener("focus", () => {
+        const fn = () => {
             if (!socketsRef.current) {
                 return;
             } else if (socketsRef.current.isClosed()) {
                 console.log("Running auto-reconnect on focus.");
-                socketsRef.current!.connect();
+                socketsRef.current.connect();
             }
-        });
+        };
+        window.addEventListener("focus", fn);
 
-        return manager;
+        return () => {
+            window.removeEventListener("focus", fn);
+            if (!socketsRef.current) {
+                return;
+            }
+
+            socketsRef.current.close(WebsocketsCloseCode.NORMAL, "Component unmounted.");
+        };
     }, []);
 
     useEffect(() => {
@@ -81,7 +101,10 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
             } else if (current.tenant === tenant && current.locale === locale) {
                 return;
             } else if (socketsRef.current) {
-                socketsRef.current.close();
+                await socketsRef.current.close(
+                    WebsocketsCloseCode.NORMAL,
+                    "Changing tenant/locale."
+                );
             }
             const url = getUrl();
 

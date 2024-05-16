@@ -44,11 +44,11 @@ export class WebsocketsManager implements IWebsocketsManager {
     }
 
     public async connect(): Promise<void> {
-        return this.connection.reconnect();
+        return this.connection.connect();
     }
 
-    public close(code?: WebsocketsCloseCode, reason?: string): void {
-        this.connection.close(code, reason);
+    public async close(code: WebsocketsCloseCode, reason: string): Promise<boolean> {
+        return await this.connection.close(code, reason);
     }
 
     public send<T extends IWebsocketManagerSendData = IWebsocketManagerSendData>(data: T): void {

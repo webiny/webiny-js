@@ -8,7 +8,6 @@ export type IWebsocketsManagerErrorEvent = Event;
 export type IGenericData = GenericRecord;
 
 export enum WebsocketsCloseCode {
-    RECONNECT = 1,
     NORMAL = 1000,
     GOING_AWAY = 1001,
     PROTOCOL_ERROR = 1002,

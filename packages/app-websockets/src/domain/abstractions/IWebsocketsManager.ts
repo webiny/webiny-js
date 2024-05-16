@@ -45,7 +45,7 @@ export interface IWebsocketsManager {
     isClosed(): boolean;
 
     connect(): Promise<void>;
-    close(code?: WebsocketsCloseCode, reason?: string): void;
+    close(code: WebsocketsCloseCode, reason: string): Promise<boolean>;
     send<T extends IWebsocketManagerSendData = IWebsocketManagerSendData>(data: T): void;
 
     onOpen(
