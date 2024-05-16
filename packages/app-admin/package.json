@@ -86,7 +86,8 @@
       "dependencies": [
         "@svgr/webpack",
         "@emotion/react",
-        "@types/mime"
+        "@types/mime",
+        "reset-css"
       ],
       "peerDependencies": [
         "react-dom"

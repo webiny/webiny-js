@@ -51,6 +51,13 @@
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
   },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "reset-css"
+      ]
+    }
+  },
   "svgo": {
     "plugins": {
       "removeViewBox": false
