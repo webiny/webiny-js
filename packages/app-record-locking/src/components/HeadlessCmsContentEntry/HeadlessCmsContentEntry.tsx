@@ -1,9 +1,9 @@
 import React, { useState } from "react";
+import { CompositionScope, createGenericContext } from "@webiny/app-admin";
 import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
+import { Prompt } from "@webiny/react-router";
 import { ContentEntryGuard } from "./ContentEntryGuard";
 import { ContentEntryLocker } from "./ContentEntryLocker";
-import { Prompt } from "@webiny/react-router";
-import { createGenericContext } from "@webiny/app-admin";
 
 const { ContentEntry } = ContentEntryEditorConfig;
 
@@ -50,7 +50,9 @@ export const HeadlessCmsContentEntry = () => {
     return (
         <>
             <ContentEntryDecorator />
-            <PromptDecorator />
+            <CompositionScope name={"cms.contentEntryForm"}>
+                <PromptDecorator />
+            </CompositionScope>
         </>
     );
 };
