@@ -4,10 +4,13 @@ import debounce from "lodash/debounce";
 import { Prompt } from "@webiny/react-router";
 import { Form, FormAPI, FormOnSubmit, FormValidation } from "@webiny/form";
 import { CmsContentEntry, CmsModel } from "@webiny/app-headless-cms-common/types";
-import { useSnackbar } from "@webiny/app-admin";
+import { CompositionScope, useSnackbar } from "@webiny/app-admin";
 import { prepareFormData } from "@webiny/app-headless-cms-common";
 import { useContentEntry } from "~/index";
 import { PartialCmsContentEntryWithId } from "~/admin/contexts/Cms";
+
+const promptMessage =
+    "There are some unsaved changes! Are you sure you want to navigate away and discard all changes?";
 
 function omitTypename(key: string, value: string): string | undefined {
     return key === "__typename" ? undefined : value;
@@ -56,6 +59,7 @@ export interface SetSaveEntry {
 interface ContentEntryFormProviderProps {
     entry: Partial<CmsContentEntry>;
     model: CmsModel;
+    confirmNavigationIfDirty: boolean;
     onAfterCreate?: (entry: CmsContentEntry) => void;
     setSaveEntry?: SetSaveEntry;
     addItemToListCache?: boolean;
@@ -75,7 +79,8 @@ export const ContentEntryFormProvider = ({
     children,
     onAfterCreate,
     setSaveEntry,
-    addItemToListCache
+    addItemToListCache,
+    confirmNavigationIfDirty
 }: ContentEntryFormProviderProps) => {
     const ref = useRef<FormAPI<CmsContentEntry> | null>(null);
     const [invalidFields, setInvalidFields] = useState({});
@@ -199,12 +204,11 @@ export const ContentEntryFormProvider = ({
                 };
                 return (
                     <ContentEntryFormContext.Provider value={context}>
-                        <Prompt
-                            when={isDirty}
-                            message={
-                                "There are some unsaved changes! Are you sure you want to navigate away and discard all changes?"
-                            }
-                        />
+                        {confirmNavigationIfDirty ? (
+                            <CompositionScope name={"cms.contentEntryForm"}>
+                                <Prompt when={isDirty} message={promptMessage} />
+                            </CompositionScope>
+                        ) : null}
                         {children}
                     </ContentEntryFormContext.Provider>
                 );

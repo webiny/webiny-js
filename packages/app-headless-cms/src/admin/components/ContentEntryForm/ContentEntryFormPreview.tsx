@@ -25,7 +25,11 @@ export const ContentEntryFormPreview = makeDecoratable(
         const formRenderer = useFormRenderer(contentModel);
 
         return (
-            <ContentEntryFormProvider entry={{}} model={contentModel}>
+            <ContentEntryFormProvider
+                entry={{}}
+                model={contentModel}
+                confirmNavigationIfDirty={false}
+            >
                 <ModelProvider model={contentModel}>
                     <FormWrapper data-testid={"cms-content-form"}>
                         {formRenderer ? (

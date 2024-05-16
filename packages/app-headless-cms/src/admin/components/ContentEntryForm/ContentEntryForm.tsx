@@ -81,6 +81,7 @@ export const ContentEntryForm = makeDecoratable(
                 onAfterCreate={onAfterCreate || defaultOnAfterCreate}
                 setSaveEntry={setSaveEntry}
                 addItemToListCache={addEntryToListCache}
+                confirmNavigationIfDirty={true}
             >
                 <ModelProvider model={model}>
                     {header ? <Header /> : null}
