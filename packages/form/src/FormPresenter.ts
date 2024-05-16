@@ -160,11 +160,13 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
         const defaultValue = field.getDefaultValue();
 
         requestAnimationFrame(() => {
-            if (emptyValues.includes(currentFieldValue) && defaultValue !== undefined) {
-                lodashSet(this.data, fieldName, defaultValue);
-            }
+            runInAction(() => {
+                if (emptyValues.includes(currentFieldValue) && defaultValue !== undefined) {
+                    lodashSet(this.data, fieldName, defaultValue);
+                }
 
-            this.formFields.set(props.name, field);
+                this.formFields.set(props.name, field);
+            });
         });
     }
 
