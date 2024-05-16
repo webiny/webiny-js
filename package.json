@@ -135,7 +135,7 @@
     "lint-staged": "lint-staged",
     "postinstall": "yarn node ./scripts/linkWorkspaces.js",
     "prepublishOnly": "node scripts/prepublishOnly",
-    "prettier": "prettier \"**/**/*.{js,jsx,ts,tsx,json}\" --config .prettierrc.js",
+    "prettier": "prettier \"**/**/*.{js,jsx,ts,tsx,json,scss}\" --config .prettierrc.js",
     "prettier:check": "yarn prettier --check",
     "prettier:fix": "yarn prettier --write",
     "lint:fix": "yarn eslint:fix && yarn prettier:fix",
