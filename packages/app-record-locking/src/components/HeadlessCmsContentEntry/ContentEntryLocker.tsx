@@ -1,5 +1,5 @@
 import { useContentEntriesList, useContentEntry } from "@webiny/app-headless-cms";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useRecordLocking } from "~/hooks";
 import { IIsRecordLockedParams, IRecordLockingIdentity, IRecordLockingLockRecord } from "~/types";
 import {
@@ -9,9 +9,14 @@ import {
 } from "@webiny/app-websockets";
 import { parseIdentifier } from "@webiny/utils";
 import { useDialogs } from "@webiny/app-admin";
-import { Prompt } from "@webiny/react-router";
+import styled from "@emotion/styled";
+
+const Bold = styled.span`
+    font-weight: 600;
+`;
 
 export interface IContentEntryLockerProps {
+    onDisablePrompt: (flag: boolean) => void;
     children: React.ReactElement;
 }
 
@@ -27,15 +32,14 @@ interface IForceUnlockedProps {
 const ForceUnlocked = ({ user }: IForceUnlockedProps) => {
     return (
         <>
-            The entry you were editing was forcefully unlocked by{" "}
-            {user.displayName || "Unknown user"}. You will now be redirected back to the list of
-            entries.
+            The entry you were editing was forcefully unlocked by
+            <Bold>{user.displayName || "Unknown user"}</Bold>. Unfortunately, this means you lost
+            the unsaved changes.
         </>
     );
 };
 
-export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
-    const disablePrompt = useRef(false);
+export const ContentEntryLocker = ({ onDisablePrompt, children }: IContentEntryLockerProps) => {
     const { entry, contentModel: model } = useContentEntry();
     const { updateEntryLock, unlockEntry, fetchLockedEntryLockRecord, removeEntryLock } =
         useRecordLocking();
@@ -47,15 +51,6 @@ export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
     const websockets = useWebsockets();
 
     const { showDialog } = useDialogs();
-
-    const PromptDecorator = useMemo(() => {
-        return Prompt.createDecorator(Original => {
-            return function Prompt(props) {
-                const when = disablePrompt.current === true ? false : props.when;
-                return <Original message={props.message} when={when} />;
-            };
-        });
-    }, []);
 
     useEffect(() => {
         if (!entry.id) {
@@ -74,9 +69,9 @@ export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
                     $lockingType: model.modelId
                 };
                 removeEntryLock(record);
-                disablePrompt.current = true;
+                onDisablePrompt(true);
                 showDialog({
-                    title: "Entry was forcefully unlocked",
+                    title: "Entry was forcefully unlocked!",
                     content: <ForceUnlocked user={user} />,
                     acceptLabel: "Ok",
                     onClose: undefined,
@@ -116,10 +111,5 @@ export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
         };
     }, [entry.id]);
 
-    return (
-        <>
-            <PromptDecorator />
-            {children}
-        </>
-    );
+    return <>{children}</>;
 };
