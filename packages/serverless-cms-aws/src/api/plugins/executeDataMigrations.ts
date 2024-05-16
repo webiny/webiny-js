@@ -7,7 +7,8 @@ import {
     NonInteractiveCliStatusReporter,
     MigrationRunner,
     CliMigrationRunReporter,
-    MigrationStatusReporter
+    MigrationStatusReporter,
+    VoidStatusReporter
 } from "@webiny/data-migration/cli";
 
 /**
@@ -34,7 +35,18 @@ export const executeDataMigrations = {
 
         const apiOutput = getStackOutput({ folder: "apps/api", env });
 
-        context.info("Executing data migrations Lambda function...");
+        context.info("Executing data migrations AWS Lambda function...");
+
+        const logStreamingEnabled = process.env.WEBINY_MIGRATION_LOG_STREAMING !== "false";
+        if (!logStreamingEnabled) {
+            context.warning(
+                [
+                    "Data migration log streaming is disabled.",
+                    "Note that the logs will still be accessible in Amazon CloudWatch.",
+                    "Learn more: https://webiny.link/cloudwatch"
+                ].join(" ")
+            );
+        }
 
         try {
             const lambdaClient = new LambdaClient({
@@ -45,8 +57,8 @@ export const executeDataMigrations = {
 
             const logReporter = new LogReporter(functionName);
 
-            let statusReporter: MigrationStatusReporter | undefined;
-            if (inputs.dataMigrationReporter) {
+            let statusReporter: MigrationStatusReporter = new VoidStatusReporter();
+            if (inputs.dataMigrationLogStreaming) {
                 const useNonInteractiveReporter = !process.stdout.isTTY || "CI" in process.env;
                 statusReporter = useNonInteractiveReporter
                     ? new NonInteractiveCliStatusReporter(logReporter)
