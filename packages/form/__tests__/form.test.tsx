@@ -1,22 +1,55 @@
 /**
  * @jest-environment jsdom
  */
-import React, { useState } from "react";
+import React from "react";
 import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Form, useBind, FormProps as BaseFormProps, BindComponentProps } from "~/index";
+import {
+    Form,
+    useBind,
+    FormProps as BaseFormProps,
+    BindComponentProps,
+    FormAPI,
+    Bind
+} from "~/index";
 import { validation } from "@webiny/validation";
 
 type FormProps = Omit<BaseFormProps, "children" | "onSubmit"> & {
+    imperativeHandle?: React.RefObject<FormAPI>;
     onSubmit?(data: any): void;
     children?: React.ReactNode;
 };
 
-const FormViewWithBind = ({ children, data, onSubmit, ...props }: FormProps) => {
-    const [formData] = useState(data || { name: "empty name" });
+const EmptyForm = ({ children, data, onSubmit, imperativeHandle, ...props }: FormProps) => {
+    const formData = data;
 
     return (
-        <Form data={formData} onSubmit={data => onSubmit && onSubmit(data)} {...props}>
+        <Form
+            ref={imperativeHandle}
+            data={formData}
+            onSubmit={data => onSubmit && onSubmit(data)}
+            {...props}
+        >
+            {({ form }) => (
+                <div>
+                    {children}
+                    <button onClick={form.submit}>Submit</button>
+                </div>
+            )}
+        </Form>
+    );
+};
+
+const FormViewWithBind = ({ children, data, onSubmit, imperativeHandle, ...props }: FormProps) => {
+    const formData = data || { name: "empty name" };
+
+    return (
+        <Form
+            ref={imperativeHandle}
+            data={formData}
+            onSubmit={data => onSubmit && onSubmit(data)}
+            {...props}
+        >
             {({ Bind, form }) => (
                 <div>
                     <Bind name={"name"}>
@@ -40,6 +73,7 @@ const FormViewWithBind = ({ children, data, onSubmit, ...props }: FormProps) => 
 };
 
 const Input = (bindProps: BindComponentProps & { "data-testid"?: string }) => {
+    const { name } = bindProps;
     const { value, onChange, validate, validation, disabled } = useBind(bindProps);
 
     return (
@@ -49,7 +83,7 @@ const Input = (bindProps: BindComponentProps & { "data-testid"?: string }) => {
                 id={bindProps.name}
                 value={value || ""}
                 data-testid={bindProps["data-testid"] || bindProps.name}
-                onBlur={e => {
+                onBlur={async e => {
                     e.persist();
                     validate();
                 }}
@@ -57,20 +91,31 @@ const Input = (bindProps: BindComponentProps & { "data-testid"?: string }) => {
             />
             {disabled ? <div data-testid={"is-disabled"} /> : null}
             {validation.isValid === false ? (
-                <div data-testid={"validation-error"}>{validation.message}</div>
+                <div data-testid={`${name}:validation-error`}>{validation.message}</div>
             ) : null}
             {validation.isValid === true ? (
-                <div data-testid={"validation-success"}>Valid!</div>
+                <div data-testid={`${name}:validation-success`}>Valid!</div>
             ) : null}
         </div>
     );
 };
 
-const FormViewWithHooks = ({ children = null, data, onSubmit, ...props }: FormProps) => {
-    const [formData] = useState(data || { name: "empty name" });
+const FormViewWithHooks = ({
+    children = null,
+    data,
+    onSubmit,
+    imperativeHandle,
+    ...props
+}: FormProps) => {
+    const formData = data || { name: "empty name" };
 
     return (
-        <Form data={formData} onSubmit={data => onSubmit && onSubmit(data)} {...props}>
+        <Form
+            ref={imperativeHandle}
+            data={formData}
+            onSubmit={data => onSubmit && onSubmit(data)}
+            {...props}
+        >
             {({ form }) => (
                 <div>
                     <Input name={"name"} />
@@ -84,23 +129,32 @@ const FormViewWithHooks = ({ children = null, data, onSubmit, ...props }: FormPr
 
 const assert = async (view: React.ReactElement, onSubmit: jest.MockedFunction<any>) => {
     render(view);
+    const user = userEvent.setup();
     const submitBtn = screen.getByRole("button", { name: /submit/i });
     const nameInput = screen.getByLabelText(/name/i);
 
     // Submit form without any user input.
-    userEvent.click(submitBtn);
+    await user.click(submitBtn);
     await waitFor(() => onSubmit.mock.calls.length === 1);
     expect(onSubmit).toHaveBeenLastCalledWith({ name: "empty name" });
 
     // Take user input, then submit.
-    userEvent.clear(nameInput);
-    userEvent.type(nameInput, "Webiny");
-    userEvent.click(submitBtn);
+    await user.clear(nameInput);
+    await user.type(nameInput, "Webiny");
+    await user.click(submitBtn);
     await waitFor(() => onSubmit.mock.calls.length === 2);
     expect(onSubmit).toHaveBeenLastCalledWith({ name: "Webiny" });
 };
 
 describe("Form", () => {
+    // beforeEach(() => {
+    //     jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => cb());
+    // });
+    //
+    // afterEach(() => {
+    //     window.requestAnimationFrame.mockRestore();
+    // });
+
     test("should call `onSubmit` callback with correct field values using `<Bind>`", async () => {
         const onSubmit = jest.fn();
         await assert(<FormViewWithBind onSubmit={onSubmit} />, onSubmit);
@@ -116,18 +170,20 @@ describe("Form", () => {
         const { rerender } = render(<FormViewWithHooks onSubmit={onSubmit} />);
 
         // anchor
-        expect(screen.queryByTestId("validation-error")).toBeNull();
+        expect(screen.queryByTestId("name:validation-error")).toBeNull();
 
         // pivot
         rerender(
             <FormViewWithHooks onSubmit={onSubmit} invalidFields={{ name: "Not a valid field!" }} />
         );
 
+        await waitFor(() => new Promise(resolve => setTimeout(resolve, 20)));
+
         expect(screen.queryByText("Not a valid field!")).toBeTruthy();
     });
 
     test("should validate data on form submit", async () => {
-        jest.useFakeTimers();
+        const user = userEvent.setup();
         const onSubmit = jest.fn();
         const onInvalid = jest.fn();
 
@@ -142,16 +198,15 @@ describe("Form", () => {
         const submitBtn = screen.getByRole("button", { name: /submit/i });
 
         // anchor
-        expect(screen.queryByTestId("validation-error")).toBeNull();
-        expect(screen.queryByTestId("validation-success")).toBeNull();
+        expect(screen.queryByTestId("price:validation-error")).toBeNull();
+        expect(screen.queryByTestId("price:validation-success")).toBeNull();
 
         // pivot 1 - submit a form without any user input
         {
-            userEvent.click(submitBtn);
-            jest.runAllTimers();
+            await user.click(submitBtn);
             await waitFor(() => onInvalid.mock.calls.length > 0);
             rerender(formElement);
-            const errorElement = screen.queryByTestId("validation-error");
+            const errorElement = screen.queryByTestId("price:validation-error");
             expect(onSubmit).toHaveBeenCalledTimes(0);
             expect(onInvalid).toHaveBeenCalledTimes(1);
             expect(errorElement).toBeTruthy();
@@ -162,12 +217,11 @@ describe("Form", () => {
         {
             onInvalid.mockReset();
             const priceInput = screen.getByTestId("price");
-            userEvent.type(priceInput, "100");
-            userEvent.click(submitBtn);
-            jest.runAllTimers();
+            await user.type(priceInput, "100");
+            await user.click(submitBtn);
             await waitFor(() => onInvalid.mock.calls.length > 0);
             rerender(formElement);
-            const errorElement = screen.queryByTestId("validation-error");
+            const errorElement = screen.queryByTestId("price:validation-error");
             expect(onSubmit).toHaveBeenCalledTimes(0);
             expect(onInvalid).toHaveBeenCalledTimes(1);
             expect(errorElement).toBeTruthy();
@@ -178,13 +232,12 @@ describe("Form", () => {
         {
             onInvalid.mockReset();
             const priceInput = screen.getByTestId("price");
-            userEvent.type(priceInput, "200");
-            userEvent.click(submitBtn);
-            jest.runAllTimers();
-            await waitFor(() => onInvalid.mock.calls.length > 0);
+            await user.type(priceInput, "200");
+            await user.click(submitBtn);
+            await waitFor(() => onSubmit.mock.calls.length > 0);
             rerender(formElement);
-            const successElement = screen.queryByTestId("validation-success");
-            const errorElement = screen.queryByTestId("validation-error");
+            const successElement = screen.queryByTestId("price:validation-success");
+            const errorElement = screen.queryByTestId("price:validation-error");
             expect(onSubmit).toHaveBeenCalledTimes(1);
             expect(onInvalid).toHaveBeenCalledTimes(0);
             expect(successElement).toBeTruthy();
@@ -194,7 +247,6 @@ describe("Form", () => {
     });
 
     test("should validate data change immediately, without form submission", async () => {
-        jest.useFakeTimers();
         const onInvalid = jest.fn();
 
         const formElement = (
@@ -203,52 +255,47 @@ describe("Form", () => {
             </FormViewWithHooks>
         );
 
-        render(formElement);
+        const { rerender } = render(formElement);
 
         // anchor
-        expect(screen.queryByTestId("validation-error")).toBeNull();
-        expect(screen.queryByTestId("validation-success")).toBeNull();
+        expect(screen.queryByTestId("price:validation-error")).toBeNull();
+        expect(screen.queryByTestId("price:validation-success")).toBeNull();
 
         // pivot - enter an invalid value
         {
             const priceInput = screen.getByTestId("price");
             fireEvent.blur(priceInput);
-            jest.runAllTimers();
             await waitFor(() => false);
-            const errorElement = screen.queryByTestId("validation-error");
+            rerender(formElement);
+            const errorElement = screen.queryByTestId("price:validation-error");
             expect(errorElement).toBeTruthy();
             expect(errorElement!.innerHTML).toBe("Value is required.");
         }
     });
 
     test("should submit form when Enter is pressed (if `submitOnEnter` prop is set)", async () => {
-        await act(async () => {
-            jest.useFakeTimers();
+        const onSubmit = jest.fn();
 
-            const onSubmit = jest.fn();
+        const hitEnter = () => {
+            const inputElement = screen.getByTestId("name");
+            fireEvent.keyDown(inputElement, { key: "Enter", code: "Enter", charCode: 13 });
+        };
 
-            const hitEnter = () => {
-                const inputElement = screen.getByTestId("name");
-                fireEvent.keyDown(inputElement, { key: "Enter", code: "Enter", charCode: 13 });
-            };
+        const { rerender } = render(<FormViewWithHooks onSubmit={onSubmit} />);
+        hitEnter();
 
-            const { rerender } = render(<FormViewWithHooks onSubmit={onSubmit} />);
-            hitEnter();
+        await waitFor(() => onSubmit.mock.calls.length === 0);
 
-            await waitFor(() => onSubmit.mock.calls.length === 0);
+        rerender(<FormViewWithHooks onSubmit={onSubmit} submitOnEnter />);
+        hitEnter();
 
-            rerender(<FormViewWithHooks onSubmit={onSubmit} submitOnEnter />);
-            hitEnter();
-
-            jest.runAllTimers();
-
-            await waitFor(() => onSubmit.mock.calls.length > 0);
-            expect(onSubmit).toHaveBeenLastCalledWith({ name: "empty name" });
-        });
+        await waitFor(() => onSubmit.mock.calls.length > 0);
+        expect(onSubmit).toHaveBeenLastCalledWith({ name: "empty name" });
     });
 
     test("should execute the `onChange` callback whenever data is changed", async () => {
         const onChange = jest.fn();
+        const user = userEvent.setup();
 
         const formElement = (
             <FormViewWithHooks onChange={onChange}>
@@ -258,9 +305,9 @@ describe("Form", () => {
         render(formElement);
 
         const priceInput = screen.getByTestId("price");
-        userEvent.type(priceInput, "100");
+        await user.type(priceInput, "100");
         expect(onChange).toHaveBeenCalledTimes(3);
-        userEvent.type(priceInput, "200");
+        await user.type(priceInput, "200");
         expect(onChange).toHaveBeenCalledTimes(6);
 
         const [formData] = onChange.mock.calls[onChange.mock.calls.length - 1];
@@ -272,4 +319,72 @@ describe("Form", () => {
 
         expect(queryByTestId("is-disabled")).toBeTruthy();
     });
+
+    test("should set new data through props", async () => {
+        const user = userEvent.setup();
+        const onSubmit = jest.fn();
+
+        const { rerender } = render(<EmptyForm onSubmit={onSubmit} data={{}} />);
+
+        const submitBtn = screen.getByRole("button", { name: /submit/i });
+        await user.click(submitBtn);
+
+        expect(onSubmit).toHaveBeenLastCalledWith({});
+
+        rerender(<EmptyForm onSubmit={onSubmit} data={{ email: "test@example.com" }} />);
+        await user.click(submitBtn);
+
+        await waitFor(() => onSubmit.mock.calls.length > 0);
+        expect(onSubmit).toHaveBeenLastCalledWith({ email: "test@example.com" });
+    });
+
+    test("should set default field value on first render cycle", async () => {
+        const ref = React.createRef<FormAPI>();
+        const onSubmit = jest.fn();
+
+        render(
+            <EmptyForm onSubmit={onSubmit} imperativeHandle={ref}>
+                <Bind name={"folder"} defaultValue={{ id: "root" }}>
+                    {({ value }) => <div data-testid={"folderId"}>{value.id}</div>}
+                </Bind>
+            </EmptyForm>
+        );
+
+        // Assert
+        await act(() => ref.current?.submit());
+        await waitFor(() => onSubmit.mock.calls.length > 0);
+        expect(onSubmit).toHaveBeenLastCalledWith({ folder: { id: "root" } });
+
+        const folderDiv = screen.getByTestId("folderId");
+        expect(folderDiv).toBeTruthy();
+        expect(folderDiv.innerHTML).toEqual("root");
+    });
+
+    test("should submit the form using imperative handle", async () => {
+        const user = userEvent.setup();
+        const ref = React.createRef<FormAPI>();
+        const onSubmit = jest.fn();
+
+        render(<FormViewWithHooks onSubmit={onSubmit} imperativeHandle={ref} />);
+
+        // Assert
+        await act(() => ref.current?.submit());
+        await waitFor(() => onSubmit.mock.calls.length > 0);
+        expect(onSubmit).toHaveBeenLastCalledWith({ name: "empty name" });
+
+        // Pivot
+        onSubmit.mockReset();
+        const nameInput = screen.getByTestId("name");
+        await user.clear(nameInput);
+        await user.type(nameInput, "John");
+
+        // Assert
+        await act(() => ref.current?.submit());
+        await waitFor(() => onSubmit.mock.calls.length > 0);
+        expect(onSubmit).toHaveBeenLastCalledWith({ name: "John" });
+    });
+
+    // TODO: Implement the following tests
+    // test.skip("should validate using async validators", async () => {});
+    // test.skip("should reset validation status when field goes from valid to invalid value", async () => {});
 });

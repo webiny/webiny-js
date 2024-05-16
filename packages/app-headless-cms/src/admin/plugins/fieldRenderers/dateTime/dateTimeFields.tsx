@@ -1,7 +1,7 @@
 import React from "react";
 import get from "lodash/get";
 import DynamicSection from "../DynamicSection";
-import { CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsModelFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
 import { DateTimeWithoutTimezone } from "./DateTimeWithoutTimezone";
@@ -11,7 +11,7 @@ import { Time } from "./Time";
 
 const t = i18n.ns("app-headless-cms/admin/fields/date-time");
 
-const plugin: CmsEditorFieldRendererPlugin = {
+const plugin: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-date-times",
     renderer: {

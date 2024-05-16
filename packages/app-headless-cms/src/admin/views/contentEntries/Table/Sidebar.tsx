@@ -13,6 +13,7 @@ import { TrashBin } from "~/admin/components/ContentEntries/TrashBin/components/
 const t = i18n.ns("app-headless-cms/admin/content-entries/table");
 
 const ModelName = styled.div`
+    font-family: var(--mdc-typography-font-family);
     padding: 10px 0;
     font-size: 24px;
 `;

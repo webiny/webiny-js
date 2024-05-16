@@ -17,7 +17,7 @@ const View = () => {
                 <Sidebar folderId={currentFolderId} />
             </LeftPanel>
             <RightPanel span={10}>
-                <ContentEntryProvider>
+                <ContentEntryProvider currentFolderId={currentFolderId}>
                     <Main folderId={currentFolderId} />
                 </ContentEntryProvider>
             </RightPanel>

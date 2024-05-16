@@ -92,7 +92,7 @@ const getRmwcProps = (props: SelectProps): FormComponentProps & RmwcSelectProps 
  * Error says to use the empty string in null/undefined case.
  */
 export const Select = (props: SelectProps) => {
-    const { value: initialValue, description, validation, ...other } = props;
+    const { value: initialValue, description, validation, placeholder, ...other } = props;
 
     const value = initialValue === null || initialValue === undefined ? "" : initialValue;
 
@@ -107,6 +107,7 @@ export const Select = (props: SelectProps) => {
                 ref={undefined}
                 options={options}
                 value={value}
+                placeholder={placeholder ?? ""} // Fix RMWC version 14.2.2 to make the label float by default when a predefined value is selected.
                 className={classNames(
                     "webiny-ui-select mdc-ripple-surface mdc-ripple-upgraded",
                     webinySelect,

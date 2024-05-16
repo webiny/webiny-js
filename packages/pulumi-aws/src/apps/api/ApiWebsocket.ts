@@ -83,7 +83,8 @@ export const ApiWebsocket = createAppModule({
                 routeKey: "$connect",
                 authorizationType: "NONE",
                 target: websocketApiIntegration.output.id.apply(value => `integrations/${value}`)
-            }
+            },
+            opts: { dependsOn: websocketApiDefaultRoute.output }
         });
 
         const websocketApiDisconnectRoute = app.addResource(aws.apigatewayv2.Route, {
@@ -93,7 +94,8 @@ export const ApiWebsocket = createAppModule({
                 routeKey: "$disconnect",
                 authorizationType: "NONE",
                 target: websocketApiIntegration.output.id.apply(value => `integrations/${value}`)
-            }
+            },
+            opts: { dependsOn: websocketApiConnectRoute.output }
         });
 
         const apiGatewayLoggingRole = app.addResource(aws.iam.Role, {

@@ -54,9 +54,50 @@ module.exports = [
                     });
                     yargs.option("deployment-logs", {
                         default: undefined,
-                        describe: `Print deployment logs`,
+                        describe: `Print deployment logs (automatically enabled in CI environments)`,
                         type: "boolean"
                     });
+
+                    yargs
+                        .option("allow-local-state-files", {
+                            describe: `Allow using local Pulumi state files with production environment deployment (not recommended).`,
+                            type: "boolean"
+                        })
+                        .check(args => {
+                            const { red } = require("chalk");
+                            const { env, allowLocalStateFiles } = args;
+
+                            // If the folder is not defined, we are destroying the whole project.
+                            // In that case, we must confirm the environment name to destroy.
+                            const prodEnvs = ["prod", "production"];
+                            const isProdEnv = prodEnvs.includes(env);
+                            if (!isProdEnv) {
+                                return true;
+                            }
+
+                            let pulumiBackend =
+                                process.env.WEBINY_PULUMI_BACKEND ||
+                                process.env.WEBINY_PULUMI_BACKEND_URL ||
+                                process.env.PULUMI_LOGIN;
+
+                            if (pulumiBackend) {
+                                return true;
+                            }
+
+                            if (allowLocalStateFiles) {
+                                return true;
+                            }
+
+                            throw new Error(
+                                [
+                                    "Please confirm you want to use local Pulumi state files with",
+                                    "your production deployment by appending",
+                                    `${red(
+                                        "--allow-local-state-files"
+                                    )} to the command. Learn more: https://webiny.link/state-files-production.`
+                                ].join(" ")
+                            );
+                        });
                 },
                 async argv => {
                     return require("./deploy")(argv, context);
@@ -99,7 +140,7 @@ module.exports = [
 
             yargs.command(
                 "watch [folder]",
-                `Rebuild and deploy specified specified project application while making changes to it`,
+                `Rebuild and deploy specified project application while making changes to it`,
                 yargs => {
                     yargs.example("$0 watch api --env=dev");
                     yargs.example(

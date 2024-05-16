@@ -75,7 +75,7 @@
     "@babel/preset-env": "^7.24.0",
     "@babel/preset-typescript": "^7.23.3",
     "@emotion/babel-plugin": "^11.11.0",
-    "@testing-library/react": "^12.1.2",
+    "@testing-library/react": "^15.0.7",
     "@types/nprogress": "^0.2.0",
     "@types/react-color": "^2.17.11",
     "@types/react-custom-scrollbars": "^4.0.10",

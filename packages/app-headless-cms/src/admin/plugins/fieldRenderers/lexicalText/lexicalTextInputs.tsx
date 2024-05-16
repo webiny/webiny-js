@@ -1,22 +1,20 @@
 import React from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
-import { CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsModelField, CmsModelFieldRendererPlugin } from "~/types";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
-import DynamicSection, { DynamicSectionPropsChildrenParams } from "../DynamicSection";
+import DynamicSection from "../DynamicSection";
 import { IconButton } from "@webiny/ui/Button";
 import styled from "@emotion/styled";
 import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor";
 import { modelHasLegacyRteField } from "~/admin/plugins/fieldRenderers/richText/utils";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { useForm } from "@webiny/form";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
-const getKey = (
-    field: CmsModelField,
-    bind: DynamicSectionPropsChildrenParams["bind"],
-    index: number
-): string => {
-    const formId = bind.index.form?.data?.id || "new";
+const getKey = (id: string | undefined, field: CmsModelField, index: number): string => {
+    const formId = id || "new";
     return `${formId}.${field.fieldId}.${index}`;
 };
 
@@ -30,7 +28,7 @@ const EditorWrapper = styled("div")({
     }
 });
 
-const plugin: CmsEditorFieldRendererPlugin = {
+const plugin: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-lexical-inputs",
     renderer: {
@@ -51,6 +49,8 @@ const plugin: CmsEditorFieldRendererPlugin = {
         },
         render(props) {
             const { field } = props;
+            const form = useForm();
+
             return (
                 <DynamicSection {...props}>
                     {({ bind, index }) => (
@@ -58,9 +58,10 @@ const plugin: CmsEditorFieldRendererPlugin = {
                             <LexicalCmsEditor
                                 value={bind.index.value}
                                 onChange={bind.index.onChange}
-                                key={getKey(field, bind, index)}
+                                key={getKey(form.data.id, field, index)}
                                 placeholder={field.placeholderText}
                             />
+                            <FormElementMessage>{field.helpText}</FormElementMessage>
                             {index > 0 && (
                                 <IconButton
                                     icon={<DeleteIcon />}

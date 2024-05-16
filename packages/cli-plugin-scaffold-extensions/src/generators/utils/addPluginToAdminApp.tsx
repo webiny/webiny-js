@@ -7,13 +7,15 @@ interface Params {
     packageName: string;
 }
 
-export const addPluginToReactApp = async (params: Params): Promise<void> => {
+export const addPluginToAdminApp = async (params: Params): Promise<void> => {
     const { name, packageName } = params;
 
     const extensionsFilePath = path.join("apps", "admin", "src", "Extensions.tsx");
 
-    const extensionFactory = name + "ExtensionFactory";
-    const importName = "{ createExtension as " + extensionFactory + " }";
+    const ucFirstName = name.charAt(0).toUpperCase() + name.slice(1);
+    const componentName = ucFirstName + "Extension";
+
+    const importName = "{ Extension as " + componentName + " }";
     const importPath = packageName;
 
     const project = new Project();
@@ -75,7 +77,7 @@ export const addPluginToReactApp = async (params: Params): Promise<void> => {
         .trim();
 
     extensionsArrowFnFragment.replaceWithText(
-        `<>{${name}ExtensionFactory()}${extensionsArrowFnFragmentChildrenText}</>`
+        `<><${componentName}/>${extensionsArrowFnFragmentChildrenText}</>`
     );
 
     await source.save();

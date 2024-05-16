@@ -1,9 +1,9 @@
 import React, { useMemo } from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
-import { CmsModelField, CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsModelField, CmsModelFieldRendererPlugin } from "~/types";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
-import DynamicSection, { DynamicSectionPropsChildrenParams } from "../DynamicSection";
+import DynamicSection from "../DynamicSection";
 import { createPropsFromConfig, RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 import { IconButton } from "@webiny/ui/Button";
 import { plugins } from "@webiny/plugins";
@@ -14,15 +14,12 @@ import {
     isLegacyRteFieldSaved,
     modelHasLegacyRteField
 } from "~/admin/plugins/fieldRenderers/richText/utils";
+import { useForm } from "@webiny/form";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
-const getKey = (
-    field: CmsModelField,
-    bind: DynamicSectionPropsChildrenParams["bind"],
-    index: number
-): string => {
-    const formId = bind.index.form?.data?.id || "new";
+const getKey = (field: CmsModelField, id: string | undefined, index: number): string => {
+    const formId = id || "new";
     return `${formId}.${field.fieldId}.${index}`;
 };
 
@@ -46,7 +43,7 @@ const EditorWrapper = styled("div")({
     }
 });
 
-const plugin: CmsEditorFieldRendererPlugin = {
+const plugin: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-rich-text-inputs",
     renderer: {
@@ -77,6 +74,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
             return canUse;
         },
         render(props) {
+            const form = useForm();
             const { field } = props;
 
             const rteProps = useMemo(() => {
@@ -94,7 +92,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                 />
                             )}
                             <RichTextEditor
-                                key={getKey(field, bind, index)}
+                                key={getKey(field, form.data.id, index)}
                                 {...rteProps}
                                 {...bind.index}
                                 label={`Value ${index + 1}`}

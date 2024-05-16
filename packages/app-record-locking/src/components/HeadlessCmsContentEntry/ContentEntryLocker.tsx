@@ -1,5 +1,5 @@
 import { useContentEntriesList, useContentEntry } from "@webiny/app-headless-cms";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useRecordLocking } from "~/hooks";
 import { IIsRecordLockedParams, IRecordLockingIdentity, IRecordLockingLockRecord } from "~/types";
 import {
@@ -9,6 +9,7 @@ import {
 } from "@webiny/app-websockets";
 import { parseIdentifier } from "@webiny/utils";
 import { useDialogs } from "@webiny/app-admin";
+import { Prompt } from "@webiny/react-router";
 
 export interface IContentEntryLockerProps {
     children: React.ReactElement;
@@ -34,6 +35,7 @@ const ForceUnlocked = ({ user }: IForceUnlockedProps) => {
 };
 
 export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
+    const disablePrompt = useRef(false);
     const { entry, contentModel: model } = useContentEntry();
     const { updateEntryLock, unlockEntry, fetchLockedEntryLockRecord, removeEntryLock } =
         useRecordLocking();
@@ -45,6 +47,15 @@ export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
     const websockets = useWebsockets();
 
     const { showDialog } = useDialogs();
+
+    const PromptDecorator = useMemo(() => {
+        return Prompt.createDecorator(Original => {
+            return function Prompt(props) {
+                const when = disablePrompt.current === true ? false : props.when;
+                return <Original message={props.message} when={when} />;
+            };
+        });
+    }, []);
 
     useEffect(() => {
         if (!entry.id) {
@@ -63,6 +74,7 @@ export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
                     $lockingType: model.modelId
                 };
                 removeEntryLock(record);
+                disablePrompt.current = true;
                 showDialog({
                     title: "Entry was forcefully unlocked",
                     content: <ForceUnlocked user={user} />,
@@ -104,5 +116,10 @@ export const ContentEntryLocker = ({ children }: IContentEntryLockerProps) => {
         };
     }, [entry.id]);
 
-    return children;
+    return (
+        <>
+            <PromptDecorator />
+            {children}
+        </>
+    );
 };

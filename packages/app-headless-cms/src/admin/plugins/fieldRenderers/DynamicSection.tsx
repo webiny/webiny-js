@@ -1,4 +1,5 @@
 import React from "react";
+import classSet from "classnames";
 import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
@@ -13,6 +14,9 @@ import { ParentValueIndexProvider } from "~/admin/components/ModelFieldProvider"
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
 const style = {
+    gridContainer: css`
+        padding: 0 !important;
+    `,
     addButton: css({
         width: "100%",
         borderTop: "1px solid var(--mdc-theme-background)",
@@ -67,7 +71,7 @@ const DynamicSection = ({
                 const bindFieldValue: string[] = value || [];
                 return (
                     <ParentFieldProvider value={value} path={Bind.parentName}>
-                        <Grid className={gridClassName}>
+                        <Grid className={classSet(gridClassName, style.gridContainer)}>
                             {typeof renderTitle === "function" && renderTitle(bindFieldValue)}
                             <Cell span={12}>
                                 {/* We always render the first item, for better UX */}

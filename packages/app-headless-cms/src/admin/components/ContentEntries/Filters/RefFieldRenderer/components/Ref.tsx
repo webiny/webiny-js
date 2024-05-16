@@ -9,8 +9,20 @@ import { RefPresenter } from "./RefPresenter";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useApolloClient } from "~/admin/hooks";
 
-export const Ref = observer(() => {
-    const { useInputField } = ContentEntryListConfig.Browser.AdvancedSearch.FieldRenderer;
+const { useInputField } = ContentEntryListConfig.Browser.AdvancedSearch.FieldRenderer;
+
+export const Ref = () => {
+    const { name } = useInputField();
+    const { value } = useBind({ name });
+
+    return <RefWithValue value={value} />;
+};
+
+interface RefProps {
+    value: string | undefined;
+}
+
+const RefWithValue = observer(({ value }: RefProps) => {
     const { name, field } = useInputField();
     const client = useApolloClient();
 
@@ -20,13 +32,9 @@ export const Ref = observer(() => {
         return new RefPresenter(repository);
     }, [client, field.settings.modelIds]);
 
-    const { value } = useBind({
-        name
-    });
-
     useEffect(() => {
         presenter.load(value);
-    }, []);
+    }, [value]);
 
     const onInput = useCallback(
         debounce(value => presenter.search(value), 250),

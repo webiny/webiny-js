@@ -5,7 +5,14 @@ import { Hotkeys } from "react-hotkeyz";
 import dataURLtoBlob from "dataurl-to-blob";
 import { ImageEditorDialog } from "@webiny/ui/ImageUpload";
 import { ReactComponent as EditIcon } from "@material-design-icons/svg/outlined/edit.svg";
-import { FileManagerViewConfig, useFile, useFileManagerApi, useFileManagerView } from "~/index";
+import {
+    FileManagerViewConfig,
+    useFile,
+    useFileDetails,
+    useFileManagerApi,
+    useFileManagerView
+} from "~/index";
+import { useSnackbar } from "@webiny/app-admin";
 
 function toDataUrl(url: string): Promise<string> {
     return new Promise((resolve: (value: string) => void) => {
@@ -60,8 +67,10 @@ const { FileDetails } = FileManagerViewConfig;
 export const EditImage = () => {
     const { file } = useFile();
     const { canEdit } = useFileManagerApi();
+    const fileDetails = useFileDetails();
     const { uploadFile } = useFileManagerView();
     const [state, dispatch] = React.useReducer(reducer, initialState);
+    const { showSnackbar } = useSnackbar();
 
     if (!file.type.startsWith("image/")) {
         return null;
@@ -90,12 +99,18 @@ export const EditImage = () => {
                     open={state.showImageEditor}
                     src={state.dataUrl as string}
                     onClose={() => dispatch({ type: "hideImageEditor" })}
-                    onAccept={src => {
+                    onAccept={async src => {
                         const blob = dataURLtoBlob(src);
                         blob.name = file.name;
                         blob.key = file.key.split("/").pop();
-                        uploadFile(blob);
-                        dispatch({ type: "hideImageEditor" });
+                        const newFile = await uploadFile(blob);
+
+                        if (newFile) {
+                            showSnackbar("A new version of the image has been created!");
+                            dispatch({ type: "hideImageEditor" });
+                            fileDetails.setFile(newFile);
+                            fileDetails.close();
+                        }
                     }}
                 />
             </Hotkeys>

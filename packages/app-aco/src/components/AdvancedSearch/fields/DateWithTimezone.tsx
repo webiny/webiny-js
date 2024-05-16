@@ -31,8 +31,10 @@ export const DateWithTimezone = () => {
     });
 
     useEffect(() => {
-        setDateTime(value.slice(0, -6));
-        setTimeZone(value.slice(-6) || "+00:00");
+        if (value) {
+            setDateTime(value.slice(0, -6));
+            setTimeZone(value.slice(-6) || "+00:00");
+        }
     }, [value]);
 
     const handleDateTimeChange = (value: string) => {

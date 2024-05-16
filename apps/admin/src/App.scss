@@ -12,8 +12,5 @@
 // $webiny-theme-light-text-hint-on-dark: rgba(255, 255, 255, 0.5);
 // $webiny-theme-typography-font-family: "Source Sans Pro";
 
-// Import theme styles
-@import "~theme/global.scss";
-
 // Import main styles
 @import "~@webiny/app-serverless-cms/styles.scss";
