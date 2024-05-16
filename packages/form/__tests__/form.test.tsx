@@ -387,4 +387,5 @@ describe("Form", () => {
     // TODO: Implement the following tests
     // test.skip("should validate using async validators", async () => {});
     // test.skip("should reset validation status when field goes from valid to invalid value", async () => {});
+    // test.skip("should re-register all fields when new `data` is set (default values must be applied)", async () => {});
 });

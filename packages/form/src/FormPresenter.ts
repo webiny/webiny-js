@@ -70,6 +70,8 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
 
     setData(data: T) {
         this.data = data || {};
+        // We're clearing all form fields, to reset the form.
+        this.formFields.clear();
     }
 
     getFieldValue(name: string) {
