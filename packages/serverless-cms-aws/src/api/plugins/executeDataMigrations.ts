@@ -7,9 +7,9 @@ import {
     NonInteractiveCliStatusReporter,
     MigrationRunner,
     CliMigrationRunReporter,
-    MigrationStatusReporter
+    MigrationStatusReporter,
+    VoidStatusReporter
 } from "@webiny/data-migration/cli";
-import { VoidStatusReporter } from "@webiny/data-migration/cli/VoidStatusReporter";
 
 /**
  * On every deployment of the API project application, this plugin invokes the data migrations Lambda.
