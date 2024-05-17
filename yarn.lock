@@ -15203,6 +15203,7 @@ __metadata:
     react-dom: 18.2.0
     react-hotkeyz: ^1.0.4
     react-transition-group: ^4.3.0
+    reset-css: ^5.0.1
     rimraf: ^5.0.5
     store: ^2.0.12
     ttypescript: ^1.5.12
@@ -16344,6 +16345,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     react-helmet: ^6.1.0
+    reset-css: ^5.0.1
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -35891,6 +35893,13 @@ __metadata:
   version: 4.1.8
   resolution: "reselect@npm:4.1.8"
   checksum: a4ac87cedab198769a29be92bc221c32da76cfdad6911eda67b4d3e7136dca86208c3b210e31632eae31ebd2cded18596f0dd230d3ccc9e978df22f233b5583e
+  languageName: node
+  linkType: hard
+
+"reset-css@npm:^5.0.1":
+  version: 5.0.2
+  resolution: "reset-css@npm:5.0.2"
+  checksum: d6955ea4d852c21510d6f50dc06e151a90e0d7d6fa43aac7a79f3779c72a1eb3a5769a2eb9f5c490675376888e9a4bfbc34937cd7d4198ab65a1c73620819b1a
   languageName: node
   linkType: hard
 

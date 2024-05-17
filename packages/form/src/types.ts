@@ -104,6 +104,7 @@ export interface FormProps<T extends GenericFormData = GenericFormData> {
     onChange?: FormOnSubmit<T>;
     children(params: FormRenderPropParams<T>): React.ReactElement;
     ref?: React.MutableRefObject<any>;
+    "data-testid"?: string;
 }
 
 /**
