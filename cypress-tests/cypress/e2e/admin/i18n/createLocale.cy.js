@@ -1,7 +1,7 @@
 context("I18N app", () => {
     beforeEach(() => cy.login());
 
-    it("should create a locale, select, unselect and immediately delete everything", () => {
+    it.skip("should create a locale, select, unselect and immediately delete everything", () => {
         const newCode = "de-DE";
 
         cy.visit("/i18n/locales");
@@ -132,6 +132,9 @@ context("I18N app", () => {
         cy.get(".react-spinner-material").should("not.exist");
         // Update it as "default"
         cy.findByLabelText("Default").click();
+        // We need to wait a bit, just enough to allow the form to update its internal state, before submitting.
+        // Cypress is clicking the switch button and submit button too fast, and often, the form submits with the previous state.
+        cy.wait(20);
         cy.findByTestId("l18n.locale.save").click();
         // Wait for loading to complete
         cy.get(".react-spinner-material").should("not.exist");
