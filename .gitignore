@@ -36,6 +36,7 @@ globalConfig.json
 .graphqlconfig
 schema.graphql
 .tmp/
+.nx/*
 # yarn2 files
 .yarn/*
 !.yarn/releases
