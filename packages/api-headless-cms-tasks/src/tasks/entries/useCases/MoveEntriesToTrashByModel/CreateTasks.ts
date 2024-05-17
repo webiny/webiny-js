@@ -16,28 +16,29 @@ export class CreateTasks {
         const { input, response, isAborted, isCloseToTimeout, context, store } = params;
 
         try {
+            if (!input.modelId) {
+                return response.error(`Missing "modelId" in the input.`);
+            }
+
             const model = await context.cms.getModel(input.modelId);
 
             if (!model) {
                 return response.error(`Model with ${input.modelId} not found!`);
             }
 
-            const totalCount = input.totalCount || 0;
+            const listEntriesParams: CmsEntryListParams = {
+                where: {
+                    latest: true,
+                    ...input.where
+                },
+                after: input.after,
+                limit: BATCH_SIZE
+            };
+
             let currentBatch = input.currentBatch || 1;
             let hasMoreEntries = true;
 
             while (hasMoreEntries) {
-                const listEntriesParams: CmsEntryListParams = {
-                    where: {
-                        latest: true,
-                        ...input.where
-                    },
-                    after: input.after,
-                    limit: BATCH_SIZE
-                };
-
-                const [entries, meta] = await context.cms.listEntries(model, listEntriesParams);
-
                 if (isAborted()) {
                     return response.aborted();
                 } else if (isCloseToTimeout()) {
@@ -48,22 +49,30 @@ export class CreateTasks {
                     });
                 }
 
-                if (meta.totalCount === 0) {
-                    if (totalCount > 0) {
-                        return response.continue(
-                            {
-                                ...input,
-                                ...listEntriesParams,
-                                currentBatch,
-                                processing: true
-                            },
-                            {
-                                seconds: WAITING_TIME
-                            }
-                        );
-                    }
+                const [entries, meta] = await context.cms.listEntries(model, listEntriesParams);
 
-                    return response.done("Task done: no entries to move to trash bin.");
+                hasMoreEntries = meta.hasMoreItems;
+                listEntriesParams.after = meta.cursor;
+
+                // If no entries exist for the provided query, let's return done.
+                if (meta.totalCount === 0) {
+                    return response.done("Task done: no entries to move to trash.");
+                }
+
+                // If no entries are returned, let's continue with the task, but in `processing` mode.
+                if (entries.length === 0) {
+                    return response.continue(
+                        {
+                            ...input,
+                            ...listEntriesParams,
+                            currentBatch,
+                            totalCount: meta.totalCount,
+                            processing: true
+                        },
+                        {
+                            seconds: WAITING_TIME
+                        }
+                    );
                 }
 
                 const ids = entries.map(entry => entry.id);
@@ -81,15 +90,30 @@ export class CreateTasks {
                     });
                 }
 
-                hasMoreEntries = meta.hasMoreItems;
-                input.after = meta.cursor;
-                input.totalCount = meta.totalCount;
+                // If there are no more entries to load, we can continue the controller task in a `processing` mode, with some delay.
+                if (!meta.hasMoreItems || !meta.cursor) {
+                    return response.continue(
+                        {
+                            ...input,
+                            ...listEntriesParams,
+                            currentBatch,
+                            totalCount: meta.totalCount,
+                            processing: true
+                        },
+                        {
+                            seconds: WAITING_TIME
+                        }
+                    );
+                }
+
                 currentBatch++;
             }
 
+            // Should not be possible to exit the loop without returning a response, but let's have a continue response here just in case.
             return response.continue(
                 {
                     ...input,
+                    ...listEntriesParams,
                     currentBatch
                 },
                 {
