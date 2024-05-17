@@ -85,11 +85,11 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
 
         return () => {
             window.removeEventListener("focus", fn);
-            if (!socketsRef.current) {
-                return;
-            }
+            // if (!socketsRef.current) {
+            //     return;
+            // }
 
-            socketsRef.current.close(WebsocketsCloseCode.NORMAL, "Component unmounted.");
+            // socketsRef.current.close(WebsocketsCloseCode.NORMAL, "Component unmounted.");
         };
     }, []);
 
@@ -183,12 +183,6 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
     if (!socketsRef.current) {
         return props.loader || null;
     }
-
-    // TODO remove when finished with development
-    (window as any).webinySockets = socketsRef.current;
-    (window as any).send = send;
-    (window as any).createAction = createAction;
-    (window as any).onMessage = onMessage;
 
     const value: IWebsocketsContext = {
         send,

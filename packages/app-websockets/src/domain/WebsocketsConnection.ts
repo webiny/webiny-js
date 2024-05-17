@@ -18,6 +18,27 @@ const defaultFactory: IWebsocketsConnectionFactory = (url, protocol) => {
     return new WebSocket(url, protocol);
 };
 
+interface IConnection {
+    ws: WebSocket | null;
+}
+
+/**
+ * We need to attach the websockets cache to window object, or it will be reset on every hot reload.
+ */
+declare global {
+    interface Window {
+        WebinyWebsocketsConnectionCache: IConnection;
+    }
+}
+
+if (!window.WebinyWebsocketsConnectionCache) {
+    window.WebinyWebsocketsConnectionCache = {
+        ws: null
+    };
+}
+
+const connectionCache = window.WebinyWebsocketsConnectionCache;
+
 export interface IWebsocketsConnectionParams {
     url: string;
     tenant: string;
@@ -29,7 +50,6 @@ export interface IWebsocketsConnectionParams {
 }
 
 export class WebsocketsConnection implements IWebsocketsConnection {
-    private connection: WebSocket | null = null;
     private readonly url: string;
     private readonly getToken: () => Promise<string | null>;
     private tenant: string;
@@ -56,73 +76,41 @@ export class WebsocketsConnection implements IWebsocketsConnection {
         this.locale = locale;
     }
 
-    public init(): void {
-        this.connect();
-    }
-
     public async connect(): Promise<void> {
-        if (this.connection && this.connection.readyState !== WebsocketsReadyState.CLOSED) {
-            return;
-        }
-
-        const result = await this.createUrl();
-        if (!result) {
-            return;
-        }
-        const { url } = result;
-
-        this.connection = this.factory(url, this.protocol);
-
-        const start = new Date().getTime();
-
-        console.log(`Websockets connecting to ${this.url}...`);
-
-        this.connection.addEventListener("open", event => {
-            const end = new Date().getTime();
-            console.log(`...connected in ${end - start}ms.`);
-            return this.subscriptionManager.triggerOnOpen(event);
-        });
-        this.connection.addEventListener("close", event => {
-            return this.subscriptionManager.triggerOnClose(event);
-        });
-        this.connection.addEventListener("error", event => {
-            console.info(`Error in the Websocket connection.`, event);
-            return this.subscriptionManager.triggerOnError(event);
-        });
-        this.connection.addEventListener(
-            "message",
-            (event: IWebsocketsManagerMessageEvent<string>) => {
-                return this.subscriptionManager.triggerOnMessage(event);
-            }
-        );
+        await this.getConnection();
     }
 
     public async close(code: WebsocketsCloseCode, reason: string): Promise<boolean> {
-        if (!this.connection || this.connection.readyState === WebsocketsReadyState.CLOSED) {
-            this.connection = null;
+        if (
+            !connectionCache.ws ||
+            connectionCache.ws.readyState === WebsocketsReadyState.CLOSED ||
+            connectionCache.ws.readyState === WebsocketsReadyState.CLOSING
+        ) {
+            connectionCache.ws = undefined as unknown as null;
+
             return true;
-        } else if (this.connection.readyState !== WebsocketsReadyState.OPEN) {
-            return false;
         }
-        this.connection.close(code, reason);
-        this.connection = null;
+        connectionCache.ws.close(code, reason);
+
+        connectionCache.ws = undefined as unknown as null;
         return true;
     }
 
-    public send<T extends IGenericData = IGenericData>(data: T): void {
-        if (!this.connection || this.connection.readyState !== WebsocketsReadyState.OPEN) {
+    public async send<T extends IGenericData = IGenericData>(data: T): Promise<void> {
+        const connection = await this.getConnection();
+        if (connection.readyState !== WebsocketsReadyState.OPEN) {
             console.info("Websocket connection is not open, cannot send any data.", data);
             return;
         }
-        this.connection.send(JSON.stringify(data));
+        connection.send(JSON.stringify(data));
     }
 
     public isConnected(): boolean {
-        return this.connection?.readyState === WebsocketsReadyState.OPEN;
+        return connectionCache.ws?.readyState === WebsocketsReadyState.OPEN;
     }
 
     public isClosed(): boolean {
-        return this.connection?.readyState === WebsocketsReadyState.CLOSED;
+        return connectionCache.ws?.readyState === WebsocketsReadyState.CLOSED;
     }
 
     private async createUrl(): Promise<ICreateUrlResult | null> {
@@ -135,6 +123,48 @@ export class WebsocketsConnection implements IWebsocketsConnection {
             token,
             url: `${this.url}?token=${token}&tenant=${this.tenant}&locale=${this.locale}`
         };
+    }
+
+    private async getConnection(): Promise<WebSocket> {
+        if (connectionCache.ws?.readyState === WebsocketsReadyState.OPEN) {
+            return connectionCache.ws;
+        } else if (connectionCache.ws?.readyState === WebsocketsReadyState.CONNECTING) {
+            return connectionCache.ws;
+        }
+
+        const result = await this.createUrl();
+        if (!result) {
+            throw new Error(`Missing URL for WebSocket to connect to.`);
+        }
+        const { url } = result;
+
+        connectionCache.ws = this.factory(url, this.protocol);
+
+        const start = new Date().getTime();
+
+        console.log(`Websockets connecting to ${this.url}...`);
+
+        connectionCache.ws.addEventListener("open", event => {
+            const end = new Date().getTime();
+            console.log(`...connected in ${end - start}ms.`);
+            return this.subscriptionManager.triggerOnOpen(event);
+        });
+        connectionCache.ws.addEventListener("close", event => {
+            return this.subscriptionManager.triggerOnClose(event);
+        });
+        connectionCache.ws.addEventListener("error", event => {
+            console.info(`Error in the Websocket connection.`, event);
+            return this.subscriptionManager.triggerOnError(event);
+        });
+
+        connectionCache.ws.addEventListener(
+            "message",
+            (event: IWebsocketsManagerMessageEvent<string>) => {
+                return this.subscriptionManager.triggerOnMessage(event);
+            }
+        );
+
+        return connectionCache.ws;
     }
 }
 
