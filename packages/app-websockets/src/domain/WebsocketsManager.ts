@@ -43,16 +43,24 @@ export class WebsocketsManager implements IWebsocketsManager {
         return this.connection.subscriptionManager.onError(cb);
     }
 
-    public connect(): void {
-        this.connection.reconnect();
+    public async connect(): Promise<void> {
+        return this.connection.connect();
     }
 
-    public close(code?: WebsocketsCloseCode, reason?: string): void {
-        this.connection.close(code, reason);
+    public async close(code: WebsocketsCloseCode, reason: string): Promise<boolean> {
+        return await this.connection.close(code, reason);
     }
 
     public send<T extends IWebsocketManagerSendData = IWebsocketManagerSendData>(data: T): void {
         return this.connection.send<T>(data);
+    }
+
+    public isConnected(): boolean {
+        return this.connection.isConnected();
+    }
+
+    public isClosed(): boolean {
+        return this.connection.isClosed();
     }
 }
 

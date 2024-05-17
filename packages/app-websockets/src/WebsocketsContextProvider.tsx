@@ -2,8 +2,12 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTenancy } from "@webiny/app-tenancy";
 import { useI18N } from "@webiny/app-i18n";
 import { getToken } from "./utils/getToken";
-import { getUrl } from "./utils/getUrl";
-import { IncomingGenericData, IWebsocketsContext, IWebsocketsContextSendCallable } from "~/types";
+import {
+    IncomingGenericData,
+    IWebsocketsContext,
+    IWebsocketsContextSendCallable,
+    WebsocketsCloseCode
+} from "~/types";
 import {
     createWebsocketsAction,
     createWebsocketsActions,
@@ -12,6 +16,7 @@ import {
     createWebsocketsSubscriptionManager
 } from "./domain";
 import { IGenericData, IWebsocketsManager } from "./domain/types";
+import { getUrl } from "./utils/getUrl";
 
 export interface IWebsocketsContextProviderProps {
     loader?: React.ReactElement;
@@ -41,20 +46,51 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
 
         let currentIteration = 0;
         manager.onClose(event => {
-            if (currentIteration > 5 || event.code !== 1001) {
+            if (currentIteration > 5 || event.code !== WebsocketsCloseCode.GOING_AWAY) {
                 return;
             }
             currentIteration++;
             setTimeout(() => {
                 if (!socketsRef.current) {
                     return;
+                } else if (socketsRef.current.isClosed()) {
+                    console.log("Running auto-reconnect.");
+
+                    socketsRef.current.connect();
                 }
-                console.log("Running auto-reconnect.");
-                socketsRef.current.connect();
             }, 1000);
         });
 
         return manager;
+    }, []);
+    /**
+     * We need this useEffect to close the websocket connection and remove window focus event in case component is unmounted.
+     * This will, probably, happen only during the development phase.
+     *
+     * If we did not disconnect on component unmount, we would have a memory leak - multiple connections would be opened.
+     */
+    useEffect(() => {
+        /**
+         * We want to add a window event listener which will check if the connection is closed, and if its - it will connect again.
+         */
+        const fn = () => {
+            if (!socketsRef.current) {
+                return;
+            } else if (socketsRef.current.isClosed()) {
+                console.log("Running auto-reconnect on focus.");
+                socketsRef.current.connect();
+            }
+        };
+        window.addEventListener("focus", fn);
+
+        return () => {
+            window.removeEventListener("focus", fn);
+            // if (!socketsRef.current) {
+            //     return;
+            // }
+
+            // socketsRef.current.close(WebsocketsCloseCode.NORMAL, "Component unmounted.");
+        };
     }, []);
 
     useEffect(() => {
@@ -65,9 +101,12 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
             } else if (current.tenant === tenant && current.locale === locale) {
                 return;
             } else if (socketsRef.current) {
-                socketsRef.current.close();
+                await socketsRef.current.close(
+                    WebsocketsCloseCode.NORMAL,
+                    "Changing tenant/locale."
+                );
             }
-            const url = getUrl({ tenant, locale, token });
+            const url = getUrl();
 
             if (!url) {
                 console.error("Not possible to connect to the websocket without a valid URL.", {
@@ -82,10 +121,13 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
                 createWebsocketsConnection({
                     subscriptionManager,
                     url,
+                    tenant,
+                    locale,
+                    getToken,
                     protocol: ["webiny-ws-v1"]
                 })
             );
-            socketsRef.current.connect();
+            await socketsRef.current.connect();
 
             setCurrent({
                 tenant,
@@ -141,12 +183,6 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
     if (!socketsRef.current) {
         return props.loader || null;
     }
-
-    // TODO remove when finished with development
-    (window as any).webinySockets = socketsRef.current;
-    (window as any).send = send;
-    (window as any).createAction = createAction;
-    (window as any).onMessage = onMessage;
 
     const value: IWebsocketsContext = {
         send,
