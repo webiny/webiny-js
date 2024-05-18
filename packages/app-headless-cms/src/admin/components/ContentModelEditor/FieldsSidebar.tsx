@@ -29,11 +29,13 @@ const FileInfo = styled("div")({});
 const FieldLabel = styled("div")({
     textTransform: "uppercase",
     lineHeight: "145%",
+    fontFamily: "var(--mdc-typography-font-family)",
     color: "var(--mdc-theme-on-surface)"
 });
 
 const FieldDescription = styled("div")({
     fontSize: 14,
+    fontFamily: "var(--mdc-typography-font-family)",
     color: "var(--mdc-theme-text-secondary-on-background)"
 });
 
@@ -46,6 +48,7 @@ interface FieldProps {
     onFieldDragStart: DragEventHandler;
     fieldType: CmsModelFieldTypePlugin["field"];
 }
+
 const Field = (props: FieldProps) => {
     const {
         onFieldDragStart,
@@ -78,6 +81,7 @@ const Field = (props: FieldProps) => {
 interface FieldsSidebarProps {
     onFieldDragStart: DragEventHandler;
 }
+
 export const FieldsSidebar = ({ onFieldDragStart }: FieldsSidebarProps) => {
     const fieldTypePlugin = plugins.byType<CmsModelFieldTypePlugin>("cms-editor-field-type");
 

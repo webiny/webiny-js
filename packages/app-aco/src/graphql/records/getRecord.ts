@@ -9,9 +9,9 @@ export const createGetRecord = (model: AcoModel, mode: AcoAppMode) => {
     }
     const { singularApiName } = model;
     return gql`
-        query Get${singularApiName}($id: ID!) {
+        query Get${singularApiName}($entryId: ID!) {
             search {
-                content: get${singularApiName}(id: $id) {
+                content: get${singularApiName}(id: $entryId) {
                     data {
                         ${createAppFields(model)}
                     }

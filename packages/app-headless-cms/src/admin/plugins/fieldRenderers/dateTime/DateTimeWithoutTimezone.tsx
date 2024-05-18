@@ -117,7 +117,7 @@ export const DateTimeWithoutTimezone = ({
                         label: `${field.label} time`
                     }}
                     type={"time"}
-                    step={5}
+                    step={60}
                 />
             </Cell>
             <RemoveFieldButton trailingIcon={trailingIcon} />

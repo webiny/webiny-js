@@ -10,6 +10,7 @@ import {
     CmsModelFieldSettings as BaseCmsModelFieldSettings
 } from "~/types";
 import { createFieldStorageId } from "~/crud/contentModel/createFieldStorageId";
+import { validateStorageId } from "~/crud/contentModel/validateStorageId";
 
 const createApiName = (name: string) => {
     return upperFirst(camelCase(name));
@@ -32,7 +33,7 @@ interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "storageId" | "sett
      * This is for backwards compatibility - before fields had storageId.
      *
      * This should only be populated in old model fields.
-     * News ones must have this empty.
+     * New ones must have this empty.
      */
     storageId?: string;
     /**
@@ -47,14 +48,13 @@ export interface CmsApiModel
         "isPrivate" | "fields" | "singularApiName" | "pluralApiName" | "isPlugin"
     > {
     isPrivate?: never;
-    noValidate?: never;
+    noValidate?: boolean;
     singularApiName?: string;
     pluralApiName?: string;
     fields: CmsModelFieldInput[];
 }
 
-export interface CmsApiModelFull extends Omit<CmsApiModel, "fields" | "noValidate"> {
-    noValidate: true;
+export interface CmsApiModelFull extends Omit<CmsApiModel, "fields"> {
     fields: CmsModelFieldBase[];
 }
 
@@ -70,7 +70,7 @@ interface CmsPrivateModel
         | "titleFieldId"
         | "description"
     > {
-    noValidate?: never;
+    noValidate?: boolean;
     titleFieldId?: string;
     singularApiName?: never;
     pluralApiName?: never;
@@ -78,9 +78,9 @@ interface CmsPrivateModel
     fields: CmsModelFieldInput[];
 }
 
-export interface CmsPrivateModelFull extends Omit<CmsPrivateModel, "fields" | "noValidate"> {
+export interface CmsPrivateModelFull
+    extends Omit<CmsPrivateModel, "fields" | "createdBy" | "createdOn" | "savedOn"> {
     fields: CmsModelFieldBase[];
-    noValidate: true;
 }
 
 export type CmsModelInput = CmsApiModel | CmsPrivateModel | CmsApiModelFull | CmsPrivateModelFull;
@@ -139,12 +139,13 @@ export class CmsModelPlugin extends Plugin {
             /**
              * We can safely ignore this error, because we are sure noValidate is not a model field.
              */
-            // @ts-expect-error
             delete input["noValidate"];
 
             return {
                 ...modelPlugin,
                 ...input,
+                // Since `noValidate` is set, we trust the input, and cast to `CmsModelFieldBase`.
+                fields: input.fields as CmsModelFieldBase[],
                 pluralApiName,
                 singularApiName
             };
@@ -232,24 +233,16 @@ export class CmsModelPlugin extends Plugin {
                 );
             }
 
-            let storageId = input.storageId ? lodashCamelCase(input.storageId) : null;
-            /**
-             * If defined, storageId MUST be camel cased string - for backward compatibility.
-             */
-            if (
-                storageId &&
-                (storageId.match(/^([a-zA-Z-0-9]+)$/) === null || storageId !== input.storageId)
-            ) {
-                throw new WebinyError(
-                    `Field's "storageId" of the field with "fieldId" ${input.fieldId} is not camel cased string in the content model "${model.modelId}".`,
-                    "STORAGE_ID_NOT_CAMEL_CASED_ERROR",
-                    {
-                        model,
-                        storageId,
-                        field: input
-                    }
-                );
-            } else if (!storageId) {
+            let storageId = input.storageId;
+            if (storageId) {
+                try {
+                    validateStorageId(storageId);
+                } catch (e) {
+                    throw WebinyError.from(e, {
+                        data: { model, storageId, field: input }
+                    });
+                }
+            } else {
                 storageId = createFieldStorageId(input);
             }
 
@@ -333,6 +326,9 @@ export class CmsModelPlugin extends Plugin {
     }
 }
 
+/**
+ * @deprecated Use `createCmsModelPlugin` instead.
+ */
 export const createCmsModel = (
     model: CmsModelInput,
     options?: CmsModelPluginOptions
@@ -340,17 +336,24 @@ export const createCmsModel = (
     return new CmsModelPlugin(model, options);
 };
 
+export const createCmsModelPlugin = (
+    model: CmsModelInput,
+    options?: CmsModelPluginOptions
+): CmsModelPlugin => {
+    return new CmsModelPlugin(model, options);
+};
+
 export const createPrivateModel = (
-    input: Omit<CmsPrivateModelFull, "group" | "isPrivate" | "noValidate">
+    input: Omit<CmsPrivateModelFull, "group" | "isPrivate">
 ): CmsPrivateModelFull => {
     return {
         authorization: false,
-        ...input,
-        isPrivate: true,
         noValidate: true,
+        isPrivate: true,
         group: {
             id: "private",
             name: "Private Models"
-        }
+        },
+        ...input
     };
 };

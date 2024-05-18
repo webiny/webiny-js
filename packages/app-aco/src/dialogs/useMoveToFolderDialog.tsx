@@ -3,7 +3,7 @@ import React, { ReactNode } from "react";
 import { i18n } from "@webiny/app/i18n";
 import { Bind, GenericFormData } from "@webiny/form";
 import { Typography } from "@webiny/ui/Typography";
-import { useDialogs } from "~/dialogs/useDialogs";
+import { useDialogs } from "@webiny/app-admin";
 import { FolderTree } from "~/components";
 import { DialogFoldersContainer } from "~/dialogs/styled";
 
@@ -63,7 +63,7 @@ export const useMoveToFolderDialog = (): UseMoveToFolderDialogResponse => {
     }: ShowDialogParams) => {
         dialogs.showDialog({
             title,
-            message: <Message helpText={message} focusedFolderId={focusedFolderId} />,
+            content: <Message helpText={message} focusedFolderId={focusedFolderId} />,
             acceptLabel,
             cancelLabel,
             loadingLabel,

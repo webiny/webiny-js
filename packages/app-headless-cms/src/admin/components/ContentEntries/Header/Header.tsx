@@ -1,12 +1,9 @@
 import React from "react";
 import { Search } from "@webiny/app-aco";
-import { Cell, Grid } from "@webiny/ui/Grid";
-
 import { ButtonFilters } from "./ButtonFilters";
 import { ButtonsCreate } from "./ButtonsCreate";
 import { Title } from "./Title";
-
-import { Container, WrapperActions } from "./styled";
+import { ActionsColumn, Container, TitleColumn, WrapperActions } from "./styled";
 
 interface HeaderProps {
     title?: string;
@@ -31,23 +28,21 @@ export const Header = (props: HeaderProps) => {
 
     return (
         <Container>
-            <Grid align={"right"} style={{ padding: 0 }}>
-                <Cell span={4}>
-                    <Title title={title} />
-                </Cell>
-                <Cell span={8}>
-                    <WrapperActions>
-                        <Search value={searchValue} onChange={onSearchChange} />
-                        <ButtonFilters />
-                        <ButtonsCreate
-                            canCreateFolder={canCreateFolder}
-                            canCreateContent={canCreateContent}
-                            onCreateFolder={onCreateFolder}
-                            onCreateEntry={onCreateEntry}
-                        />
-                    </WrapperActions>
-                </Cell>
-            </Grid>
+            <TitleColumn>
+                <Title title={title} />
+            </TitleColumn>
+            <ActionsColumn>
+                <WrapperActions>
+                    <Search value={searchValue} onChange={onSearchChange} />
+                    <ButtonFilters />
+                    <ButtonsCreate
+                        canCreateFolder={canCreateFolder}
+                        canCreateContent={canCreateContent}
+                        onCreateFolder={onCreateFolder}
+                        onCreateEntry={onCreateEntry}
+                    />
+                </WrapperActions>
+            </ActionsColumn>
         </Container>
     );
 };

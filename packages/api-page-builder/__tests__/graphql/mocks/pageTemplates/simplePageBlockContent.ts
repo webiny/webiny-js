@@ -1,8 +1,13 @@
+import { PageElementId } from "~/graphql";
+
+const blockId = PageElementId.create().getValue();
+
 /**
  * Contains a grid > cell with a heading and a paragraph.
  * The heading and paragraph are both editable (linked elements).
  */
 export const simplePageBlockContent = {
+    id: blockId,
     type: "block",
     data: {
         settings: {
@@ -49,6 +54,7 @@ export const simplePageBlockContent = {
     },
     elements: [
         {
+            id: PageElementId.create().getValue(),
             type: "grid",
             data: {
                 settings: {
@@ -92,6 +98,7 @@ export const simplePageBlockContent = {
             },
             elements: [
                 {
+                    id: PageElementId.create().getValue(),
                     type: "cell",
                     data: {
                         settings: {
@@ -116,6 +123,7 @@ export const simplePageBlockContent = {
                     },
                     elements: [
                         {
+                            id: PageElementId.create().getValue(),
                             type: "heading",
                             data: {
                                 text: {
@@ -146,6 +154,7 @@ export const simplePageBlockContent = {
                             path: ["UTaSFnVtkV", "uFzaV9SB6q", "k77Fdcod55", "BOMdKQBt23"]
                         },
                         {
+                            id: PageElementId.create().getValue(),
                             type: "paragraph",
                             data: {
                                 text: {

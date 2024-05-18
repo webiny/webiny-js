@@ -181,6 +181,14 @@ export const createManageSDL: CreateManageSDL = ({
                 after: String
                 search: String
             ): ${singularName}ListResponse
+            
+            listDeleted${pluralName} (
+                where: ${singularName}ListWhereInput
+                sort: [${singularName}ListSorter]
+                limit: Int
+                after: String
+                search: String
+            ): ${singularName}ListResponse
         }
 
         extend type Mutation {
@@ -195,6 +203,8 @@ export const createManageSDL: CreateManageSDL = ({
             move${singularName}(revision: ID!, folderId: ID!): ${singularName}MoveResponse
 
             delete${singularName}(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
+            
+            restore${singularName}FromBin(revision: ID!): ${singularName}Response
 
             deleteMultiple${pluralName}(entries: [ID!]!): CmsDeleteMultipleResponse!
     

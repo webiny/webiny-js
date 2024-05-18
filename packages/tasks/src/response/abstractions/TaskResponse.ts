@@ -18,7 +18,7 @@ export interface ITaskResponseDoneResultOutput {
         | number
         | boolean
         | undefined
-        | Record<string, string | number>
+        | Record<string, any>
         | IResponseError;
 }
 export interface ITaskResponseDoneResult<

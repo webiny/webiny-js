@@ -49,6 +49,7 @@ const AddBlockContainer = styled.div<{ displayMode: string }>(({ displayMode }) 
 });
 
 const AddBlockContent = styled.div<{ displayMode: string }>(({ displayMode }) => ({
+    fontFamily: "var(--mdc-typography-font-family)",
     width: displayMode === "mobile-portrait" ? 280 : 300,
     margin: 5,
     textAlign: "center",

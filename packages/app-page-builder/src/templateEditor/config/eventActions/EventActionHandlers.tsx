@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { plugins } from "@webiny/plugins";
+import { Prompt } from "@webiny/react-router";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { saveTemplateAction, SaveTemplateActionEvent } from "./saveTemplate";
 import { UpdateDocumentActionEvent } from "~/editor/recoil/actions";
 import { TemplateEditorEventActionCallableState } from "~/templateEditor/types";
-import { Prompt } from "@webiny/react-router";
+import { createCloneElementPlugin } from "./cloneElement/plugin";
 
 export const EventActionHandlers = () => {
+    plugins.register(createCloneElementPlugin());
     const eventActionHandler = useEventActionHandler<TemplateEditorEventActionCallableState>();
     const [isDirty, setDirty] = useState(false);
 

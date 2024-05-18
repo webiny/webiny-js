@@ -61,6 +61,28 @@ const expectedSystemFields: Record<string, Field> = {
         transform: expect.any(Function),
         label: "Revision Saved On"
     },
+    revisionDeletedOn: {
+        id: "revisionDeletedOn",
+        parents: [],
+        type: "datetime",
+        storageId: "revisionDeletedOn",
+        fieldId: "revisionDeletedOn",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Revision Deleted On"
+    },
+    revisionRestoredOn: {
+        id: "revisionRestoredOn",
+        parents: [],
+        type: "datetime",
+        storageId: "revisionRestoredOn",
+        fieldId: "revisionRestoredOn",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Revision Restored On"
+    },
     revisionFirstPublishedOn: {
         id: "revisionFirstPublishedOn",
         parents: [],
@@ -104,6 +126,28 @@ const expectedSystemFields: Record<string, Field> = {
         system: true,
         transform: expect.any(Function),
         label: "Modified On"
+    },
+    deletedOn: {
+        id: "deletedOn",
+        parents: [],
+        type: "datetime",
+        storageId: "deletedOn",
+        fieldId: "deletedOn",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Deleted On"
+    },
+    restoredOn: {
+        id: "restoredOn",
+        parents: [],
+        type: "datetime",
+        storageId: "restoredOn",
+        fieldId: "restoredOn",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Restored On"
     },
     savedOn: {
         id: "savedOn",
@@ -180,6 +224,34 @@ const expectedSystemFields: Record<string, Field> = {
             path: "revisionSavedBy.id"
         }
     },
+    revisionDeletedBy: {
+        id: "revisionDeletedBy",
+        parents: [],
+        type: "plainObject",
+        storageId: "revisionDeletedBy",
+        fieldId: "revisionDeletedBy",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Revision Deleted By",
+        settings: {
+            path: "revisionDeletedBy.id"
+        }
+    },
+    revisionRestoredBy: {
+        id: "revisionRestoredBy",
+        parents: [],
+        type: "plainObject",
+        storageId: "revisionRestoredBy",
+        fieldId: "revisionRestoredBy",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Revision Restored By",
+        settings: {
+            path: "revisionRestoredBy.id"
+        }
+    },
     revisionFirstPublishedBy: {
         id: "revisionFirstPublishedBy",
         parents: [],
@@ -248,6 +320,34 @@ const expectedSystemFields: Record<string, Field> = {
         label: "Saved By",
         settings: {
             path: "savedBy.id"
+        }
+    },
+    deletedBy: {
+        id: "deletedBy",
+        parents: [],
+        type: "plainObject",
+        storageId: "deletedBy",
+        fieldId: "deletedBy",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Deleted By",
+        settings: {
+            path: "deletedBy.id"
+        }
+    },
+    restoredBy: {
+        id: "restoredBy",
+        parents: [],
+        type: "plainObject",
+        storageId: "restoredBy",
+        fieldId: "restoredBy",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Restored By",
+        settings: {
+            path: "restoredBy.id"
         }
     },
     firstPublishedBy: {
@@ -354,6 +454,17 @@ const expectedSystemFields: Record<string, Field> = {
         system: true,
         transform: expect.any(Function),
         label: "Status"
+    },
+    wbyDeleted: {
+        id: "wbyDeleted",
+        parents: [],
+        type: "boolean",
+        storageId: "wbyDeleted",
+        fieldId: "wbyDeleted",
+        createPath: expect.any(Function),
+        system: true,
+        transform: expect.any(Function),
+        label: "Deleted"
     }
 };
 

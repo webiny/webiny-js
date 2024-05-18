@@ -1,0 +1,8 @@
+{
+  "name": "PACKAGE_NAME",
+  "main": "src/index.tsx",
+  "version": "1.0.0",
+  "dependencies": {
+    "react": "18.2.0"
+  }
+}

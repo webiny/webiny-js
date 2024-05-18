@@ -16,6 +16,7 @@ const t = i18n.namespace("FormEditor.FormSubmissionDialog");
 const dialogStyle = css`
     .webiny-ui-dialog__title {
         position: relative;
+        margin-bottom: 0;
 
         .title-actions {
             position: absolute;

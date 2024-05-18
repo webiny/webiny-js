@@ -7,7 +7,6 @@ export {
     getFileGraphQLSelection
 } from "./modules/FileManagerApiProvider/FileManagerApiContext";
 export { useFileManagerView } from "./modules/FileManagerRenderer/FileManagerViewProvider";
-export * from "./FileManagerFileTypePlugin";
 export {
     FileManagerViewConfig,
     useFileManagerViewConfig

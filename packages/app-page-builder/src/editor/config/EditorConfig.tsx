@@ -9,7 +9,7 @@ import { Elements } from "~/editor/config/Elements";
 import { OnActiveElement } from "./OnActiveElement";
 import { NoActiveElement } from "./NoActiveElement";
 import { ElementProperties, ElementProperty } from "./ElementProperty";
-import { ElementAction } from "./ElementAction";
+import { ElementAction, ElementActions } from "./ElementAction";
 
 const base = createConfigurableComponent<ContentEntryEditorConfig>("PageBuilderEditorConfig");
 
@@ -40,6 +40,13 @@ export const EditorConfig = Object.assign(base.Config, {
      * Define an element action.
      */
     ElementAction,
+    /**
+     * Render all element actions.
+     */
+    ElementActions,
+    /**
+     * Access full editor config. WARNING: very low-level, we don't recommend using this directly!
+     */
     useEditorConfig
 });
 

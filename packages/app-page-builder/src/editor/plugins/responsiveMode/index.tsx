@@ -17,7 +17,7 @@ const plugins: PbEditorResponsiveModePlugin[] = [
         name: "pb-editor-responsive-mode-desktop",
         config: {
             displayMode: DisplayMode.DESKTOP,
-            toolTip: {
+            tooltip: {
                 title: "Desktop",
                 subTitle: "Base breakpoint",
                 body: `Desktop styles apply at all breakpoints, unless they're
@@ -32,7 +32,7 @@ const plugins: PbEditorResponsiveModePlugin[] = [
         name: "pb-editor-responsive-mode-tablet",
         config: {
             displayMode: DisplayMode.TABLET,
-            toolTip: {
+            tooltip: {
                 title: "Tablet",
                 subTitle: "991px and down",
                 body: `Styles added here will apply at 991px and down, unless they're
@@ -46,7 +46,7 @@ const plugins: PbEditorResponsiveModePlugin[] = [
         name: "pb-editor-responsive-mode-mobile-landscape",
         config: {
             displayMode: DisplayMode.MOBILE_LANDSCAPE,
-            toolTip: {
+            tooltip: {
                 title: "Mobile landscape",
                 subTitle: "767px and down",
                 body: `Styles added here will apply at 767px and down, unless they're
@@ -60,7 +60,7 @@ const plugins: PbEditorResponsiveModePlugin[] = [
         name: "pb-editor-responsive-mode-mobile-portrait",
         config: {
             displayMode: DisplayMode.MOBILE_PORTRAIT,
-            toolTip: {
+            tooltip: {
                 title: "Mobile portrait",
                 subTitle: "478px and down",
                 body: `Styles added here will apply at 478px and down.`

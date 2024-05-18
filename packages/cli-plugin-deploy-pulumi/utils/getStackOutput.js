@@ -1,10 +1,9 @@
-const execa = require("execa");
-const mapStackOutput = require("./mapStackOutput");
-const { getProject } = require("@webiny/cli/utils");
-
 const cache = {};
+
 const getOutputJson = ({ folder, env, cwd, variant }) => {
+    const { getProject } = require("@webiny/cli/utils");
     const project = getProject();
+    const execa = require("execa");
 
     if (cache[folder + env]) {
         return cache[folder + env];
@@ -46,7 +45,7 @@ module.exports = (folderOrArgs, env, map) => {
     }
 
     if (!args.folder) {
-        throw new Error(`Please specify a project application folder, for example "apps/admin".`);
+        throw new Error(`Please specify a project application folder, for example "admin".`);
     }
 
     if (!args.env) {
@@ -62,5 +61,6 @@ module.exports = (folderOrArgs, env, map) => {
         return output;
     }
 
+    const mapStackOutput = require("./mapStackOutput");
     return mapStackOutput(output, args.map);
 };

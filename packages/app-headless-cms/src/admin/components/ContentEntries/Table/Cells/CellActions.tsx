@@ -1,10 +1,10 @@
 import React from "react";
 import { FolderProvider, useAcoConfig } from "@webiny/app-aco";
-import { OptionsMenu } from "@webiny/app-admin";
+import { makeDecoratable, OptionsMenu } from "@webiny/app-admin";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { EntryProvider } from "~/admin/hooks/useEntry";
 
-export const CellActions = () => {
+const DefaultCellActions = () => {
     const { useTableRow, isFolderRow } = ContentEntryListConfig.Browser.Table.Column;
     const { row } = useTableRow();
     const { folder: folderConfig, record: recordConfig } = useAcoConfig();
@@ -34,3 +34,5 @@ export const CellActions = () => {
         </EntryProvider>
     );
 };
+
+export const CellActions = makeDecoratable("CellActions", DefaultCellActions);

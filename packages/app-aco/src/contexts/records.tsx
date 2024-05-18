@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo, useState } from "react";
+import React, { ReactNode, useMemo } from "react";
 import sortBy from "lodash/sortBy";
 import unionBy from "lodash/unionBy";
 import lodashMerge from "lodash/merge";
@@ -40,6 +40,7 @@ import {
 import { validateOrGetDefaultDbSort } from "~/sorting";
 import { useAcoApp } from "~/hooks";
 import { parseIdentifier } from "@webiny/utils";
+import { useStateIfMounted } from "@webiny/app-admin";
 
 interface ListTagsParams {
     where?: ListTagsWhereQueryVariables;
@@ -111,10 +112,10 @@ export const SearchRecordsProvider = ({ children }: Props) => {
     const { app, client, mode } = useAcoApp();
     const { model } = app;
 
-    const [records, setRecords] = useState<SearchRecordItem[]>([]);
-    const [tags, setTags] = useState<TagItem[]>([]);
-    const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
-    const [meta, setMeta] = useState<ListMeta>(Object.create(defaultMeta));
+    const [records, setRecords] = useStateIfMounted<SearchRecordItem[]>([]);
+    const [tags, setTags] = useStateIfMounted<TagItem[]>([]);
+    const [loading, setLoading] = useStateIfMounted<Loading<LoadingActions>>(defaultLoading);
+    const [meta, setMeta] = useStateIfMounted<ListMeta>(Object.create(defaultMeta));
 
     const {
         GET_RECORD,
@@ -166,7 +167,9 @@ export const SearchRecordsProvider = ({ children }: Props) => {
             },
             removeRecordFromCache: (id: string) => {
                 setRecords(prev => {
-                    return prev.filter(record => record.id !== id);
+                    return prev.filter(
+                        record => record.id !== id && !record.id.startsWith(`${id}#`)
+                    );
                 });
             },
 
@@ -174,7 +177,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                 const { after, limit, sort: sorting, search, where } = params;
 
                 /**
-                 * Avoiding to fetch records in case they have already been fetched.
+                 * Avoiding fetching records in case they have already been fetched.
                  * This happens when visiting a list with all records loaded and receives "after" param.
                  */
                 const totalCount = meta?.totalCount || 0;
@@ -248,7 +251,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
                     () =>
                         client.query<GetSearchRecordResponse, GetSearchRecordQueryVariables>({
                             query: GET_RECORD,
-                            variables: { id: recordId },
+                            variables: { entryId: recordId },
                             fetchPolicy: "network-only"
                         })
                 );

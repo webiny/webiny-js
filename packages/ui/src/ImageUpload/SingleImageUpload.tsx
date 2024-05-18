@@ -5,7 +5,7 @@ import { FormElementMessage } from "~/FormElementMessage";
 import styled from "@emotion/styled";
 import classNames from "classnames";
 import Image from "./Image";
-import ImageEditorDialog from "./ImageEditorDialog";
+import { ImageEditorDialog } from "./ImageEditorDialog";
 
 const ImageUploadWrapper = styled("div")({
     position: "relative",

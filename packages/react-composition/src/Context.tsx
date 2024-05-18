@@ -1,10 +1,10 @@
 import React, {
     ComponentType,
-    useState,
-    useCallback,
     createContext,
+    useCallback,
     useContext,
-    useMemo
+    useMemo,
+    useState
 } from "react";
 import { useCompositionScope } from "~/CompositionScope";
 import {
@@ -12,9 +12,9 @@ import {
     ComposeWith,
     DecoratableComponent,
     DecoratableHook,
+    Decorator,
     Enumerable,
     GenericComponent,
-    Decorator,
     GenericHook
 } from "~/types";
 
@@ -51,9 +51,16 @@ type ComponentScopes = Map<string, ComposedComponents>;
 
 export type DecoratableTypes = DecoratableComponent | DecoratableHook;
 
+interface CompositionContextGetComponentCallable {
+    (component: ComponentType<unknown>, scope?: string):
+        | ComposedFunction
+        | GenericComponent
+        | undefined;
+}
+
 interface CompositionContext {
     components: ComponentScopes;
-    getComponent(component: ComponentType<unknown>, scope?: string): ComposedFunction | undefined;
+    getComponent: CompositionContextGetComponentCallable;
     composeComponent(
         component: ComponentType<unknown>,
         hocs: Enumerable<ComposeWith>,
@@ -71,7 +78,11 @@ export const CompositionProvider = ({ children }: CompositionProviderProps) => {
     const [components, setComponents] = useState<ComponentScopes>(new Map());
 
     const composeComponent = useCallback(
-        (component, hocs, scope = "*") => {
+        (
+            component: GenericHook | GenericComponent,
+            hocs: HigherOrderComponent<any, any>[],
+            scope: string | undefined = "*"
+        ) => {
             setComponents(prevComponents => {
                 const components = new Map(prevComponents);
                 const scopeMap: ComposedComponents = components.get(scope) || new Map();
@@ -116,7 +127,7 @@ export const CompositionProvider = ({ children }: CompositionProviderProps) => {
         [setComponents]
     );
 
-    const getComponent: CompositionContext["getComponent"] = useCallback(
+    const getComponent = useCallback<CompositionContextGetComponentCallable>(
         (Component, scope = "*") => {
             const scopeMap: ComposedComponents = components.get(scope) || new Map();
             const composedComponent = scopeMap.get(Component);

@@ -1,18 +1,13 @@
 import React from "react";
+import { i18n } from "@webiny/app/i18n";
+import { useForm } from "@webiny/form";
 import { CmsModelField, CmsModelFieldRendererPlugin } from "~/types";
 import ContentEntriesMultiAutocomplete from "./components/ContentEntriesMultiAutoComplete";
 
-import { i18n } from "@webiny/app/i18n";
-
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
-const getKey = (
-    field: CmsModelField,
-    data?: {
-        id?: string;
-    }
-): string => {
-    return (data?.id || "unknown") + "." + field.fieldId;
+const getKey = (field: CmsModelField, id: string | undefined): string => {
+    return (id || "unknown") + "." + field.fieldId;
 };
 
 const plugin: CmsModelFieldRendererPlugin = {
@@ -27,11 +22,13 @@ const plugin: CmsModelFieldRendererPlugin = {
         },
         render(props) {
             const Bind = props.getBind();
+            const form = useForm();
+
             return (
                 <Bind>
                     {bind => (
                         <ContentEntriesMultiAutocomplete
-                            key={getKey(props.field, bind.form?.data)}
+                            key={getKey(props.field, form.data.id)}
                             {...props}
                             bind={bind}
                         />

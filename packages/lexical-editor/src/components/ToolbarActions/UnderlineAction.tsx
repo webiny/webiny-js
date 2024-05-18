@@ -1,10 +1,9 @@
 import React from "react";
 import { FORMAT_TEXT_COMMAND } from "lexical";
-import { useCurrentSelection } from "~/hooks/useCurrentSelection";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useCurrentSelection, useRichTextEditor } from "~/hooks";
 
 export const UnderlineAction = () => {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
     const { rangeSelection } = useCurrentSelection();
     const isUnderlineSelected = rangeSelection ? rangeSelection.hasFormat("underline") : false;
 

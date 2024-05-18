@@ -50,9 +50,7 @@ export interface TitleProps {
 const Title = makeDecoratable("ViewTitle", ({ title, description }: TitleProps) => {
     return (
         <Styled.Title>
-            <h1>
-                <Typography use="headline4">{title}</Typography>
-            </h1>
+            <Typography use="headline4">{title}</Typography>
             {description ? (
                 <p>
                     <Typography use="body1">{description}</Typography>

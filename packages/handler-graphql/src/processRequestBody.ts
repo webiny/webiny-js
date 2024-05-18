@@ -2,7 +2,7 @@ import { ExecutionResult, graphql, GraphQLSchema } from "graphql";
 import { GraphQLAfterQueryPlugin, GraphQLBeforeQueryPlugin, GraphQLRequestBody } from "~/types";
 import { Context } from "@webiny/api/types";
 
-const processRequestBody = async (
+const executeGraphQl = async (
     body: GraphQLRequestBody,
     schema: GraphQLSchema,
     context: Context
@@ -22,18 +22,24 @@ const processRequestBody = async (
     return result;
 };
 
-export default async (
+export const processRequestBody = async <
+    TData = Record<string, any>,
+    TExtensions = Record<string, any>
+>(
     requestBody: GraphQLRequestBody | GraphQLRequestBody[],
     schema: GraphQLSchema,
     context: Context
-): Promise<ExecutionResult[] | ExecutionResult> => {
+): Promise<ExecutionResult<TData, TExtensions>[] | ExecutionResult<TData, TExtensions>> => {
     if (Array.isArray(requestBody)) {
-        const results: ExecutionResult[] = [];
+        const results: ExecutionResult<TData, TExtensions>[] = [];
         for (const body of requestBody) {
-            const result = await processRequestBody(body, schema, context);
-            results.push(result);
+            const result = await executeGraphQl(body, schema, context);
+            results.push(result as ExecutionResult<TData, TExtensions>);
         }
         return results;
     }
-    return await processRequestBody(requestBody, schema, context);
+    return (await executeGraphQl(requestBody, schema, context)) as ExecutionResult<
+        TData,
+        TExtensions
+    >;
 };

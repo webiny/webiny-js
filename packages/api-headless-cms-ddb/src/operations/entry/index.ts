@@ -37,7 +37,9 @@ import { filter, sort } from "~/operations/entry/filtering";
 import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
 import { CmsEntryStorageOperations } from "~/types";
 import {
+    isDeletedEntryMetaField,
     isEntryLevelEntryMetaField,
+    isRestoredEntryMetaField,
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants";
 
@@ -474,6 +476,82 @@ export const createEntriesStorageOperations = (
         }
     };
 
+    const moveToBin: CmsEntryStorageOperations["moveToBin"] = async (initialModel, params) => {
+        const { entry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
+
+        /**
+         * First we need to load all the revisions and published / latest entries.
+         */
+        const queryAllParams: QueryAllParams = {
+            entity,
+            partitionKey: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
+            options: {
+                gte: " "
+            }
+        };
+
+        let records: DbItem<CmsEntry>[] = [];
+        try {
+            records = await queryAll(queryAllParams);
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not load all records.",
+                ex.code || "LOAD_ALL_RECORDS_ERROR",
+                {
+                    error: ex,
+                    id: entry.id
+                }
+            );
+        }
+
+        const storageEntry = convertToStorageEntry({
+            model,
+            storageEntry: initialStorageEntry
+        });
+
+        /**
+         * Let's pick the `deleted` meta fields from the storage entry.
+         */
+        const updatedDeletedMetaFields = pickEntryMetaFields(storageEntry, isDeletedEntryMetaField);
+
+        /**
+         * Then create the batch writes for the DynamoDB, with the updated data.
+         */
+        const items = records.map(record => {
+            return entity.putBatch({
+                ...record,
+                ...updatedDeletedMetaFields,
+                wbyDeleted: storageEntry.wbyDeleted,
+                location: storageEntry.location,
+                binOriginalFolderId: storageEntry.binOriginalFolderId
+            });
+        });
+        /**
+         * And finally write it...
+         */
+        try {
+            await batchWriteAll({
+                table: entity.table,
+                items
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not move the entry to the bin.",
+                ex.code || "MOVE_ENTRY_TO_BIN_ERROR",
+                {
+                    error: ex,
+                    entry,
+                    storageEntry
+                }
+            );
+        }
+    };
+
     const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
         const { entry } = params;
         const id = entry.id || entry.entryId;
@@ -527,6 +605,91 @@ export const createEntriesStorageOperations = (
                     error: ex,
                     partitionKey: queryAllParams.partitionKey,
                     id
+                }
+            );
+        }
+    };
+
+    const restoreFromBin: CmsEntryStorageOperations["restoreFromBin"] = async (
+        initialModel,
+        params
+    ) => {
+        const { entry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
+
+        /**
+         * First we need to load all the revisions and published / latest entries.
+         */
+        const queryAllParams: QueryAllParams = {
+            entity,
+            partitionKey: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
+            options: {
+                gte: " "
+            }
+        };
+
+        let records: DbItem<CmsEntry>[] = [];
+        try {
+            records = await queryAll(queryAllParams);
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not load all records.",
+                ex.code || "LOAD_ALL_RECORDS_ERROR",
+                {
+                    error: ex,
+                    id: entry.id
+                }
+            );
+        }
+
+        const storageEntry = convertToStorageEntry({
+            model,
+            storageEntry: initialStorageEntry
+        });
+
+        /**
+         * Let's pick the `restored` meta fields from the storage entry.
+         */
+        const updatedRestoredMetaFields = pickEntryMetaFields(
+            storageEntry,
+            isRestoredEntryMetaField
+        );
+
+        const items = records.map(record => {
+            return entity.putBatch({
+                ...record,
+                ...updatedRestoredMetaFields,
+                wbyDeleted: storageEntry.wbyDeleted,
+                location: storageEntry.location,
+                binOriginalFolderId: storageEntry.binOriginalFolderId
+            });
+        });
+        /**
+         * And finally write it...
+         */
+        try {
+            await batchWriteAll({
+                table: entity.table,
+                items
+            });
+
+            dataLoaders.clearAll({
+                model
+            });
+
+            return initialStorageEntry;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not restore the entry from the bin.",
+                ex.code || "RESTORE_ENTRY_ERROR",
+                {
+                    error: ex,
+                    entry,
+                    storageEntry
                 }
             );
         }
@@ -1312,6 +1475,8 @@ export const createEntriesStorageOperations = (
         update,
         move,
         delete: deleteEntry,
+        moveToBin,
+        restoreFromBin,
         deleteRevision,
         deleteMultipleEntries,
         getPreviousRevision,

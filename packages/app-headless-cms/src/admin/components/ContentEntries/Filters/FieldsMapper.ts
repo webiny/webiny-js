@@ -3,19 +3,13 @@ import { CmsModel } from "@webiny/app-headless-cms-common/types";
 import { FieldRaw } from "@webiny/app-aco/components/AdvancedSearch/domain";
 
 export class FieldsMapper {
-    private static excluded: FieldRaw["type"][] = [
-        "ref",
-        "rich-text",
-        "file",
-        "object",
-        "dynamicZone"
-    ];
+    private static excluded: FieldRaw["type"][] = ["rich-text", "file", "object", "dynamicZone"];
     private static defaultFields: FieldRaw[] = [
         {
             id: "status",
             type: "text",
             label: "Status",
-            multipleValues: true,
+            multipleValues: false,
             predefinedValues: {
                 enabled: true,
                 values: [

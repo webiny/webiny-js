@@ -54,6 +54,7 @@ const Actions = styled("div")({
  * TODO @sven to give correct values
  */
 const FieldTypeName = styled("div")({
+    fontFamily: "var(--mdc-typography-font-family)",
     display: "flex",
     flexDirection: "column",
     textTransform: "uppercase",

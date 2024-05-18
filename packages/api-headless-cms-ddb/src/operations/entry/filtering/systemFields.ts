@@ -93,6 +93,13 @@ export const createSystemFields = (): Field[] => {
             storageId: "status",
             fieldId: "status",
             label: "Status"
+        },
+        {
+            id: "wbyDeleted",
+            type: "boolean",
+            storageId: "wbyDeleted",
+            fieldId: "wbyDeleted",
+            label: "Deleted"
         }
     ];
 };

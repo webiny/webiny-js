@@ -58,18 +58,6 @@ export const createMenuCrud = (params: CreateMenuCrudParams): MenusCrud => {
     );
 
     return {
-        /**
-         * Deprecated in 5.34.0 - will be removed in 5.36.0
-         */
-        onBeforeMenuCreate: onMenuBeforeCreate,
-        onAfterMenuCreate: onMenuAfterCreate,
-        onBeforeMenuUpdate: onMenuBeforeUpdate,
-        onAfterMenuUpdate: onMenuAfterUpdate,
-        onBeforeMenuDelete: onMenuBeforeDelete,
-        onAfterMenuDelete: onMenuAfterDelete,
-        /**
-         *
-         */
         onMenuBeforeCreate,
         onMenuAfterCreate,
         onMenuBeforeUpdate,

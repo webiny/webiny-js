@@ -16,7 +16,7 @@ import {
 
 import { getAwsAccountId } from "../awsUtils";
 import { CoreVpc } from "./CoreVpc";
-import { LAMBDA_RUNTIME } from "~/constants";
+import { DEFAULT_PROD_ENV_NAMES, LAMBDA_RUNTIME } from "~/constants";
 
 export interface ElasticSearchParams {
     protect: boolean;
@@ -46,7 +46,8 @@ export const ElasticSearch = createAppModule({
         const domainName = "webiny-js";
         const accountId = getAwsAccountId(app);
 
-        const productionEnvironments = app.params.create.productionEnvironments || ["prod"];
+        const productionEnvironments =
+            app.params.create.productionEnvironments || DEFAULT_PROD_ENV_NAMES;
         const isProduction = productionEnvironments.includes(app.params.run.env);
 
         const vpc = app.getModule(CoreVpc, { optional: true });

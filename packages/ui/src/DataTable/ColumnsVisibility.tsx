@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/outlined/settings.svg";
 import { Column } from "@tanstack/react-table";
 import { IconButton } from "~/Button";
@@ -12,7 +12,7 @@ interface ColumnsVisibilityProps<T> {
 
 interface Option {
     id: string;
-    header: ReactNode;
+    header: string;
     onChange: (value?: boolean | undefined) => void;
     getValue: () => boolean;
 }

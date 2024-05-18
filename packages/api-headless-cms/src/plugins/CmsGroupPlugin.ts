@@ -25,6 +25,13 @@ export class CmsGroupPlugin extends Plugin {
     }
 }
 
+/**
+ * @deprecated Use `createCmsGroupPlugin` instead.
+ */
 export const createCmsGroup = (group: CmsGroup): CmsGroupPlugin => {
+    return new CmsGroupPlugin(group);
+};
+
+export const createCmsGroupPlugin = (group: CmsGroup): CmsGroupPlugin => {
     return new CmsGroupPlugin(group);
 };

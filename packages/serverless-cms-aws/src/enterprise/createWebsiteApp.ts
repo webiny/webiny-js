@@ -5,7 +5,6 @@ import {
 import { PluginCollection } from "@webiny/plugins/types";
 import { generateCommonHandlers, lambdaEdgeWarning, renderWebsite } from "~/website/plugins";
 import { uploadAppToS3 } from "~/react/plugins";
-import { pbLegacyRenderingWarningPlugins } from "~/utils/pbLegacyRenderingWarning";
 
 export interface CreateWebsiteAppParams extends CreateWebsitePulumiAppParams {
     plugins?: PluginCollection;
@@ -16,7 +15,6 @@ export function createWebsiteApp(projectAppParams: CreateWebsiteAppParams = {}) 
         uploadAppToS3({ folder: "apps/website" }),
         generateCommonHandlers,
         renderWebsite,
-        pbLegacyRenderingWarningPlugins,
         lambdaEdgeWarning
     ];
 

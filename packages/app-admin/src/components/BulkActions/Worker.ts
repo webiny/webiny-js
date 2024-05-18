@@ -10,7 +10,7 @@ export interface CallbackParams<T> {
 export interface Result {
     title: string;
     status: "success" | "failure";
-    message?: string;
+    message?: string | React.ReactElement;
 }
 
 /**

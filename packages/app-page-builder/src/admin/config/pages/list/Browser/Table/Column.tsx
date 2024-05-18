@@ -20,6 +20,6 @@ const BaseColumn = (props: ColumnProps) => {
 };
 
 export const Column = Object.assign(BaseColumn, {
-    useTableRow: Table.Column.useTableRow<TableItem>,
+    useTableRow: Table.Column.createUseTableRow<TableItem>(),
     isFolderRow: Table.Column.isFolderRow
 });

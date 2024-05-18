@@ -17,7 +17,8 @@ export enum PROJECT_PACKAGE_FEATURE_NAME {
     APW = "advancedPublishingWorkflow",
     AACL = "advancedAccessControlLayer",
     AL = "auditLogs",
-    AUDIT_LOGS = "auditLogs"
+    AUDIT_LOGS = "auditLogs",
+    RECORD_LOCKING = "recordLocking"
 }
 
 export enum MT_OPTIONS_MAX_COUNT_TYPE {
@@ -47,6 +48,9 @@ export interface ProjectPackageFeatures {
         enabled: boolean;
     };
     [PROJECT_PACKAGE_FEATURE_NAME.AUDIT_LOGS]: {
+        enabled: boolean;
+    };
+    [PROJECT_PACKAGE_FEATURE_NAME.RECORD_LOCKING]: {
         enabled: boolean;
     };
     [PROJECT_PACKAGE_FEATURE_NAME.AACL]: {

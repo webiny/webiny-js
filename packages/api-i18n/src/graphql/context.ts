@@ -219,6 +219,26 @@ const createBaseContextPlugin = () => {
             __i18n.locales = await loadLocales();
         };
 
+        const withEachLocale: I18NContextObject["withEachLocale"] = async (locales, cb) => {
+            const initialLocale = getDefaultLocale();
+            if (!initialLocale) {
+                return;
+            }
+            const results = [];
+            for (const locale of locales) {
+                setContentLocale(locale);
+                setCurrentLocale("default", locale);
+                try {
+                    results.push(await cb(locale));
+                } finally {
+                    setContentLocale(initialLocale);
+                    setCurrentLocale("default", initialLocale);
+                }
+            }
+
+            return results;
+        };
+
         context.i18n = {
             ...context.i18n,
             getDefaultLocale,
@@ -231,7 +251,8 @@ const createBaseContextPlugin = () => {
             getLocale,
             reloadLocales,
             hasI18NContentPermission: () => hasI18NContentPermission(context),
-            checkI18NContentPermission
+            checkI18NContentPermission,
+            withEachLocale
         };
     });
 };

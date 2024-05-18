@@ -34,7 +34,6 @@
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../data-migration/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
-    { "path": "../feature-flags/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../handler-db/tsconfig.build.json" },
     { "path": "../handler-logs/tsconfig.build.json" },

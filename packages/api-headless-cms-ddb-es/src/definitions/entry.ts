@@ -45,11 +45,15 @@ export const createEntryEntity = (params: CreateEntryEntityParams): Entity<any> 
             revisionCreatedOn: { type: "string" },
             revisionSavedOn: { type: "string" },
             revisionModifiedOn: { type: "string" },
+            revisionDeletedOn: { type: "string" },
+            revisionRestoredOn: { type: "string" },
             revisionFirstPublishedOn: { type: "string" },
             revisionLastPublishedOn: { type: "string" },
             revisionCreatedBy: { type: "map" },
             revisionSavedBy: { type: "map" },
             revisionModifiedBy: { type: "map" },
+            revisionDeletedBy: { type: "map" },
+            revisionRestoredBy: { type: "map" },
             revisionFirstPublishedBy: { type: "map" },
             revisionLastPublishedBy: { type: "map" },
 
@@ -59,11 +63,15 @@ export const createEntryEntity = (params: CreateEntryEntityParams): Entity<any> 
             createdOn: { type: "string" },
             savedOn: { type: "string" },
             modifiedOn: { type: "string" },
+            deletedOn: { type: "string" },
+            restoredOn: { type: "string" },
             firstPublishedOn: { type: "string" },
             lastPublishedOn: { type: "string" },
             createdBy: { type: "map" },
             savedBy: { type: "map" },
             modifiedBy: { type: "map" },
+            deletedBy: { type: "map" },
+            restoredBy: { type: "map" },
             firstPublishedBy: { type: "map" },
             lastPublishedBy: { type: "map" },
 
@@ -84,6 +92,12 @@ export const createEntryEntity = (params: CreateEntryEntityParams): Entity<any> 
             },
             location: {
                 type: "map"
+            },
+            wbyDeleted: {
+                type: "boolean"
+            },
+            binOriginalFolderId: {
+                type: "string"
             },
             values: {
                 type: "map"

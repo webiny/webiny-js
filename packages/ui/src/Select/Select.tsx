@@ -7,7 +7,7 @@ import {
 import { FormElementMessage } from "~/FormElementMessage";
 import { FormComponentProps } from "~/types";
 import classNames from "classnames";
-import { webinySelect, noLabel } from "./styled";
+import { webinySelect } from "./styled";
 
 export type SelectProps = FormComponentProps &
     RmwcSelectProps & {
@@ -92,7 +92,7 @@ const getRmwcProps = (props: SelectProps): FormComponentProps & RmwcSelectProps 
  * Error says to use the empty string in null/undefined case.
  */
 export const Select = (props: SelectProps) => {
-    const { value: initialValue, description, validation, ...other } = props;
+    const { value: initialValue, description, validation, placeholder, ...other } = props;
 
     const value = initialValue === null || initialValue === undefined ? "" : initialValue;
 
@@ -101,22 +101,21 @@ export const Select = (props: SelectProps) => {
     const options = getOptions(other.options);
 
     return (
-        <React.Fragment>
+        <>
             <RmwcSelect
                 {...getRmwcProps(other)}
+                ref={undefined}
                 options={options}
                 value={value}
+                placeholder={placeholder ?? ""} // Fix RMWC version 14.2.2 to make the label float by default when a predefined value is selected.
                 className={classNames(
                     "webiny-ui-select mdc-ripple-surface mdc-ripple-upgraded",
                     webinySelect,
                     props.size ? `webiny-ui-select--size-${props.size}` : null,
-                    props.className,
-                    {
-                        [noLabel]: !props.label
-                    }
+                    props.className
                 )}
-                onChange={e => {
-                    props.onChange && props.onChange((e.target as HTMLInputElement).value);
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                    props.onChange && props.onChange(e.target.value);
                 }}
             />
 
@@ -127,7 +126,7 @@ export const Select = (props: SelectProps) => {
             {validationIsValid !== false && description && (
                 <FormElementMessage>{description}</FormElementMessage>
             )}
-        </React.Fragment>
+        </>
     );
 };
 

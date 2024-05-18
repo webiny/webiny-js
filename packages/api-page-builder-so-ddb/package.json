@@ -18,7 +18,7 @@
   "description": "The DynamoDB storage operations Webiny Page Builder API.",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.22.6",
+    "@babel/runtime": "^7.24.0",
     "@webiny/api-page-builder": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/db-dynamodb": "0.0.0",
@@ -29,10 +29,10 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@babel/cli": "^7.22.6",
-    "@babel/core": "^7.22.8",
-    "@babel/preset-env": "^7.22.7",
-    "@babel/preset-typescript": "^7.22.5",
+    "@babel/cli": "^7.23.9",
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
+    "@babel/preset-typescript": "^7.23.3",
     "@webiny/api-security": "0.0.0",
     "@webiny/api-tenancy": "0.0.0",
     "@webiny/cli": "0.0.0",
@@ -40,9 +40,9 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "jest": "^29.5.0",
+    "jest": "^29.7.0",
     "jest-dynalite": "^3.2.0",
-    "rimraf": "^3.0.2",
+    "rimraf": "^5.0.5",
     "ttypescript": "^1.5.12",
     "typescript": "4.7.4"
   },

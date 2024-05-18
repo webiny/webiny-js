@@ -1,14 +1,11 @@
 import React from "react";
-import {
-    ContentEntryEditorConfig as BaseContentEntryEditorConfig,
-    ContentEntryListConfig
-} from "./admin/config/contentEntries";
-
+import { ContentEntryListConfig } from "./ContentEntryListConfig";
 export * from "./HeadlessCMS";
 export * from "./admin/hooks";
 export { LexicalEditorConfig } from "~/admin/lexicalConfig/LexicalEditorConfig";
 export * from "~/admin/components/ContentEntryForm/FieldElement";
 export { ModelProvider } from "~/admin/components/ModelProvider";
+
 export { ContentEntryListConfig };
 
 interface LegacyContentEntriesViewConfigProps {
@@ -38,11 +35,4 @@ export const ContentEntriesViewConfig = Object.assign(LegacyContentEntriesViewCo
     Sorter: LegacySorter
 });
 
-import { Components as AllComponents } from "./components";
-
-/**
- * @deprecated Use `ContentEntryEditorConfig` namespace instead.
- */
-export const Components = AllComponents;
-
-export const ContentEntryEditorConfig = Object.assign(BaseContentEntryEditorConfig, AllComponents);
+export { ContentEntryEditorConfig } from "./ContentEntryEditorConfig";

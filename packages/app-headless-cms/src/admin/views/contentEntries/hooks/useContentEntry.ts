@@ -1,12 +1,13 @@
 import { useContext } from "react";
-import { Context } from "../ContentEntry/ContentEntryContext";
+import { makeDecoratable } from "@webiny/app-admin";
+import { ContentEntryContext } from "../ContentEntry/ContentEntryContext";
 
-export function useContentEntry() {
-    const context = useContext(Context);
+export const useContentEntry = makeDecoratable(() => {
+    const context = useContext(ContentEntryContext);
     if (!context) {
         throw Error(
             `useContentEntry() hook can only be used within the ContentEntryContext provider.`
         );
     }
     return context;
-}
+});

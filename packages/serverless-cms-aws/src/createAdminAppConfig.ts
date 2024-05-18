@@ -5,7 +5,12 @@ export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {
     return createReactAppConfig(baseParams => {
         const { config } = baseParams;
 
-        config.customEnv(env => ({ ...env, PORT: 3001 }));
+        config.customEnv(env => ({
+            ...env,
+            WEBINY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS: process.env
+                .WEBINY_TRASH_BIN_RETENTION_PERIOD_DAYS as string,
+            PORT: 3001
+        }));
 
         config.pulumiOutputToEnv<ApiOutput>("apps/api", ({ output, env }) => {
             return {
@@ -17,7 +22,8 @@ export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {
                 REACT_APP_USER_POOL_WEB_CLIENT_ID: output.cognitoAppClientId,
                 REACT_APP_USER_POOL_PASSWORD_POLICY: JSON.stringify(
                     output.cognitoUserPoolPasswordPolicy
-                )
+                ),
+                REACT_APP_WEBSOCKET_URL: output.websocketApiUrl
             };
         });
 

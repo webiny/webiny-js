@@ -1,4 +1,4 @@
-.floating-text-format-popup {
+.floating-toolbar {
   display: flex;
   padding: 4px;
   vertical-align: middle;
@@ -15,7 +15,7 @@
   will-change: transform;
 }
 
-.floating-text-format-popup button.popup-item {
+.floating-toolbar button.popup-item {
   border: 0;
   display: flex;
   background: none;
@@ -25,15 +25,15 @@
   vertical-align: middle;
 }
 
-.floating-text-format-popup button.popup-item:disabled {
+.floating-toolbar button.popup-item:disabled {
   cursor: not-allowed;
 }
 
-.floating-text-format-popup button.popup-item.spaced {
+.floating-toolbar button.popup-item.spaced {
   margin-right: 2px;
 }
 
-.floating-text-format-popup button.popup-item i.format {
+.floating-toolbar button.popup-item i.format {
   background-size: contain;
   display: inline-block;
   height: 18px;
@@ -44,23 +44,23 @@
   opacity: 0.6;
 }
 
-.floating-text-format-popup button.popup-item:disabled i.format {
+.floating-toolbar button.popup-item:disabled i.format {
   opacity: 0.2;
 }
 
-.floating-text-format-popup button.popup-item.active {
+.floating-toolbar button.popup-item.active {
   background-color: rgba(223, 232, 250, 0.3);
 }
 
-.floating-text-format-popup button.popup-item.active i {
+.floating-toolbar button.popup-item.active i {
   opacity: 1;
 }
 
-.floating-text-format-popup .popup-item:hover:not([disabled]) {
+.floating-toolbar .popup-item:hover:not([disabled]) {
   background-color: #eee;
 }
 
-.floating-text-format-popup select.popup-item {
+.floating-toolbar select.popup-item {
   border: 0;
   display: flex;
   background: none;
@@ -75,12 +75,12 @@
   text-overflow: ellipsis;
 }
 
-.floating-text-format-popup select.code-language {
+.floating-toolbar select.code-language {
   text-transform: capitalize;
   width: 130px;
 }
 
-.floating-text-format-popup .popup-item .text {
+.floating-toolbar .popup-item .text {
   display: flex;
   line-height: 20px;
   width: 200px;
@@ -94,7 +94,7 @@
   text-align: left;
 }
 
-.floating-text-format-popup .popup-item .icon {
+.floating-toolbar .popup-item .icon {
   display: flex;
   width: 20px;
   height: 20px;
@@ -104,7 +104,7 @@
   background-size: contain;
 }
 
-.floating-text-format-popup i.chevron-down {
+.floating-toolbar i.chevron-down {
   margin-top: 3px;
   width: 16px;
   height: 16px;
@@ -112,7 +112,7 @@
   user-select: none;
 }
 
-.floating-text-format-popup i.chevron-down.inside {
+.floating-toolbar i.chevron-down.inside {
   width: 16px;
   height: 16px;
   display: flex;
@@ -122,7 +122,7 @@
   pointer-events: none;
 }
 
-.floating-text-format-popup .divider {
+.floating-toolbar .divider {
   width: 1px;
   background-color: #eee;
   margin: 0 4px;
@@ -190,8 +190,8 @@ i.chevron-down {
   background-image: url("../../images/icons/chevron-down.svg");
 }
 
-
-i.insert-image, .icon.insert-image {
+i.insert-image,
+.icon.insert-image {
   background-color: transparent;
   background-size: contain;
   display: inline-block;
@@ -210,7 +210,8 @@ i.insert-image, .icon.insert-image {
   background-image: url("../../images/icons/list-ol.svg");
 }
 
-i.font-color, .icon.font-color {
+i.font-color,
+.icon.font-color {
   background-image: url("../../images/icons/font-color.svg");
 }
 
@@ -219,7 +220,7 @@ i.font-color, .icon.font-color {
   background-color: rgb(223, 232, 250);
 }
 
-.floating-text-format-popup button.toolbar-item {
+.floating-toolbar button.toolbar-item {
   border: 0;
   display: flex;
   background: none;
@@ -232,15 +233,15 @@ i.font-color, .icon.font-color {
   justify-content: space-between;
 }
 
-.floating-text-format-popup button.toolbar-item:disabled {
+.floating-toolbar button.toolbar-item:disabled {
   cursor: not-allowed;
 }
 
-.floating-text-format-popup button.toolbar-item.spaced {
+.floating-toolbar button.toolbar-item.spaced {
   margin-right: 2px;
 }
 
-.floating-text-format-popup button.toolbar-item i.format {
+.floating-toolbar button.toolbar-item i.format {
   background-size: contain;
   display: inline-block;
   height: 18px;
@@ -250,35 +251,35 @@ i.font-color, .icon.font-color {
   opacity: 0.6;
 }
 
-.floating-text-format-popup button.toolbar-item:disabled .icon,
-.floating-text-format-popup button.toolbar-item:disabled .text,
-.floating-text-format-popup button.toolbar-item:disabled i.format,
-.floating-text-format-popup button.toolbar-item:disabled .chevron-down {
+.floating-toolbar button.toolbar-item:disabled .icon,
+.floating-toolbar button.toolbar-item:disabled .text,
+.floating-toolbar button.toolbar-item:disabled i.format,
+.floating-toolbar button.toolbar-item:disabled .chevron-down {
   opacity: 0.2;
 }
 
-.floating-text-format-popup button.toolbar-item.active {
+.floating-toolbar button.toolbar-item.active {
   background-color: rgba(223, 232, 250, 0.3);
 }
 
-.floating-text-format-popup button.toolbar-item.active i {
+.floating-toolbar button.toolbar-item.active i {
   opacity: 1;
 }
 
-.floating-text-format-popup .toolbar-item:hover:not([disabled]) {
+.floating-toolbar .toolbar-item:hover:not([disabled]) {
   background-color: #eee;
 }
 
-.floating-text-format-popup .toolbar-item.font-family .text {
+.floating-toolbar .toolbar-item.font-family .text {
   display: block;
   max-width: 40px;
 }
 
-.floating-text-format-popup .code-language {
+.floating-toolbar .code-language {
   width: 150px;
 }
 
-.floating-text-format-popup .toolbar-item .text {
+.floating-toolbar .toolbar-item .text {
   display: flex;
   line-height: 20px;
   vertical-align: middle;
@@ -291,7 +292,7 @@ i.font-color, .icon.font-color {
   padding-right: 10px;
 }
 
-.floating-text-format-popup .toolbar-item .icon {
+.floating-toolbar .toolbar-item .icon {
   display: flex;
   width: 20px;
   height: 20px;
@@ -301,7 +302,7 @@ i.font-color, .icon.font-color {
   background-size: contain;
 }
 
-.floating-text-format-popup i.chevron-down {
+.floating-toolbar i.chevron-down {
   margin-top: 3px;
   width: 16px;
   height: 16px;
@@ -309,7 +310,7 @@ i.font-color, .icon.font-color {
   user-select: none;
 }
 
-.floating-text-format-popup i.chevron-down.inside {
+.floating-toolbar i.chevron-down.inside {
   width: 16px;
   height: 16px;
   display: flex;
@@ -325,7 +326,7 @@ i.font-color, .icon.font-color {
   margin: 0 4px;
 }
 
-.toolbar-item.font-size{
+.toolbar-item.font-size {
   width: 70px;
 }
 
@@ -340,7 +341,7 @@ i.font-color, .icon.font-color {
   display: block;
   position: fixed;
   box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1),
-  inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
   border-radius: 8px;
   min-height: 40px;
   background-color: #fff;
@@ -436,7 +437,7 @@ i.font-color, .icon.font-color {
   }
 }
 
- button.item i {
+button.item i {
   opacity: 0.6;
 }
 
@@ -452,30 +453,30 @@ button.item.dropdown-item-active i {
   cursor: default;
   display: inline-block;
   position: relative;
-  user-select: none
+  user-select: none;
 }
 
 .editor-shell .editor-image img {
   max-width: 100%;
-  cursor: default
+  cursor: default;
 }
 
 .editor-shell .editor-image img.focused {
-  outline: 2px solid rgb(60,132,244);
-  user-select: none
+  outline: 2px solid rgb(60, 132, 244);
+  user-select: none;
 }
 
 .editor-shell .editor-image img.focused.draggable {
-  cursor: grab
+  cursor: grab;
 }
 
 .editor-shell .editor-image img.focused.draggable:active {
-  cursor: grabbing
+  cursor: grabbing;
 }
 
 .editor-shell .editor-image .image-caption-container .tree-view-output {
   margin: 0;
-  border-radius: 0
+  border-radius: 0;
 }
 
 .editor-shell .editor-image .image-caption-container {
@@ -490,7 +491,7 @@ button.item.dropdown-item-active i {
   background-color: #ffffffe6;
   min-width: 100px;
   color: #000;
-  overflow: hidden
+  overflow: hidden;
 }
 
 .editor-shell .editor-image .image-caption-button {
@@ -502,17 +503,17 @@ button.item.dropdown-item-active i {
   width: 30%;
   padding: 10px;
   margin: 0 auto;
-  border: 1px solid rgba(255,255,255,.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 5px;
   background-color: #00000080;
   min-width: 100px;
   color: #fff;
   cursor: pointer;
-  user-select: none
+  user-select: none;
 }
 
 .editor-shell .editor-image .image-caption-button:hover {
-  background-color: #3c84f480
+  background-color: #3c84f480;
 }
 
 .editor-shell .editor-image .image-resizer {
@@ -521,100 +522,100 @@ button.item.dropdown-item-active i {
   height: 7px;
   position: absolute;
   background-color: #3c84f4;
-  border: 1px solid #fff
+  border: 1px solid #fff;
 }
 
 .editor-shell .editor-image .image-resizer.image-resizer-n {
   top: -6px;
   left: 48%;
-  cursor: n-resize
+  cursor: n-resize;
 }
 
 .editor-shell .editor-image .image-resizer.image-resizer-ne {
   top: -6px;
   right: -6px;
-  cursor: ne-resize
+  cursor: ne-resize;
 }
 
 .editor-shell .editor-image .image-resizer.image-resizer-e {
   bottom: 48%;
   right: -6px;
-  cursor: e-resize
+  cursor: e-resize;
 }
 
 .editor-shell .editor-image .image-resizer.image-resizer-se {
   bottom: -2px;
   right: -6px;
-  cursor: nwse-resize
+  cursor: nwse-resize;
 }
 
 .editor-shell .editor-image .image-resizer.image-resizer-s {
   bottom: -2px;
   left: 48%;
-  cursor: s-resize
+  cursor: s-resize;
 }
 
 .editor-shell .editor-image .image-resizer.image-resizer-sw {
   bottom: -2px;
   left: -6px;
-  cursor: sw-resize
+  cursor: sw-resize;
 }
 
 .editor-shell .editor-image .image-resizer.image-resizer-w {
   bottom: 48%;
   left: -6px;
-  cursor: w-resize
+  cursor: w-resize;
 }
 
 .editor-shell .editor-image .image-resizer.image-resizer-nw {
   top: -6px;
   left: -6px;
-  cursor: nw-resize
+  cursor: nw-resize;
 }
 
 .editor-shell span.inline-editor-image {
   cursor: default;
   display: inline-block;
   position: relative;
-  z-index: 1
+  z-index: 1;
 }
 
 .editor-shell .inline-editor-image img {
   max-width: 100%;
-  cursor: default
+  cursor: default;
 }
 
 .editor-shell .inline-editor-image img.focused {
-  outline: 2px solid rgb(60,132,244)
+  outline: 2px solid rgb(60, 132, 244);
 }
 
 .editor-shell .inline-editor-image img.focused.draggable {
-  cursor: grab
+  cursor: grab;
 }
 
 .editor-shell .inline-editor-image img.focused.draggable:active {
-  cursor: grabbing
+  cursor: grabbing;
 }
 
 .editor-shell .inline-editor-image .image-caption-container .tree-view-output {
   margin: 0;
-  border-radius: 0
+  border-radius: 0;
 }
 
 .editor-shell .inline-editor-image.position-full {
-  margin: 1em 0
+  margin: 1em 0;
 }
 
 .editor-shell .inline-editor-image.position-left {
   float: left;
   width: 50%;
-  margin: 1em 1em 0 0
+  margin: 1em 1em 0 0;
 }
 
 .editor-shell .inline-editor-image.position-right {
   float: right;
   width: 50%;
-  margin: 1em 0 0 1em
+  margin: 1em 0 0 1em;
 }
 
 .editor-shell .inline-editor-image .image-edit-button {
@@ -624,17 +625,17 @@ button.item.dropdown-item-active i {
   right: 12px;
   padding: 6px 8px;
   margin: 0 auto;
-  border: 1px solid rgba(255,255,255,.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 5px;
   background-color: #00000080;
   min-width: 60px;
   color: #fff;
   cursor: pointer;
-  user-select: none
+  user-select: none;
 }
 
 .editor-shell .inline-editor-image .image-edit-button:hover {
-  background-color: #3c84f480
+  background-color: #3c84f480;
 }
 
 .editor-shell .inline-editor-image .image-caption-container {
@@ -642,5 +643,5 @@ button.item.dropdown-item-active i {
   background-color: #f4f4f4;
   min-width: 100%;
   color: #000;
-  overflow: hidden
+  overflow: hidden;
 }

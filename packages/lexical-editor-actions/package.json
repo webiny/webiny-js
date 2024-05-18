@@ -8,11 +8,12 @@
     "@webiny/lexical-editor": "0.0.0",
     "classnames": "^2.3.1",
     "emotion": "^10.0.27",
-    "react": "^17.0.2",
-    "react-color": "^2.14.1",
-    "react-dom": "^17.0.2"
+    "react": "18.2.0",
+    "react-color": "^2.19.3",
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
+    "@types/react-color": "^2.17.11",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0"
   },

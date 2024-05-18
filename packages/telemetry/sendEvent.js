@@ -1,56 +1,60 @@
-const FormData = require("form-data");
-const fetch = require("node-fetch");
-
-const API_KEY = "ZdDZgkeOt4Z_m-UWmqFsE1d6-kcCK3BH0ypYTUIFty4";
-const API_URL = "https://t.webiny.com";
-
+const stripAnsi = require("strip-ansi");
+const jsesc = require("jsesc");
 /**
  * The main `sendEvent` function.
  * NOTE: don't use this in your app directly. Instead, use the one from `cli.js` or `react.js` files accordingly.
  */
-module.exports = ({ event, user, version, properties, extraPayload } = {}) => {
+module.exports = ({ event, user, properties, wts } = {}) => {
+    // 1. Check for existence of required base parameters.
     if (!event) {
         throw new Error(`Cannot send event - missing "event" name.`);
     }
 
     if (!user) {
-        throw new Error(`Cannot send event - missing "user" property.`);
-    }
-
-    if (!version) {
-        throw new Error(`Cannot send event - missing "version" property.`);
+        throw new Error(`Cannot send event - missing "user" ID.`);
     }
 
     if (!properties) {
-        properties = {};
+        throw new Error(`Cannot send event - missing "properties" object.`);
     }
 
-    if (!extraPayload) {
-        extraPayload = {};
+    if (!wts) {
+        throw new Error(`Cannot send event - missing "wts" instance.`);
     }
 
-    const payload = {
-        ...extraPayload,
-        event,
-        properties: {
-            ...properties,
-            version
-        },
-        distinct_id: user,
-        api_key: API_KEY,
-        timestamp: new Date().toISOString()
+    // 2. Extract properties and check for existence of required properties.
+    if (!properties.version) {
+        throw new Error(`Cannot send event - missing "version" property.`);
+    }
+
+    const hasCiProp = "ci" in properties;
+    if (!hasCiProp) {
+        throw new Error(`Cannot send event - missing "ci" boolean property.`);
+    }
+
+    const hasNewUserProp = "newUser" in properties;
+    if (!hasNewUserProp) {
+        throw new Error(`Cannot send event - missing "newUser" boolean property.`);
+    }
+
+    // 2. Sanitize properties.
+    const sanitizedProperties = {
+        ...properties,
+        newUser: properties.newUser === true ? "yes" : "no",
+        ci: properties.ci === true ? "yes" : "no"
     };
 
-    const body = new FormData();
-    body.append("data", Buffer.from(JSON.stringify(payload)).toString("base64"));
+    for (const key in sanitizedProperties) {
+        let sanitizedValue = sanitizedProperties[key];
+        if (typeof sanitizedValue === "string") {
+            sanitizedValue = sanitizedValue.trim();
+            sanitizedValue = stripAnsi(sanitizedValue);
+            sanitizedValue = jsesc(sanitizedValue);
+        }
 
-    // Return a function which will send the prepared body when invoked.
-    return () => {
-        return fetch(API_URL + "/capture/", {
-            body,
-            method: "POST"
-        }).catch(() => {
-            // Ignore errors
-        });
-    };
+        sanitizedProperties[key] = sanitizedValue;
+    }
+
+    // 3. Send.
+    return wts.trackEvent(user, event, sanitizedProperties);
 };

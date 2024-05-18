@@ -190,6 +190,8 @@ export const EventActionHandlerProvider = makeDecoratable(
                         element = (await getElementById(rootElementAtomValue)) as PbEditorElement;
                     }
 
+                    // We need this `path` property to keep track of the hierarchy of a particular tree branch.
+                    // It helps us when we need to quickly determine all element IDs on the path to the current element.
                     const path = props?.path || [];
                     if (element.parent) {
                         path.push(element.parent);
@@ -220,6 +222,10 @@ export const EventActionHandlerProvider = makeDecoratable(
         const getElementTree = useMemo(() => {
             return composeAsync([...(props.getElementTree || []), defaultGetElementTree]);
         }, [props.getElementTree]);
+
+        const getRawElementTree = useMemo(() => {
+            return composeAsync([defaultGetElementTree]);
+        }, []);
 
         const get = (name: string): ListType => {
             const list = registry.current.get(name);
@@ -342,6 +348,7 @@ export const EventActionHandlerProvider = makeDecoratable(
         eventActionHandlerRef.current = useMemo<EventActionHandler>(
             () => ({
                 getElementTree,
+                getRawElementTree,
                 on: (target, callable) => {
                     const name = getEventActionClassName(target);
                     if (!has(name)) {

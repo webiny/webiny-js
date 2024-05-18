@@ -1,7 +1,6 @@
 export type FeatureFlags<TFeatureFlags = Record<string, any>> = {
     copyPermissionsButton?: boolean;
     experimentalAdminOmniSearch?: boolean;
-    pbLegacyRenderingEngine?: boolean;
     allowCmsLegacyRichTextInput?: boolean;
 } & TFeatureFlags;
 

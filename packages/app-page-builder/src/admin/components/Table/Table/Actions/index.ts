@@ -2,6 +2,8 @@ export * from "./ChangePageStatus";
 export * from "./SecureChangePageStatus";
 export * from "./DeletePage";
 export * from "./SecureDeletePage";
+export * from "./DuplicatePage";
+export * from "./SecureDuplicatePage";
 export * from "./EditPage";
 export * from "./SecureEditPage";
 export * from "./MovePage";

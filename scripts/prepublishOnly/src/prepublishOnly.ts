@@ -46,6 +46,10 @@ class FileLocker {
                     continue;
                 }
 
+                if (depVersion.startsWith("https:")) {
+                    continue;
+                }
+
                 const resolvedVersion = resolvePackageVersion(key, {
                     cwd: path.dirname(this.file)
                 });
@@ -131,7 +135,7 @@ const extraFiles: string[] = [
     "packages/cwp-template-aws/template/ddb-es/apps/api/graphql/package.json",
     "packages/cwp-template-aws/template/ddb-os/apps/api/graphql/package.json",
     "packages/cwp-template-aws/template/common/apps/admin/package.json",
-    "packages/cwp-template-aws/template/common/apps/theme/package.json",
+    "packages/cwp-template-aws/template/common/extensions/theme/package.json",
     "packages/cwp-template-aws/template/common/apps/website/package.json"
 ];
 

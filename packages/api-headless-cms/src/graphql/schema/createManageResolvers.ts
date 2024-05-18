@@ -1,6 +1,7 @@
 import { CmsContext, CmsEntry, CmsFieldTypePlugins, CmsModel } from "~/types";
 import { resolveGet } from "./resolvers/manage/resolveGet";
 import { resolveList } from "./resolvers/manage/resolveList";
+import { resolveListDeleted } from "./resolvers/manage/resolveListDeleted";
 import { resolveGetRevisions } from "./resolvers/manage/resolveGetRevisions";
 import { resolveGetByIds } from "./resolvers/manage/resolveGetByIds";
 import { resolveCreate } from "./resolvers/manage/resolveCreate";
@@ -8,6 +9,7 @@ import { resolveUpdate } from "./resolvers/manage/resolveUpdate";
 import { resolveValidate } from "./resolvers/manage/resolveValidate";
 import { resolveMove } from "./resolvers/manage/resolveMove";
 import { resolveDelete } from "./resolvers/manage/resolveDelete";
+import { resolveRestoreFromBin } from "./resolvers/manage/resolveRestoreFromBin";
 import { resolveDeleteMultiple } from "./resolvers/manage/resolveDeleteMultiple";
 import { resolvePublish } from "./resolvers/manage/resolvePublish";
 import { resolveRepublish } from "./resolvers/manage/resolveRepublish";
@@ -72,7 +74,8 @@ export const createManageResolvers: CreateManageResolvers = ({
             [`get${model.singularApiName}`]: resolveGet({ model }),
             [`get${model.singularApiName}Revisions`]: resolveGetRevisions({ model }),
             [`get${model.pluralApiName}ByIds`]: resolveGetByIds({ model }),
-            [`list${model.pluralApiName}`]: resolveList({ model })
+            [`list${model.pluralApiName}`]: resolveList({ model }),
+            [`listDeleted${model.pluralApiName}`]: resolveListDeleted({ model })
         },
         Mutation: {
             [`create${model.singularApiName}`]: resolveCreate({ model }),
@@ -80,6 +83,7 @@ export const createManageResolvers: CreateManageResolvers = ({
             [`validate${model.singularApiName}`]: resolveValidate({ model }),
             [`move${model.singularApiName}`]: resolveMove({ model }),
             [`delete${model.singularApiName}`]: resolveDelete({ model }),
+            [`restore${model.singularApiName}FromBin`]: resolveRestoreFromBin({ model }),
             [`deleteMultiple${model.pluralApiName}`]: resolveDeleteMultiple({ model }),
             [`publish${model.singularApiName}`]: resolvePublish({ model }),
             [`republish${model.singularApiName}`]: resolveRepublish({ model }),

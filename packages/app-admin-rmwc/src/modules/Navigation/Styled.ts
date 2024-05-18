@@ -39,7 +39,7 @@ export const MenuFooter = styled("div")({
 });
 
 export const subFooter = css({
-    ".mdc-drawer &.mdc-list-item": {
+    ".mdc-drawer &.mdc-deprecated-list-item": {
         borderTop: "1px solid var(--mdc-theme-on-background)",
         padding: "10px 16px",
         margin: 0

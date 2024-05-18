@@ -4,11 +4,11 @@
  *
  * We should try to have some kind of standardized event type implementation at some point.
  */
+import type { Context as LambdaContext } from "aws-lambda";
 import {
     createHandler as createBaseHandler,
     CreateHandlerParams as BaseCreateHandlerParams
 } from "@webiny/handler";
-import { Context as LambdaContext } from "aws-lambda";
 import { APIGatewayProxyResult } from "aws-lambda/trigger/api-gateway-proxy";
 import { RawEventHandler } from "~/raw/plugins/RawEventHandler";
 import { registerDefaultPlugins } from "~/plugins";

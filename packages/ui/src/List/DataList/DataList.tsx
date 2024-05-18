@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "@emotion/styled";
 import classNames from "classnames";
 import Loader from "./Loader";
@@ -11,12 +11,12 @@ import { Checkbox } from "../../Checkbox";
 import { Menu, MenuItem } from "~/Menu";
 
 import {
-    RefreshIcon,
-    SortIcon,
     FilterIcon,
-    PreviousPageIcon,
     NextPageIcon,
-    OptionsIcon
+    OptionsIcon,
+    PreviousPageIcon,
+    RefreshIcon,
+    SortIcon
 } from "./icons";
 import { List, ListItem, ListProps } from "..";
 import { DataListModalOverlayProvider } from "./DataListModalOverlay";
@@ -25,27 +25,28 @@ import { PaginationProp, SortersProp } from "./types";
 const ListContainer = styled("div")({
     position: "relative",
     height: "100%",
-    ".mdc-list": {
+    ".mdc-deprecated-list": {
         paddingBottom: 0,
         paddingTop: 0
     },
-    ".mdc-list-item": {
+    ".mdc-deprecated-list-item": {
         borderBottom: "1px solid var(--mdc-theme-on-background)",
         padding: "10px 20px 10px 20px",
         height: "auto",
         minHeight: 40,
-        ".mdc-list-item__text, .mdc-list-item__secondary-text, .webiny-list-text-overline": {
-            display: "block"
-        },
-        ".mdc-list-item__graphic": {
+        ".mdc-deprecated-list-item__text, .mdc-deprecated-list-item__secondary-text, .webiny-list-text-overline":
+            {
+                display: "block"
+            },
+        ".mdc-deprecated-list-item__graphic": {
             marginRight: 20
         },
-        ".mdc-list-item__text": {
+        ".mdc-deprecated-list-item__text": {
             width: "100%",
             margin: "-20px 0",
             padding: "20px 0"
         },
-        ".mdc-list-item__meta": {
+        ".mdc-deprecated-list-item__meta": {
             alignItems: "center",
             display: "flex",
             justifyContent: "space-between",
@@ -70,7 +71,7 @@ const ListContainer = styled("div")({
             }
         },
         "&:hover": {
-            ".mdc-list-item__meta": {
+            ".mdc-deprecated-list-item__meta": {
                 ".webiny-list-top-caption, .webiny-list-bottom-caption": {
                     display: "none"
                 },
@@ -349,8 +350,44 @@ const Pagination = (props: DataListProps) => {
     );
 };
 
-export const DataList = (props: DataListProps) => {
-    let render: React.ReactNode | null = null;
+const defaultDataListProps = {
+    children: null,
+    title: null,
+    data: null,
+    meta: null,
+    loading: false,
+    refresh: () => {
+        return void 0;
+    },
+    setPage: null,
+    setPerPage: null,
+    perPageOptions: [10, 25, 50],
+    filters: null,
+    sorters: null,
+    setSorters: null,
+    actions: null,
+    multiSelectAll: noop,
+    isAllMultiSelected: () => false,
+    isNoneMultiSelected: () => false,
+    loader: <Loader />,
+    noData: <NoData />,
+    showOptions: {
+        refresh: true,
+        pagination: true,
+        sorters: true,
+        filters: true
+    }
+};
+
+export const DataList = (propsInput: DataListProps) => {
+    let render: React.ReactNode | null;
+
+    const props = useMemo(() => {
+        return {
+            ...defaultDataListProps,
+            ...propsInput
+        };
+    }, [propsInput]);
 
     if (props.loading) {
         render = props.loader;
@@ -396,35 +433,6 @@ export const DataList = (props: DataListProps) => {
             </ListContainer>
         </DataListModalOverlayProvider>
     );
-};
-
-DataList.defaultProps = {
-    children: null,
-    title: null,
-    data: null,
-    meta: null,
-    loading: false,
-    refresh: () => {
-        return void 0;
-    },
-    setPage: null,
-    setPerPage: null,
-    perPageOptions: [10, 25, 50],
-    filters: null,
-    sorters: null,
-    setSorters: null,
-    actions: null,
-    multiSelectAll: noop,
-    isAllMultiSelected: () => false,
-    isNoneMultiSelected: () => false,
-    loader: <Loader />,
-    noData: <NoData />,
-    showOptions: {
-        refresh: true,
-        pagination: true,
-        sorters: true,
-        filters: true
-    }
 };
 
 export interface ScrollListProps extends ListProps {

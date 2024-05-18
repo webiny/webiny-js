@@ -26,6 +26,7 @@ apps/**/build/
 cypress.json
 cypress.config.ts
 cypress/screenshots/*
+cypress-tests/cypress/screenshots/*
 .pulumi
 Pulumi.*
 !Pulumi.yaml
@@ -35,6 +36,7 @@ globalConfig.json
 .graphqlconfig
 schema.graphql
 .tmp/
+.nx/*
 # yarn2 files
 .yarn/*
 !.yarn/releases

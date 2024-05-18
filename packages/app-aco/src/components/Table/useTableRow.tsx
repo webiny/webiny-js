@@ -22,16 +22,20 @@ export const TableRowProvider = <T,>({ row, children }: TableRowProviderProps<T>
     return <TableRowContext.Provider value={value}>{children}</TableRowContext.Provider>;
 };
 
-export const useTableRow = <T extends Record<string, any> & DefaultData>() => {
-    const context = useContext<TableRowContextData<T>>(
-        TableRowContext as unknown as Context<TableRowContextData<T>>
-    );
-
-    if (!context) {
-        throw Error(
-            `TableRowContext is missing in the component tree. Are you using "useTableRow()" hook in the right place?`
+export const createUseTableRow = <TBaseRow = Record<string, any>,>() => {
+    return <TUserRow = Record<string, any>,>() => {
+        const context = useContext<TableRowContextData<TBaseRow & DefaultData & TUserRow>>(
+            TableRowContext as unknown as Context<
+                TableRowContextData<TBaseRow & DefaultData & TUserRow>
+            >
         );
-    }
 
-    return context;
+        if (!context) {
+            throw Error(
+                `TableRowContext is missing in the component tree. Are you using "useTableRow()" hook in the right place?`
+            );
+        }
+
+        return context;
+    };
 };

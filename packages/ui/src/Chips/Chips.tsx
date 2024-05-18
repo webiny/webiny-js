@@ -30,15 +30,13 @@ export const Chips = (props: ChipsProps) => {
     const { children, className, disabled, ...rest } = props;
 
     return (
-        <React.Fragment>
-            <ChipSet
-                {...rest}
-                className={classNames(className, chipIconWrapper, {
-                    [disabledChips]: disabled
-                })}
-            >
-                {children}
-            </ChipSet>
-        </React.Fragment>
+        <ChipSet
+            {...rest}
+            className={classNames("mdc-evolution-chip-set", className, chipIconWrapper, {
+                [disabledChips]: disabled
+            })}
+        >
+            {children}
+        </ChipSet>
     );
 };

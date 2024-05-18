@@ -13,6 +13,11 @@ import { PagesListComponent } from "@webiny/app-page-builder-elements/renderers/
 import { Theme } from "@webiny/app-theme/types";
 import { Renderer } from "@webiny/app-page-builder-elements/types";
 import { FolderTableItem, RecordTableItem, SearchRecordItem } from "@webiny/app-aco/table.types";
+import type { SourceType } from "dnd-core";
+
+export type DragObjectWithType = {
+    type: SourceType;
+};
 
 export enum PageStatus {
     PUBLISHED = "published",
@@ -183,6 +188,7 @@ export interface PbElementDataTypeSource {
 
 export type PbElementDataType = {
     blockId?: string;
+    variableId?: string;
     variables?: PbBlockVariable[];
     action?: {
         href: string;
@@ -217,6 +223,11 @@ export type PbElementDataType = {
     width?: number;
     [key: string]: any;
 };
+
+export interface CollectedProps {
+    handlerId: string | symbol | null;
+    isOver: boolean;
+}
 
 export interface PbEditorElement {
     id: string;
@@ -731,8 +742,8 @@ export enum DisplayMode {
 export type PbEditorResponsiveModePlugin = Plugin & {
     type: "pb-editor-responsive-mode";
     config: {
-        displayMode: string;
-        toolTip: {
+        displayMode: DisplayMode;
+        tooltip: {
             title: string;
             subTitle: string;
             body: string;
@@ -803,7 +814,14 @@ export interface EventActionHandler<TCallableState = unknown> {
     endBatch: () => void;
     enableHistory: () => void;
     disableHistory: () => void;
+    /**
+     * Get element tree (includes processing with decorators).
+     */
     getElementTree: (props: GetElementTreeProps) => Promise<PbEditorElement>;
+    /**
+     * Get raw element tree (DOES NOT include processing with decorators).
+     */
+    getRawElementTree: (props: GetElementTreeProps) => Promise<PbEditorElement>;
 }
 
 export interface EventActionHandlerTarget {
@@ -870,6 +888,7 @@ export interface PbMenu {
     url: string;
     slug: string;
     description: string;
+    createdOn: string;
     createdBy: PbIdentity;
 }
 
@@ -1000,6 +1019,10 @@ export interface PageBuilderFormDataSettings {
 }
 
 export interface PageBuilderSecurityPermission extends SecurityPermission {
+    accessLevel?: string;
+    settingsAccessLevel?: string;
+    templateUnlink?: boolean;
+    blockUnlink?: boolean;
     own?: boolean;
     rwd?: string;
     pw?: string | boolean;

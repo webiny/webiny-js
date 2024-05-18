@@ -3,7 +3,6 @@ import { Image } from "@webiny/app/components";
 import * as Ui from "@webiny/ui/ImageUpload";
 import { createRenderImagePreview, imagePlugins } from "./utils";
 import fileIcon from "@material-design-icons/svg/round/insert_drive_file.svg";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 const imagePreviewProps = {
     transform: { width: 300 },
@@ -24,15 +23,6 @@ const defaultStyles = {
     height: "auto"
 };
 
-interface ValidationStatus {
-    isValid?: boolean;
-    message?: string;
-}
-const defaultValidation: ValidationStatus = {
-    isValid: undefined,
-    message: undefined
-};
-
 export interface FileProps {
     url: string;
     onRemove: () => void;
@@ -40,23 +30,18 @@ export interface FileProps {
     placeholder?: string;
     styles?: Record<string, any>;
     showFileManager?: () => void;
-    validation?: {
-        isValid?: boolean;
-        message?: string;
-    };
-    description?: string;
 }
-const File = (props: FileProps) => {
-    const { url, onRemove, onEdit, placeholder, showFileManager, description } = props;
+
+export const File = (props: FileProps) => {
+    const { url, onRemove, onEdit, placeholder, showFileManager } = props;
 
     const styles = props.styles || defaultStyles;
-    const validation = props.validation || defaultValidation;
 
-    const isImage = useCallback(url => {
+    const isImage = useCallback((url: string) => {
         return imagePlugins.some(extension => url.includes(extension));
     }, []);
 
-    const getImageSrc = useCallback(url => {
+    const getImageSrc = useCallback((url?: string) => {
         if (url && isImage(url)) {
             return url;
         }
@@ -93,16 +78,6 @@ const File = (props: FileProps) => {
                 placeholder={placeholder}
                 containerStyle={{ height: "auto" }}
             />
-            {validation.isValid === false && (
-                <FormElementMessage error>
-                    {validation.message || "Invalid value."}
-                </FormElementMessage>
-            )}
-            {validation.isValid !== false && description && (
-                <FormElementMessage>{description}</FormElementMessage>
-            )}
         </>
     );
 };
-
-export default File;

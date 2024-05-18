@@ -32,6 +32,7 @@ export * from "./utils/formatToQuote";
 export * from "./utils/formatToHeading";
 export * from "./utils/formatToParagraph";
 export * from "./utils/clearNodeFormating";
+export * from "./utils/toggleLink";
 
 // This is a list of all the nodes that our Lexical implementation supports OOTB.
 export const allNodes: ReadonlyArray<

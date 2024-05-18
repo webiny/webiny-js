@@ -9,6 +9,7 @@ import { getBuildMeta } from "./getBuildMeta";
 import { buildPackageInNewProcess, buildPackageInSameProcess } from "./buildSinglePackage";
 import { MetaJSON, Package } from "./types";
 import { getHardwareInfo } from "./getHardwareInfo";
+import execa from "execa";
 
 class BuildError extends Error {
     private workspace: string;
@@ -38,6 +39,9 @@ export const buildPackages = async () => {
     const options = yargs.argv as BuildOptions;
 
     printHardwareReport();
+
+    console.log("Check Typescript");
+    await execa("yarn", ["tsc", "--version"], { stdio: "inherit" });
 
     let packagesWhitelist: string[] = [];
     if (options.p) {

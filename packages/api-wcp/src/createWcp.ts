@@ -147,6 +147,14 @@ export const createWcp = async (params: CreateWcpParams = {}): Promise<WcpContex
             return license!.package.features.advancedAccessControlLayer.options.privateFiles;
         },
 
+        canUseAuditLogs() {
+            return this.canUseFeature("auditLogs");
+        },
+
+        canUseRecordLocking() {
+            return this.canUseFeature("recordLocking");
+        },
+
         ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL) {
             if (this.canUseFeature(wcpFeatureId)) {
                 return;

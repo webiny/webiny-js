@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import {
     $getSelection,
@@ -9,17 +8,18 @@ import {
     PASTE_COMMAND
 } from "lexical";
 import { LinkNode, TOGGLE_LINK_COMMAND, toggleLink } from "@webiny/lexical-nodes";
+import { useRichTextEditor } from "~/hooks";
 
 type Props = {
     validateUrl?: (url: string) => boolean;
 };
 
 export function LinkPlugin({ validateUrl }: Props): null {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
 
     useEffect(() => {
         if (!editor.hasNodes([LinkNode])) {
-            throw new Error("LinkPlugin: LinkNode not registered on editor");
+            throw new Error("LinkPlugin: LinkNode not registered in the editor!");
         }
 
         const commands = [

@@ -30,11 +30,11 @@ function TemplateValidationSettings() {
     });
 
     return (
-        <Bind<CmsDynamicZoneTemplate[]> name={"settings.templates"}>
+        <Bind name={"settings.templates"}>
             {({ value: templates }) => {
                 return (
                     <>
-                        {templates.map((template, index) => {
+                        {(templates as CmsDynamicZoneTemplate[]).map((template, index) => {
                             const icon = template.icon
                                 ? (template.icon.split("/") as FontAwesomeIconProps["icon"])
                                 : undefined;

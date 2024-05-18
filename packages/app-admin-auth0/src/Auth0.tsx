@@ -2,12 +2,7 @@ import React, { Fragment, useCallback, useEffect, useRef, useState } from "react
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 import get from "lodash/get";
-import {
-    LoginScreenRenderer,
-    useTenancy,
-    createDecorator,
-    useTags
-} from "@webiny/app-serverless-cms";
+import { LoginScreenRenderer, useTenancy, useTags } from "@webiny/app-serverless-cms";
 import {
     createAuthentication,
     Auth0Options,
@@ -89,7 +84,7 @@ const AppClientIdLoader = ({
 };
 
 const createLoginScreenPlugin = (params: Auth0Props) => {
-    return createDecorator(LoginScreenRenderer, () => {
+    return LoginScreenRenderer.createDecorator(() => {
         return function Auth0LoginScreen({ children }) {
             const { installer } = useTags();
 
