@@ -116,7 +116,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         <FormContext.Provider value={formContext}>
             {React.createElement(
                 "webiny-form-container",
-                { onKeyDown: __onKeyDown },
+                { onKeyDown: __onKeyDown, "data-testid": props["data-testid"] },
                 children({
                     data: formApi.data,
                     setValue: formApi.setValue,
@@ -134,3 +134,5 @@ export const Form = observer(
         props: FormProps<T> & { ref?: React.ForwardedRef<any> }
     ) => ReturnType<typeof FormInner<T>>
 );
+
+Form.displayName = "Form";

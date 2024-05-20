@@ -70,6 +70,8 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
 
     setData(data: T) {
         this.data = data || {};
+        // We're clearing all form fields, to reset the form.
+        this.formFields.clear();
     }
 
     getFieldValue(name: string) {
@@ -160,11 +162,13 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
         const defaultValue = field.getDefaultValue();
 
         requestAnimationFrame(() => {
-            if (emptyValues.includes(currentFieldValue) && defaultValue !== undefined) {
-                lodashSet(this.data, fieldName, defaultValue);
-            }
+            runInAction(() => {
+                if (emptyValues.includes(currentFieldValue) && defaultValue !== undefined) {
+                    lodashSet(this.data, fieldName, defaultValue);
+                }
 
-            this.formFields.set(props.name, field);
+                this.formFields.set(props.name, field);
+            });
         });
     }
 

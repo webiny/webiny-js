@@ -63,11 +63,14 @@ export const useLocaleForm = (): UseLocaleForm => {
                 return showSnackbar(error.message);
             }
 
-            !isUpdate && history.push(`/i18n/locales?code=${data.code}`);
             showSnackbar(t`Locale saved successfully.`);
-            refetchLocales();
-            // Reload page
-            window.location.reload();
+
+            if (!isUpdate) {
+                refetchLocales();
+                history.push(`/i18n/locales?code=${data.code}`);
+                window.location.reload();
+                return;
+            }
         },
         [currentLocaleCode]
     );

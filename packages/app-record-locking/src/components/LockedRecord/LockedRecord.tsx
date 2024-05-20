@@ -111,7 +111,9 @@ export const LockedRecord = ({ record: lockRecordEntry }: ILockedRecordProps) =>
                     This record is locked, but the system cannot find the user that created the
                     record lock.
                 </Text>
-                <Text>A force-unlock is required to regain edit capabilities for this record.</Text>
+                <Text>
+                    A force-unlock is required to regain editing capabilities for this record.
+                </Text>
                 <LockedRecordForceUnlock
                     id={lockRecordEntry.id}
                     type={record.$lockingType}

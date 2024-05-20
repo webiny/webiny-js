@@ -17,8 +17,10 @@ export enum WebsocketsReadyState {
 export interface IWebsocketsConnection {
     readonly subscriptionManager: IWebsocketsSubscriptionManager;
 
-    connect(url: string, protocol?: IWebsocketsConnectProtocol): void;
-    reconnect(url?: string, protocol?: IWebsocketsConnectProtocol): void;
-    close(code?: WebsocketsCloseCode, reason?: string): boolean;
+    isConnected(): boolean;
+    isClosed(): boolean;
+
+    connect(): Promise<void>;
+    close(code: WebsocketsCloseCode, reason: string): Promise<boolean>;
     send<T extends IGenericData = IGenericData>(data: T): void;
 }

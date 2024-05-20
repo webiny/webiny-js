@@ -19,7 +19,6 @@ export const webinyInputStyles = css`
     }
 
     // medium input styles
-
     &.webiny-ui-input--size-medium {
         &.mdc-text-field {
             height: 40px;
@@ -28,11 +27,25 @@ export const webinyInputStyles = css`
     }
 
     // small input styles
-
     &.webiny-ui-input--size-small {
         &.mdc-text-field {
             height: 30px;
             font-size: 0.75em;
+        }
+    }
+
+    // textarea
+    &.mdc-text-field--textarea {
+        display: flex;
+        flex-direction: row;
+
+        &.mdc-text-field--with-trailing-icon {
+            padding-left: 0;
+            padding-right: 0;
+
+            .mdc-text-field__input {
+                padding-right: 0;
+            }
         }
     }
 `;
