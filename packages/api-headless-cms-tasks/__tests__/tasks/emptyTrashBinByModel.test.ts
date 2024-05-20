@@ -109,7 +109,7 @@ describe("Empty Trash Bin By Model", () => {
 
         expect(result).toMatchObject({
             status: "done",
-            message: "Task done: No entries to delete.",
+            message: "Task done: no entries to delete.",
             webinyTaskId: task.id,
             webinyTaskDefinitionId: EntriesTask.EmptyTrashBinByModel,
             tenant: "root",

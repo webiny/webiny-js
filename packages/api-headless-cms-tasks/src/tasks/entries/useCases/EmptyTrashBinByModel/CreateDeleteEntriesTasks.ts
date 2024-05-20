@@ -2,36 +2,34 @@ import { ITaskResponseResult } from "@webiny/tasks";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 import { EntriesTask, IDeleteTrashBinEntriesInput, IEmptyTrashBinByModelTaskParams } from "~/types";
 
-const DELETE_ENTRIES_IN_BATCH = 50;
-const DELETE_ENTRIES_WAIT_TIME = 5;
+const BATCH_SIZE = 50;
+const WAITING_TIME = 5;
 
 export class CreateDeleteEntriesTasks {
     public async execute(params: IEmptyTrashBinByModelTaskParams): Promise<ITaskResponseResult> {
         const { input, response, isAborted, isCloseToTimeout, context, store } = params;
 
         try {
+            if (!input.modelId) {
+                return response.error(`Missing "modelId" in the input.`);
+            }
+
             const model = await context.cms.getModel(input.modelId);
 
             if (!model) {
                 return response.error(`Model with ${input.modelId} not found!`);
             }
 
-            const totalCount = input.totalCount || 0;
+            const listEntriesParams: CmsEntryListParams = {
+                where: input.where,
+                after: input.after,
+                limit: BATCH_SIZE
+            };
+
             let currentBatch = input.currentBatch || 1;
             let hasMoreEntries = true;
 
             while (hasMoreEntries) {
-                const listEntriesParams: CmsEntryListParams = {
-                    where: input.where,
-                    after: input.after,
-                    limit: DELETE_ENTRIES_IN_BATCH
-                };
-
-                const [entries, meta] = await context.cms.listDeletedEntries(
-                    model,
-                    listEntriesParams
-                );
-
                 if (isAborted()) {
                     return response.aborted();
                 } else if (isCloseToTimeout()) {
@@ -42,25 +40,36 @@ export class CreateDeleteEntriesTasks {
                     });
                 }
 
-                if (meta.totalCount === 0) {
-                    if (totalCount > 0) {
-                        return response.continue(
-                            {
-                                ...input,
-                                ...listEntriesParams,
-                                currentBatch,
-                                processing: true
-                            },
-                            {
-                                seconds: DELETE_ENTRIES_WAIT_TIME
-                            }
-                        );
-                    }
+                const [entries, meta] = await context.cms.listDeletedEntries(
+                    model,
+                    listEntriesParams
+                );
 
-                    return response.done("Task done: No entries to delete.");
+                hasMoreEntries = meta.hasMoreItems;
+                listEntriesParams.after = meta.cursor;
+
+                // If no entries exist for the provided query, let's return done.
+                if (meta.totalCount === 0) {
+                    return response.done("Task done: no entries to delete.");
                 }
 
-                const entryIds = entries.map(entry => entry.entryId);
+                // If no entries are returned, let's continue with the task, but in `processing` mode.
+                if (entries.length === 0) {
+                    return response.continue(
+                        {
+                            ...input,
+                            ...listEntriesParams,
+                            currentBatch,
+                            totalCount: meta.totalCount,
+                            processing: true
+                        },
+                        {
+                            seconds: WAITING_TIME
+                        }
+                    );
+                }
+
+                const entryIds = entries.map(entry => entry.id);
 
                 if (entryIds.length > 0) {
                     await context.tasks.trigger<IDeleteTrashBinEntriesInput>({
@@ -74,19 +83,34 @@ export class CreateDeleteEntriesTasks {
                     });
                 }
 
-                hasMoreEntries = meta.hasMoreItems;
-                input.after = meta.cursor;
-                input.totalCount = meta.totalCount;
+                // If there are no more entries to load, we can continue the controller task in a `processing` mode, with some delay.
+                if (!meta.hasMoreItems || !meta.cursor) {
+                    return response.continue(
+                        {
+                            ...input,
+                            ...listEntriesParams,
+                            currentBatch,
+                            totalCount: meta.totalCount,
+                            processing: true
+                        },
+                        {
+                            seconds: WAITING_TIME
+                        }
+                    );
+                }
+
                 currentBatch++;
             }
 
+            // Should not be possible to exit the loop without returning a response, but let's have a continue response here just in case.
             return response.continue(
                 {
                     ...input,
+                    ...listEntriesParams,
                     currentBatch
                 },
                 {
-                    seconds: DELETE_ENTRIES_WAIT_TIME
+                    seconds: WAITING_TIME
                 }
             );
         } catch (ex) {
