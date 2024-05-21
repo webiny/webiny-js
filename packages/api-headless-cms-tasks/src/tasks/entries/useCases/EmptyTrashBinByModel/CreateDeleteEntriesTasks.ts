@@ -1,11 +1,16 @@
 import { ITaskResponseResult } from "@webiny/tasks";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
-import { EntriesTask, IDeleteTrashBinEntriesInput, IEmptyTrashBinByModelTaskParams } from "~/types";
+import { TaskCache } from "./TaskCache";
+import { TaskTrigger } from "./TaskTrigger";
+import { IEmptyTrashBinByModelTaskParams } from "~/types";
 
 const BATCH_SIZE = 50;
 const WAITING_TIME = 5;
 
 export class CreateDeleteEntriesTasks {
+    private taskCache = new TaskCache();
+    private taskTrigger = new TaskTrigger(this.taskCache);
+
     public async execute(params: IEmptyTrashBinByModelTaskParams): Promise<ITaskResponseResult> {
         const { input, response, isAborted, isCloseToTimeout, context, store } = params;
 
@@ -33,6 +38,7 @@ export class CreateDeleteEntriesTasks {
                 if (isAborted()) {
                     return response.aborted();
                 } else if (isCloseToTimeout()) {
+                    await this.taskTrigger.execute(context, store);
                     return response.continue({
                         ...input,
                         ...listEntriesParams,
@@ -55,6 +61,7 @@ export class CreateDeleteEntriesTasks {
 
                 // If no entries are returned, let's continue with the task, but in `processing` mode.
                 if (entries.length === 0) {
+                    await this.taskTrigger.execute(context, store);
                     return response.continue(
                         {
                             ...input,
@@ -72,19 +79,11 @@ export class CreateDeleteEntriesTasks {
                 const entryIds = entries.map(entry => entry.id);
 
                 if (entryIds.length > 0) {
-                    await context.tasks.trigger<IDeleteTrashBinEntriesInput>({
-                        definition: EntriesTask.DeleteTrashBinEntries,
-                        name: `Headless CMS - Delete Entries - ${model.name} - #${currentBatch}`,
-                        parent: store.getTask(),
-                        input: {
-                            modelId: input.modelId,
-                            entryIds
-                        }
-                    });
+                    this.taskCache.cacheTask(input.modelId, entryIds);
                 }
 
-                // If there are no more entries to load, we can continue the controller task in a `processing` mode, with some delay.
                 if (!meta.hasMoreItems || !meta.cursor) {
+                    await this.taskTrigger.execute(context, store);
                     return response.continue(
                         {
                             ...input,
@@ -102,7 +101,7 @@ export class CreateDeleteEntriesTasks {
                 currentBatch++;
             }
 
-            // Should not be possible to exit the loop without returning a response, but let's have a continue response here just in case.
+            await this.taskTrigger.execute(context, store);
             return response.continue(
                 {
                     ...input,
@@ -114,6 +113,7 @@ export class CreateDeleteEntriesTasks {
                 }
             );
         } catch (ex) {
+            console.error("Error while executing CreateDeleteEntriesTasks:", ex);
             return response.error(ex.message ?? "Error while executing CreateDeleteEntriesTasks");
         }
     }
