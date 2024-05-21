@@ -39,6 +39,43 @@ const listDeletedEntries = async (context: HcmsTasksContext, modelId: string) =>
 jest.setTimeout(720000);
 
 describe("Empty Trash Bin By Model", () => {
+    it("should fail in case of invalid input - missing `modelId`", async () => {
+        const taskDefinition = createEmptyTrashBinByModelTask();
+        const { handler } = useHandler<HcmsTasksContext>({
+            plugins: [taskDefinition, ...createMockModels()]
+        });
+
+        const context = await handler();
+
+        const task = await context.tasks.createTask({
+            name: "Empty Trash Bin By Model",
+            definitionId: taskDefinition.id,
+            input: {}
+        });
+
+        const runner = createRunner({
+            context,
+            task: taskDefinition
+        });
+
+        const result = await runner({
+            webinyTaskId: task.id
+        });
+
+        expect(result).toBeInstanceOf(ResponseErrorResult);
+
+        expect(result).toMatchObject({
+            status: "error",
+            error: {
+                message: `Missing "modelId" in the input.`
+            },
+            webinyTaskId: task.id,
+            webinyTaskDefinitionId: EntriesTask.EmptyTrashBinByModel,
+            tenant: "root",
+            locale: "en-US"
+        });
+    });
+
     it("should fail in case of not existing model", async () => {
         const taskDefinition = createEmptyTrashBinByModelTask();
         const { handler } = useHandler<HcmsTasksContext>({
