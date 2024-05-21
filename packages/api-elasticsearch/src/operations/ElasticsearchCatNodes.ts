@@ -1,6 +1,7 @@
 import { IElasticsearchCatNodesResponse } from "./types";
 import { Client } from "~/client";
 import { WebinyError } from "@webiny/error";
+import { stripConnectionFromException } from "~/operations/stripConnectionFromException";
 
 export class ElasticsearchCatNodes {
     private readonly client: Client;
@@ -15,13 +16,18 @@ export class ElasticsearchCatNodes {
                 format: "json"
             });
             if (!Array.isArray(response.body) || response.body.length === 0) {
-                throw new WebinyError(`There is no valid response from cat.nodes operation.`);
+                throw new WebinyError({
+                    message: `There is no valid response from cat.nodes operation.`,
+                    code: "ELASTICSEARCH_NODES_INVALID_RESPONSE",
+                    data: response.body
+                });
             }
             return response.body;
         } catch (ex) {
             console.error(`Could not fetch cluster nodes information: ${ex.message}`);
-            console.log(ex);
-            throw ex;
+            const error = stripConnectionFromException(ex);
+            console.log(JSON.stringify(error));
+            throw error;
         }
     }
 }

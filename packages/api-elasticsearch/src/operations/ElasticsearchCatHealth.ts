@@ -1,6 +1,7 @@
 import { WebinyError } from "@webiny/error";
 import { Client } from "~/client";
 import { IElasticsearchCatHealthResponse } from "./types";
+import { stripConnectionFromException } from "~/operations/stripConnectionFromException";
 
 export class ElasticsearchCatHealth {
     private readonly client: Client;
@@ -30,8 +31,9 @@ export class ElasticsearchCatHealth {
             };
         } catch (ex) {
             console.error(`Could not fetch cluster health information: ${ex.message}`);
-            console.log(ex);
-            throw ex;
+            const error = stripConnectionFromException(ex);
+            console.log(JSON.stringify(error));
+            throw error;
         }
     }
 }
