@@ -32,9 +32,8 @@ export class CreateDeleteEntriesTasks {
             };
 
             let currentBatch = input.currentBatch || 1;
-            let hasMoreEntries = true;
 
-            while (hasMoreEntries) {
+            while (true) {
                 if (isAborted()) {
                     return response.aborted();
                 } else if (isCloseToTimeout()) {
@@ -51,15 +50,14 @@ export class CreateDeleteEntriesTasks {
                     listEntriesParams
                 );
 
-                hasMoreEntries = meta.hasMoreItems;
-                listEntriesParams.after = meta.cursor;
-
                 // If no entries exist for the provided query, let's return done.
                 if (meta.totalCount === 0) {
-                    return response.done("Task done: no entries to delete.");
+                    return response.done(
+                        `Task done: no entries to delete for the "${input.modelId}" model.`
+                    );
                 }
 
-                // If no entries are returned, let's continue with the task, but in `processing` mode.
+                // If no entries are returned, let's trigger the cached child tasks and continue in `processing` mode.
                 if (entries.length === 0) {
                     await this.taskTrigger.execute(context, store);
                     return response.continue(
@@ -70,9 +68,7 @@ export class CreateDeleteEntriesTasks {
                             totalCount: meta.totalCount,
                             processing: true
                         },
-                        {
-                            seconds: WAITING_TIME
-                        }
+                        { seconds: WAITING_TIME }
                     );
                 }
 
@@ -82,6 +78,7 @@ export class CreateDeleteEntriesTasks {
                     this.taskCache.cacheTask(input.modelId, entryIds);
                 }
 
+                // No more entries paginated, let's trigger the cached child tasks and continue in `processing` mode.
                 if (!meta.hasMoreItems || !meta.cursor) {
                     await this.taskTrigger.execute(context, store);
                     return response.continue(
@@ -92,26 +89,13 @@ export class CreateDeleteEntriesTasks {
                             totalCount: meta.totalCount,
                             processing: true
                         },
-                        {
-                            seconds: WAITING_TIME
-                        }
+                        { seconds: WAITING_TIME }
                     );
                 }
 
+                listEntriesParams.after = meta.cursor;
                 currentBatch++;
             }
-
-            await this.taskTrigger.execute(context, store);
-            return response.continue(
-                {
-                    ...input,
-                    ...listEntriesParams,
-                    currentBatch
-                },
-                {
-                    seconds: WAITING_TIME
-                }
-            );
         } catch (ex) {
             console.error("Error while executing CreateDeleteEntriesTasks:", ex);
             return response.error(ex.message ?? "Error while executing CreateDeleteEntriesTasks");
