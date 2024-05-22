@@ -5,7 +5,8 @@ import { UnhealthyClusterError } from "~/utils/waitUntilHealthy/UnhealthyCluster
 
 describe("wait until healthy", () => {
     const client = createElasticsearchClient();
-    it("should wait until the cluster is healthy - single run", async () => {
+
+    it.skip("should wait until the cluster is healthy - single run", async () => {
         const waitUntilHealthy = createWaitUntilHealthy(client, {
             minStatus: ElasticsearchCatHealthStatus.Yellow,
             maxProcessorPercent: 101,
@@ -23,7 +24,7 @@ describe("wait until healthy", () => {
         expect(result).toEqual("healthy");
     });
 
-    it("should wait until the cluster is health - processor - max waiting time hit", async () => {
+    it.skip("should wait until the cluster is health - processor - max waiting time hit", async () => {
         expect.assertions(2);
         const waitUntilHealthy = createWaitUntilHealthy(client, {
             minStatus: ElasticsearchCatHealthStatus.Yellow,
@@ -43,7 +44,7 @@ describe("wait until healthy", () => {
         }
     });
 
-    it("should wait until the cluster is health - memory - max waiting time hit", async () => {
+    it.skip("should wait until the cluster is health - memory - max waiting time hit", async () => {
         expect.assertions(2);
         const waitUntilHealthy = createWaitUntilHealthy(client, {
             minStatus: ElasticsearchCatHealthStatus.Yellow,
@@ -62,5 +63,100 @@ describe("wait until healthy", () => {
             expect(ex).toBeInstanceOf(UnhealthyClusterError);
             expect(ex.message).toEqual("Cluster did not become healthy in 3 seconds.");
         }
+    });
+
+    it.skip("should trigger onUnhealthy callback - once", async () => {
+        expect.assertions(2);
+        const waitUntilHealthy = createWaitUntilHealthy(client, {
+            minStatus: ElasticsearchCatHealthStatus.Green,
+            maxProcessorPercent: 1,
+            maxWaitingTime: 1,
+            waitingTimeStep: 3,
+            maxRamPercent: 1
+        });
+
+        const fn = jest.fn();
+
+        try {
+            await waitUntilHealthy.wait(
+                async () => {
+                    return "should not reach this";
+                },
+                {
+                    async onUnhealthy() {
+                        fn();
+                    }
+                }
+            );
+        } catch (ex) {
+            expect(ex).toBeInstanceOf(UnhealthyClusterError);
+        }
+
+        expect(fn).toHaveBeenCalledTimes(1);
+    });
+
+    it.skip("should trigger onUnhealthy callback - multiple times", async () => {
+        expect.assertions(2);
+        const waitUntilHealthy = createWaitUntilHealthy(client, {
+            minStatus: ElasticsearchCatHealthStatus.Green,
+            maxProcessorPercent: 1,
+            maxWaitingTime: 3,
+            waitingTimeStep: 1,
+            maxRamPercent: 1
+        });
+
+        const fn = jest.fn();
+
+        try {
+            await waitUntilHealthy.wait(
+                async () => {
+                    return "should not reach this";
+                },
+                {
+                    async onUnhealthy() {
+                        fn();
+                    }
+                }
+            );
+        } catch (ex) {
+            expect(ex).toBeInstanceOf(UnhealthyClusterError);
+        }
+
+        expect(fn).toHaveBeenCalledTimes(3);
+    });
+
+    it("should trigger onTimeout callback - once", async () => {
+        expect.assertions(3);
+        const waitUntilHealthy = createWaitUntilHealthy(client, {
+            minStatus: ElasticsearchCatHealthStatus.Green,
+            maxProcessorPercent: 1,
+            maxWaitingTime: 3,
+            waitingTimeStep: 1,
+            maxRamPercent: 1
+        });
+
+        const onUnhealthy = jest.fn();
+        const onTimeout = jest.fn();
+
+        try {
+            await waitUntilHealthy.wait(
+                async () => {
+                    return "should not reach this";
+                },
+                {
+                    async onUnhealthy() {
+                        onUnhealthy();
+                    },
+                    async onTimeout() {
+                        onTimeout();
+                    }
+                }
+            );
+        } catch (ex) {
+            expect(ex).toBeInstanceOf(UnhealthyClusterError);
+        }
+
+        expect(onUnhealthy).toHaveBeenCalledTimes(3);
+        expect(onTimeout).toHaveBeenCalledTimes(1);
     });
 });

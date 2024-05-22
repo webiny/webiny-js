@@ -37,6 +37,25 @@ export interface IWaitCb<T> {
     (): Promise<T>;
 }
 
+export interface IWaitOptionsOnUnhealthyParams {
+    startedAt: Date;
+    mustEndAt: Date;
+    waitingTimeStep: number;
+    runs: number;
+}
+
+export interface IWaitOptionsOnTimeoutParams {
+    startedAt: Date;
+    mustEndAt: Date;
+    waitingTimeStep: number;
+    runs: number;
+}
+
+export interface IWaitOptions {
+    onUnhealthy?(params: IWaitOptionsOnUnhealthyParams): Promise<void>;
+    onTimeout?(params: IWaitOptionsOnTimeoutParams): Promise<void>;
+}
+
 export interface IWaitUntilHealthyWaitResponse<T> {
     result: T;
     runningTime: number;
@@ -64,7 +83,10 @@ class WaitUntilHealthy {
         this.aborted = true;
     }
 
-    public async wait<T>(cb: IWaitCb<T>): Promise<IWaitUntilHealthyWaitResponse<T>> {
+    public async wait<T>(
+        cb: IWaitCb<T>,
+        options?: IWaitOptions
+    ): Promise<IWaitUntilHealthyWaitResponse<T>> {
         if (this.aborted) {
             throw new WaitingHealthyClusterAbortedError(
                 `Waiting for the cluster to become healthy was aborted even before it started.`
@@ -75,10 +97,29 @@ class WaitUntilHealthy {
         const waitingTimeStep = this.options.waitingTimeStep || WAITING_TIME_STEP;
         let runs = 1;
         while (await this.shouldWait()) {
+            if (new Date() >= mustEndAt) {
+                if (options?.onTimeout) {
+                    await options.onTimeout({
+                        startedAt,
+                        mustEndAt,
+                        waitingTimeStep,
+                        runs
+                    });
+                }
+                throw new UnhealthyClusterError(this.options.maxWaitingTime);
+            } else if (options?.onUnhealthy) {
+                await options.onUnhealthy({
+                    startedAt,
+                    mustEndAt,
+                    waitingTimeStep,
+                    runs
+                });
+            }
+            /**
+             * Abort check is separated from other IFs because it can be aborted in onUnhealthy callback.
+             */
             if (this.aborted) {
                 throw new WaitingHealthyClusterAbortedError();
-            } else if (new Date() >= mustEndAt) {
-                throw new UnhealthyClusterError(this.options.maxWaitingTime);
             }
             runs++;
             await new Promise(resolve => {
