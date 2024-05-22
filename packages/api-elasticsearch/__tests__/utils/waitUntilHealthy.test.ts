@@ -16,13 +16,10 @@ describe("wait until healthy", () => {
             maxRamPercent: 101
         });
 
-        const { result, runs, runningTime } = await waitUntilHealthy.wait(async () => {
-            return "healthy";
-        });
+        const { runs, runningTime } = await waitUntilHealthy.wait();
 
         expect(runs).toEqual(1);
         expect(runningTime).toBeLessThan(30000);
-        expect(result).toEqual("healthy");
     });
 
     it("should wait until the cluster is health - processor - max waiting time hit", async () => {
@@ -36,9 +33,7 @@ describe("wait until healthy", () => {
         });
 
         try {
-            await waitUntilHealthy.wait(async () => {
-                return "should not reach this";
-            });
+            await waitUntilHealthy.wait();
         } catch (ex) {
             expect(ex).toBeInstanceOf(UnhealthyClusterError);
             expect(ex.message).toEqual("Cluster did not become healthy in 3 seconds.");
@@ -56,10 +51,8 @@ describe("wait until healthy", () => {
         });
 
         try {
-            const { result } = await waitUntilHealthy.wait(async () => {
-                return "should not reach this";
-            });
-            expect(result).toEqual("reaching here would fail the test");
+            const { runs } = await waitUntilHealthy.wait();
+            expect(runs).toEqual("reaching here would fail the test");
         } catch (ex) {
             expect(ex).toBeInstanceOf(UnhealthyClusterError);
             expect(ex.message).toEqual("Cluster did not become healthy in 3 seconds.");
@@ -76,24 +69,20 @@ describe("wait until healthy", () => {
             maxRamPercent: 1
         });
 
-        const fn = jest.fn();
+        const onUnhealthy = jest.fn();
 
         try {
-            await waitUntilHealthy.wait(
-                async () => {
-                    return "should not reach this";
-                },
-                {
-                    async onUnhealthy() {
-                        fn();
-                    }
+            const { runs } = await waitUntilHealthy.wait({
+                async onUnhealthy() {
+                    onUnhealthy();
                 }
-            );
+            });
+            expect(runs).toEqual("reaching here would fail the test");
         } catch (ex) {
             expect(ex).toBeInstanceOf(UnhealthyClusterError);
         }
 
-        expect(fn).toHaveBeenCalledTimes(1);
+        expect(onUnhealthy).toHaveBeenCalledTimes(1);
     });
 
     it("should trigger onUnhealthy callback - multiple times", async () => {
@@ -106,24 +95,20 @@ describe("wait until healthy", () => {
             maxRamPercent: 1
         });
 
-        const fn = jest.fn();
+        const onUnhealthy = jest.fn();
 
         try {
-            await waitUntilHealthy.wait(
-                async () => {
-                    return "should not reach this";
-                },
-                {
-                    async onUnhealthy() {
-                        fn();
-                    }
+            const { runs } = await waitUntilHealthy.wait({
+                async onUnhealthy() {
+                    onUnhealthy();
                 }
-            );
+            });
+            expect(runs).toEqual("reaching here would fail the test");
         } catch (ex) {
             expect(ex).toBeInstanceOf(UnhealthyClusterError);
         }
 
-        expect(fn).toHaveBeenCalledTimes(3);
+        expect(onUnhealthy).toHaveBeenCalledTimes(3);
     });
 
     it("should trigger onTimeout callback - once", async () => {
@@ -140,19 +125,15 @@ describe("wait until healthy", () => {
         const onTimeout = jest.fn();
 
         try {
-            await waitUntilHealthy.wait(
-                async () => {
-                    return "should not reach this";
+            const { runs } = await waitUntilHealthy.wait({
+                async onUnhealthy() {
+                    onUnhealthy();
                 },
-                {
-                    async onUnhealthy() {
-                        onUnhealthy();
-                    },
-                    async onTimeout() {
-                        onTimeout();
-                    }
+                async onTimeout() {
+                    onTimeout();
                 }
-            );
+            });
+            expect(runs).toEqual("reaching here would fail the test");
         } catch (ex) {
             expect(ex).toBeInstanceOf(UnhealthyClusterError);
         }
@@ -177,20 +158,16 @@ describe("wait until healthy", () => {
         const onTimeout = jest.fn();
 
         try {
-            await waitUntilHealthy.wait(
-                async () => {
-                    return "should not reach this";
+            const { runs } = await waitUntilHealthy.wait({
+                async onUnhealthy() {
+                    onUnhealthy();
+                    waitUntilHealthy.abort();
                 },
-                {
-                    async onUnhealthy() {
-                        onUnhealthy();
-                        waitUntilHealthy.abort();
-                    },
-                    async onTimeout() {
-                        onTimeout();
-                    }
+                async onTimeout() {
+                    onTimeout();
                 }
-            );
+            });
+            expect(runs).toEqual("reaching here would fail the test");
         } catch (ex) {
             expect(ex).toBeInstanceOf(WaitingHealthyClusterAbortedError);
         }
@@ -212,17 +189,13 @@ describe("wait until healthy", () => {
         const onUnhealthy = jest.fn();
 
         try {
-            await waitUntilHealthy.wait(
-                async () => {
-                    return "should not reach this";
-                },
-                {
-                    async onUnhealthy() {
-                        onUnhealthy();
-                        waitUntilHealthy.abort();
-                    }
+            const { runs } = await waitUntilHealthy.wait({
+                async onUnhealthy() {
+                    onUnhealthy();
+                    waitUntilHealthy.abort();
                 }
-            );
+            });
+            expect(runs).toEqual("reaching here would fail the test");
         } catch (ex) {
             expect(ex).toBeInstanceOf(WaitingHealthyClusterAbortedError);
         }

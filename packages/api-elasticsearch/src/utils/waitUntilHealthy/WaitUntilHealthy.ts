@@ -33,10 +33,6 @@ export interface IWaitUntilHealthyParams {
     waitingTimeStep?: number;
 }
 
-export interface IWaitCb<T> {
-    (): Promise<T>;
-}
-
 export interface IWaitOptionsOnUnhealthyParams {
     startedAt: Date;
     mustEndAt: Date;
@@ -56,8 +52,7 @@ export interface IWaitOptions {
     onTimeout?(params: IWaitOptionsOnTimeoutParams): Promise<void>;
 }
 
-export interface IWaitUntilHealthyWaitResponse<T> {
-    result: T;
+export interface IWaitUntilHealthyWaitResponse {
     runningTime: number;
     runs: number;
 }
@@ -82,11 +77,11 @@ class WaitUntilHealthy {
     public abort(): void {
         this.aborted = true;
     }
-
-    public async wait<T>(
-        cb: IWaitCb<T>,
-        options?: IWaitOptions
-    ): Promise<IWaitUntilHealthyWaitResponse<T>> {
+    /**
+     * @throws UnhealthyClusterError
+     * @throws WaitingHealthyClusterAbortedError
+     */
+    public async wait(options?: IWaitOptions): Promise<IWaitUntilHealthyWaitResponse> {
         if (this.aborted) {
             throw new WaitingHealthyClusterAbortedError(
                 `Waiting for the cluster to become healthy was aborted even before it started.`
@@ -128,10 +123,8 @@ class WaitUntilHealthy {
         }
 
         const runningTime = new Date().getTime() - startedAt.getTime();
-        const result = await cb();
 
         return {
-            result,
             runningTime,
             runs
         };
@@ -152,11 +145,7 @@ class WaitUntilHealthy {
         }
 
         const ramPercent = this.getRamPercent(nodes);
-        if (ramPercent > this.options.maxRamPercent) {
-            return true;
-        }
-
-        return false;
+        return ramPercent > this.options.maxRamPercent;
     }
 
     private getProcessorPercent(nodes: IElasticsearchCatNodesResponse): number {
