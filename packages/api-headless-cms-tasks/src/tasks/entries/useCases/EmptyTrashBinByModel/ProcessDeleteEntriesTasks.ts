@@ -37,7 +37,7 @@ export class ProcessDeleteEntriesTasks {
             }
 
             return response.done(
-                `Task done: The trash bin has been emptied for the ${input.modelId} model.`
+                `Task done: trash bin for the "${input.modelId}" model has been emptied.`
             );
         } catch (ex) {
             return response.error(ex.message ?? "Error while executing ProcessDeleteEntriesTasks");
