@@ -84,7 +84,11 @@ export function useUserForm() {
     return {
         id,
         loading,
-        user,
+        user: {
+            ...user,
+            group: user.group ? user.group.id : undefined,
+            team: user.team ? user.team.id : undefined
+        },
         onSubmit,
         isNewUser: newUser,
         fullName: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
