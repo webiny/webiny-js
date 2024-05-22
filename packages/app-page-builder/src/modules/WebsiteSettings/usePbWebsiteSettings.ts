@@ -1,19 +1,19 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect, useMemo } from "react";
 import get from "lodash/get";
 import set from "lodash/set";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import debounce from "lodash/debounce";
+import { useLazyQuery, useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin";
 import { sendEvent } from "@webiny/telemetry/react";
 import {
-    GET_SETTINGS,
     GetSettingsQueryResponse,
     GetSettingsResponseData,
-    UPDATE_SETTINGS,
     UpdateSettingsMutationResponse,
     UpdateSettingsMutationVariables
 } from "./graphql";
 import { PbErrorResponse } from "~/types";
 import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
+import { WebsiteSettingsConfig } from "~/modules/WebsiteSettings/config/WebsiteSettingsConfig";
 
 interface PageBuilderWebsiteSettings {
     id?: string;
@@ -23,10 +23,13 @@ interface PageBuilderWebsiteSettings {
 export function usePbWebsiteSettings() {
     const { showSnackbar } = useSnackbar();
     const { navigateToPageEditor } = useNavigatePage();
+    const { GET_SETTINGS, UPDATE_SETTINGS } = WebsiteSettingsConfig.useWebsiteSettingsConfig();
 
     const [error, setError] = useState<PbErrorResponse | null>(null);
 
-    const { data, loading: queryInProgress } = useQuery<GetSettingsQueryResponse>(GET_SETTINGS);
+    const [getSettings, { data, loading: queryInProgress }] =
+        useLazyQuery<GetSettingsQueryResponse>(GET_SETTINGS);
+
     const settings = get(
         data,
         "pageBuilder.getSettings.data",
@@ -60,6 +63,14 @@ export function usePbWebsiteSettings() {
             }
         }
     });
+
+    const debouncedGetSettings = useMemo(() => {
+        return debounce(getSettings, 20);
+    }, []);
+
+    useEffect(() => {
+        debouncedGetSettings();
+    }, []);
 
     const onSubmit = useCallback(
         /**
