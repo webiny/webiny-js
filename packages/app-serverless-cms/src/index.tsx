@@ -68,5 +68,5 @@ export { HasPermission, useSecurity, usePermission } from "@webiny/app-security"
 export { useTenancy } from "@webiny/app-tenancy";
 export type { Tenant } from "@webiny/app-tenancy";
 
-export { AddPbWebsiteSettings } from "@webiny/app-page-builder";
+export { WebsiteSettingsConfig } from "@webiny/app-page-builder";
 export * from "./apolloClientFactory";
