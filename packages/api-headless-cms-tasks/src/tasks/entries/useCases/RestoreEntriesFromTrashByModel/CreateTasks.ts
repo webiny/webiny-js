@@ -39,10 +39,7 @@ export class CreateTasks {
             }
 
             const listEntriesParams: CmsEntryListParams = {
-                where: {
-                    latest: true,
-                    ...input.where
-                },
+                where: input.where,
                 after: input.after,
                 limit: BATCH_SIZE
             };
@@ -61,7 +58,10 @@ export class CreateTasks {
                     });
                 }
 
-                const [entries, meta] = await context.cms.listEntries(model, listEntriesParams);
+                const [entries, meta] = await context.cms.listDeletedEntries(
+                    model,
+                    listEntriesParams
+                );
 
                 // If no entries exist for the provided query, let's return done.
                 if (meta.totalCount === 0) {
