@@ -43,6 +43,16 @@ const shouldForceExecute = (mig: DataMigration) => {
     return process.env[key] === "true";
 };
 
+/**
+ * This allows us to always skip a migration.
+ * Example: WEBINY_MIGRATION_SKIP_5_35_0_006=true
+ */
+const shouldSkip = (mig: DataMigration) => {
+    const key = `WEBINY_MIGRATION_SKIP_${mig.getId().replace(/[\.\-]/g, "_")}`;
+
+    return process.env[key] === "true";
+};
+
 class MigrationNotFinished extends Error {}
 class MigrationInProgress extends Error {}
 
@@ -132,6 +142,7 @@ export class MigrationRunner {
         const isMigrationApplicable = isApplicable || defaultIsApplicable;
 
         this.printForceExecuteEnvVars();
+        this.printSkipExecuteEnvVars();
 
         if (forceExecute) {
             this.logger.info(
@@ -141,6 +152,15 @@ export class MigrationRunner {
 
         const executableMigrations = this.migrations
             .filter(mig => {
+                if (shouldSkip(mig)) {
+                    this.setRunItem(lastRun, {
+                        id: mig.getId(),
+                        status: "skipped"
+                    });
+
+                    return false;
+                }
+
                 if (shouldForceExecute(mig)) {
                     return true;
                 }
@@ -247,17 +267,23 @@ export class MigrationRunner {
                 this.logger.error(err, err.message);
                 return;
             } finally {
-                // We sum duration from the previous run with the current run.
                 runItem.finishedOn = getCurrentISOTime();
 
                 // Update run stats.
                 await this.setRunItemAndSave(lastRun, runItem);
 
-                this.logger.info(
-                    `Finished executing migration %s in %sms.`,
-                    migration.getId(),
-                    getRunItemDuration(runItem)
-                );
+                if (runItem.status === "pending") {
+                    this.logger.info(
+                        `Pausing migration %s, awaiting continuation.`,
+                        migration.getId()
+                    );
+                } else {
+                    this.logger.info(
+                        `Finished executing migration %s in %sms.`,
+                        migration.getId(),
+                        getRunItemDuration(runItem)
+                    );
+                }
             }
 
             await this.repository.logMigration({
@@ -398,6 +424,25 @@ export class MigrationRunner {
 
         this.logger.info(`FORCED MIGRATIONS DETECTED!`);
         for (const key of forceKeys) {
+            this.logger.info(`${key}=${process.env[key]}`);
+        }
+    }
+
+    private printSkipExecuteEnvVars() {
+        const skipKeys = Object.keys(process.env).filter(key =>
+            key.startsWith("WEBINY_MIGRATION_SKIP_")
+        );
+
+        if (!skipKeys.length) {
+            this.logger.info(
+                `No migrations are skipped via WEBINY_MIGRATION_SKIP environment variable.`
+            );
+
+            return;
+        }
+
+        this.logger.info(`SKIPPED MIGRATIONS DETECTED!`);
+        for (const key of skipKeys) {
             this.logger.info(`${key}=${process.env[key]}`);
         }
     }
