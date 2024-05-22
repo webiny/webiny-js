@@ -32,7 +32,7 @@ interface IForceUnlockedProps {
 const ForceUnlocked = ({ user }: IForceUnlockedProps) => {
     return (
         <>
-            The entry you were editing was forcefully unlocked by
+            The entry you were editing was forcefully unlocked by{" "}
             <Bold>{user.displayName || "Unknown user"}</Bold>. Unfortunately, this means you lost
             the unsaved changes.
         </>
