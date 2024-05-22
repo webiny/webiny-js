@@ -3,14 +3,17 @@ import { TaskCache } from "./TaskCache";
 import {
     EntriesTask,
     HcmsTasksContext,
-    IDeleteTrashBinEntriesInput,
-    IEmptyTrashBinByModelInput
+    IBulkActionOperationByModelInput,
+    IBulkActionOperationInput
 } from "~/types";
 
 export class TaskTrigger {
     constructor(private taskCache: TaskCache) {}
 
-    async execute(context: HcmsTasksContext, store: ITaskManagerStore<IEmptyTrashBinByModelInput>) {
+    async execute(
+        context: HcmsTasksContext,
+        store: ITaskManagerStore<IBulkActionOperationByModelInput>
+    ) {
         const tasks = this.taskCache.getTasks();
         if (tasks.length === 0) {
             return;
@@ -18,13 +21,14 @@ export class TaskTrigger {
 
         for (const task of tasks) {
             try {
-                await context.tasks.trigger<IDeleteTrashBinEntriesInput>({
-                    definition: EntriesTask.DeleteTrashBinEntries,
+                await context.tasks.trigger<IBulkActionOperationInput>({
+                    definition: EntriesTask.DeleteEntries,
                     name: `Headless CMS - Delete Entries - ${task.modelId}`,
                     parent: store.getTask(),
                     input: {
                         modelId: task.modelId,
-                        entryIds: task.entryIds
+                        ids: task.ids,
+                        identity: task.identity
                     }
                 });
             } catch (error) {

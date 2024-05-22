@@ -1,15 +1,16 @@
 import { ITaskResponseResult } from "@webiny/tasks";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
-import {
-    EntriesTask,
-    IBulkActionOperationByModelTaskParams,
-    IBulkActionOperationInput
-} from "~/types";
+import { TaskCache } from "./TaskCache";
+import { TaskTrigger } from "./TaskTrigger";
+import { IBulkActionOperationByModelTaskParams } from "~/types";
 
 const BATCH_SIZE = 50;
 const WAITING_TIME = 5;
 
 export class CreateTasks {
+    private taskCache = new TaskCache();
+    private taskTrigger = new TaskTrigger(this.taskCache);
+
     public async execute(
         params: IBulkActionOperationByModelTaskParams
     ): Promise<ITaskResponseResult> {
@@ -33,12 +34,12 @@ export class CreateTasks {
             };
 
             let currentBatch = input.currentBatch || 1;
-            let hasMoreEntries = true;
 
-            while (hasMoreEntries) {
+            while (true) {
                 if (isAborted()) {
                     return response.aborted();
                 } else if (isCloseToTimeout()) {
+                    await this.taskTrigger.execute(context, store);
                     return response.continue({
                         ...input,
                         ...listEntriesParams,
@@ -51,16 +52,16 @@ export class CreateTasks {
                     listEntriesParams
                 );
 
-                hasMoreEntries = meta.hasMoreItems;
-                listEntriesParams.after = meta.cursor;
-
                 // If no entries exist for the provided query, let's return done.
                 if (meta.totalCount === 0) {
-                    return response.done("Task done: no entries to delete.");
+                    return response.done(
+                        `Task done: no entries to delete for the "${input.modelId}" model.`
+                    );
                 }
 
-                // If no entries are returned, let's continue with the task, but in `processing` mode.
+                // If no entries are returned, let's trigger the cached child tasks and continue in `processing` mode.
                 if (entries.length === 0) {
+                    await this.taskTrigger.execute(context, store);
                     return response.continue(
                         {
                             ...input,
@@ -69,29 +70,19 @@ export class CreateTasks {
                             totalCount: meta.totalCount,
                             processing: true
                         },
-                        {
-                            seconds: WAITING_TIME
-                        }
+                        { seconds: WAITING_TIME }
                     );
                 }
 
-                const ids = entries.map(entry => entry.id);
+                const entryIds = entries.map(entry => entry.id);
 
-                if (ids.length > 0) {
-                    await context.tasks.trigger<IBulkActionOperationInput>({
-                        definition: EntriesTask.DeleteEntries,
-                        name: `Headless CMS - Delete Entries - ${model.name} - #${currentBatch}`,
-                        parent: store.getTask(),
-                        input: {
-                            modelId: input.modelId,
-                            identity: input.identity,
-                            ids
-                        }
-                    });
+                if (entryIds.length > 0) {
+                    this.taskCache.cacheTask(input.modelId, entryIds, input.identity);
                 }
 
-                // If there are no more entries to load, we can continue the controller task in a `processing` mode, with some delay.
+                // No more entries paginated, let's trigger the cached child tasks and continue in `processing` mode.
                 if (!meta.hasMoreItems || !meta.cursor) {
+                    await this.taskTrigger.execute(context, store);
                     return response.continue(
                         {
                             ...input,
@@ -100,26 +91,13 @@ export class CreateTasks {
                             totalCount: meta.totalCount,
                             processing: true
                         },
-                        {
-                            seconds: WAITING_TIME
-                        }
+                        { seconds: WAITING_TIME }
                     );
                 }
 
+                listEntriesParams.after = meta.cursor;
                 currentBatch++;
             }
-
-            // Should not be possible to exit the loop without returning a response, but let's have a continue response here just in case.
-            return response.continue(
-                {
-                    ...input,
-                    ...listEntriesParams,
-                    currentBatch
-                },
-                {
-                    seconds: WAITING_TIME
-                }
-            );
         } catch (ex) {
             return response.error(
                 ex.message ?? "Error while executing DeleteEntriesByModel/CreateTasks"

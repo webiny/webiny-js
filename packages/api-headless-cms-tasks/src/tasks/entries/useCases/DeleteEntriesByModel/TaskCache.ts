@@ -1,13 +1,16 @@
+import { SecurityIdentity } from "@webiny/api-security/types";
+
 interface TaskCacheItem {
     modelId: string;
-    entryIds: string[];
+    ids: string[];
+    identity: SecurityIdentity;
 }
 
 export class TaskCache {
     private taskCache: TaskCacheItem[] = [];
 
-    cacheTask(modelId: string, entryIds: string[]): void {
-        this.taskCache.push({ modelId, entryIds });
+    cacheTask(modelId: string, ids: string[], identity: SecurityIdentity): void {
+        this.taskCache.push({ modelId, ids, identity });
     }
 
     getTasks(): TaskCacheItem[] {
