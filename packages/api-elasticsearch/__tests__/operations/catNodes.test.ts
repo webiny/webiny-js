@@ -15,7 +15,6 @@ describe("cat nodes", () => {
                 load_1m: expect.any(String),
                 "node.role": expect.any(String),
                 ip: expect.any(String),
-                master: expect.any(String),
                 name: expect.any(String)
             }
         ];

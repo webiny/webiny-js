@@ -19,6 +19,7 @@ export interface IElasticsearchCatHealthResponse {
     pending_tasks: `${number}`;
     max_task_wait_time: string;
     active_shards_percent: `${number}%`;
+    discovered_cluster_manager?: `${boolean}`;
 }
 
 export interface IElasticsearchCatNodeResponse {
@@ -30,7 +31,7 @@ export interface IElasticsearchCatNodeResponse {
     load_5m: `${number}` | null;
     load_15m: `${number}` | null;
     "node.role": string;
-    master: string;
+    master?: string;
     name: string;
 }
 

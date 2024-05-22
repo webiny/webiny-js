@@ -25,6 +25,6 @@ describe("cat health", () => {
         };
 
         const response = await catHealth.getHealth();
-        expect(response).toEqual(expected);
+        expect(response).toMatchObject(expected);
     });
 });
