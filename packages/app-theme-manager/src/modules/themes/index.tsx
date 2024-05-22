@@ -1,7 +1,7 @@
 import React, { Fragment, memo, useEffect, useRef } from "react";
 import gql from "graphql-tag";
 import { Provider, Plugins } from "@webiny/app-admin";
-import { AddPbWebsiteSettings } from "@webiny/app-page-builder";
+import { WebsiteSettingsConfig } from "@webiny/app-page-builder";
 import { AddTenantFormField, IsRootTenant, IsNotRootTenant } from "@webiny/app-tenant-manager";
 import { useBind } from "@webiny/form";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
@@ -15,7 +15,7 @@ import { ThemeLoader } from "~/components/ThemeLoader";
 import { useCurrentTheme } from "~/hooks/useCurrentTheme";
 import { ThemeSource } from "~/types";
 
-const { Group, Element } = AddPbWebsiteSettings;
+const { Group, Element } = WebsiteSettingsConfig;
 
 const tenantFormFieldsSelection = gql`
     {
@@ -77,9 +77,9 @@ const WebsiteSettingsSelection = gql`
 
 const WebsiteSettings = () => {
     return (
-        <Fragment>
+        <WebsiteSettingsConfig>
             <Group name={"theme"} label={"Theme"} querySelection={WebsiteSettingsSelection}>
-                <Element>
+                <Element name={"theme"}>
                     <IsNotRootTenant>
                         <TenantThemes />
                     </IsNotRootTenant>
@@ -88,7 +88,7 @@ const WebsiteSettings = () => {
                     </IsRootTenant>
                 </Element>
             </Group>
-        </Fragment>
+        </WebsiteSettingsConfig>
     );
 };
 
