@@ -40,7 +40,7 @@ jest.setTimeout(720000);
 
 describe("Empty Trash Bin By Model", () => {
     it("should fail in case of invalid input - missing `modelId`", async () => {
-        const taskDefinition = createEmptyTrashBinByModelTask();
+        const taskDefinition = createDeleteEntriesByModelTask();
         const { handler } = useHandler<HcmsTasksContext>({
             plugins: [taskDefinition, ...createMockModels()]
         });
@@ -70,7 +70,7 @@ describe("Empty Trash Bin By Model", () => {
                 message: `Missing "modelId" in the input.`
             },
             webinyTaskId: task.id,
-            webinyTaskDefinitionId: EntriesTask.EmptyTrashBinByModel,
+            webinyTaskDefinitionId: EntriesTask.DeleteEntriesByModel,
             tenant: "root",
             locale: "en-US"
         });
@@ -146,7 +146,7 @@ describe("Empty Trash Bin By Model", () => {
 
         expect(result).toMatchObject({
             status: "done",
-            message: `Task done: no entries to delete for the "${MODEL_ID}" model.`,
+            message: "Task done: no entries to delete.",
             webinyTaskId: task.id,
             webinyTaskDefinitionId: EntriesTask.DeleteEntriesByModel,
             tenant: "root",

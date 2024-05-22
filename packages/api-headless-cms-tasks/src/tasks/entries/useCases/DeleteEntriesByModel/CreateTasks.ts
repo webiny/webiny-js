@@ -1,15 +1,22 @@
 import { ITaskResponseResult } from "@webiny/tasks";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
-import { TaskCache } from "./TaskCache";
-import { TaskTrigger } from "./TaskTrigger";
-import { IBulkActionOperationByModelTaskParams } from "~/types";
+import { TaskCache, TaskTrigger } from "../../domain";
+import {
+    EntriesTask,
+    IBulkActionOperationByModelInput,
+    IBulkActionOperationByModelTaskParams,
+    IBulkActionOperationInput
+} from "~/types";
 
 const BATCH_SIZE = 50;
 const WAITING_TIME = 5;
 
 export class CreateTasks {
-    private taskCache = new TaskCache();
-    private taskTrigger = new TaskTrigger(this.taskCache);
+    private taskCache = new TaskCache<IBulkActionOperationInput>();
+    private taskTrigger = new TaskTrigger<
+        IBulkActionOperationInput,
+        IBulkActionOperationByModelInput
+    >(this.taskCache, EntriesTask.DeleteEntries, `Headless CMS - Delete Entries`);
 
     public async execute(
         params: IBulkActionOperationByModelTaskParams
@@ -54,9 +61,7 @@ export class CreateTasks {
 
                 // If no entries exist for the provided query, let's return done.
                 if (meta.totalCount === 0) {
-                    return response.done(
-                        `Task done: no entries to delete for the "${input.modelId}" model.`
-                    );
+                    return response.done("Task done: no entries to delete.");
                 }
 
                 // If no entries are returned, let's trigger the cached child tasks and continue in `processing` mode.
@@ -74,10 +79,14 @@ export class CreateTasks {
                     );
                 }
 
-                const entryIds = entries.map(entry => entry.id);
+                const ids = entries.map(entry => entry.id);
 
-                if (entryIds.length > 0) {
-                    this.taskCache.cacheTask(input.modelId, entryIds, input.identity);
+                if (ids.length > 0) {
+                    this.taskCache.cacheTask({
+                        modelId: input.modelId,
+                        identity: input.identity,
+                        ids
+                    });
                 }
 
                 // No more entries paginated, let's trigger the cached child tasks and continue in `processing` mode.
