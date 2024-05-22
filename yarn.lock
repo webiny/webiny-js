@@ -18428,6 +18428,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/utils": 0.0.0
     elastic-ts: ^0.8.0
+    execa: ^5.0.0
     jest-dynalite: ^3.2.0
     jsonpack: ^1.1.5
     lodash: ^4.17.21
