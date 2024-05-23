@@ -1,5 +1,11 @@
 import { FormPresenter } from "~/FormPresenter";
-import { BindComponentProps, FormOnSubmit, FormPropsState, FormValidationOptions } from "~/types";
+import {
+    BindComponentProps,
+    FormOnSubmit,
+    FormPropsState,
+    FormValidationOptions,
+    UseBindHook
+} from "~/types";
 
 export interface FormApiOptions<T> {
     onSubmit: FormOnSubmit<T>;
@@ -13,6 +19,7 @@ export class FormAPI<T> {
     private presenter: FormPresenter<T>;
     private readonly options: FormApiOptions<T>;
     private wasSubmitted = false;
+    private fieldsCache = new Map<string, UseBindHook>();
 
     constructor(presenter: FormPresenter<T>, options: FormApiOptions<T>) {
         this.presenter = presenter;
@@ -31,9 +38,7 @@ export class FormAPI<T> {
         const isFormDisabled = this.options.isFormDisabled;
         if (isFormDisabled) {
             const inputDisabledByForm =
-                typeof isFormDisabled === "function"
-                    ? isFormDisabled({ data: { ...this.presenter.vm.data } })
-                    : isFormDisabled;
+                typeof isFormDisabled === "function" ? isFormDisabled(this) : isFormDisabled;
 
             // Only override the input prop if the entire Form is disabled
             if (inputDisabledByForm) {
@@ -43,21 +48,38 @@ export class FormAPI<T> {
         return false;
     };
 
-    registerField = (props: BindComponentProps) => {
+    registerField = (props: BindComponentProps): UseBindHook => {
         this.presenter.registerField(props);
 
-        return {
-            disabled: this.isDisabled(),
-            validate: () => this.validateInput(props.name),
-            validation: this.presenter.getFieldValidation(props.name),
-            value: this.valueOrDefault(props),
-            onChange: async (value: unknown) => {
-                this.presenter.setFieldValue(props.name, value);
+        if (!this.fieldsCache.has(props.name)) {
+            /**
+             * We create a reusable template, which will be cached.
+             * On subsequent renders, only the dynamic properties will be recalculated.
+             */
+            this.fieldsCache.set(props.name, {
+                disabled: false,
+                value: undefined,
+                validation: {
+                    isValid: null
+                },
+                validate: () => this.validateInput(props.name),
+                onChange: async (value: unknown) => {
+                    this.presenter.setFieldValue(props.name, value);
 
-                if (this.shouldValidate()) {
-                    this.presenter.validateField(props.name);
+                    if (this.shouldValidate()) {
+                        this.presenter.validateField(props.name);
+                    }
                 }
-            }
+            });
+        }
+
+        const hookValue = this.fieldsCache.get(props.name) as UseBindHook;
+
+        return {
+            ...hookValue,
+            disabled: this.isDisabled(),
+            value: this.valueOrDefault(props),
+            validation: this.presenter.getFieldValidation(props.name)
         };
     };
 
@@ -113,6 +135,7 @@ export class FormAPI<T> {
      */
     private valueOrDefault(props: BindComponentProps) {
         const value = this.presenter.getFieldValue(props.name);
+
         if (emptyValues.includes(value) && props.defaultValue !== undefined) {
             return props.defaultValue;
         }
