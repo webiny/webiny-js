@@ -62,6 +62,8 @@ interface MigrationStatus {
     lastEvaluatedKey: LastEvaluatedKey;
     iterationsCount: number;
     recordsScanned: number;
+    recordsUpdated: number;
+    recordsSkipped: number;
     indexes: {
         [index: string]: IndexSettings | null;
     };
@@ -78,6 +80,8 @@ const createInitialCheckpoint = (): MigrationStatus => {
         lastEvaluatedKey: null,
         iterationsCount: 0,
         recordsScanned: 0,
+        recordsUpdated: 0,
+        recordsSkipped: 0,
         indexes: {}
     };
 };
@@ -95,7 +99,7 @@ const createInitialCheckpoint = (): MigrationStatus => {
 
     const documentClient = getDocumentClient();
     const elasticsearchClient = createElasticsearchClient({
-        endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
+        endpoint: `https://${argv.elasticsearchEndpoint}`
     });
 
     const primaryTable = createTable({
@@ -133,8 +137,8 @@ const createInitialCheckpoint = (): MigrationStatus => {
             status.recordsScanned += result.items.length;
 
             logger.trace(`Analyzing ${result.items.length} record(s)...`);
-            const ddbItems: BatchWriteItem[] = [];
-            const ddbEsItems: BatchWriteItem[] = [];
+            const ddbItemsToBatchWrite: BatchWriteItem[] = [];
+            const ddbEsItemsToBatchWrite: BatchWriteItem[] = [];
             const ddbEsGetItems: Record<string, BatchReadItem> = {};
 
             const fallbackDateTime = new Date().toISOString();
@@ -148,6 +152,7 @@ const createInitialCheckpoint = (): MigrationStatus => {
                     hasAllNonNullableValues(item);
 
                 if (isFullyMigrated) {
+                    status.recordsSkipped++;
                     continue;
                 }
 
@@ -171,11 +176,11 @@ const createInitialCheckpoint = (): MigrationStatus => {
                     status.indexes[index] = settings;
 
                     // and then set not to index
-                    await disableElasticsearchIndexing({
-                        elasticsearchClient: elasticsearchClient,
-                        index,
-                        logger
-                    });
+                    // await disableElasticsearchIndexing({
+                    //     elasticsearchClient: elasticsearchClient,
+                    //     index,
+                    //     logger
+                    // });
                 }
 
                 // 1. Check if the data migration was ever performed. If not, let's perform it.
@@ -232,7 +237,9 @@ const createInitialCheckpoint = (): MigrationStatus => {
                     }
                 }
 
-                ddbItems.push(ddbEntryEntity.putBatch(item));
+                status.recordsUpdated++;
+
+                ddbItemsToBatchWrite.push(ddbEntryEntity.putBatch(item));
 
                 /**
                  * Prepare the loading of DynamoDB Elasticsearch part of the records.
@@ -254,95 +261,97 @@ const createInitialCheckpoint = (): MigrationStatus => {
                 }
             }
 
-            /**
-             * Get all the records from DynamoDB Elasticsearch.
-             */
-            const ddbEsRecords = await batchReadAll<DynamoDbElasticsearchRecord>({
-                table: ddbEsEntryEntity.table,
-                items: Object.values(ddbEsGetItems)
-            });
+            if (Object.keys(ddbEsGetItems).length === 0) {
+                /**
+                 * Get all the records from DynamoDB Elasticsearch.
+                 */
+                const ddbEsRecords = await batchReadAll<DynamoDbElasticsearchRecord>({
+                    table: ddbEsEntryEntity.table,
+                    items: Object.values(ddbEsGetItems)
+                });
 
-            for (const ddbEsRecord of ddbEsRecords) {
-                const decompressedData = await getDecompressedData<CmsEntry>(ddbEsRecord.data);
-                if (!decompressedData) {
-                    logger.trace(
-                        `[DDB-ES Table] Skipping record "${ddbEsRecord.PK}" as it is not a valid CMS entry...`
-                    );
-                    continue;
-                }
+                for (const ddbEsRecord of ddbEsRecords) {
+                    const decompressedData = await getDecompressedData<CmsEntry>(ddbEsRecord.data);
+                    if (!decompressedData) {
+                        logger.trace(
+                            `[DDB-ES Table] Skipping record "${ddbEsRecord.PK}" as it is not a valid CMS entry...`
+                        );
+                        continue;
+                    }
 
-                // 1. Check if the data migration was ever performed. If not, let's perform it.
-                if (!isMigratedEntry(decompressedData)) {
-                    // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
-                    const createdOn = await getOldestRevisionCreatedOn({
-                        entry: { ...decompressedData, PK: ddbEsRecord.PK },
-                        entryEntity: ddbEntryEntity
-                    });
-
-                    const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
-                        entry: { ...decompressedData, PK: ddbEsRecord.PK },
-                        entryEntity: ddbEntryEntity
-                    });
-
-                    assignNewMetaFields(decompressedData, {
-                        createdOn,
-                        ...firstLastPublishedOnByFields
-                    });
-                }
-
-                // 2. Ensure new non-nullable meta fields have a value and nothing is missing.
-                if (!hasAllNonNullableValues(decompressedData)) {
-                    logger.trace(
-                        [
-                            `[DDB-ES Table] Detected an entry with missing values for non-nullable meta fields`,
-                            `(${decompressedData.modelId}/${decompressedData.id}).`
-                        ].join(" ")
-                    );
-
-                    try {
-                        const fallbackIdentity = await getFallbackIdentity({
-                            entity: ddbEntryEntity,
-                            tenant: decompressedData.tenant
+                    // 1. Check if the data migration was ever performed. If not, let's perform it.
+                    if (!isMigratedEntry(decompressedData)) {
+                        // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
+                        const createdOn = await getOldestRevisionCreatedOn({
+                            entry: { ...decompressedData, PK: ddbEsRecord.PK },
+                            entryEntity: ddbEntryEntity
                         });
 
-                        ensureAllNonNullableValues(decompressedData, {
-                            dateTime: fallbackDateTime,
-                            identity: fallbackIdentity
+                        const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
+                            entry: { ...decompressedData, PK: ddbEsRecord.PK },
+                            entryEntity: ddbEntryEntity
                         });
 
+                        assignNewMetaFields(decompressedData, {
+                            createdOn,
+                            ...firstLastPublishedOnByFields
+                        });
+                    }
+
+                    // 2. Ensure new non-nullable meta fields have a value and nothing is missing.
+                    if (!hasAllNonNullableValues(decompressedData)) {
                         logger.trace(
                             [
-                                `[DDB-ES Table] Successfully ensured all non-nullable meta fields`,
-                                `have values (${decompressedData.modelId}/${decompressedData.id}).`,
-                                "Will be saving the changes soon."
+                                `[DDB-ES Table] Detected an entry with missing values for non-nullable meta fields`,
+                                `(${decompressedData.modelId}/${decompressedData.id}).`
                             ].join(" ")
                         );
-                    } catch (e) {
-                        logger.error(
-                            [
-                                "[DDB-ES Table] Failed to ensure all non-nullable meta fields have values",
-                                `(${decompressedData.modelId}/${decompressedData.id}): ${e.message}`
-                            ].join(" ")
-                        );
+
+                        try {
+                            const fallbackIdentity = await getFallbackIdentity({
+                                entity: ddbEntryEntity,
+                                tenant: decompressedData.tenant
+                            });
+
+                            ensureAllNonNullableValues(decompressedData, {
+                                dateTime: fallbackDateTime,
+                                identity: fallbackIdentity
+                            });
+
+                            logger.trace(
+                                [
+                                    `[DDB-ES Table] Successfully ensured all non-nullable meta fields`,
+                                    `have values (${decompressedData.modelId}/${decompressedData.id}).`,
+                                    "Will be saving the changes soon."
+                                ].join(" ")
+                            );
+                        } catch (e) {
+                            logger.error(
+                                [
+                                    "[DDB-ES Table] Failed to ensure all non-nullable meta fields have values",
+                                    `(${decompressedData.modelId}/${decompressedData.id}): ${e.message}`
+                                ].join(" ")
+                            );
+                        }
                     }
+
+                    const compressedData = await getCompressedData(decompressedData);
+
+                    ddbEsItemsToBatchWrite.push(
+                        ddbEsEntryEntity.putBatch({
+                            ...ddbEsRecord,
+                            data: compressedData
+                        })
+                    );
                 }
-
-                const compressedData = await getCompressedData(decompressedData);
-
-                ddbEsItems.push(
-                    ddbEsEntryEntity.putBatch({
-                        ...ddbEsRecord,
-                        data: compressedData
-                    })
-                );
             }
 
-            if (ddbItems.length) {
+            if (ddbItemsToBatchWrite.length) {
                 // Store data in primary DynamoDB table.
                 const execute = () => {
                     return batchWriteAll({
                         table: ddbEntryEntity.table,
-                        items: ddbItems
+                        items: ddbItemsToBatchWrite
                     });
                 };
 
@@ -355,24 +364,25 @@ const createInitialCheckpoint = (): MigrationStatus => {
                     }
                 });
 
-                // Store data in DDB-ES DynamoDB table.
-                const executeDdbEs = () => {
-                    return batchWriteAll({
-                        table: ddbEsEntryEntity.table,
-                        items: ddbEsItems
+                if (ddbEsItemsToBatchWrite.length) {
+                    // Store data in DDB-ES DynamoDB table.
+                    const executeDdbEs = () => {
+                        return batchWriteAll({
+                            table: ddbEsEntryEntity.table,
+                            items: ddbEsItemsToBatchWrite
+                        });
+                    };
+
+                    logger.trace(`Storing records in DDB-ES DynamoDB table...`);
+                    await executeWithRetry(executeDdbEs, {
+                        onFailedAttempt: error => {
+                            logger.error(
+                                `[DDB-ES Table] Batch write attempt #${error.attemptNumber} failed: ${error.message}`
+                            );
+                        }
                     });
-                };
-
-                logger.trace(`Storing records in DDB-ES DynamoDB table...`);
-                await executeWithRetry(executeDdbEs, {
-                    onFailedAttempt: error => {
-                        logger.error(
-                            `[DDB-ES Table] Batch write attempt #${error.attemptNumber} failed: ${error.message}`
-                        );
-                    }
-                });
+                }
             }
-
 
             // Update checkpoint after every batch.
             let lastEvaluatedKey: LastEvaluatedKey = true;
@@ -391,5 +401,5 @@ const createInitialCheckpoint = (): MigrationStatus => {
         }
     );
 
-    logger.trace(status)
+    logger.trace(status);
 })();
