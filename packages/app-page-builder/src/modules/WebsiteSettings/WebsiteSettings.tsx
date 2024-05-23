@@ -8,6 +8,7 @@ import { WebsiteSettingsView } from "./WebsiteSettingsView";
 import { FaviconAndLogo } from "./settingsGroups/FaviconAndLogo";
 import { SocialMedia } from "./settingsGroups/SocialMedia";
 import { HtmlTags } from "./settingsGroups/HtmlTags";
+import { WebsiteSettingsWithConfig } from "./config/WebsiteSettingsConfig";
 
 export const WebsiteSettings = () => {
     return (
@@ -15,7 +16,9 @@ export const WebsiteSettings = () => {
             <HasPermission name={"pb.settings"}>
                 <AddRoute path="/settings/page-builder/website">
                     <Layout title={"Page Builder - Website Settings"}>
-                        <WebsiteSettingsView />
+                        <WebsiteSettingsWithConfig>
+                            <WebsiteSettingsView />
+                        </WebsiteSettingsWithConfig>
                     </Layout>
                 </AddRoute>
             </HasPermission>
