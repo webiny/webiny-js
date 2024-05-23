@@ -6,6 +6,7 @@ import { useForm } from "@webiny/form";
 import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor";
 import { modelHasLegacyRteField } from "~/admin/plugins/fieldRenderers/richText/utils";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -42,13 +43,17 @@ const plugin: CmsModelFieldRendererPlugin = {
                         return (
                             <>
                                 <Label>{field.label}</Label>
-                                <LexicalCmsEditor
-                                    value={bind.value}
-                                    onChange={bind.onChange}
-                                    key={getKey(form.data.id, field)}
-                                    placeholder={field.placeholderText}
-                                    data-testid={`fr.input.lexical.${field.label}`}
-                                />
+                                <DelayedOnChange {...bind}>
+                                    {({ value, onChange }) => (
+                                        <LexicalCmsEditor
+                                            value={value}
+                                            onChange={onChange}
+                                            key={getKey(form.data.id, field)}
+                                            placeholder={field.placeholderText}
+                                            data-testid={`fr.input.lexical.${field.label}`}
+                                        />
+                                    )}
+                                </DelayedOnChange>
                                 <FormElementMessage>{field.helpText}</FormElementMessage>
                             </>
                         );

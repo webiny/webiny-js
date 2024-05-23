@@ -15,6 +15,7 @@ import {
     modelHasLegacyRteField
 } from "~/admin/plugins/fieldRenderers/richText/utils";
 import { useForm } from "@webiny/form";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -91,14 +92,15 @@ const plugin: CmsModelFieldRendererPlugin = {
                                     onClick={() => bind.field.removeValue(index)}
                                 />
                             )}
-                            <RichTextEditor
-                                key={getKey(field, form.data.id, index)}
-                                {...rteProps}
-                                {...bind.index}
-                                label={`Value ${index + 1}`}
-                                placeholder={field.placeholderText}
-                                description={field.helpText}
-                            />
+                            <DelayedOnChange {...bind.index}>
+                                <RichTextEditor
+                                    key={getKey(field, form.data.id, index)}
+                                    {...rteProps}
+                                    label={`Value ${index + 1}`}
+                                    placeholder={field.placeholderText}
+                                    description={field.helpText}
+                                />
+                            </DelayedOnChange>
                         </EditorWrapper>
                     )}
                 </DynamicSection>

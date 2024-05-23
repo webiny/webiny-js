@@ -10,6 +10,7 @@ import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCms
 import { modelHasLegacyRteField } from "~/admin/plugins/fieldRenderers/richText/utils";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { useForm } from "@webiny/form";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -55,12 +56,16 @@ const plugin: CmsModelFieldRendererPlugin = {
                 <DynamicSection {...props}>
                     {({ bind, index }) => (
                         <EditorWrapper>
-                            <LexicalCmsEditor
-                                value={bind.index.value}
-                                onChange={bind.index.onChange}
-                                key={getKey(form.data.id, field, index)}
-                                placeholder={field.placeholderText}
-                            />
+                            <DelayedOnChange {...bind.index}>
+                                {({ value, onChange }) => (
+                                    <LexicalCmsEditor
+                                        value={value}
+                                        onChange={onChange}
+                                        key={getKey(form.data.id, field, index)}
+                                        placeholder={field.placeholderText}
+                                    />
+                                )}
+                            </DelayedOnChange>
                             <FormElementMessage>{field.helpText}</FormElementMessage>
                             {index > 0 && (
                                 <IconButton

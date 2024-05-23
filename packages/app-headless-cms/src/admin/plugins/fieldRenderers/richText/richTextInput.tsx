@@ -11,6 +11,7 @@ import {
     isLegacyRteFieldSaved,
     modelHasLegacyRteField
 } from "~/admin/plugins/fieldRenderers/richText/utils";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -59,20 +60,16 @@ const plugin: CmsModelFieldRendererPlugin = {
 
             return (
                 <Bind>
-                    {bind => {
-                        return (
-                            <RichTextEditor
-                                key={getKey(field, form.data.id)}
-                                {...rteProps}
-                                {...bind}
-                                onChange={bind.onChange}
-                                label={field.label}
-                                placeholder={field.placeholderText}
-                                description={field.helpText}
-                                data-testid={`fr.input.richtext.${field.label}`}
-                            />
-                        );
-                    }}
+                    <DelayedOnChange>
+                        <RichTextEditor
+                            key={getKey(field, form.data.id)}
+                            {...rteProps}
+                            label={field.label}
+                            placeholder={field.placeholderText}
+                            description={field.helpText}
+                            data-testid={`fr.input.richtext.${field.label}`}
+                        />
+                    </DelayedOnChange>
                 </Bind>
             );
         }
