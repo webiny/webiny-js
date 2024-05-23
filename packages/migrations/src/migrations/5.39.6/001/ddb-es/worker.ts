@@ -29,8 +29,10 @@ import {
     ddbScanWithCallback
 } from "~/utils";
 import pinoPretty from "pino-pretty";
-import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUntilHealthy";
-import { ElasticsearchCatHealthStatus } from "@webiny/api-elasticsearch/operations/types";
+import {
+    createWaitUntilHealthy,
+    ElasticsearchCatCluterHealthStatus
+} from "@webiny/api-elasticsearch";
 
 const argv = yargs(hideBin(process.argv))
     .options({
@@ -108,9 +110,9 @@ const createInitialStatus = (): MigrationStatus => {
 
     // TODO: make these configurable outside of the script.
     const waitUntilHealthy = createWaitUntilHealthy(elasticsearchClient, {
-        minStatus: ElasticsearchCatHealthStatus.Yellow,
+        minClusterHealthStatus: ElasticsearchCatCluterHealthStatus.Yellow,
         maxProcessorPercent: 75,
-        maxRamPercent: 100,
+        //maxRamPercent: 100,
         maxWaitingTime: 60,
         waitingTimeStep: 5
     });
