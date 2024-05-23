@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const emptyFunction = (): undefined => {
     return undefined;
@@ -47,6 +47,7 @@ export interface DelayedOnChangeProps {
 }
 
 export const DelayedOnChange = ({ children, ...other }: DelayedOnChangeProps) => {
+    const firstMount = useRef(true);
     const { onChange, delay = 400, value: initialValue } = other;
     const [value, setValue] = useState<string | undefined>(initialValue);
     // Sync state and props
@@ -90,6 +91,11 @@ export const DelayedOnChange = ({ children, ...other }: DelayedOnChangeProps) =>
     }, []);
 
     useEffect(() => {
+        if (firstMount.current) {
+            firstMount.current = false;
+            return;
+        }
+
         onValueStateChanged(value || "");
     }, [value]);
 
