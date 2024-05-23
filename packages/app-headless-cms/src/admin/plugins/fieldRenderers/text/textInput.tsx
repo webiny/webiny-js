@@ -26,14 +26,21 @@ const plugin: CmsModelFieldRendererPlugin = {
 
             return (
                 <Bind>
-                    <DelayedOnChange>
-                        <Input
-                            label={field.label}
-                            placeholder={field.placeholderText}
-                            description={field.helpText}
-                            data-testid={`fr.input.text.${field.label}`}
-                        />
-                    </DelayedOnChange>
+                    {bind => (
+                        <DelayedOnChange
+                            value={bind.value}
+                            onChange={bind.onChange}
+                            onBlur={bind.validate}
+                        >
+                            <Input
+                                label={field.label}
+                                placeholder={field.placeholderText}
+                                description={field.helpText}
+                                data-testid={`fr.input.text.${field.label}`}
+                                validation={bind.validation}
+                            />
+                        </DelayedOnChange>
+                    )}
                 </Bind>
             );
         }

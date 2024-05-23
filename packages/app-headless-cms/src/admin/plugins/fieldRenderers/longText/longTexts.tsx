@@ -27,8 +27,13 @@ const plugin: CmsModelFieldRendererPlugin = {
             return (
                 <DynamicSection {...props}>
                     {({ bind, index }) => (
-                        <DelayedOnChange {...bind.index}>
+                        <DelayedOnChange
+                            value={bind.index.value}
+                            onChange={bind.index.onChange}
+                            onBlur={bind.index.validate}
+                        >
                             <Input
+                                validation={bind.index.validation}
                                 rows={5}
                                 label={t`Value {number}`({ number: index + 1 })}
                                 placeholder={props.field.placeholderText}
