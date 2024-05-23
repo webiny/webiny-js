@@ -254,7 +254,8 @@ export const ElasticSearch = createAppModule({
             elasticsearchDomainArn: domain.output.arn,
             elasticsearchDomainEndpoint: domain.output.endpoint,
             elasticsearchDynamodbTableArn: table.output.arn,
-            elasticsearchDynamodbTableName: table.output.name
+            elasticsearchDynamodbTableName: table.output.name,
+            elasticsearchDynamoToElasticLambdaName: lambda.output.name
         });
 
         return {
