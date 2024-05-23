@@ -26,12 +26,11 @@ import {
     BatchReadItem,
     batchWriteAll,
     BatchWriteItem,
-    ddbScanWithCallback,
-    disableElasticsearchIndexing,
-    esGetIndexName,
-    fetchOriginalElasticsearchSettings
+    ddbScanWithCallback
 } from "~/utils";
 import pinoPretty from "pino-pretty";
+import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUntilHealthy";
+import { ElasticsearchCatHealthStatus } from "@webiny/api-elasticsearch/operations/types";
 
 const argv = yargs(hideBin(process.argv))
     .options({
@@ -53,20 +52,12 @@ interface LastEvaluatedKeyObject {
 
 type LastEvaluatedKey = LastEvaluatedKeyObject | true | null;
 
-interface IndexSettings {
-    number_of_replicas: number;
-    refresh_interval: `${number}s`;
-}
-
 interface MigrationStatus {
     lastEvaluatedKey: LastEvaluatedKey;
     iterationsCount: number;
     recordsScanned: number;
     recordsUpdated: number;
     recordsSkipped: number;
-    indexes: {
-        [index: string]: IndexSettings | null;
-    };
 }
 
 interface DynamoDbElasticsearchRecord {
@@ -75,14 +66,13 @@ interface DynamoDbElasticsearchRecord {
     data: string;
 }
 
-const createInitialCheckpoint = (): MigrationStatus => {
+const createInitialStatus = (): MigrationStatus => {
     return {
         lastEvaluatedKey: null,
         iterationsCount: 0,
         recordsScanned: 0,
         recordsUpdated: 0,
-        recordsSkipped: 0,
-        indexes: {}
+        recordsSkipped: 0
     };
 };
 
@@ -114,7 +104,16 @@ const createInitialCheckpoint = (): MigrationStatus => {
     const ddbEntryEntity = createDdbEntryEntity(primaryTable);
     const ddbEsEntryEntity = createDdbEsEntryEntity(dynamoToEsTable);
 
-    const status = createInitialCheckpoint();
+    const status = createInitialStatus();
+
+    // TODO: make these configurable outside of the script.
+    const waitUntilHealthy = createWaitUntilHealthy(elasticsearchClient, {
+        minStatus: ElasticsearchCatHealthStatus.Yellow,
+        maxProcessorPercent: 75,
+        maxRamPercent: 100,
+        maxWaitingTime: 60,
+        waitingTimeStep: 5
+    });
 
     await ddbScanWithCallback<CmsEntry>(
         {
@@ -136,10 +135,10 @@ const createInitialCheckpoint = (): MigrationStatus => {
             status.iterationsCount++;
             status.recordsScanned += result.items.length;
 
-            logger.trace(`Analyzing ${result.items.length} record(s)...`);
+            logger.trace(`Reading ${result.items.length} record(s)...`);
             const ddbItemsToBatchWrite: BatchWriteItem[] = [];
             const ddbEsItemsToBatchWrite: BatchWriteItem[] = [];
-            const ddbEsGetItems: Record<string, BatchReadItem> = {};
+            const ddbEsItemsToBatchRead: Record<string, BatchReadItem> = {};
 
             const fallbackDateTime = new Date().toISOString();
 
@@ -154,33 +153,6 @@ const createInitialCheckpoint = (): MigrationStatus => {
                 if (isFullyMigrated) {
                     status.recordsSkipped++;
                     continue;
-                }
-
-                const index = esGetIndexName({
-                    tenant: item.tenant,
-                    locale: item.locale,
-                    type: item.modelId,
-                    isHeadlessCmsModel: true
-                });
-
-                // Check ES index settings.
-                if (!status.indexes[index]) {
-                    // We need to fetch the index settings first
-                    const settings = await fetchOriginalElasticsearchSettings({
-                        index,
-                        logger,
-                        elasticsearchClient: elasticsearchClient
-                    });
-
-                    // ... add it to the checkpoint...
-                    status.indexes[index] = settings;
-
-                    // and then set not to index
-                    // await disableElasticsearchIndexing({
-                    //     elasticsearchClient: elasticsearchClient,
-                    //     index,
-                    //     logger
-                    // });
                 }
 
                 // 1. Check if the data migration was ever performed. If not, let's perform it.
@@ -237,37 +209,38 @@ const createInitialCheckpoint = (): MigrationStatus => {
                     }
                 }
 
-                status.recordsUpdated++;
-
                 ddbItemsToBatchWrite.push(ddbEntryEntity.putBatch(item));
 
                 /**
                  * Prepare the loading of DynamoDB Elasticsearch part of the records.
                  */
-                if (ddbEsGetItems[`${item.entryId}:L`]) {
+
+                const ddbEsLatestRecordKey = `${item.entryId}:L`;
+                if (ddbEsItemsToBatchRead[ddbEsLatestRecordKey]) {
                     continue;
                 }
 
-                ddbEsGetItems[`${item.entryId}:L`] = ddbEsEntryEntity.getBatch({
+                ddbEsItemsToBatchRead[ddbEsLatestRecordKey] = ddbEsEntryEntity.getBatch({
                     PK: item.PK,
                     SK: "L"
                 });
 
+                const ddbEsPublishedRecordKey = `${item.entryId}:P`;
                 if (item.status === "published" || !!item.locked) {
-                    ddbEsGetItems[`${item.entryId}:P`] = ddbEsEntryEntity.getBatch({
+                    ddbEsItemsToBatchRead[ddbEsPublishedRecordKey] = ddbEsEntryEntity.getBatch({
                         PK: item.PK,
                         SK: "P"
                     });
                 }
             }
 
-            if (Object.keys(ddbEsGetItems).length === 0) {
+            if (Object.keys(ddbEsItemsToBatchRead).length > 0) {
                 /**
                  * Get all the records from DynamoDB Elasticsearch.
                  */
                 const ddbEsRecords = await batchReadAll<DynamoDbElasticsearchRecord>({
                     table: ddbEsEntryEntity.table,
-                    items: Object.values(ddbEsGetItems)
+                    items: Object.values(ddbEsItemsToBatchRead)
                 });
 
                 for (const ddbEsRecord of ddbEsRecords) {
@@ -355,16 +328,30 @@ const createInitialCheckpoint = (): MigrationStatus => {
                     });
                 };
 
-                logger.trace(`Storing records in primary DynamoDB table...`);
+                logger.trace(
+                    `Storing ${ddbItemsToBatchWrite.length} record(s) in primary DynamoDB table...`
+                );
                 await executeWithRetry(execute, {
                     onFailedAttempt: error => {
-                        logger.error(
+                        logger.warn(
                             `Batch write attempt #${error.attemptNumber} failed: ${error.message}`
                         );
                     }
                 });
 
                 if (ddbEsItemsToBatchWrite.length) {
+                    logger.trace(
+                        `Storing ${ddbEsItemsToBatchWrite.length} record(s) in DDB-ES DynamoDB table...`
+                    );
+                    await waitUntilHealthy.wait({
+                        async onUnhealthy(params) {
+                            logger.warn(
+                                `Cluster is unhealthy. Waiting for the cluster to become healthy...`,
+                                params
+                            );
+                        }
+                    });
+
                     // Store data in DDB-ES DynamoDB table.
                     const executeDdbEs = () => {
                         return batchWriteAll({
@@ -373,15 +360,16 @@ const createInitialCheckpoint = (): MigrationStatus => {
                         });
                     };
 
-                    logger.trace(`Storing records in DDB-ES DynamoDB table...`);
                     await executeWithRetry(executeDdbEs, {
                         onFailedAttempt: error => {
-                            logger.error(
+                            logger.warn(
                                 `[DDB-ES Table] Batch write attempt #${error.attemptNumber} failed: ${error.message}`
                             );
                         }
                     });
                 }
+
+                status.recordsUpdated += ddbItemsToBatchWrite.length;
             }
 
             // Update checkpoint after every batch.
