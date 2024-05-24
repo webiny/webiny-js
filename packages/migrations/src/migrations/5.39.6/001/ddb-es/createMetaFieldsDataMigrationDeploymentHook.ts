@@ -2,7 +2,10 @@ import { CliContext } from "@webiny/cli/types";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 import { createPinoLogger, getLogLevel } from "@webiny/logger";
 import pinoPretty from "pino-pretty";
-import { MetaFieldsMigrationParams, MetaFieldsMigration } from "~/migrations/5.39.6/001/ddb-es/MetaFieldsMigration";
+import {
+    MetaFieldsMigrationParams,
+    MetaFieldsMigration
+} from "~/migrations/5.39.6/001/ddb-es/MetaFieldsMigration";
 
 interface CoreOutput {
     primaryDynamodbTableName: string;
