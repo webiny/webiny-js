@@ -149,7 +149,9 @@ const createInitialStatus = (): MigrationStatus => {
 
             if (status.stats.iterationsCount % 5 === 0) {
                 // We log every 5th iteration.
-                logger.trace(`[iteration #${status.stats.iterationsCount}] Reading ${result.items.length} record(s)...`);
+                logger.trace(
+                    `[iteration #${status.stats.iterationsCount}] Reading ${result.items.length} record(s)...`
+                );
             }
 
             const ddbItemsToBatchWrite: BatchWriteItem[] = [];

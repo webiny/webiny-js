@@ -139,7 +139,10 @@ export class Migration {
 
         // Pickup all log files and print a summary of the migration.
         const logFilePaths = await glob(
-            path.join(os.tmpdir(), `webiny-5-39-6-meta-fields-data-migration-log-${this.runId}-*.log`)
+            path.join(
+                os.tmpdir(),
+                `webiny-5-39-6-meta-fields-data-migration-log-${this.runId}-*.log`
+            )
         );
 
         const migrationStats = {

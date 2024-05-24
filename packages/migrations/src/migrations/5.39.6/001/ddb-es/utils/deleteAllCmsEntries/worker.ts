@@ -125,7 +125,7 @@ const createInitialStatus = (): MigrationStatus => {
             }
 
             if (Object.keys(ddbEsItemsToPutIntoBatchDelete).length > 0) {
-                Object.values(ddbEsItemsToPutIntoBatchDelete).forEach((item) => {
+                Object.values(ddbEsItemsToPutIntoBatchDelete).forEach(item => {
                     ddbEsItemsToBatchDelete.push(ddbEsEntryEntity.deleteBatch(item));
                 });
             }
@@ -135,7 +135,7 @@ const createInitialStatus = (): MigrationStatus => {
                 const execute = () => {
                     return batchWriteAll({
                         table: ddbEntryEntity.table,
-                        items: ddbItemsToBatchDelete,
+                        items: ddbItemsToBatchDelete
                     });
                 };
 

@@ -39,6 +39,6 @@ export class SegmentProcessor {
                 stdio: "inherit",
                 env: process.env
             }
-        )
+        );
     }
 }
