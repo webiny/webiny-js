@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
-import { Migration } from "./Migration";
+import { MetaFieldsMigration } from "./MetaFieldsMigration";
 import { createPinoLogger, getLogLevel } from "@webiny/logger";
 import pinoPretty from "pino-pretty";
 import {
@@ -58,7 +58,7 @@ const argv = yargs(hideBin(process.argv))
         pinoPretty({ ignore: "pid,hostname" })
     );
 
-    const migration = new Migration({
+    const migration = new MetaFieldsMigration({
         totalSegments: argv.segments,
         ddbTable: argv.ddbTable,
         ddbEsTable: argv.ddbEsTable,

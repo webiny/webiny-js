@@ -2,7 +2,7 @@ import { CliContext } from "@webiny/cli/types";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils";
 import { createPinoLogger, getLogLevel } from "@webiny/logger";
 import pinoPretty from "pino-pretty";
-import { MetaFieldsMigrationParams, Migration } from "~/migrations/5.39.6/001/ddb-es/Migration";
+import { MetaFieldsMigrationParams, MetaFieldsMigration } from "~/migrations/5.39.6/001/ddb-es/MetaFieldsMigration";
 
 interface CoreOutput {
     primaryDynamodbTableName: string;
@@ -77,7 +77,7 @@ export const createMetaFieldsDataMigrationDeploymentHook = (
                 pinoPretty({ ignore: "pid,hostname" })
             );
 
-            const migration = new Migration({
+            const migration = new MetaFieldsMigration({
                 ddbTable: coreOutput.primaryDynamodbTableName,
                 ddbEsTable: coreOutput.elasticsearchDynamodbTableName,
                 esEndpoint: coreOutput.elasticsearchDomainEndpoint,

@@ -28,7 +28,7 @@ export interface MetaFieldsMigrationParams {
     esHealthChecks?: Partial<EsHealthChecksParams>;
 }
 
-export class Migration {
+export class MetaFieldsMigration {
     private readonly runId: string;
     private readonly ddbTable: string;
     private readonly ddbEsTable: string;
