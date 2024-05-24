@@ -31,9 +31,13 @@ import {
 import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUntilHealthy";
 import pinoPretty from "pino-pretty";
 import { EsHealthChecksParams } from "~/migrations/5.39.6/001/ddb-es/utils";
+import path from "path";
+import os from "os";
+import fs from "fs";
 
 const argv = yargs(hideBin(process.argv))
     .options({
+        runId: { type: "string", demandOption: true },
         ddbTable: { type: "string", demandOption: true },
         ddbEsTable: { type: "string", demandOption: true },
         esEndpoint: { type: "string", demandOption: true },
@@ -60,10 +64,12 @@ type LastEvaluatedKey = LastEvaluatedKeyObject | true | null;
 
 interface MigrationStatus {
     lastEvaluatedKey: LastEvaluatedKey;
-    iterationsCount: number;
-    recordsScanned: number;
-    recordsUpdated: number;
-    recordsSkipped: number;
+    stats: {
+        iterationsCount: number;
+        recordsScanned: number;
+        recordsUpdated: number;
+        recordsSkipped: number;
+    };
 }
 
 interface DynamoDbElasticsearchRecord {
@@ -75,10 +81,12 @@ interface DynamoDbElasticsearchRecord {
 const createInitialStatus = (): MigrationStatus => {
     return {
         lastEvaluatedKey: null,
-        iterationsCount: 0,
-        recordsScanned: 0,
-        recordsUpdated: 0,
-        recordsSkipped: 0
+        stats: {
+            iterationsCount: 0,
+            recordsScanned: 0,
+            recordsUpdated: 0,
+            recordsSkipped: 0
+        }
     };
 };
 
@@ -136,10 +144,14 @@ const createInitialStatus = (): MigrationStatus => {
             }
         },
         async result => {
-            status.iterationsCount++;
-            status.recordsScanned += result.items.length;
+            status.stats.iterationsCount++;
+            status.stats.recordsScanned += result.items.length;
 
-            logger.trace(`Reading ${result.items.length} record(s)...`);
+            if (status.stats.iterationsCount % 5 === 0) {
+                // We log every 5th iteration.
+                logger.trace(`[iteration #${status.stats.iterationsCount}] Reading ${result.items.length} record(s)...`);
+            }
+
             const ddbItemsToBatchWrite: BatchWriteItem[] = [];
             const ddbEsItemsToBatchWrite: BatchWriteItem[] = [];
             const ddbEsItemsToBatchRead: Record<string, BatchReadItem> = {};
@@ -155,7 +167,7 @@ const createInitialStatus = (): MigrationStatus => {
                     hasAllNonNullableValues(item);
 
                 if (isFullyMigrated) {
-                    status.recordsSkipped++;
+                    status.stats.recordsSkipped++;
                     continue;
                 }
 
@@ -373,7 +385,7 @@ const createInitialStatus = (): MigrationStatus => {
                     });
                 }
 
-                status.recordsUpdated += ddbItemsToBatchWrite.length;
+                status.stats.recordsUpdated += ddbItemsToBatchWrite.length;
             }
 
             // Update checkpoint after every batch.
@@ -393,5 +405,15 @@ const createInitialStatus = (): MigrationStatus => {
         }
     );
 
-    logger.trace({ status }, "Segment processing completed.");
+    // Store status in tmp file.
+    logger.trace({ status }, "Segment processing completed. Saving status to tmp file...");
+    const logFilePath = path.join(
+        os.tmpdir(),
+        `webiny-5-39-6-meta-fields-data-migration-log-${argv.runId}-${argv.segmentIndex}.log`
+    );
+
+    // Save segment processing stats to a file.
+    fs.writeFileSync(logFilePath, JSON.stringify(status.stats, null, 2));
+
+    logger.trace(`Segment processing stats saved in ${logFilePath}.`);
 })();

@@ -1,8 +1,9 @@
 import execa from "execa";
 import path from "path";
-import {EsHealthChecksParams} from "~/migrations/5.39.6/001/ddb-es/utils";
+import { EsHealthChecksParams } from "~/migrations/5.39.6/001/ddb-es/utils";
 
 interface SegmentProcessorParams {
+    runId: string;
     ddbTable: string;
     ddbEsTable: string;
     esEndpoint: string;
@@ -12,6 +13,7 @@ interface SegmentProcessorParams {
 }
 
 export class SegmentProcessor {
+    private readonly runId: string;
     private readonly ddbTable: string;
     private readonly ddbEsTable: string;
     private readonly esEndpoint: string;
@@ -20,6 +22,7 @@ export class SegmentProcessor {
     private readonly esHealthChecks: EsHealthChecksParams;
 
     constructor(params: SegmentProcessorParams) {
+        this.runId = params.runId;
         this.ddbTable = params.ddbTable;
         this.ddbEsTable = params.ddbEsTable;
         this.esEndpoint = params.esEndpoint;
@@ -33,6 +36,8 @@ export class SegmentProcessor {
             "node",
             [
                 path.join(__dirname, "worker"),
+                "--runId",
+                this.runId,
                 "--ddbTable",
                 this.ddbTable,
                 "--ddbEsTable",

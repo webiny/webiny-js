@@ -12,8 +12,12 @@ import {
     DEFAULT_ES_HEALTH_CHECKS_PARAMS,
     EsHealthChecksParams
 } from "~/migrations/5.39.6/001/ddb-es/utils";
+import path from "path";
+import os from "os";
+import fs from "fs";
+import glob from "fast-glob";
 
-interface SegmentProcessorParams {
+export interface MetaFieldsMigrationParams {
     ddbTable: string;
     ddbEsTable: string;
     esEndpoint: string;
@@ -25,6 +29,7 @@ interface SegmentProcessorParams {
 }
 
 export class Migration {
+    private readonly runId: string;
     private readonly ddbTable: string;
     private readonly ddbEsTable: string;
     private readonly esEndpoint: string;
@@ -33,7 +38,8 @@ export class Migration {
 
     private readonly esHealthChecks: EsHealthChecksParams;
 
-    constructor(params: SegmentProcessorParams) {
+    constructor(params: MetaFieldsMigrationParams) {
+        this.runId = String(new Date().getTime());
         this.ddbTable = params.ddbTable;
         this.ddbEsTable = params.ddbEsTable;
         this.esEndpoint = params.esEndpoint;
@@ -53,21 +59,32 @@ export class Migration {
             return (Date.now() - start) / 1000;
         };
 
-        // Disable indexing for HCMS Elasticsearch index.
+        this.logger.info("Starting 5.39.6-001 meta fields data migration...");
+        this.logger.info(
+            {
+                ddbTable: this.ddbTable,
+                ddbEsTable: this.ddbEsTable,
+                esEndpoint: this.esEndpoint,
+                totalSegments: this.totalSegments,
+                esHealthChecks: this.esHealthChecks
+            },
+            "Received the following parameters:"
+        );
+
         const elasticsearchClient = createElasticsearchClient({
             endpoint: `https://${this.esEndpoint}`
         });
 
-        this.logger.trace("Checking Elasticsearch health status...");
+        this.logger.info("Checking Elasticsearch health status...");
         const waitUntilHealthy = createWaitUntilHealthy(elasticsearchClient, this.esHealthChecks);
-        this.logger.trace("Elasticsearch is healthy.");
+        this.logger.info("Elasticsearch is healthy.");
 
         await waitUntilHealthy.wait();
 
         const indexes = await esListIndexes({ elasticsearchClient, match: "-headless-cms-" });
         const indexSettings: Record<string, any> = {};
         for (const indexName of indexes) {
-            this.logger.trace(`Disabling indexing for Elasticsearch index "${indexName}"...`);
+            this.logger.info(`Disabling indexing for Elasticsearch index "${indexName}"...`);
             indexSettings[indexName] = await fetchOriginalElasticsearchSettings({
                 elasticsearchClient,
                 index: indexName,
@@ -81,11 +98,12 @@ export class Migration {
             });
         }
 
-        this.logger.trace("Proceeding with the migration...");
+        this.logger.info("Proceeding with the migration...");
 
         for (let segmentIndex = 0; segmentIndex < this.totalSegments; segmentIndex++) {
             const segmentProcessor = new SegmentProcessor({
                 segmentIndex,
+                runId: this.runId,
                 totalSegments: this.totalSegments,
                 ddbTable: this.ddbTable,
                 ddbEsTable: this.ddbEsTable,
@@ -98,13 +116,62 @@ export class Migration {
 
         await Promise.all(scanProcessesPromises);
 
-        this.logger.trace("Restoring original Elasticsearch settings...");
+        this.logger.info("Restoring original Elasticsearch settings...");
         await restoreOriginalElasticsearchSettings({
             elasticsearchClient,
             indexSettings,
             logger: this.logger
         });
 
-        this.logger.trace(`5.39.6-001 migration completed in ${getDuration()}s.`);
+        const duration = getDuration();
+        this.logger.info(`5.39.6-001 migration completed in ${duration}s, here are the results...`);
+
+        // Wait for 1 second.
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        this.logger.info(
+            {
+                totalSegments: this.totalSegments,
+                esHealthChecks: this.esHealthChecks
+            },
+            "The migration was performed with the following following parameters:"
+        );
+
+        // Pickup all log files and print a summary of the migration.
+        const logFilePaths = await glob(
+            path.join(os.tmpdir(), `webiny-5-39-6-meta-fields-data-migration-log-${this.runId}-*.log`)
+        );
+
+        const migrationStats = {
+            iterationsCount: 0,
+            avgIterationDuration: 0,
+            recordsScanned: 0,
+            avgRecordsScannedPerIteration: 0,
+            recordsScannedPerSecond: 0,
+            recordsUpdated: 0,
+            recordsSkipped: 0
+        };
+
+        for (const logFilePath of logFilePaths) {
+            const logFileContent = fs.readFileSync(logFilePath, "utf-8");
+            const logFile = JSON.parse(logFileContent);
+
+            migrationStats.iterationsCount += logFile.iterationsCount;
+            migrationStats.recordsScanned += logFile.recordsScanned;
+            migrationStats.recordsUpdated += logFile.recordsUpdated;
+            migrationStats.recordsSkipped += logFile.recordsSkipped;
+        }
+
+        migrationStats.avgIterationDuration = duration / migrationStats.iterationsCount;
+
+        migrationStats.avgRecordsScannedPerIteration =
+            migrationStats.recordsScanned / migrationStats.iterationsCount;
+
+        migrationStats.recordsScannedPerSecond = migrationStats.recordsScanned / duration;
+
+        this.logger.info(
+            migrationStats,
+            `Migration summary (based on ${logFilePaths.length} generated logs):`
+        );
     }
 }
