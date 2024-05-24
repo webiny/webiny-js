@@ -27,7 +27,7 @@ export class SegmentProcessor {
         this.totalSegments = params.totalSegments;
     }
 
-    execute() {
+    async execute() {
         return execa(
             "node",
             [
@@ -38,8 +38,6 @@ export class SegmentProcessor {
                 this.primaryDynamoDbTable,
                 "--ddbEsTable",
                 this.ddbEsTable,
-                "--elasticsearchEndpoint",
-                this.elasticsearchEndpoint,
                 "--segmentIndex",
                 String(this.segmentIndex),
                 "--totalSegments",
@@ -49,6 +47,6 @@ export class SegmentProcessor {
                 stdio: "inherit",
                 env: process.env
             }
-        );
+        )
     }
 }

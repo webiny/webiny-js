@@ -7,6 +7,8 @@ import {
     restoreOriginalElasticsearchSettings
 } from "~/utils";
 import { createElasticsearchClient } from "@webiny/api-elasticsearch";
+import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUntilHealthy";
+import { ElasticsearchCatHealthStatus } from "@webiny/api-elasticsearch/operations/types";
 
 interface SegmentProcessorParams {
     region: string;
@@ -47,6 +49,20 @@ export class Migration {
             endpoint: `https://${this.elasticsearchEndpoint}`
         });
 
+        // TODO: make these configurable outside of the script.
+
+        this.logger.trace("Checking Elasticsearch health status...");
+        const waitUntilHealthy = createWaitUntilHealthy(elasticsearchClient, {
+            minStatus: ElasticsearchCatHealthStatus.Yellow,
+            maxProcessorPercent: 75,
+            maxRamPercent: 100,
+            maxWaitingTime: 60,
+            waitingTimeStep: 5
+        });
+        this.logger.trace("Elasticsearch is healthy.");
+
+        await waitUntilHealthy.wait();
+
         const indexes = await esListIndexes({ elasticsearchClient, match: "-headless-cms-" });
         const indexSettings: Record<string, any> = {};
         for (const indexName of indexes) {
@@ -67,9 +83,6 @@ export class Migration {
         this.logger.trace("Proceeding with the migration...");
 
         for (let segmentIndex = 0; segmentIndex < this.totalSegments; segmentIndex++) {
-            const segmentPrefix = `[segment index ${segmentIndex}]`;
-            this.logger.trace(`${segmentPrefix} Scanning primary DynamoDB table...`);
-
             const segmentProcessor = new SegmentProcessor({
                 segmentIndex,
                 totalSegments: this.totalSegments,

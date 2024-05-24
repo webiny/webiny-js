@@ -28,9 +28,9 @@ import {
     BatchWriteItem,
     ddbScanWithCallback
 } from "~/utils";
-import pinoPretty from "pino-pretty";
 import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUntilHealthy";
 import { ElasticsearchCatHealthStatus } from "@webiny/api-elasticsearch/operations/types";
+import pinoPretty from "pino-pretty";
 
 const argv = yargs(hideBin(process.argv))
     .options({
@@ -80,11 +80,9 @@ const createInitialStatus = (): MigrationStatus => {
     const logger = createPinoLogger(
         {
             level: getLogLevel(process.env.MIGRATIONS_LOG_LEVEL, "trace"),
-            msgPrefix: `[segment index ${argv.segmentIndex}] `
+            msgPrefix: `[segment #${argv.segmentIndex}] `
         },
-        pinoPretty({
-            ignore: "pid,hostname"
-        })
+        pinoPretty({ ignore: "pid,hostname" })
     );
 
     const documentClient = getDocumentClient();
@@ -389,5 +387,5 @@ const createInitialStatus = (): MigrationStatus => {
         }
     );
 
-    logger.trace(status);
+    logger.trace({ status }, "Segment processing completed.");
 })();
