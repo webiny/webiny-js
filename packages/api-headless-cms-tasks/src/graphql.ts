@@ -1,9 +1,18 @@
 import { CmsGraphQLSchemaPlugin, isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { ContextPlugin } from "@webiny/handler-aws";
 import { EntriesTask, HcmsTasksContext } from "~/types";
-import { Response } from "@webiny/handler-graphql";
+import { ErrorResponse, Response } from "@webiny/handler-graphql";
 
-export const EntriesTaskActionName = Object.values(EntriesTask).join("\n");
+const BulkActions = new Map([
+    ["DeleteEntries", EntriesTask.DeleteEntriesByModel],
+    ["PublishEntries", EntriesTask.PublishEntriesByModel],
+    ["UnpublishEntries", EntriesTask.UnpublishEntriesByModel],
+    ["MoveEntriesToFolder", EntriesTask.MoveEntriesToFolderByModel],
+    ["MoveEntriesToTrash", EntriesTask.MoveEntriesToTrashByModel],
+    ["RestoreEntriesFromTrash", EntriesTask.RestoreEntriesFromTrashByModel]
+]);
+
+const BulkActionNames = Array.from(BulkActions.keys()).join("\n");
 
 export const createGraphQL = () => {
     return new ContextPlugin<HcmsTasksContext>(async context => {
@@ -24,8 +33,8 @@ export const createGraphQL = () => {
                         id: String
                     }
                     
-                    enum ${model.singularApiName}BulkActionActionName {
-                        ${EntriesTaskActionName}
+                    enum ${model.singularApiName}BulkActionName {
+                        ${BulkActionNames}
                     }
     
                     type ${model.singularApiName}BulkActionResponse {
@@ -35,8 +44,9 @@ export const createGraphQL = () => {
                 
                     extend type Mutation {
                         bulkAction${model.singularApiName}(
-                            action: ${model.singularApiName}BulkActionActionName!
+                            action: ${model.singularApiName}BulkActionName!
                             where: ${model.singularApiName}ListWhereInput
+                            data: JSON
                         ): ${model.singularApiName}BulkActionResponse
                     }
                 `,
@@ -44,11 +54,25 @@ export const createGraphQL = () => {
                     Mutation: {
                         [`bulkAction${model.singularApiName}`]: async (_, args) => {
                             const identity = context.security.getIdentity();
+                            const definition = BulkActions.get(args.action);
+
+                            if (!definition) {
+                                return new ErrorResponse({
+                                    message: "No bulk action defined for the provided action.",
+                                    code: "BULK_ACTION_ACTION_ERROR",
+                                    data: {
+                                        ...args,
+                                        identity
+                                    }
+                                });
+                            }
+
                             const response = await context.tasks.trigger({
-                                definition: args.action,
+                                definition,
                                 input: {
                                     modelId: model.modelId,
                                     where: args.where,
+                                    data: args.data,
                                     identity
                                 }
                             });

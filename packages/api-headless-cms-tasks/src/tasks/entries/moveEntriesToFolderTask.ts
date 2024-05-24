@@ -3,14 +3,14 @@ import { ChildTasksCleanup } from "~/tasks/common";
 import {
     EntriesTask,
     HcmsTasksContext,
-    IBulkActionMoveEntriesToFolderOperationInput,
+    IBulkActionOperationInput,
     IBulkActionOperationOutput
 } from "~/types";
 
 export const createMoveEntriesToFolderTask = () => {
     return createPrivateTaskDefinition<
         HcmsTasksContext,
-        IBulkActionMoveEntriesToFolderOperationInput,
+        IBulkActionOperationInput,
         IBulkActionOperationOutput
     >({
         id: EntriesTask.MoveEntriesToFolder,

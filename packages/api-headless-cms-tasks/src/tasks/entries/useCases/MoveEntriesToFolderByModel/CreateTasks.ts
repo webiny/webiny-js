@@ -3,28 +3,28 @@ import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 import { TaskCache, TaskTrigger } from "~/tasks/entries";
 import {
     EntriesTask,
-    IBulkActionMoveEntriesToFolderOperationInput,
-    IMoveEntriesToFolderByModelInput,
-    IMoveEntriesToFolderByModelTaskParams
+    IBulkActionOperationByModelInput,
+    IBulkActionOperationByModelTaskParams,
+    IBulkActionOperationInput
 } from "~/types";
 
 const BATCH_SIZE = 50;
 const WAITING_TIME = 5;
 
 export class CreateTasks {
-    private taskCache = new TaskCache<IBulkActionMoveEntriesToFolderOperationInput>();
+    private taskCache = new TaskCache<IBulkActionOperationInput>();
     private taskTrigger = new TaskTrigger<
-        IBulkActionMoveEntriesToFolderOperationInput,
-        IMoveEntriesToFolderByModelInput
+        IBulkActionOperationInput,
+        IBulkActionOperationByModelInput
     >(this.taskCache, EntriesTask.MoveEntriesToFolder, `Headless CMS - Move entries to folder`);
 
     public async execute(
-        params: IMoveEntriesToFolderByModelTaskParams
+        params: IBulkActionOperationByModelTaskParams
     ): Promise<ITaskResponseResult> {
         const { input, response, isAborted, isCloseToTimeout, context, store } = params;
 
         try {
-            if (!input.folderId) {
+            if (!input?.data?.folderId) {
                 return response.error(`Missing "folderId" in the input.`);
             }
 
@@ -89,7 +89,7 @@ export class CreateTasks {
                     this.taskCache.cacheTask({
                         modelId: input.modelId,
                         identity: input.identity,
-                        folderId: input.folderId,
+                        data: input.data,
                         ids
                     });
                 }

@@ -32,38 +32,13 @@ export enum EntriesTask {
 export type IEmptyTrashBins = ITaskRunParams<HcmsTasksContext>;
 
 /**
- * Move Entries to Folder by Model
- */
-
-export interface IMoveEntriesToFolderByModelInput {
-    modelId: string;
-    identity: SecurityIdentity;
-    folderId: string;
-    where?: Record<string, any>;
-    after?: string | null;
-    currentBatch?: number;
-    processing?: boolean;
-    totalCount?: number;
-}
-
-export interface IMoveEntriesToFolderByModelOutput extends ITaskResponseDoneResultOutput {
-    done: string[];
-    failed: string[];
-}
-
-export type IMoveEntriesToFolderByModelTaskParams = ITaskRunParams<
-    HcmsTasksContext,
-    IMoveEntriesToFolderByModelInput,
-    IMoveEntriesToFolderByModelOutput
->;
-
-/**
  * Bulk Action Operation
  */
 
 export interface IBulkActionOperationInput {
     modelId: string;
     ids: string[];
+    data?: Record<string, any>;
     identity: SecurityIdentity;
     done?: string[];
     failed?: string[];
@@ -81,20 +56,6 @@ export type IBulkActionOperationTaskParams = ITaskRunParams<
 >;
 
 /**
- * Bulk Action Operation // Move Entries to Folder
- */
-
-export interface IBulkActionMoveEntriesToFolderOperationInput extends IBulkActionOperationInput {
-    folderId: string;
-}
-
-export type IBulkActionMoveEntriesToFolderOperationTaskParams = ITaskRunParams<
-    HcmsTasksContext,
-    IBulkActionMoveEntriesToFolderOperationInput,
-    IBulkActionOperationOutput
->;
-
-/**
  * Bulk Action Operation By Model
  */
 
@@ -102,6 +63,7 @@ export interface IBulkActionOperationByModelInput {
     modelId: string;
     identity: SecurityIdentity;
     where?: Record<string, any>;
+    data?: Record<string, any>;
     after?: string | null;
     currentBatch?: number;
     processing?: boolean;

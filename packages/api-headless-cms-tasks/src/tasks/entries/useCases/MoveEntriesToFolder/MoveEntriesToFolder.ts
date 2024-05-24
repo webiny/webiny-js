@@ -1,12 +1,12 @@
 import { ITaskResponseResult } from "@webiny/tasks";
-import { IBulkActionMoveEntriesToFolderOperationTaskParams } from "~/types";
+import { IBulkActionOperationTaskParams } from "~/types";
 import { taskRepositoryFactory } from "~/tasks/entries/domain";
 import { IUseCase } from "~/tasks/IUseCase";
 
 export class MoveEntriesToFolder
-    implements IUseCase<IBulkActionMoveEntriesToFolderOperationTaskParams, ITaskResponseResult>
+    implements IUseCase<IBulkActionOperationTaskParams, ITaskResponseResult>
 {
-    public async execute(params: IBulkActionMoveEntriesToFolderOperationTaskParams) {
+    public async execute(params: IBulkActionOperationTaskParams) {
         const { input, response, isAborted, isCloseToTimeout, context, store } = params;
 
         try {
@@ -26,8 +26,8 @@ export class MoveEntriesToFolder
                 return response.error(`Missing "identity" in the input.`);
             }
 
-            if (!input.folderId) {
-                return response.error(`Missing "folderId" in the input.`);
+            if (!input?.data?.folderId) {
+                return response.error(`Missing "data.folderId" in the input.`);
             }
 
             const model = await context.cms.getModel(input.modelId);
@@ -38,7 +38,7 @@ export class MoveEntriesToFolder
 
             if (!input.ids || input.ids.length === 0) {
                 return response.done(
-                    `Task done: no entries to move into folder ${input.folderId}.`
+                    `Task done: no entries to move into folder ${input.data.folderId}.`
                 );
             }
 
@@ -47,12 +47,12 @@ export class MoveEntriesToFolder
             for (const id of input.ids) {
                 try {
                     context.security.setIdentity(input.identity);
-                    await context.cms.moveEntry(model, id, input.folderId);
+                    await context.cms.moveEntry(model, id, input.data.folderId);
                     taskRepository.addDone(id);
                 } catch (ex) {
                     const message =
                         ex.message ||
-                        `Failed to move entry with id ${id} into folder ${input.folderId}.`;
+                        `Failed to move entry with id ${id} into folder ${input.data.folderId}.`;
 
                     try {
                         await store.addErrorLog({

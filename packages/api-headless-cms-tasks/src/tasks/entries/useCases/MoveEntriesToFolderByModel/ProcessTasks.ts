@@ -1,11 +1,11 @@
 import { ITaskResponseResult, TaskDataStatus } from "@webiny/tasks";
-import { EntriesTask, IMoveEntriesToFolderByModelTaskParams } from "~/types";
+import { EntriesTask, IBulkActionOperationByModelTaskParams } from "~/types";
 
 export const WAITING_TIME = 10;
 
 export class ProcessTasks {
     public async execute(
-        params: IMoveEntriesToFolderByModelTaskParams
+        params: IBulkActionOperationByModelTaskParams
     ): Promise<ITaskResponseResult> {
         const { response, input, isAborted, isCloseToTimeout, context, store } = params;
 
@@ -39,7 +39,7 @@ export class ProcessTasks {
             }
 
             return response.done(
-                `Task done: entries from "${input.modelId}" model has been moved to folder "${input.folderId}".`
+                `Task done: entries from "${input.modelId}" model has been moved to a different folder.`
             );
         } catch (ex) {
             return response.error(
