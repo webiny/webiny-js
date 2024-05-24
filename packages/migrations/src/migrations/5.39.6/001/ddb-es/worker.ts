@@ -29,17 +29,23 @@ import {
     ddbScanWithCallback
 } from "~/utils";
 import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUntilHealthy";
-import { ElasticsearchCatHealthStatus } from "@webiny/api-elasticsearch/operations/types";
 import pinoPretty from "pino-pretty";
+import { EsHealthChecksParams } from "~/migrations/5.39.6/001/ddb-es/utils";
 
 const argv = yargs(hideBin(process.argv))
     .options({
-        region: { type: "string", demandOption: true },
-        primaryDynamoDbTable: { type: "string", demandOption: true },
+        ddbTable: { type: "string", demandOption: true },
         ddbEsTable: { type: "string", demandOption: true },
-        elasticsearchEndpoint: { type: "string", demandOption: true },
+        esEndpoint: { type: "string", demandOption: true },
         segmentIndex: { type: "number", demandOption: true },
-        totalSegments: { type: "number", demandOption: true }
+        totalSegments: { type: "number", demandOption: true },
+
+        // Elasticsearch health check options.
+        esHealthMinClusterHealthStatus: { type: "string", demandOption: true },
+        esHealthMaxProcessorPercent: { type: "number", demandOption: true },
+        esHealthMaxRamPercent: { type: "number", demandOption: true },
+        esHealthMaxWaitingTime: { type: "number", demandOption: true },
+        esHealthWaitingTimeStep: { type: "number", demandOption: true }
     })
     .parseSync();
 
@@ -87,11 +93,11 @@ const createInitialStatus = (): MigrationStatus => {
 
     const documentClient = getDocumentClient();
     const elasticsearchClient = createElasticsearchClient({
-        endpoint: `https://${argv.elasticsearchEndpoint}`
+        endpoint: `https://${argv.esEndpoint}`
     });
 
     const primaryTable = createTable({
-        name: argv.primaryDynamoDbTable,
+        name: argv.ddbTable,
         documentClient
     });
     const dynamoToEsTable = createTable({
@@ -104,13 +110,13 @@ const createInitialStatus = (): MigrationStatus => {
 
     const status = createInitialStatus();
 
-    // TODO: make these configurable outside of the script.
     const waitUntilHealthy = createWaitUntilHealthy(elasticsearchClient, {
-        minStatus: ElasticsearchCatHealthStatus.Yellow,
-        maxProcessorPercent: 75,
-        maxRamPercent: 100,
-        maxWaitingTime: 60,
-        waitingTimeStep: 5
+        minClusterHealthStatus:
+            argv.esHealthMinClusterHealthStatus as EsHealthChecksParams["minClusterHealthStatus"],
+        maxProcessorPercent: argv.esHealthMaxProcessorPercent,
+        maxRamPercent: argv.esHealthMaxRamPercent,
+        maxWaitingTime: argv.esHealthMaxWaitingTime,
+        waitingTimeStep: argv.esHealthWaitingTimeStep
     });
 
     await ddbScanWithCallback<CmsEntry>(
@@ -344,7 +350,7 @@ const createInitialStatus = (): MigrationStatus => {
                     await waitUntilHealthy.wait({
                         async onUnhealthy(params) {
                             logger.warn(
-                                `Cluster is unhealthy. Waiting for the cluster to become healthy...`,
+                                `Cluster is unhealthy (${params.shouldWaitReason}). Waiting for the cluster to become healthy...`,
                                 params
                             );
                         }

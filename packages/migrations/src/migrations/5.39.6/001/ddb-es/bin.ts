@@ -4,14 +4,49 @@ import { hideBin } from "yargs/helpers";
 import { Migration } from "./Migration";
 import { createPinoLogger, getLogLevel } from "@webiny/logger";
 import pinoPretty from "pino-pretty";
+import {
+    DEFAULT_ES_HEALTH_CHECKS_PARAMS,
+    EsHealthChecksParams
+} from "~/migrations/5.39.6/001/ddb-es/utils";
 
 const argv = yargs(hideBin(process.argv))
     .options({
-        region: { type: "string", demandOption: true },
-        primaryDynamoDbTable: { type: "string", demandOption: true },
+        ddbTable: { type: "string", demandOption: true },
         ddbEsTable: { type: "string", demandOption: true },
-        elasticsearchEndpoint: { type: "string", demandOption: true },
-        segments: { type: "number", demandOption: true }
+        esEndpoint: { type: "string", demandOption: true },
+        segments: { type: "number", demandOption: true },
+
+        // Elasticsearch health check options.
+        esHealthMinClusterHealthStatus: {
+            type: "string",
+            demandOption: false,
+            default: DEFAULT_ES_HEALTH_CHECKS_PARAMS.minClusterHealthStatus,
+            description: `Minimum cluster health status to wait for before proceeding with the migration.`
+        },
+        esHealthMaxProcessorPercent: {
+            type: "number",
+            demandOption: false,
+            default: DEFAULT_ES_HEALTH_CHECKS_PARAMS.maxProcessorPercent,
+            description: `Maximum CPU usage percentage to wait for before proceeding with the migration.`
+        },
+        esHealthMaxRamPercent: {
+            type: "number",
+            demandOption: false,
+            default: DEFAULT_ES_HEALTH_CHECKS_PARAMS.maxRamPercent,
+            description: `Maximum RAM usage percentage to wait for before proceeding with the migration.`
+        },
+        esHealthMaxWaitingTime: {
+            type: "number",
+            demandOption: false,
+            default: DEFAULT_ES_HEALTH_CHECKS_PARAMS.maxWaitingTime,
+            description: `Maximum time to wait (seconds) for before proceeding with the migration.`
+        },
+        esHealthWaitingTimeStep: {
+            type: "number",
+            demandOption: false,
+            default: DEFAULT_ES_HEALTH_CHECKS_PARAMS.waitingTimeStep,
+            description: `Time step (seconds) to wait before checking Elasticsearch health status again.`
+        }
     })
     .parseSync();
 
@@ -25,10 +60,17 @@ const argv = yargs(hideBin(process.argv))
 
     const migration = new Migration({
         totalSegments: argv.segments,
-        region: argv.region,
-        primaryDynamoDbTable: argv.primaryDynamoDbTable,
+        ddbTable: argv.ddbTable,
         ddbEsTable: argv.ddbEsTable,
-        elasticsearchEndpoint: argv.elasticsearchEndpoint,
+        esEndpoint: argv.esEndpoint,
+        esHealthChecks: {
+            minClusterHealthStatus:
+                argv.esHealthMinClusterHealthStatus as EsHealthChecksParams["minClusterHealthStatus"],
+            maxProcessorPercent: argv.esHealthMaxProcessorPercent,
+            maxRamPercent: argv.esHealthMaxRamPercent,
+            maxWaitingTime: argv.esHealthMaxWaitingTime,
+            waitingTimeStep: argv.esHealthWaitingTimeStep
+        },
         logger
     });
 

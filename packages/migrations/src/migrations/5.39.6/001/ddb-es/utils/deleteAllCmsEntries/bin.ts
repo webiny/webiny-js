@@ -7,10 +7,8 @@ import pinoPretty from "pino-pretty";
 
 const argv = yargs(hideBin(process.argv))
     .options({
-        region: { type: "string", demandOption: true },
-        primaryDynamoDbTable: { type: "string", demandOption: true },
+        ddbTable: { type: "string", demandOption: true },
         ddbEsTable: { type: "string", demandOption: true },
-        elasticsearchEndpoint: { type: "string", demandOption: true },
         segments: { type: "number", demandOption: true }
     })
     .parseSync();
@@ -25,10 +23,8 @@ const argv = yargs(hideBin(process.argv))
 
     const deleteAllCmsEntries = new DeleteAllCmsEntries({
         totalSegments: argv.segments,
-        region: argv.region,
-        primaryDynamoDbTable: argv.primaryDynamoDbTable,
+        ddbTable: argv.ddbTable,
         ddbEsTable: argv.ddbEsTable,
-        elasticsearchEndpoint: argv.elasticsearchEndpoint,
         logger
     });
 

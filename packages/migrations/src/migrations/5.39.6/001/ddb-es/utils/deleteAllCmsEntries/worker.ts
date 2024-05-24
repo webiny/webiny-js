@@ -14,8 +14,7 @@ import pinoPretty from "pino-pretty";
 
 const argv = yargs(hideBin(process.argv))
     .options({
-        region: { type: "string", demandOption: true },
-        primaryDynamoDbTable: { type: "string", demandOption: true },
+        ddbTable: { type: "string", demandOption: true },
         ddbEsTable: { type: "string", demandOption: true },
         segmentIndex: { type: "number", demandOption: true },
         totalSegments: { type: "number", demandOption: true }
@@ -61,7 +60,7 @@ const createInitialStatus = (): MigrationStatus => {
     const documentClient = getDocumentClient();
 
     const primaryTable = createTable({
-        name: argv.primaryDynamoDbTable,
+        name: argv.ddbTable,
         documentClient
     });
     const dynamoToEsTable = createTable({

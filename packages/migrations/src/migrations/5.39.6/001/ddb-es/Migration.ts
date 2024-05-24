@@ -8,32 +8,41 @@ import {
 } from "~/utils";
 import { createElasticsearchClient } from "@webiny/api-elasticsearch";
 import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUntilHealthy";
-import { ElasticsearchCatHealthStatus } from "@webiny/api-elasticsearch/operations/types";
+import {
+    DEFAULT_ES_HEALTH_CHECKS_PARAMS,
+    EsHealthChecksParams
+} from "~/migrations/5.39.6/001/ddb-es/utils";
 
 interface SegmentProcessorParams {
-    region: string;
-    primaryDynamoDbTable: string;
+    ddbTable: string;
     ddbEsTable: string;
-    elasticsearchEndpoint: string;
+    esEndpoint: string;
     totalSegments: number;
     logger: Logger;
+
+    // Elasticsearch health check options.
+    esHealthChecks?: Partial<EsHealthChecksParams>;
 }
 
 export class Migration {
-    private readonly region: string;
-    private readonly primaryDynamoDbTable: string;
+    private readonly ddbTable: string;
     private readonly ddbEsTable: string;
-    private readonly elasticsearchEndpoint: string;
+    private readonly esEndpoint: string;
     private readonly totalSegments: number;
     private readonly logger: Logger;
 
+    private readonly esHealthChecks: EsHealthChecksParams;
+
     constructor(params: SegmentProcessorParams) {
-        this.region = params.region;
-        this.primaryDynamoDbTable = params.primaryDynamoDbTable;
+        this.ddbTable = params.ddbTable;
         this.ddbEsTable = params.ddbEsTable;
-        this.elasticsearchEndpoint = params.elasticsearchEndpoint;
+        this.esEndpoint = params.esEndpoint;
         this.totalSegments = params.totalSegments;
         this.logger = params.logger;
+        this.esHealthChecks = {
+            ...DEFAULT_ES_HEALTH_CHECKS_PARAMS,
+            ...params.esHealthChecks
+        };
     }
 
     async execute() {
@@ -46,19 +55,11 @@ export class Migration {
 
         // Disable indexing for HCMS Elasticsearch index.
         const elasticsearchClient = createElasticsearchClient({
-            endpoint: `https://${this.elasticsearchEndpoint}`
+            endpoint: `https://${this.esEndpoint}`
         });
-
-        // TODO: make these configurable outside of the script.
 
         this.logger.trace("Checking Elasticsearch health status...");
-        const waitUntilHealthy = createWaitUntilHealthy(elasticsearchClient, {
-            minStatus: ElasticsearchCatHealthStatus.Yellow,
-            maxProcessorPercent: 75,
-            maxRamPercent: 100,
-            maxWaitingTime: 60,
-            waitingTimeStep: 5
-        });
+        const waitUntilHealthy = createWaitUntilHealthy(elasticsearchClient, this.esHealthChecks);
         this.logger.trace("Elasticsearch is healthy.");
 
         await waitUntilHealthy.wait();
@@ -86,11 +87,10 @@ export class Migration {
             const segmentProcessor = new SegmentProcessor({
                 segmentIndex,
                 totalSegments: this.totalSegments,
-                region: this.region,
-                primaryDynamoDbTable: this.primaryDynamoDbTable,
+                ddbTable: this.ddbTable,
                 ddbEsTable: this.ddbEsTable,
-                elasticsearchEndpoint: this.elasticsearchEndpoint,
-                logger: this.logger
+                esEndpoint: this.esEndpoint,
+                esHealthChecks: this.esHealthChecks
             });
 
             scanProcessesPromises.push(segmentProcessor.execute());
