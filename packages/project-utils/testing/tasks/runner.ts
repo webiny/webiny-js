@@ -8,6 +8,7 @@ import {
 import { TaskRunner } from "@webiny/tasks/runner";
 import { timerFactory } from "@webiny/tasks/timer";
 import { TaskEventValidation } from "@webiny/tasks/runner/TaskEventValidation";
+import { createMockTaskTriggerTransportPlugin } from "./mockTaskTriggerTransportPlugin";
 
 export interface CreateRunnerParams<
     C extends Context = Context,
@@ -26,6 +27,7 @@ export const createRunner = <
 >(
     params: CreateRunnerParams<C, I, O>
 ) => {
+    params.context.plugins.register(createMockTaskTriggerTransportPlugin());
     const runner = new TaskRunner(
         params.context,
         timerFactory({
