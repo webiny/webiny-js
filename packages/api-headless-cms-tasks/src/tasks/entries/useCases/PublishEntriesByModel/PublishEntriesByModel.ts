@@ -1,7 +1,7 @@
 import { ITaskResponseResult } from "@webiny/tasks";
-import { ProcessTasks } from "./ProcessTasks";
+import { TaskProcess } from "../../domain";
 import { CreateTasks } from "./CreateTasks";
-import { IBulkActionOperationByModelTaskParams } from "~/types";
+import { EntriesTask, IBulkActionOperationByModelTaskParams } from "~/types";
 import { IUseCase } from "~/tasks/IUseCase";
 
 export class PublishEntriesByModel
@@ -16,7 +16,7 @@ export class PublishEntriesByModel
             }
 
             if (input.processing) {
-                const processTasks = new ProcessTasks();
+                const processTasks = new TaskProcess(EntriesTask.PublishEntriesByModel);
                 return await processTasks.execute(params);
             }
 

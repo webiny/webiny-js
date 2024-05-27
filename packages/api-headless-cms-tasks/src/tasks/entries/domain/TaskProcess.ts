@@ -1,12 +1,16 @@
-import { ITaskResponseResult, TaskDataStatus } from "@webiny/tasks";
+import { TaskDataStatus } from "@webiny/tasks";
 import { EntriesTask, IBulkActionOperationByModelTaskParams } from "~/types";
 
 const WAITING_TIME = 10;
 
-export class ProcessTasks {
-    public async execute(
-        params: IBulkActionOperationByModelTaskParams
-    ): Promise<ITaskResponseResult> {
+export class TaskProcess {
+    private taskDefinition: EntriesTask;
+
+    constructor(taskDefinition: EntriesTask) {
+        this.taskDefinition = taskDefinition;
+    }
+
+    async execute(params: IBulkActionOperationByModelTaskParams) {
         const { response, input, isAborted, isCloseToTimeout, context, store } = params;
 
         try {
@@ -21,7 +25,7 @@ export class ProcessTasks {
             const result = await context.tasks.listTasks({
                 where: {
                     parentId: store.getTask().id,
-                    definitionId: EntriesTask.DeleteEntries,
+                    definitionId: this.taskDefinition,
                     taskStatus_in: [TaskDataStatus.RUNNING, TaskDataStatus.PENDING]
                 },
                 limit: 1
@@ -39,12 +43,10 @@ export class ProcessTasks {
             }
 
             return response.done(
-                `Task done: entries from "${input.modelId}" model has been deleted.`
+                `Task done: The task "${this.taskDefinition}" has been successfully processed for entries from "${input.modelId}".`
             );
         } catch (ex) {
-            return response.error(
-                ex.message ?? "Error while executing DeleteEntriesByModel/ProcessTasks"
-            );
+            return response.error(ex.message ?? `Error while executing "${this.taskDefinition}"`);
         }
     }
 }
