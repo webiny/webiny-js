@@ -1,0 +1,39 @@
+{
+  "name": "@webiny/api-headless-cms-es-tasks",
+  "version": "0.0.0",
+  "main": "index.js",
+  "description": "Elasticsearch Background tasks for Webiny Headless CMS",
+  "keywords": [
+    "api-headless-cms-es-tasks:base"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-headless-cms-es-tasks"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api-elasticsearch": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/handler": "0.0.0",
+    "@webiny/handler-aws": "0.0.0",
+    "@webiny/tasks": "0.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.22.6",
+    "@babel/core": "^7.22.8",
+    "@babel/preset-env": "^7.22.7",
+    "@webiny/cli": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "ttypescript": "^1.5.13",
+    "typescript": "^4.7.4"
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  }
+}

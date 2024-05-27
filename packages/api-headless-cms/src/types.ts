@@ -1776,8 +1776,10 @@ export interface CmsModelUpdateDirectParams {
 export interface CmsModelContext {
     /**
      * Get a single content model.
+     *
+     * @throws NotFoundError
      */
-    getModel: (modelId: string) => Promise<CmsModel | null>;
+    getModel: (modelId: string) => Promise<CmsModel>;
     /**
      * Get all content models.
      */
