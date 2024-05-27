@@ -1,6 +1,7 @@
 import { ITaskResponseDoneResultOutput } from "@webiny/tasks";
 
-export interface ICarsMockInput {
+export interface IMockDataManagerInput {
+    modelId: string;
     amount: number;
     seconds?: number;
     amountOfTasks?: number;
@@ -8,4 +9,4 @@ export interface ICarsMockInput {
     overwrite?: boolean;
 }
 
-export type ICarsMockOutput = ITaskResponseDoneResultOutput;
+export type IMockDataManagerOutput = ITaskResponseDoneResultOutput;

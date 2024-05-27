@@ -1,19 +1,15 @@
 import { Context, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
-import { ICarsMockDataInput, ICarsMockDataOutput } from "./types";
+import { IMockDataCreatorInput, IMockDataCreatorOutput } from "./types";
 import { CmsModelManager } from "@webiny/api-headless-cms/types";
-import { createMockData } from "~/tasks/CarsMockData/mockData";
+import { createMockData } from "./mockData";
 
-export interface ICarsMockDataParams {}
-
-export class CarsMockData<
+export class MockDataCreator<
     C extends Context,
-    I extends ICarsMockDataInput,
-    O extends ICarsMockDataOutput
+    I extends IMockDataCreatorInput,
+    O extends IMockDataCreatorOutput
 > {
-    public constructor(params: ICarsMockDataParams = {}) {}
-
     public async execute(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { context, isAborted, input, store, response, trigger, isCloseToTimeout } = params;
+        const { context, isAborted, input, response, isCloseToTimeout } = params;
 
         if (isAborted()) {
             return response.aborted();

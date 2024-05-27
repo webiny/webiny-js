@@ -1,4 +1,4 @@
-import { calculateAmounts } from "~/tasks/CarsMock/calculateAmounts";
+import { calculateAmounts } from "~/tasks/MockDataManager/calculateAmounts";
 
 describe("calculateAmounts", () => {
     it("should properly calculate the amount of tasks and records - 50", async () => {
@@ -92,8 +92,8 @@ describe("calculateAmounts", () => {
         const values = calculateAmounts(990000);
 
         expect(values).toEqual({
-            amountOfTasks: 20,
-            amountOfRecords: 49500
+            amountOfTasks: 50,
+            amountOfRecords: 19800
         });
     });
 
@@ -101,8 +101,8 @@ describe("calculateAmounts", () => {
         const values = calculateAmounts(2900000);
 
         expect(values).toEqual({
-            amountOfTasks: 50,
-            amountOfRecords: 58000
+            amountOfTasks: 100,
+            amountOfRecords: 29000
         });
     });
 
@@ -110,8 +110,8 @@ describe("calculateAmounts", () => {
         const values = calculateAmounts(3100000);
 
         expect(values).toEqual({
-            amountOfTasks: 50,
-            amountOfRecords: 62000
+            amountOfTasks: 100,
+            amountOfRecords: 31000
         });
     });
 
@@ -119,8 +119,8 @@ describe("calculateAmounts", () => {
         const values = calculateAmounts(5100000);
 
         expect(values).toEqual({
-            amountOfTasks: 100,
-            amountOfRecords: 51000
+            amountOfTasks: 200,
+            amountOfRecords: 25500
         });
     });
 
@@ -128,8 +128,8 @@ describe("calculateAmounts", () => {
         const values = calculateAmounts(10000000);
 
         expect(values).toEqual({
-            amountOfTasks: 100,
-            amountOfRecords: 100000
+            amountOfTasks: 200,
+            amountOfRecords: 50000
         });
     });
 

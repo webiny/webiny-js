@@ -1,7 +1,10 @@
-import { createCarsMockTask } from "~/tasks/createCarsMockTask";
-import { createCarsMockDataTask } from "~/tasks/createCarsMockDataTask";
+import { createMockDataManagerTask } from "~/tasks/createMockDataManagerTask";
+import { createMockDataCreatorTask } from "~/tasks/createMockDataCreatorTask";
 
-export * from "./tasks/createCarsMockTask";
-export * from "./tasks/createCarsMockDataTask";
+export * from "./tasks/createMockDataManagerTask";
+export * from "./tasks/createMockDataCreatorTask";
 
-export const createHeadlessCmsEsTasks = () => [createCarsMockTask(), createCarsMockDataTask()];
+export const createHeadlessCmsEsTasks = () => [
+    createMockDataManagerTask(),
+    createMockDataCreatorTask()
+];

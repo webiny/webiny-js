@@ -27,15 +27,15 @@ const constrains: IMaxRecordsPerTask[] = [
     },
     {
         amount: 1000000,
-        percentagePerTask: 5
-    },
-    {
-        amount: 5000000,
         percentagePerTask: 2
     },
     {
-        amount: 10000000,
+        amount: 5000000,
         percentagePerTask: 1
+    },
+    {
+        amount: 10000000,
+        percentagePerTask: 0.5
     }
 ];
 
@@ -51,7 +51,7 @@ const findValue = (input: number): IMaxRecordsPerTask => {
 export const calculateAmounts = (input: number): ICalculateAmounts => {
     const values = findValue(input);
 
-    const { percentagePerTask, amount } = values;
+    const { percentagePerTask } = values;
     /**
      * Do not ask...
      */
@@ -63,9 +63,7 @@ export const calculateAmounts = (input: number): ICalculateAmounts => {
     const amountOfTasks = Math.ceil(100 / percentagePerTask);
 
     return {
-        // values,
         amountOfRecords,
-        // total,
         amountOfTasks
     };
 };

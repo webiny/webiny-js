@@ -1,3 +1,5 @@
+import { faker } from "@faker-js/faker";
+
 export const createMockData = () => {
     return {
         standardTires: "P235/75R15 BSW",
@@ -202,8 +204,7 @@ export const createMockData = () => {
                 },
                 {
                     categorySequenceNmb: 1,
-                    includesNote:
-                        "  INCLUDES:  Color-Keyed F&R w/Rear Step Bumpers; [B30] Carpeting; Front Fog Lights; Color-Keyed Grille Surround; Aluminum Wheels",
+                    includesNote: faker.lorem.paragraphs(1),
                     invoice: 0,
                     sequenceNmb: 1,
                     retail: 0,
@@ -1064,93 +1065,78 @@ export const createMockData = () => {
         recalls: [
             {
                 recallsPotaff: 3227,
-                correctiveAction:
-                    "A LABEL THAT WILL CORRECT THE LABEL ORIGINALLY INSTALLED WILL BE MAILED TO CONSUMERS ALONG WITH INSTALLATION INSTRUCTIONS.  THE CUSTOMER WILL HAVE THE OPTION FOR DEALERS TO INSTALL THE LABEL.  THE RECALL BEGAON ON NOVEMBER 7, 2006.  OWNERS SHOULD CONTACT CADILLAC AT 1-866-982-2239, CHEVROLET AT 1-800-630-2438, AND GMC TRUCKS AT 1-866-996-9463.",
+                correctiveAction: faker.lorem.paragraphs(2),
                 yearText: 2007,
                 rcDate: "2006-08-11T00:00:00.000Z",
                 mfgText: "GENERAL MOTORS CORP.",
                 makeText: "CHEVROLET",
                 modelText: "COLORADO",
-                consequenceDefect:
-                    "IF A CUSTOMER REPLACES A WHEEL AND ONLY RELIES ON THE RIM SIZE DESIGNATION THAT IS INDICATED ON THE LABEL, A WHEEL THAT IS OF A DIFFERENT RIM CONTOUR DESIGNATION MAY BE INSTALLED.  IT MAY BE DIFFICULT OR IMPOSSIBLE TO MOUNT THE TIRE ON A WHEEL WITH THE WRONG CONTOUR.  IF THE TIRE IS MOUNTED ON THE WHEEL WITH THE WRONG CONTOUR, THE WHEEL AND TIRE MAY NOT PERFORM AS INTENDED, WHICH COULD INCREASE THE RISK OF A CRASH.",
-                descDefect:
-                    'CERTAIN SPORT UTILITY VEHICLES AND TRUCKS FAIL TO COMPLY WITH THE REQUIREMENTS OF FEDERAL MOTOR VEHICLE SAFETY STANDARD NO. 110, "TIRE SELECTION AND RIMS."  THESE VEHICLES HAVE AN INCOMPLETE TIRE RIM DESIGNATION ON THE CERTIFICATION/TIRE LABEL LOCATED ON THE DRIVER\'S DOOR EDGE.  IN ADDITION, THE LABEL MAY ALSO BE MISSING THE TIRE LOAD RATING ON THE LABEL.  ALTHOUGH THIS INFORMATION IS NOT REQUIRED BY THE STANDARD, IF A TIRE OF A LESSER LOAD RATING IS INSTALLED, THE TIRE MAY NOT BE ABLE TO SUSTAIN THE LOADS ENCOUNTERED DURING USE.',
+                consequenceDefect: faker.lorem.paragraphs(2),
+                descDefect: faker.lorem.paragraphs(3),
                 recallsCampNumber: "06V307000",
                 recallId: 63244,
                 compName: "WHEELS:RIM "
             },
             {
                 recallsPotaff: 42540,
-                correctiveAction:
-                    "DOPE, INC. WILL NOTIFY OWNERS AND OFFER A FULL REFUND FOR THE NONCOMPLIANT COMBINATION LAMPS.  THE SAFETY RECALL BEGAN ON JULY 28, 2009.  OWNERS MAY CONTACT DOPE, INC. AT 1-626-272-1798.  ",
+                correctiveAction: faker.lorem.paragraphs(1),
                 yearText: 2007,
                 rcDate: "2009-05-11T00:00:00.000Z",
                 mfgText: "DOPE, INC.",
                 makeText: "CHEVROLET",
                 modelText: "S10",
-                consequenceDefect: "DECREASED LIGHTING VISIBILITY MAY RESULT IN A VEHICLE CRASH.",
-                descDefect:
-                    'DOPE, INC. IS RECALLING 42,540 COMBINATION CORNER AND BUMPER LAMP ASSEMBLIES OF VARIOUS PART NUMBERS SOLD FOR USE AS AFTERMARKET EQUIPMENT FOR VARIOUS PASSENGER VEHICLES.  THESE HEADLAMPS FAIL TO CONFORM TO THE REQUIREMENTS OF FEDERAL MOTOR VEHICLE SAFETY STANDARD NO. 108, "LAMPS, REFLECTIVE DEVICES, AND ASSOCIATED EQUIPMENT."  THESE LAMPS DO NOT CONTAIN THE REQUIRED AMBER SIDE REFLECTORS.',
+                consequenceDefect: faker.lorem.paragraph(),
+                descDefect: faker.lorem.paragraphs(4),
                 recallsCampNumber: "09E025000",
                 recallId: 102448,
                 compName: "EXTERIOR LIGHTING:HEADLIGHTS"
             },
             {
                 recallsPotaff: 185903,
-                correctiveAction:
-                    "DEALERS WILL INSPECT AND REPLACE THE NECESSARY COMPONENTS AS SPECIFIED IN THE RECALL BULLETIN FREE OF CHARGE.  GM ANTICIPATES THAT PARTS WILL BE AVAILABLE BY JUNE 2010. A SPECIAL COVERAGE FOR VEHICLES REGISTERED IN ALL OTHER STATES WILL BE IMPLEMENTED IN THE SAME TIME FRAME. IN THE INTERIM, OWNERS WHO EXPERIENCE THE FAILURE CAN OBTAIN A FREE REPAIR, HOWEVER THEY WILL BE REQUIRED TO RETURN WHEN THE NEW DESIGN PART BECOMES AVAILABLE.  OWNERS MAY CONTACT CHEVROLET AT 1-800-630-2438, GMC AT 1-866-996-9463, ISUZU AT 1-800-255-6727 OR AT WWW.GMOWNERCENTER.COM.",
+                correctiveAction: faker.lorem.paragraphs(4),
                 yearText: 2007,
                 rcDate: "2009-07-29T00:00:00.000Z",
                 mfgText: "GENERAL MOTORS CORP.",
                 makeText: "CHEVROLET",
                 modelText: "COLORADO",
-                consequenceDefect:
-                    "THIS CONDITION COULD CAUSE THE SIMULTANEOUS LOSS OF ALL BRAKE LAMPS OR CAUSE ALL OF THE BRAKE LAMPS TO STAY ON CONTINUOUSLY. BOTH OF THESE CONDITIONS COULD FAIL TO WARN OTHERS OF THE DRIVER'S INTENTIONS AND COULD LEAD TO A VEHICLE CRASH.",
-                descDefect:
-                    "GM IS RECALLING 185,903 MODEL YEAR 2004-2009 COLORADO, GMC MODEL YEAR 2009-2004 CANYON, MODEL YEAR 2006 I-280, I-350, MODEL YEAR 2007-2008 I-290, AND I-370, PASSENGER VEHICLES ORIGINALLY SOLD IN OR CURRENTLY REGISTERED IN THE STATES OF ALABAMA, ARIZONA, FLORIDA, GEORGIA, HAWAII, LOUISIANA, MISSISSIPPI, NEVADA, NEW MEXICO, PUERTO RICO, SOUTH CAROLINA, TEXAS, U.S. VIRGIN ISLANDS AND UTAH.  SOME OF THESE VEHICLES HAVE A BRAKE LAMP SWITCH THAT MAY NOT WORK AS DESIGNED DUE TO CONTAMINATION IN THE SWITCH.",
+                consequenceDefect: faker.lorem.paragraphs(2),
+                descDefect: faker.lorem.paragraphs(2),
                 recallsCampNumber: "09V310000",
                 recallId: 102549,
                 compName: "EXTERIOR LIGHTING:BRAKE LIGHTS:SWITCH"
             },
             {
                 recallsPotaff: 192676,
-                correctiveAction:
-                    "DEALERS WILL CUT A HOLE INTO THE BACK PANEL TRIM COVER TO ALLOW ACCESS TO THE TOP TETHER ANCHOR FOR THE FRONT CENTER SEAT POSITION AND WILL PROVIDE SUPPLEMENTAL INFORMATION AS TO USE IN  THE OWNER'S MANUAL.  THE MANUFACTURER HAS NOT YET PROVIDED AN OWNER NOTIFICATION SCHEDULE FOR THIS CAMPAIGN.  OWNERS MAY CONTACT CHEVROLET AT 1-800-630-2438, GMC AT 1-866-996-9463, ISUZU AT 1-800-255-6727 OR VISIT GM'S WEBSITE AT WWW.GMOWNERCENTER.COM.",
+                correctiveAction: faker.lorem.paragraphs(2),
                 yearText: 2007,
                 rcDate: "2010-11-18T00:00:00.000Z",
                 mfgText: "GENERAL MOTORS CORP.",
                 makeText: "CHEVROLET",
                 modelText: "COLORADO",
-                consequenceDefect:
-                    "BOTH NHTSA AND GM DISCOURAGE PLACEMENT OF A CHILD IN A FRONT SEAT.   NEVERTHELESS, THERE ARE INDIVIDUAL CIRCUMSTANCES THAT MAY REQUIRE PLACEMENT OF A CHILD IN A RESTRAINT IN THE FRONT CENTER SEATING POSITION OF THIS VEHICLE THAT DOES NOT OFFER A REAR SEAT.  LACK OF ACCESS TO THE TOP TETHER ANCHOR AND A LACK OF INSTRUCTIONS AS TO HOW TO USE IT, MAY RESULT IN IMPROPER INSTALLATION OF A CHILD RESTRAINT.  IMPROPER INSTALLATION OF A CHILD RESTRAINT CAN RESULT IN A REDUCTION IN THE RESTRAINT'S PERFORMANCE IN THE EVENT OF A CRASH AND AN INCREASED RISK OF INJURY OR DEATH TO THE CHILD SEATED IN THE RESTRAINT.",
-                descDefect:
-                    'GM IS RECALLING CERTAIN MODEL YEAR 2004-2011, CHEVROLET COLORADO, GMC CANYON, MODEL YEAR 2006, ISUZU I-280/I-350, AND MODEL YEAR 2007-2008, I-290/I-370, REGULAR CAB VEHICLES AND EXTENDED CAB VEHICLES WITHOUT A REAR SEAT AND EQUIPPED WITH A FRONT 60/40 SPLIT BENCH SEAT.  THESE VEHICLES FAIL TO COMPLY WITH THE REQUIREMENTS OF FEDERAL MOTOR VEHICLE SAFETY STANDARD NO. 225, "CHILD RESTRAINT ANCHORAGE SYSTEMS." THE TOP TETHER ANCHOR FOR THE FRONT CENTER SEAT IS NOT ACCESSIBLE AND THE OWNER MANUAL DOES NOT INCLUDE INSTRUCTIONS REGARDING HOW TO USE THE TOP TETHER.  ',
+                consequenceDefect: faker.lorem.paragraphs(6),
+                descDefect: faker.lorem.paragraphs(2),
                 recallsCampNumber: "10V575000",
                 recallId: 121363,
                 compName: "CHILD SEAT"
             }
         ],
         cpoProgram: {
-            cpoWarrantyBbnc:
-                "12-month/12,000-mile comprehensive mechanical coverage and up to an additional 12-month/40,000-mile powertrain limited warranty",
+            cpoWarrantyBbnc: faker.lorem.paragraph(),
             cpoInspectionPoint: "172",
             cpoWebsite: "https://www.gmcertified.com",
-            cpoAdditionalBenefits:
-                "2-year/24,000-mile Certified Pre-Owned Maintenance Plan with two included visits (includes oil change, tire rotation, and multi-point vehicle inspection), courtesy transportation and/or reimbursement offered for life of warranty, and available My GM Rewards program.",
+            cpoAdditionalBenefits: faker.lorem.paragraphs(2),
             cpoAgeMileage: "6 model years or newer/less than 75,000 miles",
             cpoName: "Chevrolet/Buick/GMC Certified Pre-Owned Vehicles",
             cpoLease: "No",
             cpoCustomerServiceNumber: "(866) 694-6546",
             cpoInspectionScore: 99,
-            cpoWarranty:
-                "6-year/100,000-mile powertrain limited warranty (from the original in-service date) and a 12-month/12,000-mile comprehensive bumper-to-bumper warranty. The 12-month comprehensive bumper-to-bumper warranty starts at the end of the new car warranty, or from the date of purchase if the vehicle is outside of the new car warranty period. 24-month/24,000 miles free maintenance from date of purchase.",
+            cpoWarranty: faker.lorem.paragraphs(2),
             cpoReturnExchange: "3-day/150-mile Vehicle Exchange Program",
             cpoFinancing: "Yes",
             cpoWarrantyExtended: "Yes",
             cpoHistoryReport: 1,
             cpoParticipation: "3,400 dealerships enrolled (94% of available dealerships)",
-            cpoProgramOverview:
-                "General Motors' pre-owned program, Chevrolet/Buick/GMC Certified Pre-Owned Vehicles, sees 3,400 dealerships participating nationwide. IntelliChoice has been analyzing manufacturer CPO programs since 1999, and based on the results of our annual studies, GM won Best Popular Brand Used Ownership Costs for 2009, 2010, 2018 and 2019. Collectively, its brands sold over 367,000 certified pre-owned vehicles in 2019, an decrease of 7.5% from 2018. Benefits include a six-year/100,000-mile roadside assistance program for the duration of the certified warranty. Three complimentary months of SiriusXM and one month of OnStar services are offered on equipped vehicles.",
+            cpoProgramOverview: faker.lorem.paragraphs(6),
             cpoWarrantyDeductible: "No",
             cpoWarrantyTransferable: "Yes",
             cpoRoadside: "6 years/100,000 miles (full term of Certified Powertrain Warranty)."
@@ -1216,8 +1202,7 @@ export const createMockData = () => {
         releaseType: "Complete",
         ymmPriceRange: "$14,085 - $23,810",
         seoText: {
-            seoContent:
-                "Along with their competitors from Ford and Ram, Chevrolet trucks are some of the most popular vehicles in America. The midsize Chevrolet Colorado was our Truck of the Year back in 2016, and we liked it just as much in a 2019 comparison test. Silverado models are burly full-size trucks with work-friendly features and a wide range of capable powertrains. Chevrolet plans to release an electric version of the Silverado, which will enter the ring against the Ford F-150 Lightning. Popular Chevrolet trucks include the Silverado 1500, Silverado 2500HD, and Colorado.",
+            seoContent: faker.lorem.paragraphs(5),
             seoTitle: "Chevrolet Trucks",
             seoType: "truck"
         },
