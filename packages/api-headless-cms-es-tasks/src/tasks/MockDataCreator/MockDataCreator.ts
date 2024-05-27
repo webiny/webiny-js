@@ -1,7 +1,10 @@
-import { Context, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
+import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { IMockDataCreatorInput, IMockDataCreatorOutput } from "./types";
 import { CmsModelManager } from "@webiny/api-headless-cms/types";
 import { createMockData } from "./mockData";
+import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUntilHealthy";
+import { Context } from "~/types";
+import { ElasticsearchCatHealthStatus } from "@webiny/api-elasticsearch/operations/types";
 
 export class MockDataCreator<
     C extends Context,
@@ -28,6 +31,14 @@ export class MockDataCreator<
 
         const max = input.totalAmount - input.createdAmount;
 
+        const healthCheck = createWaitUntilHealthy(context.elasticsearch, {
+            waitingTimeStep: 20,
+            maxWaitingTime: 150,
+            maxProcessorPercent: 80,
+            minStatus: ElasticsearchCatHealthStatus.Yellow,
+            maxRamPercent: 101
+        });
+
         for (let createdAmount = input.createdAmount; createdAmount < max; createdAmount++) {
             if (isAborted()) {
                 return response.aborted();
@@ -36,6 +47,19 @@ export class MockDataCreator<
                     ...input,
                     createdAmount
                 });
+            }
+            try {
+                await healthCheck.wait();
+            } catch (ex) {
+                return response.continue(
+                    {
+                        ...input,
+                        createdAmount
+                    },
+                    {
+                        seconds: 30
+                    }
+                );
             }
             try {
                 await manager.create(createMockData());
