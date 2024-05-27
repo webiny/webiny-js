@@ -58,5 +58,6 @@ export const createHeadlessCmsContext = (params: ContentContextParams) => {
 export * from "~/graphqlFields";
 export * from "~/plugins";
 export * from "~/utils/incrementEntryIdVersion";
+export * from "~/utils/RichTextRenderer";
 export * from "./graphql/handleRequest";
 export { entryToStorageTransform, entryFieldFromStorageTransform, entryFromStorageTransform };
