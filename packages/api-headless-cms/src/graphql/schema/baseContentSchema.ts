@@ -13,6 +13,7 @@ import {
 } from "@webiny/handler-graphql/builtInTypes";
 import { GraphQLScalarType } from "graphql";
 import { CmsGraphQLSchemaPlugin } from "~/plugins";
+import { RevisionIdScalar } from "~/graphql/scalars/RevisionId";
 
 interface Params {
     context: CmsContext;
@@ -34,6 +35,7 @@ export const createBaseContentSchema = ({ context }: Params): CmsGraphQLSchemaPl
             scalar DateTime
             scalar DateTimeZ
             scalar Time
+            scalar RevisionId
 
             type Query
 
@@ -60,6 +62,7 @@ export const createBaseContentSchema = ({ context }: Params): CmsGraphQLSchemaPl
             JSON: JsonScalar,
             Long: LongScalar,
             RefInput: RefInputScalar,
+            RevisionId: RevisionIdScalar,
             Number: NumberScalar,
             Any: AnyScalar,
             DateTime: DateTimeScalar,
