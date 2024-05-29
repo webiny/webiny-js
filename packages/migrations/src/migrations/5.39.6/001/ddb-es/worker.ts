@@ -69,6 +69,13 @@ interface MigrationStatus {
         recordsScanned: number;
         recordsUpdated: number;
         recordsSkipped: number;
+        esHealthChecks: {
+            timeSpentWaiting: number;
+            checksCount: number;
+            unhealthyReasons: {
+                [key: string]: number;
+            };
+        };
     };
 }
 
@@ -85,7 +92,12 @@ const createInitialStatus = (): MigrationStatus => {
             iterationsCount: 0,
             recordsScanned: 0,
             recordsUpdated: 0,
-            recordsSkipped: 0
+            recordsSkipped: 0,
+            esHealthChecks: {
+                timeSpentWaiting: 0,
+                checksCount: 0,
+                unhealthyReasons: {}
+            }
         }
     };
 };
@@ -361,14 +373,25 @@ const createInitialStatus = (): MigrationStatus => {
                     logger.trace(
                         `Storing ${ddbEsItemsToBatchWrite.length} record(s) in DDB-ES DynamoDB table...`
                     );
-                    await waitUntilHealthy.wait({
+                    const results = await waitUntilHealthy.wait({
                         async onUnhealthy(params) {
+                            const shouldWaitReason = params.shouldWaitReason || "unknown";
+
                             logger.warn(
-                                `Cluster is unhealthy (${params.shouldWaitReason}). Waiting for the cluster to become healthy...`,
+                                `Cluster is unhealthy (${shouldWaitReason}). Waiting for the cluster to become healthy...`,
                                 params
                             );
+
+                            if (status.stats.esHealthChecks.unhealthyReasons[shouldWaitReason]) {
+                                status.stats.esHealthChecks.unhealthyReasons[shouldWaitReason]++;
+                            } else {
+                                status.stats.esHealthChecks.unhealthyReasons[shouldWaitReason] = 1;
+                            }
                         }
                     });
+
+                    status.stats.esHealthChecks.checksCount++;
+                    status.stats.esHealthChecks.timeSpentWaiting += results.runningTime;
 
                     // Store data in DDB-ES DynamoDB table.
                     const executeDdbEs = () => {
