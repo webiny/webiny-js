@@ -242,14 +242,18 @@ export const createEventHandler = () => {
                 });
                 checkErrors(res);
             } catch (error) {
-                if (process.env.DEBUG === "true") {
-                    const meta = error?.meta || {};
-                    delete meta["meta"];
-                    loggedError = true;
-                    console.error("Bulk error", JSON.stringify(error, null, 2));
+                if (process.env.DEBUG !== "true") {
+                    throw error;
                 }
-                throw error;
+                const meta = error?.meta || {};
+                delete meta["meta"];
+                loggedError = true;
+                console.error("Bulk error", JSON.stringify(error, null, 2));
             }
+            if (process.env.DEBUG !== "true") {
+                return;
+            }
+            console.info(`Transferred ${operations.length} operations to Elasticsearch.`);
         };
 
         try {
