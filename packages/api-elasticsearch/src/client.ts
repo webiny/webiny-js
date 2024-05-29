@@ -72,7 +72,7 @@ export const createElasticsearchClient = (options: ElasticsearchClientOptions): 
                 ...rest,
                 auth: undefined
             };
-            console.log({
+            console.error({
                 ...data
             });
             throw new WebinyError(

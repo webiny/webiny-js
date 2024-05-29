@@ -2,6 +2,7 @@ import { createTaskDefinition } from "@webiny/tasks";
 import { Context } from "~/types";
 import { IMockDataManagerInput, IMockDataManagerOutput } from "~/tasks/MockDataManager/types";
 import { CARS_MODEL_ID } from "~/tasks/MockDataManager/constants";
+import { enableIndexing } from "~/utils";
 
 export const MOCK_DATA_MANAGER_TASK_ID = "mockDataManager";
 
@@ -32,6 +33,26 @@ export const createMockDataManagerTask = () => {
             } catch (ex) {
                 return params.response.error(ex);
             }
+        },
+        async onError({ context }) {
+            await enableIndexing({
+                client: context.elasticsearch,
+                model: {
+                    modelId: CARS_MODEL_ID,
+                    tenant: "root",
+                    locale: "en-US"
+                }
+            });
+        },
+        async onAbort({ context }) {
+            await enableIndexing({
+                client: context.elasticsearch,
+                model: {
+                    modelId: CARS_MODEL_ID,
+                    tenant: "root",
+                    locale: "en-US"
+                }
+            });
         }
     });
 };

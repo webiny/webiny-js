@@ -21,39 +21,33 @@ export class MockDataManager<
             await this.abortChildTasks(context, taskId);
             return response.aborted();
         } else if (input.seconds) {
-            const items = await this.listChildTasks(context, taskId);
-            /**
-             * If there are no running tasks, we can enable indexing and finish the manager task.
-             */
-            if (items.length === 0) {
-                await enableIndexing({
-                    client: context.elasticsearch,
-                    model: {
-                        modelId: input.modelId,
-                        tenant: "root",
-                        locale: "en-US"
-                    }
-                });
-                return response.done();
-            }
+            const items = await this.listChildTasksNotDone(context, taskId);
+
             /**
              * If there are still running creator tasks, we need to wait a bit more.
              */
-            for (const item of items) {
-                if (
-                    item.taskStatus === TaskDataStatus.RUNNING ||
-                    item.taskStatus === TaskDataStatus.PENDING
-                ) {
-                    return response.continue(
-                        {
-                            ...input
-                        },
-                        {
-                            seconds: input.seconds || WAIT_MAX_SECONDS
-                        }
-                    );
-                }
+            if (items.length > 0) {
+                return response.continue(
+                    {
+                        ...input
+                    },
+                    {
+                        seconds: input.seconds || WAIT_MAX_SECONDS
+                    }
+                );
             }
+            /**
+             * If there are no running tasks, we can enable indexing and finish the manager task.
+             */
+            await enableIndexing({
+                client: context.elasticsearch,
+                model: {
+                    modelId: input.modelId,
+                    tenant: "root",
+                    locale: "en-US"
+                }
+            });
+            return response.done();
         }
 
         const result = await createModelAndGroup({
@@ -98,10 +92,11 @@ export class MockDataManager<
         );
     }
 
-    private async listChildTasks(context: Context, id: string): Promise<ITask[]> {
+    private async listChildTasksNotDone(context: Context, id: string): Promise<ITask[]> {
         const { items } = await context.tasks.listTasks({
             where: {
-                parentId: id
+                parentId: id,
+                taskStatus_in: [TaskDataStatus.PENDING, TaskDataStatus.RUNNING]
             },
             limit: 10000
         });
@@ -109,7 +104,7 @@ export class MockDataManager<
     }
 
     private async abortChildTasks(context: Context, id: string): Promise<void> {
-        const items = await this.listChildTasks(context, id);
+        const items = await this.listChildTasksNotDone(context, id);
         for (const item of items) {
             await context.tasks.abort({
                 id: item.id,

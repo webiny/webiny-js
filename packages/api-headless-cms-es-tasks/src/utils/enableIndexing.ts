@@ -13,20 +13,6 @@ export const enableIndexing = async (params: IEnableIndexingParams) => {
         model
     });
     try {
-        const response = await client.indices.getSettings({
-            index
-        });
-
-        const setting = response.body[index].settings.index;
-
-        if (setting.number_of_replicas !== "0" && setting.refresh_interval !== "-1") {
-            return;
-        }
-    } catch (ex) {
-        console.error(ex);
-        throw ex;
-    }
-    try {
         await client.indices.putSettings({
             index,
             body: {

@@ -10,33 +10,37 @@ interface IMaxRecordsPerTask {
 
 const constrains: IMaxRecordsPerTask[] = [
     {
-        amount: 1000,
+        amount: 50,
         percentagePerTask: 100
     },
     {
-        amount: 5000,
+        amount: 1000,
         percentagePerTask: 50
     },
     {
-        amount: 50000,
+        amount: 500000,
         percentagePerTask: 20
-    },
-    {
-        amount: 750000,
-        percentagePerTask: 10
-    },
-    {
-        amount: 1000000,
-        percentagePerTask: 2
-    },
-    {
-        amount: 5000000,
-        percentagePerTask: 1
-    },
-    {
-        amount: 10000000,
-        percentagePerTask: 0.5
     }
+    // {
+    //     amount: 50000,
+    //     percentagePerTask: 10
+    // },
+    // {
+    //     amount: 750000,
+    //     percentagePerTask: 10
+    // },
+    // {
+    //     amount: 1000000,
+    //     percentagePerTask: 2
+    // },
+    // {
+    //     amount: 5000000,
+    //     percentagePerTask: 1
+    // },
+    // {
+    //     amount: 10000000,
+    //     percentagePerTask: 0.5
+    // }
 ];
 
 const findValue = (input: number): IMaxRecordsPerTask => {

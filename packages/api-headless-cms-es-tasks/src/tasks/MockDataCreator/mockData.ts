@@ -1,7 +1,23 @@
-import { faker } from "@faker-js/faker";
+import { ROOT_FOLDER } from "@webiny/api-headless-cms/constants";
 
-export const createMockData = () => {
+const text =
+    "orem ipsum dolor sit amet, consectetur adipiscing elit. Sed augue justo, tempor vel aliquet id, sodales ut est. Morbi sodales lacus lacinia justo molestie, a vulputate ligula ornare. Cras commodo augue sed suscipit auctor. Mauris dapibus vulputate nibh, ultrices porta risus ullamcorper in. Praesent iaculis faucibus tellus, eget egestas mauris ultrices in. Ut dapibus felis id tincidunt tempor. Cras imperdiet lectus et mollis facilisis. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur vitae nulla ut quam cursus viverra ac sed felis. Cras eget nulla nunc. Phasellus facilisis ante in velit tincidunt posuere. Aenean a cursus ex. In a accumsan metus. Nullam faucibus sapien ac pulvinar volutpat. Sed varius sem quis libero pharetra ullamcorper.";
+
+const paragraph = (): string => {
+    return text;
+};
+
+const paragraphs = (length = 1): string => {
+    return Array.from({ length })
+        .map(() => paragraph())
+        .join("\n");
+};
+
+const createMockData = () => {
     return {
+        wbyAco_location: {
+            folderId: ROOT_FOLDER
+        },
         standardTires: "P235/75R15 BSW",
         newUsedBg: "USED",
         ymmMaxPriceRange: 23810,
@@ -204,7 +220,7 @@ export const createMockData = () => {
                 },
                 {
                     categorySequenceNmb: 1,
-                    includesNote: faker.lorem.paragraphs(1),
+                    includesNote: paragraphs(1),
                     invoice: 0,
                     sequenceNmb: 1,
                     retail: 0,
@@ -876,7 +892,7 @@ export const createMockData = () => {
                     invoice: 170.15,
                     sequenceNmb: 1,
                     retail: 205,
-                    name: "  Pickup Bed Extender, Brushed Aluminum (Installed by Dealer)",
+                    name: paragraph(),
                     availability: "Opt"
                 },
                 {
@@ -903,7 +919,7 @@ export const createMockData = () => {
                     invoice: 332,
                     sequenceNmb: 1,
                     retail: 400,
-                    name: "  Side Steps, Gray Tubular",
+                    name: paragraph(),
                     availability: "Opt"
                 },
                 {
@@ -930,7 +946,7 @@ export const createMockData = () => {
                     invoice: 0,
                     sequenceNmb: 1,
                     retail: 0,
-                    name: "  Wheel Flares, Small F&R",
+                    name: paragraph(),
                     availability: "Std"
                 }
             ],
@@ -1065,81 +1081,81 @@ export const createMockData = () => {
         recalls: [
             {
                 recallsPotaff: 3227,
-                correctiveAction: faker.lorem.paragraphs(2),
+                correctiveAction: paragraphs(2),
                 yearText: 2007,
                 rcDate: "2006-08-11T00:00:00.000Z",
                 mfgText: "GENERAL MOTORS CORP.",
                 makeText: "CHEVROLET",
                 modelText: "COLORADO",
-                consequenceDefect: faker.lorem.paragraphs(2),
-                descDefect: faker.lorem.paragraphs(3),
+                consequenceDefect: paragraphs(2),
+                descDefect: paragraphs(3),
                 recallsCampNumber: "06V307000",
                 recallId: 63244,
                 compName: "WHEELS:RIM "
             },
             {
                 recallsPotaff: 42540,
-                correctiveAction: faker.lorem.paragraphs(1),
+                correctiveAction: paragraphs(1),
                 yearText: 2007,
                 rcDate: "2009-05-11T00:00:00.000Z",
                 mfgText: "DOPE, INC.",
                 makeText: "CHEVROLET",
                 modelText: "S10",
-                consequenceDefect: faker.lorem.paragraph(),
-                descDefect: faker.lorem.paragraphs(4),
+                consequenceDefect: paragraph(),
+                descDefect: paragraphs(4),
                 recallsCampNumber: "09E025000",
                 recallId: 102448,
                 compName: "EXTERIOR LIGHTING:HEADLIGHTS"
             },
             {
                 recallsPotaff: 185903,
-                correctiveAction: faker.lorem.paragraphs(4),
+                correctiveAction: paragraphs(4),
                 yearText: 2007,
                 rcDate: "2009-07-29T00:00:00.000Z",
                 mfgText: "GENERAL MOTORS CORP.",
                 makeText: "CHEVROLET",
                 modelText: "COLORADO",
-                consequenceDefect: faker.lorem.paragraphs(2),
-                descDefect: faker.lorem.paragraphs(2),
+                consequenceDefect: paragraphs(2),
+                descDefect: paragraphs(2),
                 recallsCampNumber: "09V310000",
                 recallId: 102549,
                 compName: "EXTERIOR LIGHTING:BRAKE LIGHTS:SWITCH"
             },
             {
                 recallsPotaff: 192676,
-                correctiveAction: faker.lorem.paragraphs(2),
+                correctiveAction: paragraphs(2),
                 yearText: 2007,
                 rcDate: "2010-11-18T00:00:00.000Z",
                 mfgText: "GENERAL MOTORS CORP.",
                 makeText: "CHEVROLET",
                 modelText: "COLORADO",
-                consequenceDefect: faker.lorem.paragraphs(6),
-                descDefect: faker.lorem.paragraphs(2),
+                consequenceDefect: paragraphs(6),
+                descDefect: paragraphs(2),
                 recallsCampNumber: "10V575000",
                 recallId: 121363,
                 compName: "CHILD SEAT"
             }
         ],
         cpoProgram: {
-            cpoWarrantyBbnc: faker.lorem.paragraph(),
+            cpoWarrantyBbnc: paragraph(),
             cpoInspectionPoint: "172",
             cpoWebsite: "https://www.gmcertified.com",
-            cpoAdditionalBenefits: faker.lorem.paragraphs(2),
-            cpoAgeMileage: "6 model years or newer/less than 75,000 miles",
+            cpoAdditionalBenefits: paragraphs(2),
+            cpoAgeMileage: paragraph(),
             cpoName: "Chevrolet/Buick/GMC Certified Pre-Owned Vehicles",
             cpoLease: "No",
             cpoCustomerServiceNumber: "(866) 694-6546",
             cpoInspectionScore: 99,
-            cpoWarranty: faker.lorem.paragraphs(2),
+            cpoWarranty: paragraphs(2),
             cpoReturnExchange: "3-day/150-mile Vehicle Exchange Program",
             cpoFinancing: "Yes",
             cpoWarrantyExtended: "Yes",
             cpoHistoryReport: 1,
             cpoParticipation: "3,400 dealerships enrolled (94% of available dealerships)",
-            cpoProgramOverview: faker.lorem.paragraphs(6),
+            cpoProgramOverview: paragraphs(6),
             cpoWarrantyDeductible: "No",
             cpoWarrantyTransferable: "Yes",
-            cpoRoadside: "6 years/100,000 miles (full term of Certified Powertrain Warranty)."
+            cpoRoadside: paragraph()
         },
         priceRangeValue: 1,
         dieselCategory: null,
@@ -1202,7 +1218,7 @@ export const createMockData = () => {
         releaseType: "Complete",
         ymmPriceRange: "$14,085 - $23,810",
         seoText: {
-            seoContent: faker.lorem.paragraphs(5),
+            seoContent: paragraphs(5),
             seoTitle: "Chevrolet Trucks",
             seoType: "truck"
         },
@@ -1313,7 +1329,7 @@ export const createMockData = () => {
             {
                 imageUrl:
                     "https://mocks.webiny.com/2007-chevrolet-colorado-ls-2wd-truck-taillight.png",
-                imageAngle: "taillight",
+                imageAngle: paragraph(),
                 imageOrder: 17,
                 imageType: "exterior"
             },
@@ -1332,7 +1348,7 @@ export const createMockData = () => {
             {
                 imageUrl:
                     "https://mocks.webiny.com/2007-chevrolet-colorado-ls-2wd-truck-door-controls.png",
-                imageAngle: "door controls",
+                imageAngle: paragraph(),
                 imageOrder: 22,
                 imageType: "interior"
             }
@@ -1341,3 +1357,5 @@ export const createMockData = () => {
         manufacturerCd: "CT15403"
     };
 };
+
+export const mockData = createMockData();
