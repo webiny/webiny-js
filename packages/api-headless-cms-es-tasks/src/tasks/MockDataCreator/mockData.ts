@@ -892,7 +892,7 @@ const createMockData = () => {
                     invoice: 170.15,
                     sequenceNmb: 1,
                     retail: 205,
-                    name: "  Pickup Bed Extender, Brushed Aluminum (Installed by Dealer)",
+                    name: paragraph(),
                     availability: "Opt"
                 },
                 {
@@ -919,7 +919,7 @@ const createMockData = () => {
                     invoice: 332,
                     sequenceNmb: 1,
                     retail: 400,
-                    name: "  Side Steps, Gray Tubular",
+                    name: paragraph(),
                     availability: "Opt"
                 },
                 {
@@ -946,7 +946,7 @@ const createMockData = () => {
                     invoice: 0,
                     sequenceNmb: 1,
                     retail: 0,
-                    name: "  Wheel Flares, Small F&R",
+                    name: paragraph(),
                     availability: "Std"
                 }
             ],
@@ -1141,7 +1141,7 @@ const createMockData = () => {
             cpoInspectionPoint: "172",
             cpoWebsite: "https://www.gmcertified.com",
             cpoAdditionalBenefits: paragraphs(2),
-            cpoAgeMileage: "6 model years or newer/less than 75,000 miles",
+            cpoAgeMileage: paragraph(),
             cpoName: "Chevrolet/Buick/GMC Certified Pre-Owned Vehicles",
             cpoLease: "No",
             cpoCustomerServiceNumber: "(866) 694-6546",
@@ -1155,7 +1155,7 @@ const createMockData = () => {
             cpoProgramOverview: paragraphs(6),
             cpoWarrantyDeductible: "No",
             cpoWarrantyTransferable: "Yes",
-            cpoRoadside: "6 years/100,000 miles (full term of Certified Powertrain Warranty)."
+            cpoRoadside: paragraph()
         },
         priceRangeValue: 1,
         dieselCategory: null,
@@ -1329,7 +1329,7 @@ const createMockData = () => {
             {
                 imageUrl:
                     "https://mocks.webiny.com/2007-chevrolet-colorado-ls-2wd-truck-taillight.png",
-                imageAngle: "taillight",
+                imageAngle: paragraph(),
                 imageOrder: 17,
                 imageType: "exterior"
             },
@@ -1348,7 +1348,7 @@ const createMockData = () => {
             {
                 imageUrl:
                     "https://mocks.webiny.com/2007-chevrolet-colorado-ls-2wd-truck-door-controls.png",
-                imageAngle: "door controls",
+                imageAngle: paragraph(),
                 imageOrder: 22,
                 imageType: "interior"
             }

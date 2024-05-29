@@ -39,7 +39,9 @@ export class MockDataCreator<
             maxRamPercent: 101
         });
 
-        for (let createdAmount = input.createdAmount; createdAmount < max; createdAmount++) {
+        let createdAmount = input.createdAmount;
+
+        for (; createdAmount < max; createdAmount++) {
             if (isAborted()) {
                 return response.aborted();
             } else if (isCloseToTimeout()) {
@@ -48,18 +50,28 @@ export class MockDataCreator<
                     createdAmount
                 });
             }
-            try {
-                await healthCheck.wait();
-            } catch (ex) {
-                return response.continue(
-                    {
-                        ...input,
-                        createdAmount
-                    },
-                    {
-                        seconds: 30
-                    }
-                );
+            if (createdAmount % 50 === 0) {
+                try {
+                    await healthCheck.wait({
+                        async onUnhealthy({ waitingTimeStep, startedAt, mustEndAt, runs }) {
+                            console.warn(`Cluster is unhealthy on run #${runs}.`, {
+                                startedAt,
+                                mustEndAt,
+                                waitingTimeStep
+                            });
+                        }
+                    });
+                } catch (ex) {
+                    return response.continue(
+                        {
+                            ...input,
+                            createdAmount
+                        },
+                        {
+                            seconds: 30
+                        }
+                    );
+                }
             }
             try {
                 await manager.create(mockData);
@@ -68,6 +80,6 @@ export class MockDataCreator<
             }
         }
 
-        return params.response.done();
+        return params.response.done(`Created ${input.totalAmount} of records.`);
     }
 }
