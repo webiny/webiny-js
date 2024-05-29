@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
     FormattedOption,
     Select as RmwcSelect,
@@ -92,13 +92,32 @@ const getRmwcProps = (props: SelectProps): FormComponentProps & RmwcSelectProps 
  * Error says to use the empty string in null/undefined case.
  */
 export const Select = (props: SelectProps) => {
-    const { value: initialValue, description, validation, placeholder, ...other } = props;
+    const { value: initialValue, description, validation, ...other } = props;
 
     const value = initialValue === null || initialValue === undefined ? "" : initialValue;
 
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
     const options = getOptions(other.options);
+
+    // Memoize the label and placeholder values based on the component size.
+    const { label, placeholder } = useMemo(() => {
+        const { size, label, placeholder } = props;
+
+        // For small or medium size, we set only the placeholder, using label as fallback.
+        if (size === "small" || size === "medium") {
+            return {
+                label: undefined,
+                placeholder: placeholder || label
+            };
+        }
+
+        // For other sizes, use the provided label and placeholder.
+        return {
+            label,
+            placeholder
+        };
+    }, [props.label, props.placeholder, props.size]);
 
     return (
         <>
@@ -107,7 +126,8 @@ export const Select = (props: SelectProps) => {
                 ref={undefined}
                 options={options}
                 value={value}
-                placeholder={placeholder ?? ""} // Fix RMWC version 14.2.2 to make the label float by default when a predefined value is selected.
+                label={label}
+                placeholder={placeholder}
                 className={classNames(
                     "webiny-ui-select mdc-ripple-surface mdc-ripple-upgraded",
                     webinySelect,
