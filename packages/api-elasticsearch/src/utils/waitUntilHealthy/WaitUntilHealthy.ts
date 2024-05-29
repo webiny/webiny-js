@@ -6,20 +6,21 @@ import {
     IElasticsearchCatNodesResponse
 } from "~/operations/types";
 import { UnhealthyClusterError } from "~/utils/waitUntilHealthy/UnhealthyClusterError";
+import {
+    createClusterHealthStatusReason,
+    createMemoryReason,
+    createProcessorReason,
+    IClusterHealthReason,
+    IMemoryReason,
+    IProcessorReason
+} from "./reason";
 import { WaitingHealthyClusterAbortedError } from "./WaitingHealthyClusterAbortedError";
 
 const WAITING_TIME_STEP = 10;
 
-export type ShouldWaitProcessor = "processor";
-export type ShouldWaitMemory = "memory";
-export type ShouldWaitClusterHealthStatus = "clusterHealthStatus";
 export type ShouldNotWait = false;
 
-export type WaitingReason =
-    | ShouldWaitProcessor
-    | ShouldWaitMemory
-    | ShouldWaitClusterHealthStatus
-    | ShouldNotWait;
+export type WaitingReason = IProcessorReason | IMemoryReason | IClusterHealthReason | ShouldNotWait;
 
 export interface IWaitUntilHealthyParams {
     /**
@@ -156,16 +157,22 @@ class WaitUntilHealthy {
         const nodes = await this.catNodes.getNodes();
 
         const clusterHealthStatus = this.transformClusterHealthStatus(health.status);
-        if (
-            clusterHealthStatus >
-            this.transformClusterHealthStatus(this.options.minClusterHealthStatus)
-        ) {
-            return "clusterHealthStatus";
+        const minClusterHealthStatus = this.transformClusterHealthStatus(
+            this.options.minClusterHealthStatus
+        );
+        if (clusterHealthStatus > minClusterHealthStatus) {
+            return createClusterHealthStatusReason({
+                minimum: this.options.minClusterHealthStatus,
+                current: health.status
+            });
         }
 
         const processorPercent = this.getProcessorPercent(nodes);
         if (processorPercent > this.options.maxProcessorPercent) {
-            return "processor";
+            return createProcessorReason({
+                maximum: this.options.maxProcessorPercent,
+                current: processorPercent
+            });
         }
         /**
          * Possibly no max ram definition?
@@ -176,7 +183,10 @@ class WaitUntilHealthy {
 
         const ramPercent = this.getRamPercent(nodes);
         if (ramPercent > this.options.maxRamPercent) {
-            return "memory";
+            return createMemoryReason({
+                maximum: this.options.maxRamPercent,
+                current: ramPercent
+            });
         }
         return false;
     }
