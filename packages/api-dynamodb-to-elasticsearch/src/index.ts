@@ -8,7 +8,7 @@ import {
 } from "@webiny/api-elasticsearch";
 import { ApiResponse, ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { createDynamoDBEventHandler } from "@webiny/handler-aws";
-import { ElasticsearchCatHealthStatus } from "@webiny/api-elasticsearch/operations/types";
+import { ElasticsearchCatClusterHealthStatus } from "@webiny/api-elasticsearch/operations/types";
 
 enum Operations {
     INSERT = "INSERT",
@@ -90,7 +90,7 @@ export const createEventHandler = () => {
         }
 
         const healthCheck = createWaitUntilHealthy(context.elasticsearch, {
-            minStatus: ElasticsearchCatHealthStatus.Yellow,
+            minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Yellow,
             waitingTimeStep: 30,
             maxProcessorPercent: 85,
             maxWaitingTime: 810
@@ -195,18 +195,32 @@ export const createEventHandler = () => {
 
             try {
                 await healthCheck.wait({
-                    async onUnhealthy({ startedAt, runs, mustEndAt, waitingTimeStep }) {
+                    async onUnhealthy({
+                        startedAt,
+                        runs,
+                        mustEndAt,
+                        waitingTimeStep,
+                        waitingReason
+                    }) {
                         console.warn(`Cluster is unhealthy on run #${runs}.`, {
                             startedAt,
                             mustEndAt,
-                            waitingTimeStep
+                            waitingTimeStep,
+                            waitingReason: waitingReason
                         });
                     },
-                    async onTimeout({ startedAt, runs, waitingTimeStep, mustEndAt }) {
+                    async onTimeout({
+                        startedAt,
+                        runs,
+                        waitingTimeStep,
+                        mustEndAt,
+                        waitingReason
+                    }) {
                         console.error(`Cluster health check timeout on run #${runs}.`, {
                             startedAt,
                             mustEndAt,
-                            waitingTimeStep
+                            waitingTimeStep,
+                            waitingReason: waitingReason
                         });
                     }
                 });

@@ -2,7 +2,7 @@ import { Client } from "~/client";
 import { ElasticsearchCatHealth } from "~/operations/ElasticsearchCatHealth";
 import { ElasticsearchCatNodes } from "~/operations/ElasticsearchCatNodes";
 import {
-    ElasticsearchCatCluterHealthStatus,
+    ElasticsearchCatClusterHealthStatus,
     IElasticsearchCatNodesResponse
 } from "~/operations/types";
 import { UnhealthyClusterError } from "~/utils/waitUntilHealthy/UnhealthyClusterError";
@@ -15,7 +15,7 @@ export type ShouldWaitMemory = "memory";
 export type ShouldWaitClusterHealthStatus = "clusterHealthStatus";
 export type ShouldNotWait = false;
 
-export type ShouldWaitReason =
+export type WaitingReason =
     | ShouldWaitProcessor
     | ShouldWaitMemory
     | ShouldWaitClusterHealthStatus
@@ -26,8 +26,8 @@ export interface IWaitUntilHealthyParams {
      * Minimum status allowed, otherwise the cluster is considered unhealthy.
      */
     minClusterHealthStatus:
-        | ElasticsearchCatCluterHealthStatus.Green
-        | ElasticsearchCatCluterHealthStatus.Yellow;
+        | ElasticsearchCatClusterHealthStatus.Green
+        | ElasticsearchCatClusterHealthStatus.Yellow;
     /**
      * Maximum processor percent allowed, otherwise the cluster is considered unhealthy.
      */
@@ -54,7 +54,7 @@ export interface IWaitOptionsOnUnhealthyParams {
     mustEndAt: Date;
     waitingTimeStep: number;
     runs: number;
-    shouldWaitReason: ShouldWaitReason;
+    waitingReason: WaitingReason;
 }
 
 export interface IWaitOptionsOnTimeoutParams {
@@ -62,7 +62,7 @@ export interface IWaitOptionsOnTimeoutParams {
     mustEndAt: Date;
     waitingTimeStep: number;
     runs: number;
-    shouldWaitReason: ShouldWaitReason;
+    waitingReason: WaitingReason;
 }
 
 export interface IWaitOptions {
@@ -109,15 +109,15 @@ class WaitUntilHealthy {
         const mustEndAt = new Date(startedAt.getTime() + this.options.maxWaitingTime * 1000);
         const waitingTimeStep = this.options.waitingTimeStep || WAITING_TIME_STEP;
         let runs = 1;
-        let shouldWaitReason: ShouldWaitReason;
-        while ((shouldWaitReason = await this.shouldWait())) {
+        let waitingReason: WaitingReason;
+        while ((waitingReason = await this.shouldWait())) {
             if (new Date() >= mustEndAt) {
                 if (options?.onTimeout) {
                     await options.onTimeout({
                         startedAt,
                         mustEndAt,
                         waitingTimeStep,
-                        shouldWaitReason,
+                        waitingReason,
                         runs
                     });
                 }
@@ -127,7 +127,7 @@ class WaitUntilHealthy {
                     startedAt,
                     mustEndAt,
                     waitingTimeStep,
-                    shouldWaitReason,
+                    waitingReason,
                     runs
                 });
             }
@@ -151,7 +151,7 @@ class WaitUntilHealthy {
         };
     }
 
-    private async shouldWait(): Promise<ShouldWaitReason> {
+    private async shouldWait(): Promise<WaitingReason> {
         const health = await this.catHealth.getHealth();
         const nodes = await this.catNodes.getNodes();
 
@@ -195,13 +195,13 @@ class WaitUntilHealthy {
         return total / nodes.length;
     }
 
-    private transformClusterHealthStatus(status: ElasticsearchCatCluterHealthStatus): number {
+    private transformClusterHealthStatus(status: ElasticsearchCatClusterHealthStatus): number {
         switch (status) {
-            case ElasticsearchCatCluterHealthStatus.Green:
+            case ElasticsearchCatClusterHealthStatus.Green:
                 return 1;
-            case ElasticsearchCatCluterHealthStatus.Yellow:
+            case ElasticsearchCatClusterHealthStatus.Yellow:
                 return 2;
-            case ElasticsearchCatCluterHealthStatus.Red:
+            case ElasticsearchCatClusterHealthStatus.Red:
                 return 3;
             default:
                 return 99;

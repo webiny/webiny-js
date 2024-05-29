@@ -4,7 +4,7 @@ import { CmsModelManager } from "@webiny/api-headless-cms/types";
 import { mockData } from "./mockData";
 import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUntilHealthy";
 import { Context } from "~/types";
-import { ElasticsearchCatHealthStatus } from "@webiny/api-elasticsearch/operations/types";
+import { ElasticsearchCatClusterHealthStatus } from "@webiny/api-elasticsearch/operations/types";
 import { mdbid } from "@webiny/utils";
 
 export class MockDataCreator<
@@ -36,7 +36,7 @@ export class MockDataCreator<
             waitingTimeStep: 20,
             maxWaitingTime: 150,
             maxProcessorPercent: 80,
-            minStatus: ElasticsearchCatHealthStatus.Yellow,
+            minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Yellow,
             maxRamPercent: 101
         });
 
@@ -54,11 +54,32 @@ export class MockDataCreator<
             if (createdAmount % 50 === 0) {
                 try {
                     await healthCheck.wait({
-                        async onUnhealthy({ waitingTimeStep, startedAt, mustEndAt, runs }) {
+                        async onUnhealthy({
+                            waitingTimeStep,
+                            startedAt,
+                            mustEndAt,
+                            runs,
+                            waitingReason
+                        }) {
                             console.warn(`Cluster is unhealthy on run #${runs}.`, {
                                 startedAt,
                                 mustEndAt,
-                                waitingTimeStep
+                                waitingTimeStep,
+                                waitingReason
+                            });
+                        },
+                        async onTimeout({
+                            waitingTimeStep,
+                            startedAt,
+                            mustEndAt,
+                            runs,
+                            waitingReason
+                        }) {
+                            console.warn(`Cluster health check timed out on run #${runs}.`, {
+                                startedAt,
+                                mustEndAt,
+                                waitingTimeStep,
+                                waitingReason
                             });
                         }
                     });
