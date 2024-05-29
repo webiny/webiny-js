@@ -103,6 +103,8 @@ export const createEventHandler = () => {
         const execute = async (): Promise<void> => {
             const operations = [];
 
+            const operationIdList: string[] = [];
+
             for (const record of event.Records) {
                 const dynamodb = record.dynamodb;
                 if (!dynamodb) {
@@ -160,6 +162,8 @@ export const createEventHandler = () => {
                         continue;
                     }
                 }
+
+                operationIdList.push(_id);
 
                 switch (record.eventName) {
                     case Operations.INSERT:
@@ -254,6 +258,7 @@ export const createEventHandler = () => {
                 return;
             }
             console.info(`Transferred ${operations.length} operations to Elasticsearch.`);
+            console.log(operationIdList);
         };
 
         try {
