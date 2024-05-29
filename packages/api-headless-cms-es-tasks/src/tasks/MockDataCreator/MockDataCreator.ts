@@ -5,7 +5,7 @@ import { mockData } from "./mockData";
 import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUntilHealthy";
 import { Context } from "~/types";
 import { ElasticsearchCatHealthStatus } from "@webiny/api-elasticsearch/operations/types";
-import { generateAlphaNumericId } from "@webiny/utils";
+import { mdbid } from "@webiny/utils";
 
 export class MockDataCreator<
     C extends Context,
@@ -77,7 +77,7 @@ export class MockDataCreator<
             const taskId = params.store.getTask().id;
             try {
                 await manager.create({
-                    id: `${taskId}${generateAlphaNumericId(24)}`,
+                    id: `${taskId}${mdbid()}`,
                     ...mockData
                 });
             } catch (ex) {

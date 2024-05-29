@@ -259,7 +259,7 @@ export const OpenSearch = createAppModule({
                 functionName: lambda.output.arn,
                 startingPosition: "LATEST",
                 maximumRetryAttempts: 0,
-                batchSize: 200,
+                batchSize: 50,
                 maximumBatchingWindowInSeconds: 1
             }
         });
