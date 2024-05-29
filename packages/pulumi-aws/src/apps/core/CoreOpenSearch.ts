@@ -300,6 +300,7 @@ function getDynamoDbToElasticLambdaPolicy(
                         Sid: "PermissionForES",
                         Effect: "Allow",
                         Action: [
+                            "es:ESHttpGet",
                             "es:ESHttpDelete",
                             "es:ESHttpPatch",
                             "es:ESHttpPost",

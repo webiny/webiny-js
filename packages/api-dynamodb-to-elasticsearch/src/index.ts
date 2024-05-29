@@ -96,6 +96,7 @@ export const createEventHandler = () => {
             maxWaitingTime: 810
         });
 
+        let loggedError = false;
         /**
          * Wrap the code we need to run into the function, so it can be called within itself.
          */
@@ -230,6 +231,7 @@ export const createEventHandler = () => {
                 if (process.env.DEBUG === "true") {
                     const meta = error?.meta || {};
                     delete meta["meta"];
+                    loggedError = true;
                     console.error("Bulk error", JSON.stringify(error, null, 2));
                 }
                 throw error;
@@ -239,6 +241,9 @@ export const createEventHandler = () => {
         try {
             await execute();
         } catch (ex) {
+            if (loggedError) {
+                throw ex;
+            }
             console.error(`Could not insert data into Elasticsearch/OpenSearch.`);
             console.error(ex);
             throw ex;

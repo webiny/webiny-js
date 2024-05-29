@@ -74,9 +74,10 @@ export class MockDataCreator<
                     );
                 }
             }
+            const taskId = params.store.getTask().id;
             try {
                 await manager.create({
-                    id: generateAlphaNumericId(36),
+                    id: `${taskId}${generateAlphaNumericId(24)}`,
                     ...mockData
                 });
             } catch (ex) {
