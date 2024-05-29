@@ -19,7 +19,7 @@ export interface IWaitUntilHealthyParams {
     /**
      * Maximum RAM percent allowed, otherwise the cluster is considered unhealthy.
      */
-    maxRamPercent: number;
+    maxRamPercent?: number;
     /**
      * Maximum time to wait in seconds.
      * This is to prevent infinite waiting in case the cluster never becomes healthy.
@@ -142,6 +142,8 @@ class WaitUntilHealthy {
         const processorPercent = this.getProcessorPercent(nodes);
         if (processorPercent > this.options.maxProcessorPercent) {
             return true;
+        } else if (!this.options.maxRamPercent) {
+            return false;
         }
 
         const ramPercent = this.getRamPercent(nodes);

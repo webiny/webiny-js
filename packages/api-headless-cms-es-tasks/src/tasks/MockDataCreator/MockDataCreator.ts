@@ -1,7 +1,7 @@
 import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { IMockDataCreatorInput, IMockDataCreatorOutput } from "./types";
 import { CmsModelManager } from "@webiny/api-headless-cms/types";
-import { createMockData } from "./mockData";
+import { mockData } from "./mockData";
 import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUntilHealthy";
 import { Context } from "~/types";
 import { ElasticsearchCatHealthStatus } from "@webiny/api-elasticsearch/operations/types";
@@ -62,7 +62,7 @@ export class MockDataCreator<
                 );
             }
             try {
-                await manager.create(createMockData());
+                await manager.create(mockData);
             } catch (ex) {
                 return response.error(ex);
             }

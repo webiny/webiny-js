@@ -1,9 +1,13 @@
 import WebinyError from "@webiny/error";
 import { AttributeValue, unmarshall as baseUnmarshall } from "@webiny/aws-sdk/client-dynamodb";
-import { decompress } from "@webiny/api-elasticsearch";
+import {
+    createWaitUntilHealthy,
+    decompress,
+    IWaitOptionsOnUnhealthyParams
+} from "@webiny/api-elasticsearch";
 import { ApiResponse, ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { createDynamoDBEventHandler } from "@webiny/handler-aws";
-import pRetry from "p-retry";
+import { ElasticsearchCatHealthStatus } from "@webiny/api-elasticsearch/operations/types";
 
 enum Operations {
     INSERT = "INSERT",
@@ -92,6 +96,13 @@ export const createEventHandler = () => {
             console.error("Missing elasticsearch definition on context.");
             return null;
         }
+
+        const healthCheck = createWaitUntilHealthy(context.elasticsearch, {
+            minStatus: ElasticsearchCatHealthStatus.Yellow,
+            waitingTimeStep: 30,
+            maxProcessorPercent: 85,
+            maxWaitingTime: 810
+        });
 
         /**
          * Wrap the code we need to run into the function, so it can be called within itself.
@@ -190,6 +201,28 @@ export const createEventHandler = () => {
             }
 
             try {
+                await healthCheck.wait({
+                    async onUnhealthy({ startedAt, runs, mustEndAt, waitingTimeStep }) {
+                        console.warn(`Cluster is unhealthy on run #${runs}.`, {
+                            startedAt,
+                            mustEndAt,
+                            waitingTimeStep
+                        });
+                    },
+                    async onTimeout({ startedAt, runs, waitingTimeStep, mustEndAt }) {
+                        console.error(`Cluster health check timeout on run #${runs}.`, {
+                            startedAt,
+                            mustEndAt,
+                            waitingTimeStep
+                        });
+                    }
+                });
+            } catch (ex) {
+                // TODO implement retrying...?
+                throw ex;
+            }
+
+            try {
                 const res = await context.elasticsearch.bulk<BulkOperationsResponseBody>({
                     body: operations
                 });
@@ -204,36 +237,13 @@ export const createEventHandler = () => {
             }
         };
 
-        const maxRetryTime = getNumberEnvVariable(
-            "WEBINY_DYNAMODB_TO_ELASTICSEARCH_MAX_RETRY_TIME",
-            300000
-        );
-        const retries = getNumberEnvVariable("WEBINY_DYNAMODB_TO_ELASTICSEARCH_RETRIES", 20);
-        const minTimeout = getNumberEnvVariable(
-            "WEBINY_DYNAMODB_TO_ELASTICSEARCH_MIN_TIMEOUT",
-            1500
-        );
-        const maxTimeout = getNumberEnvVariable(
-            "WEBINY_DYNAMODB_TO_ELASTICSEARCH_MAX_TIMEOUT",
-            30000
-        );
-
-        await pRetry(execute, {
-            maxRetryTime,
-            retries,
-            minTimeout,
-            maxTimeout,
-            onFailedAttempt: error => {
-                /**
-                 * We will only log attempts which are after 3/4 of total attempts.
-                 */
-                if (error.attemptNumber < retries * 0.75) {
-                    return;
-                }
-                console.error(`Attempt #${error.attemptNumber} failed.`);
-                console.error(error.message);
-            }
-        });
+        try {
+            await execute();
+        } catch (ex) {
+            console.error(`Could not insert data into Elasticsearch/OpenSearch.`);
+            console.error(ex);
+            throw ex;
+        }
 
         return null;
     });

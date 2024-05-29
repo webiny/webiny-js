@@ -69,6 +69,8 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         try {
             return await control.run(event);
         } catch (ex) {
+            console.error(`Failed to execute task "${event.webinyTaskId}".`);
+            console.error(ex);
             return response.error({
                 error: getErrorProperties(ex)
             });
