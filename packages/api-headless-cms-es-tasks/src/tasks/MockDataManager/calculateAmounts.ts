@@ -10,16 +10,20 @@ interface IMaxRecordsPerTask {
 
 const constrains: IMaxRecordsPerTask[] = [
     {
-        amount: 1000,
+        amount: 50,
         percentagePerTask: 100
     },
     {
-        amount: 5000,
+        amount: 1000,
         percentagePerTask: 50
     },
     {
-        amount: 50000,
+        amount: 5000,
         percentagePerTask: 20
+    },
+    {
+        amount: 50000,
+        percentagePerTask: 10
     },
     {
         amount: 750000,
