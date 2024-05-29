@@ -3,7 +3,8 @@ import { AttributeValue, unmarshall as baseUnmarshall } from "@webiny/aws-sdk/cl
 import {
     createWaitUntilHealthy,
     decompress,
-    IWaitOptionsOnUnhealthyParams
+    UnhealthyClusterError,
+    WaitingHealthyClusterAbortedError
 } from "@webiny/api-elasticsearch";
 import { ApiResponse, ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { createDynamoDBEventHandler } from "@webiny/handler-aws";
@@ -41,15 +42,6 @@ const getError = (item: BulkOperationsResponseBodyItem): string | null => {
         return "index";
     }
     return reason;
-};
-
-const getNumberEnvVariable = (name: string, def: number): number => {
-    const input = process.env[name];
-    const value = Number(input);
-    if (value > 0) {
-        return value;
-    }
-    return def;
 };
 
 const checkErrors = (result?: ApiResponse<BulkOperationsResponseBody>): void => {
@@ -218,6 +210,13 @@ export const createEventHandler = () => {
                     }
                 });
             } catch (ex) {
+                if (
+                    ex instanceof UnhealthyClusterError ||
+                    ex instanceof WaitingHealthyClusterAbortedError
+                ) {
+                    throw ex;
+                }
+                console.error(`Cluster health check failed.`, ex);
                 // TODO implement retrying...?
                 throw ex;
             }
