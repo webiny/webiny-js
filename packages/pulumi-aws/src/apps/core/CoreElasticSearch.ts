@@ -215,8 +215,8 @@ export const ElasticSearch = createAppModule({
                 role: role.output.arn,
                 runtime: LAMBDA_RUNTIME,
                 handler: "handler.handler",
-                timeout: 600,
-                memorySize: 512,
+                timeout: 900,
+                memorySize: 1024,
                 environment: {
                     variables: {
                         DEBUG: String(process.env.DEBUG),
@@ -244,7 +244,7 @@ export const ElasticSearch = createAppModule({
                 eventSourceArn: table.output.streamArn,
                 functionName: lambda.output.arn,
                 startingPosition: "LATEST",
-                maximumRetryAttempts: 3,
+                maximumRetryAttempts: 0,
                 batchSize: 200,
                 maximumBatchingWindowInSeconds: 1
             }
