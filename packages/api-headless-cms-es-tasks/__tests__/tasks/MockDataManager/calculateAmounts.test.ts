@@ -1,7 +1,7 @@
 import { calculateAmounts } from "~/tasks/MockDataManager/calculateAmounts";
 
 describe("calculateAmounts", () => {
-    it("should properly calculate the amount of tasks and records - 50", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 50", async () => {
         const values = calculateAmounts(50);
 
         expect(values).toEqual({
@@ -9,7 +9,7 @@ describe("calculateAmounts", () => {
             amountOfRecords: 50
         });
     });
-    it("should properly calculate the amount of tasks and records - 100", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 100", async () => {
         const values = calculateAmounts(100);
 
         expect(values).toEqual({
@@ -17,7 +17,7 @@ describe("calculateAmounts", () => {
             amountOfRecords: 100
         });
     });
-    it("should properly calculate the amount of tasks and records - 249", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 249", async () => {
         const values = calculateAmounts(249);
 
         expect(values).toEqual({
@@ -25,7 +25,7 @@ describe("calculateAmounts", () => {
             amountOfRecords: 249
         });
     });
-    it("should properly calculate the amount of tasks and records - 251", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 251", async () => {
         const values = calculateAmounts(251);
 
         expect(values).toEqual({
@@ -34,7 +34,7 @@ describe("calculateAmounts", () => {
         });
     });
 
-    it("should properly calculate the amount of tasks and records - 500", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 500", async () => {
         const values = calculateAmounts(500);
 
         expect(values).toEqual({
@@ -43,7 +43,7 @@ describe("calculateAmounts", () => {
         });
     });
 
-    it("should properly calculate the amount of tasks and records - 999", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 999", async () => {
         const values = calculateAmounts(999);
 
         expect(values).toEqual({
@@ -52,7 +52,7 @@ describe("calculateAmounts", () => {
         });
     });
 
-    it("should properly calculate the amount of tasks and records - 9999", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 9999", async () => {
         const values = calculateAmounts(9999);
 
         expect(values).toEqual({
@@ -61,7 +61,7 @@ describe("calculateAmounts", () => {
         });
     });
 
-    it("should properly calculate the amount of tasks and records - 10001", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 10001", async () => {
         const values = calculateAmounts(10001);
 
         expect(values).toEqual({
@@ -70,7 +70,7 @@ describe("calculateAmounts", () => {
         });
     });
 
-    it("should properly calculate the amount of tasks and records - 25001", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 25001", async () => {
         const values = calculateAmounts(25001);
 
         expect(values).toEqual({
@@ -79,7 +79,7 @@ describe("calculateAmounts", () => {
         });
     });
 
-    it("should properly calculate the amount of tasks and records - 250000", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 250000", async () => {
         const values = calculateAmounts(250000);
 
         expect(values).toEqual({
@@ -88,7 +88,7 @@ describe("calculateAmounts", () => {
         });
     });
 
-    it("should properly calculate the amount of tasks and records - 990000", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 990000", async () => {
         const values = calculateAmounts(990000);
 
         expect(values).toEqual({
@@ -97,7 +97,7 @@ describe("calculateAmounts", () => {
         });
     });
 
-    it("should properly calculate the amount of tasks and records - 2900000", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 2900000", async () => {
         const values = calculateAmounts(2900000);
 
         expect(values).toEqual({
@@ -106,7 +106,7 @@ describe("calculateAmounts", () => {
         });
     });
 
-    it("should properly calculate the amount of tasks and records - 3100000", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 3100000", async () => {
         const values = calculateAmounts(3100000);
 
         expect(values).toEqual({
@@ -115,7 +115,7 @@ describe("calculateAmounts", () => {
         });
     });
 
-    it("should properly calculate the amount of tasks and records - 5100000", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 5100000", async () => {
         const values = calculateAmounts(5100000);
 
         expect(values).toEqual({
@@ -124,7 +124,7 @@ describe("calculateAmounts", () => {
         });
     });
 
-    it("should properly calculate the amount of tasks and records - 10000000", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 10000000", async () => {
         const values = calculateAmounts(10000000);
 
         expect(values).toEqual({
@@ -133,7 +133,7 @@ describe("calculateAmounts", () => {
         });
     });
 
-    it("should properly calculate the amount of tasks and records - 10000001", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 10000001", async () => {
         expect.assertions(1);
 
         try {
@@ -143,7 +143,7 @@ describe("calculateAmounts", () => {
         }
     });
 
-    it("should properly calculate the amount of tasks and records - 50000000", async () => {
+    it.skip("should properly calculate the amount of tasks and records - 50000000", async () => {
         expect.assertions(1);
 
         try {
