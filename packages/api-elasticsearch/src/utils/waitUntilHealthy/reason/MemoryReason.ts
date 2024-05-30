@@ -1,21 +1,21 @@
 import { IReason } from "~/utils/waitUntilHealthy/reason/IReason";
 
-export interface IMemoryReason {
+export interface IMemoryReasonParams {
     maximum: number;
     current: number;
 }
 
-class MemoryReason implements IReason {
+export class MemoryReason implements IReason {
     public readonly name = "memory";
     public readonly maximum: number;
     public readonly current: number;
 
-    public constructor(params: IMemoryReason) {
+    public constructor(params: IMemoryReasonParams) {
         this.maximum = params.maximum;
         this.current = params.current;
     }
 }
 
-export const createMemoryReason = (params: IMemoryReason): IMemoryReason => {
+export const createMemoryReason = (params: IMemoryReasonParams): MemoryReason => {
     return new MemoryReason(params);
 };

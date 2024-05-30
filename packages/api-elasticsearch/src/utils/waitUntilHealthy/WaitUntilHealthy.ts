@@ -10,17 +10,15 @@ import {
     createClusterHealthStatusReason,
     createMemoryReason,
     createProcessorReason,
-    IClusterHealthReason,
-    IMemoryReason,
-    IProcessorReason
+    ClusterHealthReason,
+    MemoryReason,
+    ProcessorReason
 } from "./reason";
 import { WaitingHealthyClusterAbortedError } from "./WaitingHealthyClusterAbortedError";
 
 const WAITING_TIME_STEP = 10;
 
-export type ShouldNotWait = false;
-
-export type WaitingReason = IProcessorReason | IMemoryReason | IClusterHealthReason | ShouldNotWait;
+export type WaitingReason = ProcessorReason | MemoryReason | ClusterHealthReason;
 
 export interface IWaitUntilHealthyParams {
     /**
@@ -110,7 +108,7 @@ class WaitUntilHealthy {
         const mustEndAt = new Date(startedAt.getTime() + this.options.maxWaitingTime * 1000);
         const waitingTimeStep = this.options.waitingTimeStep || WAITING_TIME_STEP;
         let runs = 1;
-        let waitingReason: WaitingReason;
+        let waitingReason: WaitingReason | false;
         while ((waitingReason = await this.shouldWait())) {
             if (new Date() >= mustEndAt) {
                 if (options?.onTimeout) {
@@ -152,7 +150,7 @@ class WaitUntilHealthy {
         };
     }
 
-    private async shouldWait(): Promise<WaitingReason> {
+    private async shouldWait(): Promise<WaitingReason | false> {
         const health = await this.catHealth.getHealth();
         const nodes = await this.catNodes.getNodes();
 

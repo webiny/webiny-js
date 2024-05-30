@@ -30,8 +30,6 @@ export class MockDataCreator<
             return response.error(ex);
         }
 
-        const max = input.totalAmount - input.createdAmount;
-
         const healthCheck = createWaitUntilHealthy(context.elasticsearch, {
             waitingTimeStep: 20,
             maxWaitingTime: 150,
@@ -42,7 +40,7 @@ export class MockDataCreator<
 
         let createdAmount = input.createdAmount;
 
-        for (; createdAmount < max; createdAmount++) {
+        for (; createdAmount < input.totalAmount; createdAmount++) {
             if (isAborted()) {
                 return response.aborted();
             } else if (isCloseToTimeout()) {
@@ -106,6 +104,6 @@ export class MockDataCreator<
             }
         }
 
-        return params.response.done(`Created ${input.totalAmount} of records.`);
+        return params.response.done(`Created ${input.totalAmount} records.`);
     }
 }

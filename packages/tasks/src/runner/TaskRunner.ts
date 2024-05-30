@@ -1,7 +1,7 @@
 import { ITaskEvent, ITaskRawEvent } from "~/handler/types";
 import { ITaskEventValidation, ITaskRunner } from "./abstractions";
 import { Context } from "~/types";
-import { Response } from "~/response";
+import { Response, ResponseErrorResult } from "~/response";
 import { TaskControl } from "./TaskControl";
 import { IResponseResult } from "~/response/abstractions";
 import { getErrorProperties } from "~/utils/getErrorProperties";
@@ -67,7 +67,12 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
         const control = new TaskControl(this, response, this.context);
 
         try {
-            return await control.run(event);
+            const result = await control.run(event);
+            if (result instanceof ResponseErrorResult === false) {
+                return result;
+            }
+            console.error(result);
+            return result;
         } catch (ex) {
             console.error(`Failed to execute task "${event.webinyTaskId}".`);
             console.error(ex);

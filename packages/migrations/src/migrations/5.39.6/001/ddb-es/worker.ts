@@ -375,17 +375,19 @@ const createInitialStatus = (): MigrationStatus => {
                     );
                     const results = await waitUntilHealthy.wait({
                         async onUnhealthy(params) {
-                            const waitingReason = params.waitingReason || "unknown";
+                            const waitingReason = params.waitingReason;
 
                             logger.warn(
-                                `Cluster is unhealthy (${waitingReason}). Waiting for the cluster to become healthy...`,
+                                `Cluster is unhealthy (${waitingReason.name}). Waiting for the cluster to become healthy...`,
                                 params
                             );
 
-                            if (status.stats.esHealthChecks.unhealthyReasons[waitingReason]) {
-                                status.stats.esHealthChecks.unhealthyReasons[waitingReason]++;
+                            if (status.stats.esHealthChecks.unhealthyReasons[waitingReason.name]) {
+                                status.stats.esHealthChecks.unhealthyReasons[waitingReason.name]++;
                             } else {
-                                status.stats.esHealthChecks.unhealthyReasons[waitingReason] = 1;
+                                status.stats.esHealthChecks.unhealthyReasons[
+                                    waitingReason.name
+                                ] = 1;
                             }
                         }
                     });
