@@ -10,6 +10,7 @@ import { ApiResponse, ElasticsearchContext } from "@webiny/api-elasticsearch/typ
 import { createDynamoDBEventHandler, timerFactory } from "@webiny/handler-aws";
 import { ElasticsearchCatClusterHealthStatus } from "@webiny/api-elasticsearch/operations/types";
 import pRetry from "p-retry";
+import { NotEnoughRemainingTimeError } from "./NotEnoughRemainingTimeError";
 
 enum Operations {
     INSERT = "INSERT",
@@ -313,6 +314,9 @@ export const createEventHandler = () => {
                 minTimeout,
                 maxTimeout,
                 onFailedAttempt: error => {
+                    if (timer.getRemainingSeconds() < minRemainingSecondsToTimeout) {
+                        throw new NotEnoughRemainingTimeError(error);
+                    }
                     /**
                      * We will only log attempts which are after 3/4 of total attempts.
                      */
@@ -321,9 +325,6 @@ export const createEventHandler = () => {
                     }
                     console.error(`Attempt #${error.attemptNumber} failed.`);
                     console.error(error);
-                },
-                shouldRetry: async () => {
-                    return timer.getRemainingSeconds() > minRemainingSecondsToTimeout;
                 }
             });
         } catch (ex) {

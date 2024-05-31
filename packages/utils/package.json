@@ -19,7 +19,7 @@
     "mdbid": "^1.0.0",
     "nanoid": "^3.3.4",
     "nanoid-dictionary": "^4.3.0",
-    "p-retry": "^6.2.0"
+    "p-retry": "^4.6.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",
