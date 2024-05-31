@@ -15,7 +15,8 @@
     "@webiny/api-elasticsearch": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/error": "0.0.0",
-    "@webiny/handler-aws": "0.0.0"
+    "@webiny/handler-aws": "0.0.0",
+    "p-retry": "^4.6.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",

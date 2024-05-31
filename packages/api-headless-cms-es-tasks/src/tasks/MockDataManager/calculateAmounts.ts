@@ -18,7 +18,7 @@ const constrains: IMaxRecordsPerTask[] = [
         percentagePerTask: 50
     },
     {
-        amount: 500000,
+        amount: 100000,
         percentagePerTask: 20
     }
     // {

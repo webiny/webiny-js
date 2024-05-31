@@ -244,7 +244,7 @@ export const ElasticSearch = createAppModule({
                 eventSourceArn: table.output.streamArn,
                 functionName: lambda.output.arn,
                 startingPosition: "LATEST",
-                maximumRetryAttempts: 0,
+                maximumRetryAttempts: 3,
                 batchSize: 50,
                 maximumBatchingWindowInSeconds: 1
             }

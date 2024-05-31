@@ -9,6 +9,7 @@ import {
 import { ApiResponse, ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { createDynamoDBEventHandler } from "@webiny/handler-aws";
 import { ElasticsearchCatClusterHealthStatus } from "@webiny/api-elasticsearch/operations/types";
+import pRetry from "p-retry";
 
 enum Operations {
     INSERT = "INSERT",
@@ -63,6 +64,17 @@ const checkErrors = (result?: ApiResponse<BulkOperationsResponseBody>): void => 
     }
 };
 
+const getNumberEnvVariable = (name: string, def: number): number => {
+    const input = process.env[name];
+    const value = Number(input);
+    if (isNaN(value)) {
+        return def;
+    } else if (value <= 0) {
+        return def;
+    }
+    return value;
+};
+
 interface RecordDynamoDbImage {
     data: Record<string, any>;
     ignore?: boolean;
@@ -80,9 +92,21 @@ const unmarshall = <T>(value?: Record<string, AttributeValue>): T | undefined =>
     }
     return baseUnmarshall(value) as T;
 };
+/**
+ * Seconds * Milliseconds.
+ */
+const minRemainingToTimeout = 120 * 1000;
+
+const breakOnCloseToTimeout = (getRemainingTimeInMillis: () => number): void => {
+    const remaining = getRemainingTimeInMillis();
+    if (remaining <= minRemainingToTimeout) {
+        throw new Error("The Lambda Function is about to timeout.");
+    }
+};
 
 export const createEventHandler = () => {
-    return createDynamoDBEventHandler(async ({ event, context: ctx }) => {
+    return createDynamoDBEventHandler(async ({ event, context: ctx, lambdaContext }) => {
+        const { getRemainingTimeInMillis } = lambdaContext;
         const context = ctx as unknown as ElasticsearchContext;
         if (!context.elasticsearch) {
             console.error("Missing elasticsearch definition on context.");
@@ -95,8 +119,6 @@ export const createEventHandler = () => {
             maxProcessorPercent: 85,
             maxWaitingTime: 810
         });
-
-        let loggedError = false;
         /**
          * Wrap the code we need to run into the function, so it can be called within itself.
          */
@@ -193,7 +215,7 @@ export const createEventHandler = () => {
                 }
             }
 
-            if (!operations.length) {
+            if (operations.length === 0) {
                 return;
             }
 
@@ -210,7 +232,7 @@ export const createEventHandler = () => {
                             startedAt,
                             mustEndAt,
                             waitingTimeStep,
-                            waitingReason: waitingReason
+                            waitingReason
                         });
                     },
                     async onTimeout({
@@ -224,7 +246,7 @@ export const createEventHandler = () => {
                             startedAt,
                             mustEndAt,
                             waitingTimeStep,
-                            waitingReason: waitingReason
+                            waitingReason
                         });
                     }
                 });
@@ -236,7 +258,6 @@ export const createEventHandler = () => {
                     throw ex;
                 }
                 console.error(`Cluster health check failed.`, ex);
-                // TODO implement retrying...?
                 throw ex;
             }
 
@@ -251,26 +272,51 @@ export const createEventHandler = () => {
                 }
                 const meta = error?.meta || {};
                 delete meta["meta"];
-                loggedError = true;
                 console.error("Bulk error", JSON.stringify(error, null, 2));
+                throw error;
             }
             if (process.env.DEBUG !== "true") {
                 return;
             }
-            console.info(`Transferred ${operations.length} operations to Elasticsearch.`);
+            console.info(
+                `Transferred ${operations.length / 2} record operations to Elasticsearch.`
+            );
             console.log(operationIdList);
         };
 
-        try {
-            await execute();
-        } catch (ex) {
-            if (loggedError) {
-                throw ex;
+        const maxRetryTime = getNumberEnvVariable(
+            "WEBINY_DYNAMODB_TO_ELASTICSEARCH_MAX_RETRY_TIME",
+            300000
+        );
+        const retries = getNumberEnvVariable("WEBINY_DYNAMODB_TO_ELASTICSEARCH_RETRIES", 20);
+        const minTimeout = getNumberEnvVariable(
+            "WEBINY_DYNAMODB_TO_ELASTICSEARCH_MIN_TIMEOUT",
+            1500
+        );
+        const maxTimeout = getNumberEnvVariable(
+            "WEBINY_DYNAMODB_TO_ELASTICSEARCH_MAX_TIMEOUT",
+            30000
+        );
+
+        await pRetry(execute, {
+            maxRetryTime,
+            retries,
+            minTimeout,
+            maxTimeout,
+            onFailedAttempt: error => {
+                breakOnCloseToTimeout(() => {
+                    return getRemainingTimeInMillis();
+                });
+                /**
+                 * We will only log attempts which are after 3/4 of total attempts.
+                 */
+                if (error.attemptNumber < retries * 0.75) {
+                    return;
+                }
+                console.error(`Attempt #${error.attemptNumber} failed.`);
+                console.error(error);
             }
-            console.error(`Could not insert data into Elasticsearch/OpenSearch.`);
-            console.error(ex);
-            throw ex;
-        }
+        });
 
         return null;
     });
