@@ -103,6 +103,12 @@ const breakOnCloseToTimeout = (getRemainingTimeInMillis: () => number): void => 
         throw new Error("The Lambda Function is about to timeout.");
     }
 };
+/**
+ * Also, we need to set the maximum running time for the Lambda Function.
+ * https://github.com/webiny/webiny-js/blob/f7352d418da2b5ae0b781376be46785aa7ac6ae0/packages/pulumi-aws/src/apps/core/CoreOpenSearch.ts#L232
+ * https://github.com/webiny/webiny-js/blob/f7352d418da2b5ae0b781376be46785aa7ac6ae0/packages/pulumi-aws/src/apps/core/CoreElasticSearch.ts#L218
+ */
+const MAX_RUNNING_TIME = 900;
 
 export const createEventHandler = () => {
     return createDynamoDBEventHandler(async ({ event, context: ctx, lambdaContext }) => {
@@ -117,8 +123,8 @@ export const createEventHandler = () => {
          */
         const execute = async (): Promise<void> => {
             const remainingTime = timer.getRemainingSeconds();
-            const runningTime = 900 - remainingTime;
-            const maxWaitingTime = 810 - remainingTime;
+            const runningTime = MAX_RUNNING_TIME - remainingTime;
+            const maxWaitingTime = MAX_RUNNING_TIME - 90 - remainingTime;
 
             if (process.env.DEBUG === "true") {
                 console.debug(
