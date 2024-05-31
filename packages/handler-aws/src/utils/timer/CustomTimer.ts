@@ -9,11 +9,6 @@ export class CustomTimer {
     }
 
     public getRemainingMilliseconds(): number {
-        const result = this.startTime + MAX_RUNNING_MILLISECONDS - Date.now(); // 14 minutes
-        console.log(
-            "It looks like the Lambda Context getRemainingTimeInMillis does not exist. Mocked remaining time:",
-            result
-        );
-        return result;
+        return this.startTime + MAX_RUNNING_MILLISECONDS - Date.now(); // 14 minutes
     }
 }
