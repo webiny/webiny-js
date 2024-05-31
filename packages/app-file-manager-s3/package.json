@@ -12,7 +12,7 @@
   "dependencies": {
     "@webiny/app": "0.0.0",
     "graphql-tag": "^2.12.6",
-    "p-retry": "^4.6.2"
+    "p-retry": "^6.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",

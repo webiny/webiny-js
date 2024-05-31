@@ -92,17 +92,9 @@ const unmarshall = <T>(value?: Record<string, AttributeValue>): T | undefined =>
     }
     return baseUnmarshall(value) as T;
 };
-/**
- * Seconds * Milliseconds.
- */
-const minRemainingToTimeout = 120 * 1000;
 
-const breakOnCloseToTimeout = (getRemainingTimeInMillis: () => number): void => {
-    const remaining = getRemainingTimeInMillis();
-    if (remaining <= minRemainingToTimeout) {
-        throw new Error("The Lambda Function is about to timeout.");
-    }
-};
+const minRemainingSecondsToTimeout = 120;
+
 /**
  * Also, we need to set the maximum running time for the Lambda Function.
  * https://github.com/webiny/webiny-js/blob/f7352d418da2b5ae0b781376be46785aa7ac6ae0/packages/pulumi-aws/src/apps/core/CoreOpenSearch.ts#L232
@@ -117,6 +109,98 @@ export const createEventHandler = () => {
         if (!context.elasticsearch) {
             console.error("Missing elasticsearch definition on context.");
             return null;
+        }
+
+        const operations: Record<string, any>[] = [];
+
+        const operationIdList: string[] = [];
+
+        for (const record of event.Records) {
+            const dynamodb = record.dynamodb;
+            if (!dynamodb) {
+                continue;
+            }
+            /**
+             * TODO: figure out correct types
+             */
+            // @ts-expect-error
+            const newImage = unmarshall<RecordDynamoDbImage>(dynamodb.NewImage);
+
+            // Note that with the `REMOVE` event, there is no `NewImage` property. Which means,
+            // if the `newImage` is `undefined`, we are dealing with a `REMOVE` event and we still
+            // need to process it.
+            if (newImage && newImage.ignore === true) {
+                continue;
+            }
+            /**
+             * TODO: figure out correct types
+             */
+            // @ts-expect-error
+            const keys = unmarshall<RecordDynamoDbKeys>(dynamodb.Keys);
+            if (!keys?.PK || !keys.SK) {
+                continue;
+            }
+            const _id = `${keys.PK}:${keys.SK}`;
+            /**
+             * TODO: figure out correct types
+             */
+            // @ts-expect-error
+            const oldImage = unmarshall<RecordDynamoDbImage>(dynamodb.OldImage);
+            const operation = record.eventName;
+
+            /**
+             * On operations other than REMOVE we decompress the data and store it into the Elasticsearch.
+             * No need to try to decompress if operation is REMOVE since there is no data sent into that operation.
+             */
+            let data: any = undefined;
+            if (newImage && operation !== Operations.REMOVE) {
+                /**
+                 * We must decompress the data that is going into the Elasticsearch.
+                 */
+                data = await decompress(context.plugins, newImage.data);
+                /**
+                 * No point in writing null or undefined data into the Elasticsearch.
+                 * This might happen on some error while decompressing. We will log it.
+                 *
+                 * Data should NEVER be null or undefined in the Elasticsearch DynamoDB table, unless it is a delete operations.
+                 * If it is - it is a bug.
+                 */
+                if (data === undefined || data === null) {
+                    console.error(
+                        `Could not get decompressed data, skipping ES operation "${operation}", ID ${_id}`
+                    );
+                    continue;
+                }
+            }
+
+            operationIdList.push(_id);
+
+            switch (record.eventName) {
+                case Operations.INSERT:
+                case Operations.MODIFY:
+                    if (newImage) {
+                        operations.push(
+                            {
+                                index: {
+                                    _id,
+                                    _index: newImage.index
+                                }
+                            },
+                            data
+                        );
+                    }
+                    break;
+                case Operations.REMOVE:
+                    operations.push({
+                        delete: {
+                            _id,
+                            _index: oldImage?.index || "unknown"
+                        }
+                    });
+                    break;
+                default:
+                    break;
+            }
         }
         /**
          * Wrap the code we need to run into the function, so it can be called within itself.
@@ -135,101 +219,9 @@ export const createEventHandler = () => {
             const healthCheck = createWaitUntilHealthy(context.elasticsearch, {
                 minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Yellow,
                 waitingTimeStep: 30,
-                maxProcessorPercent: 85,
+                maxProcessorPercent: 95,
                 maxWaitingTime
             });
-
-            const operations = [];
-
-            const operationIdList: string[] = [];
-
-            for (const record of event.Records) {
-                const dynamodb = record.dynamodb;
-                if (!dynamodb) {
-                    continue;
-                }
-                /**
-                 * TODO: figure out correct types
-                 */
-                // @ts-expect-error
-                const newImage = unmarshall<RecordDynamoDbImage>(dynamodb.NewImage);
-
-                // Note that with the `REMOVE` event, there is no `NewImage` property. Which means,
-                // if the `newImage` is `undefined`, we are dealing with a `REMOVE` event and we still
-                // need to process it.
-                if (newImage && newImage.ignore === true) {
-                    continue;
-                }
-                /**
-                 * TODO: figure out correct types
-                 */
-                // @ts-expect-error
-                const keys = unmarshall<RecordDynamoDbKeys>(dynamodb.Keys);
-                if (!keys?.PK || !keys.SK) {
-                    continue;
-                }
-                const _id = `${keys.PK}:${keys.SK}`;
-                /**
-                 * TODO: figure out correct types
-                 */
-                // @ts-expect-error
-                const oldImage = unmarshall<RecordDynamoDbImage>(dynamodb.OldImage);
-                const operation = record.eventName;
-
-                /**
-                 * On operations other than REMOVE we decompress the data and store it into the Elasticsearch.
-                 * No need to try to decompress if operation is REMOVE since there is no data sent into that operation.
-                 */
-                let data: any = undefined;
-                if (newImage && operation !== Operations.REMOVE) {
-                    /**
-                     * We must decompress the data that is going into the Elasticsearch.
-                     */
-                    data = await decompress(context.plugins, newImage.data);
-                    /**
-                     * No point in writing null or undefined data into the Elasticsearch.
-                     * This might happen on some error while decompressing. We will log it.
-                     *
-                     * Data should NEVER be null or undefined in the Elasticsearch DynamoDB table, unless it is a delete operations.
-                     * If it is - it is a bug.
-                     */
-                    if (data === undefined || data === null) {
-                        console.error(
-                            `Could not get decompressed data, skipping ES operation "${operation}", ID ${_id}`
-                        );
-                        continue;
-                    }
-                }
-
-                operationIdList.push(_id);
-
-                switch (record.eventName) {
-                    case Operations.INSERT:
-                    case Operations.MODIFY:
-                        if (newImage) {
-                            operations.push(
-                                {
-                                    index: {
-                                        _id,
-                                        _index: newImage.index
-                                    }
-                                },
-                                data
-                            );
-                        }
-                        break;
-                    case Operations.REMOVE:
-                        operations.push({
-                            delete: {
-                                _id,
-                                _index: oldImage?.index || "unknown"
-                            }
-                        });
-                        break;
-                    default:
-                        break;
-                }
-            }
 
             if (operations.length === 0) {
                 return;
@@ -314,25 +306,30 @@ export const createEventHandler = () => {
             30000
         );
 
-        await pRetry(execute, {
-            maxRetryTime,
-            retries,
-            minTimeout,
-            maxTimeout,
-            onFailedAttempt: error => {
-                breakOnCloseToTimeout(() => {
-                    return timer.getRemainingMilliseconds();
-                });
-                /**
-                 * We will only log attempts which are after 3/4 of total attempts.
-                 */
-                if (error.attemptNumber < retries * 0.75) {
-                    return;
+        try {
+            await pRetry(execute, {
+                maxRetryTime,
+                retries,
+                minTimeout,
+                maxTimeout,
+                onFailedAttempt: error => {
+                    /**
+                     * We will only log attempts which are after 3/4 of total attempts.
+                     */
+                    if (error.attemptNumber < retries * 0.75) {
+                        return;
+                    }
+                    console.error(`Attempt #${error.attemptNumber} failed.`);
+                    console.error(error);
+                },
+                shouldRetry: async () => {
+                    return timer.getRemainingSeconds() > minRemainingSecondsToTimeout;
                 }
-                console.error(`Attempt #${error.attemptNumber} failed.`);
-                console.error(error);
-            }
-        });
+            });
+        } catch (ex) {
+            // TODO implement storing of failed operations
+            throw ex;
+        }
 
         return null;
     });
