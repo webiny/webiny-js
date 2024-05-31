@@ -112,17 +112,26 @@ export const createEventHandler = () => {
             console.error("Missing elasticsearch definition on context.");
             return null;
         }
-
-        const healthCheck = createWaitUntilHealthy(context.elasticsearch, {
-            minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Yellow,
-            waitingTimeStep: 30,
-            maxProcessorPercent: 85,
-            maxWaitingTime: 810
-        });
         /**
          * Wrap the code we need to run into the function, so it can be called within itself.
          */
         const execute = async (): Promise<void> => {
+            const runningTime = 900 - Math.ceil(getRemainingTimeInMillis() / 1000);
+            const maxWaitingTime = 810 - runningTime;
+
+            if (process.env.DEBUG === "true") {
+                console.debug(
+                    `The Lambda is already running for ${runningTime}s. Setting Health Check max waiting time: ${maxWaitingTime}s`
+                );
+            }
+
+            const healthCheck = createWaitUntilHealthy(context.elasticsearch, {
+                minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Yellow,
+                waitingTimeStep: 30,
+                maxProcessorPercent: 85,
+                maxWaitingTime
+            });
+
             const operations = [];
 
             const operationIdList: string[] = [];
@@ -228,7 +237,7 @@ export const createEventHandler = () => {
                         waitingTimeStep,
                         waitingReason
                     }) {
-                        console.warn(`Cluster is unhealthy on run #${runs}.`, {
+                        console.debug(`Cluster is unhealthy on run #${runs}.`, {
                             startedAt,
                             mustEndAt,
                             waitingTimeStep,
