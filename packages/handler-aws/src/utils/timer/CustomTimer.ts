@@ -1,9 +1,7 @@
-import { ITimer } from "~/timer/abstractions/ITimer";
-
 const MAX_RUNNING_MINUTES = 14;
 const MAX_RUNNING_MILLISECONDS = MAX_RUNNING_MINUTES * 60 * 1000;
 
-export class CustomTimer implements ITimer {
+export class CustomTimer {
     private readonly startTime: number;
 
     public constructor() {

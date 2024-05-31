@@ -7,7 +7,7 @@ import {
     WaitingHealthyClusterAbortedError
 } from "@webiny/api-elasticsearch";
 import { ApiResponse, ElasticsearchContext } from "@webiny/api-elasticsearch/types";
-import { createDynamoDBEventHandler } from "@webiny/handler-aws";
+import { createDynamoDBEventHandler, timerFactory } from "@webiny/handler-aws";
 import { ElasticsearchCatClusterHealthStatus } from "@webiny/api-elasticsearch/operations/types";
 import pRetry from "p-retry";
 
@@ -106,7 +106,7 @@ const breakOnCloseToTimeout = (getRemainingTimeInMillis: () => number): void => 
 
 export const createEventHandler = () => {
     return createDynamoDBEventHandler(async ({ event, context: ctx, lambdaContext }) => {
-        const { getRemainingTimeInMillis } = lambdaContext;
+        const timer = timerFactory(lambdaContext);
         const context = ctx as unknown as ElasticsearchContext;
         if (!context.elasticsearch) {
             console.error("Missing elasticsearch definition on context.");
@@ -116,7 +116,7 @@ export const createEventHandler = () => {
          * Wrap the code we need to run into the function, so it can be called within itself.
          */
         const execute = async (): Promise<void> => {
-            const runningTime = 900 - Math.ceil(getRemainingTimeInMillis() / 1000);
+            const runningTime = 900 - Math.ceil(timer.getRemainingSeconds());
             const maxWaitingTime = 810 - runningTime;
 
             if (process.env.DEBUG === "true") {
@@ -314,7 +314,7 @@ export const createEventHandler = () => {
             maxTimeout,
             onFailedAttempt: error => {
                 breakOnCloseToTimeout(() => {
-                    return getRemainingTimeInMillis();
+                    return timer.getRemainingMilliseconds();
                 });
                 /**
                  * We will only log attempts which are after 3/4 of total attempts.
