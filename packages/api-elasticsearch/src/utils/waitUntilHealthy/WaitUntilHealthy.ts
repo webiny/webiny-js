@@ -3,14 +3,15 @@ import { ElasticsearchCatHealth } from "~/operations/ElasticsearchCatHealth";
 import { ElasticsearchCatNodes } from "~/operations/ElasticsearchCatNodes";
 import {
     ElasticsearchCatClusterHealthStatus,
+    IElasticsearchCatHealthResponse,
     IElasticsearchCatNodesResponse
 } from "~/operations/types";
 import { UnhealthyClusterError } from "~/utils/waitUntilHealthy/UnhealthyClusterError";
 import {
+    ClusterHealthReason,
     createClusterHealthStatusReason,
     createMemoryReason,
     createProcessorReason,
-    ClusterHealthReason,
     MemoryReason,
     ProcessorReason
 } from "./reason";
@@ -151,8 +152,26 @@ class WaitUntilHealthy {
     }
 
     private async shouldWait(): Promise<WaitingReason | false> {
-        const health = await this.catHealth.getHealth();
-        const nodes = await this.catNodes.getNodes();
+        let health: IElasticsearchCatHealthResponse;
+        let nodes: IElasticsearchCatNodesResponse;
+        try {
+            health = await this.catHealth.getHealth();
+        } catch (ex) {
+            return createClusterHealthStatusReason({
+                description: ex.message,
+                minimum: this.options.minClusterHealthStatus,
+                current: ElasticsearchCatClusterHealthStatus.Red
+            });
+        }
+        try {
+            nodes = await this.catNodes.getNodes();
+        } catch (ex) {
+            return createClusterHealthStatusReason({
+                description: ex.message,
+                minimum: this.options.minClusterHealthStatus,
+                current: ElasticsearchCatClusterHealthStatus.Red
+            });
+        }
 
         const clusterHealthStatus = this.transformClusterHealthStatus(health.status);
         const minClusterHealthStatus = this.transformClusterHealthStatus(
