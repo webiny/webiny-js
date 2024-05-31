@@ -6,7 +6,7 @@ import {
     ITaskResponseDoneResultOutput
 } from "@webiny/tasks/types";
 import { TaskRunner } from "@webiny/tasks/runner";
-import { timerFactory } from "@webiny/tasks/timer";
+import { timerFactory } from "@webiny/handler-aws/utils";
 import { TaskEventValidation } from "@webiny/tasks/runner/TaskEventValidation";
 import { createMockTaskTriggerTransportPlugin } from "./mockTaskTriggerTransportPlugin";
 

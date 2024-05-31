@@ -116,8 +116,9 @@ export const createEventHandler = () => {
          * Wrap the code we need to run into the function, so it can be called within itself.
          */
         const execute = async (): Promise<void> => {
-            const runningTime = 900 - Math.ceil(timer.getRemainingSeconds());
-            const maxWaitingTime = 810 - runningTime;
+            const remainingTime = timer.getRemainingSeconds();
+            const runningTime = 900 - remainingTime;
+            const maxWaitingTime = 810 - remainingTime;
 
             if (process.env.DEBUG === "true") {
                 console.debug(
