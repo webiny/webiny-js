@@ -76,6 +76,11 @@ const getNumberEnvVariable = (name: string, def: number): number => {
     return value;
 };
 
+const MAX_PROCESSOR_PERCENT = getNumberEnvVariable(
+    "MAX_ES_PROCESSOR",
+    process.env.NODE_ENV === "test" ? 101 : 98
+);
+
 interface RecordDynamoDbImage {
     data: Record<string, any>;
     ignore?: boolean;
@@ -204,6 +209,12 @@ export const createEventHandler = () => {
             }
         }
         /**
+         * No need to do anything if there are no operations.
+         */
+        if (operations.length === 0) {
+            return null;
+        }
+        /**
          * Wrap the code we need to run into the function, so it can be called within itself.
          */
         const execute = async (): Promise<void> => {
@@ -220,13 +231,9 @@ export const createEventHandler = () => {
             const healthCheck = createWaitUntilHealthy(context.elasticsearch, {
                 minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Yellow,
                 waitingTimeStep: 30,
-                maxProcessorPercent: 98,
+                maxProcessorPercent: MAX_PROCESSOR_PERCENT,
                 maxWaitingTime
             });
-
-            if (operations.length === 0) {
-                return;
-            }
 
             try {
                 await healthCheck.wait({
