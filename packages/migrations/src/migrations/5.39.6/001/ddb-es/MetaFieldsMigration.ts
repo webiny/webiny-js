@@ -152,7 +152,12 @@ export class MetaFieldsMigration {
             avgRecordsScannedPerIteration: 0,
             recordsScannedPerSecond: 0,
             recordsUpdated: 0,
-            recordsSkipped: 0
+            recordsSkipped: 0,
+            esHealthChecks: {
+                timeSpentWaiting: 0,
+                checksCount: 0,
+                unhealthyReasons: {} as Record<string, any>
+            }
         };
 
         for (const logFilePath of logFilePaths) {
@@ -163,6 +168,24 @@ export class MetaFieldsMigration {
             migrationStats.recordsScanned += logFile.recordsScanned;
             migrationStats.recordsUpdated += logFile.recordsUpdated;
             migrationStats.recordsSkipped += logFile.recordsSkipped;
+
+            migrationStats.esHealthChecks.timeSpentWaiting +=
+                logFile.esHealthChecks.timeSpentWaiting;
+            migrationStats.esHealthChecks.checksCount += logFile.esHealthChecks.checksCount;
+
+            for (const unhealthyReasonType in logFile.esHealthChecks.unhealthyReasons) {
+                if (!logFile.esHealthChecks.unhealthyReasons.hasOwnProperty(unhealthyReasonType)) {
+                    continue;
+                }
+
+                if (!migrationStats.esHealthChecks.unhealthyReasons[unhealthyReasonType]) {
+                    migrationStats.esHealthChecks.unhealthyReasons[unhealthyReasonType] =
+                        logFile.esHealthChecks.unhealthyReasons[unhealthyReasonType];
+                }
+
+                migrationStats.esHealthChecks.unhealthyReasons[unhealthyReasonType] +=
+                    logFile.esHealthChecks.unhealthyReasons[unhealthyReasonType];
+            }
         }
 
         migrationStats.avgIterationDuration = duration / migrationStats.iterationsCount;
@@ -176,5 +199,15 @@ export class MetaFieldsMigration {
             migrationStats,
             `Migration summary (based on ${logFilePaths.length} generated logs):`
         );
+
+        const logFilePath = path.join(
+            os.tmpdir(),
+            `webiny-5-39-6-meta-fields-data-migration-log-${this.runId}.log`
+        );
+
+        // Save segment processing stats to a file.
+        fs.writeFileSync(logFilePath, JSON.stringify(migrationStats, null, 2));
+        this.logger.trace(`Migration summary saved to "${logFilePath}".`);
+
     }
 }
