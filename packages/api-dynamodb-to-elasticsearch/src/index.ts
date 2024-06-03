@@ -220,7 +220,7 @@ export const createEventHandler = () => {
             const healthCheck = createWaitUntilHealthy(context.elasticsearch, {
                 minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Yellow,
                 waitingTimeStep: 30,
-                maxProcessorPercent: 95,
+                maxProcessorPercent: 98,
                 maxWaitingTime
             });
 
