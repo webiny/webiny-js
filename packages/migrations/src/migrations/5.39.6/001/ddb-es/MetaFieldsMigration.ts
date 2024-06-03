@@ -178,13 +178,15 @@ export class MetaFieldsMigration {
                     continue;
                 }
 
-                if (!migrationStats.esHealthChecks.unhealthyReasons[unhealthyReasonType]) {
+                const hasCount =
+                    unhealthyReasonType in migrationStats.esHealthChecks.unhealthyReasons;
+                if (hasCount) {
+                    migrationStats.esHealthChecks.unhealthyReasons[unhealthyReasonType] +=
+                        logFile.esHealthChecks.unhealthyReasons[unhealthyReasonType];
+                } else {
                     migrationStats.esHealthChecks.unhealthyReasons[unhealthyReasonType] =
                         logFile.esHealthChecks.unhealthyReasons[unhealthyReasonType];
                 }
-
-                migrationStats.esHealthChecks.unhealthyReasons[unhealthyReasonType] +=
-                    logFile.esHealthChecks.unhealthyReasons[unhealthyReasonType];
             }
         }
 
@@ -208,6 +210,5 @@ export class MetaFieldsMigration {
         // Save segment processing stats to a file.
         fs.writeFileSync(logFilePath, JSON.stringify(migrationStats, null, 2));
         this.logger.trace(`Migration summary saved to "${logFilePath}".`);
-
     }
 }

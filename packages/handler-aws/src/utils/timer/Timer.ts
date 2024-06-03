@@ -13,4 +13,12 @@ export class Timer implements ITimer {
     public getRemainingMilliseconds(): number {
         return this.cb();
     }
+
+    public getRemainingSeconds(): number {
+        const result = this.cb();
+        if (result > 0) {
+            return Math.floor(result / 1000);
+        }
+        return 0;
+    }
 }

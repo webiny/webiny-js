@@ -10,6 +10,9 @@ export const getObjectProperties = <T = GenericRecord>(input: unknown): T => {
         return {} as unknown as T;
     }
     return Object.getOwnPropertyNames(input).reduce<T>((acc, key) => {
+        if (key === "stack") {
+            return acc;
+        }
         acc[key as keyof T] = (input as unknown as T)[key as keyof T];
         return acc;
     }, {} as T) as unknown as T;

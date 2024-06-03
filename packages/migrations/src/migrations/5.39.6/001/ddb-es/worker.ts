@@ -375,7 +375,7 @@ const createInitialStatus = (): MigrationStatus => {
                     );
                     const results = await waitUntilHealthy.wait({
                         async onUnhealthy(params) {
-                            const shouldWaitReason = params.shouldWaitReason || "unknown";
+                            const shouldWaitReason = params.waitingReason.name;
 
                             logger.warn(
                                 `Cluster is unhealthy (${shouldWaitReason}). Waiting for the cluster to become healthy...`,

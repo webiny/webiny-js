@@ -215,8 +215,8 @@ export const ElasticSearch = createAppModule({
                 role: role.output.arn,
                 runtime: LAMBDA_RUNTIME,
                 handler: "handler.handler",
-                timeout: 600,
-                memorySize: 512,
+                timeout: 900,
+                memorySize: 1024,
                 environment: {
                     variables: {
                         DEBUG: String(process.env.DEBUG),
@@ -245,7 +245,7 @@ export const ElasticSearch = createAppModule({
                 functionName: lambda.output.arn,
                 startingPosition: "LATEST",
                 maximumRetryAttempts: 3,
-                batchSize: 200,
+                batchSize: 50,
                 maximumBatchingWindowInSeconds: 1
             }
         });
@@ -287,6 +287,7 @@ function getDynamoDbToElasticLambdaPolicy(
                         Sid: "PermissionForES",
                         Effect: "Allow",
                         Action: [
+                            "es:ESHttpGet",
                             "es:ESHttpDelete",
                             "es:ESHttpPatch",
                             "es:ESHttpPost",

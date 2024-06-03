@@ -6707,6 +6707,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@faker-js/faker@npm:^8.4.1":
+  version: 8.4.1
+  resolution: "@faker-js/faker@npm:8.4.1"
+  checksum: d802d531f8929562715adc279cfec763c9a4bc596ec67b0ce43fd0ae61b285d2b0eec6f1f4aa852452a63721a842fe7e81926dce7bd92acca94b01e2a1f55f5a
+  languageName: node
+  linkType: hard
+
 "@fastify/accept-negotiator@npm:^1.0.0":
   version: 1.1.0
   resolution: "@fastify/accept-negotiator@npm:1.1.0"
@@ -15320,6 +15327,7 @@ __metadata:
     "@babel/cli": ^7.22.6
     "@babel/core": ^7.22.8
     "@webiny/api-elasticsearch-tasks": 0.0.0
+    "@webiny/api-headless-cms-es-tasks": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -15337,6 +15345,7 @@ __metadata:
     "@babel/cli": ^7.22.6
     "@babel/core": ^7.22.8
     "@webiny/api-elasticsearch-tasks": 0.0.0
+    "@webiny/api-headless-cms-es-tasks": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -15724,6 +15733,35 @@ __metadata:
     lodash: ^4.5.0
     ttypescript: ^1.5.12
     typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-headless-cms-es-tasks@0.0.0, @webiny/api-headless-cms-es-tasks@workspace:packages/api-headless-cms-es-tasks":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-headless-cms-es-tasks@workspace:packages/api-headless-cms-es-tasks"
+  dependencies:
+    "@babel/cli": ^7.22.6
+    "@babel/core": ^7.22.8
+    "@babel/preset-env": ^7.22.7
+    "@faker-js/faker": ^8.4.1
+    "@webiny/api": 0.0.0
+    "@webiny/api-elasticsearch": 0.0.0
+    "@webiny/api-headless-cms": 0.0.0
+    "@webiny/api-headless-cms-ddb-es": 0.0.0
+    "@webiny/api-i18n": 0.0.0
+    "@webiny/api-security": 0.0.0
+    "@webiny/api-tenancy": 0.0.0
+    "@webiny/api-wcp": 0.0.0
+    "@webiny/cli": 0.0.0
+    "@webiny/handler": 0.0.0
+    "@webiny/handler-aws": 0.0.0
+    "@webiny/handler-graphql": 0.0.0
+    "@webiny/plugins": 0.0.0
+    "@webiny/project-utils": 0.0.0
+    "@webiny/tasks": 0.0.0
+    "@webiny/utils": 0.0.0
+    ttypescript: ^1.5.13
+    typescript: ^4.7.4
   languageName: unknown
   linkType: soft
 
@@ -24681,7 +24719,7 @@ __metadata:
     load-json-file: 6.2.0
     node-fetch: ^2.6.1
     os: 0.1.1
-    p-retry: ^4.6.0
+    p-retry: ^4.6.2
     rimraf: 3.0.2
     semver: ^7.3.5
     uuid: 8.3.2
@@ -38406,7 +38444,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-retry@npm:^4.5.0, p-retry@npm:^4.6.0, p-retry@npm:^4.6.2":
+"p-retry@npm:^4.5.0, p-retry@npm:^4.6.2":
   version: 4.6.2
   resolution: "p-retry@npm:4.6.2"
   dependencies:
