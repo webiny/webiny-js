@@ -208,6 +208,5 @@ export class MetaFieldsMigration {
         // Save segment processing stats to a file.
         fs.writeFileSync(logFilePath, JSON.stringify(migrationStats, null, 2));
         this.logger.trace(`Migration summary saved to "${logFilePath}".`);
-
     }
 }
