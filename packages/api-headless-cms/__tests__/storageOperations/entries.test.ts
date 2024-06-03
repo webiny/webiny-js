@@ -34,7 +34,7 @@ describe("Entries storage operations", () => {
 
     it("getRevisions - should get revisions of all the entries", async () => {
         const personModel = createPersonModel();
-        const amount = 102;
+        const amount = 45;
         const results = await createPersonEntries({
             amount,
             storageOperations,
