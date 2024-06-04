@@ -21,6 +21,7 @@ export interface CmsModelFieldSettings<T = unknown> {
     models?: Pick<CmsModel, "modelId">[];
     templates?: CmsDynamicZoneTemplate[];
     imagesOnly?: boolean;
+    open?: boolean;
     [key: string]: any;
 }
 

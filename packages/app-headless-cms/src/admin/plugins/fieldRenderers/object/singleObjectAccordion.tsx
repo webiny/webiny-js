@@ -37,7 +37,11 @@ const plugin: CmsModelFieldRendererPlugin = {
                         <ParentFieldProvider value={bindProps.value} path={Bind.parentName}>
                             <ParentValueIndexProvider index={-1}>
                                 <Accordion>
-                                    <AccordionItem title={field.label} description={field.helpText}>
+                                    <AccordionItem
+                                        title={field.label}
+                                        description={field.helpText}
+                                        open={settings?.open || false}
+                                    >
                                         <Fields
                                             Bind={Bind}
                                             contentModel={contentModel}

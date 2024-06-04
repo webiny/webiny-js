@@ -86,7 +86,11 @@ const ObjectsRenderer = (props: CmsModelFieldRendererProps) => {
 
     return (
         <RootAccordion>
-            <AccordionItem title={field.label} description={field.helpText}>
+            <AccordionItem
+                title={field.label}
+                description={field.helpText}
+                open={settings?.open || false}
+            >
                 <DynamicSection
                     {...props}
                     emptyValue={{}}

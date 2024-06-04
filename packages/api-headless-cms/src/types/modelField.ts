@@ -293,6 +293,10 @@ export interface CmsModelFieldSettings {
      * Disable full text search explicitly on this field.
      */
     disableFullTextSearch?: boolean;
+    /**
+     * Expand accordion appearances of dynamic zone and objects.
+     */
+    open?: boolean;
 
     /**
      * There are a lot of other settings that are possible to add, so we keep the type opened.

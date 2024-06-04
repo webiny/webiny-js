@@ -29,6 +29,7 @@ export type DynamicZoneContainerProps = {
     title?: string;
     description?: string;
     className?: string;
+    open?: boolean;
 };
 
 export const DynamicZoneContainer = makeDecoratable(
@@ -42,7 +43,8 @@ export const DynamicZoneContainer = makeDecoratable(
             title = field.label,
             description = field.helpText,
             className,
-            children
+            children,
+            open = field.settings?.open || false
         } = props;
 
         const defaultClassName = field.multipleValues ? noBottomPadding : undefined;
@@ -54,6 +56,7 @@ export const DynamicZoneContainer = makeDecoratable(
                         title={title}
                         description={description}
                         className={className || defaultClassName}
+                        open={open || false}
                     >
                         {children}
                     </AccordionItem>
