@@ -11,7 +11,7 @@ import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUnti
 import {
     DEFAULT_ES_HEALTH_CHECKS_PARAMS,
     EsHealthChecksParams
-} from "~/migrations/5.39.6/001/ddb-es/utils";
+} from "../../utils";
 import path from "path";
 import os from "os";
 import fs from "fs";
