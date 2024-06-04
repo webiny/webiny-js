@@ -73,7 +73,8 @@ describe("event", () => {
             },
             lambdaContext,
             request,
-            reply
+            reply,
+            next: jest.fn()
         });
 
         expect(result).toEqual(null);
@@ -86,7 +87,8 @@ describe("event", () => {
             event,
             lambdaContext,
             request,
-            reply
+            reply,
+            next: jest.fn()
         });
 
         expect(result).toEqual(null);

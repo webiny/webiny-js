@@ -12,7 +12,7 @@ import { ElasticsearchCatClusterHealthStatus } from "@webiny/api-elasticsearch/o
 import pRetry from "p-retry";
 import { NotEnoughRemainingTimeError } from "./NotEnoughRemainingTimeError";
 
-enum Operations {
+export enum Operations {
     INSERT = "INSERT",
     MODIFY = "MODIFY",
     REMOVE = "REMOVE"
@@ -220,7 +220,7 @@ export const createEventHandler = () => {
         const execute = async (): Promise<void> => {
             const remainingTime = timer.getRemainingSeconds();
             const runningTime = MAX_RUNNING_TIME - remainingTime;
-            const maxWaitingTime = MAX_RUNNING_TIME - 90 - remainingTime;
+            const maxWaitingTime = remainingTime - 90;
 
             if (process.env.DEBUG === "true") {
                 console.debug(
