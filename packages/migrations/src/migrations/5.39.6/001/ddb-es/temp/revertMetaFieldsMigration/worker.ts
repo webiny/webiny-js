@@ -216,7 +216,7 @@ const createInitialStatus = (): MigrationStatus => {
                         continue;
                     }
 
-                    if (isMigratedEntry(decompressedData)) {
+                    if (!isMigratedEntry(decompressedData)) {
                         status.stats.recordsSkipped++;
                         continue;
                     }
