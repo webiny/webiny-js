@@ -34,6 +34,9 @@ import { EsHealthChecksParams } from "~/migrations/5.39.6/001/ddb-es/utils";
 import path from "path";
 import os from "os";
 import fs from "fs";
+import {
+    getNonNullableFieldsWithMissingValues
+} from "~/migrations/5.39.0/001/utils/getNonNullableFieldsWithMissingValues";
 
 const argv = yargs(hideBin(process.argv))
     .options({
@@ -215,6 +218,7 @@ const createInitialStatus = (): MigrationStatus => {
                 //    new non-nullable meta fields have a value and nothing is missing.
                 if (!hasAllNonNullableValues(item)) {
                     logger.trace(
+                        getNonNullableFieldsWithMissingValues(item),
                         `Detected an entry with missing values for non-nullable meta fields (${item.modelId}/${item.id}).`
                     );
 
@@ -304,6 +308,7 @@ const createInitialStatus = (): MigrationStatus => {
                     // 2. Ensure new non-nullable meta fields have a value and nothing is missing.
                     if (!hasAllNonNullableValues(decompressedData)) {
                         logger.trace(
+                            getNonNullableFieldsWithMissingValues(decompressedData),
                             [
                                 `[DDB-ES Table] Detected an entry with missing values for non-nullable meta fields`,
                                 `(${decompressedData.modelId}/${decompressedData.id}).`
