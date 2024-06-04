@@ -14,8 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api-headless-cms": "0.0.0",
-    "@webiny/handler": "0.0.0",
-    "@webiny/handler-aws": "0.0.0",
+    "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/tasks": "0.0.0",
     "@webiny/utils": "0.0.0",

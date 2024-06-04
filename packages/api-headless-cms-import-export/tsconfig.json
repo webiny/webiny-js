@@ -3,8 +3,7 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-headless-cms" },
-    { "path": "../handler" },
-    { "path": "../handler-aws" },
+    { "path": "../handler-graphql" },
     { "path": "../plugins" },
     { "path": "../tasks" },
     { "path": "../utils" },
@@ -14,7 +13,6 @@
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
     { "path": "../api-wcp" },
-    { "path": "../handler-graphql" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -26,10 +24,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/tasks/*": ["../tasks/src/*"],
@@ -48,8 +44,6 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/api-wcp/*": ["../api-wcp/src/*"],
       "@webiny/api-wcp": ["../api-wcp/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     },
