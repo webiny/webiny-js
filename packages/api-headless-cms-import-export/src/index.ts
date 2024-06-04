@@ -1,5 +1,19 @@
+import { ContextPlugin } from "@webiny/api";
 import { Plugin } from "@webiny/plugins/types";
+import { attachHeadlessCmsImportExportGraphQL } from "~/graphql";
+import { Context } from "./types";
+import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
+import { createHeadlessCmsImportExportCrud } from "~/crud";
 
 export const createHeadlessCmsImportExport = (): Plugin[] => {
-    return [];
+    const plugin = new ContextPlugin<Context>(async context => {
+        const installed = await isHeadlessCmsReady(context);
+        if (!installed) {
+            return;
+        }
+
+        context.cmsImportExport = await createHeadlessCmsImportExportCrud(context);
+        await attachHeadlessCmsImportExportGraphQL(context);
+    });
+    return [plugin];
 };

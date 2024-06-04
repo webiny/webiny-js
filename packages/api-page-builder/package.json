@@ -40,7 +40,7 @@
     "node-fetch": "^2.6.13",
     "stream": "^0.0.2",
     "uniqid": "^5.2.0",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",

@@ -24,7 +24,7 @@
     "crypto-js": "^4.2.0",
     "lodash": "^4.17.21",
     "nodemailer": "^6.9.12",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
