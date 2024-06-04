@@ -170,8 +170,6 @@ const createInitialStatus = (): MigrationStatus => {
             const ddbEsItemsToBatchWrite: BatchWriteItem[] = [];
             const ddbEsItemsToBatchRead: Record<string, BatchReadItem> = {};
 
-            const fallbackDateTime = new Date().toISOString();
-
             // Update records in primary DynamoDB table. Also do preparations for
             // subsequent updates on DDB-ES DynamoDB table, and in Elasticsearch.
             for (const item of result.items) {
@@ -180,6 +178,7 @@ const createInitialStatus = (): MigrationStatus => {
                     continue;
                 }
 
+                // @ts-expect-error
                 delete item.revisionCreatedOn;
 
                 ddbItemsToBatchWrite.push(ddbEntryEntity.putBatch(item));
@@ -230,6 +229,7 @@ const createInitialStatus = (): MigrationStatus => {
                         continue;
                     }
 
+                    // @ts-expect-error
                     delete decompressedData.revisionCreatedOn;
 
                     const compressedData = await getCompressedData(decompressedData);
