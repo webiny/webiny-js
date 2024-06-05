@@ -23,6 +23,7 @@ import {
 } from "./StyledComponents";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import { FieldSettings } from "./FieldSettings";
+import { AccordionRenderSettings, getAccordionRenderSettings } from "../AccordionRenderSettings";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -83,10 +84,11 @@ const ObjectsRenderer = (props: CmsModelFieldRendererProps) => {
     }
 
     const settings = fieldSettings.getSettings();
+    const open = getAccordionRenderSettings(field).open;
 
     return (
         <RootAccordion>
-            <AccordionItem title={field.label} description={field.helpText}>
+            <AccordionItem title={field.label} description={field.helpText} open={open}>
                 <DynamicSection
                     {...props}
                     emptyValue={{}}
@@ -140,6 +142,9 @@ const plugin: CmsModelFieldRendererPlugin = {
         },
         render(props) {
             return <ObjectsRenderer {...props} />;
+        },
+        renderSettings({ field }) {
+            return <AccordionRenderSettings field={field} />;
         }
     }
 };

@@ -6,6 +6,10 @@ import { Fields } from "~/admin/components/ContentEntryForm/Fields";
 import { FieldSettings } from "./FieldSettings";
 import { ParentFieldProvider } from "~/admin/hooks";
 import { ParentValueIndexProvider } from "~/admin/components/ModelFieldProvider";
+import {
+    AccordionRenderSettings,
+    getAccordionRenderSettings
+} from "~/admin/plugins/fieldRenderers/AccordionRenderSettings";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -30,6 +34,7 @@ const plugin: CmsModelFieldRendererPlugin = {
             }
 
             const settings = fieldSettings.getSettings();
+            const open = getAccordionRenderSettings(field).open;
 
             return (
                 <Bind>
@@ -37,7 +42,11 @@ const plugin: CmsModelFieldRendererPlugin = {
                         <ParentFieldProvider value={bindProps.value} path={Bind.parentName}>
                             <ParentValueIndexProvider index={-1}>
                                 <Accordion>
-                                    <AccordionItem title={field.label} description={field.helpText}>
+                                    <AccordionItem
+                                        title={field.label}
+                                        description={field.helpText}
+                                        open={open}
+                                    >
                                         <Fields
                                             Bind={Bind}
                                             contentModel={contentModel}
@@ -51,6 +60,9 @@ const plugin: CmsModelFieldRendererPlugin = {
                     )}
                 </Bind>
             );
+        },
+        renderSettings({ field }) {
+            return <AccordionRenderSettings field={field} />;
         }
     }
 };
