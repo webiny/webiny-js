@@ -11,6 +11,14 @@ export class MoveEntriesToFolderByModel
         const { input, response } = params;
 
         try {
+            if (!input.modelId) {
+                return response.error(`Missing "modelId" in the input.`);
+            }
+
+            if (!input?.data?.folderId) {
+                return response.error(`Missing "folderId" in the input.`);
+            }
+
             if (input.processing) {
                 const processTasks = new TaskProcess(EntriesTask.MoveEntriesToFolderByModel);
                 return await processTasks.execute(params);

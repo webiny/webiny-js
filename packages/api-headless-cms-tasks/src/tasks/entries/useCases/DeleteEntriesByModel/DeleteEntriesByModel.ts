@@ -1,8 +1,8 @@
 import { ITaskResponseResult } from "@webiny/tasks";
-import { TaskProcess } from "../../domain";
-import { CreateTasks } from "./CreateTasks";
+import { TaskCreate, TaskProcess } from "../../domain";
 import { EntriesTask, IBulkActionOperationByModelTaskParams } from "~/types";
 import { IUseCase } from "~/tasks/IUseCase";
+import { ListDeletedEntries } from "~/tasks/entries/gateways";
 
 export class DeleteEntriesByModel
     implements IUseCase<IBulkActionOperationByModelTaskParams, ITaskResponseResult>
@@ -11,12 +11,17 @@ export class DeleteEntriesByModel
         const { input, response } = params;
 
         try {
+            if (!input.modelId) {
+                return response.error(`Missing "modelId" in the input.`);
+            }
+
             if (input.processing) {
-                const processTasks = new TaskProcess(EntriesTask.DeleteEntriesByModel);
+                const processTasks = new TaskProcess(EntriesTask.DeleteEntries);
                 return await processTasks.execute(params);
             }
 
-            const createTasks = new CreateTasks();
+            const gateway = new ListDeletedEntries();
+            const createTasks = new TaskCreate(EntriesTask.DeleteEntries, gateway);
             return await createTasks.execute(params);
         } catch (ex) {
             return response.error(ex.message ?? "Error while executing DeleteEntriesByModel");

@@ -1,39 +1,36 @@
-import { ITaskResponseResult } from "@webiny/tasks";
-import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
+import { TaskCache } from "./TaskCache";
+import { TaskTrigger } from "./TaskTrigger";
 import {
     EntriesTask,
     IBulkActionOperationByModelInput,
     IBulkActionOperationByModelTaskParams,
     IBulkActionOperationInput
 } from "~/types";
-import { TaskCache, TaskTrigger } from "~/tasks/entries";
+import { IListEntries } from "~/tasks/entries/gateways";
+import { ITaskResponseResult } from "@webiny/tasks";
+import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 
 const BATCH_SIZE = 50;
 const WAITING_TIME = 5;
 
-export class CreateTasks {
-    private taskCache = new TaskCache<IBulkActionOperationInput>();
-    private taskTrigger = new TaskTrigger<
-        IBulkActionOperationInput,
-        IBulkActionOperationByModelInput
-    >(this.taskCache, EntriesTask.RestoreEntriesFromTrash);
+export class TaskCreate {
+    private readonly taskCache: TaskCache<IBulkActionOperationInput>;
+    private taskTrigger: TaskTrigger<IBulkActionOperationInput, IBulkActionOperationByModelInput>;
+    private listEntriesGateway: IListEntries;
 
-    public async execute(
-        params: IBulkActionOperationByModelTaskParams
-    ): Promise<ITaskResponseResult> {
-        const { input, response, isAborted, isCloseToTimeout, context, store } = params;
+    constructor(taskDefinition: EntriesTask, listEntriesGateway: IListEntries) {
+        this.taskCache = new TaskCache<IBulkActionOperationInput>();
+        this.taskTrigger = new TaskTrigger<
+            IBulkActionOperationInput,
+            IBulkActionOperationByModelInput
+        >(this.taskCache, taskDefinition);
+        this.listEntriesGateway = listEntriesGateway;
+    }
+
+    async execute(params: IBulkActionOperationByModelTaskParams): Promise<ITaskResponseResult> {
+        const { response, input, isAborted, isCloseToTimeout, context, store } = params;
 
         try {
-            if (!input.modelId) {
-                return response.error(`Missing "modelId" in the input.`);
-            }
-
-            const model = await context.cms.getModel(input.modelId);
-
-            if (!model) {
-                return response.error(`Model with ${input.modelId} not found!`);
-            }
-
             const listEntriesParams: CmsEntryListParams = {
                 where: input.where,
                 after: input.after,
@@ -54,8 +51,9 @@ export class CreateTasks {
                     });
                 }
 
-                const [entries, meta] = await context.cms.listDeletedEntries(
-                    model,
+                const { entries, meta } = await this.listEntriesGateway.execute(
+                    context,
+                    input.modelId,
                     listEntriesParams
                 );
 
@@ -108,9 +106,7 @@ export class CreateTasks {
                 currentBatch++;
             }
         } catch (ex) {
-            return response.error(
-                ex.message ?? "Error while executing RestoreEntriesFromTrashByModel/CreateTasks"
-            );
+            throw new Error(ex.message ?? `Error while creating task.`);
         }
     }
 }

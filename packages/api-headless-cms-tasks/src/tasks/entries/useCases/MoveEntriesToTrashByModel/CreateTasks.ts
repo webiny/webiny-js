@@ -61,7 +61,7 @@ export class CreateTasks {
 
                 // If no entries exist for the provided query, let's return done.
                 if (meta.totalCount === 0) {
-                    return response.done("Task done: no entries to move to trash.");
+                    return response.done("Task done: no entries to process.");
                 }
 
                 // If no entries are returned, let's trigger the cached child tasks and continue in `processing` mode.
