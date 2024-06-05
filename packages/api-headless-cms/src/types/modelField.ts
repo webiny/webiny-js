@@ -255,6 +255,10 @@ interface CmsModelFieldRenderer {
      * Can be blank to let automatically determine the renderer.
      */
     name: string;
+    /**
+     * Renderer settings allow you to configure field renderer on a field level.
+     */
+    settings?: Record<string, any>;
 }
 
 /**

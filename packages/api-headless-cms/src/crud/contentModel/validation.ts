@@ -82,7 +82,7 @@ const fieldSchema = zod.object({
     renderer: zod
         .object({
             name: shortString,
-            settings: zod.object({}).passthrough().nullable().optional()
+            settings: zod.object({}).passthrough().optional()
         })
         .optional()
         .nullable()

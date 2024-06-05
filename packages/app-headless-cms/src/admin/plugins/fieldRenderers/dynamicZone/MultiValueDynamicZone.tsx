@@ -37,20 +37,45 @@ export interface MultiValueItemContainerProps {
     onMoveUp: () => void;
     onMoveDown: () => void;
     onDelete: () => void;
-    onClone: () => void;
+    onClone: (value: TemplateValue) => void;
     title: React.ReactNode;
     description: string;
     icon: JSX.Element;
-    actions: JSX.Element;
     template: CmsDynamicZoneTemplate;
     children: React.ReactNode;
 }
 
 export const MultiValueItemContainer = makeDecoratable(
     "MultiValueItemContainer",
-    ({ title, description, icon, actions, children }: MultiValueItemContainerProps) => {
+    ({ children, ...props }: MultiValueItemContainerProps) => {
+        const actions = (
+            <AccordionItem.Actions>
+                <AccordionItem.Action
+                    icon={<ArrowUpIcon />}
+                    onClick={props.onMoveUp}
+                    disabled={props.isFirst}
+                />
+                <AccordionItem.Action
+                    icon={<ArrowDownIcon />}
+                    onClick={props.onMoveDown}
+                    disabled={props.isLast}
+                />
+                <AccordionItem.Divider />
+                <AccordionItem.Action
+                    icon={<CloneIcon />}
+                    onClick={() => props.onClone(props.value)}
+                />
+                <AccordionItem.Action icon={<DeleteIcon />} onClick={props.onDelete} />
+            </AccordionItem.Actions>
+        );
+
         return (
-            <AccordionItem title={title} description={description} icon={icon} actions={actions}>
+            <AccordionItem
+                title={props.title}
+                description={props.description}
+                icon={props.icon}
+                actions={actions}
+            >
                 {children}
             </AccordionItem>
         );
@@ -95,7 +120,7 @@ interface TemplateValueFormProps {
     onMoveUp: () => void;
     onMoveDown: () => void;
     onDelete: () => void;
-    onClone: () => void;
+    onClone: (value: TemplateValue) => void;
 }
 
 const TemplateValueForm = ({
@@ -124,9 +149,9 @@ const TemplateValueForm = ({
         <MultiValueItemContainer
             value={value}
             contentModel={contentModel}
-            onClone={onClone}
             isFirst={isFirst}
             isLast={isLast}
+            onClone={onClone}
             onDelete={onDelete}
             onMoveUp={onMoveUp}
             onMoveDown={onMoveDown}
@@ -134,23 +159,6 @@ const TemplateValueForm = ({
             description={template.description}
             icon={<TemplateIcon icon={template.icon} />}
             template={template}
-            actions={
-                <AccordionItem.Actions>
-                    <AccordionItem.Action
-                        icon={<ArrowUpIcon />}
-                        onClick={onMoveUp}
-                        disabled={isFirst}
-                    />
-                    <AccordionItem.Action
-                        icon={<ArrowDownIcon />}
-                        onClick={onMoveDown}
-                        disabled={isLast}
-                    />
-                    <AccordionItem.Divider />
-                    <AccordionItem.Action icon={<CloneIcon />} onClick={onClone} />
-                    <AccordionItem.Action icon={<DeleteIcon />} onClick={onDelete} />
-                </AccordionItem.Actions>
-            }
         >
             <MultiValueItem template={template} contentModel={contentModel} Bind={Bind} />
         </MultiValueItemContainer>
@@ -186,9 +194,8 @@ export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
         bind.appendValue({ _templateId: template.id, __typename: template.__typename });
     };
 
-    const cloneValue = (index: number) => {
-        const newValue = cloneDeep(bind.value[index]);
-        bind.appendValue(newValue, index + 1);
+    const cloneValue = (value: TemplateValue, index: number) => {
+        bind.appendValue(cloneDeep(value), index + 1);
     };
 
     const values: TemplateValue[] = bind.value || [];
@@ -215,7 +222,7 @@ export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
                                         onMoveUp={() => bind.moveValueUp(index)}
                                         onMoveDown={() => bind.moveValueDown(index)}
                                         onDelete={() => bind.removeValue(index)}
-                                        onClone={() => cloneValue(index)}
+                                        onClone={value => cloneValue(value, index)}
                                     />
                                 </ParentValueIndexProvider>
                             );
