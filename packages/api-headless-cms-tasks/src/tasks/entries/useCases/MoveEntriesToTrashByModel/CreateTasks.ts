@@ -16,7 +16,7 @@ export class CreateTasks {
     private taskTrigger = new TaskTrigger<
         IBulkActionOperationInput,
         IBulkActionOperationByModelInput
-    >(this.taskCache, EntriesTask.MoveEntriesToTrash, `Headless CMS - Move entries to trash`);
+    >(this.taskCache, EntriesTask.MoveEntriesToTrash);
 
     public async execute(
         params: IBulkActionOperationByModelTaskParams

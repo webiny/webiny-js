@@ -16,7 +16,7 @@ export class CreateTasks {
     private taskTrigger = new TaskTrigger<
         IBulkActionOperationInput,
         IBulkActionOperationByModelInput
-    >(this.taskCache, EntriesTask.MoveEntriesToFolder, `Headless CMS - Move entries to folder`);
+    >(this.taskCache, EntriesTask.MoveEntriesToFolder);
 
     public async execute(
         params: IBulkActionOperationByModelTaskParams

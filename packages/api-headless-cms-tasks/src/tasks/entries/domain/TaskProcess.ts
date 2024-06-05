@@ -46,7 +46,9 @@ export class TaskProcess {
                 `Task done: The task "${this.taskDefinition}" has been successfully processed for entries from "${input.modelId}".`
             );
         } catch (ex) {
-            return response.error(ex.message ?? `Error while executing "${this.taskDefinition}"`);
+            return response.error(
+                ex.message ?? `Error while processing task "${this.taskDefinition}"`
+            );
         }
     }
 }

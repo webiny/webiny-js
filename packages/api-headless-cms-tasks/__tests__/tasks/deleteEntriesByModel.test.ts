@@ -38,7 +38,7 @@ const listDeletedEntries = async (context: HcmsTasksContext, modelId: string) =>
 
 jest.setTimeout(720000);
 
-describe("Empty Trash Bin By Model", () => {
+describe("deleteEntriesByModel", () => {
     it("should fail in case of invalid input - missing `modelId`", async () => {
         const taskDefinition = createDeleteEntriesByModelTask();
         const { handler } = useHandler<HcmsTasksContext>({

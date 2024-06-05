@@ -16,7 +16,7 @@ export class CreateTasks {
     private taskTrigger = new TaskTrigger<
         IBulkActionOperationInput,
         IBulkActionOperationByModelInput
-    >(this.taskCache, EntriesTask.PublishEntries, `Headless CMS - Publish entries`);
+    >(this.taskCache, EntriesTask.PublishEntries);
 
     public async execute(
         params: IBulkActionOperationByModelTaskParams
