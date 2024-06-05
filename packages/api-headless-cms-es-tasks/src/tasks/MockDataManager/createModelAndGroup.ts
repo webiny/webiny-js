@@ -2,6 +2,7 @@ import { CmsGroup, CmsModel } from "@webiny/api-headless-cms/types";
 import { Context } from "~/types";
 import { createGroupData } from "./group";
 import { createCarsModel } from "./model";
+import { createIndex } from "~/utils";
 
 interface ICreateModelAndGroupParams {
     context: Context;
@@ -37,6 +38,12 @@ export const createModelAndGroup = async (
         const carsModel = createCarsModel(group);
         model = await context.cms.createModel(carsModel);
     }
+    await createIndex({
+        model,
+        client: context.elasticsearch,
+        plugins: context.plugins
+    });
+
     return {
         group: group as CmsGroup,
         model: model as CmsModel

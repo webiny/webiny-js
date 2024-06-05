@@ -34,9 +34,7 @@ import { EsHealthChecksParams } from "~/migrations/5.39.6/001/ddb-es/utils";
 import path from "path";
 import os from "os";
 import fs from "fs";
-import {
-    getNonNullableFieldsWithMissingValues
-} from "~/migrations/5.39.0/001/utils/getNonNullableFieldsWithMissingValues";
+import { getNonNullableFieldsWithMissingValues } from "~/migrations/5.39.0/001/utils/getNonNullableFieldsWithMissingValues";
 
 const argv = yargs(hideBin(process.argv))
     .options({

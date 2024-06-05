@@ -8,10 +8,7 @@ import {
 } from "~/utils";
 import { createElasticsearchClient } from "@webiny/api-elasticsearch";
 import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUntilHealthy";
-import {
-    DEFAULT_ES_HEALTH_CHECKS_PARAMS,
-    EsHealthChecksParams
-} from "../../utils";
+import { DEFAULT_ES_HEALTH_CHECKS_PARAMS, EsHealthChecksParams } from "../../utils";
 import path from "path";
 import os from "os";
 import fs from "fs";
