@@ -37,6 +37,8 @@ const ensureAwsEnvVars = () => {
     }
 };
 
+const MIGRATION_ENV_VAR = process.env.WEBINY_MIGRATION_RUN_5_39_6_META_FIELDS_DATA_MIGRATIONS;
+
 /**
  * Creates an after-deployment hook that triggers the meta fields data migration.
  * @param params
@@ -44,51 +46,68 @@ const ensureAwsEnvVars = () => {
 export const createMetaFieldsDataMigrationDeploymentHook = (
     params: Pick<MetaFieldsMigrationParams, "totalSegments" | "esHealthChecks">
 ) => {
-    return {
-        type: "hook-after-deploy",
-        name: "hook-after-deploy-api-run-5-39-6-meta-fields-data-migrations",
-        async hook({ inputs, env, projectApplication }: Record<string, any>, context: CliContext) {
-            // Only run migrations for `api` app
-            if (projectApplication.id !== "api") {
-                return;
-            }
+    return [
+        {
+            type: "hook-before-deploy",
+            name: "hook-before-deploy-skip-5-39-6-001-migration",
+            async hook({ projectApplication }: Record<string, any>) {
+                // Only run migrations for `api` app
+                if (projectApplication.id !== "api") {
+                    return;
+                }
 
-            // No need to run migrations if we're doing a preview.
-            if (inputs.preview) {
-                return;
+                process.env.WEBINY_MIGRATION_SKIP_5_39_6_001 = "true";
             }
+        },
+        {
+            type: "hook-after-deploy",
+            name: "hook-after-deploy-api-run-5-39-6-meta-fields-data-migrations",
+            async hook(
+                { inputs, env, projectApplication }: Record<string, any>,
+                context: CliContext
+            ) {
+                // Only run migrations for `api` app
+                if (projectApplication.id !== "api") {
+                    return;
+                }
 
-            if (process.env.WEBINY_MIGRATION_RUN_5_39_6_META_FIELDS_DATA_MIGRATIONS !== "true") {
-                context.info(
-                    `Skipping meta fields data migration. Set %s to %s to enable.`,
-                    "WEBINY_MIGRATION_RUN_5_39_6_META_FIELDS_DATA_MIGRATIONS",
-                    "true"
+                // No need to run migrations if we're doing a preview.
+                if (inputs.preview) {
+                    return;
+                }
+
+                if (MIGRATION_ENV_VAR !== "true") {
+                    context.info(
+                        `Skipping meta fields data migration. Set %s to %s to enable.`,
+                        "WEBINY_MIGRATION_RUN_5_39_6_META_FIELDS_DATA_MIGRATIONS",
+                        "true"
+                    );
+                    return;
+                }
+
+                ensureAwsEnvVars();
+
+                const coreOutput = getStackOutput<CoreOutput>({ folder: "apps/core", env });
+
+                context.info("Executing 5.39.6-001 meta fields data migration...");
+
+                const logger = createPinoLogger(
+                    {
+                        level: getLogLevel(process.env.MIGRATIONS_LOG_LEVEL, "trace")
+                    },
+                    pinoPretty({ ignore: "pid,hostname" })
                 );
-                return;
+
+                const migration = new MetaFieldsMigration({
+                    ddbTable: coreOutput.primaryDynamodbTableName,
+                    ddbEsTable: coreOutput.elasticsearchDynamodbTableName,
+                    esEndpoint: coreOutput.elasticsearchDomainEndpoint,
+                    ...params,
+                    logger
+                });
+
+                await migration.execute();
             }
-
-            ensureAwsEnvVars();
-
-            const coreOutput = getStackOutput<CoreOutput>({ folder: "apps/core", env });
-
-            context.info("Executing 5.39.6-001 meta fields data migration...");
-
-            const logger = createPinoLogger(
-                {
-                    level: getLogLevel(process.env.MIGRATIONS_LOG_LEVEL, "trace")
-                },
-                pinoPretty({ ignore: "pid,hostname" })
-            );
-
-            const migration = new MetaFieldsMigration({
-                ddbTable: coreOutput.primaryDynamodbTableName,
-                ddbEsTable: coreOutput.elasticsearchDynamodbTableName,
-                esEndpoint: coreOutput.elasticsearchDomainEndpoint,
-                ...params,
-                logger
-            });
-
-            await migration.execute();
         }
-    };
+    ];
 };

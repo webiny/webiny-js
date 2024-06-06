@@ -10,12 +10,15 @@ import { createElasticsearchClient } from "@webiny/api-elasticsearch";
 import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUntilHealthy";
 import {
     DEFAULT_ES_HEALTH_CHECKS_PARAMS,
-    EsHealthChecksParams
+    EsHealthChecksParams,
+    migrationSkippedDdbRecordExists,
+    createMigrationSkippedDdbRecord
 } from "~/migrations/5.39.6/001/ddb-es/utils";
 import path from "path";
 import os from "os";
 import fs from "fs";
 import glob from "fast-glob";
+import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 
 export interface MetaFieldsMigrationParams {
     ddbTable: string;
@@ -58,6 +61,19 @@ export class MetaFieldsMigration {
         const getDuration = () => {
             return (Date.now() - start) / 1000;
         };
+
+        const documentClient = getDocumentClient();
+
+        // Was the migration already executed?
+        const dataMigrationRecordExists = await migrationSkippedDdbRecordExists({
+            documentClient,
+            ddbTable: this.ddbTable
+        });
+
+        if (dataMigrationRecordExists) {
+            this.logger.info("5.39.6-001 migration has already been executed. Exiting...");
+            return;
+        }
 
         this.logger.info("Starting 5.39.6-001 meta fields data migration...");
         this.logger.info(
@@ -121,6 +137,12 @@ export class MetaFieldsMigration {
             elasticsearchClient,
             indexSettings,
             logger: this.logger
+        });
+
+        // Insert a record that the migration was executed.
+        await createMigrationSkippedDdbRecord({
+            documentClient,
+            ddbTable: this.ddbTable
         });
 
         const duration = getDuration();
