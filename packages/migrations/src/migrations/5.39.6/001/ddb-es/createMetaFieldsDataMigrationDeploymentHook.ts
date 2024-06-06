@@ -37,8 +37,6 @@ const ensureAwsEnvVars = () => {
     }
 };
 
-const MIGRATION_ENV_VAR = process.env.WEBINY_MIGRATION_RUN_5_39_6_META_FIELDS_DATA_MIGRATIONS;
-
 /**
  * Creates an after-deployment hook that triggers the meta fields data migration.
  * @param params
@@ -73,15 +71,6 @@ export const createMetaFieldsDataMigrationDeploymentHook = (
 
                 // No need to run migrations if we're doing a preview.
                 if (inputs.preview) {
-                    return;
-                }
-
-                if (MIGRATION_ENV_VAR !== "true") {
-                    context.info(
-                        `Skipping meta fields data migration. Set %s to %s to enable.`,
-                        "WEBINY_MIGRATION_RUN_5_39_6_META_FIELDS_DATA_MIGRATIONS",
-                        "true"
-                    );
                     return;
                 }
 
