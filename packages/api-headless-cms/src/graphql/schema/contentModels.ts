@@ -35,6 +35,15 @@ export const createModelsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
             }
         },
         CmsContentModelField: {
+            renderer: field => {
+                // Make sure `settings` is an object.
+                if (field.renderer) {
+                    // We're using `||` here, because we want to use the fallback value for both `undefined` and `null`.
+                    return { ...field.renderer, settings: field.renderer.settings || {} };
+                }
+
+                return field.renderer;
+            },
             tags(field) {
                 // Make sure `tags` are always returned as an array.
                 return Array.isArray(field.tags) ? field.tags : [];
