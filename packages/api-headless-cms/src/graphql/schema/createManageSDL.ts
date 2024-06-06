@@ -85,7 +85,7 @@ export const createManageSDL: CreateManageSDL = ({
             ${onByMetaGqlFields}
             
             publishedOn: DateTime @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'firstPublishedOn' or 'lastPublishedOn' field.")
-            ownedBy: CmsIdentityInput @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'createdBy' field.")
+            ownedBy: CmsIdentity @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'createdBy' field.")
             
             meta: ${singularName}Meta
             ${fields.map(f => f.fields).join("\n")}
