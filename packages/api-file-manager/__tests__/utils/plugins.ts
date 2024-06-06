@@ -2,7 +2,11 @@ import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import { createTenancyAndSecurity } from "~tests/utils/tenancySecurity";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
+import {
+    CmsParametersPlugin,
+    createHeadlessCmsContext,
+    createHeadlessCmsGraphQL
+} from "@webiny/api-headless-cms";
 import {
     createFileManagerContext,
     createFileManagerGraphQL,
@@ -44,6 +48,7 @@ export const handlerPlugins = (params: HandlerParams) => {
             };
         }),
         createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
+        createHeadlessCmsGraphQL(),
         createFileManagerContext({
             storageOperations: fileManagerStorage.storageOperations
         }),

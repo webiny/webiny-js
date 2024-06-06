@@ -302,7 +302,8 @@ export const onReceived: PbEditorPageElementPlugin["onReceived"] = props => {
 
     const result = executeAction<UpdateElementActionArgsType>(state, meta, updateElementAction, {
         element: parent,
-        history: false
+        // Dropping of elements should always be stored to history, to trigger document save.
+        history: true
     });
 
     result.actions.push(new AfterDropElementActionEvent({ element }));

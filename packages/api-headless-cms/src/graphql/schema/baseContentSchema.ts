@@ -1,15 +1,15 @@
 import { GraphQLScalarPlugin } from "@webiny/handler-graphql/types";
 import { CmsContext } from "~/types";
 import {
-    RefInputScalar,
-    NumberScalar,
     AnyScalar,
-    DateTimeScalar,
     DateScalar,
-    TimeScalar,
-    LongScalar,
+    DateTimeScalar,
+    DateTimeZScalar,
     JsonScalar,
-    DateTimeZScalar
+    LongScalar,
+    NumberScalar,
+    RefInputScalar,
+    TimeScalar
 } from "@webiny/handler-graphql/builtInTypes";
 import { GraphQLScalarType } from "graphql";
 import { CmsGraphQLSchemaPlugin } from "~/plugins";
