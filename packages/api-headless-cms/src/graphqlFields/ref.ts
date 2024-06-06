@@ -274,7 +274,7 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
 
                         input RefFieldInput {
                             modelId: String!
-                            id: ID!
+                            id: RevisionId!
                         }
 
                         ${createFilteringTypeDef()}
