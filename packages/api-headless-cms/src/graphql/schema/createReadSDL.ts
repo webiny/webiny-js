@@ -4,7 +4,7 @@ import { renderSortEnum } from "~/utils/renderSortEnum";
 import { renderFields } from "~/utils/renderFields";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
-import { ENTRY_META_FIELDS, isDateTimeEntryMetaField, isNullableEntryMetaField } from "~/constants";
+import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants";
 
 interface CreateReadSDLParams {
     models: CmsModel[];
@@ -57,11 +57,10 @@ export const createReadSDL: CreateReadSDL = ({
 
     const { singularApiName: singularName, pluralApiName: pluralName } = model;
 
-    const onByMetaFields = ENTRY_META_FIELDS.map(field => {
-        const isNullable = isNullableEntryMetaField(field) ? "" : "!";
+    const onByMetaGqlFields = ENTRY_META_FIELDS.map(field => {
         const fieldType = isDateTimeEntryMetaField(field) ? "DateTime" : "CmsIdentity";
 
-        return `${field}: ${fieldType}${isNullable}`;
+        return `${field}: ${fieldType}`;
     }).join("\n");
 
     return `
@@ -71,7 +70,10 @@ export const createReadSDL: CreateReadSDL = ({
             entryId: String!
             ${hasModelIdField ? "" : "modelId: String!"}
             
-            ${onByMetaFields} 
+            ${onByMetaGqlFields} 
+            
+            publishedOn: DateTime @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'firstPublishedOn' or 'lastPublishedOn' field.")
+            ownedBy: CmsIdentityInput @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'createdBy' field.")
             
             ${fieldsRender.map(f => f.fields).join("\n")}
         }
