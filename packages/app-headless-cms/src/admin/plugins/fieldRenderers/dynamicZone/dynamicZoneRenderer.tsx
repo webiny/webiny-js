@@ -47,7 +47,7 @@ export const DynamicZoneContainer = makeDecoratable(
         } = props;
 
         const defaultClassName = field.multipleValues ? noBottomPadding : undefined;
-        const open = getAccordionRenderSettings(field).open;
+        const { open } = getAccordionRenderSettings(field);
 
         return (
             <>
