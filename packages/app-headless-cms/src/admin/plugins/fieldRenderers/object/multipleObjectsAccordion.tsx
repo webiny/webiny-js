@@ -84,7 +84,7 @@ const ObjectsRenderer = (props: CmsModelFieldRendererProps) => {
     }
 
     const settings = fieldSettings.getSettings();
-    const open = getAccordionRenderSettings(field).open;
+    const { open } = getAccordionRenderSettings(field);
 
     return (
         <RootAccordion>

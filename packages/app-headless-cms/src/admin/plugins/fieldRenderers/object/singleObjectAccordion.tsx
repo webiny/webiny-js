@@ -34,7 +34,7 @@ const plugin: CmsModelFieldRendererPlugin = {
             }
 
             const settings = fieldSettings.getSettings();
-            const open = getAccordionRenderSettings(field).open;
+            const { open } = getAccordionRenderSettings(field);
 
             return (
                 <Bind>
