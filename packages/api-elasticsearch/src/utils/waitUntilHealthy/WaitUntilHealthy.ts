@@ -1,17 +1,33 @@
 import { Client } from "~/client";
 import { ElasticsearchCatHealth } from "~/operations/ElasticsearchCatHealth";
 import { ElasticsearchCatNodes } from "~/operations/ElasticsearchCatNodes";
-import { ElasticsearchCatHealthStatus, IElasticsearchCatNodesResponse } from "~/operations/types";
+import {
+    ElasticsearchCatClusterHealthStatus,
+    IElasticsearchCatHealthResponse,
+    IElasticsearchCatNodesResponse
+} from "~/operations/types";
 import { UnhealthyClusterError } from "~/utils/waitUntilHealthy/UnhealthyClusterError";
+import {
+    ClusterHealthReason,
+    createClusterHealthStatusReason,
+    createMemoryReason,
+    createProcessorReason,
+    MemoryReason,
+    ProcessorReason
+} from "./reason";
 import { WaitingHealthyClusterAbortedError } from "./WaitingHealthyClusterAbortedError";
 
 const WAITING_TIME_STEP = 10;
+
+export type WaitingReason = ProcessorReason | MemoryReason | ClusterHealthReason;
 
 export interface IWaitUntilHealthyParams {
     /**
      * Minimum status allowed, otherwise the cluster is considered unhealthy.
      */
-    minStatus: ElasticsearchCatHealthStatus.Green | ElasticsearchCatHealthStatus.Yellow;
+    minClusterHealthStatus:
+        | ElasticsearchCatClusterHealthStatus.Green
+        | ElasticsearchCatClusterHealthStatus.Yellow;
     /**
      * Maximum processor percent allowed, otherwise the cluster is considered unhealthy.
      */
@@ -19,7 +35,7 @@ export interface IWaitUntilHealthyParams {
     /**
      * Maximum RAM percent allowed, otherwise the cluster is considered unhealthy.
      */
-    maxRamPercent: number;
+    maxRamPercent?: number;
     /**
      * Maximum time to wait in seconds.
      * This is to prevent infinite waiting in case the cluster never becomes healthy.
@@ -38,6 +54,7 @@ export interface IWaitOptionsOnUnhealthyParams {
     mustEndAt: Date;
     waitingTimeStep: number;
     runs: number;
+    waitingReason: WaitingReason;
 }
 
 export interface IWaitOptionsOnTimeoutParams {
@@ -45,6 +62,7 @@ export interface IWaitOptionsOnTimeoutParams {
     mustEndAt: Date;
     waitingTimeStep: number;
     runs: number;
+    waitingReason: WaitingReason;
 }
 
 export interface IWaitOptions {
@@ -91,13 +109,15 @@ class WaitUntilHealthy {
         const mustEndAt = new Date(startedAt.getTime() + this.options.maxWaitingTime * 1000);
         const waitingTimeStep = this.options.waitingTimeStep || WAITING_TIME_STEP;
         let runs = 1;
-        while (await this.shouldWait()) {
+        let waitingReason: WaitingReason | false;
+        while ((waitingReason = await this.shouldWait())) {
             if (new Date() >= mustEndAt) {
                 if (options?.onTimeout) {
                     await options.onTimeout({
                         startedAt,
                         mustEndAt,
                         waitingTimeStep,
+                        waitingReason,
                         runs
                     });
                 }
@@ -107,6 +127,7 @@ class WaitUntilHealthy {
                     startedAt,
                     mustEndAt,
                     waitingTimeStep,
+                    waitingReason,
                     runs
                 });
             }
@@ -130,22 +151,61 @@ class WaitUntilHealthy {
         };
     }
 
-    private async shouldWait(): Promise<boolean> {
-        const health = await this.catHealth.getHealth();
-        const nodes = await this.catNodes.getNodes();
+    private async shouldWait(): Promise<WaitingReason | false> {
+        let health: IElasticsearchCatHealthResponse;
+        let nodes: IElasticsearchCatNodesResponse;
+        try {
+            health = await this.catHealth.getHealth();
+        } catch (ex) {
+            return createClusterHealthStatusReason({
+                description: ex.message,
+                minimum: this.options.minClusterHealthStatus,
+                current: ElasticsearchCatClusterHealthStatus.Red
+            });
+        }
+        try {
+            nodes = await this.catNodes.getNodes();
+        } catch (ex) {
+            return createClusterHealthStatusReason({
+                description: ex.message,
+                minimum: this.options.minClusterHealthStatus,
+                current: ElasticsearchCatClusterHealthStatus.Red
+            });
+        }
 
-        const status = this.transformStatus(health.status);
-        if (status > this.transformStatus(this.options.minStatus)) {
-            return true;
+        const clusterHealthStatus = this.transformClusterHealthStatus(health.status);
+        const minClusterHealthStatus = this.transformClusterHealthStatus(
+            this.options.minClusterHealthStatus
+        );
+        if (clusterHealthStatus > minClusterHealthStatus) {
+            return createClusterHealthStatusReason({
+                minimum: this.options.minClusterHealthStatus,
+                current: health.status
+            });
         }
 
         const processorPercent = this.getProcessorPercent(nodes);
         if (processorPercent > this.options.maxProcessorPercent) {
-            return true;
+            return createProcessorReason({
+                maximum: this.options.maxProcessorPercent,
+                current: processorPercent
+            });
+        }
+        /**
+         * Possibly no max ram definition?
+         */
+        if (this.options.maxRamPercent === undefined) {
+            return false;
         }
 
         const ramPercent = this.getRamPercent(nodes);
-        return ramPercent > this.options.maxRamPercent;
+        if (ramPercent > this.options.maxRamPercent) {
+            return createMemoryReason({
+                maximum: this.options.maxRamPercent,
+                current: ramPercent
+            });
+        }
+        return false;
     }
 
     private getProcessorPercent(nodes: IElasticsearchCatNodesResponse): number {
@@ -162,13 +222,13 @@ class WaitUntilHealthy {
         return total / nodes.length;
     }
 
-    private transformStatus(status: ElasticsearchCatHealthStatus): number {
+    private transformClusterHealthStatus(status: ElasticsearchCatClusterHealthStatus): number {
         switch (status) {
-            case ElasticsearchCatHealthStatus.Green:
+            case ElasticsearchCatClusterHealthStatus.Green:
                 return 1;
-            case ElasticsearchCatHealthStatus.Yellow:
+            case ElasticsearchCatClusterHealthStatus.Yellow:
                 return 2;
-            case ElasticsearchCatHealthStatus.Red:
+            case ElasticsearchCatClusterHealthStatus.Red:
                 return 3;
             default:
                 return 99;

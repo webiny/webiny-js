@@ -1,4 +1,4 @@
-export enum ElasticsearchCatHealthStatus {
+export enum ElasticsearchCatClusterHealthStatus {
     Green = "green",
     Yellow = "yellow",
     Red = "red"
@@ -8,7 +8,7 @@ export interface IElasticsearchCatHealthResponse {
     epoch: number;
     timestamp: `${number}:${number}:${number}`;
     cluster: string;
-    status: ElasticsearchCatHealthStatus;
+    status: ElasticsearchCatClusterHealthStatus;
     "node.total": `${number}`;
     "node.data": `${number}`;
     shards: `${number}`;
