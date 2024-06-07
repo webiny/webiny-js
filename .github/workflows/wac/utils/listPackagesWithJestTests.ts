@@ -205,16 +205,24 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     "api-dynamodb-to-elasticsearch": () => {
         return [
             {
-                cmd: "packages/api-dynamodb-to-elasticsearch",
-                storage: ["ddb-es", "ddb-os"]
+                cmd: "packages/api-dynamodb-to-elasticsearch --storage=ddb-es,ddb",
+                storage: ["ddb-es"]
+            },
+            {
+                cmd: "packages/api-dynamodb-to-elasticsearch --storage=ddb-os,ddb",
+                storage: ["ddb-os"]
             }
         ];
     },
     "api-headless-cms-es-tasks": () => {
         return [
             {
-                cmd: "packages/api-headless-cms-es-tasks",
-                storage: ["ddb-es", "ddb-os"]
+                cmd: "packages/api-headless-cms-es-tasks --storage=ddb-es,ddb",
+                storage: ["ddb-es"]
+            },
+            {
+                cmd: "packages/api-headless-cms-es-tasks --storage=ddb-os,ddb",
+                storage: ["ddb-os"]
             }
         ];
     },
@@ -266,7 +274,7 @@ function hasTestFiles(packageFolderPath: string) {
     }
 
     const files = fs.readdirSync(packageFolderPath);
-    for (let filename of files) {
+    for (const filename of files) {
         const filepath = path.join(packageFolderPath, filename);
         if (fs.statSync(filepath).isDirectory()) {
             const hasTFiles = hasTestFiles(filepath);

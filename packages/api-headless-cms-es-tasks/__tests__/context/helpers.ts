@@ -1,6 +1,6 @@
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
-import { CmsContext } from "~/types";
+import { Context } from "~/types";
 
 export interface PermissionsArg {
     name: string;
@@ -65,7 +65,7 @@ export const createIdentity = (identity?: SecurityIdentity) => {
 };
 
 export const createDummyLocales = () => {
-    return new ContextPlugin<CmsContext>(async context => {
+    return new ContextPlugin<Context>(async context => {
         const { i18n, security } = context;
 
         await security.authenticate("");
