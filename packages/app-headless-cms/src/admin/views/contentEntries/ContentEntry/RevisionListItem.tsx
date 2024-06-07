@@ -102,7 +102,8 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                 <ListItemTextPrimary>{revision.meta.title || t`N/A`}</ListItemTextPrimary>
                 <ListItemTextSecondary>
                     {t`Last modified by {author} on {time} (#{version})`({
-                        author: revision.revisionCreatedBy.displayName,
+                        // Added this because revisionCreatedBy can be returned as null from GraphQL.
+                        author: revision.revisionCreatedBy?.displayName,
                         time: <Date date={revision.revisionCreatedOn} />,
                         version: revision.meta.version
                     })}
