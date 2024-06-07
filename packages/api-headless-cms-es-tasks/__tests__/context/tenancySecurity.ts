@@ -8,7 +8,7 @@ import {
 } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import { CmsContext } from "~/types";
+import { Context } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { TenancyStorageOperations, Tenant } from "@webiny/api-tenancy/types";
 
@@ -37,7 +37,7 @@ export const createTenancyAndSecurity = ({
         setupGraphQL ? createTenancyGraphQL() : null,
         createSecurityContext({ storageOperations: securityStorage.storageOperations }),
         setupGraphQL ? createSecurityGraphQL() : null,
-        new ContextPlugin<CmsContext>(async context => {
+        new ContextPlugin<Context>(async context => {
             await context.tenancy.createTenant({
                 id: "root",
                 name: "Root",
@@ -70,7 +70,7 @@ export const createTenancyAndSecurity = ({
                 tags: []
             });
         }),
-        new ContextPlugin<CmsContext>(async context => {
+        new ContextPlugin<Context>(async context => {
             context.tenancy.setCurrentTenant({
                 id: "root",
                 name: "Root",
@@ -90,7 +90,7 @@ export const createTenancyAndSecurity = ({
                 return permissions || [{ name: "*" }];
             });
         }),
-        new BeforeHandlerPlugin<CmsContext>(context => {
+        new BeforeHandlerPlugin<Context>(context => {
             const { headers = {} } = context.request || {};
             if (headers["authorization"]) {
                 return context.security.authenticate(headers["authorization"]);
