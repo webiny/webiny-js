@@ -68,10 +68,14 @@ const IGNORED_ES_SEARCH_EXCEPTIONS = [
     "search_phase_execution_exception"
 ];
 
-const shouldIgnoreElasticsearchException = (ex: Pick<Error, "message">) => {
+const shouldIgnoreElasticsearchException = (ex: WebinyError) => {
     if (IGNORED_ES_SEARCH_EXCEPTIONS.includes(ex.message)) {
         console.log(`Ignoring Elasticsearch exception: ${ex.message}`);
-        console.log(ex);
+        console.log({
+            code: ex.code,
+            data: ex.data,
+            stack: ex.stack
+        });
         return true;
     }
     return false;
