@@ -1,4 +1,4 @@
-import { ITimer } from "~/timer/abstractions/ITimer";
+import { ITimer } from "./abstractions/ITimer";
 import { CustomTimer } from "./CustomTimer";
 import { Context as LambdaContext } from "aws-lambda/handler";
 import { Timer } from "./Timer";

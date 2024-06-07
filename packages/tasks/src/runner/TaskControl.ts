@@ -111,6 +111,8 @@ export class TaskControl implements ITaskControl {
         }
 
         try {
+            this.context.security.setIdentity(task.createdBy);
+
             const result = await manager.run(definition);
 
             await this.runEvents(result, definition, task);

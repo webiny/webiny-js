@@ -1,31 +1,26 @@
-import WebinyError from "@webiny/error";
 import {
-    EventBridgeClient,
-    PutEventsCommand,
-    PutEventsCommandOutput
-} from "@webiny/aws-sdk/client-eventbridge";
-import { ITask, ITaskConfig } from "~/types";
-import { ITaskEventInput } from "~/handler/types";
+    ITaskTriggerTransport,
+    ITaskTriggerTransportPluginParams,
+    PutEventsCommandOutput,
+    TaskTriggerTransportPlugin
+} from "~/plugins";
+import { Context, ITask, ITaskConfig, ITaskEventInput } from "~/types";
+import { EventBridgeClient, PutEventsCommand } from "@webiny/aws-sdk/client-eventbridge";
+import { WebinyError } from "@webiny/error";
 
-export { PutEventsCommandOutput };
-
-export interface IEventBridgeEventTransportParams {
-    config: ITaskConfig;
-    getTenant: () => string;
-    getLocale: () => string;
-}
-
-export class EventBridgeEventTransport {
+class EventBridgeEventTransport implements ITaskTriggerTransport {
+    protected readonly context: Context;
+    protected readonly config: ITaskConfig;
+    protected readonly getTenant: () => string;
+    protected readonly getLocale: () => string;
     private readonly client: EventBridgeClient;
-    private readonly eventBusName: string;
-    private readonly getTenant: () => string;
-    private readonly getLocale: () => string;
 
-    public constructor(params: IEventBridgeEventTransportParams) {
+    public constructor(params: ITaskTriggerTransportPluginParams) {
         this.client = new EventBridgeClient({
             region: process.env.AWS_REGION
         });
-        this.eventBusName = params.config.eventBusName;
+        this.context = params.context;
+        this.config = params.config;
         this.getTenant = params.getTenant;
         this.getLocale = params.getLocale;
     }
@@ -50,7 +45,7 @@ export class EventBridgeEventTransport {
             Entries: [
                 {
                     Source: "webiny-api-tasks",
-                    EventBusName: this.eventBusName,
+                    EventBusName: this.config.eventBusName,
                     DetailType: "WebinyBackgroundTask",
                     Detail: JSON.stringify(event)
                 }
@@ -68,5 +63,12 @@ export class EventBridgeEventTransport {
                 }
             );
         }
+    }
+}
+
+export class EventBridgeEventTransportPlugin extends TaskTriggerTransportPlugin {
+    public override name = "task.eventBridgeEventTransport";
+    public createTransport(params: ITaskTriggerTransportPluginParams): ITaskTriggerTransport {
+        return new EventBridgeEventTransport(params);
     }
 }

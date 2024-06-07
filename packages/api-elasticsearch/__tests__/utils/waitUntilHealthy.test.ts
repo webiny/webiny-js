@@ -1,6 +1,6 @@
 import { createWaitUntilHealthy } from "~/utils/waitUntilHealthy";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
-import { ElasticsearchCatHealthStatus } from "~/operations/types";
+import { ElasticsearchCatClusterHealthStatus } from "~/operations/types";
 import { UnhealthyClusterError } from "~/utils/waitUntilHealthy/UnhealthyClusterError";
 import { WaitingHealthyClusterAbortedError } from "~/utils/waitUntilHealthy/WaitingHealthyClusterAbortedError";
 
@@ -9,11 +9,25 @@ describe("wait until healthy", () => {
 
     it("should wait until the cluster is healthy - single run", async () => {
         const waitUntilHealthy = createWaitUntilHealthy(client, {
-            minStatus: ElasticsearchCatHealthStatus.Yellow,
+            minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Yellow,
+            maxProcessorPercent: 101,
+            maxRamPercent: 101,
+            maxWaitingTime: 30,
+            waitingTimeStep: 5
+        });
+
+        const { runs, runningTime } = await waitUntilHealthy.wait();
+
+        expect(runs).toEqual(1);
+        expect(runningTime).toBeLessThan(30000);
+    });
+
+    it("should wait until the cluster is healthy - no max memory defined", async () => {
+        const waitUntilHealthy = createWaitUntilHealthy(client, {
+            minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Yellow,
             maxProcessorPercent: 101,
             maxWaitingTime: 30,
-            waitingTimeStep: 5,
-            maxRamPercent: 101
+            waitingTimeStep: 5
         });
 
         const { runs, runningTime } = await waitUntilHealthy.wait();
@@ -25,11 +39,11 @@ describe("wait until healthy", () => {
     it("should wait until the cluster is health - processor - max waiting time hit", async () => {
         expect.assertions(2);
         const waitUntilHealthy = createWaitUntilHealthy(client, {
-            minStatus: ElasticsearchCatHealthStatus.Yellow,
+            minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Yellow,
             maxProcessorPercent: 1,
+            maxRamPercent: 99,
             maxWaitingTime: 3,
-            waitingTimeStep: 1,
-            maxRamPercent: 99
+            waitingTimeStep: 1
         });
 
         try {
@@ -43,11 +57,11 @@ describe("wait until healthy", () => {
     it("should wait until the cluster is health - memory - max waiting time hit", async () => {
         expect.assertions(2);
         const waitUntilHealthy = createWaitUntilHealthy(client, {
-            minStatus: ElasticsearchCatHealthStatus.Yellow,
+            minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Yellow,
             maxProcessorPercent: 99,
+            maxRamPercent: 1,
             maxWaitingTime: 3,
-            waitingTimeStep: 1,
-            maxRamPercent: 1
+            waitingTimeStep: 1
         });
 
         try {
@@ -62,11 +76,11 @@ describe("wait until healthy", () => {
     it("should trigger onUnhealthy callback - once", async () => {
         expect.assertions(2);
         const waitUntilHealthy = createWaitUntilHealthy(client, {
-            minStatus: ElasticsearchCatHealthStatus.Green,
+            minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Green,
             maxProcessorPercent: 1,
+            maxRamPercent: 1,
             maxWaitingTime: 1,
-            waitingTimeStep: 3,
-            maxRamPercent: 1
+            waitingTimeStep: 3
         });
 
         const onUnhealthy = jest.fn();
@@ -88,11 +102,11 @@ describe("wait until healthy", () => {
     it("should trigger onUnhealthy callback - multiple times", async () => {
         expect.assertions(2);
         const waitUntilHealthy = createWaitUntilHealthy(client, {
-            minStatus: ElasticsearchCatHealthStatus.Green,
+            minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Green,
             maxProcessorPercent: 1,
+            maxRamPercent: 1,
             maxWaitingTime: 3,
-            waitingTimeStep: 1,
-            maxRamPercent: 1
+            waitingTimeStep: 1
         });
 
         const onUnhealthy = jest.fn();
@@ -114,11 +128,11 @@ describe("wait until healthy", () => {
     it("should trigger onTimeout callback - once", async () => {
         expect.assertions(3);
         const waitUntilHealthy = createWaitUntilHealthy(client, {
-            minStatus: ElasticsearchCatHealthStatus.Green,
+            minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Green,
             maxProcessorPercent: 1,
+            maxRamPercent: 1,
             maxWaitingTime: 3,
-            waitingTimeStep: 1,
-            maxRamPercent: 1
+            waitingTimeStep: 1
         });
 
         const onUnhealthy = jest.fn();
@@ -145,11 +159,11 @@ describe("wait until healthy", () => {
     it("should trigger abort even before the checks start", async () => {
         expect.assertions(3);
         const waitUntilHealthy = createWaitUntilHealthy(client, {
-            minStatus: ElasticsearchCatHealthStatus.Green,
+            minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Green,
             maxProcessorPercent: 1,
+            maxRamPercent: 1,
             maxWaitingTime: 1,
-            waitingTimeStep: 3,
-            maxRamPercent: 1
+            waitingTimeStep: 3
         });
 
         waitUntilHealthy.abort();
@@ -179,11 +193,11 @@ describe("wait until healthy", () => {
     it("should trigger abort in onUnhealthy callback", async () => {
         expect.assertions(2);
         const waitUntilHealthy = createWaitUntilHealthy(client, {
-            minStatus: ElasticsearchCatHealthStatus.Green,
+            minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Green,
             maxProcessorPercent: 1,
+            maxRamPercent: 1,
             maxWaitingTime: 1,
-            waitingTimeStep: 3,
-            maxRamPercent: 1
+            waitingTimeStep: 3
         });
 
         const onUnhealthy = jest.fn();
