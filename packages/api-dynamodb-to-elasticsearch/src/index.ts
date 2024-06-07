@@ -297,7 +297,6 @@ export const createEventHandler = () => {
             console.info(
                 `Transferred ${operations.length / 2} record operations to Elasticsearch.`
             );
-            console.log(operationIdList);
         };
 
         const maxRetryTime = getNumberEnvVariable(

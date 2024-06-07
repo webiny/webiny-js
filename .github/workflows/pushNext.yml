@@ -247,13 +247,15 @@ jobs:
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-aco_ddb-es_ddb"},{"cmd":"packages/api-audit-logs
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-audit-logs_ddb-es_ddb"},{"cmd":"packages/api-dynamodb-to-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-dynamodb-to-elasticsearch"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch"},{"cmd":"packages/api-elasticsearch-tasks
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-audit-logs_ddb-es_ddb"},{"cmd":"packages/api-dynamodb-to-elasticsearch
+          --storage=ddb-es,ddb","storage":["ddb-es"],"id":"api-dynamodb-to-elasticsearch_ddb-es_ddb"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch"},{"cmd":"packages/api-elasticsearch-tasks
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-elasticsearch-tasks_ddb-es_ddb"},{"cmd":"packages/api-file-manager
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-file-manager_ddb-es_ddb"},{"cmd":"packages/api-form-builder
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder_ddb-es_ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder-so-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-headless-cms
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-ddb-es
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-es-tasks","storage":["ddb-es","ddb-os"],"id":"api-headless-cms-es-tasks"},{"cmd":"packages/api-mailer
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-es-tasks
+          --storage=ddb-es,ddb","storage":["ddb-es"],"id":"api-headless-cms-es-tasks_ddb-es_ddb"},{"cmd":"packages/api-mailer
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-mailer_ddb-es_ddb"},{"cmd":"packages/api-page-builder
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder_ddb-es_ddb"},{"cmd":"packages/api-page-builder-aco
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder-aco_ddb-es_ddb"},{"cmd":"packages/api-page-builder-so-ddb-es
@@ -313,13 +315,15 @@ jobs:
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-aco_ddb-os_ddb"},{"cmd":"packages/api-audit-logs
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-audit-logs_ddb-os_ddb"},{"cmd":"packages/api-dynamodb-to-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-dynamodb-to-elasticsearch"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch"},{"cmd":"packages/api-elasticsearch-tasks
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-audit-logs_ddb-os_ddb"},{"cmd":"packages/api-dynamodb-to-elasticsearch
+          --storage=ddb-os,ddb","storage":["ddb-os"],"id":"api-dynamodb-to-elasticsearch_ddb-os_ddb"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch"},{"cmd":"packages/api-elasticsearch-tasks
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-elasticsearch-tasks_ddb-os_ddb"},{"cmd":"packages/api-file-manager
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-file-manager_ddb-os_ddb"},{"cmd":"packages/api-form-builder
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-form-builder_ddb-os_ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-form-builder-so-ddb-es_ddb-os_ddb"},{"cmd":"packages/api-headless-cms
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-ddb-es
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-ddb-es_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-es-tasks","storage":["ddb-es","ddb-os"],"id":"api-headless-cms-es-tasks"},{"cmd":"packages/api-mailer
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-ddb-es_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-es-tasks
+          --storage=ddb-os,ddb","storage":["ddb-os"],"id":"api-headless-cms-es-tasks_ddb-os_ddb"},{"cmd":"packages/api-mailer
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-mailer_ddb-os_ddb"},{"cmd":"packages/api-page-builder
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-page-builder_ddb-os_ddb"},{"cmd":"packages/api-page-builder-aco
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-page-builder-aco_ddb-os_ddb"},{"cmd":"packages/api-page-builder-so-ddb-es
