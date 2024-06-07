@@ -205,8 +205,12 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     "api-dynamodb-to-elasticsearch": () => {
         return [
             {
-                cmd: "packages/api-dynamodb-to-elasticsearch",
-                storage: ["ddb-es", "ddb-os"]
+                cmd: "packages/api-dynamodb-to-elasticsearch --storage=ddb-es,ddb",
+                storage: ["ddb-es"]
+            },
+            {
+                cmd: "packages/api-dynamodb-to-elasticsearch --storage=ddb-os,ddb",
+                storage: ["ddb-os"]
             }
         ];
     },

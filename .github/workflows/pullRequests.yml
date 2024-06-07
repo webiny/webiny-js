@@ -281,7 +281,8 @@ jobs:
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-aco_ddb-es_ddb"},{"cmd":"packages/api-audit-logs
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-audit-logs_ddb-es_ddb"},{"cmd":"packages/api-dynamodb-to-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-dynamodb-to-elasticsearch"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch"},{"cmd":"packages/api-elasticsearch-tasks
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-audit-logs_ddb-es_ddb"},{"cmd":"packages/api-dynamodb-to-elasticsearch
+          --storage=ddb-es,ddb","storage":["ddb-es"],"id":"api-dynamodb-to-elasticsearch_ddb-es_ddb"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch"},{"cmd":"packages/api-elasticsearch-tasks
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-elasticsearch-tasks_ddb-es_ddb"},{"cmd":"packages/api-file-manager
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-file-manager_ddb-es_ddb"},{"cmd":"packages/api-form-builder
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder_ddb-es_ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
@@ -349,7 +350,8 @@ jobs:
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-aco_ddb-os_ddb"},{"cmd":"packages/api-audit-logs
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-audit-logs_ddb-os_ddb"},{"cmd":"packages/api-dynamodb-to-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-dynamodb-to-elasticsearch"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch"},{"cmd":"packages/api-elasticsearch-tasks
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-audit-logs_ddb-os_ddb"},{"cmd":"packages/api-dynamodb-to-elasticsearch
+          --storage=ddb-os,ddb","storage":["ddb-os"],"id":"api-dynamodb-to-elasticsearch_ddb-os_ddb"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch"},{"cmd":"packages/api-elasticsearch-tasks
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-elasticsearch-tasks_ddb-os_ddb"},{"cmd":"packages/api-file-manager
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-file-manager_ddb-os_ddb"},{"cmd":"packages/api-form-builder
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-form-builder_ddb-os_ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
