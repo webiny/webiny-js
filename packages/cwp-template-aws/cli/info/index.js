@@ -137,7 +137,8 @@ module.exports = {
                         console.log();
                     }
                 } else {
-                    await getInfo(env, context);
+                    console.log(await getInfo(env, context));
+                    console.log();
                 }
 
                 context.info(
