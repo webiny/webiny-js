@@ -4,8 +4,8 @@ const { Listr } = require("listr2");
 const { createWatchPackage, createBuildPackage } = require("@webiny/project-utils");
 
 async function buildHandlers(options) {
-    if (process.env.WEBINY_SERVERLESS_CMS_AWS_SKIP_PREPUBLISH_ONLY === 'true') {
-        console.log('Skipping building of handlers...')
+    if (process.env.WEBINY_SERVERLESS_CMS_AWS_SKIP_PREPUBLISH_ONLY === "true") {
+        console.log("Skipping building of handlers...");
         return;
     }
 
