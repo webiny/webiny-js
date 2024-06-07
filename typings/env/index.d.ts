@@ -25,6 +25,8 @@ declare namespace NodeJS {
         MOCK_DYNAMODB_ENDPOINT?: string;
         ELASTICSEARCH_PORT?: string;
         WEBINY_ENV?: string;
+        WEBINY_ADMIN_ENV?: string;
+        WEBINY_WEBSITE_ENV?: string;
         REACT_APP_DEBUG?: "true" | "false" | string;
         AWS_REGION?: string;
         REACT_APP_WEBINY_VERSION?: string;
