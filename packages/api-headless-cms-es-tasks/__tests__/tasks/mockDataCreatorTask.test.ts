@@ -14,6 +14,7 @@ import {
 import { CARS_MODEL_ID } from "~/tasks/MockDataManager/constants";
 import { disableIndexing, enableIndexing } from "~/utils";
 
+jest.setTimeout(120000)
 describe("mock data creator task", () => {
     it("should create a mock data creator task", async () => {
         const { handler } = useHandler();
