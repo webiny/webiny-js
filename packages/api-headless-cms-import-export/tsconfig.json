@@ -3,6 +3,7 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-headless-cms" },
+    { "path": "../aws-sdk" },
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
     { "path": "../tasks" },
@@ -24,6 +25,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

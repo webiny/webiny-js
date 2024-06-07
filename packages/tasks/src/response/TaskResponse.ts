@@ -91,8 +91,8 @@ export class TaskResponse implements ITaskResponse {
         if (error instanceof Error) {
             return getErrorProperties(error);
         } else if (typeof error === "string") {
-            return new Error(error);
+            return getErrorProperties(new Error(error));
         }
-        return error;
+        return getErrorProperties(error);
     }
 }
