@@ -210,6 +210,14 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             }
         ];
     },
+    "api-headless-cms-es-tasks": () => {
+        return [
+            {
+                cmd: "packages/api-headless-cms-es-tasks",
+                storage: ["ddb-es", "ddb-os"]
+            }
+        ];
+    },
     tasks: () => {
         return [
             { cmd: "packages/tasks --storage=ddb", storage: "ddb" },
