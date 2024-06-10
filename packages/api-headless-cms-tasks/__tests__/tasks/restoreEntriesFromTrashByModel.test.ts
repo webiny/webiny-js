@@ -4,9 +4,9 @@ import { useHandler } from "~tests/context/useHandler";
 import { createMockModels } from "~tests/mocks";
 import { EntriesTask, HcmsTasksContext } from "~/types";
 
-import { createPublishEntriesByModelTask } from "~/tasks/entries/publishEntriesByModelTask";
+import { createRestoreEntriesFromTrashByModelTask } from "~/tasks/entries/restoreEntriesFromTrashByModelTask";
 
-const createEntries = async (context: HcmsTasksContext, modelId: string, total = 100) => {
+const createDeletedEntries = async (context: HcmsTasksContext, modelId: string, total = 100) => {
     const model = await context.cms.getModel(modelId);
 
     if (!model) {
@@ -14,8 +14,26 @@ const createEntries = async (context: HcmsTasksContext, modelId: string, total =
     }
 
     for (let i = 0; i < total; i++) {
-        await context.cms.createEntry(model, { title: `Entry-${i}` });
+        const entry = await context.cms.createEntry(model, { title: `Entry-${i}` });
+        await context.cms.deleteEntry(model, entry.entryId, {
+            permanently: false
+        });
     }
+};
+
+const listDeletedEntries = async (context: HcmsTasksContext, modelId: string) => {
+    const model = await context.cms.getModel(modelId);
+
+    if (!model) {
+        throw new Error("Error while retrieving the model");
+    }
+
+    const [entries, meta] = await context.cms.listDeletedEntries(model, { limit: 10000 });
+
+    return {
+        entries,
+        meta
+    };
 };
 
 const listLatestEntries = async (context: HcmsTasksContext, modelId: string) => {
@@ -33,26 +51,11 @@ const listLatestEntries = async (context: HcmsTasksContext, modelId: string) => 
     };
 };
 
-const listPublishedEntries = async (context: HcmsTasksContext, modelId: string) => {
-    const model = await context.cms.getModel(modelId);
-
-    if (!model) {
-        throw new Error("Error while retrieving the model");
-    }
-
-    const [entries, meta] = await context.cms.listPublishedEntries(model, { limit: 10000 });
-
-    return {
-        entries,
-        meta
-    };
-};
-
 jest.setTimeout(720000);
 
-describe("publishEntriesByModel", () => {
+describe("restoreEntriesFromTrashByModel", () => {
     it("should fail in case of invalid input - missing `modelId`", async () => {
-        const taskDefinition = createPublishEntriesByModelTask();
+        const taskDefinition = createRestoreEntriesFromTrashByModelTask();
         const { handler } = useHandler<HcmsTasksContext>({
             plugins: [taskDefinition, ...createMockModels()]
         });
@@ -82,14 +85,14 @@ describe("publishEntriesByModel", () => {
                 message: `Missing "modelId" in the input.`
             },
             webinyTaskId: task.id,
-            webinyTaskDefinitionId: EntriesTask.PublishEntriesByModel,
+            webinyTaskDefinitionId: EntriesTask.RestoreEntriesFromTrashByModel,
             tenant: "root",
             locale: "en-US"
         });
     });
 
     it("should fail in case of not existing model", async () => {
-        const taskDefinition = createPublishEntriesByModelTask();
+        const taskDefinition = createRestoreEntriesFromTrashByModelTask();
         const { handler } = useHandler<HcmsTasksContext>({
             plugins: [taskDefinition, ...createMockModels()]
         });
@@ -121,14 +124,14 @@ describe("publishEntriesByModel", () => {
                 message: `Content model "any-non-existing-modelId" was not found!`
             },
             webinyTaskId: task.id,
-            webinyTaskDefinitionId: EntriesTask.PublishEntriesByModel,
+            webinyTaskDefinitionId: EntriesTask.RestoreEntriesFromTrashByModel,
             tenant: "root",
             locale: "en-US"
         });
     });
 
-    it("should return success in case of no entries to publish", async () => {
-        const taskDefinition = createPublishEntriesByModelTask();
+    it("should return success in case of no entries to restore", async () => {
+        const taskDefinition = createRestoreEntriesFromTrashByModelTask();
         const { handler } = useHandler<HcmsTasksContext>({
             plugins: [taskDefinition, ...createMockModels()]
         });
@@ -160,15 +163,15 @@ describe("publishEntriesByModel", () => {
             status: "done",
             message: "Task done: no entries to process.",
             webinyTaskId: task.id,
-            webinyTaskDefinitionId: EntriesTask.PublishEntriesByModel,
+            webinyTaskDefinitionId: EntriesTask.RestoreEntriesFromTrashByModel,
             tenant: "root",
             locale: "en-US"
         });
     });
 
     // TODO: Add test for when multiple task definitions are supported.
-    it.skip("should publish multiple entries", async () => {
-        const taskDefinition = createPublishEntriesByModelTask();
+    it.skip("should restore multiple entries from trash", async () => {
+        const taskDefinition = createRestoreEntriesFromTrashByModelTask();
 
         const { handler } = useHandler<HcmsTasksContext>({
             plugins: [taskDefinition, ...createMockModels()]
@@ -179,8 +182,8 @@ describe("publishEntriesByModel", () => {
         const MODEL_ID = "car";
         const ENTRIES_COUNT = 200;
 
-        await createEntries(context, MODEL_ID, ENTRIES_COUNT);
-        const { entries, meta } = await listLatestEntries(context, MODEL_ID);
+        await createDeletedEntries(context, MODEL_ID, ENTRIES_COUNT);
+        const { entries, meta } = await listDeletedEntries(context, MODEL_ID);
 
         // Let's check how many entries we just created
         expect(meta.totalCount).toBe(ENTRIES_COUNT);
@@ -202,16 +205,16 @@ describe("publishEntriesByModel", () => {
             webinyTaskId: task.id
         });
 
-        // Let's check we just published all the entries
-        const entriesAfterPublishResponse = await listPublishedEntries(context, MODEL_ID);
-        expect(entriesAfterPublishResponse.meta.totalCount).toBe(ENTRIES_COUNT);
+        // Let's check we just restored all the entries
+        const entriesAfterRestoreResponse = await listLatestEntries(context, MODEL_ID);
+        expect(entriesAfterRestoreResponse.meta.totalCount).toBe(ENTRIES_COUNT);
 
         expect(result).toBeInstanceOf(ResponseDoneResult);
 
         expect(result).toMatchObject({
             status: "done",
             webinyTaskId: taskDefinition.id,
-            webinyTaskDefinitionId: EntriesTask.PublishEntriesByModel,
+            webinyTaskDefinitionId: EntriesTask.RestoreEntriesFromTrashByModel,
             tenant: "root",
             locale: "en-US",
             output: {
@@ -222,8 +225,8 @@ describe("publishEntriesByModel", () => {
     });
 
     // TODO: Add test for when multiple task definitions are supported.
-    it.skip("should publish entries, with a custom `where` condition", async () => {
-        const taskDefinition = createPublishEntriesByModelTask();
+    it.skip("should restore entries, with a custom `where` condition", async () => {
+        const taskDefinition = createRestoreEntriesFromTrashByModelTask();
         const { handler } = useHandler<HcmsTasksContext>({
             plugins: [taskDefinition, ...createMockModels()]
         });
@@ -233,8 +236,8 @@ describe("publishEntriesByModel", () => {
         const MODEL_ID = "car";
         const ENTRIES_COUNT = 10;
 
-        await createEntries(context, MODEL_ID, ENTRIES_COUNT);
-        const { entries, meta } = await listLatestEntries(context, MODEL_ID);
+        await createDeletedEntries(context, MODEL_ID, ENTRIES_COUNT);
+        const { entries, meta } = await listDeletedEntries(context, MODEL_ID);
 
         // Let's check how many entries we just created
         expect(meta.totalCount).toBe(ENTRIES_COUNT);
@@ -259,16 +262,16 @@ describe("publishEntriesByModel", () => {
             webinyTaskId: task.id
         });
 
-        // Let's check we published all the entries according to custom `where`provided
-        const entriesAfterPublishResponse = await listPublishedEntries(context, MODEL_ID);
-        expect(entriesAfterPublishResponse.meta.totalCount).toBe(ENTRIES_COUNT - 1);
+        // Let's check we restored all the entries according to custom `where` provided
+        const entriesAfterRestoreResponse = await listLatestEntries(context, MODEL_ID);
+        expect(entriesAfterRestoreResponse.meta.totalCount).toBe(ENTRIES_COUNT - 1);
 
         expect(result).toBeInstanceOf(ResponseDoneResult);
 
         expect(result).toMatchObject({
             status: "done",
             webinyTaskId: task.id,
-            webinyTaskDefinitionId: EntriesTask.PublishEntriesByModel,
+            webinyTaskDefinitionId: EntriesTask.RestoreEntriesFromTrashByModel,
             tenant: "root",
             locale: "en-US",
             output: {
