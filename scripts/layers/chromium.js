@@ -4,7 +4,38 @@ const writeJson = require("write-json-file");
 const { green, blue } = require("chalk");
 const regions = require("./regions");
 
-const LAYER_NAME = "sharp";
+const BUCKET_NAME = "webiny-layers";
+const LAYER_NAME = "chromium";
+const LAYER_ZIP = "chromium-v123.0.1-layer.zip";
+const LAYER_ZIP_KEY = `${LAYER_NAME}/${LAYER_ZIP}`;
+
+async function createBucketIfNotExists(region) {
+    const bucketName = `${BUCKET_NAME}-${region}`;
+
+    const locationConstraint = [];
+    if (region !== "us-east-1") {
+        locationConstraint.push("--create-bucket-configuration");
+        locationConstraint.push(`LocationConstraint=${region}`);
+    }
+
+    try {
+        await execa("aws", [
+            "s3api",
+            "create-bucket",
+            "--bucket",
+            bucketName,
+            "--region",
+            region,
+            ...locationConstraint
+        ]);
+    } catch (err) {
+        if (err && !err.stderr.includes("BucketAlreadyOwnedByYou")) {
+            throw Error(err);
+        }
+    }
+
+    return bucketName;
+}
 
 (async () => {
     process.env.AWS_PROFILE = "webiny";
@@ -14,6 +45,22 @@ const LAYER_NAME = "sharp";
     try {
         for (let i = 0; i < regions.length; i++) {
             const region = regions[i];
+
+            const bucketName = await createBucketIfNotExists(region);
+
+            // Upload ZIP file to S3 bucket
+            console.log(`Uploading layer archive ${green(LAYER_ZIP)} to ${green(bucketName)}...`);
+            await execa("aws", [
+                "s3",
+                "cp",
+                path.join(__dirname, LAYER_ZIP),
+                `s3://${bucketName}/${LAYER_ZIP_KEY}`,
+                // For opt-in regions, we _must_ explicitly specify the region, so let's just always specify it.
+                // https://github.com/aws/aws-cli/issues/8289#issuecomment-1791580189
+                "--region",
+                region
+            ]);
+
             try {
                 console.log(`Creating layer ${green(LAYER_NAME)} in ${green(region)}...`);
                 // Create layer
@@ -23,9 +70,9 @@ const LAYER_NAME = "sharp";
                     "--layer-name",
                     LAYER_NAME,
                     "--description",
-                    "Sharp dependency for image transformation",
-                    "--zip-file",
-                    "fileb://" + path.join(__dirname, "sharp-x64.zip"),
+                    "Chromium ",
+                    "--content",
+                    `S3Bucket=${bucketName},S3Key=${LAYER_ZIP_KEY}`,
                     "--compatible-runtimes",
                     "nodejs18.x",
                     "--region",

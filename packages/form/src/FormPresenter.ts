@@ -174,6 +174,7 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
 
     unregisterField(name: string) {
         this.formFields.delete(name);
+        delete this.invalidFields[name];
     }
 
     async validate(options?: FormValidationOptions) {

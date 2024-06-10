@@ -5,7 +5,7 @@ import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid } from "react-virtualized";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import DelayedOnChange, { OnChangeCbCallable } from "./DelayedOnChange";
+import { DelayedOnChange, OnChangeCallable } from "@webiny/ui/DelayedOnChange";
 import { Menu, RenderableMenuChildren } from "@webiny/ui/Menu";
 import { Input } from "@webiny/ui/Input";
 import { CmsIcon, CmsIconsPlugin } from "~/types";
@@ -126,8 +126,8 @@ export const IconPicker = ({
         }, 50);
     }, [mustRenderGrid]);
 
-    const onFilterChange = useCallback(
-        (value: string, cb?: OnChangeCbCallable) => {
+    const onFilterChange = useCallback<OnChangeCallable>(
+        (value, cb) => {
             setFilter(value);
             if (cb) {
                 cb(value);

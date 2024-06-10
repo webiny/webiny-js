@@ -23,6 +23,7 @@ cypress.json
 # yarn2 files
 .yarn/*
 !.yarn/releases
+!.yarn/patches
 !.yarn/plugins
 !.yarn/sdks
 !.yarn/versions

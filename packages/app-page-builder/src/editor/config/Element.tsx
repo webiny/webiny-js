@@ -13,7 +13,16 @@ export interface ElementProps {
     name: string;
     id?: string;
     element?: JSX.Element | null;
+    /**
+     * `group` is a public prop that can be used by external developers to logically group elements.
+     * For example: "actions", "buttons", etc.
+     */
     group?: string;
+    /**
+     * `scope` is used for internal grouping of elements. It is only used to create higher level components used by the 3rd party.
+     * For example: "sidebar", "topBar", "toolbar".
+     * This creates a scope within which we can then filter elements by their `group` prop.
+     */
     scope?: string;
     remove?: boolean;
     before?: string;

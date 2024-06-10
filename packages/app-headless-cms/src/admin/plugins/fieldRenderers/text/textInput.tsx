@@ -1,8 +1,9 @@
 import React from "react";
-import { i18n } from "@webiny/app/i18n";
-import { CmsModelFieldRendererPlugin } from "~/types";
-import { Input } from "@webiny/ui/Input";
 import get from "lodash/get";
+import { i18n } from "@webiny/app/i18n";
+import { Input } from "@webiny/ui/Input";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
+import { CmsModelFieldRendererPlugin } from "~/types";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -26,13 +27,19 @@ const plugin: CmsModelFieldRendererPlugin = {
             return (
                 <Bind>
                     {bind => (
-                        <Input
-                            {...bind}
-                            label={field.label}
-                            placeholder={field.placeholderText}
-                            description={field.helpText}
-                            data-testid={`fr.input.text.${field.label}`}
-                        />
+                        <DelayedOnChange
+                            value={bind.value}
+                            onChange={bind.onChange}
+                            onBlur={bind.validate}
+                        >
+                            <Input
+                                label={field.label}
+                                placeholder={field.placeholderText}
+                                description={field.helpText}
+                                data-testid={`fr.input.text.${field.label}`}
+                                validation={bind.validation}
+                            />
+                        </DelayedOnChange>
                     )}
                 </Bind>
             );

@@ -1,15 +1,15 @@
 import { Plugin } from "@webiny/plugins";
 
-export interface RTEContents {
+export interface RichTextContents {
     [key: string]: any;
 }
 
-export interface RichTextRenderer<T> {
-    (contents: RTEContents): Promise<T>;
+export interface CmsRichTextRenderer<T> {
+    (contents: RichTextContents): Promise<T>;
 }
 
 export interface RichTextRendererMiddleware<T> {
-    (contents: RTEContents, next: RichTextRenderer<T>): Promise<T> | T;
+    (contents: RichTextContents, next: CmsRichTextRenderer<T>): Promise<T> | T;
 }
 
 interface CmsRichTextRendererConstructorParams<T> {
@@ -17,7 +17,7 @@ interface CmsRichTextRendererConstructorParams<T> {
     render: RichTextRendererMiddleware<T>;
 }
 
-export class CmsRichTextRendererPlugin<T> extends Plugin {
+export class CmsRichTextRendererPlugin<T = unknown> extends Plugin {
     public static override readonly type: string = "cms-rich-text-renderer";
     private readonly outputFormat: string;
     private readonly renderer: RichTextRendererMiddleware<T>;
@@ -32,7 +32,7 @@ export class CmsRichTextRendererPlugin<T> extends Plugin {
         return this.outputFormat;
     }
 
-    async render(contents: RTEContents, next: RichTextRenderer<T>) {
+    async render(contents: RichTextContents, next: CmsRichTextRenderer<T>) {
         return this.renderer(contents, next);
     }
 }

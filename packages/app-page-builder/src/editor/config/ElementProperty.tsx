@@ -1,7 +1,7 @@
 import React from "react";
 import { Element, ElementProps } from "./Element";
 import { makeDecoratable } from "@webiny/react-composition";
-import { Elements } from "~/editor/config/Elements";
+import { Elements, ElementsProps } from "~/editor/config/Elements";
 
 const SCOPE = "elementProperties";
 
@@ -32,8 +32,9 @@ export const ElementProperty = Object.assign(BaseElementProperty, ElementPropert
 
 export interface ElementPropertiesProps {
     group?: string;
+    transform?: ElementsProps["transform"];
 }
 
 export const ElementProperties = (props: ElementPropertiesProps) => {
-    return <Elements group={props.group} scope={SCOPE} />;
+    return <Elements group={props.group} scope={SCOPE} transform={props.transform} />;
 };

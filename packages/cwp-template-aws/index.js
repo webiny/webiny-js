@@ -48,7 +48,7 @@ const runInquirer = async cwp => {
                 { value: "ap-southeast-1", name: "ap-southeast-1 (Asia Pacific, Singapore)" },
                 { value: "ap-southeast-2", name: "ap-southeast-2 (Asia Pacific, Sydney)" },
                 { value: "ap-northeast-1", name: "ap-northeast-1 (Asia Pacific, Tokyo)" },
-                { value: "me-south-1", name: "me-south-1 (Middle East, Bahrain)" },
+                // { value: "me-south-1", name: "me-south-1 (Middle East, Bahrain)" },
                 { value: "sa-east-1", name: "sa-east-1 (South America, São Paulo)" }
             ]
         },

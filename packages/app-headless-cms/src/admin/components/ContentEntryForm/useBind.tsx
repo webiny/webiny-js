@@ -28,6 +28,8 @@ export interface GetBindCallable {
     (index?: number): BindComponent;
 }
 
+const emptyValidators: Validator[] = [];
+
 export function useBind({ Bind, field }: UseBindProps) {
     const memoizedBindComponents = useRef<Record<string, BindComponent>>({});
     const cacheKey = createFieldCacheKey(field);
@@ -49,8 +51,8 @@ export function useBind({ Bind, field }: UseBindProps) {
                 return memoizedBindComponents.current[componentId];
             }
 
-            const validators = createValidators(field, field.validation || []);
-            const listValidators = createValidators(field, field.listValidation || []);
+            const validators = createValidators(field, field.validation || emptyValidators);
+            const listValidators = createValidators(field, field.listValidation || emptyValidators);
             const defaultValue: string[] | undefined = undefined;
             const isMultipleValues = index === -1 && field.multipleValues;
             const inputValidators = isMultipleValues ? listValidators : validators;

@@ -2,10 +2,10 @@ import React from "react";
 import { Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { Input } from "@webiny/ui/Input";
-import { AddPbWebsiteSettings } from "../AddPbWebsiteSettings";
 import { usePbWebsiteSettings } from "../usePbWebsiteSettings";
+import { WebsiteSettingsConfig } from "~/modules/WebsiteSettings/config/WebsiteSettingsConfig";
 
-const { Group, Element } = AddPbWebsiteSettings;
+const { Group, Element } = WebsiteSettingsConfig;
 
 const WebsiteURL = () => {
     const { defaultSettings } = usePbWebsiteSettings();
@@ -64,18 +64,19 @@ const WebsitePreviewURL = () => {
 
 export const GeneralSettings = () => {
     return (
-        <Group name={"website"} label={"Website Settings"}>
-            <Element>
-                <Bind name={"name"} validators={validation.create("required")}>
-                    <Input label="Website name" />
-                </Bind>
-            </Element>
-            <Element>
-                <WebsiteURL />
-            </Element>
-            <Element>
-                <WebsitePreviewURL />
-            </Element>
-        </Group>
+        <WebsiteSettingsConfig>
+            <Group name={"website"} label={"Website Settings"}>
+                <Element
+                    name={"name"}
+                    element={
+                        <Bind name={"name"} validators={validation.create("required")}>
+                            <Input label="Website name" />
+                        </Bind>
+                    }
+                />
+                <Element name={"websiteUrl"} element={<WebsiteURL />} />
+                <Element name={"websitePreviewUrl"} element={<WebsitePreviewURL />} />
+            </Group>
+        </WebsiteSettingsConfig>
     );
 };

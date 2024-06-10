@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { makeDecoratable } from "@webiny/react-composition";
 import { BindComponentProps, UseBindHook } from "~/types";
 import { useBindPrefix } from "~/BindPrefix";
@@ -10,13 +10,19 @@ export const useBind = makeDecoratable((props: BindComponentProps): UseBindHook 
     const form = useForm();
     const bindPrefix = useBindPrefix();
 
-    const bindName = [bindPrefix, props.name].filter(Boolean).join(".");
+    const bindName = useMemo(() => {
+        return [bindPrefix, props.name].filter(Boolean).join(".");
+    }, [props.name]);
+
+    const fieldProps = { ...props, name: bindName };
 
     useEffect(() => {
+        form.registerField(fieldProps);
+
         return () => {
-            form.unregisterField(props.name);
+            form.unregisterField(fieldProps.name);
         };
     }, []);
 
-    return form.registerField({ ...props, name: bindName });
+    return form.registerField(fieldProps);
 });
