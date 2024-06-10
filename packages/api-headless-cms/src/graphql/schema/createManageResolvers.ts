@@ -56,7 +56,7 @@ export const createManageResolvers: CreateManageResolvers = ({
         // These are extra fields we want to apply to field resolvers of "gqlType"
         extraResolvers: {
             /**
-             * Advanced Content Entry
+             * Advanced Content Organization
              */
             wbyAco_location: async (entry: CmsEntry) => {
                 return entry.location || null;
