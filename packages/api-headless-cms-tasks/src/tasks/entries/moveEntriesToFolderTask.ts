@@ -6,6 +6,8 @@ import {
     IBulkActionOperationInput,
     IBulkActionOperationOutput
 } from "~/types";
+import { MoveEntryToFolder } from "~/tasks/entries/gateways";
+import { ProcessTask } from "~/tasks/entries/useCases/ProcessTask";
 
 export const createMoveEntriesToFolderTask = () => {
     return createPrivateTaskDefinition<
@@ -18,19 +20,12 @@ export const createMoveEntriesToFolderTask = () => {
         description: "Move entries to folder.",
         maxIterations: 2,
         run: async params => {
-            const { response, isAborted } = params;
+            const { response } = params;
 
             try {
-                if (isAborted()) {
-                    return response.aborted();
-                }
-
-                const { MoveEntriesToFolder } = await import(
-                    /* webpackChunkName: "MoveEntriesToFolder" */ "~/tasks/entries/useCases/MoveEntriesToFolder"
-                );
-
-                const moveEntriesToFolder = new MoveEntriesToFolder();
-                return await moveEntriesToFolder.execute(params);
+                const moveGateway = new MoveEntryToFolder();
+                const processTask = new ProcessTask(moveGateway);
+                return await processTask.execute(params);
             } catch (ex) {
                 return response.error(
                     ex.message ?? "Error while executing MoveEntriesToFolder task"

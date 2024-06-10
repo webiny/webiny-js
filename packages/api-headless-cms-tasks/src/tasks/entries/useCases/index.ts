@@ -1,23 +1,3 @@
-// Trash Bin
-export * from "./EmptyTrashBins";
-
-// Bulk Action - Delete Entries
-export * from "./DeleteEntries";
-
-// Bulk Action - Publish Entries
-export * from "./PublishEntries";
-
-// Bulk Action - Unpublish Entries
-export * from "./UnpublishEntries";
-
-// Bulk Action - Move Entries to Folder
-export * from "./MoveEntriesToFolder";
-
-// Bulk Action - Move Entries to Trash Bin
-export * from "./MoveEntriesToTrash";
-
-// Bulk Action - Restore Entries from Trash Bin
-export * from "./RestoreEntriesFromTrash";
-
 export * from "./CreateTasksByModel";
 export * from "./ProcessTasksByModel";
+export * from "./ProcessTask";

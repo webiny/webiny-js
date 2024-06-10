@@ -6,6 +6,8 @@ import {
     IBulkActionOperationInput,
     IBulkActionOperationOutput
 } from "~/types";
+import { DeleteEntry } from "~/tasks/entries/gateways";
+import { ProcessTask } from "~/tasks/entries/useCases/ProcessTask";
 
 export const createDeleteEntriesTask = () => {
     return createPrivateTaskDefinition<
@@ -18,19 +20,12 @@ export const createDeleteEntriesTask = () => {
         description: "Delete entries.",
         maxIterations: 2,
         run: async params => {
-            const { response, isAborted } = params;
+            const { response } = params;
 
             try {
-                if (isAborted()) {
-                    return response.aborted();
-                }
-
-                const { DeleteEntries } = await import(
-                    /* webpackChunkName: "DeleteEntries" */ "~/tasks/entries/useCases/DeleteEntries"
-                );
-
-                const deleteEntries = new DeleteEntries();
-                return await deleteEntries.execute(params);
+                const deleteGateway = new DeleteEntry();
+                const processTask = new ProcessTask(deleteGateway);
+                return await processTask.execute(params);
             } catch (ex) {
                 return response.error(ex.message ?? "Error while executing DeleteEntries task");
             }

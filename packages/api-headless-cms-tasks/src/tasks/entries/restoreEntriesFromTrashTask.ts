@@ -6,6 +6,8 @@ import {
     IBulkActionOperationInput,
     IBulkActionOperationOutput
 } from "~/types";
+import { RestoreEntryFromTrash } from "~/tasks/entries/gateways";
+import { ProcessTask } from "~/tasks/entries/useCases";
 
 export const createRestoreEntriesFromTrashTask = () => {
     return createPrivateTaskDefinition<
@@ -18,19 +20,12 @@ export const createRestoreEntriesFromTrashTask = () => {
         description: "Restore entries from trash bin.",
         maxIterations: 2,
         run: async params => {
-            const { response, isAborted } = params;
+            const { response } = params;
 
             try {
-                if (isAborted()) {
-                    return response.aborted();
-                }
-
-                const { RestoreEntriesFromTrash } = await import(
-                    /* webpackChunkName: "RestoreEntriesFromTrash" */ "~/tasks/entries/useCases/RestoreEntriesFromTrash"
-                );
-
-                const restoreEntriesFromTrash = new RestoreEntriesFromTrash();
-                return await restoreEntriesFromTrash.execute(params);
+                const restoreGateway = new RestoreEntryFromTrash();
+                const processTask = new ProcessTask(restoreGateway);
+                return await processTask.execute(params);
             } catch (ex) {
                 return response.error(
                     ex.message ?? "Error while executing RestoreEntriesFromTrash task"

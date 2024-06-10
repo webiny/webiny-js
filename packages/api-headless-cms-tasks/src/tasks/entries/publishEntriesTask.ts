@@ -6,6 +6,8 @@ import {
     IBulkActionOperationInput,
     IBulkActionOperationOutput
 } from "~/types";
+import { PublishEntry } from "~/tasks/entries/gateways";
+import { ProcessTask } from "~/tasks/entries/useCases";
 
 export const createPublishEntriesTask = () => {
     return createPrivateTaskDefinition<
@@ -18,19 +20,12 @@ export const createPublishEntriesTask = () => {
         description: "Publish entries.",
         maxIterations: 2,
         run: async params => {
-            const { response, isAborted } = params;
+            const { response } = params;
 
             try {
-                if (isAborted()) {
-                    return response.aborted();
-                }
-
-                const { PublishEntries } = await import(
-                    /* webpackChunkName: "PublishEntries" */ "~/tasks/entries/useCases/PublishEntries"
-                );
-
-                const publishEntries = new PublishEntries();
-                return await publishEntries.execute(params);
+                const publishGateway = new PublishEntry();
+                const processTask = new ProcessTask(publishGateway);
+                return await processTask.execute(params);
             } catch (ex) {
                 return response.error(ex.message ?? "Error while executing PublishEntries task");
             }

@@ -1,12 +1,17 @@
-import { ITaskResponseResult } from "@webiny/tasks";
+import { Result } from "./Result";
+import { IProcessEntry } from "~/tasks/entries/gateways";
 import { IBulkActionOperationTaskParams } from "~/types";
-import { taskRepositoryFactory } from "~/tasks/entries/domain";
-import { IUseCase } from "~/tasks/IUseCase";
 
-export class UnpublishEntries
-    implements IUseCase<IBulkActionOperationTaskParams, ITaskResponseResult>
-{
-    public async execute(params: IBulkActionOperationTaskParams) {
+export class ProcessTask {
+    private readonly result: Result;
+    private gateway: IProcessEntry;
+
+    constructor(gateway: IProcessEntry) {
+        this.result = new Result();
+        this.gateway = gateway;
+    }
+
+    async execute(params: IBulkActionOperationTaskParams) {
         const { input, response, isAborted, isCloseToTimeout, context, store } = params;
 
         try {
@@ -29,24 +34,22 @@ export class UnpublishEntries
             const model = await context.cms.getModel(input.modelId);
 
             if (!model) {
-                return response.error(`Content model "${input.modelId}" was not found!`);
+                return response.error(`Model with ${input.modelId} not found!`);
             }
 
             if (!input.ids || input.ids.length === 0) {
-                return response.done("Task done: no entries to unpublish.");
+                return response.done("Task done: no entries to process.");
             }
-
-            const taskRepository = taskRepositoryFactory.getRepository(store.getTask().id);
 
             for (const id of input.ids) {
                 try {
                     context.security.setIdentity(input.identity);
-                    await context.cms.unpublishEntry(model, id);
-                    taskRepository.addDone(id);
+                    await this.gateway.execute(context, model, id, input.data);
+                    this.result.addDone(id);
                 } catch (ex) {
-                    const message = ex.message || `Failed to unpublish entry with id ${id}.`;
-
+                    const message = ex.message || `Failed to process entry with id "${id}".`;
                     try {
+                        console.error(message);
                         await store.addErrorLog({
                             message,
                             error: ex
@@ -54,19 +57,18 @@ export class UnpublishEntries
                     } catch {
                         console.error(`Failed to add error log: "${message}"`);
                     } finally {
-                        taskRepository.addFailed(id);
+                        this.result.addFailed(id);
                     }
                 }
             }
 
             return response.done("Task done.", {
-                done: taskRepository.getDone(),
-                failed: taskRepository.getFailed()
+                done: this.result.getDone(),
+                failed: this.result.getFailed()
             });
         } catch (ex) {
-            return response.error(
-                ex.message ?? `Error while unpublishing entries for model ${input.modelId}.`
-            );
+            // Handle errors that occur during task processing
+            return response.error(ex.message ?? `Error while processing task.`);
         }
     }
 }

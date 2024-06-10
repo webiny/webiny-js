@@ -6,6 +6,8 @@ import {
     IBulkActionOperationInput,
     IBulkActionOperationOutput
 } from "~/types";
+import { ProcessTask } from "~/tasks/entries/useCases";
+import { MoveEntryToTrash } from "~/tasks/entries/gateways";
 
 export const createMoveEntriesToTrashTask = () => {
     return createPrivateTaskDefinition<
@@ -18,19 +20,12 @@ export const createMoveEntriesToTrashTask = () => {
         description: "Move entries to trash bin.",
         maxIterations: 2,
         run: async params => {
-            const { response, isAborted } = params;
+            const { response } = params;
 
             try {
-                if (isAborted()) {
-                    return response.aborted();
-                }
-
-                const { MoveEntriesToTrash } = await import(
-                    /* webpackChunkName: "MoveEntriesToTrash" */ "~/tasks/entries/useCases/MoveEntriesToTrash"
-                );
-
-                const moveEntriesToTrash = new MoveEntriesToTrash();
-                return await moveEntriesToTrash.execute(params);
+                const moveToTrashGateway = new MoveEntryToTrash();
+                const processTask = new ProcessTask(moveToTrashGateway);
+                return await processTask.execute(params);
             } catch (ex) {
                 return response.error(
                     ex.message ?? "Error while executing MoveEntriesToTrash task"

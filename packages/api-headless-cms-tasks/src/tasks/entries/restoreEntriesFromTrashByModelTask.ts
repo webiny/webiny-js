@@ -20,13 +20,9 @@ export const createRestoreEntriesFromTrashByModelTask = () => {
         description: "Restore entries from trash bin found for a particular query, by model.",
         maxIterations: 500,
         run: async params => {
-            const { response, isAborted, input } = params;
+            const { response, input } = params;
 
             try {
-                if (isAborted()) {
-                    return response.aborted();
-                }
-
                 if (!input.modelId) {
                     return response.error(`Missing "modelId" in the input.`);
                 }
