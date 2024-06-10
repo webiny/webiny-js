@@ -10,7 +10,7 @@ const WAITING_TIME = 5; // Time to wait in seconds before retrying
 /**
  * TaskCreate class handles the execution of a task to process entries in batches.
  */
-export class TaskCreate {
+export class CreateTasksByModel {
     private readonly taskCache: TaskCache;
     private listEntriesGateway: IListEntries;
 

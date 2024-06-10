@@ -1,6 +1,6 @@
 import { createTaskDefinition } from "@webiny/tasks";
 import { ChildTasksCleanup } from "~/tasks/common";
-import { TaskCreate, TaskProcess } from "~/tasks/entries/domain";
+import { CreateTasksByModel, ProcessTasksByModel } from "~/tasks/entries/useCases";
 import { ListDeletedEntries } from "~/tasks/entries/gateways";
 import {
     EntriesTask,
@@ -32,12 +32,14 @@ export const createRestoreEntriesFromTrashByModelTask = () => {
                 }
 
                 if (input.processing) {
-                    const processTasks = new TaskProcess(EntriesTask.RestoreEntriesFromTrash);
+                    const processTasks = new ProcessTasksByModel(
+                        EntriesTask.RestoreEntriesFromTrash
+                    );
                     return await processTasks.execute(params);
                 }
 
                 const listGateway = new ListDeletedEntries();
-                const createTasks = new TaskCreate(
+                const createTasks = new CreateTasksByModel(
                     EntriesTask.RestoreEntriesFromTrash,
                     listGateway
                 );

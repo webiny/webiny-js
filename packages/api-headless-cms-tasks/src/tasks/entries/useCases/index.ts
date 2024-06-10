@@ -18,3 +18,6 @@ export * from "./MoveEntriesToTrash";
 
 // Bulk Action - Restore Entries from Trash Bin
 export * from "./RestoreEntriesFromTrash";
+
+export * from "./CreateTasksByModel";
+export * from "./ProcessTasksByModel";

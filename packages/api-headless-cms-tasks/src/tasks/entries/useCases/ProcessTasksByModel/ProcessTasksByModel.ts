@@ -6,7 +6,7 @@ const WAITING_TIME = 10;
 /**
  * Class representing a task processing operation.
  */
-export class TaskProcess {
+export class ProcessTasksByModel {
     private taskDefinition: EntriesTask;
 
     constructor(taskDefinition: EntriesTask) {
