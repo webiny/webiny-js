@@ -80,6 +80,19 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             firstPublishedBy: { type: "map" },
             lastPublishedBy: { type: "map" },
 
+            /**
+             * Deprecated fields. 👇
+             */
+            ownedBy: {
+                type: "map"
+            },
+            publishedOn: {
+                type: "string"
+            },
+
+            /**
+             * The rest. 👇
+             */
             version: {
                 type: "number"
             },
