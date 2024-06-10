@@ -1,14 +1,8 @@
 import { ITaskResponseResult } from "@webiny/tasks";
 import { IListEntries } from "~/tasks/entries/gateways";
 import { TaskCache } from "./TaskCache";
-import { TaskTrigger } from "./TaskTrigger";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
-import {
-    EntriesTask,
-    IBulkActionOperationByModelInput,
-    IBulkActionOperationByModelTaskParams,
-    IBulkActionOperationInput
-} from "~/types";
+import { EntriesTask, IBulkActionOperationByModelTaskParams } from "~/types";
 
 const BATCH_SIZE = 50; // Number of entries to fetch in each batch
 const WAITING_TIME = 5; // Time to wait in seconds before retrying
@@ -17,16 +11,11 @@ const WAITING_TIME = 5; // Time to wait in seconds before retrying
  * TaskCreate class handles the execution of a task to process entries in batches.
  */
 export class TaskCreate {
-    private readonly taskCache: TaskCache<IBulkActionOperationInput>;
-    private taskTrigger: TaskTrigger<IBulkActionOperationInput, IBulkActionOperationByModelInput>;
+    private readonly taskCache: TaskCache;
     private listEntriesGateway: IListEntries;
 
     constructor(taskDefinition: EntriesTask, listEntriesGateway: IListEntries) {
-        this.taskCache = new TaskCache<IBulkActionOperationInput>();
-        this.taskTrigger = new TaskTrigger<
-            IBulkActionOperationInput,
-            IBulkActionOperationByModelInput
-        >(this.taskCache, taskDefinition);
+        this.taskCache = new TaskCache(taskDefinition);
         this.listEntriesGateway = listEntriesGateway;
     }
 
@@ -46,7 +35,7 @@ export class TaskCreate {
                 if (isAborted()) {
                     return response.aborted();
                 } else if (isCloseToTimeout()) {
-                    await this.taskTrigger.execute(context, store);
+                    await this.taskCache.triggerTask(context, store.getTask());
                     return response.continue({
                         ...input,
                         ...listEntriesParams,
@@ -68,7 +57,7 @@ export class TaskCreate {
 
                 // Continue processing if no entries are returned in the current batch
                 if (entries.length === 0) {
-                    await this.taskTrigger.execute(context, store);
+                    await this.taskCache.triggerTask(context, store.getTask());
                     return response.continue(
                         {
                             ...input,
@@ -95,7 +84,7 @@ export class TaskCreate {
 
                 // Continue processing if there are no more entries or pagination is complete
                 if (!meta.hasMoreItems || !meta.cursor) {
-                    await this.taskTrigger.execute(context, store);
+                    await this.taskCache.triggerTask(context, store.getTask());
                     return response.continue(
                         {
                             ...input,
