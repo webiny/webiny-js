@@ -19,8 +19,6 @@ export class TaskCreate {
     private listEntriesGateway: IListEntries;
 
     constructor(taskDefinition: EntriesTask, listEntriesGateway: IListEntries) {
-        console.log("taskDefinition", taskDefinition);
-
         this.taskCache = new TaskCache<IBulkActionOperationInput>();
         this.taskTrigger = new TaskTrigger<
             IBulkActionOperationInput,
@@ -39,16 +37,12 @@ export class TaskCreate {
                 limit: BATCH_SIZE
             };
 
-            console.log("listEntriesParams", listEntriesParams);
-
             let currentBatch = input.currentBatch || 1;
 
             while (true) {
                 if (isAborted()) {
                     return response.aborted();
                 } else if (isCloseToTimeout()) {
-                    console.log("taskTrigger.execute 1");
-
                     await this.taskTrigger.execute(context, store);
                     return response.continue({
                         ...input,
@@ -63,9 +57,6 @@ export class TaskCreate {
                     listEntriesParams
                 );
 
-                console.log("entries", entries);
-                console.log("meta", meta);
-
                 // If no entries exist for the provided query, let's return done.
                 if (meta.totalCount === 0) {
                     return response.done("Task done: no entries to process.");
@@ -73,8 +64,6 @@ export class TaskCreate {
 
                 // If no entries are returned, let's trigger the cached child tasks and continue in `processing` mode.
                 if (entries.length === 0) {
-                    console.log("taskTrigger.execute 2");
-
                     await this.taskTrigger.execute(context, store);
                     return response.continue(
                         {
@@ -91,18 +80,16 @@ export class TaskCreate {
                 const ids = entries.map(entry => entry.id);
 
                 if (ids.length > 0) {
-                    console.log("cacheTask", ids);
-
                     this.taskCache.cacheTask({
                         modelId: input.modelId,
                         identity: input.identity,
+                        data: input.data,
                         ids
                     });
                 }
 
                 // No more entries paginated, let's trigger the cached child tasks and continue in `processing` mode.
                 if (!meta.hasMoreItems || !meta.cursor) {
-                    console.log("taskTrigger.execute 3");
                     await this.taskTrigger.execute(context, store);
                     return response.continue(
                         {
