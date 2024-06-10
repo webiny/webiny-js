@@ -1,18 +1,21 @@
+import { ITaskResponseResult } from "@webiny/tasks";
+import { IListEntries } from "~/tasks/entries/gateways";
 import { TaskCache } from "./TaskCache";
 import { TaskTrigger } from "./TaskTrigger";
+import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 import {
     EntriesTask,
     IBulkActionOperationByModelInput,
     IBulkActionOperationByModelTaskParams,
     IBulkActionOperationInput
 } from "~/types";
-import { IListEntries } from "~/tasks/entries/gateways";
-import { ITaskResponseResult } from "@webiny/tasks";
-import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 
-const BATCH_SIZE = 50;
-const WAITING_TIME = 5;
+const BATCH_SIZE = 50; // Number of entries to fetch in each batch
+const WAITING_TIME = 5; // Time to wait in seconds before retrying
 
+/**
+ * TaskCreate class handles the execution of a task to process entries in batches.
+ */
 export class TaskCreate {
     private readonly taskCache: TaskCache<IBulkActionOperationInput>;
     private taskTrigger: TaskTrigger<IBulkActionOperationInput, IBulkActionOperationByModelInput>;
@@ -51,18 +54,19 @@ export class TaskCreate {
                     });
                 }
 
+                // List entries from the HCMS based on the provided query
                 const { entries, meta } = await this.listEntriesGateway.execute(
                     context,
                     input.modelId,
                     listEntriesParams
                 );
 
-                // If no entries exist for the provided query, let's return done.
+                // End the task if no entries match the query
                 if (meta.totalCount === 0) {
                     return response.done("Task done: no entries to process.");
                 }
 
-                // If no entries are returned, let's trigger the cached child tasks and continue in `processing` mode.
+                // Continue processing if no entries are returned in the current batch
                 if (entries.length === 0) {
                     await this.taskTrigger.execute(context, store);
                     return response.continue(
@@ -77,9 +81,10 @@ export class TaskCreate {
                     );
                 }
 
-                const ids = entries.map(entry => entry.id);
+                const ids = entries.map(entry => entry.id); // Extract entry IDs
 
                 if (ids.length > 0) {
+                    // Cache the task with the entry IDs
                     this.taskCache.cacheTask({
                         modelId: input.modelId,
                         identity: input.identity,
@@ -88,7 +93,7 @@ export class TaskCreate {
                     });
                 }
 
-                // No more entries paginated, let's trigger the cached child tasks and continue in `processing` mode.
+                // Continue processing if there are no more entries or pagination is complete
                 if (!meta.hasMoreItems || !meta.cursor) {
                     await this.taskTrigger.execute(context, store);
                     return response.continue(

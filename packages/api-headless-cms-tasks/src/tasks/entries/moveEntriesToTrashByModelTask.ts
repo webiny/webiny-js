@@ -1,5 +1,7 @@
 import { createTaskDefinition } from "@webiny/tasks";
 import { ChildTasksCleanup } from "~/tasks/common";
+import { TaskCreate, TaskProcess } from "~/tasks/entries/domain";
+import { ListLatestEntries } from "~/tasks/entries/gateways";
 import {
     EntriesTask,
     HcmsTasksContext,
@@ -18,19 +20,25 @@ export const createMoveEntriesToTrashByModelTask = () => {
         description: "Move entries to trash bin found for a particular query, by model.",
         maxIterations: 500,
         run: async params => {
-            const { response, isAborted } = params;
+            const { response, isAborted, input } = params;
 
             try {
                 if (isAborted()) {
                     return response.aborted();
                 }
 
-                const { MoveEntriesToTrashByModel } = await import(
-                    /* webpackChunkName: "MoveEntriesToTrashByModel" */ "~/tasks/entries/useCases/MoveEntriesToTrashByModel"
-                );
+                if (!input.modelId) {
+                    return response.error(`Missing "modelId" in the input.`);
+                }
 
-                const moveEntriesToTrashByModel = new MoveEntriesToTrashByModel();
-                return await moveEntriesToTrashByModel.execute(params);
+                if (input.processing) {
+                    const processTasks = new TaskProcess(EntriesTask.MoveEntriesToTrash);
+                    return await processTasks.execute(params);
+                }
+
+                const listGateway = new ListLatestEntries();
+                const createTasks = new TaskCreate(EntriesTask.MoveEntriesToTrash, listGateway);
+                return await createTasks.execute(params);
             } catch (ex) {
                 return response.error(
                     ex.message ?? "Error while executing MoveEntriesToTrashByModel task"

@@ -1,5 +1,7 @@
 import { createTaskDefinition } from "@webiny/tasks";
 import { ChildTasksCleanup } from "~/tasks/common";
+import { TaskCreate, TaskProcess } from "~/tasks/entries/domain";
+import { ListPublishedEntries } from "~/tasks/entries/gateways";
 import {
     EntriesTask,
     HcmsTasksContext,
@@ -18,19 +20,25 @@ export const createUnpublishEntriesByModelTask = () => {
         description: "Unpublish entries found for a particular query, by model.",
         maxIterations: 500,
         run: async params => {
-            const { response, isAborted } = params;
+            const { response, isAborted, input } = params;
 
             try {
                 if (isAborted()) {
                     return response.aborted();
                 }
 
-                const { UnpublishEntriesByModel } = await import(
-                    /* webpackChunkName: "UnpublishEntriesByModel" */ "~/tasks/entries/useCases/UnpublishEntriesByModel"
-                );
+                if (!input.modelId) {
+                    return response.error(`Missing "modelId" in the input.`);
+                }
 
-                const unpublishEntriesByModel = new UnpublishEntriesByModel();
-                return await unpublishEntriesByModel.execute(params);
+                if (input.processing) {
+                    const processTasks = new TaskProcess(EntriesTask.UnpublishEntries);
+                    return await processTasks.execute(params);
+                }
+
+                const listGateway = new ListPublishedEntries();
+                const createTasks = new TaskCreate(EntriesTask.UnpublishEntries, listGateway);
+                return await createTasks.execute(params);
             } catch (ex) {
                 return response.error(
                     ex.message ?? "Error while executing UnpublishEntriesByModel task"
