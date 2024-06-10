@@ -43,7 +43,7 @@ export class TaskProcess {
             }
 
             return response.done(
-                `Task done: The task "${this.taskDefinition}" has been successfully processed for entries from "${input.modelId}".`
+                `Task done: task "${this.taskDefinition}" has been successfully processed for entries from "${input.modelId}".`
             );
         } catch (ex) {
             return response.error(

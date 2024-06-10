@@ -1,6 +1,6 @@
 import { ITaskResponseResult } from "@webiny/tasks";
-import { TaskProcess } from "../../domain";
-import { CreateTasks } from "./CreateTasks";
+import { TaskCreate, TaskProcess } from "../../domain";
+import { ListLatestEntries } from "~/tasks/entries/gateways";
 import { EntriesTask, IBulkActionOperationByModelTaskParams } from "~/types";
 import { IUseCase } from "~/tasks/IUseCase";
 
@@ -12,11 +12,12 @@ export class MoveEntriesToTrashByModel
 
         try {
             if (input.processing) {
-                const processTasks = new TaskProcess(EntriesTask.MoveEntriesToTrashByModel);
+                const processTasks = new TaskProcess(EntriesTask.MoveEntriesToTrash);
                 return await processTasks.execute(params);
             }
 
-            const createTasks = new CreateTasks();
+            const gateway = new ListLatestEntries();
+            const createTasks = new TaskCreate(EntriesTask.MoveEntriesToTrash, gateway);
             return await createTasks.execute(params);
         } catch (ex) {
             return response.error(ex.message ?? "Error while executing MoveEntriesToTrashByModel");
