@@ -91,10 +91,11 @@ describe("Content entries - Entry Meta Fields", () => {
 
         customGqlResolvers.name = "cms-test-entry-meta-fields";
 
-        const { manage: manageApiWithGqlResolvers, read: readApiWithGqlResolvers } = useTestModelHandler({
-            identity: identityA,
-            plugins: [customGqlResolvers]
-        });
+        const { manage: manageApiWithGqlResolvers, read: readApiWithGqlResolvers } =
+            useTestModelHandler({
+                identity: identityA,
+                plugins: [customGqlResolvers]
+            });
 
         const { data: testEntryWithDeprecatedFields } =
             await manageApiWithGqlResolvers.getTestEntry({
@@ -117,6 +118,5 @@ describe("Content entries - Entry Meta Fields", () => {
             publishedOn: publishedTestEntry.lastPublishedOn,
             ownedBy: publishedTestEntry.createdBy
         });
-
     });
 });
