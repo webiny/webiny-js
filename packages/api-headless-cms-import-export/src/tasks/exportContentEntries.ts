@@ -14,11 +14,11 @@ export const createExportContentEntriesTask = () => {
         isPrivate: true,
         description: "Export content entries from a specific model.",
         async run(params) {
-            const { ExportContentEntries } = await import(
+            const { createExportContentEntries } = await import(
                 /* webpackChunkName: "ExportContentEntries" */ "./domain/ExportContentEntries"
             );
 
-            const exportContentEntries = new ExportContentEntries();
+            const exportContentEntries = createExportContentEntries();
 
             try {
                 return await exportContentEntries.run(params);

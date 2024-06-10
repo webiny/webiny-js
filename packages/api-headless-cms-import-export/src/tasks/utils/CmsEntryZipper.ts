@@ -1,10 +1,14 @@
 import { CmsEntry, CmsEntryMeta } from "@webiny/api-headless-cms/types";
 import { IZipper } from "./abstractions/Zipper";
-import { Archiver } from "archiver";
+import { IArchiver } from "./abstractions/Archiver";
+import {
+    ICmsEntryZipper,
+    ICmsEntryZipperExecuteParams
+} from "~/tasks/utils/abstractions/CmsEntryZIpper";
 
-export interface ICmsEntryZipperParams {
+export interface ICmsEntryZipperConfig {
     zipper: IZipper;
-    archiver: Archiver;
+    archiver: IArchiver;
     fetcher: ICmsEntryFetcher;
 }
 
@@ -32,16 +36,12 @@ export interface ICmsEntryFetcher {
     (after?: string): Promise<ICmsEntryFetcherResult>;
 }
 
-export interface ICmsEntryZipperExecuteParams {
-    shouldAbort(): boolean;
-}
-
-export class CmsEntryZipper {
+export class CmsEntryZipper implements ICmsEntryZipper {
     private readonly zipper: IZipper;
-    private readonly archiver: Archiver;
+    private readonly archiver: IArchiver;
     private readonly fetcher: ICmsEntryFetcher;
 
-    public constructor(params: ICmsEntryZipperParams) {
+    public constructor(params: ICmsEntryZipperConfig) {
         this.zipper = params.zipper;
         this.archiver = params.archiver;
         this.fetcher = params.fetcher;
@@ -80,9 +80,9 @@ export class CmsEntryZipper {
             after = meta.cursor || undefined;
         };
 
-        this.archiver.on("entry", () => {
+        this.archiver.archiver.on("entry", () => {
             if (shouldAbort()) {
-                this.archiver.abort();
+                this.archiver.archiver.abort();
                 return;
             }
             addItems();

@@ -1,31 +1,31 @@
 import { IAddOptions, IZipper } from "./abstractions/Zipper";
-import { Archiver } from "archiver";
 import { IUpload } from "./abstractions/Upload";
 import { CompleteMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3";
+import { IArchiver } from "./abstractions/Archiver";
 
-export interface IZipperParams {
+export interface IZipperConfig {
     upload: IUpload;
-    archiver: Archiver;
+    archiver: IArchiver;
 }
 
 export class Zipper implements IZipper {
     private readonly upload: IUpload;
-    public readonly archiver: Archiver;
+    public readonly archiver: IArchiver;
 
-    public constructor(params: IZipperParams) {
-        this.upload = params.upload;
-        this.archiver = params.archiver;
+    public constructor(config: IZipperConfig) {
+        this.upload = config.upload;
+        this.archiver = config.archiver;
 
-        this.archiver.pipe(params.upload.stream);
+        this.archiver.archiver.pipe(config.upload.stream);
     }
 
     public async add(data: Buffer, options: IAddOptions): Promise<void> {
-        this.archiver.append(data, options);
+        this.archiver.archiver.append(data, options);
     }
 
     public async finalize(): Promise<void> {
         setTimeout(() => {
-            this.archiver.finalize();
+            this.archiver.archiver.finalize();
         }, 200);
     }
 

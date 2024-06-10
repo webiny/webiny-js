@@ -4,7 +4,7 @@ import { CompleteMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3"
 import { IS3Client } from "./abstractions/S3Client";
 import { IUpload } from "./abstractions/Upload";
 
-export interface IUploadParams {
+export interface IUploadConfig {
     client: IS3Client;
     stream: PassThrough;
     bucket: string;
@@ -13,10 +13,10 @@ export interface IUploadParams {
 
 export class Upload implements IUpload {
     public readonly stream: PassThrough;
-    private readonly upload: BaseUpload;
+    private readonly upload: Pick<BaseUpload, "done">;
     private readonly client: IS3Client;
 
-    public constructor(params: IUploadParams) {
+    public constructor(params: IUploadConfig) {
         this.client = params.client;
         this.upload = new BaseUpload({
             client: this.client.client,
