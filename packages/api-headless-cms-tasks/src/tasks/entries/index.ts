@@ -12,8 +12,8 @@ import { createRestoreEntriesFromTrashTask } from "./restoreEntriesFromTrashTask
 import { createRestoreEntriesFromTrashByModelTask } from "./restoreEntriesFromTrashByModelTask";
 import { createUnpublishEntriesByModelTask } from "./unpublishEntriesByModelTask";
 
+export * from "./gateways";
 export * from "./useCases";
-export * from "./domain";
 
 export const createEntriesTasks = () => {
     return [

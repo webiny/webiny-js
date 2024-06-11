@@ -20,34 +20,40 @@ export const createGraphQL = () => {
             return;
         }
 
+        const genericBulkActionPlugin = new CmsGraphQLSchemaPlugin({
+            typeDefs: /* GraphQL */ `
+                enum BulkActionName {
+                    ${BulkActionNames}
+                }
+                 
+                type BulkActionResponseData {
+                    id: String
+                }
+                 
+                type BulkActionResponse {
+                    data: BulkActionResponseData
+                    error: CmsError
+                }
+            `
+        });
+
+        genericBulkActionPlugin.name = `headless-cms.graphql.schema.bulkAction`;
+
         const models = await context.security.withoutAuthorization(async () => {
             return (await context.cms.listModels()).filter(model => !model.isPrivate);
         });
 
-        const bulkActionPlugins: CmsGraphQLSchemaPlugin<HcmsTasksContext>[] = [];
+        const modelBulkActionPlugins: CmsGraphQLSchemaPlugin<HcmsTasksContext>[] = [];
 
         models.forEach(model => {
             const plugin = new CmsGraphQLSchemaPlugin({
                 typeDefs: /* GraphQL */ `
-                    type ${model.singularApiName}BulkActionResponseData {
-                        id: String
-                    }
-                    
-                    enum ${model.singularApiName}BulkActionName {
-                        ${BulkActionNames}
-                    }
-    
-                    type ${model.singularApiName}BulkActionResponse {
-                        data: ${model.singularApiName}BulkActionResponseData
-                        error: CmsError
-                    }
-                
                     extend type Mutation {
                         bulkAction${model.singularApiName}(
-                            action: ${model.singularApiName}BulkActionName!
+                            action: BulkActionName!
                             where: ${model.singularApiName}ListWhereInput
                             data: JSON
-                        ): ${model.singularApiName}BulkActionResponse
+                        ): BulkActionResponse
                     }
                 `,
                 resolvers: {
@@ -86,9 +92,9 @@ export const createGraphQL = () => {
             });
 
             plugin.name = `headless-cms.graphql.schema.bulkAction.${model.modelId}`;
-            bulkActionPlugins.push(plugin);
+            modelBulkActionPlugins.push(plugin);
         });
 
-        context.plugins.register(bulkActionPlugins);
+        context.plugins.register([genericBulkActionPlugin, ...modelBulkActionPlugins]);
     });
 };
