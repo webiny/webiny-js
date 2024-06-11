@@ -10,7 +10,6 @@ import {
     S3Client,
     UploadPartCommand
 } from "@webiny/aws-sdk/client-s3";
-
 import AdmZip from "adm-zip";
 
 describe("zipper", () => {
@@ -42,7 +41,7 @@ describe("zipper", () => {
     it("should properly zip a file", async () => {
         const stream = createPassThrough();
 
-        const buffers: any[] = [];
+        const buffers: Buffer[] = [];
 
         let buffer: Buffer | undefined = undefined;
 

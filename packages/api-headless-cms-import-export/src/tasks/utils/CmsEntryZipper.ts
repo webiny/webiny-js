@@ -5,6 +5,7 @@ import {
     ICmsEntryZipper,
     ICmsEntryZipperExecuteParams
 } from "~/tasks/utils/abstractions/CmsEntryZipper";
+import { IFileMeta } from "./types";
 
 export interface ICmsEntryZipperConfig {
     zipper: IZipper;
@@ -12,7 +13,14 @@ export interface ICmsEntryZipperConfig {
     fetcher: ICmsEntryFetcher;
 }
 
-const createDataFromItems = (items: CmsEntry[], meta: CmsEntryMeta, after?: string) => {
+interface ICreateBufferDataParams {
+    items: CmsEntry[];
+    meta: CmsEntryMeta;
+    after?: string;
+}
+
+const createBufferData = (params: ICreateBufferDataParams) => {
+    const { items, meta, after } = params;
     return Buffer.from(
         JSON.stringify({
             items: items.map(item => {
@@ -50,9 +58,11 @@ export class CmsEntryZipper implements ICmsEntryZipper {
     public async execute(params: ICmsEntryZipperExecuteParams): Promise<void> {
         const { shouldAbort } = params;
 
-        const files: string[] = [];
+        const files: IFileMeta[] = [];
         let after: string | undefined = undefined;
         let storedFiles = false;
+
+        let id = 1;
 
         const addItems = async () => {
             if (storedFiles) {
@@ -62,8 +72,9 @@ export class CmsEntryZipper implements ICmsEntryZipper {
 
             const { items, meta } = await this.fetcher(after);
             if (meta.totalCount === 0) {
+                await this.zipper.finalize();
                 return;
-            } else if (items.length === 0) {
+            } else if (items.length === 0 && meta.hasMoreItems === false) {
                 await this.zipper.add(Buffer.from(JSON.stringify({ files })), {
                     name: "files.json"
                 });
@@ -71,15 +82,20 @@ export class CmsEntryZipper implements ICmsEntryZipper {
                 return;
             }
 
-            const name = `items-${after || "last"}.json`;
+            const name = `entries-${id}.json`;
 
-            files.push(name);
+            files.push({
+                id,
+                name,
+                after
+            });
 
-            await this.zipper.add(createDataFromItems(items, meta, after), {
+            await this.zipper.add(createBufferData({ items, meta, after }), {
                 name
             });
 
             after = meta.cursor || undefined;
+            id++;
         };
 
         this.archiver.archiver.on("entry", () => {
