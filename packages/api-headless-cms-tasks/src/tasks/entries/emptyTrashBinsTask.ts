@@ -41,8 +41,6 @@ export const createEmptyTrashBinsTask = () => {
                         return (await context.cms.listModels()).filter(model => !model.isPrivate);
                     });
 
-                    const identity = context.security.getIdentity();
-
                     for (const model of models) {
                         await context.tasks.trigger<IBulkActionOperationByModelInput>({
                             name: `Headless CMS - Empty trash bin for "${model.name}" model.`,
@@ -50,7 +48,6 @@ export const createEmptyTrashBinsTask = () => {
                             parent: params.store.getTask(),
                             input: {
                                 modelId: model.modelId,
-                                identity,
                                 where: {
                                     deletedOn_lt: calculateDateTimeString()
                                 }

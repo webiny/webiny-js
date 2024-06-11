@@ -27,10 +27,6 @@ export class ProcessTask {
                 return response.error(`Missing "modelId" in the input.`);
             }
 
-            if (!input.identity) {
-                return response.error(`Missing "identity" in the input.`);
-            }
-
             const model = await context.cms.getModel(input.modelId);
 
             if (!model) {
@@ -38,7 +34,7 @@ export class ProcessTask {
             }
 
             if (!input.ids || input.ids.length === 0) {
-                return response.done("Task done: no entries to process.");
+                return response.done(`Task done: no entries to process for "${model.name}" model.`);
             }
 
             for (const id of input.ids) {
@@ -62,7 +58,7 @@ export class ProcessTask {
                 }
             }
 
-            return response.done("Task done.", {
+            return response.done(`Task done: all entries processed for "${model.name}" model.`, {
                 done: this.result.getDone(),
                 failed: this.result.getFailed()
             });

@@ -61,7 +61,7 @@ export type IBulkActionOperationTaskParams = ITaskRunParams<
 
 export interface IBulkActionOperationByModelInput {
     modelId: string;
-    identity: SecurityIdentity;
+    identity?: SecurityIdentity;
     where?: Record<string, any>;
     data?: Record<string, any>;
     after?: string | null;
