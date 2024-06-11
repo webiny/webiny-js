@@ -1,25 +1,32 @@
-import { Upload as BaseUpload } from "@webiny/aws-sdk/lib-storage";
+import { Options as BaseUploadOptions, Upload as BaseUpload } from "@webiny/aws-sdk/lib-storage";
 import { PassThrough } from "stream";
-import { CompleteMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3";
-import { IS3Client } from "./abstractions/S3Client";
-import { IUpload } from "./abstractions/Upload";
+import type { CompleteMultipartUploadCommandOutput, S3Client } from "@webiny/aws-sdk/client-s3";
+import { IAwsUpload, IUpload } from "./abstractions/Upload";
 
 export interface IUploadConfig {
-    client: IS3Client;
+    client: S3Client;
     stream: PassThrough;
     bucket: string;
     filename: string;
+    factory?(params: BaseUploadOptions): IAwsUpload;
 }
+
+const defaultFactory = (options: BaseUploadOptions) => {
+    return new BaseUpload(options);
+};
 
 export class Upload implements IUpload {
     public readonly stream: PassThrough;
-    private readonly upload: Pick<BaseUpload, "done">;
-    private readonly client: IS3Client;
+    public readonly upload: IAwsUpload;
+    private readonly client: S3Client;
 
     public constructor(params: IUploadConfig) {
         this.client = params.client;
-        this.upload = new BaseUpload({
-            client: this.client.client,
+
+        const factory = params?.factory || defaultFactory;
+
+        this.upload = factory({
+            client: params.client,
             params: {
                 ACL: "private",
                 Body: params.stream,

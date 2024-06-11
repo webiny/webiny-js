@@ -4,7 +4,7 @@ import { IArchiver } from "./abstractions/Archiver";
 import {
     ICmsEntryZipper,
     ICmsEntryZipperExecuteParams
-} from "~/tasks/utils/abstractions/CmsEntryZIpper";
+} from "~/tasks/utils/abstractions/CmsEntryZipper";
 
 export interface ICmsEntryZipperConfig {
     zipper: IZipper;
@@ -61,7 +61,9 @@ export class CmsEntryZipper implements ICmsEntryZipper {
             }
 
             const { items, meta } = await this.fetcher(after);
-            if (items.length === 0) {
+            if (meta.totalCount === 0) {
+                return;
+            } else if (items.length === 0) {
                 await this.zipper.add(Buffer.from(JSON.stringify({ files })), {
                     name: "files.json"
                 });

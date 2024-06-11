@@ -8,7 +8,6 @@ import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { Context } from "~/types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { getErrorProperties } from "@webiny/tasks/utils";
-import { S3Client } from "~/tasks/utils/S3Client";
 import { PassThrough, StreamOptions } from "stream";
 import { IZipperConfig, Zipper } from "../utils/Zipper";
 import { IUploadConfig, Upload } from "../utils/Upload";
@@ -18,7 +17,11 @@ import {
     ICmsEntryZipperConfig
 } from "~/tasks/utils/CmsEntryZipper";
 import { Archiver, IArchiverConfig } from "../utils/Archiver";
-import { ICmsEntryZipper } from "../utils/abstractions/CmsEntryZIpper";
+import { ICmsEntryZipper } from "../utils/abstractions/CmsEntryZipper";
+import { createS3Client } from "@webiny/aws-sdk/client-s3";
+import { Agent as HttpAgent } from "http";
+import { Agent as HttpsAgent } from "https";
+import { NodeHttpHandler } from "@smithy/node-http-handler";
 
 export interface IExportContentEntriesConfig {
     createCmsEntryZipper(config: Pick<ICmsEntryZipperConfig, "fetcher">): ICmsEntryZipper;
@@ -63,6 +66,7 @@ export class ExportContentEntries<
                 sort: params.input.sort,
                 after
             });
+
             return {
                 items,
                 meta
@@ -89,10 +93,6 @@ export class ExportContentEntries<
 }
 
 export const createExportContentEntries = () => {
-    const createS3Client = () => {
-        return new S3Client();
-    };
-
     const createPassThrough = (config: StreamOptions<PassThrough>) => {
         return new PassThrough(config);
     };
@@ -110,7 +110,28 @@ export const createExportContentEntries = () => {
     };
 
     const createCmsEntryZipper = (config: ICreateCmsEntryZipperConfig) => {
-        const s3Client = createS3Client();
+        const s3Client = createS3Client({
+            requestHandler: new NodeHttpHandler({
+                connectionTimeout: 0,
+                httpAgent: new HttpAgent({
+                    maxSockets: 10000,
+                    keepAlive: true,
+                    maxFreeSockets: 10000,
+                    maxTotalSockets: 10000,
+                    keepAliveMsecs: 900000 // milliseconds / 15 minutes
+                }),
+                httpsAgent: new HttpsAgent({
+                    maxSockets: 10000,
+                    keepAlive: true,
+                    sessionTimeout: 900, // seconds / 15 minutes
+                    maxCachedSessions: 100000,
+                    maxFreeSockets: 10000,
+                    maxTotalSockets: 10000,
+                    keepAliveMsecs: 900000 // milliseconds / 15 minutes
+                }),
+                requestTimeout: 900000 // milliseconds / 15 minutes
+            })
+        });
         const streamPassThrough = createPassThrough({
             autoDestroy: true
         });
