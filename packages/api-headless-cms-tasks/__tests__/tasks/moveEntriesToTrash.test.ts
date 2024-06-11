@@ -97,45 +97,6 @@ describe("Move Entries to Trash Bin", () => {
         });
     });
 
-    it("should fail in case of missing `identity` in the input", async () => {
-        const taskDefinition = createMoveEntriesToTrashTask();
-        const { handler } = useHandler<HcmsTasksContext>({
-            plugins: [taskDefinition, ...createMockModels()]
-        });
-
-        const context = await handler();
-
-        const task = await context.tasks.createTask({
-            name: "Move entries to trash bin",
-            definitionId: taskDefinition.id,
-            input: {
-                modelId: "any-modelId"
-            }
-        });
-
-        const runner = createRunner({
-            context,
-            task: taskDefinition
-        });
-
-        const result = await runner({
-            webinyTaskId: task.id
-        });
-
-        expect(result).toBeInstanceOf(ResponseErrorResult);
-
-        expect(result).toMatchObject({
-            status: "error",
-            error: {
-                message: `Missing "identity" in the input.`
-            },
-            webinyTaskId: task.id,
-            webinyTaskDefinitionId: EntriesTask.MoveEntriesToTrash,
-            tenant: "root",
-            locale: "en-US"
-        });
-    });
-
     it("should fail in case in case of not found model in the system", async () => {
         const taskDefinition = createMoveEntriesToTrashTask();
         const { handler } = useHandler<HcmsTasksContext>({
@@ -208,7 +169,7 @@ describe("Move Entries to Trash Bin", () => {
 
         expect(result).toMatchObject({
             status: "done",
-            message: `Task done: no entries to move into trash bin.`,
+            message: `Task done: no entries to process for "${MODEL_ID}" model.`,
             webinyTaskId: task.id,
             webinyTaskDefinitionId: EntriesTask.MoveEntriesToTrash,
             tenant: "root",

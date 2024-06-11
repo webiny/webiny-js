@@ -8,7 +8,7 @@ import { createEmptyTrashBinsTask } from "~/tasks/entries/emptyTrashBinsTask";
 
 jest.setTimeout(100000);
 
-describe("Empty Trash Bins", () => {
+describe("emptyTrashBins", () => {
     it("should execute and return a `Done` response in case of no found models in the system", async () => {
         const taskDefinition = createEmptyTrashBinsTask();
         const { handler } = useHandler<HcmsTasksContext>({

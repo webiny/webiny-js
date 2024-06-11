@@ -161,7 +161,7 @@ describe("restoreEntriesFromTrashByModel", () => {
 
         expect(result).toMatchObject({
             status: "done",
-            message: "Task done: no entries to process.",
+            message: `Task done: no entries found for model "${MODEL_ID}", skipping task creation.`,
             webinyTaskId: task.id,
             webinyTaskDefinitionId: EntriesTask.RestoreEntriesFromTrashByModel,
             tenant: "root",

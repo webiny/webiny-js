@@ -53,7 +53,7 @@ export class CreateTasksByModel {
                 // End the task if no entries match the query
                 if (meta.totalCount === 0) {
                     return response.done(
-                        `Task done: no entries found for model ${input.modelId}, skipping task creation.`
+                        `Task done: no entries found for model "${input.modelId}", skipping task creation.`
                     );
                 }
 

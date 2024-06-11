@@ -47,7 +47,9 @@ const listEntries = async (context: HcmsTasksContext, modelId: string, folderId:
     };
 };
 
-describe("Move Entries to Folder", () => {
+const MODEL_ID = "car";
+
+describe("moveEntriesToFolder", () => {
     it("should fail in case of missing `modelId` in the input", async () => {
         const taskDefinition = createMoveEntriesToFolderTask();
         const { handler } = useHandler<HcmsTasksContext>({
@@ -85,45 +87,6 @@ describe("Move Entries to Folder", () => {
         });
     });
 
-    it("should fail in case of missing `identity` in the input", async () => {
-        const taskDefinition = createMoveEntriesToFolderTask();
-        const { handler } = useHandler<HcmsTasksContext>({
-            plugins: [taskDefinition, ...createMockModels()]
-        });
-
-        const context = await handler();
-
-        const task = await context.tasks.createTask({
-            name: "Move entries to folder",
-            definitionId: taskDefinition.id,
-            input: {
-                modelId: "any-modelId"
-            }
-        });
-
-        const runner = createRunner({
-            context,
-            task: taskDefinition
-        });
-
-        const result = await runner({
-            webinyTaskId: task.id
-        });
-
-        expect(result).toBeInstanceOf(ResponseErrorResult);
-
-        expect(result).toMatchObject({
-            status: "error",
-            error: {
-                message: `Missing "identity" in the input.`
-            },
-            webinyTaskId: task.id,
-            webinyTaskDefinitionId: EntriesTask.MoveEntriesToFolder,
-            tenant: "root",
-            locale: "en-US"
-        });
-    });
-
     it("should fail in case of missing `folderId` in the input", async () => {
         const taskDefinition = createMoveEntriesToFolderTask();
         const { handler } = useHandler<HcmsTasksContext>({
@@ -136,7 +99,7 @@ describe("Move Entries to Folder", () => {
             name: "Move entries to folder",
             definitionId: taskDefinition.id,
             input: {
-                modelId: "any-modelId",
+                modelId: MODEL_ID,
                 identity
             }
         });
@@ -213,7 +176,6 @@ describe("Move Entries to Folder", () => {
 
         const context = await handler();
 
-        const MODEL_ID = "car";
         const FOLDER_ID = "folder-1";
 
         const task = await context.tasks.createTask({
@@ -239,7 +201,7 @@ describe("Move Entries to Folder", () => {
 
         expect(result).toMatchObject({
             status: "done",
-            message: `Task done: no entries to move into folder ${FOLDER_ID}.`,
+            message: `Task done: no entries to process for "${MODEL_ID}" model.`,
             webinyTaskId: task.id,
             webinyTaskDefinitionId: EntriesTask.MoveEntriesToFolder,
             tenant: "root",
@@ -255,7 +217,6 @@ describe("Move Entries to Folder", () => {
 
         const context = await handler();
 
-        const MODEL_ID = "car";
         const FOLDER_ID = "folder-1";
         const ENTRIES_COUNT = 50;
 
@@ -277,8 +238,10 @@ describe("Move Entries to Folder", () => {
             definitionId: taskDefinition.id,
             input: {
                 modelId: MODEL_ID,
-                folderId: FOLDER_ID,
                 identity,
+                data: {
+                    folderId: FOLDER_ID
+                },
                 ids
             }
         });

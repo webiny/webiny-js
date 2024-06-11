@@ -146,7 +146,7 @@ describe("deleteEntriesByModel", () => {
 
         expect(result).toMatchObject({
             status: "done",
-            message: "Task done: no entries to process.",
+            message: `Task done: no entries found for model "car", skipping task creation.`,
             webinyTaskId: task.id,
             webinyTaskDefinitionId: EntriesTask.DeleteEntriesByModel,
             tenant: "root",

@@ -34,7 +34,9 @@ export class ProcessTask {
             }
 
             if (!input.ids || input.ids.length === 0) {
-                return response.done(`Task done: no entries to process for "${model.name}" model.`);
+                return response.done(
+                    `Task done: no entries to process for "${input.modelId}" model.`
+                );
             }
 
             for (const id of input.ids) {

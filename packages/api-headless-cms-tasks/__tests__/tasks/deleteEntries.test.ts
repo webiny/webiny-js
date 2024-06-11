@@ -76,7 +76,7 @@ const listDeletedEntries = async (context: HcmsTasksContext, modelId: string) =>
 
 jest.setTimeout(100000);
 
-describe("Delete Entries", () => {
+describe("deleteEntries", () => {
     it("should fail in case of not existing model", async () => {
         const taskDefinition = createDeleteEntriesTask();
         const { handler } = useHandler<HcmsTasksContext>({
@@ -147,7 +147,7 @@ describe("Delete Entries", () => {
 
         expect(result).toMatchObject({
             status: "done",
-            message: "Task done: no entries to process.",
+            message: `Task done: no entries to process for "${MODEL_ID}" model.`,
             webinyTaskId: task.id,
             webinyTaskDefinitionId: EntriesTask.DeleteEntries,
             tenant: "root",

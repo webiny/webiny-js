@@ -64,7 +64,7 @@ const listPublishedEntries = async (context: HcmsTasksContext, modelId: string) 
     };
 };
 
-describe("Publish Entries", () => {
+describe("publishEntries", () => {
     it("should fail in case of missing `modelId` in the input", async () => {
         const taskDefinition = createPublishEntriesTask();
         const { handler } = useHandler<HcmsTasksContext>({
@@ -94,45 +94,6 @@ describe("Publish Entries", () => {
             status: "error",
             error: {
                 message: `Missing "modelId" in the input.`
-            },
-            webinyTaskId: task.id,
-            webinyTaskDefinitionId: EntriesTask.PublishEntries,
-            tenant: "root",
-            locale: "en-US"
-        });
-    });
-
-    it("should fail in case of missing `identity` in the input", async () => {
-        const taskDefinition = createPublishEntriesTask();
-        const { handler } = useHandler<HcmsTasksContext>({
-            plugins: [taskDefinition, ...createMockModels()]
-        });
-
-        const context = await handler();
-
-        const task = await context.tasks.createTask({
-            name: "Publish entries",
-            definitionId: taskDefinition.id,
-            input: {
-                modelId: "any-modelId"
-            }
-        });
-
-        const runner = createRunner({
-            context,
-            task: taskDefinition
-        });
-
-        const result = await runner({
-            webinyTaskId: task.id
-        });
-
-        expect(result).toBeInstanceOf(ResponseErrorResult);
-
-        expect(result).toMatchObject({
-            status: "error",
-            error: {
-                message: `Missing "identity" in the input.`
             },
             webinyTaskId: task.id,
             webinyTaskDefinitionId: EntriesTask.PublishEntries,
@@ -213,7 +174,7 @@ describe("Publish Entries", () => {
 
         expect(result).toMatchObject({
             status: "done",
-            message: "Task done: no entries to publish.",
+            message: `Task done: no entries to process for "${MODEL_ID}" model.`,
             webinyTaskId: task.id,
             webinyTaskDefinitionId: EntriesTask.PublishEntries,
             tenant: "root",
