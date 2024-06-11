@@ -13,7 +13,7 @@ jest.mock("~/graphql/getSchema/generateCacheId", () => {
 });
 
 describe("Content entries - Entry Meta Fields", () => {
-    const { manage: manageApiIdentityA } = useTestModelHandler({
+    const { manage: manageApiIdentityA, read: readApiIdentityA } = useTestModelHandler({
         identity: identityA
     });
 
@@ -27,40 +27,81 @@ describe("Content entries - Entry Meta Fields", () => {
         // Let's directly insert values for deprecated fields.
         const client = getDocumentClient();
 
-        // Query all records where PK = `T#root#L#en-US#CMS#CME#CME#${testEntry.entryId}` and SK > "".
-        const { Items: testEntryDdbRecords } = await client.send(
-            new QueryCommand({
-                TableName: String(process.env.DB_TABLE),
-                KeyConditionExpression: "PK = :PK AND SK > :SK",
-                ExpressionAttributeValues: {
-                    ":PK": { S: `T#root#L#en-US#CMS#CME#CME#${testEntry.entryId}` },
-                    ":SK": { S: " " }
-                }
-            })
-        );
-
-        for (const testEntryDdbRecord of testEntryDdbRecords!) {
-            await client.send(
-                new PutCommand({
-                    TableName: process.env.DB_TABLE,
-                    Item: {
-                        ...unmarshall(testEntryDdbRecord),
-                        publishedOn: "2021-01-01T00:00:00.000Z",
-                        ownedBy: identityA
+        // Not pretty, but this test will be removed anyway, in 5.41.0.
+        if (process.env.WEBINY_STORAGE_OPS === "ddb") {
+            const { Items: testEntryDdbRecords } = await client.send(
+                new QueryCommand({
+                    TableName: String(process.env.DB_TABLE),
+                    KeyConditionExpression: "PK = :PK AND SK > :SK",
+                    ExpressionAttributeValues: {
+                        ":PK": { S: `T#root#L#en-US#CMS#CME#CME#${testEntry.entryId}` },
+                        ":SK": { S: " " }
                     }
                 })
             );
+
+            for (const testEntryDdbRecord of testEntryDdbRecords!) {
+                await client.send(
+                    new PutCommand({
+                        TableName: process.env.DB_TABLE,
+                        Item: {
+                            ...unmarshall(testEntryDdbRecord),
+                            publishedOn: "2021-01-01T00:00:00.000Z",
+                            ownedBy: identityA
+                        }
+                    })
+                );
+            }
+        } else {
+            const { Items: testEntryDdbRecords } = await client.send(
+                new QueryCommand({
+                    TableName: String(process.env.DB_TABLE),
+                    KeyConditionExpression: "PK = :PK AND SK > :SK",
+                    ExpressionAttributeValues: {
+                        ":PK": { S: `T#root#L#en-US#CMS#CME#${testEntry.entryId}` },
+                        ":SK": { S: " " }
+                    }
+                })
+            );
+
+            for (const testEntryDdbRecord of testEntryDdbRecords!) {
+                await client.send(
+                    new PutCommand({
+                        TableName: process.env.DB_TABLE,
+                        Item: {
+                            ...unmarshall(testEntryDdbRecord),
+                            publishedOn: "2021-01-01T00:00:00.000Z",
+                            ownedBy: identityA
+                        }
+                    })
+                );
+            }
         }
 
         // Ensure values are visible when data is fetched via GraphQL.
-        const { data: testEntryWithDeprecatedFields } = await manageApiIdentityA.getTestEntry({
-            revision: testEntry.id
-        });
+        {
+            const { data: testEntryWithDeprecatedFields } = await manageApiIdentityA.getTestEntry({
+                revision: testEntry.id
+            });
 
-        expect(testEntryWithDeprecatedFields).toMatchObject({
-            publishedOn: "2021-01-01T00:00:00.000Z",
-            ownedBy: identityA
-        });
+            expect(testEntryWithDeprecatedFields).toMatchObject({
+                publishedOn: "2021-01-01T00:00:00.000Z",
+                ownedBy: identityA
+            });
+        }
+
+        await manageApiIdentityA.publishTestEntry({ revision: testEntry.id });
+
+        {
+            const { data: testEntryWithDeprecatedFields } = await readApiIdentityA.getTestEntry({
+                where: { entryId: testEntry.entryId }
+            });
+
+            expect(testEntryWithDeprecatedFields).toMatchObject({
+                publishedOn: "2021-01-01T00:00:00.000Z",
+                ownedBy: identityA
+            });
+        }
     });
 
     test("deprecated 'publishedOn' and 'ownedBy' GraphQL fields should fall back to new fields if no value is present", async () => {
