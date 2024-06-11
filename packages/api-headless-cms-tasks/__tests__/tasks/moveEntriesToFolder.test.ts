@@ -61,7 +61,11 @@ describe("moveEntriesToFolder", () => {
         const task = await context.tasks.createTask({
             name: "Move entries to folder",
             definitionId: taskDefinition.id,
-            input: {}
+            input: {
+                data: {
+                    folderId: "any-folderId"
+                }
+            }
         });
 
         const runner = createRunner({
@@ -87,7 +91,7 @@ describe("moveEntriesToFolder", () => {
         });
     });
 
-    it("should fail in case of missing `folderId` in the input", async () => {
+    it("should fail in case of missing `data.folderId` in the input", async () => {
         const taskDefinition = createMoveEntriesToFolderTask();
         const { handler } = useHandler<HcmsTasksContext>({
             plugins: [taskDefinition, ...createMockModels()]
@@ -100,6 +104,7 @@ describe("moveEntriesToFolder", () => {
             definitionId: taskDefinition.id,
             input: {
                 modelId: MODEL_ID,
+                data: {},
                 identity
             }
         });
@@ -118,7 +123,7 @@ describe("moveEntriesToFolder", () => {
         expect(result).toMatchObject({
             status: "error",
             error: {
-                message: `Missing "folderId" in the input.`
+                message: `Missing "data.folderId" in the input.`
             },
             webinyTaskId: task.id,
             webinyTaskDefinitionId: EntriesTask.MoveEntriesToFolder,
@@ -140,7 +145,9 @@ describe("moveEntriesToFolder", () => {
             definitionId: taskDefinition.id,
             input: {
                 modelId: "any-not-existing-modelId",
-                folderId: "any-folderId",
+                data: {
+                    folderId: "any-folderId"
+                },
                 identity
             }
         });
@@ -183,7 +190,9 @@ describe("moveEntriesToFolder", () => {
             definitionId: taskDefinition.id,
             input: {
                 modelId: MODEL_ID,
-                folderId: FOLDER_ID,
+                data: {
+                    folderId: FOLDER_ID
+                },
                 identity
             }
         });

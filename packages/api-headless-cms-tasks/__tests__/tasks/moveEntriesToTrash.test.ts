@@ -59,7 +59,7 @@ const listDeletedEntries = async (context: HcmsTasksContext, modelId: string) =>
     };
 };
 
-describe("Move Entries to Trash Bin", () => {
+describe("moveEntriesToTrashBin", () => {
     it("should fail in case of missing `modelId` in the input", async () => {
         const taskDefinition = createMoveEntriesToTrashTask();
         const { handler } = useHandler<HcmsTasksContext>({
