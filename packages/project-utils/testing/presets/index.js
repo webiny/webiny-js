@@ -11,6 +11,9 @@ const getAllPackages = targetKeywords => {
         throw Error(`Missing required --storage parameter!`);
     }
 
+    // Set the storage type as an environment variable.
+    process.env.WEBINY_STORAGE_OPS = storage;
+
     const storagePriority = storage.split(",");
 
     const packages = getYarnWorkspaces(process.cwd())
