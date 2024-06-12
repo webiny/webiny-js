@@ -41,7 +41,7 @@ export default /* GraphQL */ `
             )
         ownedBy: CmsIdentity
             @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'createdBy' field.")
-            
+
         meta: PageModelApiNameMeta
         content: [PageModelApiName_Content!]
         header: PageModelApiName_Header

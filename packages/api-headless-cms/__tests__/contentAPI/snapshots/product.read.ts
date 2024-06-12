@@ -42,7 +42,7 @@ export default /* GraphQL */ `
             )
         ownedBy: CmsIdentity
             @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'createdBy' field.")
-            
+
         title: String
         category(populate: Boolean = true): CategoryApiNameWhichIsABitDifferentThanModelId
         price: Number

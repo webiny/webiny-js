@@ -184,9 +184,9 @@ export interface CmsModelFieldToGraphQLCreateResolver<TField = CmsModelField> {
     (params: CmsModelFieldToGraphQLCreateResolverParams<TField>):
         | GraphQLFieldResolver
         | {
-        resolver: GraphQLFieldResolver | null;
-        typeResolvers: Resolvers<CmsContext>;
-    }
+              resolver: GraphQLFieldResolver | null;
+              typeResolvers: Resolvers<CmsContext>;
+          }
         | false;
 }
 
