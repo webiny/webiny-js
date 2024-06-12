@@ -163,6 +163,13 @@ export class TaskManagerStore<
         log: ITaskManagerStoreErrorLog,
         options?: ITaskManagerStoreAddLogOptions
     ): Promise<void> {
+        /**
+         * Let's log the error to the console as well.
+         */
+        console.error(log.error);
+        /**
+         * Then update the log object.
+         */
         this.taskLogUpdater.update({
             items: [
                 {
