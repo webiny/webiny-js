@@ -49,6 +49,7 @@ export const createCognito = <
     });
 
     const { getIdentity, getPermissions } = config;
+    const isAdminIdentity = config.identityType === "admin";
 
     return [
         new ContextPlugin<TContext>(context => {
@@ -97,7 +98,6 @@ export const createCognito = <
             const teams = context.wcp.canUseTeams();
             context.plugins.register(adminUsersGqlPlugins({ teams }));
         }),
-        installGqlPlugins,
-        createAdminUsersHooks()
+        isAdminIdentity ? [installGqlPlugins, createAdminUsersHooks()] : []
     ];
 };

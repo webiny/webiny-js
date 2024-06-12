@@ -6,35 +6,42 @@ export default /* GraphQL */ `
         id: ID!
         entryId: String!
 
-        createdOn: DateTime!
+        createdOn: DateTime
         modifiedOn: DateTime
-        savedOn: DateTime!
+        savedOn: DateTime
         deletedOn: DateTime
         restoredOn: DateTime
         firstPublishedOn: DateTime
         lastPublishedOn: DateTime
-        createdBy: CmsIdentity!
+        createdBy: CmsIdentity
         modifiedBy: CmsIdentity
-        savedBy: CmsIdentity!
+        savedBy: CmsIdentity
         deletedBy: CmsIdentity
         restoredBy: CmsIdentity
         firstPublishedBy: CmsIdentity
         lastPublishedBy: CmsIdentity
-        revisionCreatedOn: DateTime!
+        revisionCreatedOn: DateTime
         revisionModifiedOn: DateTime
-        revisionSavedOn: DateTime!
+        revisionSavedOn: DateTime
         revisionDeletedOn: DateTime
         revisionRestoredOn: DateTime
         revisionFirstPublishedOn: DateTime
         revisionLastPublishedOn: DateTime
-        revisionCreatedBy: CmsIdentity!
+        revisionCreatedBy: CmsIdentity
         revisionModifiedBy: CmsIdentity
-        revisionSavedBy: CmsIdentity!
+        revisionSavedBy: CmsIdentity
         revisionDeletedBy: CmsIdentity
         revisionRestoredBy: CmsIdentity
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
 
+        publishedOn: DateTime
+            @deprecated(
+                reason: "Field was removed with the 5.39.0 release. Use 'firstPublishedOn' or 'lastPublishedOn' field."
+            )
+        ownedBy: CmsIdentity
+            @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'createdBy' field.")
+            
         meta: ReviewApiModelMeta
         text: String
         product: RefField

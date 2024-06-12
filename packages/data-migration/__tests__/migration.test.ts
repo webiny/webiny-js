@@ -429,4 +429,34 @@ describe("Migration Lambda Handler", () => {
         expect(data2.executed[0].id).toBe("2.1.0-001");
         expect(data2.executed[1].id).toBe("2.1.0-002");
     });
+
+    it("should skip migrations defined by WEBINY_MIGRATION_SKIP env var", async () => {
+        const allMigrations = [
+            createDdbMigration("1.0.0-001"),
+            createDdbMigration("1.1.0-001"),
+            createDdbMigration("2.0.0-001"),
+            createDdbMigration("2.1.0-001"),
+            createDdbMigration("2.1.0-002")
+        ];
+
+        process.env["WEBINY_MIGRATION_SKIP_2_0_0_001"] = "true";
+        process.env["WEBINY_MIGRATION_SKIP_2_1_0_002"] = "true";
+
+        const handler = useHandler(
+            createDdbProjectMigration({
+                primaryTable: table,
+                migrations: allMigrations
+            })
+        );
+
+        const exactMatch = await handler({ version: "1.0.0", pattern: "*" });
+        assertNotError(exactMatch.error);
+        const data1 = groupMigrations(exactMatch.data.migrations);
+        expect(data1.notApplicable.length).toBe(0);
+        expect(data1.skipped.length).toBe(2);
+        expect(data1.executed.length).toBe(3);
+        expect(data1.executed[0].id).toBe("1.0.0-001");
+        expect(data1.executed[1].id).toBe("1.1.0-001");
+        expect(data1.executed[2].id).toBe("2.1.0-001");
+    });
 });

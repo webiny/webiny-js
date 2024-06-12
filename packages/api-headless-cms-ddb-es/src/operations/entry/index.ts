@@ -70,10 +70,14 @@ const IGNORED_ES_SEARCH_EXCEPTIONS = [
     "search_phase_execution_exception"
 ];
 
-const shouldIgnoreElasticsearchException = (ex: Pick<Error, "message">) => {
+const shouldIgnoreElasticsearchException = (ex: WebinyError) => {
     if (IGNORED_ES_SEARCH_EXCEPTIONS.includes(ex.message)) {
         console.log(`Ignoring Elasticsearch exception: ${ex.message}`);
-        console.log(ex);
+        console.log({
+            code: ex.code,
+            data: ex.data,
+            stack: ex.stack
+        });
         return true;
     }
     return false;
@@ -1811,12 +1815,21 @@ export const createEntriesStorageOperations = (
             })
         ];
         /**
-         * If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
+         * If we are unpublishing the latest revision, let's also update the latest revision entry's status in both DynamoDB tables.
          */
         if (latestStorageEntry?.id === entry.id) {
             const { index } = configurations.es({
                 model
             });
+
+            items.push(
+                entity.putBatch({
+                    ...storageEntry,
+                    PK: partitionKey,
+                    SK: createLatestSortKey(),
+                    TYPE: createLatestRecordType()
+                })
+            );
 
             const esLatestData = await transformer.getElasticsearchLatestEntryData();
             esItems.push(

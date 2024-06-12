@@ -5,6 +5,8 @@ import "./sqs/register";
 import "./eventBridge/register";
 import "./sns/register";
 
+export * from "./utils";
+
 /**
  * API Gateway
  */

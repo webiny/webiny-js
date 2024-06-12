@@ -32,7 +32,7 @@ import { fixTypeFieldValue } from "~/migrations/5.39.0/001/utils/fixTypeFieldVal
 import { isMigratedEntry } from "~/migrations/5.39.0/001/utils/isMigratedEntry";
 import { getOldestRevisionCreatedOn } from "~/migrations/5.39.0/001/utils/getOldestRevisionCreatedOn";
 import { getFirstLastPublishedOnBy } from "~/migrations/5.39.0/001/utils/getFirstLastPublishedOn";
-import { hasValidTypeFieldValue } from "~/migrations/5.39.2/001/ddb-es/utils/hasValidTypeFieldValue";
+import { hasValidTypeFieldValue } from "~/migrations/5.39.0/001/utils/hasValidTypeFieldValue";
 import { ScanDbItem } from "@webiny/db-dynamodb";
 
 interface LastEvaluatedKey {
@@ -124,7 +124,7 @@ export class CmsEntriesInitNewMetaFields_5_39_2_001 implements DataMigration {
             return true;
         }
 
-        logger.info(`CMS entries already upgraded. skipping...`);
+        logger.info(`CMS entries already upgraded. Skipping...`);
         return false;
     }
 

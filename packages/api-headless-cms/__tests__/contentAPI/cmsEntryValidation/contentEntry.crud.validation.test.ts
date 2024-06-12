@@ -346,7 +346,7 @@ describe("content entry validation", () => {
                 xyzPublishedOn: "2023-01-01T00:00:00.000+00:00",
                 image: "https://webiny.com/image.png",
                 category: {
-                    id: "category-1",
+                    id: "category-1#0001",
                     modelId: "category"
                 },
                 nested: {
@@ -365,7 +365,7 @@ describe("content entry validation", () => {
                     nestedXyzPublishedOn: "2022-01-01T00:00:00.000+02:00",
                     nestedImage: "https://webiny.com/image2.png",
                     nestedCategory: {
-                        id: "category-2",
+                        id: "category-2#0001",
                         modelId: "category"
                     }
                 },
@@ -386,7 +386,7 @@ describe("content entry validation", () => {
                         dzXyzPublishedOn: "2021-01-01T00:00:00.000+02:00",
                         dzImage: "https://webiny.com/image2.png",
                         dzCategory: {
-                            id: "category-3",
+                            id: "category-3#0001",
                             modelId: "category"
                         },
                         dzNested: {
@@ -405,7 +405,7 @@ describe("content entry validation", () => {
                             dzNestedXyzPublishedOn: "2021-01-01T00:00:00.000+02:00",
                             dzNestedImage: "https://webiny.com/image2.png",
                             dzNestedCategory: {
-                                id: "category-4",
+                                id: "category-4#0001",
                                 modelId: "category"
                             }
                         }
@@ -427,7 +427,7 @@ describe("content entry validation", () => {
                 multiValueXyzPublishedOn: "2021-01-01T00:00:00.000+02:00",
                 multiValueImage: "https://webiny.com/image2.png",
                 multiValueCategory: {
-                    id: "category-11",
+                    id: "category-11#0001",
                     modelId: "category"
                 }
             }
