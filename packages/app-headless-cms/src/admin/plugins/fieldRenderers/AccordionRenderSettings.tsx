@@ -20,7 +20,7 @@ export const getAccordionRenderSettings = (field: CmsModelField) => {
         return DEFAULT_ACCORDION_RENDER_SETTINGS;
     }
 
-    return field.renderer.settings as IAccordionRenderSettings;
+    return (field.renderer.settings ?? {}) as IAccordionRenderSettings;
 };
 
 export const AccordionRenderSettings = ({ field }: CmsModelFieldRendererSettingsProps) => {
