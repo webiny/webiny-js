@@ -41,3 +41,7 @@ export interface SecurityIdentity {
     getPermission?<T extends SecurityPermission = SecurityPermission>(name: string): T | null;
     [key: string]: any;
 }
+
+export type IdToken = string;
+
+export type IdTokenProvider = () => Promise<IdToken | undefined> | IdToken | undefined;

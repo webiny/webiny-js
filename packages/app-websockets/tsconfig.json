@@ -4,6 +4,7 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-i18n" },
+    { "path": "../app-security" },
     { "path": "../app-tenancy" },
     { "path": "../utils" }
   ],
@@ -18,6 +19,8 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-i18n/*": ["../app-i18n/src/*"],
       "@webiny/app-i18n": ["../app-i18n/src"],
+      "@webiny/app-security/*": ["../app-security/src/*"],
+      "@webiny/app-security": ["../app-security/src"],
       "@webiny/app-tenancy/*": ["../app-tenancy/src/*"],
       "@webiny/app-tenancy": ["../app-tenancy/src"],
       "@webiny/utils/*": ["../utils/src/*"],

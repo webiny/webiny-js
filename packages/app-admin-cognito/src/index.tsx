@@ -102,7 +102,7 @@ export const createAuthentication: AuthenticationFactory = ({
     const Authentication = (props: AuthenticationProps) => {
         const { children } = props;
         const [loadingIdentity, setLoadingIdentity] = useState(false);
-        const { setIdentity } = useSecurity();
+        const { setIdentity, setIdTokenProvider } = useSecurity();
         const client = useApolloClient();
 
         const onToken = useCallback(async (token: CognitoIdToken) => {
@@ -143,6 +143,17 @@ export const createAuthentication: AuthenticationFactory = ({
         }, []);
 
         useEffect(() => {
+            /**
+             * We need to give the security layer a way to fetch the `idToken`, so other network clients can use
+             * it when sending requests to external services (APIs, websockets,...).
+             */
+            setIdTokenProvider(async () => {
+                const user = await Auth.currentSession();
+                const idToken = user.getIdToken();
+
+                return idToken ? idToken.getJwtToken() : undefined;
+            });
+
             plugins.register(createApolloLinkPlugin());
         }, []);
 

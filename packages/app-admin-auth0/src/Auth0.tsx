@@ -6,7 +6,8 @@ import { LoginScreenRenderer, useTenancy, useTags } from "@webiny/app-serverless
 import {
     createAuthentication,
     Auth0Options,
-    CreateAuthenticationConfig
+    CreateAuthenticationConfig,
+    OnLogout
 } from "./createAuthentication";
 import { UserMenuModule } from "~/modules/userMenu";
 import { AppClientModule } from "~/modules/appClient";
@@ -16,6 +17,7 @@ interface AppClientIdLoaderProps {
     auth0: Auth0Options;
     rootAppClientId: string;
     children: React.ReactNode;
+    onLogout?: OnLogout;
     onError?: CreateAuthenticationConfig["onError"];
 }
 
@@ -30,6 +32,7 @@ const GET_CLIENT_ID = gql`
 const AppClientIdLoader = ({
     auth0,
     rootAppClientId,
+    onLogout,
     onError,
     children
 }: AppClientIdLoaderProps) => {
@@ -50,6 +53,7 @@ const AppClientIdLoader = ({
         if (tenantId === "root") {
             console.info(`Configuring Auth0 with App Client Id "${rootAppClientId}"`);
             authRef.current = createAuthentication({
+                onLogout,
                 onError,
                 auth0: {
                     ...auth0,
@@ -114,6 +118,7 @@ const createLoginScreenPlugin = (params: Auth0Props) => {
 export interface Auth0Props {
     auth0: Auth0Options;
     rootAppClientId: string;
+    onLogout?: OnLogout;
     children?: React.ReactNode;
 }
 
