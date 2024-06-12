@@ -3,10 +3,10 @@ import { createCmsEntryZipper } from "~tests/mocks/createCmsEntryZipper";
 import { fetchItems } from "./mocks/cmsEntryZipperItems";
 
 describe("cms entry zipper", () => {
-    it("should properly create an instance of CMS Entry Zipper", async () => {
-        expect.assertions(1);
+    it("should properly create an instance of CMS Entry Zipper and execute it", async () => {
+        expect.assertions(2);
 
-        const { cmsEntryZipper } = createCmsEntryZipper({
+        const { cmsEntryZipper, bucket, filename, s3Url } = createCmsEntryZipper({
             fetcher: async () => {
                 return {
                     items: [],
@@ -22,7 +22,7 @@ describe("cms entry zipper", () => {
         expect(cmsEntryZipper.execute).toBeFunction();
 
         try {
-            await cmsEntryZipper.execute({
+            const result = await cmsEntryZipper.execute({
                 shouldAbort: () => {
                     return false;
                 },
@@ -30,8 +30,14 @@ describe("cms entry zipper", () => {
                     modelId: "aTestModelId"
                 }
             });
+
+            expect(result).toEqual({
+                Bucket: bucket,
+                Key: filename,
+                Location: s3Url
+            });
         } catch (ex) {
-            expect(ex).toEqual("Must not happen!");
+            expect(ex.message).toEqual("Must not happen!");
         }
     });
 

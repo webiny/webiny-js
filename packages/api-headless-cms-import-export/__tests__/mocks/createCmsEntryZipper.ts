@@ -11,6 +11,7 @@ import { mockClient } from "aws-sdk-client-mock";
 
 interface ICreateCmsEntryZipperParams {
     fetcher: ICmsEntryFetcher;
+    region?: string;
     filename?: string;
     stream?: PassThrough;
     bucket?: string;
@@ -23,11 +24,17 @@ export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
     client.on(CreateMultipartUploadCommand).resolves({ UploadId: "1" });
     client.on(UploadPartCommand).resolves({ ETag: "1" });
 
+    const region = params.region || "eu-central-1";
+    const bucket = params.bucket || "my-test-bucket";
+    const filename = params.filename || "test.zip";
+
     const upload = new Upload({
-        client: createS3Client(),
-        bucket: params.bucket || "my-test-bucket",
+        client: createS3Client({
+            region
+        }),
+        bucket,
         stream,
-        filename: params.filename || "test.zip"
+        filename
     });
 
     const buffers: Buffer[] = [];
@@ -55,6 +62,10 @@ export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
     });
 
     return {
+        s3Url: `https://${bucket}.s3.${region}.amazonaws.com/${filename}`,
+        region,
+        bucket,
+        filename,
         buffers,
         getBuffer: () => {
             return Buffer.concat(buffers);
