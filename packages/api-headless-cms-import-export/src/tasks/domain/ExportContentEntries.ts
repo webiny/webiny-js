@@ -9,14 +9,19 @@ import { Context } from "~/types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { getErrorProperties } from "@webiny/tasks/utils";
 import { PassThrough, StreamOptions } from "stream";
-import { IZipperConfig, Zipper } from "../utils/Zipper";
-import { IUploadConfig, Upload } from "../utils/Upload";
 import {
     CmsEntryZipper,
     ICmsEntryFetcher,
     ICmsEntryZipperConfig
 } from "~/tasks/utils/CmsEntryZipper";
-import { Archiver, IArchiverConfig } from "../utils/Archiver";
+import {
+    Archiver,
+    IArchiverConfig,
+    IUploadConfig,
+    IZipperConfig,
+    Upload,
+    Zipper
+} from "~/tasks/utils";
 import { ICmsEntryZipper } from "../utils/abstractions/CmsEntryZipper";
 import { createS3Client } from "@webiny/aws-sdk/client-s3";
 import { Agent as HttpAgent } from "http";
@@ -60,20 +65,21 @@ export class ExportContentEntries<
         }
 
         const fetcher: ICmsEntryFetcher = async after => {
-            const [items, meta] = await context.cms.listLatestEntries(model, {
+            const input = {
                 where: params.input.where,
                 limit: 10000,
                 sort: params.input.sort,
                 after
-            });
-
+            };
+            const [items, meta] = await context.cms.listLatestEntries(model, input);
             return {
                 items,
                 meta
             };
         };
 
-        const filename = uniqueId(`cms-export/${model.modelId}/`, "entries.zip");
+        const prefix = uniqueId(`cms-export/${model.modelId}/`);
+        const filename = `${prefix}/entries.zip`;
 
         const entryZipper = this.createCmsEntryZipper({
             filename,
@@ -84,11 +90,23 @@ export class ExportContentEntries<
             return isCloseToTimeout() || isAborted();
         };
 
-        await entryZipper.execute({
-            shouldAbort
+        const result = await entryZipper.execute({
+            shouldAbort,
+            model
         });
+        if (!result.Key || !result.Location) {
+            return response.error({
+                message: "Failed to export content entries.",
+                code: "EXPORT_FAILED"
+            });
+        }
 
-        return response.done();
+        // unfortunately we need to cast as TS thinks this is a bug.
+        // TODO: pass proper types to response.done callable
+        return response.done({
+            file: result.Key,
+            url: result.Location
+        } as O);
     }
 }
 

@@ -4,6 +4,10 @@ import { ICmsImportExportRecord } from "./domain/abstractions/CmsImportExportRec
 
 export * from "./domain/abstractions/CmsImportExportRecord";
 
+export interface ICmsImportExportObjectGetExportParams {
+    id: string;
+}
+
 export interface ICmsImportExportObjectStartExportParams {
     modelId: string;
 }
@@ -22,6 +26,9 @@ export interface ICmsImportExportTaskOutput extends ITaskResponseDoneResultOutpu
 }
 
 export interface CmsImportExportObject {
+    getExportContentEntries(
+        params: ICmsImportExportObjectGetExportParams
+    ): Promise<ICmsImportExportRecord>;
     startExportContentEntries(
         params: ICmsImportExportObjectStartExportParams
     ): Promise<ICmsImportExportRecord>;

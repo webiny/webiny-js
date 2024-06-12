@@ -1,9 +1,9 @@
-import { createCmsEntryZipper } from "~tests/mocks/createCmsEntryZipper";
-import { ICmsEntryFetcherResult } from "~/tasks/utils";
 import AdmZip from "adm-zip";
+import { createCmsEntryZipper } from "~tests/mocks/createCmsEntryZipper";
+import { fetchItems } from "./mocks/cmsEntryZipperItems";
 
 describe("cms entry zipper", () => {
-    it.skip("should properly create an instance of CMS Entry Zipper", async () => {
+    it("should properly create an instance of CMS Entry Zipper", async () => {
         expect.assertions(1);
 
         const { cmsEntryZipper } = createCmsEntryZipper({
@@ -25,6 +25,9 @@ describe("cms entry zipper", () => {
             await cmsEntryZipper.execute({
                 shouldAbort: () => {
                     return false;
+                },
+                model: {
+                    modelId: "aTestModelId"
                 }
             });
         } catch (ex) {
@@ -35,54 +38,16 @@ describe("cms entry zipper", () => {
     it("should zip entries into a file", async () => {
         const { cmsEntryZipper, getBuffer } = createCmsEntryZipper({
             fetcher: async after => {
-                if (after === "2") {
-                    return {
-                        items: [
-                            {
-                                id: "3"
-                            },
-                            {
-                                id: "4"
-                            }
-                        ],
-                        meta: {
-                            totalCount: 4,
-                            cursor: "4",
-                            hasMoreItems: false
-                        }
-                    } as ICmsEntryFetcherResult;
-                } else if (after) {
-                    return {
-                        items: [],
-                        meta: {
-                            totalCount: 4,
-                            cursor: null,
-                            hasMoreItems: false
-                        }
-                    } as ICmsEntryFetcherResult;
-                }
-
-                return {
-                    items: [
-                        {
-                            id: "1"
-                        },
-                        {
-                            id: "2"
-                        }
-                    ],
-                    meta: {
-                        totalCount: 4,
-                        cursor: "2",
-                        hasMoreItems: false
-                    }
-                } as ICmsEntryFetcherResult;
+                return fetchItems(after);
             }
         });
 
         await cmsEntryZipper.execute({
             shouldAbort: () => {
                 return false;
+            },
+            model: {
+                modelId: "aTestModelId"
             }
         });
 
@@ -98,11 +63,13 @@ describe("cms entry zipper", () => {
         const zip = new AdmZip(buffer);
 
         const zipEntries = zip.getEntries();
-        expect(zipEntries).toHaveLength(3);
+        expect(zipEntries).toHaveLength(5);
 
         expect(zipEntries[0].entryName).toEqual("entries-1.json");
         expect(zipEntries[1].entryName).toEqual("entries-2.json");
-        expect(zipEntries[2].entryName).toEqual("files.json");
+        expect(zipEntries[2].entryName).toEqual("entries-3.json");
+        expect(zipEntries[3].entryName).toEqual("entries-4.json");
+        expect(zipEntries[4].entryName).toEqual("files.json");
 
         const entries1Json = zip.readAsText(zipEntries[0]);
 
@@ -117,9 +84,9 @@ describe("cms entry zipper", () => {
                     }
                 ],
                 meta: {
-                    totalCount: 4,
+                    totalCount: 8,
                     cursor: "2",
-                    hasMoreItems: false
+                    hasMoreItems: true
                 }
             })
         );
@@ -137,15 +104,57 @@ describe("cms entry zipper", () => {
                     }
                 ],
                 meta: {
-                    totalCount: 4,
+                    totalCount: 8,
                     cursor: "4",
-                    hasMoreItems: false
+                    hasMoreItems: true
                 },
                 after: "2"
             })
         );
 
-        const filesJson = JSON.parse(zip.readAsText(zipEntries[2]));
+        const entries3Json = zip.readAsText(zipEntries[2]);
+
+        expect(entries3Json).toEqual(
+            JSON.stringify({
+                items: [
+                    {
+                        id: "5"
+                    },
+                    {
+                        id: "6"
+                    }
+                ],
+                meta: {
+                    totalCount: 8,
+                    cursor: "6",
+                    hasMoreItems: true
+                },
+                after: "4"
+            })
+        );
+
+        const entries4Json = zip.readAsText(zipEntries[3]);
+
+        expect(entries4Json).toEqual(
+            JSON.stringify({
+                items: [
+                    {
+                        id: "7"
+                    },
+                    {
+                        id: "8"
+                    }
+                ],
+                meta: {
+                    totalCount: 8,
+                    cursor: "8",
+                    hasMoreItems: false
+                },
+                after: "6"
+            })
+        );
+
+        const filesJson = JSON.parse(zip.readAsText(zipEntries[4]));
         expect(filesJson).toEqual({
             files: [
                 {
@@ -156,8 +165,19 @@ describe("cms entry zipper", () => {
                     id: 2,
                     name: "entries-2.json",
                     after: "2"
+                },
+                {
+                    id: 3,
+                    name: "entries-3.json",
+                    after: "4"
+                },
+                {
+                    id: 4,
+                    name: "entries-4.json",
+                    after: "6"
                 }
-            ]
+            ],
+            modelId: "aTestModelId"
         });
     });
 });

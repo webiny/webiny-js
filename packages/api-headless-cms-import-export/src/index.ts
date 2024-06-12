@@ -13,8 +13,10 @@ export const createHeadlessCmsImportExport = (): Plugin[] => {
             return;
         }
 
+        context.plugins.register(createExportContentEntriesTask());
+
         context.cmsImportExport = await createHeadlessCmsImportExportCrud(context);
         await attachHeadlessCmsImportExportGraphQL(context);
     });
-    return [plugin, createExportContentEntriesTask()];
+    return [plugin];
 };

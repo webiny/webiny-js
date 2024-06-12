@@ -7,12 +7,29 @@ const validateAbortExportContentEntries = zod.object({
     id: zod.string()
 });
 
+const validateGetExportContentEntries = zod.object({
+    id: zod.string()
+});
+
 export const createResolvers = (models: [string, ...string[]]) => {
     const validateExportContentEntriesInput = zod.object({
         modelId: zod.enum(models)
     });
 
     return {
+        Query: {
+            async getExportContentEntries(_: unknown, input: unknown, context: Context) {
+                return resolve(async () => {
+                    const result = validateGetExportContentEntries.safeParse(input);
+
+                    if (!result.success) {
+                        throw createZodError(result.error);
+                    }
+
+                    return await context.cmsImportExport.getExportContentEntries(result.data);
+                });
+            }
+        },
         Mutation: {
             async startExportContentEntries(_: unknown, input: unknown, context: Context) {
                 return resolve(async () => {

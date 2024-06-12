@@ -13,7 +13,7 @@ import {
 import AdmZip from "adm-zip";
 
 describe("zipper", () => {
-    it.skip("should properly create a Zipper instance", async () => {
+    it("should properly create a Zipper instance", async () => {
         mockClient(S3Client);
 
         const upload = new Upload({

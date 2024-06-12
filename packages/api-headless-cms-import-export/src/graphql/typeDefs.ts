@@ -1,12 +1,24 @@
 export const createTypeDefs = (models: [string, ...string[]]): string => {
     return /* GraphQL */ `
-        type StartExportContentEntriesResponseData {
-            url: String!
-            total: Int!
+        
+        type ExportContentEntriesExportRecord {
+            id: ID!
+            createdOn: DateTime!
+            createdBy: CmsIdentity!
+            finishedOn: DateTime
+            modelId: String!
+            file: String
+            url: String
+            status: String
         }
-
+        
+        type ExportContentEntriesResponse {
+            data: ExportContentEntriesExportRecord
+            error: CmsError
+        }
+        
         type StartExportContentEntriesResponse {
-            data: StartExportContentEntriesResponseData
+            data: ExportContentEntriesExportRecord
             error: CmsError
         }
 
@@ -17,6 +29,10 @@ export const createTypeDefs = (models: [string, ...string[]]): string => {
         
         enum ExportContentEntriesModelsListEnum {
             ${models.join("\n")}
+        }
+        
+        extend type Query {
+            getExportContentEntries(id: String!): ExportContentEntriesResponse!
         }
 
         extend type Mutation {

@@ -6,6 +6,7 @@ import {
     ICmsEntryZipperExecuteParams
 } from "~/tasks/utils/abstractions/CmsEntryZipper";
 import { IFileMeta } from "./types";
+import { CompleteMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3";
 
 export interface ICmsEntryZipperConfig {
     zipper: IZipper;
@@ -55,11 +56,15 @@ export class CmsEntryZipper implements ICmsEntryZipper {
         this.fetcher = params.fetcher;
     }
 
-    public async execute(params: ICmsEntryZipperExecuteParams): Promise<void> {
-        const { shouldAbort } = params;
+    public async execute(
+        params: ICmsEntryZipperExecuteParams
+    ): Promise<CompleteMultipartUploadCommandOutput> {
+        const { shouldAbort, model } = params;
 
         const files: IFileMeta[] = [];
         let after: string | undefined = undefined;
+
+        let hasMoreItems = true;
         let storedFiles = false;
 
         let id = 1;
@@ -68,17 +73,27 @@ export class CmsEntryZipper implements ICmsEntryZipper {
             if (storedFiles) {
                 await this.zipper.finalize();
                 return;
+            } else if (hasMoreItems === false) {
+                console.log("No more items to fetch, finalizing the zip.");
+                await this.zipper.add(
+                    Buffer.from(
+                        JSON.stringify({
+                            files,
+                            modelId: model.modelId
+                        })
+                    ),
+                    {
+                        name: "files.json"
+                    }
+                );
+                storedFiles = true;
+                return;
             }
 
             const { items, meta } = await this.fetcher(after);
             if (meta.totalCount === 0) {
+                console.log("No items found, finalizing the zip.");
                 await this.zipper.finalize();
-                return;
-            } else if (items.length === 0 && meta.hasMoreItems === false) {
-                await this.zipper.add(Buffer.from(JSON.stringify({ files })), {
-                    name: "files.json"
-                });
-                storedFiles = true;
                 return;
             }
 
@@ -95,6 +110,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
             });
 
             after = meta.cursor || undefined;
+            hasMoreItems = meta.hasMoreItems;
             id++;
         };
 
@@ -108,6 +124,6 @@ export class CmsEntryZipper implements ICmsEntryZipper {
 
         addItems();
 
-        await this.zipper.done();
+        return await this.zipper.done();
     }
 }
