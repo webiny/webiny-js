@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useSecurity } from "@webiny/app-security";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
-import { CmsIdentity, CmsGroup, CmsModel, CmsSecurityPermission } from "~/types";
+import { CmsGroup, CmsIdentity, CmsModel, CmsSecurityPermission } from "~/types";
 
 export interface CreatableItem {
     createdBy?: Pick<CmsIdentity, "id">;
@@ -217,6 +217,24 @@ export const usePermission = () => {
         [identity]
     );
 
+    const canDeleteEntries = useCallback(
+        (permissionName: string): boolean => {
+            if (hasFullAccess) {
+                return true;
+            }
+            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
+
+            if (!permissions.length) {
+                return false;
+            }
+
+            return permissions.some(permission => {
+                return permission.rwd?.includes("d");
+            });
+        },
+        [identity, hasFullAccess]
+    );
+
     const canPublish = useCallback(
         (permissionName: string): boolean => {
             if (hasFullAccess) {
@@ -266,6 +284,7 @@ export const usePermission = () => {
         canEdit,
         canCreate,
         canDelete,
+        canDeleteEntries,
         canPublish,
         canUnpublish,
         canReadContentModels,

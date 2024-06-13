@@ -10,6 +10,6 @@ export class GetRevisionsByEntryIdNotDeleted implements IGetRevisionsByEntryId {
 
     async execute(model: CmsModel, params: CmsEntryStorageOperationsGetRevisionParams) {
         const entries = await this.getRevisionsByEntryId.execute(model, params);
-        return entries.filter(entry => !entry.deleted);
+        return entries.filter(entry => !entry.wbyDeleted);
     }
 }

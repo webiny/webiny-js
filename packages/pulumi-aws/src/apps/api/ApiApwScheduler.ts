@@ -30,7 +30,7 @@ export const ApiApwScheduler = createAppModule({
             config: {
                 description: `Enable us to schedule an action in publishing workflow at a particular datetime`,
                 scheduleExpression: "cron(* * * * ? 2000)",
-                isEnabled: true
+                state: "ENABLED"
             }
         });
 

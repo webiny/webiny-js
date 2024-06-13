@@ -1,6 +1,8 @@
-import { CmsContext, HeadlessCmsStorageOperations } from "~/types";
+import { ApiEndpoint, CmsContext, HeadlessCmsStorageOperations } from "~/types";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
+import { GraphQLRequestBody } from "@webiny/handler-graphql/types";
+import { processRequestBody } from "@webiny/handler-graphql";
 import { CmsParametersPlugin, CmsParametersPluginResponse } from "~/plugins/CmsParametersPlugin";
 import { AccessControl } from "~/crud/AccessControl/AccessControl";
 import { createSystemCrud } from "~/crud/system.crud";
@@ -11,6 +13,7 @@ import { StorageOperationsCmsModelPlugin } from "~/plugins";
 import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
 import { createExportCrud } from "~/export";
 import { createImportCrud } from "~/export/crud/importing";
+import { getSchema } from "~/graphql/getSchema";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -33,14 +36,21 @@ export interface CrudParams {
 
 export const createContextPlugin = ({ storageOperations }: CrudParams) => {
     const plugin = new ContextPlugin<CmsContext>(async context => {
-        const { type, locale } = await getParameters(context);
+        const { type, locale: localeCode } = await getParameters(context);
+
+        if (localeCode) {
+            const locale = context.i18n.getLocale(localeCode);
+            if (locale) {
+                context.i18n.setContentLocale(locale);
+            }
+        }
 
         const getLocale = () => {
-            const systemLocale = context.i18n.getLocale(locale);
-            if (!systemLocale) {
-                throw new WebinyError(`There is no locale "${locale}" in the system.`);
+            const locale = context.i18n.getContentLocale();
+            if (!locale) {
+                throw new WebinyError("Missing content locale in cms context.ts.", "LOCALE_ERROR");
             }
-            return systemLocale;
+            return locale;
         };
 
         const getIdentity = () => {
@@ -50,6 +60,45 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         const getTenant = () => {
             return context.tenancy.getCurrentTenant();
         };
+
+        const setSchemaType = (type: ApiEndpoint | null) => {
+            if (!type) {
+                return;
+            }
+
+            context.cms.type = type;
+
+            switch (type) {
+                case "read":
+                    context.cms.READ = true;
+                    break;
+                case "preview":
+                    context.cms.PREVIEW = true;
+                    break;
+                default:
+                    context.cms.MANAGE = true;
+            }
+        };
+
+        async function getExecutableSchema(type: ApiEndpoint) {
+            const originalType = context.cms.type;
+            setSchemaType(type);
+
+            const schema = await context.security.withoutAuthorization(() => {
+                return getSchema({
+                    context,
+                    getTenant,
+                    getLocale,
+                    type
+                });
+            });
+
+            setSchemaType(originalType);
+
+            return async <TData, TExtensions>(input: GraphQLRequestBody | GraphQLRequestBody[]) => {
+                return processRequestBody<TData, TExtensions>(input, schema, context);
+            };
+        }
 
         context.plugins.register(
             new StorageOperationsCmsModelPlugin(
@@ -75,13 +124,14 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
 
             context.cms = {
                 type,
-                locale,
+                locale: localeCode,
                 getLocale,
                 READ: type === "read",
                 PREVIEW: type === "preview",
                 MANAGE: type === "manage",
                 storageOperations,
                 accessControl,
+                getExecutableSchema,
                 ...createSystemCrud({
                     context,
                     getTenant,

@@ -17,16 +17,13 @@ export interface MosaicProps {
     children: React.ReactNode;
 }
 
-const Mosaic = ({ children, columns, className }: MosaicProps) => {
+const Mosaic = (props: MosaicProps) => {
+    const { children, columns = { 320: 1, 480: 2, 800: 3, 1366: 4 }, className } = props;
     return (
         <Columned columns={columns} className={className}>
             {children}
         </Columned>
     );
-};
-
-Mosaic.defaultProps = {
-    columns: { 320: 1, 480: 2, 800: 3, 1366: 4 }
 };
 
 export { Mosaic };

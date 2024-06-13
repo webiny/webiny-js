@@ -37,7 +37,7 @@ context("Page Builder - Blocks Export/Import", () => {
         description: nanoid(10).toLowerCase()
     };
 
-    it("Test the importation and exportation of all blocks", () => {
+    it("Test import and export of all blocks", () => {
         cy.visit("/page-builder/page-blocks");
         // Exports all created data and saves the exported string value.
         cy.pbCreateCategoryAndBlocks({
@@ -60,7 +60,7 @@ context("Page Builder - Blocks Export/Import", () => {
         cy.findByText("Export all blocks").click();
         cy.findByText("Your export is now ready!").should("exist");
 
-        cy.get(".link-text.mdc-typography--body2")
+        cy.findByTestId("pb-blocks-export-dialog-export-url")
             .invoke("text")
             .then(text => {
                 const url = text.trim();
@@ -94,7 +94,7 @@ context("Page Builder - Blocks Export/Import", () => {
             });
     });
 
-    it("Test the importation and exportation functionality of the import block button", () => {
+    it("Test import and export functionality of the import block button", () => {
         cy.visit("/page-builder/page-blocks");
         cy.pbCreateCategoryAndBlocks({
             blockCategory: blockCategoryData1,

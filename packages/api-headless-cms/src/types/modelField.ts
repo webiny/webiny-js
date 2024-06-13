@@ -72,7 +72,7 @@ export interface CmsModelField {
     /**
      * Field renderer. Blank if determined automatically.
      */
-    renderer?: CmsModelFieldRenderer;
+    renderer?: CmsModelFieldRenderer | null;
     /**
      * List of validations for the field
      *
@@ -154,7 +154,7 @@ export interface CmsModelFieldInput {
     /**
      * Renderer options for the field. Check the reference for more information.
      */
-    renderer?: CmsModelFieldRenderer;
+    renderer?: CmsModelFieldRenderer | null;
     /**
      * List of validations for the field.
      */
@@ -255,6 +255,10 @@ interface CmsModelFieldRenderer {
      * Can be blank to let automatically determine the renderer.
      */
     name: string;
+    /**
+     * Renderer settings allow you to configure field renderer on a field level.
+     */
+    settings?: Record<string, any>;
 }
 
 /**

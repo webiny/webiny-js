@@ -13,6 +13,7 @@ export const BLOCK = "block";
 interface UseMoveBlock {
     move: (current: number, next: number) => void;
 }
+
 export const useMoveBlock = (elementId: string): UseMoveBlock => {
     const handler = useEventActionHandler();
     const rootElementId = useRecoilValue(rootElementAtom);
@@ -44,15 +45,18 @@ export const useMoveBlock = (elementId: string): UseMoveBlock => {
         move
     };
 };
+
 interface XYCoord {
     x: number;
     y: number;
 }
+
 interface DragItem {
     index: number;
     id: string;
     type: string;
 }
+
 interface UseSortableListArgs {
     index: number;
     id: string;
@@ -150,7 +154,14 @@ export const useSortableList = ({ index, move, type, beginDrag, endDrag }: UseSo
             if (typeof beginDrag === "function") {
                 return beginDrag(monitor);
             }
-            return null;
+
+            return {
+                type,
+                target: [BLOCK],
+                id: ref.current?.id,
+                index,
+                dragInNavigator: true
+            };
         },
         collect: monitor => ({
             isDragging: monitor.isDragging()

@@ -9,6 +9,7 @@ import { resolveUpdate } from "./resolvers/manage/resolveUpdate";
 import { resolveValidate } from "./resolvers/manage/resolveValidate";
 import { resolveMove } from "./resolvers/manage/resolveMove";
 import { resolveDelete } from "./resolvers/manage/resolveDelete";
+import { resolveRestoreFromBin } from "./resolvers/manage/resolveRestoreFromBin";
 import { resolveDeleteMultiple } from "./resolvers/manage/resolveDeleteMultiple";
 import { resolvePublish } from "./resolvers/manage/resolvePublish";
 import { resolveRepublish } from "./resolvers/manage/resolveRepublish";
@@ -57,7 +58,7 @@ export const createManageResolvers: CreateManageResolvers = ({
         // These are extra fields we want to apply to field resolvers of "gqlType"
         extraResolvers: {
             /**
-             * Advanced Content Entry
+             * Advanced Content Organization
              */
             wbyAco_location: async (entry: CmsEntry) => {
                 return entry.location || null;
@@ -82,6 +83,7 @@ export const createManageResolvers: CreateManageResolvers = ({
             [`validate${model.singularApiName}`]: resolveValidate({ model }),
             [`move${model.singularApiName}`]: resolveMove({ model }),
             [`delete${model.singularApiName}`]: resolveDelete({ model }),
+            [`restore${model.singularApiName}FromBin`]: resolveRestoreFromBin({ model }),
             [`deleteMultiple${model.pluralApiName}`]: resolveDeleteMultiple({ model }),
             [`publish${model.singularApiName}`]: resolvePublish({ model }),
             [`republish${model.singularApiName}`]: resolveRepublish({ model }),

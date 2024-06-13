@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import * as React from "react";
+import React, { useRef, useState } from "react";
 
 function MenuContainer({
     children,
@@ -24,7 +23,6 @@ function MenuContainer({
 
     const handleContainerClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.preventDefault();
-        console.log("click", e);
     };
 
     return (
@@ -53,7 +51,6 @@ interface ToolbarActionDialogProps {
     buttonClassName: string;
     buttonIconClassName: string;
     children: React.ReactNode | React.ReactNode[];
-    stopCloseOnClickSelf?: boolean;
 }
 
 export const ToolbarActionDialog = ({
@@ -62,8 +59,7 @@ export const ToolbarActionDialog = ({
     buttonClassName,
     buttonIconClassName,
     buttonLabel,
-    children,
-    stopCloseOnClickSelf
+    children
 }: ToolbarActionDialogProps): JSX.Element => {
     const menuWindowRef = useRef<HTMLDivElement>(null);
     const [showDropDown, setShowDropDown] = useState(false);
@@ -74,25 +70,6 @@ export const ToolbarActionDialog = ({
             menuWindowRef.current.focus();
         }
     };
-
-    useEffect(() => {
-        if (!showDropDown) {
-            return;
-        }
-
-        const handle = (event: MouseEvent) => {
-            /* const target = event.target;
-             if (!button.contains(target as Node)) {
-                setShowDropDown(false);
-            }*/
-            console.log("handle", event);
-        };
-        document.addEventListener("click", handle);
-
-        return () => {
-            document.removeEventListener("click", handle);
-        };
-    }, [showDropDown, stopCloseOnClickSelf]);
 
     return (
         <div style={{ position: "relative" }}>

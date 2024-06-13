@@ -187,13 +187,6 @@ Fix the width of input components when inside grids
   @include textfield.label-color($mdc-theme-text-primary-on-background);
   @include textfield.ink-color($mdc-theme-on-surface);
   &.mdc-text-field--textarea {
-    textarea {
-      padding-top: 25px;
-    }
-    .mdc-floating-label.mdc-floating-label {
-      margin-left: 11px;
-      top: 35px;
-    }
     &.--focused {
       .mdc-floating-label.mdc-floating-label {
         top: 0px;
@@ -263,7 +256,7 @@ Fix the width of input components when inside grids
           .mdc-tab {
             @include tab.text-label-color($mdc-theme-on-secondary);
             @include tab.icon-color($mdc-theme-on-secondary);
-            @include tab.fixed-width(100px);
+            @include tab.fixed-width(auto);
             justify-content: flex-start;
             font-weight: 600;
           }

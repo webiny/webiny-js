@@ -27,6 +27,8 @@ import fileManagerS3, { createAssetDelivery } from "@webiny/api-file-manager-s3"
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
+import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
@@ -36,11 +38,14 @@ import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 import { createAuditLogs } from "@webiny/api-audit-logs";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-ddb";
-import scaffoldsPlugins from "./plugins/scaffolds";
 import { createBenchmarkEnablePlugin } from "~/plugins/benchmarkEnable";
 import { createCountDynamoDbTask } from "~/plugins/countDynamoDbTask";
 import { createContinuingTask } from "~/plugins/continuingTask";
 import { createWebsockets } from "@webiny/api-websockets";
+import { createRecordLocking } from "@webiny/api-record-locking";
+
+import scaffoldsPlugins from "./plugins/scaffolds";
+import { extensions } from "./extensions";
 
 const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
@@ -68,6 +73,7 @@ export const handler = createHandler({
             })
         }),
         createHeadlessCmsGraphQL(),
+        createRecordLocking(),
         createBackgroundTasks(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({
@@ -101,7 +107,8 @@ export const handler = createHandler({
         }),
         createAco(),
         createAcoPageBuilderContext(),
-        scaffoldsPlugins(),
+        createAcoHcmsContext(),
+        createHcmsTasks(),
         createFileModelModifier(({ modifier }) => {
             modifier.addField({
                 id: "customField1",
@@ -128,7 +135,11 @@ export const handler = createHandler({
         }),
         createAuditLogs(),
         createCountDynamoDbTask(),
-        createContinuingTask()
+        createContinuingTask(),
+
+        // Leave this at the end.
+        scaffoldsPlugins(),
+        extensions()
     ],
     debug
 });

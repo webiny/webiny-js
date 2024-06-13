@@ -1,14 +1,15 @@
 import React from "react";
 import get from "lodash/get";
-import { CmsEditorFieldRendererPlugin } from "~/types";
+import { CmsModelFieldRendererPlugin } from "~/types";
 import { Input } from "@webiny/ui/Input";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as DeleteIcon } from "~/admin/icons/close.svg";
 import DynamicSection from "../DynamicSection";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
-const plugin: CmsEditorFieldRendererPlugin = {
+const plugin: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-number-inputs",
     renderer: {
@@ -26,21 +27,27 @@ const plugin: CmsEditorFieldRendererPlugin = {
             return (
                 <DynamicSection {...props}>
                     {({ bind, index }) => (
-                        <Input
-                            {...bind.index}
-                            onChange={value => {
-                                return bind.index.onChange(value);
-                            }}
-                            onEnter={() => bind.field.appendValue("")}
-                            label={t`Value {number}`({ number: index + 1 })}
-                            type="number"
-                            trailingIcon={
-                                index > 0 && {
-                                    icon: <DeleteIcon />,
-                                    onClick: () => bind.field.removeValue(index)
+                        <DelayedOnChange
+                            value={bind.index.value}
+                            onChange={bind.index.onChange}
+                            onBlur={bind.index.validate}
+                        >
+                            <Input
+                                validation={bind.index.validation}
+                                onEnter={() => bind.field.appendValue("")}
+                                label={t`Value {number}`({ number: index + 1 })}
+                                placeholder={props.field.placeholderText}
+                                description={props.field.helpText}
+                                data-testid={`fr.input.numbers.${props.field.label}.${index + 1}`}
+                                type="number"
+                                trailingIcon={
+                                    index > 0 && {
+                                        icon: <DeleteIcon />,
+                                        onClick: () => bind.field.removeValue(index)
+                                    }
                                 }
-                            }
-                        />
+                            />
+                        </DelayedOnChange>
                     )}
                 </DynamicSection>
             );

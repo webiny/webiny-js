@@ -78,7 +78,7 @@ export function makeDecoratable<T extends GenericComponent>(
 ): ReturnType<typeof makeDecoratableComponent<T>>;
 export function makeDecoratable(hookOrName: any, Component?: any) {
     if (Component) {
-        return makeDecoratableComponent(hookOrName, Component);
+        return makeDecoratableComponent(hookOrName, React.memo(Component));
     }
 
     return makeDecoratableHook(hookOrName);

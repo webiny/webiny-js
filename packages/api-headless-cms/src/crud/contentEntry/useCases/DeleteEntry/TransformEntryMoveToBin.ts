@@ -4,6 +4,7 @@ import { getDate } from "~/utils/date";
 import { getIdentity } from "~/utils/identity";
 import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataValidation";
 import { CmsContext, CmsEntry, CmsEntryStorageOperationsMoveToBinParams, CmsModel } from "~/types";
+import { ROOT_FOLDER } from "~/constants";
 
 export class TransformEntryMoveToBin {
     private context: CmsContext;
@@ -32,7 +33,8 @@ export class TransformEntryMoveToBin {
             context: this.context,
             model,
             data: originalEntry.values,
-            entry: originalEntry
+            entry: originalEntry,
+            skipValidators: ["required"]
         });
 
         const currentDateTime = new Date().toISOString();
@@ -40,7 +42,15 @@ export class TransformEntryMoveToBin {
 
         const entry: CmsEntry = {
             ...originalEntry,
-            deleted: true,
+            wbyDeleted: true,
+
+            /**
+             * Entry location fields. 👇
+             */
+            location: {
+                folderId: ROOT_FOLDER
+            },
+            binOriginalFolderId: originalEntry.location?.folderId,
 
             /**
              * Entry-level meta fields. 👇

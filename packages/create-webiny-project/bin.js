@@ -20,7 +20,7 @@ const verifyConfig = require("./utils/verifyConfig");
                 [
                     `You are running Node.js ${nodeVersion}, but Webiny requires version 18 or 20.`,
                     `Please switch to one of the required versions and try again.`,
-                    "For more information, please visit https://docs.webiny.com/docs/tutorials/install-webiny#prerequisites."
+                    "For more information, please visit https://www.webiny.com/docs/get-started/install-webiny#prerequisites."
                 ].join(" ")
             )
         );

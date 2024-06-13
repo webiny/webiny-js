@@ -90,8 +90,20 @@ const CUSTOM_HANDLERS = {
             "packages/api-headless-cms --storage=ddb-es,ddb"
         ];
     },
+    "api-headless-cms-aco": () => {
+        return [
+            "packages/api-headless-cms-aco --storage=ddb",
+            "packages/api-headless-cms-aco --storage=ddb-es,ddb"
+        ];
+    },
     "api-headless-cms-ddb-es": () => {
         return ["packages/api-headless-cms-ddb-es --storage=ddb-es,ddb"];
+    },
+    "api-headless-cms-tasks": () => {
+        return [
+            "packages/api-headless-cms-tasks --storage=ddb",
+            "packages/api-headless-cms-tasks --storage=ddb-es,ddb"
+        ];
     },
     "api-apw": () => {
         return [
@@ -118,11 +130,20 @@ const CUSTOM_HANDLERS = {
     "app-headless-cms": () => {
         return ["packages/app-headless-cms"];
     },
+    "app-trash-bin": () => {
+        return ["packages/app-trash-bin"];
+    },
     tasks: () => {
         return ["packages/tasks --storage=ddb", "packages/tasks --storage=ddb-es,ddb"];
     },
     "api-elasticsearch-tasks": () => {
         return ["packages/api-elasticsearch-tasks --storage=ddb-es,ddb"];
+    },
+    "api-record-locking": () => {
+        return [
+            "packages/api-record-locking --storage=ddb",
+            "packages/api-record-locking --storage=ddb-es,ddb"
+        ];
     }
 };
 

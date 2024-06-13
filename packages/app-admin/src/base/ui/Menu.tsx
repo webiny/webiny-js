@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect } from "react";
-import { useNavigation } from "~/index";
+import { makeDecoratable, useNavigation } from "~/index";
 
 export interface MenuUpdater {
     (menuItem: MenuData | undefined | null): MenuData | undefined;
@@ -83,7 +83,7 @@ const mergeMenuItems = (item1: MenuData, item2: MenuData): MenuData => {
 /**
  * Register a new menu item into the Admin app.
  */
-export const AddMenu = ({ children, ...props }: AddMenuProps) => {
+export const AddMenu = makeDecoratable("AddMenu", ({ children, ...props }: AddMenuProps) => {
     const menu = useMenu();
     const navigation = useNavigation();
 
@@ -173,6 +173,4 @@ export const AddMenu = ({ children, ...props }: AddMenuProps) => {
     }
 
     return <MenuContext.Provider value={context}>{children}</MenuContext.Provider>;
-};
-
-AddMenu.defaultProps = { tags: [] };
+});

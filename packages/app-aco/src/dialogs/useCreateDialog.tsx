@@ -1,14 +1,14 @@
 import React, { useCallback, useState } from "react";
 import slugify from "slugify";
 import { useSnackbar } from "@webiny/app-admin";
-import { Bind, FormAPI, GenericFormData } from "@webiny/form";
+import { Bind, GenericFormData, useForm } from "@webiny/form";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Typography } from "@webiny/ui/Typography";
 import { validation } from "@webiny/validation";
 
 import { FolderTree } from "~/components";
-import { useDialogs } from "~/dialogs/useDialogs";
+import { useDialogs } from "@webiny/app-admin";
 import { DialogFoldersContainer } from "~/dialogs/styled";
 import { useFolders } from "~/hooks";
 import { ROOT_FOLDER } from "~/constants";
@@ -28,37 +28,34 @@ interface FormComponentProps {
 
 const FormComponent = ({ currentParentId = null }: FormComponentProps) => {
     const [parentId, setParentId] = useState<string | null>(currentParentId);
+    const form = useForm();
 
-    const generateSlug = (form: FormAPI) => {
-        return () => {
-            if (form.data.slug || !form.data.title) {
-                return;
-            }
+    const generateSlug = () => {
+        if (form.data.slug || !form.data.title) {
+            return;
+        }
 
-            // We want to update slug only when the folder is first being created.
-            form.setValue(
-                "slug",
-                slugify(form.data.title, {
-                    replacement: "-",
-                    lower: true,
-                    remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
-                    trim: false
-                })
-            );
-        };
+        // We want to update slug only when the folder is first being created.
+        form.setValue(
+            "slug",
+            slugify(form.data.title, {
+                replacement: "-",
+                lower: true,
+                remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
+                trim: false
+            })
+        );
     };
 
     return (
         <Grid>
             <Cell span={12}>
-                <Bind name={"title"} validators={[validation.create("required")]}>
-                    {({ form, ...bind }) => (
-                        <Input {...bind} label={"Title"} onBlur={generateSlug(form)} />
-                    )}
+                <Bind name={"title"} validators={validation.create("required")}>
+                    {bind => <Input {...bind} label={"Title"} onBlur={generateSlug} />}
                 </Bind>
             </Cell>
             <Cell span={12}>
-                <Bind name={"slug"} validators={[validation.create("required,slug")]}>
+                <Bind name={"slug"} validators={validation.create("required,slug")}>
                     <Input label={"Slug"} />
                 </Bind>
             </Cell>
@@ -104,10 +101,10 @@ export const useCreateDialog = (): UseCreateDialogResponse => {
 
         dialogs.showDialog({
             title: "Create a new folder",
-            message: <FormComponent currentParentId={currentParentId} />,
+            content: <FormComponent currentParentId={currentParentId} />,
             acceptLabel: "Create folder",
             cancelLabel: "Cancel",
-            loadingLabel: "Creating folder",
+            loadingLabel: "Creating folder...",
             /**
              * We need to cast as there are no generics to pass for the onAccept function.
              */

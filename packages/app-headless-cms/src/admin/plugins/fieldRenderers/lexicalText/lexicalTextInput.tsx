@@ -1,23 +1,21 @@
 import React from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
-import { CmsContentEntry, CmsEditorFieldRendererPlugin, CmsModelField } from "~/types";
-import { BindComponentRenderProp } from "@webiny/form";
+import { CmsModelFieldRendererPlugin, CmsModelField } from "~/types";
+import { useForm } from "@webiny/form";
 import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor";
 import { modelHasLegacyRteField } from "~/admin/plugins/fieldRenderers/richText/utils";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
-const getKey = (
-    field: CmsModelField,
-    bind: BindComponentRenderProp<string, CmsContentEntry>
-): string => {
-    const formId = bind.form.data.id || "new";
+const getKey = (id: string | undefined, field: CmsModelField): string => {
+    const formId = id || "new";
     return `${formId}.${field.fieldId}`;
 };
 
-const plugin: CmsEditorFieldRendererPlugin = {
+const plugin: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-lexical",
     renderer: {
@@ -37,20 +35,25 @@ const plugin: CmsEditorFieldRendererPlugin = {
             return canUse;
         },
         render({ field, getBind, Label }) {
-            const Bind = getBind<string, CmsContentEntry>();
+            const form = useForm();
+            const Bind = getBind<string>();
             return (
                 <Bind>
                     {bind => {
                         return (
                             <>
                                 <Label>{field.label}</Label>
-                                <LexicalCmsEditor
-                                    value={bind.value}
-                                    onChange={bind.onChange}
-                                    key={getKey(field, bind)}
-                                    placeholder={field.placeholderText}
-                                    data-testid={`fr.input.lexical.${field.label}`}
-                                />
+                                <DelayedOnChange {...bind}>
+                                    {({ value, onChange }) => (
+                                        <LexicalCmsEditor
+                                            value={value}
+                                            onChange={onChange}
+                                            key={getKey(form.data.id, field)}
+                                            placeholder={field.placeholderText}
+                                            data-testid={`fr.input.lexical.${field.label}`}
+                                        />
+                                    )}
+                                </DelayedOnChange>
                                 <FormElementMessage>{field.helpText}</FormElementMessage>
                             </>
                         );

@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
     $applyStylesToNode,
     $createFontColorNode,
@@ -15,9 +14,10 @@ import {
     COMMAND_PRIORITY_EDITOR
 } from "lexical";
 import { $wrapNodeInElement } from "@lexical/utils";
+import { useRichTextEditor } from "~/hooks";
 
 export const FontColorPlugin = () => {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
 
     useEffect(() => {
         return editor.registerCommand<FontColorPayload>(

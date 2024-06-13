@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "@emotion/styled";
 import classNames from "classnames";
 import Loader from "./Loader";
@@ -11,12 +11,12 @@ import { Checkbox } from "../../Checkbox";
 import { Menu, MenuItem } from "~/Menu";
 
 import {
-    RefreshIcon,
-    SortIcon,
     FilterIcon,
-    PreviousPageIcon,
     NextPageIcon,
-    OptionsIcon
+    OptionsIcon,
+    PreviousPageIcon,
+    RefreshIcon,
+    SortIcon
 } from "./icons";
 import { List, ListItem, ListProps } from "..";
 import { DataListModalOverlayProvider } from "./DataListModalOverlay";
@@ -350,8 +350,44 @@ const Pagination = (props: DataListProps) => {
     );
 };
 
-export const DataList = (props: DataListProps) => {
-    let render: React.ReactNode | null = null;
+const defaultDataListProps = {
+    children: null,
+    title: null,
+    data: null,
+    meta: null,
+    loading: false,
+    refresh: () => {
+        return void 0;
+    },
+    setPage: null,
+    setPerPage: null,
+    perPageOptions: [10, 25, 50],
+    filters: null,
+    sorters: null,
+    setSorters: null,
+    actions: null,
+    multiSelectAll: noop,
+    isAllMultiSelected: () => false,
+    isNoneMultiSelected: () => false,
+    loader: <Loader />,
+    noData: <NoData />,
+    showOptions: {
+        refresh: true,
+        pagination: true,
+        sorters: true,
+        filters: true
+    }
+};
+
+export const DataList = (propsInput: DataListProps) => {
+    let render: React.ReactNode | null;
+
+    const props = useMemo(() => {
+        return {
+            ...defaultDataListProps,
+            ...propsInput
+        };
+    }, [propsInput]);
 
     if (props.loading) {
         render = props.loader;
@@ -397,35 +433,6 @@ export const DataList = (props: DataListProps) => {
             </ListContainer>
         </DataListModalOverlayProvider>
     );
-};
-
-DataList.defaultProps = {
-    children: null,
-    title: null,
-    data: null,
-    meta: null,
-    loading: false,
-    refresh: () => {
-        return void 0;
-    },
-    setPage: null,
-    setPerPage: null,
-    perPageOptions: [10, 25, 50],
-    filters: null,
-    sorters: null,
-    setSorters: null,
-    actions: null,
-    multiSelectAll: noop,
-    isAllMultiSelected: () => false,
-    isNoneMultiSelected: () => false,
-    loader: <Loader />,
-    noData: <NoData />,
-    showOptions: {
-        refresh: true,
-        pagination: true,
-        sorters: true,
-        filters: true
-    }
 };
 
 export interface ScrollListProps extends ListProps {

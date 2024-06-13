@@ -13,8 +13,8 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@pulumi/aws": "^5.42.0",
-    "@pulumi/pulumi": "^3.99.0",
+    "@pulumi/aws": "^6.32.0",
+    "@pulumi/pulumi": "^3.113.3",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-apw": "0.0.0",
     "@webiny/api-apw-scheduler-so-ddb": "0.0.0",
@@ -62,7 +62,7 @@
     "invariant": "^2.2.4",
     "node-fetch": "^2.6.13",
     "ora": "^4.1.1",
-    "webpack": "^5.90.0"
+    "webpack": "^5.91.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
@@ -79,7 +79,7 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch",
-    "prepublishOnly": "yarn webiny run buildHandlers"
+    "prepublishOnly": "WEBINY_DISABLE_TS_CHECKS=true yarn webiny run buildHandlers"
   },
   "adio": {
     "ignoreDirs": [

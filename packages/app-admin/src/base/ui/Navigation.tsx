@@ -143,13 +143,13 @@ export const NavigationProvider = (Component: ComponentWithChildren) => {
     };
 };
 
-export const Navigation = () => {
+export const Navigation = makeDecoratable("Navigation", () => {
     return (
         <Tags tags={{ location: "navigation" }}>
             <NavigationRenderer />
         </Tags>
     );
-};
+});
 
 export const NavigationRenderer = makeDecoratable("NavigationRenderer", createVoidComponent());
 

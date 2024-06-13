@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
     FormattedOption,
     Select as RmwcSelect,
@@ -100,6 +100,25 @@ export const Select = (props: SelectProps) => {
 
     const options = getOptions(other.options);
 
+    // Memoize the label and placeholder values based on the component size.
+    const { label, placeholder } = useMemo(() => {
+        const { size, label, placeholder } = props;
+
+        // For small or medium size, we set only the placeholder, using label as fallback.
+        if (size === "small" || size === "medium") {
+            return {
+                label: undefined,
+                placeholder: placeholder || label
+            };
+        }
+
+        // For other sizes, use the provided label and placeholder.
+        return {
+            label,
+            placeholder
+        };
+    }, [props.label, props.placeholder, props.size]);
+
     return (
         <>
             <RmwcSelect
@@ -107,6 +126,8 @@ export const Select = (props: SelectProps) => {
                 ref={undefined}
                 options={options}
                 value={value}
+                label={label}
+                placeholder={placeholder}
                 className={classNames(
                     "webiny-ui-select mdc-ripple-surface mdc-ripple-upgraded",
                     webinySelect,

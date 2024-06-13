@@ -11,6 +11,7 @@ import {
 } from "~/types";
 import { SingleValueDynamicZone } from "./SingleValueDynamicZone";
 import { MultiValueDynamicZone } from "./MultiValueDynamicZone";
+import { AccordionRenderSettings, getAccordionRenderSettings } from "../AccordionRenderSettings";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { makeDecoratable } from "@webiny/react-composition";
 
@@ -46,6 +47,7 @@ export const DynamicZoneContainer = makeDecoratable(
         } = props;
 
         const defaultClassName = field.multipleValues ? noBottomPadding : undefined;
+        const { open } = getAccordionRenderSettings(field);
 
         return (
             <>
@@ -54,6 +56,7 @@ export const DynamicZoneContainer = makeDecoratable(
                         title={title}
                         description={description}
                         className={className || defaultClassName}
+                        open={open}
                     >
                         {children}
                     </AccordionItem>
@@ -114,6 +117,9 @@ export const dynamicZoneFieldRenderer: CmsModelFieldRendererPlugin = {
         },
         render(props) {
             return <DynamicZoneContent {...props} />;
+        },
+        renderSettings({ field }) {
+            return <AccordionRenderSettings field={field} />;
         }
     }
 };

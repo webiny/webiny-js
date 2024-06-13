@@ -1,17 +1,17 @@
 import React from "react";
 import { Provider } from "@webiny/app";
-import { WebsocketsProvider as WebsocketsProviderComponent } from "~/WebsocketsProvider";
+import { WebsocketsContextProvider } from "~/WebsocketsContextProvider";
 
 export interface WebsocketsProviderProps {
     children: React.ReactNode;
 }
 
 const WebsocketsHoc = (Component: React.ComponentType<React.PropsWithChildren>) => {
-    return function WebsocketsProvider({ children }: WebsocketsProviderProps) {
+    return function WebsocketsProvider(props: WebsocketsProviderProps) {
         return (
-            <Component>
-                <WebsocketsProviderComponent>{children}</WebsocketsProviderComponent>
-            </Component>
+            <WebsocketsContextProvider>
+                <Component {...props} />
+            </WebsocketsContextProvider>
         );
     };
 };

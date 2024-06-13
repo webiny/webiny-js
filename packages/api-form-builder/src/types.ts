@@ -94,6 +94,13 @@ export interface FbFormField {
     settings?: Record<string, any>;
 }
 
+export interface ReCaptchaSettings {
+    reCaptcha: {
+        enabled: boolean | null;
+        errorMessage: string;
+    };
+}
+
 export interface FbForm {
     id: string;
     tenant: string;
@@ -112,7 +119,7 @@ export interface FbForm {
     fields: FbFormField[];
     steps: FbFormStep[];
     stats: Omit<FbFormStats, "conversionRate">;
-    settings: Record<string, any>;
+    settings: ReCaptchaSettings | Record<string, any>;
     triggers: Record<string, any> | null;
     formId: string;
     webinyVersion: string;

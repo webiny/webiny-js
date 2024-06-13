@@ -1,7 +1,8 @@
 import React, { useRef, useCallback, cloneElement } from "react";
+import { Validator } from "@webiny/validation/types";
+import { useForm } from "@webiny/form";
 import { createValidators } from "~/utils/createValidators";
 import { BindComponent, CmsModelField } from "~/types";
-import { Validator } from "@webiny/validation/types";
 
 interface UseBindProps {
     field: CmsModelField;
@@ -14,33 +15,49 @@ interface UseBindParams {
     children?: any;
 }
 
+const createFieldCacheKey = (field: CmsModelField) => {
+    return [
+        field.id,
+        field.fieldId,
+        JSON.stringify(field.validation),
+        JSON.stringify(field.listValidation)
+    ].join(";");
+};
+
 export interface GetBindCallable {
     (index?: number): BindComponent;
 }
 
+const emptyValidators: Validator[] = [];
+
 export function useBind({ Bind, field }: UseBindProps) {
     const memoizedBindComponents = useRef<Record<string, BindComponent>>({});
+    const cacheKey = createFieldCacheKey(field);
+    const form = useForm();
 
     return useCallback(
         (index = -1) => {
             const { parentName } = Bind;
+
             // If there's a parent name assigned to the given Bind component, we need to include it in the new field "name".
             // This allows us to have nested fields (like "object" field with nested properties)
             const name = [parentName, field.fieldId, index >= 0 ? index : undefined]
                 .filter(v => v !== undefined)
                 .join(".");
 
-            if (memoizedBindComponents.current[name]) {
-                return memoizedBindComponents.current[name];
+            const componentId = `${name};${cacheKey}`;
+
+            if (memoizedBindComponents.current[componentId]) {
+                return memoizedBindComponents.current[componentId];
             }
 
-            const validators = createValidators(field, field.validation || []);
-            const listValidators = createValidators(field, field.listValidation || []);
+            const validators = createValidators(field, field.validation || emptyValidators);
+            const listValidators = createValidators(field, field.listValidation || emptyValidators);
             const defaultValue: string[] | undefined = undefined;
             const isMultipleValues = index === -1 && field.multipleValues;
             const inputValidators = isMultipleValues ? listValidators : validators;
 
-            memoizedBindComponents.current[name] = function UseBind(params: UseBindParams) {
+            memoizedBindComponents.current[componentId] = function UseBind(params: UseBindParams) {
                 const { name: childName, validators: childValidators, children } = params;
 
                 return (
@@ -80,7 +97,7 @@ export function useBind({ Bind, field }: UseBindProps) {
                                     bind.onChange(value);
 
                                     // To make sure the field is still valid, we must trigger validation.
-                                    bind.form.validateInput(field.fieldId);
+                                    form.validateInput(field.fieldId);
                                 };
 
                                 props.moveValueUp = (index: number) => {
@@ -120,11 +137,11 @@ export function useBind({ Bind, field }: UseBindProps) {
             } as BindComponent;
 
             // We need to keep track of current field name, to support nested fields.
-            memoizedBindComponents.current[name].parentName = name;
-            memoizedBindComponents.current[name].displayName = `Bind<${name}>`;
+            memoizedBindComponents.current[componentId].parentName = name;
+            memoizedBindComponents.current[componentId].displayName = `Bind<${name}>`;
 
-            return memoizedBindComponents.current[name];
+            return memoizedBindComponents.current[componentId];
         },
-        [field.fieldId]
+        [field.fieldId, cacheKey]
     );
 }

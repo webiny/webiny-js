@@ -40,6 +40,10 @@ export interface I18NContextObject {
     system: SystemCRUD;
     hasI18NContentPermission: () => Promise<boolean>;
     checkI18NContentPermission: () => Promise<void>;
+    withEachLocale: <TReturn>(
+        locales: I18NLocale[],
+        cb: (locale: I18NLocale) => Promise<TReturn>
+    ) => Promise<TReturn[] | undefined>;
 }
 
 export interface SystemInstallParams {

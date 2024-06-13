@@ -41,8 +41,11 @@ export interface IWebsocketManagerSendData<T extends IGenericData = IGenericData
 }
 
 export interface IWebsocketsManager {
-    connect(): void;
-    close(code?: WebsocketsCloseCode, reason?: string): void;
+    isConnected(): boolean;
+    isClosed(): boolean;
+
+    connect(): Promise<void>;
+    close(code: WebsocketsCloseCode, reason: string): Promise<boolean>;
     send<T extends IWebsocketManagerSendData = IWebsocketManagerSendData>(data: T): void;
 
     onOpen(

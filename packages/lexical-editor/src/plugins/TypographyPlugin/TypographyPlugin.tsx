@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR } from "lexical";
 import {
     ADD_TYPOGRAPHY_COMMAND,
@@ -8,9 +7,10 @@ import {
     formatToHeading
 } from "@webiny/lexical-nodes";
 import { HeadingTagType } from "@lexical/rich-text";
+import { useRichTextEditor } from "~/hooks";
 
 export const TypographyPlugin = () => {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
 
     useEffect(() => {
         return editor.registerCommand<TypographyPayload>(

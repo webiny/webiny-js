@@ -16,7 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.24.0",
-    "@sparticuz/chromium": "109.0.0",
+    "@sparticuz/chromium": "123.0.1",
     "@webiny/api": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/error": "0.0.0",
@@ -25,12 +25,12 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "lodash": "^4.17.21",
-    "object-hash": "^2.1.1",
+    "object-hash": "^3.0.0",
     "pluralize": "^8.0.0",
     "posthtml": "^0.15.0",
     "posthtml-noopener": "^1.0.5",
     "posthtml-plugin-link-preload": "^1.0.0",
-    "puppeteer-core": "19.4.1",
+    "puppeteer-core": "22.6.4",
     "shortid": "^2.2.16",
     "srcset": "^4.0.0"
   },

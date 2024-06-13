@@ -248,7 +248,6 @@ const FileManagerView = () => {
                 folders={view.folders}
                 records={view.files}
                 loading={view.isListLoading}
-                onRecordClick={view.showFileDetails}
                 onFolderClick={view.setFolderId}
                 selected={view.selected}
                 multiple={view.multiple}

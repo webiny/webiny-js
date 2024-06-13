@@ -16,10 +16,11 @@ import {
     appColumn,
     previewColumn
 } from "./styled";
+import { ActionType } from "~/types";
 
 type ActionProps = {
     label: string;
-    value: string;
+    value: ActionType;
 };
 
 export const Action = ({ label, value }: ActionProps) => {

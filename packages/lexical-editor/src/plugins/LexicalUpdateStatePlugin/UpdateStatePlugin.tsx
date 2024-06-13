@@ -1,18 +1,18 @@
 import { useEffect } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { parseLexicalState } from "~/utils/isValidLexicalData";
 import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 import { LexicalValue } from "~/types";
+import { useRichTextEditor } from "~/hooks";
 
 interface UpdateStatePluginProps {
     value: LexicalValue | null;
 }
 
 /**
- * Updates the lexical state if new value is provided to the lexical editor trough props.
+ * Updates the lexical state if new value is provided to the lexical editor through props.
  */
 export const UpdateStatePlugin = ({ value }: UpdateStatePluginProps) => {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
     useEffect(() => {
         if (value && editor) {
             let newState;

@@ -11,13 +11,13 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.24.0",
-    "@types/react": "18.2.65",
+    "@types/react": "18.2.79",
     "@webiny/react-composition": "0.0.0",
     "nanoid": "^3.3.7",
     "react": "18.2.0"
   },
   "devDependencies": {
-    "@testing-library/react": "^12.1.5",
+    "@testing-library/react": "^15.0.7",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "prettier": "^2.8.3"

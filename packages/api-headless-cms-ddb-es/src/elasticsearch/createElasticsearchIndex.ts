@@ -34,6 +34,7 @@ export const createElasticsearchIndex = async (params: CreateElasticsearchIndexP
             console.error(
                 `Could not create Elasticsearch index "${index}" for the CMS model "${model.name}".`
             );
+            console.error(ex);
             return ex;
         }
     });

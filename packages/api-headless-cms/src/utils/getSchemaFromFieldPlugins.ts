@@ -1,6 +1,6 @@
 import { ApiEndpoint, CmsContext, CmsFieldTypePlugins, CmsModel } from "~/types";
-import { CmsGraphQLSchemaPlugin } from "~/plugins";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { createCmsGraphQLSchemaPlugin, ICmsGraphQLSchemaPlugin } from "~/plugins";
+import { IGraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types";
 
 const TYPE_MAP: Record<string, "manage" | "read"> = {
@@ -16,11 +16,11 @@ interface CreatePluginCallableParams {
 }
 
 interface CreatePluginCallable {
-    (params: CreatePluginCallableParams): GraphQLSchemaPlugin<CmsContext>;
+    (params: CreatePluginCallableParams): IGraphQLSchemaPlugin<CmsContext>;
 }
 
 const defaultCreatePlugin: CreatePluginCallable = ({ schema, type, fieldType }) => {
-    const plugin = new CmsGraphQLSchemaPlugin(schema);
+    const plugin = createCmsGraphQLSchemaPlugin(schema);
     plugin.name = `headless-cms.graphql.schema.${type}.field.${fieldType}`;
     return plugin;
 };
@@ -34,7 +34,7 @@ interface Params {
 export const createGraphQLSchemaPluginFromFieldPlugins = (params: Params) => {
     const { models, fieldTypePlugins, type, createPlugin = defaultCreatePlugin } = params;
 
-    const plugins: CmsGraphQLSchemaPlugin[] = [];
+    const plugins: ICmsGraphQLSchemaPlugin[] = [];
     for (const key in fieldTypePlugins) {
         const fieldTypePlugin = fieldTypePlugins[key];
         if (!TYPE_MAP[type] || !fieldTypePlugin[TYPE_MAP[type]]) {
@@ -47,7 +47,7 @@ export const createGraphQLSchemaPluginFromFieldPlugins = (params: Params) => {
         }
         const schema = createSchema({ models });
 
-        // const plugin = new CmsGraphQLSchemaPlugin(schema);
+        // const plugin = createCmsGraphQLSchemaPlugin(schema);
         // plugin.name = `headless-cms.graphql.schema.${type}.field.${fieldTypePlugin.fieldType}`;
         const plugin = createPlugin({
             schema,

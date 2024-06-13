@@ -20,7 +20,7 @@ const grid = css({
 const RightPanelWrapper = styled("div")({
     backgroundColor: "var(--mdc-theme-background)",
     overflow: "auto",
-    height: "calc(100vh - 70px)"
+    height: "calc(100vh - 64px)"
 });
 
 export const leftPanel = css({
@@ -36,7 +36,7 @@ export const leftPanel = css({
     ">.mdc-deprecated-list": {
         display: "flex",
         flexDirection: "column",
-        maxHeight: "calc(100vh - 70px)",
+        maxHeight: "calc(100vh - 64px)",
         overflow: "auto"
     }
 });

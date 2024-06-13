@@ -94,7 +94,7 @@ export interface GetSearchRecordResponse {
 }
 
 export interface GetSearchRecordQueryVariables {
-    id: string;
+    entryId: string;
 }
 
 export interface DeleteSearchRecordVariables {

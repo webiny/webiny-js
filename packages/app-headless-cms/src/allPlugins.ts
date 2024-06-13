@@ -20,6 +20,7 @@ import selectFieldRenderer from "~/admin/plugins/fieldRenderers/select";
 import checkboxesFieldRenderer from "~/admin/plugins/fieldRenderers/checkboxes";
 import refFieldRenderer from "~/admin/plugins/fieldRenderers/ref";
 import objectFieldRenderer from "~/admin/plugins/fieldRenderers/object";
+import { hiddenFieldRenderer } from "~/admin/plugins/fieldRenderers/hidden";
 
 import editorGteFieldValidator from "~/admin/plugins/fieldValidators/gte";
 import editorDateGteFieldValidator from "~/admin/plugins/fieldValidators/dateGte";
@@ -83,5 +84,6 @@ export default [
     objectField,
     objectFieldRenderer,
     dynamicZoneField,
-    dynamicZoneFieldRenderer
+    dynamicZoneFieldRenderer,
+    hiddenFieldRenderer
 ];

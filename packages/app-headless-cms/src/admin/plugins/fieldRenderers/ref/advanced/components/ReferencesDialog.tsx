@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { Search } from "./Search";
 import { Entry } from "./Entry";
 import { DialogActions, DialogContent as BaseDialogContent } from "~/admin/components/Dialog";
-import { CmsModelFieldRendererProps } from "~/types";
+import { CmsModelField, CmsModelFieldRendererProps } from "~/types";
 import { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin";
@@ -13,6 +13,7 @@ import { useEntries } from "~/admin/plugins/fieldRenderers/ref/advanced/hooks/us
 import { Entries } from "./Entries";
 import { Dialog } from "~/admin/plugins/fieldRenderers/ref/components/dialog/Dialog";
 import { DialogHeader } from "~/admin/plugins/fieldRenderers/ref/components/dialog/DialogHeader";
+import { MultiRefFieldSettings } from "~/admin/plugins/fieldRenderers/ref/advanced/components/AdvancedMultipleReferenceSettings";
 
 const Container = styled("div")({
     width: "100%",
@@ -50,16 +51,35 @@ const isSelected = (entryId: string, values: CmsReferenceValue[]) => {
 
 interface ReferencesDialogProps extends CmsModelFieldRendererProps {
     values?: CmsReferenceValue[] | null;
+    field: CmsModelField;
     onDialogClose: () => void;
     storeValues: (values: CmsReferenceValue[]) => void;
     multiple: boolean;
 }
 
+const getSettings = (field: CmsModelField) => {
+    if (typeof field.renderer === "function") {
+        return undefined;
+    }
+
+    return field.renderer.settings as MultiRefFieldSettings;
+};
+
 export const ReferencesDialog = (props: ReferencesDialogProps) => {
-    const { contentModel, onDialogClose, storeValues, values: initialValues, multiple } = props;
     const { showSnackbar } = useSnackbar();
 
+    const {
+        contentModel,
+        onDialogClose,
+        storeValues,
+        values: initialValues,
+        multiple,
+        field
+    } = props;
+
     const [values, setValues] = useState<CmsReferenceValue[]>(initialValues || []);
+    const rendererSettings = getSettings(field);
+    const newItemPosition = rendererSettings?.newItemPosition ?? "last";
 
     /**
      * On change needs to handle the adding or removing of a reference.
@@ -94,8 +114,14 @@ export const ReferencesDialog = (props: ReferencesDialogProps) => {
                 const { id: valueEntryId } = parseIdentifier(value.id);
                 return referenceEntryId !== valueEntryId;
             });
+
             if (newValues.length === values.length) {
-                setValues([...values, reference]);
+                setValues(values => {
+                    if (newItemPosition === "first") {
+                        return [reference, ...values];
+                    }
+                    return [...values, reference];
+                });
                 return;
             }
             setValues(newValues);

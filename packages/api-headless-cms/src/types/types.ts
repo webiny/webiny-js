@@ -1,7 +1,8 @@
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
-import { Context } from "@webiny/api/types";
-import { GraphQLFieldResolver, Resolvers } from "@webiny/handler-graphql/types";
+import { Context, GenericRecord } from "@webiny/api/types";
+import { GraphQLFieldResolver, GraphQLRequestBody, Resolvers } from "@webiny/handler-graphql/types";
+import { processRequestBody } from "@webiny/handler-graphql";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { Topic } from "@webiny/pubsub/types";
@@ -15,6 +16,20 @@ import { CmsModelField, CmsModelFieldValidation, CmsModelUpdateInput } from "./m
 import { CmsModel, CmsModelCreateFromInput, CmsModelCreateInput } from "./model";
 import { CmsGroup } from "./modelGroup";
 import { CmsIdentity } from "./identity";
+
+export interface CmsError {
+    message: string;
+    code: string;
+    data: GenericRecord;
+    stack?: string;
+}
+
+export interface CmsError {
+    message: string;
+    code: string;
+    data: GenericRecord;
+    stack?: string;
+}
 
 export type ApiEndpoint = "manage" | "preview" | "read";
 
@@ -62,7 +77,16 @@ export interface HeadlessCms
      */
     export: HeadlessCmsExport;
     importing: HeadlessCmsImport;
+    getExecutableSchema: GetExecutableSchema;
 }
+
+export type GetExecutableSchema = (
+    type: ApiEndpoint
+) => Promise<
+    <TData = Record<string, any>, TExtensions = Record<string, any>>(
+        input: GraphQLRequestBody | GraphQLRequestBody[]
+    ) => ReturnType<typeof processRequestBody<TData, TExtensions>>
+>;
 
 /**
  * @description This combines all contexts used in the CMS into a single one.
@@ -414,7 +438,7 @@ export interface ModelManagerPlugin extends Plugin {
      * Create a CmsModelManager for specific type - or new default one.
      * For reference in how is this plugin run check [contentModelManagerFactory](https://github.com/webiny/webiny-js/blob/f15676/packages/api-headless-cms/src/content/plugins/CRUD/contentModel/contentModelManagerFactory.ts)
      */
-    create: (context: CmsContext, model: CmsModel) => Promise<CmsModelManager>;
+    create<T = any>(context: CmsContext, model: CmsModel): Promise<CmsModelManager<T>>;
 }
 
 /**
@@ -476,6 +500,10 @@ export interface CmsEntry<T = CmsEntryValues> {
     /**
      * An ISO 8601 date/time string.
      */
+    revisionRestoredOn: string | null;
+    /**
+     * An ISO 8601 date/time string.
+     */
     revisionFirstPublishedOn: string | null;
     /**
      * An ISO 8601 date/time string.
@@ -498,6 +526,10 @@ export interface CmsEntry<T = CmsEntryValues> {
      * Identity that last deleted the revision.
      */
     revisionDeletedBy: CmsIdentity | null;
+    /**
+     * Identity that last restored the revision.
+     */
+    revisionRestoredBy: CmsIdentity | null;
     /**
      * Identity that first published the entry.
      */
@@ -526,6 +558,10 @@ export interface CmsEntry<T = CmsEntryValues> {
     /**
      * An ISO 8601 date/time string.
      */
+    restoredOn: string | null;
+    /**
+     * An ISO 8601 date/time string.
+     */
     firstPublishedOn: string | null;
     /**
      * An ISO 8601 date/time string.
@@ -549,6 +585,10 @@ export interface CmsEntry<T = CmsEntryValues> {
      */
     deletedBy: CmsIdentity | null;
     /**
+     * Identity that last restored the entry.
+     */
+    restoredBy: CmsIdentity | null;
+    /**
      * Identity that first published the entry.
      */
     firstPublishedBy: CmsIdentity | null;
@@ -556,6 +596,20 @@ export interface CmsEntry<T = CmsEntryValues> {
      * Identity that last published the entry.
      */
     lastPublishedBy: CmsIdentity | null;
+
+    /**
+     * Deprecated fields. 👇
+     */
+
+    /**
+     * @deprecated Will be removed with the 5.41.0 release. Use `createdBy` field instead.
+     */
+    ownedBy?: CmsIdentity | null;
+
+    /**
+     * @deprecated Will be removed with the 5.41.0 release. Use `firstPublishedOn` or `lastPublishedOn` field instead.
+     */
+    publishedOn?: string | null;
 
     /**
      * Model ID of the definition for the entry.
@@ -605,7 +659,12 @@ export interface CmsEntry<T = CmsEntryValues> {
     /**
      * Is the entry in the bin?
      */
-    deleted?: boolean | null;
+    wbyDeleted?: boolean | null;
+    /**
+     * This field preserves the original folderId value, as the ROOT_FOLDER is set upon deletion.
+     * The value is utilized when restoring the entry from the trash bin.
+     */
+    binOriginalFolderId?: string | null;
 }
 
 export interface CmsStorageEntry extends CmsEntry {
@@ -627,39 +686,39 @@ export interface CmsEntryUniqueValue {
  * @category CmsEntry
  * @category CmsModel
  */
-export interface CmsModelManager {
+export interface CmsModelManager<T = CmsEntryValues> {
     /**
      * List only published entries in the content model.
      */
-    listPublished: (params: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
+    listPublished(params: CmsEntryListParams): Promise<[CmsEntry<T>[], CmsEntryMeta]>;
     /**
      * List latest entries in the content model. Used for administration.
      */
-    listLatest: (params: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
+    listLatest(params: CmsEntryListParams): Promise<[CmsEntry<T>[], CmsEntryMeta]>;
     /**
      * Get a list of published entries by the ID list.
      */
-    getPublishedByIds: (ids: string[]) => Promise<CmsEntry[]>;
+    getPublishedByIds(ids: string[]): Promise<CmsEntry<T>[]>;
     /**
      * Get a list of the latest entries by the ID list.
      */
-    getLatestByIds: (ids: string[]) => Promise<CmsEntry[]>;
+    getLatestByIds(ids: string[]): Promise<CmsEntry<T>[]>;
     /**
      * Get an entry filtered by given params. Will always get one.
      */
-    get: (id: string) => Promise<CmsEntry>;
+    get(id: string): Promise<CmsEntry<T>>;
     /**
      * Create an entry.
      */
-    create: (data: CreateCmsEntryInput) => Promise<CmsEntry>;
+    create<I>(data: CreateCmsEntryInput & I): Promise<CmsEntry<T>>;
     /**
      * Update an entry.
      */
-    update: (id: string, data: UpdateCmsEntryInput) => Promise<CmsEntry>;
+    update(id: string, data: UpdateCmsEntryInput): Promise<CmsEntry<T>>;
     /**
      * Delete an entry.
      */
-    delete: (id: string) => Promise<void>;
+    delete(id: string): Promise<void>;
 }
 
 /**
@@ -766,8 +825,10 @@ export interface CmsModelUpdateDirectParams {
 export interface CmsModelContext {
     /**
      * Get a single content model.
+     *
+     * @throws NotFoundError
      */
-    getModel: (modelId: string) => Promise<CmsModel | null>;
+    getModel: (modelId: string) => Promise<CmsModel>;
     /**
      * Get model to AST converter.
      */
@@ -775,50 +836,50 @@ export interface CmsModelContext {
     /**
      * Get all content models.
      */
-    listModels: () => Promise<CmsModel[]>;
+    listModels(): Promise<CmsModel[]>;
     /**
      * Create a content model.
      */
-    createModel: (data: CmsModelCreateInput) => Promise<CmsModel>;
+    createModel(data: CmsModelCreateInput): Promise<CmsModel>;
     /**
      * Create a content model from the given model - clone.
      */
-    createModelFrom: (modelId: string, data: CmsModelCreateFromInput) => Promise<CmsModel>;
+    createModelFrom(modelId: string, data: CmsModelCreateFromInput): Promise<CmsModel>;
     /**
      * Update content model without data validation. Used internally.
      * @hidden
      */
-    updateModelDirect: (params: CmsModelUpdateDirectParams) => Promise<CmsModel>;
+    updateModelDirect(params: CmsModelUpdateDirectParams): Promise<CmsModel>;
     /**
      * Update content model.
      */
-    updateModel: (modelId: string, data: CmsModelUpdateInput) => Promise<CmsModel>;
+    updateModel(modelId: string, data: CmsModelUpdateInput): Promise<CmsModel>;
     /**
      * Delete content model. Should not allow deletion if there are entries connected to it.
      */
-    deleteModel: (modelId: string) => Promise<void>;
+    deleteModel(modelId: string): Promise<void>;
     /**
      * Possibility for users to trigger the model initialization.
      * They can hook into it and do what ever they want to.
      *
      * Primary idea behind this is creating the index, for the code models, in the ES.
      */
-    initializeModel: (modelId: string, data: Record<string, any>) => Promise<boolean>;
+    initializeModel(modelId: string, data: Record<string, any>): Promise<boolean>;
     /**
      * Get an instance of CmsModelManager for given content modelId.
      *
      * @see CmsModelManager
      */
-    getEntryManager: (model: CmsModel | string) => Promise<CmsModelManager>;
+    getEntryManager<T = any>(model: CmsModel | string): Promise<CmsModelManager<T>>;
     /**
      * Get all content model managers mapped by modelId.
      * @see CmsModelManager
      */
-    getEntryManagers: () => Map<string, CmsModelManager>;
+    getEntryManagers(): Map<string, CmsModelManager>;
     /**
      * Clear all the model caches.
      */
-    clearModelsCache: () => void;
+    clearModelsCache(): void;
     /**
      * Lifecycle Events
      */
@@ -977,6 +1038,7 @@ export interface CmsEntryListWhere {
         | string
         | number
         | boolean
+        | Date
         | undefined
         | string[]
         | number[]
@@ -1146,7 +1208,6 @@ export interface OnEntryMoveErrorTopicParams {
 /**
  * Publish
  */
-
 export interface OnEntryBeforePublishTopicParams {
     original: CmsEntry;
     entry: CmsEntry;
@@ -1190,7 +1251,6 @@ export interface OnEntryRepublishErrorTopicParams {
 /**
  * Unpublish
  */
-
 export interface OnEntryBeforeUnpublishTopicParams {
     entry: CmsEntry;
     model: CmsModel;
@@ -1208,6 +1268,9 @@ export interface OnEntryUnpublishErrorTopicParams {
     model: CmsModel;
 }
 
+/**
+ * Delete
+ */
 export interface OnEntryBeforeDeleteTopicParams {
     entry: CmsEntry;
     model: CmsModel;
@@ -1227,6 +1290,29 @@ export interface OnEntryDeleteErrorTopicParams {
     model: CmsModel;
 }
 
+/**
+ * Restore from bin
+ */
+export interface OnEntryBeforeRestoreFromBinTopicParams {
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+export interface OnEntryAfterRestoreFromBinTopicParams {
+    entry: CmsEntry;
+    model: CmsModel;
+    storageEntry: CmsEntry;
+}
+
+export interface OnEntryRestoreFromBinErrorTopicParams {
+    error: Error;
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+/**
+ * Delete Revision
+ */
 export interface OnEntryRevisionBeforeDeleteTopicParams {
     entry: CmsEntry;
     model: CmsModel;
@@ -1243,6 +1329,9 @@ export interface OnEntryRevisionDeleteErrorTopicParams {
     model: CmsModel;
 }
 
+/**
+ * Delete multiple
+ */
 export interface OnEntryBeforeDeleteMultipleTopicParams {
     model: CmsModel;
     entries: CmsEntry[];
@@ -1262,11 +1351,17 @@ export interface OnEntryDeleteMultipleErrorTopicParams {
     error: Error;
 }
 
+/**
+ * Get
+ */
 export interface OnEntryBeforeGetTopicParams {
     model: CmsModel;
     where: CmsEntryListWhere;
 }
 
+/**
+ * List
+ */
 export interface EntryBeforeListTopicParams {
     where: CmsEntryListWhere;
     model: CmsModel;
@@ -1287,9 +1382,11 @@ export interface CreateCmsEntryInput {
     modifiedOn?: Date | string | null;
     savedOn?: Date | string;
     deletedOn?: Date | string | null;
+    restoredOn?: Date | string | null;
     createdBy?: CmsIdentity;
     savedBy?: CmsIdentity;
     deletedBy?: CmsIdentity | null;
+    restoredBy?: CmsIdentity | null;
     firstPublishedOn?: Date | string;
     lastPublishedOn?: Date | string;
     firstPublishedBy?: CmsIdentity;
@@ -1302,10 +1399,12 @@ export interface CreateCmsEntryInput {
     revisionModifiedOn?: Date | string | null;
     revisionSavedOn?: Date | string;
     revisionDeletedOn?: Date | string | null;
+    revisionRestoredOn?: Date | string | null;
     revisionCreatedBy?: CmsIdentity;
     revisionModifiedBy?: CmsIdentity | null;
     revisionSavedBy?: CmsIdentity;
     revisionDeletedBy?: CmsIdentity | null;
+    revisionRestoredBy?: CmsIdentity | null;
     revisionFirstPublishedOn?: Date | string;
     revisionLastPublishedOn?: Date | string;
     revisionFirstPublishedBy?: CmsIdentity;
@@ -1374,12 +1473,14 @@ export interface UpdateCmsEntryInput {
     revisionModifiedOn?: Date | string | null;
     revisionSavedOn?: Date | string | null;
     revisionDeletedOn?: Date | string | null;
+    revisionRestoredOn?: Date | string | null;
     revisionFirstPublishedOn?: Date | string | null;
     revisionLastPublishedOn?: Date | string | null;
     revisionModifiedBy?: CmsIdentity | null;
     revisionCreatedBy?: CmsIdentity | null;
     revisionSavedBy?: CmsIdentity | null;
     revisionDeletedBy?: CmsIdentity | null;
+    revisionRestoredBy?: CmsIdentity | null;
     revisionFirstPublishedBy?: CmsIdentity | null;
     revisionLastPublishedBy?: CmsIdentity | null;
 
@@ -1390,12 +1491,14 @@ export interface UpdateCmsEntryInput {
     modifiedOn?: Date | string | null;
     savedOn?: Date | string | null;
     deletedOn?: Date | string | null;
+    restoredOn?: Date | string | null;
     firstPublishedOn?: Date | string | null;
     lastPublishedOn?: Date | string | null;
     createdBy?: CmsIdentity | null;
     modifiedBy?: CmsIdentity | null;
     savedBy?: CmsIdentity | null;
     deletedBy?: CmsIdentity | null;
+    restoredBy?: CmsIdentity | null;
     firstPublishedBy?: CmsIdentity | null;
     lastPublishedBy?: CmsIdentity | null;
 
@@ -1746,6 +1849,20 @@ export interface CmsEntryStorageOperationsMoveToBinParams<
     storageEntry: T;
 }
 
+export interface CmsEntryStorageOperationsRestoreFromBinParams<
+    T extends CmsStorageEntry = CmsStorageEntry
+> {
+    /**
+     * The modified entry that is going to be saved as restored.
+     * Entry is in its original form.
+     */
+    entry: CmsEntry;
+    /**
+     * The modified entry and prepared for the storage.
+     */
+    storageEntry: T;
+}
+
 export interface CmsEntryStorageOperationsDeleteEntriesParams {
     entries: string[];
 }
@@ -1944,6 +2061,13 @@ export interface CmsEntryStorageOperations<T extends CmsStorageEntry = CmsStorag
      * Move the entry to bin.
      */
     moveToBin: (model: CmsModel, params: CmsEntryStorageOperationsMoveToBinParams) => Promise<void>;
+    /**
+     * Restore the entry from the bin.
+     */
+    restoreFromBin: (
+        model: CmsModel,
+        params: CmsEntryStorageOperationsRestoreFromBinParams<T>
+    ) => Promise<T>;
     /**
      * Delete multiple entries, with a limit on how much can be deleted in one call.
      */

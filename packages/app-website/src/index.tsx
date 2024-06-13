@@ -11,6 +11,7 @@ export {
 
 export type {
     HigherOrderComponent,
+    Decorator,
     ProviderProps,
     ComposeProps,
     ComposableFC,

@@ -1,5 +1,5 @@
 import { DynamoDBClient, DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocument, TranslateConfig } from "@aws-sdk/lib-dynamodb";
 import crypto from "crypto";
 
 const DEFAULT_CONFIG = {
@@ -14,6 +14,16 @@ const createKey = (config: DynamoDBClientConfig): string => {
 };
 
 const documentClients: Record<string, DynamoDBDocument> = {};
+/**
+ * We do not want users to be able to change these options, so we are not exposing them.
+ */
+const documentClientConfig: TranslateConfig = {
+    marshallOptions: {
+        convertEmptyValues: true,
+        removeUndefinedValues: true,
+        convertClassInstanceToMap: true
+    }
+};
 
 export const getDocumentClient = (input?: DynamoDBClientConfig): DynamoDBDocument => {
     const config = input || DEFAULT_CONFIG;
@@ -22,13 +32,8 @@ export const getDocumentClient = (input?: DynamoDBClientConfig): DynamoDBDocumen
         return documentClients[key];
     }
     const client = new DynamoDBClient(config);
-    const documentClient = DynamoDBDocument.from(client, {
-        marshallOptions: {
-            convertEmptyValues: true,
-            removeUndefinedValues: true,
-            convertClassInstanceToMap: true
-        }
-    });
+
+    const documentClient = DynamoDBDocument.from(client, documentClientConfig);
 
     documentClients[key] = documentClient;
     return documentClient;

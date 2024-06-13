@@ -26,6 +26,7 @@
     "@webiny/app-i18n-content": "0.0.0",
     "@webiny/app-mailer": "0.0.0",
     "@webiny/app-page-builder": "0.0.0",
+    "@webiny/app-record-locking": "0.0.0",
     "@webiny/app-security": "0.0.0",
     "@webiny/app-security-access-management": "0.0.0",
     "@webiny/app-tenancy": "0.0.0",

@@ -1,7 +1,7 @@
 import React from "react";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
-import { Editor } from "~/admin/components/ContentModelEditor/Editor";
+import { ContentModelEditor } from "~/admin/components/ContentModelEditor/ContentModelEditor";
 import { useRouter } from "@webiny/react-router";
 import { useCms } from "~/admin/hooks";
 import { ContentModelEditorProvider } from "~/admin/components/ContentModelEditor";
@@ -19,11 +19,9 @@ const ContentModelEditorView = () => {
     }
     return (
         <ContentModelEditorProvider key={modelId} apolloClient={apolloClient} modelId={modelId}>
-            {
-                <DndProvider backend={HTML5Backend}>
-                    <Editor />
-                </DndProvider>
-            }
+            <DndProvider backend={HTML5Backend}>
+                <ContentModelEditor />
+            </DndProvider>
         </ContentModelEditorProvider>
     );
 };

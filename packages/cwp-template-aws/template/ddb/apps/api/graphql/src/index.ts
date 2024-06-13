@@ -24,8 +24,10 @@ import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
+import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
+import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
 import { createAuditLogs } from "@webiny/api-audit-logs";
@@ -33,9 +35,11 @@ import { createBackgroundTasks } from "@webiny/api-background-tasks-ddb";
 import { createApwGraphQL, createApwPageBuilderContext } from "@webiny/api-apw";
 import { createStorageOperations as createApwSaStorageOperations } from "@webiny/api-apw-scheduler-so-ddb";
 import { createWebsockets } from "@webiny/api-websockets";
+import { createRecordLocking } from "@webiny/api-record-locking";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
+import { extensions } from "./extensions";
 
 const debug = process.env.DEBUG === "true";
 
@@ -63,6 +67,7 @@ export const handler = createHandler({
             })
         }),
         createHeadlessCmsGraphQL(),
+        createRecordLocking(),
         createBackgroundTasks(),
         createFileManagerContext({
             storageOperations: createFileManagerStorageOperations({
@@ -97,7 +102,10 @@ export const handler = createHandler({
         createAco(),
         createAcoPageBuilderContext(),
         createAuditLogs(),
-        scaffoldsPlugins()
+        createAcoHcmsContext(),
+        createHcmsTasks(),
+        scaffoldsPlugins(),
+        extensions()
     ],
     debug
 });

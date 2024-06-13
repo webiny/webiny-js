@@ -93,6 +93,7 @@ export const createUpdateEntryData = async ({
         revisionModifiedOn: getDate(rawInput.revisionModifiedOn, currentDateTime),
         revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
         revisionDeletedOn: getDate(rawInput.revisionDeletedOn, null),
+        revisionRestoredOn: getDate(rawInput.revisionRestoredOn, null),
         revisionFirstPublishedOn: getDate(
             rawInput.revisionFirstPublishedOn,
             originalEntry.revisionFirstPublishedOn
@@ -105,6 +106,7 @@ export const createUpdateEntryData = async ({
         revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, currentIdentity),
         revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
         revisionDeletedBy: getIdentity(rawInput.revisionSavedBy, null),
+        revisionRestoredBy: getIdentity(rawInput.revisionRestoredBy, null),
         revisionFirstPublishedBy: getIdentity(
             rawInput.revisionFirstPublishedBy,
             originalEntry.revisionFirstPublishedBy
@@ -123,12 +125,14 @@ export const createUpdateEntryData = async ({
         savedOn: getDate(rawInput.savedOn, currentDateTime),
         modifiedOn: getDate(rawInput.modifiedOn, currentDateTime),
         deletedOn: getDate(rawInput.deletedOn, null),
+        restoredOn: getDate(rawInput.restoredOn, null),
         firstPublishedOn: getDate(rawInput.firstPublishedOn, originalEntry.firstPublishedOn),
         lastPublishedOn: getDate(rawInput.lastPublishedOn, originalEntry.lastPublishedOn),
         createdBy: getIdentity(rawInput.createdBy, originalEntry.createdBy),
         savedBy: getIdentity(rawInput.savedBy, currentIdentity),
         modifiedBy: getIdentity(rawInput.modifiedBy, currentIdentity),
         deletedBy: getIdentity(rawInput.deletedBy, null),
+        restoredBy: getIdentity(rawInput.restoredBy, null),
         firstPublishedBy: getIdentity(rawInput.firstPublishedBy, originalEntry.firstPublishedBy),
         lastPublishedBy: getIdentity(rawInput.lastPublishedBy, originalEntry.lastPublishedBy),
 

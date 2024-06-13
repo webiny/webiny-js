@@ -81,7 +81,16 @@ export interface AvatarProps {
  * Use Avatar component to display user's avatar.
  */
 export const Avatar = (props: AvatarProps) => {
-    const { className, width, height, src, alt, fallbackText, renderImage, ...rest } = props;
+    const {
+        className,
+        width = 38,
+        height = 38,
+        src,
+        alt,
+        fallbackText,
+        renderImage,
+        ...rest
+    } = props;
 
     let renderedImage;
     const imageProps = { src, alt };
@@ -117,9 +126,4 @@ export const Avatar = (props: AvatarProps) => {
             )}
         </div>
     );
-};
-
-Avatar.defaultProps = {
-    width: 38,
-    height: 38
 };

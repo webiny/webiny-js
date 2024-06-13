@@ -1,13 +1,17 @@
 import React from "react";
 import { ReactComponent as Delete } from "@material-design-icons/svg/outlined/delete.svg";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
-import { useDeleteEntry, useEntry, usePermission } from "~/admin/hooks";
+import { useContentEntry, useEntry, usePermission } from "~/admin/hooks";
 
 export const DeleteEntry = () => {
     const { entry } = useEntry();
+    const contentEntry = useContentEntry();
     const { canDelete } = usePermission();
-    const { openDialogDeleteEntry } = useDeleteEntry({ entry });
     const { OptionsMenuItem } = ContentEntryListConfig.Browser.EntryAction;
+
+    const deleteEntry = async () => {
+        await contentEntry.deleteEntry({ id: entry.entryId });
+    };
 
     if (!canDelete(entry, "cms.contentEntry")) {
         return null;
@@ -16,8 +20,8 @@ export const DeleteEntry = () => {
     return (
         <OptionsMenuItem
             icon={<Delete />}
-            label={"Delete"}
-            onAction={openDialogDeleteEntry}
+            label={"Trash"}
+            onAction={deleteEntry}
             data-testid={"aco.actions.entry.delete"}
         />
     );

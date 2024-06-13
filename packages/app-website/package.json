@@ -28,7 +28,8 @@
     "graphql-tag": "^2.12.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-helmet": "^6.1.0"
+    "react-helmet": "^6.1.0",
+    "reset-css": "^5.0.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
@@ -49,6 +50,13 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "reset-css"
+      ]
+    }
   },
   "svgo": {
     "plugins": {

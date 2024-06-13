@@ -18,6 +18,9 @@
       "path": "../../../packages/api-audit-logs/tsconfig.build.json"
     },
     {
+      "path": "../../../packages/api-record-locking/tsconfig.build.json"
+    },
+    {
       "path": "../../../packages/api-file-manager/tsconfig.build.json"
     },
     {
@@ -37,6 +40,12 @@
     },
     {
       "path": "../../../packages/api-headless-cms/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-headless-cms-aco/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-headless-cms-tasks/tsconfig.build.json"
     },
     {
       "path": "../../../packages/api-headless-cms-ddb/tsconfig.build.json"
@@ -143,8 +152,14 @@
       "@webiny/api-form-builder-so-ddb": ["../../../packages/api-form-builder-so-ddb/src"],
       "@webiny/api-headless-cms/*": ["../../../packages/api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../../../packages/api-headless-cms/src"],
+      "@webiny/api-headless-cms-aco/*": ["../../../packages/api-headless-cms-aco/src/*"],
+      "@webiny/api-headless-cms-aco": ["../../../packages/api-headless-cms-aco/src"],
       "@webiny/api-headless-cms-ddb/*": ["../../../packages/api-headless-cms-ddb/src/*"],
       "@webiny/api-headless-cms-ddb": ["../../../packages/api-headless-cms-ddb/src"],
+      "@webiny/api-record-locking/*": ["../../../packages/api-record-locking/src/*"],
+      "@webiny/api-record-locking": ["../../../packages/api-record-locking/src"],
+      "@webiny/api-headless-cms-tasks/*": ["../../../packages/api-headless-cms-tasks/src/*"],
+      "@webiny/api-headless-cms-tasks": ["../../../packages/api-headless-cms-tasks/src"],
       "@webiny/api-i18n/*": ["../../../packages/api-i18n/src/*"],
       "@webiny/api-i18n": ["../../../packages/api-i18n/src"],
       "@webiny/api-i18n-content/*": ["../../../packages/api-i18n-content/src/*"],

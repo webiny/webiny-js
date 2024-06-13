@@ -59,12 +59,14 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             revisionModifiedOn: { type: "string" },
             revisionSavedOn: { type: "string" },
             revisionDeletedOn: { type: "string" },
+            revisionRestoredOn: { type: "string" },
             revisionFirstPublishedOn: { type: "string" },
             revisionLastPublishedOn: { type: "string" },
             revisionCreatedBy: { type: "map" },
             revisionModifiedBy: { type: "map" },
             revisionSavedBy: { type: "map" },
             revisionDeletedBy: { type: "map" },
+            revisionRestoredBy: { type: "map" },
             revisionFirstPublishedBy: { type: "map" },
             revisionLastPublishedBy: { type: "map" },
 
@@ -75,15 +77,30 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             modifiedOn: { type: "string" },
             savedOn: { type: "string" },
             deletedOn: { type: "string" },
+            restoredOn: { type: "string" },
             firstPublishedOn: { type: "string" },
             lastPublishedOn: { type: "string" },
             createdBy: { type: "map" },
             modifiedBy: { type: "map" },
             savedBy: { type: "map" },
             deletedBy: { type: "map" },
+            restoredBy: { type: "map" },
             firstPublishedBy: { type: "map" },
             lastPublishedBy: { type: "map" },
 
+            /**
+             * Deprecated fields. 👇
+             */
+            ownedBy: {
+                type: "map"
+            },
+            publishedOn: {
+                type: "string"
+            },
+
+            /**
+             * The rest. 👇
+             */
             version: {
                 type: "number"
             },
@@ -96,8 +113,11 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             location: {
                 type: "map"
             },
-            deleted: {
+            wbyDeleted: {
                 type: "boolean"
+            },
+            binOriginalFolderId: {
+                type: "string"
             },
             values: {
                 type: "map"

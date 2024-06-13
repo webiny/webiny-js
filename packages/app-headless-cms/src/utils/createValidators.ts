@@ -5,13 +5,17 @@ import camelCase from "lodash/camelCase";
 
 export const createValidators = (
     field: CmsModelField,
-    validation: CmsModelFieldValidator[]
+    validation: (CmsModelFieldValidator | Validator)[]
 ): Validator[] => {
     const validatorPlugins = plugins.byType<CmsModelFieldValidatorPlugin>(
         "cms-model-field-validator"
     );
 
     return validation.reduce<Validator[]>((collection, item) => {
+        if (typeof item === "function") {
+            return [...collection, item];
+        }
+
         const validatorPlugin = validatorPlugins.find(
             plugin => plugin.validator.name === item.name
         );

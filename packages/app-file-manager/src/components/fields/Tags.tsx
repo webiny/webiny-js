@@ -9,14 +9,14 @@ export const Tags = () => {
     const { canEdit } = useFileManagerApi();
     const { tags } = useFileManagerView();
 
-    const bind = useBind<string[]>({
+    const bind = useBind({
         name: "tags"
     });
 
     return (
         <MultiAutoComplete
             {...bind}
-            value={(bind.value || []).filter(tag => !tag.startsWith("mime:"))}
+            value={(bind.value || []).filter((tag: string) => !tag.startsWith("mime:"))}
             options={tags.allTags.map(tagItem => tagItem.tag)}
             label={"Tags"}
             description={"Type in a new tag or select an existing one."}

@@ -5,7 +5,7 @@ import { PbEditorPageElementStyleSettingsPlugin } from "~/types";
 import { EditorConfig } from "~/editor/config";
 import { useElementStyleSettings } from "~/editor/plugins/elementSettings/hooks/useElementStyleSettings";
 
-const getPropertyName = (pluginName: string) => {
+export const getPropertyName = (pluginName: string) => {
     return camelCase(pluginName.replace("pb-editor-page-element-style-settings-", ""));
 };
 

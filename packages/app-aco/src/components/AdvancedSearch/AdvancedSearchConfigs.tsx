@@ -6,12 +6,12 @@ import {
     DateWithoutTimezone,
     DateWithTimezone,
     Input,
-    MultipleValues
+    PredefinedValues
 } from "~/components/AdvancedSearch/fields";
 
 const { AdvancedSearch } = AcoConfig;
 
-export const AdvancedSearchConfigs = () => {
+export const AdvancedSearchConfigs = React.memo(() => {
     return (
         <AcoConfig>
             <AdvancedSearch.FieldRenderer name={"text"} type={FieldType.TEXT} element={<Input />} />
@@ -38,10 +38,12 @@ export const AdvancedSearchConfigs = () => {
                 element={<DateWithoutTimezone />}
             />
             <AdvancedSearch.FieldRenderer
-                name={"multipleValues"}
-                type={FieldType.MULTIPLE_VALUES}
-                element={<MultipleValues />}
+                name={"predefinedValues"}
+                type={FieldType.PREDEFINED_VALUES}
+                element={<PredefinedValues />}
             />
         </AcoConfig>
     );
-};
+});
+
+AdvancedSearchConfigs.displayName = "AdvancedSearchConfigs";

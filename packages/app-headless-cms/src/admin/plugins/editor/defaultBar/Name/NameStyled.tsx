@@ -32,6 +32,7 @@ export const FormName = styled("div")({
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
+    fontFamily: "var(--mdc-typography-font-family)",
     width: "100%",
     "&:hover": {
         border: "1px solid var(--mdc-theme-on-background)"

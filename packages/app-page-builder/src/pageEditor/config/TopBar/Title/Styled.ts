@@ -27,6 +27,7 @@ export const TitleWrapper = styled("div")({
 });
 
 export const PageTitle = styled("div")({
+    fontFamily: "var(--mdc-typography-font-family)",
     border: "1px solid transparent",
     fontSize: 20,
     whiteSpace: "nowrap",

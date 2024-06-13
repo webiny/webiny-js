@@ -30,7 +30,7 @@ export const createElasticsearchIndex = async (params: CreateElasticsearchIndexP
             console.log(`Elasticsearch index "${index}" for the Form Builder already exists.`);
         },
         onError: (ex: Error) => {
-            console.error(`Could not create the Form Builder Elasticsearch index "${index}".`);
+            console.error(`Could not create the Form Builder Elasticsearch index "${index}".`, ex);
             return ex;
         }
     });

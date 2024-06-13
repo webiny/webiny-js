@@ -12,7 +12,6 @@ import {
     CmsModel,
     CmsStorageEntry,
     EntryBeforeListTopicParams,
-    HeadlessCms,
     HeadlessCmsStorageOperations,
     OnEntryAfterCreateTopicParams,
     OnEntryAfterDeleteMultipleTopicParams,
@@ -20,6 +19,7 @@ import {
     OnEntryAfterMoveTopicParams,
     OnEntryAfterPublishTopicParams,
     OnEntryAfterRepublishTopicParams,
+    OnEntryAfterRestoreFromBinTopicParams,
     OnEntryAfterUnpublishTopicParams,
     OnEntryAfterUpdateTopicParams,
     OnEntryBeforeCreateTopicParams,
@@ -29,6 +29,7 @@ import {
     OnEntryBeforeMoveTopicParams,
     OnEntryBeforePublishTopicParams,
     OnEntryBeforeRepublishTopicParams,
+    OnEntryBeforeRestoreFromBinTopicParams,
     OnEntryBeforeUnpublishTopicParams,
     OnEntryBeforeUpdateTopicParams,
     OnEntryCreateErrorTopicParams,
@@ -38,6 +39,7 @@ import {
     OnEntryMoveErrorTopicParams,
     OnEntryPublishErrorTopicParams,
     OnEntryRepublishErrorTopicParams,
+    OnEntryRestoreFromBinErrorTopicParams,
     OnEntryRevisionAfterCreateTopicParams,
     OnEntryRevisionAfterDeleteTopicParams,
     OnEntryRevisionBeforeCreateTopicParams,
@@ -78,7 +80,8 @@ import {
     getLatestRevisionByEntryIdUseCases,
     getPreviousRevisionByEntryIdUseCases,
     getPublishedRevisionByEntryIdUseCases,
-    deleteEntryUseCases
+    deleteEntryUseCases,
+    restoreEntryFromBinUseCases
 } from "~/crud/contentEntry/useCases";
 import { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser";
 
@@ -183,6 +186,19 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         createTopic<OnEntryBeforeDeleteTopicParams>("cms.onEntryBeforeDelete");
     const onEntryAfterDelete = createTopic<OnEntryAfterDeleteTopicParams>("cms.onEntryAfterDelete");
     const onEntryDeleteError = createTopic<OnEntryDeleteErrorTopicParams>("cms.onEntryDeleteError");
+
+    /**
+     * Restore from bin
+     */
+    const onEntryBeforeRestoreFromBin = createTopic<OnEntryBeforeRestoreFromBinTopicParams>(
+        "cms.onEntryBeforeRestoreFromBin"
+    );
+    const onEntryAfterRestoreFromBin = createTopic<OnEntryAfterRestoreFromBinTopicParams>(
+        "cms.onEntryAfterRestoreFromBin"
+    );
+    const onEntryRestoreFromBinError = createTopic<OnEntryRestoreFromBinErrorTopicParams>(
+        "cms.onEntryRestoreFromBinError"
+    );
 
     /**
      * Delete revision
@@ -294,10 +310,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     /**
      * Get latest revision by entryId
      */
-    const { getLatestRevisionByEntryIdUseCase, getLatestRevisionByEntryIdWithDeletedUseCase } =
-        getLatestRevisionByEntryIdUseCases({
-            operation: storageOperations.entries.getLatestRevisionByEntryId
-        });
+    const {
+        getLatestRevisionByEntryIdUseCase,
+        getLatestRevisionByEntryIdWithDeletedUseCase,
+        getLatestRevisionByEntryIdDeletedUseCase
+    } = getLatestRevisionByEntryIdUseCases({
+        operation: storageOperations.entries.getLatestRevisionByEntryId
+    });
 
     /**
      * Get previous revision by entryId
@@ -328,6 +347,22 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             context
         }
     );
+
+    /**
+     * Restore entry from bin
+     */
+    const { restoreEntryFromBinUseCase } = restoreEntryFromBinUseCases({
+        restoreOperation: storageOperations.entries.restoreFromBin,
+        getEntry: getLatestRevisionByEntryIdDeletedUseCase,
+        getIdentity: getSecurityIdentity,
+        topics: {
+            onEntryBeforeRestoreFromBin,
+            onEntryAfterRestoreFromBin,
+            onEntryRestoreFromBinError
+        },
+        accessControl,
+        context
+    });
 
     const getEntryById: CmsEntryContext["getEntryById"] = async (model, id) => {
         const where: CmsEntryListWhere = {
@@ -1195,6 +1230,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         onEntryAfterDelete,
         onEntryDeleteError,
 
+        onEntryBeforeRestoreFromBin,
+        onEntryAfterRestoreFromBin,
+        onEntryRestoreFromBinError,
+
         onEntryRevisionBeforeDelete,
         onEntryRevisionAfterDelete,
         onEntryRevisionDeleteError,
@@ -1263,8 +1302,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         },
         /**
-         * TODO determine if this method is required at all.
-         *
          * @internal
          */
         async getEntry(model, params) {
@@ -1286,7 +1323,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             });
         },
         async listLatestEntries<T = CmsEntryValues>(
-            this: HeadlessCms,
             model: CmsModel,
             params?: CmsEntryListParams
         ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
@@ -1298,7 +1334,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         },
         async listDeletedEntries<T = CmsEntryValues>(
-            this: HeadlessCms,
             model: CmsModel,
             params?: CmsEntryListParams
         ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
@@ -1372,6 +1407,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return context.benchmark.measure("headlessCms.crud.entries.deleteEntry", async () => {
                 return deleteEntry(model, entryId, options);
             });
+        },
+        async restoreEntryFromBin(model, entryId) {
+            return context.benchmark.measure(
+                "headlessCms.crud.entries.restoreEntryFromBin",
+                async () => {
+                    return await restoreEntryFromBinUseCase.execute(model, entryId);
+                }
+            );
         },
         async deleteMultipleEntries(model, ids) {
             return context.benchmark.measure(

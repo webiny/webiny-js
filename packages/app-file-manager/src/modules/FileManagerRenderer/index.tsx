@@ -19,6 +19,9 @@ import {
     EditFile,
     MoveFile
 } from "~/components/Table";
+import { DefaultRenderer } from "~/modules/ThumbnailRenderers/DefaultRenderer";
+import { ImageRenderer } from "~/modules/ThumbnailRenderers/ImageRenderer";
+import { FileActions } from "~/modules/FileManagerRenderer/FileActions";
 
 const { Browser, FileDetails } = FileManagerConfig;
 
@@ -91,6 +94,11 @@ export const FileManagerRendererModule = () => {
                     />
                 </Wcp.CanUsePrivateFiles>
                 <FileDetails.GroupFields value={false} />
+                <FileActions />
+                <Browser.Grid.Item.Thumbnail type={"*/*"} element={<DefaultRenderer />} />
+                <Browser.Grid.Item.Thumbnail type={"image/*"} element={<ImageRenderer />} />
+                <FileDetails.Preview.Thumbnail type={"*/*"} element={<DefaultRenderer />} />
+                <FileDetails.Preview.Thumbnail type={"image/*"} element={<ImageRenderer />} />
             </FileManagerConfig>
         </>
     );
