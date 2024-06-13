@@ -18,8 +18,8 @@ export const ActionMove = observer(() => {
     const { showDialog: showMoveDialog } = useMoveToFolderDialog();
 
     const entriesLabel = useMemo(() => {
-        return getEntriesLabel(worker.items.length);
-    }, [worker.items.length]);
+        return getEntriesLabel(worker.selectedLength);
+    }, [worker.selectedLength]);
 
     const openWorkerDialog = useCallback(
         (folder: FolderItem) => {
@@ -28,6 +28,16 @@ export const ActionMove = observer(() => {
                 message: `You are about to move ${entriesLabel} to ${folder.title}. Are you sure you want to continue?`,
                 loadingLabel: `Processing ${entriesLabel}`,
                 execute: async () => {
+                    console.log("worker.isSelectedAll", worker.isSelectedAll);
+
+                    if (worker.isSelectedAll) {
+                        await worker.processInBulk("MoveEntriesToFolder", {
+                            folderId: folder.id
+                        });
+                        worker.resetItems();
+                        return;
+                    }
+
                     await worker.processInSeries(async ({ item, report }) => {
                         try {
                             await moveRecord({
@@ -59,7 +69,7 @@ export const ActionMove = observer(() => {
                 }
             });
         },
-        [entriesLabel]
+        [entriesLabel, worker.isSelectedAll]
     );
 
     const openMoveEntriesDialog = () =>

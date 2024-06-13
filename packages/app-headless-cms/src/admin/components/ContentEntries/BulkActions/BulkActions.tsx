@@ -18,15 +18,15 @@ export const getEntriesLabel = (count = 0): string => {
 
 export const BulkActions = () => {
     const { browser } = useContentEntryListConfig();
-    const { selected, setSelected } = useContentEntriesList();
+    const { selectedLength, setSelected } = useContentEntriesList();
 
     const headline = useMemo((): string => {
         return t`{count|count:1:entry:default:entries} selected:`({
-            count: selected.length
+            count: selectedLength
         });
-    }, [selected]);
+    }, [selectedLength]);
 
-    if (!selected.length) {
+    if (!selectedLength) {
         return null;
     }
 

@@ -46,8 +46,15 @@ export interface ContentEntriesListProviderContext {
     setSorting: OnSortingChange;
     showFilters: () => void;
     showingFilters: boolean;
+    showingSelectAll: boolean;
     sorting: Sorting;
     setFilters: (data: Record<string, any>) => void;
+    selectedLength: number;
+    selectAll: () => void;
+    unselectAll: () => void;
+    isSelectedAll: boolean;
+    where: Record<string, any>;
+    searchQuery: string;
 }
 
 export const ContentEntriesListContext = React.createContext<
@@ -79,7 +86,13 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         setSelected,
         showFilters,
         hideFilters,
-        showingFilters
+        showingFilters,
+        showingSelectAll,
+        selectedLength,
+        isSelectedAll,
+        selectAll,
+        unselectAll,
+        where
     } = useAcoList<CmsContentEntry>();
 
     const [sorting, setSorting] = useState<Sorting>([]);
@@ -197,7 +210,14 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         showingFilters,
         showFilters,
         hideFilters,
-        setFilters
+        setFilters,
+        showingSelectAll,
+        selectedLength,
+        isSelectedAll,
+        selectAll,
+        unselectAll,
+        where,
+        searchQuery
     };
 
     return (

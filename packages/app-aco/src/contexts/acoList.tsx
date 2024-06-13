@@ -34,6 +34,13 @@ export interface AcoListContextData<T> {
     setSelected: (selected: T[]) => void;
     showFilters: () => void;
     showingFilters: boolean;
+    showingSelectAll: boolean;
+    where: Record<string, any>;
+    searchQuery: string;
+    selectedLength: number;
+    isSelectedAll: boolean;
+    selectAll: () => void;
+    unselectAll: () => void;
 }
 
 export const AcoListContext = React.createContext<
@@ -50,6 +57,10 @@ export interface State<T> {
     searchQuery: string;
     selected: T[];
     showingFilters: boolean;
+    showingSelectAll: boolean;
+    where: Record<string, any>;
+    selectedLength: number;
+    isSelectedAll: boolean;
 }
 
 const initializeAcoListState = (): State<GenericSearchData> => {
@@ -62,7 +73,11 @@ const initializeAcoListState = (): State<GenericSearchData> => {
         listSort: [],
         searchQuery: "",
         selected: [],
-        showingFilters: false
+        showingFilters: false,
+        showingSelectAll: false,
+        where: {},
+        selectedLength: 0,
+        isSelectedAll: false
     };
 };
 
@@ -158,7 +173,11 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
                 isSearch: false,
                 searchQuery: "",
                 selected: [],
-                showingFilters: false
+                showingFilters: false,
+                showingSelectAll: false,
+                where: {},
+                selectedLength: 0,
+                isSelectedAll: false
             };
         });
     }, [currentFolderId]);
@@ -230,6 +249,56 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
     }, [meta]);
 
     /**
+     * This effect runs when the component mounts and updates the state with a 'where' condition
+     * based on the current state properties and props.
+     *
+     * It constructs the 'where' condition which is used for filtering data based on the folder ID,
+     * search query, and filters present in the state. If a search query or any active filter exists,
+     * it adjusts the 'where' and `isSearch` condition accordingly.
+     */
+    useEffect(() => {
+        // Initialize the 'locationWhere' object with the current folder ID
+        let locationWhere = dotPropImmutable.set({}, folderIdPath, state.folderId);
+
+        console.log("state", state);
+
+        // Update 'locationWhere' if there is an active search
+        if (state.folderId === ROOT_FOLDER) {
+            locationWhere = undefined;
+        } else {
+            // Get descendant folders and set them in 'locationWhere'
+            const descendantFolderIds = getDescendantFolders(state.folderId).map(
+                folder => folder.id
+            );
+
+            console.log("descendantFolderIds", descendantFolderIds);
+
+            locationWhere = dotPropImmutable.set({}, folderIdInPath, descendantFolderIds);
+        }
+
+        // Update the state with the new 'where' condition
+        setState(state => ({
+            ...state,
+            where: {
+                createdBy: props.own ? identity!.id : undefined,
+                ...locationWhere,
+                ...state.filters
+            }
+        }));
+    }, [state.searchQuery, state.filters, state.folderId, props.own, identity]);
+
+    useEffect(() => {
+        // Determine if there is an active search or filters
+        const isSearch = Boolean(
+            state.searchQuery ||
+                (state.filters && Object.values(state.filters).filter(Boolean).length)
+        );
+
+        // Update the state with the new 'isSearch' condition
+        setState(state => ({ ...state, isSearch }));
+    }, [state.searchQuery, state.filters]);
+
+    /**
      * Any time we receive new useful `state` params:
      * - we fetch records according to the new params
      */
@@ -239,21 +308,20 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
                 return;
             }
 
-            const isSearch = Boolean(
-                state.searchQuery ||
-                    (state.filters && Object.values(state.filters).filter(Boolean).length)
-            );
-
             let locationWhere = dotPropImmutable.set({}, folderIdPath, state.folderId);
 
-            if (isSearch) {
+            if (state.isSearch) {
                 if (state.folderId === ROOT_FOLDER) {
                     locationWhere = undefined;
                 } else {
+                    // Get descendant folders and set them in 'locationWhere'
                     const descendantFolderIds = getDescendantFolders(state.folderId).map(
                         folder => folder.id
                     );
-                    locationWhere = dotPropImmutable.set({}, folderIdInPath, descendantFolderIds);
+
+                    console.log("descendantFolderIds", descendantFolderIds);
+
+                    locationWhere = state.where;
                 }
             }
 
@@ -263,22 +331,57 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
                 search: state.searchQuery,
                 after: state.after,
                 where: {
-                    createdBy: props.own ? identity!.id : undefined,
-                    ...locationWhere,
-                    ...state.filters
+                    ...state.where,
+                    ...locationWhere
                 }
             };
 
             await listRecords(params);
-
-            setState(state => ({ ...state, isSearch }));
         };
 
         listItems();
-    }, [state.folderId, state.filters, state.searchQuery, state.after, state.listSort]);
+    }, [
+        state.folderId,
+        state.where,
+        state.searchQuery,
+        state.isSearch,
+        state.after,
+        state.listSort,
+        state.limit
+    ]);
+
+    /**
+     * This `useEffect` hook runs whenever the number of `records` changes
+     * or the length of the `selected` array in the state changes.
+     *
+     * The hook checks if:
+     * - There are any `records` available (i.e., `records.length` is not zero)
+     * - The length of `records` is equal to the length of the `selected` array in the state
+     *
+     * If both conditions are true, it sets the `showingSelectAll` state to true.
+     * Otherwise, it sets `showingSelectAll` to false.
+     */
+    useEffect(() => {
+        const showingSelectAll = !!records.length && records.length === state.selected.length;
+
+        setState(state => ({
+            ...state,
+            isSelectedAll: false,
+            showingSelectAll
+        }));
+    }, [records.length, state.selected.length]);
 
     const context: AcoListContextData<GenericSearchData> = {
-        ...pick(state, ["isSearch", "selected", "showingFilters"]),
+        ...pick(state, [
+            "isSearch",
+            "where",
+            "searchQuery",
+            "selected",
+            "showingFilters",
+            "showingSelectAll",
+            "selectedLength",
+            "isSelectedAll"
+        ]),
         folders,
         records,
         listTitle,
@@ -307,7 +410,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
             setState(state => ({ ...state, listSort: sort, after: undefined }));
         },
         setSelected(selected) {
-            setState(state => ({ ...state, selected }));
+            setState(state => ({ ...state, selected, selectedLength: selected.length }));
         },
         hideFilters() {
             setState(state => ({
@@ -319,6 +422,16 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         },
         showFilters() {
             setState(state => ({ ...state, showingFilters: true }));
+        },
+        selectAll() {
+            setState(state => ({ ...state, isSelectedAll: true, selectedLength: meta.totalCount }));
+        },
+        unselectAll() {
+            setState(state => ({
+                ...state,
+                isSelectedAll: false,
+                selectedLength: state.selected.length
+            }));
         },
         listMoreRecords
     };

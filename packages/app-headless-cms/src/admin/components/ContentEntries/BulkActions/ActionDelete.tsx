@@ -18,8 +18,8 @@ export const ActionDelete = observer(() => {
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
     const entriesLabel = useMemo(() => {
-        return getEntriesLabel(worker.items.length);
-    }, [worker.items.length]);
+        return getEntriesLabel(worker.selectedLength);
+    }, [worker.selectedLength]);
 
     const openDeleteEntriesDialog = () =>
         showConfirmationDialog({
@@ -27,6 +27,12 @@ export const ActionDelete = observer(() => {
             message: `You are about to move ${entriesLabel} to trash. Are you sure you want to continue?`,
             loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
+                if (worker.isSelectedAll) {
+                    await worker.processInBulk("MoveEntriesToTrash");
+                    worker.resetItems();
+                    return;
+                }
+
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
                         /**
