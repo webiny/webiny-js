@@ -3,9 +3,13 @@ import { ApiOutput } from "@webiny/pulumi-aws";
 
 export const createWebsiteAppConfig = (modifier?: ReactAppConfigModifier) => {
     return createReactAppConfig(baseParams => {
-        const { config } = baseParams;
+        const { config, options } = baseParams;
 
-        config.customEnv(env => ({ ...env, PORT: 3000 }));
+        config.customEnv(env => ({
+            ...env,
+            PORT: process.env.PORT || 3000,
+            WEBINY_WEBSITE_ENV: options.env
+        }));
 
         config.pulumiOutputToEnv<ApiOutput>("apps/api", ({ output, env }) => {
             return {

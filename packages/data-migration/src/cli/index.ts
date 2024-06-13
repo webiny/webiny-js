@@ -4,6 +4,7 @@ export * from "./MigrationStatusReporter";
 export * from "./MigrationRunReporter";
 export * from "./InteractiveCliStatusReporter";
 export * from "./NonInteractiveCliStatusReporter";
+export * from "./VoidStatusReporter";
 export * from "./CliMigrationRunReporter";
 export * from "./LogStream";
 export * from "./LogReporter";

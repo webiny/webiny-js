@@ -78,20 +78,23 @@ export const pickEntryMetaFields = (
 ) => {
     const pickedEntryMetaFields: Partial<RecordWithEntryMetaFields> = {};
     for (const entryMetaFieldName of ENTRY_META_FIELDS) {
-        if (entryMetaFieldName in object) {
-            const mustPick = !filter || filter(entryMetaFieldName);
-            if (mustPick) {
-                Object.assign(pickedEntryMetaFields, {
-                    [entryMetaFieldName]: object[entryMetaFieldName]
-                });
-            }
+        const fieldExists = entryMetaFieldName in object;
+        if (!fieldExists) {
+            object[entryMetaFieldName] = undefined;
+        }
+
+        const mustPick = !filter || filter(entryMetaFieldName);
+        if (mustPick) {
+            Object.assign(pickedEntryMetaFields, {
+                [entryMetaFieldName]: object[entryMetaFieldName]
+            });
         }
     }
 
     return pickedEntryMetaFields;
 };
 
-export const isNullableEntryMetaField = (fieldName: EntryMetaFieldName) => {
+export const isNullableEntryMetaField = (fieldName: string) => {
     // Only modifiedX, publishedX, deletedX fields are nullable.
     const lcFieldName = fieldName.toLowerCase();
     return (
@@ -102,12 +105,16 @@ export const isNullableEntryMetaField = (fieldName: EntryMetaFieldName) => {
     );
 };
 
-export const isDateTimeEntryMetaField = (fieldName: EntryMetaFieldName) => {
+export const isNonNullableEntryMetaField = (fieldName: string) => {
+    return !isNullableEntryMetaField(fieldName);
+};
+
+export const isDateTimeEntryMetaField = (fieldName: string) => {
     // Only field ending with "On" are date/time fields.
     return fieldName.endsWith("On");
 };
 
-export const isIdentityEntryMetaField = (fieldName: EntryMetaFieldName) => {
+export const isIdentityEntryMetaField = (fieldName: string) => {
     // Only field ending with "On" are date/time fields.
     return fieldName.endsWith("By");
 };

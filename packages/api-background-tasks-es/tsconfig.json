@@ -3,6 +3,7 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-elasticsearch-tasks" },
+    { "path": "../api-headless-cms-es-tasks" },
     { "path": "../plugins" },
     { "path": "../tasks" }
   ],
@@ -15,6 +16,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-elasticsearch-tasks/*": ["../api-elasticsearch-tasks/src/*"],
       "@webiny/api-elasticsearch-tasks": ["../api-elasticsearch-tasks/src"],
+      "@webiny/api-headless-cms-es-tasks/*": ["../api-headless-cms-es-tasks/src/*"],
+      "@webiny/api-headless-cms-es-tasks": ["../api-headless-cms-es-tasks/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/tasks/*": ["../tasks/src/*"],

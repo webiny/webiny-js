@@ -321,7 +321,7 @@ async function validateReferencedEntries({
     referencesByModel.forEach((ids, modelId) => {
         const modelEntriesInDb = entriesByModel[modelId];
         for (const id of ids) {
-            if (!modelEntriesInDb.includes(id)) {
+            if (!modelEntriesInDb || !modelEntriesInDb.includes(id)) {
                 throw new WebinyError(
                     `Missing referenced entry with id "${id}" in model "${modelId}".`,
                     "ENTRY_NOT_FOUND",
