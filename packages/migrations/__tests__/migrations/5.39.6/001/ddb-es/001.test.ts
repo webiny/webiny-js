@@ -49,7 +49,7 @@ const expectModifiedFieldsAreSynced = (entry: Record<string, unknown>) => {
     expect(hasEntryModifiedOn).toBe(hasEntryModifiedBy);
 };
 
-describe("5.39.2-001", () => {
+describe("5.39.6-001", () => {
     const primaryTable = getPrimaryDynamoDbTable();
     const dynamoToEsTable = getDynamoToEsTable();
     const elasticsearchClient = createElasticsearchClient();
