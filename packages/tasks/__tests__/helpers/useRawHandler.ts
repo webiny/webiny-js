@@ -50,7 +50,17 @@ export const useRawHandler = <C extends Context = Context>(params?: UseHandlerPa
 
     return {
         handle: async (payload?: Record<string, any>) => {
-            return await handler(payload || {}, {} as LambdaContext);
+            const headers = {
+                ["x-tenant"]: "root",
+                ...(payload?.headers || {})
+            };
+            return await handler(
+                {
+                    ...payload,
+                    headers
+                },
+                {} as LambdaContext
+            );
         }
     };
 };
