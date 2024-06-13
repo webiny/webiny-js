@@ -10,13 +10,13 @@ export interface IWebsocketActionsParams {
     manager: IWebsocketsManager;
     tenant: string | null;
     locale: string | null;
-    getToken: () => Promise<string | null>;
+    getToken: () => Promise<string | undefined>;
 }
 
 export class WebsocketsActions implements IWebsocketsActions {
     public readonly manager: IWebsocketsManager;
 
-    private readonly getToken: () => Promise<string | null>;
+    private readonly getToken: () => Promise<string | undefined>;
     private readonly tenant: string | null;
     private readonly locale: string | null;
 

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTenancy } from "@webiny/app-tenancy";
 import { useI18N } from "@webiny/app-i18n";
-import { getToken } from "./utils/getToken";
+import { useSecurity } from "@webiny/app-security";
 import {
     IncomingGenericData,
     IWebsocketsContext,
@@ -35,11 +35,16 @@ interface ICurrentData {
 export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps) => {
     const { tenant } = useTenancy();
     const { getCurrentLocale } = useI18N();
+    const { getIdToken } = useSecurity();
     const locale = getCurrentLocale("default");
 
     const socketsRef = useRef<IWebsocketsManager>();
 
     const [current, setCurrent] = useState<ICurrentData>({});
+
+    const getToken = useCallback(async () => {
+        return await getIdToken();
+    }, [getIdToken]);
 
     const subscriptionManager = useMemo(() => {
         const manager = createWebsocketsSubscriptionManager();
@@ -134,7 +139,7 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
                 locale
             });
         })();
-    }, [tenant, locale, subscriptionManager]);
+    }, [tenant, locale, subscriptionManager, getToken]);
 
     const websocketActions = useMemo(() => {
         return createWebsocketsActions({
@@ -143,7 +148,7 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
             locale,
             getToken
         });
-    }, [socketsRef.current, tenant, locale]);
+    }, [socketsRef.current, tenant, locale, getToken]);
 
     const send = useCallback<IWebsocketsContextSendCallable>(
         async (action, data, timeout) => {
