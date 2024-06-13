@@ -71,7 +71,9 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
                 headers: {
                     ["x-tenant"]: event.tenant,
                     ["x-webiny-cms-endpoint"]: event.endpoint,
-                    ["x-webiny-cms-locale"]: event.locale
+                    ["x-webiny-cms-locale"]: event.locale,
+                    ["x-i18n-locale"]: event.locale,
+                    ["accept-language"]: event.locale
                 }
             }
         });

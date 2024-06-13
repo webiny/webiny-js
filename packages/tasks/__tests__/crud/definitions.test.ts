@@ -1,8 +1,8 @@
-import { useHandler } from "~tests/helpers/useHandler";
+import { useRawHandler } from "~tests/helpers/useRawHandler";
 import { createTaskDefinition } from "~/task";
 
 describe("definitions crud", () => {
-    const handler = useHandler({
+    const handler = useRawHandler({
         plugins: [
             createTaskDefinition({
                 id: "testDefinitionNumber1",

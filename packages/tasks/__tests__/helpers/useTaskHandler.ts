@@ -1,28 +1,29 @@
+import { createHandler } from "~/handler";
+import { createWcpContext } from "@webiny/api-wcp";
+import { createTenancyAndSecurity } from "~tests/helpers/tenancySecurity";
+import { createDummyLocales, createIdentity, createPermissions } from "~tests/helpers/helpers";
+import i18nContext from "@webiny/api-i18n/graphql/context";
+import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
+import { createBackgroundTaskContext } from "~/context";
+import { createRawEventHandler } from "@webiny/handler-aws";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { createWcpContext } from "@webiny/api-wcp";
-import { createTenancyAndSecurity } from "./tenancySecurity";
-import { createDummyLocales, createIdentity, createPermissions } from "./helpers";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import i18nContext from "@webiny/api-i18n/graphql/context";
-import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
-import { LambdaContext } from "@webiny/handler-aws/types";
-import { Context } from "~tests/types";
 import { PluginCollection } from "@webiny/plugins/types";
-import { createBackgroundTaskContext } from "~/index";
+import { LambdaContext } from "@webiny/handler-aws/types";
+import { ITaskRawEvent } from "~/handler/types";
 
-export interface UseHandlerParams {
+export interface UseTaskHandlerParams {
     plugins?: PluginCollection;
 }
 
-export const useHandler = <C extends Context = Context>(params?: UseHandlerParams) => {
+export const useTaskHandler = (params?: UseTaskHandlerParams) => {
     const { plugins = [] } = params || {};
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const i18nStorage = getStorageOps<any[]>("i18n");
 
-    const handler = createRawHandler<any, C>({
+    const handler = createHandler({
         plugins: [
             createWcpContext(),
             ...cmsStorage.plugins,
@@ -49,8 +50,8 @@ export const useHandler = <C extends Context = Context>(params?: UseHandlerParam
     });
 
     return {
-        handle: async () => {
-            return await handler({}, {} as LambdaContext);
+        handle: async (payload: ITaskRawEvent) => {
+            return await handler(payload, {} as LambdaContext);
         }
     };
 };
