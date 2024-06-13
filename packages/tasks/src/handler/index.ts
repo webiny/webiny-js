@@ -8,7 +8,7 @@ import { Context, TaskResponseStatus } from "~/types";
 import { ITaskRawEvent } from "~/handler/types";
 import { TaskRunner } from "~/runner";
 import WebinyError from "@webiny/error";
-import { timerFactory } from "~/timer";
+import { timerFactory } from "@webiny/handler-aws/utils";
 import { TaskEventValidation } from "~/runner/TaskEventValidation";
 
 export interface HandlerCallable {

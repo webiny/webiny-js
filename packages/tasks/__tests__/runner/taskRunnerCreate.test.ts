@@ -1,7 +1,7 @@
 import { TaskRunner } from "~/runner";
 import { createLiveContextFactory } from "~tests/live";
 import { taskDefinition } from "~tests/runner/taskDefinition";
-import { timerFactory } from "~/timer";
+import { timerFactory } from "@webiny/handler-aws/utils";
 import { TaskEventValidation } from "~/runner/TaskEventValidation";
 
 describe("task runner create", () => {

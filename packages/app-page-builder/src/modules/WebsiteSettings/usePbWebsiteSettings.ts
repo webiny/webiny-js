@@ -30,17 +30,9 @@ export function usePbWebsiteSettings() {
     const [getSettings, { data, loading: queryInProgress }] =
         useLazyQuery<GetSettingsQueryResponse>(GET_SETTINGS);
 
-    const settings = get(
-        data,
-        "pageBuilder.getSettings.data",
-        {}
-    ) as unknown as GetSettingsResponseData;
-
-    const defaultSettings = get(
-        data,
-        "pageBuilder.getDefaultSettings.data",
-        {}
-    ) as unknown as GetSettingsResponseData;
+    const settings: Partial<GetSettingsResponseData> = data?.pageBuilder.getSettings.data || {};
+    const defaultSettings: Partial<GetSettingsResponseData> =
+        data?.pageBuilder.getDefaultSettings.data || {};
 
     const [update, { loading: mutationInProgress }] = useMutation<
         UpdateSettingsMutationResponse,

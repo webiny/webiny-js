@@ -598,6 +598,20 @@ export interface CmsEntry<T = CmsEntryValues> {
     lastPublishedBy: CmsIdentity | null;
 
     /**
+     * Deprecated fields. 👇
+     */
+
+    /**
+     * @deprecated Will be removed with the 5.41.0 release. Use `createdBy` field instead.
+     */
+    ownedBy?: CmsIdentity | null;
+
+    /**
+     * @deprecated Will be removed with the 5.41.0 release. Use `firstPublishedOn` or `lastPublishedOn` field instead.
+     */
+    publishedOn?: string | null;
+
+    /**
      * Model ID of the definition for the entry.
      * @see CmsModel
      */
@@ -811,8 +825,10 @@ export interface CmsModelUpdateDirectParams {
 export interface CmsModelContext {
     /**
      * Get a single content model.
+     *
+     * @throws NotFoundError
      */
-    getModel(modelId: string): Promise<CmsModel | null>;
+    getModel: (modelId: string) => Promise<CmsModel>;
     /**
      * Get model to AST converter.
      */

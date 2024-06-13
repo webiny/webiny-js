@@ -142,6 +142,7 @@ export class MigrationRunner {
         const isMigrationApplicable = isApplicable || defaultIsApplicable;
 
         this.printForceExecuteEnvVars();
+        this.printSkipExecuteEnvVars();
 
         if (forceExecute) {
             this.logger.info(
@@ -152,6 +153,11 @@ export class MigrationRunner {
         const executableMigrations = this.migrations
             .filter(mig => {
                 if (shouldSkip(mig)) {
+                    this.setRunItem(lastRun, {
+                        id: mig.getId(),
+                        status: "skipped"
+                    });
+
                     return false;
                 }
 
@@ -418,6 +424,25 @@ export class MigrationRunner {
 
         this.logger.info(`FORCED MIGRATIONS DETECTED!`);
         for (const key of forceKeys) {
+            this.logger.info(`${key}=${process.env[key]}`);
+        }
+    }
+
+    private printSkipExecuteEnvVars() {
+        const skipKeys = Object.keys(process.env).filter(key =>
+            key.startsWith("WEBINY_MIGRATION_SKIP_")
+        );
+
+        if (!skipKeys.length) {
+            this.logger.info(
+                `No migrations are skipped via WEBINY_MIGRATION_SKIP environment variable.`
+            );
+
+            return;
+        }
+
+        this.logger.info(`SKIPPED MIGRATIONS DETECTED!`);
+        for (const key of skipKeys) {
             this.logger.info(`${key}=${process.env[key]}`);
         }
     }
