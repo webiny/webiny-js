@@ -35,17 +35,7 @@ export default ({ documentClient }: { documentClient: DynamoDBDocument }) => [
     /**
      * Expose security GraphQL schema.
      */
-    createSecurityGraphQL({
-        async getDefaultTenant(context) {
-            const identity = context.security.getIdentity();
-
-            if (identity.defaultTenant === "root") {
-                return context.tenancy.getRootTenant();
-            }
-
-            return context.tenancy.getTenantById(identity.defaultTenant);
-        }
-    }),
+    createSecurityGraphQL(),
 
     /**
      * Create Admin Users app.
