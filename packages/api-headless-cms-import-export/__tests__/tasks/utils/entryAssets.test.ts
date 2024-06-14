@@ -1,6 +1,16 @@
-import { EntryAssets } from "~/tasks/utils/EntryAssets";
+import { EntryAssets, IAsset } from "~/tasks/utils/EntryAssets";
 import { useHandler } from "~tests/helpers/useHandler";
 import { CmsEntry } from "@webiny/api-headless-cms/types";
+
+const cloudfrontUrl = "https://aCloundfrontDistributionId.cloudfront.net";
+
+const createImagePath = (file: string) => {
+    return `/files/${file}`;
+};
+
+const createImageUrl = (file: string) => {
+    return `${cloudfrontUrl}${createImagePath(file)}`;
+};
 
 describe("entry assets", () => {
     it("should properly initialize EntryAssets", async () => {
@@ -11,45 +21,108 @@ describe("entry assets", () => {
         const traverser = await context.cms.getEntryTraverser("author");
 
         const entryAssets = new EntryAssets({
-            traverser,
-            plugins: context.plugins
+            traverser
         });
 
         expect(entryAssets).toBeInstanceOf(EntryAssets);
 
+        const image1 = `fileId1234/image-1-in-its-own-directory.jpg`;
+        const image2 = `fileId2345/image-2-in-its-own-directory.jpg`;
+        const image3 = `image-3-no-directory.jpg`;
+        const image4 = `fileId4567/image-4-in-its-own-directory.jpg`;
+        const image5 = `image-5-no-directory.jpg`;
+        const image6 = `fileId6789/image-6-in-its-own-directory.jpg`;
+
         const entry: Pick<CmsEntry, "values"> = {
             values: {
                 fullName: "John Doe",
-                image: "image.jpg",
-                images: ["image1.jpg", "image2.jpg"],
+                image: createImageUrl(image1),
+                images: [createImageUrl(image1), createImageUrl(image2), createImageUrl(image3)],
                 wrapper: {
-                    image: "image4.jpg",
-                    images: ["image5.jpg", "image6.jpg"]
-                }
+                    image: createImageUrl(image4),
+                    images: [
+                        createImageUrl(image3),
+                        createImageUrl(image5),
+                        createImageUrl(image6)
+                    ],
+                    anotherWrapper: {
+                        image: createImageUrl(image4),
+                        images: [
+                            createImageUrl(image1),
+                            createImageUrl(image2),
+                            createImageUrl(image3),
+                            createImageUrl(image4),
+                            createImageUrl(image5),
+                            createImageUrl(image6)
+                        ]
+                    }
+                },
+                wrappers: [
+                    {
+                        image: createImageUrl(image4),
+                        images: [
+                            createImageUrl(image3),
+                            createImageUrl(image5),
+                            createImageUrl(image6)
+                        ]
+                    },
+                    {
+                        image: createImageUrl(image4),
+                        images: [
+                            createImageUrl(image1),
+                            createImageUrl(image2),
+                            createImageUrl(image3),
+                            createImageUrl(image4),
+                            createImageUrl(image5),
+                            createImageUrl(image6)
+                        ]
+                    }
+                ]
             }
         };
 
-        const values = entryAssets.findAssets(entry);
+        entryAssets.assignAssets(entry);
 
-        expect(values).toEqual([
+        expect(entryAssets.assets.size).toEqual(6);
+
+        const expected: IAsset[] = [
             {
-                src: "image.jpg"
+                id: "fileId1234",
+                key: image1,
+                path: createImagePath(image1),
+                url: createImageUrl(image1)
             },
             {
-                src: "image1.jpg"
+                id: "fileId2345",
+                key: image2,
+                path: createImagePath(image2),
+                url: createImageUrl(image2)
             },
             {
-                src: "image2.jpg"
+                id: undefined,
+                key: image3,
+                path: createImagePath(image3),
+                url: createImageUrl(image3)
             },
             {
-                src: "image4.jpg"
+                id: "fileId4567",
+                key: image4,
+                path: createImagePath(image4),
+                url: createImageUrl(image4)
             },
             {
-                src: "image5.jpg"
+                id: undefined,
+                key: image5,
+                path: createImagePath(image5),
+                url: createImageUrl(image5)
             },
             {
-                src: "image6.jpg"
+                id: "fileId6789",
+                key: image6,
+                path: createImagePath(image6),
+                url: createImageUrl(image6)
             }
-        ]);
+        ];
+        expect(Array.from(entryAssets.assets.values())).toEqual(expected);
     });
 });
