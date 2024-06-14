@@ -63,6 +63,7 @@ export interface IBulkActionOperationByModelInput {
     modelId: string;
     identity?: SecurityIdentity;
     where?: Record<string, any>;
+    search?: string;
     data?: Record<string, any>;
     after?: string | null;
     currentBatch?: number;

@@ -52,6 +52,7 @@ export const createGraphQL = () => {
                         bulkAction${model.singularApiName}(
                             action: BulkActionName!
                             where: ${model.singularApiName}ListWhereInput
+                            search: String
                             data: JSON
                         ): BulkActionResponse
                     }
@@ -78,6 +79,7 @@ export const createGraphQL = () => {
                                 input: {
                                     modelId: model.modelId,
                                     where: args.where,
+                                    search: args.search,
                                     data: args.data,
                                     identity
                                 }

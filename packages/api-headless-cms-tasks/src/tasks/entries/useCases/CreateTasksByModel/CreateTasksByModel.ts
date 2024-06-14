@@ -25,6 +25,7 @@ export class CreateTasksByModel {
         try {
             const listEntriesParams: CmsEntryListParams = {
                 where: input.where,
+                search: input.search,
                 after: input.after,
                 limit: BATCH_SIZE
             };
