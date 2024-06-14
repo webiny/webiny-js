@@ -37,9 +37,12 @@ export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
         filename
     });
 
-    const buffers: Buffer[] = [];
+    let buffers: Buffer[] | undefined = undefined;
 
     stream.on("data", chunk => {
+        if (!buffers) {
+            buffers = [];
+        }
         buffers.push(chunk);
     });
 
@@ -66,8 +69,10 @@ export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
         region,
         bucket,
         filename,
-        buffers,
         getBuffer: () => {
+            if (!buffers) {
+                throw new Error("No buffers found. Please write some data to the stream first.");
+            }
             return Buffer.concat(buffers);
         },
         upload,

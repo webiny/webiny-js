@@ -14,6 +14,8 @@
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
     { "path": "../api-wcp" },
+    { "path": "../handler" },
+    { "path": "../handler-aws" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -47,6 +49,10 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/api-wcp/*": ["../api-wcp/src/*"],
       "@webiny/api-wcp": ["../api-wcp/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     },
