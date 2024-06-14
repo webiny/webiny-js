@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { ReactComponent as MoveIcon } from "@material-design-icons/svg/outlined/drive_file_move.svg";
 import { useRecords, useMoveToFolderDialog, useNavigateFolder } from "@webiny/app-aco";
 import { FolderItem } from "@webiny/app-aco/types";
@@ -17,9 +17,7 @@ export const ActionMove = observer(() => {
     const { showConfirmationDialog, showResultsDialog } = useDialog();
     const { showDialog: showMoveDialog } = useMoveToFolderDialog();
 
-    const entriesLabel = useMemo(() => {
-        return getEntriesLabel(worker.selectedLength);
-    }, [worker.selectedLength]);
+    const entriesLabel = getEntriesLabel();
 
     const openWorkerDialog = useCallback(
         (folder: FolderItem) => {

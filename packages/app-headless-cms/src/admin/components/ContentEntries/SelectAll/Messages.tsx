@@ -1,30 +1,29 @@
 import React from "react";
-import { ButtonDefault } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
 import { getEntriesLabel } from "./SelectAll";
+import { Button, MessageContainer } from "./SelectAll.styled";
 
 export interface MessagesProps {
     onClick: () => void;
-    selectedLength: number;
-    totalCount: number;
+    selected: number;
 }
 
 export const SelectAllMessage = (props: MessagesProps) => {
     return (
-        <Typography use={"body1"}>
-            {`All ${getEntriesLabel(props.selectedLength)} on this page are selected.`}
-            <ButtonDefault small={true} onClick={props.onClick}>{`Select all ${getEntriesLabel(
-                props.totalCount
-            )}`}</ButtonDefault>
-        </Typography>
+        <MessageContainer>
+            <Typography use={"body1"}>
+                {`All ${getEntriesLabel(props.selected)} on this page are selected.`}
+            </Typography>
+            <Button small={true} onClick={props.onClick}>{`Select all entries`}</Button>
+        </MessageContainer>
     );
 };
 
 export const ClearSelectionMessage = (props: MessagesProps) => {
     return (
-        <Typography use={"body1"}>
-            {`All ${getEntriesLabel(props.selectedLength)} are selected.`}
-            <ButtonDefault small={true} onClick={props.onClick}>{`Clear selection`}</ButtonDefault>
-        </Typography>
+        <MessageContainer>
+            <Typography use={"body1"}>{`All entries are selected.`}</Typography>
+            <Button small={true} onClick={props.onClick}>{`Clear selection`}</Button>
+        </MessageContainer>
     );
 };

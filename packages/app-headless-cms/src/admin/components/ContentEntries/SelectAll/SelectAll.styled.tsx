@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { ButtonDefault } from "@webiny/ui/Button";
 
 export const SelectAllContainer = styled.div`
     width: 100%;
@@ -9,8 +10,12 @@ export const SelectAllContainer = styled.div`
     text-align: center;
 `;
 
-export const SelectAllInner = styled.div`
-    padding: 8px;
-    align-items: center;
+export const MessageContainer = styled.div`
     display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+export const Button = styled(ButtonDefault)`
+    margin-left: 8px;
 `;

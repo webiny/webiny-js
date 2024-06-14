@@ -17,17 +17,9 @@ export const SelectAll = () => {
     return (
         <SelectAllContainer data-testid={"select-all-container"}>
             {list.isSelectedAll ? (
-                <ClearSelectionMessage
-                    onClick={list.unselectAll}
-                    selectedLength={list.selectedLength}
-                    totalCount={list.meta.totalCount}
-                />
+                <ClearSelectionMessage onClick={list.unselectAll} selected={list.selected.length} />
             ) : (
-                <SelectAllMessage
-                    onClick={list.selectAll}
-                    selectedLength={list.selectedLength}
-                    totalCount={list.meta.totalCount}
-                />
+                <SelectAllMessage onClick={list.selectAll} selected={list.selected.length} />
             )}
         </SelectAllContainer>
     );

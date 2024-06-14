@@ -86,8 +86,8 @@ export const Main = ({ folderId: initialFolderId }: MainProps) => {
                 />
                 <BulkActions />
                 <Wrapper>
-                    <Filters />
                     <SelectAll />
+                    <Filters />
                     {list.records.length === 0 &&
                     list.folders.length === 0 &&
                     !list.isListLoading ? (

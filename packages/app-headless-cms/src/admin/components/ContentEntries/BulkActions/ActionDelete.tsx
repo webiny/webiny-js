@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { observer } from "mobx-react-lite";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier";
@@ -17,9 +17,7 @@ export const ActionDelete = observer(() => {
     const worker = useWorker();
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
-    const entriesLabel = useMemo(() => {
-        return getEntriesLabel(worker.selectedLength);
-    }, [worker.selectedLength]);
+    const entriesLabel = getEntriesLabel();
 
     const openDeleteEntriesDialog = () =>
         showConfirmationDialog({

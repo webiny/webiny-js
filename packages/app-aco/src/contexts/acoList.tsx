@@ -35,12 +35,11 @@ export interface AcoListContextData<T> {
     showFilters: () => void;
     showingFilters: boolean;
     showingSelectAll: boolean;
-    where: Record<string, any>;
     searchQuery: string;
-    selectedLength: number;
     isSelectedAll: boolean;
     selectAll: () => void;
     unselectAll: () => void;
+    getWhere: () => Record<string, any>;
 }
 
 export const AcoListContext = React.createContext<
@@ -58,8 +57,6 @@ export interface State<T> {
     selected: T[];
     showingFilters: boolean;
     showingSelectAll: boolean;
-    where: Record<string, any>;
-    selectedLength: number;
     isSelectedAll: boolean;
 }
 
@@ -75,8 +72,6 @@ const initializeAcoListState = (): State<GenericSearchData> => {
         selected: [],
         showingFilters: false,
         showingSelectAll: false,
-        where: {},
-        selectedLength: 0,
         isSelectedAll: false
     };
 };
@@ -175,8 +170,6 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
                 selected: [],
                 showingFilters: false,
                 showingSelectAll: false,
-                where: {},
-                selectedLength: 0,
                 isSelectedAll: false
             };
         });
@@ -249,54 +242,30 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
     }, [meta]);
 
     /**
-     * This effect runs when the component mounts and updates the state with a 'where' condition
-     * based on the current state properties and props.
-     *
-     * It constructs the 'where' condition which is used for filtering data based on the folder ID,
-     * search query, and filters present in the state. If a search query or any active filter exists,
-     * it adjusts the 'where' and `isSearch` condition accordingly.
+     * This useEffect hook updates the state with a new 'where' condition
+     * based on the current folder ID, filters, the user's identity, and the ownership status.
+     * It sets the 'where' condition for filtering items by creator and folder location.
      */
-    useEffect(() => {
-        // Initialize the 'locationWhere' object with the current folder ID
-        let locationWhere = dotPropImmutable.set({}, folderIdPath, state.folderId);
+    const getWhere = useCallback(() => {
+        // Initialize an empty object for locationWhere
+        let where = {};
 
-        console.log("state", state);
-
-        // Update 'locationWhere' if there is an active search
-        if (state.folderId === ROOT_FOLDER) {
-            locationWhere = undefined;
-        } else {
-            // Get descendant folders and set them in 'locationWhere'
+        // Check if the current folder ID is not the root folder
+        if (state.folderId !== ROOT_FOLDER) {
+            // Get descendant folder IDs of the current folder
             const descendantFolderIds = getDescendantFolders(state.folderId).map(
                 folder => folder.id
             );
-
-            console.log("descendantFolderIds", descendantFolderIds);
-
-            locationWhere = dotPropImmutable.set({}, folderIdInPath, descendantFolderIds);
+            // Set the locationWhere object with descendant folder IDs
+            where = dotPropImmutable.set({}, folderIdInPath, descendantFolderIds);
         }
 
-        // Update the state with the new 'where' condition
-        setState(state => ({
-            ...state,
-            where: {
-                createdBy: props.own ? identity!.id : undefined,
-                ...locationWhere,
-                ...state.filters
-            }
-        }));
-    }, [state.searchQuery, state.filters, state.folderId, props.own, identity]);
-
-    useEffect(() => {
-        // Determine if there is an active search or filters
-        const isSearch = Boolean(
-            state.searchQuery ||
-                (state.filters && Object.values(state.filters).filter(Boolean).length)
-        );
-
-        // Update the state with the new 'isSearch' condition
-        setState(state => ({ ...state, isSearch }));
-    }, [state.searchQuery, state.filters]);
+        return {
+            createdBy: props.own ? identity?.id : undefined, // Set 'createdBy' based on the ownership status
+            ...state.filters, // Merge existing filters into the 'where' condition
+            ...where // Include where condition if applicable
+        };
+    }, [state.folderId, state.filters, props.own, identity]);
 
     /**
      * Any time we receive new useful `state` params:
@@ -308,46 +277,46 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
                 return;
             }
 
-            let locationWhere = dotPropImmutable.set({}, folderIdPath, state.folderId);
+            const isSearch = Boolean(
+                state.searchQuery ||
+                    (state.filters && Object.values(state.filters).filter(Boolean).length)
+            );
 
-            if (state.isSearch) {
+            let where = dotPropImmutable.set({}, folderIdPath, state.folderId);
+
+            if (isSearch) {
                 if (state.folderId === ROOT_FOLDER) {
-                    locationWhere = undefined;
+                    where = undefined;
                 } else {
-                    // Get descendant folders and set them in 'locationWhere'
-                    const descendantFolderIds = getDescendantFolders(state.folderId).map(
-                        folder => folder.id
-                    );
-
-                    console.log("descendantFolderIds", descendantFolderIds);
-
-                    locationWhere = state.where;
+                    where = getWhere();
                 }
             }
+
+            console.log("whereCondition", getWhere());
 
             const params: ListSearchRecordsQueryVariables = {
                 limit: state.limit,
                 sort: validateOrGetDefaultDbSort(state.listSort),
                 search: state.searchQuery,
                 after: state.after,
-                where: {
-                    ...state.where,
-                    ...locationWhere
-                }
+                where
             };
 
             await listRecords(params);
+
+            setState(state => ({ ...state, isSearch }));
         };
 
         listItems();
     }, [
         state.folderId,
-        state.where,
+        state.filters,
         state.searchQuery,
-        state.isSearch,
         state.after,
         state.listSort,
-        state.limit
+        state.limit,
+        props.own,
+        identity
     ]);
 
     /**
@@ -374,12 +343,10 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
     const context: AcoListContextData<GenericSearchData> = {
         ...pick(state, [
             "isSearch",
-            "where",
             "searchQuery",
             "selected",
             "showingFilters",
             "showingSelectAll",
-            "selectedLength",
             "isSelectedAll"
         ]),
         folders,
@@ -410,7 +377,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
             setState(state => ({ ...state, listSort: sort, after: undefined }));
         },
         setSelected(selected) {
-            setState(state => ({ ...state, selected, selectedLength: selected.length }));
+            setState(state => ({ ...state, selected }));
         },
         hideFilters() {
             setState(state => ({
@@ -424,15 +391,15 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
             setState(state => ({ ...state, showingFilters: true }));
         },
         selectAll() {
-            setState(state => ({ ...state, isSelectedAll: true, selectedLength: meta.totalCount }));
+            setState(state => ({ ...state, isSelectedAll: true }));
         },
         unselectAll() {
             setState(state => ({
                 ...state,
-                isSelectedAll: false,
-                selectedLength: state.selected.length
+                isSelectedAll: false
             }));
         },
+        getWhere,
         listMoreRecords
     };
 

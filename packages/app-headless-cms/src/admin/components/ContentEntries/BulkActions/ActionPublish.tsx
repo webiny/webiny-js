@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { ReactComponent as PublishIcon } from "@material-design-icons/svg/outlined/publish.svg";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
@@ -17,9 +17,7 @@ export const ActionPublish = observer(() => {
     const worker = useWorker();
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
-    const entriesLabel = useMemo(() => {
-        return getEntriesLabel(worker.selectedLength);
-    }, [worker.selectedLength]);
+    const entriesLabel = getEntriesLabel();
 
     const openPublishEntriesDialog = () =>
         showConfirmationDialog({
