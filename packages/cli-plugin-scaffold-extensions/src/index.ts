@@ -105,6 +105,11 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
                         return true;
                     }
+                },
+                {
+                    name: "dependencies",
+                    message: "Enter one or more NPM dependencies (optional):",
+                    required: false
                 }
             ];
         },
