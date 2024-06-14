@@ -508,6 +508,7 @@ export interface CmsEntryBulkActionMutationVariables {
     where?: {
         [key: string]: any;
     };
+    search?: string;
     data?: {
         [key: string]: any;
     };
@@ -515,8 +516,8 @@ export interface CmsEntryBulkActionMutationVariables {
 
 export const createBulkActionMutation = (model: CmsEditorContentModel) => {
     return gql`
-        mutation CmsBulkAction${model.singularApiName}($action: BulkActionName!, $where: ${model.singularApiName}ListWhereInput, $data: JSON) {
-            content: bulkAction${model.singularApiName}(action: $action, where: $where, data: $data) {
+        mutation CmsBulkAction${model.singularApiName}($action: BulkActionName!, $where: ${model.singularApiName}ListWhereInput, $search: String, $data: JSON) {
+            content: bulkAction${model.singularApiName}(action: $action, where: $where, search: $search, data: $data) {
                  data {
                     id
                 }

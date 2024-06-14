@@ -242,20 +242,24 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
     }, [meta]);
 
     /**
-     * This useEffect hook updates the state with a new 'where' condition
-     * based on the current folder ID, filters, the user's identity, and the ownership status.
-     * It sets the 'where' condition for filtering items by creator and folder location.
+     * Constructs a "where" condition object based on the current state and properties.
+     *
+     * This function creates a "where" object used to filter data based on the current folder ID,
+     * ownership status, and other existing filters in the state.
+     *
+     * @returns {Object} A "where" condition object containing filters for querying data.
      */
     const getWhere = useCallback(() => {
-        // Initialize an empty object for locationWhere
+        // Initialize an empty object
         let where = {};
 
-        // Check if the current folder ID is not the root folder
+        // Check if the current folder ID is not the ROOT_FOLDER folder
         if (state.folderId !== ROOT_FOLDER) {
             // Get descendant folder IDs of the current folder
             const descendantFolderIds = getDescendantFolders(state.folderId).map(
                 folder => folder.id
             );
+
             // Set the locationWhere object with descendant folder IDs
             where = dotPropImmutable.set({}, folderIdInPath, descendantFolderIds);
         }
@@ -291,8 +295,6 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
                     where = getWhere();
                 }
             }
-
-            console.log("whereCondition", getWhere());
 
             const params: ListSearchRecordsQueryVariables = {
                 limit: state.limit,
