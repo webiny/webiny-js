@@ -32,7 +32,7 @@ const EXTENSIONS_ROOT_FOLDER = "extensions";
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-extensions",
     type: "cli-plugin-scaffold-template",
-    templateName: "new-extension",
+    templateName: "extension",
     scaffold: {
         name: "New Extension",
         description: "Scaffolds essential files for creating a new extension.",
