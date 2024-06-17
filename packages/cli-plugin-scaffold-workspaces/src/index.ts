@@ -15,7 +15,6 @@ import validateNpmPackageName from "validate-npm-package-name";
  */
 // @ts-expect-error
 import { getProject, log } from "@webiny/cli/utils";
-import { generators } from "./generators";
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -30,35 +29,26 @@ interface Input {
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
 export default (): CliCommandScaffoldTemplate<Input> => ({
-    name: "cli-plugin-scaffold-template-extensions",
+    name: "cli-plugin-scaffold-template-workspace",
     type: "cli-plugin-scaffold-template",
-    templateName: "extension",
+    templateName: "workspace",
     scaffold: {
-        name: "New Extension",
-        description: "Scaffolds essential files for creating a new extension.",
+        name: "Empty Workspace",
+        description: "Scaffolds essential files for a new workspace.",
         questions: () => {
             return [
                 {
-                    name: "type",
-                    message: "What type of an extension do you want to create?",
-                    type: "list",
-                    choices: [
-                        { name: "Admin extension", value: "admin" },
-                        { name: "API extension", value: "api" }
-                    ]
-                },
-                {
                     name: "name",
-                    message: "Enter the extension name:",
-                    default: "myCustomExtension",
+                    message: "Enter the workspace name:",
+                    default: "myCustomWorkspace",
                     validate: name => {
                         if (!name) {
-                            return "Missing extension name.";
+                            return "Missing workspace name.";
                         }
 
                         const isValidName = name === Case.camel(name);
                         if (!isValidName) {
-                            return `Please use camel case when providing the name of the extension (for example "myCustomExtension").`;
+                            return `Please use camel case when providing the name of the workspace (for example "myCustomWorkspace").`;
                         }
 
                         return true;
@@ -66,7 +56,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 },
                 {
                     name: "location",
-                    message: `Enter the extension location:`,
+                    message: `Enter the workspace location:`,
                     default: (answers: Input) => {
                         return `${EXTENSIONS_ROOT_FOLDER}/${answers.name}`;
                     },
@@ -100,7 +90,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
                         const isValidName = validateNpmPackageName(pkgName);
                         if (!isValidName) {
-                            return `Package name must be a valid NPM package name, for example "my-custom-extension".`;
+                            return `Package name must be a valid NPM package name, for example "my-custom-workspace".`;
                         }
 
                         return true;
@@ -114,19 +104,19 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             ];
         },
         generate: async ({ input, ora, context }) => {
-            const { type, name } = input;
+            const { type = "node", name } = input;
             if (!type) {
-                throw new Error("Missing extension type.");
+                throw new Error("Missing workspace type.");
             }
 
             const templatePath = path.join(__dirname, "templates", type);
             const templateExists = fs.existsSync(templatePath);
             if (!templateExists) {
-                throw new Error("Unknown extension type.");
+                throw new Error("Unknown workspace type.");
             }
 
             if (!name) {
-                throw new Error("Missing extension name.");
+                throw new Error("Missing workspace name.");
             }
 
             let { packageName, location } = input;
@@ -143,7 +133,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             }
 
             try {
-                ora.start(`Creating ${log.success.hl(name)} extension...`);
+                ora.start(`Creating ${log.success.hl(name)} workspace...`);
 
                 // Copy template files
                 fs.mkdirSync(location, { recursive: true });
@@ -209,10 +199,6 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     await writeJson(rootPackageJsonPath, rootPackageJson);
                 }
 
-                if (typeof generators[type] === "function") {
-                    await generators[type]({ input: { name, packageName } });
-                }
-
                 // Sleep for 1 second before proceeding with yarn installation.
                 await new Promise(resolve => {
                     setTimeout(resolve, 1000);
@@ -221,9 +207,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 // Once everything is done, run `yarn` so the new packages are installed.
                 await execa("yarn");
 
-                ora.succeed(`New extension created in ${log.success.hl(location)}.`);
+                ora.succeed(`New workspace created in ${log.success.hl(location)}.`);
             } catch (err) {
-                ora.fail("Could not create extension. Please check the logs below.");
+                ora.fail("Could not create workspace. Please check the logs below.");
                 console.log();
                 console.log(err);
             }
