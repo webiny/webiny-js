@@ -137,7 +137,7 @@ export const ColumnDirectionIcon = styled(ArrowDown)<ColumnDirectionProps>`
 `;
 
 export const ColumnsVisibilityMenuHeader = styled(Typography)`
-    padding: 4px 16px;
+    padding: 4px 16px 12px;
     font-weight: 600;
 `;
 
