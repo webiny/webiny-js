@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import { useApolloClient, useModel, usePermission } from "~/admin/hooks";
 import { TrashBin as BaseTrashBin } from "@webiny/app-trash-bin";
 import {
@@ -36,6 +36,13 @@ export const TrashBin = () => {
         return new TrashBinItemMapper();
     }, []);
 
+    const handleItemAfterRestore = useCallback(
+        async (item: { location: { folderId: string | undefined } }) => {
+            navigateToFolder(item.location.folderId);
+        },
+        [navigateToFolder]
+    );
+
     if (!canDeleteEntries("cms.contentEntry")) {
         return null;
     }
@@ -49,7 +56,7 @@ export const TrashBin = () => {
             deleteGateway={deleteGateway}
             restoreGateway={restoreGateway}
             itemMapper={itemMapper}
-            onItemAfterRestore={async item => navigateToFolder(item.location.folderId)}
+            onItemAfterRestore={handleItemAfterRestore}
             nameColumnId={model.titleFieldId || "id"}
             title={`Trash - ${model.name}`}
         />
