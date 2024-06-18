@@ -2,6 +2,7 @@ import { EntryAssets } from "~/tasks/utils/EntryAssets";
 import { useHandler } from "~tests/helpers/useHandler";
 import { CmsEntry } from "@webiny/api-headless-cms/types";
 import { IAsset } from "./abstractions/EntryAssets";
+import type { ContentEntryTraverser } from "@webiny/api-headless-cms";
 
 const cloudfrontUrl = "https://aCloundfrontDistributionId.cloudfront.net";
 
@@ -15,17 +16,18 @@ const createImageUrl = (file: string) => {
 
 describe("entry assets", () => {
     let entryAssets: EntryAssets;
+    let traverser: ContentEntryTraverser;
 
     beforeEach(async () => {
         const { handler } = useHandler();
         const context = await handler();
-        const traverser = await context.cms.getEntryTraverser("author");
-        entryAssets = new EntryAssets({
-            traverser
-        });
+        traverser = await context.cms.getEntryTraverser("author");
     });
 
     it("should properly extract assets", async () => {
+        const entryAssets = new EntryAssets({
+            traverser
+        });
         expect(entryAssets).toBeInstanceOf(EntryAssets);
 
         const image1 = `fileId1234/image-1-in-its-own-directory.jpg`;

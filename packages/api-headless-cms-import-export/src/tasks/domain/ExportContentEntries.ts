@@ -86,8 +86,9 @@ export class ExportContentEntries<
         const prefix = uniqueId(`cms-export/${model.modelId}/`);
         const filename = `${prefix}/entries.zip`;
 
+        const traverser = await context.cms.getEntryTraverser(model.modelId);
         const entryAssets = new EntryAssets({
-            traverser: await context.cms.getEntryTraverser(model.modelId)
+            traverser
         });
 
         const entryAssetsList = new EntryAssetsList({

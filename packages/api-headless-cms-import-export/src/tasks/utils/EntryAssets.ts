@@ -1,4 +1,4 @@
-import { ContentEntryTraverser } from "@webiny/api-headless-cms";
+import type { ContentEntryTraverser } from "@webiny/api-headless-cms";
 import {
     IAsset,
     IAssets,

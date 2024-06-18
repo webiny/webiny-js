@@ -122,4 +122,51 @@ describe("zipper", () => {
 
         expect(zip.readAsText(zipEntries[0])).toEqual(json);
     });
+
+    it("should abort zipper if no records", async () => {
+        const stream = createPassThrough();
+
+        const buffers: Buffer[] = [];
+
+        let buffer: Buffer | undefined = undefined;
+
+        stream.on("data", chunk => {
+            buffers.push(chunk);
+        });
+
+        stream.on("end", () => {
+            buffer = Buffer.concat(buffers);
+        });
+
+        const client = mockClient(S3Client);
+        client.on(CreateMultipartUploadCommand).resolves({ UploadId: "1" });
+        client.on(UploadPartCommand).resolves({ ETag: "1" });
+
+        const upload = new Upload({
+            client: createS3Client(),
+            bucket: "my-test-bucket",
+            stream,
+            filename: "test.zip",
+            factory(params) {
+                return new BaseUpload(params);
+            }
+        });
+
+        const archiver = new Archiver({
+            format: "zip",
+            options: {
+                gzip: true
+            }
+        });
+
+        const zipper = new Zipper({
+            upload,
+            archiver
+        });
+
+        await zipper.abort();
+
+        expect(buffer).toBeUndefined();
+        expect(buffers).toHaveLength(0);
+    });
 });
