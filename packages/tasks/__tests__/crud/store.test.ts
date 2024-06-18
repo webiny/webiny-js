@@ -1,4 +1,4 @@
-import { useHandler } from "~tests/helpers/useHandler";
+import { useRawHandler } from "~tests/helpers/useRawHandler";
 import { createTaskDefinition } from "~/task";
 import { ITask, TaskDataStatus } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
@@ -6,7 +6,7 @@ import WebinyError from "@webiny/error";
 import { createMockIdentity } from "~tests/mocks/identity";
 
 describe("store crud", () => {
-    const handler = useHandler({
+    const handler = useRawHandler({
         plugins: [
             createTaskDefinition({
                 id: "testDefinition",
