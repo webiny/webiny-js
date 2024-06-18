@@ -5,12 +5,14 @@ import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useCms, useModel, usePermission } from "~/admin/hooks";
 import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
 import { useRecords } from "@webiny/app-aco";
+import { useSnackbar } from "@webiny/app-admin";
 
 export const ActionUnpublish = observer(() => {
     const { model } = useModel();
     const { canUnpublish } = usePermission();
     const { unpublishEntryRevision } = useCms();
     const { updateRecordInCache } = useRecords();
+    const { showSnackbar } = useSnackbar();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
@@ -28,6 +30,9 @@ export const ActionUnpublish = observer(() => {
                 if (worker.isSelectedAll) {
                     await worker.processInBulk("UnpublishEntries");
                     worker.resetItems();
+                    showSnackbar(
+                        "The selected entries will be unpublished. This process may take longer depending on the number of entries."
+                    );
                     return;
                 }
 

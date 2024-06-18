@@ -3,6 +3,7 @@ import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outline
 import { observer } from "mobx-react-lite";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier";
 import { useRecords } from "@webiny/app-aco";
+import { useSnackbar } from "@webiny/app-admin";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { useCms, useModel } from "~/admin/hooks";
 import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
@@ -11,6 +12,7 @@ export const ActionDelete = observer(() => {
     const { model } = useModel();
     const { deleteEntry } = useCms();
     const { removeRecordFromCache } = useRecords();
+    const { showSnackbar } = useSnackbar();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
@@ -28,6 +30,9 @@ export const ActionDelete = observer(() => {
                 if (worker.isSelectedAll) {
                     await worker.processInBulk("MoveEntriesToTrash");
                     worker.resetItems();
+                    showSnackbar(
+                        "The selected entries will be moved to trash. This process may take longer depending on the number of entries."
+                    );
                     return;
                 }
 

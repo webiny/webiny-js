@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { ReactComponent as MoveIcon } from "@material-design-icons/svg/outlined/drive_file_move.svg";
 import { useRecords, useMoveToFolderDialog, useNavigateFolder } from "@webiny/app-aco";
+import { useSnackbar } from "@webiny/app-admin";
 import { FolderItem } from "@webiny/app-aco/types";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
@@ -10,6 +11,7 @@ import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/B
 export const ActionMove = observer(() => {
     const { moveRecord } = useRecords();
     const { currentFolderId } = useNavigateFolder();
+    const { showSnackbar } = useSnackbar();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
@@ -26,13 +28,14 @@ export const ActionMove = observer(() => {
                 message: `You are about to move ${entriesLabel} to ${folder.title}. Are you sure you want to continue?`,
                 loadingLabel: `Processing ${entriesLabel}`,
                 execute: async () => {
-                    console.log("worker.isSelectedAll", worker.isSelectedAll);
-
                     if (worker.isSelectedAll) {
                         await worker.processInBulk("MoveEntriesToFolder", {
                             folderId: folder.id
                         });
                         worker.resetItems();
+                        showSnackbar(
+                            `The selected entries will be moved to ${folder.title}. This process may take longer depending on the number of entries.`
+                        );
                         return;
                     }
 
