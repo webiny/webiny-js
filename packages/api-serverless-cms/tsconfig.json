@@ -14,6 +14,7 @@
     { "path": "../api-prerendering-service" },
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
+    { "path": "../error" },
     { "path": "../handler-client" },
     { "path": "../handler-graphql" }
   ],
@@ -48,6 +49,8 @@
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
       "@webiny/handler-client/*": ["../handler-client/src/*"],
       "@webiny/handler-client": ["../handler-client/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
