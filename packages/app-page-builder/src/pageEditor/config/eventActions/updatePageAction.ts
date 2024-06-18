@@ -15,7 +15,7 @@ export const updatePageAction: PageEventActionCallable<
         },
         actions: [
             new SaveRevisionActionEvent({
-                debounce: args?.debounce || false,
+                debounce: args?.debounce ?? true,
                 onFinish: args?.onFinish
             })
         ]

@@ -2,11 +2,12 @@
 import codeFrame from "code-frame";
 import WebinyError from "@webiny/error";
 import { generateSchema } from "./generateSchema";
-import { ApiEndpoint, CmsContext, CmsModel } from "~/types";
+import { ApiEndpoint, CmsContext } from "~/types";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { GraphQLSchema } from "graphql";
-import crypto from "crypto";
+import { generateCacheId } from "./getSchema/generateCacheId";
+import { generateCacheKey } from "./getSchema/generateCacheKey";
 
 interface SchemaCache {
     key: string;
@@ -21,45 +22,6 @@ interface GetSchemaParams {
 }
 
 const schemaList = new Map<string, SchemaCache>();
-
-/**
- * Method generates cache ID based on:
- * - tenant
- * - endpoint type
- * - locale
- */
-type GenerateCacheIdParams = Pick<GetSchemaParams, "getTenant" | "getLocale" | "type">;
-const generateCacheId = (params: GenerateCacheIdParams): string => {
-    const { getTenant, type, getLocale } = params;
-    return [`tenant:${getTenant().id}`, `endpoint:${type}`, `locale:${getLocale().code}`].join("#");
-};
-/**
- * Method generates cache key based on last model change time.
- * Or sets "unknown" - possible when no models in database.
- */
-interface GenerateCacheKeyParams {
-    models: Pick<CmsModel, "modelId" | "singularApiName" | "pluralApiName" | "savedOn">[];
-}
-const generateCacheKey = async (params: GenerateCacheKeyParams): Promise<string> => {
-    const { models } = params;
-
-    const keys: string[] = [];
-    for (const model of models) {
-        const savedOn = model.savedOn;
-        const value =
-            // @ts-expect-error
-            savedOn instanceof Date || savedOn?.toISOString
-                ? // @ts-expect-error
-                  savedOn.toISOString()
-                : savedOn || "unknown";
-        keys.push(model.modelId, model.singularApiName, model.pluralApiName, value);
-    }
-    const key = keys.join("#");
-
-    const hash = crypto.createHash("sha1");
-    hash.update(key);
-    return hash.digest("hex");
-};
 
 /**
  * Gets an existing schema or rewrites existing one or creates a completely new one

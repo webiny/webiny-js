@@ -6,7 +6,6 @@
     { "path": "../api-aco" },
     { "path": "../api-file-manager" },
     { "path": "../api-form-builder" },
-    { "path": "../handler-graphql" },
     { "path": "../api-headless-cms" },
     { "path": "../api-i18n" },
     { "path": "../api-i18n-content" },
@@ -15,7 +14,9 @@
     { "path": "../api-prerendering-service" },
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
-    { "path": "../handler-client" }
+    { "path": "../error" },
+    { "path": "../handler-client" },
+    { "path": "../handler-graphql" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -32,8 +33,6 @@
       "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-form-builder/*": ["../api-form-builder/src/*"],
       "@webiny/api-form-builder": ["../api-form-builder/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
@@ -50,8 +49,12 @@
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
       "@webiny/handler-client/*": ["../handler-client/src/*"],
-      "@webiny/handler-client": ["../handler-client/src"]
+      "@webiny/handler-client": ["../handler-client/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"]
     },
     "baseUrl": "."
   }

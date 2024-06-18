@@ -64,7 +64,8 @@
       "src": [
         "@webiny/api-tenant-manager",
         "@webiny/api-theme-manager",
-        "@webiny/api-security-okta"
+        "@webiny/api-security-okta",
+        "@webiny/api-security-auth0"
       ]
     }
   }

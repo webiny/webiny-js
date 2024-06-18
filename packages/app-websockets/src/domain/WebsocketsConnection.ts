@@ -43,7 +43,7 @@ export interface IWebsocketsConnectionParams {
     url: string;
     tenant: string;
     locale: string;
-    getToken(): Promise<string | null>;
+    getToken(): Promise<string | undefined>;
     subscriptionManager: IWebsocketsSubscriptionManager;
     protocol?: IWebsocketsConnectProtocol;
     factory?: IWebsocketsConnectionFactory;
@@ -51,7 +51,7 @@ export interface IWebsocketsConnectionParams {
 
 export class WebsocketsConnection implements IWebsocketsConnection {
     private readonly url: string;
-    private readonly getToken: () => Promise<string | null>;
+    private readonly getToken: () => Promise<string | undefined>;
     private tenant: string;
     private locale: string;
     private readonly protocol: IWebsocketsConnectProtocol;

@@ -6,6 +6,7 @@ import { useRecordLocking } from "~/hooks";
 import { UseContentEntriesListHookDecorator } from "./decorators/UseContentEntriesListHookDecorator";
 import styled from "@emotion/styled";
 import { UseSaveEntryDecorator } from "~/components/decorators/UseSaveEntryDecorator";
+import { UseRecordsDecorator } from "./decorators/UseRecordsDecorator";
 
 const CenterAlignment = styled.div`
     display: block;
@@ -66,6 +67,7 @@ export const HeadlessCmsActionsAcoCell = () => {
             <UseContentEntriesListHookDecorator />
             <UseSaveEntryDecorator />
             <RecordLockingCellActions />
+            <UseRecordsDecorator />
         </>
     );
 };

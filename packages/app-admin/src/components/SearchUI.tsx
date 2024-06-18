@@ -61,6 +61,7 @@ const Search = ({ value, onChange, onEnter, inputPlaceholder = "Search..." }: Se
                 <SearchIcon />
             </div>
             <InputField
+                id={"search-input"}
                 onKeyDown={inputOnKeyDown}
                 className="search__input"
                 placeholder={inputPlaceholder}

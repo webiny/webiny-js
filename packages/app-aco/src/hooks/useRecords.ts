@@ -1,11 +1,12 @@
 import dotPropImmutable from "dot-prop-immutable";
 import { useContext, useEffect, useMemo } from "react";
+import { makeDecoratable } from "@webiny/app-admin";
 import { ListRecordsParams, SearchRecordsContext } from "~/contexts/records";
 import { DeletableSearchRecordItem, MovableSearchRecordItem, SearchRecordItem } from "~/types";
 import { useAcoApp } from "~/hooks/useAcoApp";
 import { useNavigateFolder } from "~/hooks/useNavigateFolder";
 
-export const useRecords = (folderId?: string) => {
+export const useRecords = makeDecoratable((folderId?: string) => {
     const context = useContext(SearchRecordsContext);
 
     if (!context) {
@@ -86,4 +87,4 @@ export const useRecords = (folderId?: string) => {
         }),
         [records, loading, meta, currentFolderId, folderId]
     );
-};
+});

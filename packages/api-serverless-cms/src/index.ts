@@ -41,3 +41,5 @@ export const createGraphQLSchemaPlugin = <T extends Context = Context>(
 ) => {
     return baseCreateGraphQLSchemaPlugin<T>(config);
 };
+
+export * from "./tenancy/InstallTenant";

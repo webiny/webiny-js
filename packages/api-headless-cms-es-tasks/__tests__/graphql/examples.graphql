@@ -1,0 +1,68 @@
+mutation StartMockDataGenerator {
+    backgroundTasks {
+        triggerTask(definition: "mockDataManager", input: {
+            modelId: "cars",
+            amount: 10000
+        }) {
+            data {
+                id
+            }
+            error {
+                message
+                code
+                data
+            }
+        }
+    }
+}
+
+
+mutation AbortMockDataGenerator {
+    backgroundTasks {
+        abortTask(id: "YOUR_TASK_ID") {
+            data {
+                id
+            }
+            error {
+                message
+                code
+                data
+            }
+        }
+    }
+}
+
+
+query GetMockDataGenerator {
+    backgroundTasks {
+        getTask(id: "YOUR_TASK_ID") {
+            data {
+                id
+                taskStatus
+            }
+            error {
+                message
+                code
+                data
+            }
+        }
+    }
+}
+
+query ListChildMockDataCreators {
+    backgroundTasks {
+        listTasks(where: {
+            parentId: "YOUR_TASK_ID"
+        }) {
+            data {
+                id
+                taskStatus
+            }
+            error {
+                message
+                code
+                data
+            }
+        }
+    }
+}

@@ -81,10 +81,18 @@ export const createAuthentication = ({
     const Authentication = ({ getIdentityData, children }: AuthenticationProps) => {
         const timerRef = useRef<number | undefined>(undefined);
         const apolloClient = useApolloClient();
-        const { identity, setIdentity } = useSecurity();
+        const { identity, setIdentity, setIdTokenProvider } = useSecurity();
         const [isAuthenticated, setIsAuthenticated] = useState(false);
 
         useEffect(() => {
+            /**
+             * We need to give the security layer a way to fetch the `idToken`, so other network clients can use
+             * it when sending requests to external services (APIs, websockets,...).
+             */
+            setIdTokenProvider(() => {
+                return oktaAuth.getIdToken();
+            });
+
             plugins.register(
                 new ApolloLinkPlugin(() => {
                     return setContext(async (_, payload) => {

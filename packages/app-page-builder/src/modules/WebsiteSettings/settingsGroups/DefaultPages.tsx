@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Bind } from "@webiny/form";
 import { ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 import { usePbWebsiteSettings } from "../usePbWebsiteSettings";
@@ -8,6 +8,13 @@ import { WebsiteSettingsConfig } from "~/modules/WebsiteSettings/config/WebsiteS
 
 const Homepage = () => {
     const { settings, editPage } = usePbWebsiteSettings();
+    const homePage = settings.pages?.home;
+
+    const editButtonClickHandler = useCallback(() => {
+        if (homePage) {
+            editPage(homePage);
+        }
+    }, [homePage]);
 
     return (
         <Bind name={"pages.home"}>
@@ -15,7 +22,7 @@ const Homepage = () => {
                 label={"Homepage"}
                 description={`To set a different page, start typing its title and select it from the dropdown menu. Note that the page must be published in order to appear.`}
                 trailingIcon={
-                    <ButtonPrimary small onClick={() => editPage(settings.pages.home)}>
+                    <ButtonPrimary small disabled={!homePage} onClick={editButtonClickHandler}>
                         <ButtonIcon icon={<EditIcon />} />
                         Edit
                     </ButtonPrimary>
@@ -27,6 +34,13 @@ const Homepage = () => {
 
 const NotFoundPage = () => {
     const { settings, editPage } = usePbWebsiteSettings();
+    const notFoundPage = settings.pages?.notFound;
+
+    const editButtonClickHandler = useCallback(() => {
+        if (notFoundPage) {
+            editPage(notFoundPage);
+        }
+    }, [notFoundPage]);
 
     return (
         <Bind name={"pages.notFound"}>
@@ -34,7 +48,7 @@ const NotFoundPage = () => {
                 label={"Not found (404) page"}
                 description={`To set a different page, start typing its title and select it from the dropdown menu. Note that the page must be published in order to appear.`}
                 trailingIcon={
-                    <ButtonPrimary small onClick={() => editPage(settings.pages.notFound)}>
+                    <ButtonPrimary small disabled={!notFoundPage} onClick={editButtonClickHandler}>
                         <ButtonIcon icon={<EditIcon />} />
                         Edit
                     </ButtonPrimary>

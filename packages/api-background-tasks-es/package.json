@@ -11,6 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api-elasticsearch-tasks": "0.0.0",
+    "@webiny/api-headless-cms-es-tasks": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/tasks": "0.0.0"
   },

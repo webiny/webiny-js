@@ -21,6 +21,7 @@
     "@webiny/api-prerendering-service": "0.0.0",
     "@webiny/api-security": "0.0.0",
     "@webiny/api-tenancy": "0.0.0",
+    "@webiny/error": "0.0.0",
     "@webiny/handler-client": "0.0.0",
     "@webiny/handler-graphql": "0.0.0"
   },

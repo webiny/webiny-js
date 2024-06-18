@@ -23,6 +23,7 @@ import {
 } from "~/types";
 import { PulumiAppRemoteResource } from "~/PulumiAppRemoteResource";
 import cloneDeep from "lodash/cloneDeep";
+import { DEFAULT_PROD_ENV_NAMES } from "./constants";
 
 export function createPulumiApp<TResources extends Record<string, unknown>>(
     params: CreatePulumiAppParams<TResources>
@@ -64,12 +65,26 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
             create: params.config || {},
             run: {}
         },
+        env: {
+            name: "",
+            isProduction: false
+        },
         decorateProgram: cb => {
             programDecorators.push(cb);
         },
 
         async run(config) {
             app.params.run = config;
+
+            // Add environment-related variables.
+            const productionEnvironments =
+                app.params.create.productionEnvironments || DEFAULT_PROD_ENV_NAMES;
+            const isProduction = productionEnvironments.includes(app.params.run.env);
+
+            app.env = {
+                name: app.params.run.env,
+                isProduction
+            };
 
             const programOutput = programDecorators.reduce<PulumiProgram<PulumiApp<TResources>>>(
                 (program, decorator) => {

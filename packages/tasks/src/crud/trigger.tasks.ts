@@ -10,10 +10,12 @@ import {
     ITaskLogItemType,
     ITasksContextTriggerObject,
     ITaskTriggerParams,
+    PutEventsCommandOutput,
     TaskDataStatus
 } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { EventBridgeEventTransport, PutEventsCommandOutput } from "./EventBridgeEventTransport";
+import { createTransport } from "~/transport/createTransport";
+import { EventBridgeEventTransportPlugin } from "~/crud/transport/EventBridgeEventTransportPlugin";
 
 const MAX_DELAY_DAYS = 355;
 const MAX_DELAY_SECONDS = MAX_DELAY_DAYS * 24 * 60 * 60;
@@ -43,16 +45,11 @@ export const createTriggerTasksCrud = (
     context: Context,
     config: ITaskConfig
 ): ITasksContextTriggerObject => {
-    const getTenant = (): string => {
-        return context.tenancy.getCurrentTenant().id;
-    };
-    const getLocale = (): string => {
-        return context.cms.getLocale().code;
-    };
-    const eventBridgeEventTransport = new EventBridgeEventTransport({
-        config,
-        getTenant,
-        getLocale
+    context.plugins.register(new EventBridgeEventTransportPlugin());
+
+    const transport = createTransport({
+        context,
+        config
     });
 
     return {
@@ -85,7 +82,7 @@ export const createTriggerTasksCrud = (
 
             let event: PutEventsCommandOutput | null = null;
             try {
-                event = await eventBridgeEventTransport.send(task, delay);
+                event = await transport.send(task, delay);
 
                 if (!event) {
                     throw new WebinyError(
