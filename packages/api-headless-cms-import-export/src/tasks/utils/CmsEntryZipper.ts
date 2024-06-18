@@ -7,11 +7,15 @@ import {
 } from "~/tasks/utils/abstractions/CmsEntryZipper";
 import { IFileMeta } from "./types";
 import { CompleteMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3";
+import { IEntryAssets } from "~/tasks/utils/abstractions/EntryAssets";
+import { IEntryAssetsList } from "~/tasks/utils/abstractions/EntryAssetsList";
 
 export interface ICmsEntryZipperConfig {
     zipper: IZipper;
     archiver: IArchiver;
     fetcher: ICmsEntryFetcher;
+    entryAssets: IEntryAssets;
+    entryAssetsList: IEntryAssetsList;
 }
 
 interface ICreateBufferDataParams {
@@ -49,11 +53,15 @@ export class CmsEntryZipper implements ICmsEntryZipper {
     private readonly zipper: IZipper;
     private readonly archiver: IArchiver;
     private readonly fetcher: ICmsEntryFetcher;
+    private readonly entryAssets: IEntryAssets;
+    private readonly entryAssetsList: IEntryAssetsList;
 
     public constructor(params: ICmsEntryZipperConfig) {
         this.zipper = params.zipper;
         this.archiver = params.archiver;
         this.fetcher = params.fetcher;
+        this.entryAssets = params.entryAssets;
+        this.entryAssetsList = params.entryAssetsList;
     }
 
     public async execute(
@@ -75,10 +83,14 @@ export class CmsEntryZipper implements ICmsEntryZipper {
                 return;
             } else if (hasMoreItems === false) {
                 console.log("No more items to fetch, finalizing the zip.");
+
+                const assets = await this.entryAssetsList.fetch(this.entryAssets.assets);
+
                 await this.zipper.add(
                     Buffer.from(
                         JSON.stringify({
                             files,
+                            assets,
                             modelId: model.modelId
                         })
                     ),
@@ -96,6 +108,8 @@ export class CmsEntryZipper implements ICmsEntryZipper {
                 await this.zipper.finalize();
                 return;
             }
+
+            this.entryAssets.assignAssets(items);
 
             const name = `entries-${id}.json`;
 

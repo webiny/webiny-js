@@ -8,9 +8,13 @@ import {
 import { createPassThrough } from "~tests/mocks/createPassThrough";
 import { PassThrough } from "stream";
 import { mockClient } from "aws-sdk-client-mock";
+import { IEntryAssets } from "~/tasks/utils/abstractions/EntryAssets";
+import { IEntryAssetsList } from "~/tasks/utils/abstractions/EntryAssetsList";
 
 interface ICreateCmsEntryZipperParams {
     fetcher: ICmsEntryFetcher;
+    entryAssets: IEntryAssets;
+    entryAssetsList: IEntryAssetsList;
     region?: string;
     filename?: string;
     stream?: PassThrough;
@@ -60,8 +64,10 @@ export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
 
     const cmsEntryZipper = new CmsEntryZipper({
         zipper,
+        archiver,
         fetcher: params.fetcher,
-        archiver
+        entryAssets: params.entryAssets,
+        entryAssetsList: params.entryAssetsList
     });
 
     return {

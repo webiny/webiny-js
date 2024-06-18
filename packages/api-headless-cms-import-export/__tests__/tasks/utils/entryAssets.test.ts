@@ -1,6 +1,7 @@
-import { EntryAssets, IAsset } from "~/tasks/utils/EntryAssets";
+import { EntryAssets } from "~/tasks/utils/EntryAssets";
 import { useHandler } from "~tests/helpers/useHandler";
 import { CmsEntry } from "@webiny/api-headless-cms/types";
+import { IAsset } from "./abstractions/EntryAssets";
 
 const cloudfrontUrl = "https://aCloundfrontDistributionId.cloudfront.net";
 
@@ -13,17 +14,18 @@ const createImageUrl = (file: string) => {
 };
 
 describe("entry assets", () => {
-    it("should properly initialize EntryAssets", async () => {
+    let entryAssets: EntryAssets;
+
+    beforeEach(async () => {
         const { handler } = useHandler();
-
         const context = await handler();
-
         const traverser = await context.cms.getEntryTraverser("author");
-
-        const entryAssets = new EntryAssets({
+        entryAssets = new EntryAssets({
             traverser
         });
+    });
 
+    it("should properly extract assets", async () => {
         expect(entryAssets).toBeInstanceOf(EntryAssets);
 
         const image1 = `fileId1234/image-1-in-its-own-directory.jpg`;
@@ -83,46 +85,84 @@ describe("entry assets", () => {
 
         entryAssets.assignAssets(entry);
 
-        expect(entryAssets.assets.size).toEqual(6);
+        expect(Object.keys(entryAssets.assets)).toHaveLength(6);
 
         const expected: IAsset[] = [
             {
-                id: "fileId1234",
                 key: image1,
-                path: createImagePath(image1),
                 url: createImageUrl(image1)
             },
             {
-                id: "fileId2345",
                 key: image2,
-                path: createImagePath(image2),
                 url: createImageUrl(image2)
             },
             {
-                id: undefined,
                 key: image3,
-                path: createImagePath(image3),
                 url: createImageUrl(image3)
             },
             {
-                id: "fileId4567",
                 key: image4,
-                path: createImagePath(image4),
                 url: createImageUrl(image4)
             },
             {
-                id: undefined,
                 key: image5,
-                path: createImagePath(image5),
                 url: createImageUrl(image5)
             },
             {
-                id: "fileId6789",
                 key: image6,
-                path: createImagePath(image6),
                 url: createImageUrl(image6)
             }
         ];
-        expect(Array.from(entryAssets.assets.values())).toEqual(expected);
+        expect(Object.values(entryAssets.assets)).toEqual(expected);
+    });
+
+    it("should properly extract asset from complex path", async () => {
+        const cloudfrontUrl = "https://odisadosadnsakl.cloudfront.aws";
+        const filePath = "files";
+        const fileKey =
+            "demo-pages/6022814891bd1300087bd24c/welcome-to-webiny__webiny-infrastructure-overview!.svg";
+        const image = `${cloudfrontUrl}/${filePath}/${fileKey}`;
+
+        const entry: Pick<CmsEntry, "values"> = {
+            values: {
+                fullName: "John Doe",
+                image
+            }
+        };
+
+        entryAssets.assignAssets(entry);
+
+        const expected: IAsset[] = [
+            {
+                key: fileKey,
+                url: image
+            }
+        ];
+
+        expect(Object.values(entryAssets.assets)).toEqual(expected);
+    });
+
+    it("should properly extract asset alias from a path", async () => {
+        const cloudfrontUrl = "https://odisadosadnsakl.cloudfront.aws";
+        const filePath = "files";
+        const fileKey = "demo-pages/welcome-to-webiny__webiny-infrastructure-overview!.svg";
+        const image = `${cloudfrontUrl}/${filePath}/${fileKey}`;
+
+        const entry: Pick<CmsEntry, "values"> = {
+            values: {
+                fullName: "John Doe",
+                image
+            }
+        };
+
+        entryAssets.assignAssets(entry);
+
+        const expected: IAsset[] = [
+            {
+                key: fileKey,
+                url: image
+            }
+        ];
+        expect(Object.values(entryAssets.assets)).toEqual(expected);
     });
 });

@@ -41,6 +41,11 @@ export class Upload implements IUpload {
         this.stream = params.stream;
     }
 
+    public async abort(): Promise<void> {
+        await this.upload.abort();
+        this.client.destroy();
+    }
+
     public async done(): Promise<CompleteMultipartUploadCommandOutput> {
         const result = await this.upload.done();
         this.client.destroy();

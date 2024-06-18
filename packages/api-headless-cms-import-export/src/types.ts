@@ -1,4 +1,4 @@
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { Context as TasksContext, ITaskResponseDoneResultOutput } from "@webiny/tasks/types";
 import { ICmsImportExportRecord } from "./domain/abstractions/CmsImportExportRecord";
 
@@ -35,6 +35,6 @@ export interface CmsImportExportObject {
     abortExportContentEntries(params: ICmsImportExportObjectAbortExportParams): Promise<void>;
 }
 
-export interface Context extends CmsContext, TasksContext {
+export interface Context extends FileManagerContext, TasksContext {
     cmsImportExport: CmsImportExportObject;
 }

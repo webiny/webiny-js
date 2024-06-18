@@ -1,6 +1,8 @@
 import AdmZip from "adm-zip";
 import { createCmsEntryZipper } from "~tests/mocks/createCmsEntryZipper";
 import { fetchItems } from "./mocks/cmsEntryZipperItems";
+import { IEntryAssets } from "~/tasks/utils/abstractions/EntryAssets";
+import { IEntryAssetsList } from "~/tasks/utils/abstractions/EntryAssetsList";
 
 describe("cms entry zipper", () => {
     it("should properly create an instance of CMS Entry Zipper and execute it", async () => {
@@ -16,7 +18,9 @@ describe("cms entry zipper", () => {
                         hasMoreItems: false
                     }
                 };
-            }
+            },
+            entryAssets: {} as IEntryAssets,
+            entryAssetsList: {} as IEntryAssetsList
         });
 
         expect(cmsEntryZipper.execute).toBeFunction();
@@ -45,6 +49,17 @@ describe("cms entry zipper", () => {
         const { cmsEntryZipper, getBuffer } = createCmsEntryZipper({
             fetcher: async after => {
                 return fetchItems(after);
+            },
+            entryAssets: {
+                assets: {},
+                assignAssets() {
+                    return {};
+                }
+            },
+            entryAssetsList: {
+                async fetch() {
+                    return [];
+                }
             }
         });
 
@@ -183,6 +198,7 @@ describe("cms entry zipper", () => {
                     after: "6"
                 }
             ],
+            assets: [],
             modelId: "aTestModelId"
         });
     });

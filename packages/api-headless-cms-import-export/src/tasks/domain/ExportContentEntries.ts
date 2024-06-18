@@ -27,12 +27,17 @@ import { createS3Client } from "@webiny/aws-sdk/client-s3";
 import { Agent as HttpAgent } from "http";
 import { Agent as HttpsAgent } from "https";
 import { NodeHttpHandler } from "@smithy/node-http-handler";
+import { EntryAssets } from "~/tasks/utils/EntryAssets";
+import { EntryAssetsList } from "~/tasks/utils/EntryAssetsList";
 
 export interface IExportContentEntriesConfig {
-    createCmsEntryZipper(config: Pick<ICmsEntryZipperConfig, "fetcher">): ICmsEntryZipper;
+    createCmsEntryZipper(
+        config: Pick<ICmsEntryZipperConfig, "fetcher" | "entryAssets" | "entryAssetsList">
+    ): ICmsEntryZipper;
 }
 
-export interface ICreateCmsEntryZipperConfig extends Pick<ICmsEntryZipperConfig, "fetcher"> {
+export interface ICreateCmsEntryZipperConfig
+    extends Pick<ICmsEntryZipperConfig, "fetcher" | "entryAssets" | "entryAssetsList"> {
     filename: string;
 }
 
@@ -81,9 +86,21 @@ export class ExportContentEntries<
         const prefix = uniqueId(`cms-export/${model.modelId}/`);
         const filename = `${prefix}/entries.zip`;
 
+        const entryAssets = new EntryAssets({
+            traverser: await context.cms.getEntryTraverser(model.modelId)
+        });
+
+        const entryAssetsList = new EntryAssetsList({
+            listFiles: opts => {
+                return context.fileManager.listFiles(opts);
+            }
+        });
+
         const entryZipper = this.createCmsEntryZipper({
             filename,
-            fetcher
+            fetcher,
+            entryAssets,
+            entryAssetsList
         });
 
         const shouldAbort = (): boolean => {
@@ -176,7 +193,9 @@ export const createExportContentEntries = () => {
         return new CmsEntryZipper({
             fetcher: config.fetcher,
             archiver,
-            zipper
+            zipper,
+            entryAssets: config.entryAssets,
+            entryAssetsList: config.entryAssetsList
         });
     };
 

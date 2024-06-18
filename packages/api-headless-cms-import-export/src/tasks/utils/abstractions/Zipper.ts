@@ -6,5 +6,6 @@ export interface IAddOptions extends Omit<EntryData, "name">, Required<Pick<Entr
 export interface IZipper {
     add(data: Buffer, options: IAddOptions): Promise<void>;
     finalize(): Promise<void>;
+    abort(): Promise<void>;
     done(): Promise<CompleteMultipartUploadCommandOutput>;
 }

@@ -29,6 +29,10 @@ export class Zipper implements IZipper {
         }, 200);
     }
 
+    public async abort(): Promise<void> {
+        return this.upload.abort();
+    }
+
     public async done(): Promise<CompleteMultipartUploadCommandOutput> {
         return this.upload.done();
     }

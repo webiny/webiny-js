@@ -1,72 +1,79 @@
-import { CmsEntry } from "@webiny/api-headless-cms/types";
-import { ContentEntryTraverser } from "@webiny/api-headless-cms/utils/contentEntryTraverser/ContentEntryTraverser";
-
-export interface IAsset {
-    id?: string;
-    key: string;
-    path: string;
-    url: string;
-}
-
-export type IAssets = Map<string, IAsset>;
-
-export interface IEntryAssets {
-    readonly assets: IAssets;
-    assignAssets(entry: CmsEntry): void;
-}
+import { ContentEntryTraverser } from "@webiny/api-headless-cms";
+import {
+    IAsset,
+    IAssets,
+    IAssignAssetsInput,
+    IEntryAssets
+} from "~/tasks/utils/abstractions/EntryAssets";
 
 export interface IEntryAssetsParams {
     traverser: ContentEntryTraverser;
 }
 
-/**
- * This regexp creates a match group for the file path, file id, and file name.
- * Expected match.groups is IMatchedGroup type
- */
-const assetSrcRegexp =
-    /(?<filePath>\/files\/((?<fileId>[a-zA-Z0-9_-]+)\/)?(?<fileName>[a-zA-Z0-9_\-]+\.[a-z]{2,5}))$/;
+const fileTypes: string[] = ["file"];
 
-type IMatchedGroup =
-    | {
-          filePath: string;
-          fileId?: string;
-          fileName: string;
-      }
-    | undefined;
+interface IMatchOutput {
+    alias?: never;
+    key: string;
+}
+
+interface IMatchAliasOutput {
+    key?: never;
+    alias: string;
+}
 
 export class EntryAssets implements IEntryAssets {
-    public readonly assets: IAssets = new Map();
+    public readonly assets: IAssets = {};
     private readonly traverser: ContentEntryTraverser;
 
     public constructor(params: IEntryAssetsParams) {
         this.traverser = params.traverser;
     }
 
-    public assignAssets(entry: Pick<CmsEntry, "values">): void {
-        this.traverser.traverse(entry.values, ({ field, value }) => {
-            if (field.type !== "file" || !value) {
-                return;
-            }
+    public assignAssets(input: IAssignAssetsInput): void {
+        const entries = Array.isArray(input) ? input : [input];
+        if (entries.length === 0) {
+            return;
+        }
 
-            this.assignAssetsToItems(value);
-        });
+        for (const entry of entries) {
+            this.traverser.traverse(entry.values, ({ field, value }) => {
+                if (!value || fileTypes.includes(field.type) === false) {
+                    return;
+                }
+
+                this.assignAssetsToItems(value);
+            });
+        }
     }
 
-    private parseAssetSrc(url?: string | unknown): IAsset | null {
-        if (!url || typeof url !== "string") {
+    private parseAssetSrc(input?: string | unknown): IAsset | null {
+        if (!input || typeof input !== "string") {
             return null;
         }
-        const matched = url.match(assetSrcRegexp);
-        const groups = matched?.groups as IMatchedGroup;
-        if (!groups) {
+
+        const result = this.match(input);
+        if (!result) {
             return null;
         }
 
         return {
-            id: groups.fileId,
-            path: groups.filePath,
-            key: [groups.fileId, groups.fileName].filter(Boolean).join("/"),
-            url
+            ...result,
+            url: input
+        };
+    }
+
+    private match(input: string): IMatchAliasOutput | IMatchOutput | null {
+        const url = new URL(input);
+        const { pathname } = url;
+        const isAlias = !pathname.startsWith("/files/") && !pathname.startsWith("/private/");
+        if (isAlias) {
+            return {
+                alias: pathname
+            };
+        }
+        return {
+            key: pathname.replace("/files/", "").replace("/private/", "")
         };
     }
 
@@ -77,10 +84,11 @@ export class EntryAssets implements IEntryAssets {
             const asset = this.parseAssetSrc(input);
             if (!asset) {
                 return;
-            } else if (this.assets.has(asset.key)) {
+            } else if (this.assets[asset.url]) {
                 return;
             }
-            this.assets.set(asset.key, asset);
+            this.assets[asset.url] = asset;
+            return;
         } else if (!Array.isArray(input)) {
             return;
         }
@@ -88,10 +96,10 @@ export class EntryAssets implements IEntryAssets {
             const asset = this.parseAssetSrc(src);
             if (!asset) {
                 continue;
-            } else if (this.assets.has(asset.key)) {
+            } else if (this.assets[asset.url]) {
                 continue;
             }
-            this.assets.set(asset.key, asset);
+            this.assets[asset.url] = asset;
         }
     }
 }
