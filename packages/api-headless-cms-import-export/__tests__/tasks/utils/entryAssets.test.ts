@@ -22,12 +22,12 @@ describe("entry assets", () => {
         const { handler } = useHandler();
         const context = await handler();
         traverser = await context.cms.getEntryTraverser("author");
+        entryAssets = new EntryAssets({
+            traverser
+        });
     });
 
     it("should properly extract assets", async () => {
-        const entryAssets = new EntryAssets({
-            traverser
-        });
         expect(entryAssets).toBeInstanceOf(EntryAssets);
 
         const image1 = `fileId1234/image-1-in-its-own-directory.jpg`;

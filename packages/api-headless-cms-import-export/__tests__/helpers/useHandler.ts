@@ -13,6 +13,8 @@ import { PluginCollection } from "@webiny/plugins/types";
 import { createBackgroundTaskContext } from "@webiny/tasks";
 import { Context } from "~/types";
 import { createModelPlugin } from "~tests/mocks/model";
+import { createFileManagerContext } from "@webiny/api-file-manager";
+import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -23,11 +25,14 @@ export const useHandler = <C extends Context = Context>(params?: UseHandlerParam
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const i18nStorage = getStorageOps<any[]>("i18n");
 
+    const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
+
     const handler = createRawHandler<any, C>({
         plugins: [
             createModelPlugin(),
             createWcpContext(),
             ...cmsStorage.plugins,
+            ...fileManagerStorage.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: false,
                 permissions: createPermissions(),
@@ -41,6 +46,9 @@ export const useHandler = <C extends Context = Context>(params?: UseHandlerParam
                 storageOperations: cmsStorage.storageOperations
             }),
             createHeadlessCmsGraphQL(),
+            createFileManagerContext({
+                storageOperations: fileManagerStorage.storageOperations
+            }),
             graphQLHandlerPlugins(),
             createBackgroundTaskContext(),
             createRawEventHandler(async ({ context }) => {

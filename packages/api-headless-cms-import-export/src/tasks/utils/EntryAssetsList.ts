@@ -42,13 +42,13 @@ export class EntryAssetsList implements IEntryAssetsList {
                     key_in: keys
                 },
                 {
-                    aliases_contains: aliases
+                    aliases_in: aliases
                 }
             ];
         } else if (keys.length > 0) {
             where.key_in = keys;
         } else if (aliases.length > 0) {
-            where.aliases_contains = aliases;
+            where.aliases_in = aliases;
         } else {
             return assets;
         }
@@ -71,7 +71,8 @@ export class EntryAssetsList implements IEntryAssetsList {
             for (const file of files) {
                 assets.push({
                     id: file.id,
-                    key: file.key
+                    key: file.key,
+                    aliases: file.aliases || []
                 });
             }
             if (!meta.hasMoreItems) {
