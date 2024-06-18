@@ -4,6 +4,7 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-admin" },
+    { "path": "../app-aco" },
     { "path": "../app-headless-cms" },
     { "path": "../app-security" },
     { "path": "../app-wcp" },
@@ -24,6 +25,8 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-aco/*": ["../app-aco/src/*"],
+      "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/app-headless-cms/*": ["../app-headless-cms/src/*"],
       "@webiny/app-headless-cms": ["../app-headless-cms/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
