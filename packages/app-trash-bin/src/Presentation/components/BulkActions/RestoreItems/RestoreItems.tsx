@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { ReactComponent as RestoreIcon } from "@material-design-icons/svg/outlined/restore.svg";
 import { observer } from "mobx-react-lite";
+import { useSnackbar } from "@webiny/app-admin";
 import { TrashBinListConfig } from "~/Presentation/configs";
 import { useTrashBin } from "~/Presentation/hooks";
 import { getEntriesLabel } from "../BulkActions";
@@ -9,6 +10,7 @@ import { TrashBinItemDTO } from "~/Domain";
 
 export const BulkActionsRestoreItems = observer(() => {
     const { restoreItem, onItemAfterRestore, getRestoredItemById } = useTrashBin();
+    const { showSnackbar } = useSnackbar();
 
     const { useWorker, useButtons, useDialog } = TrashBinListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
@@ -16,8 +18,8 @@ export const BulkActionsRestoreItems = observer(() => {
     const { showConfirmationDialog, showResultsDialog, hideResultsDialog } = useDialog();
 
     const entriesLabel = useMemo(() => {
-        return getEntriesLabel(worker.items.length);
-    }, [worker.items.length]);
+        return getEntriesLabel(worker.items.length, worker.isSelectedAll);
+    }, [worker.items.length, worker.isSelectedAll]);
 
     const onLocationClick = useCallback(
         async (item: TrashBinItemDTO) => {
@@ -33,6 +35,15 @@ export const BulkActionsRestoreItems = observer(() => {
             message: `You are about to restore ${entriesLabel}. Are you sure you want to continue?`,
             loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
+                if (worker.isSelectedAll) {
+                    await worker.processInBulk("RestoreEntriesFromTrash");
+                    worker.resetItems();
+                    showSnackbar(
+                        "The selected items will be restored from the trash bin. This process may take longer depending on the number of items."
+                    );
+                    return;
+                }
+
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
                         await restoreItem(item.id);

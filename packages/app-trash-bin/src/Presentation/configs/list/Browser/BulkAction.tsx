@@ -49,7 +49,7 @@ export const BaseBulkAction = ({
 };
 
 const useWorker = () => {
-    const { vm, selectItems } = useTrashBin();
+    const { vm, selectItems, bulkAction } = useTrashBin();
     const { current: worker } = useRef(new Worker<TrashBinItemDTO>());
 
     useEffect(() => {
@@ -73,8 +73,12 @@ const useWorker = () => {
             }: CallbackParams<TrashBinItemDTO>) => Promise<void>,
             chunkSize?: number
         ) => worker.processInSeries(callback, chunkSize),
+        processInBulk: async (action: string, data?: Record<string, any>) => {
+            await bulkAction({ action, search: vm.searchQuery, data });
+        },
         resetItems: resetItems,
-        results: worker.results
+        results: worker.results,
+        isSelectedAll: vm.isSelectedAll
     };
 };
 

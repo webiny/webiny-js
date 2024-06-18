@@ -4,6 +4,7 @@ import { ISelectedItemsRepository } from "./ISelectedItemsRepository";
 
 export class SelectedItemsRepository implements ISelectedItemsRepository {
     private items: TrashBinItem[] = [];
+    private selectedAll = false;
 
     constructor() {
         makeAutoObservable(this);
@@ -13,7 +14,20 @@ export class SelectedItemsRepository implements ISelectedItemsRepository {
         return this.items;
     }
 
+    getSelectedAllItems() {
+        return this.selectedAll;
+    }
+
     async selectItems(items: TrashBinItem[]) {
         this.items = items;
+        this.selectedAll = false;
+    }
+
+    async selectAllItems() {
+        this.selectedAll = true;
+    }
+
+    async unselectAllItems() {
+        this.selectedAll = false;
     }
 }
