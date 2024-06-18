@@ -322,25 +322,61 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
     ]);
 
     /**
-     * This `useEffect` hook runs whenever the number of `records` changes
-     * or the length of the `selected` array in the state changes.
-     *
-     * The hook checks if:
-     * - There are any `records` available (i.e., `records.length` is not zero)
-     * - The length of `records` is equal to the length of the `selected` array in the state
-     *
-     * If both conditions are true, it sets the `showingSelectAll` state to true.
-     * Otherwise, it sets `showingSelectAll` to false.
+     * useEffect hook to determine if the "Select All" option should be displayed based on the current state and meta properties:
+     *  - if in the root folder with no folders, checks if all records are selected.
+     *  - if in a non-root folder with multiple descendant folders, checks if all records are selected.
+     *  - if there are more items to load, checks if all records are selected.
      */
     useEffect(() => {
-        const showingSelectAll = !!records.length && records.length === state.selected.length;
+        // Destructure relevant properties from state and meta
+        const { selected, folderId } = state;
+        const { hasMoreItems } = meta;
 
-        setState(state => ({
-            ...state,
-            isSelectedAll: false,
-            showingSelectAll
-        }));
-    }, [records.length, state.selected.length]);
+        // Retrieve all descendant folders of the current folderId
+        const folderWithChildren = getDescendantFolders(folderId);
+
+        // Compute the lengths of various arrays for later comparisons
+        const foldersLength = folders.length;
+        const recordsLength = records.length;
+        const selectedLength = selected.length;
+        const folderWithChildrenLength = folderWithChildren.length;
+
+        // Function to determine if all records are selected
+        const getAllRecordsAreSelected = () => !!recordsLength && recordsLength === selectedLength;
+
+        // Initialize a flag to determine if the "Select All" option should be shown
+        let showingSelectAll = false;
+
+        // If in the root folder and there are no folders, check if all records are selected
+        if (folderId === ROOT_FOLDER && foldersLength === 0) {
+            showingSelectAll = getAllRecordsAreSelected();
+        }
+
+        // If not in the root folder and there are multiple descendant folders, check if all records are selected
+        if (folderId !== ROOT_FOLDER && folderWithChildrenLength > 1) {
+            showingSelectAll = getAllRecordsAreSelected();
+        }
+
+        // If there are more items to load, check if all records are selected
+        if (hasMoreItems) {
+            showingSelectAll = getAllRecordsAreSelected();
+        }
+
+        // Update the component's state based on the computed showingSelectAll flag
+        setState(prevState => {
+            // Only update if there is a change in showingSelectAll or if isSelectedAll was true previously
+            if (!prevState.isSelectedAll && prevState.showingSelectAll === showingSelectAll) {
+                return prevState;
+            }
+
+            // Return the new state with updated showingSelectAll and reset isSelectedAll to false
+            return {
+                ...prevState,
+                isSelectedAll: false,
+                showingSelectAll
+            };
+        });
+    }, [records.length, state.isSearch, meta.hasMoreItems, state.selected.length, state.folderId]);
 
     const context: AcoListContextData<GenericSearchData> = {
         ...pick(state, [
