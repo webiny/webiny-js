@@ -26,12 +26,6 @@ export enum EntriesTask {
 }
 
 /**
- * Empty Trash Bins
- */
-
-export type IEmptyTrashBins = ITaskRunParams<HcmsTasksContext>;
-
-/**
  * Bulk Action Operation
  */
 
