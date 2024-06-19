@@ -215,7 +215,11 @@ const defineColumns = <T,>(
                     if (cell && typeof cell === "function") {
                         return cell(info.row.original);
                     } else {
-                        return info.getValue() || null;
+                        // Automatically convert any cell value to a string for rendering,
+                        // ensuring the table displays values correctly. This aligns with React's
+                        // rendering, which expects JSX, strings or null.
+                        // https://github.com/TanStack/table/issues/1042
+                        return info.getValue() ? String(info.getValue()) : null;
                     }
                 },
                 enableSorting,
