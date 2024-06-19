@@ -29,6 +29,8 @@ import { Agent as HttpsAgent } from "https";
 import { NodeHttpHandler } from "@smithy/node-http-handler";
 import { EntryAssets } from "~/tasks/utils/EntryAssets";
 import { EntryAssetsList } from "~/tasks/utils/EntryAssetsList";
+import { SignedUrl } from "~/tasks/utils/SignedUrl";
+import { getBucket } from "~/tasks/utils/helpers/getBucket";
 
 export interface IExportContentEntriesConfig {
     createCmsEntryZipper(
@@ -112,7 +114,7 @@ export class ExportContentEntries<
             shouldAbort,
             model
         });
-        if (!result.Key || !result.Location) {
+        if (!result.key || !result.url) {
             return response.error({
                 message: "Failed to export content entries.",
                 code: "EXPORT_FAILED"
@@ -122,8 +124,8 @@ export class ExportContentEntries<
         // unfortunately we need to cast as TS thinks this is a bug.
         // TODO: pass proper types to response.done callable
         return response.done({
-            file: result.Key,
-            url: result.Location
+            file: result.key,
+            url: result.url
         } as O);
     }
 }
@@ -146,7 +148,7 @@ export const createExportContentEntries = () => {
     };
 
     const createCmsEntryZipper = (config: ICreateCmsEntryZipperConfig) => {
-        const s3Client = createS3Client({
+        const client = createS3Client({
             requestHandler: new NodeHttpHandler({
                 connectionTimeout: 0,
                 httpAgent: new HttpAgent({
@@ -168,15 +170,17 @@ export const createExportContentEntries = () => {
                 requestTimeout: 900000 // milliseconds / 15 minutes
             })
         });
-        const streamPassThrough = createPassThrough({
+        const stream = createPassThrough({
             autoDestroy: true
         });
 
+        const bucket = getBucket();
+
         const upload = createUpload({
-            client: s3Client,
+            client,
             filename: config.filename,
-            bucket: process.env.S3_BUCKET as string,
-            stream: streamPassThrough
+            bucket,
+            stream
         });
 
         const archiver = createArchiver({
@@ -191,8 +195,14 @@ export const createExportContentEntries = () => {
             archiver
         });
 
+        const signedUrl = new SignedUrl({
+            client,
+            bucket
+        });
+
         return new CmsEntryZipper({
             fetcher: config.fetcher,
+            signedUrl,
             archiver,
             zipper,
             entryAssets: config.entryAssets,

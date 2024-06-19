@@ -3,15 +3,17 @@ import { IZipper } from "./abstractions/Zipper";
 import { IArchiver } from "./abstractions/Archiver";
 import {
     ICmsEntryZipper,
-    ICmsEntryZipperExecuteParams
+    ICmsEntryZipperExecuteParams,
+    ICmsEntryZipperExecuteResult
 } from "~/tasks/utils/abstractions/CmsEntryZipper";
 import { IFileMeta } from "./types";
-import { CompleteMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3";
 import { IEntryAssets } from "~/tasks/utils/abstractions/EntryAssets";
 import { IEntryAssetsList } from "~/tasks/utils/abstractions/EntryAssetsList";
+import { ISignedUrl } from "./abstractions/SignedUrl";
 
 export interface ICmsEntryZipperConfig {
     zipper: IZipper;
+    signedUrl: ISignedUrl;
     archiver: IArchiver;
     fetcher: ICmsEntryFetcher;
     entryAssets: IEntryAssets;
@@ -51,6 +53,7 @@ export interface ICmsEntryFetcher {
 
 export class CmsEntryZipper implements ICmsEntryZipper {
     private readonly zipper: IZipper;
+    private readonly signedUrl: ISignedUrl;
     private readonly archiver: IArchiver;
     private readonly fetcher: ICmsEntryFetcher;
     private readonly entryAssets: IEntryAssets;
@@ -58,6 +61,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
 
     public constructor(params: ICmsEntryZipperConfig) {
         this.zipper = params.zipper;
+        this.signedUrl = params.signedUrl;
         this.archiver = params.archiver;
         this.fetcher = params.fetcher;
         this.entryAssets = params.entryAssets;
@@ -66,7 +70,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
 
     public async execute(
         params: ICmsEntryZipperExecuteParams
-    ): Promise<CompleteMultipartUploadCommandOutput> {
+    ): Promise<ICmsEntryZipperExecuteResult> {
         const { shouldAbort, model } = params;
 
         const files: IFileMeta[] = [];
@@ -138,6 +142,20 @@ export class CmsEntryZipper implements ICmsEntryZipper {
 
         addItems();
 
-        return await this.zipper.done();
+        const result = await this.zipper.done();
+
+        if (!result.Key) {
+            throw new Error("Failed to upload the zip file.");
+        }
+
+        const { url, bucket } = await this.signedUrl.fetch({
+            key: result.Key
+        });
+
+        return {
+            url,
+            bucket,
+            key: result.Key
+        };
     }
 }

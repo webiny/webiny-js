@@ -36,9 +36,9 @@ describe("cms entry zipper", () => {
             });
 
             expect(result).toEqual({
-                Bucket: bucket,
-                Key: filename,
-                Location: s3Url
+                bucket,
+                key: filename,
+                url: expect.stringMatching(s3Url)
             });
         } catch (ex) {
             expect(ex.message).toEqual("Must not happen!");

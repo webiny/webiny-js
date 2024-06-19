@@ -2,6 +2,7 @@ import { Archiver, CmsEntryZipper, ICmsEntryFetcher, Upload, Zipper } from "~/ta
 import {
     CreateMultipartUploadCommand,
     createS3Client,
+    GetObjectCommand,
     S3Client,
     UploadPartCommand
 } from "@webiny/aws-sdk/client-s3";
@@ -10,6 +11,7 @@ import { PassThrough } from "stream";
 import { mockClient } from "aws-sdk-client-mock";
 import { IEntryAssets } from "~/tasks/utils/abstractions/EntryAssets";
 import { IEntryAssetsList } from "~/tasks/utils/abstractions/EntryAssetsList";
+import { SignedUrl } from "~/tasks/utils/SignedUrl";
 
 interface ICreateCmsEntryZipperParams {
     fetcher: ICmsEntryFetcher;
@@ -24,18 +26,21 @@ interface ICreateCmsEntryZipperParams {
 export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
     const stream = params.stream || createPassThrough();
 
-    const client = mockClient(S3Client);
-    client.on(CreateMultipartUploadCommand).resolves({ UploadId: "1" });
-    client.on(UploadPartCommand).resolves({ ETag: "1" });
+    const mockedClient = mockClient(S3Client);
+    mockedClient.on(CreateMultipartUploadCommand).resolves({ UploadId: "1" });
+    mockedClient.on(GetObjectCommand).resolves({});
+    mockedClient.on(UploadPartCommand).resolves({ ETag: "1" });
 
     const region = params.region || "eu-central-1";
     const bucket = params.bucket || "my-test-bucket";
     const filename = params.filename || "test.zip";
 
+    const client = createS3Client({
+        region
+    });
+
     const upload = new Upload({
-        client: createS3Client({
-            region
-        }),
+        client,
         bucket,
         stream,
         filename
@@ -62,8 +67,14 @@ export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
         archiver
     });
 
+    const signedUrl = new SignedUrl({
+        client,
+        bucket
+    });
+
     const cmsEntryZipper = new CmsEntryZipper({
         zipper,
+        signedUrl,
         archiver,
         fetcher: params.fetcher,
         entryAssets: params.entryAssets,
