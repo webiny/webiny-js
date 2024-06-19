@@ -5,10 +5,10 @@ import { IEntryAssets } from "~/tasks/utils/abstractions/EntryAssets";
 import { IEntryAssetsList } from "~/tasks/utils/abstractions/EntryAssetsList";
 
 describe("cms entry zipper", () => {
-    it("should properly create an instance of CMS Entry Zipper and execute it", async () => {
+    it("should abort upload because of no items", async () => {
         expect.assertions(2);
 
-        const { cmsEntryZipper, bucket, filename, s3Url } = createCmsEntryZipper({
+        const { cmsEntryZipper } = createCmsEntryZipper({
             fetcher: async () => {
                 return {
                     items: [],
@@ -35,17 +35,13 @@ describe("cms entry zipper", () => {
                 }
             });
 
-            expect(result).toEqual({
-                bucket,
-                key: filename,
-                url: expect.stringMatching(s3Url)
-            });
+            expect(result).toEqual("should not happen");
         } catch (ex) {
-            expect(ex.message).toEqual("Must not happen!");
+            expect(ex.message).toEqual("Upload aborted.");
         }
     });
 
-    it("should zip entries into a file", async () => {
+    it("should zip entries into a file - no assets", async () => {
         const { cmsEntryZipper, getBuffer } = createCmsEntryZipper({
             fetcher: async after => {
                 return fetchItems(after);

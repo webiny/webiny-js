@@ -108,8 +108,8 @@ export class CmsEntryZipper implements ICmsEntryZipper {
 
             const { items, meta } = await this.fetcher(after);
             if (meta.totalCount === 0) {
-                console.log("No items found, finalizing the zip.");
-                await this.zipper.finalize();
+                console.log("No items found, aborting...");
+                await this.zipper.abort();
                 return;
             }
 
@@ -132,9 +132,14 @@ export class CmsEntryZipper implements ICmsEntryZipper {
             id++;
         };
 
+        this.archiver.archiver.on("error", error => {
+            console.error(error);
+        });
+
         this.archiver.archiver.on("entry", () => {
             if (shouldAbort()) {
                 this.archiver.archiver.abort();
+                this.zipper.abort();
                 return;
             }
             addItems();
