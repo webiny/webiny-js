@@ -1,4 +1,4 @@
-import { useHandler } from "~tests/helpers/useHandler";
+import { useRawHandler } from "~tests/helpers/useRawHandler";
 import { createMockTaskDefinitions } from "~tests/mocks/definition";
 import { createMockIdentity } from "~tests/mocks/identity";
 import { TaskDataStatus } from "~/types";
@@ -23,7 +23,7 @@ jest.mock("@webiny/aws-sdk/client-eventbridge", () => {
 });
 
 describe("trigger crud", () => {
-    const handler = useHandler({
+    const handler = useRawHandler({
         plugins: [...createMockTaskDefinitions()]
     });
 

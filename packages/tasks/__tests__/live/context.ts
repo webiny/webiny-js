@@ -1,29 +1,30 @@
 import { PluginCollection } from "@webiny/plugins/types";
-import { useHandler } from "~tests/helpers/useHandler";
+import { useRawHandler } from "~tests/helpers/useRawHandler";
 import { Context } from "~tests/types";
 
 export interface CreateLiveContextParams<C extends Context = Context> {
     plugins?: PluginCollection;
-    handler?: ReturnType<typeof useHandler<C>>;
+    handler?: ReturnType<typeof useRawHandler<C>>;
 }
 
 export const createLiveContext = async <C extends Context = Context>(
-    params?: CreateLiveContextParams<C>
+    params?: CreateLiveContextParams<C>,
+    payload?: Record<string, any>
 ) => {
     if (params?.handler) {
-        return params.handler.handle();
+        return params.handler.handle(payload);
     }
-    const handler = useHandler<C>({
+    const handler = useRawHandler<C>({
         plugins: [...(params?.plugins || [])]
     });
 
-    return handler.handle();
+    return handler.handle(payload);
 };
 
 export const createLiveContextFactory = <C extends Context = Context>(
     params?: CreateLiveContextParams<C>
 ) => {
-    return () => {
-        return createLiveContext<C>(params);
+    return (payload: Record<string, any> = {}) => {
+        return createLiveContext<C>(params, payload);
     };
 };
