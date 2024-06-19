@@ -8,7 +8,7 @@ const BATCH_SIZE = 50; // Number of entries to fetch in each batch
 const WAITING_TIME = 5; // Time to wait in seconds before retrying
 
 /**
- * TaskCreate class handles the execution of a task to process entries in batches.
+ * The `TaskCreate` class handles the execution of a task to process entries in batches.
  */
 export class CreateTasksByModel {
     private readonly taskCache: TaskCache;
