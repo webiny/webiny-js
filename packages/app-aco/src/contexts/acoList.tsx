@@ -347,8 +347,8 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         // Initialize a flag to determine if the "Select All" option should be shown
         let showingSelectAll = false;
 
-        // If in the root folder and there are no folders, check if all records are selected
-        if (folderId === ROOT_FOLDER && foldersLength === 0) {
+        // If in the root folder and there are some folders, check if all records are selected
+        if (folderId === ROOT_FOLDER && foldersLength > 0) {
             showingSelectAll = getAllRecordsAreSelected();
         }
 
@@ -376,7 +376,14 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
                 showingSelectAll
             };
         });
-    }, [records.length, state.isSearch, meta.hasMoreItems, state.selected.length, state.folderId]);
+    }, [
+        records.length,
+        folders.length,
+        state.isSearch,
+        meta.hasMoreItems,
+        state.selected.length,
+        state.folderId
+    ]);
 
     const context: AcoListContextData<GenericSearchData> = {
         ...pick(state, [
