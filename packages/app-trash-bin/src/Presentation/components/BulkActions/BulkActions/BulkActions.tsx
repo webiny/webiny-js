@@ -19,8 +19,6 @@ export const BulkActions = () => {
     const { browser } = useTrashBinListConfig();
     const { vm, selectItems } = useTrashBin();
 
-    console.log("vm", vm);
-
     const headline = useMemo((): string => {
         if (vm.isSelectedAll) {
             return "All entries selected:";
