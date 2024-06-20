@@ -60,7 +60,7 @@ export class TrashBinItemsRepositoryWithLoading implements ITrashBinItemsReposit
         );
     }
 
-    async bulkAction(params: TrashBinBulkActionsParams) {
-        await this.trashBinItemsRepository.bulkAction(params);
+    async bulkAction(action: string, params: TrashBinBulkActionsParams) {
+        await this.trashBinItemsRepository.bulkAction(action, params);
     }
 }

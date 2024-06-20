@@ -441,6 +441,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         unselectAll() {
             setState(state => ({
                 ...state,
+                selected: [],
                 isSelectedAll: false
             }));
         },

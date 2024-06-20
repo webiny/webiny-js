@@ -156,6 +156,9 @@ describe("TrashBin", () => {
 
     const itemMapper = new CustomItemMapper();
 
+    const BulkActionDeleteItems = "BulkDeleteItems";
+    const BulkActionRestoreItems = "BulkRestoreItems";
+
     const init = (
         listGateway: ITrashBinListGateway<Item>,
         deleteItemGateway: ITrashBinDeleteItemGateway,
@@ -191,7 +194,9 @@ describe("TrashBin", () => {
                 itemsRepo,
                 selectedRepo,
                 sortRepoWithDefaults,
-                searchRepo
+                searchRepo,
+                BulkActionDeleteItems,
+                BulkActionRestoreItems
             ).getControllers()
         };
     };
@@ -799,9 +804,7 @@ describe("TrashBin", () => {
         });
     });
 
-    it("should be able to perform a bulk action", async () => {
-        const action = "RandomBulkAction";
-
+    it("should be able to perform bulk action - RESTORE", async () => {
         const { controllers } = init(listGateway, deleteItemGateway, restoreItemGateway);
 
         // let's list some entries from the gateway
@@ -809,8 +812,7 @@ describe("TrashBin", () => {
 
         expect(listGateway.execute).toHaveBeenCalledTimes(1);
 
-        const bulkActionPromise = controllers.bulkAction.execute({
-            action,
+        const restoreBulkActionPromise = controllers.restoreBulkAction.execute({
             search: "Custom search",
             where: {
                 title: "Item title"
@@ -820,11 +822,44 @@ describe("TrashBin", () => {
             }
         });
 
-        await bulkActionPromise;
+        await restoreBulkActionPromise;
 
         expect(bulkActionGateway.execute).toHaveBeenCalledTimes(1);
         expect(bulkActionGateway.execute).toHaveBeenCalledWith({
-            action,
+            action: BulkActionRestoreItems,
+            search: "Custom search",
+            where: {
+                title: "Item title"
+            },
+            data: {
+                any: 1
+            }
+        });
+    });
+
+    it("should be able to perform bulk action - DELETE", async () => {
+        const { controllers } = init(listGateway, deleteItemGateway, restoreItemGateway);
+
+        // let's list some entries from the gateway
+        await controllers.listItems.execute();
+
+        expect(listGateway.execute).toHaveBeenCalledTimes(1);
+
+        const deleteBulkActionPromise = controllers.deleteBulkAction.execute({
+            search: "Custom search",
+            where: {
+                title: "Item title"
+            },
+            data: {
+                any: 1
+            }
+        });
+
+        await deleteBulkActionPromise;
+
+        expect(bulkActionGateway.execute).toHaveBeenCalledTimes(1);
+        expect(bulkActionGateway.execute).toHaveBeenCalledWith({
+            action: BulkActionDeleteItems,
             search: "Custom search",
             where: {
                 title: "Item title"
@@ -878,8 +913,8 @@ describe("TrashBin", () => {
 
             // let's check the vm state after unselecting all items
             await controllers.unselectAllItems.execute();
-            expect(presenter.vm.selectedItems.length).toBe(3);
-            expect(presenter.vm.allowSelectAll).toBeTruthy();
+            expect(presenter.vm.selectedItems.length).toBe(0);
+            expect(presenter.vm.allowSelectAll).toBeFalsy();
             expect(presenter.vm.isSelectedAll).toBeFalsy();
 
             // let's check the vm state after unselecting one item

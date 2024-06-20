@@ -34,7 +34,11 @@ export const ActionMove = observer(() => {
                         });
                         worker.resetItems();
                         showSnackbar(
-                            `The selected entries will be moved to ${folder.title}. This process may take longer depending on the number of entries.`
+                            `All entries will be moved to ${folder.title}. This process will be carried out in the background and may take some time. You can safely navigate away from this page while the process is running.`,
+                            {
+                                dismissIcon: true,
+                                timeout: -1
+                            }
                         );
                         return;
                     }

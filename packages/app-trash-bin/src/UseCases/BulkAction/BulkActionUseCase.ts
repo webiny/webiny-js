@@ -11,7 +11,7 @@ export class BulkActionUseCase implements IBulkActionUseCase {
         makeAutoObservable(this);
     }
 
-    async execute(params: TrashBinBulkActionsParams) {
-        await this.repository.bulkAction(params);
+    async execute(action: string, params: TrashBinBulkActionsParams) {
+        await this.repository.bulkAction(action, params);
     }
 }

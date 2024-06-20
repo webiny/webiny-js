@@ -34,17 +34,23 @@ export class TrashBinControllers {
     private readonly selectedRepository: ISelectedItemsRepository;
     private readonly sortingRepository: ISortingRepository;
     private readonly searchRepository: ISearchRepository;
+    private readonly deleteBulkActionName: string;
+    private readonly restoreBulkActionName: string;
 
     constructor(
         itemsRepository: ITrashBinItemsRepository,
         selectedRepository: ISelectedItemsRepository,
         sortingRepository: ISortingRepository,
-        searchRepository: ISearchRepository
+        searchRepository: ISearchRepository,
+        deleteBulkActionName: string,
+        restoreBulkActionName: string
     ) {
         this.itemsRepository = itemsRepository;
         this.selectedRepository = selectedRepository;
         this.sortingRepository = sortingRepository;
         this.searchRepository = searchRepository;
+        this.deleteBulkActionName = deleteBulkActionName;
+        this.restoreBulkActionName = restoreBulkActionName;
     }
 
     getControllers() {
@@ -99,14 +105,22 @@ export class TrashBinControllers {
         const sortItems = new SortItemsController(listItemsUseCase, sortItemsUseCase);
         const searchItems = new SearchItemsController(listItemsUseCase, searchItemsUseCase);
         const getRestoredItemById = new GetRestoredItemByIdController(getRestoredItemUseCase);
-        const bulkAction = new BulkActionsController(bulkActionUseCase);
+        const restoreBulkAction = new BulkActionsController(
+            bulkActionUseCase,
+            this.restoreBulkActionName
+        );
+        const deleteBulkAction = new BulkActionsController(
+            bulkActionUseCase,
+            this.deleteBulkActionName
+        );
 
         return {
             listItems,
             listMoreItems,
             deleteItem,
             restoreItem,
-            bulkAction,
+            restoreBulkAction,
+            deleteBulkAction,
             selectItems,
             selectAllItems,
             unselectAllItems,

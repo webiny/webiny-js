@@ -3,6 +3,7 @@ import { CallbackParams, useButtons, useDialogWithReport, Worker } from "@webiny
 import { Property, useIdGenerator } from "@webiny/react-properties";
 import { useTrashBin } from "~/Presentation/hooks";
 import { TrashBinItemDTO } from "~/Domain";
+import { TrashBinBulkActionsParams } from "~/types";
 
 export interface BulkActionConfig {
     name: string;
@@ -49,7 +50,7 @@ export const BaseBulkAction = ({
 };
 
 const useWorker = () => {
-    const { vm, selectItems, bulkAction } = useTrashBin();
+    const { vm, selectItems } = useTrashBin();
     const { current: worker } = useRef(new Worker<TrashBinItemDTO>());
 
     useEffect(() => {
@@ -73,8 +74,11 @@ const useWorker = () => {
             }: CallbackParams<TrashBinItemDTO>) => Promise<void>,
             chunkSize?: number
         ) => worker.processInSeries(callback, chunkSize),
-        processInBulk: async (action: string, data?: Record<string, any>) => {
-            await bulkAction({ action, search: vm.searchQuery, data });
+        processInBulk: async (
+            callback: (params: TrashBinBulkActionsParams) => Promise<void>,
+            data?: Record<string, any>
+        ) => {
+            await callback({ search: vm.searchQuery, data });
         },
         resetItems: resetItems,
         results: worker.results,

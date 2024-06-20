@@ -28,6 +28,7 @@ export class SelectedItemsRepository implements ISelectedItemsRepository {
     }
 
     async unselectAllItems() {
+        this.items = [];
         this.selectedAll = false;
     }
 }

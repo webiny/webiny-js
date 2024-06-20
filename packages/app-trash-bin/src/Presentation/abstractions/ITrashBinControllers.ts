@@ -16,7 +16,6 @@ export interface ITrashBinControllers {
     deleteItem: IDeleteItemController;
     getRestoredItemById: IGetRestoredItemByIdController;
     restoreItem: IRestoreItemController;
-    bulkAction: IBulkActionsController;
     listMoreItems: IListMoreItemsController;
     listItems: IListItemsController;
     selectItems: ISelectItemsController;
@@ -24,4 +23,6 @@ export interface ITrashBinControllers {
     sortItems: ISortItemsController;
     searchItems: ISearchItemsController;
     unselectAllItems: IUnselectAllItemsController;
+    restoreBulkAction: IBulkActionsController;
+    deleteBulkAction: IBulkActionsController;
 }

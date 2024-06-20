@@ -31,6 +31,8 @@ export interface TrashBinProps {
     deleteGateway: ITrashBinDeleteItemGateway;
     restoreGateway: ITrashBinRestoreItemGateway<any>;
     bulkActionsGateway: ITrashBinBulkActionsGateway;
+    deleteBulkActionName: string;
+    restoreBulkActionName: string;
     itemMapper: ITrashBinItemMapper<any>;
     onClose: () => void;
     onItemAfterRestore: (item: TrashBinItemDTO) => Promise<void>;
@@ -87,7 +89,9 @@ export const TrashBin = observer((props: TrashBinProps) => {
             itemsRepository,
             selectedRepository,
             sortingRepository,
-            searchRepository
+            searchRepository,
+            props.deleteBulkActionName,
+            props.restoreBulkActionName
         ).getControllers();
     }, [
         itemsRepository,

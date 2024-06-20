@@ -7,7 +7,7 @@ import { useTrashBin } from "~/Presentation/hooks";
 import { getEntriesLabel } from "../BulkActions";
 
 export const BulkActionsDeleteItems = observer(() => {
-    const { deleteItem } = useTrashBin();
+    const { deleteItem, deleteBulkAction } = useTrashBin();
     const { showSnackbar } = useSnackbar();
 
     const { useWorker, useButtons, useDialog } = TrashBinListConfig.Browser.BulkAction;
@@ -26,10 +26,14 @@ export const BulkActionsDeleteItems = observer(() => {
             loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
                 if (worker.isSelectedAll) {
-                    await worker.processInBulk("DeleteEntries");
+                    await worker.processInBulk(deleteBulkAction);
                     worker.resetItems();
                     showSnackbar(
-                        "The selected items will be permanently deleted. This process may take longer depending on the number of items."
+                        "All items will be permanently deleted. This process will be carried out in the background and may take some time. You can safely navigate away from this page while the process is running.",
+                        {
+                            dismissIcon: true,
+                            timeout: -1
+                        }
                     );
                     return;
                 }

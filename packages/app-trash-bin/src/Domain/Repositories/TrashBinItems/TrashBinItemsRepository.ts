@@ -125,8 +125,8 @@ export class TrashBinItemsRepository<TItem extends Record<string, any>>
         });
     }
 
-    async bulkAction(params: TrashBinBulkActionsParams) {
-        const { action, where, search, data } = params;
+    async bulkAction(action: string, params: TrashBinBulkActionsParams) {
+        const { where, search, data } = params;
         await this.bulkActionsGateway.execute({ action, where, search, data });
     }
 }

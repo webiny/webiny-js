@@ -9,7 +9,8 @@ import { RestoreItemsReportMessage } from "~/Presentation/components/BulkActions
 import { TrashBinItemDTO } from "~/Domain";
 
 export const BulkActionsRestoreItems = observer(() => {
-    const { restoreItem, onItemAfterRestore, getRestoredItemById } = useTrashBin();
+    const { restoreItem, onItemAfterRestore, getRestoredItemById, restoreBulkAction } =
+        useTrashBin();
     const { showSnackbar } = useSnackbar();
 
     const { useWorker, useButtons, useDialog } = TrashBinListConfig.Browser.BulkAction;
@@ -36,10 +37,14 @@ export const BulkActionsRestoreItems = observer(() => {
             loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
                 if (worker.isSelectedAll) {
-                    await worker.processInBulk("RestoreEntriesFromTrash");
+                    await worker.processInBulk(restoreBulkAction);
                     worker.resetItems();
                     showSnackbar(
-                        "The selected items will be restored from the trash bin. This process may take longer depending on the number of items."
+                        "All items will be restored. This process will be carried out in the background and may take some time. You can safely navigate away from this page while the process is running.",
+                        {
+                            dismissIcon: true,
+                            timeout: -1
+                        }
                     );
                     return;
                 }

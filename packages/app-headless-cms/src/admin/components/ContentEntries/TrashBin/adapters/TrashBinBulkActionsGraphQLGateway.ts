@@ -6,7 +6,7 @@ import {
     createBulkActionMutation
 } from "@webiny/app-headless-cms-common";
 import { CmsModel } from "@webiny/app-headless-cms-common/types";
-import { TrashBinBulkActionsParams } from "@webiny/app-trash-bin/types";
+import { TrashBinBulkActionsGatewayParams } from "@webiny/app-trash-bin/types";
 
 export class TrashBinBulkActionsGraphQLGateway implements ITrashBinBulkActionsGateway {
     private client: ApolloClient<any>;
@@ -17,7 +17,7 @@ export class TrashBinBulkActionsGraphQLGateway implements ITrashBinBulkActionsGa
         this.model = model;
     }
 
-    async execute(params: TrashBinBulkActionsParams) {
+    async execute(params: TrashBinBulkActionsGatewayParams) {
         const { data: response } = await this.client.mutate<
             CmsEntryBulkActionMutationResponse,
             CmsEntryBulkActionMutationVariables

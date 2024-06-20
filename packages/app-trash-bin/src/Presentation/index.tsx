@@ -28,6 +28,8 @@ export type TrashBinProps = {
     deleteGateway: ITrashBinDeleteItemGateway;
     restoreGateway: ITrashBinRestoreItemGateway<any>;
     itemMapper: ITrashBinItemMapper<any>;
+    deleteBulkActionName: string;
+    restoreBulkActionName: string;
     onClose?: () => void;
     onItemAfterRestore?: (item: TrashBinItemDTO) => Promise<void>;
     show?: boolean;

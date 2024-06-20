@@ -7,7 +7,7 @@ export interface ITrashBinItemsRepository {
     listMoreItems: () => Promise<void>;
     deleteItem: (id: string) => Promise<void>;
     restoreItem: (id: string) => Promise<void>;
-    bulkAction: (params: TrashBinBulkActionsParams) => Promise<void>;
+    bulkAction: (action: string, params: TrashBinBulkActionsParams) => Promise<void>;
     getItems: () => TrashBinItem[];
     getRestoredItems: () => TrashBinItem[];
     getMeta: () => Meta;

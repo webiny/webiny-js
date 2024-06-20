@@ -39,9 +39,15 @@ export const useTrashBin = () => {
         [context.controllers.restoreItem]
     );
 
-    const bulkAction = useCallback(
-        (params: TrashBinBulkActionsParams) => context.controllers.bulkAction.execute(params),
-        [context.controllers.bulkAction]
+    const restoreBulkAction = useCallback(
+        (params: TrashBinBulkActionsParams) =>
+            context.controllers.restoreBulkAction.execute(params),
+        [context.controllers.restoreBulkAction]
+    );
+
+    const deleteBulkAction = useCallback(
+        (params: TrashBinBulkActionsParams) => context.controllers.deleteBulkAction.execute(params),
+        [context.controllers.deleteBulkAction]
     );
 
     const listItems = useCallback(
@@ -89,7 +95,6 @@ export const useTrashBin = () => {
         onItemAfterRestore,
         deleteItem,
         restoreItem,
-        bulkAction,
         listItems,
         listMoreItems,
         searchItems,
@@ -97,7 +102,9 @@ export const useTrashBin = () => {
         selectAllItems,
         unselectAllItems,
         sortItems,
-        getRestoredItemById
+        getRestoredItemById,
+        restoreBulkAction,
+        deleteBulkAction
     };
 };
 

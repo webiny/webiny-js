@@ -32,7 +32,6 @@ export enum LoadingActions {
 }
 
 export interface TrashBinBulkActionsParams {
-    action: string;
     where?: {
         [key: string]: any;
     };
@@ -40,6 +39,10 @@ export interface TrashBinBulkActionsParams {
     data?: {
         [key: string]: any;
     };
+}
+
+export interface TrashBinBulkActionsGatewayParams extends TrashBinBulkActionsParams {
+    action: string;
 }
 
 export interface TrashBinBulkActionsResponse {
