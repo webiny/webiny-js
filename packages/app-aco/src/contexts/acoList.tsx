@@ -269,7 +269,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
             ...state.filters, // Merge existing filters into the 'where' condition
             ...where // Include where condition if applicable
         };
-    }, [state.folderId, state.filters, props.own, identity]);
+    }, [folders, state.folderId, state.filters, props.own, identity]);
 
     /**
      * Any time we receive new useful `state` params:
