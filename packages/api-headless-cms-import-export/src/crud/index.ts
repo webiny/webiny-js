@@ -37,7 +37,8 @@ export const createHeadlessCmsImportExportCrud = async (
         const task = await context.tasks.trigger<ICmsImportExportTaskParams>({
             name: `Exporting content entries of model "${params.modelId}"`,
             input: {
-                modelId: params.modelId
+                modelId: params.modelId,
+                limit: params.limit
             },
             definition: "exportContentEntries"
         });
@@ -47,10 +48,11 @@ export const createHeadlessCmsImportExportCrud = async (
 
     const abortExportContentEntries = async (
         params: ICmsImportExportObjectAbortExportParams
-    ): Promise<void> => {
-        await context.tasks.abort({
+    ): Promise<ICmsImportExportRecord> => {
+        const task = await context.tasks.abort<ICmsImportExportTaskParams>({
             id: params.id
         });
+        return convertTaskToCmsImportExportRecord(task);
     };
 
     return {

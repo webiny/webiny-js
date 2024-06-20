@@ -23,7 +23,7 @@ export const createTypeDefs = (models: [string, ...string[]]): string => {
         }
 
         type AbortExportContentEntriesResponse {
-            data: Boolean
+            data: ExportContentEntriesExportRecord
             error: CmsError
         }
         
@@ -32,11 +32,11 @@ export const createTypeDefs = (models: [string, ...string[]]): string => {
         }
         
         extend type Query {
-            getExportContentEntries(id: String!): ExportContentEntriesResponse!
+            getExportContentEntries(id: ID!): ExportContentEntriesResponse!
         }
 
         extend type Mutation {
-            startExportContentEntries(modelId: ExportContentEntriesModelsListEnum!): StartExportContentEntriesResponse!
+            startExportContentEntries(modelId: ExportContentEntriesModelsListEnum!, limit: Int): StartExportContentEntriesResponse!
             abortExportContentEntries(id: ID!): AbortExportContentEntriesResponse!
         }
     `;

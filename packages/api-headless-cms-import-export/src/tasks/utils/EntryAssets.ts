@@ -37,6 +37,9 @@ export class EntryAssets implements IEntryAssets {
         }
 
         for (const entry of entries) {
+            if (!entry?.values) {
+                continue;
+            }
             this.traverser.traverse(entry.values, ({ field, value }) => {
                 if (!value || fileTypes.includes(field.type) === false) {
                     return;
@@ -48,7 +51,7 @@ export class EntryAssets implements IEntryAssets {
     }
 
     private parseAssetSrc(input?: string | unknown): IAsset | null {
-        if (!input || typeof input !== "string") {
+        if (!input || typeof input !== "string" || !input.trim()) {
             return null;
         }
 
@@ -56,7 +59,6 @@ export class EntryAssets implements IEntryAssets {
         if (!result) {
             return null;
         }
-
         return {
             ...result,
             url: input
@@ -64,17 +66,24 @@ export class EntryAssets implements IEntryAssets {
     }
 
     private match(input: string): IMatchAliasOutput | IMatchOutput | null {
-        const url = new URL(input);
-        const { pathname } = url;
-        const isAlias = !pathname.startsWith("/files/") && !pathname.startsWith("/private/");
-        if (isAlias) {
+        try {
+            const url = new URL(input);
+            const { pathname } = url;
+            const isAlias = !pathname.startsWith("/files/") && !pathname.startsWith("/private/");
+            if (isAlias) {
+                return {
+                    alias: pathname
+                };
+            }
             return {
-                alias: pathname
+                key: pathname.replace("/files/", "").replace("/private/", "")
             };
+        } catch (ex) {
+            if (process.env.DEBUG === "true") {
+                console.error(`Url ${input} is not valid.`);
+            }
+            return null;
         }
-        return {
-            key: pathname.replace("/files/", "").replace("/private/", "")
-        };
     }
 
     private assignAssetsToItems(input: string | string[] | unknown): void {

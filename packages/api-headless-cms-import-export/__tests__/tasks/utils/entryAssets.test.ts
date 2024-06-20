@@ -19,8 +19,8 @@ describe("entry assets", () => {
     let traverser: ContentEntryTraverser;
 
     beforeEach(async () => {
-        const { handler } = useHandler();
-        const context = await handler();
+        const { createContext } = useHandler();
+        const context = await createContext();
         traverser = await context.cms.getEntryTraverser("author");
         entryAssets = new EntryAssets({
             traverser
@@ -146,9 +146,8 @@ describe("entry assets", () => {
 
     it("should properly extract asset alias from a path", async () => {
         const cloudfrontUrl = "https://odisadosadnsakl.cloudfront.aws";
-        const filePath = "files";
-        const fileKey = "demo-pages/welcome-to-webiny__webiny-infrastructure-overview!.svg";
-        const image = `${cloudfrontUrl}/${filePath}/${fileKey}`;
+        const fileKey = "/demo-pages/welcome-to-webiny__webiny-infrastructure-overview!.svg";
+        const image = `${cloudfrontUrl}${fileKey}`;
 
         const entry: Pick<CmsEntry, "values"> = {
             values: {
@@ -161,10 +160,68 @@ describe("entry assets", () => {
 
         const expected: IAsset[] = [
             {
-                key: fileKey,
+                alias: fileKey,
                 url: image
             }
         ];
         expect(Object.values(entryAssets.assets)).toEqual(expected);
+    });
+
+    it("should not find any assets", async () => {
+        entryAssets.assignAssets([]);
+
+        expect(Object.keys(entryAssets.assets)).toHaveLength(0);
+
+        entryAssets.assignAssets({
+            values: {
+                image: "",
+                images: {}
+            }
+        });
+
+        expect(Object.keys(entryAssets.assets)).toHaveLength(0);
+
+        entryAssets.assignAssets({
+            values: {
+                image: " ",
+                images: [" ", null, undefined]
+            }
+        });
+
+        expect(Object.keys(entryAssets.assets)).toHaveLength(0);
+
+        entryAssets.assignAssets({
+            values: {
+                image: undefined,
+                images: undefined
+            }
+        });
+
+        expect(Object.keys(entryAssets.assets)).toHaveLength(0);
+
+        entryAssets.assignAssets({
+            values: {
+                image: " bla bla bla"
+            }
+        });
+
+        expect(Object.keys(entryAssets.assets)).toHaveLength(0);
+
+        entryAssets.assignAssets({
+            values: {
+                image: null,
+                images: null
+            }
+        });
+
+        expect(Object.keys(entryAssets.assets)).toHaveLength(0);
+
+        entryAssets.assignAssets(undefined as any);
+
+        expect(Object.keys(entryAssets.assets)).toHaveLength(0);
+
+        entryAssets.assignAssets(null as any);
+
+        expect(Object.keys(entryAssets.assets)).toHaveLength(0);
     });
 });

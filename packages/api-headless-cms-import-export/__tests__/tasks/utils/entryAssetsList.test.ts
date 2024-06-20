@@ -10,8 +10,8 @@ describe("entry assets list", () => {
     let entryAssetsList: IEntryAssetsList;
 
     beforeEach(async () => {
-        const { handler } = useHandler();
-        context = await handler();
+        const { createContext } = useHandler();
+        context = await createContext();
 
         entryAssetsList = new EntryAssetsList({
             listFiles: async opts => {

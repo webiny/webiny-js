@@ -10,6 +10,7 @@ export interface ICmsImportExportObjectGetExportParams {
 
 export interface ICmsImportExportObjectStartExportParams {
     modelId: string;
+    limit?: number;
 }
 
 export interface ICmsImportExportObjectAbortExportParams {
@@ -18,6 +19,7 @@ export interface ICmsImportExportObjectAbortExportParams {
 
 export interface ICmsImportExportTaskParams {
     modelId: string;
+    limit?: number;
 }
 
 export interface ICmsImportExportTaskOutput extends ITaskResponseDoneResultOutput {
@@ -32,7 +34,9 @@ export interface CmsImportExportObject {
     startExportContentEntries(
         params: ICmsImportExportObjectStartExportParams
     ): Promise<ICmsImportExportRecord>;
-    abortExportContentEntries(params: ICmsImportExportObjectAbortExportParams): Promise<void>;
+    abortExportContentEntries(
+        params: ICmsImportExportObjectAbortExportParams
+    ): Promise<ICmsImportExportRecord>;
 }
 
 export interface Context extends FileManagerContext, TasksContext {

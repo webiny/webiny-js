@@ -74,10 +74,11 @@ export class ExportContentEntries<
         const fetcher: ICmsEntryFetcher = async after => {
             const input = {
                 where: params.input.where,
-                limit: 10000,
+                limit: params.input.limit || 10000,
                 sort: params.input.sort,
                 after
             };
+            console.log("Fetching entries", input);
             const [items, meta] = await context.cms.listLatestEntries(model, input);
             return {
                 items,
@@ -86,7 +87,7 @@ export class ExportContentEntries<
         };
 
         const prefix = uniqueId(`cms-export/${model.modelId}/`);
-        const filename = `${prefix}/entries.zip`;
+        const filename = `${prefix}/${model.modelId}-entries.zip`;
 
         const traverser = await context.cms.getEntryTraverser(model.modelId);
         const entryAssets = new EntryAssets({

@@ -1,5 +1,7 @@
 import { createCmsModelPlugin } from "@webiny/api-headless-cms";
 
+export const AUTHOR_MODEL_ID = "author";
+
 export const createModelPlugin = () => {
     return createCmsModelPlugin({
         createdOn: new Date().toISOString(),
@@ -9,7 +11,7 @@ export const createModelPlugin = () => {
         lockedFields: [],
         name: "Author",
         description: "Author",
-        modelId: "author",
+        modelId: AUTHOR_MODEL_ID,
         singularApiName: "AuthorApiModel",
         pluralApiName: "AuthorsApiModel",
         group: {

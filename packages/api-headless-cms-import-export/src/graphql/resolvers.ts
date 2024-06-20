@@ -13,7 +13,8 @@ const validateGetExportContentEntries = zod.object({
 
 export const createResolvers = (models: [string, ...string[]]) => {
     const validateExportContentEntriesInput = zod.object({
-        modelId: zod.enum(models)
+        modelId: zod.enum(models),
+        limit: zod.number().optional()
     });
 
     return {

@@ -4,6 +4,7 @@ import { Context } from "~/types";
 
 export interface IExportContentEntriesInput {
     modelId: string;
+    limit?: number;
     where?: CmsEntryListWhere;
     sort?: string[];
 }

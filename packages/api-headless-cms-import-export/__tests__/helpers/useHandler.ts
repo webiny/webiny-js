@@ -7,60 +7,109 @@ import { createTenancyAndSecurity } from "./tenancySecurity";
 import { createDummyLocales, createIdentity, createPermissions } from "./helpers";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import i18nContext from "@webiny/api-i18n/graphql/context";
-import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
-import { LambdaContext } from "@webiny/handler-aws/types";
+import {
+    createApiGatewayHandler,
+    createRawEventHandler,
+    createRawHandler
+} from "@webiny/handler-aws";
+import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { PluginCollection } from "@webiny/plugins/types";
 import { createBackgroundTaskContext } from "@webiny/tasks";
 import { Context } from "~/types";
 import { createModelPlugin } from "~tests/mocks/model";
 import { createFileManagerContext } from "@webiny/api-file-manager";
 import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
+import { InvokeParams } from "./types";
+import { createHeadlessCmsImportExport } from "~/index";
+import { createGetExportContentEntries } from "./graphql/getExportContentEntries";
+import { createStartExportContentEntries } from "./graphql/startExportContentEntries";
+import { createAbortExportContentEntries } from "./graphql/abortExportContentEntries";
+import { createMockTaskTriggerTransportPlugin } from "@webiny/project-utils/testing/tasks";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
 }
 
 export const useHandler = <C extends Context = Context>(params?: UseHandlerParams) => {
-    const { plugins = [] } = params || {};
+    const { plugins: inputPlugins = [] } = params || {};
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const i18nStorage = getStorageOps<any[]>("i18n");
 
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
 
-    const handler = createRawHandler<any, C>({
-        plugins: [
-            createModelPlugin(),
-            createWcpContext(),
-            ...cmsStorage.plugins,
-            ...fileManagerStorage.plugins,
-            ...createTenancyAndSecurity({
-                setupGraphQL: false,
-                permissions: createPermissions(),
-                identity: createIdentity()
-            }),
-            i18nContext(),
-            i18nStorage.storageOperations,
-            createDummyLocales(),
-            mockLocalesPlugins(),
-            createHeadlessCmsContext({
-                storageOperations: cmsStorage.storageOperations
-            }),
-            createHeadlessCmsGraphQL(),
-            createFileManagerContext({
-                storageOperations: fileManagerStorage.storageOperations
-            }),
-            graphQLHandlerPlugins(),
-            createBackgroundTaskContext(),
-            createRawEventHandler(async ({ context }) => {
-                return context;
-            }),
-            ...plugins
-        ]
+    const plugins = [
+        createModelPlugin(),
+        createWcpContext(),
+        ...cmsStorage.plugins,
+        ...fileManagerStorage.plugins,
+        ...createTenancyAndSecurity({
+            setupGraphQL: false,
+            permissions: createPermissions(),
+            identity: createIdentity()
+        }),
+        i18nContext(),
+        i18nStorage.storageOperations,
+        createDummyLocales(),
+        mockLocalesPlugins(),
+        createHeadlessCmsContext({
+            storageOperations: cmsStorage.storageOperations
+        }),
+        createHeadlessCmsGraphQL(),
+        createHeadlessCmsImportExport(),
+        createFileManagerContext({
+            storageOperations: fileManagerStorage.storageOperations
+        }),
+        graphQLHandlerPlugins(),
+        createBackgroundTaskContext(),
+        createRawEventHandler(async ({ context }) => {
+            return context;
+        }),
+        createMockTaskTriggerTransportPlugin(),
+        ...inputPlugins
+    ];
+
+    const rawHandler = createRawHandler<any, C>({
+        plugins
     });
 
+    const graphQLHandler = createApiGatewayHandler({
+        plugins
+    });
+
+    const invoke = async <T = any>({
+        httpMethod = "POST",
+        body,
+        headers = {},
+        ...rest
+    }: InvokeParams): Promise<[T, any]> => {
+        const response = await graphQLHandler(
+            {
+                /**
+                 * If no path defined, use /graphql as we want to make request to main api
+                 */
+                path: `/cms/manage/en-US`,
+                httpMethod,
+                headers: {
+                    ["x-tenant"]: "root",
+                    ["Content-Type"]: "application/json",
+                    ...headers
+                },
+                body: JSON.stringify(body),
+                ...rest
+            } as unknown as APIGatewayEvent,
+            {} as LambdaContext
+        );
+        // The first element is the response body, and the second is the raw response.
+        return [JSON.parse(response.body || "{}"), response];
+    };
+
     return {
-        handler: async () => {
-            return await handler({}, {} as LambdaContext);
+        invoke,
+        getExportContentEntries: createGetExportContentEntries(invoke),
+        startExportContentEntries: createStartExportContentEntries(invoke),
+        abortExportContentEntries: createAbortExportContentEntries(invoke),
+        createContext: async () => {
+            return await rawHandler({}, {} as LambdaContext);
         }
     };
 };
