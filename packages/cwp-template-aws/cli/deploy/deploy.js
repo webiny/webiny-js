@@ -122,10 +122,12 @@ module.exports = async (inputs, context) => {
 
         await sendEvent("cli-project-deploy-end");
     } catch (e) {
-        if (e instanceof GracefulPulumiError) {
+        const gracefulError = e.cause?.gracefulError;
+        if (gracefulError instanceof GracefulPulumiError) {
             await sendEvent("cli-project-deploy-error-graceful", {
-                errorMessage: e.message,
-                errorStack: e.stack
+                // Send original error message and stack.
+                errorMessage: e.cause.error?.message || e.message,
+                errorStack: e.cause.error?.stack || e.stack
             });
         } else {
             await sendEvent("cli-project-deploy-error", {
