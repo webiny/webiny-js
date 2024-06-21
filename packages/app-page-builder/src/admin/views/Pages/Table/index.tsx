@@ -1,5 +1,12 @@
-import React, { useCallback } from "react";
-import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
+import React, { useCallback, useMemo } from "react";
+import {
+    generateAutoSaveId,
+    LeftPanel,
+    RightPanel,
+    SplitView
+} from "@webiny/app-admin/components/SplitView";
+import { useI18N } from "@webiny/app-i18n";
+import { useTenancy } from "@webiny/app-tenancy";
 import { AcoWithConfig } from "@webiny/app-aco";
 import { Sidebar } from "./Sidebar";
 import { Main } from "./Main";
@@ -16,9 +23,17 @@ import { PageListWithConfig } from "~/admin/config/pages";
 
 const View = () => {
     const { currentFolderId } = useNavigateFolder();
+    const { getCurrentLocale } = useI18N();
+    const { tenant } = useTenancy();
+
+    const autoSaveId = useMemo(() => {
+        const localeCode = getCurrentLocale("content");
+        const applicationId = "pb:page";
+        return generateAutoSaveId(tenant, localeCode, applicationId);
+    }, [getCurrentLocale, tenant]);
 
     return (
-        <SplitView>
+        <SplitView autoSaveId={autoSaveId}>
             <LeftPanel span={2}>
                 <Sidebar folderId={currentFolderId} />
             </LeftPanel>

@@ -12,6 +12,14 @@ import { ReactComponent as AddIcon } from "@material-design-icons/svg/filled/add
 import { i18n } from "@webiny/app/i18n";
 import { useCreateDialog } from "@webiny/app-aco";
 import { OverlayLayout, useSnackbar } from "@webiny/app-admin";
+import {
+    generateAutoSaveId,
+    LeftPanel,
+    RightPanel,
+    SplitView
+} from "@webiny/app-admin/components/SplitView";
+import { useI18N } from "@webiny/app-i18n";
+import { useTenancy } from "@webiny/app-tenancy";
 import { ButtonIcon, ButtonPrimary, ButtonProps, ButtonSecondary } from "@webiny/ui/Button";
 import { Sorting } from "@webiny/ui/DataTable";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
@@ -40,12 +48,8 @@ import { TableItem } from "~/types";
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
 const FileListWrapper = styled("div")({
-    float: "right",
     zIndex: 60,
-    display: "inline-block",
-    width: "calc(100vw - 286px)",
     height: "calc(100vh - 94px)",
-    position: "relative",
     ".mdc-data-table": {
         display: "inline-table"
     }
@@ -81,6 +85,8 @@ const FileManagerView = () => {
     const { browser } = useFileManagerViewConfig();
     const { showSnackbar } = useSnackbar();
     const { showDialog: showCreateFolderDialog } = useCreateDialog();
+    const { tenant } = useTenancy();
+    const { getCurrentLocale } = useI18N();
     const [drawerLoading, setDrawerLoading] = useState<string | null>(null);
 
     const uploader = useMemo<BatchFileUploader>(
@@ -285,6 +291,12 @@ const FileManagerView = () => {
         [view.updateFile]
     );
 
+    const autoSaveId = useMemo(() => {
+        const localeCode = getCurrentLocale("content");
+        const applicationId = "fm:file";
+        return generateAutoSaveId(tenant, localeCode, applicationId);
+    }, [getCurrentLocale, tenant]);
+
     return (
         <>
             <Files
@@ -342,44 +354,52 @@ const FileManagerView = () => {
                                 onClose={view.hideFileDetails}
                                 onSave={updateFile}
                             />
-                            <LeftSidebar
-                                currentFolder={view.folderId}
-                                onFolderClick={view.setFolderId}
-                            >
-                                {browser.filterByTags ? (
-                                    <TagsList
-                                        loading={view.tags.loading}
-                                        activeTags={view.tags.activeTags}
-                                        tags={view.tags.allTags}
-                                        onActivatedTagsChange={view.tags.setActiveTags}
-                                    />
-                                ) : null}
-                            </LeftSidebar>
-                            <FileListWrapper
-                                {...getDropZoneProps({
-                                    onDragOver: () => view.setDragging(true),
-                                    onDragLeave: () => view.setDragging(false),
-                                    onDrop: () => view.setDragging(false)
-                                })}
-                                data-testid={"fm-list-wrapper"}
-                            >
-                                {view.dragging && <DropFilesHere />}
-                                <BulkActions />
-                                <Filters />
-                                <Scrollbar
-                                    onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
-                                >
-                                    {renderList(browseFiles)}
-                                </Scrollbar>
-                                <BottomInfoBar
-                                    accept={view.accept}
-                                    listing={view.isListLoadingMore}
-                                />
-                                <UploadStatus
-                                    numberOfFiles={filesBeingUploaded}
-                                    progress={progress}
-                                />
-                            </FileListWrapper>
+                            <SplitView autoSaveId={autoSaveId}>
+                                <LeftPanel span={2}>
+                                    <LeftSidebar
+                                        currentFolder={view.folderId}
+                                        onFolderClick={view.setFolderId}
+                                    >
+                                        {browser.filterByTags ? (
+                                            <TagsList
+                                                loading={view.tags.loading}
+                                                activeTags={view.tags.activeTags}
+                                                tags={view.tags.allTags}
+                                                onActivatedTagsChange={view.tags.setActiveTags}
+                                            />
+                                        ) : null}
+                                    </LeftSidebar>
+                                </LeftPanel>
+                                <RightPanel span={10}>
+                                    <FileListWrapper
+                                        {...getDropZoneProps({
+                                            onDragOver: () => view.setDragging(true),
+                                            onDragLeave: () => view.setDragging(false),
+                                            onDrop: () => view.setDragging(false)
+                                        })}
+                                        data-testid={"fm-list-wrapper"}
+                                    >
+                                        {view.dragging && <DropFilesHere />}
+                                        <BulkActions />
+                                        <Filters />
+                                        <Scrollbar
+                                            onScrollFrame={scrollFrame =>
+                                                loadMoreOnScroll({ scrollFrame })
+                                            }
+                                        >
+                                            {renderList(browseFiles)}
+                                        </Scrollbar>
+                                        <BottomInfoBar
+                                            accept={view.accept}
+                                            listing={view.isListLoadingMore}
+                                        />
+                                        <UploadStatus
+                                            numberOfFiles={filesBeingUploaded}
+                                            progress={progress}
+                                        />
+                                    </FileListWrapper>
+                                </RightPanel>
+                            </SplitView>
                         </>
                     </OverlayLayout>
                 )}
