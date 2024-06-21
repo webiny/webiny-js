@@ -17740,6 +17740,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     case: ^1.6.3
     execa: ^5.0.0
+    glob: ^7.1.2
     load-json-file: ^6.2.0
     ncp: ^2.0.0
     replace-in-path: ^1.1.0
