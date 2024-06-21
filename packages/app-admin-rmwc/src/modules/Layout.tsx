@@ -32,7 +32,7 @@ const RMWCLayout = () => {
                         </TopAppBarSection>
                     </TopAppBarPrimary>
                 </Tags>
-                <div style={{ paddingTop: 67 }}>{children}</div>
+                <div style={{ paddingTop: 64 }}>{children}</div>
                 <Navigation />
             </Fragment>
         );
