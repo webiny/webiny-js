@@ -1,4 +1,3 @@
-import { Upload } from "~/tasks/utils/Upload";
 import { createPassThrough } from "~tests/mocks/createPassThrough";
 import { mockClient } from "aws-sdk-client-mock";
 import {
@@ -8,6 +7,7 @@ import {
     UploadPartCommand
 } from "@webiny/aws-sdk/client-s3";
 import { PassThrough } from "stream";
+import { Upload } from "~/tasks/utils";
 
 describe("upload", () => {
     it("should properly create an instance of Upload", async () => {
@@ -16,6 +16,7 @@ describe("upload", () => {
         client.on(UploadPartCommand).resolves({ ETag: "1" });
 
         const stream = createPassThrough();
+
         const upload = new Upload({
             client: createS3Client(),
             bucket: "my-test-bucket",

@@ -1,12 +1,12 @@
 import { GetObjectCommand, getSignedUrl, S3Client } from "@webiny/aws-sdk/client-s3";
-import { ISignedUrl, ISignedUrlFetchParams, ISignedUrlFetchResult } from "./abstractions/SignedUrl";
+import { ISignUrl, ISignedUrlFetchParams, ISignedUrlFetchResult } from "./abstractions/SignedUrl";
 
 export interface ISignedUrlParams {
     client: S3Client;
     bucket: string;
 }
 
-export class SignedUrl implements ISignedUrl {
+export class SignUrl implements ISignUrl {
     private readonly client: S3Client;
     private readonly bucket: string;
 

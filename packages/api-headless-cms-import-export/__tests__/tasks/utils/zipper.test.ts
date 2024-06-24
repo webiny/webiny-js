@@ -61,10 +61,10 @@ describe("zipper", () => {
             client: createS3Client(),
             bucket: "my-test-bucket",
             stream,
-            filename: "test.zip",
             factory(params) {
                 return new BaseUpload(params);
-            }
+            },
+            filename: "test.zip"
         });
 
         const archiver = new Archiver({
@@ -146,10 +146,10 @@ describe("zipper", () => {
             client: createS3Client(),
             bucket: "my-test-bucket",
             stream,
-            filename: "test.zip",
             factory(params) {
                 return new BaseUpload(params);
-            }
+            },
+            filename: "test.zip"
         });
 
         const archiver = new Archiver({

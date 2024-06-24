@@ -1,4 +1,4 @@
-import { IAddOptions, IZipper } from "./abstractions/Zipper";
+import { IAddOptions, IZipper, IZipperOnCb } from "./abstractions/Zipper";
 import { IUpload } from "./abstractions/Upload";
 import { CompleteMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3";
 import { IArchiver } from "./abstractions/Archiver";
@@ -35,5 +35,9 @@ export class Zipper implements IZipper {
 
     public async done(): Promise<CompleteMultipartUploadCommandOutput> {
         return this.upload.done();
+    }
+
+    public on(event: string, callback: IZipperOnCb): void {
+        this.archiver.archiver.on(event, callback);
     }
 }

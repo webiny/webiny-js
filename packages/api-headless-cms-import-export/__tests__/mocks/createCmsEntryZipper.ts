@@ -11,7 +11,7 @@ import { PassThrough } from "stream";
 import { mockClient } from "aws-sdk-client-mock";
 import { IEntryAssets } from "~/tasks/utils/abstractions/EntryAssets";
 import { IEntryAssetsList } from "~/tasks/utils/abstractions/EntryAssetsList";
-import { SignedUrl } from "~/tasks/utils/SignedUrl";
+import { SignUrl } from "~/tasks/utils/SignUrl";
 
 interface ICreateCmsEntryZipperParams {
     fetcher: ICmsEntryFetcher;
@@ -67,15 +67,14 @@ export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
         archiver
     });
 
-    const signedUrl = new SignedUrl({
+    const signUrl = new SignUrl({
         client,
         bucket
     });
 
     const cmsEntryZipper = new CmsEntryZipper({
         zipper,
-        signedUrl,
-        archiver,
+        signUrl,
         fetcher: params.fetcher,
         entryAssets: params.entryAssets,
         entryAssetsList: params.entryAssetsList

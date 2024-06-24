@@ -8,20 +8,13 @@ import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { Context } from "~/types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { getErrorProperties } from "@webiny/tasks/utils";
-import { PassThrough, StreamOptions } from "stream";
+import { PassThrough } from "stream";
 import {
     CmsEntryZipper,
     ICmsEntryFetcher,
     ICmsEntryZipperConfig
 } from "~/tasks/utils/CmsEntryZipper";
-import {
-    Archiver,
-    IArchiverConfig,
-    IUploadConfig,
-    IZipperConfig,
-    Upload,
-    Zipper
-} from "~/tasks/utils";
+import { Archiver, Upload, Zipper } from "~/tasks/utils";
 import { ICmsEntryZipper } from "../utils/abstractions/CmsEntryZipper";
 import { createS3Client } from "@webiny/aws-sdk/client-s3";
 import { Agent as HttpAgent } from "http";
@@ -29,7 +22,7 @@ import { Agent as HttpsAgent } from "https";
 import { NodeHttpHandler } from "@smithy/node-http-handler";
 import { EntryAssets } from "~/tasks/utils/EntryAssets";
 import { EntryAssetsList } from "~/tasks/utils/EntryAssetsList";
-import { SignedUrl } from "~/tasks/utils/SignedUrl";
+import { SignUrl } from "~/tasks/utils/SignUrl";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
 
 export interface IExportContentEntriesConfig {
@@ -132,22 +125,6 @@ export class ExportContentEntries<
 }
 
 export const createExportContentEntries = () => {
-    const createPassThrough = (config: StreamOptions<PassThrough>) => {
-        return new PassThrough(config);
-    };
-
-    const createUpload = (config: IUploadConfig) => {
-        return new Upload(config);
-    };
-
-    const createZipper = (config: IZipperConfig) => {
-        return new Zipper(config);
-    };
-
-    const createArchiver = (config: IArchiverConfig) => {
-        return new Archiver(config);
-    };
-
     const createCmsEntryZipper = (config: ICreateCmsEntryZipperConfig) => {
         const client = createS3Client({
             requestHandler: new NodeHttpHandler({
@@ -171,40 +148,44 @@ export const createExportContentEntries = () => {
                 requestTimeout: 900000 // milliseconds / 15 minutes
             })
         });
-        const stream = createPassThrough({
-            autoDestroy: true
-        });
 
         const bucket = getBucket();
 
-        const upload = createUpload({
-            client,
-            filename: config.filename,
-            bucket,
-            stream
-        });
+        const createUpload = (filename: string) => {
+            const stream = new PassThrough({
+                autoDestroy: true
+            });
 
-        const archiver = createArchiver({
+            return new Upload({
+                client,
+                bucket,
+                stream,
+                filename
+            });
+        };
+
+        const upload = createUpload(config.filename);
+
+        const archiver = new Archiver({
             format: "zip",
             options: {
                 gzip: true
             }
         });
 
-        const zipper = createZipper({
+        const zipper = new Zipper({
             upload,
             archiver
         });
 
-        const signedUrl = new SignedUrl({
+        const signUrl = new SignUrl({
             client,
             bucket
         });
 
         return new CmsEntryZipper({
             fetcher: config.fetcher,
-            signedUrl,
-            archiver,
+            signUrl,
             zipper,
             entryAssets: config.entryAssets,
             entryAssetsList: config.entryAssetsList

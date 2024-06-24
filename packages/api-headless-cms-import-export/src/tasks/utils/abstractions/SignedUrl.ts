@@ -10,6 +10,6 @@ export interface ISignedUrlFetchParams {
     timeout?: number;
 }
 
-export interface ISignedUrl {
+export interface ISignUrl {
     fetch(params: ISignedUrlFetchParams): Promise<ISignedUrlFetchResult>;
 }

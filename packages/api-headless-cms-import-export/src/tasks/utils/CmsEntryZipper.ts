@@ -1,6 +1,5 @@
 import { CmsEntry, CmsEntryMeta } from "@webiny/api-headless-cms/types";
 import { IZipper } from "./abstractions/Zipper";
-import { IArchiver } from "./abstractions/Archiver";
 import {
     ICmsEntryZipper,
     ICmsEntryZipperExecuteParams,
@@ -9,12 +8,11 @@ import {
 import { IFileMeta } from "./types";
 import { IEntryAssets } from "~/tasks/utils/abstractions/EntryAssets";
 import { IEntryAssetsList } from "~/tasks/utils/abstractions/EntryAssetsList";
-import { ISignedUrl } from "./abstractions/SignedUrl";
+import { ISignUrl } from "./abstractions/SignedUrl";
 
 export interface ICmsEntryZipperConfig {
     zipper: IZipper;
-    signedUrl: ISignedUrl;
-    archiver: IArchiver;
+    signUrl: ISignUrl;
     fetcher: ICmsEntryFetcher;
     entryAssets: IEntryAssets;
     entryAssetsList: IEntryAssetsList;
@@ -48,16 +46,14 @@ export interface ICmsEntryFetcher {
 
 export class CmsEntryZipper implements ICmsEntryZipper {
     private readonly zipper: IZipper;
-    private readonly signedUrl: ISignedUrl;
-    private readonly archiver: IArchiver;
+    private readonly signUrl: ISignUrl;
     private readonly fetcher: ICmsEntryFetcher;
     private readonly entryAssets: IEntryAssets;
     private readonly entryAssetsList: IEntryAssetsList;
 
     public constructor(params: ICmsEntryZipperConfig) {
         this.zipper = params.zipper;
-        this.signedUrl = params.signedUrl;
-        this.archiver = params.archiver;
+        this.signUrl = params.signUrl;
         this.fetcher = params.fetcher;
         this.entryAssets = params.entryAssets;
         this.entryAssetsList = params.entryAssetsList;
@@ -127,11 +123,11 @@ export class CmsEntryZipper implements ICmsEntryZipper {
             id++;
         };
 
-        this.archiver.archiver.on("error", error => {
+        this.zipper.on("error", error => {
             console.error(error);
         });
 
-        this.archiver.archiver.on("entry", () => {
+        this.zipper.on("entry", () => {
             if (shouldAbort()) {
                 this.zipper.abort();
                 return;
@@ -147,7 +143,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
             throw new Error("Failed to upload the zip file.");
         }
 
-        const { url, bucket, key, expiresOn } = await this.signedUrl.fetch({
+        const { url, bucket, key, expiresOn } = await this.signUrl.fetch({
             key: result.Key
         });
 
