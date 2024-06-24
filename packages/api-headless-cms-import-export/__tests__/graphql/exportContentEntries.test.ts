@@ -66,9 +66,6 @@ describe("get export content entries", () => {
                 abortExportContentEntries: {
                     data: {
                         ...task,
-                        url: null,
-                        file: null,
-                        finishedOn: null,
                         status: "aborted"
                     },
                     error: null

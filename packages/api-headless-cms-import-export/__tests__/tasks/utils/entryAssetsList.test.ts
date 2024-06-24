@@ -21,7 +21,7 @@ describe("entry assets list", () => {
     });
 
     it("should fetch assets - empty list", async () => {
-        const result = await entryAssetsList.fetch({});
+        const result = await entryAssetsList.resolve({});
 
         expect(result).toEqual([]);
     });
@@ -55,7 +55,7 @@ describe("entry assets list", () => {
             return items;
         }, {});
 
-        const results = await entryAssetsList.fetch(assets);
+        const results = await entryAssetsList.resolve(assets);
 
         expect(results.length).toEqual(images.length);
 

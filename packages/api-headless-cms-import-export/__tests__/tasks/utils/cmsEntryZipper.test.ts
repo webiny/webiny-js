@@ -1,10 +1,15 @@
 import AdmZip from "adm-zip";
 import { createCmsEntryZipper } from "~tests/mocks/createCmsEntryZipper";
-import { fetchItems } from "./mocks/cmsEntryZipperItems";
-import { IEntryAssets } from "~/tasks/utils/abstractions/EntryAssets";
-import { IEntryAssetsList } from "~/tasks/utils/abstractions/EntryAssetsList";
+import { fetchItems, findImage, images } from "./mocks/cmsEntryZipperItems";
+import { IAssets, IEntryAssets } from "~/tasks/utils/abstractions/EntryAssets";
+import { IAssetItem, IEntryAssetsList } from "~/tasks/utils/abstractions/EntryAssetsList";
+import { createModelPlugin } from "~tests/mocks/model";
+import { CmsModel } from "@webiny/api-headless-cms/types";
+import { matchKeyOrAlias } from "~/tasks/utils/helpers/matchKeyOrAlias";
 
 describe("cms entry zipper", () => {
+    const model = createModelPlugin().contentModel as CmsModel;
+
     it("should abort upload because of no items", async () => {
         expect.assertions(2);
 
@@ -30,9 +35,7 @@ describe("cms entry zipper", () => {
                 shouldAbort: () => {
                     return false;
                 },
-                model: {
-                    modelId: "aTestModelId"
-                }
+                model
             });
 
             expect(result).toEqual("should not happen");
@@ -42,19 +45,61 @@ describe("cms entry zipper", () => {
     });
 
     it("should zip entries into a file - no assets", async () => {
+        const assets: IAssets = {};
         const { cmsEntryZipper, getBuffer } = createCmsEntryZipper({
             fetcher: async after => {
                 return fetchItems(after);
             },
             entryAssets: {
-                assets: {},
-                assignAssets() {
-                    return {};
+                assets,
+                assignAssets(input) {
+                    if (Array.isArray(input)) {
+                        for (const item of input) {
+                            const url = item.values.image;
+                            if (!url) {
+                                return;
+                            }
+                            const result = matchKeyOrAlias(url);
+                            if (!result) {
+                                return;
+                            }
+                            assets[url] = {
+                                ...result,
+                                url
+                            };
+                        }
+                        return;
+                    }
+                    const url = input.values.image;
+                    if (!url) {
+                        return;
+                    }
+                    const result = matchKeyOrAlias(url);
+                    if (!result) {
+                        return;
+                    }
+                    assets[url] = {
+                        ...result,
+                        url
+                    };
                 }
             },
             entryAssetsList: {
-                async fetch() {
-                    return [];
+                async resolve(input) {
+                    return Object.values(input)
+                        .map(item => {
+                            const image = findImage(item);
+                            if (!image) {
+                                return null;
+                            }
+
+                            return {
+                                id: image.id,
+                                key: image.key,
+                                aliases: image.alias ? [image.alias] : []
+                            };
+                        })
+                        .filter((item): item is IAssetItem => !!item);
                 }
             }
         });
@@ -63,9 +108,7 @@ describe("cms entry zipper", () => {
             shouldAbort: () => {
                 return false;
             },
-            model: {
-                modelId: "aTestModelId"
-            }
+            model
         });
 
         const buffer = getBuffer();
@@ -94,10 +137,16 @@ describe("cms entry zipper", () => {
             JSON.stringify({
                 items: [
                     {
-                        id: "1"
+                        id: "1",
+                        values: {
+                            image: images[1].url
+                        }
                     },
                     {
-                        id: "2"
+                        id: "2",
+                        values: {
+                            image: images[2].url
+                        }
                     }
                 ],
                 meta: {
@@ -114,10 +163,16 @@ describe("cms entry zipper", () => {
             JSON.stringify({
                 items: [
                     {
-                        id: "3"
+                        id: "3",
+                        values: {
+                            image: images[3].url
+                        }
                     },
                     {
-                        id: "4"
+                        id: "4",
+                        values: {
+                            image: images[4].url
+                        }
                     }
                 ],
                 meta: {
@@ -135,10 +190,16 @@ describe("cms entry zipper", () => {
             JSON.stringify({
                 items: [
                     {
-                        id: "5"
+                        id: "5",
+                        values: {
+                            image: images[5].url
+                        }
                     },
                     {
-                        id: "6"
+                        id: "6",
+                        values: {
+                            image: images[6].url
+                        }
                     }
                 ],
                 meta: {
@@ -156,10 +217,16 @@ describe("cms entry zipper", () => {
             JSON.stringify({
                 items: [
                     {
-                        id: "7"
+                        id: "7",
+                        values: {
+                            image: images[7].url
+                        }
                     },
                     {
-                        id: "8"
+                        id: "8",
+                        values: {
+                            image: images[8].url
+                        }
                     }
                 ],
                 meta: {
@@ -194,8 +261,49 @@ describe("cms entry zipper", () => {
                     after: "6"
                 }
             ],
-            assets: [],
-            modelId: "aTestModelId"
+            assets: [
+                {
+                    aliases: [],
+                    id: "1",
+                    key: "files/1.jpg"
+                },
+                {
+                    aliases: ["possibly-an-alias/2.jpg"],
+                    id: "2",
+                    key: "files/2.jpg"
+                },
+                {
+                    aliases: [],
+                    id: "3",
+                    key: "files/3.jpg"
+                },
+                {
+                    aliases: [],
+                    id: "4",
+                    key: "files/4.jpg"
+                },
+                {
+                    aliases: [],
+                    id: "5",
+                    key: "files/5.jpg"
+                },
+                {
+                    aliases: ["is-alias/6.jpg"],
+                    id: "6",
+                    key: "files/6.jpg"
+                },
+                {
+                    aliases: [],
+                    id: "7",
+                    key: "files/7.jpg"
+                },
+                {
+                    aliases: [],
+                    id: "8",
+                    key: "files/8.jpg"
+                }
+            ],
+            modelId: model.modelId
         });
     });
 });

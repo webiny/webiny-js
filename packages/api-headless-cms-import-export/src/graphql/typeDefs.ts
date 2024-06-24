@@ -9,6 +9,7 @@ export const createTypeDefs = (models: [string, ...string[]]): string => {
             modelId: String!
             file: String
             url: String
+            expiresOn: DateTime
             status: String
         }
         

@@ -11,6 +11,7 @@ export const createFields = () => {
         modelId
         file
         url
+        expiresOn
         status
     `;
 };

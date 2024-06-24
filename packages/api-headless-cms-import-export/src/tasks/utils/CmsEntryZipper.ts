@@ -30,12 +30,7 @@ const createBufferData = (params: ICreateBufferDataParams) => {
     const { items, meta, after } = params;
     return Buffer.from(
         JSON.stringify({
-            items: items.map(item => {
-                return {
-                    ...item,
-                    ...item.values
-                };
-            }),
+            items,
             meta,
             after
         })
@@ -88,7 +83,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
             } else if (hasMoreItems === false) {
                 console.log("No more items to fetch, finalizing the zip.");
 
-                const assets = await this.entryAssetsList.fetch(this.entryAssets.assets);
+                const assets = await this.entryAssetsList.resolve(this.entryAssets.assets);
 
                 await this.zipper.add(
                     Buffer.from(
@@ -138,7 +133,6 @@ export class CmsEntryZipper implements ICmsEntryZipper {
 
         this.archiver.archiver.on("entry", () => {
             if (shouldAbort()) {
-                this.archiver.archiver.abort();
                 this.zipper.abort();
                 return;
             }
@@ -153,14 +147,15 @@ export class CmsEntryZipper implements ICmsEntryZipper {
             throw new Error("Failed to upload the zip file.");
         }
 
-        const { url, bucket } = await this.signedUrl.fetch({
+        const { url, bucket, key, expiresOn } = await this.signedUrl.fetch({
             key: result.Key
         });
 
         return {
             url,
             bucket,
-            key: result.Key
+            key,
+            expiresOn
         };
     }
 }

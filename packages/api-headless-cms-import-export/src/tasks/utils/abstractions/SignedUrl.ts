@@ -2,6 +2,7 @@ export interface ISignedUrlFetchResult {
     url: string;
     bucket: string;
     key: string;
+    expiresOn: Date;
 }
 
 export interface ISignedUrlFetchParams {

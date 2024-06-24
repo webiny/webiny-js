@@ -7,5 +7,5 @@ export interface IAssetItem {
 }
 
 export interface IEntryAssetsList {
-    fetch(input: IAssets): Promise<IAssetItem[]>;
+    resolve(input: IAssets): Promise<IAssetItem[]>;
 }

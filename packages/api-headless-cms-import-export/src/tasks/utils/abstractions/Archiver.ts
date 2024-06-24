@@ -1,5 +1,5 @@
 import { Archiver } from "archiver";
 
 export interface IArchiver {
-    archiver: Pick<Archiver, "append" | "finalize" | "pipe" | "on" | "abort">;
+    archiver: Pick<Archiver, "append" | "finalize" | "pipe" | "on">;
 }

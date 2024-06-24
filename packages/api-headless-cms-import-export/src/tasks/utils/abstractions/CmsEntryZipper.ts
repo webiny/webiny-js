@@ -6,9 +6,10 @@ export interface ICmsEntryZipperExecuteParams {
 }
 
 export interface ICmsEntryZipperExecuteResult {
-    key?: string;
-    url?: string;
+    key: string;
+    url: string;
     bucket: string;
+    expiresOn: Date;
 }
 
 export interface ICmsEntryZipper {

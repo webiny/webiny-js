@@ -8,7 +8,7 @@ import {
     ICmsImportExportTaskOutput,
     ICmsImportExportTaskParams
 } from "~/types";
-import { convertTaskToCmsImportExportRecord } from "~/crud/importExportRecord";
+import { convertTaskToCmsImportExportRecord } from "~/crud/utils/importExportRecord";
 import { NotFoundError } from "@webiny/handler-graphql";
 
 export const createHeadlessCmsImportExportCrud = async (

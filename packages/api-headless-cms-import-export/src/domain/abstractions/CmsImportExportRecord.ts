@@ -5,9 +5,10 @@ export interface ICmsImportExportRecord {
     id: string;
     createdOn: string;
     createdBy: CmsIdentity;
-    finishedOn?: string;
+    finishedOn: string | null;
     modelId: string;
-    file?: string;
-    url?: string;
+    file: string | null;
+    url: string | null;
+    expiresOn: Date | null;
     status: TaskDataStatus;
 }

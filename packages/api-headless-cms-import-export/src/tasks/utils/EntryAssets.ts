@@ -5,22 +5,13 @@ import {
     IAssignAssetsInput,
     IEntryAssets
 } from "~/tasks/utils/abstractions/EntryAssets";
+import { matchKeyOrAlias } from "~/tasks/utils/helpers/matchKeyOrAlias";
 
 export interface IEntryAssetsParams {
     traverser: ContentEntryTraverser;
 }
 
 const fileTypes: string[] = ["file"];
-
-interface IMatchOutput {
-    alias?: never;
-    key: string;
-}
-
-interface IMatchAliasOutput {
-    key?: never;
-    alias: string;
-}
 
 export class EntryAssets implements IEntryAssets {
     public readonly assets: IAssets = {};
@@ -55,7 +46,7 @@ export class EntryAssets implements IEntryAssets {
             return null;
         }
 
-        const result = this.match(input);
+        const result = matchKeyOrAlias(input);
         if (!result) {
             return null;
         }
@@ -63,27 +54,6 @@ export class EntryAssets implements IEntryAssets {
             ...result,
             url: input
         };
-    }
-
-    private match(input: string): IMatchAliasOutput | IMatchOutput | null {
-        try {
-            const url = new URL(input);
-            const { pathname } = url;
-            const isAlias = !pathname.startsWith("/files/") && !pathname.startsWith("/private/");
-            if (isAlias) {
-                return {
-                    alias: pathname
-                };
-            }
-            return {
-                key: pathname.replace("/files/", "").replace("/private/", "")
-            };
-        } catch (ex) {
-            if (process.env.DEBUG === "true") {
-                console.error(`Url ${input} is not valid.`);
-            }
-            return null;
-        }
     }
 
     private assignAssetsToItems(input: string | string[] | unknown): void {

@@ -16,6 +16,7 @@ export class SignedUrl implements ISignedUrl {
     }
 
     public async fetch(params: ISignedUrlFetchParams): Promise<ISignedUrlFetchResult> {
+        const timeout = params.timeout || 604800; // 1 week default
         const url = await getSignedUrl(
             this.client,
             new GetObjectCommand({
@@ -23,13 +24,15 @@ export class SignedUrl implements ISignedUrl {
                 Key: params.key
             }),
             {
-                expiresIn: params.timeout || 604800 // 1 week default
+                expiresIn: timeout
             }
         );
+        const expiresOn = new Date(new Date().getTime() + timeout);
         return {
             url,
             bucket: this.bucket,
-            key: params.key
+            key: params.key,
+            expiresOn
         };
     }
 }

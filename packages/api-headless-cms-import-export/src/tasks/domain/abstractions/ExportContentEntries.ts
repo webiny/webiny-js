@@ -12,6 +12,7 @@ export interface IExportContentEntriesInput {
 export interface IExportContentEntriesOutput extends ITaskResponseDoneResultOutput {
     file: string;
     url: string;
+    expiresOn: Date;
 }
 
 export interface IExportContentEntries<

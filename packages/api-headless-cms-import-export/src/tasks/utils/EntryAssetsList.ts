@@ -22,7 +22,7 @@ export class EntryAssetsList implements IEntryAssetsList {
         this.listFiles = params.listFiles;
     }
 
-    public async fetch(input: IAssets): Promise<IAssetItem[]> {
+    public async resolve(input: IAssets): Promise<IAssetItem[]> {
         const keys: string[] = [];
         const aliases: string[] = [];
         for (const url in input) {
@@ -56,7 +56,7 @@ export class EntryAssetsList implements IEntryAssetsList {
         const list = async (after?: string) => {
             return this.listFiles({
                 where,
-                limit: 1000,
+                limit: 10000000,
                 after
             });
         };
@@ -76,7 +76,7 @@ export class EntryAssetsList implements IEntryAssetsList {
                 });
             }
             if (!meta.hasMoreItems) {
-                return Object.values(assets);
+                return assets;
             }
             after = meta.cursor || undefined;
         }

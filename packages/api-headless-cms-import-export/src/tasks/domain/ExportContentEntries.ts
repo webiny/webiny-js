@@ -78,7 +78,6 @@ export class ExportContentEntries<
                 sort: params.input.sort,
                 after
             };
-            console.log("Fetching entries", input);
             const [items, meta] = await context.cms.listLatestEntries(model, input);
             return {
                 items,
@@ -126,7 +125,8 @@ export class ExportContentEntries<
         // TODO: pass proper types to response.done callable
         return response.done({
             file: result.key,
-            url: result.url
+            url: result.url,
+            expiresOn: result.expiresOn
         } as O);
     }
 }

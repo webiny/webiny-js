@@ -25,6 +25,7 @@ export interface ICmsImportExportTaskParams {
 export interface ICmsImportExportTaskOutput extends ITaskResponseDoneResultOutput {
     file?: string;
     url?: string;
+    expiresOn?: Date;
 }
 
 export interface CmsImportExportObject {
