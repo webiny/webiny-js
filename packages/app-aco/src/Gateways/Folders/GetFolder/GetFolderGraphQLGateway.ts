@@ -1,0 +1,39 @@
+import { ApolloClient } from "apollo-client";
+import { IGetFolderGateway } from "./IGetFolderGateway";
+import { GetFolderFtaResponse, GetFolderQueryVariables } from "~/types";
+import { GET_FOLDER } from "~/graphql/folders.gql";
+
+export class GetFolderGraphQLGateway implements IGetFolderGateway {
+    private client: ApolloClient<any>;
+
+    constructor(client: ApolloClient<any>) {
+        this.client = client;
+    }
+
+    async execute(id: string) {
+        if (!id) {
+            throw new Error("Folder `id` is mandatory");
+        }
+
+        const { data: response } = await this.client.query<
+            GetFolderFtaResponse,
+            GetFolderQueryVariables
+        >({
+            query: GET_FOLDER,
+            variables: { id },
+            fetchPolicy: "network-only"
+        });
+
+        if (!response) {
+            throw new Error("Network error while fetch folder.");
+        }
+
+        const { data, error } = response.aco.getFolder;
+
+        if (!data) {
+            throw new Error(error?.message || `Could not fetch folder with id: ${id}`);
+        }
+
+        return data;
+    }
+}

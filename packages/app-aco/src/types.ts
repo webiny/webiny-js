@@ -4,6 +4,7 @@ import {
     CmsModelField,
     CmsModelFieldSettings
 } from "@webiny/app-headless-cms-common/types";
+import { FolderDTO } from "~/Domain/Models";
 
 export { CmsIdentity } from "@webiny/app-headless-cms-common/types";
 export * from "~/graphql/records/types";
@@ -67,6 +68,17 @@ export type LoadingActions =
     | "DELETE"
     | "MOVE";
 
+export enum LoadingActionsEnum {
+    init = "INIT",
+    list = "LIST",
+    listMore = "LIST_MORE",
+    get = "GET",
+    create = "CREATE",
+    update = "UPDATE",
+    delete = "DELETE",
+    move = "MOVE"
+}
+
 export interface AcoError {
     code: string;
     message: string;
@@ -91,6 +103,16 @@ export interface ListFoldersResponse {
     };
 }
 
+// ListFoldersResponse - FTA
+export interface ListFoldersFtaResponse {
+    aco: {
+        listFolders: {
+            data: FolderDTO[] | null;
+            error: AcoError | null;
+        };
+    };
+}
+
 export interface ListFoldersQueryVariables {
     type: string;
     limit: number;
@@ -102,6 +124,16 @@ export interface GetFolderResponse {
     aco: {
         getFolder: {
             data: FolderItem | null;
+            error: AcoError | null;
+        };
+    };
+}
+
+// GetFolderResponse - FTA
+export interface GetFolderFtaResponse {
+    aco: {
+        getFolder: {
+            data: FolderDTO | null;
             error: AcoError | null;
         };
     };
@@ -120,11 +152,32 @@ export interface UpdateFolderResponse {
     };
 }
 
+// UpdateFolderResponse - FTA
+export interface UpdateFolderFtaResponse {
+    aco: {
+        updateFolder: {
+            data: FolderDTO;
+            error: AcoError | null;
+        };
+    };
+}
+
 export interface UpdateFolderVariables {
     id: string;
     data: Partial<
         Omit<
             FolderItem,
+            "id" | "createdOn" | "createdBy" | "savedOn" | "savedBy" | "modifiedOn" | "modifiedBy"
+        >
+    >;
+}
+
+// UpdateFolderVariables - FTA
+export interface UpdateFolderFtaVariables {
+    id: string;
+    data: Partial<
+        Omit<
+            FolderDTO,
             "id" | "createdOn" | "createdBy" | "savedOn" | "savedBy" | "modifiedOn" | "modifiedBy"
         >
     >;
@@ -139,9 +192,27 @@ export interface CreateFolderResponse {
     };
 }
 
+// CreateFolderResponse - FTA
+export interface CreateFolderFtaResponse {
+    aco: {
+        createFolder: {
+            data: FolderDTO;
+            error: AcoError | null;
+        };
+    };
+}
+
 export interface CreateFolderVariables {
     data: Omit<
         FolderItem,
+        "id" | "createdOn" | "createdBy" | "savedOn" | "savedBy" | "modifiedOn" | "modifiedBy"
+    >;
+}
+
+// CreateFolderVariables - FTA
+export interface CreateFolderFtaVariables {
+    data: Omit<
+        FolderDTO | FolderItem,
         "id" | "createdOn" | "createdBy" | "savedOn" | "savedBy" | "modifiedOn" | "modifiedBy"
     >;
 }
