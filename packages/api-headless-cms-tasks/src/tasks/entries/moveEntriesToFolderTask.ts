@@ -20,14 +20,14 @@ export const createMoveEntriesToFolderTask = () => {
         description: "Move entries to folder.",
         maxIterations: 2,
         run: async params => {
-            const { response, input } = params;
+            const { response, input, context } = params;
 
             try {
                 if (!input?.data?.folderId) {
                     return response.error(`Missing "data.folderId" in the input.`);
                 }
 
-                const moveGateway = new MoveEntryToFolder();
+                const moveGateway = new MoveEntryToFolder(context);
                 const processTask = new ProcessTask(moveGateway);
                 return await processTask.execute(params);
             } catch (ex) {

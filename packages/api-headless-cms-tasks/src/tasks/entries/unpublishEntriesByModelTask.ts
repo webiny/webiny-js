@@ -20,7 +20,7 @@ export const createUnpublishEntriesByModelTask = () => {
         description: "Unpublish entries found for a particular query, by model.",
         maxIterations: 500,
         run: async params => {
-            const { response, input } = params;
+            const { response, input, context } = params;
 
             try {
                 if (!input.modelId) {
@@ -32,7 +32,7 @@ export const createUnpublishEntriesByModelTask = () => {
                     return await processTasks.execute(params);
                 }
 
-                const listGateway = new ListPublishedEntries();
+                const listGateway = new ListPublishedEntries(context);
                 const createTasks = new CreateTasksByModel(
                     EntriesTask.UnpublishEntries,
                     listGateway

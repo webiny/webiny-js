@@ -7,15 +7,16 @@ interface MoveEntryToFolderData {
 }
 
 export class MoveEntryToFolder implements IProcessEntry {
-    async execute(
-        context: HcmsTasksContext,
-        model: CmsModel,
-        id: string,
-        data?: MoveEntryToFolderData
-    ): Promise<void> {
+    private readonly context: HcmsTasksContext;
+
+    constructor(context: HcmsTasksContext) {
+        this.context = context;
+    }
+
+    async execute(model: CmsModel, id: string, data?: MoveEntryToFolderData): Promise<void> {
         if (!data?.folderId) {
             throw new Error(`Missing "data.folderId" in the input.`);
         }
-        await context.cms.moveEntry(model, id, data.folderId);
+        await this.context.cms.moveEntry(model, id, data.folderId);
     }
 }

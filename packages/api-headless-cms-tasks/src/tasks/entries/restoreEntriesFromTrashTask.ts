@@ -20,10 +20,10 @@ export const createRestoreEntriesFromTrashTask = () => {
         description: "Restore entries from trash bin.",
         maxIterations: 2,
         run: async params => {
-            const { response } = params;
+            const { response, context } = params;
 
             try {
-                const restoreGateway = new RestoreEntryFromTrash();
+                const restoreGateway = new RestoreEntryFromTrash(context);
                 const processTask = new ProcessTask(restoreGateway);
                 return await processTask.execute(params);
             } catch (ex) {

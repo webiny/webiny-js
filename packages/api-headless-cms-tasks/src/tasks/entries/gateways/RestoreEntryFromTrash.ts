@@ -4,8 +4,14 @@ import { CmsModel } from "@webiny/api-headless-cms/types";
 import { HcmsTasksContext } from "~/types";
 
 export class RestoreEntryFromTrash implements IProcessEntry {
-    async execute(context: HcmsTasksContext, model: CmsModel, id: string): Promise<void> {
+    private readonly context: HcmsTasksContext;
+
+    constructor(context: HcmsTasksContext) {
+        this.context = context;
+    }
+
+    async execute(model: CmsModel, id: string): Promise<void> {
         const { id: entryId } = parseIdentifier(id);
-        await context.cms.restoreEntryFromBin(model, entryId);
+        await this.context.cms.restoreEntryFromBin(model, entryId);
     }
 }

@@ -20,7 +20,7 @@ export const createRestoreEntriesFromTrashByModelTask = () => {
         description: "Restore entries from trash bin found for a particular query, by model.",
         maxIterations: 500,
         run: async params => {
-            const { response, input } = params;
+            const { response, input, context } = params;
 
             try {
                 if (!input.modelId) {
@@ -34,7 +34,7 @@ export const createRestoreEntriesFromTrashByModelTask = () => {
                     return await processTasks.execute(params);
                 }
 
-                const listGateway = new ListDeletedEntries();
+                const listGateway = new ListDeletedEntries(context);
                 const createTasks = new CreateTasksByModel(
                     EntriesTask.RestoreEntriesFromTrash,
                     listGateway

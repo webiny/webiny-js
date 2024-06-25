@@ -20,10 +20,10 @@ export const createMoveEntriesToTrashTask = () => {
         description: "Move entries to trash bin.",
         maxIterations: 2,
         run: async params => {
-            const { response } = params;
+            const { response, context } = params;
 
             try {
-                const moveToTrashGateway = new MoveEntryToTrash();
+                const moveToTrashGateway = new MoveEntryToTrash(context);
                 const processTask = new ProcessTask(moveToTrashGateway);
                 return await processTask.execute(params);
             } catch (ex) {

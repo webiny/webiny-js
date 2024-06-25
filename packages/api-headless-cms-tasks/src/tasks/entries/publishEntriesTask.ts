@@ -20,10 +20,10 @@ export const createPublishEntriesTask = () => {
         description: "Publish entries.",
         maxIterations: 2,
         run: async params => {
-            const { response } = params;
+            const { response, context } = params;
 
             try {
-                const publishGateway = new PublishEntry();
+                const publishGateway = new PublishEntry(context);
                 const processTask = new ProcessTask(publishGateway);
                 return await processTask.execute(params);
             } catch (ex) {

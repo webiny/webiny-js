@@ -20,10 +20,10 @@ export const createDeleteEntriesTask = () => {
         description: "Delete entries.",
         maxIterations: 2,
         run: async params => {
-            const { response } = params;
+            const { response, context } = params;
 
             try {
-                const deleteGateway = new DeleteEntry();
+                const deleteGateway = new DeleteEntry(context);
                 const processTask = new ProcessTask(deleteGateway);
                 return await processTask.execute(params);
             } catch (ex) {

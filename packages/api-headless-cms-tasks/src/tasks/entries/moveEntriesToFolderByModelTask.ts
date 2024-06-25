@@ -20,7 +20,7 @@ export const createMoveEntriesToFolderByModelTask = () => {
         description: "Move entries to folder found for a particular query, by model.",
         maxIterations: 500,
         run: async params => {
-            const { response, input } = params;
+            const { response, input, context } = params;
 
             try {
                 if (!input.modelId) {
@@ -36,7 +36,7 @@ export const createMoveEntriesToFolderByModelTask = () => {
                     return await processTasks.execute(params);
                 }
 
-                const listGateway = new ListLatestEntries();
+                const listGateway = new ListLatestEntries(context);
                 const createTasks = new CreateTasksByModel(
                     EntriesTask.MoveEntriesToFolder,
                     listGateway

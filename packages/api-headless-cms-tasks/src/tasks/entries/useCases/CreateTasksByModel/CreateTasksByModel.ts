@@ -46,7 +46,6 @@ export class CreateTasksByModel {
 
                 // List entries from the HCMS based on the provided query
                 const { entries, meta } = await this.listEntriesGateway.execute(
-                    context,
                     input.modelId,
                     listEntriesParams
                 );

@@ -54,7 +54,7 @@ export class ProcessTask {
                     // Set the security identity in the context.
                     context.security.setIdentity(input.identity);
                     // Execute the gateway operation for the current ID.
-                    await this.gateway.execute(context, model, id, input.data);
+                    await this.gateway.execute(model, id, input.data);
                     // Add the ID to the list of successfully processed entries.
                     this.result.addDone(id);
                 } catch (ex) {

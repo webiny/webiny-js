@@ -20,7 +20,7 @@ export const createDeleteEntriesByModelTask = () => {
         description: "Delete entries found for a particular query, by model.",
         maxIterations: 500,
         run: async params => {
-            const { response, input } = params;
+            const { response, input, context } = params;
 
             try {
                 if (!input.modelId) {
@@ -32,7 +32,7 @@ export const createDeleteEntriesByModelTask = () => {
                     return await processTasks.execute(params);
                 }
 
-                const listGateway = new ListDeletedEntries();
+                const listGateway = new ListDeletedEntries(context);
                 const createTasks = new CreateTasksByModel(EntriesTask.DeleteEntries, listGateway);
                 return await createTasks.execute(params);
             } catch (ex) {

@@ -20,10 +20,10 @@ export const createUnpublishEntriesTask = () => {
         description: "Unpublish entries.",
         maxIterations: 2,
         run: async params => {
-            const { response } = params;
+            const { response, context } = params;
 
             try {
-                const unpublishGateway = new UnpublishEntry();
+                const unpublishGateway = new UnpublishEntry(context);
                 const processTask = new ProcessTask(unpublishGateway);
                 return await processTask.execute(params);
             } catch (ex) {

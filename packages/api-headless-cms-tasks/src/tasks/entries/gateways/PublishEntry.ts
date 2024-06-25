@@ -3,7 +3,13 @@ import { CmsModel } from "@webiny/api-headless-cms/types";
 import { HcmsTasksContext } from "~/types";
 
 export class PublishEntry implements IProcessEntry {
-    async execute(context: HcmsTasksContext, model: CmsModel, id: string): Promise<void> {
-        await context.cms.publishEntry(model, id);
+    private readonly context: HcmsTasksContext;
+
+    constructor(context: HcmsTasksContext) {
+        this.context = context;
+    }
+
+    async execute(model: CmsModel, id: string): Promise<void> {
+        await this.context.cms.publishEntry(model, id);
     }
 }
