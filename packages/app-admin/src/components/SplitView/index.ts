@@ -1,1 +1,1 @@
-export { SplitView, LeftPanel, RightPanel, generateAutoSaveId } from "./SplitView";
+export { SplitView, LeftPanel, RightPanel } from "./SplitView";

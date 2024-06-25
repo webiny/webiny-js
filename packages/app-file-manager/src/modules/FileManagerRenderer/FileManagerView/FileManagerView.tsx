@@ -12,12 +12,7 @@ import { ReactComponent as AddIcon } from "@material-design-icons/svg/filled/add
 import { i18n } from "@webiny/app/i18n";
 import { useCreateDialog } from "@webiny/app-aco";
 import { OverlayLayout, useSnackbar } from "@webiny/app-admin";
-import {
-    generateAutoSaveId,
-    LeftPanel,
-    RightPanel,
-    SplitView
-} from "@webiny/app-admin/components/SplitView";
+import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
 import { useI18N } from "@webiny/app-i18n";
 import { useTenancy } from "@webiny/app-tenancy";
 import { ButtonIcon, ButtonPrimary, ButtonProps, ButtonSecondary } from "@webiny/ui/Button";
@@ -79,14 +74,32 @@ const createSort = (sorting?: Sorting): ListFilesSort | undefined => {
     }, []);
 };
 
+/**
+ * Generates a `layoutId` to be used with the `<SplitView />` component.
+ * The `layoutId` is essential for saving user preferences into localStorage.
+ * The generation of the `layoutId` takes into account the current `tenantId`, `localeCode`, and the provided `applicationId`.
+ *
+ *  TODO: export the useLayoutId from a generic use package, such as app-admin. At the moment is not possible because of circular dependency issues.
+ */
+const useLayoutId = (applicationId: string) => {
+    const { tenant } = useTenancy();
+    const { getCurrentLocale } = useI18N();
+    const localeCode = getCurrentLocale("content");
+
+    if (!tenant || !localeCode) {
+        console.warn("Missing tenant or localeCode while creating layoutId");
+        return null;
+    }
+
+    return `T#${tenant}#L#${localeCode}#A#${applicationId}`;
+};
+
 const FileManagerView = () => {
     const view = useFileManagerView();
     const fileManager = useFileManagerApi();
     const { browser } = useFileManagerViewConfig();
     const { showSnackbar } = useSnackbar();
     const { showDialog: showCreateFolderDialog } = useCreateDialog();
-    const { tenant } = useTenancy();
-    const { getCurrentLocale } = useI18N();
     const [drawerLoading, setDrawerLoading] = useState<string | null>(null);
 
     const uploader = useMemo<BatchFileUploader>(
@@ -96,6 +109,7 @@ const FileManagerView = () => {
 
     const [tableSorting, setTableSorting] = useState<Sorting>([]);
     const [currentFile, setCurrentFile] = useState<FileItem>();
+    const layoutId = useLayoutId("fm:file");
 
     useEffect(() => {
         const fetchFileDetails = async () => {
@@ -291,12 +305,6 @@ const FileManagerView = () => {
         [view.updateFile]
     );
 
-    const autoSaveId = useMemo(() => {
-        const localeCode = getCurrentLocale("content");
-        const applicationId = "fm:file";
-        return generateAutoSaveId(tenant, localeCode, applicationId);
-    }, [getCurrentLocale, tenant]);
-
     return (
         <>
             <Files
@@ -354,7 +362,7 @@ const FileManagerView = () => {
                                 onClose={view.hideFileDetails}
                                 onSave={updateFile}
                             />
-                            <SplitView autoSaveId={autoSaveId}>
+                            <SplitView layoutId={layoutId}>
                                 <LeftPanel span={2}>
                                     <LeftSidebar
                                         currentFolder={view.folderId}

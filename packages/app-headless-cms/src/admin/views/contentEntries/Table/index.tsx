@@ -1,10 +1,5 @@
-import React, { useCallback, useMemo } from "react";
-import {
-    generateAutoSaveId,
-    LeftPanel,
-    RightPanel,
-    SplitView
-} from "@webiny/app-admin/components/SplitView";
+import React, { useCallback } from "react";
+import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
 import { Sidebar } from "./Sidebar";
 import { Main } from "./Main";
 import { ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/ContentEntryContext";
@@ -15,20 +10,33 @@ import { useApolloClient, useModel } from "~/admin/hooks";
 import { ContentEntriesListProvider } from "~/admin/views/contentEntries/hooks";
 import { CMS_ENTRY_LIST_LINK, LOCAL_STORAGE_LATEST_VISITED_FOLDER } from "~/admin/constants";
 
+/**
+ * Generates a `layoutId` to be used with the `<SplitView />` component.
+ * The `layoutId` is essential for saving user preferences into localStorage.
+ * The generation of the `layoutId` takes into account the current `tenantId`, `localeCode`, and the provided `applicationId`.
+ *
+ *  TODO: export the useLayoutId from a generic use package, such as app-admin. At the moment is not possible because of circular dependency issues.
+ */
+const useLayoutId = (applicationId: string) => {
+    const { tenant } = useTenancy();
+    const { getCurrentLocale } = useI18N();
+    const localeCode = getCurrentLocale("content");
+
+    if (!tenant || !localeCode) {
+        console.warn("Missing tenant or localeCode while creating layoutId");
+        return null;
+    }
+
+    return `T#${tenant}#L#${localeCode}#A#${applicationId}`;
+};
+
 const View = () => {
     const { currentFolderId } = useNavigateFolder();
     const { model } = useModel();
-    const { getCurrentLocale } = useI18N();
-    const { tenant } = useTenancy();
-
-    const autoSaveId = useMemo(() => {
-        const localeCode = getCurrentLocale("content");
-        const applicationId = `cms:${model.modelId}`;
-        return generateAutoSaveId(tenant, localeCode, applicationId);
-    }, [model, getCurrentLocale, tenant]);
+    const layoutId = useLayoutId(`cms:${model.modelId}`);
 
     return (
-        <SplitView autoSaveId={autoSaveId}>
+        <SplitView layoutId={layoutId}>
             <LeftPanel span={2}>
                 <Sidebar folderId={currentFolderId} />
             </LeftPanel>

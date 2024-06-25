@@ -47,13 +47,16 @@ export const leftPanel = css({
     }
 });
 
-type SplitViewProps = Omit<PanelGroupProps, "direction" | "id">;
+interface SplitViewProps extends Omit<PanelGroupProps, "direction" | "id" | "autoSaveId"> {
+    layoutId?: string | null;
+}
 
-const SplitView = ({ children, className, ...props }: SplitViewProps) => {
+const SplitView = ({ children, className, layoutId, ...props }: SplitViewProps) => {
     return (
         <PanelGroup
             direction="horizontal"
             id="splitView"
+            autoSaveId={layoutId}
             className={classSet(grid, className, "webiny-split-view")}
             {...props}
         >
@@ -112,16 +115,4 @@ const RightPanel = ({ children, ...props }: SplitViewPanelProps) => {
     );
 };
 
-// Utility function to generate the autoSaveId
-const generateAutoSaveId = (
-    tenantId: string | null,
-    localeCode: string | null,
-    applicationId: string
-) => {
-    if (!tenantId || !localeCode || !applicationId) {
-        return null;
-    }
-    return `T#${tenantId}#L#${localeCode}#A#${applicationId}`;
-};
-
-export { SplitView, LeftPanel, RightPanel, generateAutoSaveId };
+export { SplitView, LeftPanel, RightPanel };
