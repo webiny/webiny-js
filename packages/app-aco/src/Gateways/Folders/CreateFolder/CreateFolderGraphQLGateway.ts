@@ -1,8 +1,7 @@
 import { ApolloClient } from "apollo-client";
 import { ICreateFolderGateway } from "./ICreateFolderGateway";
-import { CreateFolderFtaResponse, CreateFolderFtaVariables } from "~/types";
 import { CREATE_FOLDER } from "~/graphql/folders.gql";
-import { FolderDTO } from "~/Domain/Models";
+import { CreateFolderResponse, CreateFolderVariables, FolderItem } from "~/types";
 
 export class CreateFolderGraphQLGateway implements ICreateFolderGateway {
     private client: ApolloClient<any>;
@@ -11,10 +10,10 @@ export class CreateFolderGraphQLGateway implements ICreateFolderGateway {
         this.client = client;
     }
 
-    async execute(folder: FolderDTO) {
+    async execute(folder: FolderItem) {
         const { data: response } = await this.client.mutate<
-            CreateFolderFtaResponse,
-            CreateFolderFtaVariables
+            CreateFolderResponse,
+            CreateFolderVariables
         >({
             mutation: CREATE_FOLDER,
             variables: {

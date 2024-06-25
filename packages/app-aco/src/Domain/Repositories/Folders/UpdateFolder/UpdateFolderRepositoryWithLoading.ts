@@ -2,7 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { ILoadingRepository } from "@webiny/app-utils";
 import { IUpdateFolderRepository } from "~/Domain/Repositories";
 import { LoadingActionsEnum } from "~/types";
-import { FolderDTO } from "~/Domain/Models";
+import { FolderItem } from "~/types";
 
 export class UpdateFolderRepositoryWithLoading implements IUpdateFolderRepository {
     private loadingRepository: ILoadingRepository;
@@ -17,7 +17,7 @@ export class UpdateFolderRepositoryWithLoading implements IUpdateFolderRepositor
         makeAutoObservable(this);
     }
 
-    async execute(folder: FolderDTO) {
+    async execute(folder: FolderItem) {
         await this.loadingRepository.runCallBack(
             this.updateFolderRepository.execute(folder),
             LoadingActionsEnum.update

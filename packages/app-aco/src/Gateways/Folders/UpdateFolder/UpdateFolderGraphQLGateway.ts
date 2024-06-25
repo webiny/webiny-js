@@ -1,8 +1,7 @@
 import { ApolloClient } from "apollo-client";
 import { IUpdateFolderGateway } from "./IUpdateFolderGateway";
-import { UpdateFolderFtaResponse, UpdateFolderFtaVariables } from "~/types";
 import { UPDATE_FOLDER } from "~/graphql/folders.gql";
-import { FolderDTO } from "~/Domain/Models";
+import { FolderItem, UpdateFolderResponse, UpdateFolderVariables } from "~/types";
 
 export class UpdateFolderGraphQLGateway implements IUpdateFolderGateway {
     private client: ApolloClient<any>;
@@ -11,12 +10,12 @@ export class UpdateFolderGraphQLGateway implements IUpdateFolderGateway {
         this.client = client;
     }
 
-    async execute(folder: FolderDTO) {
+    async execute(folder: FolderItem) {
         const { id, title, slug, permissions, parentId } = folder;
 
         const { data: response } = await this.client.mutate<
-            UpdateFolderFtaResponse,
-            UpdateFolderFtaVariables
+            UpdateFolderResponse,
+            UpdateFolderVariables
         >({
             mutation: UPDATE_FOLDER,
             variables: {

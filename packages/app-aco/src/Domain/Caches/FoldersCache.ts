@@ -10,7 +10,7 @@ export class FoldersCache implements ICache<Folder> {
         makeAutoObservable(this);
     }
 
-    async get(): Promise<Folder[]> {
+    getItems() {
         return this.folders;
     }
 

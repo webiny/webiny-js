@@ -3,6 +3,8 @@ import { IFolderMapper } from "./IFolderMapper";
 
 export class FolderMapper implements IFolderMapper {
     toDTO(folder: Folder) {
+        console.log("FolderMapper", folder);
+
         return {
             id: folder.id,
             title: folder.title,

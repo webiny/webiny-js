@@ -1,8 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { ILoadingRepository } from "@webiny/app-utils";
 import { IDeleteFolderRepository } from "~/Domain/Repositories";
-import { FolderDTO } from "~/Domain/Models";
-import { LoadingActionsEnum } from "~/types";
+import { FolderItem, LoadingActionsEnum } from "~/types";
 
 export class DeleteFolderRepositoryWithLoading implements IDeleteFolderRepository {
     private loadingRepository: ILoadingRepository;
@@ -17,7 +16,7 @@ export class DeleteFolderRepositoryWithLoading implements IDeleteFolderRepositor
         makeAutoObservable(this);
     }
 
-    async execute(folder: FolderDTO) {
+    async execute(folder: FolderItem) {
         await this.loadingRepository.runCallBack(
             this.deleteFolderRepository.execute(folder),
             LoadingActionsEnum.delete

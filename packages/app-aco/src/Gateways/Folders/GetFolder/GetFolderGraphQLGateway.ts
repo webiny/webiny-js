@@ -1,7 +1,7 @@
 import { ApolloClient } from "apollo-client";
 import { IGetFolderGateway } from "./IGetFolderGateway";
-import { GetFolderFtaResponse, GetFolderQueryVariables } from "~/types";
 import { GET_FOLDER } from "~/graphql/folders.gql";
+import { GetFolderResponse, GetFolderQueryVariables } from "~/types";
 
 export class GetFolderGraphQLGateway implements IGetFolderGateway {
     private client: ApolloClient<any>;
@@ -16,7 +16,7 @@ export class GetFolderGraphQLGateway implements IGetFolderGateway {
         }
 
         const { data: response } = await this.client.query<
-            GetFolderFtaResponse,
+            GetFolderResponse,
             GetFolderQueryVariables
         >({
             query: GET_FOLDER,

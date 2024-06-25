@@ -17,3 +17,5 @@ export class FoldersCacheFactory {
         return namespace;
     }
 }
+
+export const folderCacheFactory = new FoldersCacheFactory();

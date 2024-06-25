@@ -1,7 +1,8 @@
 import { IUpdateFolderRepository } from "./IUpdateFolderRepository";
 import { IUpdateFolderGateway } from "~/Gateways";
-import { Folder, FolderDTO } from "~/Domain/Models";
+import { Folder } from "~/Domain/Models";
 import { FoldersCache } from "~/Domain/Caches";
+import { FolderItem } from "~/types";
 
 export class UpdateFolderRepository implements IUpdateFolderRepository {
     private cache: FoldersCache;
@@ -12,7 +13,7 @@ export class UpdateFolderRepository implements IUpdateFolderRepository {
         this.gateway = gateway;
     }
 
-    async execute(folder: FolderDTO) {
+    async execute(folder: FolderItem) {
         const item = await this.gateway.execute(folder);
         await this.cache.update(item.id, Folder.create(item));
     }

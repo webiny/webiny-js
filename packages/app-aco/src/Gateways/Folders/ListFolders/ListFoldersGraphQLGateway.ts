@@ -1,8 +1,8 @@
 import { ApolloClient } from "apollo-client";
 import { IListFoldersGateway } from "./IListFoldersGateway";
-import { ListFoldersFtaResponse, ListFoldersQueryVariables } from "~/types";
 import { LIST_FOLDERS } from "~/graphql/folders.gql";
 import { ROOT_FOLDER } from "~/constants";
+import { FolderItem, ListFoldersQueryVariables, ListFoldersResponse } from "~/types";
 
 export class ListFoldersGraphQLGateway implements IListFoldersGateway {
     private client: ApolloClient<any>;
@@ -13,7 +13,7 @@ export class ListFoldersGraphQLGateway implements IListFoldersGateway {
 
     async execute(type: string) {
         const { data: response } = await this.client.query<
-            ListFoldersFtaResponse,
+            ListFoldersResponse,
             ListFoldersQueryVariables
         >({
             query: LIST_FOLDERS,
@@ -37,7 +37,7 @@ export class ListFoldersGraphQLGateway implements IListFoldersGateway {
         return [this.getRootFolder(), ...(data || [])];
     }
 
-    private getRootFolder() {
+    private getRootFolder(): FolderItem {
         return {
             id: ROOT_FOLDER,
             title: "Home",

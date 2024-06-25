@@ -1,5 +1,6 @@
-import { Folder, FolderDTO } from "./Folder";
+import { Folder } from "./Folder";
+import { FolderItem } from "~/types";
 
 export interface IFolderMapper {
-    toDTO: (folder: Folder | FolderDTO) => FolderDTO;
+    toDTO: (folder: Folder | FolderItem) => FolderItem;
 }

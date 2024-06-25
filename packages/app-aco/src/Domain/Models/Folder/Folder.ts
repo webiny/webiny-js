@@ -1,23 +1,23 @@
-import { CmsIdentity, FolderPermission } from "~/types";
+import { CmsIdentity, FolderPermission, FolderItem } from "~/types";
 
-export interface FolderDTO {
-    id: string;
-    title: string;
-    slug: string;
-    type: string;
-    parentId: string;
-    createdBy: CmsIdentity;
-    createdOn: string;
-    savedBy: CmsIdentity;
-    savedOn: string;
-    modifiedBy: CmsIdentity | null;
-    modifiedOn: string | null;
-    permissions: FolderPermission[];
-    hasNonInheritedPermissions: boolean;
-    canManagePermissions: boolean;
-    canManageStructure: boolean;
-    canManageContent: boolean;
-}
+// export interface FolderDTO {
+//     id: string;
+//     title: string;
+//     slug: string;
+//     type: string;
+//     parentId: string | null;
+//     createdBy: CmsIdentity;
+//     createdOn: string;
+//     savedBy: CmsIdentity;
+//     savedOn: string;
+//     modifiedBy: CmsIdentity | null;
+//     modifiedOn: string | null;
+//     permissions: FolderPermission[];
+//     hasNonInheritedPermissions: boolean;
+//     canManagePermissions: boolean;
+//     canManageStructure: boolean;
+//     canManageContent: boolean;
+// }
 
 export class Folder {
     public id: string;
@@ -37,7 +37,7 @@ export class Folder {
     public canManageStructure: boolean;
     public canManageContent: boolean;
 
-    protected constructor(folder: FolderDTO) {
+    protected constructor(folder: FolderItem) {
         this.id = folder.id;
         this.title = folder.title;
         this.slug = folder.slug;
@@ -56,7 +56,7 @@ export class Folder {
         this.canManageContent = folder.canManageContent;
     }
 
-    static create(folder: FolderDTO) {
+    static create(folder: FolderItem) {
         return new Folder(folder);
     }
 }

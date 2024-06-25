@@ -1,8 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { ILoadingRepository } from "@webiny/app-utils";
 import { ICreateFolderRepository } from "~/Domain/Repositories";
-import { FolderDTO } from "~/Domain/Models";
-import { LoadingActionsEnum } from "~/types";
+import { FolderItem, LoadingActionsEnum } from "~/types";
 
 export class CreateFolderRepositoryWithLoading implements ICreateFolderRepository {
     private loadingRepository: ILoadingRepository;
@@ -17,7 +16,7 @@ export class CreateFolderRepositoryWithLoading implements ICreateFolderRepositor
         makeAutoObservable(this);
     }
 
-    async execute(folder: FolderDTO) {
+    async execute(folder: FolderItem) {
         await this.loadingRepository.runCallBack(
             this.createFolderRepository.execute(folder),
             LoadingActionsEnum.create

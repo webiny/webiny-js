@@ -1,5 +1,5 @@
-import { FolderDTO } from "~/Domain/Models";
+import { FolderItem } from "~/types";
 
 export interface IUpdateFolderRepository {
-    execute: (folder: FolderDTO) => Promise<void>;
+    execute: (folder: FolderItem) => Promise<void>;
 }

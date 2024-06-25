@@ -1,7 +1,7 @@
 import { IDeleteFolderRepository } from "./IDeleteFolderRepository";
 import { IDeleteFolderGateway } from "~/Gateways";
-import { FolderDTO } from "~/Domain/Models";
 import { FoldersCache } from "~/Domain/Caches";
+import { FolderItem } from "~/types";
 
 export class DeleteFolderRepository implements IDeleteFolderRepository {
     private cache: FoldersCache;
@@ -12,7 +12,7 @@ export class DeleteFolderRepository implements IDeleteFolderRepository {
         this.gateway = gateway;
     }
 
-    async execute(folder: FolderDTO) {
+    async execute(folder: FolderItem) {
         await this.gateway.execute(folder.id);
         await this.cache.remove(folder.id);
     }

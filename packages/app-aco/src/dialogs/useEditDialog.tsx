@@ -77,16 +77,11 @@ export const useEditDialog = (): UseEditDialogResponse => {
 
     const onAccept = useCallback(async (folder: FolderItem, data: GenericFormData) => {
         try {
-            const result = await updateFolder({
+            await updateFolder({
                 ...folder,
                 ...data
             });
-
-            if (result) {
-                showSnackbar(`The folder "${result.title}" was updated successfully!`);
-            } else {
-                throw new Error(`Error while updating folder "${folder.title}"!`);
-            }
+            showSnackbar(`The folder "${data.title}" was updated successfully!`);
         } catch (error) {
             showSnackbar(error.message);
         }

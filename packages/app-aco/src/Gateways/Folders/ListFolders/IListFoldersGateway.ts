@@ -1,5 +1,5 @@
-import { FolderDTO } from "~/Domain/Models";
+import { FolderItem } from "~/types";
 
 export interface IListFoldersGateway {
-    execute: (type: string) => Promise<FolderDTO[]>;
+    execute: (type: string) => Promise<FolderItem[]>;
 }
