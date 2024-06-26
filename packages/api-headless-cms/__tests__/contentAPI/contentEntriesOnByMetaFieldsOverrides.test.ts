@@ -130,6 +130,9 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
             lastPublishedBy: identityD
         });
 
+        // Ensure that the new published revision is the one that is returned when listing or getting the entry.
+
+        // 1. Manage API.
         const { data: getEntryManage } = await manageIdentityA.getTestEntry({
             entryId: rev.entryId
         });
@@ -141,11 +144,24 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
             }
         });
 
+        const { data: listEntriesManage } = await manageIdentityA.listTestEntries();
+
+        expect(listEntriesManage).toMatchObject([
+            {
+                meta: {
+                    status: "published",
+                    version: 3
+                }
+            }
+        ]);
+
+        // 2. Read API (here we can't get versions directly, so we're just inspecting the revision ID).
         const { data: getEntryRead } = await readIdentityA.getTestEntry({
             where: { entryId: rev.entryId }
         });
-
-        // Could not get version directly, so we're just inspecting the revision ID.
         expect(getEntryRead.id).toEndWith("#0003");
+
+        const { data: listEntriesRead } = await readIdentityA.listTestEntries();
+        expect(listEntriesRead[0].id).toEndWith("#0003");
     });
 });
