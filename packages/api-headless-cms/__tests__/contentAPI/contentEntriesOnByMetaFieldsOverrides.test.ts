@@ -2,19 +2,19 @@ import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
 import { identityA, identityB, identityC, identityD } from "./security/utils";
 
 describe("Content entries - Entry Meta Fields Overrides", () => {
-    const { manage: managerIdentityA } = useTestModelHandler({
+    const { read: readIdentityA, manage: manageIdentityA } = useTestModelHandler({
         identity: identityA
     });
 
     beforeEach(async () => {
-        await managerIdentityA.setup();
+        await manageIdentityA.setup();
     });
 
     test("users should be able to create and immediately publish an entry with custom publishing-related values", async () => {
         // 1. Initially, all meta fields should be populated, except the "modified" ones.
         const testDate = new Date("2020-01-01T00:00:00.000Z").toISOString();
 
-        const { data: rev } = await managerIdentityA.createTestEntry({
+        const { data: rev } = await manageIdentityA.createTestEntry({
             data: {
                 status: "published",
                 revisionFirstPublishedOn: testDate,
@@ -50,7 +50,7 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
         const testDate2 = new Date("2021-01-01T00:00:00.000Z").toISOString();
         const testDate3 = new Date("2022-01-01T00:00:00.000Z").toISOString();
 
-        const { data: rev } = await managerIdentityA.createTestEntry({
+        const { data: rev } = await manageIdentityA.createTestEntry({
             data: {
                 status: "published",
                 revisionFirstPublishedOn: testDate1,
@@ -65,7 +65,7 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
         });
 
         const { data: publishedRevWithCustomLastPublishedValues } =
-            await managerIdentityA.createTestEntryFrom({
+            await manageIdentityA.createTestEntryFrom({
                 revision: rev.id,
                 data: {
                     status: "published",
@@ -98,8 +98,8 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
                 rev.revisionFirstPublishedOn
         ).toBeTrue();
 
-        const { data: publishedRevWithAllCustomValues } =
-            await managerIdentityA.createTestEntryFrom({
+        const { data: publishedRevWithAllCustomValues } = await manageIdentityA.createTestEntryFrom(
+            {
                 revision: publishedRevWithCustomLastPublishedValues.id,
                 data: {
                     status: "published",
@@ -112,7 +112,8 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
                     firstPublishedBy: identityD,
                     lastPublishedBy: identityD
                 }
-            });
+            }
+        );
 
         expect(publishedRevWithAllCustomValues).toMatchObject({
             createdOn: expect.toBeDateString(),
@@ -128,5 +129,23 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
             firstPublishedBy: identityD,
             lastPublishedBy: identityD
         });
+
+        const { data: getEntryManage } = await manageIdentityA.getTestEntry({
+            entryId: rev.entryId
+        });
+
+        expect(getEntryManage).toMatchObject({
+            meta: {
+                status: "published",
+                version: 3
+            }
+        });
+
+        const { data: getEntryRead } = await readIdentityA.getTestEntry({
+            where: { entryId: rev.entryId }
+        });
+
+        // Could not get version directly, so we're just inspecting the revision ID.
+        expect(getEntryRead.id).toEndWith("#0003");
     });
 });

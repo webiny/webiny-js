@@ -278,6 +278,18 @@ export const createEntriesStorageOperations = (
             SK: createLatestSortKey()
         };
 
+        const publishedKeys = {
+            PK: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
+            SK: createPublishedSortKey()
+        };
+
+        // We'll need this flag below.
+        const isPublished = entry.status === "published";
+
         const esLatestData = await transformer.getElasticsearchLatestEntryData();
 
         const items = [
@@ -293,9 +305,16 @@ export const createEntriesStorageOperations = (
             })
         ];
 
-        const { index } = configurations.es({
-            model
-        });
+        if (isPublished) {
+            items.push(
+                entity.putBatch({
+                    ...storageEntry,
+                    TYPE: createPublishedRecordType(),
+                    ...publishedKeys
+                })
+            );
+        }
+
         try {
             await batchWriteAll({
                 table: entity.table,
@@ -315,17 +334,34 @@ export const createEntriesStorageOperations = (
                 }
             );
         }
-        /**
-         * Update the "latest" entry item in the Elasticsearch
-         */
+
+        const { index: esIndex } = configurations.es({
+            model
+        });
+
+        const esItems: BatchWriteItem[] = [
+            esEntity.putBatch({
+                ...latestKeys,
+                index: esIndex,
+                data: esLatestData
+            })
+        ];
+
+        if (isPublished) {
+            const esPublishedData = await transformer.getElasticsearchPublishedEntryData();
+            esItems.push(
+                esEntity.putBatch({
+                    ...publishedKeys,
+                    index: esIndex,
+                    data: esPublishedData
+                })
+            );
+        }
+
         try {
-            await put({
-                entity: esEntity,
-                item: {
-                    ...latestKeys,
-                    index,
-                    data: esLatestData
-                }
+            await batchWriteAll({
+                table: esEntity.table,
+                items: esItems
             });
         } catch (ex) {
             throw new WebinyError(
