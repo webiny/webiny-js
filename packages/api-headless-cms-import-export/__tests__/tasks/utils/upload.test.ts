@@ -7,7 +7,7 @@ import {
     UploadPartCommand
 } from "@webiny/aws-sdk/client-s3";
 import { PassThrough } from "stream";
-import { Upload } from "~/tasks/utils";
+import { Upload } from "~/tasks/utils/Upload";
 
 describe("upload", () => {
     it("should properly create an instance of Upload", async () => {

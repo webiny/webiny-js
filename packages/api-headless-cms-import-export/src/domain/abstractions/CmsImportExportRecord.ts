@@ -7,8 +7,7 @@ export interface ICmsImportExportRecord {
     createdBy: CmsIdentity;
     finishedOn: string | null;
     modelId: string;
-    file: string | null;
-    url: string | null;
+    files: string[] | null;
     expiresOn: Date | null;
     status: TaskDataStatus;
 }

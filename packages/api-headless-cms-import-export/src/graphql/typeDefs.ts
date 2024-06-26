@@ -7,8 +7,7 @@ export const createTypeDefs = (models: [string, ...string[]]): string => {
             createdBy: CmsIdentity!
             finishedOn: DateTime
             modelId: String!
-            file: String
-            url: String
+            files: [String!]
             expiresOn: DateTime
             status: String
         }

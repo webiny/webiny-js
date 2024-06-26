@@ -67,3 +67,23 @@ export class Upload implements IUpload {
         return result;
     }
 }
+
+export interface ICreateUploadFactoryParams {
+    client: S3Client;
+    bucket: string;
+}
+
+export const createUploadFactory = (params: ICreateUploadFactoryParams) => {
+    return (filename: string) => {
+        const stream = new PassThrough({
+            autoDestroy: true
+        });
+
+        return new Upload({
+            client: params.client,
+            bucket: params.bucket,
+            stream,
+            filename
+        });
+    };
+};

@@ -7,8 +7,7 @@ export class CmsImportExportRecord implements ICmsImportExportRecord {
     public createdBy: any;
     public finishedOn: string | null;
     public modelId: string;
-    public file: string | null;
-    public url: string | null;
+    public files: string[] | null;
     public expiresOn: Date | null;
     public status: TaskDataStatus;
 
@@ -18,8 +17,7 @@ export class CmsImportExportRecord implements ICmsImportExportRecord {
         this.createdBy = data.createdBy;
         this.finishedOn = data.finishedOn;
         this.modelId = data.modelId;
-        this.file = data.file;
-        this.url = data.url;
+        this.files = data.files;
         this.expiresOn = data.expiresOn;
         this.status = data.status;
     }

@@ -2,6 +2,7 @@ import { IAddOptions, IZipper, IZipperOnCb } from "./abstractions/Zipper";
 import { IUpload } from "./abstractions/Upload";
 import { CompleteMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3";
 import { IArchiver } from "./abstractions/Archiver";
+import { Readable } from "stream";
 
 export interface IZipperConfig {
     upload: IUpload;
@@ -19,7 +20,7 @@ export class Zipper implements IZipper {
         this.archiver.archiver.pipe(config.upload.stream);
     }
 
-    public async add(data: Buffer, options: IAddOptions): Promise<void> {
+    public async add(data: Buffer | Readable, options: IAddOptions): Promise<void> {
         this.archiver.archiver.append(data, options);
     }
 

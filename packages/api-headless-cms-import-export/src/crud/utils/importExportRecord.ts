@@ -11,8 +11,7 @@ export const convertTaskToCmsImportExportRecord = (
         createdBy: task.createdBy,
         finishedOn: task.finishedOn || null,
         modelId: task.input.modelId,
-        file: task.output?.file || null,
-        url: task.output?.url || null,
+        files: task.output?.files || null,
         expiresOn: task.output?.expiresOn || null,
         status: task.taskStatus
     });

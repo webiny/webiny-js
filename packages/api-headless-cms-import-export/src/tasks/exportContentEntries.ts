@@ -9,19 +9,19 @@ import {
 export const createExportContentEntriesTask = () => {
     return createTaskDefinition<Context, IExportContentEntriesInput, IExportContentEntriesOutput>({
         id: EXPORT_CONTENT_ENTRIES_TASK,
-        title: "Export Content Entries",
-        maxIterations: 100,
+        title: "Export Content Entries and Assets ",
+        maxIterations: 10,
         isPrivate: true,
-        description: "Export content entries from a specific model.",
+        description: "Export content entries and assets from a specific model - entries exporter.",
         async run(params) {
             const { createExportContentEntries } = await import(
-                /* webpackChunkName: "ExportContentEntries" */ "./domain/ExportContentEntries"
+                /* webpackChunkName: "createExportContentEntries" */ "./domain/createExportContentEntries"
             );
 
-            const exportContentEntries = createExportContentEntries();
+            const runner = createExportContentEntries();
 
             try {
-                return await exportContentEntries.run(params);
+                return await runner.run(params);
             } catch (ex) {
                 return params.response.error(ex);
             }

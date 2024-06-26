@@ -85,7 +85,7 @@ export interface ITaskIdentity {
 }
 
 export interface ITask<
-    T = any,
+    T = GenericRecord,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 > {
     /**
@@ -136,34 +136,39 @@ export type IUpdateTaskResponse<
 > = ITask<T, O>;
 export type IDeleteTaskResponse = boolean;
 
-export interface IListTaskParams extends Omit<CmsEntryListParams, "fields" | "search"> {
-    where?: CmsEntryListWhere & {
-        parentId?: string;
-        parentId_not?: string;
-        parentId_in?: string[];
-        parentId_not_in?: string[];
-        definitionId?: string;
-        definitionId_not?: string;
-        definitionId_in?: string[];
-        definitionId_not_in?: string[];
-        taskStatus?: string;
-        taskStatus_not?: string;
-        taskStatus_in?: string[];
-        taskStatus_not_in?: string[];
-    };
+export interface IListTaskParamsWhere extends CmsEntryListWhere {
+    parentId?: string;
+    parentId_not?: string;
+    parentId_in?: string[];
+    parentId_not_in?: string[];
+    definitionId?: string;
+    definitionId_not?: string;
+    definitionId_in?: string[];
+    definitionId_not_in?: string[];
+    taskStatus?: string;
+    taskStatus_not?: string;
+    taskStatus_in?: string[];
+    taskStatus_not_in?: string[];
 }
+
+export interface IListTaskParams extends Omit<CmsEntryListParams, "fields" | "search"> {
+    where?: IListTaskParamsWhere;
+}
+
+export interface IListTaskLogParamsWhere extends CmsEntryListWhere {
+    task?: string;
+    task_in?: string[];
+    task_not?: string;
+    iteration?: number;
+    iteration_not?: number;
+    iteration_gte?: number;
+    iteration_gt?: number;
+    iteration_lte?: number;
+    iteration_lt?: number;
+}
+
 export interface IListTaskLogParams extends Omit<CmsEntryListParams, "fields" | "search"> {
-    where?: CmsEntryListWhere & {
-        task?: string;
-        task_in?: string[];
-        task_not?: string;
-        iteration?: number;
-        iteration_not?: number;
-        iteration_gte?: number;
-        iteration_gt?: number;
-        iteration_lte?: number;
-        iteration_lt?: number;
-    };
+    where?: IListTaskLogParamsWhere;
 }
 
 export interface ITaskCreateData<T = ITaskDataInput> {

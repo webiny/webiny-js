@@ -1,0 +1,34 @@
+import { createTaskDefinition } from "@webiny/tasks";
+import { EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK } from "./constants";
+import { Context } from "~/types";
+import {
+    IExportContentEntriesControllerInput,
+    IExportContentEntriesControllerOutput
+} from "~/tasks/domain/abstractions/ExportContentEntriesController";
+
+export const createExportContentEntriesControllerTask = () => {
+    return createTaskDefinition<
+        Context,
+        IExportContentEntriesControllerInput,
+        IExportContentEntriesControllerOutput
+    >({
+        id: EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK,
+        title: "Export Content Entries and Assets Controller",
+        maxIterations: 100,
+        isPrivate: true,
+        description: "Export content entries and assets from a specific model - controller.",
+        async run(params) {
+            const { ExportContentEntriesController } = await import(
+                /* webpackChunkName: "ExportContentEntriesController" */ "./domain/ExportContentEntriesController"
+            );
+
+            const controller = new ExportContentEntriesController();
+
+            try {
+                return await controller.run(params);
+            } catch (ex) {
+                return params.response.error(ex);
+            }
+        }
+    });
+};

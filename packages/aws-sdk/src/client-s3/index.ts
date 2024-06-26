@@ -11,6 +11,7 @@ export {
     GetObjectOutput,
     HeadObjectCommand,
     HeadObjectOutput,
+    ListObjectsCommand,
     ListObjectsOutput,
     ListObjectsV2Command,
     ListPartsCommand,

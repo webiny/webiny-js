@@ -1,11 +1,8 @@
 import AdmZip from "adm-zip";
 import { createCmsEntryZipper } from "~tests/mocks/createCmsEntryZipper";
-import { fetchItems, findImage, images } from "./mocks/cmsEntryZipperItems";
-import { IAssets, IEntryAssets } from "~/tasks/utils/abstractions/EntryAssets";
-import { IAssetItem, IEntryAssetsList } from "~/tasks/utils/abstractions/EntryAssetsList";
+import { fetchItems, images } from "./mocks/cmsEntryZipperItems";
 import { createModelPlugin } from "~tests/mocks/model";
 import { CmsModel } from "@webiny/api-headless-cms/types";
-import { matchKeyOrAlias } from "~/tasks/utils/helpers/matchKeyOrAlias";
 
 describe("cms entry zipper", () => {
     const model = createModelPlugin().contentModel as CmsModel;
@@ -23,16 +20,17 @@ describe("cms entry zipper", () => {
                         hasMoreItems: false
                     }
                 };
-            },
-            entryAssets: {} as IEntryAssets,
-            entryAssetsList: {} as IEntryAssetsList
+            }
         });
 
         expect(cmsEntryZipper.execute).toBeFunction();
 
         try {
             const result = await cmsEntryZipper.execute({
-                shouldAbort: () => {
+                isCloseToTimeout(): boolean {
+                    return false;
+                },
+                isAborted(): boolean {
                     return false;
                 },
                 model
@@ -45,67 +43,17 @@ describe("cms entry zipper", () => {
     });
 
     it("should zip entries into a file - no assets", async () => {
-        const assets: IAssets = {};
         const { cmsEntryZipper, getBuffer } = createCmsEntryZipper({
             fetcher: async after => {
                 return fetchItems(after);
-            },
-            entryAssets: {
-                assets,
-                assignAssets(input) {
-                    if (Array.isArray(input)) {
-                        for (const item of input) {
-                            const url = item.values.image;
-                            if (!url) {
-                                return;
-                            }
-                            const result = matchKeyOrAlias(url);
-                            if (!result) {
-                                return;
-                            }
-                            assets[url] = {
-                                ...result,
-                                url
-                            };
-                        }
-                        return;
-                    }
-                    const url = input.values.image;
-                    if (!url) {
-                        return;
-                    }
-                    const result = matchKeyOrAlias(url);
-                    if (!result) {
-                        return;
-                    }
-                    assets[url] = {
-                        ...result,
-                        url
-                    };
-                }
-            },
-            entryAssetsList: {
-                async resolve(input) {
-                    return Object.values(input)
-                        .map(item => {
-                            const image = findImage(item);
-                            if (!image) {
-                                return null;
-                            }
-
-                            return {
-                                id: image.id,
-                                key: image.key,
-                                aliases: image.alias ? [image.alias] : []
-                            };
-                        })
-                        .filter((item): item is IAssetItem => !!item);
-                }
             }
         });
 
         await cmsEntryZipper.execute({
-            shouldAbort: () => {
+            isCloseToTimeout(): boolean {
+                return false;
+            },
+            isAborted(): boolean {
                 return false;
             },
             model
@@ -259,48 +207,6 @@ describe("cms entry zipper", () => {
                     id: 4,
                     name: "entries-4.json",
                     after: "6"
-                }
-            ],
-            assets: [
-                {
-                    aliases: [],
-                    id: "1",
-                    key: "files/1.jpg"
-                },
-                {
-                    aliases: ["possibly-an-alias/2.jpg"],
-                    id: "2",
-                    key: "files/2.jpg"
-                },
-                {
-                    aliases: [],
-                    id: "3",
-                    key: "files/3.jpg"
-                },
-                {
-                    aliases: [],
-                    id: "4",
-                    key: "files/4.jpg"
-                },
-                {
-                    aliases: [],
-                    id: "5",
-                    key: "files/5.jpg"
-                },
-                {
-                    aliases: ["is-alias/6.jpg"],
-                    id: "6",
-                    key: "files/6.jpg"
-                },
-                {
-                    aliases: [],
-                    id: "7",
-                    key: "files/7.jpg"
-                },
-                {
-                    aliases: [],
-                    id: "8",
-                    key: "files/8.jpg"
                 }
             ],
             modelId: model.modelId

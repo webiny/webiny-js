@@ -1,4 +1,3 @@
-import { Archiver, CmsEntryZipper, ICmsEntryFetcher, Upload, Zipper } from "~/tasks/utils";
 import {
     CreateMultipartUploadCommand,
     createS3Client,
@@ -9,14 +8,14 @@ import {
 import { createPassThrough } from "~tests/mocks/createPassThrough";
 import { PassThrough } from "stream";
 import { mockClient } from "aws-sdk-client-mock";
-import { IEntryAssets } from "~/tasks/utils/abstractions/EntryAssets";
-import { IEntryAssetsList } from "~/tasks/utils/abstractions/EntryAssetsList";
 import { SignUrl } from "~/tasks/utils/SignUrl";
+import { CmsEntryZipper, ICmsEntryFetcher } from "~/tasks/utils/cmsEntryZipper";
+import { Upload } from "~/tasks/utils/Upload";
+import { Zipper } from "~/tasks/utils/Zipper";
+import { Archiver } from "~/tasks/utils/Archiver";
 
 interface ICreateCmsEntryZipperParams {
     fetcher: ICmsEntryFetcher;
-    entryAssets: IEntryAssets;
-    entryAssetsList: IEntryAssetsList;
     region?: string;
     filename?: string;
     stream?: PassThrough;
@@ -75,9 +74,7 @@ export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
     const cmsEntryZipper = new CmsEntryZipper({
         zipper,
         signUrl,
-        fetcher: params.fetcher,
-        entryAssets: params.entryAssets,
-        entryAssetsList: params.entryAssetsList
+        fetcher: params.fetcher
     });
 
     return {

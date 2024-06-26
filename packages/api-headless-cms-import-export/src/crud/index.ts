@@ -10,6 +10,7 @@ import {
 } from "~/types";
 import { convertTaskToCmsImportExportRecord } from "~/crud/utils/importExportRecord";
 import { NotFoundError } from "@webiny/handler-graphql";
+import { EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK } from "~/tasks";
 
 export const createHeadlessCmsImportExportCrud = async (
     context: Context
@@ -35,12 +36,12 @@ export const createHeadlessCmsImportExportCrud = async (
         params: ICmsImportExportObjectStartExportParams
     ): Promise<ICmsImportExportRecord> => {
         const task = await context.tasks.trigger<ICmsImportExportTaskParams>({
-            name: `Exporting content entries of model "${params.modelId}"`,
+            name: `Export Content Entries and Assets Controller for "${params.modelId}"`,
             input: {
                 modelId: params.modelId,
                 limit: params.limit
             },
-            definition: "exportContentEntries"
+            definition: EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK
         });
 
         return convertTaskToCmsImportExportRecord(task);

@@ -1,21 +1,19 @@
 import { CmsEntry, CmsEntryMeta } from "@webiny/api-headless-cms/types";
-import { IZipper } from "./abstractions/Zipper";
+import { IZipper } from "../abstractions/Zipper";
+import { ISignUrl } from "~/tasks/utils/abstractions/SignedUrl";
+import { IFileMeta } from "../types";
+import { CmsEntryZipperExecuteContinueResult } from "./CmsEntryZipperExecuteContinueResult";
+import { CmsEntryZipperExecuteDoneResult } from "./CmsEntryZipperExecuteDoneResult";
 import {
     ICmsEntryZipper,
     ICmsEntryZipperExecuteParams,
     ICmsEntryZipperExecuteResult
-} from "~/tasks/utils/abstractions/CmsEntryZipper";
-import { IFileMeta } from "./types";
-import { IEntryAssets } from "~/tasks/utils/abstractions/EntryAssets";
-import { IEntryAssetsList } from "~/tasks/utils/abstractions/EntryAssetsList";
-import { ISignUrl } from "./abstractions/SignedUrl";
+} from "./abstractions/CmsEntryZipper";
 
 export interface ICmsEntryZipperConfig {
     zipper: IZipper;
     signUrl: ISignUrl;
     fetcher: ICmsEntryFetcher;
-    entryAssets: IEntryAssets;
-    entryAssetsList: IEntryAssetsList;
 }
 
 interface ICreateBufferDataParams {
@@ -48,21 +46,17 @@ export class CmsEntryZipper implements ICmsEntryZipper {
     private readonly zipper: IZipper;
     private readonly signUrl: ISignUrl;
     private readonly fetcher: ICmsEntryFetcher;
-    private readonly entryAssets: IEntryAssets;
-    private readonly entryAssetsList: IEntryAssetsList;
 
     public constructor(params: ICmsEntryZipperConfig) {
         this.zipper = params.zipper;
         this.signUrl = params.signUrl;
         this.fetcher = params.fetcher;
-        this.entryAssets = params.entryAssets;
-        this.entryAssetsList = params.entryAssetsList;
     }
 
     public async execute(
         params: ICmsEntryZipperExecuteParams
     ): Promise<ICmsEntryZipperExecuteResult> {
-        const { shouldAbort, model } = params;
+        const { isCloseToTimeout, isAborted, model } = params;
 
         const files: IFileMeta[] = [];
         let after: string | undefined = undefined;
@@ -72,20 +66,25 @@ export class CmsEntryZipper implements ICmsEntryZipper {
 
         let id = 1;
 
+        let continueAfter: string | undefined = undefined;
+        /**
+         * This function works as self invoking function, it will add items to the zipper until there are no more items to add.
+         *
+         * If the lambda is close to timeout, we will store the current state and continue from the last cursor in the next task run.
+         */
         const addItems = async () => {
+            const closeToTimeout = isCloseToTimeout();
             if (storedFiles) {
                 await this.zipper.finalize();
                 return;
-            } else if (hasMoreItems === false) {
-                console.log("No more items to fetch, finalizing the zip.");
-
-                const assets = await this.entryAssetsList.resolve(this.entryAssets.assets);
-
+            } else if (!hasMoreItems || closeToTimeout) {
+                if (closeToTimeout && hasMoreItems) {
+                    continueAfter = after;
+                }
                 await this.zipper.add(
                     Buffer.from(
                         JSON.stringify({
                             files,
-                            assets,
                             modelId: model.modelId
                         })
                     ),
@@ -100,11 +99,9 @@ export class CmsEntryZipper implements ICmsEntryZipper {
             const { items, meta } = await this.fetcher(after);
             if (meta.totalCount === 0) {
                 console.log("No items found, aborting...");
-                await this.zipper.abort();
+                this.zipper.abort();
                 return;
             }
-
-            this.entryAssets.assignAssets(items);
 
             const name = `entries-${id}.json`;
 
@@ -118,8 +115,9 @@ export class CmsEntryZipper implements ICmsEntryZipper {
                 name
             });
 
-            after = meta.cursor || undefined;
             hasMoreItems = meta.hasMoreItems;
+            after = meta.cursor || undefined;
+
             id++;
         };
 
@@ -128,7 +126,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
         });
 
         this.zipper.on("entry", () => {
-            if (shouldAbort()) {
+            if (isAborted()) {
                 this.zipper.abort();
                 return;
             }
@@ -140,18 +138,25 @@ export class CmsEntryZipper implements ICmsEntryZipper {
         const result = await this.zipper.done();
 
         if (!result.Key) {
-            throw new Error("Failed to upload the zip file.");
+            throw new Error("Failed to upload the file.");
+        }
+
+        if (continueAfter) {
+            return new CmsEntryZipperExecuteContinueResult({
+                key: result.Key,
+                cursor: continueAfter
+            });
         }
 
         const { url, bucket, key, expiresOn } = await this.signUrl.fetch({
             key: result.Key
         });
 
-        return {
+        return new CmsEntryZipperExecuteDoneResult({
+            key,
             url,
             bucket,
-            key,
             expiresOn
-        };
+        });
     }
 }

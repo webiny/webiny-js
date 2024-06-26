@@ -1,6 +1,6 @@
-import { ICmsEntryFetcherResult } from "~/tasks/utils";
 import { CmsEntry } from "@webiny/api-headless-cms/types";
 import { GenericRecord } from "@webiny/api/types";
+import { ICmsEntryFetcherResult } from "../cmsEntryZipper";
 
 const cloudfrontUrl = "https://aCloundfrontDistributionId.cloudfront.net";
 

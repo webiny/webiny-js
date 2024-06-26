@@ -9,8 +9,7 @@ export const createFields = () => {
         }
         finishedOn
         modelId
-        file
-        url
+        files
         expiresOn
         status
     `;
