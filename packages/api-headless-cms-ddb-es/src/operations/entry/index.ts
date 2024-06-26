@@ -43,7 +43,7 @@ import { createElasticsearchBody } from "./elasticsearch/body";
 import { createLatestRecordType, createPublishedRecordType, createRecordType } from "./recordType";
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
 import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
-import { batchReadAll, BatchReadItem, put } from "@webiny/db-dynamodb";
+import { batchReadAll, BatchReadItem } from "@webiny/db-dynamodb";
 import { createTransformer } from "./transformations";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys";
 import {
