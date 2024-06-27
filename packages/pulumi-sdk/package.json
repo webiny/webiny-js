@@ -18,7 +18,7 @@
     "@pulumi/pulumi": "^3.113.3",
     "decompress": "^4.2.1",
     "execa": "^5.0.0",
-    "fs-extra": "^9.1.0",
+    "fs-extra": "^11.2.0",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.9",
     "semver": "^7.3.5",

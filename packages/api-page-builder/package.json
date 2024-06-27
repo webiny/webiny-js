@@ -33,7 +33,7 @@
     "archiver": "^7.0.1",
     "dataloader": "^2.0.0",
     "extract-zip": "^1.6.7",
-    "fs-extra": "^9.1.0",
+    "fs-extra": "^11.2.0",
     "jsonpack": "^1.1.5",
     "load-json-file": "^6.2.0",
     "lodash": "^4.17.21",
