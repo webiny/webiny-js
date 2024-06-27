@@ -287,10 +287,6 @@ export const createEntriesStorageOperations = (
             })
         ];
 
-        const { index } = configurations.es({
-            model
-        });
-
         if (isPublished) {
             items.push(
                 entity.putBatch({
