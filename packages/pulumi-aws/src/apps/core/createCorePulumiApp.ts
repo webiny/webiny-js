@@ -7,10 +7,12 @@ import { OpenSearch } from "./CoreOpenSearch";
 import { CoreEventBus } from "./CoreEventBus";
 import { CoreFileManger } from "./CoreFileManager";
 import { CoreVpc } from "./CoreVpc";
+import { WatchCommand } from "./watchCommand";
 import { tagResources } from "~/utils";
 import { withServiceManifest } from "~/utils/withServiceManifest";
 import { addServiceManifestTableItem, TableDefinition } from "~/utils/addServiceManifestTableItem";
 import { DEFAULT_PROD_ENV_NAMES } from "~/constants";
+import * as random from "@pulumi/random";
 
 export type CorePulumiApp = ReturnType<typeof createCorePulumiApp>;
 
@@ -85,6 +87,8 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
         path: "apps/core",
         config: projectAppParams,
         program: async app => {
+            const deploymentId = new random.RandomId("deploymentId", { byteLength: 8 });
+
             let searchEngineType: "openSearch" | "elasticSearch" | null = null;
             let searchEngineParams:
                 | CreateCorePulumiAppParams["openSearch"]
@@ -165,7 +169,12 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 elasticSearch = app.addModule(ElasticSearch, { protect });
             }
 
+            const watchCommand = app.addModule(WatchCommand, {
+                deploymentId: deploymentId.hex
+            })
+
             app.addOutputs({
+                deploymentId: deploymentId.hex,
                 region: aws.config.region,
                 fileManagerBucketId: fileManagerBucket.output.id,
                 primaryDynamodbTableArn: dynamoDbTable.output.arn,
@@ -191,7 +200,8 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 ...cognito,
                 fileManagerBucket,
                 eventBus,
-                elasticSearch
+                elasticSearch,
+                watchCommand
             };
         }
     });

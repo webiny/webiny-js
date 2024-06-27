@@ -1,8 +1,9 @@
 exports.handler = async event => {
     const urlParams = new URLSearchParams(event.protocolData.http.queryString);
 
+    console.log(urlParams);
     const WEBINY_WATCH_COMMAND_TOPIC = process.env.WEBINY_WATCH_COMMAND_TOPIC;
-    if (urlParams["x-webiny-watch-command-topic"] !== WEBINY_WATCH_COMMAND_TOPIC) {
+    if (urlParams.get("x-webiny-watch-command-topic") !== WEBINY_WATCH_COMMAND_TOPIC) {
         return {
             isAuthenticated: false
         };

@@ -1,3 +1,5 @@
+const { featureFlags } = require("@webiny/feature-flags");
+
 module.exports = [
     {
         type: "cli-command",

@@ -1,18 +1,18 @@
 import * as aws from "@pulumi/aws";
-import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
+import { createAppModule, PulumiApp } from "@webiny/pulumi";
 import { LAMBDA_RUNTIME } from "~/constants";
 import * as pulumi from "@pulumi/pulumi";
 import path from "path";
 import { CoreVpc } from "~/apps";
+import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 
 export interface WatchCommandParams {
-    deploymentId: boolean;
+    deploymentId: pulumi.Output<string>;
 }
 
 export const WatchCommand = createAppModule({
     name: "WatchCommand",
     config(app: PulumiApp, params: WatchCommandParams) {
-
         const roleName = "iot-authorizer-lambda-role";
 
         const role = app.addResource(aws.iam.Role, {
@@ -61,17 +61,17 @@ export const WatchCommand = createAppModule({
                 role: role.output.arn,
                 runtime: LAMBDA_RUNTIME,
                 handler: "handler.handler",
-                timeout: 1,
+                timeout: 10,
                 memorySize: 128,
                 description: "Authorizes 'webiny watch' command communication.",
                 code: new pulumi.asset.AssetArchive({
-                    ".": new pulumi.asset.FileArchive(
-                        path.join(__dirname, "webinyWatchCommand")
-                    )
+                    ".": new pulumi.asset.FileArchive(path.join(__dirname, "webinyWatchCommand"))
                 }),
                 environment: {
                     variables: {
-                        WEBINY_WATCH_COMMAND_TOPIC: `webiny-watch-${params.deploymentId}`,
+                        WEBINY_WATCH_COMMAND_TOPIC: params.deploymentId.apply(deploymentId => {
+                            return `webiny-watch-${deploymentId}`;
+                        })
                     }
                 },
                 vpcConfig: vpc
@@ -83,25 +83,29 @@ export const WatchCommand = createAppModule({
             }
         });
 
-        app.addResource(aws.lambda.Permission, {
-            name: "webiny-watch-iot-authorizer",
-            config: {
-                action: "lambda:InvokeFunction",
-                function: iotAuthorizerFunction.output.arn,
-                principal: "iot.amazonaws.com",
-                sourceArn: "arn:aws:iot:eu-central-1:674320871285:authorizer/Authorizer"
-            }
-        });
-
-        app.addResource(aws.iot.Authorizer, {
+        const iotAuthorizer = app.addResource(aws.iot.Authorizer, {
             name: "watch-command-iot-authorizer",
             config: {
-                name: "example",
+                signingDisabled: true,
                 authorizerFunctionArn: iotAuthorizerFunction.output.arn,
                 status: "ACTIVE"
             }
         });
 
-        return {};
+        app.addResource(aws.lambda.Permission, {
+            name: "webiny-watch-iot-authorizer",
+            config: {
+                principal: "iot.amazonaws.com",
+                function: iotAuthorizerFunction.output.arn,
+                sourceArn: iotAuthorizer.output.arn,
+                action: "lambda:InvokeFunction"
+            }
+        });
+
+        app.addOutputs({
+            iotAuthorizerName: iotAuthorizer.output.name
+        });
+
+        return { iotAuthorizerFunction };
     }
 });

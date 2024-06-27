@@ -4,7 +4,7 @@ const { getProjectApplication, getProject } = require("@webiny/cli/utils");
 const get = require("lodash/get");
 const merge = require("lodash/merge");
 const { Worker } = require("worker_threads");
-const { loadEnvVariables, runHook, getDeploymentId} = require("../utils");
+const { loadEnvVariables, runHook, getDeploymentId } = require("../utils");
 const { getIotEndpoint } = require("./newWatch/getIotEndpoint");
 const { listLambdaFunctions } = require("./newWatch/listLambdaFunctions");
 const listPackages = require("./newWatch/listPackages");
@@ -17,7 +17,7 @@ const WATCH_DISABLED_ENVIRONMENTS = ["prod", "production"];
 const WEBINY_WATCH_FN_INVOCATION_EVENT = "webiny.watch.functionInvocation";
 const WEBINY_WATCH_FN_INVOCATION_RESULT_EVENT = "webiny.watch.functionInvocationResult";
 
-const WATCH_WORKER_PATH = path.join(__dirname, "watch", "localInvocationWorker.js");
+const WATCH_WORKER_PATH = path.join(__dirname, "newWatch", "localInvocationWorker.js");
 
 module.exports = async (inputs, context) => {
     // 1. Initial checks for deploy and build commands.
@@ -107,8 +107,8 @@ module.exports = async (inputs, context) => {
     }
 
     const deploymentId = getDeploymentId({ env: inputs.env });
-    const iotEndpointTopic = `webiny-watch-topic-${deploymentId}`;
-    const iotEndpoint = await getIotEndpoint();
+    const iotEndpointTopic = `webiny-watch-${deploymentId}`;
+    const iotEndpoint = await getIotEndpoint({ env: inputs.env });
     const sessionId = new Date().getTime();
 
     const {
@@ -125,7 +125,7 @@ module.exports = async (inputs, context) => {
 
         const updateFnConfigCmd = new UpdateFunctionConfigurationCommand({
             FunctionName: fn.name,
-            Timeout: 300, // 5 minutes
+            Timeout: 10, // 5 minutes
             Environment: {
                 Variables: {
                     ...lambdaFnConfiguration.Environment.Variables,
@@ -133,6 +133,7 @@ module.exports = async (inputs, context) => {
                         enabled: true,
                         sessionId,
                         iotEndpoint,
+                        iotEndpointTopic,
                         functionName: fn.name
                     })
                 }
@@ -156,6 +157,7 @@ module.exports = async (inputs, context) => {
     const mqtt = require("mqtt");
 
     const client = await mqtt.connectAsync(iotEndpoint);
+
     await client.subscribeAsync(iotEndpointTopic);
 
     client.on("message", async (_, message) => {
@@ -247,4 +249,6 @@ module.exports = async (inputs, context) => {
             );
         }
     });
+
+    await watchPromise;
 };

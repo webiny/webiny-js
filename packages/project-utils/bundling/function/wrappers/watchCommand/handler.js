@@ -13,10 +13,8 @@ const getWebinyWatchArgs = () => {
     }
 };
 
-const IOT_ENDPOINT_TOPIC = "xyz";
-
 exports.handler = async (...args) => {
-    if (process.env['WEBINY_WATCH_LOCAL_INVOCATION'] === '1') {
+    if (process.env["WEBINY_WATCH_LOCAL_INVOCATION"] === "1") {
         return handler(...args);
     }
 
@@ -29,7 +27,7 @@ exports.handler = async (...args) => {
 
     const client = await mqtt.connectAsync(webinyWatchArgs.iotEndpoint);
 
-    await client.subscribeAsync(IOT_ENDPOINT_TOPIC);
+    await client.subscribeAsync(webinyWatchArgs.iotEndpointTopic);
 
     const eventId = new Date().getTime();
 
@@ -44,7 +42,7 @@ exports.handler = async (...args) => {
         }
     };
 
-    await client.publish(IOT_ENDPOINT_TOPIC, JSON.stringify(fnInvocationPayload));
+    await client.publish(webinyWatchArgs.iotEndpointTopic, JSON.stringify(fnInvocationPayload));
 
     return new Promise((resolve, reject) => {
         client.on("message", async (_, message) => {
