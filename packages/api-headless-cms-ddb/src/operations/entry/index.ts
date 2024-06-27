@@ -241,10 +241,12 @@ export const createEntriesStorageOperations = (
             storageEntry: initialStorageEntry,
             model
         });
+
         /**
          * We need to:
          *  - create the main entry item
          *  - update the last entry item to a current one
+         *  - update the published entry item to a current one (if the entry is published)
          */
         const items = [
             entity.putBatch({
@@ -264,6 +266,21 @@ export const createEntriesStorageOperations = (
                 GSI1_SK: createGSISortKey(storageEntry)
             })
         ];
+
+        const isPublished = entry.status === "published";
+        if (isPublished) {
+            items.push(
+                entity.putBatch({
+                    ...storageEntry,
+                    PK: partitionKey,
+                    SK: createPublishedSortKey(),
+                    TYPE: createPublishedType(),
+                    GSI1_PK: createGSIPartitionKey(model, "P"),
+                    GSI1_SK: createGSISortKey(storageEntry)
+                })
+            );
+        }
+
         try {
             await batchWriteAll({
                 table: entity.table,
