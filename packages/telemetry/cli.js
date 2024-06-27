@@ -1,6 +1,6 @@
 const { globalConfig } = require("@webiny/global-config");
 const isCI = require("is-ci");
-const { WTS } = require("wts/src/node");
+const { WTS } = require("wts-client/node");
 const baseSendEvent = require("./sendEvent");
 
 const sendEvent = async ({ event, user, version, properties }) => {
