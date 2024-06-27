@@ -5,6 +5,6 @@ const IGNORED_ES_SEARCH_EXCEPTIONS = [
     "search_phase_execution_exception"
 ];
 
-export const shouldIgnoreElasticsearchException = (error: WebinyError) => {
+export const shouldIgnoreEsResponseError = (error: WebinyError) => {
     return IGNORED_ES_SEARCH_EXCEPTIONS.includes(error.message);
 };

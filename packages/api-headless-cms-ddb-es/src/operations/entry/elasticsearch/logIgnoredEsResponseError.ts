@@ -7,7 +7,7 @@ interface LogIgnoredElasticsearchExceptionParams {
     indexName: string;
 }
 
-export const logIgnoredElasticsearchException = (
+export const logIgnoredEsResponseError = (
     params: LogIgnoredElasticsearchExceptionParams
 ) => {
     const { error, indexName, model } = params;
