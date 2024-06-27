@@ -7,9 +7,7 @@ interface LogIgnoredElasticsearchExceptionParams {
     indexName: string;
 }
 
-export const logIgnoredEsResponseError = (
-    params: LogIgnoredElasticsearchExceptionParams
-) => {
+export const logIgnoredEsResponseError = (params: LogIgnoredElasticsearchExceptionParams) => {
     const { error, indexName, model } = params;
 
     console.log(`Ignoring Elasticsearch response error: ${error.message}`, {
