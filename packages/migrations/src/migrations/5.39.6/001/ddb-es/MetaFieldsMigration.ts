@@ -71,8 +71,16 @@ export class MetaFieldsMigration {
         });
 
         if (dataMigrationRecordExists) {
-            this.logger.info("5.39.6-001 migration has already been executed. Exiting...");
-            return;
+            const forceExecuteEnvVar = process.env["WEBINY_MIGRATION_FORCE_EXECUTE_5_39_6_001"];
+            const forceExecute = forceExecuteEnvVar === "true";
+            if (!forceExecute) {
+                this.logger.info("5.39.6-001 migration has already been executed. Exiting...");
+                return;
+            }
+
+            this.logger.info(
+                "5.39.6-001 migration has already been executed, but force execution was requested."
+            );
         }
 
         this.logger.info("Starting 5.39.6-001 meta fields data migration...");
