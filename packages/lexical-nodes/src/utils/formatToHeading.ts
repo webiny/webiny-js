@@ -1,9 +1,4 @@
-import {
-    $getSelection,
-    $isRangeSelection,
-    DEPRECATED_$isGridSelection,
-    LexicalEditor
-} from "lexical";
+import { $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
 import { $setBlocksType } from "@lexical/selection";
 import { HeadingTagType } from "@lexical/rich-text";
 import { $createHeadingNode } from "~/HeadingNode";
@@ -20,7 +15,7 @@ export const formatToHeading = (
 ) => {
     editor.update(() => {
         const selection = $getSelection();
-        if ($isRangeSelection(selection) || DEPRECATED_$isGridSelection(selection)) {
+        if ($isRangeSelection(selection)) {
             $setBlocksType(selection, () => $createHeadingNode(tag, typographyStyleId));
         }
     });

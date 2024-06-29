@@ -125,11 +125,7 @@ export class ParagraphNode
         return this.updateElementWithThemeClasses(element, config.theme as WebinyTheme);
     }
 
-    override updateDOM(
-        prevNode: BaseParagraphNode,
-        dom: HTMLElement,
-        config: EditorConfig
-    ): boolean {
+    override updateDOM(prevNode: ParagraphNode, dom: HTMLElement, config: EditorConfig): boolean {
         const prevTypoStyleId = prevNode.getTypographyStyleId();
         const nextTypoStyleId = this.getTypographyStyleId();
 
