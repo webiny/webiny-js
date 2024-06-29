@@ -11,12 +11,10 @@ import type {
     DOMConversionMap,
     DOMConversionOutput,
     EditorConfig,
-    GridSelection,
+    RangeSelection,
     LexicalCommand,
     LexicalNode,
     NodeKey,
-    NodeSelection,
-    RangeSelection,
     SerializedElementNode
 } from "lexical";
 
@@ -152,7 +150,7 @@ export class LinkNode extends ElementNode {
         return false;
     }
 
-    static importDOM(): DOMConversionMap | null {
+    static override importDOM(): DOMConversionMap | null {
         return {
             a: () => ({
                 conversion: convertAnchorElement,
@@ -281,10 +279,7 @@ export class LinkNode extends ElementNode {
         return true;
     }
 
-    override extractWithChild(
-        _: LexicalNode,
-        selection: RangeSelection | NodeSelection | GridSelection
-    ): boolean {
+    override extractWithChild(_: LexicalNode, selection: RangeSelection): boolean {
         if (!$isRangeSelection(selection)) {
             return false;
         }
@@ -384,7 +379,7 @@ export class AutoLinkNode extends LinkNode {
         const element = this.getParentOrThrow().insertNewAfter(selection, restoreSelection);
         if ($isElementNode(element)) {
             const linkNode = $createAutoLinkNode(this.__url, {
-                rel: this._rel,
+                rel: this.__rel,
                 target: this.__target,
                 title: this.__title
             });
