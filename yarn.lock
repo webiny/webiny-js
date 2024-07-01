@@ -18398,6 +18398,7 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/lexical-editor": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/ui": 0.0.0
     classnames: ^2.3.1
     emotion: ^10.0.27
     react: 18.2.0
