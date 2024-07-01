@@ -36,6 +36,7 @@ export { DialogsProvider } from "./components/Dialogs/DialogsContext";
 export * from "./components/OptionsMenu";
 export * from "./components/Filters";
 export * from "./components/BulkActions";
+export * from "./components/ResizablePanels";
 export { OverlayLayout, OverlayLayoutProps } from "./components/OverlayLayout";
 export {
     default as SingleImageUpload,
