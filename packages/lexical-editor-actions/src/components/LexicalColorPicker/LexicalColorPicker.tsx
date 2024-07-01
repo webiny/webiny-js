@@ -1,4 +1,4 @@
-import React, { useCallback, useState, SyntheticEvent } from "react";
+import React, { useCallback, useState, SyntheticEvent, useRef, useEffect, useMemo } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
@@ -122,6 +122,9 @@ interface LexicalColorPickerProps {
     handlerClassName?: string;
 }
 
+const showPickerStyle = { display: "block" };
+const hidePickerStyle = { display: "none" };
+
 export const LexicalColorPicker = ({
     value,
     onChange,
@@ -130,7 +133,13 @@ export const LexicalColorPicker = ({
     const [showPicker, setShowPicker] = useState(false);
     // Either a custom color or a color coming from the theme object.
     const [actualSelectedColor, setActualSelectedColor] = useState(value || "#fff");
-    let themeColor = false;
+    const themeColor = useRef(false);
+
+    useEffect(() => {
+        if (value) {
+            setActualSelectedColor(value);
+        }
+    }, [value]);
 
     const getColorValue = useCallback((rgb: RGBColor) => {
         return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${rgb.a})`;
@@ -151,29 +160,28 @@ export const LexicalColorPicker = ({
 
     const onColorChangeComplete = useCallback(
         ({ rgb }: ColorState, event: React.SyntheticEvent) => {
-            setActualSelectedColor(value);
-            onChangeComplete(getColorValue(rgb));
             event.preventDefault();
+            const value = getColorValue(rgb);
+            setActualSelectedColor(value);
+            onChangeComplete(value);
         },
         [onChangeComplete]
     );
 
-    const togglePicker = useCallback((e: SyntheticEvent, showPicker: boolean) => {
+    const togglePicker = useCallback((e: SyntheticEvent) => {
         e.stopPropagation();
-        setShowPicker(!showPicker);
+        setShowPicker(state => !state);
     }, []);
 
     const pageElements = usePageElements();
 
-    const themeColors: Record<string, any> = {};
-    const colors = pageElements.theme?.styles?.colors;
-    if (colors) {
-        for (const key in colors) {
-            if (colors[key]) {
-                themeColors[key] = colors[key];
-            }
-        }
-    }
+    const themeColors: Record<string, any> = useMemo(() => {
+        const colors = pageElements.theme?.styles?.colors ?? {};
+
+        return Object.keys(colors).reduce((acc, key) => {
+            return { ...acc, [key]: colors[key] };
+        }, {});
+    }, [pageElements.theme?.styles?.colors]);
 
     return (
         <ColorPickerStyle>
@@ -181,7 +189,7 @@ export const LexicalColorPicker = ({
                 const color = themeColors[key];
 
                 if (color === value || value === "transparent") {
-                    themeColor = true;
+                    themeColor.current = true;
                 }
                 return (
                     <ColorBox key={index}>
@@ -217,26 +225,23 @@ export const LexicalColorPicker = ({
             <ColorBox>
                 <Tooltip content={<span>Color picker</span>} placement="bottom">
                     <Color
-                        className={value && !themeColor ? styles.selectedColor : ""}
-                        style={{ backgroundColor: themeColor ? "#fff" : value }}
-                        onClick={e => {
-                            togglePicker(e, showPicker);
-                        }}
+                        className={value && !themeColor.current ? styles.selectedColor : ""}
+                        style={{ backgroundColor: themeColor.current ? "#fff" : value }}
+                        onClick={togglePicker}
                     >
                         <IconPalette className={iconPaletteStyle} />
                     </Color>
                 </Tooltip>
             </ColorBox>
 
-            {showPicker && (
+            <div style={showPicker ? showPickerStyle : hidePickerStyle}>
                 <ChromePicker
                     className={chromePickerStyle}
                     color={actualSelectedColor}
-                    // TODO figure out types for the props
                     onChange={onColorChange as OnChangeHandler}
                     onChangeComplete={onColorChangeComplete as OnChangeHandler}
                 />
-            )}
+            </div>
         </ColorPickerStyle>
     );
 };
