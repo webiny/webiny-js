@@ -296,8 +296,18 @@ export interface ITaskAbortParams {
 }
 
 export interface ITasksContextTriggerObject {
-    trigger: <T = ITaskDataInput>(params: ITaskTriggerParams<T>) => Promise<ITask<T>>;
-    abort: <T = ITaskDataInput>(params: ITaskAbortParams) => Promise<ITask<T>>;
+    trigger: <
+        T = ITaskDataInput,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(
+        params: ITaskTriggerParams<T>
+    ) => Promise<ITask<T, O>>;
+    abort: <
+        T = ITaskDataInput,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(
+        params: ITaskAbortParams
+    ) => Promise<ITask<T, O>>;
 }
 
 export interface ITasksContextObject

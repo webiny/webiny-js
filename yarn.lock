@@ -19161,6 +19161,7 @@ __metadata:
     deep-equal: ^2.2.3
     lodash: ^4.17.21
     object-merge-advanced: ^12.1.0
+    object-sizeof: ^2.6.4
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
     type-fest: ^2.19.0
@@ -33495,6 +33496,15 @@ __metadata:
     lodash.uniq: ^4.5.0
     util-nonempty: ^3.1.0
   checksum: 8b99c6aac6c5fdf4857f62067550a5236c1f7793a2c182b11eabaeaf315c0e68faf862c1516181c9b8b8d32d327faa01989c8496c51d3f36c93bb79fc3233fd8
+  languageName: node
+  linkType: hard
+
+"object-sizeof@npm:^2.6.4":
+  version: 2.6.4
+  resolution: "object-sizeof@npm:2.6.4"
+  dependencies:
+    buffer: ^6.0.3
+  checksum: 0d8767669b6bdfdfd4fe48381078567af53e5c1e35522eadc9641fed60ed45b661263b104384df9b3ea838b0c5ac8beff4ed740d54913b8d6b61387fe088cf02
   languageName: node
   linkType: hard
 

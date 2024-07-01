@@ -8,6 +8,7 @@ import {
     ITaskDataInput,
     ITaskLog,
     ITaskLogItemType,
+    ITaskResponseDoneResultOutput,
     ITasksContextTriggerObject,
     ITaskTriggerParams,
     PutEventsCommandOutput,
@@ -53,7 +54,12 @@ export const createTriggerTasksCrud = (
     });
 
     return {
-        trigger: async <T = ITaskDataInput>(params: ITaskTriggerParams<T>): Promise<ITask<T>> => {
+        trigger: async <
+            T = ITaskDataInput,
+            O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        >(
+            params: ITaskTriggerParams<T>
+        ): Promise<ITask<T, O>> => {
             const { definition: id, input: inputValues, name, parent, delay = 0 } = params;
             const definition = context.tasks.getDefinition(id);
             if (!definition) {
@@ -105,8 +111,13 @@ export const createTriggerTasksCrud = (
                 eventResponse: event
             });
         },
-        abort: async (params: ITaskAbortParams): Promise<ITask> => {
-            const task = await context.tasks.getTask(params.id);
+        abort: async <
+            T = ITaskDataInput,
+            O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        >(
+            params: ITaskAbortParams
+        ): Promise<ITask<T, O>> => {
+            const task = await context.tasks.getTask<T, O>(params.id);
             if (!task) {
                 throw new NotFoundError(`Task "${params.id}" was not found!`);
             }
@@ -143,7 +154,7 @@ export const createTriggerTasksCrud = (
                 });
             }
             try {
-                const updatedTask = await context.tasks.updateTask(task.id, {
+                const updatedTask = await context.tasks.updateTask<T, O>(task.id, {
                     taskStatus: TaskDataStatus.ABORTED
                 });
                 await context.tasks.updateLog(taskLog.id, {

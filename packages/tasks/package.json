@@ -27,6 +27,7 @@
     "deep-equal": "^2.2.3",
     "lodash": "^4.17.21",
     "object-merge-advanced": "^12.1.0",
+    "object-sizeof": "^2.6.4",
     "zod": "^3.23.8"
   },
   "devDependencies": {
