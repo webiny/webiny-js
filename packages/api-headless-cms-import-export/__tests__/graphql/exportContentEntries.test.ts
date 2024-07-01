@@ -65,11 +65,18 @@ describe("get export content entries", () => {
         const [response] = await abortExportContentEntries({
             id: task.id
         });
+
         expect(response).toEqual({
             data: {
                 abortExportContentEntries: {
                     data: {
-                        ...task,
+                        id: task.id,
+                        createdOn: task.createdOn,
+                        createdBy: task.createdBy,
+                        finishedOn: task.finishedOn,
+                        modelId: task.modelId,
+                        files: task.files,
+                        expiresOn: task.expiresOn,
                         status: "aborted"
                     },
                     error: null

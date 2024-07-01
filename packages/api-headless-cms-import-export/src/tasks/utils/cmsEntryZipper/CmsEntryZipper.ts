@@ -94,7 +94,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
                         })
                     ),
                     {
-                        name: "files.json"
+                        name: "manifest.json"
                     }
                 );
                 storedFiles = true;

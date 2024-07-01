@@ -33,7 +33,7 @@ export class ZipCombiner implements IZipCombiner {
     }
 
     public async resolve(params: IZipCombinerResolveParams): Promise<IZipCombinerResolveResult> {
-        const { source, isCloseToTimeout, isAborted, lastFileProcessed: after } = params;
+        const { source, isCloseToTimeout, isAborted, lastFileProcessed: after, modelId } = params;
 
         const files = await this.fetchFiles({
             source,
@@ -84,9 +84,12 @@ export class ZipCombiner implements IZipCombiner {
             const file = files.shift();
             if (isCloseToTimeout() || !file) {
                 lastFileProcessed = file?.key;
-                await this.zipper.add(Buffer.from(JSON.stringify({ files: addedFiles })), {
-                    name: "manifest.json"
-                });
+                await this.zipper.add(
+                    Buffer.from(JSON.stringify({ files: addedFiles, model: modelId })),
+                    {
+                        name: "manifest.json"
+                    }
+                );
                 finalize = true;
                 return;
             }

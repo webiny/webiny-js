@@ -8,6 +8,7 @@ export interface IZipCombinerResolveResult {
 
 export interface IZipCombinerResolveParams {
     source: string;
+    modelId: string;
     lastFileProcessed: string | undefined;
     isAborted: () => boolean;
     isCloseToTimeout: () => boolean;
