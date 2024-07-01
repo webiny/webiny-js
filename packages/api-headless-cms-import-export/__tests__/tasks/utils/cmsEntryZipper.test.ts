@@ -33,7 +33,8 @@ describe("cms entry zipper", () => {
                 isAborted(): boolean {
                     return false;
                 },
-                model
+                model,
+                after: undefined
             });
 
             expect(result).toEqual("should not happen");
@@ -56,7 +57,8 @@ describe("cms entry zipper", () => {
             isAborted(): boolean {
                 return false;
             },
-            model
+            model,
+            after: undefined
         });
 
         const buffer = getBuffer();
@@ -77,7 +79,7 @@ describe("cms entry zipper", () => {
         expect(zipEntries[1].entryName).toEqual("entries-2.json");
         expect(zipEntries[2].entryName).toEqual("entries-3.json");
         expect(zipEntries[3].entryName).toEqual("entries-4.json");
-        expect(zipEntries[4].entryName).toEqual("files.json");
+        expect(zipEntries[4].entryName).toEqual("manifest.json");
 
         const entries1Json = zip.readAsText(zipEntries[0]);
 
