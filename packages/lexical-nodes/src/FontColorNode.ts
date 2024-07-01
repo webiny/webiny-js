@@ -1,4 +1,6 @@
 import {
+    $getSelection,
+    $isRangeSelection,
     createCommand,
     EditorConfig,
     LexicalNode,
@@ -88,12 +90,35 @@ export class FontColorNode extends TextNode {
     override splitText(...splitOffsets: Array<number>): Array<FontColorNode> {
         const newNodes = super.splitText(...splitOffsets);
 
+        const selection = $getSelection();
+
         // After splitting, we need to re-apply styling to the new TextNodes.
-        const fontColorNodes = newNodes.map(textNode => {
-            const fontColorNode = $createFontColorNode(textNode.getTextContent(), this.__color);
+        const fontColorNodes = newNodes.map(node => {
+            if (node instanceof FontColorNode) {
+                return node;
+            }
+
+            const fontColorNode = $createFontColorNode(node.getTextContent(), this.__color);
             $applyStylesToNode(fontColorNode, this);
 
-            return textNode.replace(fontColorNode);
+            const newNode = node.replace(fontColorNode);
+
+            // Since we're replacing the existing node, we need to update the selection keys.
+            // This is very important to not break the editor functionality!
+            if ($isRangeSelection(selection)) {
+                const anchor = selection.anchor;
+                const focus = selection.focus;
+
+                if (anchor.key === node.getKey()) {
+                    anchor.key = newNode.getKey();
+                }
+
+                if (focus.key === node.getKey()) {
+                    focus.key = newNode.getKey();
+                }
+            }
+
+            return newNode;
         });
 
         return fontColorNodes as Array<FontColorNode>;
