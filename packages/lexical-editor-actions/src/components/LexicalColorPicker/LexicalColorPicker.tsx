@@ -5,6 +5,7 @@ import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePage
 import classnames from "classnames";
 import { ChromePicker, ColorState, RGBColor } from "react-color";
 import { OnChangeHandler } from "react-color/lib/components/common/ColorWrap";
+import { Tooltip } from "@webiny/ui/Tooltip";
 
 // Icons
 import { ReactComponent as IconPalette } from "./round-color_lens-24px.svg";
@@ -14,29 +15,31 @@ const ColorPickerStyle = styled("div")({
     display: "flex",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    width: 225,
-    padding: 0,
+    width: 240,
+    padding: 15,
     backgroundColor: "#fff"
 });
 
 const ColorBox = styled("div")({
     cursor: "pointer",
-    width: 50,
+    width: 40,
     height: 40,
-    margin: 10,
-    borderRadius: 2
+    borderRadius: "50%",
+    margin: 5,
+    border: "1px solid var(--mdc-theme-on-background)",
+    padding: 3
 });
 
 const Color = styled("button")({
     cursor: "pointer",
     width: 40,
-    height: 30,
-    border: "1px solid var(--mdc-theme-on-background)",
+    height: 40,
     transition: "transform 0.2s, scale 0.2s",
+    borderColor: "transparent",
     display: "flex",
     alignItems: "center",
+    borderRadius: "50%",
     "&::after": {
-        boxShadow: "0 0.25rem 0.125rem 0 rgba(0,0,0,0.05)",
         transition: "opacity 0.5s cubic-bezier(0.165, 0.84, 0.44, 1)",
         content: '""',
         position: "absolute",
@@ -48,7 +51,8 @@ const Color = styled("button")({
         opacity: 0
     },
     "&:hover": {
-        transform: "scale(1.25)",
+        transform: "scale(1.1)",
+        boxShadow: "0 0.25rem 0.125rem 0 rgba(0,0,0,0.05)",
         "&::after": {
             opacity: 1
         }
@@ -106,6 +110,11 @@ const styles = {
     })
 };
 
+const chromePickerStyle = css({
+    width: "270px !important",
+    margin: "15px -15px -15px -15px"
+});
+
 interface LexicalColorPickerProps {
     value: string;
     onChange?: (color: string) => void;
@@ -149,7 +158,7 @@ export const LexicalColorPicker = ({
         [onChangeComplete]
     );
 
-    const togglePicker = useCallback((e: SyntheticEvent) => {
+    const togglePicker = useCallback((e: SyntheticEvent, showPicker: boolean) => {
         e.stopPropagation();
         setShowPicker(!showPicker);
     }, []);
@@ -176,43 +185,52 @@ export const LexicalColorPicker = ({
                 }
                 return (
                     <ColorBox key={index}>
-                        <Color
-                            className={key === value ? styles.selectedColor : ""}
-                            style={{ backgroundColor: color }}
-                            onClick={() => {
-                                // With page elements implementation, we want to store the color key and
-                                // then the actual color will be retrieved from the theme object.
-                                const colors = pageElements.theme?.styles?.colors;
-                                onChangeComplete(colors[key], key);
-                            }}
-                        />
+                        <Tooltip content={<span>{color}</span>} placement="bottom">
+                            <Color
+                                className={key === value ? styles.selectedColor : ""}
+                                style={{ backgroundColor: color }}
+                                onClick={() => {
+                                    // With page elements implementation, we want to store the color key and
+                                    // then the actual color will be retrieved from the theme object.
+                                    const colors = pageElements.theme?.styles?.colors;
+                                    onChangeComplete(colors[key], key);
+                                }}
+                            />
+                        </Tooltip>
                     </ColorBox>
                 );
             })}
 
             <ColorBox>
-                <Color
-                    className={classnames(transparent, {
-                        [styles.selectedColor]: value === "transparent"
-                    })}
-                    onClick={() => {
-                        onChangeComplete("transparent");
-                    }}
-                />
+                <Tooltip content={<span>Transparent</span>} placement="bottom">
+                    <Color
+                        className={classnames(transparent, {
+                            [styles.selectedColor]: value === "transparent"
+                        })}
+                        onClick={() => {
+                            onChangeComplete("transparent");
+                        }}
+                    />
+                </Tooltip>
             </ColorBox>
 
             <ColorBox>
-                <Color
-                    className={value && !themeColor ? styles.selectedColor : ""}
-                    style={{ backgroundColor: themeColor ? "#fff" : value }}
-                    onClick={togglePicker}
-                >
-                    <IconPalette className={iconPaletteStyle} />
-                </Color>
+                <Tooltip content={<span>Color picker</span>} placement="bottom">
+                    <Color
+                        className={value && !themeColor ? styles.selectedColor : ""}
+                        style={{ backgroundColor: themeColor ? "#fff" : value }}
+                        onClick={e => {
+                            togglePicker(e, showPicker);
+                        }}
+                    >
+                        <IconPalette className={iconPaletteStyle} />
+                    </Color>
+                </Tooltip>
             </ColorBox>
 
             {showPicker && (
                 <ChromePicker
+                    className={chromePickerStyle}
                     color={actualSelectedColor}
                     // TODO figure out types for the props
                     onChange={onColorChange as OnChangeHandler}
