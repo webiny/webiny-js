@@ -12,6 +12,7 @@
     "@lexical/rich-text": "^0.16.0",
     "@lexical/selection": "^0.16.0",
     "@lexical/utils": "^0.16.0",
+    "@types/prismjs": "^1.26.4",
     "@webiny/lexical-theme": "0.0.0",
     "lexical": "^0.16.0"
   },
@@ -27,5 +28,12 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@types/prismjs"
+      ]
+    }
   }
 }

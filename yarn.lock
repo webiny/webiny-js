@@ -13478,6 +13478,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/prismjs@npm:^1.26.4":
+  version: 1.26.4
+  resolution: "@types/prismjs@npm:1.26.4"
+  checksum: ae33fa6be38b15b11d211806c2ad034bb2d794ca4897bed4eff574114d9d0ae99c89a7489fc04b2655472413ba430e30deb5c26b190261218928cf2ee9f414d1
+  languageName: node
+  linkType: hard
+
 "@types/prop-types@npm:*":
   version: 15.7.5
   resolution: "@types/prop-types@npm:15.7.5"
@@ -18464,6 +18471,7 @@ __metadata:
     "@lexical/rich-text": ^0.16.0
     "@lexical/selection": ^0.16.0
     "@lexical/utils": ^0.16.0
+    "@types/prismjs": ^1.26.4
     "@webiny/cli": 0.0.0
     "@webiny/lexical-theme": 0.0.0
     "@webiny/project-utils": 0.0.0
