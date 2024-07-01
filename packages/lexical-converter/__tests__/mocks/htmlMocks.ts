@@ -1,13 +1,13 @@
-import { DomFactory } from "../toDom";
+import { DomFactory } from "../utils/toDom";
 
 export const paragraphHtmlTag = `<p>Testing paragraph element</p>`;
-export const htmlWithUnsupportedHtmlTags = `<div class="_1z604">
-                                    <figure data-c="inline-image" class="_3kWNL _2YlTE">
-                                        <button type="button" aria-label="Open Gallery" class="_2bgbL">
-                                            <span class="_1cCV2 _3krT7">See all 37 photos</span>
-                                         </button>
-                                    </figure>
-                                </div>`;
+export const invalidMarkup = /* HTML */ `<div class="_1z604">
+    <figure data-c="inline-image" class="_3kWNL _2YlTE">
+        <button type="button" aria-label="Open Gallery" class="_2bgbL">
+            <span class="_1cCV2 _3krT7">See all 37 photos</span>
+        </button>
+    </figure>
+</div>`;
 
 export const boldItalicUnderlineFormatHtml = `<p><u><em><strong>formatted text</strong></em></u></p>`;
 
@@ -24,7 +24,7 @@ export const imageHtml = `<img src="https://d1mjtaoiepp9z3.cloudfront.net/files/
 
 const htmlMocks = {
     paragraphHtmlTag,
-    htmlWithUnsupportedHtmlTags,
+    invalidMarkup,
     boldItalicUnderlineFormatHtml,
     headingH1Html,
     headingH4Html,
