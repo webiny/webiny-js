@@ -46,7 +46,7 @@ export class FileFetcher implements IFileFetcher {
                     size: item.Size || 0
                 });
             }
-            return items;
+            return items.sort((a, b) => a.key.localeCompare(b.key));
         } catch (ex) {
             console.error(ex);
             return [];
@@ -67,6 +67,7 @@ export class FileFetcher implements IFileFetcher {
              */
             return (response.Body || null) as IFileFetcherReadable;
         } catch (ex) {
+            console.log(`Could not fetch file "${key}" from bucket "${this.bucket}".`);
             console.error(ex);
             return null;
         }

@@ -6,6 +6,7 @@ export interface ICmsEntryZipperExecuteParams {
     isCloseToTimeout(): boolean;
     isAborted(): boolean;
     model: Pick<CmsModel, "modelId">;
+    after: string | undefined;
 }
 
 export type ICmsEntryZipperExecuteResult =

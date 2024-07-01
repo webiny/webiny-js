@@ -56,10 +56,11 @@ export class CmsEntryZipper implements ICmsEntryZipper {
     public async execute(
         params: ICmsEntryZipperExecuteParams
     ): Promise<ICmsEntryZipperExecuteResult> {
-        const { isCloseToTimeout, isAborted, model } = params;
+        const { isCloseToTimeout, isAborted, model, after: inputAfter } = params;
 
         const files: IFileMeta[] = [];
-        let after: string | undefined = undefined;
+
+        let after = inputAfter;
 
         let hasMoreItems = true;
         let storedFiles = false;
@@ -73,6 +74,10 @@ export class CmsEntryZipper implements ICmsEntryZipper {
          * If the lambda is close to timeout, we will store the current state and continue from the last cursor in the next task run.
          */
         const addItems = async () => {
+            if (isAborted()) {
+                this.zipper.abort();
+                return;
+            }
             const closeToTimeout = isCloseToTimeout();
             if (storedFiles) {
                 await this.zipper.finalize();
@@ -103,7 +108,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
                 return;
             }
 
-            const name = `entries-${id}.json`;
+            const name = `entries${inputAfter ? `-${inputAfter}` : ""}-${id}.json`;
 
             files.push({
                 id,
@@ -126,10 +131,6 @@ export class CmsEntryZipper implements ICmsEntryZipper {
         });
 
         this.zipper.on("entry", () => {
-            if (isAborted()) {
-                this.zipper.abort();
-                return;
-            }
             addItems();
         });
 

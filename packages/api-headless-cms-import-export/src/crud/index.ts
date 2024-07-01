@@ -4,13 +4,15 @@ import {
     ICmsImportExportObjectAbortExportParams,
     ICmsImportExportObjectGetExportParams,
     ICmsImportExportObjectStartExportParams,
-    ICmsImportExportRecord,
-    ICmsImportExportTaskOutput,
-    ICmsImportExportTaskParams
+    ICmsImportExportRecord
 } from "~/types";
 import { convertTaskToCmsImportExportRecord } from "~/crud/utils/importExportRecord";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK } from "~/tasks";
+import {
+    IExportContentEntriesControllerInput,
+    IExportContentEntriesControllerOutput
+} from "~/tasks/domain/abstractions/ExportContentEntriesController";
 
 export const createHeadlessCmsImportExportCrud = async (
     context: Context
@@ -19,8 +21,8 @@ export const createHeadlessCmsImportExportCrud = async (
         params: ICmsImportExportObjectGetExportParams
     ): Promise<ICmsImportExportRecord> => {
         const task = await context.tasks.getTask<
-            ICmsImportExportTaskParams,
-            ICmsImportExportTaskOutput
+            IExportContentEntriesControllerInput,
+            IExportContentEntriesControllerOutput
         >(params.id);
 
         if (!task) {
@@ -35,10 +37,14 @@ export const createHeadlessCmsImportExportCrud = async (
     const startExportContentEntries = async (
         params: ICmsImportExportObjectStartExportParams
     ): Promise<ICmsImportExportRecord> => {
-        const task = await context.tasks.trigger<ICmsImportExportTaskParams>({
+        const task = await context.tasks.trigger<
+            IExportContentEntriesControllerInput,
+            IExportContentEntriesControllerOutput
+        >({
             name: `Export Content Entries and Assets Controller for "${params.modelId}"`,
             input: {
                 modelId: params.modelId,
+                exportAssets: params.exportAssets,
                 limit: params.limit
             },
             definition: EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK
@@ -50,7 +56,10 @@ export const createHeadlessCmsImportExportCrud = async (
     const abortExportContentEntries = async (
         params: ICmsImportExportObjectAbortExportParams
     ): Promise<ICmsImportExportRecord> => {
-        const task = await context.tasks.abort<ICmsImportExportTaskParams>({
+        const task = await context.tasks.abort<
+            IExportContentEntriesControllerInput,
+            IExportContentEntriesControllerOutput
+        >({
             id: params.id
         });
         return convertTaskToCmsImportExportRecord(task);

@@ -60,27 +60,33 @@ export class ExportContentEntries<
                 }
             });
         }
-
-        const prefix = `${basePrefix}/entries/batch-`;
+        /**
+         * If we are combining files, we need to fetch the all the files and combine them.
+         * TODO: determine if its possible to combine all the files which were created.
+         */
+        const prefix = `${basePrefix}/entries-batch-`;
         if (input.combine) {
-            const next = input.next ? `-${input.next}` : "";
-            const combined: string[] = Array.from(input.combined || []);
+            const lastFileProcessed = input.lastFileProcessed ? `-${input.lastFileProcessed}` : "";
+            const combined = Array.from<string>(
+                Array.isArray(input.combined) ? input.combined : []
+            );
             const zipCombiner = this.createZipCombiner({
-                target: `${basePrefix}/entries${next}.zip`
+                target: `${basePrefix}/entries${lastFileProcessed}.zip`
             });
 
             const result = await zipCombiner.resolve({
                 source: prefix,
+                lastFileProcessed: input.lastFileProcessed,
                 isAborted,
                 isCloseToTimeout
             });
 
             combined.push(result.url);
 
-            if (result.next) {
+            if (result.lastFileProcessed) {
                 return response.continue({
                     ...input,
-                    next: result.next,
+                    lastFileProcessed: result.lastFileProcessed,
                     combined
                 });
             }
@@ -90,6 +96,9 @@ export class ExportContentEntries<
                 expiresOn: result.expiresOn
             } as O);
         }
+        /**
+         * If we are not combining files, we need to fetch the next batch of entries and zip them.
+         */
 
         const fetcher: ICmsEntryFetcher = async after => {
             const input = {
@@ -99,6 +108,7 @@ export class ExportContentEntries<
                 after
             };
             const [items, meta] = await context.cms.listLatestEntries(model, input);
+
             return {
                 items,
                 meta
@@ -116,7 +126,8 @@ export class ExportContentEntries<
         const result = await entryZipper.execute({
             isCloseToTimeout,
             isAborted,
-            model
+            model,
+            after: input.after
         });
         if (result instanceof CmsEntryZipperExecuteContinueResult) {
             return response.continue({

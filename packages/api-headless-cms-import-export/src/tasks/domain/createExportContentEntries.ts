@@ -32,7 +32,10 @@ export const createExportContentEntries = () => {
         const archiver = new Archiver({
             format: "zip",
             options: {
-                gzip: true
+                gzip: true,
+                gzipOptions: {
+                    level: 9
+                }
             }
         });
 
@@ -59,7 +62,10 @@ export const createExportContentEntries = () => {
         const archiver = new Archiver({
             format: "zip",
             options: {
-                gzip: true
+                gzip: true,
+                gzipOptions: {
+                    level: 0
+                }
             }
         });
 

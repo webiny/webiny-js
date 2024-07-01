@@ -11,6 +11,7 @@ export enum ExportContentEntriesControllerState {
 
 export interface IExportContentEntriesControllerInput {
     modelId: string;
+    exportAssets: boolean;
     contentEntriesTaskId?: string;
     contentAssetsTaskId?: string;
     prefix?: string;
@@ -22,12 +23,11 @@ export interface IExportContentEntriesControllerInput {
 }
 
 export interface IExportContentEntriesControllerOutput extends ITaskResponseDoneResultOutput {
-    file: string;
-    url: string;
+    files: string[];
     expiresOn: Date;
 }
 
-export interface ExportContentEntriesController<
+export interface IExportContentEntriesController<
     C extends Context = Context,
     I extends IExportContentEntriesControllerInput = IExportContentEntriesControllerInput,
     O extends IExportContentEntriesControllerOutput = IExportContentEntriesControllerOutput

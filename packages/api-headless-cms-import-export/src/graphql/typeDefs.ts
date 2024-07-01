@@ -36,7 +36,13 @@ export const createTypeDefs = (models: [string, ...string[]]): string => {
         }
 
         extend type Mutation {
-            startExportContentEntries(modelId: ExportContentEntriesModelsListEnum!, limit: Int): StartExportContentEntriesResponse!
+            startExportContentEntries(
+                modelId: ExportContentEntriesModelsListEnum!
+                # limit on how much entries will be fetched in a single batch - mostly used for testing
+                limit: Int
+                # do we export assets as well? default is false
+                exportAssets: Boolean
+            ): StartExportContentEntriesResponse!
             abortExportContentEntries(id: ID!): AbortExportContentEntriesResponse!
         }
     `;

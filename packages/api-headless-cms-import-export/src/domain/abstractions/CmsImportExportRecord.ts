@@ -9,5 +9,6 @@ export interface ICmsImportExportRecord {
     modelId: string;
     files: string[] | null;
     expiresOn: Date | null;
+    exportAssets: boolean;
     status: TaskDataStatus;
 }

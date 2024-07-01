@@ -1,5 +1,5 @@
 import { GetObjectCommand, getSignedUrl, S3Client } from "@webiny/aws-sdk/client-s3";
-import { ISignUrl, ISignedUrlFetchParams, ISignedUrlFetchResult } from "./abstractions/SignedUrl";
+import { ISignUrl, ISignUrlFetchParams, ISignUrlFetchResult } from "./abstractions/SignedUrl";
 
 export interface ISignedUrlParams {
     client: S3Client;
@@ -15,7 +15,7 @@ export class SignUrl implements ISignUrl {
         this.bucket = params.bucket;
     }
 
-    public async fetch(params: ISignedUrlFetchParams): Promise<ISignedUrlFetchResult> {
+    public async fetch(params: ISignUrlFetchParams): Promise<ISignUrlFetchResult> {
         const timeout = params.timeout || 604800; // 1 week default
         const url = await getSignedUrl(
             this.client,

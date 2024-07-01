@@ -1,5 +1,5 @@
 export interface IZipCombinerResolveResult {
-    next?: string;
+    lastFileProcessed?: string;
     key: string;
     url: string;
     bucket: string;
@@ -8,6 +8,7 @@ export interface IZipCombinerResolveResult {
 
 export interface IZipCombinerResolveParams {
     source: string;
+    lastFileProcessed: string | undefined;
     isAborted: () => boolean;
     isCloseToTimeout: () => boolean;
 }

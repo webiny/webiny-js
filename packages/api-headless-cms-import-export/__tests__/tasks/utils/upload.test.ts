@@ -28,6 +28,8 @@ describe("upload", () => {
     });
 
     it("should abort upload", async () => {
+        expect.assertions(4);
+
         const client = mockClient(S3Client);
         client.on(CreateMultipartUploadCommand).resolves({ UploadId: "1" });
         client.on(UploadPartCommand).resolves({ ETag: "1" });
@@ -55,7 +57,15 @@ describe("upload", () => {
 
         expect(upload.stream).toBeInstanceOf(PassThrough);
 
-        await upload.abort();
+        setTimeout(() => {
+            upload.abort();
+        }, 250);
+        try {
+            await upload.done();
+        } catch (ex) {
+            expect(ex.message).toEqual("Upload aborted.");
+        }
+
         expect(buffer).toBeUndefined();
         expect(buffers).toHaveLength(0);
     });

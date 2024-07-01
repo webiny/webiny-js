@@ -8,7 +8,15 @@ export interface IFileFetcherFile {
 
 export type IFileFetcherReadable = Readable | null;
 
+export interface IFileFetcherListCallable {
+    (key: string): Promise<IFileFetcherFile[]>;
+}
+
+export interface IFileFetcherFetchCallable {
+    (key: string): Promise<IFileFetcherReadable>;
+}
+
 export interface IFileFetcher {
-    list: (key: string) => Promise<IFileFetcherFile[]>;
-    fetch: (key: string) => Promise<IFileFetcherReadable>;
+    list: IFileFetcherListCallable;
+    fetch: IFileFetcherFetchCallable;
 }

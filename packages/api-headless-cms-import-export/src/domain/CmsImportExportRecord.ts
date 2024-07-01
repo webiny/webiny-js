@@ -9,6 +9,7 @@ export class CmsImportExportRecord implements ICmsImportExportRecord {
     public modelId: string;
     public files: string[] | null;
     public expiresOn: Date | null;
+    public exportAssets: boolean;
     public status: TaskDataStatus;
 
     constructor(data: ICmsImportExportRecord) {
@@ -19,6 +20,7 @@ export class CmsImportExportRecord implements ICmsImportExportRecord {
         this.modelId = data.modelId;
         this.files = data.files;
         this.expiresOn = data.expiresOn;
+        this.exportAssets = data.exportAssets;
         this.status = data.status;
     }
 }

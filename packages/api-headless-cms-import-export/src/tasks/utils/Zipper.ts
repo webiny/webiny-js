@@ -25,6 +25,11 @@ export class Zipper implements IZipper {
     }
 
     public async finalize(): Promise<void> {
+        /**
+         * Unfortunately we must wait a bit before finalizing the archive.
+         * Possibly it could work without this, but I've seen some issues with the archiver hanging if the finalize
+         * was called immediately after the last file was added.
+         */
         setTimeout(() => {
             this.archiver.archiver.finalize();
         }, 200);

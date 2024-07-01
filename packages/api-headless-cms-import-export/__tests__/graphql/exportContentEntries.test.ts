@@ -29,7 +29,8 @@ describe("get export content entries", () => {
         const context = await createContext();
 
         const task = await context.cmsImportExport.startExportContentEntries({
-            modelId: AUTHOR_MODEL_ID
+            modelId: AUTHOR_MODEL_ID,
+            exportAssets: false
         });
 
         const [response] = await getExportContentEntries({
@@ -41,7 +42,9 @@ describe("get export content entries", () => {
                     data: {
                         id: task.id,
                         modelId: AUTHOR_MODEL_ID,
-                        status: "pending"
+                        status: "pending",
+                        files: null,
+                        expiresOn: null
                     },
                     error: null
                 }
@@ -55,7 +58,8 @@ describe("get export content entries", () => {
         const context = await createContext();
 
         const task = await context.cmsImportExport.startExportContentEntries({
-            modelId: AUTHOR_MODEL_ID
+            modelId: AUTHOR_MODEL_ID,
+            exportAssets: false
         });
 
         const [response] = await abortExportContentEntries({

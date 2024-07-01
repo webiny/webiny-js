@@ -1,8 +1,14 @@
 import uniqueId from "uniqid";
-import { ITaskResponseResult, ITaskRunParams, TaskDataStatus } from "@webiny/tasks";
+import {
+    IGetTaskResponse,
+    ITaskResponseResult,
+    ITaskRunParams,
+    TaskDataStatus
+} from "@webiny/tasks";
 import { Context } from "~/types";
 import {
     ExportContentEntriesControllerState,
+    IExportContentEntriesController,
     IExportContentEntriesControllerInput,
     IExportContentEntriesControllerOutput
 } from "~/tasks/domain/abstractions/ExportContentEntriesController";
@@ -20,7 +26,7 @@ export class ExportContentEntriesController<
     C extends Context = Context,
     I extends IExportContentEntriesControllerInput = IExportContentEntriesControllerInput,
     O extends IExportContentEntriesControllerOutput = IExportContentEntriesControllerOutput
-> implements ExportContentEntriesController<C, I, O>
+> implements IExportContentEntriesController<C, I, O>
 {
     public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
         const { context, response, input, store, trigger } = params;
@@ -28,9 +34,14 @@ export class ExportContentEntriesController<
 
         const taskId = store.getTask().id;
         /**
+         *
+         */
+        let entriesTask: IGetTaskResponse<IExportContentEntriesInput, IExportContentEntriesOutput>;
+
+        /**
          * In case of no state yet, we will start the content entries export process.
          */
-        const prefix = input.prefix || uniqueId(`cms-export/${input.modelId}/${taskId}/`);
+        const prefix = input.prefix || uniqueId(`cms-export/${input.modelId}/${taskId}`);
         if (!state) {
             const task = await trigger<IExportContentEntriesInput>({
                 definition: EXPORT_CONTENT_ENTRIES_TASK,
@@ -71,38 +82,47 @@ export class ExportContentEntriesController<
                     code: "MISSING_CONTENT_ENTRIES_TASK_ID"
                 });
             }
-            const task = await context.tasks.getTask<
+            entriesTask = await context.tasks.getTask<
                 IExportContentEntriesInput,
                 IExportContentEntriesOutput
             >(input.contentEntriesTaskId);
-            if (!task) {
+            if (!entriesTask) {
                 return response.error({
                     message: `Task "${input.contentEntriesTaskId}" not found.`,
                     code: "TASK_NOT_FOUND"
                 });
             }
             if (
-                task.taskStatus == TaskDataStatus.RUNNING ||
-                task.taskStatus === TaskDataStatus.PENDING
+                entriesTask.taskStatus == TaskDataStatus.RUNNING ||
+                entriesTask.taskStatus === TaskDataStatus.PENDING
             ) {
                 return response.continue(input, {
                     seconds: 60
                 });
-            } else if (task.taskStatus === TaskDataStatus.FAILED) {
+            } else if (entriesTask.taskStatus === TaskDataStatus.FAILED) {
                 return response.error({
-                    message: `Failed to export content entries. Task "${task.id}" failed.`,
+                    message: `Failed to export content entries. Task "${entriesTask.id}" failed.`,
                     code: "EXPORT_ENTRIES_FAILED"
                 });
-            } else if (task.taskStatus === TaskDataStatus.ABORTED) {
+            } else if (entriesTask.taskStatus === TaskDataStatus.ABORTED) {
                 return response.error({
-                    message: `Export content entries process was aborted. Task "${task.id}" was aborted.`,
+                    message: `Export content entries process was aborted. Task "${entriesTask.id}" was aborted.`,
                     code: "EXPORT_ENTRIES_ABORTED"
                 });
-            } else if (!task.output) {
+            } else if (!entriesTask.output) {
                 return response.error({
-                    message: `No output found on task "${task.id}". Stopping export process.`,
+                    message: `No output found on task "${entriesTask.id}". Stopping export process.`,
                     code: "NO_OUTPUT"
                 });
+            }
+            /**
+             * Possibly the task does not require any assets to be exported.
+             */
+            if (!input.exportAssets) {
+                return response.done({
+                    files: entriesTask.output.files,
+                    expiresOn: entriesTask.output.expiresOn
+                } as unknown as O);
             }
 
             const assetTask = await trigger<IExportContentAssetsInput>({
@@ -139,19 +159,19 @@ export class ExportContentEntriesController<
                 });
             }
 
-            const task = await context.tasks.getTask<
+            const assetsTask = await context.tasks.getTask<
                 IExportContentAssetsInput,
                 IExportContentAssetsOutput
             >(input.contentAssetsTaskId);
-            if (!task) {
+            if (!assetsTask) {
                 return response.error({
                     message: `Task "${input.contentAssetsTaskId}" not found.`,
                     code: "TASK_NOT_FOUND"
                 });
             }
             if (
-                task.taskStatus == TaskDataStatus.RUNNING ||
-                task.taskStatus === TaskDataStatus.PENDING
+                assetsTask.taskStatus == TaskDataStatus.RUNNING ||
+                assetsTask.taskStatus === TaskDataStatus.PENDING
             ) {
                 return response.continue(
                     {
@@ -161,14 +181,14 @@ export class ExportContentEntriesController<
                         seconds: 60
                     }
                 );
-            } else if (task.taskStatus === TaskDataStatus.FAILED) {
+            } else if (assetsTask.taskStatus === TaskDataStatus.FAILED) {
                 return response.error({
-                    message: `Failed to export content assets. Task "${task.id}" failed.`,
+                    message: `Failed to export content assets. Task "${assetsTask.id}" failed.`,
                     code: "EXPORT_ASSETS_FAILED"
                 });
-            } else if (task.taskStatus === TaskDataStatus.ABORTED) {
+            } else if (assetsTask.taskStatus === TaskDataStatus.ABORTED) {
                 return response.error({
-                    message: `Export content assets process was aborted. Task "${task.id}" was aborted.`,
+                    message: `Export content assets process was aborted. Task "${assetsTask.id}" was aborted.`,
                     code: "EXPORT_ASSETS_ABORTED"
                 });
             }

@@ -1,15 +1,15 @@
-export interface ISignedUrlFetchResult {
+export interface ISignUrlFetchResult {
     url: string;
     bucket: string;
     key: string;
     expiresOn: Date;
 }
 
-export interface ISignedUrlFetchParams {
+export interface ISignUrlFetchParams {
     key: string;
     timeout?: number;
 }
 
 export interface ISignUrl {
-    fetch(params: ISignedUrlFetchParams): Promise<ISignedUrlFetchResult>;
+    fetch(params: ISignUrlFetchParams): Promise<ISignUrlFetchResult>;
 }

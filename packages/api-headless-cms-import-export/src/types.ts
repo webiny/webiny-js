@@ -10,6 +10,7 @@ export interface ICmsImportExportObjectGetExportParams {
 
 export interface ICmsImportExportObjectStartExportParams {
     modelId: string;
+    exportAssets: boolean;
     limit?: number;
 }
 

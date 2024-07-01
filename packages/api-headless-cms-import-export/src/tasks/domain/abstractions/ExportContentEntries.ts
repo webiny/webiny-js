@@ -10,7 +10,7 @@ export interface IExportContentEntriesInput {
     sort?: string[];
     after?: string;
     combine?: boolean;
-    next?: string;
+    lastFileProcessed?: string;
     combined?: string[];
 }
 

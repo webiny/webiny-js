@@ -124,6 +124,7 @@ describe("zipper", () => {
     });
 
     it("should abort zipper if no records", async () => {
+        expect.assertions(3);
         const stream = createPassThrough();
 
         const buffers: Buffer[] = [];
@@ -164,7 +165,15 @@ describe("zipper", () => {
             archiver
         });
 
-        await zipper.abort();
+        setTimeout(() => {
+            zipper.abort();
+        }, 250);
+
+        try {
+            await zipper.done();
+        } catch (ex) {
+            expect(ex.message).toEqual("Upload aborted.");
+        }
 
         expect(buffer).toBeUndefined();
         expect(buffers).toHaveLength(0);
