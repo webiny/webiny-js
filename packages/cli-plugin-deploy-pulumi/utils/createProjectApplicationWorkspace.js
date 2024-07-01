@@ -14,7 +14,7 @@ module.exports = async ({ projectApplication, inputs }) => {
     // Wait a bit and make sure the files are ready to have its content replaced.
     await new Promise(resolve => setTimeout(resolve, 10));
 
-    replaceInPath(path.join(projectApplication.paths.workspace, "/**/*.*"), [
+    replaceInPath(path.join(projectApplication.paths.workspace, "/**/*.{ts,js,yaml}"), [
         { find: "{PROJECT_ID}", replaceWith: projectApplication.id },
         { find: "{PROJECT_DESCRIPTION}", replaceWith: projectApplication.description },
         { find: "{DEPLOY_ENV}", replaceWith: inputs.env }

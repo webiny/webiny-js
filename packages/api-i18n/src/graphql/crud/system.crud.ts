@@ -31,14 +31,6 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
     );
 
     return {
-        /**
-         * Deprecated in 5.34.0
-         */
-        onBeforeInstall: onSystemBeforeInstall,
-        onAfterInstall: onSystemAfterInstall,
-        /**
-         * Introduced in 5.34.0
-         */
         onSystemBeforeInstall,
         onSystemAfterInstall,
         storageOperations,
@@ -88,31 +80,34 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCRUD => 
             }
         },
         async installSystem(this: SystemCRUD, { code }) {
-            const identity = context.security.getIdentity();
-            if (!identity) {
-                throw new NotAuthorizedError();
-            }
-            const { i18n } = context;
-            const version = await this.getSystemVersion();
-            if (version) {
-                throw new WebinyError("I18N is already installed.", "INSTALL_ERROR", {
-                    version
-                });
-            }
-            await onSystemBeforeInstall.publish({
-                code
-            });
-
+            /**
+             * `i18n` installation needs to run with authorization disabled, because permission loading needs a locale.
+             * Since the locale doesn't exist yet, the system would assume the user has no permissions, and throw an error.
+             *
+             * @see packages/api-security/src/utils/getPermissionsFromSecurityGroupsForLocale.ts
+             */
             await context.security.withoutAuthorization(async () => {
-                return i18n.locales.createLocale({
-                    code,
-                    default: true
-                });
-            });
+                const identity = context.security.getIdentity();
 
-            await this.setSystemVersion(context.WEBINY_VERSION);
-            await onSystemAfterInstall.publish({
-                code
+                if (!identity) {
+                    throw new NotAuthorizedError();
+                }
+
+                const { i18n } = context;
+
+                const version = await this.getSystemVersion();
+
+                if (version) {
+                    throw new WebinyError("I18N is already installed.", "INSTALL_ERROR", {
+                        version
+                    });
+                }
+                await onSystemBeforeInstall.publish({ code });
+
+                await i18n.locales.createLocale({ code, default: true });
+
+                await this.setSystemVersion(context.WEBINY_VERSION);
+                await onSystemAfterInstall.publish({ code });
             });
         }
     };

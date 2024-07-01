@@ -74,6 +74,30 @@ export const DataTableCell = styled(RmwcDataTableCell)<DataTableCell>`
     text-overflow: ellipsis;
 `;
 
+export const ColumnCellWrapper = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: start;
+
+    // TODO: refactor in case of RMWC removal
+    .rmwc-data-table__cell--align-start & {
+        justify-content: start;
+    }
+
+    .rmwc-data-table__cell--align-middle & {
+        justify-content: center;
+    }
+
+    .rmwc-data-table__cell--align-end & {
+        justify-content: flex-end;
+    }
+
+    // Needed to solve skeleton width equal to 0 (https://github.com/dvtng/react-loading-skeleton#troubleshooting)
+    .table-skeleton-container {
+        flex: 1;
+    }
+`;
+
 interface ColumnHeaderWrapperProps {
     sortable: boolean;
     isLastCell: boolean;
@@ -84,6 +108,19 @@ export const ColumnHeaderWrapper = styled("div")<ColumnHeaderWrapperProps>`
     display: flex;
     align-items: center;
     justify-content: ${props => (props.isLastCell ? "flex-end" : "start")};
+
+    // TODO: refactor in case of RMWC removal
+    .rmwc-data-table__cell--align-start & {
+        justify-content: start;
+    }
+
+    .rmwc-data-table__cell--align-middle & {
+        justify-content: center;
+    }
+
+    .rmwc-data-table__cell--align-end & {
+        justify-content: flex-end;
+    }
 `;
 
 export const ColumnDirectionWrapper = styled("span")`
@@ -100,7 +137,7 @@ export const ColumnDirectionIcon = styled(ArrowDown)<ColumnDirectionProps>`
 `;
 
 export const ColumnsVisibilityMenuHeader = styled(Typography)`
-    padding: 4px 16px;
+    padding: 4px 16px 12px;
     font-weight: 600;
 `;
 

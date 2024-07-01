@@ -1,41 +1,33 @@
 import minimatch from "minimatch";
 import React, { Dispatch, SetStateAction, useCallback, useMemo, useState } from "react";
-import { SecurityIdentity, SecurityPermission } from "~/types";
+import { IdTokenProvider, SecurityIdentity, SecurityPermission } from "~/types";
 
 export interface SecurityContext {
     identity: SecurityIdentity | null;
     getIdentityId: () => string | null;
-
     setIdentity: Dispatch<SetStateAction<SecurityIdentity | null>>;
-
     getPermission<T extends SecurityPermission = SecurityPermission>(
         name: string,
         exact?: boolean
     ): T | null;
-
     getPermissions<T extends SecurityPermission = SecurityPermission>(name: string): T[];
+    setIdTokenProvider: (provider: IdTokenProvider) => void;
+    getIdToken: IdTokenProvider;
 }
 
 interface SecurityProviderProps {
     children: React.ReactNode;
 }
 
-export const SecurityContext = React.createContext<SecurityContext>({
-    identity: null,
-    getIdentityId: () => null,
-    setIdentity: () => {
-        return void 0;
-    },
-    getPermission: () => {
-        return null;
-    },
-    getPermissions: () => {
-        return [];
-    }
-});
+const defaultIdTokenProvider: IdTokenProvider = () => undefined;
+
+export const SecurityContext = React.createContext<SecurityContext | undefined>(undefined);
 
 export const SecurityProvider = (props: SecurityProviderProps) => {
     const [identity, setIdentity] = useState<SecurityIdentity | null>(null);
+    const [idTokenProvider, setIdTokenProvider] = useState<IdTokenProvider>(
+        () => defaultIdTokenProvider
+    );
 
     const getPermission = useCallback(
         <T extends SecurityPermission = SecurityPermission>(
@@ -88,7 +80,7 @@ export const SecurityProvider = (props: SecurityProviderProps) => {
         return identity.id || identity.login || null;
     }, [identity]);
 
-    const value = useMemo(() => {
+    const value: SecurityContext = useMemo(() => {
         return {
             identity: identity
                 ? {
@@ -100,9 +92,13 @@ export const SecurityProvider = (props: SecurityProviderProps) => {
             getIdentityId,
             setIdentity,
             getPermission,
-            getPermissions
+            getPermissions,
+            getIdToken: idTokenProvider,
+            setIdTokenProvider: provider => {
+                setIdTokenProvider(() => provider);
+            }
         };
-    }, [identity]);
+    }, [idTokenProvider, identity]);
 
     return <SecurityContext.Provider value={value}>{props.children}</SecurityContext.Provider>;
 };

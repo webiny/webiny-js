@@ -13,3 +13,6 @@ export type ContextParams = CreateCrudParams;
 export const createPageBuilderContext = (params: ContextParams) => {
     return [createCrud(params), createElementProcessors()];
 };
+
+export * from "./crud/pages/PageContent";
+export * from "./crud/pages/PageElementId";

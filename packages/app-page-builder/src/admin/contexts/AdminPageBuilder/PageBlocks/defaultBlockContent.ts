@@ -101,11 +101,9 @@ export const getDefaultBlockContent = () => {
                                 }
                             }
                         },
-                        elements: [],
-                        path: ["sUK8viY2oz", "eM2Z1d9gfH", "nbLftfYqrg"]
+                        elements: []
                     }
-                ],
-                path: ["sUK8viY2oz", "eM2Z1d9gfH"]
+                ]
             }
         ]
     });

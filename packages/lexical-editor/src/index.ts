@@ -35,7 +35,7 @@ export { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
 export { UpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin/UpdateStatePlugin";
 export { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
 export { TypographyPlugin } from "~/plugins/TypographyPlugin/TypographyPlugin";
-export { QuotePlugin } from "~/plugins/WebinyQuoteNodePlugin/WebinyQuoteNodePlugin";
+export { QuotePlugin } from "~/plugins/QuoteNodePlugin/QuoteNodePlugin";
 export { ListPlugin } from "~/plugins/ListPLugin/ListPlugin";
 export { ImagesPlugin } from "~/plugins/ImagesPlugin/ImagesPlugin";
 // utils

@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, cloneElement } from "react";
-import getValue from "./functions/getValue";
-import setValue from "./functions/setValue";
+import { getValue } from "./functions/getValue";
+import { setValue } from "./functions/setValue";
 import { BindComponent, Bind as BaseFormBind } from "@webiny/form";
 import { useModelField } from "~/admin/hooks";
 
@@ -25,8 +25,8 @@ const PredefinedValues = () => {
                         const props = {
                             ...bind,
                             value: getValue({ bind, index, name }),
-                            onChange: async (value: string[]) => {
-                                await setValue({ value, bind, index, name });
+                            onChange: (value: string[]) => {
+                                setValue({ value, bind, index, name });
                             }
                         };
 

@@ -34,6 +34,8 @@ import { FileManager_5_39_0_002 } from "~/migrations/5.39.0/002/ddb-es";
 // 5.39.6
 import { CmsEntriesInitNewMetaFields_5_39_6_001 } from "~/migrations/5.39.6/001/ddb-es";
 
+import { PbUniqueBlockElementIds_5_40_0_001 } from "~/migrations/5.40.0/001/ddb";
+
 export const migrations = () => {
     return [
         // 5.35.0
@@ -69,6 +71,9 @@ export const migrations = () => {
         // CmsEntriesInitNewMetaFields_5_39_2_001
 
         // 5.39.6
-        CmsEntriesInitNewMetaFields_5_39_6_001
+        CmsEntriesInitNewMetaFields_5_39_6_001,
+
+        // 5.40.0
+        PbUniqueBlockElementIds_5_40_0_001
     ];
 };

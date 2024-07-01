@@ -1,4 +1,4 @@
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
@@ -12,7 +12,7 @@ import tenantLinkAuthorization from "@webiny/api-security/plugins/tenantLinkAuth
 import createAdminUsersApp from "@webiny/api-admin-users";
 import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-so-ddb";
 
-export default ({ documentClient }: { documentClient: DynamoDBClient }) => [
+export default ({ documentClient }: { documentClient: DynamoDBDocument }) => [
     /**
      * Create Tenancy app in the `context`.
      */

@@ -5,6 +5,8 @@ export enum ActionType {
     CREATE = "CREATE",
     UPDATE = "UPDATE",
     DELETE = "DELETE",
+    MOVE_TO_TRASH = "MOVE_TO_TRASH",
+    RESTORE_FROM_TRASH = "RESTORE_FROM_TRASH",
     PUBLISH = "PUBLISH",
     UNPUBLISH = "UNPUBLISH",
     IMPORT = "IMPORT",
@@ -25,6 +27,11 @@ const publishActions = {
 const importExportActions = {
     IMPORT: { type: ActionType.IMPORT, displayName: "Import" },
     EXPORT: { type: ActionType.EXPORT, displayName: "Export" }
+};
+
+const trashBinActions = {
+    MOVE_TO_TRASH: { type: ActionType.MOVE_TO_TRASH, displayName: "Move to trash" },
+    RESTORE_FROM_TRASH: { type: ActionType.RESTORE_FROM_TRASH, displayName: "Restore from trash" }
 };
 
 export const auditLogsApps: App[] = [
@@ -137,7 +144,12 @@ export const auditLogsApps: App[] = [
             {
                 type: "ENTRY",
                 displayName: "Entry",
-                actions: [commonActions.CREATE, commonActions.DELETE]
+                actions: [
+                    commonActions.CREATE,
+                    commonActions.DELETE,
+                    trashBinActions.MOVE_TO_TRASH,
+                    trashBinActions.RESTORE_FROM_TRASH
+                ]
             },
             {
                 type: "ENTRY_REVISION",

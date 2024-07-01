@@ -7,6 +7,7 @@ import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { COLORS } from "./StyledComponents";
 import { Validation } from "@webiny/form";
 import debounce from "lodash/debounce";
+import { useIsMounted } from "@webiny/app-admin";
 
 const inputStyle = css({
     boxSizing: "border-box",
@@ -103,10 +104,13 @@ const InputField = ({
     // This was mainly because of the async nature of the onChange callback. For example,
     // if we removed the async validation in PropertySettings.tsx, the cursor would no longer jump.
     const [localValue, setLocalValue] = useState<string | number | undefined>();
+    const { isMounted } = useIsMounted();
 
     const debouncedSetLocalValue = useCallback(
         debounce(value => {
-            setLocalValue(value);
+            if (isMounted()) {
+                setLocalValue(value);
+            }
         }, 100),
         []
     );

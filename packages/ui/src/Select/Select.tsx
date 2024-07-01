@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
     FormattedOption,
     Select as RmwcSelect,
@@ -7,7 +7,7 @@ import {
 import { FormElementMessage } from "~/FormElementMessage";
 import { FormComponentProps } from "~/types";
 import classNames from "classnames";
-import { webinySelect, noLabel } from "./styled";
+import { webinySelect } from "./styled";
 
 export type SelectProps = FormComponentProps &
     RmwcSelectProps & {
@@ -100,23 +100,42 @@ export const Select = (props: SelectProps) => {
 
     const options = getOptions(other.options);
 
+    // Memoize the label and placeholder values based on the component size.
+    const { label, placeholder } = useMemo(() => {
+        const { size, label, placeholder } = props;
+
+        // For small or medium size, we set only the placeholder, using label as fallback.
+        if (size === "small" || size === "medium") {
+            return {
+                label: undefined,
+                placeholder: placeholder || label
+            };
+        }
+
+        // For other sizes, use the provided label and placeholder.
+        return {
+            label,
+            placeholder
+        };
+    }, [props.label, props.placeholder, props.size]);
+
     return (
-        <React.Fragment>
+        <>
             <RmwcSelect
                 {...getRmwcProps(other)}
+                ref={undefined}
                 options={options}
                 value={value}
+                label={label}
+                placeholder={placeholder}
                 className={classNames(
                     "webiny-ui-select mdc-ripple-surface mdc-ripple-upgraded",
                     webinySelect,
                     props.size ? `webiny-ui-select--size-${props.size}` : null,
-                    props.className,
-                    {
-                        [noLabel]: !props.label
-                    }
+                    props.className
                 )}
-                onChange={e => {
-                    props.onChange && props.onChange((e.target as HTMLInputElement).value);
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                    props.onChange && props.onChange(e.target.value);
                 }}
             />
 
@@ -127,7 +146,7 @@ export const Select = (props: SelectProps) => {
             {validationIsValid !== false && description && (
                 <FormElementMessage>{description}</FormElementMessage>
             )}
-        </React.Fragment>
+        </>
     );
 };
 

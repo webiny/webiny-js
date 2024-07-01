@@ -12,17 +12,18 @@ import {
     TimeScalar
 } from "@webiny/handler-graphql/builtInTypes";
 import { GraphQLScalarType } from "graphql";
-import { CmsGraphQLSchemaPlugin } from "~/plugins";
+import { createCmsGraphQLSchemaPlugin, ICmsGraphQLSchemaPlugin } from "~/plugins";
 
 interface Params {
     context: CmsContext;
 }
-export const createBaseContentSchema = ({ context }: Params): CmsGraphQLSchemaPlugin => {
+
+export const createBaseContentSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin => {
     const scalars = context.plugins
         .byType<GraphQLScalarPlugin>("graphql-scalar")
         .map(item => item.scalar);
 
-    const plugin = new CmsGraphQLSchemaPlugin({
+    const plugin = createCmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
             scalar JSON
@@ -39,12 +40,6 @@ export const createBaseContentSchema = ({ context }: Params): CmsGraphQLSchemaPl
 
             type Mutation {
                 _empty: String
-            }
-
-            type CmsIdentity {
-                id: String
-                displayName: String
-                type: String
             }
 
             enum CmsEntryStatusType {

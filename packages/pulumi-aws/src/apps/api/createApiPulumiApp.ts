@@ -9,6 +9,7 @@ import {
     ApiGraphql,
     ApiMigration,
     ApiPageBuilder,
+    ApiWebsocket,
     CoreOutput,
     CreateCorePulumiAppParams,
     VpcConfig
@@ -20,6 +21,7 @@ import {
     withCommonLambdaEnvVariables,
     withServiceManifest
 } from "~/utils";
+import { DEFAULT_PROD_ENV_NAMES } from "~/constants";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -125,7 +127,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 });
             }
 
-            const productionEnvironments = app.params.create.productionEnvironments || ["prod"];
+            const productionEnvironments =
+                app.params.create.productionEnvironments || DEFAULT_PROD_ENV_NAMES;
             const isProduction = productionEnvironments.includes(app.params.run.env);
 
             // Enables logs forwarding.
@@ -187,15 +190,14 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     // TODO: move to okta plugin
                     OKTA_ISSUER: process.env["OKTA_ISSUER"],
                     WEBINY_LOGS_FORWARD_URL,
-                    /**
-                     * APW
-                     */
                     APW_SCHEDULER_SCHEDULE_ACTION_HANDLER:
                         apwScheduler.scheduleAction.lambda.output.arn
                 },
                 apwSchedulerEventRule: apwScheduler.eventRule.output,
                 apwSchedulerEventTarget: apwScheduler.eventTarget.output
             });
+
+            const websocket = app.addModule(ApiWebsocket);
 
             const fileManager = app.addModule(ApiFileManager, {
                 env: {
@@ -261,12 +263,20 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventRule: apwScheduler.eventRule.output.name,
                 apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
-                dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName,
                 migrationLambdaArn: migration.function.output.arn,
                 graphqlLambdaName: graphql.functions.graphql.output.name,
                 backgroundTaskLambdaArn: backgroundTask.backgroundTask.output.arn,
-                backgroundTaskStepFunctionArn: backgroundTask.stepFunction.output.arn
+                backgroundTaskStepFunctionArn: backgroundTask.stepFunction.output.arn,
+                websocketApiId: websocket.websocketApi.output.id,
+                websocketApiUrl: websocket.websocketApiUrl
             });
+
+            // Only add `dynamoDbElasticsearchTable` output if using search engine (ES/OS).
+            if (searchEngineParams) {
+                app.addOutputs({
+                    dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
+                });
+            }
 
             app.addHandler(() => {
                 addDomainsUrlsOutputs({

@@ -35,6 +35,7 @@ declare namespace NodeJS {
         REACT_APP_USER_POOL_ID?: string;
         REACT_APP_USER_POOL_WEB_CLIENT_ID?: string;
         REACT_APP_USER_POOL_PASSWORD_POLICY?: string;
+        REACT_APP_WEBSOCKET_URL?: string;
         REACT_APP_USER_POOL_DOMAIN?: string;
         REACT_APP_ADMIN_USER_CAN_CHANGE_EMAIL?: string;
         COGNITO_USER_POOL_ID?: string;

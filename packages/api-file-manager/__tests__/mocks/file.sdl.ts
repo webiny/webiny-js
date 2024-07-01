@@ -204,6 +204,20 @@ export default /* GraphQL */ `
         savedOn_lte: DateTime
         savedOn_between: [DateTime!]
         savedOn_not_between: [DateTime!]
+        deletedOn: DateTime
+        deletedOn_gt: DateTime
+        deletedOn_gte: DateTime
+        deletedOn_lt: DateTime
+        deletedOn_lte: DateTime
+        deletedOn_between: [DateTime!]
+        deletedOn_not_between: [DateTime!]
+        restoredOn: DateTime
+        restoredOn_gt: DateTime
+        restoredOn_gte: DateTime
+        restoredOn_lt: DateTime
+        restoredOn_lte: DateTime
+        restoredOn_between: [DateTime!]
+        restoredOn_not_between: [DateTime!]
         firstPublishedOn: DateTime
         firstPublishedOn_gt: DateTime
         firstPublishedOn_gte: DateTime
@@ -230,6 +244,14 @@ export default /* GraphQL */ `
         savedBy_not: ID
         savedBy_in: [ID!]
         savedBy_not_in: [ID!]
+        deletedBy: ID
+        deletedBy_not: ID
+        deletedBy_in: [ID!]
+        deletedBy_not_in: [ID!]
+        restoredBy: ID
+        restoredBy_not: ID
+        restoredBy_in: [ID!]
+        restoredBy_not_in: [ID!]
         firstPublishedBy: ID
         firstPublishedBy_not: ID
         firstPublishedBy_in: [ID!]
@@ -259,6 +281,20 @@ export default /* GraphQL */ `
         revisionSavedOn_lte: DateTime
         revisionSavedOn_between: [DateTime!]
         revisionSavedOn_not_between: [DateTime!]
+        revisionDeletedOn: DateTime
+        revisionDeletedOn_gt: DateTime
+        revisionDeletedOn_gte: DateTime
+        revisionDeletedOn_lt: DateTime
+        revisionDeletedOn_lte: DateTime
+        revisionDeletedOn_between: [DateTime!]
+        revisionDeletedOn_not_between: [DateTime!]
+        revisionRestoredOn: DateTime
+        revisionRestoredOn_gt: DateTime
+        revisionRestoredOn_gte: DateTime
+        revisionRestoredOn_lt: DateTime
+        revisionRestoredOn_lte: DateTime
+        revisionRestoredOn_between: [DateTime!]
+        revisionRestoredOn_not_between: [DateTime!]
         revisionFirstPublishedOn: DateTime
         revisionFirstPublishedOn_gt: DateTime
         revisionFirstPublishedOn_gte: DateTime
@@ -285,6 +321,14 @@ export default /* GraphQL */ `
         revisionSavedBy_not: ID
         revisionSavedBy_in: [ID!]
         revisionSavedBy_not_in: [ID!]
+        revisionDeletedBy: ID
+        revisionDeletedBy_not: ID
+        revisionDeletedBy_in: [ID!]
+        revisionDeletedBy_not_in: [ID!]
+        revisionRestoredBy: ID
+        revisionRestoredBy_not: ID
+        revisionRestoredBy_in: [ID!]
+        revisionRestoredBy_not_in: [ID!]
         revisionFirstPublishedBy: ID
         revisionFirstPublishedBy_not: ID
         revisionFirstPublishedBy_in: [ID!]
@@ -375,6 +419,10 @@ export default /* GraphQL */ `
         modifiedOn_DESC
         savedOn_ASC
         savedOn_DESC
+        deletedOn_ASC
+        deletedOn_DESC
+        restoredOn_ASC
+        restoredOn_DESC
         firstPublishedOn_ASC
         firstPublishedOn_DESC
         lastPublishedOn_ASC
@@ -385,6 +433,10 @@ export default /* GraphQL */ `
         revisionModifiedOn_DESC
         revisionSavedOn_ASC
         revisionSavedOn_DESC
+        revisionDeletedOn_ASC
+        revisionDeletedOn_DESC
+        revisionRestoredOn_ASC
+        revisionRestoredOn_DESC
         revisionFirstPublishedOn_ASC
         revisionFirstPublishedOn_DESC
         revisionLastPublishedOn_ASC

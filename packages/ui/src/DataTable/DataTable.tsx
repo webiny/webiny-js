@@ -1,6 +1,6 @@
 import React, {
-    ReactElement,
     memo,
+    ReactElement,
     useCallback,
     useEffect,
     useMemo,
@@ -20,15 +20,16 @@ import {
     Cell,
     Column as DefaultColumn,
     ColumnDef,
+    ColumnSort,
+    flexRender,
+    getCoreRowModel,
+    getSortedRowModel,
     OnChangeFn,
     Row,
     RowSelectionState,
     SortingState,
-    VisibilityState,
-    flexRender,
-    getCoreRowModel,
-    getSortedRowModel,
-    useReactTable
+    useReactTable,
+    VisibilityState
 } from "@tanstack/react-table";
 
 import { Checkbox } from "~/Checkbox";
@@ -38,6 +39,7 @@ import { ColumnsVisibility } from "~/DataTable/ColumnsVisibility";
 
 import "@rmwc/data-table/data-table.css";
 import {
+    ColumnCellWrapper,
     ColumnDirectionIcon,
     ColumnDirectionWrapper,
     ColumnHeaderWrapper,
@@ -97,6 +99,8 @@ export type DefaultData = {
 export type TableRow<T> = Row<DefaultData & T>;
 
 export type Sorting = SortingState;
+
+export { ColumnSort };
 
 export type OnSortingChange = OnChangeFn<Sorting>;
 
@@ -211,7 +215,11 @@ const defineColumns = <T,>(
                     if (cell && typeof cell === "function") {
                         return cell(info.row.original);
                     } else {
-                        return info.getValue() || null;
+                        // Automatically convert any cell value to a string for rendering,
+                        // ensuring the table displays values correctly. This aligns with React's
+                        // rendering, which expects JSX, strings or null.
+                        // https://github.com/TanStack/table/issues/1042
+                        return info.getValue() ? String(info.getValue()) : null;
                     }
                 },
                 enableSorting,
@@ -258,9 +266,6 @@ const defineColumns = <T,>(
                               />
                           );
                       },
-                      meta: {
-                          hasFormControl: true
-                      },
                       enableSorting: false,
                       enableResizing: false,
                       enableHiding: false,
@@ -273,23 +278,13 @@ const defineColumns = <T,>(
             if (loadingInitial) {
                 return {
                     ...column,
-                    cell: () => <Skeleton />
+                    cell: () => <Skeleton containerClassName="table-skeleton-container" />
                 };
             }
 
             return column;
         });
     }, [columns, onSelectRow, onToggleRow, loadingInitial]);
-};
-
-const defineData = <T,>(
-    data: Props<T>["data"],
-    loadingInitial: Props<T>["loadingInitial"]
-): T[] => {
-    if (loadingInitial) {
-        return Array(10).fill({});
-    }
-    return data;
 };
 
 const ColumnDirection = ({ direction }: ColumnDirectionProps): ReactElement | null => {
@@ -317,7 +312,9 @@ const TableCell = <T,>({ cell, getColumnWidth }: TableCellProps<T>) => {
 
     return (
         <DataTableCell {...cell.column.columnDef.meta} style={{ width, maxWidth: width }}>
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            <ColumnCellWrapper>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </ColumnCellWrapper>
         </DataTableCell>
     );
 };
@@ -347,9 +344,14 @@ const TableRow = <T,>({ selected, cells, getColumnWidth }: TableRowProps<T>) => 
 
 const MemoTableRow = typedMemo(TableRow);
 
+/**
+ * Empty array must be defined outside of the React component so it does not force rerendering of the DataTable
+ */
+const emptyArray = Array(10).fill({});
+
 export const DataTable = <T extends Record<string, any> & DefaultData>({
-    data,
-    columns,
+    data: initialData,
+    columns: initialColumns,
     onSelectRow,
     onToggleRow,
     loadingInitial,
@@ -367,6 +369,8 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
 }: Props<T>) => {
     const tableRef = useRef<HTMLDivElement>(null);
     const [tableWidth, setTableWidth] = useState(1);
+
+    const data = loadingInitial ? emptyArray : initialData;
 
     useEffect(() => {
         const updateElementWidth = () => {
@@ -426,14 +430,16 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
         return sorting;
     }, [sorting]);
 
-    const table = useReactTable({
-        data: defineData(data, loadingInitial),
-        columns: defineColumns(columns, {
-            canSelectAllRows,
-            onSelectRow,
-            onToggleRow,
-            loadingInitial
-        }),
+    const columns = defineColumns(initialColumns, {
+        canSelectAllRows,
+        onSelectRow,
+        onToggleRow,
+        loadingInitial
+    });
+
+    const table = useReactTable<T>({
+        data,
+        columns,
         enableColumnResizing: true,
         columnResizeMode: "onChange",
         getCoreRowModel: getCoreRowModel(),
@@ -446,6 +452,7 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
         enableRowSelection: isRowSelectable,
         onRowSelectionChange,
         enableSorting: !!onSortingChange,
+        enableSortingRemoval: false,
         manualSorting: true,
         onSortingChange,
         enableHiding: !!onColumnVisibilityChange,
@@ -465,6 +472,12 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
         },
         [table, tableWidth]
     );
+    /**
+     * Had to memoize the rows to avoid browser freeze.
+     */
+    const tableRows = useMemo(() => {
+        return table.getRowModel().rows;
+    }, [table, data, columns]);
 
     return (
         <div ref={tableRef}>
@@ -520,14 +533,17 @@ export const DataTable = <T extends Record<string, any> & DefaultData>({
                         ))}
                     </DataTableHead>
                     <DataTableBody>
-                        {table.getRowModel().rows.map(row => (
-                            <MemoTableRow<T>
-                                key={row.original.id || row.id}
-                                cells={row.getVisibleCells()}
-                                selected={row.getIsSelected()}
-                                getColumnWidth={getColumnWidth}
-                            />
-                        ))}
+                        {tableRows.map(row => {
+                            const id = row.original.id || row.id;
+                            return (
+                                <MemoTableRow<T>
+                                    key={id}
+                                    cells={row.getVisibleCells()}
+                                    selected={row.getIsSelected()}
+                                    getColumnWidth={getColumnWidth}
+                                />
+                            );
+                        })}
                     </DataTableBody>
                 </DataTableContent>
             </Table>

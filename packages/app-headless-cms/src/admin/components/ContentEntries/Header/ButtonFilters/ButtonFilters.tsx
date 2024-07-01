@@ -6,7 +6,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { useContentEntriesList } from "~/admin/views/contentEntries/hooks";
 
 const ButtonWrapper = styled("div")`
-    margin-left: 8px;
+    margin: 0 8px;
 `;
 
 interface IconProps {

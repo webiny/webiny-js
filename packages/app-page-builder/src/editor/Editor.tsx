@@ -25,7 +25,7 @@ export interface EditorProps {
 
 export const Editor = ({ stateInitializerFactory }: EditorProps) => {
     const initializeState = useCallback(
-        snapshot => {
+        (snapshot: MutableSnapshot) => {
             const { content, recoilInitializer } = stateInitializerFactory();
 
             /* Here we initialize elementsAtom and rootElement if it exists. */

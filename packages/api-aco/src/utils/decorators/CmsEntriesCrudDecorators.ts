@@ -40,6 +40,72 @@ export class CmsEntriesCrudDecorators {
             });
         });
 
+        decorateIfModelAuthorizationEnabled(
+            context.cms,
+            "listLatestEntries",
+            async (...allParams) => {
+                const [decoratee, model, params] = allParams;
+                const folderType = createFolderType(model);
+                const folders = await folderLevelPermissions.listAllFoldersWithPermissions(
+                    folderType
+                );
+
+                const where = createWhere({
+                    model,
+                    where: params?.where || {},
+                    folders
+                });
+                return decoratee(model, {
+                    ...params,
+                    where
+                });
+            }
+        );
+
+        decorateIfModelAuthorizationEnabled(
+            context.cms,
+            "listPublishedEntries",
+            async (...allParams) => {
+                const [decoratee, model, params] = allParams;
+                const folderType = createFolderType(model);
+                const folders = await folderLevelPermissions.listAllFoldersWithPermissions(
+                    folderType
+                );
+
+                const where = createWhere({
+                    model,
+                    where: params?.where || {},
+                    folders
+                });
+                return decoratee(model, {
+                    ...params,
+                    where
+                });
+            }
+        );
+
+        decorateIfModelAuthorizationEnabled(
+            context.cms,
+            "listDeletedEntries",
+            async (...allParams) => {
+                const [decoratee, model, params] = allParams;
+                const folderType = createFolderType(model);
+                const folders = await folderLevelPermissions.listAllFoldersWithPermissions(
+                    folderType
+                );
+
+                const where = createWhere({
+                    model,
+                    where: params?.where || {},
+                    folders
+                });
+                return decoratee(model, {
+                    ...params,
+                    where
+                });
+            }
+        );
+
         decorateIfModelAuthorizationEnabled(context.cms, "getEntry", async (...allParams) => {
             const [decoratee, model, params] = allParams;
             const entry = await decoratee(model, params);

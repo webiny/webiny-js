@@ -32,14 +32,6 @@ export const createSystemCrud = (params: CreateSystemCrudParams): SystemCrud => 
     );
 
     return {
-        /**
-         * Lifecycle events - deprecated in 5.34.0 - will be removed in 5.36.0
-         */
-        onBeforeInstall: onSystemBeforeInstall,
-        onAfterInstall: onSystemAfterInstall,
-        /**
-         * Introduced in 5.34.0
-         */
         onSystemBeforeInstall,
         onSystemAfterInstall,
         async getSystem() {

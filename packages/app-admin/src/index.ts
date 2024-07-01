@@ -32,9 +32,11 @@ export * from "./plugins/PermissionRendererPlugin";
 // Components
 export { AppInstaller } from "./components/AppInstaller";
 export * from "./components/Buttons";
+export { DialogsProvider } from "./components/Dialogs/DialogsContext";
 export * from "./components/OptionsMenu";
 export * from "./components/Filters";
 export * from "./components/BulkActions";
+export * from "./components/ResizablePanels";
 export { OverlayLayout, OverlayLayoutProps } from "./components/OverlayLayout";
 export {
     default as SingleImageUpload,
@@ -58,3 +60,5 @@ export { AaclPermission } from "@webiny/app-wcp/types";
 
 // Theme
 export { useTheme, ThemeProvider } from "@webiny/app-theme";
+
+export * from "@webiny/app/renderApp";

@@ -1,19 +1,12 @@
 import React from "react";
-import getFileTypePlugin from "~/getFileTypePlugin";
 import { useFile } from "~/hooks/useFile";
+import { useFileManagerViewConfig } from "~/index";
 
-/**
- * This component is used in the file grid to render thumbnails, as well as in the File Details preview.
- */
 export const Thumbnail = () => {
     const { file } = useFile();
-    const filePlugin = getFileTypePlugin(file);
+    const { fileDetails, getThumbnailRenderer } = useFileManagerViewConfig();
 
-    // TODO: implement preview rendering using component composition
+    const renderer = getThumbnailRenderer(fileDetails.thumbnails, file);
 
-    return filePlugin ? (
-        <>{filePlugin.render({ file, width: 600 })}</>
-    ) : (
-        <span>No Preview Available.</span>
-    );
+    return <>{renderer?.element || null}</>;
 };

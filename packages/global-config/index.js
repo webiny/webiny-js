@@ -18,7 +18,15 @@ module.exports.globalConfig = {
             }
         } catch (e) {
             // A new config file is written if it doesn't exist or is invalid.
-            this.__globalConfig = { id: uuidv4(), telemetry: true };
+            this.__globalConfig = {
+                id: uuidv4(),
+                telemetry: true,
+
+                // This flag is set to `false` the moment user successfully
+                // deploys a Webiny project for the first time. Once they do,
+                // they're considered no longer a "new user".
+                newUser: true
+            };
             writeJson.sync(GLOBAL_CONFIG_PATH, this.__globalConfig);
         }
 

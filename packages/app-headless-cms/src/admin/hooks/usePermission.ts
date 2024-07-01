@@ -1,7 +1,8 @@
 import { useCallback, useMemo } from "react";
 import { useSecurity } from "@webiny/app-security";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
-import { CmsIdentity, CmsGroup, CmsModel, CmsSecurityPermission } from "~/types";
+import { CmsGroup, CmsIdentity, CmsModel, CmsSecurityPermission } from "~/types";
+import { makeDecoratable } from "@webiny/react-composition";
 
 export interface CreatableItem {
     createdBy?: Pick<CmsIdentity, "id">;
@@ -14,7 +15,7 @@ interface CanReadEntriesCallableParams {
     contentModel: CmsModel;
 }
 
-export const usePermission = () => {
+export const usePermission = makeDecoratable(() => {
     const { identity, getIdentityId, getPermission, getPermissions } = useSecurity();
     const { getCurrentLocale } = useI18N();
 
@@ -217,6 +218,24 @@ export const usePermission = () => {
         [identity]
     );
 
+    const canDeleteEntries = useCallback(
+        (permissionName: string): boolean => {
+            if (hasFullAccess) {
+                return true;
+            }
+            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
+
+            if (!permissions.length) {
+                return false;
+            }
+
+            return permissions.some(permission => {
+                return permission.rwd?.includes("d");
+            });
+        },
+        [identity, hasFullAccess]
+    );
+
     const canPublish = useCallback(
         (permissionName: string): boolean => {
             if (hasFullAccess) {
@@ -266,6 +285,7 @@ export const usePermission = () => {
         canEdit,
         canCreate,
         canDelete,
+        canDeleteEntries,
         canPublish,
         canUnpublish,
         canReadContentModels,
@@ -274,7 +294,8 @@ export const usePermission = () => {
         canCreateContentModelGroups,
         canAccessManageEndpoint
     };
-};
+});
+
 /**
  * Default export is deprecated, use the named one.
  * @deprecated

@@ -30,7 +30,7 @@ export const BlockSettingsModal = ({ open, onClose }: BlockSettingsModalProps) =
         );
     };
 
-    const onSubmit = useCallback(formData => {
+    const onSubmit = useCallback((formData: Partial<BlockAtomType>) => {
         updateBlock({ blockCategory: formData.blockCategory });
         onClose();
     }, []);

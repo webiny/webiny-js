@@ -1,10 +1,3 @@
-const { red } = require("chalk");
-const destroy = require("./destroy");
-const deploy = require("./deploy");
-const build = require("./build");
-const watch = require("./watch");
-const output = require("./output");
-
 module.exports = [
     {
         type: "cli-command",
@@ -56,18 +49,58 @@ module.exports = [
                     });
                     yargs.option("logs", {
                         default: undefined,
-                        describe: `Enable base compilation-related logs`,
+                        describe: `Print build logs`,
                         type: "boolean"
                     });
-                    yargs.option("data-migration-reporter", {
-                        default: true,
-                        describe: `Enable data migration reporting during the deployment process`,
+                    yargs.option("deployment-logs", {
+                        default: undefined,
+                        describe: `Print deployment logs (automatically enabled in CI environments)`,
                         type: "boolean"
                     });
+
+                    yargs
+                        .option("allow-local-state-files", {
+                            describe: `Allow using local Pulumi state files with production environment deployment (not recommended).`,
+                            type: "boolean"
+                        })
+                        .check(args => {
+                            const { red } = require("chalk");
+                            const { env, allowLocalStateFiles } = args;
+
+                            // If the folder is not defined, we are destroying the whole project.
+                            // In that case, we must confirm the environment name to destroy.
+                            const prodEnvs = ["prod", "production"];
+                            const isProdEnv = prodEnvs.includes(env);
+                            if (!isProdEnv) {
+                                return true;
+                            }
+
+                            let pulumiBackend =
+                                process.env.WEBINY_PULUMI_BACKEND ||
+                                process.env.WEBINY_PULUMI_BACKEND_URL ||
+                                process.env.PULUMI_LOGIN;
+
+                            if (pulumiBackend) {
+                                return true;
+                            }
+
+                            if (allowLocalStateFiles) {
+                                return true;
+                            }
+
+                            throw new Error(
+                                [
+                                    "Please confirm you want to use local Pulumi state files with",
+                                    "your production deployment by appending",
+                                    `${red(
+                                        "--allow-local-state-files"
+                                    )} to the command. Learn more: https://webiny.link/state-files-production.`
+                                ].join(" ")
+                            );
+                        });
                 },
                 async argv => {
-                    await deploy(argv, context);
-                    process.exit(0);
+                    return require("./deploy")(argv, context);
                 }
             );
 
@@ -101,14 +134,13 @@ module.exports = [
                     });
                 },
                 async argv => {
-                    await build(argv, context);
-                    process.exit(0);
+                    return require("./build")(argv, context);
                 }
             );
 
             yargs.command(
                 "watch [folder]",
-                `Rebuild and deploy specified specified project application while making changes to it`,
+                `Rebuild and deploy specified project application while making changes to it`,
                 yargs => {
                     yargs.example("$0 watch api --env=dev");
                     yargs.example(
@@ -175,7 +207,9 @@ module.exports = [
                         type: "boolean"
                     });
                 },
-                async argv => watch(argv, context)
+                async argv => {
+                    return require("./watch")(argv, context);
+                }
             );
 
             yargs.command(
@@ -199,6 +233,7 @@ module.exports = [
                             type: "string"
                         })
                         .check(args => {
+                            const { red } = require("chalk");
                             const { folder, confirmDestroyEnv } = args;
 
                             // If the folder is not defined, we are destroying the whole project.
@@ -231,8 +266,7 @@ module.exports = [
                     });
                 },
                 async argv => {
-                    await destroy(argv, context);
-                    process.exit(0);
+                    return require("./destroy")(argv, context);
                 }
             );
 
@@ -265,8 +299,7 @@ module.exports = [
                     });
                 },
                 async argv => {
-                    await output(argv, context);
-                    process.exit(0);
+                    return require("./output")(argv, context);
                 }
             );
 
@@ -296,8 +329,7 @@ module.exports = [
                     });
                 },
                 async argv => {
-                    await require("./pulumiRun")(argv, context);
-                    process.exit(0);
+                    return require("./pulumiRun")(argv, context);
                 }
             );
 
@@ -327,8 +359,7 @@ module.exports = [
                     });
                 },
                 async argv => {
-                    await require("./executeMigrations")(argv, context);
-                    process.exit(0);
+                    return require("./executeMigrations")(argv, context);
                 }
             );
         }

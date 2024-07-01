@@ -1,15 +1,15 @@
 import React, { useMemo } from "react";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
-import { useRecords } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
-import { ContentEntryListConfig } from "~/admin/config/contentEntries";
-import { useCms, useContentEntry } from "~/admin/hooks";
-import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier";
+import { useRecords } from "@webiny/app-aco";
+import { ContentEntryListConfig } from "~/admin/config/contentEntries";
+import { useCms, useModel } from "~/admin/hooks";
+import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
 
 export const ActionDelete = observer(() => {
+    const { model } = useModel();
     const { deleteEntry } = useCms();
-    const { contentModel } = useContentEntry();
     const { removeRecordFromCache } = useRecords();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
@@ -23,8 +23,8 @@ export const ActionDelete = observer(() => {
 
     const openDeleteEntriesDialog = () =>
         showConfirmationDialog({
-            title: "Delete entries",
-            message: `You are about to delete ${entriesLabel}. Are you sure you want to continue?`,
+            title: "Trash entries",
+            message: `You are about to move ${entriesLabel} to trash. Are you sure you want to continue?`,
             loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
                 await worker.processInSeries(async ({ item, report }) => {
@@ -34,25 +34,20 @@ export const ActionDelete = observer(() => {
                          * By sending an entryId (id without #version), we are telling to the API to delete all revisions.
                          */
                         const { id } = parseIdentifier(item.id);
-                        const response = await deleteEntry({
-                            model: contentModel,
-                            entry: item,
-                            id
-                        });
+                        const response = await deleteEntry({ model, id });
 
-                        const { error } = response;
-
-                        if (error) {
+                        if (typeof response !== "boolean") {
                             throw new Error(
-                                error.message || "Unknown error while deleting the entry"
+                                response.error.message ||
+                                    "Unknown error while moving the entry to trash."
                             );
                         }
 
-                        removeRecordFromCache(item.id);
+                        removeRecordFromCache(id);
 
                         report.success({
                             title: `${item.meta.title}`,
-                            message: "Entry successfully deleted."
+                            message: "Entry successfully moved to trash."
                         });
                     } catch (e) {
                         report.error({
@@ -66,8 +61,8 @@ export const ActionDelete = observer(() => {
 
                 showResultsDialog({
                     results: worker.results,
-                    title: "Delete entries",
-                    message: "Finished deleting entries! See full report below:"
+                    title: "Trash entries",
+                    message: "Finished moving entries to trash! See full report below:"
                 });
             }
         });
@@ -76,7 +71,7 @@ export const ActionDelete = observer(() => {
         <IconButton
             icon={<DeleteIcon />}
             onAction={openDeleteEntriesDialog}
-            label={`Delete ${entriesLabel}`}
+            label={`Trash ${entriesLabel}`}
             tooltipPlacement={"bottom"}
         />
     );

@@ -83,8 +83,12 @@ describe("not equals filter", () => {
             should: [],
             filter: [
                 {
-                    term: {
-                        "values.isMarried": false
+                    bool: {
+                        must_not: {
+                            term: {
+                                "values.isMarried": true
+                            }
+                        }
                     }
                 }
             ],

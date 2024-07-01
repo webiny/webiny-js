@@ -12,7 +12,10 @@ import { ReactComponent as AddIcon } from "@material-design-icons/svg/filled/add
 import { i18n } from "@webiny/app/i18n";
 import { useCreateDialog } from "@webiny/app-aco";
 import { OverlayLayout, useSnackbar } from "@webiny/app-admin";
-import { ButtonIcon, ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
+import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
+import { useI18N } from "@webiny/app-i18n";
+import { useTenancy } from "@webiny/app-tenancy";
+import { ButtonIcon, ButtonPrimary, ButtonProps, ButtonSecondary } from "@webiny/ui/Button";
 import { Sorting } from "@webiny/ui/DataTable";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
@@ -40,16 +43,22 @@ import { TableItem } from "~/types";
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
 const FileListWrapper = styled("div")({
-    float: "right",
     zIndex: 60,
-    display: "inline-block",
-    width: "calc(100vw - 286px)",
     height: "calc(100vh - 94px)",
-    position: "relative",
     ".mdc-data-table": {
         display: "inline-table"
     }
 });
+
+type BrowseFilesHandler = {
+    browseFiles: FilesRenderChildren["browseFiles"];
+};
+
+type GetFileUploadErrorMessageProps =
+    | string
+    | {
+          message: string;
+      };
 
 const createSort = (sorting?: Sorting): ListFilesSort | undefined => {
     if (!sorting?.length) {
@@ -63,6 +72,26 @@ const createSort = (sorting?: Sorting): ListFilesSort | undefined => {
         items.push(sort);
         return items;
     }, []);
+};
+
+/**
+ * Generates a `layoutId` to be used with the `<SplitView />` component.
+ * The `layoutId` is essential for saving user preferences into localStorage.
+ * The generation of the `layoutId` takes into account the current `tenantId`, `localeCode`, and the provided `applicationId`.
+ *
+ *  TODO: export the useLayoutId from a generic use package, such as app-admin. At the moment is not possible because of circular dependency issues.
+ */
+const useLayoutId = (applicationId: string) => {
+    const { tenant } = useTenancy();
+    const { getCurrentLocale } = useI18N();
+    const localeCode = getCurrentLocale("content");
+
+    if (!tenant || !localeCode) {
+        console.warn("Missing tenant or localeCode while creating layoutId");
+        return null;
+    }
+
+    return `T#${tenant}#L#${localeCode}#A#${applicationId}`;
 };
 
 const FileManagerView = () => {
@@ -80,6 +109,7 @@ const FileManagerView = () => {
 
     const [tableSorting, setTableSorting] = useState<Sorting>([]);
     const [currentFile, setCurrentFile] = useState<FileItem>();
+    const layoutId = useLayoutId("fm:file");
 
     useEffect(() => {
         const fetchFileDetails = async () => {
@@ -108,7 +138,7 @@ const FileManagerView = () => {
         view.setListSort(sort);
     }, [tableSorting]);
 
-    const getFileUploadErrorMessage = useCallback(e => {
+    const getFileUploadErrorMessage = useCallback((e: GetFileUploadErrorMessageProps) => {
         if (typeof e === "string") {
             const match = e.match(/Message>(.*?)<\/Message/);
             if (match) {
@@ -157,12 +187,16 @@ const FileManagerView = () => {
     };
 
     const renderUploadFileAction = useCallback(
-        ({ browseFiles }) => {
+        ({ browseFiles }: BrowseFilesHandler) => {
             if (!fileManager.canCreate) {
                 return null;
             }
             return (
-                <ButtonPrimary flat={true} small={true} onClick={browseFiles}>
+                <ButtonPrimary
+                    flat={true}
+                    small={true}
+                    onClick={browseFiles as ButtonProps["onClick"]}
+                >
                     <ButtonIcon icon={<UploadIcon />} />
                     {t`Upload...`}
                 </ButtonPrimary>
@@ -234,7 +268,6 @@ const FileManagerView = () => {
                 folders={view.folders}
                 records={view.files}
                 loading={view.isListLoading}
-                onRecordClick={view.showFileDetails}
                 onFolderClick={view.setFolderId}
                 selected={view.selected}
                 multiple={view.multiple}
@@ -306,7 +339,7 @@ const FileManagerView = () => {
                                         {t`Select`} {view.multiple && `(${view.selected.length})`}
                                     </ButtonPrimary>
                                 ) : (
-                                    renderUploadFileAction({ browseFiles })
+                                    renderUploadFileAction({ browseFiles } as BrowseFilesHandler)
                                 )}
                                 <ButtonSecondary
                                     data-testid={"file-manager.create-folder-button"}
@@ -329,44 +362,52 @@ const FileManagerView = () => {
                                 onClose={view.hideFileDetails}
                                 onSave={updateFile}
                             />
-                            <LeftSidebar
-                                currentFolder={view.folderId}
-                                onFolderClick={view.setFolderId}
-                            >
-                                {browser.filterByTags ? (
-                                    <TagsList
-                                        loading={view.tags.loading}
-                                        activeTags={view.tags.activeTags}
-                                        tags={view.tags.allTags}
-                                        onActivatedTagsChange={view.tags.setActiveTags}
-                                    />
-                                ) : null}
-                            </LeftSidebar>
-                            <FileListWrapper
-                                {...getDropZoneProps({
-                                    onDragOver: () => view.setDragging(true),
-                                    onDragLeave: () => view.setDragging(false),
-                                    onDrop: () => view.setDragging(false)
-                                })}
-                                data-testid={"fm-list-wrapper"}
-                            >
-                                {view.dragging && <DropFilesHere />}
-                                <BulkActions />
-                                <Filters />
-                                <Scrollbar
-                                    onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
-                                >
-                                    {renderList(browseFiles)}
-                                </Scrollbar>
-                                <BottomInfoBar
-                                    accept={view.accept}
-                                    listing={view.isListLoadingMore}
-                                />
-                                <UploadStatus
-                                    numberOfFiles={filesBeingUploaded}
-                                    progress={progress}
-                                />
-                            </FileListWrapper>
+                            <SplitView layoutId={layoutId}>
+                                <LeftPanel span={2}>
+                                    <LeftSidebar
+                                        currentFolder={view.folderId}
+                                        onFolderClick={view.setFolderId}
+                                    >
+                                        {browser.filterByTags ? (
+                                            <TagsList
+                                                loading={view.tags.loading}
+                                                activeTags={view.tags.activeTags}
+                                                tags={view.tags.allTags}
+                                                onActivatedTagsChange={view.tags.setActiveTags}
+                                            />
+                                        ) : null}
+                                    </LeftSidebar>
+                                </LeftPanel>
+                                <RightPanel span={10}>
+                                    <FileListWrapper
+                                        {...getDropZoneProps({
+                                            onDragOver: () => view.setDragging(true),
+                                            onDragLeave: () => view.setDragging(false),
+                                            onDrop: () => view.setDragging(false)
+                                        })}
+                                        data-testid={"fm-list-wrapper"}
+                                    >
+                                        {view.dragging && <DropFilesHere />}
+                                        <BulkActions />
+                                        <Filters />
+                                        <Scrollbar
+                                            onScrollFrame={scrollFrame =>
+                                                loadMoreOnScroll({ scrollFrame })
+                                            }
+                                        >
+                                            {renderList(browseFiles)}
+                                        </Scrollbar>
+                                        <BottomInfoBar
+                                            accept={view.accept}
+                                            listing={view.isListLoadingMore}
+                                        />
+                                        <UploadStatus
+                                            numberOfFiles={filesBeingUploaded}
+                                            progress={progress}
+                                        />
+                                    </FileListWrapper>
+                                </RightPanel>
+                            </SplitView>
                         </>
                     </OverlayLayout>
                 )}

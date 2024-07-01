@@ -1,4 +1,4 @@
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 import { Entity } from "@webiny/db-dynamodb/toolbox";
 import {
     FileManagerSystem,
@@ -11,7 +11,7 @@ import WebinyError from "@webiny/error";
 import { createLegacyEntity, createTable, get, put } from "@webiny/db-dynamodb";
 
 interface SystemStorageOperationsConstructorParams {
-    documentClient: DynamoDBClient;
+    documentClient: DynamoDBDocument;
 }
 
 const SORT_KEY = "FM";

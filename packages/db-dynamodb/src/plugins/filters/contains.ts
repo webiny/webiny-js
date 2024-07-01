@@ -1,7 +1,9 @@
 import { ValueFilterPlugin } from "../definitions/ValueFilterPlugin";
 
 const createValues = (initialValue: string | string[]) => {
-    return Array.isArray(initialValue) ? initialValue : [initialValue];
+    const values = Array.isArray(initialValue) ? initialValue : [initialValue];
+
+    return values.filter(Boolean);
 };
 
 const createCompareValues = (value: string) => {
@@ -29,7 +31,6 @@ const plugin = new ValueFilterPlugin({
         const values = createValues(initialValue);
         const compareValues = createCompareValues(initialCompareValue);
         return values.some(target => {
-            // return target.match(compareValues) !== null;
             return compareValues.every(compareValue => {
                 return target.match(new RegExp(compareValue, "gi")) !== null;
             });

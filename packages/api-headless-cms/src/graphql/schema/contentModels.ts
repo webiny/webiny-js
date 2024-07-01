@@ -2,14 +2,14 @@ import { ErrorResponse, NotFoundError, Response } from "@webiny/handler-graphql"
 import { CmsContext, CmsModel } from "~/types";
 import { Resolvers } from "@webiny/handler-graphql/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
-import { CmsGraphQLSchemaPlugin } from "~/plugins";
+import { createCmsGraphQLSchemaPlugin, ICmsGraphQLSchemaPlugin } from "~/plugins";
 import { toSlug } from "~/utils/toSlug";
 
 interface Params {
     context: CmsContext;
 }
 
-export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin => {
+export const createModelsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin => {
     const resolvers: Resolvers<CmsContext> = {
         Query: {
             getContentModel: async (_: unknown, args: any, context) => {
@@ -35,6 +35,15 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
             }
         },
         CmsContentModelField: {
+            renderer: field => {
+                // Make sure `settings` is an object.
+                if (field.renderer) {
+                    // We're using `||` here, because we want to use the fallback value for both `undefined` and `null`.
+                    return { ...field.renderer, settings: field.renderer.settings || {} };
+                }
+
+                return field.renderer;
+            },
             tags(field) {
                 // Make sure `tags` are always returned as an array.
                 return Array.isArray(field.tags) ? field.tags : [];
@@ -129,6 +138,7 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
             }
             input CmsFieldRendererInput {
                 name: String
+                settings: JSON
             }
 
             input CmsFieldValidationInput {
@@ -225,7 +235,7 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
         `;
     }
 
-    const plugin = new CmsGraphQLSchemaPlugin({
+    const plugin = createCmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type CmsFieldValidation {
                 name: String!
@@ -235,6 +245,7 @@ export const createModelsSchema = ({ context }: Params): CmsGraphQLSchemaPlugin 
 
             type CmsFieldRenderer {
                 name: String
+                settings: JSON
             }
 
             type CmsPredefinedValue {

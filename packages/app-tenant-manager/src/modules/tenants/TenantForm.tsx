@@ -39,7 +39,7 @@ const TenantForm = () => {
     }
 
     return (
-        <Form data={{ tags: [], ...tenant }} onSubmit={onSubmit}>
+        <Form data={{ ...tenant }} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
                 <SimpleForm data-testid={"tenant-form"}>
                     {loading && <CircularProgress />}
@@ -57,7 +57,11 @@ const TenantForm = () => {
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
-                                <Bind name="tags" validators={validation.create("required")}>
+                                <Bind
+                                    name="tags"
+                                    validators={validation.create("required")}
+                                    defaultValue={[]}
+                                >
                                     <Tags label={"Tags"} />
                                 </Bind>
                             </Cell>

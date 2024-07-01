@@ -18,6 +18,7 @@ export const createWcpGraphQL = () => {
                 advancedPublishingWorkflow: WcpProjectPackageFeaturesFeature
                 advancedAccessControlLayer: WcpProjectPackageFeaturesFeature
                 auditLogs: WcpProjectPackageFeaturesFeature
+                recordLocking: WcpProjectPackageFeaturesFeature
             }
 
             type WcpProjectPackage {
@@ -25,6 +26,8 @@ export const createWcpGraphQL = () => {
             }
 
             type WcpProject {
+                orgId: ID
+                projectId: ID
                 package: WcpProjectPackage
             }
 
@@ -75,6 +78,8 @@ export const createWcpGraphQL = () => {
                         }
 
                         return new Response({
+                            orgId: projectLicense.orgId,
+                            projectId: projectLicense.projectId,
                             package: projectLicense.package
                         });
                     } catch (e) {

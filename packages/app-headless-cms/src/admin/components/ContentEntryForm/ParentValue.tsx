@@ -30,7 +30,7 @@ export function useParentField(level = 0): ParentField | undefined {
         return undefined;
     }
 
-    return level === 0 ? parent : parent.getParentField(level);
+    return level === 0 ? parent : parent.getParentField(level - 1);
 }
 
 interface ParentFieldProviderProps {

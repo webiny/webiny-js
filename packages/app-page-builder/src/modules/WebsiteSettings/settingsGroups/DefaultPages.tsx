@@ -1,12 +1,10 @@
 import React, { useCallback } from "react";
 import { Bind } from "@webiny/form";
 import { ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
-import { AddPbWebsiteSettings } from "../AddPbWebsiteSettings";
 import { usePbWebsiteSettings } from "../usePbWebsiteSettings";
 import { PagesAutocomplete } from "~/admin/components/PagesAutocomplete";
 import { ReactComponent as EditIcon } from "~/admin/assets/edit.svg";
-
-const { Group, Element } = AddPbWebsiteSettings;
+import { WebsiteSettingsConfig } from "~/modules/WebsiteSettings/config/WebsiteSettingsConfig";
 
 const Homepage = () => {
     const { settings, editPage } = usePbWebsiteSettings();
@@ -60,15 +58,15 @@ const NotFoundPage = () => {
     );
 };
 
+const { Group, Element } = WebsiteSettingsConfig;
+
 export const DefaultPages = () => {
     return (
-        <Group name={"defaultPages"} label={"Default Pages"}>
-            <Element>
-                <Homepage />
-            </Element>
-            <Element>
-                <NotFoundPage />
-            </Element>
-        </Group>
+        <WebsiteSettingsConfig>
+            <Group name={"defaultPages"} label={"Default Pages"}>
+                <Element name={"home"} element={<Homepage />} />
+                <Element name={"notFound"} element={<NotFoundPage />} />
+            </Group>
+        </WebsiteSettingsConfig>
     );
 };

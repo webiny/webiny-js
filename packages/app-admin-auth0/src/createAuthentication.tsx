@@ -3,7 +3,7 @@ import { setContext } from "apollo-link-context";
 import ApolloClient from "apollo-client";
 import { DocumentNode } from "graphql";
 import { useApolloClient } from "@apollo/react-hooks";
-import { useAuth0, Auth0Provider, Auth0ProviderOptions } from "@auth0/auth0-react";
+import { useAuth0, Auth0Provider, Auth0ProviderOptions, LogoutOptions } from "@auth0/auth0-react";
 import { plugins } from "@webiny/plugins";
 import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin";
 import { useSecurity } from "@webiny/app-serverless-cms";
@@ -19,9 +19,12 @@ import { LoginContent, LoginLayout } from "~/components";
 
 export type Auth0Options = Auth0ProviderOptions;
 
+export type OnLogout = (logout: (options?: LogoutOptions) => Promise<void>) => void;
+
 export interface CreateAuthenticationConfig {
     getIdentityData?: GetIdentityDataCallable;
     loginMutation?: DocumentNode;
+    onLogout?: OnLogout;
     onError?(error: Error): void;
     auth0: Auth0Options;
 }
@@ -47,7 +50,14 @@ const validatePermissions = (permissions: SecurityPermission[]) => {
     }
 };
 
-export const createAuthentication = ({ auth0, onError, ...config }: CreateAuthenticationConfig) => {
+const defaultLogout: OnLogout = logout => logout();
+
+export const createAuthentication = ({
+    auth0,
+    onError,
+    onLogout = defaultLogout,
+    ...config
+}: CreateAuthenticationConfig) => {
     const withGetIdentityData = (
         Component: React.ComponentType<WithGetIdentityDataProps>
     ): React.ComponentType<PropsWithChildren> => {
@@ -65,7 +75,7 @@ export const createAuthentication = ({ auth0, onError, ...config }: CreateAuthen
             useAuth0();
 
         const apolloClient = useApolloClient();
-        const { setIdentity, identity } = useSecurity();
+        const { setIdentity, identity, setIdTokenProvider } = useSecurity();
 
         const getIdToken = useCallback(async () => {
             const claims = await getIdTokenClaims();
@@ -77,6 +87,15 @@ export const createAuthentication = ({ auth0, onError, ...config }: CreateAuthen
         }, []);
 
         useEffect(() => {
+            /**
+             * We need to give the security layer a way to fetch the `idToken`, so other network clients can use
+             * it when sending requests to external services (APIs, websockets,...).
+             */
+            setIdTokenProvider(async () => {
+                const claims = await getIdTokenClaims();
+                return claims ? claims["__raw"] : undefined;
+            });
+
             plugins.register(
                 new ApolloLinkPlugin(() => {
                     return setContext(async (_, { headers }) => {
@@ -116,7 +135,7 @@ export const createAuthentication = ({ auth0, onError, ...config }: CreateAuthen
             // Make sure current app client ID matches token's clientId, if not, log the user out.
             if (claims?.aud !== auth0.clientId) {
                 setIdentity(null);
-                logout();
+                onLogout(logout);
                 return;
             }
 
@@ -133,7 +152,7 @@ export const createAuthentication = ({ auth0, onError, ...config }: CreateAuthen
                     ...other,
                     logout() {
                         setIdentity(null);
-                        logout();
+                        onLogout(logout);
                     }
                 });
 
@@ -144,7 +163,7 @@ export const createAuthentication = ({ auth0, onError, ...config }: CreateAuthen
                     onError(err);
                 } else {
                     console.error(err);
-                    logout();
+                    onLogout(logout);
                 }
             }
         };
@@ -180,10 +199,13 @@ export const createAuthentication = ({ auth0, onError, ...config }: CreateAuthen
     return function Authentication({ children }: PropsWithChildren) {
         return (
             <Auth0Provider
-                redirectUri={window.location.origin}
                 useRefreshTokens={true}
                 cacheLocation="memory"
                 {...auth0}
+                authorizationParams={{
+                    redirect_uri: window.location.origin,
+                    ...auth0.authorizationParams
+                }}
             >
                 <LoginWidget>{children}</LoginWidget>
             </Auth0Provider>

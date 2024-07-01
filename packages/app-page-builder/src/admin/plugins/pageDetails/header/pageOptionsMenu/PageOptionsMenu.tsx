@@ -1,21 +1,17 @@
 import React, { useCallback, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
-import { useRouter } from "@webiny/react-router";
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as MoreVerticalIcon } from "~/admin/assets/more_vert.svg";
 import { ReactComponent as HomeIcon } from "~/admin/assets/round-home-24px.svg";
-import { ReactComponent as DuplicateIcon } from "~/editor/assets/icons/round-queue-24px.svg";
 import { ReactComponent as GridViewIcon } from "@material-design-icons/svg/outlined/grid_view.svg";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { MenuItem, Menu } from "@webiny/ui/Menu";
-import { DUPLICATE_PAGE } from "~/admin/graphql/pages";
 import {
     CREATE_TEMPLATE_FROM_PAGE,
     LIST_PAGE_TEMPLATES
 } from "~/admin/views/PageTemplates/graphql";
 import CreatePageTemplateDialog from "~/admin/views/PageTemplates/CreatePageTemplateDialog";
-import * as GQLCache from "~/admin/views/Pages/cache";
 import { usePageBuilderSettings } from "~/admin/hooks/usePageBuilderSettings";
 import { css } from "emotion";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -25,9 +21,10 @@ import { plugins } from "@webiny/plugins";
 import { PbPageData, PbPageDetailsHeaderRightOptionsMenuItemPlugin, PbPageTemplate } from "~/types";
 import { SecureView } from "@webiny/app-security";
 import { useAdminPageBuilder } from "~/admin/hooks/useAdminPageBuilder";
-import { useFolders, useRecords } from "@webiny/app-aco";
-import { usePagesPermissions, useTemplatesPermissions } from "~/hooks/permissions";
+import { useFolders } from "@webiny/app-aco";
+import { useTemplatesPermissions } from "~/hooks/permissions";
 import { PreviewPage } from "./PreviewPage";
+import { DuplicatePage } from "./DuplicatePage";
 
 const menuStyles = css({
     width: 250,
@@ -48,8 +45,6 @@ const PageOptionsMenu = (props: PageOptionsMenuProps) => {
     const [isCreateTemplateDialogOpen, setIsCreateTemplateDialogOpen] = useState<boolean>(false);
     const { settings, isSpecialPage, updateSettingsMutation } = usePageBuilderSettings();
     const client = useApolloClient();
-    const { history } = useRouter();
-    const { getRecord } = useRecords();
 
     const pageBuilder = useAdminPageBuilder();
 
@@ -65,35 +60,6 @@ const PageOptionsMenu = (props: PageOptionsMenuProps) => {
             </span>
         )
     });
-
-    const handleDuplicateClick = useCallback(async () => {
-        try {
-            await client.mutate({
-                mutation: DUPLICATE_PAGE,
-                variables: {
-                    id: page.id,
-                    meta: { location: { folderId: page.wbyAco_location.folderId } }
-                },
-                async update(cache, { data }) {
-                    if (data.pageBuilder.duplicatePage.error) {
-                        return;
-                    }
-
-                    GQLCache.addPageToListCache(cache, data.pageBuilder.duplicatePage.data);
-                    showSnackbar(`The page "${page.title}" was duplicated successfully.`);
-                    history.push(
-                        `/page-builder/pages?id=${encodeURIComponent(
-                            data.pageBuilder.duplicatePage.data.id
-                        )}`
-                    );
-                    // Sync ACO record - retrieve the most updated record from network
-                    await getRecord(data.pageBuilder.duplicatePage.data.pid);
-                }
-            });
-        } catch (error) {
-            showSnackbar(error.message);
-        }
-    }, [page]);
 
     const handleCreateTemplateClick = useCallback(
         async (formData: Pick<PbPageTemplate, "title" | "slug" | "description">) => {
@@ -118,11 +84,9 @@ const PageOptionsMenu = (props: PageOptionsMenuProps) => {
         [page]
     );
 
-    const { canWrite: pagesCanWrite } = usePagesPermissions();
     const { folderLevelPermissions: flp } = useFolders();
     const { canCreate: templatesCanCreate } = useTemplatesPermissions();
 
-    const canDuplicate = pagesCanWrite();
     const canCreateTemplate = templatesCanCreate();
 
     const folderId = page.wbyAco_location?.folderId;
@@ -193,14 +157,7 @@ const PageOptionsMenu = (props: PageOptionsMenuProps) => {
                         </MenuItem>
                     </SecureView>
 
-                    {canDuplicate && (
-                        <MenuItem onClick={handleDuplicateClick}>
-                            <ListItemGraphic>
-                                <Icon icon={<DuplicateIcon />} />
-                            </ListItemGraphic>
-                            Duplicate
-                        </MenuItem>
-                    )}
+                    <DuplicatePage />
 
                     {canCreateTemplate && !isTemplatePage && (
                         <MenuItem onClick={() => setIsCreateTemplateDialogOpen(true)}>
@@ -211,12 +168,11 @@ const PageOptionsMenu = (props: PageOptionsMenuProps) => {
                         </MenuItem>
                     )}
 
-                    {isCreateTemplateDialogOpen && (
-                        <CreatePageTemplateDialog
-                            onClose={() => setIsCreateTemplateDialogOpen(false)}
-                            onSubmit={handleCreateTemplateClick}
-                        />
-                    )}
+                    <CreatePageTemplateDialog
+                        open={isCreateTemplateDialogOpen}
+                        onClose={() => setIsCreateTemplateDialogOpen(false)}
+                        onSubmit={handleCreateTemplateClick}
+                    />
                 </>
             )}
 

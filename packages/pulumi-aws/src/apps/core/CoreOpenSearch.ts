@@ -17,7 +17,7 @@ import {
 
 import { getAwsAccountId } from "../awsUtils";
 import { CoreVpc } from "./CoreVpc";
-import { LAMBDA_RUNTIME } from "~/constants";
+import { DEFAULT_PROD_ENV_NAMES, LAMBDA_RUNTIME } from "~/constants";
 
 export interface OpenSearchParams {
     protect: boolean;
@@ -46,7 +46,8 @@ const OS_ENGINE_VERSION = "OpenSearch_2.11";
 export const OpenSearch = createAppModule({
     name: "OpenSearch",
     config(app, params: OpenSearchParams) {
-        const productionEnvironments = app.params.create.productionEnvironments || ["prod"];
+        const productionEnvironments =
+            app.params.create.productionEnvironments || DEFAULT_PROD_ENV_NAMES;
         const isProduction = productionEnvironments.includes(app.params.run.env);
 
         const vpc = app.getModule(CoreVpc, { optional: true });

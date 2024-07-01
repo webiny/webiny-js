@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/ContentEntryContext";
 import { FoldersProvider } from "@webiny/app-aco/contexts/folders";
 import { DialogActions, DialogCancel, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
@@ -21,6 +21,7 @@ import { FolderTree, useNavigateFolder } from "@webiny/app-aco";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
+import { CircularProgress } from "@webiny/ui/Progress";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -65,12 +66,17 @@ const ModalFullWidthDialog = styled(FullWidthDialog)`
     }
 `;
 
-interface EntryFormProps {
-    onCreate: (entry: CmsContentEntry) => void;
+interface SaveEntry {
+    (): void;
 }
 
-const EntryForm = ({ onCreate }: EntryFormProps) => {
-    const { setFormRef, contentModel } = useContentEntry();
+interface EntryFormProps {
+    onCreate: (entry: CmsContentEntry) => void;
+    setSaveEntry: (cb: SaveEntry) => void;
+}
+
+const EntryForm = ({ onCreate, setSaveEntry }: EntryFormProps) => {
+    const { contentModel, loading } = useContentEntry();
     const { currentFolderId, navigateToFolder } = useNavigateFolder();
 
     return (
@@ -87,11 +93,13 @@ const EntryForm = ({ onCreate }: EntryFormProps) => {
                 <ModalRightPanel span={9}>
                     <RenderBlock>
                         <Elevation z={2}>
+                            {loading ? <CircularProgress label={"Creating entry..."} /> : null}
                             <ContentEntryForm
-                                onSubmit={data => onCreate(data)}
-                                onForm={form => setFormRef(form)}
+                                header={false}
+                                onAfterCreate={entry => onCreate(entry)}
                                 entry={{}}
                                 addEntryToListCache={false}
+                                setSaveEntry={setSaveEntry}
                             />
                         </Elevation>
                     </RenderBlock>
@@ -99,21 +107,6 @@ const EntryForm = ({ onCreate }: EntryFormProps) => {
             </SplitView>
         </ModelProvider>
     );
-};
-
-const DialogSaveButton = () => {
-    const { form } = useContentEntry();
-
-    const onClick = useCallback(
-        (ev: React.MouseEvent) => {
-            (async () => {
-                await form.current.submit(ev);
-            })();
-        },
-        [form.current]
-    );
-
-    return <ButtonPrimary onClick={onClick}>{t`Create Entry`}</ButtonPrimary>;
 };
 
 interface NewReferencedEntryDialogProps {
@@ -172,20 +165,11 @@ export const NewReferencedEntryDialog = ({
         <ContentEntriesProvider contentModel={model} key={model.modelId} insideDialog={true}>
             <FoldersProvider type={`cms:${model.modelId}`}>
                 <NavigateFolderProvider modelId={model.modelId}>
-                    <ContentEntryProvider isNewEntry={() => true} getContentId={() => null}>
-                        <ModalFullWidthDialog open={true} onClose={onClose}>
-                            <DialogTitle>
-                                {t`New {modelName} Entry`({ modelName: model.name })}
-                            </DialogTitle>
-                            <DialogContent>
-                                <EntryForm onCreate={onCreate} />
-                            </DialogContent>
-                            <DialogActions>
-                                <DialogCancel>{t`Cancel`}</DialogCancel>
-                                <DialogSaveButton />
-                            </DialogActions>
-                        </ModalFullWidthDialog>
-                    </ContentEntryProvider>
+                    <ContentEntryProviderWithCurrentFolderId
+                        model={model}
+                        onClose={onClose}
+                        onCreate={onCreate}
+                    />
                 </NavigateFolderProvider>
             </FoldersProvider>
         </ContentEntriesProvider>
@@ -219,5 +203,44 @@ const NavigateFolderProvider = ({
         >
             {children}
         </AbstractNavigateFolderProvider>
+    );
+};
+
+interface ContentEntryProviderWithCurrentFolderIdProps {
+    model: CmsModel;
+    onClose: () => void;
+    onCreate: (entry: CmsContentEntry) => void;
+}
+
+const ContentEntryProviderWithCurrentFolderId = ({
+    model,
+    onClose,
+    onCreate
+}: ContentEntryProviderWithCurrentFolderIdProps) => {
+    const saveEntryRef = useRef<SaveEntry>();
+    const { currentFolderId } = useNavigateFolder();
+
+    return (
+        <ContentEntryProvider
+            isNewEntry={() => true}
+            getContentId={() => null}
+            currentFolderId={currentFolderId}
+        >
+            <ModalFullWidthDialog open={true} onClose={onClose}>
+                <DialogTitle>{t`New {modelName} Entry`({ modelName: model.name })}</DialogTitle>
+                <DialogContent>
+                    <EntryForm
+                        onCreate={onCreate}
+                        setSaveEntry={cb => (saveEntryRef.current = cb)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <DialogCancel>{t`Cancel`}</DialogCancel>
+                    <ButtonPrimary
+                        onClick={() => saveEntryRef.current && saveEntryRef.current()}
+                    >{t`Create Entry`}</ButtonPrimary>
+                </DialogActions>
+            </ModalFullWidthDialog>
+        </ContentEntryProvider>
     );
 };

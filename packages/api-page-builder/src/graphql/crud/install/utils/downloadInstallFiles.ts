@@ -1,8 +1,7 @@
 import fs from "fs-extra";
 import extract from "extract-zip";
 import path from "path";
-import rimraf from "rimraf";
-import { S3, getSignedUrl, GetObjectCommand } from "@webiny/aws-sdk/client-s3";
+import { GetObjectCommand, getSignedUrl, S3 } from "@webiny/aws-sdk/client-s3";
 import download from "./download";
 
 const PAGE_BUILDER_S3_BUCKET = process.env.S3_BUCKET;
@@ -21,15 +20,7 @@ function extractZip(zipPath: string, dir: string): Promise<void> {
 }
 
 export function deleteFile(path: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-        rimraf(path, err => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            resolve();
-        });
-    });
+    return fs.unlink(path);
 }
 
 const INSTALL_DIR = "/tmp";

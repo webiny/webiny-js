@@ -15,6 +15,7 @@ declare global {
 export interface ElementsProps {
     group?: string;
     scope?: string;
+    transform?: (elements: ElementConfig[]) => ElementConfig[];
 }
 
 const passthrough = () => true;
@@ -26,7 +27,9 @@ const byScope = (scope?: string) => {
     return scope ? (item: ElementConfig) => item.scope === scope : passthrough;
 };
 
-export const Elements = ({ group, scope }: ElementsProps) => {
+const defaultTransform = (elements: ElementConfig[]) => elements;
+
+export const Elements = ({ group, scope, transform = defaultTransform }: ElementsProps) => {
     const { elements } = useEditorConfig();
 
     const groupElements = useMemo(() => {
@@ -35,7 +38,7 @@ export const Elements = ({ group, scope }: ElementsProps) => {
 
     return (
         <pb-editor-ui-elements data-scope={scope} data-group={group}>
-            {groupElements.map(element => (
+            {transform(groupElements).map(element => (
                 <pb-editor-ui-element key={element.name} data-name={element.name}>
                     {element.element}
                 </pb-editor-ui-element>

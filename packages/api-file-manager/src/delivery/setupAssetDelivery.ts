@@ -1,4 +1,4 @@
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 import {
     createHandlerOnRequest,
     createModifyFastifyPlugin,
@@ -38,7 +38,7 @@ function assertAssetWasResolved(asset: Asset | undefined): asserts asset is Asse
 }
 
 export interface AssetDeliveryParams {
-    documentClient: DynamoDBClient;
+    documentClient: DynamoDBDocument;
 }
 
 export const setupAssetDelivery = (params: AssetDeliveryParams) => {

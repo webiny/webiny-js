@@ -1,6 +1,8 @@
 context("I18N app", () => {
     beforeEach(() => cy.login());
 
+    const getFormContainer = () => cy.findByTestId("i18n-locale-form");
+
     it("should create a locale, select, unselect and immediately delete everything", () => {
         const newCode = "de-DE";
 
@@ -20,7 +22,6 @@ context("I18N app", () => {
             cy.findByText(newCode).as("code").should("exist");
         });
         cy.get("@code").click();
-
         cy.findByTestId("l18n.locale.save").click();
         // Loading should be completed
         cy.get(".react-spinner-material").should("not.exist");
@@ -53,7 +54,9 @@ context("I18N app", () => {
             cy.get("li")
                 .first()
                 .within(() => {
-                    cy.findByTestId("default-data-list.delete").click({ force: true });
+                    // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                    // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.delete")` if issue is fixed.
+                    cy.get('button[data-testid="default-data-list.delete"]').click({ force: true });
                 });
         });
         cy.findByTestId("default-data-list.delete-dialog").within(() => {
@@ -77,9 +80,7 @@ context("I18N app", () => {
         // Create new locale
         cy.findAllByTestId("new-record-button").first().click();
 
-        const formContainer = cy.get("webiny-form-container");
-
-        formContainer.within(() => {
+        getFormContainer().within(() => {
             cy.findByTestId("l18n.locale.code").focus().type(newCode);
             /**
              * Testing "Autocomplete" component is tricky.
@@ -93,13 +94,22 @@ context("I18N app", () => {
         });
 
         cy.findByTestId("l18n.locale.save").click();
+
+        // At this point, the browser will reload.
+
         // Loading should be completed
         cy.get(".react-spinner-material").should("not.exist");
         // Check newly created locale in selector
         cy.findByTestId("app-i18n-content.menu").click();
         cy.findByTestId(`app-i18n-content.menu-item.${newCode}`).should("exist");
+        // Wait for the form to be fully loaded
+        getFormContainer().within(() => {
+            cy.findByText(newCode).should("exist");
+        });
         // Set it as "Default locale"
-        cy.findByLabelText("Default").check();
+        cy.findByLabelText("Default").click();
+        // We need to wait a bit, just enough to allow the form to update its internal state, before submitting.
+        // Cypress is clicking the switch button and submit button too fast, and often, the form submits with the previous state.
         cy.findByTestId("l18n.locale.save").click();
         // Wait for loading to complete
         cy.get(".react-spinner-material").should("not.exist");
@@ -129,7 +139,7 @@ context("I18N app", () => {
         // Wait for loading to complete
         cy.get(".react-spinner-material").should("not.exist");
         // Update it as "default"
-        cy.findByLabelText("Default").check();
+        cy.findByLabelText("Default").click();
         cy.findByTestId("l18n.locale.save").click();
         // Wait for loading to complete
         cy.get(".react-spinner-material").should("not.exist");
@@ -139,7 +149,9 @@ context("I18N app", () => {
             cy.get("li")
                 .first()
                 .within(() => {
-                    cy.findByTestId("default-data-list.delete").click({ force: true });
+                    // Workaround for "@rmwc/icon-button" v14 issue: props duplication onto <i>, causing multiple elements with same `data-testid`.
+                    // Now targeting <button> directly. Revert to `.findByTestId("default-data-list.delete")` if issue is fixed.
+                    cy.get('button[data-testid="default-data-list.delete"]').click({ force: true });
                 });
         });
         cy.findByTestId("default-data-list.delete-dialog").within(() => {

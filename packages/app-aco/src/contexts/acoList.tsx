@@ -1,4 +1,8 @@
-import React, { useCallback, useContext, useEffect, useReducer, useState } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
+import dotPropImmutable from "dot-prop-immutable";
+import pick from "lodash/pick";
+import { useStateIfMounted } from "@webiny/app-admin";
+import { useSecurity } from "@webiny/app-security";
 import {
     FolderItem,
     GenericSearchData,
@@ -11,10 +15,7 @@ import { useAcoApp, useNavigateFolder } from "~/hooks";
 import { FoldersContext } from "~/contexts/folders";
 import { SearchRecordsContext } from "~/contexts/records";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
-import dotPropImmutable from "dot-prop-immutable";
-import pick from "lodash/pick";
 import { ROOT_FOLDER } from "~/constants";
-import { useSecurity } from "@webiny/app-security";
 
 export interface AcoListContextData<T> {
     folders: FolderItem[];
@@ -116,16 +117,10 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         throw new Error("useAcoList must be used within a ACOProvider");
     }
 
-    const [folders, setFolders] = useState<FolderItem[]>([]);
-    const [records, setRecords] = useState<SearchRecordItem[]>([]);
-    const [listTitle, setListTitle] = useState<string | undefined>();
-    const [state, setState] = useReducer(
-        (state: State<GenericSearchData>, newState: Partial<State<GenericSearchData>>) => ({
-            ...state,
-            ...newState
-        }),
-        initializeAcoListState()
-    );
+    const [folders, setFolders] = useStateIfMounted<FolderItem[]>([]);
+    const [records, setRecords] = useStateIfMounted<SearchRecordItem[]>([]);
+    const [listTitle, setListTitle] = useStateIfMounted<string | undefined>(undefined);
+    const [state, setState] = useStateIfMounted<State<GenericSearchData>>(initializeAcoListState());
 
     const {
         folders: originalFolders,
@@ -154,14 +149,17 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
             listFolders();
         }
 
-        setState({
-            after: undefined,
-            filters: undefined,
-            folderId: currentFolderId,
-            isSearch: false,
-            searchQuery: "",
-            selected: [],
-            showingFilters: false
+        setState(state => {
+            return {
+                ...state,
+                after: undefined,
+                filters: undefined,
+                folderId: currentFolderId,
+                isSearch: false,
+                searchQuery: "",
+                selected: [],
+                showingFilters: false
+            };
         });
     }, [currentFolderId]);
 
@@ -227,7 +225,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
     const listMoreRecords = useCallback(() => {
         const { hasMoreItems, cursor } = meta;
         if (hasMoreItems && cursor) {
-            setState({ after: cursor });
+            setState(state => ({ ...state, after: cursor }));
         }
     }, [meta]);
 
@@ -273,7 +271,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
 
             await listRecords(params);
 
-            setState({ isSearch });
+            setState(state => ({ ...state, isSearch }));
         };
 
         listItems();
@@ -290,30 +288,37 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         isListLoadingMore: Boolean(recordsLoading.LIST_MORE),
         meta,
         setSearchQuery(query) {
-            setState({ searchQuery: query, after: undefined });
+            setState(state => ({ ...state, searchQuery: query, after: undefined }));
         },
         setFilters(data) {
+            setState(state => ({ ...state, filters: data, after: undefined }));
             // Create filters object excluding entries with `undefined` values
             const filters = Object.fromEntries(
                 Object.entries(data).filter(([, value]) => value !== undefined)
             );
 
-            setState({
+            setState(state => ({
+                ...state,
                 filters: Object.keys(filters).length ? filters : undefined,
                 after: undefined
-            });
+            }));
         },
         setListSort(sort: ListSearchRecordsSort) {
-            setState({ listSort: sort, after: undefined });
+            setState(state => ({ ...state, listSort: sort, after: undefined }));
         },
         setSelected(selected) {
-            setState({ selected });
+            setState(state => ({ ...state, selected }));
         },
         hideFilters() {
-            setState({ filters: undefined, showingFilters: false, after: undefined });
+            setState(state => ({
+                ...state,
+                filters: undefined,
+                showingFilters: false,
+                after: undefined
+            }));
         },
         showFilters() {
-            setState({ showingFilters: true });
+            setState(state => ({ ...state, showingFilters: true }));
         },
         listMoreRecords
     };

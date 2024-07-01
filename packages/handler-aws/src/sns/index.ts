@@ -1,10 +1,10 @@
+import type { APIGatewayProxyResult, SNSEvent } from "aws-lambda";
+import type { Context as LambdaContext } from "aws-lambda/handler";
 import { createHandler as createBaseHandler } from "@webiny/handler";
 import { registerDefaultPlugins } from "~/plugins";
 import { SNSEventHandler, SNSEventHandlerCallableParams } from "./plugins/SNSEventHandler";
 import { execute } from "~/execute";
 import { HandlerFactoryParams } from "~/types";
-import { APIGatewayProxyResult, SNSEvent } from "aws-lambda";
-import { Context as LambdaContext } from "aws-lambda/handler";
 /**
  * We need a class, not an interface exported from types.
  */

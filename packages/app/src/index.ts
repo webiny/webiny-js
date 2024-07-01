@@ -1,7 +1,7 @@
 export { AddQuerySelectionPlugin } from "./plugins/AddQuerySelectionPlugin";
 export { ApolloLinkPlugin } from "./plugins/ApolloLinkPlugin";
 export { RoutePlugin } from "./plugins/RoutePlugin";
-export { ApolloCacheObjectIdPlugin } from "./plugins/ApolloCacheObjectIdPlugin";
+export { ApolloCacheObjectIdPlugin, ApolloCacheObject } from "./plugins/ApolloCacheObjectIdPlugin";
 
 // Composition - we re-export this for ease of use
 export * from "@webiny/react-composition";
@@ -17,3 +17,4 @@ export * from "./core/AddRoute";
 export * from "./core/DebounceRender";
 export * from "./core/createProvider";
 export * from "./core/createProviderPlugin";
+export * from "./renderApp";

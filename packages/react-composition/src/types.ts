@@ -1,6 +1,6 @@
 import React from "react";
 
-export type GenericHook = (...args: any) => any;
+export type GenericHook<TParams = any, TReturn = any> = (...args: TParams[]) => TReturn;
 
 export type GenericComponent<T = any> = React.FunctionComponent<T>;
 
@@ -33,6 +33,7 @@ export type DecoratableHook<T extends GenericHook = GenericHook> = T & {
 export type DecoratableComponent<T = GenericComponent> = T & {
     original: T;
     originalName: string;
+    displayName: string;
 };
 
 export type Decoratable = DecoratableComponent | DecoratableHook;

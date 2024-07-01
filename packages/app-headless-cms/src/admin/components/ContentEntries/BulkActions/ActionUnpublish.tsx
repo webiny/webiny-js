@@ -1,15 +1,15 @@
 import React, { useMemo } from "react";
 import { ReactComponent as UnpublishIcon } from "@material-design-icons/svg/outlined/settings_backup_restore.svg";
 import { observer } from "mobx-react-lite";
-import { useRecords } from "@webiny/app-aco";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
-import { useCms, useContentEntry, usePermission } from "~/admin/hooks";
+import { useCms, useModel, usePermission } from "~/admin/hooks";
 import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
+import { useRecords } from "@webiny/app-aco";
 
 export const ActionUnpublish = observer(() => {
+    const { model } = useModel();
     const { canUnpublish } = usePermission();
     const { unpublishEntryRevision } = useCms();
-    const { contentModel } = useContentEntry();
     const { updateRecordInCache } = useRecords();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
@@ -30,12 +30,11 @@ export const ActionUnpublish = observer(() => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
                         const response = await unpublishEntryRevision({
-                            model: contentModel,
-                            entry: item,
+                            model,
                             id: item.id
                         });
 
-                        const { error, entry } = response;
+                        const { error } = response;
 
                         if (error) {
                             throw new Error(
@@ -43,7 +42,7 @@ export const ActionUnpublish = observer(() => {
                             );
                         }
 
-                        updateRecordInCache(entry);
+                        updateRecordInCache(response.entry);
 
                         report.success({
                             title: `${item.meta.title}`,

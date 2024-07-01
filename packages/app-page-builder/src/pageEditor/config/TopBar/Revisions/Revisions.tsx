@@ -16,7 +16,7 @@ const buttonStyle = css({
 });
 
 const menuList = css({
-    ".mdc-list-item": {
+    ".mdc-deprecated-list-item": {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "baseline",

@@ -335,16 +335,16 @@ describe("READ - Resolvers", () => {
             }
         });
 
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 getCategory: {
                     data: null,
                     error: {
                         code: "SECURITY_NOT_AUTHORIZED",
+                        message: `Not authorized!`,
                         data: {
                             reason: 'Not allowed to access "category" entries.'
-                        },
-                        message: "Not authorized!"
+                        }
                     }
                 }
             }
@@ -373,16 +373,16 @@ describe("READ - Resolvers", () => {
 
         const [response] = await getCategory({ where: { id } });
 
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 getCategory: {
                     data: null,
                     error: {
                         code: "SECURITY_NOT_AUTHORIZED",
+                        message: `Not authorized!`,
                         data: {
                             reason: 'Not allowed to access "category" entries.'
-                        },
-                        message: "Not authorized!"
+                        }
                     }
                 }
             }

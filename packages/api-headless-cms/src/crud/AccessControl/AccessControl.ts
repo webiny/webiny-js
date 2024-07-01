@@ -34,11 +34,11 @@ interface CanAccessModelParams extends GetModelsAccessControlListParams {
 }
 
 interface GetEntriesAccessControlListParams {
-    model: CmsModel;
-    entry?: CmsEntry;
+    model: Pick<CmsModel, "modelId" | "createdBy" | "group" | "locale" | "authorization">;
+    entry?: Pick<CmsEntry, "entryId" | "createdBy">;
 }
 
-interface CanAccessEntryParams extends GetEntriesAccessControlListParams {
+export interface CanAccessEntryParams extends GetEntriesAccessControlListParams {
     rwd?: string;
     pw?: string;
 }
@@ -56,6 +56,10 @@ interface EntriesAccessControlEntry extends AccessControlEntry {
 }
 
 type EntriesAccessControlList = EntriesAccessControlEntry[];
+
+interface IModelAuthorizationDisabledParams {
+    model: Pick<CmsModel, "authorization">;
+}
 
 export class AccessControl {
     getIdentity: AccessControlParams["getIdentity"];
@@ -653,7 +657,7 @@ export class AccessControl {
         return permissions.some(p => this.fullAccessPermissions.filter(Boolean).includes(p.name));
     }
 
-    private modelAuthorizationDisabled(params: { model: CmsModel }) {
+    private modelAuthorizationDisabled(params: IModelAuthorizationDisabledParams) {
         if ("authorization" in params.model) {
             const { authorization } = params.model;
             if (typeof authorization === "boolean") {

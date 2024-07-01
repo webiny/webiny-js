@@ -23,7 +23,7 @@
 //         searchForPage(pageTitle);
 //         // Select page for export
 //         cy.findByTestId("default-data-list").within(() => {
-//             cy.get(".mdc-list-item")
+//             cy.get(".mdc-deprecated-list-item")
 //                 .first()
 //                 .within(() => {
 //                     cy.findByText(/Welcome to Webiny/i).should("exist");
@@ -95,7 +95,7 @@
 //         searchForPage(pageTitle);
 //
 //         cy.findByTestId("default-data-list").within(() => {
-//             cy.get(".mdc-list-item")
+//             cy.get(".mdc-deprecated-list-item")
 //                 .first()
 //                 .within(() => {
 //                     cy.findByText("Welcome to Webiny").should("exist");
@@ -108,7 +108,7 @@
 //
 //         // Delete the imported page
 //         cy.findByTestId("default-data-list").within(() => {
-//             cy.get(".mdc-list-item")
+//             cy.get(".mdc-deprecated-list-item")
 //                 .first()
 //                 .within(() => {
 //                     cy.findByTestId("pages-default-data-list.select-page").click({ force: true });
@@ -119,7 +119,7 @@
 //             cy.findByText(/Confirm/i).click();
 //         });
 //         cy.findByTestId("default-data-list").within(() => {
-//             cy.get(".mdc-list-item")
+//             cy.get(".mdc-deprecated-list-item")
 //                 .first()
 //                 .within(() => {
 //                     cy.findByText(/Draft/i).should("not.exist");

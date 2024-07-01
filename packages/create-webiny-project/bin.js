@@ -8,20 +8,19 @@ const getNpmVersion = require("./utils/getNpmVersion");
 const verifyConfig = require("./utils/verifyConfig");
 
 (async () => {
-    const minNodeVersion = "16";
     const minNpmVersion = "10";
     const minYarnVersion = "1.22.21";
     /**
      * Node
      */
     const nodeVersion = process.versions.node;
-    if (!semver.satisfies(nodeVersion, `>=${minNodeVersion}`)) {
+    if (!semver.satisfies(nodeVersion, `^18 || ^20`)) {
         console.error(
             chalk.red(
                 [
-                    `You are running Node.js ${nodeVersion}, but Webiny requires version ${minNodeVersion} or higher.`,
+                    `You are running Node.js ${nodeVersion}, but Webiny requires version 18 or 20.`,
                     `Please switch to one of the required versions and try again.`,
-                    "For more information, please visit https://docs.webiny.com/docs/tutorials/install-webiny#prerequisites."
+                    "For more information, please visit https://www.webiny.com/docs/get-started/install-webiny#prerequisites."
                 ].join(" ")
             )
         );

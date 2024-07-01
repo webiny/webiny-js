@@ -182,7 +182,7 @@ function createRenderer(
             handler: "handler.handler",
             timeout: 300,
             memorySize: 2048,
-            layers: [getLayerArn("shelf-io-chrome-aws-lambda-layer")],
+            layers: [getLayerArn("chromium")],
             environment: {
                 variables: getCommonLambdaEnvVariables().apply(value => ({
                     ...value,

@@ -25,10 +25,15 @@ export type WcpProjectPackage = {
         auditLogs: {
             enabled: boolean;
         };
+        recordLocking: {
+            enabled: boolean;
+        };
     };
 };
 
 export interface WcpProject {
+    orgId: string;
+    projectId: string;
     package: WcpProjectPackage;
 }
 

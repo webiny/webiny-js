@@ -3,6 +3,10 @@ import { Plugin } from "@webiny/plugins/types";
 import { ApolloClient } from "apollo-client";
 import { CSSProperties } from "react";
 
+export type GenericRecordKey = string | number | symbol;
+
+export type GenericRecord<K extends GenericRecordKey = GenericRecordKey, V = any> = Record<K, V>;
+
 export type UploadOptions = {
     apolloClient: ApolloClient<object>;
     onProgress?: (params: { sent: number; total: number; percentage: number }) => void;

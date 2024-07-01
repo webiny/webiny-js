@@ -13,7 +13,7 @@ import {
 } from "@rmwc/list";
 import { Typography } from "~/Typography";
 import classNames from "classnames";
-import styled from "@emotion/styled";
+import { SelectBoxWrapper, webinyList } from "./styled";
 
 export type ListItemProps = RmwcListItemProps & {
     children: React.ReactNode;
@@ -45,7 +45,11 @@ export type ListProps = RmwcListProps & {
  */
 export class List extends React.Component<ListProps> {
     public override render() {
-        return <RmwcList {...this.props}>{this.props.children}</RmwcList>;
+        return (
+            <RmwcList {...this.props} className={classNames(webinyList, this.props.className)}>
+                {this.props.children}
+            </RmwcList>
+        );
     }
 }
 
@@ -103,7 +107,10 @@ export type ListItemGraphicProps = { children: React.ReactNode; className?: stri
  */
 export const ListItemGraphic = (props: ListItemGraphicProps) => {
     return (
-        <div {...props} className={classNames("mdc-list-item__graphic", props.className)}>
+        <div
+            {...props}
+            className={classNames("mdc-deprecated-list-item__graphic", props.className)}
+        >
             {props.children}
         </div>
     );
@@ -119,7 +126,7 @@ export type ListItemMetaProps = { children: React.ReactNode; className?: string 
  */
 export const ListItemMeta = (props: ListItemMetaProps) => {
     return (
-        <span {...props} className={classNames("mdc-list-item__meta", props.className)}>
+        <span {...props} className={classNames("mdc-deprecated-list-item__meta", props.className)}>
             {props.children}
         </span>
     );
@@ -196,16 +203,6 @@ export const ListActions = (props: ListActionsProps) => {
         </span>
     );
 };
-
-const SelectBoxWrapper = styled("div")({
-    overflow: "hidden",
-    width: 25,
-    height: 25,
-    display: "flex",
-    position: "relative",
-    alignItems: "center",
-    justifyContent: "center"
-});
 
 export type ListSelectBoxProps = {
     children: React.ReactNode;

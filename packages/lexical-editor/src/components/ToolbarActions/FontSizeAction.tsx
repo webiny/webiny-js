@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getSelectionStyleValueForProperty, $patchStyleText } from "@lexical/selection";
 import { mergeRegister } from "@lexical/utils";
 import { $getSelection, $isRangeSelection, LexicalEditor } from "lexical";
 import { DropDown, DropDownItem } from "~/ui/DropDown";
 import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
+import { useRichTextEditor } from "~/hooks";
 
 const FONT_SIZE_OPTIONS: string[] = [
     "8px",
@@ -79,7 +79,7 @@ function FontSizeDropDown(props: FontSizeDropDownProps): JSX.Element {
 const defaultSize = "15px";
 
 export const FontSizeAction = () => {
-    const [editor] = useLexicalComposerContext();
+    const { editor } = useRichTextEditor();
     const [isEditable, setIsEditable] = useState(() => editor.isEditable());
     const fontSize = useDeriveValueFromSelection(({ rangeSelection }) => {
         if (!rangeSelection) {

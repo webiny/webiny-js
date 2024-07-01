@@ -1,7 +1,7 @@
 import React from "react";
 import { css } from "emotion";
 import { Bind } from "@webiny/form";
-import { AddPbWebsiteSettings } from "../AddPbWebsiteSettings";
+import { WebsiteSettingsConfig } from "~/modules/WebsiteSettings/config/WebsiteSettingsConfig";
 import { CodeEditor } from "@webiny/ui/CodeEditor";
 import { Typography } from "@webiny/ui/Typography";
 
@@ -37,25 +37,33 @@ const CodeEditorInput = ({ name, label, description }: CodeEditorInputProps) => 
     );
 };
 
-const { Group, Element } = AddPbWebsiteSettings;
+const { Group, Element } = WebsiteSettingsConfig;
 
 export const HtmlTags = () => {
     return (
-        <Group name={"htmlTags"} label={"HTML Tags"}>
-            <Element>
-                <CodeEditorInput
-                    name="htmlTags.header"
-                    label="Header tags"
-                    description="HTML tags and scripts that will be added before the closing </head> tag. (Supported tags: <script>, <meta>)"
+        <WebsiteSettingsConfig>
+            <Group name={"htmlTags"} label={"HTML Tags"}>
+                <Element
+                    name={"header"}
+                    element={
+                        <CodeEditorInput
+                            name="htmlTags.header"
+                            label="Header tags"
+                            description="HTML tags and scripts that will be added before the closing </head> tag. (Supported tags: <script>, <meta>)"
+                        />
+                    }
                 />
-            </Element>
-            <Element>
-                <CodeEditorInput
-                    name="htmlTags.footer"
-                    label="Footer tags"
-                    description="HTML tags and scripts that will be added before the closing </body> tag. (Supported tags: <script>)"
+                <Element
+                    name={"footer"}
+                    element={
+                        <CodeEditorInput
+                            name="htmlTags.footer"
+                            label="Footer tags"
+                            description="HTML tags and scripts that will be added before the closing </body> tag. (Supported tags: <script>)"
+                        />
+                    }
                 />
-            </Element>
-        </Group>
+            </Group>
+        </WebsiteSettingsConfig>
     );
 };

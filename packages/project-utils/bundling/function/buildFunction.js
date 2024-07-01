@@ -1,12 +1,7 @@
 const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
-const { getDuration } = require("../../utils");
-const chalk = require("chalk");
 const { getProjectApplication } = require("@webiny/cli/utils");
 
 module.exports = async options => {
-    const duration = getDuration();
-    const path = require("path");
-
     const { overrides, logs, cwd, debug } = options;
 
     let projectApplication;
@@ -15,8 +10,6 @@ module.exports = async options => {
     } catch {
         // No need to do anything.
     }
-
-    logs && console.log(`Compiling ${chalk.green(path.basename(cwd))}...`);
 
     let webpackConfig = require("./webpack.config")({
         production: !debug,
@@ -32,7 +25,7 @@ module.exports = async options => {
     const webpack = require("webpack");
 
     return new Promise(async (resolve, reject) => {
-        return webpack(webpackConfig).run(async (err, stats) => {
+        webpack(webpackConfig).run(async (err, stats) => {
             let messages = {};
 
             if (err) {
@@ -41,8 +34,9 @@ module.exports = async options => {
                     warnings: []
                 });
 
-                console.error(messages.errors.join("\n\n"));
-                return reject();
+                const errorMessages = messages.errors.join("\n\n");
+                console.error(errorMessages);
+                return reject(new Error(errorMessages));
             }
 
             if (stats.hasErrors()) {
@@ -62,11 +56,13 @@ module.exports = async options => {
                     messages.errors.length = 1;
                 }
 
-                console.error(messages.errors.join("\n\n"));
-                return reject();
+                const errorMessages = messages.errors.join("\n\n");
+                console.error(errorMessages);
+                reject(new Error(errorMessages));
+                return;
             }
 
-            logs && console.log(`Compiled successfully in ${chalk.green(duration()) + "s"}.`);
+            logs && console.log(`Compiled successfully.`);
             resolve();
         });
     });

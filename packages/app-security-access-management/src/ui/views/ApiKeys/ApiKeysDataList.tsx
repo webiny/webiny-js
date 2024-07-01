@@ -61,7 +61,7 @@ export const ApiKeysDataList = () => {
     });
 
     const filterAPIKey = useCallback(
-        ({ description, name }) => {
+        ({ description, name }: ApiKey) => {
             return (
                 (description && description.toLowerCase().includes(filter)) ||
                 name.toLowerCase().includes(filter)
@@ -71,7 +71,7 @@ export const ApiKeysDataList = () => {
     );
 
     const sortKeys = useCallback(
-        list => {
+        (list: ApiKey[]) => {
             if (!sort) {
                 return list;
             }
@@ -81,17 +81,19 @@ export const ApiKeysDataList = () => {
         [sort]
     );
 
-    const { data: listResponse, loading: listLoading } = useQuery(GQL.LIST_API_KEYS);
+    const { data: listResponse, loading: listLoading } = useQuery<GQL.ListApiKeysResponse>(
+        GQL.LIST_API_KEYS
+    );
 
     const [deleteIt, { loading: deleteLoading }] = useMutation(GQL.DELETE_API_KEY, {
         refetchQueries: [{ query: GQL.LIST_API_KEYS }]
     });
 
-    const data = listLoading && !listResponse ? [] : listResponse.security.apiKeys.data;
+    const data = listLoading && !listResponse ? [] : listResponse?.security.apiKeys.data || [];
     const id = new URLSearchParams(location.search).get("id");
 
     const deleteItem = useCallback(
-        item => {
+        (item: ApiKey) => {
             showConfirmation(async () => {
                 const { data } = await deleteIt({
                     variables: item

@@ -9,7 +9,7 @@ import {
 } from "~/types";
 import { createFieldsList } from "./createFieldsList";
 import { getModelTitleFieldId } from "./getModelTitleFieldId";
-import { FormSubmitOptions } from "@webiny/form";
+import { FormValidationOptions } from "@webiny/form";
 
 const CONTENT_META_FIELDS = /* GraphQL */ `
     meta {
@@ -27,7 +27,8 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
     entryId
     createdOn
     savedOn
-    modifiedOn
+    modifiedOn,
+    deletedOn
     firstPublishedOn
     lastPublishedOn
     createdBy {
@@ -45,6 +46,11 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
         type
         displayName
     }
+    deletedBy {
+        id
+        type
+        displayName
+    }
     firstPublishedBy {
         id
         type
@@ -58,6 +64,7 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
     revisionCreatedOn
     revisionSavedOn
     revisionModifiedOn
+    revisionDeletedOn
     revisionFirstPublishedOn
     revisionLastPublishedOn
     revisionCreatedBy {
@@ -71,6 +78,11 @@ const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
         displayName
     }
     revisionModifiedBy {
+        id
+        type
+        displayName
+    }
+    revisionDeletedBy {
         id
         type
         displayName
@@ -213,14 +225,29 @@ export interface CmsEntriesListQueryVariables {
     after?: string;
 }
 
-export const createListQuery = (model: CmsEditorContentModel, fields?: CmsModelField[]) => {
+export const createListQueryDataSelection = (
+    model: CmsEditorContentModel,
+    fields?: CmsModelField[]
+) => {
+    return `
+        ${CONTENT_ENTRY_SYSTEM_FIELDS}
+        ${fields ? createFieldsList({ model, fields }) : ""}
+        ${!fields ? getModelTitleFieldId(model) : ""}
+    `;
+};
+
+export const createListQuery = (
+    model: CmsEditorContentModel,
+    fields?: CmsModelField[],
+    deleted?: boolean
+) => {
+    const queryName = deleted ? `Deleted${model.pluralApiName}` : model.pluralApiName;
+
     return gql`
-        query CmsEntriesList${model.pluralApiName}($where: ${
-        model.singularApiName
-    }ListWhereInput, $sort: [${
+        query CmsEntriesList${queryName}($where: ${model.singularApiName}ListWhereInput, $sort: [${
         model.singularApiName
     }ListSorter], $limit: Int, $after: String, $search: String) {
-            content: list${model.pluralApiName}(
+            content: list${queryName}(
             where: $where
             sort: $sort
             limit: $limit
@@ -228,9 +255,7 @@ export const createListQuery = (model: CmsEditorContentModel, fields?: CmsModelF
             search: $search
             ) {
                 data {
-                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
-                    ${fields ? createFieldsList({ model, fields }) : ""}
-                    ${!fields ? getModelTitleFieldId(model) : ""}
+                    ${createListQueryDataSelection(model, fields)}
                 }
                 meta {
                     cursor
@@ -256,13 +281,43 @@ export interface CmsEntryDeleteMutationResponse {
 
 export interface CmsEntryDeleteMutationVariables {
     revision: string;
+    permanently?: boolean;
 }
 
 export const createDeleteMutation = (model: CmsEditorContentModel) => {
     return gql`
-        mutation CmsEntriesDelete${model.singularApiName}($revision: ID!) {
-            content: delete${model.singularApiName}(revision: $revision) {
+        mutation CmsEntriesDelete${model.singularApiName}($revision: ID!, $permanently: Boolean) {
+            content: delete${model.singularApiName}(revision: $revision, options: {permanently: $permanently}) {
                 data
+                error ${ERROR_FIELD}
+            }
+        }
+    `;
+};
+
+/**
+ * ############################################
+ * Restore from bin Mutation
+ */
+export interface CmsEntryRestoreFromBinMutationResponse {
+    content: {
+        data: CmsContentEntry | null;
+        error: CmsErrorResponse | null;
+    };
+}
+
+export interface CmsEntryRestoreFromBinMutationVariables {
+    revision: string;
+}
+
+export const createRestoreFromBinMutation = (model: CmsEditorContentModel) => {
+    return gql`
+        mutation CmsEntriesRestore${model.singularApiName}FromBin($revision: ID!) {
+            content: restore${model.singularApiName}FromBin(revision: $revision) {
+                data {
+                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createFieldsList({ model, fields: model.fields })}
+                }
                 error ${ERROR_FIELD}
             }
         }
@@ -285,7 +340,7 @@ export interface CmsEntryCreateMutationVariables {
      * We have any here because we do not know which fields does entry have
      */
     data: Record<string, any>;
-    options?: FormSubmitOptions;
+    options?: FormValidationOptions;
 }
 
 export const createCreateMutation = (model: CmsEditorContentModel) => {
@@ -321,7 +376,7 @@ export interface CmsEntryCreateFromMutationVariables {
      * We have any here because we do not know which fields does entry have
      */
     data?: Record<string, any>;
-    options?: FormSubmitOptions;
+    options?: FormValidationOptions;
 }
 
 export const createCreateFromMutation = (model: CmsEditorContentModel) => {
@@ -358,7 +413,7 @@ export interface CmsEntryUpdateMutationVariables {
      * We have any here because we do not know which fields does entry have
      */
     data: Record<string, any>;
-    options?: FormSubmitOptions;
+    options?: FormValidationOptions;
 }
 
 export const createUpdateMutation = (model: CmsEditorContentModel) => {

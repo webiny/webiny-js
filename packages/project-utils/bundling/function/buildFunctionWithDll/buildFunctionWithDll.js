@@ -1,5 +1,4 @@
 const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
-const { getDuration } = require("../../../utils");
 const chalk = require("chalk");
 const path = require("path");
 const { getProjectApplication } = require("@webiny/cli/utils");
@@ -44,7 +43,6 @@ function applyOverrides(webpackConfig, options) {
 }
 
 function buildConfig(config, options) {
-    const duration = getDuration();
     const webpack = require("webpack");
     return new Promise(async (resolve, reject) => {
         return webpack(config).run(async (err, stats) => {
@@ -81,8 +79,7 @@ function buildConfig(config, options) {
                 return reject();
             }
 
-            options.logs &&
-                console.log(`Compiled successfully in ${chalk.green(duration()) + "s"}.`);
+            options.logs && console.log(`Compiled successfully.`);
             resolve();
         });
     });

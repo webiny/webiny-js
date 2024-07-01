@@ -6,6 +6,8 @@ import cliAwsTemplate from "@webiny/cwp-template-aws/cli";
 import cliScaffold from "@webiny/cli-plugin-scaffold";
 import cliScaffoldExtendGraphQlApi from "@webiny/cli-plugin-scaffold-graphql-service";
 import cliScaffoldAdminModule from "@webiny/cli-plugin-scaffold-admin-app-module";
+import cliScaffoldExtensions from "@webiny/cli-plugin-scaffold-extensions";
+import cliScaffoldWorkspaces from "@webiny/cli-plugin-scaffold-workspaces";
 import cliScaffoldCiCd from "@webiny/cli-plugin-scaffold-ci";
 
 export default {
@@ -21,6 +23,8 @@ export default {
             cliScaffold(),
             cliScaffoldExtendGraphQlApi(),
             cliScaffoldAdminModule(),
+            cliScaffoldExtensions(),
+            cliScaffoldWorkspaces(),
             cliScaffoldCiCd()
         ]
     },
