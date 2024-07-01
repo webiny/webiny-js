@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { ADD_FONT_COLOR_COMMAND, FontColorPayload } from "@webiny/lexical-nodes";
 import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_EDITOR } from "lexical";
+import { ADD_FONT_COLOR_COMMAND, FontColorPayload } from "@webiny/lexical-nodes";
 import { useRichTextEditor } from "~/hooks";
 import { applyColorToSelection } from "./applyColorToSelection";
 
