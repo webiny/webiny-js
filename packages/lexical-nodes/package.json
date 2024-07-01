@@ -28,5 +28,12 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@types/prismjs"
+      ]
+    }
   }
 }
