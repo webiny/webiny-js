@@ -44,6 +44,12 @@ export const ensureFolderIsEmpty = async ({
     }
 
     // Let's also check if there are folders / content that are not visible because of folder permissions.
+    if (!context.aco.folderLevelPermissions.canUseFolderLevelPermissions()) {
+        // If folder level permissions are not enabled, we can skip this check. This is because
+        // in that case, all folders and content are visible to the user.
+        return;
+    }
+
     const [hasInvisibleFolders, hasInvisibleContent] = await context.security.withoutAuthorization(
         async () => {
             const [hasFolders, hasContent] = await Promise.all([
