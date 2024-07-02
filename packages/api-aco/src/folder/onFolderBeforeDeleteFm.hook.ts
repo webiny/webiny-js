@@ -1,5 +1,6 @@
 import WebinyError from "@webiny/error";
 import { AcoContext } from "~/types";
+import { ensureFolderIsEmpty } from "~/folder/ensureFolderIsEmpty";
 
 export const onFolderBeforeDeleteFmHook = (context: AcoContext) => {
     context.aco.folder.onFolderBeforeDelete.subscribe(async ({ folder }) => {
@@ -13,26 +14,22 @@ export const onFolderBeforeDeleteFmHook = (context: AcoContext) => {
                 return;
             }
 
-            const [files] = await context.fileManager.listFiles({
-                where: {
-                    location: {
-                        folderId: id
-                    }
-                },
-                limit: 1
-            });
+            await ensureFolderIsEmpty({
+                context,
+                folder,
+                hasContentCallback: async () => {
+                    const content = await context.fileManager.listFiles({
+                        where: {
+                            location: {
+                                folderId: id
+                            }
+                        },
+                        limit: 1
+                    });
 
-            if (files.length === 0) {
-                return;
-            }
-
-            throw new WebinyError(
-                "Delete all child folders and files before proceeding.",
-                "DELETE_FOLDER_WITH_CHILDREN",
-                {
-                    folder
+                    return content.length > 0;
                 }
-            );
+            });
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onFolderBeforeDeleteFmHook hook.",

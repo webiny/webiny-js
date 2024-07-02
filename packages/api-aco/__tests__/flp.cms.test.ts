@@ -1,20 +1,10 @@
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { SecurityIdentity } from "@webiny/api-security/types";
+import { expectNotAuthorized } from "./utils/expectNotAuthorized";
 
 const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" };
 const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" };
 const identityC: SecurityIdentity = { id: "3", type: "admin", displayName: "C" };
-
-const expectNotAuthorized = async (promise: Promise<any>) => {
-    await expect(promise).resolves.toEqual({
-        data: null,
-        error: {
-            code: "SECURITY_NOT_AUTHORIZED",
-            data: null,
-            message: "Not authorized!"
-        }
-    });
-};
 
 describe("Folder Level Permissions - File Manager GraphQL API", () => {
     const gqlIdentityA = useGraphQlHandler({ identity: identityA });
@@ -486,5 +476,95 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
                     return response.data.deleteBasicTestModel;
                 })
         ).resolves.toMatchObject({ data: true, error: null });
+    });
+
+    test("as a user, I should not be able to delete folders that have content they cannot see", async () => {
+        const gqlIdentityA = useGraphQlHandler({ identity: identityA });
+        const gqlIdentityC = useGraphQlHandler({
+            identity: identityC,
+            permissions: [{ name: "cms.*" }]
+        });
+
+        const modelGroup = await gqlIdentityA.cms.createTestModelGroup();
+        const model = await gqlIdentityA.cms.createBasicModel({ modelGroup: modelGroup.id });
+
+        const folderA = await gqlIdentityA.aco
+            .createFolder({
+                data: {
+                    title: "Folder A",
+                    slug: "folder-a",
+                    type: `cms:${model.modelId}`
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        const folderB = await gqlIdentityA.aco
+            .createFolder({
+                data: {
+                    title: "Folder B",
+                    slug: "folder-b",
+                    parentId: folderA.id,
+                    type: `cms:${model.modelId}`
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        for (let i = 1; i <= 4; i++) {
+            await gqlIdentityA.cms.createEntry(model, { data: { title: `Test-${i}` } });
+        }
+
+        // Deleting folderA should be forbidden because there is content in it. In this case,
+        // user actually sees this content, so we expect a "delete all child folders and files"
+        // error, not a "not authorized" error.
+        await expect(
+            gqlIdentityC.aco.deleteFolder({ id: folderA.id }).then(([response]) => {
+                return response.data.aco.deleteFolder;
+            })
+        ).resolves.toMatchObject({
+            data: null,
+            error: {
+                code: "DELETE_FOLDER_WITH_CHILDREN",
+                data: {
+                    folder: {
+                        slug: "folder-a"
+                    },
+                    hasFolders: true,
+                    hasContent: false
+                },
+                message: "Delete all child folders and files before proceeding."
+            }
+        });
+
+        // Only identity B (and identity A, the owner) can see the folder B and its files.
+        await gqlIdentityA.aco.updateFolder({
+            id: folderB.id,
+            data: {
+                permissions: [
+                    {
+                        target: `admin:${identityB.id}`,
+                        level: "owner"
+                    }
+                ]
+            }
+        });
+
+        // Again, deleting folderA should be forbidden because there is content in it. In this
+        // case, user doesn't see this content, so we expect a "not authorized" error.
+        await expectNotAuthorized(
+            gqlIdentityC.aco.deleteFolder({ id: folderA.id }).then(([response]) => {
+                return response.data.aco.deleteFolder;
+            }),
+            {
+                folder: { id: folderA.id },
+
+                // There are no entries in the folder, but there is one invisible / inaccessible folder.
+                hasContent: false,
+                hasFolders: true
+            }
+        );
     });
 });
