@@ -1,11 +1,6 @@
 import type { ContentEntryTraverser } from "@webiny/api-headless-cms";
-import {
-    IAsset,
-    IAssets,
-    IAssignAssetsInput,
-    IEntryAssets
-} from "~/tasks/utils/abstractions/EntryAssets";
 import { matchKeyOrAlias } from "~/tasks/utils/helpers/matchKeyOrAlias";
+import { IAsset, IAssets, IAssignAssetsInput, IEntryAssets } from "./abstractions/EntryAssets";
 
 export interface IEntryAssetsParams {
     traverser: ContentEntryTraverser;

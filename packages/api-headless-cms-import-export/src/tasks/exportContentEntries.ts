@@ -9,10 +9,10 @@ import {
 export const createExportContentEntriesTask = () => {
     return createTaskDefinition<Context, IExportContentEntriesInput, IExportContentEntriesOutput>({
         id: EXPORT_CONTENT_ENTRIES_TASK,
-        title: "Export Content Entries and Assets ",
-        maxIterations: 10,
+        title: "Export Content Entries",
+        maxIterations: 20,
         isPrivate: true,
-        description: "Export content entries and assets from a specific model - entries exporter.",
+        description: "Export content entries from a specific model.",
         async run(params) {
             const { createExportContentEntries } = await import(
                 /* webpackChunkName: "createExportContentEntries" */ "./domain/createExportContentEntries"

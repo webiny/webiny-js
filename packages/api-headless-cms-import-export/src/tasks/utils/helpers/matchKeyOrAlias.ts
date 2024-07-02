@@ -12,18 +12,24 @@ export const matchKeyOrAlias = (input: string): IMatchAliasOutput | IMatchOutput
     try {
         const url = new URL(input);
         const { pathname } = url;
-        const isAlias = !pathname.startsWith("/files/") && !pathname.startsWith("/private/");
-        if (isAlias) {
+        const isFiles = pathname.startsWith("/files/");
+        const isPrivate = pathname.startsWith("/private/");
+        if (!isFiles && !isPrivate) {
             return {
                 alias: pathname
             };
+        } else if (!isPrivate) {
+            return {
+                key: pathname.replace(/^\/files\//, "")
+            };
         }
         return {
-            key: pathname.replace("/files/", "").replace("/private/", "")
+            key: pathname.replace(/^\/private\//, "")
         };
     } catch (ex) {
         if (process.env.DEBUG === "true") {
-            console.error(`Url ${input} is not valid.`);
+            console.error(`Url "${input}" is not valid.`);
+            console.error(ex);
         }
         return null;
     }

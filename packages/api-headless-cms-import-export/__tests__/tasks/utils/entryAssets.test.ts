@@ -1,8 +1,7 @@
-import { EntryAssets } from "~/tasks/utils/EntryAssets";
 import { useHandler } from "~tests/helpers/useHandler";
 import { CmsEntry } from "@webiny/api-headless-cms/types";
-import { IAsset } from "./abstractions/EntryAssets";
 import type { ContentEntryTraverser } from "@webiny/api-headless-cms";
+import { EntryAssets, IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
 
 const cloudfrontUrl = "https://aCloundfrontDistributionId.cloudfront.net";
 
@@ -15,7 +14,7 @@ const createImageUrl = (file: string) => {
 };
 
 describe("entry assets", () => {
-    let entryAssets: EntryAssets;
+    let entryAssets: IEntryAssets;
     let traverser: ContentEntryTraverser;
 
     beforeEach(async () => {

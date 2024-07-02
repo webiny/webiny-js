@@ -3,6 +3,7 @@ import { createCmsEntryZipper } from "~tests/mocks/createCmsEntryZipper";
 import { fetchItems, images } from "./mocks/cmsEntryZipperItems";
 import { createModelPlugin } from "~tests/mocks/model";
 import { CmsModel } from "@webiny/api-headless-cms/types";
+import { createCmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
 
 describe("cms entry zipper", () => {
     const model = createModelPlugin().contentModel as CmsModel;
@@ -45,9 +46,9 @@ describe("cms entry zipper", () => {
 
     it("should zip entries into a file - no assets", async () => {
         const { cmsEntryZipper, getBuffer } = createCmsEntryZipper({
-            fetcher: async after => {
+            fetcher: createCmsEntryFetcher(async after => {
                 return fetchItems(after);
-            }
+            })
         });
 
         await cmsEntryZipper.execute({

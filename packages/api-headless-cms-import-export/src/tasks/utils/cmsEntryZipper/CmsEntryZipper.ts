@@ -9,6 +9,7 @@ import {
     ICmsEntryZipperExecuteParams,
     ICmsEntryZipperExecuteResult
 } from "./abstractions/CmsEntryZipper";
+import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/abstractions/CmsEntryFetcher";
 
 export interface ICmsEntryZipperConfig {
     zipper: IZipper;
@@ -32,15 +33,6 @@ const createBufferData = (params: ICreateBufferDataParams) => {
         })
     );
 };
-
-export interface ICmsEntryFetcherResult {
-    items: CmsEntry[];
-    meta: CmsEntryMeta;
-}
-
-export interface ICmsEntryFetcher {
-    (after?: string): Promise<ICmsEntryFetcherResult>;
-}
 
 export class CmsEntryZipper implements ICmsEntryZipper {
     private readonly zipper: IZipper;

@@ -5,7 +5,6 @@ import { getErrorProperties } from "@webiny/tasks/utils";
 import { ZipCombiner } from "~/tasks/utils/zipCombiner";
 import {
     CmsEntryZipperExecuteContinueResult,
-    ICmsEntryFetcher,
     ICmsEntryZipper,
     ICmsEntryZipperConfig
 } from "~/tasks/utils/cmsEntryZipper";
@@ -14,6 +13,7 @@ import {
     IExportContentEntriesInput,
     IExportContentEntriesOutput
 } from "~/tasks/domain/abstractions/ExportContentEntries";
+import { createCmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/createCmsEntryFetcher";
 
 export interface ICreateZipCombinerParams {
     target: string;
@@ -100,8 +100,7 @@ export class ExportContentEntries<
         /**
          * If we are not combining files, we need to fetch the next batch of entries and zip them.
          */
-
-        const fetcher: ICmsEntryFetcher = async after => {
+        const fetcher = createCmsEntryFetcher(async after => {
             const input = {
                 where: params.input.where,
                 limit: params.input.limit || 10000,
@@ -114,7 +113,7 @@ export class ExportContentEntries<
                 items,
                 meta
             };
-        };
+        });
 
         const filename = `${prefix}${input.after || "0"}.zip`;
 

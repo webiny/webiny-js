@@ -9,10 +9,11 @@ import { createPassThrough } from "~tests/mocks/createPassThrough";
 import { PassThrough } from "stream";
 import { mockClient } from "aws-sdk-client-mock";
 import { SignUrl } from "~/tasks/utils/SignUrl";
-import { CmsEntryZipper, ICmsEntryFetcher } from "~/tasks/utils/cmsEntryZipper";
+import { CmsEntryZipper } from "~/tasks/utils/cmsEntryZipper";
 import { Upload } from "~/tasks/utils/Upload";
 import { Zipper } from "~/tasks/utils/Zipper";
 import { Archiver } from "~/tasks/utils/Archiver";
+import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
 
 interface ICreateCmsEntryZipperParams {
     fetcher: ICmsEntryFetcher;

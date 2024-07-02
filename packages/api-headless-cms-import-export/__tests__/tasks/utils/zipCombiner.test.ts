@@ -19,7 +19,8 @@ describe("zip combiner", () => {
                 source: "test/source-",
                 isCloseToTimeout: () => false,
                 isAborted: () => false,
-                lastFileProcessed: undefined
+                lastFileProcessed: undefined,
+                modelId: "aModel"
             });
         } catch (ex) {
             expect(ex.message).toBe(`No files found in with prefix "test/source-".`);
@@ -60,7 +61,8 @@ describe("zip combiner", () => {
                 source: "test/source-",
                 isCloseToTimeout: () => false,
                 isAborted: () => false,
-                lastFileProcessed: undefined
+                lastFileProcessed: undefined,
+                modelId: "aModel"
             });
         } catch (ex) {
             expect(ex.message).toBe(`Upload aborted.`);
@@ -97,7 +99,8 @@ describe("zip combiner", () => {
                 source: "test/source-",
                 isAborted: () => true,
                 isCloseToTimeout: () => false,
-                lastFileProcessed: undefined
+                lastFileProcessed: undefined,
+                modelId: "aModel"
             });
         } catch (ex) {
             expect(ex.message).toBe(`Upload aborted.`);
@@ -128,7 +131,8 @@ describe("zip combiner", () => {
                 source: "test/source-",
                 isAborted: () => false,
                 isCloseToTimeout: () => false,
-                lastFileProcessed: "some-unknown-file.zip"
+                lastFileProcessed: "some-unknown-file.zip",
+                modelId: "aModel"
             });
         } catch (ex) {
             expect(ex.message).toBe(

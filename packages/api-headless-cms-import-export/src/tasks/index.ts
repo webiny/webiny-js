@@ -1,3 +1,4 @@
 export * from "./constants";
-export * from "./exportContentEntries";
 export * from "./exportContentEntriesController";
+export * from "./exportContentEntries";
+export * from "./exportContentAssets";

@@ -24,7 +24,7 @@ export interface IExportContentEntriesControllerInput {
 
 export interface IExportContentEntriesControllerOutput extends ITaskResponseDoneResultOutput {
     files: string[];
-    expiresOn: Date;
+    expiresOn?: Date;
 }
 
 export interface IExportContentEntriesController<

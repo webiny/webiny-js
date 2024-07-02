@@ -4,8 +4,8 @@ import {
     FileListWhereParams,
     FilesListOpts
 } from "@webiny/api-file-manager/types";
-import { IAssets } from "~/tasks/utils/abstractions/EntryAssets";
 import { IAssetItem, IEntryAssetsList } from "./abstractions/EntryAssetsList";
+import { IAssets } from "./abstractions/EntryAssets";
 
 export interface IListFilesCb {
     (opts?: FilesListOpts): Promise<[File[], FileListMeta]>;

@@ -1,4 +1,4 @@
-import { IAssets } from "~/tasks/utils/abstractions/EntryAssets";
+import { IAssets } from "./EntryAssets";
 
 export interface IAssetItem {
     id: string;

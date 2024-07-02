@@ -1,9 +1,7 @@
-import { EntryAssetsList } from "~/tasks/utils/EntryAssetsList";
 import { useHandler } from "~tests/helpers/useHandler";
-import { IEntryAssetsList } from "~/tasks/utils/abstractions/EntryAssetsList";
 import { Context } from "~/types";
 import { createImages } from "~tests/mocks/images";
-import { IAssets } from "~/tasks/utils/abstractions/EntryAssets";
+import { EntryAssetsList, IAssets, IEntryAssetsList } from "~/tasks/utils/entryAssets";
 
 describe("entry assets list", () => {
     let context: Context;

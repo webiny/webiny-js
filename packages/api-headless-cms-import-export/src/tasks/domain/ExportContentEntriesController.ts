@@ -118,10 +118,10 @@ export class ExportContentEntriesController<
             /**
              * Possibly the task does not require any assets to be exported.
              */
-            if (!input.exportAssets) {
+            if (!input.exportAssets || entriesTask.output.files.length === 0) {
                 return response.done({
                     files: entriesTask.output.files,
-                    expiresOn: entriesTask.output.expiresOn
+                    expiresOn: entriesTask.output.expiresOn || undefined
                 } as unknown as O);
             }
 
