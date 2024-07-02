@@ -26,6 +26,7 @@ import { createTopic } from "@webiny/pubsub";
 import { sanitizeFormSubmissionData } from "~/plugins/crud/utils/sanitizeFormSubmissionData";
 import { mdbid } from "@webiny/utils";
 import { FormsPermissions } from "~/plugins/crud/permissions/FormsPermissions";
+import { isRecaptchaEnabled } from "~/plugins/crud/utils/isRecaptchaEnabled";
 
 interface CreateSubmissionsCrudParams {
     context: FormBuilderContext;
@@ -185,7 +186,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                 throwOnNotFound: true
             });
 
-            if (settings && settings.reCaptcha && settings.reCaptcha.enabled) {
+            if (settings && isRecaptchaEnabled(settings, form)) {
                 if (!reCaptchaResponseToken) {
                     throw new Error("Missing reCAPTCHA response token - cannot verify.");
                 }

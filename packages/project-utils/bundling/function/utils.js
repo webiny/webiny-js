@@ -2,7 +2,7 @@ const path = require("path");
 
 const getDefaults = ({ cwd, projectApplication }) => {
     let outputPath = path.join(cwd, "build");
-    if (projectApplication && projectApplication.type === "v5-workspaces") {
+    if (projectApplication) {
         outputPath = path.join(
             projectApplication.paths.workspace,
             path.relative(projectApplication.paths.absolute, cwd),

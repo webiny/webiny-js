@@ -16,7 +16,11 @@ import {
 } from "./validation";
 import { CmsModel, CmsModelField } from "./model";
 import { CmsIdentity } from "~/types/shared";
-import { DragObjectWithType } from "react-dnd";
+import type { SourceType } from "dnd-core";
+
+export type DragObjectWithType = {
+    type: SourceType;
+};
 
 export * from "./validation";
 export * from "./model";
@@ -223,10 +227,14 @@ export interface CmsModelFieldTypePlugin extends Plugin {
     };
 }
 
+export interface CmsModelFieldRendererSettingsProps {
+    field: CmsModelField;
+}
+
 export interface CmsModelFieldRendererProps {
     field: CmsModelField;
-    Label: React.ComponentType;
-    getBind: <T = any, F = any>(index?: number, key?: string) => BindComponent<T, F>;
+    Label: React.ComponentType<React.PropsWithChildren>;
+    getBind: <T = any>(index?: number, key?: string) => BindComponent<T>;
     contentModel: CmsModel;
 }
 
@@ -309,6 +317,7 @@ export interface CmsModelFieldRendererPlugin extends Plugin {
          * ```
          */
         render(props: CmsModelFieldRendererProps): React.ReactNode;
+        renderSettings?: (props: CmsModelFieldRendererSettingsProps) => React.ReactNode;
     };
 }
 
@@ -335,6 +344,10 @@ export interface CmsDynamicZoneTemplate {
     tags?: string[];
 }
 
+export interface CmsDynamicZoneTemplateWithTypename extends CmsDynamicZoneTemplate {
+    __typename: string;
+}
+
 export type CmsContentEntryStatusType = "draft" | "published" | "unpublished";
 
 /**
@@ -344,6 +357,7 @@ export type CmsEditorContentEntry = CmsContentEntry;
 
 export interface CmsContentEntry {
     id: string;
+    entryId: string;
     modelId: string;
     createdOn: string;
     createdBy: CmsIdentity;
@@ -351,6 +365,8 @@ export interface CmsContentEntry {
     savedBy: CmsIdentity;
     modifiedOn: string | null;
     modifiedBy: CmsIdentity | null;
+    deletedOn: string | null;
+    deletedBy: CmsIdentity | null;
     firstPublishedOn: string | null;
     firstPublishedBy: CmsIdentity | null;
     lastPublishedOn: string | null;
@@ -361,6 +377,8 @@ export interface CmsContentEntry {
     revisionSavedBy: CmsIdentity;
     revisionModifiedOn: string | null;
     revisionModifiedBy: CmsIdentity | null;
+    revisionDeletedOn: string | null;
+    revisionDeletedBy: CmsIdentity | null;
     revisionFirstPublishedOn: string | null;
     revisionFirstPublishedBy: CmsIdentity | null;
     revisionLastPublishedOn: string | null;
@@ -381,17 +399,21 @@ export interface CmsContentEntryRevision {
     id: string;
     modelId: string;
     savedOn: string;
+    deletedOn: string | null;
     firstPublishedOn: string | null;
     lastPublishedOn: string | null;
     createdBy: CmsIdentity;
+    deletedBy: CmsIdentity | null;
     revisionCreatedOn: string;
     revisionSavedOn: string;
     revisionModifiedOn: string;
+    revisionDeletedOn: string | null;
     revisionFirstPublishedOn: string;
     revisionLastPublishedOn: string;
     revisionCreatedBy: CmsIdentity;
     revisionSavedBy: CmsIdentity;
     revisionModifiedBy: CmsIdentity;
+    revisionDeletedBy: CmsIdentity | null;
     revisionFirstPublishedBy: CmsIdentity;
     revisionLastPublishedBy: CmsIdentity;
     wbyAco_location: Location;
@@ -545,8 +567,7 @@ export interface CmsMetaResponse {
 /***
  * ###### FORM ########
  */
-export interface BindComponentRenderProp<T = any, F = Record<string, any>>
-    extends BaseBindComponentRenderProp<T, F> {
+export interface BindComponentRenderProp<T = any> extends BaseBindComponentRenderProp<T> {
     parentName: string;
     appendValue: (value: any, index?: number) => void;
     prependValue: (value: any) => void;
@@ -556,13 +577,12 @@ export interface BindComponentRenderProp<T = any, F = Record<string, any>>
     moveValueDown: (index: number) => void;
 }
 
-interface BindComponentProps<T = any, F = any>
-    extends Omit<BaseBindComponentProps, "children" | "name"> {
+interface BindComponentProps<T = any> extends Omit<BaseBindComponentProps, "children" | "name"> {
     name?: string;
-    children?: ((props: BindComponentRenderProp<T, F>) => React.ReactElement) | React.ReactElement;
+    children?: ((props: BindComponentRenderProp<T>) => React.ReactElement) | React.ReactElement;
 }
 
-export type BindComponent<T = any, F = any> = React.ComponentType<BindComponentProps<T, F>> & {
+export type BindComponent<T = any> = React.ComponentType<BindComponentProps<T>> & {
     parentName: string;
 };
 

@@ -106,7 +106,9 @@ const Accordion = ({ title, children, action, icon, defaultValue = false }: Acco
             >
                 <div className="accordion-header--left">
                     <div className={"accordion-title"}>
-                        <Typography use={"subtitle1"}>{title}</Typography>
+                        <Typography use={"subtitle1"} tag={"span"}>
+                            {title}
+                        </Typography>
                     </div>
                 </div>
                 <div className="accordion-header--right">

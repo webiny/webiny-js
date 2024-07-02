@@ -1,6 +1,6 @@
+import type { Context as LambdaContext, SNSEvent } from "aws-lambda";
 import { Plugin } from "@webiny/plugins/Plugin";
 import { Context, Reply, Request } from "@webiny/handler/types";
-import { Context as LambdaContext, SNSEvent } from "aws-lambda";
 
 export interface SNSEventHandlerCallableParams<Response = Reply> {
     request: Request;

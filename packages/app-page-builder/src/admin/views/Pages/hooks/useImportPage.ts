@@ -8,6 +8,7 @@ import {
 } from "~/admin/graphql/pageImportExport.gql";
 import useImportPageDialog from "~/editor/plugins/defaultBar/components/ImportButton/page/useImportPageDialog";
 import useImportPageLoadingDialog from "~/editor/plugins/defaultBar/components/ImportButton/page/useImportPageLoadingDialog";
+import { PbCategory } from "~/types";
 
 interface UseImportPageParams {
     setLoading: () => void;
@@ -28,47 +29,54 @@ const useImportPage = ({
     const { showImportPageDialog } = useImportPageDialog();
     const { showImportPageLoadingDialog } = useImportPageLoadingDialog();
 
-    const importPageMutation = useCallback(async ({ slug: category }, zipFileUrl, folderId) => {
-        try {
-            setLoading();
-            const response = await importPage({
-                variables: {
-                    category,
-                    zipFileUrl,
-                    meta: {
-                        location: {
-                            folderId
+    const importPageMutation = useCallback(
+        async (
+            { slug: category }: PbCategory,
+            zipFileUrl: string,
+            folderId: string | undefined
+        ) => {
+            try {
+                setLoading();
+                const response = await importPage({
+                    variables: {
+                        category,
+                        zipFileUrl,
+                        meta: {
+                            location: {
+                                folderId
+                            }
                         }
                     }
+                });
+
+                clearLoading();
+                closeDialog();
+
+                if (!response.data?.pageBuilder?.importPages) {
+                    showSnackbar("Missing response from the page import mutation.");
+                    return;
                 }
-            });
+                const { error, data } = response.data.pageBuilder.importPages;
+                if (error) {
+                    showSnackbar(error.message);
+                    return;
+                } else if (!data) {
+                    showSnackbar("Missing data from the page import mutation.");
+                    return;
+                }
 
-            clearLoading();
-            closeDialog();
-
-            if (!response.data?.pageBuilder?.importPages) {
-                showSnackbar("Missing response from the page import mutation.");
-                return;
+                showImportPageLoadingDialog({
+                    taskId: data.task.id
+                });
+            } catch (e) {
+                showSnackbar(e.message);
             }
-            const { error, data } = response.data.pageBuilder.importPages;
-            if (error) {
-                showSnackbar(error.message);
-                return;
-            } else if (!data) {
-                showSnackbar("Missing data from the page import mutation.");
-                return;
-            }
-
-            showImportPageLoadingDialog({
-                taskId: data.task.id
-            });
-        } catch (e) {
-            showSnackbar(e.message);
-        }
-    }, []);
+        },
+        []
+    );
 
     const showDialog = useCallback(
-        category => {
+        (category: PbCategory) => {
             showImportPageDialog(async url => {
                 await importPageMutation(category, url, folderId);
             });

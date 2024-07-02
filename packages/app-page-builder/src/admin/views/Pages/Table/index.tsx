@@ -1,5 +1,7 @@
 import React, { useCallback } from "react";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
+import { useI18N } from "@webiny/app-i18n";
+import { useTenancy } from "@webiny/app-tenancy";
 import { AcoWithConfig } from "@webiny/app-aco";
 import { Sidebar } from "./Sidebar";
 import { Main } from "./Main";
@@ -14,11 +16,32 @@ import { usePagesPermissions } from "~/hooks/permissions";
 import { PagesListProvider } from "~/admin/views/Pages/hooks/usePagesList";
 import { PageListWithConfig } from "~/admin/config/pages";
 
+/**
+ * Generates a `layoutId` to be used with the `<SplitView />` component.
+ * The `layoutId` is essential for saving user preferences into localStorage.
+ * The generation of the `layoutId` takes into account the current `tenantId`, `localeCode`, and the provided `applicationId`.
+ *
+ *  TODO: export the useLayoutId from a generic use package, such as app-admin. At the moment is not possible because of circular dependency issues.
+ */
+const useLayoutId = (applicationId: string) => {
+    const { tenant } = useTenancy();
+    const { getCurrentLocale } = useI18N();
+    const localeCode = getCurrentLocale("content");
+
+    if (!tenant || !localeCode) {
+        console.warn("Missing tenant or localeCode while creating layoutId");
+        return null;
+    }
+
+    return `T#${tenant}#L#${localeCode}#A#${applicationId}`;
+};
+
 const View = () => {
     const { currentFolderId } = useNavigateFolder();
+    const layoutId = useLayoutId("pb:page");
 
     return (
-        <SplitView>
+        <SplitView layoutId={layoutId}>
             <LeftPanel span={2}>
                 <Sidebar folderId={currentFolderId} />
             </LeftPanel>

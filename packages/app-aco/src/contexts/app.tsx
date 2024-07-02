@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { ApolloClient } from "apollo-client";
+import { CircularProgress } from "@webiny/ui/Progress";
+import { DialogsProvider } from "@webiny/app-admin";
 import { AcoApp, AcoAppMode, AcoError, AcoModel, AcoModelField } from "~/types";
 import { createGetAppQuery, GetAppResult, GetAppVariables } from "~/graphql/app.gql";
 import { FoldersProvider as FoldersContextProvider } from "./folders";
 import { SearchRecordsProvider as SearchRecordsContextProvider } from "./records";
-import { DialogsProvider as DialogsContextProvider } from "../dialogs";
 import { DisplayError } from "./DisplayError";
-import { ApolloClient } from "apollo-client";
 import { NavigateFolderWithRouterProvider } from "~/contexts/navigateFolderWithRouter";
-import { CircularProgress } from "@webiny/ui/Progress";
 import { AcoListProvider } from "~/contexts/acoList";
 
 export interface AcoAppProviderContext {
@@ -253,7 +253,7 @@ export const AcoAppProvider = ({
                         createStorageKey={createNavigateFolderStorageKey}
                     >
                         <AcoListProvider own={own} titleFieldId={model.titleFieldId}>
-                            <DialogsContextProvider>{children}</DialogsContextProvider>
+                            <DialogsProvider>{children}</DialogsProvider>
                         </AcoListProvider>
                     </NavigateFolderWithRouterProvider>
                 </SearchRecordsContextProvider>

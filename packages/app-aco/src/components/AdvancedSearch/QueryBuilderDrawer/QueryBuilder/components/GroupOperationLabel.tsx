@@ -15,7 +15,9 @@ export const GroupOperationLabel = ({ operation, show }: GroupOperationLabelProp
 
     return (
         <GroupOperationLabelContainer>
-            <Typography use={"subtitle2"}>{operation}</Typography>
+            <Typography use={"subtitle2"} tag={"span"}>
+                {operation}
+            </Typography>
         </GroupOperationLabelContainer>
     );
 };

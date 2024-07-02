@@ -1,7 +1,3 @@
-const camelCase = require("camelcase");
-const findUp = require("find-up");
-const path = require("path");
-
 module.exports = {
     type: "cli-command",
     name: "cli-command-run",
@@ -16,6 +12,10 @@ module.exports = {
                 });
             },
             async argv => {
+                const camelCase = require("camelcase");
+                const findUp = require("find-up");
+                const path = require("path");
+
                 const configFile = findUp.sync(["webiny.config.ts", "webiny.config.js"]);
                 let config = context.import(configFile);
 

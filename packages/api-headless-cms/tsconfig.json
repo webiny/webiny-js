@@ -16,7 +16,8 @@
     { "path": "../pubsub" },
     { "path": "../utils" },
     { "path": "../validation" },
-    { "path": "../api-wcp" }
+    { "path": "../api-wcp" },
+    { "path": "../aws-sdk" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -54,7 +55,9 @@
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
       "@webiny/api-wcp/*": ["../api-wcp/src/*"],
-      "@webiny/api-wcp": ["../api-wcp/src"]
+      "@webiny/api-wcp": ["../api-wcp/src"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"]
     },
     "baseUrl": "."
   }

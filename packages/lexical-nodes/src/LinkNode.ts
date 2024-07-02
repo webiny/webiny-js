@@ -11,19 +11,16 @@ import type {
     DOMConversionMap,
     DOMConversionOutput,
     EditorConfig,
-    GridSelection,
+    RangeSelection,
     LexicalCommand,
     LexicalNode,
     NodeKey,
-    NodeSelection,
-    RangeSelection,
     SerializedElementNode
 } from "lexical";
 
 import { addClassNamesToElement, isHTMLAnchorElement } from "@lexical/utils";
 import {
     $applyNodeReplacement,
-    $getSelection,
     $isElementNode,
     $isRangeSelection,
     createCommand,
@@ -100,8 +97,8 @@ export class LinkNode extends ElementNode {
         if (this.__title !== null) {
             element.title = this.__title;
         }
-        if (this.__alt !== null) {
-            element.alt = this.__alt;
+        if (this.__alt) {
+            element.setAttribute("alt", this.__alt);
         }
         addClassNamesToElement(element, config.theme.link);
         return element;
@@ -144,7 +141,7 @@ export class LinkNode extends ElementNode {
 
         if (alt !== prevNode.__alt) {
             if (alt) {
-                anchor.alt = alt;
+                anchor.setAttribute("alt", alt);
             } else {
                 anchor.removeAttribute("alt");
             }
@@ -153,7 +150,7 @@ export class LinkNode extends ElementNode {
         return false;
     }
 
-    static importDOM(): DOMConversionMap | null {
+    static override importDOM(): DOMConversionMap | null {
         return {
             a: () => ({
                 conversion: convertAnchorElement,
@@ -168,7 +165,8 @@ export class LinkNode extends ElementNode {
         const node = $createLinkNode(serializedNode.url, {
             rel: serializedNode.rel,
             target: serializedNode.target,
-            title: serializedNode.title
+            title: serializedNode.title,
+            alt: serializedNode.alt
         });
         node.setFormat(serializedNode.format);
         node.setIndent(serializedNode.indent);
@@ -195,6 +193,7 @@ export class LinkNode extends ElementNode {
             rel: this.getRel(),
             target: this.getTarget(),
             title: this.getTitle(),
+            alt: this.getAlt(),
             type: "link",
             url: this.getURL(),
             version: 1
@@ -237,6 +236,15 @@ export class LinkNode extends ElementNode {
         writable.__title = title;
     }
 
+    getAlt(): string | null {
+        return this.__alt;
+    }
+
+    setAlt(text: string | null): void {
+        const writable = super.getWritable();
+        writable.__alt = text;
+    }
+
     override insertNewAfter(
         selection: RangeSelection,
         restoreSelection = true
@@ -246,7 +254,8 @@ export class LinkNode extends ElementNode {
             const linkNode = $createLinkNode(this.__url, {
                 rel: this.__rel,
                 target: this.__target,
-                title: this.__title
+                title: this.__title,
+                alt: this.__alt
             });
             element.append(linkNode);
             return linkNode;
@@ -270,10 +279,7 @@ export class LinkNode extends ElementNode {
         return true;
     }
 
-    override extractWithChild(
-        _: LexicalNode,
-        selection: RangeSelection | NodeSelection | GridSelection
-    ): boolean {
+    override extractWithChild(_: LexicalNode, selection: RangeSelection): boolean {
         if (!$isRangeSelection(selection)) {
             return false;
         }
@@ -373,7 +379,7 @@ export class AutoLinkNode extends LinkNode {
         const element = this.getParentOrThrow().insertNewAfter(selection, restoreSelection);
         if ($isElementNode(element)) {
             const linkNode = $createAutoLinkNode(this.__url, {
-                rel: this._rel,
+                rel: this.__rel,
                 target: this.__target,
                 title: this.__title
             });
@@ -407,136 +413,3 @@ export function $isAutoLinkNode(node: LexicalNode | null | undefined): node is A
 export const TOGGLE_LINK_COMMAND: LexicalCommand<
     string | ({ url: string } & LinkAttributes) | null
 > = createCommand("TOGGLE_LINK_COMMAND");
-
-/**
- * Generates or updates a LinkNode. It can also delete a LinkNode if the URL is null,
- * but saves any children and brings them up to the parent node.
- * @param url - The URL the link directs to.
- * @param attributes - Optional HTML a tag attributes. { target, rel, title }
- */
-export function toggleLink(url: null | string, attributes: LinkAttributes = {}): void {
-    const { target, title } = attributes;
-    const rel = attributes.rel === undefined ? "noreferrer" : attributes.rel;
-    const selection = $getSelection();
-
-    if (!$isRangeSelection(selection)) {
-        return;
-    }
-    const nodes = selection.extract();
-
-    if (url === null) {
-        // Remove LinkNodes
-        nodes.forEach(node => {
-            const parent = node.getParent();
-
-            if ($isLinkNode(parent)) {
-                const children = parent.getChildren();
-
-                for (let i = 0; i < children.length; i++) {
-                    parent.insertBefore(children[i]);
-                }
-
-                parent.remove();
-            }
-        });
-    } else {
-        // Add or merge LinkNodes
-        if (nodes.length === 1) {
-            const firstNode = nodes[0];
-            // if the first node is a LinkNode or if its
-            // parent is a LinkNode, we update the URL, target and rel.
-            const linkNode = $isLinkNode(firstNode) ? firstNode : $getLinkAncestor(firstNode);
-            if (linkNode !== null) {
-                linkNode.setURL(url);
-                if (target !== undefined) {
-                    linkNode.setTarget(target);
-                }
-                if (rel !== null) {
-                    linkNode.setRel(rel);
-                }
-                if (title !== undefined) {
-                    linkNode.setTitle(title);
-                }
-                return;
-            }
-        }
-
-        let prevParent: ElementNode | LinkNode | null = null;
-        let linkNode: LinkNode | null = null;
-
-        nodes.forEach(node => {
-            const parent = node.getParent();
-
-            if (
-                parent === linkNode ||
-                parent === null ||
-                ($isElementNode(node) && !node.isInline())
-            ) {
-                return;
-            }
-
-            if ($isLinkNode(parent)) {
-                linkNode = parent;
-                parent.setURL(url);
-                if (target !== undefined) {
-                    parent.setTarget(target);
-                }
-                if (rel !== null) {
-                    linkNode.setRel(rel);
-                }
-                if (title !== undefined) {
-                    linkNode.setTitle(title);
-                }
-                return;
-            }
-
-            if (!parent.is(prevParent)) {
-                prevParent = parent;
-                linkNode = $createLinkNode(url, { rel, target });
-
-                if ($isLinkNode(parent)) {
-                    if (node.getPreviousSibling() === null) {
-                        parent.insertBefore(linkNode);
-                    } else {
-                        parent.insertAfter(linkNode);
-                    }
-                } else {
-                    node.insertBefore(linkNode);
-                }
-            }
-
-            if ($isLinkNode(node)) {
-                if (node.is(linkNode)) {
-                    return;
-                }
-                if (linkNode !== null) {
-                    const children = node.getChildren();
-
-                    for (let i = 0; i < children.length; i++) {
-                        linkNode.append(children[i]);
-                    }
-                }
-
-                node.remove();
-                return;
-            }
-
-            if (linkNode !== null) {
-                linkNode.append(node);
-            }
-        });
-    }
-}
-
-function $getLinkAncestor(node: LexicalNode): null | LexicalNode {
-    return $getAncestor(node, $isLinkNode);
-}
-
-function $getAncestor<NodeType extends LexicalNode = LexicalNode>(
-    node: LexicalNode,
-    predicate: (ancestor: LexicalNode) => ancestor is NodeType
-): null | LexicalNode {
-    let parent: null | LexicalNode = node;
-    while (parent !== null && (parent = parent.getParent()) !== null && !predicate(parent)) {}
-    return parent;
-}

@@ -25,6 +25,7 @@ export interface CreatePulumiAppParams<TResources extends Record<string, unknown
     name: string;
     path: string;
     config?: CreateConfig;
+
     program(app: PulumiApp): TResources | Promise<TResources>;
 }
 
@@ -49,6 +50,16 @@ export interface PulumiApp<TResources = Record<string, unknown>> {
         create: CreateConfig;
         run: RunConfig;
     };
+    env: {
+        name: string;
+
+        // Set to `true` if the environment into which the application is being deployed
+        // is considered a production environment. The list of environment names
+        // that are considered production environments is defined via the
+        // `productionEnvironments` parameter. Learn more:
+        // https://www.webiny.com/docs/infrastructure/basics/modify-cloud-infrastructure#defining-multiple-production-environments
+        isProduction: boolean;
+    };
 
     run(params: RunConfig): Record<string, any>;
 
@@ -62,19 +73,23 @@ export interface PulumiApp<TResources = Record<string, unknown>> {
     addRemoteResource<T>(name: string, getter: () => Promise<T>): PulumiAppRemoteResource<T>;
 
     addOutput<T>(name: string, output: T): void;
+
     addOutputs(outputs: Record<string, unknown>): void;
 
     addModule<TModule>(def: PulumiAppModuleDefinition<TModule, void>): TModule;
+
     addModule<TModule, TConfig>(
         def: PulumiAppModuleDefinition<TModule, TConfig>,
         config: TConfig
     ): TModule;
 
     getModule<TConfig, TModule>(def: PulumiAppModuleDefinition<TModule, TConfig>): TModule;
+
     getModule<TConfig, TModule>(
         def: PulumiAppModuleDefinition<TModule, TConfig>,
         opts: { optional: false }
     ): TModule;
+
     getModule<TConfig, TModule>(
         def: PulumiAppModuleDefinition<TModule, TConfig>,
         opts: { optional: true }

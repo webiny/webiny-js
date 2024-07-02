@@ -6,7 +6,8 @@ interface Params {
     index: number;
     name: string;
 }
-const getValue = (params: Params): string[] | undefined => {
+
+export const getValue = (params: Params): string[] | undefined => {
     const { bind, index, name } = params;
     const value = bind.value || [];
 
@@ -16,5 +17,3 @@ const getValue = (params: Params): string[] | undefined => {
 
     return value;
 };
-
-export default getValue;

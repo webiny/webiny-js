@@ -18,11 +18,13 @@ export interface ShowResultsDialogParams {
     results: Result[];
     title?: string;
     message?: string;
+    onCancel?: () => Promise<void>;
 }
 
 export interface UseDialogWithReportResponse {
     showConfirmationDialog: (params: ShowConfirmationDialogParams) => void;
     showResultsDialog: (results: ShowResultsDialogParams) => void;
+    hideResultsDialog: () => void;
 }
 
 export const useDialogWithReport = (): UseDialogWithReportResponse => {
@@ -80,8 +82,15 @@ export const useDialogWithReport = (): UseDialogWithReportResponse => {
         }, 10);
     };
 
+    const hideResultsDialog = () => {
+        ui.setState(ui => {
+            return { ...ui, dialog: null };
+        });
+    };
+
     return {
         showConfirmationDialog,
-        showResultsDialog
+        showResultsDialog,
+        hideResultsDialog
     };
 };

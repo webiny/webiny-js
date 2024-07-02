@@ -1,7 +1,7 @@
-import { CmsRichTextRendererPlugin, RTEContents } from "~/plugins";
+import { CmsRichTextRendererPlugin, RichTextContents } from "~/plugins";
 
 interface RichTextRenderer {
-    render(contents: RTEContents): Promise<unknown>;
+    render(contents: RichTextContents): Promise<unknown>;
 }
 
 class NullRenderer implements RichTextRenderer {
@@ -20,7 +20,7 @@ export class RichTextPluginsProcessor {
         );
     }
 
-    async render(contents: RTEContents) {
+    async render(contents: RichTextContents) {
         return this.renderer.render(contents);
     }
 }
@@ -34,11 +34,11 @@ class RichTextRendererDecorator implements RichTextRenderer {
         this.plugin = plugin;
     }
 
-    render(contents: RTEContents) {
+    render(contents: RichTextContents) {
         return this.plugin.render(contents, this.next);
     }
 
-    private next = (contents: RTEContents) => {
+    private next = (contents: RichTextContents) => {
         return this.renderer.render(contents);
     };
 }

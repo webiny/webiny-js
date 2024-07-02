@@ -36,10 +36,10 @@ const FileAliasMessage = styled("span")`
     font-size: 12px;
 `;
 
-const PATHNAME_REGEX = /^\/[/.a-zA-Z0-9-]+$/;
+const PATHNAME_REGEX = /^\/[/.a-zA-Z0-9-_]+$/;
 
 export const Aliases = () => {
-    const { value, onChange } = useBind<string[]>({ name: "aliases" });
+    const { value, onChange } = useBind({ name: "aliases" });
 
     const addAlias = () => {
         const newValue = Array.isArray(value) ? [...value] : [];

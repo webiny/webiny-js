@@ -97,6 +97,11 @@ export const FileManagerRenderer = makeDecoratable(
     createVoidComponent<FileManagerRendererProps>()
 );
 
+type ShowFileManagerProps =
+    | FileManagerOnChange<FileManagerFileItem>
+    | FileManagerOnChange<FileManagerFileItem[]>
+    | undefined;
+
 export const FileManager = ({ children, render, onChange, ...rest }: FileManagerProps) => {
     const containerRef = useRef<HTMLElement>(getPortalTarget());
     const [show, setShow] = useState(rest.show ?? false);
@@ -106,7 +111,7 @@ export const FileManager = ({ children, render, onChange, ...rest }: FileManager
         onChangeRef.current = onChange;
     }, [onChange]);
 
-    const showFileManager = useCallback(onChange => {
+    const showFileManager = useCallback((onChange: ShowFileManagerProps) => {
         if (typeof onChange === "function") {
             onChangeRef.current = onChange;
         }
@@ -123,10 +128,7 @@ export const FileManager = ({ children, render, onChange, ...rest }: FileManager
                     // @ts-expect-error
                     <FileManagerRenderer
                         onClose={() => setShow(false)}
-                        onChange={
-                            /* TODO: figure out how to create a conditional type based on the value of `rest.multiple` */
-                            onChangeRef.current
-                        }
+                        onChange={onChangeRef.current}
                         {...rest}
                     />,
                     containerRef.current

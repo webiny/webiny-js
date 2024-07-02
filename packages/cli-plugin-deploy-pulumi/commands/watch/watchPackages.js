@@ -1,9 +1,9 @@
 const path = require("path");
-const fs = require("fs");
 const { Worker } = require("worker_threads");
 const chalk = require("chalk");
 const execa = require("execa");
 const { getRandomColorForString } = require("../../utils");
+const { WebinyConfigFile } = require("./WebinyConfigFile");
 
 const parseMessage = message => {
     try {
@@ -135,9 +135,11 @@ const getPackages = async ({ inputs, context, output }) => {
         const packages = [];
         for (const packageName in result) {
             const root = result[packageName];
-            const configPath = fs.existsSync(path.join(root, "webiny.config.ts"))
-                ? path.join(root, "webiny.config.ts")
-                : path.join(root, "webiny.config.js");
+            const configPath = WebinyConfigFile.forWorkspace(root).getAbsolutePath();
+
+            if (!configPath) {
+                continue;
+            }
 
             try {
                 packages.push({

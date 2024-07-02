@@ -1,10 +1,11 @@
-import React, { ReactNode, useContext, useEffect, useMemo, useState } from "react";
+import React, { ReactNode, useContext, useEffect, useMemo } from "react";
+import { useWcp } from "@webiny/app-wcp/hooks/useWcp";
+import { useStateIfMounted } from "@webiny/app-admin";
 import { dataLoader, loadingHandler } from "~/handlers";
 import { FolderItem, Loading, LoadingActions } from "~/types";
 import { AcoAppContext } from "~/contexts/app";
 import { useFoldersApi } from "~/hooks";
 import { ROOT_FOLDER } from "~/constants";
-import { useWcp } from "@webiny/app-wcp/hooks/useWcp";
 
 export interface FoldersContextFolderLevelPermissions {
     canManageStructure(folderId: string): boolean;
@@ -54,8 +55,8 @@ const defaultLoading: Record<LoadingActions, boolean> = {
 
 export const FoldersProvider = ({ children, ...props }: Props) => {
     const appContext = useContext(AcoAppContext);
-    const [folders, setFolders] = useState<FolderItem[] | null>(null);
-    const [loading, setLoading] = useState<Loading<LoadingActions>>(defaultLoading);
+    const [folders, setFolders] = useStateIfMounted<FolderItem[] | null>(null);
+    const [loading, setLoading] = useStateIfMounted<Loading<LoadingActions>>(defaultLoading);
     const foldersApi = useFoldersApi();
     const { canUseFolderLevelPermissions } = useWcp();
 
@@ -124,11 +125,9 @@ export const FoldersProvider = ({ children, ...props }: Props) => {
             },
 
             async createFolder(folder) {
-                const newFolder = await dataLoader(loadingHandler("CREATE", setLoading), () =>
+                return await dataLoader(loadingHandler("CREATE", setLoading), () =>
                     foldersApi.createFolder(type, folder)
                 );
-
-                return newFolder;
             },
 
             async updateFolder(folder, options) {

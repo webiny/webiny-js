@@ -10,15 +10,15 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "inversify": "^6.0.1"
+    "inversify": "^6.0.1",
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "reflect-metadata": "^0.1.13",
     "ttypescript": "^1.5.13",
     "typescript": "4.7.4",
-    "zod": "^3.21.4"
+    "zod": "^3.22.4"
   },
   "publishConfig": {
     "access": "public",

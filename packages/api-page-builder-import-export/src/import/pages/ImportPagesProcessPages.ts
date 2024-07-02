@@ -52,6 +52,7 @@ export class ImportPagesProcessPages {
                 pageIdList.push(page.pid);
                 done.push(item.key);
             } catch (ex) {
+                console.error(ex);
                 await store.addErrorLog({
                     error: ex,
                     message: `Could not import page: ${item.key}.`,

@@ -1,5 +1,6 @@
 import React from "react";
 import { Element, ElementProps } from "./Element";
+import { Elements } from "./Elements";
 import { IconButton } from "./IconButton";
 import { makeDecoratable } from "@webiny/react-composition";
 
@@ -19,6 +20,10 @@ const BaseElementAction = makeDecoratable("ElementAction", (props: ElementAction
             after={props.after ? getElementId(props.after) : undefined}
         />
     );
+});
+
+export const ElementActions = makeDecoratable("ElementActions", () => {
+    return <Elements scope={"elementActions"} />;
 });
 
 export const ElementAction = Object.assign(BaseElementAction, { IconButton });

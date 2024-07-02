@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { LexicalCommand } from "lexical";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Compose, makeDecoratable } from "@webiny/react-composition";
 import { TypographyValue } from "@webiny/lexical-theme";
 import { TypographyActionContext } from "~/context/TypographyActionContext";
 import {
     $isHeadingNode,
+    $isListNode,
     $isParagraphNode,
     $isQuoteNode,
     $isTypographyNode,
@@ -50,9 +50,8 @@ export type TypographyAction = React.ComponentType<unknown> & {
 };
 
 export const TypographyAction: TypographyAction = () => {
-    const [editor] = useLexicalComposerContext();
     const [typography, setTypography] = useState<TypographyValue>();
-    const { themeEmotionMap } = useRichTextEditor();
+    const { editor, themeEmotionMap } = useRichTextEditor();
     const { element } = useCurrentElement();
     const isTypographySelected = $isTypographyNode(element);
     const isParagraphSelected = $isParagraphNode(element);
@@ -133,7 +132,7 @@ export const TypographyAction: TypographyAction = () => {
         }
 
         // list and quote element
-        if (themeEmotionMap && element?.getStyleId) {
+        if (themeEmotionMap && ($isListNode(element) || $isQuoteNode(element))) {
             const themeStyleId = element?.getStyleId() || undefined;
             if (themeStyleId) {
                 const elementStyle = themeEmotionMap[themeStyleId];

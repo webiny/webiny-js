@@ -2,7 +2,7 @@ import React, { forwardRef, useMemo } from "react";
 import { format, addMinutes } from "date-fns";
 
 import { ReactComponent as PreviewIcon } from "@material-design-icons/svg/outlined/visibility.svg";
-import { DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
+import { Columns, DataTable, OnSortingChange, Sorting } from "@webiny/ui/DataTable";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 
@@ -16,10 +16,11 @@ import {
     appColumn,
     previewColumn
 } from "./styled";
+import { ActionType } from "~/types";
 
 type ActionProps = {
     label: string;
-    value: string;
+    value: ActionType;
 };
 
 export const Action = ({ label, value }: ActionProps) => {
@@ -39,14 +40,21 @@ export interface TableProps {
     hasAccessToUsers: boolean;
 }
 
+export interface EntryWithPreview extends Entry {
+    /**
+     * We need the preview property because data table is expecting it in columns.
+     */
+    preview?: string;
+}
+
 export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const { records, loading, handleRecordSelect, sorting, onSortingChange, hasAccessToUsers } =
         props;
 
-    const columns = {
+    const columns: Columns<EntryWithPreview> = {
         savedOn: {
             header: "Timestamp",
-            cell: ({ savedOn }: Entry) => {
+            cell: ({ savedOn }) => {
                 const date = new Date(savedOn);
 
                 return (
@@ -66,7 +74,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         },
         app: {
             header: "App/Entity",
-            cell: ({ app, entity, entityId }: Entry) => (
+            cell: ({ app, entity, entityId }) => (
                 <>
                     <Text use={"subtitle1"}>{app}</Text>
                     {entity && <TextGray use={"body2"}>{` [Entity: ${entity.label}]`}</TextGray>}
@@ -85,17 +93,17 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         },
         action: {
             header: "Action",
-            cell: ({ action }: Entry) => <Action label={action.label} value={action.value} />
+            cell: ({ action }) => <Action label={action.label} value={action.value} />
         },
         message: {
             header: "Message",
-            cell: ({ message }: Entry) => <Text use={"subtitle1"}>{message}</Text>,
+            cell: ({ message }) => <Text use={"subtitle1"}>{message}</Text>,
             className: wideColumn
         },
         ...(hasAccessToUsers && {
             initiator: {
                 header: "Initiator",
-                cell: ({ initiator }: Entry) => (
+                cell: ({ initiator }) => (
                     <a href={`/admin-users?id=${initiator.id}`} target={"blank"}>
                         <Text use={"subtitle1"}>{initiator.name}</Text>
                     </a>
@@ -104,7 +112,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         }),
         preview: {
             header: "",
-            cell: (auditLog: Entry) => (
+            cell: auditLog => (
                 <IconButton onClick={() => handleRecordSelect(auditLog)} icon={<PreviewIcon />} />
             ),
             className: previewColumn

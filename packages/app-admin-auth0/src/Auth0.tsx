@@ -2,16 +2,12 @@ import React, { Fragment, useCallback, useEffect, useRef, useState } from "react
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 import get from "lodash/get";
-import {
-    LoginScreenRenderer,
-    useTenancy,
-    createDecorator,
-    useTags
-} from "@webiny/app-serverless-cms";
+import { LoginScreenRenderer, useTenancy, useTags } from "@webiny/app-serverless-cms";
 import {
     createAuthentication,
     Auth0Options,
-    CreateAuthenticationConfig
+    CreateAuthenticationConfig,
+    OnLogout
 } from "./createAuthentication";
 import { UserMenuModule } from "~/modules/userMenu";
 import { AppClientModule } from "~/modules/appClient";
@@ -21,6 +17,7 @@ interface AppClientIdLoaderProps {
     auth0: Auth0Options;
     rootAppClientId: string;
     children: React.ReactNode;
+    onLogout?: OnLogout;
     onError?: CreateAuthenticationConfig["onError"];
 }
 
@@ -35,6 +32,7 @@ const GET_CLIENT_ID = gql`
 const AppClientIdLoader = ({
     auth0,
     rootAppClientId,
+    onLogout,
     onError,
     children
 }: AppClientIdLoaderProps) => {
@@ -55,6 +53,7 @@ const AppClientIdLoader = ({
         if (tenantId === "root") {
             console.info(`Configuring Auth0 with App Client Id "${rootAppClientId}"`);
             authRef.current = createAuthentication({
+                onLogout,
                 onError,
                 auth0: {
                     ...auth0,
@@ -89,7 +88,7 @@ const AppClientIdLoader = ({
 };
 
 const createLoginScreenPlugin = (params: Auth0Props) => {
-    return createDecorator(LoginScreenRenderer, () => {
+    return LoginScreenRenderer.createDecorator(() => {
         return function Auth0LoginScreen({ children }) {
             const { installer } = useTags();
 
@@ -119,6 +118,7 @@ const createLoginScreenPlugin = (params: Auth0Props) => {
 export interface Auth0Props {
     auth0: Auth0Options;
     rootAppClientId: string;
+    onLogout?: OnLogout;
     children?: React.ReactNode;
 }
 

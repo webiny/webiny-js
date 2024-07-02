@@ -217,7 +217,7 @@ const MarginPaddingSettings = ({
     });
 
     const toggleAdvanced = useCallback(
-        event => {
+        (event: React.MouseEvent) => {
             event.stopPropagation();
             getUpdateValue(`${displayMode}.advanced`)(!advanced);
         },
@@ -287,7 +287,7 @@ const MarginPaddingSettings = ({
                 <TopLeft />
                 <Top className="align-center">
                     <SpacingPicker
-                        value={top}
+                        value={top || ""}
                         onChange={updateValueTop}
                         options={options[styleAttribute]}
                     />
@@ -295,7 +295,7 @@ const MarginPaddingSettings = ({
                 <TopRight />
                 <Left>
                     <SpacingPicker
-                        value={left}
+                        value={left || ""}
                         onChange={updateValueLeft}
                         options={options[styleAttribute]}
                         disabled={!advanced}
@@ -310,7 +310,7 @@ const MarginPaddingSettings = ({
                 </Center>
                 <Right>
                     <SpacingPicker
-                        value={right}
+                        value={right || ""}
                         onChange={updateValueRight}
                         options={options[styleAttribute]}
                         disabled={!advanced}
@@ -319,7 +319,7 @@ const MarginPaddingSettings = ({
                 <BottomLeft />
                 <Bottom className={"align-center"}>
                     <SpacingPicker
-                        value={bottom}
+                        value={bottom || ""}
                         onChange={updateValueBottom}
                         options={options[styleAttribute]}
                         disabled={!advanced}

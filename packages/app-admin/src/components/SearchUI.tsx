@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import styled from "@emotion/styled";
-import InputField from "./SimpleUI/InputField";
+import InputField, { OnKeyDownProps } from "./SimpleUI/InputField";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 
 const SearchWrapper = styled("div")({
@@ -44,9 +44,10 @@ export interface SearchProps {
     onEnter?: () => any;
     inputPlaceholder?: string;
 }
+
 const Search = ({ value, onChange, onEnter, inputPlaceholder = "Search..." }: SearchProps) => {
     const inputOnKeyDown = useCallback(
-        e => {
+        (e: OnKeyDownProps) => {
             if (typeof onEnter === "function" && e.key === "Enter") {
                 onEnter();
             }
@@ -60,6 +61,7 @@ const Search = ({ value, onChange, onEnter, inputPlaceholder = "Search..." }: Se
                 <SearchIcon />
             </div>
             <InputField
+                id={"search-input"}
                 onKeyDown={inputOnKeyDown}
                 className="search__input"
                 placeholder={inputPlaceholder}

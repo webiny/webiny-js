@@ -7,6 +7,7 @@ import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CREATE_TENANT, GET_TENANT, UPDATE_TENANT, LIST_TENANTS } from "~/graphql";
+import { TenantItem } from "~/types";
 
 const t = i18n.ns("app-tenant-manager/tenants/form");
 
@@ -39,7 +40,7 @@ export const useTenantForm = () => {
     const loading = [getQuery, createMutation, updateMutation].some(item => item.loading);
 
     const onSubmit = useCallback(
-        async data => {
+        async (data: TenantItem) => {
             const [operation, args] = id
                 ? [update, { variables: { id: data.id, data: omit(data, ["id", "parent"]) } }]
                 : [create, { variables: { data } }];

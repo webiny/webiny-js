@@ -1,1 +1,1 @@
-module.exports = () => [require("./commands"), require("./plugins")];
+module.exports = () => [require("./commands")];

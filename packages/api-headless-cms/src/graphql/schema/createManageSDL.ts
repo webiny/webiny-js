@@ -5,7 +5,7 @@ import { renderGetFilterFields } from "~/utils/renderGetFilterFields";
 import { renderInputFields } from "~/utils/renderInputFields";
 import { renderFields } from "~/utils/renderFields";
 import { CmsGraphQLSchemaSorterPlugin } from "~/plugins";
-import { ENTRY_META_FIELDS, isDateTimeEntryMetaField, isNullableEntryMetaField } from "~/constants";
+import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants";
 
 interface CreateManageSDLParams {
     models: CmsModel[];
@@ -70,10 +70,9 @@ export const createManageSDL: CreateManageSDL = ({
     }).join("\n");
 
     const onByMetaGqlFields = ENTRY_META_FIELDS.map(field => {
-        const isNullable = isNullableEntryMetaField(field) ? "" : "!";
         const fieldType = isDateTimeEntryMetaField(field) ? "DateTime" : "CmsIdentity";
 
-        return `${field}: ${fieldType}${isNullable}`;
+        return `${field}: ${fieldType}`;
     }).join("\n");
 
     // Had to remove /* GraphQL */ because prettier would not format the code correctly.
@@ -84,6 +83,9 @@ export const createManageSDL: CreateManageSDL = ({
             entryId: String!
             
             ${onByMetaGqlFields}
+            
+            publishedOn: DateTime @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'firstPublishedOn' or 'lastPublishedOn' field.")
+            ownedBy: CmsIdentity @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'createdBy' field.")
             
             meta: ${singularName}Meta
             ${fields.map(f => f.fields).join("\n")}
@@ -181,6 +183,14 @@ export const createManageSDL: CreateManageSDL = ({
                 after: String
                 search: String
             ): ${singularName}ListResponse
+            
+            listDeleted${pluralName} (
+                where: ${singularName}ListWhereInput
+                sort: [${singularName}ListSorter]
+                limit: Int
+                after: String
+                search: String
+            ): ${singularName}ListResponse
         }
 
         extend type Mutation {
@@ -195,6 +205,8 @@ export const createManageSDL: CreateManageSDL = ({
             move${singularName}(revision: ID!, folderId: ID!): ${singularName}MoveResponse
 
             delete${singularName}(revision: ID!, options: CmsDeleteEntryOptions): CmsDeleteResponse
+            
+            restore${singularName}FromBin(revision: ID!): ${singularName}Response
 
             deleteMultiple${pluralName}(entries: [ID!]!): CmsDeleteMultipleResponse!
     

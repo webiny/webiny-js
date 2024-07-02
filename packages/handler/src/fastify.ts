@@ -4,7 +4,7 @@ import fastify, {
     FastifyServerOptions as ServerOptions,
     preSerializationAsyncHookHandler
 } from "fastify";
-import { getWebinyVersionHeaders } from "@webiny/utils";
+import { getWebinyVersionHeaders, middleware, MiddlewareCallable } from "@webiny/utils";
 import {
     ContextRoutes,
     DefinedContextRoutes,
@@ -19,7 +19,6 @@ import { RoutePlugin } from "./plugins/RoutePlugin";
 import { createHandlerClient } from "@webiny/handler-client";
 import fastifyCookie from "@fastify/cookie";
 import fastifyCompress from "@fastify/compress";
-import { middleware, MiddlewareCallable } from "~/middleware";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "./plugins/BeforeHandlerPlugin";
 import { HandlerResultPlugin } from "./plugins/HandlerResultPlugin";
@@ -187,6 +186,10 @@ export const createHandler = (params: CreateHandlerParams) => {
      */
     const app = fastify({
         bodyLimit: 536870912, // 512MB
+
+        // TODO: in the near future, pass own Pino logger instance.
+        logger: false,
+
         ...(params.options || {})
     });
 

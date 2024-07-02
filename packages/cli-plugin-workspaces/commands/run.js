@@ -1,8 +1,7 @@
 const chalk = require("chalk");
-const randomColor = require("random-color");
 const execa = require("execa");
 const pMap = require("p-map");
-const { createGraph, getPackages, normalizeArray } = require("./utils");
+const { createGraph, getPackages, normalizeArray, randomColor } = require("./utils");
 
 const logLine = prefix => data => {
     const line = data.toString().replace(/\s\s*$/gm, "");
@@ -20,8 +19,8 @@ module.exports = async (inputs, context) => {
 
     const runScript = pkg => {
         return new Promise((resolve, reject) => {
-            const color = randomColor().hexString();
-            const prefix = chalk.hex(color).bold(pkg.name);
+            const hex = randomColor().hex();
+            const prefix = chalk.hex(hex).bold(pkg.name);
             const logger = logLine(prefix);
 
             // Let's build the complete list of args we're about to pass to execa. Also, we must ensure all of the extra

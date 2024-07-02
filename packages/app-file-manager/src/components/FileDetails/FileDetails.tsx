@@ -1,6 +1,7 @@
 import React, { useMemo, useRef } from "react";
 import ReactDOM from "react-dom";
-// @ts-expect-error
+import noop from "lodash/noop";
+// @ts-expect-error This package has no types.
 import { useHotkeys } from "react-hotkeyz";
 import styled from "@emotion/styled";
 import { FileItem } from "@webiny/app-admin/types";
@@ -13,7 +14,7 @@ import { Tab, Tabs } from "@webiny/ui/Tabs";
 import { FileDetailsProvider } from "~/components/FileDetails/FileDetailsProvider";
 import { Preview } from "./components/Preview";
 import { PreviewMeta } from "./components/PreviewMeta";
-import { Actions, FileDetailsActions } from "./components/Actions";
+import { Actions } from "./components/Actions";
 import { Header } from "./components/Header";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Content } from "./components/Content";
@@ -47,10 +48,9 @@ interface FileDetailsInnerProps {
     file: FileItem;
     onClose: () => void;
     onSubmit: (fileData: FileItem) => void;
-    actions: FileDetailsActions;
 }
 
-const FileDetailsInner = ({ file, actions, ...props }: FileDetailsInnerProps) => {
+const FileDetailsInner = ({ file, ...props }: FileDetailsInnerProps) => {
     const fileModel = useFileModel();
     const { fileDetails } = useFileManagerViewConfig();
 
@@ -90,7 +90,7 @@ const FileDetailsInner = ({ file, actions, ...props }: FileDetailsInnerProps) =>
                     <Content>
                         <Content.Panel flex={parseFloat(leftPanel)}>
                             <Elevation z={2} style={{ margin: 20 }}>
-                                <Actions file={file} actions={actions} />
+                                <Actions />
                                 <Preview />
                                 <PreviewMeta />
                             </Elevation>
@@ -142,7 +142,7 @@ export interface FileDetailsProps {
     loading: string | null;
     onClose: () => void;
     onSave: (file: FileItem) => void;
-    actions?: Partial<FileDetailsActions>;
+    onSetFile?: (file: FileItem) => void;
 }
 
 export const FileDetails = ({
@@ -151,7 +151,7 @@ export const FileDetails = ({
     onSave,
     loading,
     file,
-    ...props
+    onSetFile = noop
 }: FileDetailsProps) => {
     useHotkeys({
         zIndex: 55,
@@ -160,17 +160,6 @@ export const FileDetails = ({
             esc: onClose
         }
     });
-
-    const actions: FileDetailsActions = Object.assign(
-        {
-            copyUrl: true,
-            delete: true,
-            moveToFolder: true,
-            download: true,
-            edit: true
-        },
-        props.actions
-    );
 
     const { fileDetails } = useFileManagerViewConfig();
 
@@ -189,13 +178,8 @@ export const FileDetails = ({
                     {loading && <CircularProgress label={loading} />}
                     {file && (
                         <FileProvider file={file}>
-                            <FileDetailsProvider hideFileDetails={onClose}>
-                                <FileDetailsInner
-                                    file={file}
-                                    onClose={onClose}
-                                    onSubmit={onSave}
-                                    actions={actions}
-                                />
+                            <FileDetailsProvider hideFileDetails={onClose} onSetFile={onSetFile}>
+                                <FileDetailsInner file={file} onClose={onClose} onSubmit={onSave} />
                             </FileDetailsProvider>
                         </FileProvider>
                     )}

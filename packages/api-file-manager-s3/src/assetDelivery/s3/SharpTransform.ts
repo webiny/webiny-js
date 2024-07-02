@@ -75,6 +75,7 @@ export class SharpTransform implements AssetTransformationStrategy {
                  */
                 const buffer = await optimizedImage.getContents();
                 const transformedBuffer = sharp(buffer, { animated: this.isAssetAnimated(asset) })
+                    .withMetadata()
                     .resize({ width })
                     .toBuffer();
 
@@ -160,6 +161,7 @@ export class SharpTransform implements AssetTransformationStrategy {
     private optimizeJpeg(buffer: Buffer) {
         return sharp(buffer)
             .resize({ width: 2560, withoutEnlargement: true, fit: "inside" })
+            .withMetadata()
             .toFormat("jpeg", { quality: 90 });
     }
 }

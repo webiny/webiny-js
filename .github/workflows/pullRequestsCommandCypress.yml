@@ -8,21 +8,6 @@ env:
   NODE_OPTIONS: '--max_old_space_size=4096'
   AWS_REGION: eu-central-1
 jobs:
-  validateWorkflows:
-    name: Validate workflows
-    steps:
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-      - uses: actions/checkout@v4
-      - name: Install dependencies
-        run: yarn --immutable
-      - name: Validate
-        run: npx github-actions-wac validate
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   checkComment:
     name: Check comment for /cypress
     if: ${{ github.event.issue.pull_request }}
@@ -52,14 +37,27 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  e2e-wby-cms-ddb-constants:
+  validateWorkflows:
+    name: Validate workflows
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Validate
+        run: npx github-actions-wac validate
     needs: checkComment
-    name: E2E (DDB) - Constants
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  baseBranch:
+    needs: checkComment
+    name: Get base branch
     outputs:
-      global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
-      run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
-      cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
-      pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
+      base-branch: ${{ steps.base-branch.outputs.base-branch }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -67,29 +65,112 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
-      - name: Checkout Pull Request
-        working-directory: ''
-        run: hub pr checkout ${{ github.event.issue.number }}
+      - name: Get base branch
+        id: base-branch
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: >-
+          echo "base-branch=$(hub pr show ${{ github.event.issue.number }} -f
+          %B)" >> $GITHUB_OUTPUT
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  constants:
+    needs: baseBranch
+    name: Create constants
+    outputs:
+      global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
+      run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
       - name: Create global cache key
         id: global-cache-key
         run: >-
-          echo "global-cache-key=$(hub pr show ${{ github.event.issue.number }}
-          -f %B)-${{ runner.os }}-$(/bin/date -u "+%m%d")-${{
-          vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          echo "global-cache-key=${{ needs.baseBranch.outputs.base-branch }}-${{
+          runner.os }}-$(/bin/date -u "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX
+          }}" >> $GITHUB_OUTPUT
       - name: Create workflow run cache key
         id: run-cache-key
         run: >-
           echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
           vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  build:
+    name: Build
+    needs:
+      - baseBranch
+      - constants
+    runs-on: webiny-build-packages
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Install Hub Utility
+        run: sudo apt-get install -y hub
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: hub pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - uses: actions/cache@v4
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v4
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.global-cache-key }}
+      - name: Install dependencies
+        run: yarn --immutable
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Build packages
+        run: yarn build:quick
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - uses: actions/cache@v4
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-wby-cms-ddb-constants:
+    needs:
+      - baseBranch
+      - constants
+      - build
+    name: Constants - DDB
+    outputs:
+      cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
+      pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - uses: actions/checkout@v4
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Install Hub Utility
+        run: sudo apt-get install -y hub
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: hub pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: List Cypress tests folders
         id: list-cypress-folders
         run: >-
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Get Pulumi backend URL
         id: get-pulumi-backend-url
         run: >-
@@ -100,7 +181,10 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2e-wby-cms-ddb-project-setup:
-    needs: e2e-wby-cms-ddb-constants
+    needs:
+      - baseBranch
+      - constants
+      - e2e-wby-cms-ddb-constants
     name: E2E (DDB) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -123,34 +207,30 @@ jobs:
           aws-region: eu-central-1
       - uses: actions/checkout@v4
         with:
-          path: checked-out-pr
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
-          path: checked-out-pr/.yarn/cache
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: checked-out-pr/.webiny/cached-packages
-          key: ${{ needs.e2e-wby-cms-ddb-constants.outputs.global-cache-key }}
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
-        working-directory: checked-out-pr
         run: yarn --immutable
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Build packages
-        working-directory: checked-out-pr
         run: yarn build:quick
-      - uses: actions/cache@v4
-        with:
-          path: checked-out-pr/.webiny/cached-packages
-          key: ${{ needs.e2e-wby-cms-ddb-constants.outputs.run-cache-key }}
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Start Verdaccio local server
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
           .verdaccio.yaml
@@ -161,19 +241,19 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
       - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Version and publish to Verdaccio
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn release --type=verdaccio
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb
           retention-days: 1
-          path: |
-            checked-out-pr/.verdaccio/
-            checked-out-pr/.verdaccio.yaml
+          path: |-
+            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio/
+            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -211,16 +291,16 @@ jobs:
         working-directory: new-webiny-project
         run: yarn webiny deploy apps/website --env dev
       - name: Create Cypress config
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn setup-cypress --projectFolder ../new-webiny-project
       - name: Save Cypress config
         id: save-cypress-config
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
       - name: Cypress - run installation wizard test
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
@@ -232,6 +312,8 @@ jobs:
       ${{ matrix.cypress-folder }} (ddb, ${{ matrix.os }}, Node v${{ matrix.node
       }})
     needs:
+      - baseBranch
+      - constants
       - e2e-wby-cms-ddb-constants
       - e2e-wby-cms-ddb-project-setup
     strategy:
@@ -258,44 +340,45 @@ jobs:
           node-version: 18
       - uses: actions/checkout@v4
         with:
-          path: checked-out-pr
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
-          path: checked-out-pr/.yarn/cache
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: checked-out-pr/.webiny/cached-packages
-          key: ${{ needs.e2e-wby-cms-ddb-constants.outputs.run-cache-key }}
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
-        working-directory: checked-out-pr
         run: yarn --immutable
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Build packages
-        working-directory: checked-out-pr
         run: yarn build:quick
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Set up Cypress config
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           echo '${{ needs.e2e-wby-cms-ddb-project-setup.outputs.cypress-config
           }}' > cypress-tests/cypress.config.ts
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         timeout-minutes: 40
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
     runs-on: ubuntu-latest
   e2e-wby-cms-ddb-es-constants:
-    needs: checkComment
-    name: E2E (DDB-ES) - Constants
+    needs:
+      - baseBranch
+      - constants
+      - build
+    name: Constants - DDB-ES
     outputs:
-      global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
-      run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
       pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
     steps:
@@ -303,31 +386,21 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: ''
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Create global cache key
-        id: global-cache-key
-        run: >-
-          echo "global-cache-key=$(hub pr show ${{ github.event.issue.number }}
-          -f %B)-${{ runner.os }}-$(/bin/date -u "+%m%d")-${{
-          vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Create workflow run cache key
-        id: run-cache-key
-        run: >-
-          echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
-          vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
       - name: List Cypress tests folders
         id: list-cypress-folders
         run: >-
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Get Pulumi backend URL
         id: get-pulumi-backend-url
         run: >-
@@ -338,7 +411,10 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2e-wby-cms-ddb-es-project-setup:
-    needs: e2e-wby-cms-ddb-es-constants
+    needs:
+      - baseBranch
+      - constants
+      - e2e-wby-cms-ddb-es-constants
     name: E2E (DDB-ES) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -364,34 +440,30 @@ jobs:
           aws-region: eu-central-1
       - uses: actions/checkout@v4
         with:
-          path: checked-out-pr
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
-          path: checked-out-pr/.yarn/cache
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: checked-out-pr/.webiny/cached-packages
-          key: ${{ needs.e2e-wby-cms-ddb-es-constants.outputs.global-cache-key }}
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
-        working-directory: checked-out-pr
         run: yarn --immutable
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Build packages
-        working-directory: checked-out-pr
         run: yarn build:quick
-      - uses: actions/cache@v4
-        with:
-          path: checked-out-pr/.webiny/cached-packages
-          key: ${{ needs.e2e-wby-cms-ddb-es-constants.outputs.run-cache-key }}
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Start Verdaccio local server
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
           .verdaccio.yaml
@@ -402,19 +474,19 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
       - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Version and publish to Verdaccio
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn release --type=verdaccio
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb-es
           retention-days: 1
-          path: |
-            checked-out-pr/.verdaccio/
-            checked-out-pr/.verdaccio.yaml
+          path: |-
+            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio/
+            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -452,16 +524,16 @@ jobs:
         working-directory: new-webiny-project
         run: yarn webiny deploy apps/website --env dev
       - name: Create Cypress config
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn setup-cypress --projectFolder ../new-webiny-project
       - name: Save Cypress config
         id: save-cypress-config
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
       - name: Cypress - run installation wizard test
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
@@ -473,6 +545,8 @@ jobs:
       ${{ matrix.cypress-folder }} (ddb-es, ${{ matrix.os }}, Node v${{
       matrix.node }})
     needs:
+      - baseBranch
+      - constants
       - e2e-wby-cms-ddb-es-constants
       - e2e-wby-cms-ddb-es-project-setup
     strategy:
@@ -503,45 +577,46 @@ jobs:
           node-version: 18
       - uses: actions/checkout@v4
         with:
-          path: checked-out-pr
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
-          path: checked-out-pr/.yarn/cache
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: checked-out-pr/.webiny/cached-packages
-          key: ${{ needs.e2e-wby-cms-ddb-es-constants.outputs.run-cache-key }}
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
-        working-directory: checked-out-pr
         run: yarn --immutable
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Build packages
-        working-directory: checked-out-pr
         run: yarn build:quick
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Set up Cypress config
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           echo '${{
           needs.e2e-wby-cms-ddb-es-project-setup.outputs.cypress-config }}' >
           cypress-tests/cypress.config.ts
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         timeout-minutes: 40
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
     runs-on: ubuntu-latest
   e2e-wby-cms-ddb-os-constants:
-    needs: checkComment
-    name: E2E (DDB-OS) - Constants
+    needs:
+      - baseBranch
+      - constants
+      - build
+    name: Constants - DDB-OS
     outputs:
-      global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
-      run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
       pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
     steps:
@@ -549,31 +624,21 @@ jobs:
         with:
           node-version: 18
       - uses: actions/checkout@v4
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: ''
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Create global cache key
-        id: global-cache-key
-        run: >-
-          echo "global-cache-key=$(hub pr show ${{ github.event.issue.number }}
-          -f %B)-${{ runner.os }}-$(/bin/date -u "+%m%d")-${{
-          vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Create workflow run cache key
-        id: run-cache-key
-        run: >-
-          echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
-          vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
       - name: List Cypress tests folders
         id: list-cypress-folders
         run: >-
           echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
           $GITHUB_OUTPUT
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Get Pulumi backend URL
         id: get-pulumi-backend-url
         run: >-
@@ -584,7 +649,10 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2e-wby-cms-ddb-os-project-setup:
-    needs: e2e-wby-cms-ddb-os-constants
+    needs:
+      - baseBranch
+      - constants
+      - e2e-wby-cms-ddb-os-constants
     name: E2E (DDB-OS) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -610,34 +678,30 @@ jobs:
           aws-region: eu-central-1
       - uses: actions/checkout@v4
         with:
-          path: checked-out-pr
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
-          path: checked-out-pr/.yarn/cache
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: checked-out-pr/.webiny/cached-packages
-          key: ${{ needs.e2e-wby-cms-ddb-os-constants.outputs.global-cache-key }}
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
-        working-directory: checked-out-pr
         run: yarn --immutable
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Build packages
-        working-directory: checked-out-pr
         run: yarn build:quick
-      - uses: actions/cache@v4
-        with:
-          path: checked-out-pr/.webiny/cached-packages
-          key: ${{ needs.e2e-wby-cms-ddb-os-constants.outputs.run-cache-key }}
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Start Verdaccio local server
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
           .verdaccio.yaml
@@ -648,19 +712,19 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
       - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
       - name: Version and publish to Verdaccio
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn release --type=verdaccio
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v4
         with:
           name: verdaccio-files-ddb-os
           retention-days: 1
-          path: |
-            checked-out-pr/.verdaccio/
-            checked-out-pr/.verdaccio.yaml
+          path: |-
+            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio/
+            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -698,16 +762,16 @@ jobs:
         working-directory: new-webiny-project
         run: yarn webiny deploy apps/website --env dev
       - name: Create Cypress config
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn setup-cypress --projectFolder ../new-webiny-project
       - name: Save Cypress config
         id: save-cypress-config
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
       - name: Cypress - run installation wizard test
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
@@ -719,6 +783,8 @@ jobs:
       ${{ matrix.cypress-folder }} (ddb-os, ${{ matrix.os }}, Node v${{
       matrix.node }})
     needs:
+      - baseBranch
+      - constants
       - e2e-wby-cms-ddb-os-constants
       - e2e-wby-cms-ddb-os-project-setup
     strategy:
@@ -749,36 +815,36 @@ jobs:
           node-version: 18
       - uses: actions/checkout@v4
         with:
-          path: checked-out-pr
+          path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
       - name: Checkout Pull Request
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: hub pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
-          path: checked-out-pr/.yarn/cache
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: checked-out-pr/.webiny/cached-packages
-          key: ${{ needs.e2e-wby-cms-ddb-os-constants.outputs.run-cache-key }}
+          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
-        working-directory: checked-out-pr
         run: yarn --immutable
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Build packages
-        working-directory: checked-out-pr
         run: yarn build:quick
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Set up Cypress config
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           echo '${{
           needs.e2e-wby-cms-ddb-os-project-setup.outputs.cypress-config }}' >
           cypress-tests/cypress.config.ts
       - name: Cypress - run "${{ matrix.cypress-folder }}" tests
         timeout-minutes: 40
-        working-directory: checked-out-pr
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"
     runs-on: ubuntu-latest

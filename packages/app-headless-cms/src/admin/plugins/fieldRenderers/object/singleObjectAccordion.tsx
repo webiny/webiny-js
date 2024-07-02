@@ -5,6 +5,11 @@ import { CmsModelFieldRendererPlugin } from "~/types";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields";
 import { FieldSettings } from "./FieldSettings";
 import { ParentFieldProvider } from "~/admin/hooks";
+import { ParentValueIndexProvider } from "~/admin/components/ModelFieldProvider";
+import {
+    AccordionRenderSettings,
+    getAccordionRenderSettings
+} from "~/admin/plugins/fieldRenderers/AccordionRenderSettings";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -29,25 +34,35 @@ const plugin: CmsModelFieldRendererPlugin = {
             }
 
             const settings = fieldSettings.getSettings();
+            const { open } = getAccordionRenderSettings(field);
 
             return (
                 <Bind>
                     {bindProps => (
                         <ParentFieldProvider value={bindProps.value} path={Bind.parentName}>
-                            <Accordion>
-                                <AccordionItem title={field.label} description={field.helpText}>
-                                    <Fields
-                                        Bind={Bind}
-                                        contentModel={contentModel}
-                                        fields={settings.fields || []}
-                                        layout={settings.layout || []}
-                                    />
-                                </AccordionItem>
-                            </Accordion>
+                            <ParentValueIndexProvider index={-1}>
+                                <Accordion>
+                                    <AccordionItem
+                                        title={field.label}
+                                        description={field.helpText}
+                                        open={open}
+                                    >
+                                        <Fields
+                                            Bind={Bind}
+                                            contentModel={contentModel}
+                                            fields={settings.fields || []}
+                                            layout={settings.layout || []}
+                                        />
+                                    </AccordionItem>
+                                </Accordion>
+                            </ParentValueIndexProvider>
                         </ParentFieldProvider>
                     )}
                 </Bind>
             );
+        },
+        renderSettings({ field }) {
+            return <AccordionRenderSettings field={field} />;
         }
     }
 };

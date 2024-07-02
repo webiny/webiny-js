@@ -16,7 +16,8 @@
     { "path": "../pubsub/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
-    { "path": "../api-wcp/tsconfig.build.json" }
+    { "path": "../api-wcp/tsconfig.build.json" },
+    { "path": "../aws-sdk/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

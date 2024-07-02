@@ -29,13 +29,20 @@ export type SerializedQuoteNode = Spread<
 >;
 
 export class QuoteNode extends BaseQuoteNode implements TextNodeThemeStyles, TypographyStylesNode {
-    __styles: ThemeStyleValue[] = [];
+    private __themeStyleId: string;
+    private __styles: ThemeStyleValue[] = [];
 
     constructor(themeStyleId?: string, key?: NodeKey) {
         super(key);
+        this.__themeStyleId = themeStyleId || "";
+
         if (themeStyleId) {
             this.__styles.push({ styleId: themeStyleId, type: "typography" });
         }
+    }
+
+    getStyleId(): string {
+        return this.__themeStyleId;
     }
 
     /*
@@ -57,34 +64,12 @@ export class QuoteNode extends BaseQuoteNode implements TextNodeThemeStyles, Typ
         return !!style;
     }
 
-    setTypography(typographyStyleId: string): this {
-        const self = super.getWritable();
-        if (!typographyStyleId) {
-            return self;
-        }
-
-        if (!this.hasTypographyStyle()) {
-            const themeStyle = {
-                styleId: typographyStyleId,
-                type: "typography"
-            } as ThemeStyleValue;
-            self.__styles.push(themeStyle);
-        }
-        return self;
-    }
-
     getTypographyStyleId(): string | undefined {
         const style = this.__styles.find(x => x.type === "typography");
         return style?.styleId || undefined;
     }
 
-    clearTypographyStyle(): this {
-        const self = super.getWritable();
-        self.__styles = self.__styles.filter(s => s.type !== "typography");
-        return self;
-    }
-
-    hasTypographyStyle(): boolean {
+    private hasTypographyStyle(): boolean {
         return !!this.getTypographyStyleId();
     }
 

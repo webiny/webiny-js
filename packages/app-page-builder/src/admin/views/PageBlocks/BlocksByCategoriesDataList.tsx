@@ -5,7 +5,6 @@ import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
 import isEmpty from "lodash/isEmpty";
-
 import {
     DataList,
     DataListModalOverlay,
@@ -21,10 +20,11 @@ import {
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { Typography } from "@webiny/ui/Typography";
+import { CircularProgress } from "@webiny/ui/Progress";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { Dialog, DialogActions, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
 import { ButtonDefault, ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useSnackbar, useStateIfMounted, useStateWithCallback } from "@webiny/app-admin/hooks";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as DownloadFileIcon } from "@webiny/app-admin/assets/icons/file_download.svg";
@@ -95,7 +95,8 @@ const BlocksByCategoriesDataList = ({
     canCreate
 }: PageBuilderBlocksByCategoriesDataListProps) => {
     const [sort, setSort] = useState<string>(SORTERS[2].sort);
-    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+    const [isDialogOpen, setIsDialogOpen] = useStateWithCallback<boolean>(false);
+    const [creatingBlock, setCreatingBlock] = useStateIfMounted(false);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const listQuery = useQuery(LIST_PAGE_CATEGORIES);
@@ -144,9 +145,12 @@ const BlocksByCategoriesDataList = ({
 
     const onCreatePageBlock = async (categorySlug: string) => {
         try {
+            setCreatingBlock(true);
             const newBlock = await createBlock({ name: "New block", category: categorySlug });
-            setIsDialogOpen(false);
-            history.push(`/page-builder/block-editor/${newBlock.id}`);
+            setCreatingBlock(false);
+            setIsDialogOpen(false, () => {
+                history.push(`/page-builder/block-editor/${newBlock.id}`);
+            });
         } catch (error) {
             showSnackbar(error.message);
         }
@@ -159,11 +163,7 @@ const BlocksByCategoriesDataList = ({
     }, []);
 
     const handleNewBlockClick = useCallback(() => {
-        if (selectedBlocksCategory) {
-            onCreatePageBlock(selectedBlocksCategory);
-        } else {
-            setIsDialogOpen(true);
-        }
+        setIsDialogOpen(true);
     }, [selectedBlocksCategory]);
 
     return (
@@ -258,9 +258,12 @@ const BlocksByCategoriesDataList = ({
                 className={narrowDialog}
             >
                 <DialogTitle>
-                    <Typography use="headline5">Please select a block category</Typography>
+                    <Typography use="headline5" tag={"span"}>
+                        Please select a block category
+                    </Typography>
                 </DialogTitle>
                 <DialogContent>
+                    {creatingBlock ? <CircularProgress label={"Creating page block..."} /> : null}
                     <React.Fragment>
                         {isEmpty(blockCategoriesData) ? (
                             <div className={noRecordsWrapper}>

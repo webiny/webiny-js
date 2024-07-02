@@ -1,4 +1,4 @@
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 import {
     createHandlerOnRequest,
     createModifyFastifyPlugin,
@@ -38,7 +38,7 @@ function assertAssetWasResolved(asset: Asset | undefined): asserts asset is Asse
 }
 
 export interface AssetDeliveryParams {
-    documentClient: DynamoDBClient;
+    documentClient: DynamoDBDocument;
 }
 
 export const setupAssetDelivery = (params: AssetDeliveryParams) => {
@@ -98,10 +98,12 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
                     return false;
                 }
 
+                const assetLocale = resolvedAsset.getLocale();
+
                 request.headers = {
                     ...request.headers,
                     "x-tenant": resolvedAsset.getTenant(),
-                    "x-i18n-locale": resolvedAsset.getLocale()
+                    "x-i18n-locale": `default:${assetLocale};content:${assetLocale};`
                 };
 
                 return;

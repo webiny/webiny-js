@@ -16,7 +16,7 @@ import {
 
 import { getAwsAccountId } from "../awsUtils";
 import { CoreVpc } from "./CoreVpc";
-import { LAMBDA_RUNTIME } from "~/constants";
+import { DEFAULT_PROD_ENV_NAMES, LAMBDA_RUNTIME } from "~/constants";
 
 export interface ElasticSearchParams {
     protect: boolean;
@@ -46,7 +46,8 @@ export const ElasticSearch = createAppModule({
         const domainName = "webiny-js";
         const accountId = getAwsAccountId(app);
 
-        const productionEnvironments = app.params.create.productionEnvironments || ["prod"];
+        const productionEnvironments =
+            app.params.create.productionEnvironments || DEFAULT_PROD_ENV_NAMES;
         const isProduction = productionEnvironments.includes(app.params.run.env);
 
         const vpc = app.getModule(CoreVpc, { optional: true });
@@ -215,8 +216,8 @@ export const ElasticSearch = createAppModule({
                 role: role.output.arn,
                 runtime: LAMBDA_RUNTIME,
                 handler: "handler.handler",
-                timeout: 600,
-                memorySize: 512,
+                timeout: 900,
+                memorySize: 1024,
                 environment: {
                     variables: {
                         DEBUG: String(process.env.DEBUG),
@@ -245,7 +246,7 @@ export const ElasticSearch = createAppModule({
                 functionName: lambda.output.arn,
                 startingPosition: "LATEST",
                 maximumRetryAttempts: 3,
-                batchSize: 200,
+                batchSize: 50,
                 maximumBatchingWindowInSeconds: 1
             }
         });
@@ -254,7 +255,8 @@ export const ElasticSearch = createAppModule({
             elasticsearchDomainArn: domain.output.arn,
             elasticsearchDomainEndpoint: domain.output.endpoint,
             elasticsearchDynamodbTableArn: table.output.arn,
-            elasticsearchDynamodbTableName: table.output.name
+            elasticsearchDynamodbTableName: table.output.name,
+            elasticsearchDynamoToElasticLambdaName: lambda.output.name
         });
 
         return {
@@ -286,6 +288,7 @@ function getDynamoDbToElasticLambdaPolicy(
                         Sid: "PermissionForES",
                         Effect: "Allow",
                         Action: [
+                            "es:ESHttpGet",
                             "es:ESHttpDelete",
                             "es:ESHttpPatch",
                             "es:ESHttpPost",

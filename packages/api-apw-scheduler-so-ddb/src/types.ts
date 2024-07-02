@@ -1,5 +1,5 @@
 import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
-import { DynamoDBClient } from "@webiny/aws-sdk/client-dynamodb";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 
 export type Attributes = Record<string, AttributeDefinition>;
 
@@ -10,7 +10,7 @@ export interface PartitionKeyOptions {
 }
 
 export interface CreateStorageOperationsParams {
-    documentClient: DynamoDBClient;
+    documentClient: DynamoDBDocument;
     table?: string;
     attributes?: Attributes;
 }

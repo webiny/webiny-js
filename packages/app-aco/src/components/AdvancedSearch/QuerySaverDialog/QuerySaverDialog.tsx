@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo } from "react";
-import { observer } from "mobx-react-lite";
 
 import { Form } from "@webiny/form";
 import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
@@ -25,7 +24,7 @@ interface QuerySaverDialogProps {
     };
 }
 
-export const QuerySaverDialog = observer(({ filter, ...props }: QuerySaverDialogProps) => {
+export const QuerySaverDialog = ({ filter, ...props }: QuerySaverDialogProps) => {
     const presenter = useMemo<QuerySaverDialogPresenter>(() => {
         return new QuerySaverDialogPresenter();
     }, []);
@@ -85,4 +84,4 @@ export const QuerySaverDialog = observer(({ filter, ...props }: QuerySaverDialog
             ) : null}
         </DialogContainer>
     );
-});
+};

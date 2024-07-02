@@ -93,7 +93,7 @@ const createResolver = (
         const resolver = (parent: any) => {
             const value = parent[field.fieldId];
             if (!value) {
-                return value;
+                return field.multipleValues ? [] : value;
             }
 
             const typeName = `${graphQLType}_${createTypeName(field.fieldId)}`;
@@ -173,6 +173,27 @@ export const createDynamicZoneField =
                         originalFields: getOriginalTemplateFields(template.id)
                     });
                 }
+            },
+            getFieldAst: (field, converter) => {
+                const { templates = [], ...settings } = field.settings;
+
+                return {
+                    type: "field",
+                    field: {
+                        ...field,
+                        settings
+                    },
+                    children: templates.map(({ fields, ...template }) => {
+                        return {
+                            type: "collection",
+                            collection: {
+                                ...template,
+                                discriminator: "_templateId"
+                            },
+                            children: fields.map(field => converter.toAst(field))
+                        };
+                    })
+                };
             },
             read: {
                 createTypeField({ models, model, field, fieldTypePlugins }) {

@@ -4,4 +4,5 @@ export * from "./useTypographyAction";
 export * from "./useTextAlignmentAction";
 export * from "./useCurrentSelection";
 export * from "./useCurrentElement";
+export * from "./useList";
 export * from "./useIsMounted";

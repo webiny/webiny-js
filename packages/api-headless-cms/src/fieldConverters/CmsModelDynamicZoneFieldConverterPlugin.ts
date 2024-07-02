@@ -39,18 +39,10 @@ export class CmsModelDynamicZoneFieldConverterPlugin extends CmsModelFieldConver
         }
 
         if (field.multipleValues) {
-            if (!Array.isArray(value)) {
-                throw new WebinyError(
-                    `Dynamic zone field "${field.fieldId}" is expecting an array value.`,
-                    "DYNAMIC_ZONE_EXPECTING_ARRAY_VALUE",
-                    {
-                        field,
-                        value
-                    }
-                );
-            }
+            const arrayValue = Array.isArray(value) ? value : [];
+
             return {
-                [field.storageId]: value.map(item => {
+                [field.storageId]: arrayValue.map(item => {
                     return this.processToStorage({
                         templates,
                         converterCollection,
@@ -162,18 +154,10 @@ export class CmsModelDynamicZoneFieldConverterPlugin extends CmsModelFieldConver
         }
 
         if (field.multipleValues) {
-            if (!Array.isArray(value)) {
-                throw new WebinyError(
-                    `Dynamic zone field "${field.fieldId}" is expecting an array value.`,
-                    "DYNAMIC_ZONE_EXPECTING_ARRAY_VALUE",
-                    {
-                        field,
-                        value
-                    }
-                );
-            }
+            const arrayValue = Array.isArray(value) ? value : [];
+
             return {
-                [field.fieldId]: value.map(item => {
+                [field.fieldId]: arrayValue.map(item => {
                     return this.processFromStorage({
                         templates,
                         converterCollection,

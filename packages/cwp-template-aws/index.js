@@ -18,7 +18,7 @@ const runInquirer = async cwp => {
     }
 
     console.log(
-        "In order to setup your new Webiny project, please answer the following questions."
+        "In order to create your new Webiny project, please answer the following questions."
     );
     console.log();
 
@@ -27,7 +27,7 @@ const runInquirer = async cwp => {
             type: "list",
             name: "region",
             default: "us-east-1",
-            message: "Please choose the AWS region in which your new project will be deployed:",
+            message: "Please choose the AWS region in which your project will be deployed:",
             // Some of the regions might be commented out (not all service supported).
             choices: [
                 { value: "us-east-1", name: "us-east-1 (US East, N. Virginia)" },
@@ -48,7 +48,7 @@ const runInquirer = async cwp => {
                 { value: "ap-southeast-1", name: "ap-southeast-1 (Asia Pacific, Singapore)" },
                 { value: "ap-southeast-2", name: "ap-southeast-2 (Asia Pacific, Sydney)" },
                 { value: "ap-northeast-1", name: "ap-northeast-1 (Asia Pacific, Tokyo)" },
-                { value: "me-south-1", name: "me-south-1 (Middle East, Bahrain)" },
+                // { value: "me-south-1", name: "me-south-1 (Middle East, Bahrain)" },
                 { value: "sa-east-1", name: "sa-east-1 (South America, São Paulo)" }
             ]
         },
@@ -56,7 +56,7 @@ const runInquirer = async cwp => {
             type: "list",
             name: "storageOperations",
             default: "ddb",
-            message: `Please choose the database setup you wish to use with your Webiny project (cannot be changed later):`,
+            message: `Please choose the database setup you wish to use with your project (cannot be changed later):`,
             choices: Object.values(choices)
         }
     ]);

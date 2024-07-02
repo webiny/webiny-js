@@ -5,7 +5,7 @@ import { UIRenderer, UIRenderParams } from "~/ui/UIRenderer";
 
 const ContentWrapper = styled("div")({
     width: "100%",
-    paddingTop: 67
+    paddingTop: 64
 });
 
 class ContentElementRenderer extends UIRenderer<ContentElement> {

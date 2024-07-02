@@ -7,7 +7,8 @@ import {
     onEntryAfterPublishHook,
     onEntryAfterUnpublishHook,
     onEntryRevisionAfterCreateHook,
-    onEntryRevisionAfterDeleteHook
+    onEntryRevisionAfterDeleteHook,
+    onEntryAfterRestoreFromTrashHook
 } from "./entries";
 import { AuditLogsContext } from "~/types";
 
@@ -24,6 +25,7 @@ export const createHeadlessCmsHooks = (context: AuditLogsContext) => {
     onEntryAfterCreateHook(context);
     onEntryAfterUpdateHook(context);
     onEntryAfterDeleteHook(context);
+    onEntryAfterRestoreFromTrashHook(context);
     onEntryAfterPublishHook(context);
     onEntryAfterUnpublishHook(context);
     onEntryRevisionAfterCreateHook(context);

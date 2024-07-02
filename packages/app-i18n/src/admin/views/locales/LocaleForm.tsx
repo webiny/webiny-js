@@ -17,7 +17,6 @@ import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import LocaleCodesAutoComplete from "~/admin/components/LocaleCodesAutoComplete";
 import { useLocaleForm } from "./hooks/useLocaleForm";
-import { I18NLocaleItem } from "~/types";
 
 const t = i18n.ns("app-i18n/admin/locales/form");
 
@@ -45,17 +44,9 @@ const I18NLocaleForm = () => {
     }
 
     return (
-        <Form
-            data={locale}
-            onSubmit={data => {
-                /**
-                 * We are positive that data is I18NLocaleItem.
-                 */
-                return onSubmit(data as unknown as I18NLocaleItem);
-            }}
-        >
+        <Form data-testid={"i18n-locale-form"} data={locale} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
-                <SimpleForm data-testid={"i18n-locale-form"}>
+                <SimpleForm>
                     {loading && <CircularProgress />}
                     <SimpleFormHeader title={data.code || t`New locale`} />
                     <SimpleFormContent>

@@ -4,8 +4,10 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/global-config": "0.0.0",
-    "form-data": "3.0.0",
-    "node-fetch": "2.6.1"
+    "is-ci": "3.0.0",
+    "jsesc": "^3.0.2",
+    "strip-ansi": "^6.0.1",
+    "wts-client": "^1.0.1"
   },
   "publishConfig": {
     "access": "public",

@@ -1,6 +1,6 @@
+import type { S3Event } from "aws-lambda";
 import { registry } from "~/registry";
 import { HandlerFactoryParams } from "~/types";
-import { S3Event } from "aws-lambda";
 import { createSourceHandler } from "~/sourceHandler";
 import { createHandler } from "./index";
 

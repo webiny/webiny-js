@@ -43,11 +43,13 @@ import { createElasticsearchBody } from "./elasticsearch/body";
 import { createLatestRecordType, createPublishedRecordType, createRecordType } from "./recordType";
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
 import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
-import { batchReadAll, BatchReadItem, put } from "@webiny/db-dynamodb";
+import { batchReadAll, BatchReadItem } from "@webiny/db-dynamodb";
 import { createTransformer } from "./transformations";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys";
 import {
+    isDeletedEntryMetaField,
     isEntryLevelEntryMetaField,
+    isRestoredEntryMetaField,
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants";
 
@@ -68,10 +70,14 @@ const IGNORED_ES_SEARCH_EXCEPTIONS = [
     "search_phase_execution_exception"
 ];
 
-const shouldIgnoreElasticsearchException = (ex: Pick<Error, "message">) => {
+const shouldIgnoreElasticsearchException = (ex: WebinyError) => {
     if (IGNORED_ES_SEARCH_EXCEPTIONS.includes(ex.message)) {
         console.log(`Ignoring Elasticsearch exception: ${ex.message}`);
-        console.log(ex);
+        console.log({
+            code: ex.code,
+            data: ex.data,
+            stack: ex.stack
+        });
         return true;
     }
     return false;
@@ -272,6 +278,18 @@ export const createEntriesStorageOperations = (
             SK: createLatestSortKey()
         };
 
+        const publishedKeys = {
+            PK: createPartitionKey({
+                id: entry.id,
+                locale: model.locale,
+                tenant: model.tenant
+            }),
+            SK: createPublishedSortKey()
+        };
+
+        // We'll need this flag below.
+        const isPublished = entry.status === "published";
+
         const esLatestData = await transformer.getElasticsearchLatestEntryData();
 
         const items = [
@@ -287,9 +305,16 @@ export const createEntriesStorageOperations = (
             })
         ];
 
-        const { index } = configurations.es({
-            model
-        });
+        if (isPublished) {
+            items.push(
+                entity.putBatch({
+                    ...storageEntry,
+                    TYPE: createPublishedRecordType(),
+                    ...publishedKeys
+                })
+            );
+        }
+
         try {
             await batchWriteAll({
                 table: entity.table,
@@ -309,17 +334,34 @@ export const createEntriesStorageOperations = (
                 }
             );
         }
-        /**
-         * Update the "latest" entry item in the Elasticsearch
-         */
+
+        const { index: esIndex } = configurations.es({
+            model
+        });
+
+        const esItems: BatchWriteItem[] = [
+            esEntity.putBatch({
+                ...latestKeys,
+                index: esIndex,
+                data: esLatestData
+            })
+        ];
+
+        if (isPublished) {
+            const esPublishedData = await transformer.getElasticsearchPublishedEntryData();
+            esItems.push(
+                esEntity.putBatch({
+                    ...publishedKeys,
+                    index: esIndex,
+                    data: esPublishedData
+                })
+            );
+        }
+
         try {
-            await put({
-                entity: esEntity,
-                item: {
-                    ...latestKeys,
-                    index,
-                    data: esLatestData
-                }
+            await batchWriteAll({
+                table: esEntity.table,
+                items: esItems
             });
         } catch (ex) {
             throw new WebinyError(
@@ -707,6 +749,361 @@ export const createEntriesStorageOperations = (
         }
     };
 
+    const moveToBin: CmsEntryStorageOperations["moveToBin"] = async (initialModel, params) => {
+        const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
+
+        const transformer = createTransformer({
+            plugins,
+            model,
+            entry: initialEntry,
+            storageEntry: initialStorageEntry
+        });
+
+        const { entry, storageEntry } = transformer.transformEntryKeys();
+
+        const partitionKey = createPartitionKey({
+            id: entry.id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
+
+        /**
+         * First we need to fetch all the records in the regular DynamoDB table.
+         */
+        const queryAllParams: QueryAllParams = {
+            entity,
+            partitionKey,
+            options: {
+                gte: " "
+            }
+        };
+
+        const latestSortKey = createLatestSortKey();
+        const publishedSortKey = createPublishedSortKey();
+        const records = await queryAll<CmsEntry>(queryAllParams);
+
+        /**
+         * Let's pick the `deleted` meta fields from the entry.
+         */
+        const updatedEntryMetaFields = pickEntryMetaFields(entry, isDeletedEntryMetaField);
+
+        /**
+         * Then update all the records with data received.
+         */
+        let latestRecord: CmsEntry | undefined = undefined;
+        let publishedRecord: CmsEntry | undefined = undefined;
+        const items: BatchWriteItem[] = [];
+
+        for (const record of records) {
+            items.push(
+                entity.putBatch({
+                    ...record,
+                    ...updatedEntryMetaFields,
+                    wbyDeleted: storageEntry.wbyDeleted,
+                    location: storageEntry.location,
+                    binOriginalFolderId: storageEntry.binOriginalFolderId
+                })
+            );
+            /**
+             * We need to get the published and latest records, so we can update the Elasticsearch.
+             */
+            if (record.SK === publishedSortKey) {
+                publishedRecord = record;
+            } else if (record.SK === latestSortKey) {
+                latestRecord = record;
+            }
+        }
+
+        /**
+         * We write the records back to the primary DynamoDB table.
+         */
+        try {
+            await batchWriteAll({
+                table: entity.table,
+                items
+            });
+            dataLoaders.clearAll({
+                model
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could mark as deleted all entry records from in the DynamoDB table.",
+                ex.code || "MOVE_ENTRY_TO_BIN_ERROR",
+                {
+                    error: ex,
+                    entry,
+                    storageEntry
+                }
+            );
+        }
+
+        /**
+         * We need to get the published and latest records from Elasticsearch.
+         */
+        const esGetItems: BatchReadItem[] = [];
+        if (publishedRecord) {
+            esGetItems.push(
+                esEntity.getBatch({
+                    PK: partitionKey,
+                    SK: publishedSortKey
+                })
+            );
+        }
+        if (latestRecord) {
+            esGetItems.push(
+                esEntity.getBatch({
+                    PK: partitionKey,
+                    SK: latestSortKey
+                })
+            );
+        }
+        if (esGetItems.length === 0) {
+            return;
+        }
+
+        const esRecords = await batchReadAll<ElasticsearchDbRecord>({
+            table: esEntity.table,
+            items: esGetItems
+        });
+
+        const esItems = (
+            await Promise.all(
+                esRecords.map(async record => {
+                    if (!record) {
+                        return null;
+                    }
+                    return {
+                        ...record,
+                        data: await decompress(plugins, record.data)
+                    };
+                })
+            )
+        ).filter(Boolean) as ElasticsearchDbRecord[];
+
+        if (esItems.length === 0) {
+            return;
+        }
+
+        /**
+         * We update all ES records with data received.
+         */
+        const esUpdateItems: BatchWriteItem[] = [];
+        for (const item of esItems) {
+            esUpdateItems.push(
+                esEntity.putBatch({
+                    ...item,
+                    data: await compress(plugins, {
+                        ...item.data,
+                        ...updatedEntryMetaFields,
+                        wbyDeleted: entry.wbyDeleted,
+                        location: entry.location,
+                        binOriginalFolderId: entry.binOriginalFolderId
+                    })
+                })
+            );
+        }
+
+        /**
+         * We write the records back to the primary DynamoDB Elasticsearch table.
+         */
+        try {
+            await batchWriteAll({
+                table: esEntity.table,
+                items: esUpdateItems
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message ||
+                    "Could not mark as deleted entry records from DynamoDB Elasticsearch table.",
+                ex.code || "MOVE_ENTRY_TO_BIN_ERROR",
+                {
+                    error: ex,
+                    entry,
+                    storageEntry
+                }
+            );
+        }
+    };
+
+    const restoreFromBin: CmsEntryStorageOperations["restoreFromBin"] = async (
+        initialModel,
+        params
+    ) => {
+        const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
+
+        const transformer = createTransformer({
+            plugins,
+            model,
+            entry: initialEntry,
+            storageEntry: initialStorageEntry
+        });
+
+        const { entry, storageEntry } = transformer.transformEntryKeys();
+
+        /**
+         * Let's pick the `restored` meta fields from the storage entry.
+         */
+        const updatedEntryMetaFields = pickEntryMetaFields(entry, isRestoredEntryMetaField);
+
+        const partitionKey = createPartitionKey({
+            id: entry.id,
+            locale: model.locale,
+            tenant: model.tenant
+        });
+
+        /**
+         * First we need to fetch all the records in the regular DynamoDB table.
+         */
+        const queryAllParams: QueryAllParams = {
+            entity,
+            partitionKey,
+            options: {
+                gte: " "
+            }
+        };
+
+        const latestSortKey = createLatestSortKey();
+        const publishedSortKey = createPublishedSortKey();
+        const records = await queryAll<CmsEntry>(queryAllParams);
+
+        /**
+         * Then update all the records with data received.
+         */
+        let latestRecord: CmsEntry | undefined = undefined;
+        let publishedRecord: CmsEntry | undefined = undefined;
+        const items: BatchWriteItem[] = [];
+
+        for (const record of records) {
+            items.push(
+                entity.putBatch({
+                    ...record,
+                    ...updatedEntryMetaFields,
+                    wbyDeleted: storageEntry.wbyDeleted,
+                    location: storageEntry.location,
+                    binOriginalFolderId: storageEntry.binOriginalFolderId
+                })
+            );
+            /**
+             * We need to get the published and latest records, so we can update the Elasticsearch.
+             */
+            if (record.SK === publishedSortKey) {
+                publishedRecord = record;
+            } else if (record.SK === latestSortKey) {
+                latestRecord = record;
+            }
+        }
+
+        /**
+         * We write the records back to the primary DynamoDB table.
+         */
+        try {
+            await batchWriteAll({
+                table: entity.table,
+                items
+            });
+            dataLoaders.clearAll({
+                model
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not restore all entry records from in the DynamoDB table.",
+                ex.code || "RESTORE_ENTRY_ERROR",
+                {
+                    error: ex,
+                    entry,
+                    storageEntry
+                }
+            );
+        }
+
+        /**
+         * We need to get the published and latest records from Elasticsearch.
+         */
+        const esGetItems: BatchReadItem[] = [];
+        if (publishedRecord) {
+            esGetItems.push(
+                esEntity.getBatch({
+                    PK: partitionKey,
+                    SK: publishedSortKey
+                })
+            );
+        }
+        if (latestRecord) {
+            esGetItems.push(
+                esEntity.getBatch({
+                    PK: partitionKey,
+                    SK: latestSortKey
+                })
+            );
+        }
+
+        const esRecords = await batchReadAll<ElasticsearchDbRecord>({
+            table: esEntity.table,
+            items: esGetItems
+        });
+
+        const esItems = (
+            await Promise.all(
+                esRecords.map(async record => {
+                    if (!record) {
+                        return null;
+                    }
+                    return {
+                        ...record,
+                        data: await decompress(plugins, record.data)
+                    };
+                })
+            )
+        ).filter(Boolean) as ElasticsearchDbRecord[];
+
+        if (esItems.length === 0) {
+            return initialStorageEntry;
+        }
+
+        /**
+         * We update all ES records with data received.
+         */
+        const esUpdateItems: BatchWriteItem[] = [];
+        for (const item of esItems) {
+            esUpdateItems.push(
+                esEntity.putBatch({
+                    ...item,
+                    data: await compress(plugins, {
+                        ...item.data,
+                        ...updatedEntryMetaFields,
+                        wbyDeleted: entry.wbyDeleted,
+                        location: entry.location,
+                        binOriginalFolderId: entry.binOriginalFolderId
+                    })
+                })
+            );
+        }
+
+        /**
+         * We write the records back to the primary DynamoDB Elasticsearch table.
+         */
+        try {
+            await batchWriteAll({
+                table: esEntity.table,
+                items: esUpdateItems
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not restore entry records from DynamoDB Elasticsearch table.",
+                ex.code || "RESTORE_ENTRY_ERROR",
+                {
+                    error: ex,
+                    entry,
+                    storageEntry
+                }
+            );
+        }
+
+        return initialStorageEntry;
+    };
+
     const deleteEntry: CmsEntryStorageOperations["delete"] = async (initialModel, params) => {
         const { entry } = params;
         const id = entry.id || entry.entryId;
@@ -758,7 +1155,7 @@ export const createEntriesStorageOperations = (
             });
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not delete entry records from DynamoDB table.",
+                ex.message || "Could not destroy entry records from DynamoDB table.",
                 ex.code || "DELETE_ENTRY_ERROR",
                 {
                     error: ex,
@@ -774,7 +1171,7 @@ export const createEntriesStorageOperations = (
             });
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not delete entry records from DynamoDB Elasticsearch table.",
+                ex.message || "Could not destroy entry records from DynamoDB Elasticsearch table.",
                 ex.code || "DELETE_ENTRY_ERROR",
                 {
                     error: ex,
@@ -1454,12 +1851,21 @@ export const createEntriesStorageOperations = (
             })
         ];
         /**
-         * If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
+         * If we are unpublishing the latest revision, let's also update the latest revision entry's status in both DynamoDB tables.
          */
         if (latestStorageEntry?.id === entry.id) {
             const { index } = configurations.es({
                 model
             });
+
+            items.push(
+                entity.putBatch({
+                    ...storageEntry,
+                    PK: partitionKey,
+                    SK: createLatestSortKey(),
+                    TYPE: createLatestRecordType()
+                })
+            );
 
             const esLatestData = await transformer.getElasticsearchLatestEntryData();
             esItems.push(
@@ -1785,6 +2191,8 @@ export const createEntriesStorageOperations = (
         update,
         move,
         delete: deleteEntry,
+        moveToBin,
+        restoreFromBin,
         deleteRevision,
         deleteMultipleEntries,
         get,

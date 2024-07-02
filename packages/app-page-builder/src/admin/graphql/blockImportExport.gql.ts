@@ -64,6 +64,19 @@ export const EXPORT_BLOCKS = gql`
     }
 `;
 
+export interface GetBlockImportExportTaskResponse {
+    pageBuilder: {
+        getImportExportTask: {
+            data: PageBuilderImportExportSubTask;
+            error?: {
+                message: string;
+                code: string;
+                data: Record<string, any>;
+            };
+        };
+    };
+}
+
 export const GET_BLOCK_IMPORT_EXPORT_TASK = gql`
     query PbGetBlockImportExportTask($id: ID!) {
         pageBuilder {

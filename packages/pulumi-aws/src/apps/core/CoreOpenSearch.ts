@@ -17,7 +17,7 @@ import {
 
 import { getAwsAccountId } from "../awsUtils";
 import { CoreVpc } from "./CoreVpc";
-import { LAMBDA_RUNTIME } from "~/constants";
+import { DEFAULT_PROD_ENV_NAMES, LAMBDA_RUNTIME } from "~/constants";
 
 export interface OpenSearchParams {
     protect: boolean;
@@ -46,7 +46,8 @@ const OS_ENGINE_VERSION = "OpenSearch_2.11";
 export const OpenSearch = createAppModule({
     name: "OpenSearch",
     config(app, params: OpenSearchParams) {
-        const productionEnvironments = app.params.create.productionEnvironments || ["prod"];
+        const productionEnvironments =
+            app.params.create.productionEnvironments || DEFAULT_PROD_ENV_NAMES;
         const isProduction = productionEnvironments.includes(app.params.run.env);
 
         const vpc = app.getModule(CoreVpc, { optional: true });
@@ -229,8 +230,8 @@ export const OpenSearch = createAppModule({
                 role: role.output.arn,
                 runtime: LAMBDA_RUNTIME,
                 handler: "handler.handler",
-                timeout: 600,
-                memorySize: 512,
+                timeout: 900,
+                memorySize: 1024,
                 environment: {
                     variables: {
                         DEBUG: String(process.env.DEBUG),
@@ -259,7 +260,7 @@ export const OpenSearch = createAppModule({
                 functionName: lambda.output.arn,
                 startingPosition: "LATEST",
                 maximumRetryAttempts: 3,
-                batchSize: 200,
+                batchSize: 50,
                 maximumBatchingWindowInSeconds: 1
             }
         });
@@ -300,6 +301,7 @@ function getDynamoDbToElasticLambdaPolicy(
                         Sid: "PermissionForES",
                         Effect: "Allow",
                         Action: [
+                            "es:ESHttpGet",
                             "es:ESHttpDelete",
                             "es:ESHttpPatch",
                             "es:ESHttpPost",

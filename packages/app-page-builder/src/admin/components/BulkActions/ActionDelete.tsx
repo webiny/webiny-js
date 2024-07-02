@@ -28,7 +28,7 @@ export const ActionDelete = observer(() => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
                         const response = await deletePage(
-                            { id: item.data.id },
+                            { id: item.data.pid },
                             {
                                 client: client,
                                 mutationOptions: {

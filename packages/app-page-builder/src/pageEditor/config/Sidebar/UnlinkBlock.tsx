@@ -47,7 +47,7 @@ type UnlinkTabProps = {
 
 const UnlinkWidget = ({ permission }: UnlinkTabProps) => {
     return (
-        <UnlinkBlockWrapper permission={permission}>
+        <UnlinkBlockWrapper permission={permission} data-role={"unlink-block"}>
             This is a block element - to change it you need to unlink it first. By unlinking it, any
             changes made to the block will no longer automatically reflect on this page.
             <div className="button-wrapper">
@@ -85,6 +85,7 @@ export const UnlinkBlock = PageEditorConfig.Ui.Sidebar.Elements.createDecorator(
             return null;
         }
 
+        // TODO: extract this into a standalone UI element.
         if (blockReference) {
             return <UnlinkWidget permission={true} />;
         }

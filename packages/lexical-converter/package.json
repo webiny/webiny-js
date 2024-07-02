@@ -2,16 +2,16 @@
   "name": "@webiny/lexical-converter",
   "version": "0.0.0",
   "dependencies": {
-    "@lexical/headless": "^0.12.2",
-    "@lexical/html": "^0.12.2",
+    "@lexical/headless": "^0.16.0",
+    "@lexical/html": "^0.16.0",
     "@webiny/lexical-nodes": "0.0.0",
-    "lexical": "0.12.2"
+    "lexical": "^0.16.0"
   },
   "devDependencies": {
-    "@types/jsdom": "21.1.3",
+    "@types/jsdom": "^21.1.6",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "jsdom": "21.1.2"
+    "jsdom": "^24.0.0"
   },
   "publishConfig": {
     "access": "public",

@@ -142,6 +142,20 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             }
         ];
     },
+    "api-headless-cms-aco": () => {
+        return [
+            { cmd: "packages/api-headless-cms-aco --storage=ddb", storage: "ddb" },
+            { cmd: "packages/api-headless-cms-aco --storage=ddb-es,ddb", storage: "ddb-es" },
+            { cmd: "packages/api-headless-cms-aco --storage=ddb-os,ddb", storage: "ddb-os" }
+        ];
+    },
+    "api-headless-cms-tasks": () => {
+        return [
+            { cmd: "packages/api-headless-cms-tasks --storage=ddb", storage: "ddb" },
+            { cmd: "packages/api-headless-cms-tasks --storage=ddb-es,ddb", storage: "ddb-es" },
+            { cmd: "packages/api-headless-cms-tasks --storage=ddb-os,ddb", storage: "ddb-os" }
+        ];
+    },
     "api-apw": () => {
         return [
             { cmd: "packages/api-apw --storage=ddb", storage: "ddb" }
@@ -202,6 +216,30 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             }
         ];
     },
+    "api-dynamodb-to-elasticsearch": () => {
+        return [
+            {
+                cmd: "packages/api-dynamodb-to-elasticsearch --storage=ddb-es,ddb",
+                storage: ["ddb-es"]
+            },
+            {
+                cmd: "packages/api-dynamodb-to-elasticsearch --storage=ddb-os,ddb",
+                storage: ["ddb-os"]
+            }
+        ];
+    },
+    "api-headless-cms-es-tasks": () => {
+        return [
+            {
+                cmd: "packages/api-headless-cms-es-tasks --storage=ddb-es,ddb",
+                storage: ["ddb-es"]
+            },
+            {
+                cmd: "packages/api-headless-cms-es-tasks --storage=ddb-os,ddb",
+                storage: ["ddb-os"]
+            }
+        ];
+    },
     tasks: () => {
         return [
             { cmd: "packages/tasks --storage=ddb", storage: "ddb" },
@@ -250,7 +288,7 @@ function hasTestFiles(packageFolderPath: string) {
     }
 
     const files = fs.readdirSync(packageFolderPath);
-    for (let filename of files) {
+    for (const filename of files) {
         const filepath = path.join(packageFolderPath, filename);
         if (fs.statSync(filepath).isDirectory()) {
             const hasTFiles = hasTestFiles(filepath);

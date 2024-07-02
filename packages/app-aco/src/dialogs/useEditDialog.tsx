@@ -8,7 +8,7 @@ import { Typography } from "@webiny/ui/Typography";
 
 import { FolderTree } from "~/components";
 import { ROOT_FOLDER } from "~/constants";
-import { useDialogs } from "~/dialogs/useDialogs";
+import { useDialogs } from "@webiny/app-admin";
 import { DialogFoldersContainer } from "~/dialogs/styled";
 import { useFolders } from "~/hooks";
 import { FolderItem } from "~/types";
@@ -95,10 +95,10 @@ export const useEditDialog = (): UseEditDialogResponse => {
     const showDialog = ({ folder }: ShowDialogParams) => {
         dialog.showDialog({
             title: "Edit folder",
-            message: <FormComponent folder={folder} />,
+            content: <FormComponent folder={folder} />,
             acceptLabel: "Edit folder",
             cancelLabel: "Cancel",
-            loadingLabel: "Editing folder",
+            loadingLabel: "Editing folder...",
             onAccept: (data: GenericFormData) => onAccept(folder, data)
         });
     };

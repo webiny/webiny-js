@@ -38,6 +38,7 @@ export class TaskControl implements ITaskControl {
         let task: ITask<ITaskDataInput>;
         try {
             task = await this.getTask(taskId);
+            this.context.security.setIdentity(task.createdBy);
         } catch (error) {
             return this.response.error({
                 error

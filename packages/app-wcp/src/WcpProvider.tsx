@@ -9,6 +9,8 @@ export const GET_WCP_PROJECT = gql`
         wcp {
             getProject {
                 data {
+                    orgId
+                    projectId
                     package {
                         features {
                             seats {
@@ -27,6 +29,9 @@ export const GET_WCP_PROJECT = gql`
                                 options
                             }
                             auditLogs {
+                                enabled
+                            }
+                            recordLocking {
                                 enabled
                             }
                         }

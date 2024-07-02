@@ -10,9 +10,6 @@ const Divider = styled.div`
 
 const LeftSidebarContainer = styled.div`
     padding: 8px;
-    float: left;
-    display: block;
-    width: 269px;
     height: calc(100vh - 64px);
     background-color: var(--mdc-theme-surface);
     border-right: 1px solid var(--mdc-theme-on-background);

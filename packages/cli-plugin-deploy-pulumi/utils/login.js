@@ -1,8 +1,3 @@
-const getPulumi = require("../utils/getPulumi");
-const trimEnd = require("lodash/trimEnd");
-const fs = require("fs");
-const { join } = require("path");
-
 // To use a self-managed backend, specify a storage endpoint URL as pulumi login’s <backend-url> argument:
 // s3://<bucket-path>, azblob://<container-path>, gs://<bucket-path>, or file://<fs-path>.
 // This will tell Pulumi to store state in AWS S3, Azure Blob Storage, Google Cloud Storage, or the
@@ -11,6 +6,11 @@ const { join } = require("path");
 const SELF_MANAGED_BACKEND = ["s3://", "azblob://", "gs://"];
 
 module.exports = async projectApplication => {
+    const getPulumi = require("../utils/getPulumi");
+    const trimEnd = require("lodash/trimEnd");
+    const fs = require("fs");
+    const { join } = require("path");
+
     // Do the login with Pulumi CLI.
     const pulumi = await getPulumi({ projectApplication });
 

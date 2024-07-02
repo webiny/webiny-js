@@ -1,10 +1,10 @@
-import { useState } from "react";
 import isEqual from "lodash/isEqual";
 import { validateOrGetDefaultDbSort } from "@webiny/app-aco/sorting";
 import { useFolders } from "@webiny/app-aco";
 import { ListMeta } from "@webiny/app-aco/types";
 import { useSecurity } from "@webiny/app-security";
 import { FileItem } from "@webiny/app-admin/types";
+import { useStateIfMounted } from "@webiny/app-admin";
 import { Loading, LoadingActions } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 import {
     ListFilesQueryVariables,
@@ -38,10 +38,10 @@ export function useListFiles({ modifiers, folderId, state }: UseListFilesParams)
     const { identity } = useSecurity();
     const fileManager = useFileManagerApi();
     const { getDescendantFolders } = useFolders();
-    const [meta, setMeta] = useState<ListMeta | undefined>(undefined);
-    const [files, setFiles] = useState<FileItem[]>([]);
-    const [loading, setLoading] = useState<Loading<LoadingActions>>({});
-    const [lastSort, setLastSort] = useState<ListFilesSort | undefined>(undefined);
+    const [meta, setMeta] = useStateIfMounted<ListMeta | undefined>(undefined);
+    const [files, setFiles] = useStateIfMounted<FileItem[]>([]);
+    const [loading, setLoading] = useStateIfMounted<Loading<LoadingActions>>({});
+    const [lastSort, setLastSort] = useStateIfMounted<ListFilesSort | undefined>(undefined);
 
     const listFiles = async (params: ListFilesQueryVariables) => {
         const { after, limit, sort: sorting, search, where } = params;

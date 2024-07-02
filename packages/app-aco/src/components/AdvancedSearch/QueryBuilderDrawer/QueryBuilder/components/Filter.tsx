@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Bind } from "@webiny/form";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { Cell, Grid } from "@webiny/ui/Grid";
@@ -8,14 +7,14 @@ import { Select } from "@webiny/ui/Select";
 import { InputField } from "./InputField";
 import { RemoveFilter } from "./controls";
 
-import { FieldDTO, FilterGroupFilterDTO } from "../../../domain";
+import { FieldDTOWithElement, FilterGroupFilterDTO } from "../../../domain";
 
 import { CellInner, FilterContainer } from "../Querybuilder.styled";
 
 interface FilterProps {
     name: string;
     filter: FilterGroupFilterDTO & { canDelete: boolean };
-    fields: FieldDTO[];
+    fields: FieldDTOWithElement[];
     onDelete: () => void;
     onFieldSelectChange: (data: string) => void;
 }
@@ -38,7 +37,15 @@ export const Filter = ({ name, onDelete, onFieldSelectChange, fields, filter }: 
                                         label={"Field"}
                                         options={options}
                                         value={options.find(option => option.id === value)}
-                                        onChange={data => onFieldSelectChange(data)}
+                                        onChange={selected => {
+                                            /**
+                                             * Update the selected value only if it's different from the current value.
+                                             * When the value is populated from data, onChange might trigger re-rendering of the form and clear related fields.
+                                             */
+                                            if (selected !== value) {
+                                                onFieldSelectChange(selected);
+                                            }
+                                        }}
                                         validation={validation}
                                     />
                                 );
