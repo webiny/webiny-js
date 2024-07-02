@@ -14,8 +14,5 @@ export interface TextNodeThemeStyles {
  * Indicates that the node is implementing the typography styles
  */
 export interface TypographyStylesNode {
-    setTypography: (typographyStyleId: string) => void;
     getTypographyStyleId: () => string | undefined;
-    clearTypographyStyle: () => void;
-    hasTypographyStyle: () => boolean;
 }
