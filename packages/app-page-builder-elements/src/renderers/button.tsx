@@ -1,11 +1,13 @@
 import React, { useMemo } from "react";
-import { usePageElements } from "~/hooks/usePageElements";
-import { LinkComponent } from "~/types";
 import styled, { CSSObject } from "@emotion/styled";
 import { ClassNames } from "@emotion/react";
+import { makeDecoratable } from "@webiny/react-composition";
+import { usePageElements } from "~/hooks/usePageElements";
+import { LinkComponent, Element } from "~/types";
 import { DefaultLinkComponent } from "~/renderers/components";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
+import { ElementAttribute } from "~/attributes/ElementAttribute";
 
 const ICON_POSITION_FLEX_DIRECTION: Record<string, CSSObject> = {
     right: { flexDirection: "row-reverse" },
@@ -101,26 +103,97 @@ export interface Props {
     action?: ButtonElementData["action"];
 }
 
+const isButtonElement = (element: Element): element is Element<ButtonElementData> => {
+    return "buttonText" in element.data;
+};
+
+export const getValueFromElement = (element: Element) => {
+    if (isButtonElement(element)) {
+        return element.data.buttonText;
+    }
+    return null;
+};
+
+const attributes = {
+    buttonText: new ElementAttribute<string>({
+        name: "buttonText",
+        getValue: (element: Element<ButtonElementData>) => {
+            return element.data.buttonText;
+        }
+    }),
+    iconPosition: new ElementAttribute<string>({
+        name: "iconPosition",
+        getValue: (element: Element<ButtonElementData>) => {
+            return element.data.icon?.position;
+        }
+    }),
+    iconColor: new ElementAttribute<string>({
+        name: "iconColor",
+        getValue: (element: Element<ButtonElementData>) => {
+            return element.data.icon?.color;
+        }
+    }),
+    iconSvg: new ElementAttribute<string>({
+        name: "iconSvg",
+        getValue: (element: Element<ButtonElementData>) => {
+            return element.data.icon?.svg;
+        }
+    }),
+    iconWidth: new ElementAttribute<string>({
+        name: "iconWidth",
+        getValue: (element: Element<ButtonElementData>) => {
+            return element.data.icon?.width;
+        }
+    }),
+    actionType: new ElementAttribute<ButtonElementData["action"]["actionType"]>({
+        name: "actionType",
+        getValue: (element: Element<ButtonElementData>) => {
+            return element.data.action?.actionType;
+        }
+    }),
+    actionNewTab: new ElementAttribute<ButtonElementData["action"]["newTab"]>({
+        name: "actionNewTab",
+        getValue: (element: Element<ButtonElementData>) => {
+            return element.data.action?.newTab;
+        }
+    }),
+    actionHref: new ElementAttribute<ButtonElementData["action"]["href"]>({
+        name: "actionHref",
+        getValue: (element: Element<ButtonElementData>) => {
+            return element.data.action?.href;
+        }
+    })
+};
+
+type GetInputValues<T> = { [K in keyof T]?: T[K] extends ElementAttribute<infer P> ? P : never };
+
 export const createButton = (params: CreateButtonParams = {}) => {
     const LinkComponent = params?.linkComponent || DefaultLinkComponent;
 
-    return createRenderer<Props>(
+    const Renderer = createRenderer<Props, typeof attributes>(
         props => {
             const { getStyles } = usePageElements();
-            const { getElement } = useRenderer();
+            const { getElement, inputs: untypedInputs } = useRenderer();
             const element = getElement<ButtonElementData>();
-            const { link, icon } = element.data;
+            const { link } = element.data;
 
-            const buttonText = props.buttonText || element.data.buttonText;
-            const action = props.action?.href ? props.action : element.data.action;
+            const inputs = untypedInputs as GetInputValues<typeof attributes>;
 
+            const buttonText = inputs.buttonText || props.buttonText || "";
             let buttonInnerContent = <ButtonText text={buttonText} />;
+
+            const action: ButtonElementData["action"] = {
+                href: inputs.actionHref || "",
+                newTab: inputs.actionNewTab || false,
+                actionType: inputs.actionType || "link"
+            };
 
             let StyledButtonBody = ButtonBody,
                 StyledButtonIcon;
 
-            if (icon && icon.svg) {
-                const { position = "left", color } = icon;
+            if (inputs.iconSvg) {
+                const position = inputs.iconPosition || "left";
+                const color = inputs.iconColor || "#000";
 
                 StyledButtonBody = styled(StyledButtonBody)({
                     display: "flex",
@@ -129,7 +202,7 @@ export const createButton = (params: CreateButtonParams = {}) => {
 
                 StyledButtonIcon = styled(ButtonIcon)(
                     {
-                        width: icon.width,
+                        width: inputs.iconWidth,
                         ...ICON_POSITION_MARGIN[position]
                     },
                     getStyles(theme => {
@@ -142,7 +215,10 @@ export const createButton = (params: CreateButtonParams = {}) => {
 
                 buttonInnerContent = (
                     <>
-                        <StyledButtonIcon svg={icon.svg} className={`button-icon-${position}`} />
+                        <StyledButtonIcon
+                            svg={inputs.iconSvg}
+                            className={`button-icon-${position}`}
+                        />
                         {buttonInnerContent}
                     </>
                 );
@@ -215,7 +291,10 @@ export const createButton = (params: CreateButtonParams = {}) => {
                     prevProps.buttonText === nextProps.buttonText &&
                     prevProps.action === nextProps.action
                 );
-            }
+            },
+            attributes
         }
     );
+
+    return makeDecoratable("ButtonElement", Renderer);
 };

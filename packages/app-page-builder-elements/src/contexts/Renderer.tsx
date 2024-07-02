@@ -10,6 +10,7 @@ export const RendererProvider = ({
     children,
     element,
     attributes,
+    inputs,
     meta
 }: RendererProviderProps) => {
     const getElement = () => element;
@@ -18,7 +19,7 @@ export const RendererProvider = ({
     const pageElements = usePageElements();
 
     // @ts-expect-error Resolve the `getElement` issue.
-    const value: RendererContextValue = { ...pageElements, getElement, getAttributes, meta };
+    const value: RendererContextValue = { ...pageElements, getElement, getAttributes, meta, inputs };
 
     return <RendererContext.Provider value={value}>{children}</RendererContext.Provider>;
 };

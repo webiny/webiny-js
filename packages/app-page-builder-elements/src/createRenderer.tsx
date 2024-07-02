@@ -4,16 +4,21 @@ import { Renderer, Element } from "~/types";
 import { Theme, StylesObject } from "@webiny/theme/types";
 import { RendererProvider } from "~/contexts/Renderer";
 import { CSSObject, ClassNames } from "@emotion/react";
+import { ElementAttribute } from "~/attributes/ElementAttribute";
 
 interface GetStylesParams {
     theme: Theme;
     element: Element;
 }
 
-export type CreateRendererOptions<TRenderComponentProps> = Partial<{
+export type CreateRendererOptions<
+    TRenderComponentProps,
+    TAttributes = Record<string, ElementAttribute>
+> = Partial<{
     propsAreEqual: (prevProps: TRenderComponentProps, nextProps: TRenderComponentProps) => boolean;
     themeStyles: StylesObject | ((params: GetStylesParams) => StylesObject);
     baseStyles: StylesObject | ((params: GetStylesParams) => StylesObject);
+    attributes: TAttributes;
 }>;
 
 const DEFAULT_RENDERER_STYLES: StylesObject = {
@@ -23,10 +28,17 @@ const DEFAULT_RENDERER_STYLES: StylesObject = {
     boxSizing: "border-box"
 };
 
-export function createRenderer<TRenderComponentProps = Record<string, any>>(
+export type GetInputs<T> = {
+    inputs?: { [K in keyof T]?: T[K] extends ElementAttribute<infer P> ? P : never };
+};
+
+export function createRenderer<
+    TRenderComponentProps = Record<string, any>,
+    TAttributes extends Record<string, ElementAttribute> = Record<string, ElementAttribute>
+>(
     RendererComponent: React.ComponentType<TRenderComponentProps>,
-    options: CreateRendererOptions<TRenderComponentProps> = {}
-): Renderer<TRenderComponentProps> {
+    options: CreateRendererOptions<TRenderComponentProps, TAttributes> = {}
+): Renderer<TRenderComponentProps & GetInputs<TAttributes>> {
     return function Renderer(props) {
         const {
             getElementStyles,
@@ -42,8 +54,20 @@ export function createRenderer<TRenderComponentProps = Record<string, any>>(
             return null;
         }
 
-        const { element, meta, ...componentProps } = props;
+        const { element, meta, inputs = {}, ...componentProps } = props;
         const attributes = getElementAttributes(element);
+
+        const inputAttributes: TAttributes = options.attributes ?? ({} as TAttributes);
+        const inputsValues = Object.keys(inputAttributes).reduce((values, key) => {
+            const attribute = key in inputAttributes ? inputAttributes[key] : undefined;
+            if (attribute) {
+                // @ts-expect-error
+                const inputValue = key in inputs ? inputs[key] : attribute.getValue(element);
+
+                return { ...values, [key]: inputValue };
+            }
+            return values;
+        }, {});
 
         const styles: CSSObject[] = [DEFAULT_RENDERER_STYLES];
 
@@ -91,6 +115,7 @@ export function createRenderer<TRenderComponentProps = Record<string, any>>(
                             element={element}
                             attributes={{ ...attributes, className: o }}
                             meta={{ ...meta, calculatedStyles: styles }}
+                            inputs={inputsValues}
                         >
                             {React.createElement(
                                 `pb-${element.type}`,

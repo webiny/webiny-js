@@ -1,7 +1,12 @@
 import { useContext } from "react";
 import { RendererContext } from "~/contexts/Renderer";
-import { RendererContextValue } from "~/types";
 
-export function useRenderer(): RendererContextValue {
-    return useContext(RendererContext);
+export function useRenderer() {
+    const context = useContext(RendererContext);
+
+    if (!context) {
+        throw Error(`Missing "RendererProvider" context provider in the component hierarchy!`);
+    }
+
+    return context;
 }

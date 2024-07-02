@@ -25,8 +25,8 @@ const plugins: PbPageDetailsPlugin[] = [
     {
         name: "pb-page-details-header-edit",
         type: "pb-page-details-header-right",
-        render(props) {
-            return <EditRevision {...props} />;
+        render() {
+            return <EditRevision />;
         }
     },
     {

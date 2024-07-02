@@ -18,6 +18,7 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@webiny/lexical-editor": "0.0.0",
+    "@webiny/react-composition": "0.0.0",
     "@webiny/theme": "0.0.0",
     "facepaint": "^1.2.1"
   },

@@ -17,22 +17,13 @@ function useComposableParents() {
 
 const nullRenderer = () => null;
 
-// Maybe there's a better way to mark props as non-existent, but for now I left it as `any`.
-type NoProps = any;
-
-type GetProps<T extends (...args: any) => any> = Parameters<T> extends [infer First]
-    ? undefined extends First
-        ? NoProps
-        : First
-    : NoProps;
-
 function makeDecoratableComponent<T extends GenericComponent>(
     name: string,
     Component: T = nullRenderer as unknown as T
 ) {
-    const Decoratable = (props: GetProps<T>): JSX.Element | null => {
+    const Decoratable = (props: React.ComponentProps<T>): JSX.Element | null => {
         const parents = useComposableParents();
-        const ComposedComponent = useComponent(Component);
+        const ComposedComponent = useComponent(Component) as GenericComponent<React.ComponentProps<T>>;
 
         const context = useMemo(() => [...parents, name], [parents, name]);
 

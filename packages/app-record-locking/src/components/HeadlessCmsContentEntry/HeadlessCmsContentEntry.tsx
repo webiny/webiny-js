@@ -18,7 +18,7 @@ const PromptDecorator = Prompt.createDecorator(Original => {
 });
 
 const ContentEntryDecorator = ContentEntry.createDecorator(Original => {
-    return function RecordLockingContentEntry(props) {
+    return function RecordLockingContentEntry() {
         const [disablePrompt, setDisablePrompt] = useState(false);
         const { entry } = ContentEntry.useContentEntry();
         /**
@@ -27,7 +27,7 @@ const ContentEntryDecorator = ContentEntry.createDecorator(Original => {
         if (!entry?.id) {
             return (
                 <DisablePrompt.Provider disablePrompt={disablePrompt}>
-                    <Original {...props} />
+                    <Original />
                 </DisablePrompt.Provider>
             );
         }
@@ -38,7 +38,7 @@ const ContentEntryDecorator = ContentEntry.createDecorator(Original => {
             <ContentEntryGuard>
                 <ContentEntryLocker onDisablePrompt={flag => setDisablePrompt(flag)}>
                     <DisablePrompt.Provider disablePrompt={disablePrompt}>
-                        <Original {...props} />
+                        <Original />
                     </DisablePrompt.Provider>
                 </ContentEntryLocker>
             </ContentEntryGuard>

@@ -97,6 +97,7 @@ export interface RendererContextValue extends PageElementsContextValue {
     getAttributes: GetAttributes;
     beforeRenderer: React.ComponentType | null;
     afterRenderer: React.ComponentType | null;
+    inputs: Record<string, unknown>;
     meta: RendererProviderMeta;
 }
 
@@ -108,6 +109,7 @@ export interface RendererProviderProps {
     element: Element;
     attributes: HTMLAttributes<HTMLElement>;
     meta: RendererProviderMeta;
+    inputs: Record<string, unknown>;
     children: React.ReactNode;
 }
 
@@ -128,7 +130,7 @@ export interface PageProviderProps {
 export type Renderer<
     T = Record<string, any>,
     TElementData = Record<string, any>
-> = React.ComponentType<RendererProps<TElementData> & T>;
+> = React.FunctionComponent<RendererProps<TElementData> & T>;
 
 export type ElementAttributesModifier = (args: {
     element: Element;

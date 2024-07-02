@@ -28,6 +28,7 @@
     "@webiny/app": "0.0.0",
     "@webiny/app-aco": "0.0.0",
     "@webiny/app-admin": "0.0.0",
+    "@webiny/app-headless-cms": "0.0.0",
     "@webiny/app-i18n": "0.0.0",
     "@webiny/app-page-builder-elements": "0.0.0",
     "@webiny/app-plugin-admin-welcome-screen": "0.0.0",
