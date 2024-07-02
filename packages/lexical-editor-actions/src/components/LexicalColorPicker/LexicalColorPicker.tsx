@@ -2,7 +2,6 @@ import React, { useCallback, useState, SyntheticEvent, useRef, useEffect, useMem
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import { usePageElements } from "@webiny/app-page-builder-elements/hooks/usePageElements";
-import classnames from "classnames";
 import { ChromePicker, ColorState, RGBColor } from "react-color";
 import { OnChangeHandler } from "react-color/lib/components/common/ColorWrap";
 import { Tooltip } from "@webiny/ui/Tooltip";
@@ -34,7 +33,7 @@ const Color = styled("button")({
     cursor: "pointer",
     width: 40,
     height: 40,
-    transition: "transform 0.2s, scale 0.2s",
+    transition: "transform 0.1s, border 0.2s",
     borderColor: "transparent",
     display: "flex",
     alignItems: "center",
@@ -85,7 +84,10 @@ const COLORS = {
 
 const styles = {
     selectedColor: css({
-        boxShadow: "0px 0px 0px 2px var(--mdc-theme-secondary)"
+        boxShadow: "inset 0px 0px 0px 10px var(--mdc-theme-secondary)",
+        button: {
+            border: "5px solid var(--mdc-theme-surface)"
+        }
     }),
     button: css({
         cursor: "pointer",
@@ -192,10 +194,9 @@ export const LexicalColorPicker = ({
                     themeColor.current = true;
                 }
                 return (
-                    <ColorBox key={index}>
+                    <ColorBox key={index} className={color === value ? styles.selectedColor : ""}>
                         <Tooltip content={<span>{color}</span>} placement="bottom">
                             <Color
-                                className={key === value ? styles.selectedColor : ""}
                                 style={{ backgroundColor: color }}
                                 onClick={() => {
                                     // With page elements implementation, we want to store the color key and
@@ -209,12 +210,10 @@ export const LexicalColorPicker = ({
                 );
             })}
 
-            <ColorBox>
+            <ColorBox className={value === "transparent" ? styles.selectedColor : ""}>
                 <Tooltip content={<span>Transparent</span>} placement="bottom">
                     <Color
-                        className={classnames(transparent, {
-                            [styles.selectedColor]: value === "transparent"
-                        })}
+                        className={transparent}
                         onClick={() => {
                             onChangeComplete("transparent");
                         }}
@@ -222,10 +221,9 @@ export const LexicalColorPicker = ({
                 </Tooltip>
             </ColorBox>
 
-            <ColorBox>
+            <ColorBox className={value && !themeColor.current ? styles.selectedColor : ""}>
                 <Tooltip content={<span>Color picker</span>} placement="bottom">
                     <Color
-                        className={value && !themeColor.current ? styles.selectedColor : ""}
                         style={{ backgroundColor: themeColor.current ? "#fff" : value }}
                         onClick={togglePicker}
                     >
