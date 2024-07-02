@@ -13,7 +13,7 @@ export const onFolderBeforeDeleteHcmsHook = (context: AcoContext) => {
                 return;
             }
 
-            let model: CmsModel
+            let model: CmsModel;
             try {
                 model = await context.cms.getModel(modelId);
                 if (!model) {
