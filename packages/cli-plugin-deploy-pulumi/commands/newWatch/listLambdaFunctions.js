@@ -1,9 +1,16 @@
 const { getStackExport } = require("../../utils");
 const path = require("path");
+const minimatch = require("minimatch");
 
-const listLambdaFunctions = ({ folder, env }) => {
+const listLambdaFunctions = ({ folder, env, function: fn }) => {
     const stackExport = getStackExport({ folder, env });
-    return stackExport.deployment.resources
+    if (!stackExport) {
+        // If no stack export is found, return an empty array. This is a valid scenario.
+        // For example, watching the Admin app locally, but not deploying it.
+        return [];
+    }
+
+    const functionsList = stackExport.deployment.resources
         .filter(r => r.type === "aws:lambda/function:Function")
         .map(lambdaFunctionResource => {
             const fnName = lambdaFunctionResource.outputs.name;
@@ -11,6 +18,23 @@ const listLambdaFunctions = ({ folder, env }) => {
             const handlerPath = path.join(handlerBuildFolderPath, "handler.js");
             return { name: fnName, path: handlerPath };
         });
+
+    if (!fn) {
+        return functionsList;
+    }
+
+    const functionNamesToMatch = Array.isArray(fn) ? fn : [fn];
+
+    // `functionNamesToWatch` is an array of glob patterns, which denote which functions to watch.
+    return functionsList.filter(fn => {
+        return functionNamesToMatch.some(pattern => {
+            if (pattern.includes("*")) {
+                return minimatch(fn.name, pattern);
+            }
+
+            return fn.name.includes(pattern);
+        });
+    });
 };
 
 module.exports = { listLambdaFunctions };

@@ -1,23 +1,21 @@
+import inspector from "inspector";
+
 const chalk = require("chalk");
 const path = require("path");
 const { getProjectApplication, getProject } = require("@webiny/cli/utils");
 const get = require("lodash/get");
 const merge = require("lodash/merge");
-const { Worker } = require("worker_threads");
 const { loadEnvVariables, runHook, getDeploymentId } = require("../utils");
 const { getIotEndpoint } = require("./newWatch/getIotEndpoint");
 const { listLambdaFunctions } = require("./newWatch/listLambdaFunctions");
 const listPackages = require("./newWatch/listPackages");
 const { PackagesWatcher } = require("./newWatch/watchers/PackagesWatcher");
+const { initEventsHandling } = require("./newWatch/initEventsHandling");
+const { updateLambdaFunctionsEnvVars } = require("./newWatch/updateLambdaFunctionsEnvVars");
 
 // Do not allow watching "prod" and "production" environments. On the Pulumi CLI side, the command
 // is still in preview mode, so it's definitely not wise to use it on production environments.
 const WATCH_DISABLED_ENVIRONMENTS = ["prod", "production"];
-
-const WEBINY_WATCH_FN_INVOCATION_EVENT = "webiny.watch.functionInvocation";
-const WEBINY_WATCH_FN_INVOCATION_RESULT_EVENT = "webiny.watch.functionInvocationResult";
-
-const WATCH_WORKER_PATH = path.join(__dirname, "newWatch", "localInvocationWorker.js");
 
 module.exports = async (inputs, context) => {
     // 1. Initial checks for deploy and build commands.
@@ -68,7 +66,7 @@ module.exports = async (inputs, context) => {
         await loadEnvVariables(inputs, context);
     }
 
-    if (inputs.deploy && !inputs.env) {
+    if (projectApplicationSpecified && !inputs.env) {
         throw new Error(`Please specify environment, for example "dev".`);
     }
 
@@ -90,165 +88,96 @@ module.exports = async (inputs, context) => {
 
     console.log();
 
-    // TODO: visual feedback that the watch command has started.
-
     const packages = await listPackages({ inputs });
     const packagesWatcher = new PackagesWatcher({ packages, context, inputs });
-    const watchPromise = packagesWatcher.watch();
 
     if (!projectApplicationSpecified) {
-        await watchPromise;
+        await packagesWatcher.watch();
         return;
     }
 
-    const lambdaFunctions = listLambdaFunctions(inputs);
+    let lambdaFunctions = listLambdaFunctions(inputs);
+
+    // Let's filter out the authorizer function, as it's not needed for the watch command.
+    if (projectApplication.id === "core") {
+        lambdaFunctions = lambdaFunctions.filter(fn => {
+            const isAuthorizerFunction = fn.name.includes("watch-command-iot-authorizer");
+            return !isAuthorizerFunction;
+        });
+    }
+
     if (!lambdaFunctions.length) {
+        context.debug("No AWS Lambda functions will be invoked locally.");
+        await packagesWatcher.watch();
         return;
     }
+
+    const deployCommand = `yarn webiny deploy ${projectApplication.id} --env ${inputs.env}`;
+    const learnMoreLink = "https://webiny.link/local-aws-lambda-development";
+
+    context.info(`Local AWS Lambda development session started.`);
+    context.info(
+        `Note that you should deploy your changes once you're done. To do so, run: %s. Learn more: %s.`,
+        deployCommand,
+        learnMoreLink
+    );
+
+    context.debug(
+        "The events for following AWS Lambda functions will be forwarded locally: ",
+        lambdaFunctions.map(fn => fn.name)
+    );
+
+    console.log();
+
+    // eslint-disable-next-line
+    const { default: exitHook } = await import("exit-hook");
+
+    exitHook(() => {
+        console.log();
+        console.log();
+
+        context.info(`Stopping local AWS Lambda development session.`);
+        context.info(
+            `Note that you should deploy your changes. To do so, run: %s. Learn more: %s.`,
+            deployCommand,
+            learnMoreLink
+        );
+    });
 
     const deploymentId = getDeploymentId({ env: inputs.env });
     const iotEndpointTopic = `webiny-watch-${deploymentId}`;
     const iotEndpoint = await getIotEndpoint({ env: inputs.env });
     const sessionId = new Date().getTime();
 
-    const {
-        LambdaClient,
-        GetFunctionConfigurationCommand,
-        UpdateFunctionConfigurationCommand
-    } = require("@aws-sdk/client-lambda");
-
-    const lambdaClient = new LambdaClient();
-
-    const functionUpdatesPromises = lambdaFunctions.map(async fn => {
-        const getFnConfigCmd = new GetFunctionConfigurationCommand({ FunctionName: fn.name });
-        const lambdaFnConfiguration = await lambdaClient.send(getFnConfigCmd);
-
-        const updateFnConfigCmd = new UpdateFunctionConfigurationCommand({
-            FunctionName: fn.name,
-            Timeout: 10, // 5 minutes
-            Environment: {
-                Variables: {
-                    ...lambdaFnConfiguration.Environment.Variables,
-                    WEBINY_WATCH: JSON.stringify({
-                        enabled: true,
-                        sessionId,
-                        iotEndpoint,
-                        iotEndpointTopic,
-                        functionName: fn.name
-                    })
-                }
-            }
-        });
-
-        await lambdaClient.send(updateFnConfigCmd);
+    // Ignore promise, we don't need to wait for this to finish.
+    updateLambdaFunctionsEnvVars({
+        iotEndpoint,
+        iotEndpointTopic,
+        sessionId,
+        lambdaFunctions
     });
 
-    await Promise.all(functionUpdatesPromises);
-
+    let inspector;
     if (inputs.inspect) {
-        const inspector = require("inspector");
+        inspector = require("inspector");
         inspector.open(9229, "127.0.0.1");
+        console.log()
+
+        exitHook(() => {
+            inspector.close();
+        });
     }
 
-    // inspector.open(0, undefined, false);
-    // fs.writeFileSync(someFileName, inspector.url());
-    // inspector.waitForDebugger();
-
-    const mqtt = require("mqtt");
-
-    const client = await mqtt.connectAsync(iotEndpoint);
-
-    await client.subscribeAsync(iotEndpointTopic);
-
-    client.on("message", async (_, message) => {
-        const payload = JSON.parse(message.toString());
-
-        if (payload.eventType !== WEBINY_WATCH_FN_INVOCATION_EVENT) {
-            return;
-        }
-
-        if (payload.data.sessionId !== sessionId) {
-            return;
-        }
-
-        const invokedLambdaFunction = lambdaFunctions.find(
-            lambdaFunction => lambdaFunction.name === payload.data.functionName
-        );
-
-        try {
-            const result = await new Promise((resolve, reject) => {
-                const worker = new Worker(WATCH_WORKER_PATH, {
-                    env: { ...payload.data.env, WEBINY_WATCH_LOCAL_INVOCATION: "1" },
-                    workerData: {
-                        handler: {
-                            path: invokedLambdaFunction.path,
-                            args: payload.data.args
-                        }
-                    }
-                });
-
-                worker.on("message", message => {
-                    const { success, result, error } = JSON.parse(message);
-                    if (success) {
-                        resolve(result);
-                        worker.terminate();
-                        return;
-                    }
-                    reject(error);
-                });
-
-                worker.on("error", reject);
-                worker.on("exit", code => {
-                    if (code !== 0) {
-                        reject(new Error(`Worker stopped with exit code ${code}`));
-                    }
-                });
-            });
-
-            await client.publish(
-                iotEndpointTopic,
-                JSON.stringify({
-                    eventType: WEBINY_WATCH_FN_INVOCATION_RESULT_EVENT,
-                    eventId: new Date().getTime(),
-                    data: {
-                        originalEventId: payload.eventId,
-                        result,
-                        error: null
-                    }
-                })
-            );
-        } catch (error) {
-            console.log(
-                JSON.stringify({
-                    eventType: WEBINY_WATCH_FN_INVOCATION_RESULT_EVENT,
-                    eventId: new Date().getTime(),
-                    data: {
-                        originalEventId: payload.eventId,
-                        data: null,
-                        error: {
-                            message: error.message,
-                            stack: error.stack
-                        }
-                    }
-                })
-            );
-            await client.publish(
-                iotEndpointTopic,
-                JSON.stringify({
-                    eventType: WEBINY_WATCH_FN_INVOCATION_RESULT_EVENT,
-                    eventId: new Date().getTime(),
-                    data: {
-                        originalEventId: payload.eventId,
-                        data: null,
-                        error: {
-                            message: error.message,
-                            stack: error.stack
-                        }
-                    }
-                })
-            );
-        }
+    // Ignore promise, we don't need to wait for this to finish.
+    initEventsHandling({
+        iotEndpoint,
+        iotEndpointTopic,
+        lambdaFunctions,
+        sessionId,
+        inspector,
     });
 
-    await watchPromise;
+
+
+    await packagesWatcher.watch();
 };

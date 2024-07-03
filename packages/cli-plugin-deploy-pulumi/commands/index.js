@@ -157,23 +157,24 @@ module.exports = [
                         });
                         yargs.option("package", {
                             alias: "p",
-                            describe: `Set list of packages that need to be watched for code changes`,
+                            describe: `One or more packages that will be watched for code changes`,
                             type: "string"
                         });
+                        yargs.option("function", {
+                            alias: "f",
+                            describe: "One or more functions that will invoked locally (used with local AWS Lambda development)",
+                            type: "string"
+                        });
+                        yargs.option("inspect", {
+                            alias: "i",
+                            describe:
+                                "Enable Node debugger (used with local AWS Lambda development)",
+                            type: "boolean"
+                        });
                         yargs.option("depth", {
-                            describe: `The level of dependencies that needs to be watched for code changes`,
+                            describe: `The level of dependencies that will be watched for code changes`,
                             type: "number",
                             default: 2
-                        });
-                        yargs.option("logs", {
-                            default: undefined,
-                            describe: `Enable base compilation-related logs`,
-                            type: "boolean"
-                        });
-                        yargs.option("show-timestamps", {
-                            alias: "t",
-                            describe: `Includes timestamps in the logs`,
-                            type: "boolean"
                         });
                         yargs.option("debug", {
                             default: false,

@@ -41,7 +41,7 @@
         }
     `;
 
-    await request("https://dbvlabv65ujkm.cloudfront.net/graphql", GET_WCP_PROJECT).then(res => {
+    await request("https://dplz14g2kge48.cloudfront.net/graphql", GET_WCP_PROJECT).then(res => {
         console.log(JSON.stringify(res, null, 2));
     });
 })();
