@@ -1,3 +1,5 @@
+const { featureFlags } = require("@webiny/feature-flags");
+
 module.exports = [
     {
         type: "cli-command",
@@ -138,79 +140,132 @@ module.exports = [
                 }
             );
 
-            yargs.command(
-                "watch [folder]",
-                `Rebuild and deploy specified project application while making changes to it`,
-                yargs => {
-                    yargs.example("$0 watch api --env=dev");
-                    yargs.example(
-                        "$0 watch api --env=dev --scope my-package-1 --scope my-package-2"
-                    );
-                    yargs.example("$0 watch api --env=dev --depth 2");
-                    yargs.example('$0 watch api --env=dev -r "my-function*"');
-                    yargs.example('$0 watch --env=dev --scope "my/{package1,package2}" ');
+            if (featureFlags.newWatchCommand) {
+                yargs.command(
+                    "watch [folder]",
+                    `Start a new development session`,
+                    yargs => {
+                        yargs.example("$0 watch api --env=dev");
 
-                    yargs.positional("folder", {
-                        describe: `Project application folder`,
-                        type: "string"
-                    });
-                    yargs.option("env", {
-                        describe: `Environment`,
-                        type: "string"
-                    });
-                    yargs.option("build", {
-                        describe: `While making code changes, re-build all relevant packages`,
-                        type: "boolean"
-                    });
-                    yargs.option("deploy", {
-                        describe: `While making code changes, re-deploy cloud infrastructure`,
-                        type: "boolean"
-                    });
-                    yargs.option("package", {
-                        alias: "p",
-                        describe: `Override watch packages (list of packages that need to be watched for code changes)`,
-                        type: "string"
-                    });
-                    yargs.option("depth", {
-                        describe: `The level of dependencies that needs to be watched for code changes (does not work when "scope" is passed)`,
-                        type: "number",
-                        default: 2
-                    });
-                    yargs.option("output", {
-                        describe: `Specify the output destination to which all of the logs will be forwarded`,
-                        default: "simple",
-                        type: "string"
-                    });
-                    yargs.option("logs", {
-                        default: undefined,
-                        describe: `Enable base compilation-related logs`,
-                        type: "boolean"
-                    });
-                    yargs.option("remoteRuntimeLogs", {
-                        alias: "r",
-                        describe: `Forward logs from deployed application code to your terminal (optionally accepts a glob pattern for filtering purposes)`,
-                        type: "string"
-                    });
-                    yargs.option("show-timestamps", {
-                        alias: "t",
-                        describe: `Includes timestamps in the logs`,
-                        type: "boolean"
-                    });
-                    yargs.option("debug", {
-                        default: false,
-                        describe: `Turn on debug logs`,
-                        type: "boolean"
-                    });
-                    yargs.option("allowProduction", {
-                        default: false,
-                        describe: `Enables running the watch command with "prod" and "production" environments (not recommended).`,
-                        type: "boolean"
-                    });
-                },
-                async argv => {
-                    return require("./watch")(argv, context);
-                }
-            );
+                        yargs.positional("folder", {
+                            describe: `Project application folder or application name`,
+                            type: "string"
+                        });
+                        yargs.option("env", {
+                            describe: `Environment`,
+                            type: "string"
+                        });
+                        yargs.option("package", {
+                            alias: "p",
+                            describe: `One or more packages that will be watched for code changes`,
+                            type: "string"
+                        });
+                        yargs.option("function", {
+                            alias: "f",
+                            describe: "One or more functions that will invoked locally (used with local AWS Lambda development)",
+                            type: "string"
+                        });
+                        yargs.option("inspect", {
+                            alias: "i",
+                            describe:
+                                "Enable Node debugger (used with local AWS Lambda development)",
+                            type: "boolean"
+                        });
+                        yargs.option("depth", {
+                            describe: `The level of dependencies that will be watched for code changes`,
+                            type: "number",
+                            default: 2
+                        });
+                        yargs.option("debug", {
+                            default: false,
+                            describe: `Turn on debug logs`,
+                            type: "boolean"
+                        });
+                        yargs.option("allow-production", {
+                            default: false,
+                            describe: `Enables running the watch command with "prod" and "production" environments (not recommended).`,
+                            type: "boolean"
+                        });
+                    },
+                    async argv => {
+                        return require("./newWatch")(argv, context);
+                    }
+                );
+            } else {
+                yargs.command(
+                    "watch [folder]",
+                    `Rebuild and deploy specified specified project application while making changes to it`,
+                    yargs => {
+                        yargs.example("$0 watch api --env=dev");
+                        yargs.example(
+                            "$0 watch api --env=dev --scope my-package-1 --scope my-package-2"
+                        );
+                        yargs.example("$0 watch api --env=dev --depth 2");
+                        yargs.example('$0 watch api --env=dev -r "my-function*"');
+                        yargs.example('$0 watch --env=dev --scope "my/{package1,package2}" ');
+
+                        yargs.positional("folder", {
+                            describe: `Project application folder`,
+                            type: "string"
+                        });
+                        yargs.option("env", {
+                            describe: `Environment`,
+                            type: "string"
+                        });
+                        yargs.option("build", {
+                            describe: `While making code changes, re-build all relevant packages`,
+                            type: "boolean"
+                        });
+                        yargs.option("deploy", {
+                            describe: `While making code changes, re-deploy cloud infrastructure`,
+                            type: "boolean"
+                        });
+                        yargs.option("package", {
+                            alias: "p",
+                            describe: `Override watch packages (list of packages that need to be watched for code changes)`,
+                            type: "string"
+                        });
+                        yargs.option("depth", {
+                            describe: `The level of dependencies that needs to be watched for code changes (does not work when "scope" is passed)`,
+                            type: "number",
+                            default: 2
+                        });
+                        yargs.option("output", {
+                            describe: `Specify the output destination to which all of the logs will be forwarded`,
+                            default: "simple",
+                            type: "string"
+                        });
+                        yargs.option("logs", {
+                            default: undefined,
+                            describe: `Enable base compilation-related logs`,
+                            type: "boolean"
+                        });
+                        yargs.option("remoteRuntimeLogs", {
+                            alias: "r",
+                            describe: `Forward logs from deployed application code to your terminal (optionally accepts a glob pattern for filtering purposes)`,
+                            type: "string"
+                        });
+                        yargs.option("show-timestamps", {
+                            alias: "t",
+                            describe: `Includes timestamps in the logs`,
+                            type: "boolean"
+                        });
+                        yargs.option("debug", {
+                            default: false,
+                            describe: `Turn on debug logs`,
+                            type: "boolean"
+                        });
+                        yargs.option("allowProduction", {
+                            default: false,
+                            describe: `Enables running the watch command with "prod" and "production" environments (not recommended).`,
+                            type: "boolean"
+                        });
+                    },
+                    async argv => {
+                        return require("./watch")(argv, context);
+                    }
+                );
+            }
 
             yargs.command(
                 "destroy [folder]",
