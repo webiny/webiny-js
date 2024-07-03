@@ -21,6 +21,7 @@ export const SearchInput = () => {
             >
                 {({ value, onChange }) => (
                     <input
+                        id={"trash-bin__search-input"}
                         value={value}
                         onChange={e => onChange(e.target.value)}
                         placeholder={vm.searchLabel}

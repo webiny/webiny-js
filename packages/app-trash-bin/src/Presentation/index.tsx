@@ -7,9 +7,10 @@ import {
 } from "~/Gateways";
 import { ITrashBinItemMapper, TrashBinItemDTO } from "~/Domain";
 import { TrashBinRenderer } from "~/Presentation/TrashBinRenderer";
-import { TrashBinConfigs } from "~/Presentation/TrashBinConfigs";
 import { CompositionScope } from "@webiny/react-composition";
 import { TrashBinListWithConfig } from "~/Presentation/configs";
+
+export * from "~/Presentation/TrashBinConfigs";
 
 export type TrashBinRenderPropParams = {
     showTrashBin: () => void;
@@ -90,7 +91,6 @@ export const TrashBin = ({ render, ...rest }: TrashBinProps) => {
                             />
                         </TrashBinListWithConfig>
                     </AcoWithConfig>
-                    <TrashBinConfigs />
                 </CompositionScope>
             )}
             {render ? render({ showTrashBin }) : null}

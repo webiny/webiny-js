@@ -4,6 +4,9 @@ import { FormElementMessage } from "~/FormElementMessage";
 import { FormComponentProps } from "~/types";
 
 interface Props extends FormComponentProps {
+    // Component id.
+    id?: string;
+
     // Component label.
     label?: string;
 
@@ -37,21 +40,15 @@ class Checkbox extends React.Component<Props> {
     };
 
     public override render() {
-        const {
-            value,
-            label = "",
-            disabled,
-            indeterminate,
-            description,
-            validation,
-            onClick
-        } = this.props;
+        const { id, value, label, disabled, indeterminate, description, validation, onClick } =
+            this.props;
 
         const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
         return (
             <React.Fragment>
                 <RmwcCheckbox
+                    id={id}
                     indeterminate={indeterminate}
                     disabled={disabled}
                     checked={Boolean(value)}

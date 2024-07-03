@@ -31,15 +31,19 @@ export interface SignInProps {
     federatedProviders?: FederatedIdentityProvider[];
 }
 
-const DefaultContent = (props: SignInProps) => {
+export interface SignInDefaultContentProps extends SignInProps {
+    error?: Error | null;
+}
+
+const DefaultContent = (props: SignInDefaultContentProps) => {
     const { submit } = useForm();
-    const { error } = useSignIn();
     const { message, changeState } = useAuthenticator();
     const {
         title = "Sign In",
         description = undefined,
         federatedProviders = [],
-        allowSignInWithCredentials = true
+        allowSignInWithCredentials = true,
+        error = null
     } = props;
 
     return (
@@ -111,7 +115,7 @@ const DefaultContent = (props: SignInProps) => {
 };
 
 export const SignIn = makeDecoratable("SignIn", (props: SignInProps) => {
-    const { signIn, loading, shouldRender } = useSignIn();
+    const { signIn, loading, shouldRender, error } = useSignIn();
     const { content = undefined, footer = undefined } = props;
 
     if (!shouldRender) {
@@ -125,7 +129,7 @@ export const SignIn = makeDecoratable("SignIn", (props: SignInProps) => {
                     <>
                         <View.Content>
                             {loading && <CircularProgress label={"Signing in..."} />}
-                            {content ? content : <DefaultContent {...props} />}
+                            {content ? content : <DefaultContent {...props} error={error} />}
                         </View.Content>
                         {footer ? <View.Footer>{footer}</View.Footer> : null}
                     </>

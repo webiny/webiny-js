@@ -29,7 +29,7 @@ export async function extractAndUploadZipFileContents(zipFileUrl: string): Promi
     const response = await fetch(zipFileUrl);
     const readStream = response.body;
     if (!response.ok || !readStream) {
-        throw new WebinyError(`Unable to downloading file: "${zipFileUrl}"`, response.statusText);
+        throw new WebinyError(`Unable to download file: "${zipFileUrl}"`, response.statusText);
     }
 
     const uniquePath = uniqueId("IMPORTS/");

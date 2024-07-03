@@ -33,14 +33,23 @@ export const createTenancyAndSecurity = ({
     const securityStorage = getStorageOps<SecurityStorageOperations>("security");
 
     return [
+        new ContextPlugin<Context>(async context => {
+            const original = context.wcp.canUseFeature;
+            context.wcp.canUseFeature = feature => {
+                if (feature === "multiTenancy") {
+                    return true;
+                }
+                return original(feature);
+            };
+        }),
         createTenancyContext({ storageOperations: tenancyStorage.storageOperations }),
         setupGraphQL ? createTenancyGraphQL() : null,
         createSecurityContext({ storageOperations: securityStorage.storageOperations }),
         setupGraphQL ? createSecurityGraphQL() : null,
         new ContextPlugin<Context>(context => {
             context.tenancy.setCurrentTenant({
-                id: "root",
-                name: "Root",
+                id: context.request.headers["x-tenant"] || "root",
+                name: context.request.headers["x-tenant"] || "Root",
                 webinyVersion: context.WEBINY_VERSION
             } as unknown as Tenant);
 

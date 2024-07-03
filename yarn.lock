@@ -16781,6 +16781,7 @@ __metadata:
     "@webiny/api-security": 0.0.0
     "@webiny/api-tenancy": 0.0.0
     "@webiny/cli": 0.0.0
+    "@webiny/error": 0.0.0
     "@webiny/handler-client": 0.0.0
     "@webiny/handler-graphql": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -18023,6 +18024,7 @@ __metadata:
     "@emotion/styled": ^11.10.6
     "@material-design-icons/svg": ^0.14.3
     "@webiny/app": 0.0.0
+    "@webiny/app-aco": 0.0.0
     "@webiny/app-admin": 0.0.0
     "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-security": 0.0.0
@@ -18141,6 +18143,7 @@ __metadata:
     "@webiny/app-security-access-management": 0.0.0
     "@webiny/app-tenancy": 0.0.0
     "@webiny/app-tenant-manager": 0.0.0
+    "@webiny/app-trash-bin": 0.0.0
     "@webiny/app-websockets": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/lexical-editor-actions": 0.0.0
@@ -18648,6 +18651,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     case: ^1.6.3
     execa: ^5.0.0
+    glob: ^7.1.2
     load-json-file: ^6.2.0
     ncp: ^2.0.0
     replace-in-path: ^1.1.0
@@ -18793,6 +18797,33 @@ __metadata:
     load-json-file: ^6.2.0
     ncp: ^2.0.0
     pluralize: ^8.0.0
+    replace-in-path: ^1.1.0
+    rimraf: ^5.0.5
+    typescript: 4.7.4
+    validate-npm-package-name: ^3.0.0
+    write-json-file: ^4.3.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/cli-plugin-scaffold-workspaces@workspace:packages/cli-plugin-scaffold-workspaces":
+  version: 0.0.0-use.local
+  resolution: "@webiny/cli-plugin-scaffold-workspaces@workspace:packages/cli-plugin-scaffold-workspaces"
+  dependencies:
+    "@babel/cli": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@types/inquirer": ^7.3.1
+    "@types/ncp": ^2.0.4
+    "@types/pluralize": ^0.0.29
+    "@types/validate-npm-package-name": ^3.0.3
+    "@webiny/cli": 0.0.0
+    "@webiny/cli-plugin-scaffold": 0.0.0
+    "@webiny/error": 0.0.0
+    "@webiny/project-utils": 0.0.0
+    case: ^1.6.3
+    execa: ^5.0.0
+    load-json-file: ^6.2.0
+    ncp: ^2.0.0
     replace-in-path: ^1.1.0
     rimraf: ^5.0.5
     typescript: 4.7.4

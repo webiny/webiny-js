@@ -19,7 +19,7 @@ const EditStepDialog = styled(BaseDialog)`
 
 const DialogHeader = styled.div`
     height: 30px;
-    background-color: #00ccb0;
+    background-color: var(--mdc-theme-secondary);
     padding: 20px 20px;
 
     & span {

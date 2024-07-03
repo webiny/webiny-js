@@ -9,6 +9,7 @@
     "@webiny/cli-plugin-scaffold-graphql-service": "latest",
     "@webiny/cli-plugin-scaffold-ci": "latest",
     "@webiny/cli-plugin-scaffold-extensions": "latest",
+    "@webiny/cli-plugin-scaffold-workspaces": "latest",
     "@webiny/cli-plugin-workspaces": "latest",
     "@webiny/cli-plugin-deploy-pulumi": "latest",
     "@webiny/project-utils": "latest",

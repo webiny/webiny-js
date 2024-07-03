@@ -66,6 +66,7 @@ export const SearchWidget = () => {
             >
                 {({ value, onChange }) => (
                     <input
+                        id={"file-manager__search-input"}
                         value={value}
                         onChange={e => onChange(e.target.value)}
                         placeholder={view.searchLabel || "Search all files"}

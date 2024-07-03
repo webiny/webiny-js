@@ -1,11 +1,11 @@
 import { useGraphQLHandler } from "~tests/helpers/useGraphQLHandler";
 import { createMockTaskDefinitions } from "~tests/mocks/definition";
-import { useHandler } from "~tests/helpers/useHandler";
+import { useRawHandler } from "~tests/helpers/useRawHandler";
 import { ITaskLogItemType } from "~/types";
 import { createMockIdentity } from "~tests/mocks/identity";
 
 describe("graphql - logs", () => {
-    const contextHandler = useHandler({
+    const contextHandler = useRawHandler({
         plugins: [...createMockTaskDefinitions()]
     });
     const handler = useGraphQLHandler({
