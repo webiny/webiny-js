@@ -6,7 +6,12 @@ const WEBINY_WATCH_FN_INVOCATION_RESULT_EVENT = "webiny.watch.functionInvocation
 
 const WATCH_WORKER_PATH = path.join(__dirname, "localInvocationWorker.js");
 
-const initEventsHandling = async ({ iotEndpoint, iotEndpointTopic, sessionId, lambdaFunctions }) => {
+const initEventsHandling = async ({
+    iotEndpoint,
+    iotEndpointTopic,
+    sessionId,
+    lambdaFunctions
+}) => {
     const mqtt = require("mqtt");
 
     const client = await mqtt.connectAsync(iotEndpoint);
@@ -29,7 +34,10 @@ const initEventsHandling = async ({ iotEndpoint, iotEndpointTopic, sessionId, la
         );
 
         try {
-            const result = await new Promise((resolve, reject) => {
+            // eslint-disable-next-line
+            const { default: exitHook } = await import("exit-hook");
+
+            const result = await new Promise(async (resolve, reject) => {
                 const worker = new Worker(WATCH_WORKER_PATH, {
                     env: { ...payload.data.env, WEBINY_WATCH_LOCAL_INVOCATION: "1" },
                     workerData: {
@@ -44,17 +52,21 @@ const initEventsHandling = async ({ iotEndpoint, iotEndpointTopic, sessionId, la
                     const { success, result, error } = JSON.parse(message);
                     if (success) {
                         resolve(result);
-                        worker.terminate();
-                        return;
+                    } else {
+                        reject(error);
                     }
-                    reject(error);
                 });
 
                 worker.on("error", reject);
+
                 worker.on("exit", code => {
                     if (code !== 0) {
                         reject(new Error(`Worker stopped with exit code ${code}`));
                     }
+                });
+
+                exitHook(() => {
+                    worker.terminate()
                 });
             });
 
@@ -71,20 +83,7 @@ const initEventsHandling = async ({ iotEndpoint, iotEndpointTopic, sessionId, la
                 })
             );
         } catch (error) {
-            console.log(
-                JSON.stringify({
-                    eventType: WEBINY_WATCH_FN_INVOCATION_RESULT_EVENT,
-                    eventId: new Date().getTime(),
-                    data: {
-                        originalEventId: payload.eventId,
-                        data: null,
-                        error: {
-                            message: error.message,
-                            stack: error.stack
-                        }
-                    }
-                })
-            );
+            console.log(error)
             await client.publish(
                 iotEndpointTopic,
                 JSON.stringify({

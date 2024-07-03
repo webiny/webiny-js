@@ -1,5 +1,3 @@
-import inspector from "inspector";
-
 const chalk = require("chalk");
 const path = require("path");
 const { getProjectApplication, getProject } = require("@webiny/cli/utils");
