@@ -159,7 +159,7 @@ module.exports = async (inputs, context) => {
     if (inputs.inspect) {
         inspector = require("inspector");
         inspector.open(9229, "127.0.0.1");
-        console.log()
+        console.log();
 
         exitHook(() => {
             inspector.close();
@@ -172,10 +172,8 @@ module.exports = async (inputs, context) => {
         iotEndpointTopic,
         lambdaFunctions,
         sessionId,
-        inspector,
+        inspector
     });
-
-
 
     await packagesWatcher.watch();
 };

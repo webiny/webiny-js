@@ -66,7 +66,7 @@ const initEventsHandling = async ({
                 });
 
                 exitHook(() => {
-                    worker.terminate()
+                    worker.terminate();
                 });
             });
 
@@ -83,7 +83,7 @@ const initEventsHandling = async ({
                 })
             );
         } catch (error) {
-            console.log(error)
+            console.log(error);
             await client.publish(
                 iotEndpointTopic,
                 JSON.stringify({

@@ -7,7 +7,7 @@ import { OpenSearch } from "./CoreOpenSearch";
 import { CoreEventBus } from "./CoreEventBus";
 import { CoreFileManger } from "./CoreFileManager";
 import { CoreVpc } from "./CoreVpc";
-import { WatchCommand } from "./watchCommand";
+import { WatchCommand } from "./WatchCommand";
 import { tagResources } from "~/utils";
 import { withServiceManifest } from "~/utils/withServiceManifest";
 import { addServiceManifestTableItem, TableDefinition } from "~/utils/addServiceManifestTableItem";

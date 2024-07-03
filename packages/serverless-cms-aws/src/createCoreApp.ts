@@ -35,6 +35,6 @@ export function createCoreApp(projectAppParams: CreateCoreAppParams = {}) {
             }
         },
         pulumi: createCorePulumiApp(projectAppParams),
-        plugins: [builtInPlugins, customPlugins],
+        plugins: [builtInPlugins, customPlugins]
     };
 }
