@@ -32,5 +32,10 @@ export interface Identity {
     group?: string;
     team?: string;
 
+    // `group` and `team` are still here, mainly for backwards compatibility.
+    // Using these properties assigning multiple groups or teams.
+    groups?: string[];
+    teams?: string[];
+
     [key: string]: any;
 }

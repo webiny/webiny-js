@@ -22,9 +22,10 @@ export interface BaseUserAttributes {
     // Check `api-security-okta` package for an example.
     email: string;
 
+    groups: string[];
+    teams: string[];
+
     // Optional fields.
-    group?: string | null;
-    team?: string | null;
     firstName?: string;
     lastName?: string;
     avatar?: Record<string, any>;
