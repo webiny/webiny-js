@@ -8,7 +8,7 @@ const updateLambdaFunctionsEnvVars = async ({
         LambdaClient,
         GetFunctionConfigurationCommand,
         UpdateFunctionConfigurationCommand
-    } = require("@aws-sdk/client-lambda");
+    } = require("@webiny/aws-sdk/client-lambda");
 
     const lambdaClient = new LambdaClient();
 

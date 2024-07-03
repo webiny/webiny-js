@@ -162,7 +162,8 @@ module.exports = [
                         });
                         yargs.option("function", {
                             alias: "f",
-                            describe: "One or more functions that will invoked locally (used with local AWS Lambda development)",
+                            describe:
+                                "One or more functions that will invoked locally (used with local AWS Lambda development)",
                             type: "string"
                         });
                         yargs.option("inspect", {
