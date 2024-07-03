@@ -4,7 +4,6 @@ import { LAMBDA_RUNTIME } from "~/constants";
 import * as pulumi from "@pulumi/pulumi";
 import path from "path";
 import { CoreVpc } from "~/apps";
-import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 
 export interface WatchCommandParams {
     deploymentId: pulumi.Output<string>;

@@ -13,6 +13,7 @@ import { withServiceManifest } from "~/utils/withServiceManifest";
 import { addServiceManifestTableItem, TableDefinition } from "~/utils/addServiceManifestTableItem";
 import { DEFAULT_PROD_ENV_NAMES } from "~/constants";
 import * as random from "@pulumi/random";
+import { featureFlags } from "@webiny/feature-flags";
 
 export type CorePulumiApp = ReturnType<typeof createCorePulumiApp>;
 
@@ -169,9 +170,11 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 elasticSearch = app.addModule(ElasticSearch, { protect });
             }
 
-            const watchCommand = app.addModule(WatchCommand, {
-                deploymentId: deploymentId.hex
-            })
+            if (featureFlags.newWatchCommand) {
+                app.addModule(WatchCommand, {
+                    deploymentId: deploymentId.hex
+                });
+            }
 
             app.addOutputs({
                 deploymentId: deploymentId.hex,
@@ -200,8 +203,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 ...cognito,
                 fileManagerBucket,
                 eventBus,
-                elasticSearch,
-                watchCommand
+                elasticSearch
             };
         }
     });

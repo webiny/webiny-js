@@ -61,7 +61,7 @@ export const createWcpGraphQL = () => {
         `,
         resolvers: {
             Query: {
-                wcp: process.a.s
+                wcp: emptyResolver
             },
             WcpQuery: {
                 getProject: (_, __, context) => {
