@@ -52,8 +52,7 @@
         "inspector"
       ],
       "dependencies": [
-        "execa",
-        "exit-hook"
+        "execa"
       ]
     }
   },

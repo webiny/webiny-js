@@ -433,7 +433,7 @@ export const createStorageOperations = (
             }
             return items.filter(item => id_in.includes(item.id));
         },
-        async listTeams({ where: { tenant }, sort }): Promise<Team[]> {
+        async listTeams({ where: { tenant, id_in }, sort }): Promise<Team[]> {
             let items: Team[];
             try {
                 items = await queryAll<Team>({
@@ -450,7 +450,7 @@ export const createStorageOperations = (
                 });
             }
 
-            return cleanupItems(
+            items = cleanupItems(
                 entities.teams,
                 sortItems({
                     items,
@@ -458,6 +458,11 @@ export const createStorageOperations = (
                     fields: []
                 })
             );
+
+            if (!Array.isArray(id_in)) {
+                return items;
+            }
+            return items.filter(item => id_in.includes(item.id));
         },
         async listTenantLinksByIdentity({ identity }): Promise<TenantLink[]> {
             return await queryAllClean<TenantLink>({

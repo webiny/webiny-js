@@ -14,7 +14,7 @@ import { createTopic } from "@webiny/pubsub";
 import { validation } from "@webiny/validation";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { GetTeamParams, Team, TeamInput, PermissionsTenantLink, Security } from "~/types";
+import {GetTeamParams, Team, TeamInput, PermissionsTenantLink, Security, ListGroupsParams} from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
 
@@ -146,11 +146,12 @@ export const createTeamsMethods = ({
             return team;
         },
 
-        async listTeams(this: Security) {
+        async listTeams(this: Security, { where }: ListGroupsParams = {}) {
             await checkPermission(this);
             try {
                 return await storageOperations.listTeams({
                     where: {
+                        ...where,
                         tenant: getTenant()
                     },
                     sort: ["createdOn_ASC"]

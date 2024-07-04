@@ -32,7 +32,7 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                     displayName: String!
                     email: String!
 
-                    groups: SecurityGroup[]
+                    groups: [SecurityGroup]
                     firstName: String
                     lastName: String
                     avatar: JSON
@@ -164,14 +164,15 @@ export default (params: CreateUserGraphQlPluginsParams) => {
             new GraphQLSchemaPlugin<AdminUsersContext>({
                 typeDefs: /* GraphQL */ `
                     extend type AdminUser {
-                        teams[]: SecurityTeam
+                        teams: [SecurityTeam]
                     }
                 `,
                 resolvers: {
                     AdminUser: {
                         teams(user: AdminUser, _, context) {
-                            if (!user.teams) {
-                                return null;
+                            const hasTeams = Array.isArray(user.teams) && user.teams.length > 0;
+                            if (!hasTeams) {
+                                return [];
                             }
 
                             return context.security.listTeams({ where: { id_in: user.teams } });
