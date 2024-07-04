@@ -9,7 +9,8 @@
     { "path": "../feature-flags/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../react-router/tsconfig.build.json" },
-    { "path": "../ui/tsconfig.build.json" }
+    { "path": "../ui/tsconfig.build.json" },
+    { "path": "../ui-chakra/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

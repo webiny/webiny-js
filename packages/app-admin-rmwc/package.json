@@ -23,6 +23,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/react-router": "0.0.0",
     "@webiny/ui": "0.0.0",
+    "@webiny/ui-chakra": "0.0.0",
     "classnames": "^2.3.1",
     "emotion": "^10.0.27",
     "lodash": "^4.17.21",
