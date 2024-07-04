@@ -6604,7 +6604,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chakra-ui/anatomy@npm:2.2.2":
+"@chakra-ui/anatomy@npm:2.2.2, @chakra-ui/anatomy@npm:^2.2.2":
   version: 2.2.2
   resolution: "@chakra-ui/anatomy@npm:2.2.2"
   checksum: 0f760fae4a145305ef20bbff119bfbc92a54a477cd0916450dc4f88923e00856b582392ff35cfad93ee7cc9ab59a60fecbc9dd8bab9287bdd9cbe6d87031bce1
@@ -17462,11 +17462,9 @@ __metadata:
     "@types/react-helmet": ^6.1.5
     "@webiny/app": 0.0.0
     "@webiny/app-admin": 0.0.0
-    "@webiny/app-plugin-admin-welcome-screen": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/feature-flags": 0.0.0
-    "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/react-router": 0.0.0
     "@webiny/ui": 0.0.0
@@ -20193,12 +20191,14 @@ __metadata:
     "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.24.0
+    "@chakra-ui/anatomy": ^2.2.2
     "@chakra-ui/react": ^2.8.2
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@types/react": 18.2.79
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
+    classnames: ^2.3.1
     framer-motion: ^11.2.12
     react: 18.2.0
     react-dom: 18.2.0
