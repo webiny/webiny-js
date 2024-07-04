@@ -9,6 +9,7 @@ export const App = () => {
         <Admin>
             <Cognito />
             <Extensions />
+            <p className={"bg-brand text-primary-foreground  hover:bg-brand/80"}>Demo</p>
         </Admin>
     );
 };
