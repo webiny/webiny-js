@@ -4,16 +4,35 @@ import {
     FileListWhereParams,
     FilesListOpts
 } from "@webiny/api-file-manager/types";
-import { IAssetItem, IEntryAssetsList } from "./abstractions/EntryAssetsList";
-import { IAssets } from "./abstractions/EntryAssets";
+import { IEntryAssetsList, IResolvedAsset } from "./abstractions/EntryAssetsList";
+import { IAsset } from "./abstractions/EntryAssets";
+
+export interface IListFilesCbResult {
+    items: File[];
+    meta: FileListMeta;
+}
 
 export interface IListFilesCb {
-    (opts?: FilesListOpts): Promise<[File[], FileListMeta]>;
+    (opts?: FilesListOpts): Promise<IListFilesCbResult>;
 }
 
 export interface IEntryAssetsListParams {
     listFiles: IListFilesCb;
 }
+
+const createResolvedAsset = (file: Partial<File>): IResolvedAsset => {
+    const result = {
+        ...file,
+        aliases: file.aliases || []
+    } as Partial<File>;
+
+    delete file.tenant;
+    delete file.locale;
+    delete file.accessControl;
+    delete file.webinyVersion;
+
+    return result as IResolvedAsset;
+};
 
 export class EntryAssetsList implements IEntryAssetsList {
     private readonly listFiles: IListFilesCb;
@@ -22,11 +41,10 @@ export class EntryAssetsList implements IEntryAssetsList {
         this.listFiles = params.listFiles;
     }
 
-    public async resolve(input: IAssets): Promise<IAssetItem[]> {
+    public async resolve(input: IAsset[]): Promise<IResolvedAsset[]> {
         const keys: string[] = [];
         const aliases: string[] = [];
-        for (const url in input) {
-            const asset = input[url];
+        for (const asset of input) {
             if (asset.key) {
                 keys.push(asset.key);
             } else if (asset.alias) {
@@ -34,7 +52,7 @@ export class EntryAssetsList implements IEntryAssetsList {
             }
         }
 
-        const assets: IAssetItem[] = [];
+        const assets: IResolvedAsset[] = [];
         const where: FileListWhereParams = {};
         if (keys.length > 0 && aliases.length > 0) {
             where.OR = [
@@ -57,6 +75,7 @@ export class EntryAssetsList implements IEntryAssetsList {
             return this.listFiles({
                 where,
                 limit: 10000000,
+                sort: ["createdOn_ASC"],
                 after
             });
         };
@@ -66,14 +85,9 @@ export class EntryAssetsList implements IEntryAssetsList {
             /**
              * Unfortunately we must cast the result, because TS is not able to infer the correct type.
              */
-            const results = (await list(after)) as [File[], FileListMeta];
-            const [files, meta] = results;
-            for (const file of files) {
-                assets.push({
-                    id: file.id,
-                    key: file.key,
-                    aliases: file.aliases || []
-                });
+            const { items, meta } = (await list(after)) as IListFilesCbResult;
+            for (const file of items) {
+                assets.push(createResolvedAsset(file));
             }
             if (!meta.hasMoreItems) {
                 return assets;

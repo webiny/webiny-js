@@ -1,11 +1,8 @@
-import { IAssets } from "./EntryAssets";
+import { IAsset } from "./EntryAssets";
+import { File } from "@webiny/api-file-manager/types/file";
 
-export interface IAssetItem {
-    id: string;
-    key: string;
-    aliases: string[];
-}
+export type IResolvedAsset = Omit<File, "webinyVersion" | "locale" | "tenant">
 
 export interface IEntryAssetsList {
-    resolve(input: IAssets): Promise<IAssetItem[]>;
+    resolve(input: IAsset[]): Promise<IResolvedAsset[]>;
 }

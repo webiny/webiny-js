@@ -7,15 +7,18 @@ import {
 import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
 import { ICmsAssetsFetcher } from "~/tasks/utils/cmsAssetsFetcher";
-import { IEntryAssets } from "~/tasks/utils/entryAssets";
+import { IEntryAssets, IEntryAssetsList } from "~/tasks/utils/entryAssets";
 import { ICmsAssetsZipper } from "~/tasks/utils/cmsAssetsZipper";
 import { IZipCombiner } from "~/tasks/utils/zipCombiner";
+import { IFileFetcher } from "~/tasks/utils/fileFetcher";
 
 export interface ICreateCmsAssetsZipperCallableConfig {
     filename: string;
     entryFetcher: ICmsEntryFetcher;
     assetFetcher: ICmsAssetsFetcher;
     createEntryAssets: () => IEntryAssets;
+    createEntryAssetsList: () => IEntryAssetsList;
+    fileFetcher: IFileFetcher;
 }
 
 export interface ICreateCmsAssetsZipperCallable {

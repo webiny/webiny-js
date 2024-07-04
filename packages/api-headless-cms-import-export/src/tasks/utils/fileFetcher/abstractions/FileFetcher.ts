@@ -6,14 +6,14 @@ export interface IFileFetcherFile {
     size: number;
 }
 
-export type IFileFetcherReadable = Readable | null;
+export type IFileFetcherReadable = Readable;
 
 export interface IFileFetcherListCallable {
     (key: string): Promise<IFileFetcherFile[]>;
 }
 
 export interface IFileFetcherFetchCallable {
-    (key: string): Promise<IFileFetcherReadable>;
+    (key: string): Promise<IFileFetcherReadable | null>;
 }
 
 export interface IFileFetcher {

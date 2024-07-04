@@ -1,10 +1,6 @@
 import { GetObjectCommand, ListObjectsCommand, S3Client } from "@webiny/aws-sdk/client-s3";
 import { basename } from "path";
-import {
-    IFileFetcher,
-    IFileFetcherFile,
-    IFileFetcherReadable
-} from "~/tasks/utils/abstractions/FileFetcher";
+import { IFileFetcher, IFileFetcherFile, IFileFetcherReadable } from "./abstractions/FileFetcher";
 
 export interface IFileFetcherParams {
     client: S3Client;
@@ -53,7 +49,7 @@ export class FileFetcher implements IFileFetcher {
         }
     }
 
-    public async fetch(key: string): Promise<IFileFetcherReadable> {
+    public async fetch(key: string): Promise<IFileFetcherReadable | null> {
         try {
             const response = await this.client.send(
                 new GetObjectCommand({
@@ -65,7 +61,7 @@ export class FileFetcher implements IFileFetcher {
              * We can safely cast because we are sure that the response will be readable.
              * The method which is using the fetch() should handle the case when the response is null.
              */
-            return (response.Body || null) as IFileFetcherReadable;
+            return (response.Body || null) as IFileFetcherReadable | null;
         } catch (ex) {
             console.log(`Could not fetch file "${key}" from bucket "${this.bucket}".`);
             console.error(ex);

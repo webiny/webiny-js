@@ -13,13 +13,17 @@ describe("entry assets list", () => {
 
         entryAssetsList = new EntryAssetsList({
             listFiles: async opts => {
-                return context.fileManager.listFiles(opts);
+                const [items, meta] = await context.fileManager.listFiles(opts);
+                return {
+                    items,
+                    meta
+                };
             }
         });
     });
 
     it("should fetch assets - empty list", async () => {
-        const result = await entryAssetsList.resolve({});
+        const result = await entryAssetsList.resolve([]);
 
         expect(result).toEqual([]);
     });
@@ -53,14 +57,18 @@ describe("entry assets list", () => {
             return items;
         }, {});
 
-        const results = await entryAssetsList.resolve(assets);
+        const results = await entryAssetsList.resolve(Object.values(assets));
 
         expect(results.length).toEqual(images.length);
 
         for (const image of images) {
-            const result = results.find(
-                r => r.key === image.key || r.aliases.some(a => image.aliases.includes(a))
-            );
+            const result = results.find(asset => {
+                if (asset.key === image.key) {
+                    return true;
+                }
+                const aliases = asset.aliases as string[];
+                return aliases.some(a => image.aliases.includes(a));
+            });
             expect(result).not.toBeUndefined();
         }
     });

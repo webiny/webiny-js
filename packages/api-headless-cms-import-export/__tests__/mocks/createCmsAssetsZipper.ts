@@ -9,22 +9,31 @@ import { createPassThrough } from "~tests/mocks/createPassThrough";
 import { PassThrough } from "stream";
 import { mockClient } from "aws-sdk-client-mock";
 import { UrlSigner } from "~/tasks/utils/urlSigner";
-import { CmsEntryZipper } from "~/tasks/utils/cmsEntryZipper";
+import { CmsAssetsZipper } from "~/tasks/utils/cmsAssetsZipper";
 import { Upload } from "~/tasks/utils/Upload";
 import { Zipper } from "~/tasks/utils/Zipper";
 import { Archiver } from "~/tasks/utils/Archiver";
+import { ICmsAssetsFetcher } from "~/tasks/utils/cmsAssetsFetcher";
 import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
+import { IEntryAssets, IEntryAssetsList } from "~/tasks/utils/entryAssets";
+import { IFileFetcher } from "~/tasks/utils/fileFetcher";
+import { createFileFetcher } from "~tests/mocks/createFileFetcher";
+import { createEntryAssetsList } from "~tests/mocks/createEntryAssetsList";
 import { createUrlSigner } from "~tests/mocks/createUrlSigner";
 
-interface ICreateCmsEntryZipperParams {
-    fetcher: ICmsEntryFetcher;
+interface ICreateCmsAssetsZipperParams {
+    entryFetcher?: ICmsEntryFetcher;
+    assetFetcher?: ICmsAssetsFetcher;
+    createEntryAssets: () => IEntryAssets;
+    createEntryAssetsList?: () => IEntryAssetsList;
+    fileFetcher?: IFileFetcher;
     region?: string;
     filename?: string;
     stream?: PassThrough;
     bucket?: string;
 }
 
-export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
+export const createCmsAssetsZipper = (params: ICreateCmsAssetsZipperParams) => {
     const stream = params.stream || createPassThrough();
 
     const mockedClient = mockClient(S3Client);
@@ -70,10 +79,34 @@ export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
 
     const urlSigner = createUrlSigner();
 
-    const cmsEntryZipper = new CmsEntryZipper({
+    const cmsAssetsZipper = new CmsAssetsZipper({
+        fileFetcher: createFileFetcher(),
+        entryFetcher: async () => {
+            return {
+                items: [],
+                meta: {
+                    totalCount: 0,
+                    cursor: null,
+                    hasMoreItems: false
+                }
+            };
+        },
+        assetFetcher: async () => {
+            return {
+                items: [],
+                meta: {
+                    totalCount: 0,
+                    cursor: null,
+                    hasMoreItems: false
+                }
+            };
+        },
+        createEntryAssetsList: () => {
+            return createEntryAssetsList();
+        },
         zipper,
         urlSigner,
-        fetcher: params.fetcher
+        ...params
     });
 
     return {
@@ -90,6 +123,6 @@ export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
         upload,
         archiver,
         zipper,
-        cmsEntryZipper
+        cmsAssetsZipper
     };
 };

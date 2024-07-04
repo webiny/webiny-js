@@ -6,12 +6,14 @@ import {
 import { createS3Client } from "@webiny/aws-sdk/client-s3";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
 import { createUploadFactory } from "~/tasks/utils/Upload";
-import { SignUrl } from "~/tasks/utils/SignUrl";
+
 import { Archiver } from "~/tasks/utils/Archiver";
 import { Zipper } from "~/tasks/utils/Zipper";
-import { FileFetcher } from "~/tasks/utils/FileFetcher";
+
 import { ZipCombiner } from "~/tasks/utils/zipCombiner";
 import { CmsAssetsZipper } from "../utils/cmsAssetsZipper";
+import { UrlSigner } from "~/tasks/utils/urlSigner";
+import { FileFetcher } from "~/tasks/utils/fileFetcher";
 
 export const createExportContentAssets = () => {
     const client = createS3Client();
@@ -21,7 +23,7 @@ export const createExportContentAssets = () => {
         bucket
     });
 
-    const signUrl = new SignUrl({
+    const urlSigner = new UrlSigner({
         client,
         bucket
     });
@@ -47,8 +49,10 @@ export const createExportContentAssets = () => {
         return new CmsAssetsZipper({
             entryFetcher: config.entryFetcher,
             createEntryAssets: config.createEntryAssets,
+            createEntryAssetsList: config.createEntryAssetsList,
             assetFetcher: config.assetFetcher,
-            signUrl,
+            fileFetcher: config.fileFetcher,
+            urlSigner,
             zipper
         });
     };
@@ -79,7 +83,7 @@ export const createExportContentAssets = () => {
         return new ZipCombiner({
             fileFetcher,
             zipper,
-            signUrl
+            urlSigner
         });
     };
     return new ExportContentAssets({

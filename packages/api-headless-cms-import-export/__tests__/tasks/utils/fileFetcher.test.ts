@@ -1,4 +1,4 @@
-import { FileFetcher } from "~/tasks/utils/FileFetcher";
+import { FileFetcher } from "~/tasks/utils/fileFetcher";
 import { GetObjectCommand, ListObjectsCommand, S3Client } from "@webiny/aws-sdk/client-s3";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client";
 import { mockClient } from "aws-sdk-client-mock";

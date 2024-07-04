@@ -1,8 +1,9 @@
-import { IAddOptions, IZipper, IZipperOnCb } from "./abstractions/Zipper";
+import { IAddOptions, IZipper, IZipperDoneResult, IZipperOnCb } from "./abstractions/Zipper";
 import { IUpload } from "./abstractions/Upload";
 import { CompleteMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3";
 import { IArchiver } from "./abstractions/Archiver";
-import { Readable } from "stream";
+import stream, { Readable } from "stream";
+import { ArchiverError, EntryData, ProgressData } from "archiver";
 
 export interface IZipperConfig {
     upload: IUpload;
@@ -39,11 +40,18 @@ export class Zipper implements IZipper {
         return this.upload.abort();
     }
 
-    public async done(): Promise<CompleteMultipartUploadCommandOutput> {
+    public async done(): Promise<IZipperDoneResult> {
         return this.upload.done();
     }
 
-    public on(event: string, callback: IZipperOnCb): void {
+    public on(event: "error" | "warning", listener: (error: ArchiverError) => void): void;
+    public on(event: "data", listener: (data: Buffer) => void): void;
+    public on(event: "progress", listener: (progress: ProgressData) => void): void;
+    public on(event: "close" | "drain" | "finish", listener: () => void): void;
+    public on(event: "pipe" | "unpipe", listener: (src: stream.Readable) => void): void;
+    public on(event: "entry", listener: (entry: EntryData) => void): void;
+
+    public on(event: any, callback: any): void {
         this.archiver.archiver.on(event, callback);
     }
 }

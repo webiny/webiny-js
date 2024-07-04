@@ -4,10 +4,12 @@ import { Upload as BaseUpload } from "@webiny/aws-sdk/lib-storage";
 
 export type IAwsUpload = Pick<BaseUpload, "done" | "abort">;
 
+export type IUploadDoneResult = CompleteMultipartUploadCommandOutput;
+
 export interface IUpload {
     stream: PassThrough;
     upload: IAwsUpload;
 
-    done(): Promise<CompleteMultipartUploadCommandOutput>;
+    done(): Promise<IUploadDoneResult>;
     abort(): Promise<void>;
 }

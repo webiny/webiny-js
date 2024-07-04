@@ -1,4 +1,8 @@
 export interface ICmsAssetsZipperExecuteContinueResult {
     key: string;
-    cursor: string | null;
+    url: string;
+    bucket: string;
+    expiresOn: Date;
+    entryCursor: string | undefined;
+    fileCursor: string | undefined;
 }

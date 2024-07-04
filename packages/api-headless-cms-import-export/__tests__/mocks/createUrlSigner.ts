@@ -1,8 +1,8 @@
-import { ISignUrl } from "~/tasks/utils/abstractions/SignedUrl";
+import { IUrlSigner } from "~/tasks/utils/urlSigner";
 
-export const createSignUrl = (): ISignUrl => {
+export const createUrlSigner = (): IUrlSigner => {
     return {
-        async fetch(params) {
+        async sign(params) {
             const timeout = params.timeout || 604800; // 1 week default
             return {
                 url: `signed://${params.key}`,

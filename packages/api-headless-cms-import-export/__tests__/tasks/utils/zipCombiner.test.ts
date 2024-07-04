@@ -1,5 +1,5 @@
 import { ZipCombiner } from "~/tasks/utils/zipCombiner";
-import { createSignUrl } from "~tests/mocks/createSignUrl";
+import { createUrlSigner } from "~tests/mocks/createUrlSigner";
 import { createZipper } from "~tests/mocks/createZipper";
 import { createFileFetcher } from "~tests/mocks/createFileFetcher";
 
@@ -9,7 +9,7 @@ describe("zip combiner", () => {
     it("should fail because no files to combine", async () => {
         expect.assertions(1);
         const combiner = new ZipCombiner({
-            signUrl: createSignUrl(),
+            urlSigner: createUrlSigner(),
             zipper: createZipper(),
             fileFetcher: createFileFetcher()
         });
@@ -30,7 +30,7 @@ describe("zip combiner", () => {
     it("should fail because no files were added to the zip", async () => {
         expect.assertions(3);
         const combiner = new ZipCombiner({
-            signUrl: createSignUrl(),
+            urlSigner: createUrlSigner(),
             zipper: createZipper(),
             fileFetcher: createFileFetcher({
                 list: async () => {
@@ -78,7 +78,7 @@ describe("zip combiner", () => {
     it("should abort the upload", async () => {
         expect.assertions(1);
         const combiner = new ZipCombiner({
-            signUrl: createSignUrl(),
+            urlSigner: createUrlSigner(),
             zipper: createZipper(),
             fileFetcher: createFileFetcher({
                 list: async () => {
@@ -110,7 +110,7 @@ describe("zip combiner", () => {
     it("should fail because lastFileProcessed does not exist in the list of fetched", async () => {
         expect.assertions(1);
         const combiner = new ZipCombiner({
-            signUrl: createSignUrl(),
+            urlSigner: createUrlSigner(),
             zipper: createZipper(),
             fileFetcher: createFileFetcher({
                 list: async () => {

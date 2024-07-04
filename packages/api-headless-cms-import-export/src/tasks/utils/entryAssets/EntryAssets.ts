@@ -16,11 +16,13 @@ export class EntryAssets implements IEntryAssets {
         this.traverser = params.traverser;
     }
 
-    public assignAssets(input: IAssignAssetsInput): void {
+    public assignAssets(input: IAssignAssetsInput): IAsset[] {
         const entries = Array.isArray(input) ? input : [input];
         if (entries.length === 0) {
-            return;
+            return [];
         }
+
+        const assets: IAsset[] = [];
 
         for (const entry of entries) {
             if (!entry?.values) {
@@ -31,9 +33,10 @@ export class EntryAssets implements IEntryAssets {
                     return;
                 }
 
-                this.assignAssetsToItems(value);
+                assets.push(...this.assignAssetsToItems(value));
             });
         }
+        return assets;
     }
 
     private parseAssetSrc(input?: string | unknown): IAsset | null {
@@ -51,22 +54,13 @@ export class EntryAssets implements IEntryAssets {
         };
     }
 
-    private assignAssetsToItems(input: string | string[] | unknown): void {
+    private assignAssetsToItems(input: string | string[] | unknown): IAsset[] {
+        const assets: IAsset[] = [];
         if (!input) {
-            return;
-        } else if (typeof input === "string") {
-            const asset = this.parseAssetSrc(input);
-            if (!asset) {
-                return;
-            } else if (this.assets[asset.url]) {
-                return;
-            }
-            this.assets[asset.url] = asset;
-            return;
-        } else if (!Array.isArray(input)) {
-            return;
+            return assets;
         }
-        for (const src of input) {
+        const inputArray: string[] = Array.isArray(input) ? input : [input];
+        for (const src of inputArray) {
             const asset = this.parseAssetSrc(src);
             if (!asset) {
                 continue;
@@ -74,6 +68,8 @@ export class EntryAssets implements IEntryAssets {
                 continue;
             }
             this.assets[asset.url] = asset;
+            assets.push(asset);
         }
+        return assets;
     }
 }

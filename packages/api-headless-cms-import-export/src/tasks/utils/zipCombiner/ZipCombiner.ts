@@ -1,11 +1,11 @@
-import { IFileFetcher, IFileFetcherFile } from "~/tasks/utils/abstractions/FileFetcher";
 import { IZipper } from "~/tasks/utils/abstractions/Zipper";
-import { ISignUrl } from "~/tasks/utils/abstractions/SignedUrl";
 import {
     IZipCombiner,
     IZipCombinerResolveParams,
     IZipCombinerResolveResult
 } from "./abstractions/ZipCombiner";
+import { IFileFetcher, IFileFetcherFile } from "~/tasks/utils/fileFetcher";
+import { IUrlSigner } from "~/tasks/utils/urlSigner";
 
 interface IFetchFilesParams {
     source: string;
@@ -18,18 +18,18 @@ interface IFetchFilesParams {
 export interface IZipCombinerParams {
     fileFetcher: IFileFetcher;
     zipper: IZipper;
-    signUrl: ISignUrl;
+    urlSigner: IUrlSigner;
 }
 
 export class ZipCombiner implements IZipCombiner {
     private readonly fileFetcher: IFileFetcher;
     private readonly zipper: IZipper;
-    private readonly signUrl: ISignUrl;
+    private readonly urlSigner: IUrlSigner;
 
     public constructor(params: IZipCombinerParams) {
         this.fileFetcher = params.fileFetcher;
         this.zipper = params.zipper;
-        this.signUrl = params.signUrl;
+        this.urlSigner = params.urlSigner;
     }
 
     public async resolve(params: IZipCombinerResolveParams): Promise<IZipCombinerResolveResult> {
@@ -123,7 +123,7 @@ export class ZipCombiner implements IZipCombiner {
             throw new Error(`Failed to combine files with prefix "${source}".`);
         }
 
-        const signedUrl = await this.signUrl.fetch({
+        const signedUrl = await this.urlSigner.sign({
             key: result.Key
         });
 

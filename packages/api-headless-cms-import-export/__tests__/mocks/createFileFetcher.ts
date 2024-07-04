@@ -2,7 +2,7 @@ import {
     IFileFetcher,
     IFileFetcherFetchCallable,
     IFileFetcherListCallable
-} from "~/tasks/utils/abstractions/FileFetcher";
+} from "~/tasks/utils/fileFetcher";
 
 export interface ICreateFileFetcherParams {
     list?: IFileFetcherListCallable;
