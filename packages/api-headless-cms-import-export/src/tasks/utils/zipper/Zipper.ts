@@ -1,9 +1,8 @@
-import { IAddOptions, IZipper, IZipperDoneResult, IZipperOnCb } from "./abstractions/Zipper";
-import { IUpload } from "./abstractions/Upload";
-import { CompleteMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3";
-import { IArchiver } from "./abstractions/Archiver";
+import { IAddOptions, IZipper, IZipperDoneResult } from "./abstractions/Zipper";
 import stream, { Readable } from "stream";
 import { ArchiverError, EntryData, ProgressData } from "archiver";
+import { IUpload } from "~/tasks/utils/upload";
+import { IArchiver } from "~/tasks/utils/archiver";
 
 export interface IZipperConfig {
     upload: IUpload;

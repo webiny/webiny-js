@@ -1,4 +1,4 @@
-import { IZipper } from "~/tasks/utils/abstractions/Zipper";
+import { IZipper } from "~/tasks/utils/zipper";
 import {
     IZipCombiner,
     IZipCombinerResolveParams,

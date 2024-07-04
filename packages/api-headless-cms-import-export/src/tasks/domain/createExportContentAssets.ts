@@ -5,15 +5,13 @@ import {
 } from "./exportContentAssets/ExportContentAssets";
 import { createS3Client } from "@webiny/aws-sdk/client-s3";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
-import { createUploadFactory } from "~/tasks/utils/Upload";
-
-import { Archiver } from "~/tasks/utils/Archiver";
-import { Zipper } from "~/tasks/utils/Zipper";
-
 import { ZipCombiner } from "~/tasks/utils/zipCombiner";
 import { CmsAssetsZipper } from "../utils/cmsAssetsZipper";
 import { UrlSigner } from "~/tasks/utils/urlSigner";
 import { FileFetcher } from "~/tasks/utils/fileFetcher";
+import { createUploadFactory } from "~/tasks/utils/upload";
+import { Archiver } from "~/tasks/utils/archiver";
+import { Zipper } from "~/tasks/utils/zipper";
 
 export const createExportContentAssets = () => {
     const client = createS3Client();
@@ -50,7 +48,6 @@ export const createExportContentAssets = () => {
             entryFetcher: config.entryFetcher,
             createEntryAssets: config.createEntryAssets,
             createEntryAssetsList: config.createEntryAssetsList,
-            assetFetcher: config.assetFetcher,
             fileFetcher: config.fileFetcher,
             urlSigner,
             zipper

@@ -1,5 +1,4 @@
 import { CmsEntry, CmsEntryMeta } from "@webiny/api-headless-cms/types";
-import { IZipper } from "../abstractions/Zipper";
 import { IUrlSigner } from "~/tasks/utils/urlSigner";
 import { IFileMeta } from "../types";
 import { CmsEntryZipperExecuteContinueResult } from "./CmsEntryZipperExecuteContinueResult";
@@ -10,6 +9,7 @@ import {
     ICmsEntryZipperExecuteResult
 } from "./abstractions/CmsEntryZipper";
 import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/abstractions/CmsEntryFetcher";
+import { IZipper } from "~/tasks/utils/zipper";
 
 export interface ICmsEntryZipperConfig {
     zipper: IZipper;

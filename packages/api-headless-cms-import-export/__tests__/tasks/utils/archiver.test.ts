@@ -1,6 +1,6 @@
 // @ts-expect-error
 import BaseArchiver from "archiver/lib/core";
-import { Archiver } from "~/tasks/utils/Archiver";
+import { Archiver } from "~/tasks/utils/archiver";
 
 describe("archiver", () => {
     it("should properly create an instance of Archiver", async () => {

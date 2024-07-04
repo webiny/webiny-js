@@ -1,5 +1,5 @@
-import { Zipper } from "~/tasks/utils/Zipper";
-import { Upload } from "~/tasks/utils/Upload";
+import { Zipper } from "~/tasks/utils/zipper";
+import { Upload } from "~/tasks/utils/upload";
 import { createPassThrough } from "~tests/mocks/createPassThrough";
 import {
     CreateMultipartUploadCommand,
@@ -10,7 +10,7 @@ import {
 } from "@webiny/aws-sdk/client-s3";
 import { mockClient } from "aws-sdk-client-mock";
 import { PassThrough } from "stream";
-import { Archiver } from "~/tasks/utils/Archiver";
+import { Archiver } from "~/tasks/utils/archiver";
 
 interface ICreateZipperParams {
     region?: string;

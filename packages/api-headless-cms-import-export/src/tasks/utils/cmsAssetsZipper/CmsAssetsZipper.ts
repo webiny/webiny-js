@@ -1,8 +1,7 @@
-import { IZipper, IZipperDoneResult } from "~/tasks/utils/abstractions/Zipper";
+import { IZipper, IZipperDoneResult } from "~/tasks/utils/zipper";
 import { IUrlSigner } from "~/tasks/utils/urlSigner";
 import { IEntryAssets, IEntryAssetsList, IResolvedAsset } from "~/tasks/utils/entryAssets";
 import { ICmsEntryFetcher } from "../cmsEntryFetcher";
-import { ICmsAssetsFetcher } from "../cmsAssetsFetcher";
 import {
     ICmsAssetsZipper,
     ICmsAssetsZipperExecuteParams,
@@ -20,7 +19,6 @@ export interface ICmsAssetsZipperConfig {
     zipper: IZipper;
     urlSigner: IUrlSigner;
     entryFetcher: ICmsEntryFetcher;
-    assetFetcher: ICmsAssetsFetcher;
     createEntryAssets: () => IEntryAssets;
     createEntryAssetsList: () => IEntryAssetsList;
     fileFetcher: IFileFetcher;
@@ -30,7 +28,6 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
     private readonly zipper: IZipper;
     private readonly urlSigner: IUrlSigner;
     private readonly entryFetcher: ICmsEntryFetcher;
-    private readonly assetFetcher: ICmsAssetsFetcher;
     private readonly createEntryAssets: () => IEntryAssets;
     private readonly createEntryAssetsList: () => IEntryAssetsList;
     private readonly fileFetcher: IFileFetcher;
@@ -39,7 +36,6 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
         this.zipper = params.zipper;
         this.urlSigner = params.urlSigner;
         this.entryFetcher = params.entryFetcher;
-        this.assetFetcher = params.assetFetcher;
         this.createEntryAssets = params.createEntryAssets;
         this.createEntryAssetsList = params.createEntryAssetsList;
         this.fileFetcher = params.fileFetcher;

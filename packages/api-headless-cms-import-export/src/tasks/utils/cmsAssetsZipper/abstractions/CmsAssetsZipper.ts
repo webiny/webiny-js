@@ -1,6 +1,5 @@
 import { ICmsAssetsZipperExecuteContinueResult } from "./CmsAssetsZipperExecuteContinueResult";
 import { ICmsAssetsZipperExecuteDoneResult } from "./CmsAssetsZipperExecuteDoneResult";
-import { CmsModel } from "@webiny/api-headless-cms/types";
 import { ICmsAssetsZipperExecuteDoneWithoutResult } from "./CmsAssetsZipperExecuteDoneWithoutResult";
 import { ICmsAssetsZipperExecuteContinueWithoutResult } from "./CmsAssetsZipperExecuteContinueWithoutResult";
 

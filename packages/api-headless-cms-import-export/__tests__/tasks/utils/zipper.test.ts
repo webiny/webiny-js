@@ -1,7 +1,7 @@
-import { Zipper } from "~/tasks/utils/Zipper";
-import { Upload } from "~/tasks/utils/Upload";
+import { Zipper } from "~/tasks/utils/zipper";
+import { Upload } from "~/tasks/utils/upload";
 import { createPassThrough } from "~tests/mocks/createPassThrough";
-import { Archiver } from "~/tasks/utils/Archiver";
+import { Archiver } from "~/tasks/utils/archiver";
 import { mockClient } from "aws-sdk-client-mock";
 import { Upload as BaseUpload } from "@webiny/aws-sdk/lib-storage";
 import {

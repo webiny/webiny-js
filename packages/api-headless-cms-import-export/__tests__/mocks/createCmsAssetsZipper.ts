@@ -8,12 +8,10 @@ import {
 import { createPassThrough } from "~tests/mocks/createPassThrough";
 import { PassThrough } from "stream";
 import { mockClient } from "aws-sdk-client-mock";
-import { UrlSigner } from "~/tasks/utils/urlSigner";
 import { CmsAssetsZipper } from "~/tasks/utils/cmsAssetsZipper";
-import { Upload } from "~/tasks/utils/Upload";
-import { Zipper } from "~/tasks/utils/Zipper";
-import { Archiver } from "~/tasks/utils/Archiver";
-import { ICmsAssetsFetcher } from "~/tasks/utils/cmsAssetsFetcher";
+import { Upload } from "~/tasks/utils/upload";
+import { Zipper } from "~/tasks/utils/zipper";
+import { Archiver } from "~/tasks/utils/archiver";
 import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
 import { IEntryAssets, IEntryAssetsList } from "~/tasks/utils/entryAssets";
 import { IFileFetcher } from "~/tasks/utils/fileFetcher";
@@ -23,7 +21,6 @@ import { createUrlSigner } from "~tests/mocks/createUrlSigner";
 
 interface ICreateCmsAssetsZipperParams {
     entryFetcher?: ICmsEntryFetcher;
-    assetFetcher?: ICmsAssetsFetcher;
     createEntryAssets: () => IEntryAssets;
     createEntryAssetsList?: () => IEntryAssetsList;
     fileFetcher?: IFileFetcher;
@@ -82,16 +79,6 @@ export const createCmsAssetsZipper = (params: ICreateCmsAssetsZipperParams) => {
     const cmsAssetsZipper = new CmsAssetsZipper({
         fileFetcher: createFileFetcher(),
         entryFetcher: async () => {
-            return {
-                items: [],
-                meta: {
-                    totalCount: 0,
-                    cursor: null,
-                    hasMoreItems: false
-                }
-            };
-        },
-        assetFetcher: async () => {
             return {
                 items: [],
                 meta: {

@@ -8,11 +8,10 @@ import {
 import { createPassThrough } from "~tests/mocks/createPassThrough";
 import { PassThrough } from "stream";
 import { mockClient } from "aws-sdk-client-mock";
-import { UrlSigner } from "~/tasks/utils/urlSigner";
 import { CmsEntryZipper } from "~/tasks/utils/cmsEntryZipper";
-import { Upload } from "~/tasks/utils/Upload";
-import { Zipper } from "~/tasks/utils/Zipper";
-import { Archiver } from "~/tasks/utils/Archiver";
+import { Upload } from "~/tasks/utils/upload";
+import { Zipper } from "~/tasks/utils/zipper";
+import { Archiver } from "~/tasks/utils/archiver";
 import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
 import { createUrlSigner } from "~tests/mocks/createUrlSigner";
 
