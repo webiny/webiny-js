@@ -45,6 +45,7 @@ const t = i18n.ns("app-admin/file-manager/file-manager-view");
 const FileListWrapper = styled("div")({
     zIndex: 60,
     height: "calc(100vh - 94px)",
+    position: "relative",
     ".mdc-data-table": {
         display: "inline-table"
     }

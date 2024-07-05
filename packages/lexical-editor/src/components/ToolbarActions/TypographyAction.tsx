@@ -5,6 +5,7 @@ import { TypographyValue } from "@webiny/lexical-theme";
 import { TypographyActionContext } from "~/context/TypographyActionContext";
 import {
     $isHeadingNode,
+    $isListNode,
     $isParagraphNode,
     $isQuoteNode,
     $isTypographyNode,
@@ -131,7 +132,7 @@ export const TypographyAction: TypographyAction = () => {
         }
 
         // list and quote element
-        if (themeEmotionMap && element?.getStyleId) {
+        if (themeEmotionMap && ($isListNode(element) || $isQuoteNode(element))) {
             const themeStyleId = element?.getStyleId() || undefined;
             if (themeStyleId) {
                 const elementStyle = themeEmotionMap[themeStyleId];
