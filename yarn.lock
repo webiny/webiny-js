@@ -18575,6 +18575,7 @@ __metadata:
     ncp: 2.0.0
     node-notifier: ^10.0.1
     ora: 4.1.1
+    p-retry: ^4.6.2
     replace-in-path: ^1.1.0
   languageName: unknown
   linkType: soft
