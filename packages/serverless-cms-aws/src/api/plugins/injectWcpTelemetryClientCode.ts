@@ -26,7 +26,7 @@ export const injectWcpTelemetryClientCode = new AfterBuildPlugin(
 
                 // 2.1 Move initially built `handler.js` into `_handler.js`.
                 const builtHandlerPath = path.join(current, "handler.js");
-                const renamedHandlerPath = path.join(current, "handler.preWcp.js");
+                const renamedHandlerPath = path.join(current, "_handler.js");
                 fs.renameSync(builtHandlerPath, renamedHandlerPath);
 
                 // 2.2 Write downloaded telemetry client code as a new `handler.js`.

@@ -94,9 +94,6 @@
   },
   "license": "MIT",
   "adio": {
-    "ignoreDirs": [
-      "bundling/function/wrappers/watchCommand"
-    ],
     "ignore": {
       "src": [
         "!!raw-loader!",

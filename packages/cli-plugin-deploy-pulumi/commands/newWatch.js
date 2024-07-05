@@ -9,7 +9,7 @@ const { listLambdaFunctions } = require("./newWatch/listLambdaFunctions");
 const listPackages = require("./newWatch/listPackages");
 const { PackagesWatcher } = require("./newWatch/watchers/PackagesWatcher");
 const { initEventsHandling } = require("./newWatch/initEventsHandling");
-const { updateLambdaFunctionsEnvVars } = require("./newWatch/updateLambdaFunctionsEnvVars");
+const { replaceLambdaFunctions } = require("./newWatch/replaceLambdaFunctions");
 
 // Do not allow watching "prod" and "production" environments. On the Pulumi CLI side, the command
 // is still in preview mode, so it's definitely not wise to use it on production environments.
@@ -148,7 +148,7 @@ module.exports = async (inputs, context) => {
     const sessionId = new Date().getTime();
 
     // Ignore promise, we don't need to wait for this to finish.
-    updateLambdaFunctionsEnvVars({
+    replaceLambdaFunctions({
         iotEndpoint,
         iotEndpointTopic,
         sessionId,
