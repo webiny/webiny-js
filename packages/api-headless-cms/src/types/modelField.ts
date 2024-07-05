@@ -1,4 +1,5 @@
 import { CmsModel } from "./model";
+import { GenericRecord } from "@webiny/api/types";
 
 export type CmsModelFieldType =
     | "boolean"
@@ -258,7 +259,7 @@ interface CmsModelFieldRenderer {
     /**
      * Renderer settings allow you to configure field renderer on a field level.
      */
-    settings?: Record<string, any>;
+    settings?: GenericRecord<string> | null;
 }
 
 /**
