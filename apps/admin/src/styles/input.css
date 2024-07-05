@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 222.2 47.4% 11.2%;
+
+        --muted: 210 40% 96.1%;
+        --muted-foreground: 215.4 16.3% 46.9%;
+
+        --border: 214.3 31.8% 91.4%;
+        --input: 214.3 31.8% 91.4%;
+
+        --font-sans: "Inter", sans-serif;
+
+        --brand: 15 96% 56%;
+        --brand-900: 14 100% 25%;
+        --brand-800: 14 100% 32%;
+        --brand-700: 14 94% 40%;
+        --brand-600: 14 81% 48%;
+        --brand-500: 15 96% 56%;
+        --brand-400: 15 100% 64%;
+        --brand-300: 14 95% 78%;
+        --brand-200: 15 94% 86%;
+        --brand-100: 6 100% 97%;
+
+        --black: 214, 12%, 11%;
+
+        --gray-900: 214, 12%, 11%;
+        --gray-800: 215, 11%, 21%;
+        --gray-700: 213, 10%, 39%;
+        --gray-600: 215, 10%, 51%;
+        --gray-500: 218, 11%, 65%;
+        --gray-400: 219, 12%, 77%;
+        --gray-300: 225, 17%, 91%;
+        --gray-200: 220, 11%, 95%;
+        --gray-100: 210, 14%, 97%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+}

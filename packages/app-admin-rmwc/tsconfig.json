@@ -9,8 +9,7 @@
     { "path": "../feature-flags" },
     { "path": "../plugins" },
     { "path": "../react-router" },
-    { "path": "../ui" },
-    { "path": "../ui-shadcn" }
+    { "path": "../ui" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -34,9 +33,7 @@
       "@webiny/react-router/*": ["../react-router/src/*"],
       "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],
-      "@webiny/ui": ["../ui/src"],
-      "@webiny/ui-shadcn/*": ["../ui-shadcn/src/*"],
-      "@webiny/ui-shadcn": ["../ui-shadcn/src"]
+      "@webiny/ui": ["../ui/src"]
     },
     "baseUrl": "."
   }

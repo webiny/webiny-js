@@ -1,16 +1,32 @@
 // Webiny theme variables
-// $webiny-theme-light-primary: #fa5723;
-// $webiny-theme-light-secondary: #00ccb0;
-// $webiny-theme-light-background: #f2f2f2;
-// $webiny-theme-light-surface: #fff;
-// $webiny-theme-light-on-primary: #ffffff;
-// $webiny-theme-light-on-secondary: #ffffff;
-// $webiny-theme-light-on-surface: #000000;
-// $webiny-theme-light-on-background: rgba(212, 212, 212, 0.5);
-// $webiny-theme-light-text-primary-on-background: rgba(0, 0, 0, 0.87);
-// $webiny-theme-light-text-secondary-on-background: rgba(0, 0, 0, 0.54);
-// $webiny-theme-light-text-hint-on-dark: rgba(255, 255, 255, 0.5);
-// $webiny-theme-typography-font-family: "Source Sans Pro";
+ $webiny-theme-light-primary: #fa5723;
+ $webiny-theme-light-secondary: #00ccb0;
+ $webiny-theme-light-background: #f2f2f2;
+ $webiny-theme-light-surface: #fff;
+ $webiny-theme-light-on-primary: #ffffff;
+ $webiny-theme-light-on-secondary: #ffffff;
+ $webiny-theme-light-on-surface: #000000;
+ $webiny-theme-light-on-background: rgba(212, 212, 212, 0.5);
+ $webiny-theme-light-text-primary-on-background: rgba(0, 0, 0, 0.87);
+ $webiny-theme-light-text-secondary-on-background: rgba(0, 0, 0, 0.54);
+ $webiny-theme-light-text-hint-on-dark: rgba(255, 255, 255, 0.5);
+ $webiny-theme-typography-font-family: "Source Sans Pro";
+
+$webiny-theme-light-primary: #fa5723;
+$webiny-theme-light-secondary: #00ccb0;
+$webiny-theme-light-background: #f2f2f2;
+$webiny-theme-light-surface: #ffffff;
+$webiny-theme-light-on-primary: #ffffff;
+$webiny-theme-light-on-secondary: #ffffff;
+$webiny-theme-light-on-surface: #000000;
+$webiny-theme-light-on-background: rgb(212 212 212 / 50%);
+$webiny-theme-light-text-primary-on-background: rgb(0 0 0 / 87%);
+$webiny-theme-light-text-secondary-on-background: rgb(0 0 0 / 54%);
+$webiny-theme-light-text-hint-on-dark: rgb(255 255 255 / 50%);
+$webiny-theme-light-caret-down: url('data:image/svg+xml,%3Csvg%20width%3D%2210px%22%20height%3D%225px%22%20viewBox%3D%227%2010%2010%205%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%0A%20%20%20%20%3Cpolygon%20id%3D%22Shape%22%20stroke%3D%22none%22%20fill%3D%22%23000000%22%20fill-rule%3D%22evenodd%22%20opacity%3D%220.54%22%20points%3D%227%2010%2012%2015%2017%2010%22%3E%3C%2Fpolygon%3E%0A%3C%2Fsvg%3E');
+$webiny-theme-typography-font-family: 'Source Sans Pro';
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -45,23 +61,32 @@
     --destructive: 0 100% 50%;
     --destructive-foreground: 210 40% 98%;
 
-    --ring: 215 20.2% 65.1%;
-
     --radius: 0.5rem;
 
     --font-sans: "Inter", sans-serif;
 
-    --brand: 15 96% 56%;
+  --brand: 15 96% 56%;
+    --brand-900: 14 100% 25%;
+    --brand-800: 14 100% 32%;
+    --brand-700: 14 94% 40%;
+    --brand-600: 14 81% 48%;
+    --brand-500: 15 96% 56%;
+    --brand-400: 15 100% 64%;
+    --brand-300: 14 95% 78%;
+    --brand-200: 15 94% 86%;
+    --brand-100: 6 100% 97%;
 
-    //--brand-900: 14 100% 25%;
-    //--brand-800: 14 100% 32%;
-    //--brand-700: 14 94% 40%;
-    //--brand-600: 14 81% 48%;
-    //--brand-500: 15 96% 56%;
-    //--brand-400: 15 100% 64%;
-    //--brand-300: 14 95% 78%;
-    //--brand-200: 15 94% 86%;
-    //--brand-100: 6 100% 97%;
+    --black: 214, 12%, 11%;
+
+    --gray-900: 214, 12%, 11%;
+    --gray-800: 215, 11%, 21%;
+    --gray-700: 213, 10%, 39%;
+    --gray-600: 215, 10%, 51%;
+    --gray-500: 218, 11%, 65%;
+    --gray-400: 219, 12%, 77%;
+    --gray-300: 225, 17%, 91%;
+    --gray-200: 220, 11%, 95%;
+    --gray-100: 210, 14%, 97%;
   }
 
   .dark {
