@@ -17,7 +17,7 @@ export const UsersTeamsMultiAutocomplete = (props: UsersTeamsMultiAutocompletePr
                 renderMultipleSelection={null}
                 options={props.options}
                 valueProp={"target"}
-                unique={true}
+                unique={false}
                 onChange={props.onChange}
                 value={props.value || []}
             />

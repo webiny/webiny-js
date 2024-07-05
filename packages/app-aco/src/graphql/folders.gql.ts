@@ -14,6 +14,7 @@ const DATA_FIELD = /* GraphQL */ `
         title
         slug
         permissions {
+            id
             target
             level
             inheritedFrom

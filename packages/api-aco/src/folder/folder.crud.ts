@@ -198,6 +198,15 @@ export const createFolderCrudMethods = ({
                 }
             }
 
+            // Assign permission ID to the permissions that don't have it.
+            if (Array.isArray(data.permissions)) {
+                data.permissions.forEach(permission => {
+                    if (!permission.id) {
+                        permission.id = folderLevelPermissions.generatePermissionId();
+                    }
+                });
+            }
+
             // Finally, we check if the user would lose access to the folder by making the update.
             // In order to do this, we need to make a couple of steps. First, we're updating FLP's
             // internal cache with new folder data. Then, we're invalidating the permissions list

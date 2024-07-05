@@ -9,12 +9,14 @@ import { AcoContext, Folder } from "~/types";
 export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
     typeDefs: /* GraphQL */ `
         type FolderPermission {
+            id: ID
             target: String!
             level: String!
             inheritedFrom: ID
         }
 
         input FolderPermissionInput {
+            id: ID
             target: String!
             level: String!
             inheritedFrom: ID

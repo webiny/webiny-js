@@ -11,6 +11,11 @@ import { FolderAccessLevel, FolderLevelPermissionsTarget, FolderPermission } fro
 
 const TARGET_LEVELS = [
     {
+        id: "public",
+        label: "Public",
+        description: "Everybody can view content (public folder)"
+    },
+    {
         id: "viewer",
         label: "Viewer",
         description: "Can view content, but not modify it"
@@ -74,10 +79,12 @@ export const ListItemMeta = ({
 }: ListItemMetaProps) => {
     const { identity } = useSecurity();
 
+    console.log("permission", permission);
     const currentLevel = useMemo(() => {
         return TARGET_LEVELS.find(level => level.id === permission.level)!;
     }, [permission.level]);
 
+    console.log("currentLevel", currentLevel);
     const disabledReason = useMemo(() => {
         if (permission.inheritedFrom?.startsWith("parent:")) {
             return "Inherited from parent folder.";
