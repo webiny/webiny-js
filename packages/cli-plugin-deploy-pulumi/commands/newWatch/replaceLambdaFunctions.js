@@ -1,6 +1,8 @@
 const fs = require("fs");
 const pRetry = require("p-retry");
 
+const WATCH_MODE_NOTE_IN_DESCRIPTION = " (watch mode 💡)";
+
 const replaceLambdaFunctions = async ({
     iotEndpoint,
     iotEndpointTopic,
@@ -27,10 +29,15 @@ const replaceLambdaFunctions = async ({
 
         await lambdaClient.send(updateFnCodeCmd);
 
+        let Description = lambdaFnConfiguration.Description;
+        if (!Description.endsWith(WATCH_MODE_NOTE_IN_DESCRIPTION)) {
+            Description += WATCH_MODE_NOTE_IN_DESCRIPTION;
+        }
+
         const updateFnConfigCmd = new UpdateFunctionConfigurationCommand({
             FunctionName: fn.name,
             Timeout: 120, // 2 minutes.
-            Description: lambdaFnConfiguration.Description + " (watch mode 💡)",
+            Description,
             Environment: {
                 Variables: {
                     ...lambdaFnConfiguration.Environment.Variables,
