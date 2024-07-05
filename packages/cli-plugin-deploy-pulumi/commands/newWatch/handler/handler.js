@@ -1,28 +1,6 @@
-const { handler } = require("./_handler");
-
-const getWebinyWatchArgs = () => {
-    const webinyWatchEnvVar = process.env["WEBINY_WATCH"];
-    if (!webinyWatchEnvVar || typeof webinyWatchEnvVar !== "string") {
-        return null;
-    }
-
-    try {
-        return JSON.parse(webinyWatchEnvVar);
-    } catch {
-        return null;
-    }
-};
+const webinyWatchArgs = JSON.parse(process.env["WEBINY_WATCH"]);
 
 exports.handler = async (...args) => {
-    if (process.env["WEBINY_WATCH_LOCAL_INVOCATION"] === "1") {
-        return handler(...args);
-    }
-
-    const webinyWatchArgs = getWebinyWatchArgs();
-    if (!webinyWatchArgs) {
-        return handler(...args);
-    }
-
     const { default: mqtt } = require("./mqtt");
 
     const client = await mqtt.connectAsync(webinyWatchArgs.iotEndpoint);

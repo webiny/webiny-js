@@ -2,5 +2,6 @@ export {
     LambdaClient,
     InvokeCommand,
     GetFunctionConfigurationCommand,
-    UpdateFunctionConfigurationCommand
+    UpdateFunctionConfigurationCommand,
+    UpdateFunctionCodeCommand
 } from "@aws-sdk/client-lambda";

@@ -3,6 +3,7 @@ export type FeatureFlags<TFeatureFlags = Record<string, any>> = {
     experimentalAdminOmniSearch?: boolean;
     allowCmsLegacyRichTextInput?: boolean;
     newWatchCommand?: boolean;
+    watchCommandPackagesWithoutWebinyScope?: boolean;
 } & TFeatureFlags;
 
 let featureFlags: FeatureFlags = {};
