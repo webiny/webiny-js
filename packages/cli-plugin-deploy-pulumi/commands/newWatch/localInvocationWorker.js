@@ -18,5 +18,7 @@ const { parentPort, workerData } = require("worker_threads");
                 }
             })
         );
+    } finally {
+        process.exit(0);
     }
 })();
