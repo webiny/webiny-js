@@ -94,6 +94,13 @@ module.exports = async (inputs, context) => {
         return;
     }
 
+    // Maximum of 15minutes in seconds can be passed.
+    if (inputs.increaseTimeout > 900) {
+        throw new Error(
+            `When increasing the timeout, the maximum value that can be passed is 900 seconds (15 minutes).`
+        );
+    }
+
     let lambdaFunctions = listLambdaFunctions(inputs);
 
     // Let's filter out the authorizer function, as it's not needed for the watch command.
@@ -146,13 +153,15 @@ module.exports = async (inputs, context) => {
     const iotEndpointTopic = `webiny-watch-${deploymentId}`;
     const iotEndpoint = await getIotEndpoint({ env: inputs.env });
     const sessionId = new Date().getTime();
+    const increaseTimeout = inputs.increaseTimeout;
 
     // Ignore promise, we don't need to wait for this to finish.
     replaceLambdaFunctions({
         iotEndpoint,
         iotEndpointTopic,
         sessionId,
-        lambdaFunctions
+        lambdaFunctions,
+        increaseTimeout
     });
 
     let inspector;

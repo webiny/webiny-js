@@ -2,12 +2,14 @@ const fs = require("fs");
 const pRetry = require("p-retry");
 
 const WATCH_MODE_NOTE_IN_DESCRIPTION = " (watch mode 💡)";
+const DEFAULT_INCREASE_TIMEOUT = 120;
 
 const replaceLambdaFunctions = async ({
     iotEndpoint,
     iotEndpointTopic,
     sessionId,
-    lambdaFunctions
+    lambdaFunctions,
+    increaseTimeout
 }) => {
     const {
         GetFunctionConfigurationCommand,
@@ -34,9 +36,11 @@ const replaceLambdaFunctions = async ({
             Description += WATCH_MODE_NOTE_IN_DESCRIPTION;
         }
 
+        const Timeout = increaseTimeout || DEFAULT_INCREASE_TIMEOUT;
+
         const updateFnConfigCmd = new UpdateFunctionConfigurationCommand({
             FunctionName: fn.name,
-            Timeout: 120, // 2 minutes.
+            Timeout,
             Description,
             Environment: {
                 Variables: {
