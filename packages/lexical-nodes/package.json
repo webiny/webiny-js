@@ -2,18 +2,19 @@
   "name": "@webiny/lexical-nodes",
   "version": "0.0.0",
   "dependencies": {
-    "@lexical/code": "^0.12.2",
-    "@lexical/hashtag": "^0.12.2",
-    "@lexical/history": "^0.12.2",
-    "@lexical/list": "^0.12.2",
-    "@lexical/mark": "^0.12.2",
-    "@lexical/overflow": "^0.12.2",
-    "@lexical/react": "^0.12.2",
-    "@lexical/rich-text": "^0.12.2",
-    "@lexical/selection": "^0.12.2",
-    "@lexical/utils": "^0.12.2",
+    "@lexical/code": "^0.16.0",
+    "@lexical/hashtag": "^0.16.0",
+    "@lexical/history": "^0.16.0",
+    "@lexical/list": "^0.16.0",
+    "@lexical/mark": "^0.16.0",
+    "@lexical/overflow": "^0.16.0",
+    "@lexical/react": "^0.16.0",
+    "@lexical/rich-text": "^0.16.0",
+    "@lexical/selection": "^0.16.0",
+    "@lexical/utils": "^0.16.0",
+    "@types/prismjs": "^1.26.4",
     "@webiny/lexical-theme": "0.0.0",
-    "lexical": "0.12.2"
+    "lexical": "^0.16.0"
   },
   "devDependencies": {
     "@webiny/cli": "0.0.0",
@@ -27,5 +28,12 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@types/prismjs"
+      ]
+    }
   }
 }

@@ -18,12 +18,11 @@ const animateShow = keyframes`
 export const StatusWrapper = styled.div`
     border-radius: 28px;
     width: 320px;
-    transform: translate(-50%, -50%);
     position: absolute;
     box-shadow: 0 2px 6px rgba(170, 185, 200, 0.4);
     color: var(--mdc-theme-on-surface);
     background-color: #fff;
-    left: calc(50vw - 160px);
+    left: calc(50% - 160px);
     bottom: 16px;
     display: flex;
     align-items: center;

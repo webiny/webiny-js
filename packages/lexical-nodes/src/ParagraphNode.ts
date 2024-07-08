@@ -43,28 +43,12 @@ export class ParagraphNode
         }
     }
 
-    setTypography(typographyStyleId: string): this {
-        const self = super.getWritable();
-        const themeStyle = {
-            styleId: typographyStyleId,
-            type: "typography"
-        } as ThemeStyleValue;
-        self.__styles.push(themeStyle);
-        return self;
-    }
-
     getTypographyStyleId(): string | undefined {
         const style = this.__styles.find(x => x.type === "typography");
         return style?.styleId || undefined;
     }
 
-    clearTypographyStyle(): this {
-        const self = super.getWritable();
-        self.__styles = self.__styles.filter(s => s.type !== "typography");
-        return self;
-    }
-
-    hasTypographyStyle(): boolean {
+    private hasTypographyStyle(): boolean {
         return !!this.getTypographyStyleId();
     }
 
@@ -92,7 +76,7 @@ export class ParagraphNode
         return new ParagraphNode(node.getTypographyStyleId(), node.__key);
     }
 
-    protected updateElementWithThemeClasses(element: HTMLElement, theme: WebinyTheme): HTMLElement {
+    private updateElementWithThemeClasses(element: HTMLElement, theme: WebinyTheme): HTMLElement {
         if (!theme?.emotionMap) {
             return element;
         }
@@ -125,11 +109,7 @@ export class ParagraphNode
         return this.updateElementWithThemeClasses(element, config.theme as WebinyTheme);
     }
 
-    override updateDOM(
-        prevNode: BaseParagraphNode,
-        dom: HTMLElement,
-        config: EditorConfig
-    ): boolean {
+    override updateDOM(prevNode: ParagraphNode, dom: HTMLElement, config: EditorConfig): boolean {
         const prevTypoStyleId = prevNode.getTypographyStyleId();
         const nextTypoStyleId = this.getTypographyStyleId();
 

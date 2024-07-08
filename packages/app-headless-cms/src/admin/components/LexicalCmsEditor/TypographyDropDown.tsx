@@ -56,34 +56,29 @@ export const TypographyDropDown = () => {
             return;
         }
 
-        switch (true) {
-            case $isHeadingNode(element):
-            case $isParagraphNode(element):
-                setStyles(getAllTextStyles());
-                break;
-            case $isListNode(element):
-                let type;
-                try {
-                    const anchorNode = rangeSelection.anchor.getNode();
-                    const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
-                    if (parentList) {
-                        type = parentList.getListType();
-                    }
-                } catch {
-                    type = element.getListType();
+        if ($isParagraphNode(element) || $isHeadingNode(element)) {
+            setStyles(getAllTextStyles());
+        } else if ($isListNode(element)) {
+            let type;
+            try {
+                const anchorNode = rangeSelection.anchor.getNode();
+                const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
+                if (parentList) {
+                    type = parentList.getListType();
                 }
+            } catch {
+                type = element.getListType();
+            }
 
-                if (type === "bullet") {
-                    setStyles(getListStyles("ul"));
-                } else {
-                    setStyles(getListStyles("ol"));
-                }
-                break;
-            case $isQuoteNode(element):
-                setStyles(theme?.styles.typography?.quotes || []);
-                break;
-            default:
-                setStyles([]);
+            if (type === "bullet") {
+                setStyles(getListStyles("ul"));
+            } else {
+                setStyles(getListStyles("ol"));
+            }
+        } else if ($isQuoteNode(element)) {
+            setStyles(theme?.styles.typography?.quotes || []);
+        } else {
+            setStyles([]);
         }
     }, [element]);
 
