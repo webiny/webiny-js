@@ -26,6 +26,8 @@ const childrenAreCollections = (node: CmsModelFieldAstNode): node is NodeWithCol
     return node.children.every(node => node.type === "collection");
 };
 
+const emptyValues = [null, undefined];
+
 export class ContentEntryTraverser {
     private readonly modelAst: CmsModelAst;
 
@@ -48,7 +50,13 @@ export class ContentEntryTraverser {
             const field = this.getFieldFromNode(context);
             const value = values[field.fieldId];
 
-            if (!value) {
+            // We do not descend into nodes if they're `null` or `undefined`.
+            if (nodeHasChildren(node) && emptyValues.includes(value)) {
+                continue;
+            }
+
+            // We do not visit leaf nodes that are `undefined`.
+            if (!nodeHasChildren(node) && value === undefined) {
                 continue;
             }
 
@@ -74,7 +82,7 @@ export class ContentEntryTraverser {
                         );
                     });
                 } else {
-                    this.findCollectionAndVisit(node, value, path, visitor);
+                    this.findCollectionAndVisit(node, value, fieldPath, visitor);
                 }
                 continue;
             }
