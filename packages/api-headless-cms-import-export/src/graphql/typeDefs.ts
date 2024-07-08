@@ -1,5 +1,18 @@
 export const createTypeDefs = (models: [string, ...string[]]): string => {
     return /* GraphQL */ `
+        enum ExportContentEntriesExportRecordStatusEnum {
+            pending
+            running
+            failed
+            success
+            aborted
+        }
+        
+        type ExportContentEntriesExportRecordFile {
+            url: String!
+            expiresOn: DateTime!
+            type: String!
+        }
         
         type ExportContentEntriesExportRecord {
             id: ID!
@@ -7,9 +20,9 @@ export const createTypeDefs = (models: [string, ...string[]]): string => {
             createdBy: CmsIdentity!
             finishedOn: DateTime
             modelId: String!
-            files: [String!]
-            expiresOn: DateTime
-            status: String
+            files: [ExportContentEntriesExportRecordFile!]
+            exportAssets: Boolean!
+            status: ExportContentEntriesExportRecordStatusEnum!
         }
         
         type ExportContentEntriesResponse {

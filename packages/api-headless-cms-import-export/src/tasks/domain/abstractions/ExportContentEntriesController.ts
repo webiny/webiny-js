@@ -22,9 +22,14 @@ export interface IExportContentEntriesControllerInput {
     state?: ExportContentEntriesControllerState;
 }
 
+export interface IExportContentEntriesControllerOutputFile {
+    url: string;
+    expiresOn: string;
+    type: "entries" | "assets";
+}
+
 export interface IExportContentEntriesControllerOutput extends ITaskResponseDoneResultOutput {
-    files: string[];
-    expiresOn?: Date;
+    files: IExportContentEntriesControllerOutputFile[];
 }
 
 export interface IExportContentEntriesController<

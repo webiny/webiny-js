@@ -11,7 +11,8 @@ import {
 import {
     IExportContentEntries,
     IExportContentEntriesInput,
-    IExportContentEntriesOutput
+    IExportContentEntriesOutput,
+    IExportContentEntriesOutputFile
 } from "~/tasks/domain/abstractions/ExportContentEntries";
 import { createCmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/createCmsEntryFetcher";
 
@@ -67,7 +68,7 @@ export class ExportContentEntries<
         const prefix = `${basePrefix}/entries-batch-`;
         if (input.combine) {
             const lastFileProcessed = input.lastFileProcessed ? `-${input.lastFileProcessed}` : "";
-            const combined = Array.from<string>(
+            const combined = Array.from<IExportContentEntriesOutputFile>(
                 Array.isArray(input.combined) ? input.combined : []
             );
             const zipCombiner = this.createZipCombiner({
@@ -82,7 +83,10 @@ export class ExportContentEntries<
                 isCloseToTimeout
             });
 
-            combined.push(result.url);
+            combined.push({
+                url: result.url,
+                expiresOn: result.expiresOn.toISOString()
+            });
 
             if (result.lastFileProcessed) {
                 return response.continue({
@@ -93,8 +97,7 @@ export class ExportContentEntries<
             }
 
             return response.done("Successfully combined entry files.", {
-                files: combined,
-                expiresOn: result.expiresOn
+                files: combined
             } as O);
         }
         /**

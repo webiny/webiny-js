@@ -11,12 +11,16 @@ export interface IExportContentEntriesInput {
     after?: string;
     combine?: boolean;
     lastFileProcessed?: string;
-    combined?: string[];
+    combined?: IExportContentEntriesOutputFile[];
+}
+
+export interface IExportContentEntriesOutputFile {
+    url: string;
+    expiresOn: string;
 }
 
 export interface IExportContentEntriesOutput extends ITaskResponseDoneResultOutput {
-    files: string[];
-    expiresOn: Date;
+    files: IExportContentEntriesOutputFile[];
 }
 
 export interface IExportContentEntries<

@@ -8,13 +8,18 @@ export interface IExportContentAssetsInput {
     limit?: number;
     where?: CmsEntryListWhere;
     sort?: string[];
-    after?: string;
+    entryAfter: string | undefined;
+    fileAfter: string | undefined;
+    files?: IExportContentAssetsOutputFile[];
+}
+
+export interface IExportContentAssetsOutputFile {
+    url: string;
+    expiresOn: string;
 }
 
 export interface IExportContentAssetsOutput extends ITaskResponseDoneResultOutput {
-    file: string;
-    url: string;
-    expiresOn: Date;
+    files: IExportContentAssetsOutputFile[];
 }
 
 export interface IExportContentAssets<

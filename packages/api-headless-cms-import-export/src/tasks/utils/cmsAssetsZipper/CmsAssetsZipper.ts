@@ -189,10 +189,11 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
         });
         /**
          * Every time a file is added, add another one.
-         * Or if the file added was a manifest file, go back to the fetch function.
+         * If the getIsStoredFiles() flag is true, we will go through fetchItems() method for the last time,
+         * as will handle the upload finalization.
          */
-        this.zipper.on("entry", data => {
-            if (data.name === manifestFileName) {
+        this.zipper.on("entry", () => {
+            if (pointerStore.getIsStoredFiles()) {
                 fetchItems();
                 return;
             }

@@ -5,11 +5,26 @@ import {
     IExportContentAssetsOutput
 } from "~/tasks/domain/abstractions/ExportContentAssets";
 import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
-import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
-import { IEntryAssets, IEntryAssetsList } from "~/tasks/utils/entryAssets";
-import { ICmsAssetsZipper } from "~/tasks/utils/cmsAssetsZipper";
-import { IZipCombiner } from "~/tasks/utils/zipCombiner";
-import { IFileFetcher } from "~/tasks/utils/fileFetcher";
+import { createCmsEntryFetcher, ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
+import {
+    EntryAssets,
+    EntryAssetsList,
+    IEntryAssets,
+    IEntryAssetsList
+} from "~/tasks/utils/entryAssets";
+import {
+    CmsAssetsZipperExecuteContinueResult,
+    CmsAssetsZipperExecuteContinueWithoutResult,
+    CmsAssetsZipperExecuteDoneResult,
+    CmsAssetsZipperExecuteDoneWithoutResult,
+    ICmsAssetsZipper,
+    ICmsAssetsZipperExecuteResult
+} from "~/tasks/utils/cmsAssetsZipper";
+import { FileFetcher, IFileFetcher } from "~/tasks/utils/fileFetcher";
+import { CmsModel } from "@webiny/api-headless-cms/types";
+import { getErrorProperties } from "@webiny/tasks/utils";
+import { getBucket } from "~/tasks/utils/helpers/getBucket";
+import { createS3Client } from "~/tasks/utils/helpers/s3Client";
 
 export interface ICreateCmsAssetsZipperCallableConfig {
     filename: string;
@@ -23,17 +38,16 @@ export interface ICreateCmsAssetsZipperCallable {
     (config: ICreateCmsAssetsZipperCallableConfig): ICmsAssetsZipper;
 }
 
-export interface ICreateZipCombinerCallableConfig {
-    target: string;
-}
+const getFilename = (input: IExportContentAssetsInput): string => {
+    const current = [input.entryAfter, input.fileAfter]
+        .filter(item => item !== undefined)
+        .join("-");
 
-export interface ICreateZipCombinerCallable {
-    (config: ICreateZipCombinerCallableConfig): IZipCombiner;
-}
+    return `${input.prefix}/assets${current ? `-${current}` : ""}.zip`;
+};
 
 export interface IExportContentAssetsParams {
     createCmsAssetsZipper: ICreateCmsAssetsZipperCallable;
-    createZipCombiner: ICreateZipCombinerCallable;
 }
 
 export class ExportContentAssets<
@@ -43,16 +57,154 @@ export class ExportContentAssets<
 > implements IExportContentAssets<C, I, O>
 {
     private readonly createCmsAssetsZipper: ICreateCmsAssetsZipperCallable;
-    private readonly createZipCombiner: ICreateZipCombinerCallable;
 
     public constructor(params: IExportContentAssetsParams) {
         this.createCmsAssetsZipper = params.createCmsAssetsZipper;
-        this.createZipCombiner = params.createZipCombiner;
     }
 
     public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { response } = params;
+        const { response, context, input, isCloseToTimeout, isAborted } = params;
 
-        return response.done();
+        let model: CmsModel;
+        try {
+            model = await context.cms.getModel(input.modelId);
+        } catch (ex) {
+            return response.error({
+                message: `Could not fetch entry manager for model "${input.modelId}".`,
+                code: "MODEL_NOT_FOUND",
+                data: {
+                    error: getErrorProperties(ex)
+                }
+            });
+        }
+
+        const traverser = await context.cms.getEntryTraverser(model.modelId);
+
+        const entryFetcher = createCmsEntryFetcher(async after => {
+            const input = {
+                where: params.input.where,
+                limit: params.input.limit || 10000,
+                sort: params.input.sort,
+                after
+            };
+            const [items, meta] = await context.cms.listLatestEntries(model, input);
+
+            return {
+                items,
+                meta
+            };
+        });
+
+        const fileFetcher = new FileFetcher({
+            client: createS3Client(),
+            bucket: getBucket()
+        });
+
+        const filename = getFilename(input);
+
+        const zipper = this.createCmsAssetsZipper({
+            filename,
+            fileFetcher,
+            entryFetcher,
+            createEntryAssets: () => {
+                return new EntryAssets({
+                    traverser
+                });
+            },
+            createEntryAssetsList: () => {
+                return new EntryAssetsList({
+                    listFiles: async params => {
+                        const [items, meta] = await context.fileManager.listFiles(params);
+                        return {
+                            items,
+                            meta
+                        };
+                    }
+                });
+            }
+        });
+
+        let result: ICmsAssetsZipperExecuteResult;
+
+        try {
+            result = await zipper.execute({
+                fileAfter: input.fileAfter,
+                entryAfter: input.entryAfter,
+                isAborted() {
+                    return isAborted();
+                },
+                isCloseToTimeout() {
+                    return isCloseToTimeout();
+                }
+            });
+        } catch (ex) {
+            return response.error(ex);
+        }
+
+        const files = Array.isArray(input.files) ? input.files : [];
+        /**
+         * Zipper is done, but there is no result?
+         * We will output existing input files.
+         */
+        if (result instanceof CmsAssetsZipperExecuteDoneWithoutResult) {
+            return response.done({
+                files
+            } as O);
+        }
+        /**
+         * Zipper is done and there is a result?
+         * We will output existing input files and the new file.
+         */
+        //
+        else if (result instanceof CmsAssetsZipperExecuteDoneResult) {
+            return response.done({
+                files: files.concat([
+                    {
+                        url: result.url,
+                        expiresOn: result.expiresOn.toISOString()
+                    }
+                ])
+            } as O);
+        }
+        /**
+         * Zipper is not done and there is no result?
+         * Let's continue with the next iteration.
+         */
+        //
+        else if (result instanceof CmsAssetsZipperExecuteContinueWithoutResult) {
+            return response.continue({
+                ...input,
+                fileAfter: result.fileCursor,
+                entryAfter: result.entryCursor
+            });
+        }
+        /**
+         * Zipper is not done and there is a result?
+         * Let's merge the existing files with the new file and continue with the next iteration.
+         */
+        //
+        else if (result instanceof CmsAssetsZipperExecuteContinueResult) {
+            return response.continue({
+                ...input,
+                fileAfter: result.fileCursor,
+                entryAfter: result.entryCursor,
+                files: files.concat([
+                    {
+                        url: result.url,
+                        expiresOn: result.expiresOn.toISOString()
+                    }
+                ])
+            });
+        }
+
+        return response.error({
+            message: "Unknown zipper result.",
+            code: "UNKNOWN_ZIPPER_RESULT",
+            data: {
+                type: typeof result,
+                constructor: result?.constructor?.name || "unknown constructor",
+                result
+            }
+        });
     }
 }

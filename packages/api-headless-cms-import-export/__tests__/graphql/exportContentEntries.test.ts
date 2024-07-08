@@ -43,8 +43,7 @@ describe("get export content entries", () => {
                         id: task.id,
                         modelId: AUTHOR_MODEL_ID,
                         status: "pending",
-                        files: null,
-                        expiresOn: null
+                        files: null
                     },
                     error: null
                 }
@@ -75,8 +74,7 @@ describe("get export content entries", () => {
                         createdBy: task.createdBy,
                         finishedOn: task.finishedOn,
                         modelId: task.modelId,
-                        files: task.files,
-                        expiresOn: task.expiresOn,
+                        files: null,
                         status: "aborted"
                     },
                     error: null

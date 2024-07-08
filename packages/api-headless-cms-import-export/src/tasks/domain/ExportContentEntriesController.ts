@@ -10,7 +10,8 @@ import {
     ExportContentEntriesControllerState,
     IExportContentEntriesController,
     IExportContentEntriesControllerInput,
-    IExportContentEntriesControllerOutput
+    IExportContentEntriesControllerOutput,
+    IExportContentEntriesControllerOutputFile
 } from "~/tasks/domain/abstractions/ExportContentEntriesController";
 import { EXPORT_CONTENT_ASSETS_TASK, EXPORT_CONTENT_ENTRIES_TASK } from "~/tasks";
 import {
@@ -21,6 +22,7 @@ import {
     IExportContentAssetsInput,
     IExportContentAssetsOutput
 } from "~/tasks/domain/abstractions/ExportContentAssets";
+import { getBackOffSeconds } from "~/tasks/utils/helpers/getBackOffSeconds";
 
 export class ExportContentEntriesController<
     C extends Context = Context,
@@ -32,10 +34,10 @@ export class ExportContentEntriesController<
         const { context, response, input, store, trigger } = params;
         const { state } = input;
 
+        const backOffSeconds = getBackOffSeconds(store.getTask().iterations);
+
         const taskId = store.getTask().id;
-        /**
-         *
-         */
+
         let entriesTask: IGetTaskResponse<IExportContentEntriesInput, IExportContentEntriesOutput>;
 
         /**
@@ -64,7 +66,7 @@ export class ExportContentEntriesController<
                     state: ExportContentEntriesControllerState.entryExport
                 },
                 {
-                    seconds: 60
+                    seconds: backOffSeconds
                 }
             );
         }
@@ -82,10 +84,7 @@ export class ExportContentEntriesController<
                     code: "MISSING_CONTENT_ENTRIES_TASK_ID"
                 });
             }
-            entriesTask = await context.tasks.getTask<
-                IExportContentEntriesInput,
-                IExportContentEntriesOutput
-            >(input.contentEntriesTaskId);
+            entriesTask = await this.getEntriesTask(context, input.contentEntriesTaskId);
             if (!entriesTask) {
                 return response.error({
                     message: `Task "${input.contentEntriesTaskId}" not found.`,
@@ -97,7 +96,7 @@ export class ExportContentEntriesController<
                 entriesTask.taskStatus === TaskDataStatus.PENDING
             ) {
                 return response.continue(input, {
-                    seconds: 60
+                    seconds: backOffSeconds
                 });
             } else if (entriesTask.taskStatus === TaskDataStatus.FAILED) {
                 return response.error({
@@ -133,16 +132,22 @@ export class ExportContentEntriesController<
                     limit: input.limit,
                     where: input.where,
                     sort: input.sort,
-                    after: undefined
+                    entryAfter: undefined,
+                    fileAfter: undefined
                 },
                 name: `Export Content Assets ${taskId}`
             });
 
-            return response.continue({
-                ...input,
-                contentAssetsTaskId: assetTask.id,
-                state: ExportContentEntriesControllerState.assetsExport
-            });
+            return response.continue(
+                {
+                    ...input,
+                    contentAssetsTaskId: assetTask.id,
+                    state: ExportContentEntriesControllerState.assetsExport
+                },
+                {
+                    seconds: backOffSeconds
+                }
+            );
         }
         /**
          * If the state is "assetsExport", we need to check if there are any child tasks of the "Export Content Assets" task.
@@ -152,17 +157,19 @@ export class ExportContentEntriesController<
          */
         //
         else if (state === ExportContentEntriesControllerState.assetsExport) {
-            if (!input.contentAssetsTaskId) {
+            if (!input.contentEntriesTaskId) {
+                return response.error({
+                    message: `Missing "contentEntriesTaskId" in the input, but the input notes that the task is in "assetsExport" state. This should not happen.`,
+                    code: "MISSING_CONTENT_ENTRIES_TASK_ID"
+                });
+            } else if (!input.contentAssetsTaskId) {
                 return response.error({
                     message: `Missing "contentAssetsTaskId" in the input, but the input notes that the task is in "assetsExport" state. This should not happen.`,
                     code: "MISSING_CONTENT_ASSETS_TASK_ID"
                 });
             }
 
-            const assetsTask = await context.tasks.getTask<
-                IExportContentAssetsInput,
-                IExportContentAssetsOutput
-            >(input.contentAssetsTaskId);
+            const assetsTask = await this.getAssetsTask(context, input.contentAssetsTaskId);
             if (!assetsTask) {
                 return response.error({
                     message: `Task "${input.contentAssetsTaskId}" not found.`,
@@ -178,7 +185,7 @@ export class ExportContentEntriesController<
                         ...input
                     },
                     {
-                        seconds: 60
+                        seconds: backOffSeconds
                     }
                 );
             } else if (assetsTask.taskStatus === TaskDataStatus.FAILED) {
@@ -192,11 +199,57 @@ export class ExportContentEntriesController<
                     code: "EXPORT_ASSETS_ABORTED"
                 });
             }
+
+            entriesTask = await this.getEntriesTask(context, input.contentEntriesTaskId);
+
+            const files: IExportContentEntriesControllerOutputFile[] = [];
+            const entriesFiles = entriesTask?.output?.files || [];
+            for (const file of entriesFiles) {
+                files.push({
+                    url: file.url,
+                    expiresOn: file.expiresOn,
+                    type: "entries"
+                });
+            }
+            const assetFiles = assetsTask.output?.files || [];
+            for (const file of assetFiles) {
+                files.push({
+                    url: file.url,
+                    expiresOn: file.expiresOn,
+                    type: "assets"
+                });
+            }
+
+            return response.done({
+                files
+            } as O);
         }
 
         return response.error({
             message: `Invalid state "${state}".`,
             code: "INVALID_STATE"
         });
+    }
+
+    private async getEntriesTask(context: Context, id: string) {
+        try {
+            return await context.tasks.getTask<
+                IExportContentEntriesInput,
+                IExportContentEntriesOutput
+            >(id);
+        } catch (ex) {
+            return null;
+        }
+    }
+
+    private async getAssetsTask(context: Context, id: string) {
+        try {
+            return await context.tasks.getTask<
+                IExportContentAssetsInput,
+                IExportContentAssetsOutput
+            >(id);
+        } catch (ex) {
+            return null;
+        }
     }
 }

@@ -1,4 +1,7 @@
-import { ICmsImportExportRecord } from "~/domain/abstractions/CmsImportExportRecord";
+import {
+    ICmsImportExportRecord,
+    ICmsImportExportRecordFile
+} from "~/domain/abstractions/CmsImportExportRecord";
 import { TaskDataStatus } from "@webiny/tasks";
 
 export class CmsImportExportRecord implements ICmsImportExportRecord {
@@ -7,8 +10,7 @@ export class CmsImportExportRecord implements ICmsImportExportRecord {
     public createdBy: any;
     public finishedOn: string | null;
     public modelId: string;
-    public files: string[] | null;
-    public expiresOn: Date | null;
+    public files: ICmsImportExportRecordFile[] | null;
     public exportAssets: boolean;
     public status: TaskDataStatus;
 
@@ -19,7 +21,6 @@ export class CmsImportExportRecord implements ICmsImportExportRecord {
         this.finishedOn = data.finishedOn;
         this.modelId = data.modelId;
         this.files = data.files;
-        this.expiresOn = data.expiresOn;
         this.exportAssets = data.exportAssets;
         this.status = data.status;
     }
