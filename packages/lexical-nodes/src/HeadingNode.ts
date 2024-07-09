@@ -38,23 +38,11 @@ export class HeadingNode
         }
     }
 
-    protected setDefaultTypography(themeEmotionMap: ThemeEmotionMap) {
+    private setDefaultTypography(themeEmotionMap: ThemeEmotionMap) {
         const typographyStyle = findTypographyStyleByHtmlTag(this.__tag, themeEmotionMap);
         if (typographyStyle) {
             this.__styles.push({ styleId: typographyStyle.id, type: "typography" });
         }
-    }
-
-    setTypography(typographyStyleId: string): this {
-        const self = super.getWritable();
-        if (!this.hasTypographyStyle()) {
-            const themeStyle = {
-                styleId: typographyStyleId,
-                type: "typography"
-            } as ThemeStyleValue;
-            self.__styles.push(themeStyle);
-        }
-        return self;
     }
 
     getTypographyStyleId(): string | undefined {
@@ -62,13 +50,7 @@ export class HeadingNode
         return style?.styleId || undefined;
     }
 
-    clearTypographyStyle(): this {
-        const self = super.getWritable();
-        self.__styles = self.__styles.filter(s => s.type !== "typography");
-        return self;
-    }
-
-    hasTypographyStyle(): boolean {
+    private hasTypographyStyle(): boolean {
         return !!this.getTypographyStyleId();
     }
 
