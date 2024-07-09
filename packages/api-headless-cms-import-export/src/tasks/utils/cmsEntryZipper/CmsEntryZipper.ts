@@ -10,11 +10,15 @@ import {
 } from "./abstractions/CmsEntryZipper";
 import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/abstractions/CmsEntryFetcher";
 import { IZipper } from "~/tasks/utils/zipper";
+import { IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
+import { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
 
 export interface ICmsEntryZipperConfig {
     zipper: IZipper;
     urlSigner: IUrlSigner;
     fetcher: ICmsEntryFetcher;
+    entryAssets: IEntryAssets;
+    uniqueAssetsResolver: IUniqueResolver<IAsset>;
 }
 
 interface ICreateBufferDataParams {
@@ -38,17 +42,21 @@ export class CmsEntryZipper implements ICmsEntryZipper {
     private readonly zipper: IZipper;
     private readonly urlSigner: IUrlSigner;
     private readonly fetcher: ICmsEntryFetcher;
+    private readonly entryAssets: IEntryAssets;
+    private readonly uniqueAssetsResolver: IUniqueResolver<IAsset>;
 
     public constructor(params: ICmsEntryZipperConfig) {
         this.zipper = params.zipper;
         this.urlSigner = params.urlSigner;
         this.fetcher = params.fetcher;
+        this.entryAssets = params.entryAssets;
+        this.uniqueAssetsResolver = params.uniqueAssetsResolver;
     }
 
     public async execute(
         params: ICmsEntryZipperExecuteParams
     ): Promise<ICmsEntryZipperExecuteResult> {
-        const { isCloseToTimeout, isAborted, model, after: inputAfter } = params;
+        const { isCloseToTimeout, isAborted, model, after: inputAfter, exportedAssets } = params;
 
         const files: IFileMeta[] = [];
 
@@ -60,6 +68,8 @@ export class CmsEntryZipper implements ICmsEntryZipper {
         let id = 1;
 
         let continueAfter: string | undefined = undefined;
+
+        const assets: IAsset[] = [];
         /**
          * This function works as self invoking function, it will add items to the zipper until there are no more items to add.
          *
@@ -82,7 +92,9 @@ export class CmsEntryZipper implements ICmsEntryZipper {
                     Buffer.from(
                         JSON.stringify({
                             files,
-                            modelId: model.modelId
+                            assets,
+                            exportedAssets,
+                            model: model.modelId
                         })
                     ),
                     {
@@ -112,10 +124,20 @@ export class CmsEntryZipper implements ICmsEntryZipper {
                 name
             });
 
+            const itemsAssets = this.entryAssets.assignAssets(items);
+
             hasMoreItems = meta.hasMoreItems;
             after = meta.cursor || undefined;
 
             id++;
+            if (itemsAssets.length === 0) {
+                return;
+            }
+            const uniqueItemAssets = this.uniqueAssetsResolver.resolve(itemsAssets, "url");
+            if (uniqueItemAssets.length === 0) {
+                return;
+            }
+            assets.push(...uniqueItemAssets);
         };
 
         this.zipper.on("error", error => {

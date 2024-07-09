@@ -1,18 +1,18 @@
 import { useHandler } from "~tests/helpers/useHandler";
 import { Context } from "~/types";
 import { createImages } from "~tests/mocks/images";
-import { EntryAssetsList, IAssets, IEntryAssetsList } from "~/tasks/utils/entryAssets";
+import { EntryAssetsResolver, IAssets, IEntryAssetsResolver } from "~/tasks/utils/entryAssets";
 
-describe("entry assets list", () => {
+describe("entry assets resolver", () => {
     let context: Context;
-    let entryAssetsList: IEntryAssetsList;
+    let entryAssetsResolver: IEntryAssetsResolver;
 
     beforeEach(async () => {
         const { createContext } = useHandler();
         context = await createContext();
 
-        entryAssetsList = new EntryAssetsList({
-            listFiles: async opts => {
+        entryAssetsResolver = new EntryAssetsResolver({
+            fetchFiles: async opts => {
                 const [items, meta] = await context.fileManager.listFiles(opts);
                 return {
                     items,
@@ -23,7 +23,7 @@ describe("entry assets list", () => {
     });
 
     it("should fetch assets - empty list", async () => {
-        const result = await entryAssetsList.resolve([]);
+        const result = await entryAssetsResolver.resolve([]);
 
         expect(result).toEqual([]);
     });
@@ -57,7 +57,7 @@ describe("entry assets list", () => {
             return items;
         }, {});
 
-        const results = await entryAssetsList.resolve(Object.values(assets));
+        const results = await entryAssetsResolver.resolve(Object.values(assets));
 
         expect(results.length).toEqual(images.length);
 

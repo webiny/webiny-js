@@ -4,20 +4,20 @@ import {
     FileListWhereParams,
     FilesListOpts
 } from "@webiny/api-file-manager/types";
-import { IEntryAssetsList, IResolvedAsset } from "./abstractions/EntryAssetsList";
+import { IEntryAssetsResolver, IResolvedAsset } from "./abstractions/EntryAssetsResolver";
 import { IAsset } from "./abstractions/EntryAssets";
 
-export interface IListFilesCbResult {
+export interface IFetchFilesCbResult {
     items: File[];
     meta: FileListMeta;
 }
 
-export interface IListFilesCb {
-    (opts?: FilesListOpts): Promise<IListFilesCbResult>;
+export interface IFetchFilesCb {
+    (opts?: FilesListOpts): Promise<IFetchFilesCbResult>;
 }
 
-export interface IEntryAssetsListParams {
-    listFiles: IListFilesCb;
+export interface IEntryAssetsResolverParams {
+    fetchFiles: IFetchFilesCb;
 }
 
 const createResolvedAsset = (file: Partial<File>): IResolvedAsset => {
@@ -34,11 +34,11 @@ const createResolvedAsset = (file: Partial<File>): IResolvedAsset => {
     return result as IResolvedAsset;
 };
 
-export class EntryAssetsList implements IEntryAssetsList {
-    private readonly listFiles: IListFilesCb;
+export class EntryAssetsResolver implements IEntryAssetsResolver {
+    private readonly fetchFiles: IFetchFilesCb;
 
-    public constructor(params: IEntryAssetsListParams) {
-        this.listFiles = params.listFiles;
+    public constructor(params: IEntryAssetsResolverParams) {
+        this.fetchFiles = params.fetchFiles;
     }
 
     public async resolve(input: IAsset[]): Promise<IResolvedAsset[]> {
@@ -71,11 +71,11 @@ export class EntryAssetsList implements IEntryAssetsList {
             return assets;
         }
 
-        const list = async (after?: string) => {
-            return this.listFiles({
+        const fetch = async (after?: string) => {
+            return this.fetchFiles({
                 where,
                 limit: 10000000,
-                sort: ["createdOn_ASC"],
+                sort: ["id_ASC"],
                 after
             });
         };
@@ -85,7 +85,7 @@ export class EntryAssetsList implements IEntryAssetsList {
             /**
              * Unfortunately we must cast the result, because TS is not able to infer the correct type.
              */
-            const { items, meta } = (await list(after)) as IListFilesCbResult;
+            const { items, meta } = (await fetch(after)) as IFetchFilesCbResult;
             for (const file of items) {
                 assets.push(createResolvedAsset(file));
             }

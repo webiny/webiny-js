@@ -15,6 +15,7 @@ import {
     IExportContentEntriesOutputFile
 } from "~/tasks/domain/abstractions/ExportContentEntries";
 import { createCmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/createCmsEntryFetcher";
+import { IContentEntryTraverser } from "@webiny/api-headless-cms";
 
 export interface ICreateZipCombinerParams {
     target: string;
@@ -28,6 +29,7 @@ export interface IExportContentEntriesConfig {
 export interface ICreateCmsEntryZipperConfig extends Pick<ICmsEntryZipperConfig, "fetcher"> {
     filename: string;
     model: Pick<CmsModel, "modelId">;
+    traverser: IContentEntryTraverser;
 }
 
 export class ExportContentEntries<
@@ -120,17 +122,21 @@ export class ExportContentEntries<
 
         const filename = `${prefix}${input.after || "0"}.zip`;
 
+        const traverser = await context.cms.getEntryTraverser(model.modelId);
+
         const entryZipper = this.createCmsEntryZipper({
             filename,
             model,
-            fetcher
+            fetcher,
+            traverser
         });
 
         const result = await entryZipper.execute({
             isCloseToTimeout,
             isAborted,
             model,
-            after: input.after
+            after: input.after,
+            exportedAssets: input.exportAssets
         });
         if (result instanceof CmsEntryZipperExecuteContinueResult) {
             return response.continue({

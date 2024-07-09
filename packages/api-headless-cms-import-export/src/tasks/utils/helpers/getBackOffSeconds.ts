@@ -1,6 +1,6 @@
-const min = 15;
-const max = 60;
-const step = 5;
+export const min = 10;
+export const max = 90;
+export const step = 10;
 /**
  * This function will increase the backoff time exponentially with each iteration, after the minimum backoff time, ofc...
  */

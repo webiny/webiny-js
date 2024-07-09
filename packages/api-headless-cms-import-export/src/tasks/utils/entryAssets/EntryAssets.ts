@@ -1,19 +1,24 @@
-import type { ContentEntryTraverser } from "@webiny/api-headless-cms";
+import { IContentEntryTraverser } from "@webiny/api-headless-cms";
 import { matchKeyOrAlias } from "~/tasks/utils/helpers/matchKeyOrAlias";
-import { IAsset, IAssets, IAssignAssetsInput, IEntryAssets } from "./abstractions/EntryAssets";
+import { IAsset, IAssignAssetsInput, IEntryAssets } from "./abstractions/EntryAssets";
+import { GenericRecord } from "@webiny/api/types";
+import { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
 
 export interface IEntryAssetsParams {
-    traverser: ContentEntryTraverser;
+    traverser: IContentEntryTraverser;
+    uniqueResolver: IUniqueResolver<IAsset>;
 }
 
 const fileTypes: string[] = ["file"];
 
 export class EntryAssets implements IEntryAssets {
-    public readonly assets: IAssets = {};
-    private readonly traverser: ContentEntryTraverser;
+    private readonly uniqueResolver: IUniqueResolver<IAsset>;
+
+    private readonly traverser: IContentEntryTraverser;
 
     public constructor(params: IEntryAssetsParams) {
         this.traverser = params.traverser;
+        this.uniqueResolver = params.uniqueResolver;
     }
 
     public assignAssets(input: IAssignAssetsInput): IAsset[] {
@@ -55,21 +60,20 @@ export class EntryAssets implements IEntryAssets {
     }
 
     private assignAssetsToItems(input: string | string[] | unknown): IAsset[] {
-        const assets: IAsset[] = [];
+        const assets: GenericRecord<string, IAsset> = {};
         if (!input) {
-            return assets;
+            return [];
         }
         const inputArray: string[] = Array.isArray(input) ? input : [input];
         for (const src of inputArray) {
             const asset = this.parseAssetSrc(src);
             if (!asset) {
                 continue;
-            } else if (this.assets[asset.url]) {
+            } else if (assets[asset.url]) {
                 continue;
             }
-            this.assets[asset.url] = asset;
-            assets.push(asset);
+            assets[asset.url] = asset;
         }
-        return assets;
+        return this.uniqueResolver.resolve(Object.values(assets), "url");
     }
 }

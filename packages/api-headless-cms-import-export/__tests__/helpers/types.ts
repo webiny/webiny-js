@@ -1,10 +1,12 @@
+import { GenericRecord } from "@webiny/api/types";
+
 export interface InvokeParams {
     httpMethod?: "POST" | "GET" | "OPTIONS";
     body?: {
         query: string;
-        variables?: Record<string, any>;
+        variables?: GenericRecord<string>;
     };
-    headers?: Record<string, string>;
+    headers?: GenericRecord<string, string>;
 }
 
 export interface IInvokeCb {

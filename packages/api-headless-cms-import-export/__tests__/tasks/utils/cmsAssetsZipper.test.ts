@@ -10,7 +10,10 @@ import {
 } from "~/tasks/utils/cmsAssetsZipper";
 import { CmsEntryMeta } from "@webiny/api-headless-cms/types";
 import { ICmsEntryFetcherResult } from "~/tasks/utils/cmsEntryFetcher";
-import { ContentEntryTraverser } from "@webiny/api-headless-cms";
+import { IContentEntryTraverser } from "@webiny/api-headless-cms";
+import { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
+import { IAsset } from "~/tasks/utils/entryAssets";
+import { createUniqueResolver } from "~tests/mocks/createUniqueResolver";
 
 jest.setTimeout(5000);
 
@@ -22,16 +25,19 @@ const defaultZipperExecuteParams: ICmsAssetsZipperExecuteParams = {
         return false;
     },
     fileAfter: undefined,
-    entryAfter: undefined
+    entryAfter: undefined,
+    exportAssets: false
 };
 
 describe("cms assets zipper", () => {
     let context: Context;
-    let traverser: ContentEntryTraverser;
+    let traverser: IContentEntryTraverser;
+    let uniqueResolver: IUniqueResolver<IAsset>;
     beforeEach(async () => {
         const { createContext } = useHandler();
         context = await createContext();
         traverser = await context.cms.getEntryTraverser(AUTHOR_MODEL_ID);
+        uniqueResolver = createUniqueResolver<IAsset>();
     });
 
     it("should throw abort error because task was aborted", async () => {
@@ -40,7 +46,8 @@ describe("cms assets zipper", () => {
         const { cmsAssetsZipper } = createCmsAssetsZipper({
             createEntryAssets: () => {
                 return createEntryAssets({
-                    traverser
+                    traverser,
+                    uniqueResolver
                 });
             }
         });
@@ -63,7 +70,8 @@ describe("cms assets zipper", () => {
         const { cmsAssetsZipper } = createCmsAssetsZipper({
             createEntryAssets: () => {
                 return createEntryAssets({
-                    traverser
+                    traverser,
+                    uniqueResolver
                 });
             }
         });
@@ -120,7 +128,8 @@ describe("cms assets zipper", () => {
             },
             createEntryAssets: () => {
                 return createEntryAssets({
-                    traverser
+                    traverser,
+                    uniqueResolver
                 });
             }
         });

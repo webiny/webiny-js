@@ -1,3 +1,5 @@
+import { IIsCloseToTimeoutCallable } from "@webiny/tasks";
+
 export interface IZipCombinerResolveResult {
     lastFileProcessed?: string;
     key: string;
@@ -11,7 +13,7 @@ export interface IZipCombinerResolveParams {
     modelId: string;
     lastFileProcessed: string | undefined;
     isAborted: () => boolean;
-    isCloseToTimeout: () => boolean;
+    isCloseToTimeout: IIsCloseToTimeoutCallable;
 }
 
 export interface IZipCombiner {

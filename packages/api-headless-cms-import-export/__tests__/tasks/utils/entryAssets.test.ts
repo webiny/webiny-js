@@ -1,7 +1,8 @@
 import { useHandler } from "~tests/helpers/useHandler";
 import { CmsEntry } from "@webiny/api-headless-cms/types";
-import type { ContentEntryTraverser } from "@webiny/api-headless-cms";
+import { IContentEntryTraverser } from "@webiny/api-headless-cms";
 import { EntryAssets, IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
+import { createUniqueResolver } from "~tests/mocks/createUniqueResolver";
 
 const cloudfrontUrl = "https://aCloundfrontDistributionId.cloudfront.net";
 
@@ -15,14 +16,15 @@ const createImageUrl = (file: string) => {
 
 describe("entry assets", () => {
     let entryAssets: IEntryAssets;
-    let traverser: ContentEntryTraverser;
+    let traverser: IContentEntryTraverser;
 
     beforeEach(async () => {
         const { createContext } = useHandler();
         const context = await createContext();
         traverser = await context.cms.getEntryTraverser("author");
         entryAssets = new EntryAssets({
-            traverser
+            traverser,
+            uniqueResolver: createUniqueResolver()
         });
     });
 
@@ -84,9 +86,9 @@ describe("entry assets", () => {
             }
         };
 
-        entryAssets.assignAssets(entry);
+        const result = entryAssets.assignAssets(entry);
 
-        expect(Object.keys(entryAssets.assets)).toHaveLength(6);
+        expect(result).toHaveLength(6);
 
         const expected: IAsset[] = [
             {
@@ -114,7 +116,7 @@ describe("entry assets", () => {
                 url: createImageUrl(image6)
             }
         ];
-        expect(Object.values(entryAssets.assets)).toEqual(expected);
+        expect(result).toEqual(expected);
     });
 
     it("should properly extract asset from complex path", async () => {
@@ -131,7 +133,7 @@ describe("entry assets", () => {
             }
         };
 
-        entryAssets.assignAssets(entry);
+        const result = entryAssets.assignAssets(entry);
 
         const expected: IAsset[] = [
             {
@@ -140,7 +142,7 @@ describe("entry assets", () => {
             }
         ];
 
-        expect(Object.values(entryAssets.assets)).toEqual(expected);
+        expect(result).toEqual(expected);
     });
 
     it("should properly extract asset alias from a path", async () => {
@@ -155,7 +157,7 @@ describe("entry assets", () => {
             }
         };
 
-        entryAssets.assignAssets(entry);
+        const result = entryAssets.assignAssets(entry);
 
         const expected: IAsset[] = [
             {
@@ -163,64 +165,64 @@ describe("entry assets", () => {
                 url: image
             }
         ];
-        expect(Object.values(entryAssets.assets)).toEqual(expected);
+        expect(result).toEqual(expected);
     });
 
     it("should not find any assets", async () => {
-        entryAssets.assignAssets([]);
+        const result = entryAssets.assignAssets([]);
 
-        expect(Object.keys(entryAssets.assets)).toHaveLength(0);
+        expect(result).toHaveLength(0);
 
-        entryAssets.assignAssets({
+        const emptyResult = entryAssets.assignAssets({
             values: {
                 image: "",
                 images: {}
             }
         });
 
-        expect(Object.keys(entryAssets.assets)).toHaveLength(0);
+        expect(emptyResult).toHaveLength(0);
 
-        entryAssets.assignAssets({
+        const emptyResult2 = entryAssets.assignAssets({
             values: {
                 image: " ",
                 images: [" ", null, undefined]
             }
         });
 
-        expect(Object.keys(entryAssets.assets)).toHaveLength(0);
+        expect(emptyResult2).toHaveLength(0);
 
-        entryAssets.assignAssets({
+        const emptyResult3 = entryAssets.assignAssets({
             values: {
                 image: undefined,
                 images: undefined
             }
         });
 
-        expect(Object.keys(entryAssets.assets)).toHaveLength(0);
+        expect(emptyResult3).toHaveLength(0);
 
-        entryAssets.assignAssets({
+        const emptyResult4 = entryAssets.assignAssets({
             values: {
                 image: " bla bla bla"
             }
         });
 
-        expect(Object.keys(entryAssets.assets)).toHaveLength(0);
+        expect(emptyResult4).toHaveLength(0);
 
-        entryAssets.assignAssets({
+        const emptyResult5 = entryAssets.assignAssets({
             values: {
                 image: null,
                 images: null
             }
         });
 
-        expect(Object.keys(entryAssets.assets)).toHaveLength(0);
+        expect(emptyResult5).toHaveLength(0);
 
-        entryAssets.assignAssets(undefined as any);
+        const emptyResult6 = entryAssets.assignAssets(undefined as any);
 
-        expect(Object.keys(entryAssets.assets)).toHaveLength(0);
+        expect(emptyResult6).toHaveLength(0);
 
-        entryAssets.assignAssets(null as any);
+        const emptyResult7 = entryAssets.assignAssets(null as any);
 
-        expect(Object.keys(entryAssets.assets)).toHaveLength(0);
+        expect(emptyResult7).toHaveLength(0);
     });
 });

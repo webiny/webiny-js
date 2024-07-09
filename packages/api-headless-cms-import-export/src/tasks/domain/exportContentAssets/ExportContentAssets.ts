@@ -8,9 +8,9 @@ import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { createCmsEntryFetcher, ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
 import {
     EntryAssets,
-    EntryAssetsList,
+    EntryAssetsResolver,
     IEntryAssets,
-    IEntryAssetsList
+    IEntryAssetsResolver
 } from "~/tasks/utils/entryAssets";
 import {
     CmsAssetsZipperExecuteContinueResult,
@@ -25,12 +25,13 @@ import { CmsModel } from "@webiny/api-headless-cms/types";
 import { getErrorProperties } from "@webiny/tasks/utils";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client";
+import { UniqueResolver } from "~/tasks/utils/uniqueResolver/UniqueResolver";
 
 export interface ICreateCmsAssetsZipperCallableConfig {
     filename: string;
     entryFetcher: ICmsEntryFetcher;
     createEntryAssets: () => IEntryAssets;
-    createEntryAssetsList: () => IEntryAssetsList;
+    createEntryAssetsResolver: () => IEntryAssetsResolver;
     fileFetcher: IFileFetcher;
 }
 
@@ -108,12 +109,13 @@ export class ExportContentAssets<
             entryFetcher,
             createEntryAssets: () => {
                 return new EntryAssets({
-                    traverser
+                    traverser,
+                    uniqueResolver: new UniqueResolver()
                 });
             },
-            createEntryAssetsList: () => {
-                return new EntryAssetsList({
-                    listFiles: async params => {
+            createEntryAssetsResolver: () => {
+                return new EntryAssetsResolver({
+                    fetchFiles: async params => {
                         const [items, meta] = await context.fileManager.listFiles(params);
                         return {
                             items,
@@ -130,6 +132,7 @@ export class ExportContentAssets<
             result = await zipper.execute({
                 fileAfter: input.fileAfter,
                 entryAfter: input.entryAfter,
+                exportAssets: input.exportAssets,
                 isAborted() {
                     return isAborted();
                 },

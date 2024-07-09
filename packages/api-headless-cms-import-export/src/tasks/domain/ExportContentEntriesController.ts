@@ -49,6 +49,7 @@ export class ExportContentEntriesController<
                 definition: EXPORT_CONTENT_ENTRIES_TASK,
                 input: {
                     prefix,
+                    exportAssets: input.exportAssets,
                     modelId: input.modelId,
                     limit: input.limit,
                     where: input.where,
@@ -129,6 +130,7 @@ export class ExportContentEntriesController<
                 input: {
                     prefix,
                     modelId: input.modelId,
+                    exportAssets: input.exportAssets,
                     limit: input.limit,
                     where: input.where,
                     sort: input.sort,

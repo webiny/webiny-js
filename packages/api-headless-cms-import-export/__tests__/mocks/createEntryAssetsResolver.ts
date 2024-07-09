@@ -1,8 +1,8 @@
-import { EntryAssetsList, IEntryAssetsListParams } from "~/tasks/utils/entryAssets";
+import { EntryAssetsResolver, IEntryAssetsResolverParams } from "~/tasks/utils/entryAssets";
 
-export const createEntryAssetsList = (params?: IEntryAssetsListParams) => {
-    return new EntryAssetsList({
-        listFiles: async () => {
+export const createEntryAssetsResolver = (params?: IEntryAssetsResolverParams) => {
+    return new EntryAssetsResolver({
+        fetchFiles: async () => {
             return {
                 items: [],
                 meta: {

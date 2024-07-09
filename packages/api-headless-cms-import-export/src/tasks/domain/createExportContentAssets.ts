@@ -44,7 +44,7 @@ export const createExportContentAssets = () => {
         return new CmsAssetsZipper({
             entryFetcher: config.entryFetcher,
             createEntryAssets: config.createEntryAssets,
-            createEntryAssetsList: config.createEntryAssetsList,
+            createEntryAssetsResolver: config.createEntryAssetsResolver,
             fileFetcher: config.fileFetcher,
             urlSigner,
             zipper

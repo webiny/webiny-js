@@ -13,7 +13,7 @@ import {
     ITaskResponseDoneResultOutput,
     ITaskResponseResult
 } from "~/response/abstractions";
-import { ITaskManagerStore } from "./runner/abstractions";
+import { IIsCloseToTimeoutCallable, ITaskManagerStore } from "./runner/abstractions";
 import { PutEventsCommandOutput } from "@webiny/aws-sdk/client-eventbridge";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { GenericRecord } from "@webiny/api/types";
@@ -327,7 +327,7 @@ export interface ITaskRunParams<
 > {
     context: C;
     response: ITaskResponse<I, O>;
-    isCloseToTimeout(seconds?: number): boolean;
+    isCloseToTimeout: IIsCloseToTimeoutCallable;
     isAborted(): boolean;
     input: I;
     store: ITaskManagerStore<I>;

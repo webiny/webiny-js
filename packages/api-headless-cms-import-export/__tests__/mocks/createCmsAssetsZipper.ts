@@ -13,16 +13,16 @@ import { Upload } from "~/tasks/utils/upload";
 import { Zipper } from "~/tasks/utils/zipper";
 import { Archiver } from "~/tasks/utils/archiver";
 import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
-import { IEntryAssets, IEntryAssetsList } from "~/tasks/utils/entryAssets";
+import { IEntryAssets, IEntryAssetsResolver } from "~/tasks/utils/entryAssets";
 import { IFileFetcher } from "~/tasks/utils/fileFetcher";
 import { createFileFetcher } from "~tests/mocks/createFileFetcher";
-import { createEntryAssetsList } from "~tests/mocks/createEntryAssetsList";
+import { createEntryAssetsResolver } from "~tests/mocks/createEntryAssetsResolver";
 import { createUrlSigner } from "~tests/mocks/createUrlSigner";
 
 interface ICreateCmsAssetsZipperParams {
     entryFetcher?: ICmsEntryFetcher;
     createEntryAssets: () => IEntryAssets;
-    createEntryAssetsList?: () => IEntryAssetsList;
+    createEntryAssetsResolver?: () => IEntryAssetsResolver;
     fileFetcher?: IFileFetcher;
     region?: string;
     filename?: string;
@@ -88,8 +88,8 @@ export const createCmsAssetsZipper = (params: ICreateCmsAssetsZipperParams) => {
                 }
             };
         },
-        createEntryAssetsList: () => {
-            return createEntryAssetsList();
+        createEntryAssetsResolver: () => {
+            return createEntryAssetsResolver();
         },
         zipper,
         urlSigner,

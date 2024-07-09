@@ -13,6 +13,8 @@ import { FileFetcher } from "~/tasks/utils/fileFetcher";
 import { createUploadFactory } from "~/tasks/utils/upload";
 import { Archiver } from "~/tasks/utils/archiver";
 import { Zipper } from "~/tasks/utils/zipper";
+import { EntryAssets } from "../utils/entryAssets";
+import { UniqueResolver } from "~/tasks/utils/uniqueResolver/UniqueResolver";
 
 export const createExportContentEntries = () => {
     const client = createS3Client();
@@ -48,7 +50,12 @@ export const createExportContentEntries = () => {
         return new CmsEntryZipper({
             fetcher: config.fetcher,
             urlSigner,
-            zipper
+            zipper,
+            entryAssets: new EntryAssets({
+                uniqueResolver: new UniqueResolver(),
+                traverser: config.traverser
+            }),
+            uniqueAssetsResolver: new UniqueResolver()
         });
     };
 

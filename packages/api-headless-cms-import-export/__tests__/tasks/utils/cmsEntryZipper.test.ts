@@ -4,6 +4,8 @@ import { fetchItems, images } from "./mocks/cmsEntryZipperItems";
 import { createModelPlugin } from "~tests/mocks/model";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { createCmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
+import { createUniqueResolver } from "~tests/mocks/createUniqueResolver";
+import { createEntryAssets } from "~tests/mocks/createEntryAssets";
 
 describe("cms entry zipper", () => {
     const model = createModelPlugin().contentModel as CmsModel;
@@ -21,21 +23,24 @@ describe("cms entry zipper", () => {
                         hasMoreItems: false
                     }
                 };
-            }
+            },
+            uniqueAssetsResolver: createUniqueResolver(),
+            entryAssets: createEntryAssets()
         });
 
         expect(cmsEntryZipper.execute).toBeFunction();
 
         try {
             const result = await cmsEntryZipper.execute({
-                isCloseToTimeout(): boolean {
+                isCloseToTimeout() {
                     return false;
                 },
-                isAborted(): boolean {
+                isAborted() {
                     return false;
                 },
                 model,
-                after: undefined
+                after: undefined,
+                exportedAssets: false
             });
 
             expect(result).toEqual("should not happen");
@@ -48,18 +53,21 @@ describe("cms entry zipper", () => {
         const { cmsEntryZipper, getBuffer } = createCmsEntryZipper({
             fetcher: createCmsEntryFetcher(async after => {
                 return fetchItems(after);
-            })
+            }),
+            uniqueAssetsResolver: createUniqueResolver(),
+            entryAssets: createEntryAssets()
         });
 
         await cmsEntryZipper.execute({
-            isCloseToTimeout(): boolean {
+            isCloseToTimeout() {
                 return false;
             },
-            isAborted(): boolean {
+            isAborted() {
                 return false;
             },
             model,
-            after: undefined
+            after: undefined,
+            exportedAssets: false
         });
 
         const buffer = getBuffer();
@@ -212,7 +220,9 @@ describe("cms entry zipper", () => {
                     after: "6"
                 }
             ],
-            modelId: model.modelId
+            exportedAssets: false,
+            assets: [],
+            model: model.modelId
         });
     });
 });

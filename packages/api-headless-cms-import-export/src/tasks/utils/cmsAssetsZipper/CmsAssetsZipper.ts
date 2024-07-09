@@ -1,6 +1,6 @@
 import { IZipper, IZipperDoneResult } from "~/tasks/utils/zipper";
 import { IUrlSigner } from "~/tasks/utils/urlSigner";
-import { IEntryAssets, IEntryAssetsList, IResolvedAsset } from "~/tasks/utils/entryAssets";
+import { IEntryAssets, IEntryAssetsResolver, IResolvedAsset } from "~/tasks/utils/entryAssets";
 import { ICmsEntryFetcher } from "../cmsEntryFetcher";
 import {
     ICmsAssetsZipper,
@@ -13,6 +13,8 @@ import { IFileFetcher } from "../fileFetcher";
 import { CmsAssetsZipperExecuteContinueWithoutResult } from "./CmsAssetsZipperExecuteContinueWithoutResult";
 import { CmsAssetsZipperExecuteDoneWithoutResult } from "./CmsAssetsZipperExecuteDoneWithoutResult";
 import { PointerStore } from "~/tasks/utils/cmsAssetsZipper/PointerStore";
+import { UniqueResolver } from "../uniqueResolver/UniqueResolver";
+import { CmsEntryMeta } from "@webiny/api-headless-cms/types";
 
 const manifestFileName = "manifest.json";
 
@@ -21,7 +23,7 @@ export interface ICmsAssetsZipperConfig {
     urlSigner: IUrlSigner;
     entryFetcher: ICmsEntryFetcher;
     createEntryAssets: () => IEntryAssets;
-    createEntryAssetsList: () => IEntryAssetsList;
+    createEntryAssetsResolver: () => IEntryAssetsResolver;
     fileFetcher: IFileFetcher;
 }
 
@@ -30,7 +32,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
     private readonly urlSigner: IUrlSigner;
     private readonly entryFetcher: ICmsEntryFetcher;
     private readonly createEntryAssets: () => IEntryAssets;
-    private readonly createEntryAssetsList: () => IEntryAssetsList;
+    private readonly createEntryAssetsResolver: () => IEntryAssetsResolver;
     private readonly fileFetcher: IFileFetcher;
 
     public constructor(params: ICmsAssetsZipperConfig) {
@@ -38,7 +40,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
         this.urlSigner = params.urlSigner;
         this.entryFetcher = params.entryFetcher;
         this.createEntryAssets = params.createEntryAssets;
-        this.createEntryAssetsList = params.createEntryAssetsList;
+        this.createEntryAssetsResolver = params.createEntryAssetsResolver;
         this.fileFetcher = params.fileFetcher;
     }
 
@@ -46,11 +48,16 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
         params: ICmsAssetsZipperExecuteParams
     ): Promise<ICmsAssetsZipperExecuteResult> {
         const {
-            isCloseToTimeout,
+            isCloseToTimeout: baseIsCloseToTimeout,
             isAborted,
             entryAfter: inputEntryAfter,
-            fileAfter: inputFileAfter
+            fileAfter: inputFileAfter,
+            exportAssets
         } = params;
+
+        const isCloseToTimeout = () => {
+            return baseIsCloseToTimeout(14 * 60);
+        };
 
         const pointerStore = new PointerStore({
             entryMeta: {
@@ -58,43 +65,46 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
             },
             fileCursor: inputFileAfter
         });
-
         const entryAssets = this.createEntryAssets();
-        const entryAssetsList = this.createEntryAssetsList();
-
-        const loadedAssets: IResolvedAsset[] = [];
-
+        const entryAssetsResolver = this.createEntryAssetsResolver();
+        const uniqueLoadedAssetsResolver = new UniqueResolver<IResolvedAsset>();
+        const allLoadedAssets: IResolvedAsset[] = [];
         const assets: IResolvedAsset[] = [];
-
+        let nextMeta: CmsEntryMeta | undefined;
         /**
          * Note that this method should NEVER be awaited as it will be called recursively.
          * It handles if the upload will be finalized or aborted.
          */
         const fetchItems = async (): Promise<void> => {
+            const hasMoreItems = pointerStore.getEntryHasMoreItems();
+            const isStoredFiles = pointerStore.getIsStoredFiles();
+            pointerStore.setEntryMeta(nextMeta);
             if (isAborted()) {
                 pointerStore.setTaskIsAborted();
                 this.zipper.abort();
                 return;
             }
             const closeToTimeout = isCloseToTimeout();
-            if (pointerStore.getIsStoredFiles()) {
+            if (isStoredFiles) {
                 await this.zipper.finalize();
                 return;
-            } else if (!pointerStore.getEntryHasMoreItems() || closeToTimeout) {
-                if (loadedAssets.length === 0) {
+            } else if (!hasMoreItems || closeToTimeout) {
+                if (allLoadedAssets.length === 0) {
                     this.zipper.abort();
                     return;
                 }
                 await this.zipper.add(
                     Buffer.from(
                         JSON.stringify({
-                            assets: loadedAssets
+                            assets: allLoadedAssets,
+                            exportAssets
                         })
                     ),
                     {
                         name: manifestFileName
                     }
                 );
+
                 pointerStore.setIsStoredFiles();
                 return;
             }
@@ -108,7 +118,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
                 this.zipper.abort();
                 return;
             }
-            pointerStore.setEntryMeta(meta);
+            nextMeta = meta;
 
             /**
              * Next we want to find all the assets, which were not already assigned.
@@ -127,24 +137,42 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
              *
              * Possibly no assets found? Then just continue with the next batch of entries.
              */
-            let loadedAssetList = await entryAssetsList.resolve(assigned);
-            const fileCursor = pointerStore.getFileCursor();
+            let loadedAssetList = await entryAssetsResolver.resolve(assigned);
+            const currentFileCursor = pointerStore.getFileCursor();
             pointerStore.resetFileCursor();
             if (loadedAssetList.length === 0) {
                 fetchItems();
                 return;
-            } else if (fileCursor) {
-                const index = loadedAssetList.findIndex(asset => asset.key === fileCursor);
-                if (index > -1) {
-                    loadedAssetList = loadedAssetList.slice(index + 1);
+            } else if (currentFileCursor) {
+                const index = loadedAssetList.findIndex(asset => asset.id === currentFileCursor);
+                if (index === -1) {
+                    fetchItems();
+                    return;
                 }
+                loadedAssetList = loadedAssetList.slice(index);
+            }
+
+            const uniqueAssetsList = uniqueLoadedAssetsResolver.resolve(loadedAssetList, "id");
+            if (uniqueAssetsList.length === 0) {
+                fetchItems();
+                return;
             }
             /**
              * If we have some new assets, we will push them into the assets array, which will be used in addAsset() function.
              *
              */
-            assets.push(...loadedAssetList);
-            loadedAssets.push(...loadedAssetList);
+            assets.push(...uniqueAssetsList);
+            allLoadedAssets.push(...uniqueAssetsList);
+            /**
+             * If we are NOT exporting assets, we will only store the information about them in a zip file.
+             */
+            if (!exportAssets) {
+                fetchItems();
+                return;
+            }
+            /**
+             * We proceed with adding the assets into the zip file.
+             */
             addAsset();
         };
         /**
@@ -162,7 +190,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
             const asset = assets.shift();
 
             if (!asset || isCloseToTimeout() || isAborted()) {
-                pointerStore.setFileCursor(asset?.key);
+                pointerStore.setFileCursor(asset?.id);
                 fetchItems();
                 return;
             }
@@ -214,6 +242,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
         try {
             result = await this.zipper.done();
         } catch (ex) {
+            console.error(ex);
             /**
              * Possibly an error which is not an abort error?
              * Abort error is thrown on .abort() method call.
@@ -225,7 +254,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
              * There was a possibility that no assets were found, but we need to continue through the next batch of entries.
              * This happens on close to timeout.
              */
-            if (loadedAssets.length === 0 && pointerStore.getEntryCursor()) {
+            if (allLoadedAssets.length === 0 && pointerStore.getEntryCursor()) {
                 return new CmsAssetsZipperExecuteContinueWithoutResult({
                     entryCursor: pointerStore.getEntryCursor(),
                     fileCursor: pointerStore.getFileCursor()
@@ -245,7 +274,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
             key: result.Key
         });
 
-        if (pointerStore.getEntryCursor()) {
+        if (pointerStore.getEntryCursor() || pointerStore.getFileCursor()) {
             return new CmsAssetsZipperExecuteContinueResult({
                 ...signed,
                 entryCursor: pointerStore.getEntryCursor(),

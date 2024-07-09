@@ -10,7 +10,7 @@ export interface IPointerStoreParams {
 export class PointerStore {
     private isTaskAborted = false;
     private isStoredFiles = false;
-    private entryMeta: CmsEntryMeta;
+    private entryMeta?: CmsEntryMeta;
     private fileCursor?: string;
 
     public constructor(params: IPointerStoreParams) {
@@ -22,7 +22,7 @@ export class PointerStore {
         this.fileCursor = params.fileCursor;
     }
 
-    public setEntryMeta(meta: CmsEntryMeta): void {
+    public setEntryMeta(meta?: CmsEntryMeta): void {
         this.entryMeta = meta;
     }
 
@@ -31,11 +31,11 @@ export class PointerStore {
     }
 
     public getEntryHasMoreItems(): boolean {
-        return this.entryMeta.hasMoreItems;
+        return !!this.entryMeta?.hasMoreItems;
     }
 
     public getEntryCursor(): string | undefined {
-        if (!this.entryMeta.cursor || !this.entryMeta.hasMoreItems) {
+        if (!this.entryMeta?.cursor || !this.entryMeta.hasMoreItems) {
             return undefined;
         }
         return this.entryMeta.cursor;

@@ -14,6 +14,8 @@ import { Zipper } from "~/tasks/utils/zipper";
 import { Archiver } from "~/tasks/utils/archiver";
 import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
 import { createUrlSigner } from "~tests/mocks/createUrlSigner";
+import { IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
+import { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
 
 interface ICreateCmsEntryZipperParams {
     fetcher: ICmsEntryFetcher;
@@ -21,6 +23,8 @@ interface ICreateCmsEntryZipperParams {
     filename?: string;
     stream?: PassThrough;
     bucket?: string;
+    entryAssets: IEntryAssets;
+    uniqueAssetsResolver: IUniqueResolver<IAsset>;
 }
 
 export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
@@ -72,7 +76,9 @@ export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
     const cmsEntryZipper = new CmsEntryZipper({
         zipper,
         urlSigner,
-        fetcher: params.fetcher
+        fetcher: params.fetcher,
+        entryAssets: params.entryAssets,
+        uniqueAssetsResolver: params.uniqueAssetsResolver
     });
 
     return {

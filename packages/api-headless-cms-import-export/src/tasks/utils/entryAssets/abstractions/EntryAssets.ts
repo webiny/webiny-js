@@ -21,10 +21,6 @@ export type IAssignAssetsInput = Pick<CmsEntry, "values"> | Pick<CmsEntry, "valu
 
 export interface IEntryAssets {
     /**
-     * List of all assets that were found in all the assignAssets() method calls.
-     */
-    readonly assets: IAssets;
-    /**
      * The output of this method is a list of assets that were found in the given input.
      * If there were any duplicates, they will not be included in the output.
      */
