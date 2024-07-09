@@ -21,15 +21,11 @@ class PackagesWatcher extends BasePackagesWatcher {
         }
 
         if (packagesCount === 1) {
-            const {
-                SinglePackageWatcher
-            } = require("./SinglePackageWatcher");
+            const { SinglePackageWatcher } = require("./SinglePackageWatcher");
             return SinglePackageWatcher;
         }
 
-        const {
-            MultiplePackagesWatcher
-        } = require("./MultiplePackagesWatcher");
+        const { MultiplePackagesWatcher } = require("./MultiplePackagesWatcher");
         return MultiplePackagesWatcher;
     }
 }
