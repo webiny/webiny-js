@@ -1,10 +1,10 @@
-const path = require("path");
 const { Worker } = require("worker_threads");
-const { BasePackagesWatcher } = require("../BasePackagesWatcher");
+const path = require("path");
 const chalk = require("chalk");
-const { getRandomColorForString } = require("../../../../utils");
+const { BasePackagesWatcher } = require("./BasePackagesWatcher");
+const { getRandomColorForString } = require("../../../utils");
 
-class NoDeploymentsMultiplePackagesWatcher extends BasePackagesWatcher {
+class MultiplePackagesWatcher extends BasePackagesWatcher {
     async watch() {
         const packages = this.packages;
         const context = this.context;
@@ -115,4 +115,4 @@ const parseMessage = message => {
     }
 };
 
-module.exports = { NoDeploymentsMultiplePackagesWatcher };
+module.exports = { MultiplePackagesWatcher };
