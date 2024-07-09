@@ -12,7 +12,9 @@ export type ExtensionWorkspace = {
 };
 
 export const getExtensionsFromFilesystem = (): ExtensionWorkspace[] => {
-    const workspaces = glob.sync(`extensions/**/package.json`);
+    const workspaces = glob.sync(`extensions/**/package.json`, {
+        ignore: ["**/node_modules/**"]
+    });
     return workspaces
         .map(pkg => ({
             path: path.dirname(pkg),

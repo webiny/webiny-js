@@ -8,13 +8,13 @@
 import * as React from "react";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 
-import type { GridSelection, LexicalEditor, NodeKey, NodeSelection, RangeSelection } from "lexical";
+import type { LexicalEditor, NodeKey, BaseSelection } from "lexical";
 
 import "./ImageComponent.css";
 
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { LexicalNestedComposer } from "@lexical/react/LexicalNestedComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
@@ -124,9 +124,7 @@ export default function ImageComponent({
     const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(nodeKey);
     const [isResizing, setIsResizing] = useState<boolean>(false);
     const [editor] = useLexicalComposerContext();
-    const [selection, setSelection] = useState<
-        RangeSelection | NodeSelection | GridSelection | null
-    >(null);
+    const [selection, setSelection] = useState<BaseSelection | null>(null);
     const activeEditorRef = useRef<LexicalEditor | null>(null);
 
     const onDelete = useCallback(

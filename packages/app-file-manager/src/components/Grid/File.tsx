@@ -74,13 +74,13 @@ export const FileThumbnail = ({ file, selected, onSelect, children }: FileProps)
                 </LazyLoad>
             </FileBody>
             <FileLabel data-testid={"fm-file-wrapper-file-label"}>
-                <Typography className="type" use={"overline"}>
+                <Typography className="type" use={"overline"} tag={"span"}>
                     {file.type}
                 </Typography>
-                <Typography className="name" use={"body2"}>
+                <Typography className="name" use={"body2"} tag={"span"}>
                     {file.name}
                 </Typography>
-                <Typography className="createdOn" use={"caption"}>
+                <Typography className="createdOn" use={"caption"} tag={"span"}>
                     <TimeAgo datetime={file.createdOn} />
                 </Typography>
             </FileLabel>

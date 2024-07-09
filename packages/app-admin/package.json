@@ -51,6 +51,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hotkeyz": "^1.0.4",
+    "react-resizable-panels": "^2.0.19",
     "react-transition-group": "^4.3.0",
     "reset-css": "^5.0.1",
     "store": "^2.0.12"

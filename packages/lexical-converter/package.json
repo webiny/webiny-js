@@ -2,10 +2,10 @@
   "name": "@webiny/lexical-converter",
   "version": "0.0.0",
   "dependencies": {
-    "@lexical/headless": "^0.12.2",
-    "@lexical/html": "^0.12.2",
+    "@lexical/headless": "^0.16.0",
+    "@lexical/html": "^0.16.0",
     "@webiny/lexical-nodes": "0.0.0",
-    "lexical": "0.12.2"
+    "lexical": "^0.16.0"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.6",

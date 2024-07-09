@@ -38,7 +38,7 @@ export class ListNode extends ElementNode {
     /** @internal */
     __listType: ListType;
 
-    __themeStyleId: string;
+    private __themeStyleId: string;
 
     constructor(listType: ListType, themeStyleId?: string, start?: number, key?: NodeKey) {
         super(key);
@@ -51,10 +51,6 @@ export class ListNode extends ElementNode {
 
     static override getType() {
         return "webiny-list";
-    }
-
-    isStyleExistInTheme(theme: WebinyTheme): boolean {
-        return theme?.emotionMap ? !!theme?.emotionMap[this.__themeStyleId] : false;
     }
 
     override createDOM(config: EditorConfig): HTMLElement {
@@ -83,18 +79,6 @@ export class ListNode extends ElementNode {
         return new ListNode(node.getListType(), node.getStyleId(), node.getStart(), node.__key);
     }
 
-    getTag(): ListNodeTagType {
-        return this.__tag;
-    }
-
-    getListType(): ListType {
-        return this.__listType;
-    }
-
-    getStart(): number {
-        return this.__start;
-    }
-
     getStyleId(): string {
         return this.__themeStyleId;
     }
@@ -114,7 +98,7 @@ export class ListNode extends ElementNode {
     override exportJSON(): SerializedWebinyListNode {
         return {
             ...super.exportJSON(),
-            themeStyleId: this.__themeStyleId ?? "",
+            themeStyleId: this.getStyleId(),
             listType: this.getListType(),
             start: this.getStart(),
             tag: this.getTag(),
@@ -130,7 +114,7 @@ export class ListNode extends ElementNode {
         };
     }
 
-    static importDOM(): DOMConversionMap | null {
+    static override importDOM(): DOMConversionMap | null {
         return {
             ol: () => {
                 return this.importDomConversionMap();
@@ -139,30 +123,6 @@ export class ListNode extends ElementNode {
                 return this.importDomConversionMap();
             }
         };
-    }
-
-    /*
-     * Set default styleId from first style that is found in the theme that contains current ul or ol tag
-     */
-    setDefaultThemeListStyleByTag(tag: string, theme: WebinyTheme) {
-        if (!tag) {
-            return;
-        }
-
-        const themeEmotionMap = theme?.emotionMap;
-        if (!themeEmotionMap) {
-            return;
-        }
-
-        const style = findTypographyStyleByHtmlTag(tag, themeEmotionMap);
-
-        if (style) {
-            this.__themeStyleId = style.id;
-        }
-    }
-
-    hasThemeStyle(): boolean {
-        return !!this.__themeStyleId;
     }
 
     override updateDOM(prevNode: ListNode, dom: HTMLElement, config: EditorConfig): boolean {
@@ -184,6 +144,46 @@ export class ListNode extends ElementNode {
 
     override extractWithChild(child: LexicalNode): boolean {
         return $isListItemNode(child);
+    }
+
+    public getListType(): ListType {
+        return this.__listType;
+    }
+
+    public getStart(): number {
+        return this.__start;
+    }
+
+    /*
+     * Set default styleId from first style that is found in the theme that contains current ul or ol tag
+     */
+    private setDefaultThemeListStyleByTag(tag: string, theme: WebinyTheme) {
+        if (!tag) {
+            return;
+        }
+
+        const themeEmotionMap = theme?.emotionMap;
+        if (!themeEmotionMap) {
+            return;
+        }
+
+        const style = findTypographyStyleByHtmlTag(tag, themeEmotionMap);
+
+        if (style) {
+            this.__themeStyleId = style.id;
+        }
+    }
+
+    private hasThemeStyle(): boolean {
+        return !!this.__themeStyleId;
+    }
+
+    private getTag(): ListNodeTagType {
+        return this.__tag;
+    }
+
+    private isStyleExistInTheme(theme: WebinyTheme): boolean {
+        return theme?.emotionMap ? !!theme?.emotionMap[this.__themeStyleId] : false;
     }
 }
 

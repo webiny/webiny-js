@@ -120,7 +120,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
      * DOM data comes from clipboard or parsing HTML to nodes with the available lexical functions.
      * (@see @lexical/html package: https://github.com/facebook/lexical/blob/main/packages/lexical-html/README.md).
      */
-    static importDOM(): DOMConversionMap | null {
+    static override importDOM(): DOMConversionMap | null {
         /**
          * By returning 'null' value, we are preventing image node to be created.
          * Example of how to implement and create the node:

@@ -3,12 +3,10 @@ import { mergeRegister } from "@lexical/utils";
 import {
     $getSelection,
     $isRangeSelection,
+    BaseSelection,
     BLUR_COMMAND,
     COMMAND_PRIORITY_LOW,
-    GridSelection,
     LexicalEditor,
-    NodeSelection,
-    RangeSelection,
     SELECTION_CHANGE_COMMAND
 } from "lexical";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@webiny/lexical-nodes";
@@ -42,9 +40,7 @@ export function FloatingLinkEditor({ editor, isVisible, anchorElem }: FloatingLi
     });
 
     const [isEditMode, setEditMode] = useState(false);
-    const [lastSelection, setLastSelection] = useState<
-        RangeSelection | GridSelection | NodeSelection | null
-    >(null);
+    const [lastSelection, setLastSelection] = useState<BaseSelection | null>(null);
 
     const updateLinkEditor = useCallback(() => {
         const selection = $getSelection();
