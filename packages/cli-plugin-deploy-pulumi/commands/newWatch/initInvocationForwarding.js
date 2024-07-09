@@ -6,7 +6,7 @@ const WEBINY_WATCH_FN_INVOCATION_RESULT_EVENT = "webiny.watch.functionInvocation
 
 const WATCH_WORKER_PATH = path.join(__dirname, "localInvocationWorker.js");
 
-const initEventsHandling = async ({
+const initInvocationForwarding = async ({
     iotEndpoint,
     iotEndpointTopic,
     sessionId,
@@ -47,7 +47,6 @@ const initEventsHandling = async ({
                         }
                     }
                 });
-
 
                 const unsubscribeExitHook = exitHook(async () => {
                     await worker.terminate();
@@ -100,4 +99,4 @@ const initEventsHandling = async ({
     return client;
 };
 
-module.exports = { initEventsHandling };
+module.exports = { initInvocationForwarding };

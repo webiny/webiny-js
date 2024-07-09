@@ -8,7 +8,7 @@ const { getIotEndpoint } = require("./newWatch/getIotEndpoint");
 const { listLambdaFunctions } = require("./newWatch/listLambdaFunctions");
 const listPackages = require("./newWatch/listPackages");
 const { PackagesWatcher } = require("./newWatch/watchers/PackagesWatcher");
-const { initEventsHandling } = require("./newWatch/initEventsHandling");
+const { initInvocationForwarding } = require("./newWatch/initInvocationForwarding");
 const { replaceLambdaFunctions } = require("./newWatch/replaceLambdaFunctions");
 
 // Do not allow watching "prod" and "production" environments. On the Pulumi CLI side, the command
@@ -176,7 +176,7 @@ module.exports = async (inputs, context) => {
     }
 
     // Ignore promise, we don't need to wait for this to finish.
-    initEventsHandling({
+    initInvocationForwarding({
         iotEndpoint,
         iotEndpointTopic,
         lambdaFunctions,
