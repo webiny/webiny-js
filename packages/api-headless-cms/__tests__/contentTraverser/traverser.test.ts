@@ -24,10 +24,10 @@ describe("Content Traverser", () => {
 
         const skipFieldTypes = ["object", "dynamicZone"];
 
-        traverser.traverse(pageEntry.values, ({ field, value, path }) => {
+        await traverser.traverse(pageEntry.values, ({ field, value, path }) => {
             /**
              * Most of the time you won't care about complex fields like "object" and "dynamicZone", but only their child fields.
-             * The traverser will still go into the child fields, but this way you can
+             * The traverser will still go into the child fields, but this way you can control which fields you want to process.
              */
             if (skipFieldTypes.includes(field.type)) {
                 return;
