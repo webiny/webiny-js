@@ -44,9 +44,9 @@ const createMaxSizeOutput = <O extends ITaskResponseDoneResultOutput>({
  * Figure out the size of the output object and remove the stack trace if the size exceeds the maximum allowed size.
  * If the size is still greater than the maximum allowed size, just return the message that the output size exceeds the maximum allowed size.
  */
-const getOutput = <O extends ITaskResponseDoneResultOutput>(output?: O): O => {
-    if (!output) {
-        return {} as O;
+const getOutput = <O extends ITaskResponseDoneResultOutput>(output?: O): O | undefined => {
+    if (!output || Object.keys(output).length === 0) {
+        return undefined;
     }
     let size = sizeOfObject(output);
     if (size > MAX_SIZE_BYTES) {

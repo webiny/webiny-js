@@ -94,7 +94,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
                             files,
                             assets,
                             exportedAssets: exportAssets || false,
-                            model: model.modelId
+                            model
                         })
                     ),
                     {
