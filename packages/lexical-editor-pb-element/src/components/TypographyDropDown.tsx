@@ -43,38 +43,33 @@ export const TypographyDropDown = () => {
             return;
         }
 
-        switch (true) {
-            case $isHeadingNode(element):
-                const headingsStyles = theme?.styles.typography?.headings || [];
-                setStyles(headingsStyles);
-                break;
-            case $isParagraphNode(element):
-                const paragraphStyles = theme?.styles.typography?.paragraphs || [];
-                setStyles(paragraphStyles);
-                break;
-            case $isListNode(element):
-                let type;
-                try {
-                    const anchorNode = rangeSelection.anchor.getNode();
-                    const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
-                    if (parentList) {
-                        type = parentList.getListType();
-                    }
-                } catch {
-                    type = element.getListType();
+        if ($isHeadingNode(element)) {
+            const headingsStyles = theme?.styles.typography?.headings || [];
+            setStyles(headingsStyles);
+        } else if ($isParagraphNode(element)) {
+            const paragraphStyles = theme?.styles.typography?.paragraphs || [];
+            setStyles(paragraphStyles);
+        } else if ($isListNode(element)) {
+            let type;
+            try {
+                const anchorNode = rangeSelection.anchor.getNode();
+                const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
+                if (parentList) {
+                    type = parentList.getListType();
                 }
+            } catch {
+                type = element.getListType();
+            }
 
-                if (type === "bullet") {
-                    setStyles(getListStyles("ul"));
-                } else {
-                    setStyles(getListStyles("ol"));
-                }
-                break;
-            case $isQuoteNode(element):
-                setStyles(theme?.styles.typography?.quotes || []);
-                break;
-            default:
-                setStyles([]);
+            if (type === "bullet") {
+                setStyles(getListStyles("ul"));
+            } else {
+                setStyles(getListStyles("ol"));
+            }
+        } else if ($isQuoteNode(element)) {
+            setStyles(theme?.styles.typography?.quotes || []);
+        } else {
+            setStyles([]);
         }
     }, [element]);
 

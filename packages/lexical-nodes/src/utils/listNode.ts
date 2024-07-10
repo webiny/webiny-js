@@ -1,4 +1,4 @@
-import type { LexicalNode } from "lexical";
+import type { LexicalNode, Spread } from "lexical";
 
 import { $isListNode, ListNode } from "~/ListNode";
 import { $createListItemNode, $isListItemNode, ListItemNode } from "~/ListItemNode";
@@ -64,8 +64,17 @@ export function $getAllListItems(node: ListNode): Array<ListItemNode> {
     return listItemNodes;
 }
 
-export function isNestedListNode(node: LexicalNode | null | undefined): boolean {
-    return $isListItemNode(node) && $isListNode(node?.getFirstChild());
+const NestedListNodeBrand: unique symbol = Symbol.for("@lexical/NestedListNodeBrand");
+
+/**
+ * Checks to see if the passed node is a ListItemNode and has a ListNode as a child.
+ * @param node - The node to be checked.
+ * @returns true if the node is a ListItemNode and has a ListNode child, false otherwise.
+ */
+export function isNestedListNode(
+    node: LexicalNode | null | undefined
+): node is Spread<{ getFirstChild(): ListNode; [NestedListNodeBrand]: never }, ListItemNode> {
+    return $isListItemNode(node) && $isListNode(node.getFirstChild());
 }
 
 // TODO: rewrite with $findMatchingParent or *nodeOfType

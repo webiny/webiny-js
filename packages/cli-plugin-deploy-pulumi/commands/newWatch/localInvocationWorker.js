@@ -8,15 +8,16 @@ const { parentPort, workerData } = require("worker_threads");
 
         parentPort.postMessage(JSON.stringify({ success: true, result, error: null }));
     } catch (error) {
+        const { message, code, data, stack } = error;
+
         parentPort.postMessage(
             JSON.stringify({
                 success: false,
                 result: null,
-                error: {
-                    message: error.message,
-                    stack: error.stack
-                }
+                error: { message, code, data, stack }
             })
         );
+    } finally {
+        process.exit(0);
     }
 })();

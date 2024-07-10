@@ -1,12 +1,20 @@
-const updateLambdaFunctionsEnvVars = async ({
+const fs = require("fs");
+const pRetry = require("p-retry");
+
+const WATCH_MODE_NOTE_IN_DESCRIPTION = " (watch mode 💡)";
+const DEFAULT_INCREASE_TIMEOUT = 120;
+
+const replaceLambdaFunctions = async ({
     iotEndpoint,
     iotEndpointTopic,
     sessionId,
-    lambdaFunctions
+    lambdaFunctions,
+    increaseTimeout
 }) => {
     const {
-        LambdaClient,
         GetFunctionConfigurationCommand,
+        LambdaClient,
+        UpdateFunctionCodeCommand,
         UpdateFunctionConfigurationCommand
     } = require("@webiny/aws-sdk/client-lambda");
 
@@ -16,9 +24,24 @@ const updateLambdaFunctionsEnvVars = async ({
         const getFnConfigCmd = new GetFunctionConfigurationCommand({ FunctionName: fn.name });
         const lambdaFnConfiguration = await lambdaClient.send(getFnConfigCmd);
 
+        const updateFnCodeCmd = new UpdateFunctionCodeCommand({
+            FunctionName: fn.name,
+            ZipFile: fs.readFileSync(__dirname + "/handler/handler.zip")
+        });
+
+        await lambdaClient.send(updateFnCodeCmd);
+
+        let Description = lambdaFnConfiguration.Description;
+        if (!Description.endsWith(WATCH_MODE_NOTE_IN_DESCRIPTION)) {
+            Description += WATCH_MODE_NOTE_IN_DESCRIPTION;
+        }
+
+        const Timeout = increaseTimeout || DEFAULT_INCREASE_TIMEOUT;
+
         const updateFnConfigCmd = new UpdateFunctionConfigurationCommand({
             FunctionName: fn.name,
-            Timeout: 120, // 2 minutes
+            Timeout,
+            Description,
             Environment: {
                 Variables: {
                     ...lambdaFnConfiguration.Environment.Variables,
@@ -33,8 +56,8 @@ const updateLambdaFunctionsEnvVars = async ({
             }
         });
 
-        await lambdaClient.send(updateFnConfigCmd);
+        await pRetry(() => lambdaClient.send(updateFnConfigCmd));
     });
 };
 
-module.exports = { updateLambdaFunctionsEnvVars };
+module.exports = { replaceLambdaFunctions };

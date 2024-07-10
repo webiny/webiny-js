@@ -1,6 +1,6 @@
-const { BasePackagesWatcher } = require("./../BasePackagesWatcher");
+const { BasePackagesWatcher } = require("./BasePackagesWatcher");
 
-class NoDeploymentsSinglePackageWatcher extends BasePackagesWatcher {
+class SinglePackageWatcher extends BasePackagesWatcher {
     async watch() {
         const pkg = this.packages[0];
         const context = this.context;
@@ -31,4 +31,4 @@ class NoDeploymentsSinglePackageWatcher extends BasePackagesWatcher {
     }
 }
 
-module.exports = { NoDeploymentsSinglePackageWatcher };
+module.exports = { SinglePackageWatcher };

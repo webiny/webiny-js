@@ -182,6 +182,11 @@ module.exports = [
                             describe: `Turn on debug logs`,
                             type: "boolean"
                         });
+                        yargs.option("increase-timeout", {
+                            default: 120,
+                            describe: `Increase AWS Lambda function timeout (passed as number of seconds, used with local AWS Lambda development)`,
+                            type: "number"
+                        });
                         yargs.option("allow-production", {
                             default: false,
                             describe: `Enables running the watch command with "prod" and "production" environments (not recommended).`,

@@ -14,11 +14,19 @@ class PackagesWatcher extends BasePackagesWatcher {
     }
 
     getWatcherClass() {
-        const {
-            NoDeploymentsPackagesWatcher
-        } = require("./NoDeploymentsPackagesWatcher/NoDeploymentsPackagesWatcher");
+        const packagesCount = this.packages.length;
+        if (packagesCount === 0) {
+            const { ZeroPackagesWatcher } = require("./ZeroPackagesWatcher");
+            return ZeroPackagesWatcher;
+        }
 
-        return NoDeploymentsPackagesWatcher;
+        if (packagesCount === 1) {
+            const { SinglePackageWatcher } = require("./SinglePackageWatcher");
+            return SinglePackageWatcher;
+        }
+
+        const { MultiplePackagesWatcher } = require("./MultiplePackagesWatcher");
+        return MultiplePackagesWatcher;
     }
 }
 
