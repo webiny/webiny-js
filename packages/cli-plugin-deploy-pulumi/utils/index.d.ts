@@ -13,9 +13,17 @@ export function getStackOutput<TStackOutput = Record<string, any>>(options: {
     cwd?: string;
 }): TStackOutput;
 
+export function getStackExport<TStackOutput = Record<string, any>>(options: {
+    folder: string;
+    env: string;
+    cwd?: string;
+}): TStackOutput;
+
+export function getDeploymentId(params: { env: string }): string;
+
 interface GetPulumiParams {
     projectApplication?: Record<string, unknown>;
-    pulumi?: Options
+    pulumi?: Options;
     install?: boolean;
 }
 
