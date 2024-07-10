@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin";
 import { GenericFormData, useBind } from "@webiny/form";
 import { Cell, Grid } from "@webiny/ui/Grid";
+import { generateId } from "@webiny/utils";
 
 import { UsersTeamsMultiAutocomplete } from "./DialogSetPermissions/UsersTeamsMultiAutocomplete";
 import { UsersTeamsSelection } from "./DialogSetPermissions/UsersTeamsSelection";
@@ -10,7 +11,12 @@ import { LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS } from "./DialogSetPermissions/gr
 
 import { useDialogs } from "@webiny/app-admin";
 import { useFolders } from "~/hooks";
-import { FolderItem, FolderLevelPermissionsTarget, FolderPermission } from "~/types";
+import {
+    FolderItem,
+    FolderLevelPermissionsTarget,
+    FolderPermission,
+    FolderPermissionWithKey
+} from "~/types";
 
 interface ShowDialogParams {
     folder: FolderItem;
@@ -25,7 +31,7 @@ interface FormComponentProps {
 }
 
 interface UpdatePermissionCallableParams {
-    permission: FolderPermission;
+    permission: FolderPermissionWithKey;
 }
 
 interface UpdatePermissionCallable {
@@ -33,7 +39,7 @@ interface UpdatePermissionCallable {
 }
 
 interface RemoveUserTeamCallableParams {
-    permission: FolderPermission;
+    permission: FolderPermissionWithKey;
 }
 
 interface RemoveUserTeamCallable {
@@ -41,7 +47,17 @@ interface RemoveUserTeamCallable {
 }
 
 const FormComponent = ({ folder }: FormComponentProps) => {
-    const [permissions, setPermissions] = useState<FolderPermission[]>(folder.permissions || []); // Moved useState outside showDialog
+    const [permissions, setPermissions] = useState<FolderPermissionWithKey[]>(() => {
+        if (!folder.permissions) {
+            return [];
+        }
+
+        return folder.permissions.map(p => {
+            return { key: generateId(), ...p };
+        });
+    });
+
+    // Moved useState outside showDialog
     const listTargetsQuery = useQuery(LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS);
     const targetsList: FolderLevelPermissionsTarget[] =
         listTargetsQuery.data?.aco.listFolderLevelPermissionsTargets.data || [];
@@ -55,9 +71,10 @@ const FormComponent = ({ folder }: FormComponentProps) => {
     }, [permissions]);
 
     const addPermission = useCallback(
-        (value: FolderPermission[]) => {
+        (value: FolderPermissionWithKey[]) => {
             const selectedUserOrTeam = value[value.length - 1];
-            const newPermission: FolderPermission = {
+            const newPermission: FolderPermissionWithKey = {
+                key: generateId(),
                 target: selectedUserOrTeam.target,
                 level: "editor"
             };
@@ -120,7 +137,18 @@ export const useSetPermissionsDialog = (): UseSetPermissionsDialogResponse => {
 
     const onAccept = useCallback(async (folder: FolderItem, data: Partial<FolderItem>) => {
         const updateData = { ...folder, ...data };
+        if (updateData.permissions) {
+            // Omit "key" property from permissions.
+            updateData.permissions = updateData.permissions.map(p => {
+                return {
+                    target: p.target,
+                    level: p.level,
+                    inheritedFrom: p.inheritedFrom
+                };
+            });
+        }
 
+        console.log('updateData', updateData)
         try {
             await updateFolder(updateData, { refetchFoldersList: true });
             showSnackbar("Folder permissions updated successfully!");

@@ -7,7 +7,7 @@ import { Typography } from "@webiny/ui/Typography";
 import styled from "@emotion/styled";
 import { useSecurity } from "@webiny/app-security";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { FolderAccessLevel, FolderLevelPermissionsTarget, FolderPermission } from "~/types";
+import { FolderAccessLevel, FolderLevelPermissionsTarget, FolderPermissionWithKey } from "~/types";
 
 const TARGET_LEVELS = [
     {
@@ -63,11 +63,11 @@ const StyledMenuItem = styled(MenuItem)`
 `;
 
 interface ListItemMetaProps {
-    permission: FolderPermission;
+    permission: FolderPermissionWithKey;
     target: FolderLevelPermissionsTarget;
     targetsList: FolderLevelPermissionsTarget[];
-    onRemoveAccess: (params: { permission: FolderPermission }) => void;
-    onUpdatePermission: (params: { permission: FolderPermission }) => void;
+    onRemoveAccess: (params: { permission: FolderPermissionWithKey }) => void;
+    onUpdatePermission: (params: { permission: FolderPermissionWithKey }) => void;
 }
 
 export const ListItemMeta = ({
@@ -79,12 +79,11 @@ export const ListItemMeta = ({
 }: ListItemMetaProps) => {
     const { identity } = useSecurity();
 
-    console.log("permission", permission);
     const currentLevel = useMemo(() => {
         return TARGET_LEVELS.find(level => level.id === permission.level)!;
     }, [permission.level]);
 
-    console.log("currentLevel", currentLevel);
+    console.log('permission', permission)
     const disabledReason = useMemo(() => {
         if (permission.inheritedFrom?.startsWith("parent:")) {
             return "Inherited from parent folder.";

@@ -267,8 +267,6 @@ export const createAdminUsers = ({
         async listUsers(params = {}) {
             await checkPermission();
 
-            const aaa = process.env;
-            const hoolkd = 123;
             try {
                 return storageOperations.listUsers({
                     where: { tenant: getTenant(), ...params.where },

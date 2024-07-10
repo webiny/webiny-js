@@ -5,13 +5,13 @@ import { ListItemText } from "./UsersTeamsSelection/ListItemText";
 import { ListItemMeta } from "./UsersTeamsSelection/ListItemMeta";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
-import { FolderLevelPermissionsTarget, FolderPermission } from "~/types";
+import { FolderLevelPermissionsTarget, FolderPermissionWithKey } from "~/types";
 
 interface UsersTeamsSelectionProps {
     targetsList: FolderLevelPermissionsTarget[];
-    permissions: FolderPermission[];
-    onRemoveAccess: (params: { permission: FolderPermission }) => void;
-    onUpdatePermission: (params: { permission: FolderPermission }) => void;
+    permissions: FolderPermissionWithKey[];
+    onRemoveAccess: (params: { permission: FolderPermissionWithKey }) => void;
+    onUpdatePermission: (params: { permission: FolderPermissionWithKey }) => void;
 }
 
 // We've set scroll list to be non-interactive, but we still need to override the hover color.
@@ -21,7 +21,10 @@ const StyledListItem = styled(ListItem)`
     }
 `;
 
-type Selection = Array<{ permission: FolderPermission; target: FolderLevelPermissionsTarget }>;
+type Selection = Array<{
+    permission: FolderPermissionWithKey;
+    target: FolderLevelPermissionsTarget;
+}>;
 
 export const UsersTeamsSelection = ({
     permissions = [],
@@ -45,7 +48,7 @@ export const UsersTeamsSelection = ({
             <Typography use={"subtitle1"}>People and teams with access</Typography>
             <ScrollList twoLine avatarList style={{ height: 300 }} nonInteractive>
                 {selection?.map(item => (
-                    <StyledListItem key={item!.permission.target}>
+                    <StyledListItem key={item!.permission.key}>
                         <ListItemGraphic {...item} />
                         <ListItemText {...item} />
                         <ListItemMeta

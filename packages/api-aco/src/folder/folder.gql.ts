@@ -13,6 +13,7 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
             target: String!
             level: String!
             inheritedFrom: ID
+            originallyInheritedFrom: ID
         }
 
         input FolderPermissionInput {
@@ -20,6 +21,7 @@ export const folderSchema = new GraphQLSchemaPlugin<AcoContext>({
             target: String!
             level: String!
             inheritedFrom: ID
+            originallyInheritedFrom: ID
         }
 
         type Folder {

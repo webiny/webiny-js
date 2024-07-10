@@ -16,6 +16,10 @@ export interface FolderPermission {
     inheritedFrom?: string;
 }
 
+export interface FolderPermissionWithKey extends FolderPermission {
+    key: string;
+}
+
 export interface FolderLevelPermissionsTarget<TMeta = Record<string, any>> {
     id: string;
     target: string;

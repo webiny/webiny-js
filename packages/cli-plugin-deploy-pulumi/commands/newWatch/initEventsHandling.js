@@ -50,6 +50,7 @@ const initEventsHandling = async ({
 
 
                 const unsubscribeExitHook = exitHook(async () => {
+                    resolve();
                     await worker.terminate();
                 });
 
