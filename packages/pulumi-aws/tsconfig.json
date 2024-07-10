@@ -3,6 +3,7 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../aws-sdk" },
+    { "path": "../feature-flags" },
     { "path": "../pulumi" },
     { "path": "../api-page-builder" },
     { "path": "../feature-flags" }
@@ -16,6 +17,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"],
       "@webiny/pulumi/*": ["../pulumi/src/*"],
       "@webiny/pulumi": ["../pulumi/src"],
       "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],
