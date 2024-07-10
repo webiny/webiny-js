@@ -35,11 +35,11 @@ export class ContentEntryTraverser {
         this.modelAst = modelAst;
     }
 
-    traverse(values: CmsEntryValues, visitor: ContentEntryValueVisitor) {
-        this.visitTree(this.modelAst, values, [], visitor);
+    async traverse(values: CmsEntryValues, visitor: ContentEntryValueVisitor) {
+        await this.visitTree(this.modelAst, values, [], visitor);
     }
 
-    private visitTree(
+    private async visitTree(
         root: CmsModelAst | CmsModelFieldAstNode,
         values: CmsEntryValues,
         path: string[],
@@ -48,7 +48,7 @@ export class ContentEntryTraverser {
         for (const node of root.children) {
             const context: VisitorContext = { node, parent: root };
             const field = this.getFieldFromNode(context);
-            const value = values[field.fieldId];
+            let value = values[field.fieldId];
 
             // We do not descend into nodes if they're `null` or `undefined`.
             if (nodeHasChildren(node) && emptyValues.includes(value)) {
@@ -62,7 +62,7 @@ export class ContentEntryTraverser {
 
             const fieldPath = [...path, field.fieldId];
 
-            visitor(
+            await visitor(
                 {
                     field,
                     value,
@@ -71,30 +71,40 @@ export class ContentEntryTraverser {
                 context
             );
 
+            // Refetch the value from the original input, in case the value changed within the visitor.
+            value = values[field.fieldId];
+
             if (nodeHasChildren(node) && childrenAreCollections(node)) {
                 if (field.multipleValues) {
-                    this.ensureArray(value).forEach((value, index) => {
-                        this.findCollectionAndVisit(
+                    const arrayValue = this.ensureArray(value);
+                    for (let i = 0; i < arrayValue.length; i++) {
+                        await this.findCollectionAndVisit(
                             node,
-                            value,
-                            [...fieldPath, index.toString()],
+                            arrayValue[i],
+                            [...fieldPath, i.toString()],
                             visitor
                         );
-                    });
+                    }
                 } else {
-                    this.findCollectionAndVisit(node, value, fieldPath, visitor);
+                    await this.findCollectionAndVisit(node, value, fieldPath, visitor);
                 }
                 continue;
             }
 
             if (field.multipleValues) {
-                this.ensureArray(value).forEach((value, index) => {
-                    this.visitTree(node, value, [...fieldPath, index.toString()], visitor);
-                });
+                const arrayValue = this.ensureArray(value);
+                for (let i = 0; i < arrayValue.length; i++) {
+                    await this.visitTree(
+                        node,
+                        arrayValue[i],
+                        [...fieldPath, i.toString()],
+                        visitor
+                    );
+                }
                 continue;
             }
 
-            this.visitTree(node, value, fieldPath, visitor);
+            await this.visitTree(node, value, fieldPath, visitor);
         }
     }
 
@@ -121,7 +131,7 @@ export class ContentEntryTraverser {
             return;
         }
 
-        this.visitTree(collection, values, path, visitor);
+        return this.visitTree(collection, values, path, visitor);
     }
 
     private getFieldFromNode({ node, parent }: VisitorContext) {
