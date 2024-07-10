@@ -22,8 +22,8 @@ export interface BaseUserAttributes {
     // Check `api-security-okta` package for an example.
     email: string;
 
-    groups: string[];
-    teams: string[];
+    groups?: string[];
+    teams?: string[];
 
     // Optional fields.
     firstName?: string;
@@ -158,7 +158,7 @@ export interface InstallParams {
     lastName: string;
     email: string;
     password: string;
-    group?: string;
+    groups?: string[];
 }
 
 export interface AdminUsers {
