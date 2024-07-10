@@ -35,7 +35,7 @@ export const ApiFileManager = createAppModule({
                 runtime: LAMBDA_RUNTIME,
                 handler: "handler.handler",
                 timeout: 30,
-                memorySize: 512,
+                memorySize: 1024,
                 description: "Triggered when a file is deleted.",
                 code: new pulumi.asset.AssetArchive({
                     ".": new pulumi.asset.FileArchive(

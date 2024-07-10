@@ -108,7 +108,7 @@ function createExecuteActionLambda(app: PulumiApp, params: ScheduleActionParams)
             runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 60,
-            memorySize: 128,
+            memorySize: 512,
             description: "Handle execute action workflow in apw scheduler",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
@@ -211,7 +211,7 @@ function createScheduleActionLambda(
             runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 60,
-            memorySize: 128,
+            memorySize: 512,
             description: "Handle schedule action workflow in apw scheduler",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
