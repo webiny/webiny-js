@@ -56,7 +56,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
     public async execute(
         params: ICmsEntryZipperExecuteParams
     ): Promise<ICmsEntryZipperExecuteResult> {
-        const { isCloseToTimeout, isAborted, model, after: inputAfter, exportedAssets } = params;
+        const { isCloseToTimeout, isAborted, model, after: inputAfter, exportAssets } = params;
 
         const files: IFileMeta[] = [];
 
@@ -69,7 +69,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
 
         let continueAfter: string | undefined = undefined;
 
-        const assets: IAsset[] = [];
+        let assets: IAsset[] | undefined = undefined;
         /**
          * This function works as self invoking function, it will add items to the zipper until there are no more items to add.
          *
@@ -93,7 +93,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
                         JSON.stringify({
                             files,
                             assets,
-                            exportedAssets,
+                            exportedAssets: exportAssets || false,
                             model: model.modelId
                         })
                     ),
@@ -124,12 +124,21 @@ export class CmsEntryZipper implements ICmsEntryZipper {
                 name
             });
 
-            const itemsAssets = this.entryAssets.assignAssets(items);
-
             hasMoreItems = meta.hasMoreItems;
             after = meta.cursor || undefined;
-
             id++;
+            /**
+             * We should not continue if assets are getting exported.
+             * There will be a new task triggered for exporting assets.
+             */
+            if (exportAssets) {
+                return;
+            } else if (!assets) {
+                assets = [];
+            }
+
+            const itemsAssets = this.entryAssets.assignAssets(items);
+
             if (itemsAssets.length === 0) {
                 return;
             }

@@ -1,4 +1,5 @@
 import { UniqueResolver } from "~/tasks/utils/uniqueResolver/UniqueResolver";
+import { assets, IMockAsset } from "~tests/mocks/assets";
 
 interface IItem {
     id: string;
@@ -68,5 +69,31 @@ describe("unique resolver", () => {
                 id: "5"
             }
         ]);
+    });
+
+    it("should return unique values only - large dataset", async () => {
+        const resolver = new UniqueResolver<IMockAsset>();
+
+        const result = resolver.resolve(
+            [
+                ...assets,
+                ...assets,
+                {
+                    url: "aMockUrl",
+                    key: "aMockKeyWhichDefinitelyDoesNotExistInTheDataset"
+                }
+            ],
+            "key"
+        );
+
+        expect(result).toHaveLength(assets.length + 1);
+
+        const extraAsset: IMockAsset = {
+            url: "aMockUrl-2",
+            key: "aMockKeyWhichDefinitelyDoesNotExistInTheDataset-2"
+        };
+        const anotherResult = resolver.resolve([...assets, ...assets, extraAsset], "key");
+
+        expect(anotherResult).toEqual([extraAsset]);
     });
 });

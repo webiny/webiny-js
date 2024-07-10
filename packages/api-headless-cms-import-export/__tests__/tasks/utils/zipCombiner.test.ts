@@ -3,8 +3,6 @@ import { createUrlSigner } from "~tests/mocks/createUrlSigner";
 import { createZipper } from "~tests/mocks/createZipper";
 import { createFileFetcher } from "~tests/mocks/createFileFetcher";
 
-jest.setTimeout(10000);
-
 describe("zip combiner", () => {
     it("should fail because no files to combine", async () => {
         expect.assertions(1);

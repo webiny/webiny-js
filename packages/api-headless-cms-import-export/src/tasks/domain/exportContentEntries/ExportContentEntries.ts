@@ -136,7 +136,7 @@ export class ExportContentEntries<
             isAborted,
             model,
             after: input.after,
-            exportedAssets: input.exportAssets
+            exportAssets: input.exportAssets
         });
         if (result instanceof CmsEntryZipperExecuteContinueResult) {
             return response.continue({

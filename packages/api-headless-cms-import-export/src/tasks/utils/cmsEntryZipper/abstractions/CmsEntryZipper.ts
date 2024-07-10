@@ -8,7 +8,7 @@ export interface ICmsEntryZipperExecuteParams {
     isAborted(): boolean;
     model: Pick<CmsModel, "modelId">;
     after: string | undefined;
-    exportedAssets: boolean;
+    exportAssets: boolean;
 }
 
 export type ICmsEntryZipperExecuteResult =

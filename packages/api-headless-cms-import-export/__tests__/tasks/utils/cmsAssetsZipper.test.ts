@@ -15,8 +15,6 @@ import { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/Uniqu
 import { IAsset } from "~/tasks/utils/entryAssets";
 import { createUniqueResolver } from "~tests/mocks/createUniqueResolver";
 
-jest.setTimeout(5000);
-
 const defaultZipperExecuteParams: ICmsAssetsZipperExecuteParams = {
     isCloseToTimeout() {
         return false;

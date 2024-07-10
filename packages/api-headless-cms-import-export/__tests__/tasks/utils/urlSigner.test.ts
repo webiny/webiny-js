@@ -4,8 +4,6 @@ import { createS3Client } from "~/tasks/utils/helpers/s3Client";
 import { mockClient } from "aws-sdk-client-mock";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
 
-jest.setTimeout(5000);
-
 describe("url signer", () => {
     beforeEach(async () => {
         process.env.S3_BUCKET = "testing-bucket";
