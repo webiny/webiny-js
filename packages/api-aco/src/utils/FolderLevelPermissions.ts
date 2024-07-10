@@ -160,6 +160,7 @@ export class FolderLevelPermissions {
             const identity = this.getIdentity();
             const permissions = await this.listPermissions();
 
+            // TODO: multiple teams support
             let identityTeam: Team | null;
             if (this.canUseTeams()) {
                 identityTeam = await this.getIdentityTeam();
