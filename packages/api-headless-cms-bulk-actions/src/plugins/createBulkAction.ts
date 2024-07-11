@@ -11,16 +11,14 @@ export interface CreateBulkActionConfig {
 }
 
 export const createBulkAction = (config: CreateBulkActionConfig) => {
-    const actionName = config.name.charAt(0).toUpperCase() + config.name.slice(1);
-
     return [
         createBulkActionTasks({
-            name: actionName,
+            name: config.name,
             dataLoader: config.dataLoader,
             dataProcessor: config.dataProcessor
         }),
         createBulkActionGraphQL({
-            name: actionName,
+            name: config.name,
             excludedModels: config.excludedModels
         })
     ];

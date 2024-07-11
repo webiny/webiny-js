@@ -516,7 +516,7 @@ export interface CmsEntryBulkActionMutationVariables {
 
 export const createBulkActionMutation = (model: CmsEditorContentModel) => {
     return gql`
-        mutation CmsBulkAction${model.singularApiName}($action: BulkActionName!, $where: ${model.singularApiName}ListWhereInput, $search: String, $data: JSON) {
+        mutation CmsBulkAction${model.singularApiName}($action: BulkAction${model.singularApiName}Name!, $where: ${model.singularApiName}ListWhereInput, $search: String, $data: JSON) {
             content: bulkAction${model.singularApiName}(action: $action, where: $where, search: $search, data: $data) {
                  data {
                     id

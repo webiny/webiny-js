@@ -58,8 +58,8 @@ export const TrashBin = () => {
                 return <TrashBinButton onClick={showTrashBin} />;
             }}
             bulkActionsGateway={bulkActionsGateway}
-            deleteBulkActionName={"DeleteEntries"}
-            restoreBulkActionName={"RestoreEntriesFromTrash"}
+            deleteBulkActionName={"Delete"}
+            restoreBulkActionName={"Restore"}
             listGateway={listGateway}
             deleteGateway={deleteGateway}
             restoreGateway={restoreGateway}

@@ -28,7 +28,7 @@ export const ActionUnpublish = observer(() => {
             loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
                 if (worker.isSelectedAll) {
-                    await worker.processInBulk("UnpublishEntries");
+                    await worker.processInBulk("Unpublish");
                     worker.resetItems();
                     showSnackbar(
                         "All entries will be unpublished. This process will be carried out in the background and may take some time. You can safely navigate away from this page while the process is running.",

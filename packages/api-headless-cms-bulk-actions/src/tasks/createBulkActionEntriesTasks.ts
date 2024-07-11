@@ -14,32 +14,32 @@ import {
 export const createBulkActionEntriesTasks = () => {
     return [
         createBulkAction({
-            name: "delete",
+            name: "Delete",
             dataLoader: createListDeletedEntries,
             dataProcessor: createDeleteEntry
         }),
         createBulkAction({
-            name: "moveToFolder",
+            name: "MoveToFolder",
             dataLoader: createListLatestEntries,
             dataProcessor: createMoveEntryToFolder
         }),
         createBulkAction({
-            name: "moveToTrash",
+            name: "MoveToTrash",
             dataLoader: createListLatestEntries,
             dataProcessor: createMoveEntryToTrash
         }),
         createBulkAction({
-            name: "publish",
+            name: "Publish",
             dataLoader: createListLatestEntries,
             dataProcessor: createPublishEntry
         }),
         createBulkAction({
-            name: "unpublish",
+            name: "Unpublish",
             dataLoader: createListPublishedEntries,
             dataProcessor: createUnpublishEntry
         }),
         createBulkAction({
-            name: "restore",
+            name: "Restore",
             dataLoader: createListDeletedEntries,
             dataProcessor: createRestoreEntryFromTrash
         })

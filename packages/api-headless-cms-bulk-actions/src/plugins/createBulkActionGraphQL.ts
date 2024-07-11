@@ -28,21 +28,17 @@ export const createBulkActionGraphQL = (config: CreateBulkActionGraphQL) => {
         models.forEach(model => {
             const plugin = new CmsGraphQLSchemaPlugin({
                 typeDefs: /* GraphQL */ `
-                    extend type Mutation {
-                        bulk${config.name}${model.singularApiName}(
-                            where: ${model.singularApiName}ListWhereInput
-                            search: String
-                            data: JSON
-                        ): BulkActionResponse
+                     extend enum BulkAction${model.singularApiName}Name {
+                        ${config.name}
                     }
                 `,
                 resolvers: {
                     Mutation: {
-                        [`bulk${config.name}${model.singularApiName}`]: async (_, args) => {
+                        [`bulkAction${model.singularApiName}`]: async (_, args) => {
                             const identity = context.security.getIdentity();
 
                             const response = await context.tasks.trigger({
-                                definition: `hcmsBulkList${config.name}Entries`,
+                                definition: `hcmsBulkList${args.action}Entries`,
                                 input: {
                                     modelId: model.modelId,
                                     where: args.where,
