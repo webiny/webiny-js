@@ -72,18 +72,14 @@ export class AdminUsers_5_41_0_001 {
             }
 
             const newUsers = users
-                .filter(user => !user.data)
+                .filter(user => !Array.isArray(user.data.groups))
                 .map(user => {
                     return this.newUserEntity.putBatch({
-                        PK: `T#${tenant.id}#ADMIN_USER#${user.id}`,
-                        SK: "A",
-                        GSI1_PK: `T#${tenant.id}#ADMIN_USERS`,
-                        GSI1_SK: user.email,
-                        TYPE: "adminUsers.user",
+                        ...user,
                         data: {
                             ...user.data,
-                            groups: [user.data.group],
-                            teams: [user.data.team]
+                            groups: [user.data.group].filter(Boolean),
+                            teams: [user.data.team].filter(Boolean)
                         }
                     });
                 });
