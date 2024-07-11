@@ -1,7 +1,11 @@
 import { createPrivateTaskDefinition } from "@webiny/tasks";
 import { IListEntries, IProcessEntry } from "~/abstractions";
-import { ChildTasksCleanup } from "~/implementations";
-import { CreateTasksByModel, ProcessTask, ProcessTasksByModel } from "~/useCases";
+import {
+    ChildTasksCleanup,
+    CreateTasksByModel,
+    ProcessTask,
+    ProcessTasksByModel
+} from "~/useCases/internals";
 import {
     HcmsBulkActionsContext,
     IBulkActionOperationByModelInput,

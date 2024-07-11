@@ -1,6 +1,6 @@
 import { createTaskDefinition } from "@webiny/tasks";
-import { EntriesTask, HcmsBulkActionsContext, IBulkActionOperationByModelInput } from "~/types";
-import { ChildTasksCleanup } from "~/implementations";
+import { HcmsBulkActionsContext, IBulkActionOperationByModelInput } from "~/types";
+import { ChildTasksCleanup } from "~/useCases/internals";
 
 const calculateDateTimeString = () => {
     // Retrieve the retention period from the environment variable WEBINY_TRASH_BIN_RETENTION_PERIOD_DAYS,
@@ -21,7 +21,7 @@ const calculateDateTimeString = () => {
 
 export const createEmptyTrashBinsTask = () => {
     return createTaskDefinition<HcmsBulkActionsContext>({
-        id: EntriesTask.EmptyTrashBins,
+        id: "hcmsEntriesEmptyTrashBins",
         title: "Headless CMS - Empty all trash bins",
         description:
             "Delete all entries found in the trash bin, for each model found in the system.",

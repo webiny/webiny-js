@@ -9,37 +9,37 @@ import {
     createPublishEntry,
     createRestoreEntryFromTrash,
     createUnpublishEntry
-} from "~/implementations";
+} from "~/useCases";
 
 export const createBulkActionEntriesTasks = () => {
     return [
         createBulkAction({
-            name: "Delete",
+            name: "delete",
             dataLoader: createListDeletedEntries,
             dataProcessor: createDeleteEntry
         }),
         createBulkAction({
-            name: "MoveToFolder",
+            name: "moveToFolder",
             dataLoader: createListLatestEntries,
             dataProcessor: createMoveEntryToFolder
         }),
         createBulkAction({
-            name: "MoveToTrash",
+            name: "moveToTrash",
             dataLoader: createListLatestEntries,
             dataProcessor: createMoveEntryToTrash
         }),
         createBulkAction({
-            name: "Publish",
+            name: "publish",
             dataLoader: createListLatestEntries,
             dataProcessor: createPublishEntry
         }),
         createBulkAction({
-            name: "Unpublish",
+            name: "unpublish",
             dataLoader: createListPublishedEntries,
             dataProcessor: createUnpublishEntry
         }),
         createBulkAction({
-            name: "Restore",
+            name: "restore",
             dataLoader: createListDeletedEntries,
             dataProcessor: createRestoreEntryFromTrash
         })

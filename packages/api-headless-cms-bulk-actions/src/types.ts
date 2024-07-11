@@ -9,22 +9,6 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 
 export interface HcmsBulkActionsContext extends BaseContext, CmsContext, TasksContext {}
 
-export enum EntriesTask {
-    EmptyTrashBins = "hcmsEntriesEmptyTrashBins",
-    DeleteEntriesByModel = "hcmsEntriesDeleteEntriesByModel",
-    DeleteEntries = "hcmsEntriesDeleteEntries",
-    PublishEntriesByModel = "hcmsEntriesPublishEntriesByModel",
-    PublishEntries = "hcmsEntriesPublishEntries",
-    UnpublishEntriesByModel = "hcmsEntriesUnpublishEntriesByModel",
-    UnpublishEntries = "hcmsEntriesUnpublishEntries",
-    MoveEntriesToFolderByModel = "hcmsEntriesMoveEntriesToFolderByModel",
-    MoveEntriesToFolder = "hcmsEntriesMoveEntriesToFolder",
-    MoveEntriesToTrashByModel = "hcmsEntriesMoveEntriesToTrashByModel",
-    MoveEntriesToTrash = "hcmsEntriesMoveEntriesToTrash",
-    RestoreEntriesFromTrashByModel = "hcmsEntriesRestoreEntriesFromTrashByModel",
-    RestoreEntriesFromTrash = "hcmsEntriesRestoreEntriesFromTrash"
-}
-
 /**
  * Bulk Action Operation
  */

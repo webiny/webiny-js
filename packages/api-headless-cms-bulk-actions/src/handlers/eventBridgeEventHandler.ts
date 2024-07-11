@@ -1,5 +1,5 @@
 import { createEventBridgeEventHandler } from "@webiny/handler-aws";
-import { EntriesTask, HcmsBulkActionsContext } from "~/types";
+import { HcmsBulkActionsContext } from "~/types";
 
 const DETAIL_TYPE = "WebinyEmptyTrashBin";
 
@@ -28,7 +28,7 @@ export const createEventBridgeHandler = () => {
                 const tenants = await context.tenancy.listTenants();
                 await context.tenancy.withEachTenant(tenants, async () => {
                     await context.tasks.trigger({
-                        definition: EntriesTask.EmptyTrashBins
+                        definition: "hcmsEntriesEmptyTrashBins"
                     });
                 });
 

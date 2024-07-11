@@ -29,7 +29,7 @@ export const ActionMove = observer(() => {
                 loadingLabel: `Processing ${entriesLabel}`,
                 execute: async () => {
                     if (worker.isSelectedAll) {
-                        await worker.processInBulk("MoveToFolder", {
+                        await worker.processInBulk("moveToFolder", {
                             folderId: folder.id
                         });
                         worker.resetItems();

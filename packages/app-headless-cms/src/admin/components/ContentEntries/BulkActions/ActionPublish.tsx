@@ -28,7 +28,7 @@ export const ActionPublish = observer(() => {
             loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
                 if (worker.isSelectedAll) {
-                    await worker.processInBulk("Publish");
+                    await worker.processInBulk("publish");
                     worker.resetItems();
                     showSnackbar(
                         "All entries will be published. This process will be carried out in the background and may take some time. You can safely navigate away from this page while the process is running.",
