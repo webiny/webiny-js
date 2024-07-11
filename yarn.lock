@@ -16643,7 +16643,6 @@ __metadata:
     "@types/jsonwebtoken": ^9.0.2
     "@types/jwk-to-pem": ^2.0.1
     "@types/node-fetch": ^2.6.1
-    "@webiny/api": 0.0.0
     "@webiny/api-admin-users": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-security": 0.0.0
