@@ -1,6 +1,5 @@
-import { mergeResolvers } from "@graphql-tools/merge";
 import { composeResolvers } from "@graphql-tools/resolvers-composition";
-import { ResolverDecorators } from "./types";
+import { ResolverDecorators, Resolvers } from "./types";
 
 export class ResolverDecoration {
     private decorators: ResolverDecorators = {};
@@ -17,7 +16,7 @@ export class ResolverDecoration {
         }
     }
 
-    decorateResolvers(resolvers: any) {
-        return composeResolvers(mergeResolvers(resolvers), this.decorators);
+    decorateResolvers(resolvers: Resolvers<unknown>) {
+        return composeResolvers(resolvers, this.decorators);
     }
 }

@@ -16127,6 +16127,7 @@ __metadata:
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
     "@babel/runtime": ^7.24.0
+    "@graphql-tools/merge": ^9.0.4
     "@graphql-tools/schema": ^10.0.4
     "@webiny/api": 0.0.0
     "@webiny/api-i18n": 0.0.0

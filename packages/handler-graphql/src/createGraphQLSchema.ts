@@ -1,5 +1,6 @@
 import gql from "graphql-tag";
 import { makeExecutableSchema } from "@graphql-tools/schema";
+import { mergeResolvers } from "@graphql-tools/merge";
 import { GraphQLScalarType } from "graphql/type/definition";
 import { GraphQLScalarPlugin, GraphQLSchemaPlugin, Resolvers, TypeDefs } from "./types";
 import { Context } from "@webiny/api/types";
@@ -83,7 +84,7 @@ export const createGraphQLSchema = (context: Context) => {
 
     return makeExecutableSchema({
         typeDefs,
-        resolvers: resolverDecoration.decorateResolvers(resolvers),
+        resolvers: resolverDecoration.decorateResolvers(mergeResolvers(resolvers)),
         inheritResolversFromInterfaces: true
     });
 };

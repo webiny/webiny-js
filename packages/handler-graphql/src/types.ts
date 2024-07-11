@@ -46,9 +46,9 @@ export type ResolverDecorator<TSource = any, TContext = any, TArgs = any> = Reso
 export type ResolverDecorators = GenericRecord<string, ResolverDecorator[]>;
 
 export interface GraphQLSchemaDefinition<TContext> {
-    typeDefs: Types;
+    typeDefs: TypeDefs;
     resolvers?: Resolvers<TContext>;
-    resolverDecorators?: GenericRecord<string, ResolverDecorator[]>;
+    resolverDecorators?: ResolverDecorators;
 }
 
 export interface GraphQLSchemaPlugin<TContext extends Context = Context> extends Plugin {
