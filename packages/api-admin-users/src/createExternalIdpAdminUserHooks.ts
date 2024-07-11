@@ -13,7 +13,7 @@ export const createExternalIdpAdminUserHooks = () => {
                 const email = identity.email || `id:${id}`;
                 const displayName = identity.displayName || "Missing display name";
 
-                const data= {
+                const data = {
                     displayName,
                     email,
                     groups: [] as string[],

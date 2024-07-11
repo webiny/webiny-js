@@ -30,7 +30,6 @@ export class TeamsMultiAutocompleteElement extends InputElement {
                 validators={typeof validators === "function" ? validators({ formProps }) : []}
             >
                 <TeamsMultiAutocomplete label={"Teams"} data-testid="teams-autocomplete" />
-
             </Bind>
         );
     }

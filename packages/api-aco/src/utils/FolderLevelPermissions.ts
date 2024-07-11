@@ -284,18 +284,20 @@ export class FolderLevelPermissions {
                             inheritedFrom: "role:full-access"
                         };
                     } else if (identityTeams.length) {
-                        // // 2. Check the team user belongs to grants access to the folder.
-                        // const teamPermission = currentFolderPermissions.permissions.find(
-                        //     p => p.target === `team:${identityTeam!.id}`
-                        // );
-                        //
-                        // if (teamPermission) {
-                        //     currentIdentityPermission = {
-                        //         target: `admin:${identity.id}`,
-                        //         level: teamPermission.level,
-                        //         inheritedFrom: "team:" + identityTeam!.id
-                        //     };
-                        // }
+                        // 2. Check the teams user belongs to grants access to the folder.
+                        for (const identityTeam of identityTeams) {
+                            const teamPermission = currentFolderPermissions.permissions.find(
+                                p => p.target === `team:${identityTeam!.id}`
+                            );
+
+                            if (teamPermission) {
+                                currentIdentityPermission = {
+                                    target: `admin:${identity.id}`,
+                                    level: teamPermission.level,
+                                    inheritedFrom: "team:" + identityTeam!.id
+                                };
+                            }
+                        }
                     }
 
                     if (currentIdentityPermission) {

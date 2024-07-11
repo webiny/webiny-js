@@ -14,7 +14,14 @@ import { createTopic } from "@webiny/pubsub";
 import { validation } from "@webiny/validation";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import {GetTeamParams, Team, TeamInput, PermissionsTenantLink, Security, ListGroupsParams} from "~/types";
+import {
+    GetTeamParams,
+    Team,
+    TeamInput,
+    PermissionsTenantLink,
+    Security,
+    ListGroupsParams
+} from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
 
