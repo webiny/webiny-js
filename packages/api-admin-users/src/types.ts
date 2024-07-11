@@ -159,6 +159,7 @@ export interface InstallParams {
     email: string;
     password: string;
     groups?: string[];
+    teams?: string[];
 }
 
 export interface AdminUsers {

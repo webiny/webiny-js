@@ -70,7 +70,8 @@ const setupAcoContext = async (
                     return [];
                 }
 
-                if (Array.isArray(adminUser.teams) && adminUser.teams.length > 0) {
+                const hasTeams = adminUser.teams && adminUser.teams.length > 0;
+                if (hasTeams) {
                     return context.security.listTeams({ where: { id_in: adminUser.teams } });
                 }
 

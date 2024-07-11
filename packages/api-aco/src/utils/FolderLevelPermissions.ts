@@ -284,7 +284,7 @@ export class FolderLevelPermissions {
                             inheritedFrom: "role:full-access"
                         };
                     } else if (identityTeams.length) {
-                        // 2. Check the teams user belongs to grants access to the folder.
+                        // 2. Check the teams user belongs to and that grant access to the folder.
                         for (const identityTeam of identityTeams) {
                             const teamPermission = currentFolderPermissions.permissions.find(
                                 p => p.target === `team:${identityTeam!.id}`
