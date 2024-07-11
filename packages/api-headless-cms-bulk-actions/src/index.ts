@@ -1,8 +1,13 @@
 import { createTasks } from "~/tasks";
 import { createHandlers } from "~/handlers";
-import { createGraphQL } from "~/graphql";
+import { createDefaultGraphQL } from "~/plugins";
 
-export * from "./tasks/entries/useCases";
-export * from "./tasks/entries/gateways";
+export * from "./abstractions";
+export * from "./implementations";
+export * from "./plugins";
 
-export const createHcmsBulkActions = () => [createTasks(), createHandlers(), createGraphQL()];
+export const createHcmsBulkActions = () => [
+    createTasks(),
+    createHandlers(),
+    createDefaultGraphQL()
+];
