@@ -5,7 +5,7 @@ import { Response } from "@webiny/handler-graphql";
 
 export interface CreateBulkActionGraphQL {
     name: string;
-    excludedModels?: string[];
+    modelIds?: string[];
 }
 
 export const createBulkActionGraphQL = (config: CreateBulkActionGraphQL) => {
@@ -19,7 +19,7 @@ export const createBulkActionGraphQL = (config: CreateBulkActionGraphQL) => {
             return allModels.filter(
                 model =>
                     !model.isPrivate &&
-                    (!config.excludedModels || !config.excludedModels.includes(model.modelId))
+                    (!config.modelIds?.length || config.modelIds.includes(model.modelId))
             );
         });
 

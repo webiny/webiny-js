@@ -7,7 +7,7 @@ export interface CreateBulkActionConfig {
     name: string;
     dataLoader: (context: HcmsBulkActionsContext) => IListEntries;
     dataProcessor: (context: HcmsBulkActionsContext) => IProcessEntry;
-    excludedModels?: string[];
+    modelIds?: string[];
 }
 
 export const createBulkAction = (config: CreateBulkActionConfig) => {
@@ -19,7 +19,7 @@ export const createBulkAction = (config: CreateBulkActionConfig) => {
         }),
         createBulkActionGraphQL({
             name: config.name,
-            excludedModels: config.excludedModels
+            modelIds: config.modelIds
         })
     ];
 };
