@@ -15,6 +15,7 @@
     "@aws-sdk/client-dynamodb-streams": "^3.540.0",
     "@aws-sdk/client-eventbridge": "^3.540.0",
     "@aws-sdk/client-iam": "^3.540.0",
+    "@aws-sdk/client-iot": "^3.540.0",
     "@aws-sdk/client-lambda": "^3.540.0",
     "@aws-sdk/client-s3": "^3.540.0",
     "@aws-sdk/client-sfn": "^3.540.0",
