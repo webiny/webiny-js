@@ -1,6 +1,6 @@
 import { createTaskDefinition } from "@webiny/tasks";
-import { ChildTasksCleanup } from "~/tasks/common";
 import { EntriesTask, HcmsBulkActionsContext, IBulkActionOperationByModelInput } from "~/types";
+import { ChildTasksCleanup } from "~/implementations";
 
 const calculateDateTimeString = () => {
     // Retrieve the retention period from the environment variable WEBINY_TRASH_BIN_RETENTION_PERIOD_DAYS,
@@ -44,7 +44,7 @@ export const createEmptyTrashBinsTask = () => {
                     for (const model of models) {
                         await context.tasks.trigger<IBulkActionOperationByModelInput>({
                             name: `Headless CMS - Empty trash bin for "${model.name}" model.`,
-                            definition: EntriesTask.DeleteEntriesByModel,
+                            definition: "hcmsBulkListDeleteEntries",
                             parent: params.store.getTask(),
                             input: {
                                 modelId: model.modelId,
