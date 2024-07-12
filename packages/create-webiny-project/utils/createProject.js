@@ -23,6 +23,8 @@ const sleep = () =>
         }, 500);
     });
 
+const getTelemetryEventName = stage => `cli-create-webiny-project-${stage}`;
+
 module.exports = async function createProject({
     projectName,
     force,
@@ -105,7 +107,7 @@ module.exports = async function createProject({
 
     console.log(`Initializing a new Webiny project in ${green(projectRoot)}...`);
 
-    await sendEvent({ event: "create-webiny-project-start" });
+    await sendEvent({ event: getTelemetryEventName("start") });
 
     let isGitAvailable = false;
     try {
@@ -268,25 +270,21 @@ module.exports = async function createProject({
             templateOptions: parsedTemplateOptions
         });
 
-        await sendEvent({ event: "create-webiny-project-end" });
+        await sendEvent({ event: getTelemetryEventName("end") });
     } catch (err) {
+        let event = getTelemetryEventName("error");
         if (err instanceof GracefulError) {
-            await sendEvent({
-                event: "create-webiny-project-error-graceful",
-                properties: {
-                    errorMessage: err.message,
-                    errorStack: err.stack
-                }
-            });
-        } else {
-            await sendEvent({
-                event: "create-webiny-project-error",
-                properties: {
-                    errorMessage: err.message,
-                    errorStack: err.stack
-                }
-            });
+            event = getTelemetryEventName("error-graceful");
         }
+
+        await sendEvent({
+            event,
+            properties: {
+                errorMessage: err.cause?.message || err.message,
+                errorStack: err.cause?.stack || err.stack
+            }
+        });
+
         const node = process.versions.node;
         const os = process.platform;
 
