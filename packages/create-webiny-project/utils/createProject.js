@@ -12,6 +12,7 @@ const validateProjectName = require("./validateProjectName");
 const yaml = require("js-yaml");
 const findUp = require("find-up");
 const { GracefulError } = require("./GracefulError");
+const yesno = require("yesno");
 
 const NOT_APPLICABLE = gray("N/A");
 const HL = bold(gray("—")).repeat(30);
@@ -260,7 +261,8 @@ module.exports = async function createProject({
 
         console.log();
 
-        await require(templatePath)({
+        const setupTemplate = require(templatePath);
+        await setupTemplate({
             log,
             isGitAvailable,
             projectName,
@@ -365,4 +367,61 @@ module.exports = async function createProject({
 
         process.exit(1);
     }
+
+    console.log();
+    console.log(
+        `🎉 Your new Webiny project ${green(
+            projectName
+        )} has been created and is ready to be deployed for the first time!`
+    );
+    console.log();
+
+    const ok = await yesno({
+        question: bold(`${green("?")} Would you like to deploy your project now (Y/n)?`),
+        defaultValue: true
+    });
+
+    console.log();
+
+    if (ok) {
+        console.log("🚀 Deploying your new Webiny project...");
+        console.log();
+
+        try {
+            const command = ["webiny", "deploy"];
+            if (debug) {
+                command.push("--debug");
+            }
+
+            await execa("yarn", command, {
+                cwd: projectRoot,
+                stdio: "inherit"
+            });
+        } catch {
+            // Don't do anything. This is because the `webiny deploy` command has its own
+            // error handling and will print the error message. As far as this setup script
+            // is concerned, it succeeded, and it doesn't need to do anything else.
+        }
+
+        return;
+    }
+
+    console.log(
+        [
+            `Finish the setup by running the following command: ${green(
+                `cd ${projectName} && yarn webiny deploy`
+            )}`,
+            "",
+            `To see all of the available CLI commands, run ${green(
+                "yarn webiny --help"
+            )} in your ${green(projectName)} directory.`,
+            "",
+            "Want to dive deeper into Webiny? Check out https://webiny.com/docs/!",
+            "Like the project? Star us on https://github.com/webiny/webiny-js!",
+            "",
+            "Need help? Join our Slack community! https://www.webiny.com/slack",
+            "",
+            "🚀 Happy coding!"
+        ].join("\n")
+    );
 };
