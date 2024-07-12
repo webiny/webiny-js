@@ -33,7 +33,7 @@ export const ensureFolderIsEmpty = async ({
 
     if (hasFolders || hasContent) {
         throw new WebinyError(
-            "Delete all child folders and files before proceeding.",
+            "Delete all child folders and entries before proceeding.",
             "DELETE_FOLDER_WITH_CHILDREN",
             {
                 folder,
