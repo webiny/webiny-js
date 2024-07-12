@@ -186,10 +186,7 @@ export const createHandler = (params: CreateHandlerParams) => {
      */
     const app = fastify({
         bodyLimit: 536870912, // 512MB
-
-        // TODO: in the near future, pass own Pino logger instance.
-        logger: false,
-
+        disableRequestLogging: true,
         ...(params.options || {})
     });
 

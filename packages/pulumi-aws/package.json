@@ -31,6 +31,7 @@
     "@webiny/api-page-builder": "0.0.0",
     "@webiny/aws-layers": "0.0.0",
     "@webiny/cli": "0.0.0",
+    "@webiny/feature-flags": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "chalk": "^4.1.0",
     "lodash": "^4.17.21",
