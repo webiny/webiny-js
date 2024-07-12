@@ -91,18 +91,18 @@ export interface CmsModel {
      */
     lockedFields?: LockedField[];
     /**
-     * The field that is being displayed as entry title.
-     * It is picked as first available text field. Or user can select own field.
+     * The field that is used as an entry title.
+     * If not specified by the user, the system tries to assign the first available `text` field.
      */
-    titleFieldId: string;
+    titleFieldId: string | null;
     /**
-     * The field which is displayed as the description one.
-     * Only way this is null or undefined is that there are no long-text fields to be set as description.
+     * The field that is used as an entry description.
+     * If not set by the user, the system will try to assign the first available `long-text` field.
      */
     descriptionFieldId?: string | null;
     /**
-     * The field which is displayed as the image.
-     * Only way this is null or undefined is that there are no file fields, with images only set, to be set as image.
+     * The field that is used as an entry image.
+     * If not set by the user, the system will try to assign a `file` field which has `imagesOnly` enabled.
      */
     imageFieldId?: string | null;
     /**
