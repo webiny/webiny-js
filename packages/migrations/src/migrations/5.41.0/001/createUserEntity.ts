@@ -1,5 +1,4 @@
 import { Table } from "@webiny/db-dynamodb/toolbox";
-import pick from "lodash/pick";
 import { createLegacyEntity, createStandardEntity } from "~/utils";
 
 const attributes: Parameters<typeof createLegacyEntity>[2] = {
