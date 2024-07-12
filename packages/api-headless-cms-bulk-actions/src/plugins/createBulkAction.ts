@@ -10,15 +10,33 @@ export interface CreateBulkActionConfig {
     modelIds?: string[];
 }
 
+function toPascalCase(str: string) {
+    // Step 1: Remove non-alphanumeric characters and replace them with spaces
+    str = str.replace(/[^a-zA-Z0-9]+/g, " ");
+
+    // Step 2: Split the string into words
+    const words = str.split(" ");
+
+    // Step 3: Capitalize the first letter of each word
+    const capitalizedWords = words.map(
+        word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    );
+
+    // Step 4: Join all the capitalized words together
+    return capitalizedWords.join("");
+}
+
 export const createBulkAction = (config: CreateBulkActionConfig) => {
+    const name = toPascalCase(config.name);
+
     return [
         createBulkActionTasks({
-            name: config.name,
+            name,
             dataLoader: config.dataLoader,
             dataProcessor: config.dataProcessor
         }),
         createBulkActionGraphQL({
-            name: config.name,
+            name,
             modelIds: config.modelIds
         })
     ];
