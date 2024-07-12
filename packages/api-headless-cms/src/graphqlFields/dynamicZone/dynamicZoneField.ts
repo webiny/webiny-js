@@ -92,7 +92,7 @@ const createResolver = (
         const resolver = (parent: any) => {
             const value = parent[field.fieldId];
             if (!value) {
-                return field.multipleValues ? [] : value;
+                return value;
             }
 
             const typeName = `${graphQLType}_${createTypeName(field.fieldId)}`;
