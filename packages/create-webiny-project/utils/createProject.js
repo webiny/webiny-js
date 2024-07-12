@@ -272,23 +272,18 @@ module.exports = async function createProject({
 
         await sendEvent({ event: getTelemetryEventName("end") });
     } catch (err) {
+        let event = getTelemetryEventName("error");
         if (err instanceof GracefulError) {
-            await sendEvent({
-                event: getTelemetryEventName("error-graceful"),
-                properties: {
-                    errorMessage: err.message,
-                    errorStack: err.stack
-                }
-            });
-        } else {
-            await sendEvent({
-                event: getTelemetryEventName("error"),
-                properties: {
-                    errorMessage: err.message,
-                    errorStack: err.stack
-                }
-            });
+            event = getTelemetryEventName("error-graceful");
         }
+
+        await sendEvent({
+            event,
+            properties: {
+                errorMessage: err.cause?.message || err.message,
+                errorStack: err.cause?.stack || err.stack
+            }
+        });
 
         const node = process.versions.node;
         const os = process.platform;
