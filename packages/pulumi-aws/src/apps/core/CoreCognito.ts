@@ -100,7 +100,15 @@ export const CoreCognito = createAppModule({
         const userPoolClient = app.addResource(aws.cognito.UserPoolClient, {
             name: "user-pool-client",
             config: {
-                userPoolId: userPool.output.id
+                userPoolId: userPool.output.id,
+                accessTokenValidity: 60,
+                idTokenValidity: 60,
+                refreshTokenValidity: 30,
+                tokenValidityUnits: {
+                    accessToken: "minutes",
+                    idToken: "minutes",
+                    refreshToken: "days"
+                }
             }
         });
 
