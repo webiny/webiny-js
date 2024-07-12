@@ -142,7 +142,8 @@ const setup = async args => {
             console.log(e.message);
 
             throw new Error(
-                "Failed while installing project dependencies. Please check the above Yarn logs for more information."
+                "Failed while installing project dependencies. Please check the above Yarn logs for more information.",
+                { cause: e }
             );
         }
     }
