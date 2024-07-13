@@ -7,8 +7,7 @@ const merge = require("lodash/merge");
 const writeJsonFile = require("write-json-file");
 const loadJsonFile = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
-const { green, yellow, bold } = require("chalk");
-const yesno = require("yesno");
+const { yellow } = require("chalk");
 const ora = require("ora");
 
 const IS_TEST = process.env.NODE_ENV === "test";
@@ -125,89 +124,30 @@ const setup = async args => {
         await writeJsonFile(packageJsonPath, packageJson);
     }
 
-    if (!IS_TEST) {
-        // Install dependencies.
-        console.log();
-        const spinner = ora("Installing packages...").start();
-        try {
-            const subprocess = execa("yarn", [], {
-                cwd: projectRoot,
-                maxBuffer: "500_000_000"
-            });
-            await subprocess;
-            spinner.succeed("Packages installed successfully.");
-        } catch (e) {
-            spinner.fail("Failed to install packages.");
-
-            console.log(e.message);
-
-            throw new Error(
-                "Failed while installing project dependencies. Please check the above Yarn logs for more information.",
-                { cause: e }
-            );
-        }
-    }
-
     if (IS_TEST) {
         return;
     }
 
+    // Install dependencies.
     console.log();
-    console.log(
-        `🎉 Your new Webiny project ${green(
-            projectName
-        )} has been created and is ready to be deployed for the first time!`
-    );
-    console.log();
+    const spinner = ora("Installing packages...").start();
+    try {
+        const subprocess = execa("yarn", [], {
+            cwd: projectRoot,
+            maxBuffer: "500_000_000"
+        });
+        await subprocess;
+        spinner.succeed("Packages installed successfully.");
+    } catch (e) {
+        spinner.fail("Failed to install packages.");
 
-    const ok = await yesno({
-        question: bold(`${green("?")} Would you like to deploy your project now (Y/n)?`),
-        defaultValue: true
-    });
+        console.log(e.message);
 
-    console.log();
-
-    if (ok) {
-        console.log("🚀 Deploying your new Webiny project...");
-        console.log();
-
-        try {
-            const command = ["webiny", "deploy"];
-            if (args.debug) {
-                command.push("--debug");
-            }
-
-            await execa("yarn", command, {
-                cwd: projectRoot,
-                stdio: "inherit"
-            });
-        } catch {
-            // Don't do anything. This is because the `webiny deploy` command has its own
-            // error handling and will print the error message. As far as this setup script
-            // is concerned, it succeeded, and it doesn't need to do anything else.
-        }
-
-        return;
+        throw new Error(
+            "Failed while installing project dependencies. Please check the above Yarn logs for more information.",
+            { cause: e }
+        );
     }
-
-    console.log(
-        [
-            `Finish the setup by running the following command: ${green(
-                `cd ${projectName} && yarn webiny deploy`
-            )}`,
-            "",
-            `To see all of the available CLI commands, run ${green(
-                "yarn webiny --help"
-            )} in your ${green(projectName)} directory.`,
-            "",
-            "Want to dive deeper into Webiny? Check out https://webiny.com/docs/!",
-            "Like the project? Star us on https://github.com/webiny/webiny-js!",
-            "",
-            "Need help? Join our Slack community! https://www.webiny.com/slack",
-            "",
-            "🚀 Happy coding!"
-        ].join("\n")
-    );
 };
 
 module.exports = setup;
