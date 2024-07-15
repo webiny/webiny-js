@@ -154,8 +154,12 @@
       "@webiny/api-headless-cms": ["../../../packages/api-headless-cms/src"],
       "@webiny/api-headless-cms-aco/*": ["../../../packages/api-headless-cms-aco/src/*"],
       "@webiny/api-headless-cms-aco": ["../../../packages/api-headless-cms-aco/src"],
-      "@webiny/api-headless-cms-bulk-actions/*": ["../../../packages/api-headless-cms-bulk-actions/src/*"],
-      "@webiny/api-headless-cms-bulk-actions": ["../../../packages/api-headless-cms-bulk-actions/src"],
+      "@webiny/api-headless-cms-bulk-actions/*": [
+        "../../../packages/api-headless-cms-bulk-actions/src/*"
+      ],
+      "@webiny/api-headless-cms-bulk-actions": [
+        "../../../packages/api-headless-cms-bulk-actions/src"
+      ],
       "@webiny/api-headless-cms-ddb/*": ["../../../packages/api-headless-cms-ddb/src/*"],
       "@webiny/api-headless-cms-ddb": ["../../../packages/api-headless-cms-ddb/src"],
       "@webiny/api-record-locking/*": ["../../../packages/api-record-locking/src/*"],
