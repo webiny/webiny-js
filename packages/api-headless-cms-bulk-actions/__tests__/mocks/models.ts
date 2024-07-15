@@ -23,8 +23,16 @@ export const createMockModels = () => {
             group: group,
             name: "Car",
             description: "Car model",
-            fields: [],
-            layout: [],
+            fields: [
+                {
+                    id: "title",
+                    fieldId: "title",
+                    storageId: "text@title",
+                    type: "text",
+                    label: "Title"
+                }
+            ],
+            layout: [["title"]],
             titleFieldId: "title"
         }),
         createCmsModelPlugin({
@@ -35,8 +43,16 @@ export const createMockModels = () => {
             group: group,
             name: "Author",
             description: "Author model",
-            fields: [],
-            layout: [],
+            fields: [
+                {
+                    id: "title",
+                    fieldId: "title",
+                    storageId: "text@title",
+                    type: "text",
+                    label: "Title"
+                }
+            ],
+            layout: [["title"]],
             titleFieldId: "title"
         })
     ];
@@ -48,7 +64,15 @@ export const createPrivateMockModels = () => {
             createPrivateModel({
                 modelId: "private-model",
                 name: "Private Model",
-                fields: [],
+                fields: [
+                    {
+                        id: "title",
+                        fieldId: "title",
+                        storageId: "text@title",
+                        type: "text",
+                        label: "Title"
+                    }
+                ],
                 titleFieldId: "title"
             })
         )

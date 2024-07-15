@@ -18,9 +18,7 @@ function toPascalCase(str: string) {
     const words = str.split(" ");
 
     // Step 3: Capitalize the first letter of each word
-    const capitalizedWords = words.map(
-        word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-    );
+    const capitalizedWords = words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
 
     // Step 4: Join all the capitalized words together
     return capitalizedWords.join("");
