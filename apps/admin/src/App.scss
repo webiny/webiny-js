@@ -13,4 +13,10 @@
 // $webiny-theme-typography-font-family: "Source Sans Pro";
 
 // Import main styles
-@import "~@webiny/app-serverless-cms/styles.scss";
+//@import "~@webiny/app-serverless-cms/styles.scss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+* {
+  font-family: "Inter", sans-serif;
+}
