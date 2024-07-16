@@ -79,7 +79,7 @@ export class ExportContentEntries<
 
             const result = await zipCombiner.resolve({
                 source: prefix,
-                modelId: model.modelId,
+                model,
                 lastFileProcessed: input.lastFileProcessed,
                 isAborted,
                 isCloseToTimeout

@@ -132,12 +132,11 @@ export class ExportContentAssets<
             result = await zipper.execute({
                 fileAfter: input.fileAfter,
                 entryAfter: input.entryAfter,
-                exportAssets: input.exportAssets,
                 isAborted() {
                     return isAborted();
                 },
-                isCloseToTimeout() {
-                    return isCloseToTimeout();
+                isCloseToTimeout(seconds?: number) {
+                    return isCloseToTimeout(seconds);
                 }
             });
         } catch (ex) {

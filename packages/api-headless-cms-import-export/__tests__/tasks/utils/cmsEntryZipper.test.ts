@@ -40,7 +40,7 @@ describe("cms entry zipper", () => {
                 },
                 model,
                 after: undefined,
-                exportedAssets: false
+                exportAssets: false
             });
 
             expect(result).toEqual("should not happen");
@@ -67,7 +67,7 @@ describe("cms entry zipper", () => {
             },
             model,
             after: undefined,
-            exportedAssets: false
+            exportAssets: false
         });
 
         const buffer = getBuffer();
@@ -222,7 +222,7 @@ describe("cms entry zipper", () => {
             ],
             exportedAssets: false,
             assets: [],
-            model: model.modelId
+            model
         });
     });
 });

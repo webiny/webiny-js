@@ -9,7 +9,6 @@ export interface ICmsAssetsZipperExecuteParams {
     isAborted(): boolean;
     entryAfter: string | undefined;
     fileAfter: string | undefined;
-    exportAssets: boolean;
 }
 
 export type ICmsAssetsZipperExecuteResult =

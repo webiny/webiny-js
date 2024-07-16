@@ -1,4 +1,5 @@
 import { IIsCloseToTimeoutCallable } from "@webiny/tasks";
+import { CmsModel } from "@webiny/api-headless-cms/types";
 
 export interface IZipCombinerResolveResult {
     lastFileProcessed?: string;
@@ -10,7 +11,7 @@ export interface IZipCombinerResolveResult {
 
 export interface IZipCombinerResolveParams {
     source: string;
-    modelId: string;
+    model: CmsModel;
     lastFileProcessed: string | undefined;
     isAborted: () => boolean;
     isCloseToTimeout: IIsCloseToTimeoutCallable;

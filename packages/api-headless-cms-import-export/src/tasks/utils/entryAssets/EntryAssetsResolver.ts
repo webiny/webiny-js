@@ -20,18 +20,17 @@ export interface IEntryAssetsResolverParams {
     fetchFiles: IFetchFilesCb;
 }
 
-const createResolvedAsset = (file: Partial<File>): IResolvedAsset => {
-    const result = {
+const createResolvedAsset = (file: File): IResolvedAsset => {
+    const result: IResolvedAsset = {
         ...file,
         aliases: file.aliases || []
-    } as Partial<File>;
+    };
 
-    delete file.tenant;
-    delete file.locale;
-    delete file.accessControl;
-    delete file.webinyVersion;
+    delete result.tenant;
+    delete result.locale;
+    delete result.webinyVersion;
 
-    return result as IResolvedAsset;
+    return result;
 };
 
 export class EntryAssetsResolver implements IEntryAssetsResolver {

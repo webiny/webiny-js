@@ -48,16 +48,11 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
         params: ICmsAssetsZipperExecuteParams
     ): Promise<ICmsAssetsZipperExecuteResult> {
         const {
-            isCloseToTimeout: baseIsCloseToTimeout,
+            isCloseToTimeout,
             isAborted,
             entryAfter: inputEntryAfter,
-            fileAfter: inputFileAfter,
-            exportAssets
+            fileAfter: inputFileAfter
         } = params;
-
-        const isCloseToTimeout = () => {
-            return baseIsCloseToTimeout(14 * 60);
-        };
 
         const pointerStore = new PointerStore({
             entryMeta: {
@@ -78,6 +73,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
         const fetchItems = async (): Promise<void> => {
             const hasMoreItems = pointerStore.getEntryHasMoreItems();
             const isStoredFiles = pointerStore.getIsStoredFiles();
+            const currentCursor = pointerStore.getEntryCursor();
             pointerStore.setEntryMeta(nextMeta);
             if (isAborted()) {
                 pointerStore.setTaskIsAborted();
@@ -97,7 +93,10 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
                     Buffer.from(
                         JSON.stringify({
                             assets: allLoadedAssets,
-                            exportAssets
+                            size: allLoadedAssets.reduce((total, file) => {
+                                const size = parseInt(file.size);
+                                return total + size;
+                            }, 0)
                         })
                     ),
                     {
@@ -108,7 +107,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
                 pointerStore.setIsStoredFiles();
                 return;
             }
-            const { items, meta } = await this.entryFetcher(pointerStore.getEntryCursor());
+            const { items, meta } = await this.entryFetcher(currentCursor);
             /**
              * If no items were found, we will throw an error via abort() call.
              * This is internal from the lib we use.
@@ -163,13 +162,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
              */
             assets.push(...uniqueAssetsList);
             allLoadedAssets.push(...uniqueAssetsList);
-            /**
-             * If we are NOT exporting assets, we will only store the information about them in a zip file.
-             */
-            if (!exportAssets) {
-                fetchItems();
-                return;
-            }
+
             /**
              * We proceed with adding the assets into the zip file.
              */

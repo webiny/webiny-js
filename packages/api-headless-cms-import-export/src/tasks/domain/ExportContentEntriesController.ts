@@ -130,7 +130,6 @@ export class ExportContentEntriesController<
                 input: {
                     prefix,
                     modelId: input.modelId,
-                    exportAssets: input.exportAssets,
                     limit: input.limit,
                     where: input.where,
                     sort: input.sort,

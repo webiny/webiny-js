@@ -2,6 +2,7 @@ import { ZipCombiner } from "~/tasks/utils/zipCombiner";
 import { createUrlSigner } from "~tests/mocks/createUrlSigner";
 import { createZipper } from "~tests/mocks/createZipper";
 import { createFileFetcher } from "~tests/mocks/createFileFetcher";
+import { CmsModel } from "@webiny/api-headless-cms/types";
 
 describe("zip combiner", () => {
     it("should fail because no files to combine", async () => {
@@ -18,7 +19,9 @@ describe("zip combiner", () => {
                 isCloseToTimeout: () => false,
                 isAborted: () => false,
                 lastFileProcessed: undefined,
-                modelId: "aModel"
+                model: {
+                    modelId: "aModel"
+                } as CmsModel
             });
         } catch (ex) {
             expect(ex.message).toBe(`No files found in with prefix "test/source-".`);
@@ -60,7 +63,9 @@ describe("zip combiner", () => {
                 isCloseToTimeout: () => false,
                 isAborted: () => false,
                 lastFileProcessed: undefined,
-                modelId: "aModel"
+                model: {
+                    modelId: "aModel"
+                } as CmsModel
             });
         } catch (ex) {
             expect(ex.message).toBe(`Upload aborted.`);
@@ -98,7 +103,9 @@ describe("zip combiner", () => {
                 isAborted: () => true,
                 isCloseToTimeout: () => false,
                 lastFileProcessed: undefined,
-                modelId: "aModel"
+                model: {
+                    modelId: "aModel"
+                } as CmsModel
             });
         } catch (ex) {
             expect(ex.message).toBe(`Upload aborted.`);
@@ -130,7 +137,9 @@ describe("zip combiner", () => {
                 isAborted: () => false,
                 isCloseToTimeout: () => false,
                 lastFileProcessed: "some-unknown-file.zip",
-                modelId: "aModel"
+                model: {
+                    modelId: "aModel"
+                } as CmsModel
             });
         } catch (ex) {
             expect(ex.message).toBe(

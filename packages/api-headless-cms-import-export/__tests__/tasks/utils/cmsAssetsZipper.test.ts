@@ -23,8 +23,7 @@ const defaultZipperExecuteParams: ICmsAssetsZipperExecuteParams = {
         return false;
     },
     fileAfter: undefined,
-    entryAfter: undefined,
-    exportAssets: false
+    entryAfter: undefined
 };
 
 describe("cms assets zipper", () => {
