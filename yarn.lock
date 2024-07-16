@@ -18730,6 +18730,7 @@ __metadata:
     execa: ^5.0.0
     glob: ^7.1.2
     load-json-file: ^6.2.0
+    lodash: ^4.17.21
     ncp: ^2.0.0
     replace-in-path: ^1.1.0
     rimraf: ^5.0.5
@@ -33456,6 +33457,20 @@ __metadata:
   checksum: c65cb8d3f7ea5669edddb3217e4c96910a60d0d9a4b52d9847ff6b28b2d0277cd8464eee0ef85133cdee32605c57940cacdd04a9a019079b091b6bba4cb0ec22
   languageName: node
   linkType: hard
+
+"new-entry-wizard@workspace:extensions/new-entry-wizard":
+  version: 0.0.0-use.local
+  resolution: "new-entry-wizard@workspace:extensions/new-entry-wizard"
+  dependencies:
+    "@webiny/app-headless-cms": 0.0.0
+    "@webiny/app-headless-cms-common": 0.0.0
+    "@webiny/form": 0.0.0
+    "@webiny/react-router": 0.0.0
+    "@webiny/ui": 0.0.0
+    "@webiny/validation": 0.0.0
+    react: 18.2.0
+  languageName: unknown
+  linkType: soft
 
 "nice-try@npm:^1.0.4":
   version: 1.0.5
