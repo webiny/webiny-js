@@ -6,7 +6,7 @@ import { IIsCloseToTimeoutCallable } from "@webiny/tasks";
 export interface ICmsEntryZipperExecuteParams {
     isCloseToTimeout: IIsCloseToTimeoutCallable;
     isAborted(): boolean;
-    model: Pick<CmsModel, "modelId">;
+    model: CmsModel;
     after: string | undefined;
     exportAssets: boolean;
 }

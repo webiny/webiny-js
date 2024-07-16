@@ -20,7 +20,10 @@ describe("zip combiner", () => {
                 isAborted: () => false,
                 lastFileProcessed: undefined,
                 model: {
-                    modelId: "aModel"
+                    modelId: "aModel",
+                    group: {
+                        id: "aGroup"
+                    }
                 } as CmsModel
             });
         } catch (ex) {
@@ -64,7 +67,10 @@ describe("zip combiner", () => {
                 isAborted: () => false,
                 lastFileProcessed: undefined,
                 model: {
-                    modelId: "aModel"
+                    modelId: "aModel",
+                    group: {
+                        id: "aGroup"
+                    }
                 } as CmsModel
             });
         } catch (ex) {
@@ -104,7 +110,10 @@ describe("zip combiner", () => {
                 isCloseToTimeout: () => false,
                 lastFileProcessed: undefined,
                 model: {
-                    modelId: "aModel"
+                    modelId: "aModel",
+                    group: {
+                        id: "aGroup"
+                    }
                 } as CmsModel
             });
         } catch (ex) {
@@ -138,7 +147,10 @@ describe("zip combiner", () => {
                 isCloseToTimeout: () => false,
                 lastFileProcessed: "some-unknown-file.zip",
                 model: {
-                    modelId: "aModel"
+                    modelId: "aModel",
+                    group: {
+                        id: "aGroup"
+                    }
                 } as CmsModel
             });
         } catch (ex) {

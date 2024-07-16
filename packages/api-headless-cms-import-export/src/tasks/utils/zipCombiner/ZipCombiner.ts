@@ -6,6 +6,7 @@ import {
 } from "./abstractions/ZipCombiner";
 import { IFileFetcher, IFileFetcherFile } from "~/tasks/utils/fileFetcher";
 import { IUrlSigner } from "~/tasks/utils/urlSigner";
+import { sanitizeModel } from "@webiny/api-headless-cms/export/crud/sanitize";
 
 interface IFetchFilesParams {
     source: string;
@@ -84,9 +85,22 @@ export class ZipCombiner implements IZipCombiner {
             const file = files.shift();
             if (isCloseToTimeout() || !file) {
                 lastFileProcessed = file?.key;
-                await this.zipper.add(Buffer.from(JSON.stringify({ files: addedFiles, model })), {
-                    name: "manifest.json"
-                });
+                await this.zipper.add(
+                    Buffer.from(
+                        JSON.stringify({
+                            files: addedFiles,
+                            model: sanitizeModel(
+                                {
+                                    id: model.group.id
+                                },
+                                model
+                            )
+                        })
+                    ),
+                    {
+                        name: "manifest.json"
+                    }
+                );
                 finalize = true;
                 return;
             }

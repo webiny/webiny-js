@@ -97,15 +97,11 @@ describe("cms entry zipper", () => {
                 items: [
                     {
                         id: "1",
-                        values: {
-                            image: images[1].url
-                        }
+                        image: images[1].url
                     },
                     {
                         id: "2",
-                        values: {
-                            image: images[2].url
-                        }
+                        image: images[2].url
                     }
                 ],
                 meta: {
@@ -123,15 +119,11 @@ describe("cms entry zipper", () => {
                 items: [
                     {
                         id: "3",
-                        values: {
-                            image: images[3].url
-                        }
+                        image: images[3].url
                     },
                     {
                         id: "4",
-                        values: {
-                            image: images[4].url
-                        }
+                        image: images[4].url
                     }
                 ],
                 meta: {
@@ -150,15 +142,11 @@ describe("cms entry zipper", () => {
                 items: [
                     {
                         id: "5",
-                        values: {
-                            image: images[5].url
-                        }
+                        image: images[5].url
                     },
                     {
                         id: "6",
-                        values: {
-                            image: images[6].url
-                        }
+                        image: images[6].url
                     }
                 ],
                 meta: {
@@ -177,15 +165,11 @@ describe("cms entry zipper", () => {
                 items: [
                     {
                         id: "7",
-                        values: {
-                            image: images[7].url
-                        }
+                        image: images[7].url
                     },
                     {
                         id: "8",
-                        values: {
-                            image: images[8].url
-                        }
+                        image: images[8].url
                     }
                 ],
                 meta: {
@@ -220,9 +204,12 @@ describe("cms entry zipper", () => {
                     after: "6"
                 }
             ],
-            exportedAssets: false,
             assets: [],
-            model
+            model: expect.objectContaining({
+                group: model.group.id,
+                fields: model.fields,
+                modelId: model.modelId
+            })
         });
     });
 });

@@ -12,6 +12,7 @@ import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/abstractions/Cms
 import { IZipper } from "~/tasks/utils/zipper";
 import { IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
 import { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
+import { sanitizeModel } from "@webiny/api-headless-cms/export/crud/sanitize";
 
 export interface ICmsEntryZipperConfig {
     zipper: IZipper;
@@ -110,8 +111,12 @@ export class CmsEntryZipper implements ICmsEntryZipper {
                         JSON.stringify({
                             files,
                             assets,
-                            exportedAssets: exportAssets || false,
-                            model
+                            model: sanitizeModel(
+                                {
+                                    id: model.group.id
+                                },
+                                model
+                            )
                         })
                     ),
                     {
