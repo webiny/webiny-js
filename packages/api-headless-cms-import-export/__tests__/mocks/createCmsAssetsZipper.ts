@@ -18,6 +18,7 @@ import { IFileFetcher } from "~/tasks/utils/fileFetcher";
 import { createFileFetcher } from "~tests/mocks/createFileFetcher";
 import { createEntryAssetsResolver } from "~tests/mocks/createEntryAssetsResolver";
 import { createUrlSigner } from "~tests/mocks/createUrlSigner";
+import { WEBINY_EXPORT_ASSETS_EXTENSION } from "~/tasks/constants";
 
 interface ICreateCmsAssetsZipperParams {
     entryFetcher?: ICmsEntryFetcher;
@@ -40,7 +41,7 @@ export const createCmsAssetsZipper = (params: ICreateCmsAssetsZipperParams) => {
 
     const region = params.region || "eu-central-1";
     const bucket = params.bucket || "my-test-bucket";
-    const filename = params.filename || "test.zip";
+    const filename = params.filename || `test.${WEBINY_EXPORT_ASSETS_EXTENSION}`;
 
     const client = createS3Client({
         region

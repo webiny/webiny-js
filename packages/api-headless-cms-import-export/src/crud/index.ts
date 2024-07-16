@@ -8,7 +8,7 @@ import {
 } from "~/types";
 import { convertTaskToCmsImportExportRecord } from "~/crud/utils/importExportRecord";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK } from "~/tasks";
+import { EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK } from "~/tasks/constants";
 import {
     IExportContentEntriesControllerInput,
     IExportContentEntriesControllerOutput

@@ -11,6 +11,7 @@ import {
 import { mockClient } from "aws-sdk-client-mock";
 import { PassThrough } from "stream";
 import { Archiver } from "~/tasks/utils/archiver";
+import { WEBINY_EXPORT_EXTENSION } from "~/tasks/constants";
 
 interface ICreateZipperParams {
     region?: string;
@@ -29,7 +30,7 @@ export const createZipper = (params: ICreateZipperParams = {}) => {
 
     const region = params.region || "eu-central-1";
     const bucket = params.bucket || "my-test-bucket";
-    const filename = params.filename || "test.zip";
+    const filename = params.filename || `test.${WEBINY_EXPORT_EXTENSION}`;
     const client = createS3Client({
         region
     });

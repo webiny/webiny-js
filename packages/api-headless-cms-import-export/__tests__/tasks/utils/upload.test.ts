@@ -8,6 +8,7 @@ import {
 } from "@webiny/aws-sdk/client-s3";
 import { PassThrough } from "stream";
 import { Upload } from "~/tasks/utils/upload";
+import { WEBINY_EXPORT_EXTENSION } from "~/tasks/constants";
 
 describe("upload", () => {
     it("should properly create an instance of Upload", async () => {
@@ -21,7 +22,7 @@ describe("upload", () => {
             client: createS3Client(),
             bucket: "my-test-bucket",
             stream,
-            filename: "test.zip"
+            filename: `test.${WEBINY_EXPORT_EXTENSION}`
         });
 
         expect(upload.stream).toBeInstanceOf(PassThrough);
@@ -52,7 +53,7 @@ describe("upload", () => {
             client: createS3Client(),
             bucket: "my-test-bucket",
             stream,
-            filename: "test.zip"
+            filename: `test.${WEBINY_EXPORT_EXTENSION}`
         });
 
         expect(upload.stream).toBeInstanceOf(PassThrough);

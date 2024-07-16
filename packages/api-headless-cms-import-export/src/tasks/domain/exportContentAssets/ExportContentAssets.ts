@@ -26,6 +26,7 @@ import { getErrorProperties } from "@webiny/tasks/utils";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client";
 import { UniqueResolver } from "~/tasks/utils/uniqueResolver/UniqueResolver";
+import { WEBINY_EXPORT_ASSETS_EXTENSION } from "~/tasks/constants";
 
 export interface ICreateCmsAssetsZipperCallableConfig {
     filename: string;
@@ -44,7 +45,9 @@ const getFilename = (input: IExportContentAssetsInput): string => {
         .filter(item => item !== undefined)
         .join("-");
 
-    return `${input.prefix}/assets${current ? `-${current}` : ""}.zip`;
+    return `${input.prefix}/assets${
+        current ? `-${current}` : ""
+    }.${WEBINY_EXPORT_ASSETS_EXTENSION}`;
 };
 
 export interface IExportContentAssetsParams {

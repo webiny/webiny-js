@@ -13,7 +13,7 @@ import {
     IExportContentEntriesControllerOutput,
     IExportContentEntriesControllerOutputFile
 } from "~/tasks/domain/abstractions/ExportContentEntriesController";
-import { EXPORT_CONTENT_ASSETS_TASK, EXPORT_CONTENT_ENTRIES_TASK } from "~/tasks";
+import { EXPORT_CONTENT_ASSETS_TASK, EXPORT_CONTENT_ENTRIES_TASK } from "~/tasks/constants";
 import {
     IExportContentEntriesInput,
     IExportContentEntriesOutput

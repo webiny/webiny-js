@@ -16,6 +16,7 @@ import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
 import { createUrlSigner } from "~tests/mocks/createUrlSigner";
 import { IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
 import { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
+import { WEBINY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants";
 
 interface ICreateCmsEntryZipperParams {
     fetcher: ICmsEntryFetcher;
@@ -37,7 +38,7 @@ export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
 
     const region = params.region || "eu-central-1";
     const bucket = params.bucket || "my-test-bucket";
-    const filename = params.filename || "test.zip";
+    const filename = params.filename || `test.${WEBINY_EXPORT_ENTRIES_EXTENSION}`;
 
     const client = createS3Client({
         region

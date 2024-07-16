@@ -2,7 +2,7 @@ import { Options as BaseUploadOptions, Upload as BaseUpload } from "@webiny/aws-
 import { PassThrough } from "stream";
 import type { CompleteMultipartUploadCommandOutput, S3Client } from "@webiny/aws-sdk/client-s3";
 import { IAwsUpload, IUpload } from "./abstractions/Upload";
-import { GenericRecord } from "@webiny/api/types";
+import { getContentType } from "./getContentType";
 
 export interface IUploadConfig {
     client: S3Client;
@@ -14,20 +14,6 @@ export interface IUploadConfig {
 
 const defaultFactory = (options: BaseUploadOptions) => {
     return new BaseUpload(options);
-};
-
-const allowedContentTypes: GenericRecord<string, string> = {
-    zip: "application/zip",
-    json: "application/json",
-    txt: "text/plain"
-};
-
-const getContentType = (filename: string): string => {
-    const ext = filename.split(".").pop();
-    if (!ext || !allowedContentTypes[ext]) {
-        throw new Error(`Could not determine the file extension from the provided filename.`);
-    }
-    return allowedContentTypes[ext];
 };
 
 export class Upload implements IUpload {
