@@ -9,6 +9,7 @@ import { UrlSigner } from "~/tasks/utils/urlSigner";
 import { createUploadFactory } from "~/tasks/utils/upload";
 import { Archiver } from "~/tasks/utils/archiver";
 import { Zipper } from "~/tasks/utils/zipper";
+import { WEBINY_EXPORT_ASSETS_EXTENSION } from "~/tasks/constants";
 
 export const createExportContentAssets = () => {
     const client = createS3Client();
@@ -32,7 +33,8 @@ export const createExportContentAssets = () => {
                 gzip: true,
                 gzipOptions: {
                     level: 0
-                }
+                },
+                comment: WEBINY_EXPORT_ASSETS_EXTENSION
             }
         });
 

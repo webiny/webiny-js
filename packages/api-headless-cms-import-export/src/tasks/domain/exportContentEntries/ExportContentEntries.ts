@@ -16,7 +16,10 @@ import {
 } from "~/tasks/domain/abstractions/ExportContentEntries";
 import { createCmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/createCmsEntryFetcher";
 import { IContentEntryTraverser } from "@webiny/api-headless-cms";
-import { WEBINY_EXPORT_ENTRIES_EXTENSION, WEBINY_EXPORT_EXTENSION } from "~/tasks/constants";
+import {
+    WEBINY_EXPORT_ENTRIES_EXTENSION,
+    WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION
+} from "~/tasks/constants";
 
 export interface ICreateZipCombinerParams {
     target: string;
@@ -75,7 +78,7 @@ export class ExportContentEntries<
                 Array.isArray(input.combined) ? input.combined : []
             );
             const zipCombiner = this.createZipCombiner({
-                target: `${basePrefix}/entries${lastFileProcessed}.${WEBINY_EXPORT_EXTENSION}`
+                target: `${basePrefix}/entries${lastFileProcessed}.${WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION}`
             });
 
             const result = await zipCombiner.resolve({

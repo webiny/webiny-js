@@ -18,9 +18,8 @@ export const createExportContentAssets = () => {
                 /* webpackChunkName: "createExportContentAssets" */ "./domain/createExportContentAssets"
             );
 
-            const runner = createExportContentAssets();
-
             try {
+                const runner = createExportContentAssets();
                 return await runner.run(params);
             } catch (ex) {
                 return params.response.error(ex);

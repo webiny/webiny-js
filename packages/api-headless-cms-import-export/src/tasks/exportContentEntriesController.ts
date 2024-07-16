@@ -22,9 +22,8 @@ export const createExportContentEntriesControllerTask = () => {
                 /* webpackChunkName: "ExportContentEntriesController" */ "./domain/ExportContentEntriesController"
             );
 
-            const controller = new ExportContentEntriesController();
-
             try {
+                const controller = new ExportContentEntriesController();
                 return await controller.run(params);
             } catch (ex) {
                 return params.response.error(ex);

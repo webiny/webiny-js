@@ -2,13 +2,13 @@ import { GenericRecord } from "@webiny/api/types";
 import {
     WEBINY_EXPORT_ASSETS_EXTENSION,
     WEBINY_EXPORT_ENTRIES_EXTENSION,
-    WEBINY_EXPORT_EXTENSION
+    WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION
 } from "~/tasks/constants";
 
 const allowedContentTypes: GenericRecord<string, [string, ...string[]]> = {
     "application/zip": [
         "zip",
-        WEBINY_EXPORT_EXTENSION,
+        WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION,
         WEBINY_EXPORT_ENTRIES_EXTENSION,
         WEBINY_EXPORT_ASSETS_EXTENSION
     ],
@@ -19,7 +19,9 @@ const allowedContentTypes: GenericRecord<string, [string, ...string[]]> = {
 export const getContentType = (filename: string): string => {
     const ext = filename.split(".").pop();
     if (!ext) {
-        throw new Error(`Could not determine the file extension from the provided filename.`);
+        throw new Error(
+            `Could not determine the file extension from the provided filename: ${filename}`
+        );
     }
     for (const type in allowedContentTypes) {
         const extensions = allowedContentTypes[type];
@@ -28,5 +30,7 @@ export const getContentType = (filename: string): string => {
         }
     }
 
-    throw new Error(`Could not determine the file content type from the provided extension.`);
+    throw new Error(
+        `Could not determine the file content type from the provided extension: ${ext}.`
+    );
 };

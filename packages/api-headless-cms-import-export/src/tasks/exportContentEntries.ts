@@ -18,9 +18,8 @@ export const createExportContentEntriesTask = () => {
                 /* webpackChunkName: "createExportContentEntries" */ "./domain/createExportContentEntries"
             );
 
-            const runner = createExportContentEntries();
-
             try {
+                const runner = createExportContentEntries();
                 return await runner.run(params);
             } catch (ex) {
                 return params.response.error(ex);

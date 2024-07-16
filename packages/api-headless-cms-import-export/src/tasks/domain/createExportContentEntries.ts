@@ -15,6 +15,10 @@ import { Archiver } from "~/tasks/utils/archiver";
 import { Zipper } from "~/tasks/utils/zipper";
 import { EntryAssets } from "../utils/entryAssets";
 import { UniqueResolver } from "~/tasks/utils/uniqueResolver/UniqueResolver";
+import {
+    WEBINY_EXPORT_ENTRIES_EXTENSION,
+    WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION
+} from "~/tasks/constants";
 
 export const createExportContentEntries = () => {
     const client = createS3Client();
@@ -38,7 +42,8 @@ export const createExportContentEntries = () => {
                 gzip: true,
                 gzipOptions: {
                     level: 9
-                }
+                },
+                comment: WEBINY_EXPORT_ENTRIES_EXTENSION
             }
         });
 
@@ -73,7 +78,8 @@ export const createExportContentEntries = () => {
                 gzip: true,
                 gzipOptions: {
                     level: 0
-                }
+                },
+                comment: WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION
             }
         });
 

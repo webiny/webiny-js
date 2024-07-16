@@ -31,7 +31,24 @@ const createBufferData = (params: ICreateBufferDataParams) => {
     const { items, meta, after } = params;
     return Buffer.from(
         JSON.stringify({
-            items,
+            items: items.map((item: Partial<CmsEntry>) => {
+                delete item.tenant;
+                delete item.locale;
+                delete item.locked;
+                delete item.webinyVersion;
+                delete item.version;
+                delete item.entryId;
+                delete item.modelId;
+
+                const values = item.values;
+
+                delete item.values;
+
+                return {
+                    ...item,
+                    ...values
+                };
+            }),
             meta,
             after
         })
