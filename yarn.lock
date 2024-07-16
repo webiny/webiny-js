@@ -19170,10 +19170,12 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.24.0
+    "@material-design-icons/svg": ^0.14.3
     "@types/react": 18.2.79
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     antd: ^5.19.2
+    rc-collapse: ^3.7.3
     ttypescript: ^1.5.12
     typescript: 4.7.4
   peerDependencies:
@@ -19628,6 +19630,7 @@ __metadata:
     "@editorjs/list": ^1.6.0
     "@editorjs/quote": ^2.4.0
     "@editorjs/underline": ^1.0.0
+    "@material-design-icons/svg": ^0.14.3
     "@types/react": 18.2.79
     "@webiny/app-admin": 0.0.0
     "@webiny/app-admin-users-cognito": 0.0.0
@@ -36355,7 +36358,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rc-collapse@npm:~3.7.3":
+"rc-collapse@npm:^3.7.3, rc-collapse@npm:~3.7.3":
   version: 3.7.3
   resolution: "rc-collapse@npm:3.7.3"
   dependencies:
