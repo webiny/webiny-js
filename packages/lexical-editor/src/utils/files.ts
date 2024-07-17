@@ -11,7 +11,7 @@ export interface FileManagerFileItemMetaItem {
     value: any;
 }
 
- export const fileToImagePayload = (file: FileManagerFileItem): ImagePayload | null => {
+export const fileToImagePayload = (file: FileManagerFileItem): ImagePayload | null => {
     const imagePayload = {} as ImagePayload;
     imagePayload["id"] = file.id;
     imagePayload["src"] = file.src;
