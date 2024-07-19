@@ -4,51 +4,48 @@ import fs from "node:fs";
 import fsAsync from "node:fs/promises";
 import { CliCommandScaffoldCallableArgs } from "@webiny/cli-plugin-scaffold/types";
 
-// @ts-expect-error (missing types)
-import downloadFolderFromGitHub from "github-directory-downloader";
-
 import { linkAllExtensions } from "./generators/utils/linkAllExtensions";
 import { Input } from "./types";
+import { downloadFolderFromS3 } from "./downloadAndLinkExtension/downloadFolderFromS3";
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
-const WEBINY_EXAMPLES_REPO_URL = "https://github.com/webiny/webiny-examples";
+
+const getS3Bucket = async () => {
+    return { name: "wby-examples-test", region: "us-east-1" };
+};
 
 export const downloadAndLinkExtension = async ({
     input,
     ora,
     context
 }: CliCommandScaffoldCallableArgs<Input>) => {
-    const source = input.templateArgs!;
     const currentWebinyVersion = context.version;
-
-    let url = source;
-    if (!url.startsWith("https")) {
-        url = WEBINY_EXAMPLES_REPO_URL + "/tree/master/" + url;
-    }
 
     try {
         ora.start(`Downloading extension...`);
 
+        const s3Bucket = await getS3Bucket();
+
         const randomId = String(Date.now());
-        const tempDownloadFolderPath = path.join(os.tmpdir(), `wby-ext-${randomId}`);
-        const stats = await downloadFolderFromGitHub(url, tempDownloadFolderPath, {
-            muteLog: true,
-            requests: 2
+        const downloadFolderPath = path.join(os.tmpdir(), `wby-ext-${randomId}`);
+        await downloadFolderFromS3({
+            bucketName: s3Bucket.name,
+            bucketRegion: s3Bucket.region,
+            bucketFolderKey: input.templateArgs!,
+            downloadFolderPath
         });
 
-        console.log(stats)
-        const withoutVersions = fs.existsSync(path.join(tempDownloadFolderPath, "extensions"));
+        const withoutVersions = fs.existsSync(path.join(downloadFolderPath, "extensions"));
         if (withoutVersions) {
-            const extensionsFolderToCopy = path.join(tempDownloadFolderPath, "extensions");
+            const extensionsFolderToCopy = path.join(downloadFolderPath, "extensions");
             await fsAsync.cp(extensionsFolderToCopy, EXTENSIONS_ROOT_FOLDER, {
                 recursive: true
             });
         } else {
-            // sleeep 1000
             await new Promise(resolve => setTimeout(resolve, 1000));
 
             const availableVersions = await fsAsync
-                .readdir(tempDownloadFolderPath)
+                .readdir(downloadFolderPath)
                 .then(versions => {
                     return versions.map(v => v.replace(".x", ".0")).sort();
                 });
@@ -71,7 +68,7 @@ export const downloadAndLinkExtension = async ({
             versionToUse = versionToUse.replace(".0", ".x");
 
             const extensionsFolderToCopy = path.join(
-                tempDownloadFolderPath,
+                downloadFolderPath,
                 versionToUse,
                 "extensions"
             );

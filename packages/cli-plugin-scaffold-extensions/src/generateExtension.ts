@@ -127,6 +127,8 @@ export const generateExtension = async ({ input, ora, context }: CliCommandScaff
 
         ora.succeed(`New extension created in ${log.success.hl(location)}.`);
     } catch (err) {
-       t
+        ora.fail("Could not create extension. Please check the logs below.");
+        console.log();
+        console.log(err);
     }
 };
