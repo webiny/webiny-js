@@ -678,7 +678,7 @@ describe("Folder Level Permissions", () => {
                     hasFolders: true,
                     hasContent: false
                 },
-                message: "Delete all child folders and files before proceeding."
+                message: "Delete all child folders and entries before proceeding."
             }
         });
 
