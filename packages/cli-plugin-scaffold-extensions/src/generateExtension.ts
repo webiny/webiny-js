@@ -1,4 +1,4 @@
-import {CliCommandScaffoldCallableArgs, PackageJson} from "@webiny/cli-plugin-scaffold/types";
+import { CliCommandScaffoldCallableArgs, PackageJson } from "@webiny/cli-plugin-scaffold/types";
 import path from "path";
 import util from "util";
 import ncpBase from "ncp";
@@ -22,7 +22,11 @@ const ncp = util.promisify(ncpBase.ncp);
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
-export const generateExtension = async ({ input, ora, context }: CliCommandScaffoldCallableArgs<Input>) => {
+export const generateExtension = async ({
+    input,
+    ora,
+    context
+}: CliCommandScaffoldCallableArgs<Input>) => {
     const project = getProject();
 
     try {
