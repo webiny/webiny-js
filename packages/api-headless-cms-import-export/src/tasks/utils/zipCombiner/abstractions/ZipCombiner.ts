@@ -4,9 +4,6 @@ import { CmsModel } from "@webiny/api-headless-cms/types";
 export interface IZipCombinerResolveResult {
     lastFileProcessed?: string;
     key: string;
-    url: string;
-    bucket: string;
-    expiresOn: Date;
 }
 
 export interface IZipCombinerResolveParams {

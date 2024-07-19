@@ -13,7 +13,6 @@ import { Upload } from "~/tasks/utils/upload";
 import { Zipper } from "~/tasks/utils/zipper";
 import { Archiver } from "~/tasks/utils/archiver";
 import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
-import { createUrlSigner } from "~tests/mocks/createUrlSigner";
 import { IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
 import { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
 import { WEBINY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants";
@@ -72,11 +71,8 @@ export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
         archiver
     });
 
-    const urlSigner = createUrlSigner();
-
     const cmsEntryZipper = new CmsEntryZipper({
         zipper,
-        urlSigner,
         fetcher: params.fetcher,
         entryAssets: params.entryAssets,
         uniqueAssetsResolver: params.uniqueAssetsResolver

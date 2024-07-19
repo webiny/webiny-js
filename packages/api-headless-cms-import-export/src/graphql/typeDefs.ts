@@ -1,4 +1,6 @@
-export const createTypeDefs = (models: [string, ...string[]]): string => {
+import { NonEmptyArray } from "@webiny/api/types";
+
+export const createTypeDefs = (models: NonEmptyArray<string>): string => {
     return /* GraphQL */ `
         enum ExportContentEntriesExportRecordStatusEnum {
             pending
@@ -9,8 +11,8 @@ export const createTypeDefs = (models: [string, ...string[]]): string => {
         }
         
         type ExportContentEntriesExportRecordFile {
-            url: String!
-            expiresOn: DateTime!
+            get: String!
+            head: String!
             type: String!
         }
         
@@ -29,14 +31,33 @@ export const createTypeDefs = (models: [string, ...string[]]): string => {
             data: ExportContentEntriesExportRecord
             error: CmsError
         }
-        
-        type StartExportContentEntriesResponse {
-            data: ExportContentEntriesExportRecord
-            error: CmsError
-        }
 
         type AbortExportContentEntriesResponse {
             data: ExportContentEntriesExportRecord
+            error: CmsError
+        }
+        
+        type ValidateImportFromUrlResponseDataFileError {
+            message: String!
+            data: JSON
+        }
+        
+        type ValidateImportFromUrlResponseDataFile {
+            get: String!
+            head: String!
+            type: String!
+            size: Int!
+            error: ValidateImportFromUrlResponseDataFileError
+        }
+        
+        type ValidateImportFromUrlResponseData {
+            id: ID!
+            files: [ValidateImportFromUrlResponseDataFile!]
+            error: CmsError
+        }
+        
+        type ValidateImportFromUrlResponse {
+            data: ValidateImportFromUrlResponseData
             error: CmsError
         }
         
@@ -46,17 +67,19 @@ export const createTypeDefs = (models: [string, ...string[]]): string => {
         
         extend type Query {
             getExportContentEntries(id: ID!): ExportContentEntriesResponse!
+            getValidateImportFromUrl(id: ID!): ValidateImportFromUrlResponse!
         }
 
         extend type Mutation {
-            startExportContentEntries(
+            exportContentEntries(
                 modelId: ExportContentEntriesModelsListEnum!
                 # limit on how much entries will be fetched in a single batch - mostly used for testing
                 limit: Int
                 # do we export assets as well? default is false
                 exportAssets: Boolean
-            ): StartExportContentEntriesResponse!
+            ): ExportContentEntriesResponse!
             abortExportContentEntries(id: ID!): AbortExportContentEntriesResponse!
+            validateImportFromUrl(data: String!): ValidateImportFromUrlResponse!
         }
     `;
 };

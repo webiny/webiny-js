@@ -2,6 +2,9 @@ export const EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK = "exportContentEntriesContr
 export const EXPORT_CONTENT_ENTRIES_TASK = "exportContentEntries";
 export const EXPORT_CONTENT_ASSETS_TASK = "exportContentAssets";
 
+export const IMPORT_CONTENT_ENTRIES_CONTROLLER_TASK = "importContentEntriesController";
+export const VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK = "validateImportFromUrlIntegrity";
+
 export const WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION = "we.zip";
 export const WEBINY_EXPORT_ENTRIES_EXTENSION = "wee.zip";
 export const WEBINY_EXPORT_ASSETS_EXTENSION = "wea.zip";

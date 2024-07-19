@@ -5,6 +5,7 @@
     { "path": "../api-file-manager/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../tasks/tsconfig.build.json" },

@@ -90,8 +90,7 @@ export class ExportContentEntries<
             });
 
             combined.push({
-                url: result.url,
-                expiresOn: result.expiresOn.toISOString()
+                key: result.key
             });
 
             if (result.lastFileProcessed) {

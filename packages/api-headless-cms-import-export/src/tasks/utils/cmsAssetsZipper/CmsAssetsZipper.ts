@@ -1,5 +1,4 @@
 import { IZipper, IZipperDoneResult } from "~/tasks/utils/zipper";
-import { IUrlSigner } from "~/tasks/utils/urlSigner";
 import { IEntryAssets, IEntryAssetsResolver, IResolvedAsset } from "~/tasks/utils/entryAssets";
 import { ICmsEntryFetcher } from "../cmsEntryFetcher";
 import {
@@ -20,7 +19,6 @@ const manifestFileName = "manifest.json";
 
 export interface ICmsAssetsZipperConfig {
     zipper: IZipper;
-    urlSigner: IUrlSigner;
     entryFetcher: ICmsEntryFetcher;
     createEntryAssets: () => IEntryAssets;
     createEntryAssetsResolver: () => IEntryAssetsResolver;
@@ -29,7 +27,6 @@ export interface ICmsAssetsZipperConfig {
 
 export class CmsAssetsZipper implements ICmsAssetsZipper {
     private readonly zipper: IZipper;
-    private readonly urlSigner: IUrlSigner;
     private readonly entryFetcher: ICmsEntryFetcher;
     private readonly createEntryAssets: () => IEntryAssets;
     private readonly createEntryAssetsResolver: () => IEntryAssetsResolver;
@@ -37,7 +34,6 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
 
     public constructor(params: ICmsAssetsZipperConfig) {
         this.zipper = params.zipper;
-        this.urlSigner = params.urlSigner;
         this.entryFetcher = params.entryFetcher;
         this.createEntryAssets = params.createEntryAssets;
         this.createEntryAssetsResolver = params.createEntryAssetsResolver;
@@ -263,18 +259,16 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
             throw new Error("Failed to upload the file.");
         }
 
-        const signed = await this.urlSigner.sign({
-            key: result.Key
-        });
-
         if (pointerStore.getEntryCursor() || pointerStore.getFileCursor()) {
             return new CmsAssetsZipperExecuteContinueResult({
-                ...signed,
+                key: result.Key,
                 entryCursor: pointerStore.getEntryCursor(),
                 fileCursor: pointerStore.getFileCursor()
             });
         }
 
-        return new CmsAssetsZipperExecuteDoneResult(signed);
+        return new CmsAssetsZipperExecuteDoneResult({
+            key: result.Key
+        });
     }
 }

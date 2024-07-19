@@ -1,9 +1,18 @@
-import { GetObjectCommand, getSignedUrl, S3Client } from "@webiny/aws-sdk/client-s3";
+import {
+    GetObjectCommand,
+    getSignedUrl,
+    HeadObjectCommand,
+    S3Client
+} from "@webiny/aws-sdk/client-s3";
 import { IUrlSigner, IUrlSignerSignParams, IUrlSignerSignResult } from "./abstractions/UrlSigner";
 
 export interface IUrlSignerParams {
     client: S3Client;
     bucket: string;
+}
+
+export interface IObjectCommandConstructor {
+    new (params: { Bucket: string; Key: string }): GetObjectCommand | HeadObjectCommand;
 }
 
 export class UrlSigner implements IUrlSigner {
@@ -15,19 +24,32 @@ export class UrlSigner implements IUrlSigner {
         this.bucket = params.bucket;
     }
 
-    public async sign(params: IUrlSignerSignParams): Promise<IUrlSignerSignResult> {
-        const timeout = params.timeout || 604800; // 1 week default
+    public async get(params: IUrlSignerSignParams): Promise<IUrlSignerSignResult> {
+        return this.sign(params, GetObjectCommand);
+    }
+
+    public async head(params: IUrlSignerSignParams): Promise<IUrlSignerSignResult> {
+        return this.sign(params, HeadObjectCommand);
+    }
+
+    private async sign(
+        params: IUrlSignerSignParams,
+        command: IObjectCommandConstructor
+    ): Promise<IUrlSignerSignResult> {
+        const expiresIn = params.timeout || 604800; // 1 week default
+        const expiresOn = new Date(new Date().getTime() + expiresIn * 1000);
+
         const url = await getSignedUrl(
             this.client,
-            new GetObjectCommand({
+            new command({
                 Bucket: this.bucket,
                 Key: params.key
             }),
             {
-                expiresIn: timeout
+                expiresIn
             }
         );
-        const expiresOn = new Date(new Date().getTime() + timeout);
+
         return {
             url,
             bucket: this.bucket,

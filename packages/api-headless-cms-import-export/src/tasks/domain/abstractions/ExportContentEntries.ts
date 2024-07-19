@@ -2,6 +2,10 @@ import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { Context } from "~/types";
 
+export interface IExportContentEntriesInputFile {
+    key: string;
+}
+
 export interface IExportContentEntriesInput {
     modelId: string;
     prefix: string;
@@ -12,12 +16,11 @@ export interface IExportContentEntriesInput {
     after?: string;
     combine?: boolean;
     lastFileProcessed?: string;
-    combined?: IExportContentEntriesOutputFile[];
+    combined?: IExportContentEntriesInputFile[];
 }
 
 export interface IExportContentEntriesOutputFile {
-    url: string;
-    expiresOn: string;
+    key: string;
 }
 
 export interface IExportContentEntriesOutput extends ITaskResponseDoneResultOutput {

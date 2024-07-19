@@ -8,7 +8,6 @@ import {
     ICreateZipCombinerParams
 } from "~/tasks/domain/exportContentEntries/ExportContentEntries";
 import { CmsEntryZipper } from "../utils/cmsEntryZipper";
-import { UrlSigner } from "~/tasks/utils/urlSigner";
 import { FileFetcher } from "~/tasks/utils/fileFetcher";
 import { createUploadFactory } from "~/tasks/utils/upload";
 import { Archiver } from "~/tasks/utils/archiver";
@@ -24,11 +23,6 @@ export const createExportContentEntries = () => {
     const client = createS3Client();
     const bucket = getBucket();
     const createUpload = createUploadFactory({
-        client,
-        bucket
-    });
-
-    const urlSigner = new UrlSigner({
         client,
         bucket
     });
@@ -54,7 +48,6 @@ export const createExportContentEntries = () => {
 
         return new CmsEntryZipper({
             fetcher: config.fetcher,
-            urlSigner,
             zipper,
             entryAssets: new EntryAssets({
                 uniqueResolver: new UniqueResolver(),
@@ -90,8 +83,7 @@ export const createExportContentEntries = () => {
 
         return new ZipCombiner({
             fileFetcher,
-            zipper,
-            urlSigner
+            zipper
         });
     };
 

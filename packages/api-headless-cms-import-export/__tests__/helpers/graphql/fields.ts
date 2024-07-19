@@ -10,8 +10,9 @@ export const createFields = () => {
         finishedOn
         modelId
         files {
-            url
-            expiresOn
+            get
+            head
+            type
         }
         status
     `;

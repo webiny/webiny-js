@@ -17,7 +17,6 @@ import { IEntryAssets, IEntryAssetsResolver } from "~/tasks/utils/entryAssets";
 import { IFileFetcher } from "~/tasks/utils/fileFetcher";
 import { createFileFetcher } from "~tests/mocks/createFileFetcher";
 import { createEntryAssetsResolver } from "~tests/mocks/createEntryAssetsResolver";
-import { createUrlSigner } from "~tests/mocks/createUrlSigner";
 import { WEBINY_EXPORT_ASSETS_EXTENSION } from "~/tasks/constants";
 
 interface ICreateCmsAssetsZipperParams {
@@ -75,8 +74,6 @@ export const createCmsAssetsZipper = (params: ICreateCmsAssetsZipperParams) => {
         archiver
     });
 
-    const urlSigner = createUrlSigner();
-
     const cmsAssetsZipper = new CmsAssetsZipper({
         fileFetcher: createFileFetcher(),
         entryFetcher: async () => {
@@ -93,7 +90,6 @@ export const createCmsAssetsZipper = (params: ICreateCmsAssetsZipperParams) => {
             return createEntryAssetsResolver();
         },
         zipper,
-        urlSigner,
         ...params
     });
 

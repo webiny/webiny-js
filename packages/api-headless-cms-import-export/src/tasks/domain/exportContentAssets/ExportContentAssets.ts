@@ -165,8 +165,7 @@ export class ExportContentAssets<
             return response.done({
                 files: files.concat([
                     {
-                        url: result.url,
-                        expiresOn: result.expiresOn.toISOString()
+                        key: result.key
                     }
                 ])
             } as O);
@@ -195,8 +194,7 @@ export class ExportContentAssets<
                 entryAfter: result.entryCursor,
                 files: files.concat([
                     {
-                        url: result.url,
-                        expiresOn: result.expiresOn.toISOString()
+                        key: result.key
                     }
                 ])
             });

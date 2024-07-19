@@ -28,7 +28,7 @@ describe("get export content entries", () => {
 
         const context = await createContext();
 
-        const task = await context.cmsImportExport.startExportContentEntries({
+        const task = await context.cmsImportExport.exportContentEntries({
             modelId: AUTHOR_MODEL_ID,
             exportAssets: false
         });
@@ -56,7 +56,7 @@ describe("get export content entries", () => {
 
         const context = await createContext();
 
-        const task = await context.cmsImportExport.startExportContentEntries({
+        const task = await context.cmsImportExport.exportContentEntries({
             modelId: AUTHOR_MODEL_ID,
             exportAssets: false
         });

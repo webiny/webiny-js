@@ -1,5 +1,4 @@
 import { CmsEntry, CmsEntryMeta } from "@webiny/api-headless-cms/types";
-import { IUrlSigner } from "~/tasks/utils/urlSigner";
 import { IFileMeta } from "../types";
 import { CmsEntryZipperExecuteContinueResult } from "./CmsEntryZipperExecuteContinueResult";
 import { CmsEntryZipperExecuteDoneResult } from "./CmsEntryZipperExecuteDoneResult";
@@ -16,7 +15,6 @@ import { sanitizeModel } from "@webiny/api-headless-cms/export/crud/sanitize";
 
 export interface ICmsEntryZipperConfig {
     zipper: IZipper;
-    urlSigner: IUrlSigner;
     fetcher: ICmsEntryFetcher;
     entryAssets: IEntryAssets;
     uniqueAssetsResolver: IUniqueResolver<IAsset>;
@@ -58,14 +56,12 @@ const createBufferData = (params: ICreateBufferDataParams) => {
 
 export class CmsEntryZipper implements ICmsEntryZipper {
     private readonly zipper: IZipper;
-    private readonly urlSigner: IUrlSigner;
     private readonly fetcher: ICmsEntryFetcher;
     private readonly entryAssets: IEntryAssets;
     private readonly uniqueAssetsResolver: IUniqueResolver<IAsset>;
 
     public constructor(params: ICmsEntryZipperConfig) {
         this.zipper = params.zipper;
-        this.urlSigner = params.urlSigner;
         this.fetcher = params.fetcher;
         this.entryAssets = params.entryAssets;
         this.uniqueAssetsResolver = params.uniqueAssetsResolver;
@@ -194,15 +190,8 @@ export class CmsEntryZipper implements ICmsEntryZipper {
             });
         }
 
-        const { url, bucket, key, expiresOn } = await this.urlSigner.sign({
-            key: result.Key
-        });
-
         return new CmsEntryZipperExecuteDoneResult({
-            key,
-            url,
-            bucket,
-            expiresOn
+            key: result.Key
         });
     }
 }

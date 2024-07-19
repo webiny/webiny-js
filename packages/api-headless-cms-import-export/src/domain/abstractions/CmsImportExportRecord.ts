@@ -1,10 +1,11 @@
 import { CmsIdentity } from "@webiny/api-headless-cms/types";
 import { TaskDataStatus } from "@webiny/tasks";
+import { CmsImportExportFileType } from "~/types";
 
 export interface ICmsImportExportRecordFile {
-    url: string;
-    expiresOn: string;
-    type: "entries" | "assets";
+    get: string;
+    head: string;
+    type: CmsImportExportFileType;
 }
 
 export interface ICmsImportExportRecord {

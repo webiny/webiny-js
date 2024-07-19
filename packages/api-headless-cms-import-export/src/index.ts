@@ -7,7 +7,8 @@ import { createHeadlessCmsImportExportCrud } from "~/crud";
 import {
     createExportContentAssets,
     createExportContentEntriesControllerTask,
-    createExportContentEntriesTask
+    createExportContentEntriesTask,
+    createValidateImportFromUrlIntegrityTask
 } from "~/tasks";
 
 export const createHeadlessCmsImportExport = (): Plugin[] => {
@@ -20,11 +21,13 @@ export const createHeadlessCmsImportExport = (): Plugin[] => {
         context.plugins.register(
             createExportContentEntriesControllerTask(),
             createExportContentEntriesTask(),
-            createExportContentAssets()
+            createExportContentAssets(),
+            createValidateImportFromUrlIntegrityTask()
         );
 
         context.cmsImportExport = await createHeadlessCmsImportExportCrud(context);
         await attachHeadlessCmsImportExportGraphQL(context);
     });
+    plugin.name = "headlessCms.context.importExport";
     return [plugin];
 };

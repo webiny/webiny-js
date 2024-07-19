@@ -1,12 +1,10 @@
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
-import { Context } from "~/types";
+import { CmsImportExportFileType, Context } from "~/types";
 
 export enum ExportContentEntriesControllerState {
     entryExport = "entryExport",
-    mergeEntryExports = "mergeEntryExports",
-    assetsExport = "assetsExport",
-    mergeAssetExports = "mergeAssetExports"
+    assetsExport = "assetsExport"
 }
 
 export interface IExportContentEntriesControllerInput {
@@ -23,9 +21,9 @@ export interface IExportContentEntriesControllerInput {
 }
 
 export interface IExportContentEntriesControllerOutputFile {
-    url: string;
-    expiresOn: string;
-    type: "entries" | "assets";
+    head: string;
+    get: string;
+    type: CmsImportExportFileType;
 }
 
 export interface IExportContentEntriesControllerOutput extends ITaskResponseDoneResultOutput {

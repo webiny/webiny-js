@@ -1,11 +1,11 @@
-import { GenericRecord } from "@webiny/api/types";
+import { GenericRecord, NonEmptyArray } from "@webiny/api/types";
 import {
     WEBINY_EXPORT_ASSETS_EXTENSION,
     WEBINY_EXPORT_ENTRIES_EXTENSION,
     WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION
 } from "~/tasks/constants";
 
-const allowedContentTypes: GenericRecord<string, [string, ...string[]]> = {
+const allowedContentTypes: GenericRecord<string, NonEmptyArray<string>> = {
     "application/zip": [
         "zip",
         WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION,

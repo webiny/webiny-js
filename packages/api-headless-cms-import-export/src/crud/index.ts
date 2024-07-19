@@ -3,38 +3,55 @@ import {
     Context,
     ICmsImportExportObjectAbortExportParams,
     ICmsImportExportObjectGetExportParams,
+    ICmsImportExportObjectGetValidateImportFromUrlParams,
+    ICmsImportExportObjectGetValidateImportFromUrlResult,
     ICmsImportExportObjectStartExportParams,
+    ICmsImportExportObjectValidateImportFromUrlParams,
+    ICmsImportExportObjectValidateImportFromUrlResult,
     ICmsImportExportRecord
 } from "~/types";
 import { convertTaskToCmsImportExportRecord } from "~/crud/utils/importExportRecord";
-import { NotFoundError } from "@webiny/handler-graphql";
 import { EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK } from "~/tasks/constants";
 import {
     IExportContentEntriesControllerInput,
     IExportContentEntriesControllerOutput
 } from "~/tasks/domain/abstractions/ExportContentEntriesController";
+import {
+    GetExportContentEntriesUseCase,
+    GetValidateImportFromUrlUseCase,
+    ValidateImportFromUrlIntegrityUseCase,
+    ValidateImportFromUrlUseCase
+} from "./useCases";
+import { NotFoundError } from "@webiny/handler-graphql";
 
 export const createHeadlessCmsImportExportCrud = async (
     context: Context
 ): Promise<CmsImportExportObject> => {
+    const getExportContentEntriesUseCase = new GetExportContentEntriesUseCase({
+        getTask: context.tasks.getTask
+    });
+
+    const validateImportFromUrlUseCase = new ValidateImportFromUrlUseCase();
+    const validateImportFromUrlIntegrityUseCase = new ValidateImportFromUrlIntegrityUseCase({
+        triggerTask: context.tasks.trigger
+    });
+    const getValidateImportFromUrlIntegrityUseCase = new GetValidateImportFromUrlUseCase({
+        getTask: context.tasks.getTask
+    });
+
     const getExportContentEntries = async (
         params: ICmsImportExportObjectGetExportParams
     ): Promise<ICmsImportExportRecord> => {
-        const task = await context.tasks.getTask<
-            IExportContentEntriesControllerInput,
-            IExportContentEntriesControllerOutput
-        >(params.id);
-
-        if (!task) {
+        const result = await getExportContentEntriesUseCase.execute(params);
+        if (!result) {
             throw new NotFoundError(
                 `Export content entries task with id "${params.id}" not found.`
             );
         }
-
-        return convertTaskToCmsImportExportRecord(task);
+        return result;
     };
 
-    const startExportContentEntries = async (
+    const exportContentEntries = async (
         params: ICmsImportExportObjectStartExportParams
     ): Promise<ICmsImportExportRecord> => {
         const task = await context.tasks.trigger<
@@ -65,9 +82,39 @@ export const createHeadlessCmsImportExportCrud = async (
         return convertTaskToCmsImportExportRecord(task);
     };
 
+    const validateImportFromUrl = async (
+        params: ICmsImportExportObjectValidateImportFromUrlParams
+    ): Promise<ICmsImportExportObjectValidateImportFromUrlResult> => {
+        const { files } = await validateImportFromUrlUseCase.execute({
+            data: params.data
+        });
+        const result = await validateImportFromUrlIntegrityUseCase.execute({
+            files
+        });
+
+        return {
+            files,
+            id: result.id
+        };
+    };
+
+    const getValidateImportFromUrl = async (
+        params: ICmsImportExportObjectGetValidateImportFromUrlParams
+    ): Promise<ICmsImportExportObjectGetValidateImportFromUrlResult> => {
+        const result = await getValidateImportFromUrlIntegrityUseCase.execute(params);
+        if (!result) {
+            throw new NotFoundError(
+                `Validate import from URL task with id "${params.id}" not found.`
+            );
+        }
+        return result;
+    };
+
     return {
         getExportContentEntries,
-        startExportContentEntries,
-        abortExportContentEntries
+        exportContentEntries,
+        abortExportContentEntries,
+        validateImportFromUrl,
+        getValidateImportFromUrl
     };
 };

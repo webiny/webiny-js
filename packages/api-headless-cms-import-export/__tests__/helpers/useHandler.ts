@@ -22,7 +22,7 @@ import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
 import { InvokeParams } from "./types";
 import { createHeadlessCmsImportExport } from "~/index";
 import { createGetExportContentEntries } from "./graphql/getExportContentEntries";
-import { createStartExportContentEntries } from "./graphql/startExportContentEntries";
+import { createExportContentEntries } from "./graphql/exportContentEntries";
 import { createAbortExportContentEntries } from "./graphql/abortExportContentEntries";
 import { createMockTaskTriggerTransportPlugin } from "@webiny/project-utils/testing/tasks";
 
@@ -55,12 +55,12 @@ export const useHandler = <C extends Context = Context>(params?: UseHandlerParam
             storageOperations: cmsStorage.storageOperations
         }),
         createHeadlessCmsGraphQL(),
+        createBackgroundTaskContext(),
         createHeadlessCmsImportExport(),
         createFileManagerContext({
             storageOperations: fileManagerStorage.storageOperations
         }),
         graphQLHandlerPlugins(),
-        createBackgroundTaskContext(),
         createRawEventHandler(async ({ context }) => {
             return context;
         }),
@@ -106,7 +106,7 @@ export const useHandler = <C extends Context = Context>(params?: UseHandlerParam
     return {
         invoke,
         getExportContentEntries: createGetExportContentEntries(invoke),
-        startExportContentEntries: createStartExportContentEntries(invoke),
+        exportContentEntries: createExportContentEntries(invoke),
         abortExportContentEntries: createAbortExportContentEntries(invoke),
         createContext: async () => {
             return await rawHandler({}, {} as LambdaContext);

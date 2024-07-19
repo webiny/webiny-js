@@ -5,7 +5,6 @@ import {
 import { createS3Client } from "@webiny/aws-sdk/client-s3";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
 import { CmsAssetsZipper } from "../utils/cmsAssetsZipper";
-import { UrlSigner } from "~/tasks/utils/urlSigner";
 import { createUploadFactory } from "~/tasks/utils/upload";
 import { Archiver } from "~/tasks/utils/archiver";
 import { Zipper } from "~/tasks/utils/zipper";
@@ -15,11 +14,6 @@ export const createExportContentAssets = () => {
     const client = createS3Client();
     const bucket = getBucket();
     const createUpload = createUploadFactory({
-        client,
-        bucket
-    });
-
-    const urlSigner = new UrlSigner({
         client,
         bucket
     });
@@ -48,7 +42,6 @@ export const createExportContentAssets = () => {
             createEntryAssets: config.createEntryAssets,
             createEntryAssetsResolver: config.createEntryAssetsResolver,
             fileFetcher: config.fileFetcher,
-            urlSigner,
             zipper
         });
     };

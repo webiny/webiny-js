@@ -3,6 +3,7 @@ import { CmsGraphQLSchemaPlugin } from "@webiny/api-headless-cms";
 import { createTypeDefs } from "./typeDefs";
 import { createResolvers } from "./resolvers";
 import { listModels } from "~/graphql/models";
+import { NonEmptyArray } from "@webiny/api/types";
 
 export const attachHeadlessCmsImportExportGraphQL = async (context: Context): Promise<void> => {
     const models = await listModels(context);
@@ -12,8 +13,8 @@ export const attachHeadlessCmsImportExportGraphQL = async (context: Context): Pr
     }
 
     const plugin = new CmsGraphQLSchemaPlugin<Context>({
-        typeDefs: createTypeDefs(models as [string, ...string[]]),
-        resolvers: createResolvers(models as [string, ...string[]])
+        typeDefs: createTypeDefs(models as NonEmptyArray<string>),
+        resolvers: createResolvers(models as NonEmptyArray<string>)
     });
 
     plugin.name = "headlessCms.graphql.importExport";

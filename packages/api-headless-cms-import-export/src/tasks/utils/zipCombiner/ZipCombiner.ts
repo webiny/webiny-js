@@ -5,8 +5,8 @@ import {
     IZipCombinerResolveResult
 } from "./abstractions/ZipCombiner";
 import { IFileFetcher, IFileFetcherFile } from "~/tasks/utils/fileFetcher";
-import { IUrlSigner } from "~/tasks/utils/urlSigner";
 import { sanitizeModel } from "@webiny/api-headless-cms/export/crud/sanitize";
+import { CmsImportExportFileType } from "~/types";
 
 interface IFetchFilesParams {
     source: string;
@@ -19,18 +19,15 @@ interface IFetchFilesParams {
 export interface IZipCombinerParams {
     fileFetcher: IFileFetcher;
     zipper: IZipper;
-    urlSigner: IUrlSigner;
 }
 
 export class ZipCombiner implements IZipCombiner {
     private readonly fileFetcher: IFileFetcher;
     private readonly zipper: IZipper;
-    private readonly urlSigner: IUrlSigner;
 
     public constructor(params: IZipCombinerParams) {
         this.fileFetcher = params.fileFetcher;
         this.zipper = params.zipper;
-        this.urlSigner = params.urlSigner;
     }
 
     public async resolve(params: IZipCombinerResolveParams): Promise<IZipCombinerResolveResult> {
@@ -94,7 +91,8 @@ export class ZipCombiner implements IZipCombiner {
                                     id: model.group.id
                                 },
                                 model
-                            )
+                            ),
+                            type: CmsImportExportFileType.COMBINED_ENTRIES
                         })
                     ),
                     {
@@ -134,16 +132,9 @@ export class ZipCombiner implements IZipCombiner {
             throw new Error(`Failed to combine files with prefix "${source}".`);
         }
 
-        const signedUrl = await this.urlSigner.sign({
-            key: result.Key
-        });
-
         return {
             lastFileProcessed,
-            key: signedUrl.key,
-            url: signedUrl.url,
-            bucket: signedUrl.bucket,
-            expiresOn: signedUrl.expiresOn
+            key: result.Key
         };
     }
 

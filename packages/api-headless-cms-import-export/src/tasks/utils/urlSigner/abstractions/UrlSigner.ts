@@ -11,5 +11,6 @@ export interface IUrlSignerSignParams {
 }
 
 export interface IUrlSigner {
-    sign(params: IUrlSignerSignParams): Promise<IUrlSignerSignResult>;
+    get(params: IUrlSignerSignParams): Promise<IUrlSignerSignResult>;
+    head(params: IUrlSignerSignParams): Promise<IUrlSignerSignResult>;
 }

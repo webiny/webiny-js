@@ -1,14 +1,14 @@
 import { IInvokeCb } from "../types";
 import { createFields } from "./fields";
 
-export interface IStartExportContentEntriesVariables {
+export interface IExportContentEntriesVariables {
     modelId: string;
     limit?: number;
 }
 
 const query = /* GraphQL */ `
-    mutation StartExportContentEntries($modelId: ExportContentEntriesModelsListEnum!, $limit: Int) {
-        startExportContentEntries(modelId: $modelId, limit: $limit) {
+    mutation ExportContentEntries($modelId: ExportContentEntriesModelsListEnum!, $limit: Int) {
+        exportContentEntries(modelId: $modelId, limit: $limit) {
             data {
                 ${createFields()}
             }
@@ -21,8 +21,8 @@ const query = /* GraphQL */ `
     }
 `;
 
-export const createStartExportContentEntries = (invoke: IInvokeCb) => {
-    return async (variables: IStartExportContentEntriesVariables) => {
+export const createExportContentEntries = (invoke: IInvokeCb) => {
+    return async (variables: IExportContentEntriesVariables) => {
         return invoke({
             body: {
                 query,
