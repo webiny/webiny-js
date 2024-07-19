@@ -6,6 +6,7 @@ export * from "./Container";
 export * from "./Flex";
 export * from "./Heading";
 export * from "./Icon";
+export * from "./Menu";
 export * from "./Popover";
 export * from "./Portal";
 export * from "./Switch";
