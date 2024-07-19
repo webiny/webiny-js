@@ -12,8 +12,6 @@ import { UserMenuProvider } from "./ui/UserMenu";
 import { NavigationProvider } from "./ui/Navigation";
 import { createDialogsProvider } from "~/components/Dialogs/DialogsContext";
 
-import { ThemeProvider as WebinyThemeProvider, theme } from "@webiny/ui-chakra";
-
 export interface AdminProps {
     createApolloClient: ApolloClientFactory;
     children?: React.ReactNode;
@@ -26,23 +24,21 @@ export const Admin = ({ children, createApolloClient }: AdminProps) => {
     const DialogsProvider = createDialogsProvider();
 
     return (
-        <WebinyThemeProvider theme={theme}>
-            <ApolloProvider>
-                <ThemeProvider>
-                    <WcpProvider loader={<CircularProgress label={"Loading..."} />}>
-                        <App>
-                            <Provider hoc={TelemetryProvider} />
-                            <Provider hoc={UiStateProvider} />
-                            <Provider hoc={SearchProvider} />
-                            <Provider hoc={UserMenuProvider} />
-                            <Provider hoc={NavigationProvider} />
-                            <Provider hoc={DialogsProvider} />
-                            <Base />
-                            {children}
-                        </App>
-                    </WcpProvider>
-                </ThemeProvider>
-            </ApolloProvider>
-        </WebinyThemeProvider>
+        <ApolloProvider>
+            <ThemeProvider>
+                <WcpProvider loader={<CircularProgress label={"Loading..."} />}>
+                    <App>
+                        <Provider hoc={TelemetryProvider} />
+                        <Provider hoc={UiStateProvider} />
+                        <Provider hoc={SearchProvider} />
+                        <Provider hoc={UserMenuProvider} />
+                        <Provider hoc={NavigationProvider} />
+                        <Provider hoc={DialogsProvider} />
+                        <Base />
+                        {children}
+                    </App>
+                </WcpProvider>
+            </ThemeProvider>
+        </ApolloProvider>
     );
 };

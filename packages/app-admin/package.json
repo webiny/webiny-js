@@ -31,7 +31,6 @@
     "@webiny/react-router": "0.0.0",
     "@webiny/telemetry": "0.0.0",
     "@webiny/ui": "0.0.0",
-    "@webiny/ui-chakra": "0.0.0",
     "@webiny/ui-composer": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",

@@ -12,7 +12,6 @@
     { "path": "../react-composition" },
     { "path": "../react-router" },
     { "path": "../ui" },
-    { "path": "../ui-chakra" },
     { "path": "../ui-composer" },
     { "path": "../utils" },
     { "path": "../validation" }
@@ -44,8 +43,6 @@
       "@webiny/react-router": ["../react-router/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
-      "@webiny/ui-chakra/*": ["../ui-chakra/src/*"],
-      "@webiny/ui-chakra": ["../ui-chakra/src"],
       "@webiny/ui-composer/*": ["../ui-composer/src/*"],
       "@webiny/ui-composer": ["../ui-composer/src"],
       "@webiny/utils/*": ["../utils/src/*"],

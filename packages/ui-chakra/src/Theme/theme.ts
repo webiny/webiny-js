@@ -2,7 +2,9 @@ import { extendTheme } from "@chakra-ui/react";
 
 import { colors, fonts } from "./foundations";
 import { accordionTheme as Accordion } from "../Accordion";
+import { avatarTheme as Avatar } from "../Avatar";
 import { buttonTheme as Button } from "../Button";
+import { popoverTheme as Popover } from "../Popover";
 
 export const theme = extendTheme({
     config: {
@@ -12,6 +14,8 @@ export const theme = extendTheme({
     colors,
     components: {
         Accordion,
-        Button
+        Avatar,
+        Button,
+        Popover
     }
 });

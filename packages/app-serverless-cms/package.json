@@ -14,7 +14,7 @@
     "@webiny/app": "0.0.0",
     "@webiny/app-aco": "0.0.0",
     "@webiny/app-admin": "0.0.0",
-    "@webiny/app-admin-rmwc": "0.0.0",
+    "@webiny/app-admin-chakra": "0.0.0",
     "@webiny/app-apw": "0.0.0",
     "@webiny/app-audit-logs": "0.0.0",
     "@webiny/app-file-manager": "0.0.0",

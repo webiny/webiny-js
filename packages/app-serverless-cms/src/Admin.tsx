@@ -13,7 +13,6 @@ import { I18NContent } from "@webiny/app-i18n-content";
 import { PageBuilder } from "@webiny/app-page-builder";
 import { FormBuilder } from "@webiny/app-form-builder";
 import { HeadlessCMS } from "@webiny/app-headless-cms";
-import { RMWC } from "@webiny/app-admin-rmwc";
 import { FileManager } from "@webiny/app-file-manager/app";
 import { GraphQLPlayground } from "@webiny/app-graphql-playground";
 import { AccessManagement } from "@webiny/app-security-access-management";
@@ -32,6 +31,7 @@ import { Folders } from "@webiny/app-aco";
 import { Websockets } from "@webiny/app-websockets";
 import { RecordLocking } from "@webiny/app-record-locking";
 import { TrashBinConfigs } from "@webiny/app-trash-bin";
+import { Dashboard } from "@webiny/app-admin-chakra";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
     createApolloClient?: BaseAdminProps["createApolloClient"];
@@ -46,7 +46,7 @@ const App = (props: AdminProps) => {
 
     return (
         <BaseAdmin createApolloClient={createApolloClient}>
-            <RMWC />
+            <Dashboard />
             <Tenancy />
             <Security />
             <AccessManagement />
