@@ -10,9 +10,8 @@ import { downloadFolderFromS3 } from "./downloadAndLinkExtension/downloadFolderF
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
-const getS3Bucket = async () => {
-    return { name: "wby-examples-test", region: "us-east-1" };
-};
+const S3_BUCKET_NAME = "wby-examples-test";
+const S3_BUCKET_REGION = "us-east-1";
 
 export const downloadAndLinkExtension = async ({
     input,
@@ -26,13 +25,11 @@ export const downloadAndLinkExtension = async ({
     try {
         ora.start(`Downloading extension...`);
 
-        const s3Bucket = await getS3Bucket();
-
         const randomId = String(Date.now());
         const downloadFolderPath = path.join(os.tmpdir(), `wby-ext-${randomId}`);
         await downloadFolderFromS3({
-            bucketName: s3Bucket.name,
-            bucketRegion: s3Bucket.region,
+            bucketName: S3_BUCKET_NAME,
+            bucketRegion: S3_BUCKET_REGION,
             bucketFolderKey: downloadExtensionSource,
             downloadFolderPath
         });
