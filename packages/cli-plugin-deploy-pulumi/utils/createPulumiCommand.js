@@ -54,7 +54,7 @@ const createPulumiCommand = ({
         }
 
         const sendTelemetryEvents = telemetry === true && params.telemetry !== false;
-        const getTelemetryEventName = stage => `pulumi-command-${name}-${stage}`;
+        const getTelemetryEventName = stage => `cli-pulumi-command-${name}-${stage}`;
         const telemetryProperties = {
             env: params.env || "unknown",
             commandParams: JSON.stringify(params)

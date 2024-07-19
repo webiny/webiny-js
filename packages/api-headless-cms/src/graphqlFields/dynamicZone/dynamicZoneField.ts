@@ -12,6 +12,7 @@ import { createTypeName } from "~/utils/createTypeName";
 import { createTypeFromFields } from "~/utils/createTypeFromFields";
 import { createGraphQLInputField } from "../helpers";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
+import { GenericRecord } from "@webiny/api/types";
 
 const createUnionTypeName = (model: CmsModel, field: CmsModelField) => {
     return `${model.singularApiName}_${createTypeName(field.fieldId)}`;
@@ -75,9 +76,7 @@ const createTypeDefsForTemplates = ({
 };
 
 const remapTemplateValue = (value: any, typeName: string) => {
-    const templateType = Object.keys(value)[0];
-
-    return { ...value[templateType], __typename: `${typeName}_${templateType}` };
+    return { ...value, __typename: typeName };
 };
 
 const createResolver = (
@@ -93,21 +92,28 @@ const createResolver = (
         const resolver = (parent: any) => {
             const value = parent[field.fieldId];
             if (!value) {
-                return field.multipleValues ? [] : value;
+                return value;
             }
 
             const typeName = `${graphQLType}_${createTypeName(field.fieldId)}`;
-            // const typeName = `${model.singularApiName}_${createTypeName(field.fieldId)}`;
 
             if (field.multipleValues && Array.isArray(value)) {
                 const remappedValues = value.map(v => {
-                    return remapTemplateValue(v, typeName);
+                    const template = templates.find(tpl => tpl.id === v._templateId);
+                    if (!template) {
+                        return undefined;
+                    }
+                    return remapTemplateValue(v, `${typeName}_${template.gqlTypeName}`);
                 });
 
                 return remappedValues;
             }
 
-            return remapTemplateValue(value, typeName);
+            const template = templates.find(tpl => tpl.id === value._templateId);
+            if (!template) {
+                return undefined;
+            }
+            return remapTemplateValue(value, `${typeName}_${template.gqlTypeName}`);
         };
 
         const { templateTypes } = createTypeDefsForTemplates({
@@ -175,14 +181,11 @@ export const createDynamicZoneField =
                 }
             },
             getFieldAst: (field, converter) => {
-                const { templates = [], ...settings } = field.settings;
+                const { templates = [] } = field.settings;
 
                 return {
                     type: "field",
-                    field: {
-                        ...field,
-                        settings
-                    },
+                    field,
                     children: templates.map(({ fields, ...template }) => {
                         return {
                             type: "collection",
@@ -307,7 +310,38 @@ export const createDynamicZoneField =
                         typeDefs: typeDefs.join("\n")
                     };
                 },
-                createResolver: createResolver("manage")
+                createResolver: createResolver("manage"),
+                /**
+                 * In `createInputField`, we generate an input type supported by GraphQL, to work around the
+                 * limitation of not being able to have a union input type. That shape of data is only needed for GraphQL,
+                 * so before passing that to our domain logic, we need to normalize it.
+                 */
+                normalizeInput: ({ field, input }) => {
+                    const templates = field.settings?.templates || [];
+
+                    if (Array.isArray(input) && field.multipleValues) {
+                        return input
+                            .map(value => normalizeDynamicZoneInput(value, templates))
+                            .filter(Boolean);
+                    }
+
+                    return normalizeDynamicZoneInput(input, templates);
+                }
             }
         };
     };
+
+const normalizeDynamicZoneInput = (
+    value: GenericRecord<string>,
+    templates: CmsDynamicZoneTemplate[]
+) => {
+    // Only one key is allowed in the input object.
+    const inputType = Object.keys(value)[0];
+    const template = templates.find(tpl => tpl.gqlTypeName === inputType);
+
+    if (template) {
+        return { ...value[inputType], _templateId: template.id };
+    }
+
+    return undefined;
+};
