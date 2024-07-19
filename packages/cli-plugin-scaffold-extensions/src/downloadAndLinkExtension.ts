@@ -21,6 +21,8 @@ export const downloadAndLinkExtension = async ({
 }: CliCommandScaffoldCallableArgs<Input>) => {
     const currentWebinyVersion = context.version;
 
+    const downloadExtensionSource = input.templateArgs!;
+
     try {
         ora.start(`Downloading extension...`);
 
@@ -31,7 +33,7 @@ export const downloadAndLinkExtension = async ({
         await downloadFolderFromS3({
             bucketName: s3Bucket.name,
             bucketRegion: s3Bucket.region,
-            bucketFolderKey: input.templateArgs!,
+            bucketFolderKey: downloadExtensionSource,
             downloadFolderPath
         });
 
@@ -45,11 +47,9 @@ export const downloadAndLinkExtension = async ({
         } else {
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            const availableVersions = await fsAsync
-                .readdir(downloadFolderPath)
-                .then(versions => {
-                    return versions.map(v => v.replace(".x", ".0")).sort();
-                });
+            const availableVersions = await fsAsync.readdir(downloadFolderPath).then(versions => {
+                return versions.map(v => v.replace(".x", ".0")).sort();
+            });
 
             let versionToUse = "";
 
@@ -80,7 +80,11 @@ export const downloadAndLinkExtension = async ({
 
         await linkAllExtensions();
 
-        ora.succeed(`Extension downloaded in ${context.success.hl("kob")}.`);
+        ora.succeed(
+            `Extension downloaded in ${context.success.hl(
+                EXTENSIONS_ROOT_FOLDER + "/" + downloadExtensionSource
+            )}.`
+        );
     } catch (e) {
         ora.fail("Could not create extension. Please check the logs below.");
         console.log();
