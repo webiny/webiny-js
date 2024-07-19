@@ -1,6 +1,7 @@
 import zod from "zod";
 import { createZodError } from "@webiny/utils";
 import { CmsImportExportFileType, ICmsImportExportFile } from "~/types";
+import { WebinyError } from "@webiny/error";
 
 const validateFiles = zod.object({
     files: zod.array(
@@ -19,7 +20,7 @@ export const getFilesFromData = (data: string): ICmsImportExportFile[] => {
     try {
         json = JSON.parse(data);
     } catch (ex) {
-        throw new Error("Invalid JSON data provided.");
+        throw new WebinyError("Invalid JSON data provided.", "INVALID_JSON_DATA");
     }
 
     const result = validateFiles.safeParse(json);

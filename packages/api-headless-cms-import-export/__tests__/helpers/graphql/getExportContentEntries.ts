@@ -1,17 +1,13 @@
 import { IInvokeCb } from "../types";
-import { createFields } from "./fields";
+import { createErrorFields, createExportFields } from "./fields";
 
 const query = /* GraphQL */ `
     query GetExportContentEntries($id: ID!) {
         getExportContentEntries(id: $id) {
             data {
-                ${createFields()}
+                ${createExportFields()}
             }
-            error {
-                code
-                message
-                data
-            }
+            ${createErrorFields()}
         }
     }
 `;

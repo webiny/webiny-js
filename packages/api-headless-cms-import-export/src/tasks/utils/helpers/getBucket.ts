@@ -1,3 +1,5 @@
+import { WebinyError } from "@webiny/error";
+
 export const getBucket = (): string => {
     const bucket = process.env.S3_BUCKET;
     if (
@@ -7,7 +9,7 @@ export const getBucket = (): string => {
         typeof bucket !== "string" ||
         !bucket.trim()
     ) {
-        throw new Error(`Missing S3_BUCKET environment variable.`);
+        throw new WebinyError(`Missing S3_BUCKET environment variable.`, "S3_BUCKET_ERROR");
     }
     return bucket;
 };

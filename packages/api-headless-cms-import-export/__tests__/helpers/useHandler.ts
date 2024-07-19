@@ -25,6 +25,8 @@ import { createGetExportContentEntries } from "./graphql/getExportContentEntries
 import { createExportContentEntries } from "./graphql/exportContentEntries";
 import { createAbortExportContentEntries } from "./graphql/abortExportContentEntries";
 import { createMockTaskTriggerTransportPlugin } from "@webiny/project-utils/testing/tasks";
+import { createValidateImportFromUrl } from "./graphql/validateImportFromUrl";
+import { createGetValidateImportFromUrl } from "./graphql/getValidateImportFromUrl";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -108,6 +110,8 @@ export const useHandler = <C extends Context = Context>(params?: UseHandlerParam
         getExportContentEntries: createGetExportContentEntries(invoke),
         exportContentEntries: createExportContentEntries(invoke),
         abortExportContentEntries: createAbortExportContentEntries(invoke),
+        validateImportFromUrl: createValidateImportFromUrl(invoke),
+        getValidateImportFromUrl: createGetValidateImportFromUrl(invoke),
         createContext: async () => {
             return await rawHandler({}, {} as LambdaContext);
         }

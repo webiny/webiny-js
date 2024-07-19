@@ -1,5 +1,5 @@
 import { IInvokeCb } from "../types";
-import { createFields } from "./fields";
+import { createErrorFields, createExportFields } from "./fields";
 
 export interface IExportContentEntriesVariables {
     modelId: string;
@@ -10,13 +10,9 @@ const query = /* GraphQL */ `
     mutation ExportContentEntries($modelId: ExportContentEntriesModelsListEnum!, $limit: Int) {
         exportContentEntries(modelId: $modelId, limit: $limit) {
             data {
-                ${createFields()}
+                ${createExportFields()}
             }
-            error {
-                code
-                message
-                data
-            }
+            ${createErrorFields()}
         }
     }
 `;

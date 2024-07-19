@@ -1,4 +1,14 @@
-export const createFields = () => {
+export const createErrorFields = () => {
+    return /* GraphQL */ `
+        error {
+            code
+            message
+            data
+        }
+    `;
+};
+
+export const createExportFields = () => {
     return /* GraphQL */ `
         id
         createdOn
@@ -15,5 +25,21 @@ export const createFields = () => {
             type
         }
         status
+    `;
+};
+
+export const createValidateImportFromUrlFields = () => {
+    return /* GraphQL */ `
+        id
+        files {
+            get
+            head
+            size
+            type
+            error {
+                message
+                data
+            }
+        }
     `;
 };

@@ -6,6 +6,7 @@ import {
 import { getFilesFromData } from "~/crud/utils/getFilesFromData";
 import { CmsImportExportFileType, ICmsImportExportFile } from "~/types";
 import { NonEmptyArray } from "@webiny/api/types";
+import { WebinyError } from "@webiny/error";
 
 export class ValidateImportFromUrlUseCase implements IValidateImportFromUrlUseCase {
     public async execute(
@@ -17,7 +18,7 @@ export class ValidateImportFromUrlUseCase implements IValidateImportFromUrlUseCa
          * There must be at least one file in the data.
          */
         if (files.length === 0) {
-            throw new Error("No files found in the provided data.");
+            throw new WebinyError("No files found in the provided data.", "NO_FILES_FOUND");
         }
         /**
          * Next step of the validation is to verify that, at least, one entries type file exists in the data.
@@ -26,7 +27,7 @@ export class ValidateImportFromUrlUseCase implements IValidateImportFromUrlUseCa
             return file.type === CmsImportExportFileType.ENTRIES;
         });
         if (!entries) {
-            throw new Error("No entries file found in the provided data.");
+            throw new WebinyError("No entries file found in the provided data.", "NO_ENTRIES_FILE");
         }
 
         return {
