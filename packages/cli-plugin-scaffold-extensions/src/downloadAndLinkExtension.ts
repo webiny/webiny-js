@@ -35,6 +35,7 @@ export const downloadAndLinkExtension = async ({
             downloadFolderPath
         });
 
+        ora.text = `Linking extension...`;
         const withoutVersions = fs.existsSync(path.join(downloadFolderPath, "extensions"));
         if (withoutVersions) {
             const extensionsFolderToCopy = path.join(downloadFolderPath, "extensions");
