@@ -7,6 +7,7 @@ import { getFilesFromData } from "~/crud/utils/getFilesFromData";
 import { CmsImportExportFileType, ICmsImportExportFile } from "~/types";
 import { NonEmptyArray } from "@webiny/api/types";
 import { WebinyError } from "@webiny/error";
+import { getImportExportFileType } from "~/tasks/utils/helpers/getImportExportFileType";
 
 export class ValidateImportFromUrlUseCase implements IValidateImportFromUrlUseCase {
     public async execute(
@@ -31,7 +32,23 @@ export class ValidateImportFromUrlUseCase implements IValidateImportFromUrlUseCa
         }
 
         return {
-            files: files as NonEmptyArray<ICmsImportExportFile>
+            files: files.reduce((collection, file) => {
+                const result = getImportExportFileType(file.head);
+                if (result.error) {
+                    file.error = {
+                        message: "File type not supported.",
+                        data: {
+                            type: result.type,
+                            pathname: result.pathname
+                        }
+                    };
+                    collection.push(file);
+                    return collection;
+                }
+
+                collection.push(file);
+                return collection;
+            }, [] as unknown as NonEmptyArray<ICmsImportExportFile>)
         };
     }
 }

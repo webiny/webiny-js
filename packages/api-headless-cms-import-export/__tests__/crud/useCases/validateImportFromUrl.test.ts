@@ -117,12 +117,26 @@ describe("validateImportFromUrl", () => {
                 {
                     get: "https://some-url.com/entries.zip",
                     head: "https://some-url.com/entries.zip",
-                    type: "entries"
+                    type: "entries",
+                    error: {
+                        data: {
+                            pathname: "/entries.zip",
+                            type: "zip"
+                        },
+                        message: "File type not supported."
+                    }
                 },
                 {
                     get: "https://some-url.com/assets.zip",
                     head: "https://some-url.com/assets.zip",
-                    type: "assets"
+                    type: "assets",
+                    error: {
+                        data: {
+                            pathname: "/assets.zip",
+                            type: "zip"
+                        },
+                        message: "File type not supported."
+                    }
                 }
             ]
         });

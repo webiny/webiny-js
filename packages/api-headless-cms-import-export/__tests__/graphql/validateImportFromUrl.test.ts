@@ -151,6 +151,48 @@ describe("validate import from url - graphql", () => {
         });
     });
 
+    it("should run validation and fail - invalid file type", async () => {
+        const { validateImportFromUrl } = useHandler();
+
+        const [result] = await validateImportFromUrl({
+            data: JSON.stringify({
+                files: [
+                    {
+                        get: "https://get-url.com",
+                        head: "https://head-url.com",
+                        type: "entries"
+                    }
+                ]
+            })
+        });
+
+        expect(result).toEqual({
+            data: {
+                validateImportFromUrl: {
+                    data: {
+                        id: expect.any(String),
+                        files: [
+                            {
+                                get: "https://get-url.com",
+                                head: "https://head-url.com",
+                                type: "entries",
+                                error: {
+                                    message: "File type not supported.",
+                                    data: {
+                                        pathname: "/",
+                                        type: undefined
+                                    }
+                                }
+                            }
+                        ],
+                        status: TaskDataStatus.PENDING
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
     it("should run validation and fail - missing entries field", async () => {
         const { validateImportFromUrl } = useHandler();
 
@@ -183,12 +225,17 @@ describe("validate import from url - graphql", () => {
     it("should run the validation and pass", async () => {
         const { validateImportFromUrl, getValidateImportFromUrl } = useHandler();
 
+        const { get, head } = {
+            get: "https://get-url.com/entries.we.zip?someExtraUrlParams=true",
+            head: "https://get-url.com/entries.we.zip?someExtraUrlParams=true"
+        };
+
         const [result] = await validateImportFromUrl({
             data: JSON.stringify({
                 files: [
                     {
-                        get: "https://get-url.com",
-                        head: "https://head-url.com",
+                        get,
+                        head,
                         type: "entries"
                     }
                 ]
@@ -202,8 +249,8 @@ describe("validate import from url - graphql", () => {
                         id: expect.any(String),
                         files: [
                             {
-                                get: "https://get-url.com",
-                                head: "https://head-url.com",
+                                get,
+                                head,
                                 type: "entries",
                                 error: null
                             }
@@ -211,6 +258,22 @@ describe("validate import from url - graphql", () => {
                         status: TaskDataStatus.PENDING
                     },
                     error: null
+                }
+            }
+        });
+
+        const [getNoResult] = await getValidateImportFromUrl({
+            id: "unknownid"
+        });
+        expect(getNoResult).toEqual({
+            data: {
+                getValidateImportFromUrl: {
+                    data: null,
+                    error: {
+                        code: "NOT_FOUND",
+                        data: null,
+                        message: 'Validate import from URL task with id "unknownid" not found.'
+                    }
                 }
             }
         });
@@ -225,8 +288,8 @@ describe("validate import from url - graphql", () => {
                         id: expect.any(String),
                         files: [
                             {
-                                get: "https://get-url.com",
-                                head: "https://head-url.com",
+                                get,
+                                head,
                                 type: "entries",
                                 error: null
                             }

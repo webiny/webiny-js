@@ -37,14 +37,15 @@ export class ValidateImportFromUrl<
 
             const target = files[index];
             const { get, head } = target;
-            const type = getImportExportFileType(head);
-            if (!type) {
+            const { type, pathname, error: fileTypeError } = getImportExportFileType(head);
+            if (fileTypeError) {
                 results.push({
                     get,
                     head,
                     error: {
                         message: "File type not supported.",
                         data: {
+                            pathname,
                             type
                         }
                     },

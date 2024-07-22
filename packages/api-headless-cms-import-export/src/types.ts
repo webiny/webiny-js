@@ -33,6 +33,7 @@ export interface ICmsImportExportFile {
     get: string;
     head: string;
     type: CmsImportExportFileType;
+    error?: ICmsImportExportValidatedFileError;
 }
 
 export interface ICmsImportExportObjectValidateImportFromUrlResult {

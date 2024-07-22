@@ -3,7 +3,7 @@ import { ExternalFileFetcher } from "~/tasks/utils/externalFileFetcher";
 
 export const createValidateImportFromUrl = () => {
     const fileFetcher = new ExternalFileFetcher({
-        fetch
+        fetcher: fetch
     });
 
     return new ValidateImportFromUrl({

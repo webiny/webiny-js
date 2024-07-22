@@ -5,36 +5,44 @@ import {
 } from "./abstractions/ExternalFileFetcher";
 import { getObjectProperties } from "@webiny/utils";
 import { WebinyError } from "@webiny/error";
-import { GenericRecord } from "@webiny/api/types";
 
 export interface IExternalFileFetcherParams {
-    fetch: typeof fetch;
+    fetcher: typeof fetch;
+    timeout?: number;
 }
 
+const defaultTimeout = 5;
+
 export class ExternalFileFetcher implements IExternalFileFetcher {
-    private readonly fetchMethod: typeof fetch;
+    private readonly fetcher: typeof fetch;
+    private readonly timeout: number = defaultTimeout;
 
     public constructor(params: IExternalFileFetcherParams) {
-        this.fetchMethod = params.fetch;
+        this.fetcher = params.fetcher;
+        this.timeout = params.timeout || defaultTimeout;
     }
 
     public async fetch(url: string): Promise<IExternalFileFetcherFetchResult> {
         try {
-            const result = await this.fetchMethod(url, {
+            const result = await this.fetcher(url, {
                 method: "GET"
             });
             const contentType = result.headers.get("content-type");
             if (!contentType) {
                 throw new Error(`Content type not found for URL: ${url}`);
             }
-            const contentLength = result.headers.get("content-length");
+            const contentLengthString = result.headers.get("content-length");
+            const contentLength = contentLengthString ? parseInt(contentLengthString) : 0;
+            if (contentLength === 0) {
+                throw new Error(`Content length not found for URL: ${url}`);
+            }
             if (!result.body) {
                 throw new Error(`Body not found for URL: ${url}`);
             }
             return {
                 file: {
                     name: url.split("/").pop() as string,
-                    size: parseInt(contentLength || "0"),
+                    size: contentLength,
                     url,
                     contentType,
                     body: result.body
@@ -45,7 +53,7 @@ export class ExternalFileFetcher implements IExternalFileFetcher {
             return {
                 error: {
                     ...error,
-                    code: error.code || "HEAD_FETCH_ERROR",
+                    code: error.code || "GET_FETCH_ERROR",
                     data: {
                         ...error.data,
                         url
@@ -58,19 +66,20 @@ export class ExternalFileFetcher implements IExternalFileFetcher {
     public async head(url: string): Promise<IExternalFileFetcherHeadResult> {
         const abort = new AbortController();
         try {
-            const t = setTimeout(() => {
+            /**
+             * We will allow $timeout seconds for the HEAD request to complete.
+             */
+            const tId = setTimeout(() => {
                 abort.abort("Timeout.");
-            }, 5000);
-            const result = await this.fetchMethod(url, {
+            }, this.timeout * 1000);
+            const result = await this.fetcher(url, {
                 method: "HEAD",
                 signal: abort.signal
             });
-            const headers: GenericRecord = {};
-            for (const [key, value] of result.headers.entries()) {
-                headers[key] = value;
-            }
-            console.log("headers", headers);
-            clearTimeout(t);
+            /**
+             * And clear timeout as soon as the request is completed.
+             */
+            clearTimeout(tId);
             const contentType = result.headers.get("content-type");
             if (!contentType) {
                 throw new Error(`Content type not found for URL: ${url}`);
