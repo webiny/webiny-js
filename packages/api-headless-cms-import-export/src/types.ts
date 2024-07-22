@@ -1,5 +1,5 @@
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { Context as TasksContext } from "@webiny/tasks/types";
+import { Context as TasksContext, TaskDataStatus } from "@webiny/tasks/types";
 import { ICmsImportExportRecord } from "./domain/abstractions/CmsImportExportRecord";
 import { GenericRecord, NonEmptyArray } from "@webiny/api/types";
 
@@ -38,6 +38,7 @@ export interface ICmsImportExportFile {
 export interface ICmsImportExportObjectValidateImportFromUrlResult {
     files: NonEmptyArray<ICmsImportExportFile>;
     id: string;
+    status: TaskDataStatus;
 }
 
 export interface ICmsImportExportObjectGetValidateImportFromUrlParams {
@@ -53,13 +54,14 @@ export interface ICmsImportExportValidatedFile {
     get: string;
     head: string;
     type: CmsImportExportFileType | undefined;
-    size: number | undefined;
+    size?: number;
     error?: ICmsImportExportValidatedFileError;
 }
 
 export interface ICmsImportExportObjectGetValidateImportFromUrlResult {
     id: string;
     files: NonEmptyArray<ICmsImportExportValidatedFile> | undefined;
+    status: TaskDataStatus;
     error?: GenericRecord;
 }
 

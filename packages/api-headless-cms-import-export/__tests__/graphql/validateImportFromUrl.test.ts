@@ -1,4 +1,5 @@
 import { useHandler } from "~tests/helpers/useHandler";
+import { TaskDataStatus } from "@webiny/tasks";
 
 describe("validate import from url - graphql", () => {
     it("should run validation and fail - parse string as json", async () => {
@@ -180,7 +181,7 @@ describe("validate import from url - graphql", () => {
     });
 
     it("should run the validation and pass", async () => {
-        const { validateImportFromUrl } = useHandler();
+        const { validateImportFromUrl, getValidateImportFromUrl } = useHandler();
 
         const [result] = await validateImportFromUrl({
             data: JSON.stringify({
@@ -198,14 +199,41 @@ describe("validate import from url - graphql", () => {
             data: {
                 validateImportFromUrl: {
                     data: {
+                        id: expect.any(String),
                         files: [
                             {
                                 get: "https://get-url.com",
                                 head: "https://head-url.com",
-                                type: "entries"
+                                type: "entries",
+                                error: null
                             }
-                        ]
-                    }
+                        ],
+                        status: TaskDataStatus.PENDING
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [getResult] = await getValidateImportFromUrl({
+            id: result.data.validateImportFromUrl.data.id
+        });
+        expect(getResult).toEqual({
+            data: {
+                getValidateImportFromUrl: {
+                    data: {
+                        id: expect.any(String),
+                        files: [
+                            {
+                                get: "https://get-url.com",
+                                head: "https://head-url.com",
+                                type: "entries",
+                                error: null
+                            }
+                        ],
+                        status: TaskDataStatus.PENDING
+                    },
+                    error: null
                 }
             }
         });

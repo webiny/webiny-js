@@ -33,7 +33,8 @@ export class ValidateImportFromUrlIntegrityUseCase
         });
 
         return {
-            id: task.id
+            id: task.id,
+            status: task.taskStatus
         };
     }
 }

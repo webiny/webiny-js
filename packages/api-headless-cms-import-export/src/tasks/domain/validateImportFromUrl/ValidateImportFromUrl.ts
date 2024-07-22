@@ -3,7 +3,7 @@ import {
     IValidateImportFromUrlInput,
     IValidateImportFromUrlOutput
 } from "~/tasks/domain/abstractions/ValidateImportFromUrl";
-import { IExternalFileFetcher } from "~/tasks/utils/externalFileHeadFetcher";
+import { IExternalFileFetcher } from "~/tasks/utils/externalFileFetcher";
 import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { Context, ICmsImportExportValidatedFile } from "~/types";
 import { getImportExportFileType } from "~/tasks/utils/helpers/getImportExportFileType";

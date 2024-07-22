@@ -53,6 +53,26 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
         type ValidateImportFromUrlResponseData {
             id: ID!
             files: [ValidateImportFromUrlResponseDataFile!]
+            status: String!
+            error: CmsError
+        }
+        
+        type GetValidateImportFromUrlResponseDataFile {
+            get: String!
+            head: String!
+            type: String!
+            error: ValidateImportFromUrlResponseDataFileError
+        }
+        
+        type GetValidateImportFromUrlResponseData {
+            id: ID!
+            files: [GetValidateImportFromUrlResponseDataFile!]
+            status: String!
+            error: CmsError
+        }
+        
+        type GetValidateImportFromUrlResponse {
+            data: GetValidateImportFromUrlResponseData
             error: CmsError
         }
         
@@ -67,7 +87,7 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
         
         extend type Query {
             getExportContentEntries(id: ID!): ExportContentEntriesResponse!
-            getValidateImportFromUrl(id: ID!): ValidateImportFromUrlResponse!
+            getValidateImportFromUrl(id: ID!): GetValidateImportFromUrlResponse!
         }
 
         extend type Mutation {

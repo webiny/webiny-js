@@ -94,7 +94,7 @@ export const createHeadlessCmsImportExportCrud = async (
 
         return {
             files,
-            id: result.id
+            ...result
         };
     };
 

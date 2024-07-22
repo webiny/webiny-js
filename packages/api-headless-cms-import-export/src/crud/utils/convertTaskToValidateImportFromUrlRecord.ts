@@ -10,7 +10,7 @@ export const convertTaskToValidateImportFromUrlRecord = (
 ) => {
     return createCmsImportValidateRecord({
         id: task.id,
-        files: task.output?.files,
+        files: task.output?.files || task.input.files,
         status: task.taskStatus,
         error: task.output?.error
     });

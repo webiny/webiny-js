@@ -31,10 +31,10 @@ export const createExportFields = () => {
 export const createValidateImportFromUrlFields = () => {
     return /* GraphQL */ `
         id
+        status
         files {
             get
             head
-            size
             type
             error {
                 message
