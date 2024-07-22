@@ -11,7 +11,7 @@ export const createValidateImportFromUrlIntegrityTask = () => {
         {
             id: VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK,
             title: "Validate Import from URL Integrity",
-            maxIterations: 20,
+            maxIterations: 1,
             isPrivate: true,
             description:
                 "Validates given URLs to verify that they are what we need to import the data.",

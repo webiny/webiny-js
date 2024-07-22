@@ -36,6 +36,7 @@ export const createValidateImportFromUrlFields = () => {
             get
             head
             type
+            size
             error {
                 message
                 data

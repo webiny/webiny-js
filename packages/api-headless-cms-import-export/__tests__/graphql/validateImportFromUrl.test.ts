@@ -176,11 +176,11 @@ describe("validate import from url - graphql", () => {
                                 get: "https://get-url.com",
                                 head: "https://head-url.com",
                                 type: "entries",
+                                size: null,
                                 error: {
                                     message: "File type not supported.",
                                     data: {
-                                        pathname: "/",
-                                        type: undefined
+                                        pathname: "/"
                                     }
                                 }
                             }
@@ -252,6 +252,7 @@ describe("validate import from url - graphql", () => {
                                 get,
                                 head,
                                 type: "entries",
+                                size: null,
                                 error: null
                             }
                         ],
@@ -290,6 +291,7 @@ describe("validate import from url - graphql", () => {
                             {
                                 get,
                                 head,
+                                size: null,
                                 type: "entries",
                                 error: null
                             }
