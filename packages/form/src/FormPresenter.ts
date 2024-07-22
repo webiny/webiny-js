@@ -75,7 +75,7 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
     }
 
     getFieldValue(name: string) {
-        return lodashGet(this.data, name) as unknown;
+        return toJS(lodashGet(this.data, name)) as unknown;
     }
 
     getFieldValidation(name: string): FieldValidationResult {
