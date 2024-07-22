@@ -94,7 +94,7 @@ export interface CmsModel {
      * The field that is used as an entry title.
      * If not specified by the user, the system tries to assign the first available `text` field.
      */
-    titleFieldId: string | null;
+    titleFieldId: string;
     /**
      * The field that is used as an entry description.
      * If not set by the user, the system will try to assign the first available `long-text` field.
