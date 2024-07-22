@@ -3,18 +3,30 @@ import {
     IValidateImportFromUrlUseCaseExecuteParams,
     IValidateImportFromUrlUseCaseExecuteResult
 } from "./abstractions/ValidateImportFromUrlUseCase";
-import { getFilesFromData } from "~/crud/utils/getFilesFromData";
 import { CmsImportExportFileType, ICmsImportExportFile } from "~/types";
 import { NonEmptyArray } from "@webiny/api/types";
 import { WebinyError } from "@webiny/error";
 import { getImportExportFileType } from "~/tasks/utils/helpers/getImportExportFileType";
+import { parseImportUrlData } from "~/crud/utils/parseImportUrlData";
+import { HeadlessCms } from "@webiny/api-headless-cms/types";
+
+export interface IValidateImportFromUrlUseCaseParams {
+    getModel: HeadlessCms["getModel"];
+}
 
 export class ValidateImportFromUrlUseCase implements IValidateImportFromUrlUseCase {
+    private readonly getModel: HeadlessCms["getModel"];
+
+    public constructor(params: IValidateImportFromUrlUseCaseParams) {
+        this.getModel = params.getModel;
+    }
+
     public async execute(
         params: IValidateImportFromUrlUseCaseExecuteParams
     ): Promise<IValidateImportFromUrlUseCaseExecuteResult> {
         const { data } = params;
-        const files = getFilesFromData(data);
+
+        const { model: validatedModel, files } = parseImportUrlData(data);
         /**
          * There must be at least one file in the data.
          */
@@ -31,7 +43,10 @@ export class ValidateImportFromUrlUseCase implements IValidateImportFromUrlUseCa
             throw new WebinyError("No entries file found in the provided data.", "NO_ENTRIES_FILE");
         }
 
+        const model = await this.getModel(validatedModel.modelId);
+
         return {
+            model,
             files: files.reduce((collection, file) => {
                 const result = getImportExportFileType(file.head);
                 if (result.error) {

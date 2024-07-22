@@ -38,6 +38,7 @@ export interface ICmsImportExportFile {
 
 export interface ICmsImportExportObjectValidateImportFromUrlResult {
     files: NonEmptyArray<ICmsImportExportFile>;
+    modelId: string;
     id: string;
     status: TaskDataStatus;
 }
@@ -66,6 +67,21 @@ export interface ICmsImportExportObjectGetValidateImportFromUrlResult {
     error?: GenericRecord;
 }
 
+export interface ICmsImportExportObjectImportFromUrlParams {
+    id: string;
+}
+
+export interface ICmsImportExportProcessedFile extends ICmsImportExportValidatedFile {
+    status: string;
+}
+
+export interface ICmsImportExportObjectImportFromUrlResult {
+    id: string;
+    files: NonEmptyArray<ICmsImportExportProcessedFile> | undefined;
+    status: TaskDataStatus;
+    error?: GenericRecord;
+}
+
 export interface CmsImportExportObject {
     getExportContentEntries(
         params: ICmsImportExportObjectGetExportParams
@@ -82,6 +98,9 @@ export interface CmsImportExportObject {
     getValidateImportFromUrl(
         params: ICmsImportExportObjectGetValidateImportFromUrlParams
     ): Promise<ICmsImportExportObjectGetValidateImportFromUrlResult>;
+    importFromUrl(
+        params: ICmsImportExportObjectImportFromUrlParams
+    ): Promise<ICmsImportExportObjectImportFromUrlResult>;
 }
 
 export interface Context extends FileManagerContext, TasksContext {

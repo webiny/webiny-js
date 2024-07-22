@@ -20,6 +20,10 @@ const getValidateImportFromUrl = zod.object({
     id: zod.string()
 });
 
+const importFromUrlValidation = zod.object({
+    id: zod.string()
+});
+
 export const createResolvers = (models: NonEmptyArray<string>) => {
     const validateExportContentEntriesInput = zod.object({
         modelId: zod.enum(models),
@@ -83,6 +87,16 @@ export const createResolvers = (models: NonEmptyArray<string>) => {
                     }
 
                     return await context.cmsImportExport.validateImportFromUrl(result.data);
+                });
+            },
+            async importFromUrl(_: unknown, input: unknown, context: Context) {
+                return resolve(async () => {
+                    const result = importFromUrlValidation.safeParse(input);
+                    if (!result.success) {
+                        throw createZodError(result.error);
+                    }
+
+                    return await context.cmsImportExport.importFromUrl(result.data);
                 });
             }
         }

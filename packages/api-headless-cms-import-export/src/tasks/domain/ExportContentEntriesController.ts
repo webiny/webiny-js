@@ -246,10 +246,14 @@ export class ExportContentEntriesController<
 
     private async getEntriesTask(context: Context, id: string) {
         try {
-            return await context.tasks.getTask<
+            const result = await context.tasks.getTask<
                 IExportContentEntriesInput,
                 IExportContentEntriesOutput
             >(id);
+            if (result?.definitionId === EXPORT_CONTENT_ENTRIES_TASK) {
+                return result;
+            }
+            return null;
         } catch (ex) {
             return null;
         }
@@ -257,10 +261,14 @@ export class ExportContentEntriesController<
 
     private async getAssetsTask(context: Context, id: string) {
         try {
-            return await context.tasks.getTask<
+            const result = await context.tasks.getTask<
                 IExportContentAssetsInput,
                 IExportContentAssetsOutput
             >(id);
+            if (result?.definitionId == EXPORT_CONTENT_ASSETS_TASK) {
+                return result;
+            }
+            return null;
         } catch (ex) {
             return null;
         }

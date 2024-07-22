@@ -8,7 +8,9 @@ export interface IValidateImportFromUrlInput {
 }
 
 export interface IValidateImportFromUrlOutput extends ITaskResponseDoneResultOutput {
+    modelId: string;
     files: NonEmptyArray<ICmsImportExportValidatedFile>;
+    importTaskId?: string;
 }
 
 export interface IValidateImportFromUrl<

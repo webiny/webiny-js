@@ -82,6 +82,30 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
             error: CmsError
         }
         
+        type ImportFromUrlResponseDataFileError {
+            message: String!
+            data: JSON
+        }
+        
+        type ImportFromUrlResponseDataFile {
+            get: String!
+            head: String!
+            type: String!
+            size: Int
+            error: ImportFromUrlResponseDataFileError
+        }
+        
+        type ImportFromUrlResponseData {
+            id: ID!
+            files: [ImportFromUrlResponseDataFile!]
+            status: String!
+        }
+        
+        type ImportFromUrlResponse {
+            data: ImportFromUrlResponseData
+            error: CmsError
+        }
+        
         enum ExportContentEntriesModelsListEnum {
             ${models.join("\n")}
         }
@@ -89,6 +113,7 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
         extend type Query {
             getExportContentEntries(id: ID!): ExportContentEntriesResponse!
             getValidateImportFromUrl(id: ID!): GetValidateImportFromUrlResponse!
+            getImportFromUrl(id: ID!): ImportFromUrlResponse!
         }
 
         extend type Mutation {
@@ -101,6 +126,9 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
             ): ExportContentEntriesResponse!
             abortExportContentEntries(id: ID!): AbortExportContentEntriesResponse!
             validateImportFromUrl(data: String!): ValidateImportFromUrlResponse!
+            # the id is a task id returned from the validateImportFromUrl mutation
+            # it will be used to get the file information and start a new task for the actual import
+            importFromUrl(id: ID!): ImportFromUrlResponse!
         }
     `;
 };

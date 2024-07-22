@@ -2,7 +2,7 @@ import {
     IExportContentEntriesControllerInput,
     IExportContentEntriesControllerOutput
 } from "~/tasks/domain/abstractions/ExportContentEntriesController";
-import { convertTaskToCmsImportExportRecord } from "~/crud/utils/importExportRecord";
+import { convertTaskToCmsExportRecord } from "~/crud/utils/convertTaskToExportRecord";
 import { ITasksContextObject } from "@webiny/tasks";
 import {
     IGetExportContentEntriesUseCase,
@@ -34,6 +34,6 @@ export class GetExportContentEntriesUseCase implements IGetExportContentEntriesU
             return null;
         }
 
-        return convertTaskToCmsImportExportRecord(task);
+        return convertTaskToCmsExportRecord(task);
     }
 }

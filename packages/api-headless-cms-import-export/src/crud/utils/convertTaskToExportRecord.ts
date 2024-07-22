@@ -5,7 +5,7 @@ import {
     IExportContentEntriesControllerOutput
 } from "~/tasks/domain/abstractions/ExportContentEntriesController";
 
-export const convertTaskToCmsImportExportRecord = (
+export const convertTaskToCmsExportRecord = (
     task: ITask<IExportContentEntriesControllerInput, IExportContentEntriesControllerOutput>
 ) => {
     return createCmsImportExportRecord({
