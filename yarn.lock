@@ -18730,6 +18730,7 @@ __metadata:
     execa: ^5.0.0
     glob: ^7.1.2
     load-json-file: ^6.2.0
+    lodash: ^4.17.21
     ncp: ^2.0.0
     replace-in-path: ^1.1.0
     rimraf: ^5.0.5
@@ -18999,7 +19000,6 @@ __metadata:
     open: ^8.4.0
     ora: 4.1.1
     write-json-file: 4.3.0
-    yesno: ^0.4.0
   languageName: unknown
   linkType: soft
 
@@ -24053,6 +24053,7 @@ __metadata:
     validate-npm-package-name: 3.0.0
     write-json-file: 4.3.0
     yargs: 15.4.1
+    yesno: ^0.4.0
   bin:
     create-webiny-project: ./bin.js
   languageName: unknown

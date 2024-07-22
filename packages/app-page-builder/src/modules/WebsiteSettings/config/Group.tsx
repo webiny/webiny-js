@@ -63,7 +63,7 @@ export const Group = makeDecoratable(
                 </Property>
                 {querySelection ? (
                     <Property
-                        id={"querySelections"}
+                        id={`querySelections:${name}`}
                         array={true}
                         name={"querySelections"}
                         value={withUniqueId(querySelection)}

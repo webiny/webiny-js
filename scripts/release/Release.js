@@ -121,7 +121,15 @@ class Release {
         ];
 
         this.logger.debug(lernaPublishArgs.join(" "));
-        await execa("yarn", lernaPublishArgs, { stdio: "inherit" });
+        try {
+            await execa("yarn", lernaPublishArgs, { stdio: "inherit" });
+        } catch (err) {
+            this.logger.debug("Failed to publish packages to NPM!", err);
+            this.logger.info("Retrying publishing...");
+            // Rerun `lerna publish` ignoring lifecycle scripts, as packages are already built and ready to go.
+            await execa("yarn", [...lernaPublishArgs, "--ignore-scripts"], { stdio: "inherit" });
+        }
+
         this.logger.info(`Packages were published to NPM under %s dist-tag`, this.tag);
 
         if (this.createGithubRelease !== false) {

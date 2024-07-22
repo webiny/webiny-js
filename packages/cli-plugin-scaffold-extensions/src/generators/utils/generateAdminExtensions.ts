@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import camelCase from "lodash/camelCase";
 import { formatCode } from "@webiny/cli-plugin-scaffold/utils";
 import { ExtensionWorkspace } from "./getExtensionsFromFilesystem";
 
@@ -9,7 +10,7 @@ export const generateAdminExtensions = async (extensions: ExtensionWorkspace[]) 
     const code: string[][] = [];
 
     extensions.forEach(extension => {
-        const name = path.basename(extension.path);
+        const name = camelCase(path.basename(extension.path));
         const ucFirstName = name.charAt(0).toUpperCase() + name.slice(1);
         const componentName = ucFirstName + "Extension";
         const importStatement = `import { Extension as ${componentName}} from "${extension.packageJson.name}";`;
