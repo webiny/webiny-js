@@ -8,6 +8,7 @@
     "@editorjs/quote": "^2.4.0",
     "@editorjs/underline": "^1.0.0",
     "@types/react": "18.2.79",
+    "@webiny/admin": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-admin-users-cognito": "0.0.0",
     "@webiny/app-form-builder": "0.0.0",
@@ -25,11 +26,15 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "regenerator-runtime": "^0.13.5",
+    "tailwindcss": "^3.4.6",
+    "tailwindcss-animate": "^1.0.7",
     "theme": "^1.0.0",
     "tslib": "^2.4.0"
   },
   "devDependencies": {
-    "cross-env": "^5.0.2"
+    "@webiny/project-utils": "0.0.0",
+    "cross-env": "^5.0.2",
+    "postcss": "^8.4.38"
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
@@ -53,6 +58,7 @@
       "dependencies": [
         "theme",
         "theme-1",
+        "@webiny/admin",
         "@webiny/app-apw",
         "@webiny/app-headless-cms",
         "@webiny/cli",
