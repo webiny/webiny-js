@@ -16,9 +16,13 @@ import { useFileManagerApi } from "~/modules/FileManagerApiProvider/FileManagerA
 import { getScopeWhereParams, State } from "./state";
 import { ROOT_FOLDER } from "~/constants";
 
+const toTypeInput = (value: string) => {
+    return value.replace("*", "");
+};
+
 function nonEmptyArray(value: string[] | undefined, fallback: string[] | undefined = undefined) {
     if (Array.isArray(value)) {
-        return value.length ? value : undefined;
+        return value.length ? value.map(toTypeInput) : undefined;
     }
 
     return fallback;
@@ -98,6 +102,15 @@ export function useListFiles({ modifiers, folderId, state }: UseListFilesParams)
 
         const AND: ListFilesWhereQueryVariables[] = [];
 
+        if (modifiers.accept.length) {
+            const types = nonEmptyArray(modifiers.accept);
+            if (types) {
+                AND.push({
+                    OR: types.map(type => ({ type_startsWith: type }))
+                });
+            }
+        }
+
         if (state.filters) {
             AND.push(state.filters);
         }
@@ -130,7 +143,6 @@ export function useListFiles({ modifiers, folderId, state }: UseListFilesParams)
                 ...getScopeWhereParams(modifiers.scope),
                 location: locationWhere,
                 createdBy: modifiers.own ? identity!.id : undefined,
-                type_in: nonEmptyArray(modifiers.accept),
                 AND: AND.length > 0 ? AND : undefined
             }
         };
