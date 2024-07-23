@@ -27,6 +27,7 @@ import { createAbortExportContentEntries } from "./graphql/abortExportContentEnt
 import { createMockTaskTriggerTransportPlugin } from "@webiny/project-utils/testing/tasks";
 import { createValidateImportFromUrl } from "./graphql/validateImportFromUrl";
 import { createGetValidateImportFromUrl } from "./graphql/getValidateImportFromUrl";
+import { createCmsPlugins } from "~tests/helpers/models";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -67,6 +68,7 @@ export const useHandler = <C extends Context = Context>(params?: UseHandlerParam
             return context;
         }),
         createMockTaskTriggerTransportPlugin(),
+        ...createCmsPlugins(),
         ...inputPlugins
     ];
 

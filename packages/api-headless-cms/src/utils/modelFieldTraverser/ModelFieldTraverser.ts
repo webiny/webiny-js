@@ -26,18 +26,12 @@ export interface IModelFieldTraverserTraverseOnFieldCallable {
 }
 
 export interface IModelFieldTraverser {
-    traverse(onField: IModelFieldTraverserTraverseOnFieldCallable): void;
+    traverse(modelAst: CmsModelAst, onField: IModelFieldTraverserTraverseOnFieldCallable): void;
 }
 
 export class ModelFieldTraverser implements IModelFieldTraverser {
-    private readonly modelAst: CmsModelAst;
-
-    constructor(modelAst: CmsModelAst) {
-        this.modelAst = modelAst;
-    }
-
-    public traverse(onField: IModelFieldTraverserTraverseOnFieldCallable) {
-        this.execute(this.modelAst, [], onField);
+    public traverse(modelAst: CmsModelAst, onField: IModelFieldTraverserTraverseOnFieldCallable) {
+        this.execute(modelAst, [], onField);
     }
 
     private execute(

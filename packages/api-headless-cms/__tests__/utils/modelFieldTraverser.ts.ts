@@ -30,11 +30,11 @@ describe("model field traverser", () => {
     it("should properly traverse through model fields - product", async () => {
         const model = await context.cms.getModel("product");
         const ast = converter.toAst(model);
-        const traverser = new ModelFieldTraverser(ast);
+        const traverser = new ModelFieldTraverser();
 
         const result: string[] = [];
 
-        traverser.traverse(({ field, path }) => {
+        traverser.traverse(ast, ({ field, path }) => {
             const ref = field.settings?.models
                 ? `#R#${field.settings.models
                       .map(m => m.modelId)
@@ -77,11 +77,11 @@ describe("model field traverser", () => {
     it("should properly traverse through model fields - page builder", async () => {
         const model = await context.cms.getModel(pageModel.modelId);
         const ast = converter.toAst(model);
-        const traverser = new ModelFieldTraverser(ast);
+        const traverser = new ModelFieldTraverser();
 
         const result: string[] = [];
 
-        traverser.traverse(({ field, path }) => {
+        traverser.traverse(ast, ({ field, path }) => {
             const ref = field.settings?.models
                 ? `#R#${field.settings.models
                       .map(m => m.modelId)

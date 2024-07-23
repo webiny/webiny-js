@@ -1,5 +1,6 @@
 import { useHandler } from "~tests/helpers/useHandler";
 import { TaskDataStatus } from "@webiny/tasks";
+import { categoryModel } from "~tests/helpers/models";
 
 describe("validate import from url - graphql", () => {
     it("should run validation and fail - parse string as json", async () => {
@@ -79,6 +80,9 @@ describe("validate import from url - graphql", () => {
 
         const [result] = await validateImportFromUrl({
             data: JSON.stringify({
+                model: {
+                    ...categoryModel
+                },
                 files: []
             })
         });
@@ -102,6 +106,9 @@ describe("validate import from url - graphql", () => {
 
         const [result] = await validateImportFromUrl({
             data: JSON.stringify({
+                model: {
+                    ...categoryModel
+                },
                 files: [
                     {
                         get: "invalid-url",
@@ -156,6 +163,9 @@ describe("validate import from url - graphql", () => {
 
         const [result] = await validateImportFromUrl({
             data: JSON.stringify({
+                model: {
+                    ...categoryModel
+                },
                 files: [
                     {
                         get: "https://get-url.com",
@@ -198,6 +208,9 @@ describe("validate import from url - graphql", () => {
 
         const [result] = await validateImportFromUrl({
             data: JSON.stringify({
+                model: {
+                    ...categoryModel
+                },
                 files: [
                     {
                         get: "https://get-url.com",
@@ -232,6 +245,9 @@ describe("validate import from url - graphql", () => {
 
         const [result] = await validateImportFromUrl({
             data: JSON.stringify({
+                model: {
+                    ...categoryModel
+                },
                 files: [
                     {
                         get,

@@ -8,17 +8,21 @@ import { NonEmptyArray } from "@webiny/api/types";
 import { WebinyError } from "@webiny/error";
 import { getImportExportFileType } from "~/tasks/utils/helpers/getImportExportFileType";
 import { parseImportUrlData } from "~/crud/utils/parseImportUrlData";
-import { HeadlessCms } from "@webiny/api-headless-cms/types";
+import { CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types";
+import { makeSureModelsAreIdentical } from "~/crud/utils/makeSureModelsAreIdentical";
 
 export interface IValidateImportFromUrlUseCaseParams {
     getModel: HeadlessCms["getModel"];
+    getModelToAstConverter: HeadlessCms["getModelToAstConverter"];
 }
 
 export class ValidateImportFromUrlUseCase implements IValidateImportFromUrlUseCase {
     private readonly getModel: HeadlessCms["getModel"];
+    private readonly getModelToAstConverter: HeadlessCms["getModelToAstConverter"];
 
     public constructor(params: IValidateImportFromUrlUseCaseParams) {
         this.getModel = params.getModel;
+        this.getModelToAstConverter = params.getModelToAstConverter;
     }
 
     public async execute(
@@ -43,7 +47,27 @@ export class ValidateImportFromUrlUseCase implements IValidateImportFromUrlUseCa
             throw new WebinyError("No entries file found in the provided data.", "NO_ENTRIES_FILE");
         }
 
-        const model = await this.getModel(validatedModel.modelId);
+        let model: CmsModel;
+        try {
+            model = await this.getModel(validatedModel.modelId);
+        } catch (ex) {
+            if (ex.code !== "NOT_FOUND") {
+                throw ex;
+            }
+            throw new WebinyError(
+                `Model provided in the JSON data, "${validatedModel.modelId}", not found.`,
+                "MODEL_NOT_FOUND",
+                {
+                    modelId: validatedModel.modelId
+                }
+            );
+        }
+
+        makeSureModelsAreIdentical({
+            getModelToAstConverter: this.getModelToAstConverter,
+            model,
+            target: validatedModel
+        });
 
         return {
             model,

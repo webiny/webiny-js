@@ -12,9 +12,7 @@ import {
     IExportContentEntriesControllerInput,
     IExportContentEntriesControllerOutput,
     IExportContentEntriesControllerOutputFile,
-    IExportedCmsModel,
-    IExportedCmsModelField,
-    IExportedCmsModelFieldSettings
+    IExportedCmsModel
 } from "~/tasks/domain/abstractions/ExportContentEntriesController";
 import { EXPORT_CONTENT_ASSETS_TASK, EXPORT_CONTENT_ENTRIES_TASK } from "~/tasks/constants";
 import {
@@ -29,44 +27,12 @@ import { getBackOffSeconds } from "~/tasks/utils/helpers/getBackOffSeconds";
 import { UrlSigner } from "~/tasks/utils/urlSigner";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
-import { CmsDynamicZoneTemplate, CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
-
-const prepareExportModelFields = (fields: CmsModelField[]): IExportedCmsModelField[] => {
-    return fields.map(field => {
-        let settings: IExportedCmsModelFieldSettings | undefined;
-        if (Array.isArray(field.settings?.fields)) {
-            settings = {
-                fields: prepareExportModelFields(field.settings!.fields)
-            };
-        } else if (Array.isArray(field.settings?.templates)) {
-            settings = {
-                templates: (field.settings!.templates as CmsDynamicZoneTemplate[]).map(template => {
-                    return {
-                        id: template.id,
-                        gqlTypeName: template.gqlTypeName,
-                        fields: prepareExportModelFields(template.fields)
-                    };
-                })
-            };
-        } else if (Array.isArray(field.settings?.models)) {
-            settings = {
-                models: field.settings?.models
-            };
-        }
-        return {
-            id: field.id,
-            fieldId: field.fieldId,
-            type: field.type,
-            multipleValues: field.multipleValues,
-            settings
-        };
-    });
-};
+import { CmsModel } from "@webiny/api-headless-cms/types";
 
 const prepareExportModel = (model: Pick<CmsModel, "modelId" | "fields">): IExportedCmsModel => {
     return {
         modelId: model.modelId,
-        fields: prepareExportModelFields(model.fields)
+        fields: model.fields
     };
 };
 

@@ -35,6 +35,7 @@ export const createHeadlessCmsImportExportCrud = async (
     });
 
     const validateImportFromUrlUseCase = new ValidateImportFromUrlUseCase({
+        getModelToAstConverter: context.cms.getModelToAstConverter,
         getModel: context.cms.getModel
     });
     const validateImportFromUrlIntegrityUseCase = new ValidateImportFromUrlIntegrityUseCase({

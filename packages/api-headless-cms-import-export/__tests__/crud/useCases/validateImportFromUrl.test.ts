@@ -1,9 +1,27 @@
 import { ValidateImportFromUrlUseCase } from "~/crud/useCases/validateImportFromUrl";
+import { categoryModel } from "~tests/helpers/models";
+import { Context } from "~/types";
+import { useHandler } from "~tests/helpers/useHandler";
 
 describe("validateImportFromUrl", () => {
+    const { createContext } = useHandler();
+    let context: Context;
+    const getModel = (modelId: string) => {
+        return context.cms.getModel(modelId);
+    };
+    const getModelToAstConverter = () => {
+        return context.cms.getModelToAstConverter();
+    };
+    beforeEach(async () => {
+        context = await createContext();
+    });
+
     it("should fail on invalid data", async () => {
         expect.assertions(1);
-        const useCase = new ValidateImportFromUrlUseCase();
+        const useCase = new ValidateImportFromUrlUseCase({
+            getModelToAstConverter,
+            getModel
+        });
 
         const params = {
             data: "data"
@@ -18,11 +36,15 @@ describe("validateImportFromUrl", () => {
 
     it("should fail on no files found", async () => {
         expect.assertions(1);
-        const useCase = new ValidateImportFromUrlUseCase();
+        const useCase = new ValidateImportFromUrlUseCase({
+            getModelToAstConverter,
+            getModel
+        });
 
         try {
             await useCase.execute({
                 data: JSON.stringify({
+                    model: categoryModel,
                     files: []
                 })
             });
@@ -33,10 +55,14 @@ describe("validateImportFromUrl", () => {
 
     it("should fail on invalid file", async () => {
         expect.assertions(2);
-        const useCase = new ValidateImportFromUrlUseCase();
+        const useCase = new ValidateImportFromUrlUseCase({
+            getModelToAstConverter,
+            getModel
+        });
         try {
             await useCase.execute({
                 data: JSON.stringify({
+                    model: categoryModel,
                     files: [
                         {
                             get: "",
@@ -73,11 +99,15 @@ describe("validateImportFromUrl", () => {
 
     it("should fail if no entries file", async () => {
         expect.assertions(1);
-        const useCase = new ValidateImportFromUrlUseCase();
+        const useCase = new ValidateImportFromUrlUseCase({
+            getModelToAstConverter,
+            getModel
+        });
 
         try {
             await useCase.execute({
                 data: JSON.stringify({
+                    model: categoryModel,
                     files: [
                         {
                             get: "https://some-url.com/file.zip",
@@ -94,10 +124,14 @@ describe("validateImportFromUrl", () => {
 
     it("should validate files properly", async () => {
         expect.assertions(1);
-        const useCase = new ValidateImportFromUrlUseCase();
+        const useCase = new ValidateImportFromUrlUseCase({
+            getModelToAstConverter,
+            getModel
+        });
 
         const result = await useCase.execute({
             data: JSON.stringify({
+                model: categoryModel,
                 files: [
                     {
                         get: "https://some-url.com/entries.zip",
@@ -112,7 +146,7 @@ describe("validateImportFromUrl", () => {
                 ]
             })
         });
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             files: [
                 {
                     get: "https://some-url.com/entries.zip",
