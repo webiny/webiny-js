@@ -120,7 +120,10 @@ const BaseRichTextEditor = ({
         editorState.read(() => {
             if (typeof onChange === "function") {
                 const editorState = editor.getEditorState();
-                onChange(JSON.stringify(editorState.toJSON()));
+                // The timeout is necessary to prevent the `flushSync` warning by React.
+                setTimeout(() => {
+                    onChange(JSON.stringify(editorState.toJSON()));
+                }, 0);
             }
         });
     }
