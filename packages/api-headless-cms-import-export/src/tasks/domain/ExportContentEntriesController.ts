@@ -11,7 +11,10 @@ import {
     IExportContentEntriesController,
     IExportContentEntriesControllerInput,
     IExportContentEntriesControllerOutput,
-    IExportContentEntriesControllerOutputFile
+    IExportContentEntriesControllerOutputFile,
+    IExportedCmsModel,
+    IExportedCmsModelField,
+    IExportedCmsModelFieldSettings
 } from "~/tasks/domain/abstractions/ExportContentEntriesController";
 import { EXPORT_CONTENT_ASSETS_TASK, EXPORT_CONTENT_ENTRIES_TASK } from "~/tasks/constants";
 import {
@@ -26,6 +29,46 @@ import { getBackOffSeconds } from "~/tasks/utils/helpers/getBackOffSeconds";
 import { UrlSigner } from "~/tasks/utils/urlSigner";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
+import { CmsDynamicZoneTemplate, CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
+
+const prepareExportModelFields = (fields: CmsModelField[]): IExportedCmsModelField[] => {
+    return fields.map(field => {
+        let settings: IExportedCmsModelFieldSettings | undefined;
+        if (Array.isArray(field.settings?.fields)) {
+            settings = {
+                fields: prepareExportModelFields(field.settings!.fields)
+            };
+        } else if (Array.isArray(field.settings?.templates)) {
+            settings = {
+                templates: (field.settings!.templates as CmsDynamicZoneTemplate[]).map(template => {
+                    return {
+                        id: template.id,
+                        gqlTypeName: template.gqlTypeName,
+                        fields: prepareExportModelFields(template.fields)
+                    };
+                })
+            };
+        } else if (Array.isArray(field.settings?.models)) {
+            settings = {
+                models: field.settings?.models
+            };
+        }
+        return {
+            id: field.id,
+            fieldId: field.fieldId,
+            type: field.type,
+            multipleValues: field.multipleValues,
+            settings
+        };
+    });
+};
+
+const prepareExportModel = (model: Pick<CmsModel, "modelId" | "fields">): IExportedCmsModel => {
+    return {
+        modelId: model.modelId,
+        fields: prepareExportModelFields(model.fields)
+    };
+};
 
 export class ExportContentEntriesController<
     C extends Context = Context,
@@ -35,7 +78,17 @@ export class ExportContentEntriesController<
 {
     public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
         const { context, response, input, store, trigger } = params;
-        const { state } = input;
+        const { state, modelId } = input;
+
+        let model: CmsModel;
+        try {
+            model = await context.cms.getModel(modelId);
+        } catch (ex) {
+            return response.error({
+                message: `Model "${modelId}" not found.`,
+                code: "MODEL_NOT_FOUND"
+            });
+        }
 
         const backOffSeconds = getBackOffSeconds(store.getTask().iterations);
 
@@ -51,14 +104,14 @@ export class ExportContentEntriesController<
         /**
          * In case of no state yet, we will start the content entries export process.
          */
-        const prefix = input.prefix || uniqueId(`cms-export/${input.modelId}/${taskId}`);
+        const prefix = input.prefix || uniqueId(`cms-export/${model.modelId}/${taskId}`);
         if (!state) {
             const task = await trigger<IExportContentEntriesInput>({
                 definition: EXPORT_CONTENT_ENTRIES_TASK,
                 input: {
                     prefix,
                     exportAssets: input.exportAssets,
-                    modelId: input.modelId,
+                    modelId: model.modelId,
                     limit: input.limit,
                     where: input.where,
                     sort: input.sort,
@@ -137,7 +190,7 @@ export class ExportContentEntriesController<
                 definition: EXPORT_CONTENT_ASSETS_TASK,
                 input: {
                     prefix,
-                    modelId: input.modelId,
+                    modelId: model.modelId,
                     limit: input.limit,
                     where: input.where,
                     sort: input.sort,
@@ -234,6 +287,7 @@ export class ExportContentEntriesController<
             }
 
             return response.done({
+                model: prepareExportModel(model),
                 files
             } as O);
         }

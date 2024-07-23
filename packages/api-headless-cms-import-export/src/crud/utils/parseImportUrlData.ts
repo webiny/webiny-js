@@ -1,29 +1,34 @@
-import { CmsModel } from "@webiny/api-headless-cms/types";
 import { CmsImportExportFileType, ICmsImportExportFile } from "~/types";
 import zod from "zod";
 import { WebinyError } from "@webiny/error";
 import { createZodError } from "@webiny/utils";
+import { IExportedCmsModel } from "~/tasks/domain/abstractions/ExportContentEntriesController";
 
 const validateData = zod.object({
     /**
      * Basic model validation.
      * We will check it more thoroughly in the next step.
      */
-    model: zod
-        .object({
-            modelId: zod.string(),
-            fields: zod
-                .array(
-                    zod
+    model: zod.object({
+        modelId: zod.string(),
+        fields: zod
+            .array(
+                zod.object({
+                    id: zod.string(),
+                    fieldId: zod.string(),
+                    type: zod.string(),
+                    multipleValues: zod.boolean().optional(),
+                    settings: zod
                         .object({
-                            fieldId: zod.string(),
-                            type: zod.string()
+                            fields: zod.array(zod.object({}).passthrough()).optional(),
+                            templates: zod.array(zod.object({}).passthrough()).optional()
                         })
                         .passthrough()
-                )
-                .min(1)
-        })
-        .passthrough(),
+                        .optional()
+                })
+            )
+            .min(1)
+    }),
     files: zod.array(
         zod.object({
             get: zod.string().url(),
@@ -34,7 +39,7 @@ const validateData = zod.object({
 });
 
 export interface IParseImportUrlDataResult {
-    model: CmsModel;
+    model: IExportedCmsModel;
     files: ICmsImportExportFile[];
 }
 
@@ -51,7 +56,7 @@ export const parseImportUrlData = (data: string): IParseImportUrlDataResult => {
         throw createZodError(result.error);
     }
     return {
-        model: result.data.model as unknown as CmsModel,
+        model: result.data.model as unknown as IExportedCmsModel,
         files: result.data.files
     };
 };

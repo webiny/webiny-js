@@ -1,4 +1,9 @@
-import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
+import {
+    CmsDynamicZoneTemplate,
+    CmsEntryListWhere,
+    CmsModel,
+    CmsModelField
+} from "@webiny/api-headless-cms/types";
 import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { CmsImportExportFileType, Context } from "~/types";
 
@@ -26,7 +31,29 @@ export interface IExportContentEntriesControllerOutputFile {
     type: CmsImportExportFileType;
 }
 
+export interface ICmsDynamicZoneTemplate
+    extends Pick<CmsDynamicZoneTemplate, "id" | "gqlTypeName"> {
+    fields: IExportedCmsModelField[];
+}
+
+export interface IExportedCmsModelFieldSettings {
+    fields?: IExportedCmsModelField[];
+    templates?: ICmsDynamicZoneTemplate[];
+    models?: Pick<CmsModel, "modelId">[];
+}
+
+export interface IExportedCmsModelField
+    extends Pick<CmsModelField, "id" | "fieldId" | "type" | "multipleValues"> {
+    settings?: IExportedCmsModelFieldSettings;
+}
+
+export interface IExportedCmsModel {
+    modelId: string;
+    fields: IExportedCmsModelField[];
+}
+
 export interface IExportContentEntriesControllerOutput extends ITaskResponseDoneResultOutput {
+    model: IExportedCmsModel;
     files: IExportContentEntriesControllerOutputFile[];
 }
 
