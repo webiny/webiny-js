@@ -29,7 +29,8 @@
     "uuid": "8.3.2",
     "validate-npm-package-name": "3.0.0",
     "write-json-file": "4.3.0",
-    "yargs": "15.4.1"
+    "yargs": "15.4.1",
+    "yesno": "^0.4.0"
   },
   "publishConfig": {
     "access": "public",

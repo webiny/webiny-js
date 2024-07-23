@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { Elements } from "~/components/Elements";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
+import { ClassNames } from "@emotion/react";
 
 const TabsHeader = styled.div`
     display: flex;
@@ -44,17 +45,24 @@ export const createTabs = () => {
         return (
             <>
                 <TabsHeader>
-                    {element.elements.map((tab, index) => (
-                        <TabLabel
-                            key={index}
-                            onClick={() => {
-                                setSelectedTabElement(tab);
-                            }}
-                            active={tab.id === selectedTabElement.id}
-                        >
-                            {tab.data?.settings?.tab?.label || ""}
-                        </TabLabel>
-                    ))}
+                    {element.elements.map((tab, index) => {
+                        const active = tab.id === selectedTabElement.id;
+                        return (
+                            <ClassNames key={index}>
+                                {({ cx }) => (
+                                    <TabLabel
+                                        active={active}
+                                        className={cx("tab-label", { active })}
+                                        onClick={() => {
+                                            setSelectedTabElement(tab);
+                                        }}
+                                    >
+                                        {tab.data?.settings?.tab?.label || ""}
+                                    </TabLabel>
+                                )}
+                            </ClassNames>
+                        );
+                    })}
                 </TabsHeader>
                 <Elements element={{ ...element, elements: [selectedTabElement] }} />
             </>

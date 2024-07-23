@@ -100,7 +100,7 @@ function createRenderSubscriber(
             runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 30,
-            memorySize: 512,
+            memorySize: 1024,
             environment: {
                 variables: getCommonLambdaEnvVariables().apply(value => ({
                     ...value,
@@ -235,7 +235,7 @@ function createFlushService(
             runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 30,
-            memorySize: 512,
+            memorySize: 1024,
             environment: {
                 variables: getCommonLambdaEnvVariables().apply(value => ({
                     ...value,

@@ -23,8 +23,10 @@ const plugin: CmsModelFieldRendererPlugin = {
                 options: []
             };
 
+            const defaultOption = options.find(opt => opt.selected === true);
+
             return (
-                <Bind>
+                <Bind defaultValue={defaultOption ? defaultOption.value : undefined}>
                     <RadioGroup label={field.label} description={field.helpText}>
                         {({ onChange, getValue }) => (
                             <React.Fragment>
