@@ -52,3 +52,5 @@ lerna.json
 gateway.*.json
 
 packages/tasks/tpl/*
+
+*storybook.log
