@@ -86,7 +86,7 @@ describe("entry assets", () => {
             }
         };
 
-        const result = entryAssets.assignAssets(entry);
+        const result = await entryAssets.assignAssets(entry);
 
         expect(result).toHaveLength(6);
 
@@ -133,7 +133,7 @@ describe("entry assets", () => {
             }
         };
 
-        const result = entryAssets.assignAssets(entry);
+        const result = await entryAssets.assignAssets(entry);
 
         const expected: IAsset[] = [
             {
@@ -157,7 +157,7 @@ describe("entry assets", () => {
             }
         };
 
-        const result = entryAssets.assignAssets(entry);
+        const result = await entryAssets.assignAssets(entry);
 
         const expected: IAsset[] = [
             {
@@ -169,11 +169,11 @@ describe("entry assets", () => {
     });
 
     it("should not find any assets", async () => {
-        const result = entryAssets.assignAssets([]);
+        const result = await entryAssets.assignAssets([]);
 
         expect(result).toHaveLength(0);
 
-        const emptyResult = entryAssets.assignAssets({
+        const emptyResult = await entryAssets.assignAssets({
             values: {
                 image: "",
                 images: {}
@@ -182,7 +182,7 @@ describe("entry assets", () => {
 
         expect(emptyResult).toHaveLength(0);
 
-        const emptyResult2 = entryAssets.assignAssets({
+        const emptyResult2 = await entryAssets.assignAssets({
             values: {
                 image: " ",
                 images: [" ", null, undefined]
@@ -191,7 +191,7 @@ describe("entry assets", () => {
 
         expect(emptyResult2).toHaveLength(0);
 
-        const emptyResult3 = entryAssets.assignAssets({
+        const emptyResult3 = await entryAssets.assignAssets({
             values: {
                 image: undefined,
                 images: undefined
@@ -200,7 +200,7 @@ describe("entry assets", () => {
 
         expect(emptyResult3).toHaveLength(0);
 
-        const emptyResult4 = entryAssets.assignAssets({
+        const emptyResult4 = await entryAssets.assignAssets({
             values: {
                 image: " bla bla bla"
             }
@@ -208,7 +208,7 @@ describe("entry assets", () => {
 
         expect(emptyResult4).toHaveLength(0);
 
-        const emptyResult5 = entryAssets.assignAssets({
+        const emptyResult5 = await entryAssets.assignAssets({
             values: {
                 image: null,
                 images: null
@@ -217,11 +217,11 @@ describe("entry assets", () => {
 
         expect(emptyResult5).toHaveLength(0);
 
-        const emptyResult6 = entryAssets.assignAssets(undefined as any);
+        const emptyResult6 = await entryAssets.assignAssets(undefined as any);
 
         expect(emptyResult6).toHaveLength(0);
 
-        const emptyResult7 = entryAssets.assignAssets(null as any);
+        const emptyResult7 = await entryAssets.assignAssets(null as any);
 
         expect(emptyResult7).toHaveLength(0);
     });

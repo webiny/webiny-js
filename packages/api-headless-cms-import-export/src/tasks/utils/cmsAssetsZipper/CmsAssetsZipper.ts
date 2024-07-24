@@ -121,7 +121,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
              *
              * Possibly no new assets found? Then just continue with the next batch of entries.
              */
-            const assigned = entryAssets.assignAssets(items);
+            const assigned = await entryAssets.assignAssets(items);
             if (assigned.length === 0) {
                 fetchItems();
                 return;

@@ -21,7 +21,7 @@ export class EntryAssets implements IEntryAssets {
         this.uniqueResolver = params.uniqueResolver;
     }
 
-    public assignAssets(input: IAssignAssetsInput): IAsset[] {
+    public async assignAssets(input: IAssignAssetsInput): Promise<IAsset[]> {
         const entries = Array.isArray(input) ? input : [input];
         if (entries.length === 0) {
             return [];
@@ -33,7 +33,7 @@ export class EntryAssets implements IEntryAssets {
             if (!entry?.values) {
                 continue;
             }
-            this.traverser.traverse(entry.values, ({ field, value }) => {
+            await this.traverser.traverse(entry.values, ({ field, value }) => {
                 if (!value || fileTypes.includes(field.type) === false) {
                     return;
                 }

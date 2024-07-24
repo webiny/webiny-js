@@ -24,5 +24,5 @@ export interface IEntryAssets {
      * The output of this method is a list of assets that were found in the given input.
      * If there were any duplicates, they will not be included in the output.
      */
-    assignAssets(input: IAssignAssetsInput): IAsset[];
+    assignAssets(input: IAssignAssetsInput): Promise<IAsset[]>;
 }

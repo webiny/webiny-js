@@ -155,7 +155,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
                 assets = [];
             }
 
-            const itemsAssets = this.entryAssets.assignAssets(items);
+            const itemsAssets = await this.entryAssets.assignAssets(items);
 
             if (itemsAssets.length === 0) {
                 return;
