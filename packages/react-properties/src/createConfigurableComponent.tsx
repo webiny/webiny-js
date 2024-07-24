@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Compose, Decorator, makeDecoratable } from "@webiny/react-composition";
-import { Property, Properties, toObject } from "~/index";
 import { GenericComponent } from "@webiny/react-composition/types";
+import { Property, Properties, toObject } from "~/index";
+import { useDebugConfig } from "./useDebugConfig";
 
 const createHOC =
     (newChildren: React.ReactNode): Decorator<GenericComponent<{ children?: React.ReactNode }>> =>
@@ -68,6 +69,7 @@ export function createConfigurableComponent<TConfig>(name: string) {
 
     const WithConfig = ({ onProperties, children }: WithConfigProps) => {
         const [properties, setProperties] = useState<Property[]>([]);
+        useDebugConfig(name, properties);
         const context = { properties };
 
         useEffect(() => {

@@ -4,18 +4,38 @@ import camelCase from "lodash/camelCase";
 
 const fieldSystemFields: string[] = [
     "id",
-    "fieldId",
-    "storageId",
-    "label",
-    "helpText",
-    "placeholderText",
-    "type",
-    "multipleValues",
-    "predefinedValues",
-    "renderer",
-    "validation",
-    "listValidation",
-    "settings"
+    "entryId",
+    "createdOn",
+    "modifiedOn",
+    "publishedOn",
+    "savedOn",
+    "deletedOn",
+    "restoredOn",
+    "firstPublishedOn",
+    "lastPublishedOn",
+    "createdBy",
+    "modifiedBy",
+    "savedBy",
+    "deletedBy",
+    "restoredBy",
+    "firstPublishedBy",
+    "lastPublishedBy",
+    "revisionCreatedOn",
+    "revisionModifiedOn",
+    "revisionSavedOn",
+    "revisionDeletedOn",
+    "revisionRestoredOn",
+    "revisionFirstPublishedOn",
+    "revisionLastPublishedOn",
+    "revisionCreatedBy",
+    "revisionModifiedBy",
+    "revisionSavedBy",
+    "revisionDeletedBy",
+    "revisionRestoredBy",
+    "revisionFirstPublishedBy",
+    "revisionLastPublishedBy",
+    "meta",
+    "wbyAco_location"
 ];
 
 const str = zod.string().trim();
@@ -43,8 +63,7 @@ const fieldSchema = zod.object({
             if (fieldSystemFields.includes(value)) {
                 return ctx.addIssue({
                     code: zod.ZodIssueCode.custom,
-                    message: `Provided ${value} is not valid - "${value}" is an auto-generated field.`,
-                    path: ["fieldId"]
+                    message: `Field ID "${value}" is a reserved keyword, and is not allowed.`
                 });
             }
         }),
@@ -82,7 +101,7 @@ const fieldSchema = zod.object({
     renderer: zod
         .object({
             name: shortString,
-            settings: zod.object({}).passthrough().optional()
+            settings: zod.object({}).passthrough().nullish().optional()
         })
         .optional()
         .nullable()
