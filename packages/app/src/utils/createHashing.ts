@@ -1,4 +1,4 @@
-export type IHashingAlgorithm = "MD5" | "SHA-1" | "SHA-256" | "SHA-512";
+export type IHashingAlgorithm = "SHA-1" | "SHA-256" | "SHA-512";
 
 export const createHashing = (algorithm: IHashingAlgorithm) => {
     return async (value: unknown) => {

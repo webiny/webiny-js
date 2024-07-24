@@ -13,9 +13,10 @@ import {
     UpdateCmsModelMutationVariables
 } from "~/admin/graphql/contentModels";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql";
-import { CmsModelField, CmsModel } from "~/types";
+import { CmsModel, CmsModelField } from "~/types";
 import { FetchResult } from "apollo-link";
 import { ModelProvider } from "~/admin/components/ModelProvider";
+import { createHashing } from "@webiny/app/utils";
 
 export interface ContentModelEditorProviderContext {
     apolloClient: ApolloClient<any>;
@@ -64,6 +65,8 @@ export const contentModelEditorReducer: Reducer = (prev: State, action: Action):
             return prev;
     }
 };
+
+const hashModel = createHashing("SHA-256");
 
 /**
  * Cleanup is required because backend always expects string value in predefined values entries
@@ -176,8 +179,13 @@ export const ContentModelEditorProvider = ({
      * Return new data once finished.
      */
     const setData = async (setter: (value: any) => any, saveModel = false): Promise<void> => {
-        setPristine(false);
         const data = setter(state.data);
+        const existingHash = await hashModel(state.data);
+        const newHash = await hashModel(data);
+        if (existingHash === newHash) {
+            return;
+        }
+        setPristine(false);
         dispatch({ type: "data", data });
         if (!saveModel) {
             return;
@@ -204,6 +212,7 @@ export const ContentModelEditorProvider = ({
         }
 
         await setData(() => data, false);
+
         setPristine(true);
         return response;
     };
