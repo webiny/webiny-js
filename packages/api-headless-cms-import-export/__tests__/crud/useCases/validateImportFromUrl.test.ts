@@ -280,6 +280,7 @@ describe("validateImportFromUrl", () => {
                             pathname: "/entries.zip",
                             type: "zip"
                         },
+                        code: "FILE_TYPE_NOT_SUPPORTED",
                         message: "File type not supported."
                     }
                 },
@@ -292,6 +293,7 @@ describe("validateImportFromUrl", () => {
                             pathname: "/assets.zip",
                             type: "zip"
                         },
+                        code: "FILE_TYPE_NOT_SUPPORTED",
                         message: "File type not supported."
                     }
                 }

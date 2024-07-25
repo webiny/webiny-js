@@ -76,6 +76,7 @@ export class ValidateImportFromUrlUseCase implements IValidateImportFromUrlUseCa
                 if (result.error) {
                     file.error = {
                         message: "File type not supported.",
+                        code: "FILE_TYPE_NOT_SUPPORTED",
                         data: {
                             type: result.type,
                             pathname: result.pathname

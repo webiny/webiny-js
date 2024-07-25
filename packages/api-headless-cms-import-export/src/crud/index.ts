@@ -12,12 +12,6 @@ import {
     ICmsImportExportObjectValidateImportFromUrlResult,
     ICmsImportExportRecord
 } from "~/types";
-import { convertTaskToCmsExportRecord } from "~/crud/utils/convertTaskToExportRecord";
-import { EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK } from "~/tasks/constants";
-import {
-    IExportContentEntriesControllerInput,
-    IExportContentEntriesControllerOutput
-} from "~/tasks/domain/abstractions/ExportContentEntriesController";
 import {
     GetExportContentEntriesUseCase,
     GetValidateImportFromUrlUseCase,
@@ -26,6 +20,8 @@ import {
 } from "./useCases";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { ImportFromUrlUseCase } from "./useCases/importFromUrl/ImportFromUrlUseCase";
+import { ExportContentEntriesUseCase } from "~/crud/useCases/exportContentEntries";
+import { AbortExportContentEntriesUseCase } from "./useCases/abortExportContentEntries";
 
 export const createHeadlessCmsImportExportCrud = async (
     context: Context
@@ -51,6 +47,14 @@ export const createHeadlessCmsImportExportCrud = async (
         triggerTask: context.tasks.trigger
     });
 
+    const exportContentEntriesUseCase = new ExportContentEntriesUseCase({
+        triggerTask: context.tasks.trigger
+    });
+
+    const abortExportContentEntriesUseCase = new AbortExportContentEntriesUseCase({
+        abortTask: context.tasks.abort
+    });
+
     const getExportContentEntries = async (
         params: ICmsImportExportObjectGetExportParams
     ): Promise<ICmsImportExportRecord> => {
@@ -66,32 +70,13 @@ export const createHeadlessCmsImportExportCrud = async (
     const exportContentEntries = async (
         params: ICmsImportExportObjectStartExportParams
     ): Promise<ICmsImportExportRecord> => {
-        const task = await context.tasks.trigger<
-            IExportContentEntriesControllerInput,
-            IExportContentEntriesControllerOutput
-        >({
-            name: `Export Content Entries and Assets Controller for "${params.modelId}"`,
-            input: {
-                modelId: params.modelId,
-                exportAssets: params.exportAssets,
-                limit: params.limit
-            },
-            definition: EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK
-        });
-
-        return convertTaskToCmsExportRecord(task);
+        return exportContentEntriesUseCase.execute(params);
     };
 
     const abortExportContentEntries = async (
         params: ICmsImportExportObjectAbortExportParams
     ): Promise<ICmsImportExportRecord> => {
-        const task = await context.tasks.abort<
-            IExportContentEntriesControllerInput,
-            IExportContentEntriesControllerOutput
-        >({
-            id: params.id
-        });
-        return convertTaskToCmsExportRecord(task);
+        return abortExportContentEntriesUseCase.execute(params);
     };
 
     const validateImportFromUrl = async (

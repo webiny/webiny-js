@@ -53,11 +53,12 @@ export class ImportFromUrlUseCase implements IImportFromUrlUseCase {
                 message: "Integrity check failed.",
                 code: "INTEGRITY_CHECK_FAILED",
                 data: {
+                    status: integrityTask.taskStatus,
                     files: integrityTask.output?.files,
                     error: integrityTask.output?.error
                 }
             });
-        } else if (!integrityTask.output?.files.length) {
+        } else if (!integrityTask.output?.files?.length) {
             throw new WebinyError({
                 message: "No files found in the provided data.",
                 code: "NO_FILES_FOUND"
