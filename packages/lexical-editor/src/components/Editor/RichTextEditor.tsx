@@ -4,6 +4,7 @@ import { CSSObject } from "@emotion/react";
 import { Klass, LexicalEditor, LexicalNode } from "lexical";
 import { EditorState } from "lexical/LexicalEditorState";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import { $isRootTextContentEmpty } from "@lexical/text";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
@@ -105,7 +106,6 @@ const BaseRichTextEditor = ({
     const editorValue = isValidLexicalData(value) ? value : generateInitialLexicalValue();
 
     const initialConfig = {
-        // We update the state via the `<LexicalUpdateStatePlugin/>`.
         editorState: null,
         namespace: "webiny",
         onError: () => {
@@ -120,10 +120,18 @@ const BaseRichTextEditor = ({
         editorState.read(() => {
             if (typeof onChange === "function") {
                 const editorState = editor.getEditorState();
-                // The timeout is necessary to prevent the `flushSync` warning by React.
-                setTimeout(() => {
-                    onChange(JSON.stringify(editorState.toJSON()));
-                }, 0);
+                const isEmpty = $isRootTextContentEmpty(editor.isComposing(), true);
+
+                const newValue = JSON.stringify(editorState.toJSON());
+
+                // We don't want to call "onChange" if editor text is empty, and original `value` is `undefined`.
+                if (value === undefined && isEmpty) {
+                    return;
+                }
+
+                if (value !== newValue) {
+                    onChange(newValue);
+                }
             }
         });
     }
