@@ -9321,6 +9321,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lexical/text@npm:^0.16.0":
+  version: 0.16.1
+  resolution: "@lexical/text@npm:0.16.1"
+  dependencies:
+    lexical: 0.16.1
+  checksum: 8ab4a2b51923d59321ddad6a9a79b02e1a04db859a6096cddea9efadae1de3e6efde45e2f3fb651a51d924afbddc74043cce3c7d124795804a3da2bfa45c6a2b
+  languageName: node
+  linkType: hard
+
 "@lexical/utils@npm:0.16.0, @lexical/utils@npm:^0.16.0":
   version: 0.16.0
   resolution: "@lexical/utils@npm:0.16.0"
@@ -19416,6 +19425,7 @@ __metadata:
     "@lexical/react": ^0.16.0
     "@lexical/rich-text": ^0.16.0
     "@lexical/selection": ^0.16.0
+    "@lexical/text": ^0.16.0
     "@lexical/utils": ^0.16.0
     "@webiny/cli": 0.0.0
     "@webiny/lexical-nodes": 0.0.0
@@ -31746,6 +31756,13 @@ __metadata:
   version: 0.16.0
   resolution: "lexical@npm:0.16.0"
   checksum: ef43cf65dd30e044f7bbab1e56078b8ebee70a4182e517d1379c190d90174c04550c86921780360ad154fc78ce11cdd859bb0b8824971d072a38e0833166fe18
+  languageName: node
+  linkType: hard
+
+"lexical@npm:0.16.1":
+  version: 0.16.1
+  resolution: "lexical@npm:0.16.1"
+  checksum: 969750060f81f99e4d9139c96356f2a3460c618ab60a9aa1821c6388c9d59cea0101339668f900407188575898ab0334d40d93ec7a114dfe561a0be7c8c777e1
   languageName: node
   linkType: hard
 
