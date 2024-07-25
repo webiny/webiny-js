@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import isEqual from "lodash/isEqual";
 
 const emptyFunction = (): undefined => {
     return undefined;
@@ -52,9 +53,13 @@ export const DelayedOnChange = ({ children, ...other }: DelayedOnChangeProps) =>
     const [value, setValue] = useState<string | undefined>(initialValue);
     // Sync state and props
     useEffect(() => {
-        if (initialValue !== value) {
-            setValue(initialValue);
+        // Do not update local state, if the incoming value is the same as the local state.
+        // This is primarily an optimization for non-scalar values (objects).
+        if (isEqual(initialValue, value)) {
+            return;
         }
+
+        setValue(initialValue);
     }, [initialValue]);
 
     const localTimeout = React.useRef<number | null>(null);
@@ -74,6 +79,11 @@ export const DelayedOnChange = ({ children, ...other }: DelayedOnChangeProps) =>
 
     // this is fired upon change value state
     const onValueStateChanged = (nextValue: string) => {
+        // We don't want to execute callbacks, if the value hasn't changed.
+        if (isEqual(nextValue, initialValue)) {
+            return;
+        }
+
         localTimeout.current && clearTimeout(localTimeout.current);
         localTimeout.current = null;
         localTimeout.current = setTimeout(() => applyValue(nextValue), delay) as unknown as number;
