@@ -22,6 +22,7 @@ export interface FormAPI<T extends GenericFormData = GenericFormData> {
         event?: React.SyntheticEvent<any, any>,
         options?: FormValidationOptions
     ) => Promise<any>;
+    isPristine: boolean;
     setValue: FormSetValue;
     getValue: (name: string) => any;
     validate: () => Promise<boolean>;
