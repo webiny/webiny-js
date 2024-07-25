@@ -6,7 +6,6 @@ import { IExportedCmsModel } from "~/tasks/domain/abstractions/ExportContentEntr
 export interface IValidateImportFromUrlInput {
     files: NonEmptyArray<ICmsImportExportFile>;
     model: IExportedCmsModel;
-    lastIndex: number;
 }
 
 export interface IValidateImportFromUrlOutput extends ITaskResponseDoneResultOutput {

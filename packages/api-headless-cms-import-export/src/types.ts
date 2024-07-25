@@ -49,6 +49,7 @@ export interface ICmsImportExportObjectGetValidateImportFromUrlParams {
 
 export interface ICmsImportExportValidatedFileError {
     message: string;
+    code: string;
     data?: GenericRecord;
 }
 

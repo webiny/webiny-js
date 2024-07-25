@@ -24,7 +24,7 @@ export const categoryModel: CmsModelInput = {
         id: group.id,
         name: group.name
     },
-    layout: [["titleFieldIdAbcdef"], ["slugFieldIdAbc"]],
+    layout: [["titleFieldIdAbcdef"], ["slugFieldIdAbc"], ["parentCategory"], ["tags"]],
     fields: [
         {
             id: "titleFieldIdAbcdef",
@@ -80,6 +80,30 @@ export const categoryModel: CmsModelInput = {
             renderer: {
                 name: "renderer"
             }
+        },
+        {
+            id: "parentCategory",
+            multipleValues: false,
+            helpText: "",
+            label: "Self - reference",
+            type: "ref",
+            fieldId: "parent",
+            settings: {
+                models: [
+                    {
+                        modelId: "category",
+                        name: "Category"
+                    }
+                ]
+            }
+        },
+        {
+            id: "tags",
+            multipleValues: true,
+            helpText: "",
+            label: "Tags",
+            type: "text",
+            fieldId: "tags"
         }
     ]
 };

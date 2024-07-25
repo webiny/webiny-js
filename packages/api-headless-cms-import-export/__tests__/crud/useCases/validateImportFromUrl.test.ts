@@ -2,6 +2,8 @@ import { ValidateImportFromUrlUseCase } from "~/crud/useCases/validateImportFrom
 import { categoryModel } from "~tests/helpers/models";
 import { Context } from "~/types";
 import { useHandler } from "~tests/helpers/useHandler";
+import { NotFoundError } from "@webiny/handler-graphql";
+import { CmsModel } from "@webiny/api-headless-cms/types";
 
 describe("validateImportFromUrl", () => {
     const { createContext } = useHandler();
@@ -122,6 +124,124 @@ describe("validateImportFromUrl", () => {
         }
     });
 
+    it("should fail if model not found", async () => {
+        expect.assertions(1);
+        const useCase = new ValidateImportFromUrlUseCase({
+            getModelToAstConverter,
+            getModel: () => {
+                throw new NotFoundError("Model not found.");
+            }
+        });
+
+        try {
+            await useCase.execute({
+                data: JSON.stringify({
+                    model: categoryModel,
+                    files: [
+                        {
+                            get: "https://some-url.com/entries.zip",
+                            head: "https://some-url.com/entries.zip",
+                            type: "entries"
+                        }
+                    ]
+                })
+            });
+        } catch (ex) {
+            expect(ex.message).toEqual(`Model provided in the JSON data, "category", not found.`);
+        }
+    });
+
+    it("should fail if model getter fails for some reason", async () => {
+        expect.assertions(1);
+        const useCase = new ValidateImportFromUrlUseCase({
+            getModelToAstConverter,
+            getModel: () => {
+                throw new Error("Unspecified.");
+            }
+        });
+
+        try {
+            await useCase.execute({
+                data: JSON.stringify({
+                    model: categoryModel,
+                    files: [
+                        {
+                            get: "https://some-url.com/entries.zip",
+                            head: "https://some-url.com/entries.zip",
+                            type: "entries"
+                        }
+                    ]
+                })
+            });
+        } catch (ex) {
+            expect(ex.message).toEqual(`Unspecified.`);
+        }
+    });
+
+    it("should fail to match models - database model missing fields", async () => {
+        expect.assertions(1);
+        const useCase = new ValidateImportFromUrlUseCase({
+            getModelToAstConverter,
+            getModel: async () => {
+                return {
+                    ...categoryModel,
+                    fields: categoryModel.fields.slice(1)
+                } as unknown as CmsModel;
+            }
+        });
+
+        try {
+            await useCase.execute({
+                data: JSON.stringify({
+                    model: categoryModel,
+                    files: [
+                        {
+                            get: "https://some-url.com/entries.we.zip",
+                            head: "https://some-url.com/entries.we.zip",
+                            type: "entries"
+                        }
+                    ]
+                })
+            });
+        } catch (ex) {
+            expect(ex.message).toEqual(`Field "title" not found in the model from the database.`);
+        }
+    });
+
+    it("should fail to match models - exported model missing fields", async () => {
+        expect.assertions(1);
+        const useCase = new ValidateImportFromUrlUseCase({
+            getModelToAstConverter,
+            getModel: async () => {
+                return {
+                    ...categoryModel
+                } as unknown as CmsModel;
+            }
+        });
+
+        try {
+            await useCase.execute({
+                data: JSON.stringify({
+                    model: {
+                        ...categoryModel,
+                        fields: categoryModel.fields.slice(0, 1)
+                    },
+                    files: [
+                        {
+                            get: "https://some-url.com/entries.we.zip",
+                            head: "https://some-url.com/entries.we.zip",
+                            type: "entries"
+                        }
+                    ]
+                })
+            });
+        } catch (ex) {
+            expect(ex.message).toEqual(
+                `Field "slug" not found in the model provided via the JSON data.`
+            );
+        }
+    });
+
     it("should validate files properly", async () => {
         expect.assertions(1);
         const useCase = new ValidateImportFromUrlUseCase({
@@ -146,7 +266,10 @@ describe("validateImportFromUrl", () => {
                 ]
             })
         });
-        expect(result).toMatchObject({
+        expect(result).toEqual({
+            model: expect.objectContaining({
+                modelId: categoryModel.modelId
+            }),
             files: [
                 {
                     get: "https://some-url.com/entries.zip",

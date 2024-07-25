@@ -28,6 +28,7 @@ import { createMockTaskTriggerTransportPlugin } from "@webiny/project-utils/test
 import { createValidateImportFromUrl } from "./graphql/validateImportFromUrl";
 import { createGetValidateImportFromUrl } from "./graphql/getValidateImportFromUrl";
 import { createCmsPlugins } from "~tests/helpers/models";
+import { createImportFromUrl } from "~tests/helpers/graphql/importFromUrl";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -114,6 +115,7 @@ export const useHandler = <C extends Context = Context>(params?: UseHandlerParam
         abortExportContentEntries: createAbortExportContentEntries(invoke),
         validateImportFromUrl: createValidateImportFromUrl(invoke),
         getValidateImportFromUrl: createGetValidateImportFromUrl(invoke),
+        importFromUrl: createImportFromUrl(invoke),
         createContext: async () => {
             return await rawHandler({}, {} as LambdaContext);
         }

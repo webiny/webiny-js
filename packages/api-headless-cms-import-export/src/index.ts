@@ -9,7 +9,7 @@ import {
     createExportContentEntriesControllerTask,
     createExportContentEntriesTask,
     createImportFromUrlTask,
-    createValidateImportFromUrlIntegrityTask
+    createValidateImportFromUrlTask
 } from "~/tasks";
 
 export const createHeadlessCmsImportExport = (): Plugin[] => {
@@ -23,7 +23,7 @@ export const createHeadlessCmsImportExport = (): Plugin[] => {
             createExportContentEntriesControllerTask(),
             createExportContentEntriesTask(),
             createExportContentAssets(),
-            createValidateImportFromUrlIntegrityTask(),
+            createValidateImportFromUrlTask(),
             createImportFromUrlTask()
         );
 

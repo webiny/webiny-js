@@ -49,13 +49,28 @@ export const makeSureModelsAreIdentical = (params: IMakeSureModelsAreIdenticalPa
 
     const modelValues = getModelValues(modelAst);
     const targetValues = getModelValues(targetAst);
-
+    /**
+     * First we will go through the model from the database.
+     * Then we will go through the exported model and check against the model from the database.
+     */
     for (const value of modelValues) {
         if (targetValues.some(v => v.key === value.key)) {
             continue;
         }
         throw new WebinyError({
             message: `Field "${value.field.fieldId}" not found in the model provided via the JSON data.`,
+            code: "MODEL_FIELD_NOT_FOUND",
+            data: {
+                ...value
+            }
+        });
+    }
+    for (const value of targetValues) {
+        if (modelValues.some(v => v.key === value.key)) {
+            continue;
+        }
+        throw new WebinyError({
+            message: `Field "${value.field.fieldId}" not found in the model from the database.`,
             code: "MODEL_FIELD_NOT_FOUND",
             data: {
                 ...value

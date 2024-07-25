@@ -26,16 +26,11 @@ export class ValidateImportFromUrl<
     public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
         const { response, input } = params;
 
-        const { files, lastIndex } = input;
+        const { files = [] } = input;
 
         const results: ICmsImportExportValidatedFile[] = [];
 
-        for (const index in files) {
-            if (lastIndex !== undefined && Number(index) <= lastIndex) {
-                continue;
-            }
-
-            const target = files[index];
+        for (const target of files) {
             const { get, head } = target;
             const { type, pathname, error: fileTypeError } = getImportExportFileType(head);
             if (fileTypeError) {
@@ -44,6 +39,7 @@ export class ValidateImportFromUrl<
                     head,
                     error: {
                         message: "File type not supported.",
+                        code: "FILE_TYPE_NOT_SUPPORTED",
                         data: {
                             pathname,
                             type
@@ -69,7 +65,11 @@ export class ValidateImportFromUrl<
                     get,
                     head,
                     error: {
-                        message: "File not found."
+                        message: "File not found.",
+                        code: "FILE_NOT_FOUND",
+                        data: {
+                            url: head
+                        }
                     },
                     size: undefined,
                     type: undefined
@@ -88,6 +88,16 @@ export class ValidateImportFromUrl<
             return response.error({
                 message: "No files found.",
                 code: "NO_FILES_FOUND"
+            });
+        }
+        const erroredFiles = results.filter(file => !!file.error);
+        if (erroredFiles.length) {
+            return response.error({
+                message: "Some files failed validation.",
+                code: "FILES_FAILED_VALIDATION",
+                data: {
+                    files: erroredFiles
+                }
             });
         }
 

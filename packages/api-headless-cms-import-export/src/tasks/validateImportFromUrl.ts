@@ -6,7 +6,7 @@ import {
     IValidateImportFromUrlOutput
 } from "~/tasks/domain/abstractions/ValidateImportFromUrl";
 
-export const createValidateImportFromUrlIntegrityTask = () => {
+export const createValidateImportFromUrlTask = () => {
     return createTaskDefinition<Context, IValidateImportFromUrlInput, IValidateImportFromUrlOutput>(
         {
             id: VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK,
