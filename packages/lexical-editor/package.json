@@ -13,6 +13,7 @@
     "@lexical/react": "^0.16.0",
     "@lexical/rich-text": "^0.16.0",
     "@lexical/selection": "^0.16.0",
+    "@lexical/text": "^0.16.0",
     "@lexical/utils": "^0.16.0",
     "@webiny/lexical-nodes": "0.0.0",
     "@webiny/lexical-theme": "0.0.0",
