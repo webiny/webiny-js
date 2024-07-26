@@ -61,6 +61,19 @@ export interface ICmsImportExportValidatedFile {
     error?: ICmsImportExportValidatedFileError;
 }
 
+export interface ICmsImportExportValidatedCombinedContentFile
+    extends ICmsImportExportValidatedFile {
+    type: CmsImportExportFileType.COMBINED_ENTRIES;
+}
+
+export interface ICmsImportExportValidatedContentEntriesFile extends ICmsImportExportValidatedFile {
+    type: CmsImportExportFileType.ENTRIES;
+}
+
+export interface ICmsImportExportValidatedAssetsFile extends ICmsImportExportValidatedFile {
+    type: CmsImportExportFileType.ASSETS;
+}
+
 export interface ICmsImportExportObjectGetValidateImportFromUrlResult {
     id: string;
     files: NonEmptyArray<ICmsImportExportValidatedFile> | undefined;
@@ -78,7 +91,10 @@ export interface ICmsImportExportProcessedFile extends ICmsImportExportValidated
 
 export interface ICmsImportExportObjectImportFromUrlResult {
     id: string;
-    files: NonEmptyArray<ICmsImportExportProcessedFile> | undefined;
+    done: string[];
+    failed: string[];
+    aborted: string[];
+    invalid: string[];
     status: TaskDataStatus;
     error?: GenericRecord;
 }

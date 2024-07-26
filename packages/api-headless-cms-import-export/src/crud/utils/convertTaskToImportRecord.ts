@@ -11,7 +11,10 @@ export const convertTaskToImportRecord = (
     return {
         id: task.id,
         status: task.taskStatus,
-        files: task.output?.files,
+        done: task.output?.done || [],
+        aborted: task.output?.aborted || [],
+        invalid: task.output?.invalid || [],
+        failed: task.output?.failed || [],
         error: task.output?.error
     };
 };

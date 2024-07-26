@@ -8,8 +8,10 @@ import {
     createExportContentAssets,
     createExportContentEntriesControllerTask,
     createExportContentEntriesTask,
-    createImportFromUrlTask,
-    createValidateImportFromUrlTask
+    createImportFromUrlControllerTask,
+    createValidateImportFromUrlTask,
+    createImportFromUrlContentEntriesTask,
+    createImportFromUrlAssetsTask
 } from "~/tasks";
 
 export const createHeadlessCmsImportExport = (): Plugin[] => {
@@ -24,7 +26,9 @@ export const createHeadlessCmsImportExport = (): Plugin[] => {
             createExportContentEntriesTask(),
             createExportContentAssets(),
             createValidateImportFromUrlTask(),
-            createImportFromUrlTask()
+            createImportFromUrlControllerTask(),
+            createImportFromUrlContentEntriesTask(),
+            createImportFromUrlAssetsTask()
         );
 
         context.cmsImportExport = await createHeadlessCmsImportExportCrud(context);

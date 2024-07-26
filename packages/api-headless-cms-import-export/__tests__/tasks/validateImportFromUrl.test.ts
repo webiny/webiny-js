@@ -126,7 +126,6 @@ describe("validate import from url task", () => {
 
         expect(result).toBeInstanceOf(ResponseErrorResult);
         expect(result).toMatchObject({
-            status: "error",
             error: {
                 code: "NO_FILES_FOUND",
                 data: {
@@ -134,6 +133,7 @@ describe("validate import from url task", () => {
                 },
                 message: "No files found."
             },
+            status: "error",
             locale: "en-US",
             tenant: "root",
             webinyTaskDefinitionId: definition.id,

@@ -6,7 +6,7 @@ import {
     IImportFromUrlControllerOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlController";
 
-export const createImportFromUrlTask = () => {
+export const createImportFromUrlControllerTask = () => {
     return createTaskDefinition<
         Context,
         IImportFromUrlControllerInput,
@@ -14,12 +14,12 @@ export const createImportFromUrlTask = () => {
     >({
         id: IMPORT_FROM_URL_CONTROLLER_TASK,
         title: "Import from URL List - Controller",
-        maxIterations: 1,
+        maxIterations: 500,
         isPrivate: true,
-        description: "Imports the data from the given URL list.",
+        description: "Imports the data from the given URL list - controller.",
         async run(params) {
             const { ImportFromUrlController } = await import(
-                /* webpackChunkName: "createValidateImportFromUrl" */ "./domain/ImportFromUrlController"
+                /* webpackChunkName: "ImportFromUrlController" */ "./domain/ImportFromUrlController"
             );
 
             try {

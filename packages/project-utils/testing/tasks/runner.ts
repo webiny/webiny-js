@@ -1,5 +1,7 @@
 import {
     Context,
+    IResponseContinueResult,
+    IResponseResult,
     ITaskDataInput,
     ITaskDefinition,
     ITaskEvent,
@@ -8,9 +10,20 @@ import {
 import { TaskRunner } from "@webiny/tasks/runner";
 import { timerFactory } from "@webiny/handler-aws/utils";
 import { TaskEventValidation } from "@webiny/tasks/runner/TaskEventValidation";
+import { ResponseContinueResult } from "@webiny/tasks/response/ResponseContinueResult";
 import { createMockTaskTriggerTransportPlugin } from "./mockTaskTriggerTransportPlugin";
 
-export interface CreateRunnerParams<
+export interface ICreateRunnerParamsOnContinueCallableParams {
+    taskId: string;
+    iteration: number;
+    result: IResponseContinueResult;
+}
+
+export interface ICreateRunnerParamsOnContinueCallable {
+    (params: ICreateRunnerParamsOnContinueCallableParams): Promise<void>;
+}
+
+export interface ICreateRunnerParams<
     C extends Context = Context,
     I = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
@@ -18,14 +31,22 @@ export interface CreateRunnerParams<
     context: Context;
     task: ITaskDefinition<C, I, O>;
     getRemainingTimeInMills?: () => number;
+    /**
+     * If provided, this function will be called every time the task continues.
+     * If the task is not supposed to continue, this function will not be called.
+     */
+    onContinue?: ICreateRunnerParamsOnContinueCallable;
 }
+
+export type IExecuteEvent = Pick<ITaskEvent, "webinyTaskId"> &
+    Partial<Pick<ITaskEvent, "tenant" | "locale">>;
 
 export const createRunner = <
     C extends Context = Context,
     I = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 >(
-    params: CreateRunnerParams<C, I, O>
+    params: ICreateRunnerParams<C, I, O>
 ) => {
     params.context.plugins.register(createMockTaskTriggerTransportPlugin());
     const runner = new TaskRunner(
@@ -41,10 +62,8 @@ export const createRunner = <
         new TaskEventValidation()
     );
 
-    return (
-        event: Pick<ITaskEvent, "webinyTaskId"> & Partial<Pick<ITaskEvent, "tenant" | "locale">>
-    ) => {
-        return runner.run({
+    const execute = async (event: IExecuteEvent) => {
+        return await runner.run({
             tenant: "root",
             locale: "en-US",
             ...event,
@@ -53,5 +72,24 @@ export const createRunner = <
             endpoint: "manage",
             executionName: "aMockExecutionName"
         });
+    };
+
+    return async (event: IExecuteEvent) => {
+        let iteration = 1;
+        let result: IResponseResult;
+        while ((result = await execute(event))) {
+            if (result instanceof ResponseContinueResult && params.onContinue) {
+                await params.onContinue({
+                    taskId: event.webinyTaskId,
+                    iteration,
+                    result
+                });
+                iteration++;
+                console.info(`Continuing task ${params.task.id} #${iteration}.`);
+                continue;
+            }
+            return result;
+        }
+        return result;
     };
 };

@@ -1,5 +1,4 @@
-import { ICmsImportExportProcessedFile } from "~/types";
-import { GenericRecord, NonEmptyArray } from "@webiny/api/types";
+import { GenericRecord } from "@webiny/api/types";
 import { TaskDataStatus } from "@webiny/tasks";
 
 export interface IImportFromUrlUseCaseExecuteParams {
@@ -8,7 +7,10 @@ export interface IImportFromUrlUseCaseExecuteParams {
 
 export interface IImportFromUrlUseCaseExecuteResponse {
     id: string;
-    files: NonEmptyArray<ICmsImportExportProcessedFile> | undefined;
+    done: string[];
+    failed: string[];
+    aborted: string[];
+    invalid: string[];
     status: TaskDataStatus;
     error?: GenericRecord;
 }

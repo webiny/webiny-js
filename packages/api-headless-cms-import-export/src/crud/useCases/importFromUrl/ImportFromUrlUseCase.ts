@@ -84,7 +84,8 @@ export class ImportFromUrlUseCase implements IImportFromUrlUseCase {
             definition: IMPORT_FROM_URL_CONTROLLER_TASK,
             input: {
                 modelId: integrityTask.output.modelId,
-                files: integrityTask.output.files
+                files: integrityTask.output.files,
+                importing: false
             },
             parent: integrityTask
         });

@@ -1,14 +1,18 @@
-import { Context, ICmsImportExportProcessedFile, ICmsImportExportValidatedFile } from "~/types";
+import { Context, ICmsImportExportValidatedFile } from "~/types";
 import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { NonEmptyArray } from "@webiny/api/types";
 
 export interface IImportFromUrlControllerInput {
     modelId: string;
     files: NonEmptyArray<ICmsImportExportValidatedFile>;
+    importing: boolean;
 }
 
 export interface IImportFromUrlControllerOutput extends ITaskResponseDoneResultOutput {
-    files: NonEmptyArray<ICmsImportExportProcessedFile>;
+    done: string[];
+    invalid: string[];
+    aborted: string[];
+    failed: string[];
 }
 
 export interface IImportFromUrlController<
