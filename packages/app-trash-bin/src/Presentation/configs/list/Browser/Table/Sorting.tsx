@@ -4,7 +4,7 @@ import { AcoConfig, TableSortingConfig as SortingConfig } from "@webiny/app-aco"
 
 const { Table } = AcoConfig;
 
-export { SortingConfig };
+export type { SortingConfig };
 
 type SortingProps = React.ComponentProps<typeof AcoConfig.Table.Sorting>;
 

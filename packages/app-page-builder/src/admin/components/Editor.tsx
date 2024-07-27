@@ -2,7 +2,7 @@ import React from "react";
 import { createVoidComponent, makeDecoratable } from "@webiny/app-admin";
 import { EditorProps } from "~/editor/Editor";
 
-export { EditorProps };
+export type { EditorProps };
 
 export const Editor = makeDecoratable("Editor", (props: EditorProps) => {
     return <EditorRenderer {...props} />;

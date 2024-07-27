@@ -4,7 +4,7 @@ import { AcoConfig, FolderActionConfig } from "@webiny/app-aco";
 
 const { Folder } = AcoConfig;
 
-export { FolderActionConfig };
+export type { FolderActionConfig };
 
 type FolderActionProps = React.ComponentProps<typeof AcoConfig.Folder.Action>;
 

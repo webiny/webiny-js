@@ -6,7 +6,7 @@ import { IsApplicableToCurrentModel } from "~/admin/config/IsApplicableToCurrent
 
 const { Table } = AcoConfig;
 
-export { ColumnConfig };
+export type { ColumnConfig };
 
 export interface ColumnProps extends React.ComponentProps<typeof AcoConfig.Table.Column> {
     modelIds?: string[];

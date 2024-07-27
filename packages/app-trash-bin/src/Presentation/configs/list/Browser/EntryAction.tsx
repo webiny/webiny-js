@@ -4,7 +4,7 @@ import { AcoConfig, RecordActionConfig } from "@webiny/app-aco";
 
 const { Record } = AcoConfig;
 
-export { RecordActionConfig as EntryActionConfig };
+export type { RecordActionConfig as EntryActionConfig };
 
 type EntryActionProps = React.ComponentProps<typeof AcoConfig.Record.Action>;
 

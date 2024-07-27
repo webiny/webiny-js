@@ -1,8 +1,3 @@
-export {
-    Panel,
-    PanelProps,
-    PanelGroup,
-    PanelGroupProps,
-    PanelResizeHandle,
-    PanelResizeHandleProps
-} from "react-resizable-panels";
+export { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+
+export type { PanelProps, PanelResizeHandleProps, PanelGroupProps } from "react-resizable-panels";

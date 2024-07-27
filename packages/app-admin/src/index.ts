@@ -37,11 +37,11 @@ export * from "./components/OptionsMenu";
 export * from "./components/Filters";
 export * from "./components/BulkActions";
 export * from "./components/ResizablePanels";
-export { OverlayLayout, OverlayLayoutProps } from "./components/OverlayLayout";
-export {
-    default as SingleImageUpload,
-    SingleImageUploadProps
-} from "./components/SingleImageUpload";
+export { OverlayLayout } from "./components/OverlayLayout";
+export type { OverlayLayoutProps } from "./components/OverlayLayout";
+
+export { default as SingleImageUpload } from "./components/SingleImageUpload";
+export type { SingleImageUploadProps } from "./components/SingleImageUpload";
 export { LexicalEditor } from "./components/LexicalEditor/LexicalEditor";
 export { Wcp } from "./components/Wcp";
 
@@ -56,7 +56,7 @@ export type {
 // Hooks
 export * from "./hooks";
 export { useWcp } from "@webiny/app-wcp";
-export { AaclPermission } from "@webiny/app-wcp/types";
+export type { AaclPermission } from "@webiny/app-wcp/types";
 
 // Theme
 export { useTheme, ThemeProvider } from "@webiny/app-theme";

@@ -10,10 +10,10 @@ export interface ToolbarActionPlugin {
 }
 
 /* Commands payload types */
-export { ImagePayload } from "~/commands";
+export type { ImagePayload } from "~/commands";
 
 /* Lexical editor interfaces */
-export { RichTextEditorProps } from "~/components/Editor/RichTextEditor";
+export type { RichTextEditorProps } from "~/components/Editor/RichTextEditor";
 
 // lexical types
-export { Klass, LexicalNode } from "lexical";
+export type { Klass, LexicalNode } from "lexical";

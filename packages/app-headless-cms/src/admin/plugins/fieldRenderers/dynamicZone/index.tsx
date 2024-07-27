@@ -1,4 +1,5 @@
-export { DynamicZoneContainerProps, DynamicZoneContainer } from "./dynamicZoneRenderer";
+export { DynamicZoneContainer } from "./dynamicZoneRenderer";
+export type { DynamicZoneContainerProps } from "./dynamicZoneRenderer";
 export { TemplateGallery } from "./TemplateGallery";
 export {
     MultiValueItemContainer,

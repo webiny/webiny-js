@@ -5,7 +5,7 @@ import { TableItem } from "~/types";
 
 const { Table } = AcoConfig;
 
-export { ColumnConfig };
+export type { ColumnConfig };
 
 type ColumnProps = React.ComponentProps<typeof AcoConfig.Table.Column>;
 

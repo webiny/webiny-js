@@ -8,7 +8,7 @@ import { useModel } from "~/admin/components/ModelProvider";
 
 const { AdvancedSearch } = AcoConfig;
 
-export { FieldRendererConfig };
+export type { FieldRendererConfig };
 
 export interface FieldRendererProps
     extends React.ComponentProps<typeof AcoConfig.AdvancedSearch.FieldRenderer> {

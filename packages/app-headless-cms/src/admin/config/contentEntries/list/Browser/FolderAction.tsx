@@ -5,7 +5,7 @@ import { useModel } from "~/admin/hooks";
 
 const { Folder } = AcoConfig;
 
-export { FolderActionConfig };
+export type { FolderActionConfig };
 
 export interface FolderActionProps extends React.ComponentProps<typeof AcoConfig.Folder.Action> {
     modelIds?: string[];
