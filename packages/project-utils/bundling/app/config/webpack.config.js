@@ -225,6 +225,8 @@ module.exports = function (webpackEnv, { paths, options }) {
                 }),
                 // This is a temporary fix, until we sort out the `react-butterfiles` dependency.
                 "react-butterfiles": require.resolve("@webiny/app/react-butterfiles"),
+                // Force `lexical` to use the CJS export.
+                lexical: require.resolve("lexical"),
                 ...(modules.webpackAliases || {})
             },
             fallback: {

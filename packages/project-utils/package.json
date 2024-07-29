@@ -105,6 +105,7 @@
         "@webiny/api-dynamodb-to-elasticsearch",
         "@webiny/api-elasticsearch",
         "@webiny/handler-aws",
+        "lexical",
         "pino",
         "pino-logger"
       ],
