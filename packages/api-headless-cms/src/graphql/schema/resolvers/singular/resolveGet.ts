@@ -1,5 +1,6 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { CmsEntryResolverFactory as ResolverFactory } from "~/types";
+import { fetchEntry } from "~/graphql/schema/resolvers/singular/fetchEntry";
 
 interface ResolveGetArgs {
     revision: string;
@@ -11,15 +12,12 @@ export const resolveGet: ResolveGet =
     ({ model }) =>
     async (_: unknown, __: unknown, context) => {
         try {
-            const [items] = await context.cms.listLatestEntries(model);
-            if (items.length > 1) {
-                throw new Error(
-                    `More than one entry found for model "${model.modelId}". Please check your data.`
-                );
-            }
-            const item = items[0];
+            const entry = await fetchEntry({
+                context,
+                model
+            });
 
-            return new Response(item || null);
+            return new Response(entry);
         } catch (e) {
             return new ErrorResponse(e);
         }
