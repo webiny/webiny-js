@@ -63,14 +63,17 @@ export interface ICmsImportExportValidatedFile {
 
 export interface ICmsImportExportValidatedCombinedContentFile
     extends ICmsImportExportValidatedFile {
+    size: number;
     type: CmsImportExportFileType.COMBINED_ENTRIES;
 }
 
 export interface ICmsImportExportValidatedContentEntriesFile extends ICmsImportExportValidatedFile {
+    size: number;
     type: CmsImportExportFileType.ENTRIES;
 }
 
 export interface ICmsImportExportValidatedAssetsFile extends ICmsImportExportValidatedFile {
+    size: number;
     type: CmsImportExportFileType.ASSETS;
 }
 

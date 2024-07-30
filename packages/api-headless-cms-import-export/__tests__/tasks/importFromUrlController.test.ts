@@ -151,9 +151,10 @@ describe("import from url controller", () => {
     });
 
     it("should run the task, trigger child tasks and return a continue response", async () => {
-        expect.assertions(4);
+        expect.assertions(5);
         const definition = createImportFromUrlControllerTask();
 
+        // @ts-expect-error
         const files: NonEmptyArray<ICmsImportExportValidatedFile> = [
             {
                 get: "https://some-url.com/file-1.we.zip",
@@ -168,6 +169,13 @@ describe("import from url controller", () => {
                 size: 1250,
                 error: undefined,
                 type: CmsImportExportFileType.ASSETS
+            },
+            {
+                get: "https://some-url.com/file-3.unknown.zip",
+                head: "https://some-url.com/file-3.unknown.zip",
+                size: 2000,
+                error: undefined,
+                type: "unknown"
             }
         ];
 
@@ -179,6 +187,8 @@ describe("import from url controller", () => {
             },
             name: "Import from URL Controller"
         });
+
+        console.warn = jest.fn();
 
         const runner = createRunner({
             context,
@@ -202,6 +212,7 @@ describe("import from url controller", () => {
                  * This is a strange expect, but we can do it as we know that it will happen due to the
                  * continue result on the first iteration of the runner.
                  */
+                // assertion #1
                 expect(result).toEqual({
                     status: TaskResponseStatus.CONTINUE,
                     locale: "en-US",
@@ -226,7 +237,14 @@ describe("import from url controller", () => {
             locale: "en-US"
         });
 
+        // assertion #2
+        expect(console.warn).toHaveBeenCalledExactlyOnceWith(
+            `Cannot import a file "${files[2].get}" of type: ${files[2].type}`
+        );
+
+        // assertion #3
         expect(result).toBeInstanceOf(ResponseDoneResult);
+        // assertion #4
         expect(result).toEqual({
             status: TaskResponseStatus.DONE,
             locale: "en-US",
@@ -248,7 +266,7 @@ describe("import from url controller", () => {
             },
             limit: 1000000
         });
-
-        expect(tasks).toHaveLength(files.length);
+        // assertion #5
+        expect(tasks).toHaveLength(2);
     });
 });

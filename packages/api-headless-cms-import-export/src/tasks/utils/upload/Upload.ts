@@ -1,7 +1,7 @@
 import { Options as BaseUploadOptions, Upload as BaseUpload } from "@webiny/aws-sdk/lib-storage";
 import { PassThrough } from "stream";
 import type { CompleteMultipartUploadCommandOutput, S3Client } from "@webiny/aws-sdk/client-s3";
-import { IAwsUpload, IUpload } from "./abstractions/Upload";
+import { IAwsUpload, IUpload, IUploadOnListener } from "./abstractions/Upload";
 import { getContentType } from "./getContentType";
 
 export interface IUploadConfig {
@@ -10,6 +10,7 @@ export interface IUploadConfig {
     bucket: string;
     filename: string;
     factory?(params: BaseUploadOptions): IAwsUpload;
+    queueSize?: number;
 }
 
 const defaultFactory = (options: BaseUploadOptions) => {
@@ -35,7 +36,7 @@ export class Upload implements IUpload {
                 ContentType: getContentType(params.filename),
                 Key: params.filename
             },
-            queueSize: 1,
+            queueSize: params.queueSize || 1,
             partSize: 1024 * 1024 * 5,
             leavePartsOnError: false
         });
@@ -52,6 +53,10 @@ export class Upload implements IUpload {
         this.client.destroy();
         return result;
     }
+
+    public onProgress(listener: IUploadOnListener): void {
+        this.upload.on("httpUploadProgress", listener);
+    }
 }
 
 export interface ICreateUploadFactoryParams {
@@ -59,8 +64,12 @@ export interface ICreateUploadFactoryParams {
     bucket: string;
 }
 
-export const createUploadFactory = (params: ICreateUploadFactoryParams) => {
-    return (filename: string) => {
+export interface ICreateUploadCallable {
+    (filename: string): IUpload;
+}
+
+export const createUploadFactory = (params: ICreateUploadFactoryParams): ICreateUploadCallable => {
+    return filename => {
         const stream = new PassThrough({
             autoDestroy: true
         });

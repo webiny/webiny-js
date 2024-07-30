@@ -64,7 +64,12 @@ export class ImportFromUrlController<
                     });
                     continue;
                 }
-                console.warn(`Cannot import a file of type: ${file.type}`);
+                /**
+                 * We will log a worn message, but we will continue with the import.
+                 * It is quite hard to get to this part of the code,
+                 * because there are multiple checks before the import controller is triggered.
+                 */
+                console.warn(`Cannot import a file "${file.get}" of type: ${file.type}`);
             }
 
             return response.continue(

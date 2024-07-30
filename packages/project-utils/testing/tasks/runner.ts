@@ -85,7 +85,7 @@ export const createRunner = <
                     result
                 });
                 iteration++;
-                console.info(`Continuing task ${params.task.id} #${iteration}.`);
+                console.debug(`Continuing task ${params.task.id} #${iteration}.`);
                 continue;
             }
             return result;
