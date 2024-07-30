@@ -2,6 +2,8 @@ import { CmsIdentity } from "~/types";
 
 export const ROOT_FOLDER = "root";
 
+export const SINGULAR_CMS_MODEL_TAG = "cms:singular";
+
 // Content entries - xOn and xBy meta fields.
 export const ENTRY_META_FIELDS = [
     // Entry-level meta fields.
