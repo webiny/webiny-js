@@ -15868,6 +15868,7 @@ __metadata:
     "@webiny/tasks": 0.0.0
     "@webiny/utils": 0.0.0
     "@webiny/validation": 0.0.0
+    cache-control-parser: ^2.0.6
     jest: ^29.7.0
     lodash: ^4.17.21
     object-hash: ^3.0.0
@@ -22537,6 +22538,13 @@ __metadata:
     tar: ^6.1.11
     unique-filename: ^3.0.0
   checksum: 0250df80e1ad0c828c956744850c5f742c24244e9deb5b7dc81bca90f8c10e011e132ecc58b64497cc1cad9a98968676147fb6575f4f94722f7619757b17a11b
+  languageName: node
+  linkType: hard
+
+"cache-control-parser@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "cache-control-parser@npm:2.0.6"
+  checksum: 18c7905e5bd96c83a06b8cdeb448638ea0a9ffa2a43a77b38930e6373f88169a35df44d2e065267b522cc5fc8ddec9c323073598d20e903c924d1b01cba46588
   languageName: node
   linkType: hard
 
