@@ -38,20 +38,13 @@ export function useBind({ Bind, field }: UseBindProps) {
 
     return useCallback(
         (index = -1) => {
-            const { parentName, displayName } = Bind;
+            const { parentName } = Bind;
 
             // If there's a parent name assigned to the given Bind component, we need to include it in the new field "name".
             // This allows us to have nested fields (like "object" field with nested properties)
             const name = [parentName, field.fieldId, index >= 0 ? index : undefined]
                 .filter(v => v !== undefined)
                 .join(".");
-
-            console.log("=========== START ===========");
-            console.log("displayName", displayName);
-            console.log("parentName", parentName);
-            console.log("name", name);
-            console.log("index", index);
-            console.log("=========== END ===========");
 
             const componentId = `${name};${cacheKey}`;
 
