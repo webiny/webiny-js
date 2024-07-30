@@ -2,13 +2,7 @@ import { Context, ICmsImportExportValidatedCombinedContentFile } from "~/types";
 import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 
 export interface IImportFromUrlContentEntriesInputValues {
-    start: number;
-    end: number;
-    length: number;
-}
-
-export interface IImportFromUrlContentEntriesValues
-    extends IImportFromUrlContentEntriesInputValues {
+    current: number;
     done: boolean;
 }
 
@@ -18,7 +12,7 @@ export interface IImportFromUrlContentEntriesInput {
     /**
      * Combined content entries file information / processing.
      */
-    combinedFile?: IImportFromUrlContentEntriesValues;
+    combinedFile?: IImportFromUrlContentEntriesInputValues;
 }
 
 export interface IImportFromUrlContentEntriesOutput extends ITaskResponseDoneResultOutput {

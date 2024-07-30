@@ -3,30 +3,35 @@ import { createCacheKey } from "@webiny/utils";
 
 export {
     CompleteMultipartUploadCommand,
-    CompleteMultipartUploadCommandOutput,
-    AbortMultipartUploadCommandOutput,
-    CompleteMultipartUploadOutput,
-    DeleteObjectOutput,
+    AbortMultipartUploadCommand,
     GetObjectCommand,
-    GetObjectOutput,
     HeadObjectCommand,
-    HeadObjectOutput,
     ListObjectsCommand,
-    ListObjectsOutput,
     ListObjectsV2Command,
     ListPartsCommand,
-    ListPartsCommandOutput,
-    ListPartsOutput,
     ObjectCannedACL,
     Part,
     PutObjectCommand,
     PutObjectCommandInput,
-    PutObjectCommandOutput,
     PutObjectRequest,
     S3,
     S3Client,
     UploadPartCommand,
     CreateMultipartUploadCommand
+} from "@aws-sdk/client-s3";
+
+export type {
+    CompleteMultipartUploadCommandOutput,
+    AbortMultipartUploadCommandOutput,
+    CompleteMultipartUploadOutput,
+    DeleteObjectOutput,
+    GetObjectOutput,
+    HeadObjectOutput,
+    ListObjectsOutput,
+    ListPartsCommandOutput,
+    ListPartsOutput,
+    PutObjectCommandOutput,
+    UploadPartCommandOutput
 } from "@aws-sdk/client-s3";
 
 export { createPresignedPost } from "@aws-sdk/s3-presigned-post";

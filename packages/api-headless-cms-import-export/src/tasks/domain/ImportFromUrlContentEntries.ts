@@ -8,7 +8,7 @@ import { Context } from "~/types";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
 import { createUploadFactory } from "~/tasks/utils/upload";
-import { ImportFromUrlContentEntriesCombined } from "./importFromUrlContentEntries/index";
+import { createImportFromUrlContentEntriesCombined } from "./importFromUrlContentEntries/index";
 
 export class ImportFromUrlContentEntries<
     C extends Context = Context,
@@ -17,9 +17,7 @@ export class ImportFromUrlContentEntries<
 > implements IImportFromUrlContentEntries<C, I, O>
 {
     public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { context, response, input, store, trigger, isCloseToTimeout, isAborted } = params;
-
-        const task = store.getTask();
+        const { context, response, input, isCloseToTimeout, isAborted } = params;
 
         if (!input.modelId) {
             return response.error({
@@ -47,7 +45,7 @@ export class ImportFromUrlContentEntries<
          * First we need to download the combined content entries file.
          */
         if (!input.combinedFile?.done) {
-            const combined = new ImportFromUrlContentEntriesCombined({
+            const combined = createImportFromUrlContentEntriesCombined({
                 fetch,
                 file: input.file,
                 input: input.combinedFile,
@@ -56,25 +54,37 @@ export class ImportFromUrlContentEntries<
                     bucket: getBucket()
                 })
             });
-
-            while (!combined.isDone()) {
-                if (isCloseToTimeout()) {
-                    return response.continue({
-                        ...input,
-                        combinedFile: combined.getValues()
-                    });
-                } else if (isAborted()) {
-                    return response.aborted();
-                }
-                try {
-                    await combined.process();
-                } catch (ex) {
-                    return response.error(ex);
-                }
+            let result: string;
+            try {
+                result = await combined.process(async ({ stop }) => {
+                    const isClose = isCloseToTimeout();
+                    if (isClose) {
+                        return stop("continue");
+                    } else if (isAborted()) {
+                        return stop("aborted");
+                    }
+                });
+            } catch (ex) {
+                return response.error(ex);
             }
+            if (result === "continue") {
+                return response.continue({
+                    ...input,
+                    combinedFile: {
+                        done: combined.isDone(),
+                        next: combined.getNext()
+                    }
+                });
+            } else if (result === "aborted") {
+                return response.aborted();
+            }
+
             return response.continue({
                 ...input,
-                combinedFile: combined.getValues()
+                combinedFile: {
+                    done: combined.isDone(),
+                    next: combined.getNext()
+                }
             });
         }
 

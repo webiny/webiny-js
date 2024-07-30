@@ -23,6 +23,7 @@
     "@webiny/tasks": "0.0.0",
     "@webiny/utils": "0.0.0",
     "archiver": "^7.0.1",
+    "bytes": "^3.1.2",
     "uniqid": "^5.4.0",
     "zod": "^3.23.8"
   },

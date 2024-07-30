@@ -13,7 +13,7 @@ export interface IUploadConfig {
     queueSize?: number;
 }
 
-const defaultFactory = (options: BaseUploadOptions) => {
+const defaultFactory = (options: BaseUploadOptions): BaseUpload => {
     return new BaseUpload(options);
 };
 

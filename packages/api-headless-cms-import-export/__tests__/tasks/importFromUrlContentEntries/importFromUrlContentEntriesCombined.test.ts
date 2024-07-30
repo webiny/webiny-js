@@ -1,7 +1,8 @@
 import { PassThrough } from "stream";
-import { ImportFromUrlContentEntriesCombined } from "~/tasks/domain/importFromUrlContentEntries/ImportFromUrlContentEntriesCombined";
+import { createImportFromUrlContentEntriesCombined } from "~/tasks/domain/importFromUrlContentEntries/ImportFromUrlContentEntriesCombined";
 import { Upload } from "~/tasks/utils/upload";
 import {
+    CompleteMultipartUploadCommand,
     CreateMultipartUploadCommand,
     GetObjectCommand,
     S3Client,
@@ -14,15 +15,14 @@ import { ICmsImportExportValidatedCombinedContentFile } from "~/types";
 import { createMockFetch } from "~tests/mocks/fetch";
 import fs from "fs";
 import path from "path";
-
-jest.setTimeout(5000);
+import { createUpload } from "~tests/mocks/createUpload";
 
 describe("import from url content entries combined", () => {
     beforeEach(async () => {
         process.env.S3_BUCKET = "a-mock-s3-bucket";
     });
 
-    it.skip("should construct class properly", async () => {
+    it("should construct class properly", async () => {
         const stream = new PassThrough({
             autoDestroy: true
         });
@@ -34,7 +34,7 @@ describe("import from url content entries combined", () => {
 
         const { pathname: filename } = new URL(file.get);
 
-        const combined = new ImportFromUrlContentEntriesCombined({
+        const combined = createImportFromUrlContentEntriesCombined({
             fetch: createMockFetch(async () => {
                 return {
                     stream: new ReadableStream()
@@ -52,17 +52,13 @@ describe("import from url content entries combined", () => {
         });
 
         expect(combined.isDone()).toBe(false);
-        expect(combined.getValues()).toEqual({
-            start: -1,
-            end: -1,
-            length: -1,
-            done: false
-        });
+        expect(combined.getNext()).toEqual(0);
     });
 
-    it("should start processing but fail", async () => {
+    it("should start processing and finish properly", async () => {
         const mockedClient = mockClient(S3Client);
         mockedClient.on(CreateMultipartUploadCommand).resolves({ UploadId: "1" });
+        mockedClient.on(CompleteMultipartUploadCommand).resolves({});
         mockedClient.on(GetObjectCommand).resolves({});
         mockedClient.on(UploadPartCommand).resolves({ ETag: "1" });
 
@@ -76,7 +72,7 @@ describe("import from url content entries combined", () => {
             size: 4642
         };
 
-        const combined = new ImportFromUrlContentEntriesCombined({
+        const combined = createImportFromUrlContentEntriesCombined({
             fetch: createMockFetch(async url => {
                 const file = fs.readFileSync(url);
                 return {
@@ -99,25 +95,20 @@ describe("import from url content entries combined", () => {
             }),
             file,
             createUpload: () => {
-                return new Upload({
-                    client: createS3Client(),
-                    bucket: getBucket(),
+                return createUpload({
                     filename,
                     stream
                 });
             }
         });
 
-        while (!combined.isDone()) {
-            await combined.process();
-        }
+        const result = await combined.process(async () => {
+            return;
+        });
+
+        expect(result).toEqual("done");
 
         expect(combined.isDone()).toBe(true);
-        expect(combined.getValues()).toEqual({
-            start: -1,
-            end: -1,
-            length: -1,
-            done: true
-        });
+        expect(combined.getNext()).toEqual(1);
     });
 });

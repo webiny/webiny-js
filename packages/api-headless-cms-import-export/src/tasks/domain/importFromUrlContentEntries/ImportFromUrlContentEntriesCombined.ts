@@ -1,23 +1,24 @@
-import {
-    IImportFromUrlContentEntriesInputValues,
-    IImportFromUrlContentEntriesValues
-} from "~/tasks/domain/abstractions/ImportFromUrlContentEntries";
+import { IImportFromUrlContentEntriesInputValues } from "~/tasks/domain/abstractions/ImportFromUrlContentEntries";
 import { ICmsImportExportValidatedCombinedContentFile } from "~/types";
 import { ICreateUploadCallable, IUpload } from "~/tasks/utils/upload";
-import { IImportFromUrlContentEntriesCombined } from "./abstractions/ImportFromUrlContentEntriesCombined";
+import {
+    IImportFromUrlContentEntriesCombined,
+    IImportFromUrlContentEntriesCombinedProcessOnIterationCallable,
+    ImportFromUrlContentEntriesCombinedProcessStatus
+} from "./abstractions/ImportFromUrlContentEntriesCombined";
 import path from "path";
 import { WebinyError } from "@webiny/error";
-
-const defaultValues: IImportFromUrlContentEntriesInputValues = {
-    start: -1,
-    end: -1,
-    length: -1
-};
+import { createSizeSegments } from "~/tasks/utils/helpers/sizeSegments";
 
 interface ImportFromUrlContentEntriesCombinedFile {
     url: string;
     key: string;
     size: number;
+}
+
+interface IRange {
+    start: number;
+    end: number;
 }
 
 export interface IImportFromUrlContentEntriesCombinedParams {
@@ -29,80 +30,87 @@ export interface IImportFromUrlContentEntriesCombinedParams {
 
 export class ImportFromUrlContentEntriesCombined implements IImportFromUrlContentEntriesCombined {
     private readonly file: ImportFromUrlContentEntriesCombinedFile;
-    private values: IImportFromUrlContentEntriesInputValues;
     private readonly upload: IUpload;
     private readonly fetch: typeof fetch;
+    private next: number;
+    private readonly ranges: IRange[];
 
     public constructor(params: IImportFromUrlContentEntriesCombinedParams) {
+        const { input } = params;
         this.file = this.createFile(params.file);
         this.fetch = params.fetch;
-        this.values = params.input || defaultValues;
+        this.next = input?.current === undefined ? 0 : input.current;
         this.upload = params.createUpload(this.file.key);
+        this.ranges = createSizeSegments(this.file.size, "1MB");
     }
 
-    public async process(): Promise<void> {
-        if (this.isDone()) {
-            await this.upload.done();
-            return;
-        }
-
-        const headers = new Headers();
-
-        headers.set("Range", `bytes=${this.values.start + 1}-${this.values.end + 1}`);
-
-        const result = await this.fetch(this.file.url, {
-            method: "GET",
-            keepalive: true,
-            mode: "cors",
-            headers
-        });
-        if (!result.ok) {
-            throw new Error(`Failed to fetch URL: ${this.file.url}`);
-        } else if (!result.body) {
-            console.log(result);
-            throw new Error(`Body not found for URL: ${this.file.url}`);
-        }
-
-        const reader = result.body.getReader();
-
-        // const passOn = async () => {
-        //     const { done, value } = await reader.read();
-        //     if (done) {
-        //         return;
-        //     }
-        //     this.upload.stream.push(value);
-        //     await passOn();
-        // };
-        //
-        // await passOn();
+    public async process(
+        onIteration: IImportFromUrlContentEntriesCombinedProcessOnIterationCallable
+    ): Promise<ImportFromUrlContentEntriesCombinedProcessStatus> {
+        let iteration = 0;
 
         while (true) {
-            const { done, value } = await reader.read();
-            if (done) {
-                break;
-            }
-            this.upload.stream.push(value);
-        }
+            const next = this.ranges[this.next];
 
-        reader.releaseLock();
+            if (this.isDone() || !next) {
+                await this.upload.done();
+                return "done";
+            }
+            let status: string | number | undefined = undefined;
+            await onIteration({
+                iteration,
+                next: this.next,
+                stop: input => {
+                    status = input;
+                }
+            });
+            if (status) {
+                await this.upload.done();
+                return status;
+            }
+            iteration++;
+
+            const headers = new Headers();
+
+            headers.set("Range", `bytes=${next.start}-${next.end}`);
+
+            const result = await this.fetch(this.file.url, {
+                method: "GET",
+                keepalive: true,
+                mode: "cors",
+                headers
+            });
+            if (!result.ok) {
+                throw new Error(`Failed to fetch URL: ${this.file.url}`);
+            } else if (!result.body) {
+                throw new Error(`Body not found for URL: ${this.file.url}`);
+            }
+
+            const reader = result.body.getReader();
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) {
+                    break;
+                }
+
+                this.upload.stream.push(value);
+            }
+
+            reader.releaseLock();
+            this.next++;
+        }
     }
 
     public async abort(): Promise<void> {
         await this.upload.abort();
     }
 
-    public getValues(): IImportFromUrlContentEntriesValues {
-        return {
-            ...this.values,
-            done: this.isDone()
-        };
+    public getNext(): number {
+        return this.next;
     }
 
-    public isDone() {
-        if (this.values.start < 0) {
-            return false;
-        }
-        return this.values.start >= this.values.length - 1;
+    public isDone(): boolean {
+        return !this.ranges[this.next];
     }
 
     private createFile(
@@ -130,3 +138,9 @@ export class ImportFromUrlContentEntriesCombined implements IImportFromUrlConten
         };
     }
 }
+
+export const createImportFromUrlContentEntriesCombined = (
+    params: IImportFromUrlContentEntriesCombinedParams
+): IImportFromUrlContentEntriesCombined => {
+    return new ImportFromUrlContentEntriesCombined(params);
+};
