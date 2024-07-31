@@ -4,7 +4,6 @@ import {
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
 } from "~/types";
-import { fetchEntry } from "~/graphql/schema/resolvers/singular/fetchEntry";
 
 interface ResolveUpdateArgs {
     data: UpdateCmsEntryInput;
@@ -17,17 +16,8 @@ export const resolveUpdate: ResolveUpdate =
     ({ model }) =>
     async (_: unknown, args, context) => {
         try {
-            const item = await fetchEntry({
-                context,
-                model
-            });
-            const entry = await context.cms.updateEntry(
-                model,
-                item.id,
-                args.data,
-                {},
-                args.options
-            );
+            const manager = await context.cms.getSingletonEntryManager(model.modelId);
+            const entry = await manager.update(args.data, args.options);
 
             return new Response(entry);
         } catch (e) {
