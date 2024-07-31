@@ -102,6 +102,20 @@ describe("singleton model content entries", () => {
     });
 
     it("should update the singleton entry multiple times in a row", async () => {
+        const [rootResponse] = await reader.getCategory();
+        expect(rootResponse).toMatchObject({
+            data: {
+                getCategory: {
+                    data: {
+                        id: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const id = rootResponse.data.getCategory.data.id;
+
         const data = {
             title: "New title",
             slug: "new-title"
@@ -112,7 +126,10 @@ describe("singleton model content entries", () => {
         expect(response1).toMatchObject({
             data: {
                 updateCategory: {
-                    data,
+                    data: {
+                        ...data,
+                        id
+                    },
                     error: null
                 }
             }
@@ -124,7 +141,10 @@ describe("singleton model content entries", () => {
         expect(response2).toMatchObject({
             data: {
                 updateCategory: {
-                    data,
+                    data: {
+                        ...data,
+                        id
+                    },
                     error: null
                 }
             }
@@ -136,7 +156,10 @@ describe("singleton model content entries", () => {
         expect(response3).toMatchObject({
             data: {
                 updateCategory: {
-                    data,
+                    data: {
+                        ...data,
+                        id
+                    },
                     error: null
                 }
             }
@@ -146,7 +169,10 @@ describe("singleton model content entries", () => {
         expect(readerResponse).toMatchObject({
             data: {
                 getCategory: {
-                    data,
+                    data: {
+                        ...data,
+                        id
+                    },
                     error: null
                 }
             }

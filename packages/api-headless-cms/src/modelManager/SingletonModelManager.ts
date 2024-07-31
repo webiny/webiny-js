@@ -45,10 +45,12 @@ export class SingletonModelManager<T extends CmsEntryValues> implements ISinglet
             encoding: "hex"
         });
         try {
-            return await this.manager.get(id);
+            return await this.manager.get(`${id}#0001`);
         } catch {
             return await this.manager.create(
-                {},
+                {
+                    id
+                },
                 {
                     skipValidators: ["required"]
                 }
