@@ -1,6 +1,5 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { CmsEntryResolverFactory as ResolverFactory } from "~/types";
-import { fetchEntry } from "~/graphql/schema/resolvers/singular/fetchEntry";
 
 interface ResolveGetArgs {
     revision: string;
@@ -12,10 +11,8 @@ export const resolveGet: ResolveGet =
     ({ model }) =>
     async (_: unknown, __: unknown, context) => {
         try {
-            const entry = await fetchEntry({
-                context,
-                model
-            });
+            const manager = await context.cms.getSingletonEntryManager(model);
+            const entry = await manager.get();
 
             return new Response(entry);
         } catch (e) {

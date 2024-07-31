@@ -4,7 +4,6 @@ import {
     ValueTransformPluginParamsTransformParams
 } from "./ValueTransformPlugin";
 import WebinyError from "@webiny/error";
-import isNumber from "is-number";
 
 const transformTime = (params: ValueTransformPluginParamsTransformParams): number => {
     const { value } = params;
@@ -16,7 +15,8 @@ const transformTime = (params: ValueTransformPluginParamsTransformParams): numbe
     /**
      * Due to some internal JS stuff, we must check for a number like this.
      */
-    if (typeof value === "number" || isNumber(value) === true) {
+    const isInt = parseInt(`${value}`);
+    if (typeof value === "number" || isNaN(isInt) === false) {
         return Number(value);
     } else if (typeof value !== "string") {
         throw new WebinyError(

@@ -11,7 +11,7 @@ import {
     ICmsGraphQLSchemaPlugin
 } from "~/plugins";
 import { createFieldTypePluginRecords } from "./createFieldTypePluginRecords";
-import { SINGULAR_CMS_MODEL_TAG } from "~/constants";
+import { CMS_MODEL_SINGLETON_TAG } from "~/constants";
 import { createSingularSDL } from "./createSingularSDL";
 import { createSingularResolvers } from "./createSingularResolvers";
 
@@ -53,7 +53,7 @@ export const generateSchemaPlugins = async (
             return model.fields.length > 0;
         })
         .forEach(model => {
-            if (model.tags?.includes(SINGULAR_CMS_MODEL_TAG)) {
+            if (model.tags?.includes(CMS_MODEL_SINGLETON_TAG)) {
                 const plugin = createCmsGraphQLSchemaPlugin({
                     typeDefs: createSingularSDL({
                         models,

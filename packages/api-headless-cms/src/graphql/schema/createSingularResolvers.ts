@@ -1,4 +1,4 @@
-import { CmsContext, CmsEntry, CmsFieldTypePlugins, CmsModel } from "~/types";
+import { CmsContext, CmsFieldTypePlugins, CmsModel } from "~/types";
 import { resolveGet } from "./resolvers/singular/resolveGet";
 import { resolveUpdate } from "./resolvers/singular/resolveUpdate";
 import { normalizeGraphQlInput } from "./resolvers/manage/normalizeGraphQlInput";
@@ -38,19 +38,7 @@ export const createSingularResolvers: CreateSingularResolvers = ({
     const fieldResolvers = createFieldResolvers({
         graphQLType: model.singularApiName,
         fields: model.fields,
-        isRoot: true,
-        // These are extra fields we want to apply to field resolvers of "gqlType"
-        extraResolvers: {
-            /**
-             * Advanced Content Organization
-             */
-            wbyAco_location: async (entry: CmsEntry) => {
-                return entry.location || null;
-            },
-            meta(entry) {
-                return entry;
-            }
-        }
+        isRoot: true
     });
 
     const resolverFactoryParams = { model, fieldTypePlugins };

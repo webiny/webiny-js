@@ -60,13 +60,10 @@ export const createSingularSDL: CreateSingularSDL = ({
             entryId: String!
             
             ${onByMetaGqlFields}
-            
-            publishedOn: DateTime @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'firstPublishedOn' or 'lastPublishedOn' field.")
+
             ownedBy: CmsIdentity @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'createdBy' field.")
             
             ${fields.map(f => f.fields).join("\n")}
-            # Advanced Content Organization - make required in 5.38.0
-            wbyAco_location: WbyAcoLocation
         }
 
         ${fields.map(f => f.typeDefs).join("\n")}
@@ -74,13 +71,7 @@ export const createSingularSDL: CreateSingularSDL = ({
         ${inputFields.map(f => f.typeDefs).join("\n")}
         
         input ${singularName}Input {
-            # Set status of the entry.
-            status: String
-            
             ${onByMetaInputGqlFields}
-            
-            wbyAco_location: WbyAcoLocationInput
-            
             ${inputGqlFields}
         }
 
@@ -90,7 +81,7 @@ export const createSingularSDL: CreateSingularSDL = ({
         }
         
         extend type Query {
-            get${singularName}(revision: ID, entryId: ID, status: CmsEntryStatusType): ${singularName}Response
+            get${singularName}: ${singularName}Response
         }
 
         extend type Mutation {
