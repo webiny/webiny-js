@@ -32,7 +32,7 @@ export const assignModelBeforeDelete = (params: AssignBeforeModelDeleteParams) =
 
             if (latestEntries.length > 0) {
                 throw new WebinyError(
-                    `The content model "${model.modelId}" cannot be deleted because there are existing entries.`,
+                    `Cannot delete content model "${model.modelId}" because there are existing entries.`,
                     "CONTENT_MODEL_BEFORE_DELETE_HOOK_FAILED"
                 );
             }
@@ -41,7 +41,7 @@ export const assignModelBeforeDelete = (params: AssignBeforeModelDeleteParams) =
 
             if (deletedEntries.length > 0) {
                 throw new WebinyError(
-                    `The content model "${model.modelId}" cannot be deleted because there are entries in the trash.`,
+                    `Cannot delete content model "${model.modelId}" because there are existing entries in the trash.`,
                     "CONTENT_MODEL_BEFORE_DELETE_HOOK_FAILED"
                 );
             }
@@ -50,7 +50,6 @@ export const assignModelBeforeDelete = (params: AssignBeforeModelDeleteParams) =
                 message: "Could not retrieve a list of content entries from the model.",
                 code: "ENTRIES_ERROR",
                 data: {
-                    error: ex,
                     model
                 }
             });
