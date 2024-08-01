@@ -6,11 +6,11 @@ import { Select } from "@webiny/ui/Select";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
-import { useQuery, useMutation, useApolloClient } from "../../hooks";
+import { useApolloClient, useMutation, useQuery } from "../../hooks";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import * as UID from "@webiny/ui/Dialog";
-import { Grid, Cell } from "@webiny/ui/Grid";
+import { Cell, Grid } from "@webiny/ui/Grid";
 import { addModelToGroupCache, addModelToListCache } from "./cache";
 import * as GQL from "../../viewsGraphql";
 import {
@@ -25,6 +25,7 @@ import { createApiNameValidator } from "~/admin/views/contentModels/helpers/apiN
 import { createNameValidator } from "~/admin/views/contentModels/helpers/nameValidator";
 import { Checkbox } from "@webiny/ui/Checkbox";
 import { IconPicker } from "~/admin/components/IconPicker";
+import { CMS_MODEL_SINGLETON_TAG } from "~/admin/constants";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
 
@@ -128,7 +129,7 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
 
         const tags: string[] = [];
         if (data.singleton) {
-            tags.push("singleton");
+            tags.push(CMS_MODEL_SINGLETON_TAG);
         }
         delete data.singleton;
         await createContentModel({
