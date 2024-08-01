@@ -37,6 +37,10 @@ interface CmsModelData {
     name: string;
     description: string;
     group: string;
+    singleton?: boolean;
+    singularApiName: string;
+    pluralApiName: string;
+    defaultFields: boolean;
 }
 
 const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) => {
@@ -121,8 +125,19 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
 
     const onSubmit = async (data: CmsModelData) => {
         setLoading(true);
+
+        const tags: string[] = [];
+        if (data.singleton) {
+            tags.push("singleton");
+        }
+        delete data.singleton;
         await createContentModel({
-            variables: { data }
+            variables: {
+                data: {
+                    ...data,
+                    tags
+                }
+            }
         });
     };
 
@@ -144,6 +159,15 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                             <UID.DialogTitle>{t`New Content Model`}</UID.DialogTitle>
                             <UID.DialogContent>
                                 <Grid>
+                                    <Cell span={12}>
+                                        <Bind name={"singleton"} defaultValue={false}>
+                                            <Checkbox
+                                                description={t`Create a model as a single entry model (cannot be changed later)`}
+                                                label={t`A single entry model`}
+                                                data-testid="cms.newcontentmodeldialog.singleton"
+                                            />
+                                        </Bind>
+                                    </Cell>
                                     <Cell span={12}>
                                         <Bind
                                             name={"name"}
