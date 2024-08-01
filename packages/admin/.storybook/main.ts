@@ -10,24 +10,60 @@ function getAbsolutePath(value: string): any {
     return dirname(require.resolve(join(value, "package.json")));
 }
 const config: StorybookConfig = {
-    stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
+    stories: ["../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
     addons: [
+        getAbsolutePath("@storybook/addon-a11y"),
         getAbsolutePath("@storybook/addon-webpack5-compiler-swc"),
         getAbsolutePath("@storybook/addon-links"),
         getAbsolutePath("@storybook/addon-essentials"),
-        getAbsolutePath("@chromatic-com/storybook"),
         getAbsolutePath("@storybook/addon-interactions"),
-        getAbsolutePath("@storybook/addon-styling-webpack")
+        {
+            name: "@storybook/addon-styling-webpack",
+            options: {
+                rules: [
+                    // Replaces any existing Sass rules with given rules
+                    {
+                        test: /\.s[ac]ss$/i,
+                        use: [
+                            "style-loader",
+                            {
+                                loader: require.resolve("css-loader"),
+                                options: {
+                                    importLoaders: 1
+                                }
+                            },
+                            {
+                                loader: require.resolve("postcss-loader"),
+                                options: {
+                                    implementation: require.resolve("postcss"),
+                                    postcssOptions: {
+                                        plugins: [require("tailwindcss")]
+                                    }
+                                }
+                            },
+                            {
+                                loader: "sass-loader",
+                                options: { implementation: require.resolve("sass") }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
     ],
     framework: {
         name: getAbsolutePath("@storybook/react-webpack5"),
         options: {}
     },
     core: { disableTelemetry: true },
-    webpackFinal: async (config, { configType }) => {
-        config.resolve.plugins = [new TsconfigPathsPlugin()];
+    webpackFinal: async config => {
+        if (!config.resolve) {
+            config.resolve = {};
+        }
 
+        config.resolve.plugins = [new TsconfigPathsPlugin()];
         return config;
     }
 };
+
 export default config;

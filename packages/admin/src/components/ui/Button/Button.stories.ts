@@ -5,7 +5,7 @@ import { Button } from "./Button";
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta: Meta<typeof Button> = {
-    title: "Example/Button",
+    title: "Components/Button",
     component: Button,
     parameters: {
         // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
@@ -14,9 +14,10 @@ const meta: Meta<typeof Button> = {
     // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
     tags: ["autodocs"],
     // More on argTypes: https://storybook.js.org/docs/api/argtypes
-    // argTypes: {
-    //   backgroundColor: { control: 'color' },
-    // },
+    argTypes: {
+        variant: { control: "select", options: ["primary", "secondary", "outline", "ghost"] },
+        size: { control: "select", options: ["sm", "md", "lg", "xl"] }
+    },
     // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
     args: { onClick: fn() }
 };
@@ -34,21 +35,49 @@ export const Primary: Story = {
 
 export const Secondary: Story = {
     args: {
-        variant: "secondary",
-        children: "Button"
+        ...Primary.args,
+        variant: "secondary"
     }
 };
 
-export const Large: Story = {
+export const Outline: Story = {
     args: {
-        size: "lg",
-        children: "Button"
+        ...Primary.args,
+        variant: "outline"
+    }
+};
+
+export const Ghost: Story = {
+    args: {
+        ...Primary.args,
+        variant: "ghost"
     }
 };
 
 export const Small: Story = {
     args: {
-        size: "sm",
-        children: "Button"
+        ...Primary.args,
+        size: "sm"
+    }
+};
+
+export const Medium: Story = {
+    args: {
+        ...Primary.args,
+        size: "md"
+    }
+};
+
+export const Large: Story = {
+    args: {
+        ...Primary.args,
+        size: "lg"
+    }
+};
+
+export const ExtraLarge: Story = {
+    args: {
+        ...Primary.args,
+        size: "xl"
     }
 };

@@ -1,5 +1,6 @@
 import type { Preview } from "@storybook/react";
-// import "../src/styles.scss";
+
+import "../src/styles.scss";
 
 const preview: Preview = {
     parameters: {

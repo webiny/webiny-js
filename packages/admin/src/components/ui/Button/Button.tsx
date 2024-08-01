@@ -17,10 +17,10 @@ const buttonVariants = cva(
                 ghost: "bg-transparent border border-transparent text-gray-900 fill-gray-900 hover:bg-gray-200"
             },
             size: {
-                sm: "p-1 rounded text-xs font-normal",
-                md: "py-1.5 px-2 rounded text-sm font-normal",
-                lg: "py-2.5 px-3 rounded-lg text-sm font-medium",
-                xl: "py-3.5 px-4 rounded-lg text-base font-medium"
+                sm: "p-1 rounded text-sm font-normal",
+                md: "py-1.5 px-2 rounded text-md font-normal",
+                lg: "py-2.5 px-3 rounded-lg text-base font-medium",
+                xl: "py-3.5 px-4 rounded-lg text-lg font-medium"
             }
         },
         defaultVariants: {
