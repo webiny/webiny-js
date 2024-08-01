@@ -203,6 +203,7 @@
   "resolutions": {
     "@emotion/react": "11.10.8",
     "@octokit/rest": "^20.0.2",
+    "braces": "^3.0.3",
     "@types/jsdom": "link:./typings/void",
     "@types/webpack": "^5.28.0",
     "browserify-sign": "^4.2.2",
