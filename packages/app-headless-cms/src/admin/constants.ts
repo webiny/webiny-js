@@ -4,6 +4,8 @@ export const LOCAL_STORAGE_LATEST_VISITED_FOLDER = "webiny_cms_entry_latest_visi
 
 export type Statuses = typeof statuses;
 
+export const CMS_MODEL_SINGLETON_TAG = "singleton";
+
 export const statuses = {
     draft: "Draft",
     published: "Published",
