@@ -8,10 +8,15 @@ import {
     ContentEntryListWithConfig
 } from "~/admin/config/contentEntries";
 import { ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext";
+import { CMS_MODEL_SINGLETON_TAG } from "~/admin/constants";
 
 export const ContentEntries = makeDecoratable("ContentEntries", () => {
     const { model } = useModel();
 
+    if (model.tags.includes(CMS_MODEL_SINGLETON_TAG)) {
+        // TODO - implement singleton model entry form
+        return <>Singleton model entry form</>;
+    }
     return (
         <ContentEntriesProvider contentModel={model} key={model.modelId}>
             <ContentEntryListWithConfig>
