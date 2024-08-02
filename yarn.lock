@@ -14072,38 +14072,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-interactions@npm:^8.2.5":
-  version: 8.2.5
-  resolution: "@storybook/addon-interactions@npm:8.2.5"
-  dependencies:
-    "@storybook/global": ^5.0.0
-    "@storybook/instrumenter": 8.2.5
-    "@storybook/test": 8.2.5
-    polished: ^4.2.2
-    ts-dedent: ^2.2.0
-  peerDependencies:
-    storybook: ^8.2.5
-  checksum: ac29240c815ba62a3b460f59d6a1c63492a6055b7cd10965dcdee118d310729c19400e8ab0251f49ac6f05169038cc3d4f4a1c8de62f624b4f4b6ba4e4e48d00
-  languageName: node
-  linkType: hard
-
-"@storybook/addon-links@npm:^8.2.5":
-  version: 8.2.5
-  resolution: "@storybook/addon-links@npm:8.2.5"
-  dependencies:
-    "@storybook/csf": 0.1.11
-    "@storybook/global": ^5.0.0
-    ts-dedent: ^2.0.0
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-    storybook: ^8.2.5
-  peerDependenciesMeta:
-    react:
-      optional: true
-  checksum: b260051502ae327d28dfd9cebd5c968546d78cac90dc7712eb16333d10550a3cda74fe0551a60b7b5e8874996b6e0705b83307ad32f99db87a1cbe6d7f7023fb
-  languageName: node
-  linkType: hard
-
 "@storybook/addon-measure@npm:8.2.5":
   version: 8.2.5
   resolution: "@storybook/addon-measure@npm:8.2.5"
@@ -14169,7 +14137,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/blocks@npm:8.2.5, @storybook/blocks@npm:^8.2.5":
+"@storybook/blocks@npm:8.2.5":
   version: 8.2.5
   resolution: "@storybook/blocks@npm:8.2.5"
   dependencies:
@@ -14492,7 +14460,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/test@npm:8.2.5, @storybook/test@npm:^8.2.5":
+"@storybook/test@npm:^8.2.5":
   version: 8.2.5
   resolution: "@storybook/test@npm:8.2.5"
   dependencies:
@@ -16830,11 +16798,8 @@ __metadata:
     "@babel/preset-typescript": ^7.23.3
     "@radix-ui/react-slot": ^1.1.0
     "@storybook/addon-essentials": ^8.2.5
-    "@storybook/addon-interactions": ^8.2.5
-    "@storybook/addon-links": ^8.2.5
     "@storybook/addon-styling-webpack": ^1.0.0
     "@storybook/addon-webpack5-compiler-swc": ^1.0.4
-    "@storybook/blocks": ^8.2.5
     "@storybook/react": ^8.2.5
     "@storybook/react-webpack5": ^8.2.5
     "@storybook/test": ^8.2.5
@@ -43824,7 +43789,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-dedent@npm:^2.0.0, ts-dedent@npm:^2.2.0":
+"ts-dedent@npm:^2.0.0":
   version: 2.2.0
   resolution: "ts-dedent@npm:2.2.0"
   checksum: 93ed8f7878b6d5ed3c08d99b740010eede6bccfe64bce61c5a4da06a2c17d6ddbb80a8c49c2d15251de7594a4f93ffa21dd10e7be75ef66a4dc9951b4a94e2af
