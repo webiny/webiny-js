@@ -1,4 +1,4 @@
-import { CmsContext, CmsFieldTypePlugins, CmsModel } from "~/types";
+import { ApiEndpoint, CmsContext, CmsFieldTypePlugins, CmsModel } from "~/types";
 import { resolveGet } from "./resolvers/singular/resolveGet";
 import { resolveUpdate } from "./resolvers/singular/resolveUpdate";
 import { normalizeGraphQlInput } from "./resolvers/manage/normalizeGraphQlInput";
@@ -9,6 +9,7 @@ interface CreateSingularResolversParams {
     model: CmsModel;
     context: CmsContext;
     fieldTypePlugins: CmsFieldTypePlugins;
+    type: ApiEndpoint;
 }
 
 interface CreateSingularResolvers {
@@ -19,7 +20,8 @@ interface CreateSingularResolvers {
 export const createSingularResolvers: CreateSingularResolvers = ({
     models,
     model,
-    fieldTypePlugins
+    fieldTypePlugins,
+    type
 }) => {
     if (model.fields.length === 0) {
         return {
@@ -43,14 +45,20 @@ export const createSingularResolvers: CreateSingularResolvers = ({
 
     const resolverFactoryParams = { model, fieldTypePlugins };
 
-    return {
+    const result = {
         Query: {
             [`get${model.singularApiName}`]: resolveGet(resolverFactoryParams)
         },
+        ...fieldResolvers
+    };
+    if (type !== "manage") {
+        return result;
+    }
+    return {
+        ...result,
         Mutation: {
             [`update${model.singularApiName}`]:
                 normalizeGraphQlInput(resolveUpdate)(resolverFactoryParams)
-        },
-        ...fieldResolvers
+        }
     };
 };

@@ -58,13 +58,15 @@ export const generateSchemaPlugins = async (
                     typeDefs: createSingularSDL({
                         models,
                         model,
-                        fieldTypePlugins
+                        fieldTypePlugins,
+                        type
                     }),
                     resolvers: createSingularResolvers({
                         context,
                         models,
                         model,
-                        fieldTypePlugins
+                        fieldTypePlugins,
+                        type
                     })
                 });
                 plugin.name = `headless-cms.graphql.schema.singular.${model.modelId}`;

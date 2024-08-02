@@ -12,10 +12,7 @@ const transformTime = (params: ValueTransformPluginParamsTransformParams): numbe
             value
         });
     }
-    /**
-     * Due to some internal JS stuff, we must check for a number like this.
-     */
-    const isInt = parseInt(`${value}`);
+    const isInt = Number(`${value}`);
     if (typeof value === "number" || isNaN(isInt) === false) {
         return Number(value);
     } else if (typeof value !== "string") {
