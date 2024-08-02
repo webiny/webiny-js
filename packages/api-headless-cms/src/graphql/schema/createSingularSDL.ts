@@ -1,4 +1,4 @@
-import { CmsFieldTypePlugins, CmsModel } from "~/types";
+import { ApiEndpoint, CmsFieldTypePlugins, CmsModel } from "~/types";
 import { renderInputFields } from "~/utils/renderInputFields";
 import { renderFields } from "~/utils/renderFields";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants";
@@ -7,6 +7,7 @@ interface CreateSingularSDLParams {
     models: CmsModel[];
     model: CmsModel;
     fieldTypePlugins: CmsFieldTypePlugins;
+    type: ApiEndpoint;
 }
 
 interface CreateSingularSDL {
@@ -16,7 +17,8 @@ interface CreateSingularSDL {
 export const createSingularSDL: CreateSingularSDL = ({
     models,
     model,
-    fieldTypePlugins
+    fieldTypePlugins,
+    type
 }): string => {
     const inputFields = renderInputFields({
         models,
@@ -53,7 +55,7 @@ export const createSingularSDL: CreateSingularSDL = ({
     }).join("\n");
 
     // Had to remove /* GraphQL */ because prettier would not format the code correctly.
-    return `
+    const read = `
         """${model.description || singularName}"""
         type ${singularName} {
             id: ID!
@@ -68,13 +70,6 @@ export const createSingularSDL: CreateSingularSDL = ({
 
         ${fields.map(f => f.typeDefs).join("\n")}
 
-        ${inputFields.map(f => f.typeDefs).join("\n")}
-        
-        input ${singularName}Input {
-            ${onByMetaInputGqlFields}
-            ${inputGqlFields}
-        }
-
         type ${singularName}Response {
             data: ${singularName}
             error: CmsError
@@ -84,6 +79,20 @@ export const createSingularSDL: CreateSingularSDL = ({
             get${singularName}: ${singularName}Response
         }
 
+    `;
+    if (type !== "manage") {
+        return read;
+    }
+    return `
+        ${read}
+    
+        ${inputFields.map(f => f.typeDefs).join("\n")}
+        
+        input ${singularName}Input {
+            ${onByMetaInputGqlFields}
+            ${inputGqlFields}
+        }
+    
         extend type Mutation {
             update${singularName}(data: ${singularName}Input!, options: UpdateCmsEntryOptionsInput): ${singularName}Response
         }
