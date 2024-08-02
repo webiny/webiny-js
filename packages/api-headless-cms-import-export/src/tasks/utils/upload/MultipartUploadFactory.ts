@@ -1,6 +1,9 @@
 import { CreateMultipartUploadCommand, S3Client } from "@webiny/aws-sdk/client-s3";
 import { WebinyError } from "@webiny/error";
-import { ICreateMultipartUpload, IMultipartUpload } from "./abstractions/MultipartUpload";
+import {
+    ICreateMultipartUploadHandler,
+    IMultipartUploadHandler
+} from "./abstractions/MultipartUploadHandler";
 import {
     IMultipartUploadFactory,
     IMultipartUploadFactoryContinueParams
@@ -10,23 +13,23 @@ export interface IMultipartUploadFactoryParams {
     client: S3Client;
     bucket: string;
     filename: string;
-    createUpload: ICreateMultipartUpload;
+    createHandler: ICreateMultipartUploadHandler;
 }
 
 export class MultipartUploadFactory implements IMultipartUploadFactory {
     private readonly client: S3Client;
     private readonly bucket: string;
     private readonly filename: string;
-    private readonly createUpload: ICreateMultipartUpload;
+    private readonly createHandler: ICreateMultipartUploadHandler;
 
     public constructor(params: IMultipartUploadFactoryParams) {
         this.client = params.client;
         this.bucket = params.bucket;
         this.filename = params.filename;
-        this.createUpload = params.createUpload;
+        this.createHandler = params.createHandler;
     }
 
-    public async start(): Promise<IMultipartUpload> {
+    public async start(): Promise<IMultipartUploadHandler> {
         const cmd = new CreateMultipartUploadCommand({
             Bucket: this.bucket,
             Key: this.filename
@@ -35,12 +38,11 @@ export class MultipartUploadFactory implements IMultipartUploadFactory {
         const result = await this.client.send(cmd);
         const uploadId = result.UploadId;
         if (uploadId) {
-            return this.createUpload({
+            return this.createHandler({
                 uploadId,
                 client: this.client,
                 bucket: this.bucket,
-                filename: this.filename,
-                part: 0
+                filename: this.filename
             });
         }
         throw new WebinyError({
@@ -53,13 +55,16 @@ export class MultipartUploadFactory implements IMultipartUploadFactory {
         });
     }
 
-    public continue(params: IMultipartUploadFactoryContinueParams): IMultipartUpload {
-        return this.createUpload({
+    public async continue(
+        params: IMultipartUploadFactoryContinueParams
+    ): Promise<IMultipartUploadHandler> {
+        return this.createHandler({
             client: this.client,
             bucket: this.bucket,
             filename: this.filename,
             uploadId: params.uploadId,
-            part: params.part
+            part: params.part,
+            tags: params.tags
         });
     }
 }

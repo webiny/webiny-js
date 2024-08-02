@@ -6,6 +6,29 @@ import { ResponseContinueResult, ResponseErrorResult, TaskResponseStatus } from 
 import { categoryModel } from "~tests/helpers/models";
 import path from "path";
 
+jest.mock("~/tasks/domain/importFromUrlContentEntries/ImportFromUrlContentEntriesCombined", () => {
+    return {
+        ImportFromUrlContentEntriesCombined: {
+            process: async () => {
+                return "continue";
+            }
+        },
+        createImportFromUrlContentEntriesCombined: () => {
+            return {
+                process: async () => {
+                    return "continue";
+                },
+                isDone: () => {
+                    return false;
+                },
+                getNext: () => {
+                    return 1;
+                }
+            };
+        }
+    };
+});
+
 describe("import from url content entries", () => {
     let context: Context;
 
@@ -15,7 +38,7 @@ describe("import from url content entries", () => {
         context = await createContext();
     });
 
-    it.skip("should run the task and fail because of missing model", async () => {
+    it("should run the task and fail because of missing model", async () => {
         const definition = createImportFromUrlContentEntriesTask();
 
         const task = await context.tasks.createTask({
@@ -51,7 +74,7 @@ describe("import from url content entries", () => {
         });
     });
 
-    it.skip("should run the task and fail because of missing files", async () => {
+    it("should run the task and fail because of missing files", async () => {
         const definition = createImportFromUrlContentEntriesTask();
 
         const task = await context.tasks.createTask({
@@ -91,7 +114,7 @@ describe("import from url content entries", () => {
         });
     });
 
-    it.skip("should run the task and fail because of non-existing model", async () => {
+    it("should run the task and fail because of non-existing model", async () => {
         const definition = createImportFromUrlContentEntriesTask();
 
         const modelId = "nonExistingModelId";
@@ -193,7 +216,7 @@ describe("import from url content entries", () => {
                     size: file.size
                 },
                 combinedFile: {
-                    next: 0,
+                    next: 1,
                     done: false
                 }
             },
