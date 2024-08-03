@@ -10,8 +10,34 @@ import { downloadFolderFromS3 } from "./downloadAndLinkExtension/downloadFolderF
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
-const S3_BUCKET_NAME = "wby-examples-test";
-const S3_BUCKET_REGION = "us-east-1";
+const S3_BUCKET_NAME = "wby-examples-test-1";
+const S3_BUCKET_REGION = "eu-central-1";
+
+const WEBINY_DEV_VERSION = "0.0.0";
+
+const getVersionFromVersionFolders = async (
+    versionFoldersList: string[],
+    currentWebinyVersion: string
+) => {
+    const availableVersions = versionFoldersList.map(v => v.replace(".x", ".0")).sort();
+
+    let versionToUse = "";
+
+    // When developing Webiny, we want to use the latest version.
+    if (currentWebinyVersion === WEBINY_DEV_VERSION) {
+        versionToUse = availableVersions[availableVersions.length - 1];
+    } else {
+        for (const availableVersion of availableVersions) {
+            if (currentWebinyVersion >= availableVersion) {
+                versionToUse = availableVersion;
+            } else {
+                break;
+            }
+        }
+    }
+
+    return versionToUse.replace(".0", ".x");
+};
 
 export const downloadAndLinkExtension = async ({
     input,
@@ -34,7 +60,10 @@ export const downloadAndLinkExtension = async ({
             downloadFolderPath
         });
 
-        ora.text = `Linking extension...`;
+        ora.text = `Copying extension...`;
+
+        // If we have `extensions` folder in the root of the downloaded extension, we can copy it directly.
+        // This means the example extension is not versioned.
         const withoutVersions = fs.existsSync(path.join(downloadFolderPath, "extensions"));
         if (withoutVersions) {
             const extensionsFolderToCopy = path.join(downloadFolderPath, "extensions");
@@ -42,39 +71,28 @@ export const downloadAndLinkExtension = async ({
                 recursive: true
             });
         } else {
+            // If we have `x.x.x` folders in the root of the downloaded extension, we need to find the right version to use.
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            const availableVersions = await fsAsync.readdir(downloadFolderPath).then(versions => {
-                return versions.map(v => v.replace(".x", ".0")).sort();
-            });
-
-            let versionToUse = "";
-
-            // When developing Webiny, we want to use the latest version.
-            if (currentWebinyVersion === "0.0.0") {
-                versionToUse = availableVersions[availableVersions.length - 1];
-            } else {
-                for (const availableVersion of availableVersions) {
-                    if (currentWebinyVersion >= availableVersion) {
-                        versionToUse = availableVersion;
-                    } else {
-                        break;
-                    }
-                }
-            }
-
-            versionToUse = versionToUse.replace(".0", ".x");
+            // This can be `5.40.x`, `5.41.x`, etc.
+            const versionFolders = await fsAsync.readdir(downloadFolderPath);
+            const versionToUse = await getVersionFromVersionFolders(
+                versionFolders,
+                currentWebinyVersion
+            );
 
             const extensionsFolderToCopy = path.join(
                 downloadFolderPath,
                 versionToUse,
                 "extensions"
             );
+
             await fsAsync.cp(extensionsFolderToCopy, EXTENSIONS_ROOT_FOLDER, {
                 recursive: true
             });
         }
 
+        ora.text = `Linking extension...`;
         await linkAllExtensions();
 
         ora.succeed(
