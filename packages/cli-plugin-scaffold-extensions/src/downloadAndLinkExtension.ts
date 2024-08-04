@@ -86,19 +86,21 @@ export const downloadAndLinkExtension = async ({
             extensionsFolderToCopyPath = path.join(downloadFolderPath, versionToUse, "extensions");
         }
 
-        // Retrieve extensions folders in the root of the downloaded extension. We use this
-        // later to run additional setup tasks on each extension.
-        const extensionsFolders = await fsAsync.readdir(extensionsFolderToCopyPath);
-
-        console.log(extensionsFolders);
-        process.exit();
-
         await fsAsync.cp(extensionsFolderToCopyPath, EXTENSIONS_ROOT_FOLDER, {
             recursive: true
         });
 
         ora.text = `Linking extension...`;
-        await setWebinyPackageVersions(EXTENSIONS_ROOT_FOLDER, currentWebinyVersion);
+
+        // Retrieve extensions folders in the root of the downloaded extension. We use this
+        // later to run additional setup tasks on each extension.
+        const extensionsFolderNames = await fsAsync.readdir(extensionsFolderToCopyPath);
+
+        for (const extensionsFolderName of extensionsFolderNames) {
+            const extensionFolderPath = path.join(EXTENSIONS_ROOT_FOLDER, extensionsFolderName);
+            await setWebinyPackageVersions(extensionFolderPath, currentWebinyVersion);
+        }
+
         await linkAllExtensions();
         await runYarnInstall();
 
