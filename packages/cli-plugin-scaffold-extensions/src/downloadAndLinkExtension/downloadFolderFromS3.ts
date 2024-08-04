@@ -1,6 +1,7 @@
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from "@webiny/aws-sdk/client-s3";
 import fs from "fs";
 import path from "path";
+import {WebinyError} from "@webiny/error";
 
 interface DownloadFolderFromS3Params {
     bucketName: string;
@@ -45,6 +46,9 @@ export const downloadFolderFromS3 = async (params: DownloadFolderFromS3Params) =
     };
 
     const objects = (await listObjects(bucketName, bucketFolderKey)) || [];
+    if (!objects.length) {
+        throw new WebinyError(`No objects found in the specified S3 folder.`, "NO_OBJECTS_FOUND");
+    }
 
     for (const object of objects) {
         const s3Key = object.Key!;
@@ -52,12 +56,12 @@ export const downloadFolderFromS3 = async (params: DownloadFolderFromS3Params) =
         const localFilePath = path.join(downloadFolderPath, relativePath);
 
         if (s3Key.endsWith("/")) {
-            // It's a directory, create it if it doesn't exist
+            // It's a directory, create it if it doesn't exist.
             if (!fs.existsSync(localFilePath)) {
                 fs.mkdirSync(localFilePath, { recursive: true });
             }
         } else {
-            // It's a file, download it
+            // It's a file, download it.
             const localDirPath = path.dirname(localFilePath);
             if (!fs.existsSync(localDirPath)) {
                 fs.mkdirSync(localDirPath, { recursive: true });

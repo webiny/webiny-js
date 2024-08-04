@@ -54,6 +54,7 @@ export const downloadAndLinkExtension = async ({
 
         const randomId = String(Date.now());
         const downloadFolderPath = path.join(os.tmpdir(), `wby-ext-${randomId}`);
+
         await downloadFolderFromS3({
             bucketName: S3_BUCKET_NAME,
             bucketRegion: S3_BUCKET_REGION,
@@ -110,8 +111,16 @@ export const downloadAndLinkExtension = async ({
             )}.`
         );
     } catch (e) {
-        ora.fail("Could not create extension. Please check the logs below.");
-        console.log();
-        console.log(e);
+
+
+        switch (e.code) {
+            case "NO_OBJECTS_FOUND":
+                ora.fail("Could not download extension. Looks like the extension does not exist.");
+                break;
+            default:
+                ora.fail("Could not create extension. Please check the logs below.");
+                console.log();
+                console.log(e);
+        }
     }
 };
