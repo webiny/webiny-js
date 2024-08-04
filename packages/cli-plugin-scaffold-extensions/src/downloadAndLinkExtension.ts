@@ -90,7 +90,8 @@ export const downloadAndLinkExtension = async ({
         // later to run additional setup tasks on each extension.
         const extensionsFolders = await fsAsync.readdir(extensionsFolderToCopyPath);
 
-        console.log(extensionsFolders)
+        console.log(extensionsFolders);
+        process.exit();
 
         await fsAsync.cp(extensionsFolderToCopyPath, EXTENSIONS_ROOT_FOLDER, {
             recursive: true
