@@ -5,8 +5,8 @@ import { formatCode } from "@webiny/cli-plugin-scaffold/utils";
 import path from "node:path";
 
 const setVersions = (dependencies: Record<string, string>, version: string) => {
-    for (const [name, value] of Object.entries(dependencies)) {
-        if (value.startsWith("@webiny")) {
+    for (const [name] of Object.entries(dependencies)) {
+        if (name.startsWith("@webiny")) {
             dependencies[name] = version;
         }
     }
