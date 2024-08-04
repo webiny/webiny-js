@@ -64,15 +64,14 @@ export const downloadAndLinkExtension = async ({
         ora.text = `Copying extension...`;
         await setTimeout(1000);
 
+        let extensionsFolderToCopyPath = path.join(downloadFolderPath, "extensions");
+
         // If we have `extensions` folder in the root of the downloaded extension.
         // it means the example extension is not versioned, and we can just copy it.
-        const withoutVersions = fs.existsSync(path.join(downloadFolderPath, "extensions"));
-        if (withoutVersions) {
-            const extensionsFolderToCopy = path.join(downloadFolderPath, "extensions");
-            await fsAsync.cp(extensionsFolderToCopy, EXTENSIONS_ROOT_FOLDER, {
-                recursive: true
-            });
-        } else {
+        const extensionsFolderExistsInRoot = fs.existsSync(extensionsFolderToCopyPath);
+        const versionedExtension = !extensionsFolderExistsInRoot;
+
+        if (versionedExtension) {
             // If we have `x.x.x` folders in the root of the downloaded
             // extension, we need to find the right version to use.
 
@@ -84,16 +83,18 @@ export const downloadAndLinkExtension = async ({
                 currentWebinyVersion
             );
 
-            const extensionsFolderToCopy = path.join(
-                downloadFolderPath,
-                versionToUse,
-                "extensions"
-            );
-
-            await fsAsync.cp(extensionsFolderToCopy, EXTENSIONS_ROOT_FOLDER, {
-                recursive: true
-            });
+            extensionsFolderToCopyPath = path.join(downloadFolderPath, versionToUse, "extensions");
         }
+
+        // Retrieve extensions folders in the root of the downloaded extension. We use this
+        // later to run additional setup tasks on each extension.
+        const extensionsFolders = await fsAsync.readdir(extensionsFolderToCopyPath);
+
+        console.log(extensionsFolders)
+
+        await fsAsync.cp(extensionsFolderToCopyPath, EXTENSIONS_ROOT_FOLDER, {
+            recursive: true
+        });
 
         ora.text = `Linking extension...`;
         await setWebinyPackageVersions(EXTENSIONS_ROOT_FOLDER, currentWebinyVersion);
