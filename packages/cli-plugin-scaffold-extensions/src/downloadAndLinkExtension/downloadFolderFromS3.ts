@@ -1,7 +1,7 @@
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from "@webiny/aws-sdk/client-s3";
 import fs from "fs";
 import path from "path";
-import {WebinyError} from "@webiny/error";
+import { WebinyError } from "@webiny/error";
 
 interface DownloadFolderFromS3Params {
     bucketName: string;

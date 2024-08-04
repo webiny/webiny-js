@@ -15,7 +15,7 @@ import fs from "node:fs";
  */
 // @ts-expect-error
 import { getProject, log } from "@webiny/cli/utils";
-import { generators } from "./generateExtension/generators"
+import { generators } from "./generateExtension/generators";
 import { Input } from "./types";
 
 const ncp = util.promisify(ncpBase.ncp);

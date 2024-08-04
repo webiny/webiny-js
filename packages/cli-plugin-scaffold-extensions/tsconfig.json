@@ -1,9 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": [
-    "src",
-    "__tests__"
-  ],
+  "include": ["src", "__tests__"],
   "references": [
     {
       "path": "../aws-sdk"
@@ -16,37 +13,18 @@
     }
   ],
   "compilerOptions": {
-    "rootDirs": [
-      "./src",
-      "./__tests__"
-    ],
+    "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": [
-        "./src/*"
-      ],
-      "~tests/*": [
-        "./__tests__/*"
-      ],
-      "@webiny/aws-sdk/*": [
-        "../aws-sdk/src/*"
-      ],
-      "@webiny/aws-sdk": [
-        "../aws-sdk/src"
-      ],
-      "@webiny/cli-plugin-scaffold/*": [
-        "../cli-plugin-scaffold/src/*"
-      ],
-      "@webiny/cli-plugin-scaffold": [
-        "../cli-plugin-scaffold/src"
-      ],
-      "@webiny/error/*": [
-        "../error/src/*"
-      ],
-      "@webiny/error": [
-        "../error/src"
-      ]
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
+      "@webiny/cli-plugin-scaffold/*": ["../cli-plugin-scaffold/src/*"],
+      "@webiny/cli-plugin-scaffold": ["../cli-plugin-scaffold/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"]
     },
     "baseUrl": "."
   }
