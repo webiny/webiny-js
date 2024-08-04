@@ -4,17 +4,17 @@ import fs from "node:fs";
 import fsAsync from "node:fs/promises";
 import { CliCommandScaffoldCallableArgs } from "@webiny/cli-plugin-scaffold/types";
 import { setTimeout } from "node:timers/promises";
-
-import { linkAllExtensions } from "./generators/utils/linkAllExtensions";
+import { WEBINY_DEV_VERSION } from "~/utils/constants";
+import { linkAllExtensions } from "./utils/linkAllExtensions";
 import { Input } from "./types";
 import { downloadFolderFromS3 } from "./downloadAndLinkExtension/downloadFolderFromS3";
+import { setWebinyPackageVersions } from "~/utils/setWebinyPackageVersions";
+import { runYarnInstall } from "@webiny/cli-plugin-scaffold/utils";
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
 const S3_BUCKET_NAME = "wby-examples-test-1";
 const S3_BUCKET_REGION = "eu-central-1";
-
-const WEBINY_DEV_VERSION = "0.0.0";
 
 const getVersionFromVersionFolders = async (
     versionFoldersList: string[],
@@ -96,7 +96,9 @@ export const downloadAndLinkExtension = async ({
         }
 
         ora.text = `Linking extension...`;
+        await setWebinyPackageVersions(EXTENSIONS_ROOT_FOLDER, currentWebinyVersion);
         await linkAllExtensions();
+        await runYarnInstall();
 
         ora.succeed(
             `Extension downloaded in ${context.success.hl(
