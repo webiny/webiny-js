@@ -3,10 +3,10 @@ import path from "path";
 import Case from "case";
 import validateNpmPackageName from "validate-npm-package-name";
 import fs from "node:fs";
-
 import { downloadAndLinkExtension } from "./downloadAndLinkExtension";
 import { generateExtension } from "./generateExtension";
 import { Input } from "./types";
+import { runYarnInstall } from "@webiny/cli-plugin-scaffold/utils";
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
@@ -20,6 +20,8 @@ export default () => [
                 await import(__dirname + "/utils/linkAllExtensions.js").then(m =>
                     m.linkAllExtensions()
                 );
+
+                await runYarnInstall();
 
                 process.exit(0);
             });
