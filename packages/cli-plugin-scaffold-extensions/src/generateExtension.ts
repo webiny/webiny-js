@@ -9,6 +9,7 @@ import Case from "case";
 import { replaceInPath } from "replace-in-path";
 import WebinyError from "@webiny/error";
 import fs from "node:fs";
+import { setTimeout } from "node:timers/promises";
 
 /**
  * TODO: rewrite cli into typescript
@@ -17,6 +18,7 @@ import fs from "node:fs";
 import { getProject, log } from "@webiny/cli/utils";
 import { generators } from "./generateExtension/generators";
 import { Input } from "./types";
+import { runYarnInstall } from "@webiny/cli-plugin-scaffold/utils";
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -122,12 +124,10 @@ export const generateExtension = async ({
         }
 
         // Sleep for 1 second before proceeding with yarn installation.
-        await new Promise(resolve => {
-            setTimeout(resolve, 1000);
-        });
+        await setTimeout(1000);
 
         // Once everything is done, run `yarn` so the new packages are installed.
-        await execa("yarn");
+        await runYarnInstall();
 
         ora.succeed(`New extension created in ${log.success.hl(location)}.`);
     } catch (err) {
