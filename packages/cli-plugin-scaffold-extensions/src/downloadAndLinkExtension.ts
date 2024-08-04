@@ -105,14 +105,18 @@ export const downloadAndLinkExtension = async ({
         await linkAllExtensions();
         await runYarnInstall();
 
-        ora.succeed(
-            `Extension downloaded in ${context.success.hl(
-                EXTENSIONS_ROOT_FOLDER + "/" + downloadExtensionSource
-            )}.`
-        );
+        if (extensionsFolderNames.length === 1) {
+            const [extensionFolderName] = extensionsFolderNames;
+            ora.succeed(
+                `Extension downloaded in ${context.success.hl(
+                    EXTENSIONS_ROOT_FOLDER + "/" + extensionFolderName
+                )}.`
+            );
+        } else {
+            const paths = extensionsFolderNames.map(name => EXTENSIONS_ROOT_FOLDER + "/" + name);
+            ora.succeed(`Extensions downloaded in ${context.success.hl(paths.join(", "))}.`);
+        }
     } catch (e) {
-
-
         switch (e.code) {
             case "NO_OBJECTS_FOUND":
                 ora.fail("Could not download extension. Looks like the extension does not exist.");
