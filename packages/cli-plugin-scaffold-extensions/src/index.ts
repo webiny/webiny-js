@@ -17,7 +17,7 @@ export default () => [
         // @ts-ignore This plugin doesn't have a type
         create({ yargs }) {
             yargs.command(["link-extensions"], `Link all project extensions.`, async () => {
-                await import(__dirname + "/generators/utils/linkAllExtensions.js").then(m =>
+                await import(__dirname + "/utils/linkAllExtensions.js").then(m =>
                     m.linkAllExtensions()
                 );
 

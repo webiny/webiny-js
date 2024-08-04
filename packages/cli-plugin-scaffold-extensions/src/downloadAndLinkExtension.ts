@@ -3,6 +3,7 @@ import path from "path";
 import fs from "node:fs";
 import fsAsync from "node:fs/promises";
 import { CliCommandScaffoldCallableArgs } from "@webiny/cli-plugin-scaffold/types";
+import { setTimeout } from "node:timers/promises";
 
 import { linkAllExtensions } from "./generators/utils/linkAllExtensions";
 import { Input } from "./types";
@@ -61,9 +62,10 @@ export const downloadAndLinkExtension = async ({
         });
 
         ora.text = `Copying extension...`;
+        await setTimeout(1000);
 
-        // If we have `extensions` folder in the root of the downloaded extension, we can copy it directly.
-        // This means the example extension is not versioned.
+        // If we have `extensions` folder in the root of the downloaded extension.
+        // it means the example extension is not versioned, and we can just copy it.
         const withoutVersions = fs.existsSync(path.join(downloadFolderPath, "extensions"));
         if (withoutVersions) {
             const extensionsFolderToCopy = path.join(downloadFolderPath, "extensions");
@@ -71,11 +73,12 @@ export const downloadAndLinkExtension = async ({
                 recursive: true
             });
         } else {
-            // If we have `x.x.x` folders in the root of the downloaded extension, we need to find the right version to use.
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // If we have `x.x.x` folders in the root of the downloaded
+            // extension, we need to find the right version to use.
 
             // This can be `5.40.x`, `5.41.x`, etc.
             const versionFolders = await fsAsync.readdir(downloadFolderPath);
+
             const versionToUse = await getVersionFromVersionFolders(
                 versionFolders,
                 currentWebinyVersion
