@@ -174,10 +174,13 @@ export const createElasticsearchQueryBody = (
 
     const fieldPlugins = plugins
         .byType<PageElasticsearchFieldPlugin>(PageElasticsearchFieldPlugin.type)
-        .reduce((acc, plugin) => {
-            acc[plugin.field] = plugin;
-            return acc;
-        }, {} as Record<string, PageElasticsearchFieldPlugin>);
+        .reduce(
+            (acc, plugin) => {
+                acc[plugin.field] = plugin;
+                return acc;
+            },
+            {} as Record<string, PageElasticsearchFieldPlugin>
+        );
 
     const limit = createLimit(initialLimit, 100);
 

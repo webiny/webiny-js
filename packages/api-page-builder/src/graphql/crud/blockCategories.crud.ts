@@ -136,9 +136,8 @@ export const createBlockCategoriesCrud = (
         async createBlockCategory(this: PageBuilderContextObject, input) {
             await blockCategoriesPermissions.ensure({ rwd: "w" });
 
-            const validationResult = await createBlockCategoryCreateValidation().safeParseAsync(
-                input
-            );
+            const validationResult =
+                await createBlockCategoryCreateValidation().safeParseAsync(input);
             if (!validationResult.success) {
                 throw createZodError(validationResult.error);
             }
@@ -199,9 +198,8 @@ export const createBlockCategoriesCrud = (
 
             await blockCategoriesPermissions.ensure({ owns: original.createdBy });
 
-            const validationResult = await createBlockCategoryUpdateValidation().safeParseAsync(
-                input
-            );
+            const validationResult =
+                await createBlockCategoryUpdateValidation().safeParseAsync(input);
             if (!validationResult.success) {
                 throw createZodError(validationResult.error);
             }

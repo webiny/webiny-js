@@ -113,21 +113,24 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
                     }
                     onReady({ editor: editorRef.current, initialData });
                 },
-                tools: Object.keys(props.tools || {}).reduce((tools, name) => {
-                    const tool = props.tools ? props.tools[name] : null;
-                    if (!tool) {
+                tools: Object.keys(props.tools || {}).reduce(
+                    (tools, name) => {
+                        const tool = props.tools ? props.tools[name] : null;
+                        if (!tool) {
+                            return tools;
+                        }
+                        tools[name] = tool;
+                        if (!tool.config) {
+                            tool.config = { context };
+                        } else if (typeof tool.config === "function") {
+                            tool.config = tool.config();
+                        } else {
+                            tool.config = { ...tool.config, context };
+                        }
                         return tools;
-                    }
-                    tools[name] = tool;
-                    if (!tool.config) {
-                        tool.config = { context };
-                    } else if (typeof tool.config === "function") {
-                        tool.config = tool.config();
-                    } else {
-                        tool.config = { ...tool.config, context };
-                    }
-                    return tools;
-                }, {} as Record<string, ToolSettings>)
+                    },
+                    {} as Record<string, ToolSettings>
+                )
             });
         });
 

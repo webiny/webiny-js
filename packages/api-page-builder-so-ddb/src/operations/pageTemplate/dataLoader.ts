@@ -51,14 +51,17 @@ export class PageTemplateDataLoader implements DataLoaderInterface {
                         items: batched
                     });
 
-                    const results = records.reduce((collection, result) => {
-                        if (!result) {
+                    const results = records.reduce(
+                        (collection, result) => {
+                            if (!result) {
+                                return collection;
+                            }
+                            const key = cacheKeyFn(result.data);
+                            collection[key] = result.data as PageTemplate;
                             return collection;
-                        }
-                        const key = cacheKeyFn(result.data);
-                        collection[key] = result.data as PageTemplate;
-                        return collection;
-                    }, {} as Record<string, PageTemplate>);
+                        },
+                        {} as Record<string, PageTemplate>
+                    );
                     return items.map(item => {
                         const key = cacheKeyFn(item);
                         return results[key] || null;

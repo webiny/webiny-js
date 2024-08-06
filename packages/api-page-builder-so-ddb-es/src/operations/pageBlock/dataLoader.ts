@@ -52,14 +52,17 @@ export class PageBlockDataLoader implements DataLoaderInterface {
                         items: batched
                     });
 
-                    const results = records.reduce((collection, result) => {
-                        if (!result) {
+                    const results = records.reduce(
+                        (collection, result) => {
+                            if (!result) {
+                                return collection;
+                            }
+                            const key = cacheKeyFn(result);
+                            collection[key] = cleanupItem(this.entity, result) as PageBlock;
                             return collection;
-                        }
-                        const key = cacheKeyFn(result);
-                        collection[key] = cleanupItem(this.entity, result) as PageBlock;
-                        return collection;
-                    }, {} as Record<string, PageBlock>);
+                        },
+                        {} as Record<string, PageBlock>
+                    );
                     return items.map(item => {
                         const key = cacheKeyFn(item);
                         return results[key] || null;

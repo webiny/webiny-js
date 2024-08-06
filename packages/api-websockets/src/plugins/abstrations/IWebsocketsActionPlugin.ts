@@ -58,7 +58,7 @@ export type WebsocketsActionPluginCallableResponse<T extends GenericRecord = Gen
     | IWebsocketsActionPluginCallableParamsRespondErrorResponse<T>;
 
 export interface IWebsocketsActionPluginCallable<T extends GenericRecord = GenericRecord> {
-    (params: IWebsocketsActionPluginCallableParams): Promise<
-        WebsocketsActionPluginCallableResponse<T>
-    >;
+    (
+        params: IWebsocketsActionPluginCallableParams
+    ): Promise<WebsocketsActionPluginCallableResponse<T>>;
 }

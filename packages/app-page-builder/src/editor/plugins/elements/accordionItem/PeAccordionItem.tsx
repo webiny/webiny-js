@@ -40,7 +40,8 @@ const AccordionItemHeader = styled.div<{ isOpen: boolean }>`
         top: 12px;
         right: 4px;
         transform: ${props => (props.isOpen ? "rotate(-180deg)" : "")};
-        transition: transform 0.35s cubic-bezier(0.65, 0.05, 0.36, 1),
+        transition:
+            transform 0.35s cubic-bezier(0.65, 0.05, 0.36, 1),
             -webkit-transform 0.35s cubic-bezier(0.65, 0.05, 0.36, 1);
     }
 `;

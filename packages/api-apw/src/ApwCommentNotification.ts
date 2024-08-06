@@ -22,10 +22,9 @@ export interface ApwCommentNotificationCbParamsResponse {
     html?: string;
 }
 export interface ApwCommentNotificationCb {
-    (params: ApwCommentNotificationCbParams):
-        | ApwCommentNotificationCbParamsResponse
-        | null
-        | undefined;
+    (
+        params: ApwCommentNotificationCbParams
+    ): ApwCommentNotificationCbParamsResponse | null | undefined;
 }
 export class ApwCommentNotification extends Plugin {
     public static override readonly type: string = "apw.notification.comment";

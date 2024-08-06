@@ -29,14 +29,11 @@ export function createComponentPlugin<T extends Decoratable>(
 export type GetDecorateeParams<T> = T extends (params?: infer P1) => any
     ? P1
     : T extends (params: infer P2) => any
-    ? P2
-    : any;
+      ? P2
+      : any;
 
-export type GetDecoratee<T> = T extends DecoratableHook<infer F>
-    ? F
-    : T extends DecoratableComponent<infer F>
-    ? F
-    : never;
+export type GetDecoratee<T> =
+    T extends DecoratableHook<infer F> ? F : T extends DecoratableComponent<infer F> ? F : never;
 
 const isDecoratableComponent = (
     decoratable: DecoratableComponent | DecoratableHook

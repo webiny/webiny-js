@@ -87,8 +87,8 @@ export const useReferences = ({
         const values = Array.isArray(initialValues)
             ? initialValues
             : initialValues
-            ? [initialValues]
-            : [];
+              ? [initialValues]
+              : [];
         return lodashChunk<CmsReferenceValue>(
             values.map(value => {
                 const { id: entryId } = parseIdentifier(value.id);

@@ -14,8 +14,8 @@ export type StandardHeaders = {
     [K in keyof AllHeaders as string extends K
         ? never
         : number extends K
-        ? never
-        : K]: http.OutgoingHttpHeaders[K];
+          ? never
+          : K]: http.OutgoingHttpHeaders[K];
 } & {
     [name: string]: StandardHeaderValue;
 };

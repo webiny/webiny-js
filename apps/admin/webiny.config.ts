@@ -20,7 +20,7 @@ export default createAdminAppConfig(({ config }) => {
                     ...loader.options.postcssOptions.plugins(),
                     tailwindcss({
                         // config: path.resolve(__dirname, "@webiny/admin/tailwind.config.js")
-                        config: __dirname + "/tailwind.config.js"
+                        config: __dirname + "/.config.js"
                     })
                 ];
             }

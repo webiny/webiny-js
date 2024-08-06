@@ -6,9 +6,9 @@ interface GetLastChangeRequestNotificationPluginParams {
     type: ApwContentTypes;
 }
 interface GetLastChangeRequestNotificationPlugin {
-    (params: GetLastChangeRequestNotificationPluginParams):
-        | ApwChangeRequestNotification
-        | undefined;
+    (
+        params: GetLastChangeRequestNotificationPluginParams
+    ): ApwChangeRequestNotification | undefined;
 }
 export const getLastChangeRequestNotificationPlugin: GetLastChangeRequestNotificationPlugin =
     params => {

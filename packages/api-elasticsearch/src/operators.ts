@@ -58,23 +58,26 @@ export const getElasticsearchOperatorPluginsByLocale = (
         .byType<ElasticsearchQueryBuilderOperatorPlugin>(
             ElasticsearchQueryBuilderOperatorPlugin.type
         )
-        .reduce((acc, plugin) => {
-            const op = plugin.getOperator();
-            /**
-             * We only allow the plugins which can pass the locale test.
-             * The default plugins always return true.
-             */
-            if (plugin.isLocaleSupported(locale) === false) {
+        .reduce(
+            (acc, plugin) => {
+                const op = plugin.getOperator();
+                /**
+                 * We only allow the plugins which can pass the locale test.
+                 * The default plugins always return true.
+                 */
+                if (plugin.isLocaleSupported(locale) === false) {
+                    return acc;
+                }
+                /**
+                 * We also only allow the override of the plugins if the new plugin is NOT a default one.
+                 * If a user names the plugin with .default, we cannot do anything about it.
+                 */
+                if (!!acc[op] && (plugin.name || "").match(/\.default$/)) {
+                    return acc;
+                }
+                acc[op] = plugin;
                 return acc;
-            }
-            /**
-             * We also only allow the override of the plugins if the new plugin is NOT a default one.
-             * If a user names the plugin with .default, we cannot do anything about it.
-             */
-            if (!!acc[op] && (plugin.name || "").match(/\.default$/)) {
-                return acc;
-            }
-            acc[op] = plugin;
-            return acc;
-        }, {} as Record<string, ElasticsearchQueryBuilderOperatorPlugin>);
+            },
+            {} as Record<string, ElasticsearchQueryBuilderOperatorPlugin>
+        );
 };

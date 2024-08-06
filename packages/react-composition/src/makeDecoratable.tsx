@@ -20,11 +20,8 @@ const nullRenderer = () => null;
 // Maybe there's a better way to mark props as non-existent, but for now I left it as `any`.
 type NoProps = any;
 
-type GetProps<T extends (...args: any) => any> = Parameters<T> extends [infer First]
-    ? undefined extends First
-        ? NoProps
-        : First
-    : NoProps;
+type GetProps<T extends (...args: any) => any> =
+    Parameters<T> extends [infer First] ? (undefined extends First ? NoProps : First) : NoProps;
 
 function makeDecoratableComponent<T extends GenericComponent>(
     name: string,

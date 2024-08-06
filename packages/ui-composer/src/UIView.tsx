@@ -185,7 +185,10 @@ export const UIViewComponent = ({ view, ...props }: UIViewComponentProps): React
         setCount(count => count + 1);
     }, []);
 
-    return wrappers.reduce((el, wrapper) => {
-        return wrapper({ ...props, children: el });
-    }, <UIViewHooks view={view} render={render} props={props} />);
+    return wrappers.reduce(
+        (el, wrapper) => {
+            return wrapper({ ...props, children: el });
+        },
+        <UIViewHooks view={view} render={render} props={props} />
+    );
 };

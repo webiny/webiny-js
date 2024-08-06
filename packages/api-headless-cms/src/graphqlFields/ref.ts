@@ -175,17 +175,20 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                             return [];
                         }
 
-                        const entriesByModel = referenceFieldValues.reduce((collection, ref) => {
-                            if (!collection[ref.modelId]) {
-                                collection[ref.modelId] = [];
-                            } else if (collection[ref.modelId].includes(ref.entryId) === true) {
+                        const entriesByModel = referenceFieldValues.reduce(
+                            (collection, ref) => {
+                                if (!collection[ref.modelId]) {
+                                    collection[ref.modelId] = [];
+                                } else if (collection[ref.modelId].includes(ref.entryId) === true) {
+                                    return collection;
+                                }
+
+                                collection[ref.modelId].push(ref.entryId);
+
                                 return collection;
-                            }
-
-                            collection[ref.modelId].push(ref.entryId);
-
-                            return collection;
-                        }, {} as Record<string, string[]>);
+                            },
+                            {} as Record<string, string[]>
+                        );
 
                         const getters = Object.keys(entriesByModel).map(async modelId => {
                             const idList = entriesByModel[modelId];

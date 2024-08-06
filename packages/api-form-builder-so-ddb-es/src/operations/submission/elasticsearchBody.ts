@@ -49,13 +49,16 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams) => {
         .byType<ElasticsearchQueryBuilderOperatorPlugin>(
             ElasticsearchQueryBuilderOperatorPlugin.type
         )
-        .reduce((acc, plugin) => {
-            if (plugin.isLocaleSupported(initialWhere.locale) === false) {
+        .reduce(
+            (acc, plugin) => {
+                if (plugin.isLocaleSupported(initialWhere.locale) === false) {
+                    return acc;
+                }
+                acc[plugin.getOperator()] = plugin;
                 return acc;
-            }
-            acc[plugin.getOperator()] = plugin;
-            return acc;
-        }, {} as Record<string, ElasticsearchQueryBuilderOperatorPlugin>);
+            },
+            {} as Record<string, ElasticsearchQueryBuilderOperatorPlugin>
+        );
 
     const where: Partial<FormBuilderStorageOperationsListSubmissionsParams["where"]> = {
         ...initialWhere
@@ -123,10 +126,13 @@ export const createElasticsearchBody = (params: CreateElasticsearchBodyParams): 
 
     const fieldPlugins = plugins
         .byType<SubmissionElasticsearchFieldPlugin>(SubmissionElasticsearchFieldPlugin.type)
-        .reduce((acc, plugin) => {
-            acc[plugin.field] = plugin;
-            return acc;
-        }, {} as Record<string, SubmissionElasticsearchFieldPlugin>);
+        .reduce(
+            (acc, plugin) => {
+                acc[plugin.field] = plugin;
+                return acc;
+            },
+            {} as Record<string, SubmissionElasticsearchFieldPlugin>
+        );
 
     const limit = createLimit(initialLimit, 100);
 

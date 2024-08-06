@@ -104,10 +104,13 @@ export const createElasticsearchBody = (params: CreateElasticsearchBodyParams): 
 
     const fieldPlugins = plugins
         .byType<FormElasticsearchFieldPlugin>(FormElasticsearchFieldPlugin.type)
-        .reduce((acc, plugin) => {
-            acc[plugin.field] = plugin;
-            return acc;
-        }, {} as Record<string, FormElasticsearchFieldPlugin>);
+        .reduce(
+            (acc, plugin) => {
+                acc[plugin.field] = plugin;
+                return acc;
+            },
+            {} as Record<string, FormElasticsearchFieldPlugin>
+        );
 
     const limit = createLimit(initialLimit, 100);
 

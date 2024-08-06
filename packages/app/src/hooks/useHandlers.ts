@@ -12,16 +12,19 @@ export function useHandlers<H = Handlers>(props: HandlerProps, factories: Handle
     const handlersRef = useRef(
         (() => {
             const names = Object.keys(factories);
-            return names.reduce((handlers, name) => {
-                /**
-                 * TODO: figure out args types
-                 */
-                handlers[name] = (...args: any) => {
-                    const handler = factories[name](propsRef.current);
-                    return handler(...args);
-                };
-                return handlers;
-            }, {} as Record<string, any>);
+            return names.reduce(
+                (handlers, name) => {
+                    /**
+                     * TODO: figure out args types
+                     */
+                    handlers[name] = (...args: any) => {
+                        const handler = factories[name](propsRef.current);
+                        return handler(...args);
+                    };
+                    return handlers;
+                },
+                {} as Record<string, any>
+            );
         })()
     );
 

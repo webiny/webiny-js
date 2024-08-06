@@ -46,9 +46,8 @@ export class CmsEntriesCrudDecorators {
             async (...allParams) => {
                 const [decoratee, model, params] = allParams;
                 const folderType = createFolderType(model);
-                const folders = await folderLevelPermissions.listAllFoldersWithPermissions(
-                    folderType
-                );
+                const folders =
+                    await folderLevelPermissions.listAllFoldersWithPermissions(folderType);
 
                 const where = createWhere({
                     model,
@@ -68,9 +67,8 @@ export class CmsEntriesCrudDecorators {
             async (...allParams) => {
                 const [decoratee, model, params] = allParams;
                 const folderType = createFolderType(model);
-                const folders = await folderLevelPermissions.listAllFoldersWithPermissions(
-                    folderType
-                );
+                const folders =
+                    await folderLevelPermissions.listAllFoldersWithPermissions(folderType);
 
                 const where = createWhere({
                     model,
@@ -90,9 +88,8 @@ export class CmsEntriesCrudDecorators {
             async (...allParams) => {
                 const [decoratee, model, params] = allParams;
                 const folderType = createFolderType(model);
-                const folders = await folderLevelPermissions.listAllFoldersWithPermissions(
-                    folderType
-                );
+                const folders =
+                    await folderLevelPermissions.listAllFoldersWithPermissions(folderType);
 
                 const where = createWhere({
                     model,

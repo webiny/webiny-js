@@ -52,14 +52,17 @@ export class CategoryDataLoader implements DataLoaderInterface {
                         items: batched
                     });
 
-                    const results = records.reduce((collection, result) => {
-                        if (!result) {
+                    const results = records.reduce(
+                        (collection, result) => {
+                            if (!result) {
+                                return collection;
+                            }
+                            const key = cacheKeyFn(result);
+                            collection[key] = cleanupItem(this.entity, result) as Category;
                             return collection;
-                        }
-                        const key = cacheKeyFn(result);
-                        collection[key] = cleanupItem(this.entity, result) as Category;
-                        return collection;
-                    }, {} as Record<string, Category>);
+                        },
+                        {} as Record<string, Category>
+                    );
                     return items.map(item => {
                         const key = cacheKeyFn(item);
                         return results[key] || null;

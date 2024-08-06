@@ -49,8 +49,7 @@ const syncBlockVariables = (block: PbElement) => {
         }
 
         return result;
-    },
-    []);
+    }, []);
 
     return { ...block, data: { ...block.data, variables: syncedVariables } };
 };

@@ -245,8 +245,8 @@ export const createListQuery = (
 
     return gql`
         query CmsEntriesList${queryName}($where: ${model.singularApiName}ListWhereInput, $sort: [${
-        model.singularApiName
-    }ListSorter], $limit: Int, $after: String, $search: String) {
+            model.singularApiName
+        }ListSorter], $limit: Int, $after: String, $search: String) {
             content: list${queryName}(
             where: $where
             sort: $sort
@@ -382,8 +382,8 @@ export interface CmsEntryCreateFromMutationVariables {
 export const createCreateFromMutation = (model: CmsEditorContentModel) => {
     return gql`
         mutation CmsCreate${model.singularApiName}From($revision: ID!, $data: ${
-        model.singularApiName
-    }Input, $options: CreateRevisionCmsEntryOptionsInput) {
+            model.singularApiName
+        }Input, $options: CreateRevisionCmsEntryOptionsInput) {
         content: create${
             model.singularApiName
         }From(revision: $revision, data: $data, options: $options) {
@@ -419,8 +419,8 @@ export interface CmsEntryUpdateMutationVariables {
 export const createUpdateMutation = (model: CmsEditorContentModel) => {
     return gql`
         mutation CmsUpdate${model.singularApiName}($revision: ID!, $data: ${
-        model.singularApiName
-    }Input!, $options: UpdateCmsEntryOptionsInput) {
+            model.singularApiName
+        }Input!, $options: UpdateCmsEntryOptionsInput) {
             content: update${
                 model.singularApiName
             }(revision: $revision, data: $data, options: $options) {

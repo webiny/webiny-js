@@ -11,22 +11,25 @@ interface CustomLayoutProps {
 export const CustomLayout = ({ model, formRenderer }: CustomLayoutProps) => {
     const { data } = useForm();
 
-    const fields = model.fields.reduce((acc, field) => {
-        acc[field.fieldId] = (
-            <FieldElement
-                field={field}
-                /**
-                 * TODO @ts-refactor
-                 * Figure out type for Bind.
-                 */
-                // @ts-expect-error
-                Bind={Bind}
-                contentModel={model}
-            />
-        );
+    const fields = model.fields.reduce(
+        (acc, field) => {
+            acc[field.fieldId] = (
+                <FieldElement
+                    field={field}
+                    /**
+                     * TODO @ts-refactor
+                     * Figure out type for Bind.
+                     */
+                    // @ts-expect-error
+                    Bind={Bind}
+                    contentModel={model}
+                />
+            );
 
-        return acc;
-    }, {} as Record<string, React.ReactElement>);
+            return acc;
+        },
+        {} as Record<string, React.ReactElement>
+    );
 
     return (
         <>

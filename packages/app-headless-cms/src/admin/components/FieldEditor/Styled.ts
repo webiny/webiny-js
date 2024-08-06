@@ -9,7 +9,8 @@ export const RowContainer = styled.div`
     border-radius: 2px;
     background-color: var(--mdc-theme-surface);
     border: 1px solid var(--mdc-theme-on-background);
-    box-shadow: var(--mdc-theme-on-background) 1px 1px 1px,
+    box-shadow:
+        var(--mdc-theme-on-background) 1px 1px 1px,
         var(--mdc-theme-on-background) 1px 1px 2px;
     :last-child {
         margin-bottom: 5px;

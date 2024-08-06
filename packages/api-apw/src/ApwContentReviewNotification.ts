@@ -20,10 +20,9 @@ export interface ApwContentReviewNotificationCbParamsResponse {
     html?: string;
 }
 export interface ApwContentReviewNotificationCb {
-    (params: ApwContentReviewNotificationCbParams):
-        | ApwContentReviewNotificationCbParamsResponse
-        | null
-        | undefined;
+    (
+        params: ApwContentReviewNotificationCbParams
+    ): ApwContentReviewNotificationCbParamsResponse | null | undefined;
 }
 export class ApwContentReviewNotification extends Plugin {
     public static override readonly type: string = "apw.notification.contentReview";

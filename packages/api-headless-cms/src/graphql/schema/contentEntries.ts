@@ -180,10 +180,13 @@ const getContentEntries = async (
 
     const models = await context.cms.listModels();
 
-    const modelsMap = models.reduce((collection, model) => {
-        collection[model.modelId] = model;
-        return collection;
-    }, {} as Record<string, CmsModel>);
+    const modelsMap = models.reduce(
+        (collection, model) => {
+            collection[model.modelId] = model;
+            return collection;
+        },
+        {} as Record<string, CmsModel>
+    );
 
     const argsEntries = args.entries as Pick<CmsEntry, "id" | "modelId">[];
 

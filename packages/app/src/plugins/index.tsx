@@ -14,15 +14,19 @@ type RenderPluginOptions<T> = {
 };
 
 interface RenderPlugin {
-    <T extends Plugin = Plugin>(name: string, params?: any, options?: RenderPluginOptions<T>):
-        | ReactNode
-        | ReactNode[];
+    <T extends Plugin = Plugin>(
+        name: string,
+        params?: any,
+        options?: RenderPluginOptions<T>
+    ): ReactNode | ReactNode[];
 }
 
 interface RenderPlugins {
-    <T extends Plugin = Plugin>(type: string, params?: any, options?: RenderPluginOptions<T>):
-        | ReactNode
-        | ReactNode[];
+    <T extends Plugin = Plugin>(
+        type: string,
+        params?: any,
+        options?: RenderPluginOptions<T>
+    ): ReactNode | ReactNode[];
 }
 
 interface PluginComponentProps {

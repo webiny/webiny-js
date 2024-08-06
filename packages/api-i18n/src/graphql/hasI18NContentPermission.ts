@@ -7,9 +7,10 @@ interface ContentPermission {
 
 export const hasI18NContentPermission = async (context: I18NContext): Promise<boolean> => {
     // If `content.i18n` permission is not present, immediately throw.
-    const contentPermissions = await context.security.getPermissions<
-        SecurityPermission<ContentPermission>
-    >("content.i18n");
+    const contentPermissions =
+        await context.security.getPermissions<SecurityPermission<ContentPermission>>(
+            "content.i18n"
+        );
 
     if (!contentPermissions.length) {
         return false;

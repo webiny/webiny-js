@@ -6,4 +6,4 @@ export default (config: PbConfigType) =>
         config() {
             return config;
         }
-    } as PbConfigPluginType);
+    }) as PbConfigPluginType;

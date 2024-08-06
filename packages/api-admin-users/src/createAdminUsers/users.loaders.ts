@@ -22,10 +22,13 @@ export const createUserLoaders = ({ storageOperations }: Config) => {
         }
 
         // Group by tenant
-        const byTenant = ids.reduce((acc, item) => {
-            acc[item.tenant] = [...(acc[item.tenant] || []), item.id];
-            return acc;
-        }, {} as Record<string, string[]>);
+        const byTenant = ids.reduce(
+            (acc, item) => {
+                acc[item.tenant] = [...(acc[item.tenant] || []), item.id];
+                return acc;
+            },
+            {} as Record<string, string[]>
+        );
 
         try {
             const results = await Promise.all(

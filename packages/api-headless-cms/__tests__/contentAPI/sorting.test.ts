@@ -99,13 +99,16 @@ describe("sorting + cursor", () => {
 
         const fruit = publish.data.publishFruit.data;
 
-        return Object.keys(fruit).reduce((acc, key) => {
-            if (filterOutFields.includes(key)) {
+        return Object.keys(fruit).reduce(
+            (acc, key) => {
+                if (filterOutFields.includes(key)) {
+                    return acc;
+                }
+                acc[key] = fruit[key];
                 return acc;
-            }
-            acc[key] = fruit[key];
-            return acc;
-        }, {} as Record<string, string>);
+            },
+            {} as Record<string, string>
+        );
     };
 
     const createFruits = async () => {

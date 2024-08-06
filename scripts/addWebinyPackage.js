@@ -35,9 +35,8 @@ const { getPackages } = require("./utils/getPackages");
             join(depPackage.packageFolder)
         ).replace(/\\/g, "/");
 
-        targetPackage.packageJson.dependencies[
-            depPackage.packageJson.name
-        ] = `^${depPackage.packageJson.version}`;
+        targetPackage.packageJson.dependencies[depPackage.packageJson.name] =
+            `^${depPackage.packageJson.version}`;
 
         if (targetPackage.tsConfigJson) {
             const exists = targetPackage.tsConfigJson.references.find(
@@ -59,7 +58,9 @@ const { getPackages } = require("./utils/getPackages");
     console.log(cyan(`Updating ("${targetPackage.packageJson.name}") package dependencies...`));
 
     await writeJson(targetPackage.packageJsonPath, targetPackage.packageJson);
-    console.log(`${green("✔ package.json")} updated ${gray(`(${targetPackage.packageJsonPath})`)}`);
+    console.log(
+        `${green("✔ package.json")} updated ${gray(`(${targetPackage.packageJsonPath})`)}`
+    );
 
     if (targetPackage.tsConfigJson) {
         await writeJson(targetPackage.tsConfigJsonPath, targetPackage.tsConfigJson);

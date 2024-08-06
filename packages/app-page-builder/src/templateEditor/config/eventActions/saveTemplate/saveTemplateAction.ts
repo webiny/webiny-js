@@ -42,8 +42,7 @@ const syncTemplateBlockVariables = (block: PbElement) => {
         }
 
         return result;
-    },
-    []);
+    }, []);
 
     return {
         ...block,

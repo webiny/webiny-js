@@ -61,10 +61,13 @@ export const getSearchableFields = (params: Params): string[] => {
     const { plugins, input, fields } = params;
     const fieldPluginMap = plugins
         .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
-        .reduce((collection, field) => {
-            collection[field.fieldType] = field;
-            return collection;
-        }, {} as Record<string, CmsModelFieldToGraphQLPlugin>);
+        .reduce(
+            (collection, field) => {
+                collection[field.fieldType] = field;
+                return collection;
+            },
+            {} as Record<string, CmsModelFieldToGraphQLPlugin>
+        );
 
     return buildSearchableFieldList({
         fields,

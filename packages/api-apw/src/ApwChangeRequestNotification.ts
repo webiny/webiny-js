@@ -22,10 +22,9 @@ export interface ApwChangeRequestNotificationCbParamsResponse {
     html?: string;
 }
 export interface ApwChangeRequestNotificationCb {
-    (params: ApwChangeRequestNotificationCbParams):
-        | ApwChangeRequestNotificationCbParamsResponse
-        | null
-        | undefined;
+    (
+        params: ApwChangeRequestNotificationCbParams
+    ): ApwChangeRequestNotificationCbParamsResponse | null | undefined;
 }
 export class ApwChangeRequestNotification extends Plugin {
     public static override readonly type: string = "apw.notification.changeRequest";

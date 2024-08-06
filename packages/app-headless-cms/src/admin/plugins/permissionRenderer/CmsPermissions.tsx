@@ -149,12 +149,15 @@ export const CMSPermissions = ({ value, onChange }: CMSPermissionsProps) => {
                     if (props) {
                         ["models", "groups"].forEach(entity => {
                             if (accessScope === entity && props[entity]) {
-                                permission[entity] = locales.reduce((acc, locale) => {
-                                    if (props[entity][locale]) {
-                                        acc[locale] = props[entity][locale];
-                                    }
-                                    return acc;
-                                }, {} as Record<string, string>);
+                                permission[entity] = locales.reduce(
+                                    (acc, locale) => {
+                                        if (props[entity][locale]) {
+                                            acc[locale] = props[entity][locale];
+                                        }
+                                        return acc;
+                                    },
+                                    {} as Record<string, string>
+                                );
                             }
                         });
                     }

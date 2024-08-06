@@ -858,7 +858,11 @@ export interface EventActionCallable<
     TArgs extends EventActionHandlerCallableArgs = any,
     TState = PbState
 > {
-    (state: EventActionHandlerCallableState<TState>, meta: EventActionHandlerMeta, args?: TArgs):
+    (
+        state: EventActionHandlerCallableState<TState>,
+        meta: EventActionHandlerMeta,
+        args?: TArgs
+    ):
         | EventActionHandlerActionCallableResponse<TState>
         | Promise<EventActionHandlerActionCallableResponse<TState>>;
 }

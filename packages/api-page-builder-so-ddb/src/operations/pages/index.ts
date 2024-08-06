@@ -833,20 +833,26 @@ export const createPageStorageOperations = (
             );
         }
 
-        const tags = pages.reduce((collection, page) => {
-            let list: string[] = lodashGet(page, "settings.general.tags") as unknown as string[];
-            if (!list || list.length === 0) {
-                return collection;
-            } else if (where.search) {
-                const re = new RegExp(where.search, "i");
-                list = list.filter(t => t.match(re) !== null);
-            }
+        const tags = pages.reduce(
+            (collection, page) => {
+                let list: string[] = lodashGet(
+                    page,
+                    "settings.general.tags"
+                ) as unknown as string[];
+                if (!list || list.length === 0) {
+                    return collection;
+                } else if (where.search) {
+                    const re = new RegExp(where.search, "i");
+                    list = list.filter(t => t.match(re) !== null);
+                }
 
-            for (const t of list) {
-                collection[t] = undefined;
-            }
-            return collection;
-        }, {} as Record<string, string | undefined>);
+                for (const t of list) {
+                    collection[t] = undefined;
+                }
+                return collection;
+            },
+            {} as Record<string, string | undefined>
+        );
 
         return Object.keys(tags);
     };

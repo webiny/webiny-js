@@ -136,10 +136,13 @@ export const useReferences = ({ bind, field }: UseReferencesParams) => {
 
                 setLoading(false);
 
-                const latest = (res.data.latest.data || []).reduce((collection, item) => {
-                    collection[item.entryId] = item;
-                    return collection;
-                }, {} as Record<string, CmsReferenceContentEntry>);
+                const latest = (res.data.latest.data || []).reduce(
+                    (collection, item) => {
+                        collection[item.entryId] = item;
+                        return collection;
+                    },
+                    {} as Record<string, CmsReferenceContentEntry>
+                );
 
                 const entries = (res.data.published.data || []).reduce((collection, item) => {
                     const entryId = item.entryId;

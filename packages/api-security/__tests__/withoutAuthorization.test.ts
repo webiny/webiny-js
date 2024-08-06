@@ -43,9 +43,8 @@ describe("without authorization", function () {
         /**
          * Should not have permission again.
          */
-        const noPermissionCheckAfterWithoutAuthorization = await security.getPermission(
-            "some-unknown-permission"
-        );
+        const noPermissionCheckAfterWithoutAuthorization =
+            await security.getPermission("some-unknown-permission");
         expect(noPermissionCheckAfterWithoutAuthorization).toEqual(null);
     });
 

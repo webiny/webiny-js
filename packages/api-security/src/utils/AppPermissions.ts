@@ -142,11 +142,14 @@ export class AppPermissions<TPermission extends SecurityPermission = SecurityPer
      * Filters out base `name` and `_src` properties from the permission object.
      */
     private filterOutSystemPermissionsObjectProperties(permission: SecurityPermission) {
-        return Object.keys(permission).reduce((acc, key) => {
-            if (key !== "name" && key !== "_src") {
-                acc[key] = permission[key];
-            }
-            return acc;
-        }, {} as Record<string, any>);
+        return Object.keys(permission).reduce(
+            (acc, key) => {
+                if (key !== "name" && key !== "_src") {
+                    acc[key] = permission[key];
+                }
+                return acc;
+            },
+            {} as Record<string, any>
+        );
     }
 }

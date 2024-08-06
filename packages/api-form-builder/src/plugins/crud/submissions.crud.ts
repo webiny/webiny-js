@@ -100,9 +100,8 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
             };
 
             try {
-                const { items } = await this.storageOperations.listSubmissions(
-                    listSubmissionsParams
-                );
+                const { items } =
+                    await this.storageOperations.listSubmissions(listSubmissionsParams);
 
                 return items;
             } catch (ex) {

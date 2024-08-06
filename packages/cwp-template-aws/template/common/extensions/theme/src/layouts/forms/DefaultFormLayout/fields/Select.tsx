@@ -19,7 +19,9 @@ export const StyledSelect = styled.select`
     padding: 10px;
     border-radius: ${props => props.theme.styles.borderRadius};
     box-sizing: border-box;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition:
+        border-color 0.15s ease-in-out,
+        box-shadow 0.15s ease-in-out;
     height: 40px;
     -webkit-appearance: none;
     position: relative;

@@ -6,9 +6,9 @@ interface GetLastContentReviewNotificationPluginParams {
     type: ApwContentTypes;
 }
 interface GetLastContentReviewNotificationPlugin {
-    (params: GetLastContentReviewNotificationPluginParams):
-        | ApwContentReviewNotification
-        | undefined;
+    (
+        params: GetLastContentReviewNotificationPluginParams
+    ): ApwContentReviewNotification | undefined;
 }
 export const getLastContentReviewNotificationPlugin: GetLastContentReviewNotificationPlugin =
     params => {

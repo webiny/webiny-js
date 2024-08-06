@@ -16,14 +16,17 @@ export const createAnimation = (params: CreateAnimationParams) => {
             resolve();
         });
 
-        return Object.keys(animation).reduce((attributes, key) => {
-            // Animation `name` doesn't need to append a suffix to the `data-aos` attribute.
-            // https://michalsnik.github.io/aos/
-            const attributeName = key === "name" ? "data-aos" : `data-aos-${key}`;
+        return Object.keys(animation).reduce(
+            (attributes, key) => {
+                // Animation `name` doesn't need to append a suffix to the `data-aos` attribute.
+                // https://michalsnik.github.io/aos/
+                const attributeName = key === "name" ? "data-aos" : `data-aos-${key}`;
 
-            attributes[attributeName] = animation[key];
-            return attributes;
-        }, {} as Record<string, any>);
+                attributes[attributeName] = animation[key];
+                return attributes;
+            },
+            {} as Record<string, any>
+        );
     };
 
     return animation;

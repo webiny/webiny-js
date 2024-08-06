@@ -33,14 +33,17 @@ interface Filter {
 }
 
 const getMappedPlugins = <T extends Plugin>(params: MappedPluginParams<T>): Record<string, T> => {
-    return params.plugins.byType<T>(params.type).reduce((plugins, plugin) => {
-        /**
-         * We expect op to be a string, that is why we cast.
-         */
-        const op = plugin[params.property] as unknown as string;
-        plugins[op] = plugin;
-        return plugins;
-    }, {} as Record<string, T>);
+    return params.plugins.byType<T>(params.type).reduce(
+        (plugins, plugin) => {
+            /**
+             * We expect op to be a string, that is why we cast.
+             */
+            const op = plugin[params.property] as unknown as string;
+            plugins[op] = plugin;
+            return plugins;
+        },
+        {} as Record<string, T>
+    );
 };
 
 interface ExtractWhereArgsResult {

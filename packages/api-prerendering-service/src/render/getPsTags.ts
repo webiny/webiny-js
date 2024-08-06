@@ -37,11 +37,14 @@ export default (content: string, unique = true): TagPathLink[] => {
     }
 
     if (unique && psTags.length > 0) {
-        const uniqueMap: Record<string, TagPathLink> = psTags.reduce((collection, psTag) => {
-            collection[`${psTag.key || ""}${psTag.value || ""}`] = psTag;
+        const uniqueMap: Record<string, TagPathLink> = psTags.reduce(
+            (collection, psTag) => {
+                collection[`${psTag.key || ""}${psTag.value || ""}`] = psTag;
 
-            return collection;
-        }, {} as Record<string, TagPathLink>);
+                return collection;
+            },
+            {} as Record<string, TagPathLink>
+        );
 
         return Object.values(uniqueMap);
     }
