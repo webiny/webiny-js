@@ -18,7 +18,7 @@ export const onFolderBeforeDeleteFmHook = (context: AcoContext) => {
                 context,
                 folder,
                 hasContentCallback: async () => {
-                    const content = await context.fileManager.listFiles({
+                    const [content] = await context.fileManager.listFiles({
                         where: {
                             location: {
                                 folderId: id
