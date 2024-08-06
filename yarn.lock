@@ -16803,8 +16803,7 @@ __metadata:
     "@storybook/react": ^8.2.7
     "@storybook/react-webpack5": ^8.2.7
     "@storybook/test": ^8.2.7
-    "@types/lodash": ^4.14.191
-    "@types/warning": ^3.0.0
+    "@types/react": 18.2.79
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     class-variance-authority: ^0.7.0
@@ -16814,12 +16813,13 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     rimraf: ^5.0.5
-    sass: ^1.77.8
+    sass: 1.44.0
     storybook: ^8.2.7
     tailwind-merge: ^2.4.0
     tailwindcss: ^3.4.6
     tailwindcss-animate: ^1.0.7
     tsconfig-paths-webpack-plugin: ^4.1.0
+    ttypescript: ^1.5.12
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
@@ -41495,19 +41495,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:^1.77.8":
-  version: 1.77.8
-  resolution: "sass@npm:1.77.8"
-  dependencies:
-    chokidar: ">=3.0.0 <4.0.0"
-    immutable: ^4.0.0
-    source-map-js: ">=0.6.2 <2.0.0"
-  bin:
-    sass: sass.js
-  checksum: 6b5dce17faa1bd1e349b4825bf7f76559a32f3f95d789cd2847623c88ee9635e1485d3458532a05fa5b9134cfbce79a4bad3f13dc63c2433632347674db0abae
-  languageName: node
-  linkType: hard
-
 "sax@npm:1.2.1":
   version: 1.2.1
   resolution: "sax@npm:1.2.1"
@@ -42229,7 +42216,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-js@npm:>=0.6.2 <2.0.0, source-map-js@npm:^1.0.1, source-map-js@npm:^1.2.0":
+"source-map-js@npm:^1.0.1, source-map-js@npm:^1.2.0":
   version: 1.2.0
   resolution: "source-map-js@npm:1.2.0"
   checksum: 791a43306d9223792e84293b00458bf102a8946e7188f3db0e4e22d8d530b5f80a4ce468eb5ec0bf585443ad55ebbd630bf379c98db0b1f317fd902500217f97
