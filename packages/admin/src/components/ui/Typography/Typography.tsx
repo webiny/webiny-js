@@ -1,5 +1,5 @@
 import React from "react";
-import { cn } from "~/ui/utils";
+import { cn } from "~/components";
 
 interface TypographyProps {
     text: string;

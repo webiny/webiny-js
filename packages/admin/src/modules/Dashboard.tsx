@@ -10,9 +10,9 @@ import {
     Users
 } from "lucide-react";
 
-import { Badge } from "~/ui/Badge";
-import { Button } from "~/ui/Button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "~/ui/Card";
+import { Badge } from "~/components";
+import { Button } from "~/components";
+import { Card, CardContent, CardFooter, CardHeader } from "~/components";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -20,13 +20,13 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger
-} from "~/ui/DropdownMenu";
-import { Sheet, SheetContent, SheetTrigger } from "~/ui/Sheet";
+} from "~/components";
+import { Sheet, SheetContent, SheetTrigger } from "~/components";
 import { ReactComponent as WebinyLogo } from "~/assets/logo.svg";
 import { ReactComponent as CmsSketch } from "./Dashboard/cms-sketch.svg";
 import { ReactComponent as FormsSketch } from "./Dashboard/forms-sketch.svg";
 import fbSshot from "./Dashboard/fb-sshot.png";
-import { TypographyH4, TypographyH5, TypographyH6 } from "~/ui/Typography";
+import { TypographyH4, TypographyH5, TypographyH6 } from "~/components";
 
 export function Dashboard() {
     return (
@@ -98,7 +98,7 @@ export function Dashboard() {
                 <header className="flex h-14 items-center gap-4 border-b px-4 lg:h-[60px] lg:px-6">
                     <Sheet>
                         <SheetTrigger asChild>
-                            <Button variant="outline" size="icon" className="shrink-0 md:hidden">
+                            <Button variant="outline" size="sm" className="shrink-0 md:hidden">
                                 <Menu className="h-5 w-5" />
                                 <span className="sr-only">Toggle navigation menu</span>
                             </Button>
@@ -156,7 +156,7 @@ export function Dashboard() {
                     <div className="w-full flex-1"></div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="secondary" size="icon" className="rounded-full">
+                            <Button variant="secondary" size="sm" className="rounded-full">
                                 <CircleUser className="h-5 w-5" />
                                 <span className="sr-only">Toggle user menu</span>
                             </Button>
@@ -188,7 +188,7 @@ export function Dashboard() {
                                     <CmsSketch className="w-[113px] mx-auto" />
                                 </CardHeader>
                                 <CardContent>
-                                    <TypographyH6 text={"Build a page"} className={"pb-1"}/>
+                                    <TypographyH6 text={"Build a page"} className={"pb-1"} />
                                     <p className="text-sm text-muted-foreground">
                                         Build stunning landing pages with an easy to use drag and
                                         drop editor.
@@ -223,7 +223,10 @@ export function Dashboard() {
                                     <CmsSketch className="w-full w-[113px] mx-auto" />
                                 </CardHeader>
                                 <CardContent>
-                                    <TypographyH6 text={"Create a content model"}  className={"pb-1"}/>
+                                    <TypographyH6
+                                        text={"Create a content model"}
+                                        className={"pb-1"}
+                                    />
                                     <p className="text-sm text-muted-foreground">
                                         GraphQL based headless CMS with powerful content modeling
                                         features.
