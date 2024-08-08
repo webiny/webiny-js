@@ -1,4 +1,128 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+
+$wby-color-primary: 15 96% 56% !default;
+$wby-color-secondary: 170 100% 37% !default;
+
+$primary-hue: nth($wby-color-primary, 1);
+$primary-saturation: nth($wby-color-primary, 2);
+$primary-lightness: nth($wby-color-primary, 3);
+
+$secondary-hue: nth($wby-color-secondary, 1);
+$secondary-saturation: nth($wby-color-secondary, 2);
+$secondary-lightness: nth($wby-color-secondary, 3);
+
+@layer base {
+  :root {
+    // NEW
+    --font-sans: '"Inter", "Source Sans Pro", "Open Sans", sans-serif';
+
+    --primary-hue: #{$primary-hue};
+    --primary-saturation: #{$primary-saturation};
+    --primary-lightness: #{$primary-lightness};
+
+    --secondary-hue: #{$secondary-hue};
+    --secondary-saturation: #{$secondary-saturation};
+    --secondary-lightness: #{$secondary-lightness};
+
+    --primary-100: var(--primary-hue), var(--primary-saturation),
+      calc(var(--primary-lightness) + 20%);
+    --primary-200: var(--primary-hue), var(--primary-saturation),
+      calc(var(--primary-lightness) + 15%);
+    --primary-300: var(--primary-hue), var(--primary-saturation),
+      calc(var(--primary-lightness) + 10%);
+    --primary-400: var(--primary-hue), var(--primary-saturation),
+      calc(var(--primary-lightness) + 5%);
+    --primary-500: var(--primary-hue), var(--primary-saturation), var(--primary-lightness);
+    --primary-600: var(--primary-hue), var(--primary-saturation),
+      calc(var(--primary-lightness) - 5%);
+    --primary-700: var(--primary-hue), var(--primary-saturation),
+      calc(var(--primary-lightness) - 10%);
+    --primary-800: var(--primary-hue), var(--primary-saturation),
+      calc(var(--primary-lightness) - 15%);
+    --primary-900: var(--primary-hue), var(--primary-saturation),
+      calc(var(--primary-lightness) - 20%);
+
+    --secondary-100: var(--secondary-hue), var(--secondary-saturation),
+      calc(var(--secondary-lightness) + 20%);
+    --secondary-200: var(--secondary-hue), var(--secondary-saturation),
+      calc(var(--secondary-lightness) + 15%);
+    --secondary-300: var(--secondary-hue), var(--secondary-saturation),
+      calc(var(--secondary-lightness) + 10%);
+    --secondary-400: var(--secondary-hue), var(--secondary-saturation),
+      calc(var(--secondary-lightness) + 5%);
+    --secondary-500: var(--secondary-hue), var(--secondary-saturation), var(--secondary-lightness);
+    --secondary-600: var(--secondary-hue), var(--secondary-saturation),
+      calc(var(--secondary-lightness) - 5%);
+    --secondary-700: var(--secondary-hue), var(--secondary-saturation),
+      calc(var(--secondary-lightness) - 10%);
+    --secondary-800: var(--secondary-hue), var(--secondary-saturation),
+      calc(var(--secondary-lightness) - 15%);
+    --secondary-900: var(--secondary-hue), var(--secondary-saturation),
+      calc(var(--secondary-lightness) - 20%);
+
+    //--primary-100: 5 100% 97%;
+    //--primary-200: 15 94% 86%;
+    //--primary-300: 14 95% 78%;
+    //--primary-400: 15 100% 64%;
+    //--primary-500: 15 96% 56%;
+    //--primary-600: 14 81% 48%;
+    //--primary-700: 14 94% 40%;
+    //--primary-800: 14 100% 32%;
+    //--primary-900: 14 100% 25%;
+
+    //--secondary-100: 168 50% 96%;
+    //--secondary-200: 170 57% 92%;
+    //--secondary-300: 168 58% 79%;
+    //--secondary-400: 168 60% 65%;
+    //--secondary-500: 170 100% 37%;
+    //--secondary-600: 168 100% 35%;
+    //--secondary-700: 165 100% 29%;
+    //--secondary-800: 160 100% 20%;
+    //--secondary-900: 160 100% 15%;
+
+    --warning-100: 43 100% 96%;
+    --warning-200: 45 97% 87%;
+    --warning-300: 45 95% 76%;
+    --warning-400: 45 96% 64%;
+    --warning-500: 45 96% 64%;
+    --warning-600: 45 100% 43%;
+    --warning-700: 45 100% 37%;
+    --warning-800: 45 98% 22%;
+    --warning-900: 45 97% 12%;
+
+    --destructive-100: 0 100% 97%;
+    --destructive-200: 0 96% 89%;
+    --destructive-300: 1 83% 77%;
+    --destructive-400: 0 66% 63%;
+    --destructive-500: 0 71% 49%;
+    --destructive-600: 360 76% 38%;
+    --destructive-700: 359 73% 29%;
+    --destructive-800: 0 84% 22%;
+    --destructive-900: 359 82% 17%;
+
+    --white-500: 0 0% 100%;
+
+    --black-100: 210, 14%, 97%;
+    --black-200: 220, 11%, 95%;
+    --black-300: 225, 17%, 91%;
+    --black-400: 219, 12%, 77%;
+    --black-500: 218, 11%, 65%;
+    --black-600: 215, 10%, 51%;
+    --black-700: 213, 10%, 39%;
+    --black-800: 215, 11%, 21%;
+    --black-900: 214, 12%, 11%;
+  }
+}
+
+@layer base {
+  body {
+    @apply font-sans text-dark;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+  }
+}
