@@ -4,18 +4,15 @@ import {
     BLUR_COMMAND,
     COMMAND_PRIORITY_LOW,
     LexicalEditor,
-    RangeSelection,
     SELECTION_CHANGE_COMMAND
 } from "lexical";
 import { createPortal } from "react-dom";
 import { mergeRegister } from "@lexical/utils";
-import { $isLinkNode } from "@webiny/lexical-nodes";
 import "./Toolbar.css";
 import { getDOMRangeRect } from "~/utils/getDOMRangeRect";
 import { setFloatingElemPosition } from "~/utils/setFloatingElemPosition";
 import { useLexicalEditorConfig } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
 import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection";
-import { getSelectedNode } from "~/utils/getSelectedNode";
 import { useRichTextEditor } from "~/hooks";
 import { isChildOfFloatingToolbar } from "~/utils/isChildOfFloatingToolbar";
 
@@ -171,16 +168,6 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ anchorElem, editor }) => {
     );
 };
 
-/**
- * TODO: this logic should live in Node classes. A toolbar should not decide when to show itself.
- */
-function isLinkNode(selection: RangeSelection) {
-    const node = getSelectedNode(selection);
-    const parent = node.getParent();
-
-    return $isLinkNode(parent) || $isLinkNode(node);
-}
-
 export interface ToolbarProps {
     anchorElem?: HTMLElement;
 }
@@ -192,7 +179,7 @@ export const Toolbar = ({ anchorElem = document.body }: ToolbarProps) => {
             return false;
         }
 
-        return !isLinkNode(rangeSelection) && !rangeSelection.isCollapsed();
+        return !rangeSelection.isCollapsed();
     });
 
     if (!showToolbar) {

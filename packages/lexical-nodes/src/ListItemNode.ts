@@ -6,10 +6,8 @@ import {
     EditorConfig,
     EditorThemeClasses,
     ElementNode,
-    GridSelection,
     LexicalNode,
     NodeKey,
-    NodeSelection,
     ParagraphNode,
     RangeSelection,
     SerializedElementNode,
@@ -81,7 +79,7 @@ export class ListItemNode extends ElementNode {
         return false;
     }
 
-    static importDOM(): DOMConversionMap | null {
+    static override importDOM(): DOMConversionMap | null {
         return {
             li: () => ({
                 conversion: convertListItemElement,
@@ -150,6 +148,10 @@ export class ListItemNode extends ElementNode {
             replaceWithNode.insertAfter(newList);
         }
         if (includeChildren) {
+            if (!$isElementNode(replaceWithNode)) {
+                throw Error("includeChildren should only be true for ElementNodes");
+            }
+
             this.getChildren().forEach((child: LexicalNode) => {
                 replaceWithNode.append(child);
             });
@@ -364,10 +366,7 @@ export class ListItemNode extends ElementNode {
         return $isParagraphNode(node) || $isListItemNode(node);
     }
 
-    override extractWithChild(
-        child: LexicalNode,
-        selection: RangeSelection | NodeSelection | GridSelection
-    ): boolean {
+    override extractWithChild(child: LexicalNode, selection: RangeSelection): boolean {
         if (!$isRangeSelection(selection)) {
             return false;
         }

@@ -104,6 +104,10 @@ module.exports = options => {
             ]
         },
         resolve: {
+            alias: {
+                // Force `lexical` to use the CJS export.
+                lexical: require.resolve("lexical")
+            },
             modules: [path.resolve(path.join(cwd, "node_modules")), "node_modules"],
             extensions: [".ts", ".mjs", ".js", ".json", ".css"]
         }

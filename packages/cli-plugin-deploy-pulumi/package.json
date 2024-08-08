@@ -13,11 +13,13 @@
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/cli": "0.0.0",
     "@webiny/data-migration": "0.0.0",
+    "@webiny/feature-flags": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/pulumi-sdk": "0.0.0",
     "body-parser": "1.20.1",
     "chalk": "4.1.2",
     "execa": "5.1.1",
+    "exit-hook": "^4.0.0",
     "express": "^4.19.2",
     "fast-glob": "^3.2.7",
     "humanize-duration": "^3.31.0",
@@ -28,9 +30,11 @@
     "log-update": "^4.0.0",
     "mime": "2.6.0",
     "minimatch": "^5.1.0",
+    "mqtt": "^5.5.2",
     "ncp": "2.0.0",
     "node-notifier": "^10.0.1",
     "ora": "4.1.1",
+    "p-retry": "^4.6.2",
     "replace-in-path": "^1.1.0"
   },
   "license": "MIT",
@@ -41,14 +45,12 @@
   "adio": {
     "ignoreDirs": [
       "/node_modules/",
-      "/dist/"
+      "/dist/",
+      "commands/newWatch/handler"
     ],
     "ignore": {
-      "src": [
-        "vm"
-      ],
       "dependencies": [
-        "execa"
+        "exit-hook"
       ]
     }
   },

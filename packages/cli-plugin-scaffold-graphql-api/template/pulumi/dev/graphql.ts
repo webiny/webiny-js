@@ -72,7 +72,7 @@ class Graphql {
                 description: "Project application name - GraphQL API Lambda function.",
                 role: role.arn,
                 timeout: 30,
-                memorySize: 512,
+                memorySize: 1024,
                 code: new pulumi.asset.AssetArchive({
                     ".": new pulumi.asset.FileArchive("../code/graphql/build")
                 }),

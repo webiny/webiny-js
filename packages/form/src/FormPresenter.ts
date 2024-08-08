@@ -2,6 +2,7 @@ import { makeAutoObservable, runInAction, toJS } from "mobx";
 import lodashGet from "lodash/get";
 import lodashSet from "lodash/set";
 import lodashNoop from "lodash/noop";
+import lodashIsEqual from "lodash/isEqual";
 import { BindComponentProps, FormValidationOptions, GenericFormData } from "~/types";
 import { FormField } from "./FormField";
 import { FormValidator } from "./FormValidator";
@@ -38,6 +39,7 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
     private formFields = new Map<string, FormField>();
     /* Holds invalid fields state. */
     private invalidFields: InvalidFormFields = {};
+    private isFormPristine = true;
     private onFormChange: FormOnChange<T>;
     private onFormInvalid: FormOnInvalid;
 
@@ -64,7 +66,8 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
         return {
             data: toJS(this.data),
             invalidFields: toJS(this.invalidFields),
-            formFields: this.formFields
+            formFields: this.formFields,
+            isPristine: this.isFormPristine
         };
     }
 
@@ -72,10 +75,11 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
         this.data = data || {};
         // We're clearing all form fields, to reset the form.
         this.formFields.clear();
+        this.isFormPristine = true;
     }
 
     getFieldValue(name: string) {
-        return lodashGet(this.data, name) as unknown;
+        return toJS(lodashGet(this.data, name)) as unknown;
     }
 
     getFieldValidation(name: string): FieldValidationResult {
@@ -106,6 +110,10 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
         /**
          * We delegate field value handling to the FormField class.
          */
+        if (lodashIsEqual(value, this.getFieldValue(name))) {
+            return;
+        }
+
         field.setValue(value, value => {
             this.commitValueToData(name, value);
         });
@@ -193,6 +201,7 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
 
     private commitValueToData = (name: string, value: unknown) => {
         lodashSet(this.data, name, value);
+        this.isFormPristine = false;
         this.onFormChange(toJS(this.data));
     };
 }

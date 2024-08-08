@@ -37,8 +37,8 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
 
     return {
         Query: {
-            [`get${model.singularApiName}`]: resolveGet({ model }),
-            [`list${model.pluralApiName}`]: resolveList({ model })
+            [`get${model.singularApiName}`]: resolveGet({ model, fieldTypePlugins }),
+            [`list${model.pluralApiName}`]: resolveList({ model, fieldTypePlugins })
         },
         [model.singularApiName]: {
             modelId: () => {

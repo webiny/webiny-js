@@ -223,6 +223,10 @@ module.exports = function (webpackEnv, { paths, options }) {
                     "react-dom$": require.resolve("react-dom/profiling"),
                     "scheduler/tracing": require.resolve("scheduler/tracing-profiling")
                 }),
+                // This is a temporary fix, until we sort out the `react-butterfiles` dependency.
+                "react-butterfiles": require.resolve("@webiny/app/react-butterfiles"),
+                // Force `lexical` to use the CJS export.
+                lexical: require.resolve("lexical"),
                 ...(modules.webpackAliases || {})
             },
             fallback: {

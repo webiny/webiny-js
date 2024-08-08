@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import pick from "lodash/pick";
-import debounce from "lodash/debounce";
 import { Prompt } from "@webiny/react-router";
 import { Form, FormAPI, FormOnSubmit, FormValidation } from "@webiny/form";
 import { CmsContentEntry, CmsModel } from "@webiny/app-headless-cms-common/types";
@@ -12,28 +11,12 @@ import { PartialCmsContentEntryWithId } from "~/admin/contexts/Cms";
 const promptMessage =
     "There are some unsaved changes! Are you sure you want to navigate away and discard all changes?";
 
-function omitTypename(key: string, value: string): string | undefined {
-    return key === "__typename" ? undefined : value;
-}
-
-const stringify = (value: any): string => {
-    return JSON.stringify(value || {}, omitTypename);
-};
-
-const isDifferent = (value: any, compare: any): boolean => {
-    if (!value && !compare) {
-        return false;
-    }
-    return stringify(value) !== stringify(compare);
-};
-
 interface SaveEntryOptions {
     skipValidators?: string[];
 }
 
 export interface ContentEntryFormContext {
     entry: Partial<CmsContentEntry>;
-    isDirty: boolean;
     saveEntry: (options?: SaveEntryOptions) => Promise<CmsContentEntry | null>;
     invalidFields: FormValidation;
 }
@@ -87,15 +70,6 @@ export const ContentEntryFormProvider = ({
     const { showSnackbar } = useSnackbar();
     const contentEntry = useContentEntry();
     const saveOptionsRef = useRef<SaveEntryOptions>({ skipValidators: undefined });
-    const [isDirty, setIsDirty] = React.useState<boolean>(false);
-
-    // Reset `isDirty` when data changes from outside.
-    useEffect(() => {
-        if (!isDirty) {
-            return;
-        }
-        setIsDirty(false);
-    }, [entry]);
 
     const saveEntry = useCallback(async (options: SaveEntryOptions = {}) => {
         saveOptionsRef.current.skipValidators = options.skipValidators;
@@ -131,15 +105,6 @@ export const ContentEntryFormProvider = ({
         });
     };
 
-    const onChange = useMemo(() => {
-        return debounce(data => {
-            const different = isDifferent(data, entry);
-            if (isDirty !== different) {
-                setIsDirty(different);
-            }
-        }, 500);
-    }, [isDirty, entry]);
-
     const onFormSubmit: FormOnSubmit<CmsContentEntry> = async data => {
         const fieldsIds = model.fields.map(item => item.fieldId);
         const formData = pick(data, [...fieldsIds]);
@@ -159,7 +124,6 @@ export const ContentEntryFormProvider = ({
         }
 
         setInvalidFields({});
-        setIsDirty(false);
 
         const isNewRevision = !isNewEntry && data.id !== entry.id;
 
@@ -184,13 +148,11 @@ export const ContentEntryFormProvider = ({
 
     return (
         <Form<CmsContentEntry>
-            onChange={onChange}
             onSubmit={onFormSubmit}
             data={entry}
             ref={ref}
             invalidFields={invalidFields}
             onInvalid={invalidFields => {
-                setIsDirty(true);
                 setInvalidFields(formValidationToMap(invalidFields));
                 showSnackbar("Some fields did not pass the validation. Please check the form.");
             }}
@@ -199,14 +161,13 @@ export const ContentEntryFormProvider = ({
                 const context: ContentEntryFormContext = {
                     entry: formProps.data,
                     saveEntry,
-                    isDirty,
                     invalidFields
                 };
                 return (
                     <ContentEntryFormContext.Provider value={context}>
                         {confirmNavigationIfDirty ? (
                             <CompositionScope name={"cms.contentEntryForm"}>
-                                <Prompt when={isDirty} message={promptMessage} />
+                                <Prompt when={!formProps.form.isPristine} message={promptMessage} />
                             </CompositionScope>
                         ) : null}
                         {children}

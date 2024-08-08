@@ -54,7 +54,7 @@ describe("HTML to Lexical State Parser", () => {
                  * By default, parser will normalize the nodes and convert DOM nodes to supported lexical nodes.
                  * It's expected all unsupported html tags like div, figure, button and other to be removed and not converted.
                  */
-                expect(defaultParser(mocks.htmlWithUnsupportedHtmlTags)).toMatchObject({
+                expect(defaultParser(mocks.invalidMarkup)).toMatchObject({
                     root: {
                         children: [
                             {
@@ -449,18 +449,6 @@ describe("HTML to Lexical State Parser", () => {
                         version: 1
                     }
                 });
-            });
-
-            it("should turn off node text normalization", async () => {
-                const parser = createHtmlToLexicalParser({ normalizeTextNodes: false });
-                const messages = [
-                    "rootNode.append: Only element or decorator nodes can be appended to the root node",
-                    "Minified Lexical error #56"
-                ];
-
-                expect(() => parser(mocks.htmlWithUnsupportedHtmlTags)).toThrow(
-                    process.env.NODE_ENV === "development" ? messages[0] : messages[1]
-                );
             });
 
             it("should be able to add custom node mapper", async () => {

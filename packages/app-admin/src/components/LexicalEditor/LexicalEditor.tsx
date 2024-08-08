@@ -9,11 +9,13 @@ interface LexicalEditorProps extends Omit<RichTextEditorProps, "theme"> {
     theme?: Theme;
 }
 
+const imagesOnly = ["image/*"];
+
 export const LexicalEditor = (props: LexicalEditorProps) => {
     const { theme } = useTheme();
 
     return (
-        <FileManager>
+        <FileManager accept={imagesOnly}>
             {({ showFileManager }) => (
                 <BaseEditor
                     {...props}

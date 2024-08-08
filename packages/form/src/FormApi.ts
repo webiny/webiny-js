@@ -34,6 +34,10 @@ export class FormAPI<T> {
         return this.presenter.vm.data;
     }
 
+    get isPristine() {
+        return this.presenter.vm.isPristine;
+    }
+
     isDisabled = () => {
         const isFormDisabled = this.options.isFormDisabled;
         if (isFormDisabled) {

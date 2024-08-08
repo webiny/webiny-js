@@ -5,6 +5,7 @@ import { createRenderer, useRenderer, Elements } from "@webiny/app-page-builder-
 import { Element as ElementType } from "@webiny/app-page-builder-elements/types";
 import { useActiveElementId } from "~/editor/hooks/useActiveElementId";
 import { elementWithChildrenByIdSelector } from "~/editor/recoil/modules";
+import { ClassNames } from "@emotion/react";
 
 const TabsContainer = styled.div`
     width: 100%;
@@ -62,18 +63,25 @@ const PeTabs = createRenderer(() => {
     return (
         <TabsContainer>
             <TabsHeader>
-                {childrenElements.map((tab, index) => (
-                    <TabLabel
-                        key={index}
-                        onClick={() => {
-                            setSelectedTabElement(tab);
-                            setActiveElementId(tab.id);
-                        }}
-                        active={tab.id === selectedTabElement.id}
-                    >
-                        {tab.data?.settings?.tab?.label || ""}
-                    </TabLabel>
-                ))}
+                {childrenElements.map((tab, index) => {
+                    const active = tab.id === selectedTabElement.id;
+                    return (
+                        <ClassNames key={index}>
+                            {({ cx }) => (
+                                <TabLabel
+                                    active={active}
+                                    className={cx("tab-label", { active })}
+                                    onClick={() => {
+                                        setSelectedTabElement(tab);
+                                        setActiveElementId(tab.id);
+                                    }}
+                                >
+                                    {tab.data?.settings?.tab?.label || ""}
+                                </TabLabel>
+                            )}
+                        </ClassNames>
+                    );
+                })}
             </TabsHeader>
             <Elements
                 element={{ ...elementWithChildren, elements: [selectedTabElementWithChildren] }}

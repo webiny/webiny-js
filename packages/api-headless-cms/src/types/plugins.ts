@@ -5,6 +5,7 @@ import {
     CmsFieldTypePlugins,
     CmsModelFieldDefinition,
     CmsModelFieldToGraphQLCreateResolver,
+    CmsModelFieldToGraphQLNormalizeInputParams,
     CmsModelFieldToGraphQLPluginValidateChildFields,
     CmsModelFieldValidatorValidateParams
 } from "./types";
@@ -265,6 +266,9 @@ export interface CmsModelFieldToGraphQLPlugin<TField extends CmsModelField = Cms
          * ```
          */
         createResolver?: CmsModelFieldToGraphQLCreateResolver<TField>;
+        normalizeInput?: <T>(
+            params: CmsModelFieldToGraphQLNormalizeInputParams<TField>
+        ) => Promise<T>;
     };
     /**
      *

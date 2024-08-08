@@ -135,20 +135,13 @@ describe("multiple values in field", () => {
             }
         });
 
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 updateContentModel: {
-                    data: null,
-                    error: {
-                        code: "ENTRY_TITLE_FIELD_TYPE",
-                        message:
-                            "Fields that accept multiple values cannot be used as the entry title.",
-                        data: {
-                            storageId: expect.stringMatching("text@"),
-                            fieldId: "availableSizes",
-                            type: "text"
-                        }
-                    }
+                    data: {
+                        titleFieldId: "title"
+                    },
+                    error: null
                 }
             }
         });

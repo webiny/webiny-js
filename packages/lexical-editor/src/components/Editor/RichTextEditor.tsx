@@ -4,11 +4,12 @@ import { CSSObject } from "@emotion/react";
 import { Klass, LexicalEditor, LexicalNode } from "lexical";
 import { EditorState } from "lexical/LexicalEditorState";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import { $isRootTextContentEmpty } from "@lexical/text";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { makeDecoratable } from "@webiny/react-composition";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -105,7 +106,6 @@ const BaseRichTextEditor = ({
     const editorValue = isValidLexicalData(value) ? value : generateInitialLexicalValue();
 
     const initialConfig = {
-        // We update the state via the `<LexicalUpdateStatePlugin/>`.
         editorState: null,
         namespace: "webiny",
         onError: () => {
@@ -120,7 +120,18 @@ const BaseRichTextEditor = ({
         editorState.read(() => {
             if (typeof onChange === "function") {
                 const editorState = editor.getEditorState();
-                onChange(JSON.stringify(editorState.toJSON()));
+                const isEmpty = $isRootTextContentEmpty(editor.isComposing(), true);
+
+                const newValue = JSON.stringify(editorState.toJSON());
+
+                // We don't want to call "onChange" if editor text is empty, and original `value` is `undefined`.
+                if (value === undefined && isEmpty) {
+                    return;
+                }
+
+                if (value !== newValue) {
+                    onChange(newValue);
+                }
             }
         });
     }

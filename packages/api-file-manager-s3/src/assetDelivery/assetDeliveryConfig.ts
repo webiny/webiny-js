@@ -17,7 +17,8 @@ export const assetDeliveryConfig = (params: AssetDeliveryParams) => {
     const region = process.env.AWS_REGION as string;
 
     const {
-        presignedUrlTtl = 900,
+        // Presigned URLs last 7 days (maximum length allowed by AWS).
+        presignedUrlTtl = 604800,
         imageResizeWidths = [100, 300, 500, 750, 1000, 1500, 2500],
         ...baseParams
     } = params;

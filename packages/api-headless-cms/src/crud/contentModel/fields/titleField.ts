@@ -1,74 +1,31 @@
 import { CmsModelField } from "~/types";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
-import WebinyError from "@webiny/error";
+import { getApplicableFieldById } from "~/crud/contentModel/fields/getApplicableFieldById";
 
 const defaultTitleFieldId = "id";
 
-const allowedTitleFieldTypes = ["text", "number"];
+const isFieldApplicable = (field: CmsModelField) => {
+    return getBaseFieldType(field) === "text" && !field.multipleValues;
+};
 
+/**
+ * Try finding the requested field, and return its `fieldId`.
+ * If not defined, or not applicable, fall back to the first applicable field.
+ */
 export const getContentModelTitleFieldId = (
     fields: CmsModelField[],
-    titleFieldId?: string
-): string => {
-    /**
-     * If there are no fields defined, we will return the default field
-     */
+    titleFieldId?: string | null
+) => {
     if (fields.length === 0) {
         return defaultTitleFieldId;
     }
-    /**
-     * if there is no title field defined either in input data or existing content model data
-     * we will take first text field that has no multiple values enabled
-     * or if initial titleFieldId is the default one also try to find first available text field
-     */
-    if (!titleFieldId || titleFieldId === defaultTitleFieldId) {
-        const titleField = fields.find(field => {
-            return getBaseFieldType(field) === "text" && !field.multipleValues;
-        });
-        return titleField?.fieldId || defaultTitleFieldId;
-    }
-    /**
-     * check existing titleFieldId for existence in the model
-     * for correct type
-     * and that it is not multiple values field
-     */
-    const target = fields.find(f => f.fieldId === titleFieldId);
-    if (!target) {
-        throw new WebinyError(
-            `Field selected for the title field does not exist in the model.`,
-            "VALIDATION_ERROR",
-            {
-                fieldId: titleFieldId,
-                fields
-            }
-        );
+
+    const target = getApplicableFieldById(fields, titleFieldId, isFieldApplicable);
+
+    if (target) {
+        return target.fieldId;
     }
 
-    if (allowedTitleFieldTypes.includes(target.type) === false) {
-        throw new WebinyError(
-            `Only ${allowedTitleFieldTypes.join(
-                ", "
-            )} and id fields can be used as an entry title.`,
-            "ENTRY_TITLE_FIELD_TYPE",
-            {
-                storageId: target.storageId,
-                fieldId: target.fieldId,
-                type: target.type
-            }
-        );
-    }
-
-    if (target.multipleValues) {
-        throw new WebinyError(
-            `Fields that accept multiple values cannot be used as the entry title.`,
-            "ENTRY_TITLE_FIELD_TYPE",
-            {
-                storageId: target.storageId,
-                fieldId: target.fieldId,
-                type: target.type
-            }
-        );
-    }
-
-    return target.fieldId;
+    const textField = fields.find(isFieldApplicable);
+    return textField ? textField.fieldId : defaultTitleFieldId;
 };

@@ -2,7 +2,6 @@ import React, { useEffect, useImperativeHandle, useMemo, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import lodashNoop from "lodash/noop";
 import isEqual from "lodash/isEqual";
-
 import { Bind } from "./Bind";
 import { FormProps, GenericFormData } from "~/types";
 import { FormContext } from "./FormContext";
@@ -108,6 +107,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     const formContext = useMemo(() => {
         return {
             ...formApi,
+            isPristine: vm.isPristine,
             data: vm.data
         };
     }, [vm.data, vm.invalidFields]);
