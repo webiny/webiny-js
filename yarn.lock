@@ -11327,19 +11327,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:^6.32.0":
-  version: 6.33.1
-  resolution: "@pulumi/aws@npm:6.33.1"
+"@pulumi/aws@npm:^6.48.0":
+  version: 6.48.0
+  resolution: "@pulumi/aws@npm:6.48.0"
   dependencies:
     "@pulumi/pulumi": ^3.0.0
     builtin-modules: 3.0.0
     mime: ^2.0.0
     resolve: ^1.7.1
-  checksum: 509b79d152727197be67179266813e5b80a3c91d368c48a1c67e8781ac1d3da6d6def14d239e3a75cff6e75fac9d1c8960e0d9b014578df01365970c447a7ca8
+  checksum: 49de98bac0310c98416e9ec90e9a46f58ade5a8d29da3724e0763a36cfc9ceec4e1790a04ce9ba65bc2f4164e3fbc908b235e2fe239c6210f34e88a3cd2ab805
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^3.0.0, @pulumi/pulumi@npm:^3.113.3, @pulumi/pulumi@npm:^3.99.0":
+"@pulumi/pulumi@npm:^3.0.0, @pulumi/pulumi@npm:^3.128.0":
   version: 3.128.0
   resolution: "@pulumi/pulumi@npm:3.128.0"
   dependencies:
@@ -19517,8 +19517,8 @@ __metadata:
     "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.24.0
-    "@pulumi/aws": ^6.32.0
-    "@pulumi/pulumi": ^3.113.3
+    "@pulumi/aws": ^6.48.0
+    "@pulumi/pulumi": ^3.128.0
     "@pulumi/random": ^4.16.3
     "@webiny/api-page-builder": 0.0.0
     "@webiny/aws-layers": 0.0.0
@@ -19545,8 +19545,8 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
-    "@pulumi/aws": ^6.32.0
-    "@pulumi/pulumi": ^3.113.3
+    "@pulumi/aws": ^6.48.0
+    "@pulumi/pulumi": ^3.128.0
     "@types/lodash": ^4.14.190
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -19568,7 +19568,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
-    "@pulumi/pulumi": ^3.99.0
+    "@pulumi/pulumi": ^3.128.0
     "@types/lodash": ^4.14.190
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -19694,8 +19694,8 @@ __metadata:
     "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.24.0
-    "@pulumi/aws": ^6.32.0
-    "@pulumi/pulumi": ^3.113.3
+    "@pulumi/aws": ^6.48.0
+    "@pulumi/pulumi": ^3.128.0
     "@webiny/api-aco": 0.0.0
     "@webiny/api-apw": 0.0.0
     "@webiny/api-apw-scheduler-so-ddb": 0.0.0
