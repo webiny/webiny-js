@@ -34,7 +34,7 @@
     "archiver": "^7.0.1",
     "commodo-fields-object": "^1.0.6",
     "dot-prop-immutable": "^2.1.0",
-    "fs-extra": "^9.1.0",
+    "fs-extra": "^11.2.0",
     "load-json-file": "^6.2.0",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.13",
