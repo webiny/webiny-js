@@ -1,5 +1,3 @@
-const path = require("path");
-const { Worker } = require("worker_threads");
 const Listr = require("listr");
 const { BasePackagesBuilder } = require("./BasePackagesBuilder");
 const { gray } = require("chalk");
@@ -13,8 +11,6 @@ class MultiplePackagesBuilder extends BasePackagesBuilder {
 
         const getBuildDuration = measureDuration();
 
-        const { env, variant, debug } = inputs;
-
         context.info(`Building %s packages...`, packages.length);
 
         const buildTasks = [];
@@ -22,49 +18,32 @@ class MultiplePackagesBuilder extends BasePackagesBuilder {
         for (let i = 0; i < packages.length; i++) {
             const pkg = packages[i];
 
-            buildTasks.push({
-                pkg: pkg,
-                task: new Promise((resolve, reject) => {
-                    const enableLogs = inputs.logs === true;
+            const buildTask = new Promise(async (resolve) => {
+                const { env, debug } = inputs;
 
-                    const workerData = {
-                        options: {
-                            env,
-                            variant,
-                            debug,
-                            logs: enableLogs
-                        },
-                        package: { ...pkg.paths }
-                    };
+                const options = {
+                    env,
+                    debug,
+                    cwd: pkg.paths.root,
+                    logs: false
+                };
 
-                    const worker = new Worker(path.join(__dirname, "./worker.js"), {
-                        workerData,
-                        stderr: true,
-                        stdout: true
-                    });
+                let config = require(pkg.paths.config).default || require(pkg.paths.config);
+                if (typeof config === "function") {
+                    config = config({ options, context });
+                }
 
-                    worker.on("message", threadMessage => {
-                        const { type, stdout, stderr, error } = JSON.parse(threadMessage);
+                const hasBuildCommand =
+                    config.commands && typeof config.commands.build === "function";
+                if (!hasBuildCommand) {
+                    throw new Error("Build command not found.");
+                }
 
-                        const result = {
-                            package: pkg,
-                            stdout,
-                            stderr,
-                            error,
-                            duration: getBuildDuration()
-                        };
-
-                        if (type === "error") {
-                            reject(result);
-                            return;
-                        }
-
-                        if (type === "success") {
-                            resolve(result);
-                        }
-                    });
-                })
+                await config.commands.build(options);
+                resolve();
             });
+
+            buildTasks.push({ pkg, task: buildTask });
         }
 
         const tasks = new Listr(

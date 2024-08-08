@@ -1,11 +1,17 @@
 import { Configuration as WebpackConfig } from "webpack";
+import { Configuration as RspackConfig } from "@rspack/core";
 
 export { WebpackConfig };
+export { RspackConfig };
 
 // Build commands.
 export type BuildCommand<TOptions = Record<string, any>> = (options: TOptions) => Promise<void>;
 
 export interface BabelConfig {
+    [key: string]: any;
+}
+
+export interface SwcConfig {
     [key: string]: any;
 }
 
@@ -48,15 +54,14 @@ interface BuildFunctionConfig {
         };
         define?: DefinePluginOptions;
         webpack?: (config: WebpackConfig) => WebpackConfig;
+        rspack?: (config: RspackConfig) => RspackConfig;
         babel?: (config: BabelConfig) => BabelConfig;
+        swc?: (config: SwcConfig) => SwcConfig;
     };
 }
 
 export function createBuildFunction(options: BuildFunctionConfig): BuildCommand;
 export function createWatchFunction(options: BuildFunctionConfig): BuildCommand;
-
-export function createBuildHandler(options: BuildFunctionConfig): BuildCommand;
-export function createWatchHandler(options: BuildFunctionConfig): BuildCommand;
 
 // Build commands - packages.
 interface BuildPackageConfig {

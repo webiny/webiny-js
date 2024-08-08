@@ -1,20 +1,19 @@
 const path = require("path");
-const webpack = require("webpack");
+const rspack = require("@rspack/core");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const { version } = require("@webiny/project-utils/package.json");
-const { getOutput, getEntry } = require("./utils");
-const WebpackBar = require("webpackbar");
+const { getOutput, getEntry } = require("../../utils");
 
 module.exports = options => {
     const output = getOutput(options);
     const entry = getEntry(options);
 
-    const { cwd, overrides, production } = options;
+    const { cwd, overrides, production, watch } = options;
 
-    let babelOptions = require("./babelrc");
+    let swcOptions = require("./swcrc");
     // Customize Babel options.
-    if (typeof overrides.babel === "function") {
-        babelOptions = overrides.babel(babelOptions);
+    if (typeof overrides.swc === "function") {
+        swcOptions = overrides.swc(swcOptions);
     }
 
     const sourceMaps = options.sourceMaps !== false;
@@ -23,6 +22,7 @@ module.exports = options => {
     const tsChecksEnabled = process.env.WEBINY_ENABLE_TS_CHECKS === "true";
 
     return {
+        watch,
         entry: [
             sourceMaps && require.resolve("source-map-support/register"),
             path.resolve(entry)
@@ -45,14 +45,14 @@ module.exports = options => {
             hints: false
         },
         plugins: [
-            new webpack.DefinePlugin({
+            new rspack.DefinePlugin({
                 "process.env.WEBINY_VERSION": JSON.stringify(process.env.WEBINY_VERSION || version),
                 ...definitions
             }),
             /**
              * This is necessary to enable JSDOM usage in Lambda.
              */
-            new webpack.IgnorePlugin({
+            new rspack.IgnorePlugin({
                 resourceRegExp: /canvas/,
                 contextRegExp: /jsdom$/
             }),
@@ -64,9 +64,9 @@ module.exports = options => {
                     },
                     async: !production
                 }),
-            options.logs && new WebpackBar({ name: path.basename(cwd) })
+            // new rspack.ProgressPlugin({})
         ].filter(Boolean),
-        // Run babel on all .js files and skip those in node_modules
+
         module: {
             exprContextCritical: false,
             rules: [
@@ -87,9 +87,17 @@ module.exports = options => {
                         },
                         {
                             test: /\.(js|ts)$/,
-                            loader: require.resolve("babel-loader"),
+                            loader: "builtin:swc-loader",
                             exclude: /node_modules/,
-                            options: babelOptions
+                            options: {
+                                jsc: {
+                                    baseUrl: cwd,
+                                    paths: {
+                                        "~/*": ["src/*"],
+                                        "~": ["src"]
+                                    }
+                                }
+                            }
                         }
                     ].filter(Boolean)
                 },
