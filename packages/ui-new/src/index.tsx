@@ -4,7 +4,7 @@ import { Dashboard } from "./modules/Dashboard";
 export const Admin = () => {
     return (
         <div>
-            <Dashboard/>
+            <Dashboard />
         </div>
     );
 };
