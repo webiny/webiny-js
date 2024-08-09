@@ -13,6 +13,7 @@ class Release {
     resetAllChanges = true;
     mostRecentVersion = undefined;
     createGithubRelease = false;
+    npmTags = [];
 
     constructor(logger) {
         if (!logger) {
@@ -61,9 +62,12 @@ class Release {
         // Generate `lerna.json` using `example.lerna.json`.
         {
             // Determine current version
-            const tags = await this.__getTags();
+            this.npmTags = await this.__getTags();
             this.mostRecentVersion = this.__getMostRecentVersion(
-                [tags["latest"], tags[this.tag === "latest" ? "beta" : this.tag]].filter(Boolean)
+                [
+                    this.npmTags["latest"],
+                    this.npmTags[this.tag === "latest" ? "beta" : this.tag]
+                ].filter(Boolean)
             );
 
             this.logger.info("Most recent version is %s", this.mostRecentVersion);
@@ -117,7 +121,15 @@ class Release {
         ];
 
         this.logger.debug(lernaPublishArgs.join(" "));
-        await execa("yarn", lernaPublishArgs, { stdio: "inherit" });
+        try {
+            await execa("yarn", lernaPublishArgs, { stdio: "inherit" });
+        } catch (err) {
+            this.logger.debug("Failed to publish packages to NPM!", err);
+            this.logger.info("Retrying publishing...");
+            // Rerun `lerna publish` ignoring lifecycle scripts, as packages are already built and ready to go.
+            await execa("yarn", [...lernaPublishArgs, "--ignore-scripts"], { stdio: "inherit" });
+        }
+
         this.logger.info(`Packages were published to NPM under %s dist-tag`, this.tag);
 
         if (this.createGithubRelease !== false) {
@@ -131,10 +143,10 @@ class Release {
             this.logger.info("Created Git tag %s", versionTag);
 
             // Changelog and Github release.
-            const changelog = await this.__getChangelog(lernaJSON.version);
-            this.logger.log("Changelog:\n\n%s\n\n", changelog);
-
             try {
+                const changelog = await this.__getChangelog(lernaJSON.version);
+                this.logger.log("Changelog:\n\n%s\n\n", changelog);
+
                 const { data: release } = await this.__createGithubRelease(versionTag, changelog);
                 this.logger.info("Created Github release: %s", release.html_url);
             } catch (err) {
@@ -181,7 +193,7 @@ class Release {
     }
 
     async __getChangelog(currentlyPublishedVersion) {
-        const from = `v${this.mostRecentVersion}`;
+        const from = `v${this.npmTags["latest"]}`;
         const to = `v${currentlyPublishedVersion}`;
 
         this.logger.info(`Generating changelog ${from}..${to}`);

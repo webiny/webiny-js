@@ -53,9 +53,9 @@ export interface ListFilesWhereQueryVariables {
     tags_in?: string[];
     tags_startsWith?: string;
     tags_not_startsWith?: string;
-    type_in?: string[];
     createdBy?: string;
     AND?: ListFilesWhereQueryVariables[];
+    [key: string]: any;
 }
 
 export interface ListFilesQueryVariables {

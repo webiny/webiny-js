@@ -84,20 +84,15 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
                     }
 
                     values.forEach((value, index) => {
-                        const valueTemplate = Object.keys(value)[0];
-                        const template = templates.find(tpl => tpl.gqlTypeName === valueTemplate);
+                        const template = templates.find(tpl => tpl.id === value["_templateId"]);
                         if (!template) {
                             return;
                         }
 
                         const result = buildReferenceFieldPaths({
                             fields: template.fields,
-                            input: value[valueTemplate],
-                            parentPaths: parentPaths.concat([
-                                field.fieldId,
-                                String(index),
-                                template.gqlTypeName
-                            ])
+                            input: value,
+                            parentPaths: parentPaths.concat([field.fieldId, String(index)])
                         });
 
                         collection.push(...result);
@@ -111,8 +106,8 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
                     return collection;
                 }
 
-                const valueTemplate = Object.keys(value)[0];
-                const template = templates.find(tpl => tpl.gqlTypeName === valueTemplate);
+                // @ts-expect-error We're sure that a template value contains a _templateId property.
+                const template = templates.find(tpl => tpl.id === value["_templateId"]);
 
                 if (!template) {
                     return collection;
@@ -120,8 +115,8 @@ const buildReferenceFieldPaths = (params: BuildReferenceFieldPaths): string[] =>
 
                 const result = buildReferenceFieldPaths({
                     fields: template.fields,
-                    input: dotProp.get(value, valueTemplate, {}),
-                    parentPaths: parentPaths.concat([field.fieldId, template.gqlTypeName])
+                    input: value ?? {},
+                    parentPaths: parentPaths.concat([field.fieldId])
                 });
                 collection.push(...result);
 
