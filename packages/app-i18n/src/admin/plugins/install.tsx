@@ -5,7 +5,7 @@ import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Alert } from "@webiny/ui/Alert";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { ButtonPrimary } from "@webiny/ui/Button";
+import { ButtonPrimary } from "@webiny/app-admin-ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
 import {

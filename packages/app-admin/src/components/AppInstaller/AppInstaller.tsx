@@ -3,7 +3,7 @@ import { default as localStorage } from "store";
 import { LoginScreen, Tags } from "~/index";
 import { useSecurity } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { ButtonPrimary } from "@webiny/ui/Button";
+import { ButtonPrimary } from "@webiny/app-admin-ui/Button";
 import { SplitView, LeftPanel, RightPanel } from "../SplitView";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
