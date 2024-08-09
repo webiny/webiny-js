@@ -17,6 +17,7 @@
     "@emotion/styled": "^11.10.6",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
+    "@webiny/app-admin-ui": "0.0.0",
     "@webiny/app-cognito-authenticator": "0.0.0",
     "@webiny/app-security": "0.0.0",
     "@webiny/form": "0.0.0",

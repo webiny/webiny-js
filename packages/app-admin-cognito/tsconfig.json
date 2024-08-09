@@ -4,6 +4,7 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-admin" },
+    { "path": "../app-admin-ui" },
     { "path": "../app-cognito-authenticator" },
     { "path": "../app-security" },
     { "path": "../form" },
@@ -23,6 +24,8 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-admin-ui/*": ["../app-admin-ui/src/*"],
+      "@webiny/app-admin-ui": ["../app-admin-ui/src"],
       "@webiny/app-cognito-authenticator/*": ["../app-cognito-authenticator/src/*"],
       "@webiny/app-cognito-authenticator": ["../app-cognito-authenticator/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],

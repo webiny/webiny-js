@@ -17609,51 +17609,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/admin@0.0.0, @webiny/admin@workspace:packages/admin":
-  version: 0.0.0-use.local
-  resolution: "@webiny/admin@workspace:packages/admin"
-  dependencies:
-    "@babel/cli": ^7.23.9
-    "@babel/core": ^7.24.0
-    "@babel/plugin-proposal-class-properties": ^7.18.6
-    "@babel/preset-env": ^7.24.0
-    "@babel/preset-react": ^7.23.3
-    "@babel/preset-typescript": ^7.23.3
-    "@radix-ui/react-avatar": ^1.1.0
-    "@radix-ui/react-dialog": ^1.1.1
-    "@radix-ui/react-dropdown-menu": ^2.1.1
-    "@radix-ui/react-label": ^2.1.0
-    "@radix-ui/react-select": ^2.1.1
-    "@radix-ui/react-separator": ^1.1.0
-    "@radix-ui/react-slot": ^1.1.0
-    "@radix-ui/react-tooltip": ^1.1.2
-    "@storybook/addon-a11y": ^8.2.6
-    "@storybook/addon-essentials": ^8.2.7
-    "@storybook/addon-styling-webpack": ^1.0.0
-    "@storybook/addon-webpack5-compiler-swc": ^1.0.4
-    "@storybook/react": ^8.2.7
-    "@storybook/react-webpack5": ^8.2.7
-    "@storybook/test": ^8.2.7
-    "@types/lodash": ^4.14.191
-    "@types/warning": ^3.0.0
-    "@webiny/cli": 0.0.0
-    "@webiny/project-utils": 0.0.0
-    autoprefixer: ^10.4.19
-    class-variance-authority: ^0.7.0
-    clsx: ^2.1.1
-    lucide-react: ^0.424.0
-    postcss: ^8.4.39
-    rimraf: ^5.0.5
-    storybook: ^8.2.7
-    tailwind-merge: ^2.4.0
-    tailwindcss: ^3.4.6
-    tailwindcss-animate: ^1.0.7
-    tsconfig-paths-webpack-plugin: ^4.1.0
-    typescript: 4.7.4
-    vaul: ^0.9.1
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-aco@0.0.0, @webiny/api-aco@workspace:packages/api-aco":
   version: 0.0.0-use.local
   resolution: "@webiny/api-aco@workspace:packages/api-aco"
@@ -19438,6 +19393,7 @@ __metadata:
     "@emotion/styled": ^11.10.6
     "@webiny/app": 0.0.0
     "@webiny/app-admin": 0.0.0
+    "@webiny/app-admin-ui": 0.0.0
     "@webiny/app-cognito-authenticator": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/cli": 0.0.0
@@ -19540,6 +19496,51 @@ __metadata:
     store: ^2.0.12
     ttypescript: ^1.5.12
     typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
+"@webiny/app-admin-ui@0.0.0, @webiny/app-admin-ui@workspace:packages/app-admin-ui":
+  version: 0.0.0-use.local
+  resolution: "@webiny/app-admin-ui@workspace:packages/app-admin-ui"
+  dependencies:
+    "@babel/cli": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/plugin-proposal-class-properties": ^7.18.6
+    "@babel/preset-env": ^7.24.0
+    "@babel/preset-react": ^7.23.3
+    "@babel/preset-typescript": ^7.23.3
+    "@radix-ui/react-avatar": ^1.1.0
+    "@radix-ui/react-dialog": ^1.1.1
+    "@radix-ui/react-dropdown-menu": ^2.1.1
+    "@radix-ui/react-label": ^2.1.0
+    "@radix-ui/react-select": ^2.1.1
+    "@radix-ui/react-separator": ^1.1.0
+    "@radix-ui/react-slot": ^1.1.0
+    "@radix-ui/react-tooltip": ^1.1.2
+    "@storybook/addon-a11y": ^8.2.6
+    "@storybook/addon-essentials": ^8.2.7
+    "@storybook/addon-styling-webpack": ^1.0.0
+    "@storybook/addon-webpack5-compiler-swc": ^1.0.4
+    "@storybook/react": ^8.2.7
+    "@storybook/react-webpack5": ^8.2.7
+    "@storybook/test": ^8.2.7
+    "@types/lodash": ^4.14.191
+    "@types/warning": ^3.0.0
+    "@webiny/cli": 0.0.0
+    "@webiny/project-utils": 0.0.0
+    autoprefixer: ^10.4.19
+    class-variance-authority: ^0.7.0
+    clsx: ^2.1.1
+    lucide-react: ^0.424.0
+    postcss: ^8.4.39
+    rimraf: ^5.0.5
+    storybook: ^8.2.7
+    tailwind-merge: ^2.4.0
+    tailwindcss: ^3.4.6
+    tailwindcss-animate: ^1.0.7
+    tsconfig-paths-webpack-plugin: ^4.1.0
+    typescript: 4.7.4
+    vaul: ^0.9.1
   languageName: unknown
   linkType: soft
 
@@ -22751,8 +22752,8 @@ __metadata:
     "@editorjs/quote": ^2.4.0
     "@editorjs/underline": ^1.0.0
     "@types/react": 18.2.79
-    "@webiny/admin": 0.0.0
     "@webiny/app-admin": 0.0.0
+    "@webiny/app-admin-ui": 0.0.0
     "@webiny/app-admin-users-cognito": 0.0.0
     "@webiny/app-form-builder": 0.0.0
     "@webiny/app-headless-cms": 0.0.0
