@@ -1,5 +1,9 @@
 import { createReactAppConfig, ReactAppConfigModifier } from "~/createReactAppConfig";
 import { ApiOutput } from "@webiny/pulumi-aws";
+import tailwindcss from "tailwindcss";
+
+// @ts-expect-error No types available for this package yet.
+import { traverseLoaders } from "@webiny/project-utils/traverseLoaders";
 
 export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {
     return createReactAppConfig(baseParams => {
@@ -26,6 +30,22 @@ export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {
                 ),
                 REACT_APP_WEBSOCKET_URL: output.websocketApiUrl
             };
+        });
+
+        /**
+         * Add Tailwind loader to webpack configuration.
+         */
+        config.webpack(config => {
+            traverseLoaders(config.module?.rules, (loader: any) => {
+                if (loader.loader && loader.loader.includes("postcss-loader")) {
+                    loader.options.postcssOptions.plugins = [
+                        ...loader.options.postcssOptions.plugins(),
+                        tailwindcss({ config: require.resolve("@webiny/admin/tailwind.config") })
+                    ];
+                }
+            });
+
+            return config;
         });
 
         if (modifier) {

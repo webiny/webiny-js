@@ -31,6 +31,7 @@
     "@babel/preset-env": "^7.24.0",
     "@babel/preset-react": "^7.23.3",
     "@babel/preset-typescript": "^7.23.3",
+    "@storybook/addon-a11y": "^8.2.6",
     "@storybook/addon-essentials": "^8.2.7",
     "@storybook/addon-styling-webpack": "^1.0.0",
     "@storybook/addon-webpack5-compiler-swc": "^1.0.4",
@@ -45,6 +46,8 @@
     "lucide-react": "^0.424.0",
     "postcss": "^8.4.39",
     "rimraf": "^5.0.5",
+    "storybook": "^8.2.7",
+    "tsconfig-paths-webpack-plugin": "^4.1.0",
     "typescript": "4.7.4"
   },
   "publishConfig": {

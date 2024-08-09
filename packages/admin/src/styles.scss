@@ -1,23 +1,6 @@
-// Webiny theme variables
-// $webiny-theme-light-primary: #fa5723;
-// $webiny-theme-light-secondary: #00ccb0;
-// $webiny-theme-light-background: #f2f2f2;
-// $webiny-theme-light-surface: #fff;
-// $webiny-theme-light-on-primary: #ffffff;
-// $webiny-theme-light-on-secondary: #ffffff;
-// $webiny-theme-light-on-surface: #000000;
-// $webiny-theme-light-on-background: rgba(212, 212, 212, 0.5);
-// $webiny-theme-light-text-primary-on-background: rgba(0, 0, 0, 0.87);
-// $webiny-theme-light-text-secondary-on-background: rgba(0, 0, 0, 0.54);
-// $webiny-theme-light-text-hint-on-dark: rgba(255, 255, 255, 0.5);
-// $webiny-theme-typography-font-family: "Source Sans Pro";
-
-// Import main styles
-// @import "~@webiny/app-serverless-cms/styles.scss";
-
-@import "~@webiny/admin/styles.scss";
-
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   :root {
@@ -99,5 +82,3 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
-
-

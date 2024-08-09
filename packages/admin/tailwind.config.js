@@ -1,9 +1,10 @@
 const { fontFamily } = require("tailwindcss/defaultTheme");
 
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     darkMode: ["class"],
-    content: ["node_modules/@webiny/admin/**/*.js", __dirname + "/src/**/*.tsx"],
+    content: [`${__dirname}/**/*.js`, `apps/admin/**/*.js`],
     theme: {
         container: {
             center: true,
@@ -13,11 +14,11 @@ module.exports = {
             }
         },
         fontSize: {
-            sm: '0.75rem', // 12px
+            sm: "0.75rem", // 12px
             md: "0.875rem", // 14px
             base: "1rem", // 16px
             lg: "1rem", // 16px
-            xl: "1.25rem", // 20px
+            xl: "1.25rem" // 20px
         },
         extend: {
             colors: {
