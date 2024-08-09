@@ -4,7 +4,7 @@
   "references": [
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
-    { "path": "../app-admin-ui/tsconfig.build.json" },
+    { "path": "../ui-new/tsconfig.build.json" },
     { "path": "../app-cognito-authenticator/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },

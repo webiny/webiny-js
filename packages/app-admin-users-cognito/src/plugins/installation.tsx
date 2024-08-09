@@ -4,7 +4,7 @@ import React, { useCallback, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { Form } from "@webiny/form";
 import { Alert } from "@webiny/ui/Alert";
-import { ButtonPrimary } from "@webiny/app-admin-ui/Button";
+import { ButtonPrimary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";
 import { Checkbox } from "@webiny/ui/Checkbox";
 import { Cell, Grid } from "@webiny/ui/Grid";
