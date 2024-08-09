@@ -2,3 +2,16 @@ $wby-color-primary: 15 96% 56%;
 $wby-color-secondary: 170 100% 37%;
 
 @import "../src/styles.scss";
+
+// 👋these variables are overridden in the .storybook/preview/body.html file.
+:root {
+  --primary-100: 90 60% 70%;
+  --primary-200: 90 60% 65%;
+  --primary-300: 90 60% 60%;
+  --primary-400: 90 60% 55%;
+  --primary-500: 90 60% 50%;
+  --primary-600: 90 60% 45%;
+  --primary-700: 90 60% 40%;
+  --primary-800: 90 60% 35%;
+  --primary-900: 90 60% 30%;
+}
