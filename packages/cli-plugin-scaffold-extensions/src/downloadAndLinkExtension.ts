@@ -13,8 +13,8 @@ import { runYarnInstall } from "@webiny/cli-plugin-scaffold/utils";
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
-const S3_BUCKET_NAME = "wby-examples-test-1";
-const S3_BUCKET_REGION = "eu-central-1";
+const S3_BUCKET_NAME = "webiny-examples";
+const S3_BUCKET_REGION = "us-east-1";
 
 const getVersionFromVersionFolders = async (
     versionFoldersList: string[],
