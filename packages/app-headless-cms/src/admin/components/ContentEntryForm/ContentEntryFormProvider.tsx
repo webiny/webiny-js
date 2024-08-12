@@ -133,7 +133,7 @@ export const ContentEntryFormProvider = ({
                 setTimeout(() => {
                     onAfterCreate(entry);
                     resolve();
-                }, 10);
+                }, 50);
             });
         }
 
