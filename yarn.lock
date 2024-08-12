@@ -18645,7 +18645,6 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/react-composition": 0.0.0
     "@webiny/ui": 0.0.0
-    "@webiny/ui-new": 0.0.0
     "@webiny/validation": 0.0.0
     apollo-client: ^2.6.10
     apollo-link-context: ^1.0.20
@@ -21366,6 +21365,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/pulumi": 0.0.0
     "@webiny/pulumi-aws": 0.0.0
+    "@webiny/ui-new": 0.0.0
     "@webiny/wcp": 0.0.0
     chalk: ^4.1.0
     fast-glob: ^3.2.7
@@ -21373,6 +21373,7 @@ __metadata:
     invariant: ^2.2.4
     node-fetch: ^2.6.13
     ora: ^4.1.1
+    tailwindcss: ^3.4.6
     ttypescript: ^1.5.12
     typescript: 4.7.4
     webpack: ^5.91.0
@@ -21505,6 +21506,7 @@ __metadata:
     clsx: ^2.1.1
     lucide-react: ^0.424.0
     postcss: ^8.4.39
+    react: 18.2.0
     rimraf: ^5.0.5
     storybook: ^8.2.7
     tailwind-merge: ^2.4.0
@@ -22009,7 +22011,6 @@ __metadata:
     "@webiny/plugins": 0.0.0
     "@webiny/react-properties": 0.0.0
     "@webiny/serverless-cms-aws": 0.0.0
-    "@webiny/ui-new": 0.0.0
     core-js: ^3.0.1
     cross-env: ^5.0.2
     cross-fetch: ^3.0.4

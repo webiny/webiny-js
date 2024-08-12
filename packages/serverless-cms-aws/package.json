@@ -44,8 +44,6 @@
     "@webiny/api-security-so-ddb": "0.0.0",
     "@webiny/api-tenancy": "0.0.0",
     "@webiny/api-tenancy-so-ddb": "0.0.0",
-    "@webiny/ui-new": "0.0.0",
-    "tailwindcss": "^3.4.6",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/cli-plugin-deploy-pulumi": "0.0.0",
     "@webiny/data-migration": "0.0.0",
@@ -57,6 +55,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/pulumi": "0.0.0",
     "@webiny/pulumi-aws": "0.0.0",
+    "@webiny/ui-new": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "chalk": "^4.1.0",
     "fast-glob": "^3.2.7",
@@ -64,6 +63,7 @@
     "invariant": "^2.2.4",
     "node-fetch": "^2.6.13",
     "ora": "^4.1.1",
+    "tailwindcss": "^3.4.6",
     "webpack": "^5.91.0"
   },
   "devDependencies": {
