@@ -116,7 +116,11 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         <FormContext.Provider value={formContext}>
             {React.createElement(
                 "webiny-form-container",
-                { onKeyDown: __onKeyDown, "data-testid": props["data-testid"] },
+                {
+                    onKeyDown: __onKeyDown,
+                    "data-testid": props["data-testid"],
+                    "data-pristine": formApi.isPristine
+                },
                 children({
                     data: formApi.data,
                     setValue: formApi.setValue,
