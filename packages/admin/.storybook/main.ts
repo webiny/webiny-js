@@ -65,6 +65,35 @@ const config: StorybookConfig = {
         }
 
         config.resolve.plugins = [new TsconfigPathsPlugin()];
+
+        // Find the rule that handles SVGs (this depends on the default Storybook config)
+        const svgRule = config.module?.rules?.find(rule => {
+            const test = (rule as { test: RegExp }).test;
+
+            if (!test) {
+                return false;
+            }
+
+            return test.test(".svg");
+        }) as { [key: string]: any };
+
+        svgRule.exclude = /\.svg$/;
+
+        config.module?.rules?.push({
+            test: /\.svg$/i,
+            use: [
+                {
+                    loader: "@svgr/webpack"
+                },
+                {
+                    loader: "file-loader",
+                    options: {
+                        name: "[name].[hash].[ext]"
+                    }
+                }
+            ]
+        });
+
         return config;
     }
 };
