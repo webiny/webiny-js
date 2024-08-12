@@ -23,6 +23,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/react-composition": "0.0.0",
     "@webiny/ui": "0.0.0",
+    "@webiny/ui-new": "0.0.0",
     "@webiny/validation": "0.0.0",
     "apollo-client": "^2.6.10",
     "apollo-link-context": "^1.0.20",

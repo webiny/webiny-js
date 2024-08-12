@@ -1,6 +1,7 @@
 import type { StorybookConfig } from "@storybook/react-webpack5";
 import { join, dirname } from "path";
 import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
+import tailwindcss from "tailwindcss";
 
 /**
  * This function is used to resolve the absolute path of a package.
@@ -41,7 +42,11 @@ const config: StorybookConfig = {
                                 options: {
                                     implementation: require.resolve("postcss"),
                                     postcssOptions: {
-                                        plugins: [require("tailwindcss")]
+                                        plugins: [
+                                            tailwindcss({
+                                                config: join(__dirname, "../tailwind.config.js")
+                                            })
+                                        ]
                                     }
                                 }
                             },

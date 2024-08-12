@@ -4,13 +4,13 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-admin" },
-    { "path": "../ui-new" },
     { "path": "../app-cognito-authenticator" },
     { "path": "../app-security" },
     { "path": "../form" },
     { "path": "../plugins" },
     { "path": "../react-composition" },
     { "path": "../ui" },
+    { "path": "../ui-new" },
     { "path": "../validation" }
   ],
   "compilerOptions": {
@@ -24,8 +24,6 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/ui-new/*": ["../ui-new/src/*"],
-      "@webiny/ui-new": ["../ui-new/src"],
       "@webiny/app-cognito-authenticator/*": ["../app-cognito-authenticator/src/*"],
       "@webiny/app-cognito-authenticator": ["../app-cognito-authenticator/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
@@ -38,6 +36,8 @@
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
+      "@webiny/ui-new/*": ["../ui-new/src/*"],
+      "@webiny/ui-new": ["../ui-new/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     },

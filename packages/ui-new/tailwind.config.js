@@ -1,16 +1,16 @@
 const { fontFamily } = require("tailwindcss/defaultTheme");
-const { getProjectApplication, getProject } = require("@webiny/cli/utils");
+const { getProject } = require("@webiny/cli/utils");
 
 const project = getProject();
-const adminProjectApplication = getProjectApplication({ cwd: `${project.root}/apps/admin` });
 
 const webinyPackagesGlob = `${project.root}/node_modules/@webiny/app*/**/*.js`;
-const adminAppSourceGlob = `${adminProjectApplication.root}/src/**/*.tsx`;
+const webinyUiPackageGlob = `${project.root}/node_modules/@webiny/ui-new/**/*.js`;
+const adminAppSourceGlob = `${project.root}/apps/admin`;
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     darkMode: ["class"],
-    content: [webinyPackagesGlob, adminAppSourceGlob],
+    content: [webinyPackagesGlob, webinyUiPackageGlob, adminAppSourceGlob],
     theme: {
         container: {
             center: true,
