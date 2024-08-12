@@ -8,7 +8,7 @@ import { StylesObject } from "@webiny/theme/types";
 
 interface LexicalEditorProps {
     tag: string | [string, Record<string, any>];
-    value: LexicalValue;
+    value: LexicalValue | undefined;
     focus?: boolean;
     onChange?: (value: LexicalValue) => void;
     onBlur?: (editorState: LexicalValue) => void;
