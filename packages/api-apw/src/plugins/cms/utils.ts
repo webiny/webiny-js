@@ -123,7 +123,7 @@ interface AssignWorkflowToEntryParams {
 }
 
 export const assignWorkflowToEntry = async (params: AssignWorkflowToEntryParams): Promise<void> => {
-    const { apw, entry, model } = params;
+    const { apw, entry } = params;
     /**
      * Lookup and assign "workflowId".
      */
