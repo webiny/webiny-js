@@ -122,7 +122,7 @@ export const generateExtension = async ({
             }
         }
 
-        const { nextSteps } = await generator({ input: { name, packageName } });
+        const { nextSteps } = await generator({ input: { name, location, packageName } });
 
         // Sleep for 1 second before proceeding with yarn installation.
         await setTimeout(1000);

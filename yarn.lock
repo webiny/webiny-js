@@ -18728,11 +18728,11 @@ __metadata:
     "@webiny/error": 0.0.0
     "@webiny/project-utils": 0.0.0
     case: ^1.6.3
+    chalk: ^4.1.0
     execa: ^5.0.0
     glob: ^7.1.2
     load-json-file: ^6.2.0
     lodash: ^4.17.21
-    ncp: ^2.0.0
     replace-in-path: ^1.1.0
     rimraf: ^5.0.5
     ts-morph: ^11.0.0
