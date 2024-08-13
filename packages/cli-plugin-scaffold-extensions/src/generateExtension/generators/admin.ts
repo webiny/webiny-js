@@ -32,7 +32,7 @@ export const adminGenerator: PluginGenerator = async ({ input }) => {
     return {
         nextSteps: [
             `run ${chalk.green(watchCommand)} to start a new local development session`,
-            `open ${chalk.green(indexTsxFilePath)} and start coding your new Admin extension`
+            `open ${chalk.green(indexTsxFilePath)} and start coding`
         ]
     };
 };

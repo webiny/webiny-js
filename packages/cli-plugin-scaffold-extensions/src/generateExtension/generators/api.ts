@@ -5,6 +5,7 @@ import readJson from "load-json-file";
 import { PackageJson } from "@webiny/cli-plugin-scaffold/types";
 import writeJson from "write-json-file";
 import chalk from "chalk";
+import {EXTENSIONS_ROOT_FOLDER} from "~/utils/constants";
 
 export const apiGenerator: PluginGenerator = async ({ input }) => {
     await addPluginToApiApp(input);
@@ -20,12 +21,18 @@ export const apiGenerator: PluginGenerator = async ({ input }) => {
 
     await writeJson(packageJsonPath, packageJson);
 
+    let { location: extensionsFolderPath } = input;
+    if (!extensionsFolderPath) {
+        extensionsFolderPath = `${EXTENSIONS_ROOT_FOLDER}/${input.name}`;
+    }
+
+    const watchCommand = `yarn webiny watch api --env dev`;
+    const indexTsxFilePath = `${extensionsFolderPath}/src/index.ts`;
+
     return {
         nextSteps: [
-            `run ${chalk.green(
-                "yarn webiny watch api --env dev"
-            )} to start a new local development session`,
-            `open ${input.name}/src/index.ts and start coding your new API extension`
+            `run ${chalk.green(watchCommand)} to start a new local development session`,
+            `open ${chalk.green(indexTsxFilePath)} and start coding`
         ]
     };
 };
