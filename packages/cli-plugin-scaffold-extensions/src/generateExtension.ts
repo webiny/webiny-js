@@ -35,6 +35,11 @@ export const generateExtension = async ({
             throw new Error("Missing extension type.");
         }
 
+        const generator = generators[type];
+        if (!generator) {
+            throw new Error(`Generator for "${type}" extension type not found.`);
+        }
+
         const templatePath = path.join(__dirname, "templates", type);
         const templateExists = fs.existsSync(templatePath);
         if (!templateExists) {
@@ -115,11 +120,9 @@ export const generateExtension = async ({
                 rootPackageJson.workspaces.packages.push(location);
                 await writeJson(rootPackageJsonPath, rootPackageJson);
             }
-
-            if (typeof generators[type] === "function") {
-                await generators[type]({ input: { name, packageName } });
-            }
         }
+
+        const { nextSteps } = await generator({ input: { name, packageName } });
 
         // Sleep for 1 second before proceeding with yarn installation.
         await setTimeout(1000);
@@ -129,11 +132,13 @@ export const generateExtension = async ({
 
         ora.succeed(`New extension created in ${log.success.hl(location)}.`);
 
-        console.log()
-        console.log(chalk.bold("Next Steps"));
-        console.log(
-            `‣ run ${chalk.green("yarn webiny watch")} to start a new local development session`
-        );
+        if (nextSteps) {
+            console.log();
+            console.log(chalk.bold("Next Steps"));
+            nextSteps.forEach(message => {
+                console.log(`‣ ${message}`);
+            });
+        }
     } catch (err) {
         ora.fail("Could not create extension. Please check the logs below.");
         console.log();

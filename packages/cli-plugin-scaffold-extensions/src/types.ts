@@ -5,7 +5,9 @@ interface PluginGeneratorParams {
     };
 }
 
-export type PluginGenerator = (params: PluginGeneratorParams) => Promise<void>;
+export type PluginGenerator = (params: PluginGeneratorParams) => Promise<{
+    nextSteps?: string[];
+}>;
 
 export interface Input {
     type: string;
