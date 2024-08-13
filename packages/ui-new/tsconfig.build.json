@@ -3,7 +3,6 @@
   "include": ["src"],
   "references": [],
   "compilerOptions": {
-    "skipLibCheck": true,
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
