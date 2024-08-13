@@ -5,6 +5,7 @@ import readJson from "load-json-file";
 import { PackageJson } from "@webiny/cli-plugin-scaffold/types";
 import writeJson from "write-json-file";
 import chalk from "chalk";
+import { EXTENSIONS_ROOT_FOLDER } from "~/utils/constants";
 
 export const adminGenerator: PluginGenerator = async ({ input }) => {
     await addPluginToAdminApp(input);
@@ -20,12 +21,19 @@ export const adminGenerator: PluginGenerator = async ({ input }) => {
 
     await writeJson(packageJsonPath, packageJson);
 
+    let { location: extensionsFolderPath } = input;
+    if (!extensionsFolderPath) {
+        extensionsFolderPath = `${EXTENSIONS_ROOT_FOLDER}/${input.name}`;
+    }
+
+    const indexTsxFilePath = `${extensionsFolderPath}/src/index.tsx`;
+
     return {
         nextSteps: [
             `run ${chalk.green(
                 "yarn webiny watch admin --env dev"
             )} to start a new local development session`,
-            `open ${input.name}/src/index.tsx and start coding your new Admin extension`
+            `open ${indexTsxFilePath} and start coding your new Admin extension`
         ]
     };
 };

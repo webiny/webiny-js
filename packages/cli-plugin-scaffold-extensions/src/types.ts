@@ -1,6 +1,7 @@
 interface PluginGeneratorParams {
     input: {
         name: string;
+        location: string;
         packageName: string;
     };
 }
