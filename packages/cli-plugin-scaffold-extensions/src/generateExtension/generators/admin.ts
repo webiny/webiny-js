@@ -26,14 +26,13 @@ export const adminGenerator: PluginGenerator = async ({ input }) => {
         extensionsFolderPath = `${EXTENSIONS_ROOT_FOLDER}/${input.name}`;
     }
 
+    const watchCommand = `yarn webiny watch admin --env dev`;
     const indexTsxFilePath = `${extensionsFolderPath}/src/index.tsx`;
 
     return {
         nextSteps: [
-            `run ${chalk.green(
-                "yarn webiny watch admin --env dev"
-            )} to start a new local development session`,
-            `open ${indexTsxFilePath} and start coding your new Admin extension`
+            `run ${chalk.green(watchCommand)} to start a new local development session`,
+            `open ${chalk.green(indexTsxFilePath)} and start coding your new Admin extension`
         ]
     };
 };
