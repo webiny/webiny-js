@@ -24,6 +24,7 @@
     "@webiny/cli-plugin-scaffold": "0.0.0",
     "@webiny/error": "0.0.0",
     "case": "^1.6.3",
+    "chalk": "^4.1.0",
     "execa": "^5.0.0",
     "glob": "^7.1.2",
     "load-json-file": "^6.2.0",
