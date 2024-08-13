@@ -24,7 +24,8 @@ export const apiGenerator: PluginGenerator = async ({ input }) => {
         nextSteps: [
             `run ${chalk.green(
                 "yarn webiny watch api --env dev"
-            )} to start a new local development session`
+            )} to start a new local development session`,
+            `open ${input.name}/src/index.ts and start coding your new API extension`
         ]
     };
 };

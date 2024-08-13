@@ -24,7 +24,8 @@ export const adminGenerator: PluginGenerator = async ({ input }) => {
         nextSteps: [
             `run ${chalk.green(
                 "yarn webiny watch admin --env dev"
-            )} to start a new local development session (restart existing one if already running)`
+            )} to start a new local development session`,
+            `open ${input.name}/src/index.tsx and start coding your new Admin extension`
         ]
     };
 };
