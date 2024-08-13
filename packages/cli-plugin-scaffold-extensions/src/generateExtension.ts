@@ -1,7 +1,5 @@
 import { CliCommandScaffoldCallableArgs, PackageJson } from "@webiny/cli-plugin-scaffold/types";
 import path from "path";
-import util from "util";
-import ncpBase from "ncp";
 import readJson from "load-json-file";
 import writeJson from "write-json-file";
 import execa from "execa";
@@ -9,6 +7,7 @@ import Case from "case";
 import { replaceInPath } from "replace-in-path";
 import WebinyError from "@webiny/error";
 import fs from "node:fs";
+import fsAsync from "node:fs/promises";
 import { setTimeout } from "node:timers/promises";
 
 /**
@@ -19,8 +18,7 @@ import { getProject, log } from "@webiny/cli/utils";
 import { generators } from "./generateExtension/generators";
 import { Input } from "./types";
 import { runYarnInstall } from "@webiny/cli-plugin-scaffold/utils";
-
-const ncp = util.promisify(ncpBase.ncp);
+import chalk from "chalk";
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
@@ -64,7 +62,7 @@ export const generateExtension = async ({
 
         // Copy template files
         fs.mkdirSync(location, { recursive: true });
-        await ncp(templatePath, location);
+        await fsAsync.cp(templatePath, location, { recursive: true });
 
         const baseTsConfigFullPath = path.resolve(project.root, "tsconfig.json");
         const baseTsConfigRelativePath = path.relative(location, baseTsConfigFullPath);
@@ -130,6 +128,12 @@ export const generateExtension = async ({
         await runYarnInstall();
 
         ora.succeed(`New extension created in ${log.success.hl(location)}.`);
+
+        console.log()
+        console.log(chalk.bold("Next Steps"));
+        console.log(
+            `‣ run ${chalk.green("yarn webiny watch")} to start a new local development session`
+        );
     } catch (err) {
         ora.fail("Could not create extension. Please check the logs below.");
         console.log();
