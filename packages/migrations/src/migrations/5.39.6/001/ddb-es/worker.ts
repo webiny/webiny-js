@@ -103,7 +103,7 @@ const createInitialStatus = (): MigrationStatus => {
     };
 };
 
-const BATCH_WRITE_MAX_CHUNK = 18;
+const BATCH_WRITE_MAX_CHUNK = 20;
 
 (async () => {
     const logger = createPinoLogger(
