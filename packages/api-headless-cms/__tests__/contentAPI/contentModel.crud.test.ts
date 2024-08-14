@@ -602,7 +602,7 @@ describe("content model test", () => {
         });
     });
 
-    test("error when assigning titleFieldId on non existing field", async () => {
+    test("when assigning `titleFieldId` to a non-existing field, fall back to the first applicable field", async () => {
         const { createContentModelMutation, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
         const [createResponse] = await createContentModelMutation({
@@ -649,15 +649,10 @@ describe("content model test", () => {
         expect(response).toMatchObject({
             data: {
                 updateContentModel: {
-                    data: null,
-                    error: {
-                        code: "VALIDATION_ERROR",
-                        message: `Field selected for the title field does not exist in the model.`,
-                        data: {
-                            fieldId: "nonExistingTitleFieldId",
-                            fields: expect.any(Array)
-                        }
-                    }
+                    data: {
+                        titleFieldId: "field1"
+                    },
+                    error: null
                 }
             }
         });

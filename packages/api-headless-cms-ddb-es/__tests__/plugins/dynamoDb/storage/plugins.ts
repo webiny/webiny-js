@@ -4,7 +4,6 @@ import { createLongTextStorageTransformPlugin } from "~/dynamoDb/storage/longTex
 import { createRichTextStorageTransformPlugin } from "~/dynamoDb/storage/richText";
 import { createDefaultStorageTransform } from "@webiny/api-headless-cms/storage/default";
 import { createObjectStorageTransform } from "@webiny/api-headless-cms/storage/object";
-import { createDynamicZoneStorageTransform } from "@webiny/api-headless-cms/graphqlFields/dynamicZone/dynamicZoneStorage";
 
 export const createStoragePluginsContainer = () => {
     return new PluginsContainer([
@@ -12,7 +11,6 @@ export const createStoragePluginsContainer = () => {
         createObjectStorageTransform(),
         createDateStorageTransformPlugin(),
         createLongTextStorageTransformPlugin(),
-        createRichTextStorageTransformPlugin(),
-        createDynamicZoneStorageTransform()
+        createRichTextStorageTransformPlugin()
     ]);
 };
