@@ -9,6 +9,11 @@ import { SharpTransform } from "~/assetDelivery/s3/SharpTransform";
 
 export type AssetDeliveryParams = Parameters<typeof createBaseAssetDelivery>[0] & {
     imageResizeWidths?: number[];
+    /**
+     * BE CAREFUL!
+     * Setting this to more than 1 hour may cause your URLs to still expire before the desired expiration time.
+     * @see https://repost.aws/knowledge-center/presigned-url-s3-bucket-expiration
+     */
     presignedUrlTtl?: number;
 };
 
@@ -17,8 +22,8 @@ export const assetDeliveryConfig = (params: AssetDeliveryParams) => {
     const region = process.env.AWS_REGION as string;
 
     const {
-        // Presigned URLs last 7 days (maximum length allowed by AWS).
-        presignedUrlTtl = 604800,
+        // Presigned URLs last 1 hour
+        presignedUrlTtl = 3600,
         imageResizeWidths = [100, 300, 500, 750, 1000, 1500, 2500],
         ...baseParams
     } = params;
