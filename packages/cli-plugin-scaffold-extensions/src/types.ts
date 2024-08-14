@@ -18,3 +18,10 @@ export interface Input {
     dependencies?: string;
     templateArgs?: string;
 }
+
+export interface DownloadedExtensionData {
+    folderName: string;
+    folderPath: string;
+    packageJsonPath: string;
+    extensionType: string | null;
+}

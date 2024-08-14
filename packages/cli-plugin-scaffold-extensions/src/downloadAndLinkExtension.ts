@@ -6,10 +6,11 @@ import { CliCommandScaffoldCallableArgs } from "@webiny/cli-plugin-scaffold/type
 import { setTimeout } from "node:timers/promises";
 import { WEBINY_DEV_VERSION } from "~/utils/constants";
 import { linkAllExtensions } from "./utils/linkAllExtensions";
-import { Input } from "./types";
+import { DownloadedExtensionData, Input } from "./types";
 import { downloadFolderFromS3 } from "./downloadAndLinkExtension/downloadFolderFromS3";
 import { setWebinyPackageVersions } from "~/utils/setWebinyPackageVersions";
 import { runYarnInstall } from "@webiny/cli-plugin-scaffold/utils";
+import { getDownloadedExtensionType } from "~/downloadAndLinkExtension/getDownloadedExtensionType";
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
@@ -93,13 +94,27 @@ export const downloadAndLinkExtension = async ({
 
         ora.text = `Linking extension...`;
 
+        const downloadedExtensions: DownloadedExtensionData[] = [];
+
         // Retrieve extensions folders in the root of the downloaded extension. We use this
         // later to run additional setup tasks on each extension.
         const extensionsFolderNames = await fsAsync.readdir(extensionsFolderToCopyPath);
 
         for (const extensionsFolderName of extensionsFolderNames) {
-            const extensionFolderPath = path.join(EXTENSIONS_ROOT_FOLDER, extensionsFolderName);
-            await setWebinyPackageVersions(extensionFolderPath, currentWebinyVersion);
+            downloadedExtensions.push({
+                folderName: extensionsFolderName,
+                folderPath: path.join(EXTENSIONS_ROOT_FOLDER, extensionsFolderName),
+                extensionType: await getDownloadedExtensionType("admin"),
+                packageJsonPath: path.join(
+                    EXTENSIONS_ROOT_FOLDER,
+                    extensionsFolderName,
+                    "package.json"
+                )
+            });
+        }
+
+        for (const downloadedExtension of downloadedExtensions) {
+            await setWebinyPackageVersions(downloadedExtension.folderPath, currentWebinyVersion);
         }
 
         await linkAllExtensions();
