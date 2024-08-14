@@ -42,10 +42,10 @@ const getVersionFromVersionFolders = async (
 };
 
 export const downloadAndLinkExtension = async ({
-    input,
-    ora,
-    context
-}: CliCommandScaffoldCallableArgs<Input>) => {
+                                                   input,
+                                                   ora,
+                                                   context
+                                               }: CliCommandScaffoldCallableArgs<Input>) => {
     const currentWebinyVersion = context.version;
 
     const downloadExtensionSource = input.templateArgs!;
@@ -101,10 +101,13 @@ export const downloadAndLinkExtension = async ({
         const extensionsFolderNames = await fsAsync.readdir(extensionsFolderToCopyPath);
 
         for (const extensionsFolderName of extensionsFolderNames) {
+            const folderName = extensionsFolderName;
+            const folderPath = path.join(EXTENSIONS_ROOT_FOLDER, extensionsFolderName);
+
             downloadedExtensions.push({
-                folderName: extensionsFolderName,
-                folderPath: path.join(EXTENSIONS_ROOT_FOLDER, extensionsFolderName),
-                extensionType: await getDownloadedExtensionType("admin"),
+                folderName,
+                folderPath,
+                extensionType: await getDownloadedExtensionType(folderPath),
                 packageJsonPath: path.join(
                     EXTENSIONS_ROOT_FOLDER,
                     extensionsFolderName,
