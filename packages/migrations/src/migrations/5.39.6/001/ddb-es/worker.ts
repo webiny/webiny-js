@@ -103,6 +103,8 @@ const createInitialStatus = (): MigrationStatus => {
     };
 };
 
+const BATCH_WRITE_MAX_CHUNK = 18;
+
 (async () => {
     const logger = createPinoLogger(
         {
@@ -358,10 +360,13 @@ const createInitialStatus = (): MigrationStatus => {
 
                 // Store data in primary DynamoDB table.
                 const execute = () => {
-                    return batchWriteAll({
-                        table: ddbEntryEntity.table,
-                        items: ddbItemsToBatchWrite
-                    }, 18);
+                    return batchWriteAll(
+                        {
+                            table: ddbEntryEntity.table,
+                            items: ddbItemsToBatchWrite
+                        },
+                        BATCH_WRITE_MAX_CHUNK
+                    );
                 };
 
                 logger.trace(
@@ -421,10 +426,13 @@ const createInitialStatus = (): MigrationStatus => {
 
                         // Store data in DDB-ES DynamoDB table.
                         const executeDdbEs = () => {
-                            return batchWriteAll({
-                                table: ddbEsEntryEntity.table,
-                                items: ddbEsItemsToBatchWrite
-                            }, 18);
+                            return batchWriteAll(
+                                {
+                                    table: ddbEsEntryEntity.table,
+                                    items: ddbEsItemsToBatchWrite
+                                },
+                                BATCH_WRITE_MAX_CHUNK
+                            );
                         };
 
                         await executeWithRetry(executeDdbEs, {
