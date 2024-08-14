@@ -3,8 +3,7 @@ import { Logger } from "@webiny/data-migration";
 import { Client } from "@elastic/elasticsearch";
 
 interface IndexSettings {
-    number_of_replicas: number;
-    refresh_interval: `${number}s`;
+    refresh_interval: `${number}s` | "-1";
 }
 
 interface RestoreOriginalElasticsearchSettingsParams {
@@ -30,13 +29,22 @@ export const restoreOriginalElasticsearchSettings = async (
         if (!settings || typeof settings !== "object") {
             continue;
         }
+
+        // We must ensure that the refresh interval is not set to a negative value. Why?
+        // We've had a case where a migration run has been manually stopped, and the index settings
+        // were never restored. Once a second run was started and this restore function
+        // was called, the refresh interval was set to `-1s`, which effectively disabled indexing.
+        let refreshInterval = settings.refresh_interval || `1s`;
+        if (refreshInterval === "-1") {
+            refreshInterval = "1s";
+        }
+
         try {
             await esPutIndexSettings({
                 elasticsearchClient: params.elasticsearchClient,
                 index,
                 settings: {
-                    number_of_replicas: settings.number_of_replicas || 1,
-                    refresh_interval: settings.refresh_interval || `1s`
+                    refresh_interval: refreshInterval
                 }
             });
         } catch (ex) {

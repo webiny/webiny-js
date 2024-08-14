@@ -9,7 +9,6 @@ interface FetchOriginalElasticsearchSettingsParams {
 }
 
 interface IndexSettings {
-    number_of_replicas: number;
     refresh_interval: `${number}s`;
 }
 
@@ -21,10 +20,9 @@ export const fetchOriginalElasticsearchSettings = async (
         const settings = await esGetIndexSettings({
             elasticsearchClient: params.elasticsearchClient,
             index,
-            fields: ["number_of_replicas", "refresh_interval"]
+            fields: ["refresh_interval"]
         });
         return {
-            number_of_replicas: settings.number_of_replicas || 1,
             refresh_interval: settings.refresh_interval || "1s"
         };
     } catch (ex) {
