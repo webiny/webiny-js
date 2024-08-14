@@ -11,6 +11,7 @@ import { downloadFolderFromS3 } from "./downloadAndLinkExtension/downloadFolderF
 import { setWebinyPackageVersions } from "~/utils/setWebinyPackageVersions";
 import { runYarnInstall } from "@webiny/cli-plugin-scaffold/utils";
 import { getDownloadedExtensionType } from "~/downloadAndLinkExtension/getDownloadedExtensionType";
+import { generators } from "./downloadAndLinkExtension/generators";
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
@@ -42,10 +43,10 @@ const getVersionFromVersionFolders = async (
 };
 
 export const downloadAndLinkExtension = async ({
-                                                   input,
-                                                   ora,
-                                                   context
-                                               }: CliCommandScaffoldCallableArgs<Input>) => {
+    input,
+    ora,
+    context
+}: CliCommandScaffoldCallableArgs<Input>) => {
     const currentWebinyVersion = context.version;
 
     const downloadExtensionSource = input.templateArgs!;
@@ -133,6 +134,28 @@ export const downloadAndLinkExtension = async ({
         } else {
             const paths = extensionsFolderNames.map(name => EXTENSIONS_ROOT_FOLDER + "/" + name);
             ora.succeed(`Extensions downloaded in ${context.success.hl(paths.join(", "))}.`);
+        }
+
+        for (const downloadedExtension of downloadedExtensions) {
+            if (!downloadedExtension.extensionType) {
+                continue;
+            }
+            const generator = generators[downloadedExtension.extensionType];
+            if (!generator) {
+                continue;
+            }
+
+            const { nextSteps } = await generator({
+                input: {
+                    name: downloadedExtension.folderName,
+                    packageName: downloadedExtension.folderName,
+                    location: downloadedExtension.folderPath
+                }
+            });
+
+            if (nextSteps) {
+                nextSteps.forEach(step => ora.info(step));
+            }
         }
     } catch (e) {
         switch (e.code) {
