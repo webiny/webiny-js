@@ -1,64 +1,8 @@
-import React from "react";
-import { Root, Trigger, Close, Dialog as DialogPrimitive } from "@radix-ui/react-dialog";
-import {
-    Button,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle
-} from "~/components";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 
-export interface DialogProps extends React.ComponentProps<typeof Root> {
-    trigger: string | React.ReactElement;
-    title?: string;
-    description?: string | React.ReactElement;
-    content?: string | React.ReactElement;
-    onAcceptLabel?: string;
-    onAccept?: () => void | Promise<void>;
-    onCancelLabel?: string;
-    onCancel?: () => void | Promise<void>;
-}
+const Dialog = DialogPrimitive.Root;
+const DialogTrigger = DialogPrimitive.Trigger;
+const DialogPortal = DialogPrimitive.Portal;
+const DialogClose = DialogPrimitive.Close;
 
-export const Dialog = ({
-    trigger,
-    title,
-    description,
-    content,
-    onAcceptLabel = "Ok",
-    onAccept,
-    onCancelLabel = "Cancel",
-    onCancel,
-    ...props
-}: DialogProps) => {
-    return (
-        <Root {...props}>
-            <Trigger>{trigger}</Trigger>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>{title}</DialogTitle>
-                    <DialogDescription>{description}</DialogDescription>
-                </DialogHeader>
-                {content}
-                <DialogFooter>
-                    {onCancel && (
-                        <Close asChild>
-                            <Button onClick={onCancel} variant={"outline"}>
-                                {onCancelLabel}
-                            </Button>
-                        </Close>
-                    )}
-                    {onAccept && (
-                        <Close asChild>
-                            <Button onClick={onAccept} variant={"primary"}>
-                                {onAcceptLabel}
-                            </Button>
-                        </Close>
-                    )}
-                </DialogFooter>
-            </DialogContent>
-        </Root>
-    );
-};
-
-Dialog.displayName = DialogPrimitive.displayName;
+export { Dialog, DialogPortal, DialogTrigger, DialogClose };
