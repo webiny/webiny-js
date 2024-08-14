@@ -353,6 +353,9 @@ const createInitialStatus = (): MigrationStatus => {
             }
 
             if (ddbItemsToBatchWrite.length) {
+                let ddbWriteError = false;
+                let ddbEsWriteError = false;
+
                 // Store data in primary DynamoDB table.
                 const execute = () => {
                     return batchWriteAll({
@@ -364,56 +367,90 @@ const createInitialStatus = (): MigrationStatus => {
                 logger.trace(
                     `Storing ${ddbItemsToBatchWrite.length} record(s) in primary DynamoDB table...`
                 );
-                await executeWithRetry(execute, {
-                    onFailedAttempt: error => {
-                        logger.warn(
-                            `Batch write attempt #${error.attemptNumber} failed: ${error.message}`
-                        );
-                    }
-                });
+
+                try {
+                    await executeWithRetry(execute, {
+                        onFailedAttempt: error => {
+                            logger.warn(
+                                `Batch write attempt #${error.attemptNumber} failed: ${error.message}`
+                            );
+                        }
+                    });
+                } catch (e) {
+                    ddbWriteError = true;
+                    logger.error(
+                        {
+                            error: e,
+                            ddbItemsToBatchWrite
+                        },
+                        "After multiple retries, failed to batch-store records in primary DynamoDB table."
+                    );
+                }
 
                 if (ddbEsItemsToBatchWrite.length) {
                     logger.trace(
                         `Storing ${ddbEsItemsToBatchWrite.length} record(s) in DDB-ES DynamoDB table...`
                     );
-                    const results = await waitUntilHealthy.wait({
-                        async onUnhealthy(params) {
-                            const shouldWaitReason = params.waitingReason.name;
 
-                            logger.warn(
-                                `Cluster is unhealthy (${shouldWaitReason}). Waiting for the cluster to become healthy...`,
-                                params
-                            );
+                    try {
+                        const results = await waitUntilHealthy.wait({
+                            async onUnhealthy(params) {
+                                const shouldWaitReason = params.waitingReason.name;
 
-                            if (status.stats.esHealthChecks.unhealthyReasons[shouldWaitReason]) {
-                                status.stats.esHealthChecks.unhealthyReasons[shouldWaitReason]++;
-                            } else {
-                                status.stats.esHealthChecks.unhealthyReasons[shouldWaitReason] = 1;
+                                logger.warn(
+                                    `Cluster is unhealthy (${shouldWaitReason}). Waiting for the cluster to become healthy...`,
+                                    params
+                                );
+
+                                if (
+                                    status.stats.esHealthChecks.unhealthyReasons[shouldWaitReason]
+                                ) {
+                                    status.stats.esHealthChecks.unhealthyReasons[
+                                        shouldWaitReason
+                                    ]++;
+                                } else {
+                                    status.stats.esHealthChecks.unhealthyReasons[
+                                        shouldWaitReason
+                                    ] = 1;
+                                }
                             }
-                        }
-                    });
-
-                    status.stats.esHealthChecks.checksCount++;
-                    status.stats.esHealthChecks.timeSpentWaiting += results.runningTime;
-
-                    // Store data in DDB-ES DynamoDB table.
-                    const executeDdbEs = () => {
-                        return batchWriteAll({
-                            table: ddbEsEntryEntity.table,
-                            items: ddbEsItemsToBatchWrite
                         });
-                    };
 
-                    await executeWithRetry(executeDdbEs, {
-                        onFailedAttempt: error => {
-                            logger.warn(
-                                `[DDB-ES Table] Batch write attempt #${error.attemptNumber} failed: ${error.message}`
-                            );
-                        }
-                    });
+                        status.stats.esHealthChecks.checksCount++;
+                        status.stats.esHealthChecks.timeSpentWaiting += results.runningTime;
+
+                        // Store data in DDB-ES DynamoDB table.
+                        const executeDdbEs = () => {
+                            return batchWriteAll({
+                                table: ddbEsEntryEntity.table,
+                                items: ddbEsItemsToBatchWrite
+                            });
+                        };
+
+                        await executeWithRetry(executeDdbEs, {
+                            onFailedAttempt: error => {
+                                logger.warn(
+                                    `[DDB-ES Table] Batch write attempt #${error.attemptNumber} failed: ${error.message}`
+                                );
+                            }
+                        });
+                    } catch (e) {
+                        ddbEsWriteError = true;
+                        logger.error(
+                            {
+                                error: e,
+                                ddbEsItemsToBatchWrite
+                            },
+                            "After multiple retries, failed to batch-store records in DDB-ES DynamoDB table."
+                        );
+                    }
                 }
 
-                status.stats.recordsUpdated += ddbItemsToBatchWrite.length;
+                if (ddbEsWriteError || ddbWriteError) {
+                    logger.warn('Not increasing the "recordsUpdated" count due to write errors.');
+                } else {
+                    status.stats.recordsUpdated += ddbItemsToBatchWrite.length;
+                }
             }
 
             // Update checkpoint after every batch.
