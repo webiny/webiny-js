@@ -11,7 +11,8 @@ import { downloadFolderFromS3 } from "./downloadAndLinkExtension/downloadFolderF
 import { setWebinyPackageVersions } from "~/utils/setWebinyPackageVersions";
 import { runYarnInstall } from "@webiny/cli-plugin-scaffold/utils";
 import { getDownloadedExtensionType } from "~/downloadAndLinkExtension/getDownloadedExtensionType";
-import { generators } from "./downloadAndLinkExtension/generators";
+import { extensionTypesNextSteps } from "~/extensionTypesNextSteps";
+import chalk from "chalk";
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
@@ -124,38 +125,26 @@ export const downloadAndLinkExtension = async ({
         await linkAllExtensions();
         await runYarnInstall();
 
-        if (extensionsFolderNames.length === 1) {
-            const [extensionFolderName] = extensionsFolderNames;
+        if (downloadedExtensions.length === 1) {
+            const [downloadedExtension] = downloadedExtensions;
             ora.succeed(
-                `Extension downloaded in ${context.success.hl(
-                    EXTENSIONS_ROOT_FOLDER + "/" + extensionFolderName
-                )}.`
+                `Extension downloaded in ${context.success.hl(downloadedExtension.folderPath)}.`
             );
+
+            const { extensionType } = downloadedExtension;
+            if (extensionType) {
+                const nextSteps = extensionTypesNextSteps[extensionType]({
+                    extensionFolderPath: downloadedExtension.folderPath
+                });
+                console.log();
+                console.log(chalk.bold("Next Steps"));
+                nextSteps.forEach(message => {
+                    console.log(`‣ ${message}`);
+                });
+            }
         } else {
-            const paths = extensionsFolderNames.map(name => EXTENSIONS_ROOT_FOLDER + "/" + name);
+            const paths = downloadedExtensions.map(ext => ext.folderPath);
             ora.succeed(`Extensions downloaded in ${context.success.hl(paths.join(", "))}.`);
-        }
-
-        for (const downloadedExtension of downloadedExtensions) {
-            if (!downloadedExtension.extensionType) {
-                continue;
-            }
-            const generator = generators[downloadedExtension.extensionType];
-            if (!generator) {
-                continue;
-            }
-
-            const { nextSteps } = await generator({
-                input: {
-                    name: downloadedExtension.folderName,
-                    packageName: downloadedExtension.folderName,
-                    location: downloadedExtension.folderPath
-                }
-            });
-
-            if (nextSteps) {
-                nextSteps.forEach(step => ora.info(step));
-            }
         }
     } catch (e) {
         switch (e.code) {
