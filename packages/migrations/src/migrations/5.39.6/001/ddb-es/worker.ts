@@ -361,7 +361,7 @@ const createInitialStatus = (): MigrationStatus => {
                     return batchWriteAll({
                         table: ddbEntryEntity.table,
                         items: ddbItemsToBatchWrite
-                    });
+                    }, 18);
                 };
 
                 logger.trace(
@@ -424,7 +424,7 @@ const createInitialStatus = (): MigrationStatus => {
                             return batchWriteAll({
                                 table: ddbEsEntryEntity.table,
                                 items: ddbEsItemsToBatchWrite
-                            });
+                            }, 18);
                         };
 
                         await executeWithRetry(executeDdbEs, {
