@@ -7,7 +7,7 @@ import {
     Worker
 } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
-import { useContentEntriesList, useModel } from "~/admin/hooks";
+import { useCms, useContentEntriesList, useModel } from "~/admin/hooks";
 import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
 
 export interface BulkActionConfig {
@@ -65,7 +65,9 @@ export const BaseBulkAction = makeDecoratable(
 );
 
 const useWorker = () => {
-    const { selected, setSelected } = useContentEntriesList();
+    const { model } = useModel();
+    const { selected, setSelected, getWhere, isSelectedAll } = useContentEntriesList();
+    const { bulkAction } = useCms();
     const { current: worker } = useRef(new Worker<CmsContentEntry>());
 
     useEffect(() => {
@@ -89,8 +91,12 @@ const useWorker = () => {
             }: CallbackParams<CmsContentEntry>) => Promise<void>,
             chunkSize?: number
         ) => worker.processInSeries(callback, chunkSize),
+        processInBulk: async (action: string, data?: Record<string, any>) => {
+            await bulkAction({ model, action, where: getWhere(), data });
+        },
         resetItems: resetItems,
-        results: worker.results
+        results: worker.results,
+        isSelectedAll
     };
 };
 

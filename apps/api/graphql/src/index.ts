@@ -28,7 +28,7 @@ import { createFormBuilder } from "@webiny/api-form-builder";
 import { createFormBuilderStorageOperations } from "@webiny/api-form-builder-so-ddb";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
-import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
+import { createHcmsBulkActions } from "@webiny/api-headless-cms-bulk-actions";
 import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
 import securityPlugins from "./security";
 import tenantManager from "@webiny/api-tenant-manager";
@@ -108,7 +108,7 @@ export const handler = createHandler({
         createAco(),
         createAcoPageBuilderContext(),
         createAcoHcmsContext(),
-        createHcmsTasks(),
+        createHcmsBulkActions(),
         createFileModelModifier(({ modifier }) => {
             modifier.addField({
                 id: "customField1",
