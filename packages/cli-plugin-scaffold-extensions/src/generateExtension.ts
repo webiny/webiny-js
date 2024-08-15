@@ -19,6 +19,7 @@ import { generators } from "./generateExtension/generators";
 import { Input } from "./types";
 import { runYarnInstall } from "@webiny/cli-plugin-scaffold/utils";
 import chalk from "chalk";
+import { extensionTypesNextSteps } from "~/extensionTypesNextSteps";
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
@@ -122,7 +123,7 @@ export const generateExtension = async ({
             }
         }
 
-        const { nextSteps } = await generator({ input: { name, location, packageName } });
+        await generator({ input: { name, location, packageName } });
 
         // Sleep for 1 second before proceeding with yarn installation.
         await setTimeout(1000);
@@ -131,6 +132,10 @@ export const generateExtension = async ({
         await runYarnInstall();
 
         ora.succeed(`New extension created in ${log.success.hl(location)}.`);
+
+        const nextSteps = extensionTypesNextSteps[type]({
+            extensionFolderPath: location
+        });
 
         if (nextSteps) {
             console.log();
