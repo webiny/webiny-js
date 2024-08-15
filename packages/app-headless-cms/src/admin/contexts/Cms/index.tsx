@@ -25,7 +25,12 @@ import {
     CmsEntryCreateFromMutationResponse,
     CmsEntryCreateFromMutationVariables,
     CmsEntryGetQueryResponse,
-    CmsEntryGetQueryVariables
+    CmsEntryGetQueryVariables,
+    createReadSingletonQuery,
+    CmsEntryGetSingletonQueryResponse,
+    createUpdateSingletonMutation,
+    CmsEntryUpdateSingletonMutationResponse,
+    CmsEntryUpdateSingletonMutationVariables
 } from "@webiny/app-headless-cms-common";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
 
@@ -56,7 +61,7 @@ export type UnpublishEntryRevisionResponse = OperationSuccess | OperationError;
 
 export interface CreateEntryParams {
     model: CmsModel;
-    entry: PartialCmsContentEntryWithId;
+    entry: Partial<CmsContentEntry>;
     options?: {
         skipValidators?: string[];
     };
@@ -72,6 +77,14 @@ export interface CreateEntryRevisionFromParams {
 }
 
 export interface UpdateEntryRevisionParams {
+    model: CmsModel;
+    entry: PartialCmsContentEntryWithId;
+    options?: {
+        skipValidators?: string[];
+    };
+}
+
+export interface UpdateSingletonEntryParams {
     model: CmsModel;
     entry: PartialCmsContentEntryWithId;
     options?: {
@@ -98,15 +111,23 @@ export interface GetEntryParams {
     id: string;
 }
 
+export interface GetSingletonEntryParams {
+    model: CmsModel;
+}
+
 export interface CmsContext {
     getApolloClient(locale: string): ApolloClient<any>;
     createApolloClient: CmsProviderProps["createApolloClient"];
     apolloClient: ApolloClient<any>;
     getEntry: (params: GetEntryParams) => Promise<GetEntryResponse>;
+    getSingletonEntry: (params: GetSingletonEntryParams) => Promise<GetEntryResponse>;
     createEntry: (params: CreateEntryParams) => Promise<CreateEntryResponse>;
     createEntryRevisionFrom: (
         params: CreateEntryRevisionFromParams
     ) => Promise<CreateEntryRevisionFromResponse>;
+    updateSingletonEntry: (
+        params: UpdateSingletonEntryParams
+    ) => Promise<UpdateEntryRevisionResponse>;
     updateEntryRevision: (
         params: UpdateEntryRevisionParams
     ) => Promise<UpdateEntryRevisionResponse>;
@@ -177,7 +198,35 @@ export const CmsProvider = (props: CmsProviderProps) => {
             if (!response.data) {
                 return {
                     error: {
-                        message: "Missing response data on Get Entry query.",
+                        message: "Missing response data on getEntry query.",
+                        code: "MISSING_RESPONSE_DATA",
+                        data: {}
+                    }
+                };
+            }
+
+            const { data, error } = response.data.content;
+
+            if (error) {
+                return { error };
+            }
+
+            return {
+                entry: data as CmsContentEntry
+            };
+        },
+        getSingletonEntry: async ({ model }) => {
+            const query = createReadSingletonQuery(model);
+
+            const response = await value.apolloClient.query<CmsEntryGetSingletonQueryResponse>({
+                query,
+                fetchPolicy: getFetchPolicy(model)
+            });
+
+            if (!response.data) {
+                return {
+                    error: {
+                        message: "Missing response data on getSingletonEntry query.",
                         code: "MISSING_RESPONSE_DATA",
                         data: {}
                     }
@@ -283,6 +332,42 @@ export const CmsProvider = (props: CmsProviderProps) => {
                 return {
                     error: {
                         message: "Missing response data on Update Entry mutation.",
+                        code: "MISSING_RESPONSE_DATA",
+                        data: {}
+                    }
+                };
+            }
+
+            const { data, error } = response.data.content;
+
+            if (error) {
+                return { error };
+            }
+
+            return {
+                entry: data as CmsContentEntry
+            };
+        },
+        updateSingletonEntry: async ({ model, entry, options }) => {
+            const mutation = createUpdateSingletonMutation(model);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { id, ...input } = entry;
+            const response = await value.apolloClient.mutate<
+                CmsEntryUpdateSingletonMutationResponse,
+                CmsEntryUpdateSingletonMutationVariables
+            >({
+                mutation,
+                variables: {
+                    data: input,
+                    options
+                },
+                fetchPolicy: getFetchPolicy(model)
+            });
+
+            if (!response.data) {
+                return {
+                    error: {
+                        message: "Missing response data on updateSingletonEntry mutation.",
                         code: "MISSING_RESPONSE_DATA",
                         data: {}
                     }

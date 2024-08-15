@@ -11,6 +11,7 @@ import { i18n } from "@webiny/app/i18n";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import * as UID from "@webiny/ui/Dialog";
 import { Cell, Grid } from "@webiny/ui/Grid";
+import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
 import { addModelToGroupCache, addModelToListCache } from "./cache";
 import * as GQL from "../../viewsGraphql";
 import {
@@ -25,7 +26,6 @@ import { createApiNameValidator } from "~/admin/views/contentModels/helpers/apiN
 import { createNameValidator } from "~/admin/views/contentModels/helpers/nameValidator";
 import { Checkbox } from "@webiny/ui/Checkbox";
 import { IconPicker } from "~/admin/components/IconPicker";
-import { CMS_MODEL_SINGLETON_TAG } from "~/admin/constants";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
 

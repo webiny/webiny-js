@@ -22,6 +22,7 @@ import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { usePersistEntry } from "~/admin/hooks/usePersistEntry";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -77,6 +78,7 @@ interface EntryFormProps {
 
 const EntryForm = ({ onCreate, setSaveEntry }: EntryFormProps) => {
     const { contentModel, loading } = useContentEntry();
+    const { persistEntry } = usePersistEntry({ addItemToListCache: false });
     const { currentFolderId, navigateToFolder } = useNavigateFolder();
 
     return (
@@ -96,9 +98,9 @@ const EntryForm = ({ onCreate, setSaveEntry }: EntryFormProps) => {
                             {loading ? <CircularProgress label={"Creating entry..."} /> : null}
                             <ContentEntryForm
                                 header={false}
-                                onAfterCreate={entry => onCreate(entry)}
                                 entry={{}}
-                                addEntryToListCache={false}
+                                persistEntry={persistEntry}
+                                onAfterCreate={entry => onCreate(entry)}
                                 setSaveEntry={setSaveEntry}
                             />
                         </Elevation>
