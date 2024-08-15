@@ -4,14 +4,11 @@ const yargs = require("yargs");
 // Disable help processing until after plugins are imported.
 yargs.help(false);
 
-const context = require("./context");
-const webinyVersion = require("./package.json").version;
-context.info('Webiny version: %s', webinyVersion);
-
 // Loads environment variables from multiple sources.
 require("./utils/loadEnvVariables");
 
 const { blue, red, bold, bgYellow } = require("chalk");
+const context = require("./context");
 const { createCommands } = require("./commands");
 
 yargs
