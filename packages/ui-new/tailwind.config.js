@@ -5,12 +5,18 @@ const project = getProject();
 
 const webinyPackagesGlob = `${project.root}/node_modules/@webiny/app*/**/*.js`;
 const webinyUiPackageGlob = `${project.root}/node_modules/@webiny/ui-new/**/*.js`;
+const webinyAdminUiPackageGlob = `${project.root}/node_modules/@webiny/admin-ui/**/*.js`;
 const adminAppSourceGlob = `${project.root}/apps/admin`;
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     darkMode: ["class"],
-    content: [webinyPackagesGlob, webinyUiPackageGlob, adminAppSourceGlob],
+    content: [
+        webinyPackagesGlob,
+        webinyUiPackageGlob,
+        webinyAdminUiPackageGlob,
+        adminAppSourceGlob
+    ],
     theme: {
         container: {
             center: true,
