@@ -34,6 +34,8 @@ module.exports = {
             "fs",
             "http",
             "https",
+            "inspector",
+            "node:fs",
             "os",
             "path",
             "readline",

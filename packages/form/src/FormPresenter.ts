@@ -75,7 +75,7 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
     }
 
     getFieldValue(name: string) {
-        return lodashGet(this.data, name) as unknown;
+        return toJS(lodashGet(this.data, name)) as unknown;
     }
 
     getFieldValidation(name: string): FieldValidationResult {
@@ -161,13 +161,13 @@ export class FormPresenter<T extends GenericFormData = GenericFormData> {
         const currentFieldValue = lodashGet(this.data, fieldName);
         const defaultValue = field.getDefaultValue();
 
+        this.formFields.set(props.name, field);
+
         requestAnimationFrame(() => {
             runInAction(() => {
                 if (emptyValues.includes(currentFieldValue) && defaultValue !== undefined) {
                     lodashSet(this.data, fieldName, defaultValue);
                 }
-
-                this.formFields.set(props.name, field);
             });
         });
     }

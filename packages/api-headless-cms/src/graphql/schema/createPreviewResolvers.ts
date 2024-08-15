@@ -41,8 +41,8 @@ export const createPreviewResolvers: CreateReadResolvers = ({
 
     return {
         Query: {
-            [`get${model.singularApiName}`]: resolveGet({ model }),
-            [`list${model.pluralApiName}`]: resolveList({ model })
+            [`get${model.singularApiName}`]: resolveGet({ model, fieldTypePlugins }),
+            [`list${model.pluralApiName}`]: resolveList({ model, fieldTypePlugins })
         },
         ...fieldResolvers
     };

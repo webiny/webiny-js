@@ -1,5 +1,5 @@
 const baseSendEvent = require("./sendEvent");
-const { WTS } = require("wts/src/admin");
+const { WTS } = require("wts-client/admin");
 
 const sendEvent = async (event, properties = {}) => {
     const shouldSend = process.env.REACT_APP_WEBINY_TELEMETRY !== "false";

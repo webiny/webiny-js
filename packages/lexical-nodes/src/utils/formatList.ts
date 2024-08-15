@@ -5,7 +5,6 @@ import {
     $isParagraphNode,
     $isRangeSelection,
     $isRootOrShadowRoot,
-    DEPRECATED_$isGridSelection,
     ElementNode,
     LexicalEditor,
     LexicalNode,
@@ -69,7 +68,7 @@ export function insertList(editor: LexicalEditor, listType: ListType, styleId?: 
     editor.update(() => {
         const selection = $getSelection();
 
-        if ($isRangeSelection(selection) || DEPRECATED_$isGridSelection(selection)) {
+        if (selection && $isRangeSelection(selection)) {
             const nodes = selection.getNodes();
             const anchor = selection.anchor;
             const anchorNode = anchor.getNode();

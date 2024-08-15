@@ -1,7 +1,6 @@
 import fs from "fs-extra";
 import extract from "extract-zip";
 import path from "path";
-import { rimraf } from "rimraf";
 import { GetObjectCommand, getSignedUrl, S3 } from "@webiny/aws-sdk/client-s3";
 import download from "./download";
 
@@ -20,8 +19,8 @@ function extractZip(zipPath: string, dir: string): Promise<void> {
     });
 }
 
-export async function deleteFile(path: string): Promise<boolean> {
-    return await rimraf(path);
+export function deleteFile(path: string): Promise<void> {
+    return fs.remove(path);
 }
 
 const INSTALL_DIR = "/tmp";

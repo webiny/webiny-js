@@ -8,7 +8,7 @@ import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { makeDecoratable } from "@webiny/react-composition";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -120,7 +120,10 @@ const BaseRichTextEditor = ({
         editorState.read(() => {
             if (typeof onChange === "function") {
                 const editorState = editor.getEditorState();
-                onChange(JSON.stringify(editorState.toJSON()));
+                // The timeout is necessary to prevent the `flushSync` warning by React.
+                setTimeout(() => {
+                    onChange(JSON.stringify(editorState.toJSON()));
+                }, 0);
             }
         });
     }
