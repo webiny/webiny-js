@@ -1,5 +1,6 @@
 import { createDdbEntryEntity } from "./../entities/createEntryEntity";
 import { CmsEntry } from "../types";
+import { executeWithRetry, ExecuteWithRetryOptions } from "@webiny/utils";
 
 const cachedEntryCreatedOn: Record<string, string> = {};
 
@@ -10,6 +11,7 @@ interface CmsEntryWithPK extends CmsEntry {
 export interface GetOldestRevisionCreatedOnParams {
     entry: CmsEntryWithPK;
     entryEntity: ReturnType<typeof createDdbEntryEntity>;
+    retryOptions?: ExecuteWithRetryOptions;
 }
 
 export const getOldestRevisionCreatedOn = async (params: GetOldestRevisionCreatedOnParams) => {
@@ -22,11 +24,15 @@ export const getOldestRevisionCreatedOn = async (params: GetOldestRevisionCreate
     if (entry.version === 1) {
         cachedEntryCreatedOn[entry.PK] = entry.createdOn;
     } else {
-        const result = await entryEntity.query(entry.PK, {
-            limit: 1,
-            beginsWith: "REV#",
-            attributes: ["createdOn"]
-        });
+        const executeQuery = () => {
+            return entryEntity.query(entry.PK, {
+                limit: 1,
+                beginsWith: "REV#",
+                attributes: ["createdOn"]
+            });
+        };
+
+        const result = await executeWithRetry(executeQuery, params.retryOptions);
 
         const oldestRevision = result.Items?.[0];
         if (oldestRevision) {
