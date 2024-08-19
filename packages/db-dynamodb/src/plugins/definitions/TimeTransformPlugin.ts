@@ -8,12 +8,20 @@ import WebinyError from "@webiny/error";
 const transformTime = (params: ValueTransformPluginParamsTransformParams): number => {
     const { value } = params;
     if (value === undefined || value === null) {
-        throw new WebinyError(`Time value is null or undefined`, "TIME_PARSE_ERROR", {
+        throw new WebinyError(`Time value is null or undefined.`, "TIME_PARSE_ERROR", {
             value
         });
+    } else if (typeof value === "boolean" || value === "" || Array.isArray(value)) {
+        throw new WebinyError(
+            "Field value must be a string because field is defined as time.",
+            "TIME_PARSE_ERROR",
+            {
+                value
+            }
+        );
     }
-    const isInt = Number(`${value}`);
-    if (typeof value === "number" || isNaN(isInt) === false) {
+    const converted = Number(`${value}`);
+    if (typeof value === "number" || isNaN(converted) === false) {
         return Number(value);
     } else if (typeof value !== "string") {
         throw new WebinyError(
