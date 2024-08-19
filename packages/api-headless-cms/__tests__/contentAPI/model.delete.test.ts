@@ -102,7 +102,9 @@ describe("model delete", () => {
                     data: null,
                     error: {
                         code: "CONTENT_MODEL_BEFORE_DELETE_HOOK_FAILED",
-                        data: null,
+                        data: {
+                            model: expect.any(Object)
+                        },
                         message: `Cannot delete content model "category" because there are existing entries.`
                     }
                 }

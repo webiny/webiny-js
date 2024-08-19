@@ -1,4 +1,5 @@
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
+import { expectNotAuthorized } from "./utils/expectNotAuthorized";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { mdbid } from "@webiny/utils";
 
@@ -9,17 +10,6 @@ const FOLDER_TYPE = "FmFile";
 const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" };
 const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" };
 const identityC: SecurityIdentity = { id: "3", type: "admin", displayName: "C" };
-
-const expectNotAuthorized = async (promise: Promise<any>, data: Record<string, any> = null) => {
-    await expect(promise).resolves.toEqual({
-        data: null,
-        error: {
-            code: "SECURITY_NOT_AUTHORIZED",
-            data,
-            message: "Not authorized!"
-        }
-    });
-};
 
 const createSampleFileData = (overrides: Record<string, any> = {}) => {
     const id = mdbid();
@@ -297,5 +287,90 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
                 })
             ).resolves.toMatchObject({ data: true, error: null });
         }
+    });
+
+    test("as a user, I should not be able to delete folders that have content they cannot see", async () => {
+        const folderA = await gqlIdentityA.aco
+            .createFolder({
+                data: {
+                    title: "Folder A",
+                    slug: "folder-a",
+                    type: FOLDER_TYPE
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        const folderB = await gqlIdentityA.aco
+            .createFolder({
+                data: {
+                    title: "Folder B",
+                    slug: "folder-b",
+                    parentId: folderA.id,
+                    type: FOLDER_TYPE
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        for (let i = 1; i <= 4; i++) {
+            await gqlIdentityA.fm.createFile({
+                data: createSampleFileData({
+                    location: { folderId: folderB.id }
+                })
+            });
+        }
+
+        // Deleting folderA should be forbidden because there is content in it. In this case,
+        // user actually sees this content, so we expect a "delete all child folders and files"
+        // error, not a "not authorized" error.
+        await expect(
+            gqlIdentityC.aco.deleteFolder({ id: folderA.id }).then(([response]) => {
+                return response.data.aco.deleteFolder;
+            })
+        ).resolves.toMatchObject({
+            data: null,
+            error: {
+                code: "DELETE_FOLDER_WITH_CHILDREN",
+                data: {
+                    folder: {
+                        slug: "folder-a"
+                    },
+                    hasFolders: true,
+                    hasContent: false
+                },
+                message: "Delete all child folders and entries before proceeding."
+            }
+        });
+
+        // Only identity B (and identity A, the owner) can see the folder B and its files.
+        await gqlIdentityA.aco.updateFolder({
+            id: folderB.id,
+            data: {
+                permissions: [
+                    {
+                        target: `admin:${identityB.id}`,
+                        level: "owner"
+                    }
+                ]
+            }
+        });
+
+        // Again, deleting folderA should be forbidden because there is content in it. In this
+        // case, user doesn't see this content, so we expect a "not authorized" error.
+        await expectNotAuthorized(
+            gqlIdentityC.aco.deleteFolder({ id: folderA.id }).then(([response]) => {
+                return response.data.aco.deleteFolder;
+            }),
+            {
+                folder: { id: folderA.id },
+
+                // There are no entries in the folder, but there is one invisible / inaccessible folder.
+                hasContent: false,
+                hasFolders: true
+            }
+        );
     });
 });

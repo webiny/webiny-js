@@ -4,8 +4,8 @@ import {
     ensureCoreDeployed,
     executeDataMigrations,
     generateCommonHandlers,
-    generateDdbHandlers,
     generateDdbEsHandlers,
+    generateDdbHandlers,
     injectWcpTelemetryClientCode
 } from "./api/plugins";
 

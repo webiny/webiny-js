@@ -243,6 +243,7 @@ export const createEntriesStorageOperations = (
             storageEntry: initialStorageEntry,
             model
         });
+
         /**
          * We need to:
          *  - create the main entry item

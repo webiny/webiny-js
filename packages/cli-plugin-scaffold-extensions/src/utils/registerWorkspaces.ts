@@ -1,4 +1,3 @@
-import execa from "execa";
 import loadJson from "load-json-file";
 import writeJson from "write-json-file";
 import type { ExtensionWorkspace } from "./getExtensionsFromFilesystem";
@@ -19,6 +18,4 @@ export const registerWorkspaces = async (extensions: ExtensionWorkspace[]) => {
 
     await writeJson(packageJsonPath, rootPkgJson);
     await formatCode(packageJsonPath, {});
-
-    await execa("yarn");
 };

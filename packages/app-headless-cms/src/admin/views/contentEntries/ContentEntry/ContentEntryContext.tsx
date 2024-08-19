@@ -226,6 +226,11 @@ export const ContentEntryProvider = ({
         if (response.entry && options?.addItemToListCache) {
             addRecordToCache(response.entry);
         }
+
+        // The `ContentEntryForm` component reads the `entry` from the context, and we want it to have the latest state.
+        // This way, the form also knows whether it's `pristine` or not.
+        setEntry(response.entry);
+
         return response;
     };
 
