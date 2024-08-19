@@ -134,7 +134,6 @@ export const generateExtension = async ({
 
         ora.succeed(`New extension created in ${log.success.hl(location)}.`);
 
-
         const nextSteps = extension.getNextSteps();
         if (nextSteps.length > 0) {
             console.log();

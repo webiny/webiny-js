@@ -15,4 +15,20 @@ export abstract class AbstractExtension {
     abstract generate(): Promise<void>;
 
     abstract getNextSteps(): string[];
+
+    getPackageJsonPath(): string {
+        return `${this.params.location}/package.json`;
+    }
+
+    getLocation(): string {
+        return this.params.location;
+    }
+
+    getPackageName(): string {
+        return this.params.packageName;
+    }
+
+    getName(): string {
+        return this.params.name;
+    }
 }

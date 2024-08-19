@@ -19,13 +19,6 @@ const EXTENSIONS_ROOT_FOLDER = "extensions";
 const S3_BUCKET_NAME = "webiny-examples";
 const S3_BUCKET_REGION = "us-east-1";
 
-interface DownloadedExtensionData {
-    folderName: string;
-    folderPath: string;
-    packageJsonPath: string;
-    extensionType: string
-}
-
 const getVersionFromVersionFolders = async (
     versionFoldersList: string[],
     currentWebinyVersion: string
@@ -103,31 +96,29 @@ export const downloadAndLinkExtension = async ({
 
         ora.text = `Linking extension...`;
 
-        const downloadedExtensions: DownloadedExtensionData[] = [];
-
         // Retrieve extensions folders in the root of the downloaded extension. We use this
         // later to run additional setup tasks on each extension.
         const extensionsFolderNames = await fsAsync.readdir(extensionsFolderToCopyPath);
-1
+        const downloadedExtensions: Extension[] = [];
+
         for (const extensionsFolderName of extensionsFolderNames) {
-            const folderName = extensionsFolderName;
             const folderPath = path.join(EXTENSIONS_ROOT_FOLDER, extensionsFolderName);
             const extensionType = await getDownloadedExtensionType(folderPath);
 
-            downloadedExtensions.push({
-                folderName,
-                folderPath,
-                extensionType,
-                packageJsonPath: path.join(
-                    EXTENSIONS_ROOT_FOLDER,
-                    extensionsFolderName,
-                    "package.json"
-                )
-            });
+            downloadedExtensions.push(
+                new Extension({
+                    name: extensionsFolderName,
+                    type: extensionType,
+                    location: folderPath,
+
+                    // We don't care about the package name here.
+                    packageName: extensionsFolderName
+                })
+            );
         }
 
         for (const downloadedExtension of downloadedExtensions) {
-            await setWebinyPackageVersions(downloadedExtension.folderPath, currentWebinyVersion);
+            await setWebinyPackageVersions(downloadedExtension, currentWebinyVersion);
         }
 
         await linkAllExtensions();
@@ -136,17 +127,10 @@ export const downloadAndLinkExtension = async ({
         if (downloadedExtensions.length === 1) {
             const [downloadedExtension] = downloadedExtensions;
             ora.succeed(
-                `Extension downloaded in ${context.success.hl(downloadedExtension.folderPath)}.`
+                `Extension downloaded in ${context.success.hl(downloadedExtension.getLocation())}.`
             );
 
-            const extension = new Extension({
-                name: downloadedExtension.folderName,
-                location: downloadedExtension.folderPath,
-                packageName: downloadedExtension.folderName,
-                type: downloadedExtension.extensionType
-            });
-
-            const nextSteps = extension.getNextSteps();
+            const nextSteps = downloadedExtension.getNextSteps();
 
             console.log();
             console.log(chalk.bold("Next Steps"));
@@ -154,7 +138,7 @@ export const downloadAndLinkExtension = async ({
                 console.log(`‣ ${message}`);
             });
         } else {
-            const paths = downloadedExtensions.map(ext => ext.folderPath);
+            const paths = downloadedExtensions.map(ext => ext.getLocation());
             ora.succeed(`Extensions downloaded in ${context.success.hl(paths.join(", "))}.`);
         }
     } catch (e) {

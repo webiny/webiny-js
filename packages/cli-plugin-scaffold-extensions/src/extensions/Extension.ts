@@ -3,18 +3,18 @@ import { AdminExtension } from "./AdminExtension";
 import { ApiExtension } from "./ApiExtension";
 
 export class Extension extends AbstractExtension {
-    extensionType: AbstractExtension;
+    extension: AbstractExtension;
 
     constructor(params: ExtensionTypeConstructorParams) {
         super(params);
 
         switch (params.type) {
             case "admin": {
-                this.extensionType = new AdminExtension(params);
+                this.extension = new AdminExtension(params);
                 break;
             }
             case "api": {
-                this.extensionType = new ApiExtension(params);
+                this.extension = new ApiExtension(params);
                 break;
             }
             default: {
@@ -24,10 +24,10 @@ export class Extension extends AbstractExtension {
     }
 
     async generate() {
-        await this.extensionType.generate();
+        await this.extension.generate();
     }
 
     getNextSteps(): string[] {
-        return this.extensionType.getNextSteps();
+        return this.extension.getNextSteps();
     }
 }

@@ -5,7 +5,7 @@ import { PackageJson } from "@webiny/cli-plugin-scaffold/types";
 import writeJson from "write-json-file";
 import { EXTENSIONS_ROOT_FOLDER } from "~/utils/constants";
 import chalk from "chalk";
-import { ArrayLiteralExpression, JsxFragment, Node, Project } from "ts-morph";
+import { JsxFragment, Node, Project } from "ts-morph";
 import { formatCode } from "@webiny/cli-plugin-scaffold/utils";
 
 export class AdminExtension extends AbstractExtension {

@@ -2,7 +2,7 @@ import loadJson from "load-json-file";
 import writeJson from "write-json-file";
 import { PackageJson } from "@webiny/cli-plugin-scaffold/types";
 import { formatCode } from "@webiny/cli-plugin-scaffold/utils";
-import path from "node:path";
+import { Extension } from "~/extensions/Extension";
 
 const setVersions = (dependencies: Record<string, string>, version: string) => {
     for (const [name] of Object.entries(dependencies)) {
@@ -17,10 +17,10 @@ const setVersions = (dependencies: Record<string, string>, version: string) => {
 // has dependencies on Webiny packages that are different from the current version. We need to
 // update those dependencies to the current version.
 export const setWebinyPackageVersions = async (
-    extensionRootPath: string,
+    extension: Extension,
     currentWebinyVersion: string
 ) => {
-    const pkgJsonPath = path.join(extensionRootPath, "package.json");
+    const pkgJsonPath = extension.getPackageJsonPath();
     const pkgJson = await loadJson<PackageJson>(pkgJsonPath);
 
     if (pkgJson.dependencies) {
