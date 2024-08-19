@@ -29,6 +29,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "chalk": "^4.1.0",
+    "execa": "^5.0.0",
     "fast-glob": "^3.2.7",
     "find-up": "^5.0.0",
     "prettier": "^2.8.3",
