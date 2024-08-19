@@ -44,7 +44,7 @@ export interface ListSearchRecordsParams {
     after?: string | null;
 }
 
-export type CreateSearchRecordParams<TData> = Pick<
+export type CreateSearchRecordParams<TData extends GenericSearchData = GenericSearchData> = Pick<
     SearchRecord<TData>,
     "id" | "title" | "content" | "type" | "location" | "data" | "tags"
 >;
@@ -181,8 +181,11 @@ export interface AcoSearchRecordCrud
         AcoSearchRecordCrudBase,
         "get" | "list" | "create" | "update" | "delete" | "listTags" | "move"
     > {
-    get<TData>(model: CmsModel, id: string): Promise<SearchRecord<TData>>;
-    list<TData>(
+    get<TData extends GenericSearchData = GenericSearchData>(
+        model: CmsModel,
+        id: string
+    ): Promise<SearchRecord<TData>>;
+    list<TData extends GenericSearchData = GenericSearchData>(
         model: CmsModel,
         params: ListSearchRecordsParams
     ): Promise<[SearchRecord<TData>[], ListMeta]>;
@@ -190,11 +193,11 @@ export interface AcoSearchRecordCrud
         model: CmsModel,
         params: ListSearchRecordTagsParams
     ): Promise<[SearchRecordTag[], ListMeta]>;
-    create<TData>(
+    create<TData extends GenericSearchData = GenericSearchData>(
         model: CmsModel,
         data: CreateSearchRecordParams<TData>
     ): Promise<SearchRecord<TData>>;
-    update<TData>(
+    update<TData extends GenericSearchData = GenericSearchData>(
         model: CmsModel,
         id: string,
         data: UpdateSearchRecordParams<TData>
