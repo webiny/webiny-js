@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
-      "skipLibCheck": true,
-      "target": "esnext",
+    "target": "esnext",
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,

@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.24.0",
-    "@graphql-tools/schema": "^7.0.0",
+    "@graphql-tools/schema": "^10.0.6",
     "@webiny/api": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler": "0.0.0",

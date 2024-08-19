@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.24.0",
-    "@graphql-tools/schema": "^7.1.2",
+    "@graphql-tools/schema": "^10.0.6",
     "@webiny/api": "0.0.0",
     "@webiny/api-i18n": "0.0.0",
     "@webiny/api-security": "0.0.0",
