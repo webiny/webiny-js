@@ -15,5 +15,5 @@ export const getDownloadedExtensionType = async (downloadedExtensionRootPath: st
         }
     }
 
-    return null;
+    throw new Error(`Could not determine the extension type from the downloaded extension.`);
 };

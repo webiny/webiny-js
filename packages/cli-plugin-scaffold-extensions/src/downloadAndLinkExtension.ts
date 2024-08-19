@@ -6,18 +6,25 @@ import { CliCommandScaffoldCallableArgs } from "@webiny/cli-plugin-scaffold/type
 import { setTimeout } from "node:timers/promises";
 import { WEBINY_DEV_VERSION } from "~/utils/constants";
 import { linkAllExtensions } from "./utils/linkAllExtensions";
-import { DownloadedExtensionData, Input } from "./types";
+import { Input } from "./types";
 import { downloadFolderFromS3 } from "./downloadAndLinkExtension/downloadFolderFromS3";
 import { setWebinyPackageVersions } from "~/utils/setWebinyPackageVersions";
 import { runYarnInstall } from "@webiny/cli-plugin-scaffold/utils";
 import { getDownloadedExtensionType } from "~/downloadAndLinkExtension/getDownloadedExtensionType";
-import { extensionTypesNextSteps } from "~/extensionTypesNextSteps";
 import chalk from "chalk";
+import { Extension } from "./extensions/Extension";
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
 const S3_BUCKET_NAME = "webiny-examples";
 const S3_BUCKET_REGION = "us-east-1";
+
+interface DownloadedExtensionData {
+    folderName: string;
+    folderPath: string;
+    packageJsonPath: string;
+    extensionType: string
+}
 
 const getVersionFromVersionFolders = async (
     versionFoldersList: string[],
@@ -101,15 +108,16 @@ export const downloadAndLinkExtension = async ({
         // Retrieve extensions folders in the root of the downloaded extension. We use this
         // later to run additional setup tasks on each extension.
         const extensionsFolderNames = await fsAsync.readdir(extensionsFolderToCopyPath);
-
+1
         for (const extensionsFolderName of extensionsFolderNames) {
             const folderName = extensionsFolderName;
             const folderPath = path.join(EXTENSIONS_ROOT_FOLDER, extensionsFolderName);
+            const extensionType = await getDownloadedExtensionType(folderPath);
 
             downloadedExtensions.push({
                 folderName,
                 folderPath,
-                extensionType: await getDownloadedExtensionType(folderPath),
+                extensionType,
                 packageJsonPath: path.join(
                     EXTENSIONS_ROOT_FOLDER,
                     extensionsFolderName,
@@ -131,17 +139,20 @@ export const downloadAndLinkExtension = async ({
                 `Extension downloaded in ${context.success.hl(downloadedExtension.folderPath)}.`
             );
 
-            const { extensionType } = downloadedExtension;
-            if (extensionType) {
-                const nextSteps = extensionTypesNextSteps[extensionType]({
-                    extensionFolderPath: downloadedExtension.folderPath
-                });
-                console.log();
-                console.log(chalk.bold("Next Steps"));
-                nextSteps.forEach(message => {
-                    console.log(`‣ ${message}`);
-                });
-            }
+            const extension = new Extension({
+                name: downloadedExtension.folderName,
+                location: downloadedExtension.folderPath,
+                packageName: downloadedExtension.folderName,
+                type: downloadedExtension.extensionType
+            });
+
+            const nextSteps = extension.getNextSteps();
+
+            console.log();
+            console.log(chalk.bold("Next Steps"));
+            nextSteps.forEach(message => {
+                console.log(`‣ ${message}`);
+            });
         } else {
             const paths = downloadedExtensions.map(ext => ext.folderPath);
             ora.succeed(`Extensions downloaded in ${context.success.hl(paths.join(", "))}.`);

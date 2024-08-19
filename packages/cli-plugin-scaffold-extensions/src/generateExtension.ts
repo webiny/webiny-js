@@ -15,11 +15,10 @@ import { setTimeout } from "node:timers/promises";
  */
 // @ts-expect-error
 import { getProject, log } from "@webiny/cli/utils";
-import { generators } from "./generateExtension/generators";
 import { Input } from "./types";
 import { runYarnInstall } from "@webiny/cli-plugin-scaffold/utils";
 import chalk from "chalk";
-import { extensionTypesNextSteps } from "~/extensionTypesNextSteps";
+import { Extension } from "~/extensions/Extension";
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
@@ -34,11 +33,6 @@ export const generateExtension = async ({
         const { type, name } = input;
         if (!type) {
             throw new Error("Missing extension type.");
-        }
-
-        const generator = generators[type];
-        if (!generator) {
-            throw new Error(`Generator for "${type}" extension type not found.`);
         }
 
         const templatePath = path.join(__dirname, "templates", type);
@@ -123,7 +117,14 @@ export const generateExtension = async ({
             }
         }
 
-        await generator({ input: { name, location, packageName } });
+        const extension = new Extension({
+            type,
+            name,
+            location,
+            packageName
+        });
+
+        await extension.generate();
 
         // Sleep for 1 second before proceeding with yarn installation.
         await setTimeout(1000);
@@ -133,11 +134,9 @@ export const generateExtension = async ({
 
         ora.succeed(`New extension created in ${log.success.hl(location)}.`);
 
-        const nextSteps = extensionTypesNextSteps[type]({
-            extensionFolderPath: location
-        });
 
-        if (nextSteps) {
+        const nextSteps = extension.getNextSteps();
+        if (nextSteps.length > 0) {
             console.log();
             console.log(chalk.bold("Next Steps"));
             nextSteps.forEach(message => {
