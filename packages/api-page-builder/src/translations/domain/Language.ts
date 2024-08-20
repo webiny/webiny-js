@@ -8,16 +8,16 @@ export interface LanguageFields {
 }
 
 export class Language {
-    private id: string;
-    private name: string;
-    private code: string;
-    private isBase: boolean;
+    public readonly id: string;
+    public readonly name: string;
+    public readonly code: string;
+    public readonly isBaseLanguage: boolean;
 
-    private constructor(id: string, name: string, code: string, isBase: boolean) {
+    private constructor(id: string, name: string, code: string, isBaseLanguage: boolean) {
         this.id = id;
         this.name = name;
         this.code = code;
-        this.isBase = isBase;
+        this.isBaseLanguage = isBaseLanguage;
     }
 
     static fromEntry(entry: CmsEntry<LanguageFields>) {
