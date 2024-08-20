@@ -8943,12 +8943,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/base@npm:^14.0.0":
+"@material/base@npm:14.0.0":
   version: 14.0.0
   resolution: "@material/base@npm:14.0.0"
   dependencies:
     tslib: ^2.1.0
   checksum: ab4c1ea9c8c391e0da130975d97a7eb26d743c6d140d7a3d0f673391850ad2fd37a3948264c05e6354a28d61c9be8d2f489f98dc9378f6617594eab59b591be1
+  languageName: node
+  linkType: hard
+
+"@material/base@patch:@material/base@npm%3A14.0.0#./.yarn/patches/@material-base-npm-14.0.0-36e0a55c42.patch::locator=root-workspace-0b6124%40workspace%3A.":
+  version: 14.0.0
+  resolution: "@material/base@patch:@material/base@npm%3A14.0.0#./.yarn/patches/@material-base-npm-14.0.0-36e0a55c42.patch::version=14.0.0&hash=ed4a27&locator=root-workspace-0b6124%40workspace%3A."
+  dependencies:
+    tslib: ^2.1.0
+  checksum: 85aab81e4e0f13d8bfd6a70c90bef76b0f5a4d3e1e733cbaa344381b26cf1304ede1730263e4ab9dfc3af567c406db69e6bc47dc664266e0597cddd36f9919b5
   languageName: node
   linkType: hard
 

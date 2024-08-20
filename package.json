@@ -230,7 +230,8 @@
     "react-dnd": "^16.0.0",
     "react-dnd-html5-backend": "^16.0.0",
     "apollo-link@^1.2.14": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch",
-    "apollo-link@^1.0.0": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch"
+    "apollo-link@^1.0.0": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch",
+    "@material/base@^14.0.0": "patch:@material/base@npm%3A14.0.0#./.yarn/patches/@material-base-npm-14.0.0-36e0a55c42.patch"
   },
   "packageManager": "yarn@3.6.4",
   "dependencies": {
