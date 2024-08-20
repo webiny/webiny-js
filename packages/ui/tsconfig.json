@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [{ "path": "../form" }, { "path": "../validation" }],
+  "references": [{ "path": "../form" }, { "path": "../ui-new" }, { "path": "../validation" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -11,6 +11,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
+      "@webiny/ui-new/*": ["../ui-new/src/*"],
+      "@webiny/ui-new": ["../ui-new/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     },

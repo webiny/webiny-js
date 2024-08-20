@@ -21678,6 +21678,7 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/form": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/ui-new": 0.0.0
     "@webiny/validation": 0.0.0
     babel-loader: 9.1.2
     brace: ^0.11.1
