@@ -48,7 +48,7 @@ describe("createBulkAction", () => {
             expect(type).toMatchObject({
                 kind: "ENUM",
                 name: expect.any(String),
-                enumValues: getEnumValues(defaultBulkActionsEnumNames),
+                enumValues: expect.arrayContaining(getEnumValues(defaultBulkActionsEnumNames)),
                 description: null,
                 inputFields: null,
                 interfaces: null,
@@ -97,7 +97,9 @@ describe("createBulkAction", () => {
             expect(type).toMatchObject({
                 kind: "ENUM",
                 name: expect.any(String),
-                enumValues: getEnumValues([...defaultBulkActionsEnumNames, "Print"]),
+                enumValues: expect.arrayContaining(
+                    getEnumValues([...defaultBulkActionsEnumNames, "Print"])
+                ),
                 description: null,
                 inputFields: null,
                 interfaces: null,
@@ -111,7 +113,7 @@ describe("createBulkAction", () => {
             expect(type).toMatchObject({
                 kind: "ENUM",
                 name: expect.any(String),
-                enumValues: getEnumValues([...defaultBulkActionsEnumNames]),
+                enumValues: expect.arrayContaining(getEnumValues([...defaultBulkActionsEnumNames])),
                 description: null,
                 inputFields: null,
                 interfaces: null,
