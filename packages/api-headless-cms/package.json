@@ -18,6 +18,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@babel/code-frame": "^7.24.7",
     "@babel/runtime": "^7.24.0",
     "@graphql-tools/schema": "^10.0.6",
     "@webiny/api": "0.0.0",
@@ -34,7 +35,6 @@
     "@webiny/pubsub": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
-    "code-frame": "^5.0.0",
     "dot-prop": "^6.0.1",
     "graphql": "^15.7.2",
     "graphql-tag": "^2.12.6",
@@ -51,6 +51,7 @@
     "@babel/cli": "^7.23.9",
     "@babel/core": "^7.24.0",
     "@babel/preset-env": "^7.24.0",
+    "@types/babel__code-frame": "^7.0.6",
     "@webiny/api-wcp": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/cli": "0.0.0",

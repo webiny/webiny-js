@@ -1,5 +1,4 @@
-// @ts-expect-error `code-frame` has no types
-import codeFrame from "code-frame";
+import { codeFrameColumns } from "@babel/code-frame";
 import WebinyError from "@webiny/error";
 import { generateSchema } from "./generateSchema";
 import { ApiEndpoint, CmsContext } from "~/types";
@@ -75,8 +74,11 @@ export const getSchema = async (params: GetSchemaParams): Promise<GraphQLSchema>
             code: "INVALID_GRAPHQL_SCHEMA",
             message: err.message,
             data: {
-                invalidSegment: codeFrame(err.source.body, location.line, location.column, {
-                    frameSize: 15
+                invalidSegment: codeFrameColumns(err.source.body, {
+                    start: {
+                        line: location.line,
+                        column: location.column
+                    }
                 })
             }
         });
