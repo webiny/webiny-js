@@ -2,7 +2,7 @@ import React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "~/utils";
 
-export type TextTags = "span" | "div" | "label" | "p";
+export type TextTags = "span" | "div";
 
 const textVariants = cva("font-sans font-normal", {
     variants: {
@@ -29,17 +29,3 @@ export interface TextProps
 export const Text = ({ size, text, className, as: Tag = "span" }: TextProps) => {
     return <Tag className={cn(textVariants({ size, className }))}>{text}</Tag>;
 };
-
-// const Text = React.forwardRef<HTMLElement, TextProps>(
-//     ({ size, text, className, as: Tag = "span", asChild }, ref) => {
-//         const Comp = asChild ? Slot : Tag;
-//
-//         return (
-//             <Comp ref={ref} className={cn(textVariants({ size, className }))}>
-//                 {text}
-//             </Comp>
-//         );
-//     }
-// );
-//
-// Text.displayName = "Text";

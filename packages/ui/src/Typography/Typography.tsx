@@ -6,15 +6,19 @@ import { Heading, HeadingLevels, Text } from "@webiny/ui-new";
 interface TypographyProps extends RmwcTypographyProps {
     children?: React.ReactNode;
     className?: string;
+    /**
+     * @deprecated
+     */
     style?: React.CSSProperties;
     tag?: string;
 }
 
 /**
- * Use Ripple component to display a list of choices, once the handler is triggered.
+ * @deprecated This component is deprecated and will be removed in future releases.
+ * Please use the `<Heading />` or `<Text />` components from the `@webiny/admin-ui` package instead.
  */
 const Typography = (props: TypographyProps) => {
-    const { children, use, className, style } = props;
+    const { children, use, className } = props;
 
     // Define a mapping of use values to heading levels
     const headingLevelMap: { [key: string]: HeadingLevels } = {
@@ -28,10 +32,10 @@ const Typography = (props: TypographyProps) => {
 
     if (use in headingLevelMap) {
         const level = headingLevelMap[use];
-        return <Heading level={level} text={children} className={className} style={style} />;
+        return <Heading level={level} text={children} className={className} />;
     }
 
-    return <Text size={"md"} text={children} className={className} style={style} />;
+    return <Text size={"md"} text={children} className={className} />;
 };
 
 export { Typography, TypographyProps };
