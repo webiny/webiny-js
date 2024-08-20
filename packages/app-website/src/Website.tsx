@@ -6,6 +6,7 @@ import { Page } from "./Page";
 import { createApolloClient, createEmotionCache } from "~/utils";
 import { ThemeProvider } from "@webiny/app-theme";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
+import { PageBuilder } from "@webiny/app-page-builder/render";
 import { RouteProps } from "@webiny/react-router";
 
 export interface WebsiteProps extends AppProps {
@@ -47,6 +48,7 @@ export const Website = ({ children, routes = [], providers = [], ...props }: Web
                         routes={appRoutes}
                         providers={[PageBuilderProviderHOC, ...providers]}
                     >
+                        <PageBuilder />
                         {children}
                     </App>
                 </ThemeProvider>

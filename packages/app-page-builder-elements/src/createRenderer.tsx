@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { Theme, StylesObject } from "@webiny/theme/types";
+import { CSSObject, ClassNames } from "@emotion/react";
+import { Decoratable, GenericComponent, makeDecoratable } from "@webiny/react-composition";
 import { usePageElements } from "~/hooks/usePageElements";
 import { Renderer, Element } from "~/types";
-import { Theme, StylesObject } from "@webiny/theme/types";
 import { RendererProvider } from "~/contexts/Renderer";
-import { CSSObject, ClassNames } from "@emotion/react";
-import { ElementAttribute } from "~/attributes/ElementAttribute";
+import { ElementInput, ElementInputs, ElementInputValues } from "~/inputs/ElementInput";
+import { ElementRendererInputs } from "~/contexts/ElementRendererInputs";
 
 interface GetStylesParams {
     theme: Theme;
@@ -13,12 +15,15 @@ interface GetStylesParams {
 
 export type CreateRendererOptions<
     TRenderComponentProps,
-    TAttributes = Record<string, ElementAttribute>
+    TInputs = Record<string, ElementInput>
 > = Partial<{
-    propsAreEqual: (prevProps: TRenderComponentProps, nextProps: TRenderComponentProps) => boolean;
+    propsAreEqual: (
+        prevProps: TRenderComponentProps & Inputs<TInputs>,
+        nextProps: TRenderComponentProps & Inputs<TInputs>
+    ) => boolean;
     themeStyles: StylesObject | ((params: GetStylesParams) => StylesObject);
     baseStyles: StylesObject | ((params: GetStylesParams) => StylesObject);
-    attributes: TAttributes;
+    inputs: TInputs;
 }>;
 
 const DEFAULT_RENDERER_STYLES: StylesObject = {
@@ -28,18 +33,33 @@ const DEFAULT_RENDERER_STYLES: StylesObject = {
     boxSizing: "border-box"
 };
 
-export type GetInputs<T> = {
-    inputs?: { [K in keyof T]?: T[K] extends ElementAttribute<infer P> ? P : never };
+const EMPTY_OBJECT = {};
+
+export type Inputs<T> = {
+    inputs?: { [K in keyof T]?: T[K] extends ElementInput<infer P> ? P : never };
 };
+
+type DecoratableComponent<T extends GenericComponent> = ReturnType<typeof makeDecoratable<T>>;
 
 export function createRenderer<
     TRenderComponentProps = Record<string, any>,
-    TAttributes extends Record<string, ElementAttribute> = Record<string, ElementAttribute>
+    TInputs extends ElementInputs = ElementInputs
 >(
-    RendererComponent: React.ComponentType<TRenderComponentProps>,
-    options: CreateRendererOptions<TRenderComponentProps, TAttributes> = {}
-): Renderer<TRenderComponentProps & GetInputs<TAttributes>> {
-    return function Renderer(props) {
+    RendererComponent: React.FunctionComponent<TRenderComponentProps>,
+    options: CreateRendererOptions<TRenderComponentProps, TInputs> = {}
+): DecoratableComponent<Renderer<TRenderComponentProps & Inputs<TInputs>>> & {
+    Component: DecoratableComponent<typeof RendererComponent>;
+} {
+    // We need to make the renderer component decoratable, to allow developers to conditionally render different
+    // output depending on the renderer inputs.
+    const DecoratableRendererComponent = makeDecoratable(
+        "DecoratableRendererComponent",
+        RendererComponent
+    );
+
+    function ConcreteRenderer(
+        props: React.ComponentProps<Renderer<TRenderComponentProps & Inputs<TInputs>>>
+    ) {
         const {
             getElementStyles,
             getStyles,
@@ -54,20 +74,8 @@ export function createRenderer<
             return null;
         }
 
-        const { element, meta, inputs = {}, ...componentProps } = props;
+        const { element, meta, inputs, ...componentProps } = props;
         const attributes = getElementAttributes(element);
-
-        const inputAttributes: TAttributes = options.attributes ?? ({} as TAttributes);
-        const inputsValues = Object.keys(inputAttributes).reduce((values, key) => {
-            const attribute = key in inputAttributes ? inputAttributes[key] : undefined;
-            if (attribute) {
-                // @ts-expect-error
-                const inputValue = key in inputs ? inputs[key] : attribute.getValue(element);
-
-                return { ...values, [key]: inputValue };
-            }
-            return values;
-        }, {});
 
         const styles: CSSObject[] = [DEFAULT_RENDERER_STYLES];
 
@@ -101,6 +109,18 @@ export function createRenderer<
         // Styles applied via registered styles modifiers (applied via the PB editor's right sidebar).
         styles.push(getElementStyles(element));
 
+        // Calculate input values using props and fallback values from `element.data`.
+        const inputValues = useMemo(() => {
+            const elementInputs: ElementInputs = options.inputs || EMPTY_OBJECT;
+            const inputValues = (inputs || EMPTY_OBJECT) as ElementInputValues<TInputs>;
+
+            return Object.entries(elementInputs).reduce((values, [key, input]) => {
+                const inputValue = key in inputValues ? inputValues[key] : input.getDefaultValue(element);
+
+                return { ...values, [key]: inputValue };
+            }, {});
+        }, [element, inputs]);
+
         return (
             <ClassNames>
                 {({ css }) => {
@@ -111,30 +131,64 @@ export function createRenderer<
                     const o = [css(styles), attributes.class].filter(Boolean).join(" ");
 
                     return (
-                        <RendererProvider
+                        <ElementRendererInputs
                             element={element}
-                            attributes={{ ...attributes, className: o }}
-                            meta={{ ...meta, calculatedStyles: styles }}
-                            inputs={inputsValues}
+                            inputs={options.inputs}
+                            values={inputValues}
                         >
-                            {React.createElement(
-                                `pb-${element.type}`,
-                                { ...attributes, class: o },
-                                <>
-                                    {BeforeRenderer ? <BeforeRenderer /> : null}
+                            <RendererProvider
+                                element={element}
+                                attributes={{ ...attributes, className: o }}
+                                meta={{ ...meta, calculatedStyles: styles }}
+                            >
+                                {React.createElement(
+                                    `pb-${element.type}`,
+                                    { ...attributes, class: o },
+                                    <>
+                                        {BeforeRenderer ? <BeforeRenderer /> : null}
 
-                                    {/* Would've liked if the `as unknown as T` part wasn't
+                                        {/* Would've liked if the `as unknown as T` part wasn't
                                         needed, but unfortunately, could not figure it out. */}
-                                    <RendererComponent
-                                        {...(componentProps as unknown as TRenderComponentProps)}
-                                    />
-                                    {AfterRenderer ? <AfterRenderer /> : null}
-                                </>
-                            )}
-                        </RendererProvider>
+                                        <DecoratableRendererComponent
+                                            {...(componentProps as unknown as TRenderComponentProps)}
+                                        />
+                                        {AfterRenderer ? <AfterRenderer /> : null}
+                                    </>
+                                )}
+                            </RendererProvider>
+                        </ElementRendererInputs>
                     );
                 }}
             </ClassNames>
         );
-    };
+    }
+
+    /**
+     * Wrap the concrete element renderer with an extra element, to allow decoration.
+     * This allows developers to intercept props, replace the actual renderer, hide the element, etc.
+     */
+    function Renderer(
+        props: React.ComponentProps<Renderer<TRenderComponentProps & Inputs<TInputs>>>
+    ) {
+        return <ElementRenderer {...props} renderer={ConcreteRenderer} />;
+    }
+
+    return Object.assign(makeDecoratable("ElementRenderer", Renderer), {
+        Component: DecoratableRendererComponent
+    });
 }
+
+const BaseElementRenderer = (
+    props: React.ComponentProps<Renderer<Record<string, any> & Inputs<ElementInputs>>> & {
+        renderer: React.ComponentType<any>;
+    }
+) => {
+    const { renderer, ...rest } = props;
+
+    return React.createElement(renderer, rest);
+};
+
+/**
+ * This component allows developers to intercept all element renderers using a single decorator.
+ */
+export const ElementRenderer = makeDecoratable("ElementRenderer", BaseElementRenderer);

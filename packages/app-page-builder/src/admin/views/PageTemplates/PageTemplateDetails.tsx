@@ -16,7 +16,7 @@ import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/round/d
 
 import { GET_PAGE_TEMPLATE } from "./graphql";
 import { CreatableItem } from "./PageTemplates";
-import PagePreview from "~/admin/plugins/pageDetails/previewContent/PagePreview";
+import { PagePreview } from "~/admin/plugins/pageDetails/previewContent/PagePreview";
 import { PbPageTemplate } from "~/types";
 
 const t = i18n.ns("app-page-builder/admin/views/page-templates/page-template-details");

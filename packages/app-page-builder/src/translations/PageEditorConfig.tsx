@@ -7,6 +7,7 @@ import { PageEditorEventActionCallableState } from "~/pageEditor/types";
 import { ToggleSaveRevisionStateActionEvent } from "~/pageEditor/config/eventActions/saveRevision";
 import { EditorConfig } from "~/editor";
 import debounce from "lodash/debounce";
+import { CollectElementValues } from "~/translations/CollectElementValues";
 
 const EditorProviderDecorator = createDecorator(EditorProvider, Original => {
     return function EditorProvider(props) {
@@ -66,6 +67,7 @@ export const TranslationsPageEditorConfig = () => {
             <EditorProviderDecorator />
             <EditorConfig>
                 <EventActionHandlers />
+                <CollectElementValues />
             </EditorConfig>
         </>
     );

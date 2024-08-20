@@ -38,7 +38,7 @@ function makeDecoratableComponent<T extends GenericComponent>(
     Decoratable.originalName = name;
     Decoratable.displayName = `Decoratable<${name}>`;
 
-    return withDecoratorFactory()(Decoratable as DecoratableComponent<typeof Decoratable>);
+    return withDecoratorFactory()(Decoratable as DecoratableComponent<typeof Component & typeof Decoratable>);
 }
 
 export function makeDecoratableHook<T extends GenericHook>(hook: T) {

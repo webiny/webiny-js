@@ -2,12 +2,13 @@ import React, { useMemo } from "react";
 import styled, { CSSObject } from "@emotion/styled";
 import { ClassNames } from "@emotion/react";
 import { makeDecoratable } from "@webiny/react-composition";
+import isEqual from "lodash/isEqual";
 import { usePageElements } from "~/hooks/usePageElements";
 import { LinkComponent, Element } from "~/types";
 import { DefaultLinkComponent } from "~/renderers/components";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
-import { ElementAttribute } from "~/attributes/ElementAttribute";
+import { ElementInput } from "~/inputs/ElementInput";
 
 const ICON_POSITION_FLEX_DIRECTION: Record<string, CSSObject> = {
     right: { flexDirection: "row-reverse" },
@@ -32,11 +33,6 @@ export interface ButtonClickHandler {
         label: string;
         defaultValue: any;
     }>;
-}
-
-export interface CreateButtonParams {
-    linkComponent?: LinkComponent;
-    clickHandlers?: Array<ButtonClickHandler> | (() => Array<ButtonClickHandler>);
 }
 
 interface ButtonBodyProps {
@@ -79,8 +75,6 @@ const ButtonText = ({ text }: ButtonTextProps) => {
     return <div className={"button-text"}>{text}</div>;
 };
 
-export type ButtonRenderer = ReturnType<typeof createButton>;
-
 export interface ButtonElementData {
     buttonText: string;
     link: {
@@ -99,202 +93,171 @@ export interface ButtonElementData {
 }
 
 export interface Props {
-    buttonText?: string;
-    action?: ButtonElementData["action"];
+    linkComponent?: LinkComponent;
+    clickHandlers?: Array<ButtonClickHandler>;
 }
 
-const isButtonElement = (element: Element): element is Element<ButtonElementData> => {
-    return "buttonText" in element.data;
-};
-
-export const getValueFromElement = (element: Element) => {
-    if (isButtonElement(element)) {
-        return element.data.buttonText;
-    }
-    return null;
-};
-
-const attributes = {
-    buttonText: new ElementAttribute<string>({
+export const elementInputs = {
+    buttonText: new ElementInput<string>({
         name: "buttonText",
-        getValue: (element: Element<ButtonElementData>) => {
+        translatable: true,
+        getDefaultValue: (element: Element<ButtonElementData>) => {
             return element.data.buttonText;
         }
     }),
-    iconPosition: new ElementAttribute<string>({
+    iconPosition: new ElementInput<string>({
         name: "iconPosition",
-        getValue: (element: Element<ButtonElementData>) => {
+        getDefaultValue: (element: Element<ButtonElementData>) => {
             return element.data.icon?.position;
         }
     }),
-    iconColor: new ElementAttribute<string>({
+    iconColor: new ElementInput<string>({
         name: "iconColor",
-        getValue: (element: Element<ButtonElementData>) => {
+        getDefaultValue: (element: Element<ButtonElementData>) => {
             return element.data.icon?.color;
         }
     }),
-    iconSvg: new ElementAttribute<string>({
+    iconSvg: new ElementInput<string>({
         name: "iconSvg",
-        getValue: (element: Element<ButtonElementData>) => {
+        getDefaultValue: (element: Element<ButtonElementData>) => {
             return element.data.icon?.svg;
         }
     }),
-    iconWidth: new ElementAttribute<string>({
+    iconWidth: new ElementInput<string>({
         name: "iconWidth",
-        getValue: (element: Element<ButtonElementData>) => {
+        getDefaultValue: (element: Element<ButtonElementData>) => {
             return element.data.icon?.width;
         }
     }),
-    actionType: new ElementAttribute<ButtonElementData["action"]["actionType"]>({
+    actionType: new ElementInput<ButtonElementData["action"]["actionType"]>({
         name: "actionType",
-        getValue: (element: Element<ButtonElementData>) => {
+        getDefaultValue: (element: Element<ButtonElementData>) => {
             return element.data.action?.actionType;
         }
     }),
-    actionNewTab: new ElementAttribute<ButtonElementData["action"]["newTab"]>({
+    actionNewTab: new ElementInput<ButtonElementData["action"]["newTab"]>({
         name: "actionNewTab",
-        getValue: (element: Element<ButtonElementData>) => {
+        getDefaultValue: (element: Element<ButtonElementData>) => {
             return element.data.action?.newTab;
         }
     }),
-    actionHref: new ElementAttribute<ButtonElementData["action"]["href"]>({
+    actionHref: new ElementInput<ButtonElementData["action"]["href"]>({
         name: "actionHref",
-        getValue: (element: Element<ButtonElementData>) => {
+        translatable: true,
+        getDefaultValue: (element: Element<ButtonElementData>) => {
             return element.data.action?.href;
         }
     })
 };
 
-type GetInputValues<T> = { [K in keyof T]?: T[K] extends ElementAttribute<infer P> ? P : never };
+const Renderer = createRenderer<Props, typeof elementInputs>(
+    props => {
+        const LinkComponent = props.linkComponent || DefaultLinkComponent;
+        const { getStyles } = usePageElements();
+        const { getElement, getInputValues } = useRenderer();
+        const element = getElement<ButtonElementData>();
+        const inputs = getInputValues<typeof elementInputs>();
+        const { link } = element.data;
 
-export const createButton = (params: CreateButtonParams = {}) => {
-    const LinkComponent = params?.linkComponent || DefaultLinkComponent;
+        const buttonText = inputs.buttonText || "";
+        let buttonInnerContent = <ButtonText text={buttonText} />;
 
-    const Renderer = createRenderer<Props, typeof attributes>(
-        props => {
-            const { getStyles } = usePageElements();
-            const { getElement, inputs: untypedInputs } = useRenderer();
-            const element = getElement<ButtonElementData>();
-            const { link } = element.data;
+        const action: ButtonElementData["action"] = {
+            href: inputs.actionHref || "",
+            newTab: inputs.actionNewTab || false,
+            actionType: inputs.actionType || "link"
+        };
 
-            const inputs = untypedInputs as GetInputValues<typeof attributes>;
+        let StyledButtonBody = ButtonBody,
+            StyledButtonIcon;
 
-            const buttonText = inputs.buttonText || props.buttonText || "";
-            let buttonInnerContent = <ButtonText text={buttonText} />;
+        if (inputs.iconSvg) {
+            const position = inputs.iconPosition || "left";
+            const color = inputs.iconColor || "#000";
 
-            const action: ButtonElementData["action"] = {
-                href: inputs.actionHref || "",
-                newTab: inputs.actionNewTab || false,
-                actionType: inputs.actionType || "link"
-            };
+            StyledButtonBody = styled(StyledButtonBody)({
+                display: "flex",
+                ...ICON_POSITION_FLEX_DIRECTION[position]
+            }) as (props: ButtonBodyProps) => JSX.Element;
 
-            let StyledButtonBody = ButtonBody,
-                StyledButtonIcon;
+            StyledButtonIcon = styled(ButtonIcon)(
+                {
+                    width: inputs.iconWidth,
+                    ...ICON_POSITION_MARGIN[position]
+                },
+                getStyles(theme => {
+                    const themeColor = theme.styles.colors?.[color];
+                    return {
+                        color: themeColor || color
+                    };
+                })
+            );
 
-            if (inputs.iconSvg) {
-                const position = inputs.iconPosition || "left";
-                const color = inputs.iconColor || "#000";
+            buttonInnerContent = (
+                <>
+                    <StyledButtonIcon svg={inputs.iconSvg} className={`button-icon-${position}`} />
+                    {buttonInnerContent}
+                </>
+            );
+        }
 
-                StyledButtonBody = styled(StyledButtonBody)({
-                    display: "flex",
-                    ...ICON_POSITION_FLEX_DIRECTION[position]
-                }) as (props: ButtonBodyProps) => JSX.Element;
+        // The `link` property is a legacy property, and it's not used anymore,
+        // but we still need to support it in order to not break existing pages.
+        const isLinkAction = useMemo(() => {
+            return link?.href || ["link", "scrollToElement"].includes(action?.actionType);
+        }, [link?.href, action?.actionType]);
 
-                StyledButtonIcon = styled(ButtonIcon)(
-                    {
-                        width: inputs.iconWidth,
-                        ...ICON_POSITION_MARGIN[position]
-                    },
-                    getStyles(theme => {
-                        const themeColor = theme.styles.colors?.[color];
-                        return {
-                            color: themeColor || color
-                        };
-                    })
-                );
+        if (isLinkAction) {
+            let href = "";
 
-                buttonInnerContent = (
-                    <>
-                        <StyledButtonIcon
-                            svg={inputs.iconSvg}
-                            className={`button-icon-${position}`}
-                        />
-                        {buttonInnerContent}
-                    </>
-                );
-            }
+            // In case the `action.actionType` is `scrollToElement`, the flag will remain false.
+            let newTab = false;
 
-            // The `link` property is a legacy property, and it's not used anymore,
-            // but we still need to support it in order to not break existing pages.
-            const isLinkAction = useMemo(() => {
-                return link?.href || ["link", "scrollToElement"].includes(action?.actionType);
-            }, [link?.href, action?.actionType]);
-
-            if (isLinkAction) {
-                let href = "";
-
-                // In case the `action.actionType` is `scrollToElement`, the flag will remain false.
-                let newTab = false;
-
-                if (link?.href) {
-                    href = link.href;
-                    newTab = link?.newTab;
-                } else {
-                    if (action.actionType === "link") {
-                        href = action.href;
-                        newTab = action.newTab;
-                    }
-
-                    if (action.actionType === "scrollToElement") {
-                        href = "#" + action.scrollToElement;
-                    }
+            if (link?.href) {
+                href = link.href;
+                newTab = link?.newTab;
+            } else {
+                if (action.actionType === "link") {
+                    href = action.href;
+                    newTab = action.newTab;
                 }
 
-                return (
-                    <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>
-                        <StyledButtonBody>{buttonInnerContent}</StyledButtonBody>
-                    </LinkComponent>
-                );
-            }
-
-            let clickHandler: ButtonClickHandler["handler"] | undefined;
-            if (action?.clickHandler) {
-                let clickHandlers: Array<ButtonClickHandler> = [];
-                if (params?.clickHandlers) {
-                    if (typeof params.clickHandlers === "function") {
-                        clickHandlers = params.clickHandlers();
-                    } else {
-                        clickHandlers = params.clickHandlers;
-                    }
+                if (action.actionType === "scrollToElement") {
+                    href = "#" + action.scrollToElement;
                 }
-
-                clickHandler = clickHandlers?.find(
-                    item => item.id === action?.clickHandler
-                )?.handler;
             }
 
             return (
-                <StyledButtonBody
-                    onClick={() => clickHandler?.({ variables: element.data.action.variables! })}
-                >
-                    {buttonInnerContent}
-                </StyledButtonBody>
+                <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>
+                    <StyledButtonBody>{buttonInnerContent}</StyledButtonBody>
+                </LinkComponent>
             );
-        },
-        {
-            themeStyles({ theme, element }) {
-                const { type } = element.data;
-                return theme.styles.elements?.button[type];
-            },
-            propsAreEqual: (prevProps: Props, nextProps: Props) => {
-                return (
-                    prevProps.buttonText === nextProps.buttonText &&
-                    prevProps.action === nextProps.action
-                );
-            },
-            attributes
         }
-    );
 
-    return makeDecoratable("ButtonElement", Renderer);
-};
+        if (action?.clickHandler) {
+            const clickHandler = props.clickHandlers?.find(
+                item => item.id === action?.clickHandler
+            );
+
+            const onClick = clickHandler
+                ? () => clickHandler.handler({ variables: element.data.action.variables! })
+                : () => void 0;
+
+            return <StyledButtonBody onClick={onClick}>{buttonInnerContent}</StyledButtonBody>;
+        }
+
+        return <StyledButtonBody>{buttonInnerContent}</StyledButtonBody>;
+    },
+    {
+        themeStyles({ theme, element }) {
+            const { type } = element.data;
+            return theme.styles.elements?.button[type];
+        },
+        propsAreEqual: (prevProps, nextProps) => {
+            return isEqual(prevProps.inputs, nextProps.inputs);
+        },
+        inputs: elementInputs
+    }
+);
+
+export const ButtonRenderer = makeDecoratable("ButtonRenderer", Renderer);

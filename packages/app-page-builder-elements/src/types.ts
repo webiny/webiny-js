@@ -3,6 +3,7 @@ export * from "@webiny/theme/types";
 import React, { HTMLAttributes } from "react";
 import { type CSSObject } from "@emotion/react";
 import { StylesObject, ThemeBreakpoints, Theme } from "@webiny/theme/types";
+import { ElementInputs, ElementInputValues } from "~/inputs/ElementInput";
 
 export interface Page {
     id: string;
@@ -89,15 +90,15 @@ export interface PageElementsContextValue extends PageElementsProviderProps {
     setStylesCallback: SetStylesCallback;
 }
 
-type GetElement = <TElementData = Record<string, any>>() => Element<TElementData>;
-type GetAttributes = () => HTMLAttributes<HTMLElement>;
+export type GetElement = <TElementData = Record<string, any>>() => Element<TElementData>;
+export type GetAttributes = () => HTMLAttributes<HTMLElement>;
 
 export interface RendererContextValue extends PageElementsContextValue {
     getElement: GetElement;
     getAttributes: GetAttributes;
+    getInputValues: <TInputs extends ElementInputs>() => ElementInputValues<TInputs>;
     beforeRenderer: React.ComponentType | null;
     afterRenderer: React.ComponentType | null;
-    inputs: Record<string, unknown>;
     meta: RendererProviderMeta;
 }
 
@@ -109,7 +110,6 @@ export interface RendererProviderProps {
     element: Element;
     attributes: HTMLAttributes<HTMLElement>;
     meta: RendererProviderMeta;
-    inputs: Record<string, unknown>;
     children: React.ReactNode;
 }
 

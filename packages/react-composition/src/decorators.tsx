@@ -95,9 +95,9 @@ export function withDecoratorFactory<TDecorator>() {
     ) {
         const createDecorator = createDecoratorFactory<TDecorator>()(Component, shouldDecorate);
 
-        return Object.assign(Component, { createDecorator }) as unknown as DecoratableComponent<
-            GenericComponent<GetDecorateeParams<GetDecoratee<TDecoratable>>>
-        > & { createDecorator: typeof createDecorator };
+        return Object.assign(Component, { createDecorator }) as TDecoratable & {
+            createDecorator: typeof createDecorator;
+        };
     };
 }
 
