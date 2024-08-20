@@ -20,7 +20,7 @@ function extractZip(zipPath: string, dir: string): Promise<void> {
 }
 
 export function deleteFile(path: string): Promise<void> {
-    return fs.unlink(path);
+    return fs.remove(path);
 }
 
 const INSTALL_DIR = "/tmp";

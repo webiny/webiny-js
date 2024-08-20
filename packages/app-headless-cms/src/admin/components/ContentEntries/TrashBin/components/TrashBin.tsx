@@ -2,6 +2,7 @@ import React, { useMemo, useCallback } from "react";
 import { useApolloClient, useModel, usePermission } from "~/admin/hooks";
 import { TrashBin as BaseTrashBin } from "@webiny/app-trash-bin";
 import {
+    TrashBinBulkActionsGraphQLGateway,
     TrashBinDeleteItemGraphQLGateway,
     TrashBinItemMapper,
     TrashBinListGraphQLGateway,
@@ -32,6 +33,10 @@ export const TrashBin = () => {
         return new TrashBinRestoreItemGraphQLGatewayWithCallback(getRecord, restoreGateway);
     }, [client, model]);
 
+    const bulkActionsGateway = useMemo(() => {
+        return new TrashBinBulkActionsGraphQLGateway(client, model);
+    }, [client, model]);
+
     const itemMapper = useMemo(() => {
         return new TrashBinItemMapper();
     }, []);
@@ -52,6 +57,9 @@ export const TrashBin = () => {
             render={({ showTrashBin }) => {
                 return <TrashBinButton onClick={showTrashBin} />;
             }}
+            bulkActionsGateway={bulkActionsGateway}
+            deleteBulkActionName={"delete"}
+            restoreBulkActionName={"restore"}
             listGateway={listGateway}
             deleteGateway={deleteGateway}
             restoreGateway={restoreGateway}

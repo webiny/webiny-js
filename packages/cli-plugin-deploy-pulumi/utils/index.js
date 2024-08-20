@@ -1,6 +1,8 @@
 const createProjectApplicationWorkspace = require("./createProjectApplicationWorkspace");
 const getPulumi = require("./getPulumi");
 const getStackOutput = require("./getStackOutput");
+const getStackExport = require("./getStackExport");
+const getDeploymentId = require("./getDeploymentId");
 const { GracefulError } = require("./GracefulError");
 const { GracefulPulumiError } = require("./GracefulPulumiError");
 const createPulumiCommand = require("./createPulumiCommand");
@@ -16,6 +18,8 @@ const getRandomColorForString = require("./getRandomColorForString");
 module.exports = {
     getPulumi,
     getStackOutput,
+    getStackExport,
+    getDeploymentId,
     GracefulError,
     GracefulPulumiError,
     createPulumiCommand,

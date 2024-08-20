@@ -171,6 +171,12 @@ export interface CmsModelFieldDefinition {
     typeDefs?: string;
 }
 
+export interface CmsModelFieldToGraphQLNormalizeInputParams<TField> {
+    model: CmsModel;
+    field: TField;
+    input: GenericRecord<string> | Array<GenericRecord<string>>;
+}
+
 interface CmsModelFieldToGraphQLCreateResolverParams<TField> {
     models: CmsModel[];
     model: CmsModel;
@@ -1561,6 +1567,7 @@ export interface CmsEntryValidateResponse {
  */
 interface CmsEntryResolverFactoryParams {
     model: CmsModel;
+    fieldTypePlugins: CmsFieldTypePlugins;
 }
 
 /**

@@ -1,23 +1,10 @@
 import React from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
-import {
-    CmsEditorFieldPredefinedValuesEntry as Option,
-    CmsModelFieldRendererPlugin
-} from "~/types";
+import { CmsModelFieldRendererPlugin } from "~/types";
 import { Select } from "@webiny/ui/Select";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
-
-const getDefaultValue = (initialValue?: string | null, options?: Option[]): string | undefined => {
-    if (initialValue) {
-        return initialValue || undefined;
-    } else if (!options) {
-        return undefined;
-    }
-    const selected = options.find(option => !!option.selected);
-    return selected ? selected.value : undefined;
-};
 
 const plugin: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
@@ -32,23 +19,18 @@ const plugin: CmsModelFieldRendererPlugin = {
         render({ field, getBind }) {
             const Bind = getBind();
 
-            const { values: options } = field.predefinedValues || {};
+            const { values: options = [] } = field.predefinedValues || {};
+            const defaultOption = options.find(option => !!option.selected);
 
             return (
-                <Bind>
-                    {bind => {
-                        const value = getDefaultValue(bind.value, options);
-                        return (
-                            <Select
-                                {...bind}
-                                value={value}
-                                label={field.label}
-                                description={field.helpText}
-                                options={options}
-                                data-testid={`fr.input.select.${field.label}`}
-                            />
-                        );
-                    }}
+                <Bind defaultValue={defaultOption ? defaultOption.value : undefined}>
+                    <Select
+                        label={field.label}
+                        description={field.helpText}
+                        options={options}
+                        placeholder={field.placeholderText}
+                        data-testid={`fr.input.select.${field.label}`}
+                    />
                 </Bind>
             );
         }

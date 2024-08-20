@@ -78,7 +78,7 @@ describe("Model to AST", () => {
                         type: "dynamicZone",
                         label: "Content",
                         multipleValues: true,
-                        settings: {}
+                        settings: expect.toBeObject()
                     },
                     children: [
                         {
@@ -145,7 +145,7 @@ describe("Model to AST", () => {
                                         fieldId: "settings",
                                         label: "Settings",
                                         type: "object",
-                                        settings: {}
+                                        settings: expect.toBeObject()
                                     },
                                     children: [
                                         {
@@ -166,7 +166,7 @@ describe("Model to AST", () => {
                                                 type: "object",
                                                 label: "SEO",
                                                 multipleValues: true,
-                                                settings: {}
+                                                settings: expect.toBeObject()
                                             },
                                             children: [
                                                 {
@@ -190,7 +190,7 @@ describe("Model to AST", () => {
                                         fieldId: "dynamicZone",
                                         label: "DynamicZone",
                                         type: "dynamicZone",
-                                        settings: {}
+                                        settings: expect.toBeObject()
                                     },
                                     children: [
                                         {
@@ -233,7 +233,7 @@ describe("Model to AST", () => {
                                         fieldId: "emptyDynamicZone",
                                         label: "DynamicZone",
                                         type: "dynamicZone",
-                                        settings: {}
+                                        settings: expect.toBeObject()
                                     },
                                     children: []
                                 }

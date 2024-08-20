@@ -7,7 +7,7 @@ import { StylesObject } from "@webiny/theme/types";
 
 interface LexicalEditorProps {
     type: "heading" | "paragraph";
-    value: LexicalValue;
+    value: LexicalValue | undefined;
     focus?: boolean;
     onChange?: (value: LexicalValue) => void;
     onBlur?: (editorState: LexicalValue) => void;

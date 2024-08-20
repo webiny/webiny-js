@@ -2,21 +2,16 @@ import * as fs from "fs";
 import * as path from "path";
 import fetch from "node-fetch";
 import { getWcpApiUrl } from "@webiny/wcp";
-import { CliContext } from "@webiny/cli/types";
+import { AfterBuildPlugin } from "@webiny/cli-plugin-deploy-pulumi/plugins";
 
-export const injectWcpTelemetryClientCode = {
-    type: "hook-after-build",
-    name: "hook-after-build-inject-wcp-telemetry",
-    async hook({ projectApplication }: Record<string, any>, context: CliContext) {
+export const injectWcpTelemetryClientCode = new AfterBuildPlugin(
+    async ({ projectApplication }, context) => {
         if (!projectApplication.project.config.id) {
             return;
         }
 
         const workspacePath = projectApplication.paths.workspace;
-        const handlersPaths = [
-            path.join(workspacePath, "graphql", "build"),
-            path.join(workspacePath, "headlessCMS", "build")
-        ];
+        const handlersPaths = [path.join(workspacePath, "graphql", "build")];
 
         // 1. Download telemetry client code.
         const latestTelemetryClientUrl = getWcpApiUrl("/clients/latest.js");
@@ -41,4 +36,6 @@ export const injectWcpTelemetryClientCode = {
             context.warning(`WCP client is unavailable; telemetry was disabled.`);
         }
     }
-};
+);
+
+injectWcpTelemetryClientCode.name = "api.after-build.inject-wcp-telemetry-client-code";

@@ -39,7 +39,6 @@ interface LastEvaluatedKey {
 }
 
 interface IndexSettings {
-    number_of_replicas: number;
     refresh_interval: `${number}s`;
 }
 

@@ -110,7 +110,6 @@ export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
                 setState({ checkingUser: false });
             }
         } catch (e) {
-            console.log("error", e);
             setState({ checkingUser: false });
         }
     };

@@ -4,7 +4,6 @@ import { CmsContentEntry } from "~/types";
 import { makeDecoratable } from "@webiny/app-admin";
 import { ModelProvider, useModel } from "~/admin/components/ModelProvider";
 import { Header } from "~/admin/components/ContentEntryForm/Header";
-import { useDefaultValues } from "~/admin/components/ContentEntryForm/useDefaultValues";
 import { useFormRenderer } from "~/admin/components/ContentEntryForm/useFormRenderer";
 import { ContentEntryFormContext, ContentEntryFormProvider } from "./ContentEntryFormProvider";
 import { CustomLayout } from "./CustomLayout";
@@ -53,15 +52,11 @@ export const ContentEntryForm = makeDecoratable(
         const formElementRef = useRef<HTMLDivElement>(null);
         const { model } = useModel();
         const { goToRevision } = useGoToRevision();
-        const defaultValues = useDefaultValues(model);
         const formRenderer = useFormRenderer(model);
 
         const defaultOnAfterCreate = (entry: CmsContentEntry) => {
             goToRevision(entry.id);
         };
-
-        // Determine initial entry.
-        const initialData = entry && entry.id ? entry : defaultValues;
 
         // When entry changes, scroll to the top of the form.
         useEffect(() => {
@@ -72,12 +67,12 @@ export const ContentEntryForm = makeDecoratable(
             setTimeout(() => {
                 formElementRef.current?.scrollTo(0, 0);
             }, 20);
-        }, [initialData.id, formElementRef.current]);
+        }, [entry.id, formElementRef.current]);
 
         return (
             <ContentEntryFormProvider
                 model={model}
-                entry={initialData}
+                entry={entry}
                 onAfterCreate={onAfterCreate || defaultOnAfterCreate}
                 setSaveEntry={setSaveEntry}
                 addItemToListCache={addEntryToListCache}

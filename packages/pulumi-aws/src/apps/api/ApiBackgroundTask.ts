@@ -26,7 +26,7 @@ export const ApiBackgroundTask = createAppModule({
                     return Array.from(new Set([...(arns || []), getLayerArn("sharp")]));
                 }),
                 timeout: 900,
-                memorySize: 512,
+                memorySize: 1024,
                 description: "Performs background tasks."
             }
         });

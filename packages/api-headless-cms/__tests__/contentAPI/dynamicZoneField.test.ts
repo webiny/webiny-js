@@ -4,6 +4,8 @@ import { usePageManageHandler } from "../testHelpers/usePageManageHandler";
 import { usePageReadHandler } from "../testHelpers/usePageReadHandler";
 import { useAuthorManageHandler } from "~tests/testHelpers/useAuthorManageHandler";
 import { CmsModel } from "~tests/types";
+import { ContextPlugin } from "@webiny/api";
+import { CmsContext, CmsEntry } from "~/types";
 
 const singularPageApiName = pageModel.singularApiName;
 
@@ -266,11 +268,45 @@ const setupAuthor = async ({ manager }: SetupAuthorParams) => {
     return authorPublishResponse.data.publishAuthor.data;
 };
 
+type Values = {
+    content: Array<{ _templateId: string }>;
+};
+
 describe("dynamicZone field", () => {
     const manageOpts = { path: "manage/en-US" };
     const previewOpts = { path: "preview/en-US" };
 
-    const manage = usePageManageHandler(manageOpts);
+    const eventEntryContent: {
+        beforeCreate: CmsEntry<Values> | undefined;
+        afterCreate: CmsEntry<Values> | undefined;
+        beforeUpdate: CmsEntry<Values> | undefined;
+        afterUpdate: CmsEntry<Values> | undefined;
+    } = {
+        beforeCreate: undefined,
+        afterCreate: undefined,
+        beforeUpdate: undefined,
+        afterUpdate: undefined
+    };
+
+    const lifecycleEvents = new ContextPlugin<CmsContext>(async (context: CmsContext) => {
+        if (!context.cms) {
+            throw new Error("Missing cms on context.");
+        }
+        context.cms.onEntryBeforeCreate.subscribe(async params => {
+            eventEntryContent.beforeCreate = structuredClone(params.entry) as CmsEntry<Values>;
+        });
+        context.cms.onEntryAfterCreate.subscribe(async params => {
+            eventEntryContent.afterCreate = structuredClone(params.entry) as CmsEntry<Values>;
+        });
+        context.cms.onEntryBeforeUpdate.subscribe(async params => {
+            eventEntryContent.beforeUpdate = structuredClone(params.entry) as CmsEntry<Values>;
+        });
+        context.cms.onEntryAfterUpdate.subscribe(async params => {
+            eventEntryContent.afterUpdate = structuredClone(params.entry) as CmsEntry<Values>;
+        });
+    });
+
+    const manage = usePageManageHandler({ ...manageOpts, bottomPlugins: [lifecycleEvents] });
 
     const authorManager = useAuthorManageHandler({
         ...manageOpts
@@ -443,5 +479,12 @@ describe("dynamicZone field", () => {
                 }
             }
         });
+
+        const tplIsConverted = <T>(tpl: T) => "_templateId" in tpl;
+
+        expect(eventEntryContent.beforeCreate?.values.content.every(tplIsConverted)).toEqual(true);
+        expect(eventEntryContent.afterCreate?.values.content.every(tplIsConverted)).toEqual(true);
+        expect(eventEntryContent.beforeUpdate?.values.content.every(tplIsConverted)).toEqual(true);
+        expect(eventEntryContent.afterUpdate?.values.content.every(tplIsConverted)).toEqual(true);
     });
 });
