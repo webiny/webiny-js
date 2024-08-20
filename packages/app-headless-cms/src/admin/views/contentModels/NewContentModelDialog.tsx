@@ -26,6 +26,7 @@ import { createApiNameValidator } from "~/admin/views/contentModels/helpers/apiN
 import { createNameValidator } from "~/admin/views/contentModels/helpers/nameValidator";
 import { Checkbox } from "@webiny/ui/Checkbox";
 import { IconPicker } from "~/admin/components/IconPicker";
+import { Switch } from "@webiny/ui/Switch";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
 
@@ -180,15 +181,6 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                                 <UID.DialogContent>
                                     <Grid>
                                         <Cell span={12}>
-                                            <Bind name={"singleton"} defaultValue={false}>
-                                                <Checkbox
-                                                    description={t`Create a model as a single entry model (cannot be changed later)`}
-                                                    label={t`A single entry model`}
-                                                    data-testid="cms.newcontentmodeldialog.singleton"
-                                                />
-                                            </Bind>
-                                        </Cell>
-                                        <Cell span={12}>
                                             <Bind
                                                 name={"name"}
                                                 validators={[
@@ -218,7 +210,7 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                                                 />
                                             </Bind>
                                         </Cell>
-                                        <Cell span={12}>
+                                        <Cell span={8}>
                                             <Bind
                                                 name={"pluralApiName"}
                                                 validators={
@@ -237,6 +229,15 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                                                     label={t`Plural API Name`}
                                                     description={t`The plural API name of the content model. For example: AuthorCategories.`}
                                                     data-testid="cms.newcontentmodeldialog.pluralApiName"
+                                                />
+                                            </Bind>
+                                        </Cell>
+                                        <Cell span={4}>
+                                            <Bind name={"singleton"} defaultValue={false}>
+                                                <Switch
+                                                    description={t`Create a model That can hold only one entry. Cannot be changed later.`}
+                                                    label={t`Single entry model`}
+                                                    data-testid="cms.newcontentmodeldialog.singleton"
                                                 />
                                             </Bind>
                                         </Cell>
