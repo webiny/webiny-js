@@ -22,7 +22,7 @@ export interface TextProps
     extends React.HTMLAttributes<HTMLElement>,
         VariantProps<typeof textVariants> {
     as?: TextTags;
-    text: string | React.ReactNode;
+    text: React.ReactNode;
 }
 
 export const Text = ({ size, text, className, as: Tag = "span" }: TextProps) => {

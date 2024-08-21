@@ -35,7 +35,7 @@ export interface HeadingProps
     extends React.HTMLAttributes<HTMLHeadingElement>,
         VariantProps<typeof headingVariants> {
     as?: HeadingTags;
-    text: string | React.ReactNode;
+    text: React.ReactNode;
 }
 
 export const Heading = ({ level, text, className, as }: HeadingProps) => {
@@ -43,7 +43,7 @@ export const Heading = ({ level, text, className, as }: HeadingProps) => {
     const validatedLevel = level && level in TAG_MAP ? level : 1;
 
     // Choose the tag: prefer `as`, otherwise use `TAG_MAP[validatedLevel]`
-    const Tag = as || TAG_MAP[validatedLevel] || TAG_MAP[1];
+    const Tag = as || TAG_MAP[validatedLevel];
 
     return <Tag className={cn(headingVariants({ level, className }))}>{text}</Tag>;
 };
