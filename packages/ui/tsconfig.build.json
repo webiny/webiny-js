@@ -4,7 +4,7 @@
   "references": [
     { "path": "../form/tsconfig.build.json" },
     { "path": "../ui-new/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" },
+    { "path": "../validation/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
