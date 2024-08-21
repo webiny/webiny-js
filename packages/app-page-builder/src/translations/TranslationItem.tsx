@@ -1,14 +1,7 @@
 import { useEffect } from "react";
-import { useTranslations } from "./TranslationContext";
+import { TranslatableItem, useTranslations } from "./TranslationContext";
 
-export interface TranslationItemProps {
-    collection: string;
-    itemId: string;
-    source: any;
-    context?: Record<string, any>;
-}
-
-export const TranslationItem = (props: TranslationItemProps) => {
+export const TranslationItem = (props: TranslatableItem) => {
     const translations = useTranslations();
 
     useEffect(() => {
@@ -17,7 +10,7 @@ export const TranslationItem = (props: TranslationItemProps) => {
         }
 
         translations.setTranslationItem(props);
-    }, [props.source]);
+    }, [props.value]);
 
     return null;
 };

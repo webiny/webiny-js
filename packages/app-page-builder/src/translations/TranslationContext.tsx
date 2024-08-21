@@ -1,15 +1,15 @@
 import React, { useMemo, useRef } from "react";
 
-interface TranslationItem {
-    collection: string;
+export interface TranslatableItem {
+    collectionId: string;
     itemId: string;
-    source: any;
+    value: any;
     context?: Record<string, any>;
 }
 
 export interface TranslationContext {
-    getTranslationItems: () => TranslationItem[];
-    setTranslationItem: (item: TranslationItem) => void;
+    getTranslationItems: () => TranslatableItem[];
+    setTranslationItem: (item: TranslatableItem) => void;
 }
 
 const TranslationContext = React.createContext<TranslationContext | undefined>(undefined);
@@ -19,7 +19,7 @@ interface TranslationProviderProps {
 }
 
 export const TranslationProvider = ({ children }: TranslationProviderProps) => {
-    const translationItemsRef = useRef(new Map<string, TranslationItem>());
+    const translationItemsRef = useRef(new Map<string, TranslatableItem>());
 
     const context = useMemo<TranslationContext>(
         () => ({

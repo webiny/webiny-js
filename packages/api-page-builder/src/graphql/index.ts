@@ -1,9 +1,10 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { createCrud, CreateCrudParams } from "./crud";
 import graphql from "./graphql";
+import { createTranslations } from "~/translations/createTranslations";
+import { PluginCollection } from "@webiny/plugins/types";
 
-export const createPageBuilderGraphQL = (): GraphQLSchemaPlugin[] => {
-    return graphql();
+export const createPageBuilderGraphQL = (): PluginCollection => {
+    return [...graphql(), ...createTranslations()];
 };
 
 export type ContextParams = CreateCrudParams;

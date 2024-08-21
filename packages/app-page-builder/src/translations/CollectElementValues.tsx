@@ -20,9 +20,9 @@ export const CollectElementValues = ElementRendererInputs.createDecorator(Origin
                 }
 
                 translations.setTranslationItem({
-                    collection: `page:${page.id}`,
-                    source: value,
-                    itemId: `${element.id}.${key}`,
+                    collectionId: `page:${page.id}`,
+                    value: value,
+                    itemId: `element:${element.id}.${key}`,
                     context: {
                         element: {
                             id: element.id,
