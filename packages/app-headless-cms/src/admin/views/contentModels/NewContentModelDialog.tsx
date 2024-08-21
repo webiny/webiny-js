@@ -210,7 +210,16 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                                                 />
                                             </Bind>
                                         </Cell>
-                                        <Cell span={8}>
+                                        <Cell span={12}>
+                                            <Bind name={"singleton"} defaultValue={false}>
+                                                <Switch
+                                                    description={t`Create a model that can hold only one entry. Cannot be changed later.`}
+                                                    label={t`Single entry model`}
+                                                    data-testid="cms.newcontentmodeldialog.singleton"
+                                                />
+                                            </Bind>
+                                        </Cell>
+                                        <Cell span={12}>
                                             <Bind
                                                 name={"pluralApiName"}
                                                 validators={
@@ -229,15 +238,6 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                                                     label={t`Plural API Name`}
                                                     description={t`The plural API name of the content model. For example: AuthorCategories.`}
                                                     data-testid="cms.newcontentmodeldialog.pluralApiName"
-                                                />
-                                            </Bind>
-                                        </Cell>
-                                        <Cell span={4}>
-                                            <Bind name={"singleton"} defaultValue={false}>
-                                                <Switch
-                                                    description={t`Create a model That can hold only one entry. Cannot be changed later.`}
-                                                    label={t`Single entry model`}
-                                                    data-testid="cms.newcontentmodeldialog.singleton"
                                                 />
                                             </Bind>
                                         </Cell>
