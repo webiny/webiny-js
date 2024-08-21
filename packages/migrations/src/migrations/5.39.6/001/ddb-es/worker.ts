@@ -278,21 +278,22 @@ if (process.env.WEBINY_MIGRATION_5_39_6_001_BATCH_WRITE_MAX_CHUNK) {
                      */
 
                     const ddbEsLatestRecordKey = `${item.entryId}:L`;
-                    if (ddbEsItemsToBatchRead[ddbEsLatestRecordKey]) {
-                        continue;
+                    if (!ddbEsItemsToBatchRead[ddbEsLatestRecordKey]) {
+                        ddbEsItemsToBatchRead[ddbEsLatestRecordKey] = ddbEsEntryEntity.getBatch({
+                            PK: item.PK,
+                            SK: "L"
+                        });
                     }
 
-                    ddbEsItemsToBatchRead[ddbEsLatestRecordKey] = ddbEsEntryEntity.getBatch({
-                        PK: item.PK,
-                        SK: "L"
-                    });
-
                     const ddbEsPublishedRecordKey = `${item.entryId}:P`;
-                    if (item.status === "published" || !!item.locked) {
-                        ddbEsItemsToBatchRead[ddbEsPublishedRecordKey] = ddbEsEntryEntity.getBatch({
-                            PK: item.PK,
-                            SK: "P"
-                        });
+                    if (!ddbEsItemsToBatchRead[ddbEsPublishedRecordKey]) {
+                        if (item.status === "published" || !!item.locked) {
+                            ddbEsItemsToBatchRead[ddbEsPublishedRecordKey] =
+                                ddbEsEntryEntity.getBatch({
+                                    PK: item.PK,
+                                    SK: "P"
+                                });
+                        }
                     }
                 }
 
@@ -481,15 +482,15 @@ if (process.env.WEBINY_MIGRATION_5_39_6_001_BATCH_WRITE_MAX_CHUNK) {
                                     if (
                                         status.stats.esHealthChecks.unhealthyReasons[
                                             shouldWaitReason
-                                        ]
+                                            ]
                                     ) {
                                         status.stats.esHealthChecks.unhealthyReasons[
                                             shouldWaitReason
-                                        ]++;
+                                            ]++;
                                     } else {
                                         status.stats.esHealthChecks.unhealthyReasons[
                                             shouldWaitReason
-                                        ] = 1;
+                                            ] = 1;
                                     }
                                 }
                             });
