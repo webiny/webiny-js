@@ -21,9 +21,8 @@ const textVariants = cva("font-sans font-normal", {
 export interface TextProps
     extends React.HTMLAttributes<HTMLElement>,
         VariantProps<typeof textVariants> {
-    text: string | React.ReactNode;
-    className?: string;
     as?: TextTags;
+    text: string | React.ReactNode;
 }
 
 export const Text = ({ size, text, className, as: Tag = "span" }: TextProps) => {

@@ -34,9 +34,8 @@ const headingVariants = cva("font-sans font-semibold", {
 export interface HeadingProps
     extends React.HTMLAttributes<HTMLHeadingElement>,
         VariantProps<typeof headingVariants> {
-    text: string | React.ReactNode;
-    className?: string;
     as?: HeadingTags;
+    text: string | React.ReactNode;
 }
 
 export const Heading = ({ level, text, className, as }: HeadingProps) => {
