@@ -1,18 +1,52 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__"],
-  "references": [{ "path": "../form" }, { "path": "../validation" }],
+  "include": [
+    "src",
+    "__tests__"
+  ],
+  "references": [
+    {
+      "path": "../form"
+    },
+    {
+      "path": "../ui-new"
+    },
+    {
+      "path": "../validation"
+    }
+  ],
   "compilerOptions": {
-    "rootDirs": ["./src", "./__tests__"],
+    "rootDirs": [
+      "./src",
+      "./__tests__"
+    ],
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": ["./src/*"],
-      "~tests/*": ["./__tests__/*"],
-      "@webiny/form/*": ["../form/src/*"],
-      "@webiny/form": ["../form/src"],
-      "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "~/*": [
+        "./src/*"
+      ],
+      "~tests/*": [
+        "./__tests__/*"
+      ],
+      "@webiny/form/*": [
+        "../form/src/*"
+      ],
+      "@webiny/form": [
+        "../form/src"
+      ],
+      "@webiny/ui-new/*": [
+        "../ui-new/src/*"
+      ],
+      "@webiny/ui-new": [
+        "../ui-new/src"
+      ],
+      "@webiny/validation/*": [
+        "../validation/src/*"
+      ],
+      "@webiny/validation": [
+        "../validation/src"
+      ]
     },
     "baseUrl": "."
   }

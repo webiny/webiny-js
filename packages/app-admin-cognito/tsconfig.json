@@ -36,8 +36,6 @@
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
-      "@webiny/ui-new/*": ["../ui-new/src/*"],
-      "@webiny/ui-new": ["../ui-new/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     },

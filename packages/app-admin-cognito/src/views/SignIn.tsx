@@ -2,7 +2,7 @@ import React from "react";
 import { makeDecoratable } from "@webiny/app-admin";
 import { Form, Bind, useForm } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import { ButtonPrimary } from "@webiny/ui-new/Button";
+import { ButtonPrimary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Alert } from "@webiny/ui/Alert";
@@ -34,6 +34,7 @@ export interface SignInProps {
 export interface SignInDefaultContentProps extends SignInProps {
     error?: Error | null;
 }
+
 
 const DefaultContent = (props: SignInDefaultContentProps) => {
     const { submit } = useForm();

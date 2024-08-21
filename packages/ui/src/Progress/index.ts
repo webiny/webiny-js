@@ -1,1 +1,4 @@
-export { default as CircularProgress } from "./CircularProgress";
+export * from "@webiny/ui-new/Progress";
+
+
+

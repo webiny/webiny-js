@@ -1,3 +1,5 @@
 export * from "./Button";
-export * from "./IconButton/IconButton";
-export * from "./CopyButton/CopyButton";
+export * from "./ButtonPrimary";
+export * from "./ButtonSecondary";
+export * from "./ButtonDefault";
+export * from "./IconButton";
