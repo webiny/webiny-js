@@ -482,15 +482,15 @@ if (process.env.WEBINY_MIGRATION_5_39_6_001_BATCH_WRITE_MAX_CHUNK) {
                                     if (
                                         status.stats.esHealthChecks.unhealthyReasons[
                                             shouldWaitReason
-                                            ]
+                                        ]
                                     ) {
                                         status.stats.esHealthChecks.unhealthyReasons[
                                             shouldWaitReason
-                                            ]++;
+                                        ]++;
                                     } else {
                                         status.stats.esHealthChecks.unhealthyReasons[
                                             shouldWaitReason
-                                            ] = 1;
+                                        ] = 1;
                                     }
                                 }
                             });
