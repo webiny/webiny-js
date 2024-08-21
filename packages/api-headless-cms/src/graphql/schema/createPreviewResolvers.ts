@@ -20,12 +20,6 @@ export const createPreviewResolvers: CreateReadResolvers = ({
     model,
     fieldTypePlugins
 }) => {
-    if (model.fields.length === 0) {
-        return {
-            Query: {}
-        };
-    }
-
     const createFieldResolvers = createFieldResolversFactory({
         endpointType: "read",
         models,
