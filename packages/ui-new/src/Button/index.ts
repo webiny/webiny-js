@@ -1,2 +1,3 @@
 export * from "./Button";
-export * from "./IconButton";
+export * from "./IconButton/IconButton";
+export * from "./CopyButton/CopyButton";
