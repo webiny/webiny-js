@@ -1,1 +1,1 @@
-export { Button } from "@webiny/ui-new/Button";
+export { Button, ButtonProps } from "@webiny/ui-new/Button";

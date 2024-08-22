@@ -1,10 +1,15 @@
 import React from "react";
-import { Button, ButtonProps } from "@webiny/ui-new/Button";
+import {
+    IconButton as BaseIconButton,
+    IconButtonProps as BaseIconButtonProps
+} from "@webiny/ui-new/Button";
 
-export interface IconButtonProps extends ButtonProps {
-    icon: React.ReactNode;
+export interface IconButtonProps extends BaseIconButtonProps {
+    // @deprecated Use `text` prop instead.
+    children?: React.ReactNode;
 }
 
 export const IconButton = (props: IconButtonProps) => {
-    return <Button {...props} variant={"primary"} />;
+    const { icon, text, children, ...rest } = props;
+    return <BaseIconButton icon={icon} text={text || children} {...rest} />;
 };

@@ -23,5 +23,22 @@ export const Admin = ({ children, createApolloClient }: AdminProps) => {
     const UiStateProvider = createUiStateProvider();
     const DialogsProvider = createDialogsProvider();
 
-    return <CircularProgress label={"Loading..."} />;
+    return (
+        <ApolloProvider>
+            <ThemeProvider>
+                <WcpProvider loader={<CircularProgress label={"Loading..."} />}>
+                    <App>
+                        <Provider hoc={TelemetryProvider} />
+                        <Provider hoc={UiStateProvider} />
+                        <Provider hoc={SearchProvider} />
+                        <Provider hoc={UserMenuProvider} />
+                        <Provider hoc={NavigationProvider} />
+                        <Provider hoc={DialogsProvider} />
+                        <Base />
+                        {children}
+                    </App>
+                </WcpProvider>
+            </ThemeProvider>
+        </ApolloProvider>
+    );
 };
