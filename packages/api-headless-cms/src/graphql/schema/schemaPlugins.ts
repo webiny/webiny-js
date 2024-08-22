@@ -48,48 +48,47 @@ export const generateSchemaPlugins = async (
         type
     });
 
-    models
-        .forEach(model => {
-            if (model.tags?.includes(CMS_MODEL_SINGLETON_TAG)) {
-                const plugin = createCmsGraphQLSchemaPlugin({
-                    typeDefs: createSingularSDL({
-                        models,
-                        model,
-                        fieldTypePlugins,
-                        type
-                    }),
-                    resolvers: createSingularResolvers({
-                        context,
-                        models,
-                        model,
-                        fieldTypePlugins,
-                        type
-                    })
-                });
-                plugin.name = `headless-cms.graphql.schema.singular.${model.modelId}`;
-                schemaPlugins.push(plugin);
-                return;
-            }
-            switch (type) {
-                case "manage":
-                    {
-                        const plugin = createCmsGraphQLSchemaPlugin({
-                            typeDefs: createManageSDL({
-                                models,
-                                model,
-                                fieldTypePlugins,
-                                sorterPlugins
-                            }),
-                            resolvers: createManageResolvers({
-                                models,
-                                model,
-                                fieldTypePlugins,
-                                context
-                            })
-                        });
-                        plugin.name = `headless-cms.graphql.schema.manage.${model.modelId}`;
-                        schemaPlugins.push(plugin);
-                    }
+    models.forEach(model => {
+        if (model.tags?.includes(CMS_MODEL_SINGLETON_TAG)) {
+            const plugin = createCmsGraphQLSchemaPlugin({
+                typeDefs: createSingularSDL({
+                    models,
+                    model,
+                    fieldTypePlugins,
+                    type
+                }),
+                resolvers: createSingularResolvers({
+                    context,
+                    models,
+                    model,
+                    fieldTypePlugins,
+                    type
+                })
+            });
+            plugin.name = `headless-cms.graphql.schema.singular.${model.modelId}`;
+            schemaPlugins.push(plugin);
+            return;
+        }
+        switch (type) {
+            case "manage":
+                {
+                    const plugin = createCmsGraphQLSchemaPlugin({
+                        typeDefs: createManageSDL({
+                            models,
+                            model,
+                            fieldTypePlugins,
+                            sorterPlugins
+                        }),
+                        resolvers: createManageResolvers({
+                            models,
+                            model,
+                            fieldTypePlugins,
+                            context
+                        })
+                    });
+                    plugin.name = `headless-cms.graphql.schema.manage.${model.modelId}`;
+                    schemaPlugins.push(plugin);
+                }
 
                 break;
             case "preview":
