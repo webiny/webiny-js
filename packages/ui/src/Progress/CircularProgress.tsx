@@ -34,3 +34,6 @@ const CircularProgress = (props: CircularProgressProps) => {
 CircularProgress.displayName = "CircularProgress";
 
 export { CircularProgress };
+
+// Needed for backward compatibility.
+export default CircularProgress;
