@@ -66,7 +66,7 @@ export class ImportFromUrlContentEntries<
                 bucket: getBucket()
             })
         });
-        let result: ProcessType | null;
+        let result: ProcessType | "done";
         try {
             result = await combined.process<ProcessType>(async ({ stop }) => {
                 const isClose = isCloseToTimeout();

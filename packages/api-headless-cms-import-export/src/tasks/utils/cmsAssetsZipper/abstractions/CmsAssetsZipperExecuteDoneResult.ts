@@ -1,3 +1,4 @@
 export interface ICmsAssetsZipperExecuteDoneResult {
-    key: string;
+    readonly key: string;
+    readonly checksum: string;
 }

@@ -90,7 +90,8 @@ export class ExportContentEntries<
             });
 
             combined.push({
-                key: result.key
+                key: result.key,
+                checksum: result.checksum
             });
 
             if (result.lastFileProcessed) {

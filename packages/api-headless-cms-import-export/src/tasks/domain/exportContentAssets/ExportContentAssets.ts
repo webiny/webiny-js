@@ -165,7 +165,8 @@ export class ExportContentAssets<
             return response.done({
                 files: files.concat([
                     {
-                        key: result.key
+                        key: result.key,
+                        checksum: result.checksum
                     }
                 ])
             } as O);
@@ -194,7 +195,8 @@ export class ExportContentAssets<
                 entryAfter: result.entryCursor,
                 files: files.concat([
                     {
-                        key: result.key
+                        key: result.key,
+                        checksum: result.checksum
                     }
                 ])
             });

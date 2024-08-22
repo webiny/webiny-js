@@ -255,20 +255,22 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
             return new CmsAssetsZipperExecuteDoneWithoutResult();
         }
 
-        if (!result?.Key) {
+        if (!result?.Key || !result.ETag) {
             throw new Error("Failed to upload the file.");
         }
 
         if (pointerStore.getEntryCursor() || pointerStore.getFileCursor()) {
             return new CmsAssetsZipperExecuteContinueResult({
                 key: result.Key,
+                checksum: result.ETag,
                 entryCursor: pointerStore.getEntryCursor(),
                 fileCursor: pointerStore.getFileCursor()
             });
         }
 
         return new CmsAssetsZipperExecuteDoneResult({
-            key: result.Key
+            key: result.Key,
+            checksum: result.ETag
         });
     }
 }

@@ -128,13 +128,14 @@ export class ZipCombiner implements IZipCombiner {
         }, 100);
 
         const result = await this.zipper.done();
-        if (!result.Key) {
+        if (!result.Key || !result.ETag) {
             throw new Error(`Failed to combine files with prefix "${source}".`);
         }
 
         return {
             lastFileProcessed,
-            key: result.Key
+            key: result.Key,
+            checksum: result.ETag
         };
     }
 

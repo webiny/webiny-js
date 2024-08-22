@@ -21,9 +21,10 @@ export interface IExportContentEntriesControllerInput {
 }
 
 export interface IExportContentEntriesControllerOutputFile {
-    head: string;
-    get: string;
-    type: CmsImportExportFileType;
+    readonly head: string;
+    readonly get: string;
+    readonly checksum: string;
+    readonly type: CmsImportExportFileType;
 }
 
 // export interface ICmsDynamicZoneTemplate

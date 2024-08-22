@@ -238,6 +238,7 @@ export class ExportContentEntriesController<
                 files.push({
                     head,
                     get,
+                    checksum: file.checksum,
                     type: CmsImportExportFileType.ENTRIES
                 });
             }
@@ -248,6 +249,7 @@ export class ExportContentEntriesController<
                 files.push({
                     head,
                     get,
+                    checksum: file.checksum,
                     type: CmsImportExportFileType.ASSETS
                 });
             }

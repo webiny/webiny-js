@@ -4,6 +4,7 @@ import { CmsModel } from "@webiny/api-headless-cms/types";
 export interface IZipCombinerResolveResult {
     lastFileProcessed?: string;
     key: string;
+    checksum: string;
 }
 
 export interface IZipCombinerResolveParams {

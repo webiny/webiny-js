@@ -3,11 +3,11 @@ import { ICmsImportExportValidatedCombinedContentFile } from "~/types";
 import { ICreateUploadCallable, IUpload } from "~/tasks/utils/upload";
 import {
     IImportFromUrlContentEntriesCombined,
-    IImportFromUrlContentEntriesCombinedProcessOnIterationCallable
+    IImportFromUrlContentEntriesCombinedProcessOnIterationCallable,
+    IImportFromUrlContentEntriesCombinedProcessResponseType
 } from "./abstractions/ImportFromUrlContentEntriesCombined";
-import path from "path";
-import { WebinyError } from "@webiny/error";
 import { createSizeSegments } from "~/tasks/utils/helpers/sizeSegments";
+import { convertFromUrlToPathname } from "~/tasks/domain/utils/convertFromUrlToPathname";
 
 interface ImportFromUrlContentEntriesCombinedFile {
     url: string;
@@ -36,7 +36,10 @@ export class ImportFromUrlContentEntriesCombined implements IImportFromUrlConten
 
     public constructor(params: IImportFromUrlContentEntriesCombinedParams) {
         const { input } = params;
-        this.file = this.createFile(params.file);
+        this.file = convertFromUrlToPathname({
+            url: params.file.get,
+            size: params.file.size
+        });
         this.fetch = params.fetch;
         this.next = input?.current === undefined ? 0 : input.current;
         this.upload = params.createUpload(this.file.key);
@@ -44,8 +47,8 @@ export class ImportFromUrlContentEntriesCombined implements IImportFromUrlConten
     }
 
     public async process<T extends string>(
-        onIteration: IImportFromUrlContentEntriesCombinedProcessOnIterationCallable
-    ): Promise<T | null> {
+        onIteration: IImportFromUrlContentEntriesCombinedProcessOnIterationCallable<T>
+    ): Promise<IImportFromUrlContentEntriesCombinedProcessResponseType<T>> {
         let iteration = 0;
 
         while (true) {
@@ -53,9 +56,10 @@ export class ImportFromUrlContentEntriesCombined implements IImportFromUrlConten
 
             if (this.isDone() || !next) {
                 await this.upload.done();
-                return null;
+                return "done";
             }
-            let status: string | number | undefined = undefined;
+            let status: IImportFromUrlContentEntriesCombinedProcessResponseType<T> | undefined =
+                undefined;
             await onIteration({
                 iteration,
                 next: this.next,
@@ -110,31 +114,6 @@ export class ImportFromUrlContentEntriesCombined implements IImportFromUrlConten
 
     public isDone(): boolean {
         return !this.ranges[this.next];
-    }
-
-    private createFile(
-        file: Pick<ICmsImportExportValidatedCombinedContentFile, "get" | "size">
-    ): ImportFromUrlContentEntriesCombinedFile {
-        let pathname: string | undefined;
-        try {
-            pathname = new URL(file.get).pathname;
-        } catch {
-            pathname = path.basename(file.get);
-        }
-        if (!pathname) {
-            throw new WebinyError({
-                message: `Failed to get a file pathname from "${file.get}".`,
-                code: "FAILED_TO_PARSE_FILE",
-                data: {
-                    file
-                }
-            });
-        }
-        return {
-            url: file.get,
-            key: pathname,
-            size: file.size
-        };
     }
 }
 

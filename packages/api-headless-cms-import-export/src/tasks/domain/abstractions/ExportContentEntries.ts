@@ -3,7 +3,8 @@ import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } fr
 import { Context } from "~/types";
 
 export interface IExportContentEntriesInputFile {
-    key: string;
+    readonly key: string;
+    readonly checksum: string;
 }
 
 export interface IExportContentEntriesInput {
@@ -20,7 +21,8 @@ export interface IExportContentEntriesInput {
 }
 
 export interface IExportContentEntriesOutputFile {
-    key: string;
+    readonly key: string;
+    readonly checksum: string;
 }
 
 export interface IExportContentEntriesOutput extends ITaskResponseDoneResultOutput {

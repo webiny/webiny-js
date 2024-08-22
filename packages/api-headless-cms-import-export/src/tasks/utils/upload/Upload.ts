@@ -14,7 +14,9 @@ export interface IUploadConfig {
 }
 
 const defaultFactory = (options: BaseUploadOptions): BaseUpload => {
-    return new BaseUpload(options);
+    return new BaseUpload({
+        ...options
+    });
 };
 
 export class Upload implements IUpload {
@@ -34,7 +36,8 @@ export class Upload implements IUpload {
                 Body: params.stream,
                 Bucket: params.bucket,
                 ContentType: getContentType(params.filename),
-                Key: params.filename
+                Key: params.filename,
+                ChecksumAlgorithm: "SHA256"
             },
             queueSize: params.queueSize || 1,
             partSize: 1024 * 1024 * 5,

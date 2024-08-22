@@ -9,10 +9,12 @@ export interface IImportFromUrlContentEntriesCombinedProcessOnIterationCallable<
     ): Promise<void>;
 }
 
+export type IImportFromUrlContentEntriesCombinedProcessResponseType<T extends string> = T | "done";
+
 export interface IImportFromUrlContentEntriesCombined {
     process<T extends string>(
         onIteration: IImportFromUrlContentEntriesCombinedProcessOnIterationCallable<T>
-    ): Promise<T | null>;
+    ): Promise<IImportFromUrlContentEntriesCombinedProcessResponseType<T>>;
     abort(): Promise<void>;
     getNext(): number;
     isDone(): boolean;
