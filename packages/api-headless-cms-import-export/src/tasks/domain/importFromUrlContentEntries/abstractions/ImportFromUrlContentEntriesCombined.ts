@@ -1,18 +1,18 @@
-export interface IImportFromUrlContentEntriesCombinedProcessOnIterationCallableParams {
+export interface IImportFromUrlContentEntriesCombinedProcessOnIterationCallableParams<T> {
     iteration: number;
     next: number;
-    stop: (status: string | number) => void;
+    stop: (status: T) => void;
 }
-export interface IImportFromUrlContentEntriesCombinedProcessOnIterationCallable {
-    (params: IImportFromUrlContentEntriesCombinedProcessOnIterationCallableParams): Promise<void>;
+export interface IImportFromUrlContentEntriesCombinedProcessOnIterationCallable<T> {
+    (
+        params: IImportFromUrlContentEntriesCombinedProcessOnIterationCallableParams<T>
+    ): Promise<void>;
 }
-
-export type ImportFromUrlContentEntriesCombinedProcessStatus = string;
 
 export interface IImportFromUrlContentEntriesCombined {
-    process(
-        onIteration: IImportFromUrlContentEntriesCombinedProcessOnIterationCallable
-    ): Promise<ImportFromUrlContentEntriesCombinedProcessStatus>;
+    process<T extends string>(
+        onIteration: IImportFromUrlContentEntriesCombinedProcessOnIterationCallable<T>
+    ): Promise<T | null>;
     abort(): Promise<void>;
     getNext(): number;
     isDone(): boolean;

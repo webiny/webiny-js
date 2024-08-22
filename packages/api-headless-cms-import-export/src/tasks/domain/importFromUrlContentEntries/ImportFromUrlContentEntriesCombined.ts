@@ -1,10 +1,9 @@
-import { IImportFromUrlContentEntriesInputValues } from "~/tasks/domain/abstractions/ImportFromUrlContentEntries";
+import { IImportFromUrlContentEntriesInputDownloadValues } from "~/tasks/domain/abstractions/ImportFromUrlContentEntries";
 import { ICmsImportExportValidatedCombinedContentFile } from "~/types";
 import { ICreateUploadCallable, IUpload } from "~/tasks/utils/upload";
 import {
     IImportFromUrlContentEntriesCombined,
-    IImportFromUrlContentEntriesCombinedProcessOnIterationCallable,
-    ImportFromUrlContentEntriesCombinedProcessStatus
+    IImportFromUrlContentEntriesCombinedProcessOnIterationCallable
 } from "./abstractions/ImportFromUrlContentEntriesCombined";
 import path from "path";
 import { WebinyError } from "@webiny/error";
@@ -25,7 +24,7 @@ export interface IImportFromUrlContentEntriesCombinedParams {
     file: Pick<ICmsImportExportValidatedCombinedContentFile, "get" | "size">;
     fetch: typeof fetch;
     createUpload: ICreateUploadCallable;
-    input?: IImportFromUrlContentEntriesInputValues;
+    input?: IImportFromUrlContentEntriesInputDownloadValues;
 }
 
 export class ImportFromUrlContentEntriesCombined implements IImportFromUrlContentEntriesCombined {
@@ -44,9 +43,9 @@ export class ImportFromUrlContentEntriesCombined implements IImportFromUrlConten
         this.ranges = createSizeSegments(this.file.size, "1MB");
     }
 
-    public async process(
+    public async process<T extends string>(
         onIteration: IImportFromUrlContentEntriesCombinedProcessOnIterationCallable
-    ): Promise<ImportFromUrlContentEntriesCombinedProcessStatus> {
+    ): Promise<T | null> {
         let iteration = 0;
 
         while (true) {
@@ -54,7 +53,7 @@ export class ImportFromUrlContentEntriesCombined implements IImportFromUrlConten
 
             if (this.isDone() || !next) {
                 await this.upload.done();
-                return "done";
+                return null;
             }
             let status: string | number | undefined = undefined;
             await onIteration({

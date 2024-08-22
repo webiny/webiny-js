@@ -215,7 +215,7 @@ describe("import from url content entries", () => {
                     type: file.type,
                     size: file.size
                 },
-                combinedFile: {
+                download: {
                     next: 1,
                     done: false
                 }
