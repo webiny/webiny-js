@@ -2,18 +2,13 @@ import * as React from "react";
 import { Text } from "~/Text";
 import { cn } from "~/utils";
 
-interface CircularProgressProps extends React.HTMLAttributes<HTMLDivElement> {
-    label?: React.ReactNode;
-}
-
-interface CircularProgressProps {
-    label?: React.ReactNode;
-    size?: number;
+export interface CircularProgressProps extends React.HTMLAttributes<HTMLDivElement> {
+    text?: React.ReactNode;
     spinnerWidth?: number;
 }
 
 const CircularProgress = React.forwardRef<HTMLDivElement, CircularProgressProps>((props, ref) => {
-    const { label = "Loading...", className, spinnerWidth = 48, ...divProps } = props;
+    const { text = "Loading...", className, spinnerWidth = 48, ...divProps } = props;
 
     return (
         <div
@@ -39,7 +34,7 @@ const CircularProgress = React.forwardRef<HTMLDivElement, CircularProgressProps>
                 >
                     <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                 </svg>
-                {props.label && <Text text={label} />}
+                {props.text && <Text text={text} />}
             </div>
         </div>
     );

@@ -1,4 +1,1 @@
-export * from "@webiny/ui-new/Progress";
-
-
-
+export * from "./CircularProgress";

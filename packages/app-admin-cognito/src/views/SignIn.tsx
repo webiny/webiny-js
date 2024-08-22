@@ -35,7 +35,6 @@ export interface SignInDefaultContentProps extends SignInProps {
     error?: Error | null;
 }
 
-
 const DefaultContent = (props: SignInDefaultContentProps) => {
     const { submit } = useForm();
     const { message, changeState } = useAuthenticator();
