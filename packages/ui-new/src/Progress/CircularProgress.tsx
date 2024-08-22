@@ -8,7 +8,7 @@ export interface CircularProgressProps extends React.HTMLAttributes<HTMLDivEleme
 }
 
 const CircularProgress = React.forwardRef<HTMLDivElement, CircularProgressProps>((props, ref) => {
-    const { text = "Loading...", className, spinnerWidth = 48, ...divProps } = props;
+    const { text = "", className, spinnerWidth = 48, ...divProps } = props;
 
     return (
         <div
