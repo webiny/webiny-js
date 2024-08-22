@@ -1,6 +1,12 @@
 import { createContentModelGroup } from "./contentModelGroup";
 import { CmsModel } from "~/types";
-import { CmsModelInput, createCmsGroup, createCmsModel } from "~/plugins";
+import {
+    CmsGroupPlugin,
+    CmsModelInput,
+    CmsModelPlugin,
+    createCmsGroupPlugin,
+    createCmsModelPlugin
+} from "~/plugins";
 
 const { version: webinyVersion } = require("@webiny/cli/package.json");
 
@@ -1839,7 +1845,7 @@ export const getCmsModel = (modelId: string) => {
 
 export const createModelPlugins = (targets: string[]) => {
     return [
-        createCmsGroup({
+        createCmsGroupPlugin({
             ...contentModelGroup
         }),
         ...targets.map(modelId => {
@@ -1851,7 +1857,23 @@ export const createModelPlugins = (targets: string[]) => {
                 ...(model as Omit<CmsModel, "isPrivate">),
                 noValidate: true
             };
-            return createCmsModel(newModel);
+            return createCmsModelPlugin(newModel);
+        })
+    ];
+};
+
+export const createPluginFromCmsModel = (
+    model: Omit<CmsModel, "isPrivate">
+): (CmsModelPlugin | CmsGroupPlugin)[] => {
+    return [
+        createCmsGroupPlugin(contentModelGroup),
+        createCmsModelPlugin({
+            ...model,
+            group: {
+                id: contentModelGroup.id,
+                name: contentModelGroup.name
+            },
+            noValidate: true
         })
     ];
 };

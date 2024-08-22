@@ -34,6 +34,7 @@ import { OptionsMenu } from "./OptionsMenu";
 import { ReactComponent as DownloadFileIcon } from "@webiny/app-admin/assets/icons/file_download.svg";
 import { ReactComponent as UploadFileIcon } from "@webiny/app-admin/assets/icons/file_upload.svg";
 import { useModelExport } from "./exporting/useModelExport";
+import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
 
 const t = i18n.namespace("FormsApp.ContentModelsDataList");
 
@@ -120,7 +121,20 @@ const ContentModelsDataList = ({
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog({
-        dataTestId: "cms-delete-content-model-dialog"
+        dataTestId: "cms-delete-content-model-dialog",
+        title: "Delete a content model"
+    });
+
+    const { showConfirmation: showConfirmationSingleton } = useConfirmationDialog({
+        dataTestId: "cms-delete-singleton-content-model-dialog",
+        title: "Delete a single entry model",
+        message: (
+            <p>
+                Deleting a single entry content model will also delete the entry in the model.
+                <br />
+                Are you sure you want to delete this content model?
+            </p>
+        )
     });
     const { models, loading, refresh } = useModels();
     const { canDelete, canEdit } = usePermission();
@@ -144,7 +158,11 @@ const ContentModelsDataList = ({
     );
 
     const deleteRecord = async (item: CmsModel): Promise<void> => {
-        showConfirmation(async () => {
+        const confirmation = item.tags.includes(CMS_MODEL_SINGLETON_TAG)
+            ? showConfirmationSingleton
+            : showConfirmation;
+
+        confirmation(async () => {
             await client.mutate<DeleteCmsModelMutationResponse, DeleteCmsModelMutationVariables>({
                 mutation: GQL.DELETE_CONTENT_MODEL,
                 variables: { modelId: item.modelId },
