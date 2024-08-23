@@ -1,20 +1,12 @@
-import React from "react";
-import { default as RcTooltip } from "rc-tooltip";
-import "rc-tooltip/assets/bootstrap_white.css";
-import "./style.scss";
-
-type TooltipPropsContent =
-    | (() => React.ReactChild)
-    | React.ReactChild
-    | React.ReactFragment
-    | React.ReactPortal;
+import React, { useCallback } from "react";
+import { Tooltip as TooltipAdmin, TooltipProps as TooltipPropsAdmin } from "@webiny/ui-new";
 
 export interface TooltipProps {
     // A component (eg. button) which will trigger the tooltip.
     children: React.ReactNode;
 
     // Content which will be shown inside the tooltip.
-    content: TooltipPropsContent;
+    content: React.ReactNode;
 
     // Defines which action will trigger the tooltip: "hover", "click" or "focus".
     trigger?: string;
@@ -34,38 +26,43 @@ export interface TooltipProps {
     className?: string;
 }
 
-interface State {
-    tooltipIsOpen: boolean;
-}
-
 /**
- * Use Tooltip component to display a list of choices, once the handler is triggered.
+ * @deprecated This component is deprecated and will be removed in future releases.
+ * Please use the `<Tooltip />` component from the `@webiny/admin-ui` package instead.
  */
-class Tooltip extends React.Component<TooltipProps, State> {
-    public override state = {
-        tooltipIsOpen: false
-    };
+export const Tooltip = ({
+    children,
+    content,
+    placement,
+    className = "webiny-ui-tooltip"
+}: TooltipProps) => {
+    const mapPlacementToSideAndAlign = useCallback((placement?: string) => {
+        const placementMapping: Record<
+            string,
+            { side: TooltipPropsAdmin["side"]; align: TooltipPropsAdmin["align"] }
+        > = {
+            left: { side: "left", align: undefined },
+            right: { side: "right", align: undefined },
+            top: { side: "top", align: undefined },
+            bottom: { side: "bottom", align: undefined },
+            topLeft: { side: "top", align: "start" },
+            topRight: { side: "top", align: "end" },
+            bottomLeft: { side: "bottom", align: "start" },
+            bottomRight: { side: "bottom", align: "end" }
+        };
 
-    onVisibleChange = (visible?: boolean) => {
-        this.setState({
-            tooltipIsOpen: visible || false
-        });
-    };
+        return placementMapping[placement ?? ""] || { side: undefined, align: undefined };
+    }, []);
 
-    public override render() {
-        return (
-            <RcTooltip
-                animation={"fade"}
-                onVisibleChange={this.onVisibleChange}
-                overlay={this.props.content}
-                {...this.props}
-            >
-                <span className="webiny-ui-tooltip tooltip-content-wrapper">
-                    {this.props.children}
-                </span>
-            </RcTooltip>
-        );
-    }
-}
+    const { side, align } = mapPlacementToSideAndAlign(placement);
 
-export { Tooltip };
+    return (
+        <TooltipAdmin
+            trigger={children}
+            content={content}
+            className={className}
+            side={side}
+            align={align}
+        />
+    );
+};

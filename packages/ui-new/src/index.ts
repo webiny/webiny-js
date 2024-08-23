@@ -6,6 +6,7 @@ export * from "./Drawer";
 export * from "./DropdownMenu";
 export * from "./Input";
 export * from "./Label";
+export * from "./Providers";
 export * from "./Select";
 export * from "./Separator";
 export * from "./Sheet";

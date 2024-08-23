@@ -13,6 +13,7 @@
     { "path": "../react-router" },
     { "path": "../ui" },
     { "path": "../ui-composer" },
+    { "path": "../ui-new" },
     { "path": "../utils" },
     { "path": "../validation" }
   ],
@@ -45,6 +46,8 @@
       "@webiny/ui": ["../ui/src"],
       "@webiny/ui-composer/*": ["../ui-composer/src/*"],
       "@webiny/ui-composer": ["../ui-composer/src"],
+      "@webiny/ui-new/*": ["../ui-new/src/*"],
+      "@webiny/ui-new": ["../ui-new/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
