@@ -4,6 +4,7 @@ const { PackagesBuilder } = require("./buildPackages/PackagesBuilder");
 const pulumiLoginSelectStack = require("./deploy/pulumiLoginSelectStack");
 const executeDeploy = require("./deploy/executeDeploy");
 const executePreview = require("./deploy/executePreview");
+const { setTimeout } = require("node:timers/promises");
 
 module.exports = (params, context) => {
     const command = createPulumiCommand({
@@ -15,6 +16,12 @@ module.exports = (params, context) => {
             const { env, folder, build, deploy } = inputs;
 
             const hookArgs = { context, env, inputs, projectApplication };
+
+            context.info("Webiny version: %s", context.version);
+            console.log();
+
+            // Just so the version stays on the screen for a second, before the process continues.
+            await setTimeout(1000);
 
             if (build) {
                 await runHook({

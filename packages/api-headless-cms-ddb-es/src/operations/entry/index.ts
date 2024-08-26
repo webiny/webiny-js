@@ -40,6 +40,8 @@ import {
 } from "@webiny/api-elasticsearch/types";
 import { CmsEntryStorageOperations, CmsIndexEntry } from "~/types";
 import { createElasticsearchBody } from "./elasticsearch/body";
+import { logIgnoredEsResponseError } from "./elasticsearch/logIgnoredEsResponseError";
+import { shouldIgnoreEsResponseError } from "./elasticsearch/shouldIgnoreEsResponseError";
 import { createLatestRecordType, createPublishedRecordType, createRecordType } from "./recordType";
 import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
 import { WriteRequest } from "@webiny/aws-sdk/client-dynamodb";
@@ -64,24 +66,6 @@ export interface CreateEntriesStorageOperationsParams {
     elasticsearch: Client;
     plugins: PluginsContainer;
 }
-
-const IGNORED_ES_SEARCH_EXCEPTIONS = [
-    "index_not_found_exception",
-    "search_phase_execution_exception"
-];
-
-const shouldIgnoreElasticsearchException = (ex: WebinyError) => {
-    if (IGNORED_ES_SEARCH_EXCEPTIONS.includes(ex.message)) {
-        console.log(`Ignoring Elasticsearch exception: ${ex.message}`);
-        console.log({
-            code: ex.code,
-            data: ex.data,
-            stack: ex.stack
-        });
-        return true;
-    }
-    return false;
-};
 
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
@@ -1449,12 +1433,18 @@ export const createEntriesStorageOperations = (
                 index,
                 body
             });
-        } catch (ex) {
+        } catch (error) {
             /**
              * We will silently ignore the `index_not_found_exception` error and return an empty result set.
              * This is because the index might not exist yet, and we don't want to throw an error.
              */
-            if (shouldIgnoreElasticsearchException(ex)) {
+            if (shouldIgnoreEsResponseError(error)) {
+                logIgnoredEsResponseError({
+                    error,
+                    model,
+                    indexName: index
+                });
+
                 return {
                     hasMoreItems: false,
                     totalCount: 0,
@@ -1462,8 +1452,9 @@ export const createEntriesStorageOperations = (
                     items: []
                 };
             }
-            throw new WebinyError(ex.message, ex.code || "ELASTICSEARCH_ERROR", {
-                error: ex,
+
+            throw new WebinyError(error.message, error.code || "ELASTICSEARCH_ERROR", {
+                error,
                 index,
                 body,
                 model
@@ -2160,15 +2151,21 @@ export const createEntriesStorageOperations = (
                 index,
                 body
             });
-        } catch (ex) {
-            if (shouldIgnoreElasticsearchException(ex)) {
+        } catch (error) {
+            if (shouldIgnoreEsResponseError(error)) {
+                logIgnoredEsResponseError({
+                    error,
+                    model,
+                    indexName: index
+                });
                 return [];
             }
+
             throw new WebinyError(
-                ex.message || "Error in the Elasticsearch query.",
-                ex.code || "ELASTICSEARCH_ERROR",
+                error.message || "Error in the Elasticsearch query.",
+                error.code || "ELASTICSEARCH_ERROR",
                 {
-                    error: ex,
+                    error,
                     index,
                     model,
                     body

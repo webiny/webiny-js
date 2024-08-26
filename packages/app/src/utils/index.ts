@@ -1,3 +1,4 @@
+export * from "./createHashing";
 export * from "./getApiUrl";
 export * from "./getGqlApiUrl";
 export * from "./getHeadlessCmsGqlApiUrl";

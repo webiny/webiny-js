@@ -1,6 +1,7 @@
 import { createApiPulumiApp, CreateApiPulumiAppParams } from "@webiny/pulumi-aws/enterprise";
 import { PluginCollection } from "@webiny/plugins/types";
 import {
+    ensureCoreDeployed,
     executeDataMigrations,
     generateCommonHandlers,
     generateDdbEsHandlers,
@@ -16,6 +17,7 @@ export interface CreateApiAppParams extends CreateApiPulumiAppParams {
 
 export function createApiApp(projectAppParams: CreateApiAppParams = {}) {
     const builtInPlugins = [
+        ensureCoreDeployed,
         injectWcpTelemetryClientCode,
         generateCommonHandlers,
         executeDataMigrations
@@ -38,7 +40,12 @@ export function createApiApp(projectAppParams: CreateApiAppParams = {}) {
             // Default args for the "yarn webiny watch ..." command.
             watch: {
                 // Watch five levels of dependencies, starting from this project application.
-                depth: 5
+                depth: 5,
+
+                // By default, we only enable local development for the "graphql" function.
+                // This can be changed down the line by passing another set of values
+                // to the "watch" command.
+                function: "graphql"
             }
         },
         pulumi: createApiPulumiApp(projectAppParams),

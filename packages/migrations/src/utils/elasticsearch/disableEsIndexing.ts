@@ -18,7 +18,6 @@ export const disableElasticsearchIndexing = async (
             elasticsearchClient: params.elasticsearchClient,
             index,
             settings: {
-                number_of_replicas: 0,
                 refresh_interval: -1
             }
         });

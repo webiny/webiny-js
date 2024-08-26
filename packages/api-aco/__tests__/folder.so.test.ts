@@ -317,7 +317,7 @@ describe("`folder` CRUD", () => {
                         data: null,
                         error: expect.objectContaining({
                             code: "DELETE_FOLDER_WITH_CHILDREN",
-                            message: "Delete all child folders and files before proceeding."
+                            message: "Delete all child folders and entries before proceeding."
                         })
                     }
                 }

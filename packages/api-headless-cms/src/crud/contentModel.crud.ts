@@ -269,8 +269,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
     });
     assignModelBeforeDelete({
         onModelBeforeDelete,
-        plugins: context.plugins,
-        storageOperations
+        context
     });
 
     /**

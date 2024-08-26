@@ -27,7 +27,7 @@ export const scaffold = async (context: CliContext, args: Record<string, any>) =
     if (args.templateName) {
         const scaffoldPlugin = scaffoldPlugins.find(p => p.templateName === args.templateName);
         if (!scaffoldPlugin) {
-            console.log(`🚨 We couldn't find the scaffold with the "${args.templateName}" alias.`);
+            console.log(`🚨 We couldn't find the scaffold with the "${args.templateName}" name.`);
             process.exit(1);
         }
 

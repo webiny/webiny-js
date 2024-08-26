@@ -41,6 +41,8 @@ export class TrashBinPresenter {
             items: this.mapItemsToDTOs(this.itemsRepository.getItems()),
             restoredItems: this.mapItemsToDTOs(this.itemsRepository.getRestoredItems()),
             selectedItems: this.mapItemsToDTOs(this.selectedRepository.getSelectedItems()),
+            allowSelectAll: this.getAllowSelectAll(),
+            isSelectedAll: this.selectedRepository.getSelectedAllItems(),
             meta: MetaMapper.toDto(this.itemsRepository.getMeta()),
             sorting: this.sortingRepository.get().map(sort => SortingMapper.fromDTOtoColumn(sort)),
             loading: this.itemsRepository.getLoading(),
@@ -75,5 +77,14 @@ export class TrashBinPresenter {
             return "1 day";
         }
         return `${this.retentionPeriod} days`;
+    }
+
+    private getAllowSelectAll() {
+        return (
+            this.itemsRepository.getMeta().hasMoreItems &&
+            !!this.itemsRepository.getItems().length &&
+            this.selectedRepository.getSelectedItems().length ===
+                this.itemsRepository.getItems().length
+        );
     }
 }
