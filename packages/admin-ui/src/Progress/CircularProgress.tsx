@@ -3,7 +3,7 @@ import { Text } from "~/Text";
 import { cn } from "~/utils";
 import { makeDecoratable } from "@webiny/react-composition";
 
-export interface CircularProgressProps extends React.HTMLAttributes<HTMLDivElement> {
+interface CircularProgressProps extends React.HTMLAttributes<HTMLDivElement> {
     text?: React.ReactNode;
     spinnerWidth?: number;
 }
@@ -45,4 +45,6 @@ const CircularProgressBase = React.forwardRef<HTMLDivElement, CircularProgressPr
 
 CircularProgressBase.displayName = "CircularProgress";
 
-export const CircularProgress = makeDecoratable("CircularProgress", CircularProgressBase);
+const CircularProgress = makeDecoratable("CircularProgress", CircularProgressBase);
+
+export { CircularProgress, CircularProgressProps };
