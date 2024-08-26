@@ -2,13 +2,14 @@ import React from "react";
 import { ReactComponent as CopyToClipboardIcon } from "@material-design-icons/svg/filled/content_copy.svg";
 import { IconButton, IconButtonProps } from "./IconButton";
 import { useCallback } from "react";
+import { makeDecoratable } from "@webiny/react-composition";
 
-export interface CopyButtonProps extends IconButtonProps {
+interface CopyButtonProps extends IconButtonProps {
     value: string;
     onCopy?: () => void;
 }
 
-const CopyButton = (props: CopyButtonProps) => {
+const CopyButtonBase = (props: CopyButtonProps) => {
     const { value, onCopy, ...rest } = props;
 
     const copyToClipboard = useCallback(() => {
@@ -21,4 +22,6 @@ const CopyButton = (props: CopyButtonProps) => {
     return <IconButton {...rest} onClick={copyToClipboard} icon={<CopyToClipboardIcon />} />;
 };
 
-export { CopyButton };
+const CopyButton = makeDecoratable("CopyButton", CopyButtonBase);
+
+export { CopyButton, CopyButtonProps };

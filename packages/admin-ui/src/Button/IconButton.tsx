@@ -1,11 +1,12 @@
 import React from "react";
 import { Button, ButtonProps } from "./Button";
+import { makeDecoratable } from "@webiny/react-composition";
 
-export interface IconButtonProps extends ButtonProps {
+interface IconButtonProps extends ButtonProps {
     icon: React.ReactNode;
 }
 
-export const IconButton = (props: IconButtonProps) => {
+const IconButtonBase = (props: IconButtonProps) => {
     const { icon, text, ...rest } = props;
     return (
         <Button
@@ -19,3 +20,7 @@ export const IconButton = (props: IconButtonProps) => {
         />
     );
 };
+
+const IconButton = makeDecoratable("IconButton", IconButtonBase);
+
+export { IconButton, IconButtonProps };
