@@ -40,7 +40,7 @@ export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {
                 if (loader.loader && loader.loader.includes("postcss-loader")) {
                     loader.options.postcssOptions.plugins = [
                         ...loader.options.postcssOptions.plugins(),
-                        tailwindcss({ config: require.resolve("@webiny/ui-new/tailwind.config") })
+                        tailwindcss({ config: require.resolve("@webiny/admin-ui/tailwind.config") })
                     ];
                 }
             });

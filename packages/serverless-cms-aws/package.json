@@ -55,7 +55,6 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/pulumi": "0.0.0",
     "@webiny/pulumi-aws": "0.0.0",
-    "@webiny/ui-new": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "chalk": "^4.1.0",
     "fast-glob": "^3.2.7",

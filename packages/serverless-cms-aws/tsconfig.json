@@ -42,7 +42,7 @@
     { "path": "../pulumi-aws" },
     { "path": "../wcp" },
     { "path": "../migrations" },
-    { "path": "../ui-new" }
+    { "path": "../admin-ui" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -135,8 +135,8 @@
       "@webiny/wcp": ["../wcp/src"],
       "@webiny/migrations/*": ["../migrations/src/*"],
       "@webiny/migrations": ["../migrations/src"],
-      "@webiny/ui-new/*": ["../ui-new/src/*"],
-      "@webiny/ui-new": ["../ui-new/src"]
+      "@webiny/admin-ui/*": ["../admin-ui/src/*"],
+      "@webiny/admin-ui": ["../admin-ui/src"]
     },
     "baseUrl": "."
   }

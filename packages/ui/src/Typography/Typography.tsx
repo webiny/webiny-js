@@ -1,7 +1,7 @@
 import React from "react";
 import { TypographyProps as RmwcTypographyProps } from "@rmwc/typography";
 
-import { Heading, HeadingLevels, Text } from "@webiny/ui-new";
+import { Heading, HeadingLevels, Text } from "@webiny/admin-ui";
 
 interface TypographyProps extends RmwcTypographyProps {
     children?: React.ReactNode;
