@@ -44,7 +44,7 @@
     "@rmwc/typography": "^14.2.2",
     "@svgr/webpack": "^6.1.1",
     "@tanstack/react-table": "^8.5.22",
-    "@webiny/ui-new": "0.0.0",
+    "@webiny/admin-ui": "0.0.0",
     "brace": "^0.11.1",
     "classnames": "^2.2.6",
     "cropperjs": "^1.4.3",
@@ -121,7 +121,7 @@
         "material-components-web",
         "@emotion/react",
         "@rmwc/touch-target",
-        "@webiny/ui-new"
+        "@webiny/admin-ui"
       ]
     }
   },

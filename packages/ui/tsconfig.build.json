@@ -3,7 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../form/tsconfig.build.json" },
-    { "path": "../ui-new/tsconfig.build.json" },
+    { "path": "../admin-ui/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ],
   "compilerOptions": {
