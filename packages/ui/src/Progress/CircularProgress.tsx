@@ -2,7 +2,7 @@ import * as React from "react";
 import {
     CircularProgress as CircularProgressBase,
     CircularProgressProps as CircularProgressPropsBase
-} from "@webiny/ui-new/Progress";
+} from "@webiny/admin-ui";
 
 interface CircularProgressProps extends CircularProgressPropsBase {
     /**

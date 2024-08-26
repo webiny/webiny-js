@@ -4,7 +4,7 @@
   "dependencies": {
     "@emotion/react": "^11.10.6",
     "emotion": "^10.0.17",
-    "lexical": "^0.16.0",
+    "lexical": "^0.16.1",
     "react-style-object-to-css": "^1.1.2"
   },
   "devDependencies": {

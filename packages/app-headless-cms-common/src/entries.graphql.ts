@@ -489,3 +489,39 @@ export const createUnpublishMutation = (model: CmsEditorContentModel) => {
             }
         }`;
 };
+
+/**
+ * ############################################
+ * Bulk Action Mutation
+ */
+export interface CmsEntryBulkActionMutationResponse {
+    content: {
+        data?: {
+            id: string;
+        };
+        error?: CmsErrorResponse;
+    };
+}
+
+export interface CmsEntryBulkActionMutationVariables {
+    action: string;
+    where?: {
+        [key: string]: any;
+    };
+    search?: string;
+    data?: {
+        [key: string]: any;
+    };
+}
+
+export const createBulkActionMutation = (model: CmsEditorContentModel) => {
+    return gql`
+        mutation CmsBulkAction${model.singularApiName}($action: BulkAction${model.singularApiName}Name!, $where: ${model.singularApiName}ListWhereInput, $search: String, $data: JSON) {
+            content: bulkAction${model.singularApiName}(action: $action, where: $where, search: $search, data: $data) {
+                 data {
+                    id
+                }
+                error ${ERROR_FIELD}
+            }
+        }`;
+};

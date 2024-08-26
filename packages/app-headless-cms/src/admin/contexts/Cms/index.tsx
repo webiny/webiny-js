@@ -25,7 +25,10 @@ import {
     CmsEntryCreateFromMutationResponse,
     CmsEntryCreateFromMutationVariables,
     CmsEntryGetQueryResponse,
-    CmsEntryGetQueryVariables
+    CmsEntryGetQueryVariables,
+    createBulkActionMutation,
+    CmsEntryBulkActionMutationResponse,
+    CmsEntryBulkActionMutationVariables
 } from "@webiny/app-headless-cms-common";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
 
@@ -37,6 +40,11 @@ interface EntryError {
 
 interface OperationSuccess {
     entry: CmsContentEntry;
+    error?: never;
+}
+
+interface BulkActionOperationSuccess {
+    id: string;
     error?: never;
 }
 
@@ -53,6 +61,7 @@ export type UpdateEntryRevisionResponse = OperationSuccess | OperationError;
 export type DeleteEntryResponse = boolean | OperationError;
 export type PublishEntryRevisionResponse = OperationSuccess | OperationError;
 export type UnpublishEntryRevisionResponse = OperationSuccess | OperationError;
+export type BulkActionResponse = BulkActionOperationSuccess | OperationError;
 
 export interface CreateEntryParams {
     model: CmsModel;
@@ -98,6 +107,13 @@ export interface GetEntryParams {
     id: string;
 }
 
+export interface BulkActionParams {
+    model: CmsModel;
+    action: string;
+    where?: Record<string, any>;
+    data?: Record<string, any>;
+}
+
 export interface CmsContext {
     getApolloClient(locale: string): ApolloClient<any>;
     createApolloClient: CmsProviderProps["createApolloClient"];
@@ -117,6 +133,7 @@ export interface CmsContext {
         params: UnpublishEntryRevisionParams
     ) => Promise<UnpublishEntryRevisionResponse>;
     deleteEntry: (params: DeleteEntryParams) => Promise<DeleteEntryResponse>;
+    bulkAction: (params: BulkActionParams) => Promise<BulkActionResponse>;
 }
 
 export const CmsContext = React.createContext<CmsContext | undefined>(undefined);
@@ -392,6 +409,49 @@ export const CmsProvider = (props: CmsProviderProps) => {
             }
 
             return true;
+        },
+        bulkAction: async ({ model, action, where, data }) => {
+            const mutation = createBulkActionMutation(model);
+            const response = await value.apolloClient.mutate<
+                CmsEntryBulkActionMutationResponse,
+                CmsEntryBulkActionMutationVariables
+            >({
+                mutation,
+                variables: {
+                    action,
+                    where,
+                    data
+                }
+            });
+
+            if (!response.data) {
+                return {
+                    error: {
+                        message: "Missing response data on Bulk Action mutation.",
+                        code: "MISSING_RESPONSE_DATA",
+                        data: {}
+                    }
+                };
+            }
+            const { data: responseData, error } = response.data.content;
+
+            if (error) {
+                return {
+                    error
+                };
+            }
+
+            if (!responseData) {
+                return {
+                    error: {
+                        message: "Missing response data on Bulk Action mutation.",
+                        code: "MISSING_RESPONSE_DATA",
+                        data: {}
+                    }
+                };
+            }
+
+            return responseData;
         }
     };
 

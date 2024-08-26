@@ -1,4 +1,34 @@
+const zlib = require("zlib");
+
 const webinyWatchArgs = JSON.parse(process.env["WEBINY_WATCH"]);
+
+const jsonStringifyAndCompress = input => {
+    const jsonStringInput = JSON.stringify(input);
+    return new Promise(function (resolve, reject) {
+        zlib.gzip(jsonStringInput, {}, function (error, result) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(result);
+            }
+        });
+    });
+};
+
+const decompressAndJsonParse = async input => {
+    const inputBuffer = Buffer.from(input);
+    const jsonStringResult = await new Promise(function (resolve, reject) {
+        zlib.gunzip(inputBuffer, {}, function (error, result) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(result);
+            }
+        });
+    });
+
+    return JSON.parse(jsonStringResult);
+};
 
 exports.handler = async (...args) => {
     const { default: mqtt } = require("./mqtt");
@@ -15,7 +45,7 @@ exports.handler = async (...args) => {
         data: {
             sessionId: webinyWatchArgs.sessionId,
             functionName: webinyWatchArgs.functionName,
-            args,
+            compressedArgs: await jsonStringifyAndCompress(args),
             env: process.env
         }
     };
@@ -34,12 +64,16 @@ exports.handler = async (...args) => {
                 return;
             }
 
-            if (payload.data.error) {
-                reject(payload.data.error);
+            if (payload.data.compressedError) {
+                const decompressedError = await decompressAndJsonParse(
+                    payload.data.compressedError
+                );
+                reject(decompressedError);
                 return;
             }
 
-            resolve(payload.data.result);
+            const decompressedResult = await decompressAndJsonParse(payload.data.compressedResult);
+            resolve(decompressedResult);
         });
     });
 };

@@ -42,7 +42,7 @@
     { "path": "../pulumi-aws/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" },
     { "path": "../migrations/tsconfig.build.json" },
-    { "path": "../ui-new/tsconfig.build.json" }
+    { "path": "../admin-ui/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

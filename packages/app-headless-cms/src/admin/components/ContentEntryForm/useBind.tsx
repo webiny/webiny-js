@@ -69,7 +69,7 @@ export function useBind({ Bind, field }: UseBindProps) {
                     <Bind
                         name={childName || name}
                         validators={childValidators || inputValidators}
-                        defaultValue={index === -1 ? defaultValue : null}
+                        defaultValue={!isMultipleValues ? defaultValue : null}
                     >
                         {bind => {
                             // Multiple-values functions below.
