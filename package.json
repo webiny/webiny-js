@@ -153,8 +153,8 @@
     "verdaccio:start:detached": "yarn pm2 start \"yarn verdaccio:start\"",
     "webiny": "./node_modules/.bin/webiny",
     "wby": "./node_modules/.bin/wby",
-    "webiny-admin-storybook": "cd packages/ui-new && yarn storybook",
-    "webiny-admin-build-storybook": "cd packages/ui-new && cross-env OUT=../../netlify-static yarn build-storybook"
+    "webiny-admin-storybook": "cd packages/admin-ui && yarn storybook",
+    "webiny-admin-build-storybook": "cd packages/admin-ui && cross-env OUT=../../netlify-static yarn build-storybook"
   },
   "husky": {
     "hooks": {
