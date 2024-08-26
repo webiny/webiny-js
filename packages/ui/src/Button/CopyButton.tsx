@@ -1,1 +1,1 @@
-export * from "@webiny/ui-new/Button/CopyButton";
+export * from "@webiny/admin-ui/Button/CopyButton";

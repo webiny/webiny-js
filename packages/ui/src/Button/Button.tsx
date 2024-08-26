@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button as ButtonBase, ButtonProps as ButtonPropsBase } from "@webiny/ui-new/Button";
+import { Button as ButtonBase, ButtonProps as ButtonPropsBase } from "@webiny/admin-ui/Button";
 
 interface ButtonProps extends ButtonPropsBase {
     /**

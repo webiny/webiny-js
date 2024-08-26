@@ -2,7 +2,7 @@ import React from "react";
 import {
     IconButton as BaseIconButton,
     IconButtonProps as BaseIconButtonProps
-} from "@webiny/ui-new/Button";
+} from "@webiny/admin-ui/Button";
 
 export interface IconButtonProps extends BaseIconButtonProps {
     // @deprecated Use `text` prop instead.
