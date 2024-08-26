@@ -16884,6 +16884,7 @@ __metadata:
     "@types/react": 18.2.79
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/react-composition": 0.0.0
     class-variance-authority: ^0.7.0
     clsx: ^2.1.1
     css-loader: ^6.10.0
@@ -18686,7 +18687,6 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@emotion/styled": ^11.10.6
-    "@webiny/admin-ui": 0.0.0
     "@webiny/app": 0.0.0
     "@webiny/app-admin": 0.0.0
     "@webiny/app-cognito-authenticator": 0.0.0
