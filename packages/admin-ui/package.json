@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "The Webiny Admin app.",
+  "description": "The UI component library for Webiny's Admin app.",
   "license": "MIT",
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.0",

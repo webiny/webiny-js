@@ -120,8 +120,7 @@
         "@svgr/webpack",
         "material-components-web",
         "@emotion/react",
-        "@rmwc/touch-target",
-        "@webiny/admin-ui"
+        "@rmwc/touch-target"
       ]
     }
   },
