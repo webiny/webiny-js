@@ -10,7 +10,6 @@
     { "path": "../plugins" },
     { "path": "../react-composition" },
     { "path": "../ui" },
-    { "path": "../ui-new" },
     { "path": "../validation" }
   ],
   "compilerOptions": {
