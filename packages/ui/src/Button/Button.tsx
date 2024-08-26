@@ -1,1 +1,41 @@
-export { Button, ButtonProps } from "@webiny/ui-new/Button";
+import React from "react";
+
+import { Button as ButtonBase, ButtonProps as ButtonPropsBase } from "@webiny/ui-new/Button";
+
+interface ButtonProps extends ButtonPropsBase {
+    /**
+     * @deprecated Will be removed in the future release.
+     * Make button flat (only applicable to Primary button).
+     */
+    flat?: boolean;
+
+    /**
+     * @deprecated Use `size` prop instead.
+     * Make button smaller.
+     */
+    small?: boolean;
+
+    /**
+     * @deprecated Use `text` prop instead.
+     */
+    children?: React.ReactNode;
+
+    /**
+     * @deprecated Will be removed in the future release.
+     * Show ripple effect on button click.
+     */
+    ripple?: boolean;
+}
+
+// We needed this default export for backwards compatibility.
+const Button = (props: ButtonProps) => {
+    return <ButtonBase {...props} />;
+};
+
+Button.displayName = "Button";
+
+export { Button };
+
+// Needed for backward compatibility.
+export default Button;
+

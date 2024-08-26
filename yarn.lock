@@ -21499,6 +21499,7 @@ __metadata:
     "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
+    "@material-design-icons/svg": ^0.14.3
     "@radix-ui/react-avatar": ^1.1.0
     "@radix-ui/react-dialog": ^1.1.1
     "@radix-ui/react-dropdown-menu": ^2.1.1
@@ -21643,16 +21644,13 @@ __metadata:
     "@emotion/react": ^11.10.6
     "@emotion/styled": ^11.10.6
     "@material-design-icons/svg": ^0.14.3
-    "@rmwc/button": ^14.2.2
     "@rmwc/checkbox": ^14.2.2
     "@rmwc/chip": ^14.2.2
     "@rmwc/data-table": ^14.2.2
     "@rmwc/dialog": ^14.2.2
     "@rmwc/drawer": ^14.2.2
     "@rmwc/elevation": ^14.2.2
-    "@rmwc/fab": ^14.2.2
     "@rmwc/grid": ^14.2.2
-    "@rmwc/icon-button": ^14.2.2
     "@rmwc/list": ^14.2.2
     "@rmwc/menu": ^14.2.2
     "@rmwc/radio": ^14.2.2
