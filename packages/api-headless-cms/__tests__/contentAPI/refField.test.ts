@@ -123,7 +123,7 @@ describe("refField", () => {
         return publishAuthorResponse.data.publishAuthor.data;
     };
 
-    test("should create review connected to a product", async () => {
+    it("should create review connected to a product", async () => {
         await setupContentModels(mainHandler);
 
         const category = await createCategory();
@@ -429,6 +429,133 @@ describe("refField", () => {
                     data: [
                         {
                             references
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    }
+                }
+            }
+        });
+    });
+
+    it("should create a product which is not connected to category and list and filter by the category value", async () => {
+        await setupContentModels(mainHandler);
+        const { createProduct, listProducts } = useProductManageHandler({
+            ...manageOpts
+        });
+
+        const [listEmptyResult] = await listProducts({
+            where: {
+                category: null
+            }
+        });
+        expect(listEmptyResult).toMatchObject({
+            data: {
+                listProducts: {
+                    data: [],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 0
+                    }
+                }
+            }
+        });
+
+        const data = {
+            title: "Potato",
+            price: 100,
+            availableOn: "2020-12-25",
+            color: "white",
+            availableSizes: ["s", "m"],
+            image: "file.jpg",
+            category: null
+        };
+        const [createResponse] = await createProduct({
+            data
+        });
+
+        expect(createResponse).toMatchObject({
+            data: {
+                createProduct: {
+                    data: {
+                        id: expect.any(String),
+                        ...data,
+                        category: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listResult] = await listProducts();
+
+        expect(listResult).toMatchObject({
+            data: {
+                listProducts: {
+                    data: [
+                        {
+                            id: expect.any(String),
+                            entryId: expect.any(String),
+                            ...data,
+                            category: null
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    }
+                }
+            }
+        });
+
+        const [whereNullResult] = await listProducts({
+            where: {
+                category: null
+            }
+        });
+        expect(whereNullResult).toMatchObject({
+            data: {
+                listProducts: {
+                    data: [
+                        {
+                            id: expect.any(String),
+                            entryId: expect.any(String),
+                            ...data,
+                            category: null
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    }
+                }
+            }
+        });
+
+        const [whereUndefinedResult] = await listProducts({
+            where: {
+                category: undefined
+            }
+        });
+        expect(whereUndefinedResult).toMatchObject({
+            data: {
+                listProducts: {
+                    data: [
+                        {
+                            id: expect.any(String),
+                            entryId: expect.any(String),
+                            ...data,
+                            category: null
                         }
                     ],
                     error: null,

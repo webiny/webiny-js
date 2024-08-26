@@ -2,15 +2,9 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
-    {
-      "path": "../aws-sdk"
-    },
-    {
-      "path": "../cli-plugin-scaffold"
-    },
-    {
-      "path": "../error"
-    }
+    { "path": "../aws-sdk" },
+    { "path": "../cli-plugin-scaffold" },
+    { "path": "../error" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

@@ -15939,6 +15939,7 @@ __metadata:
     "@babel/preset-env": ^7.24.0
     "@babel/runtime": ^7.24.0
     "@types/jsonpack": ^1.1.0
+    "@webiny/api": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
     "@webiny/aws-sdk": 0.0.0
     "@webiny/cli": 0.0.0
