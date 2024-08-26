@@ -26,8 +26,8 @@ const TooltipContent = React.forwardRef<
 
 TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
-const TooltipArrow = () => (
-    <TooltipPrimitive.Arrow width={12} height={6} className={"fill-popover"} />
+const TooltipArrow = (props: TooltipPrimitive.TooltipArrowProps) => (
+    <TooltipPrimitive.Arrow {...props} width={12} height={6} className={"fill-popover"} />
 );
 
 TooltipArrow.displayName = TooltipPrimitive.Arrow.displayName;
@@ -53,7 +53,9 @@ export const Tooltip = ({
 }: TooltipProps) => {
     return (
         <TooltipRoot delayDuration={500} onOpenChange={onOpenChange}>
-            <TooltipTrigger asChild>{trigger}</TooltipTrigger>
+            <TooltipTrigger asChild>
+                <span>{trigger}</span>
+            </TooltipTrigger>
             <TooltipContent side={side} align={align} sideOffset={4} {...props}>
                 {content}
                 {showArrow && <TooltipArrow />}
