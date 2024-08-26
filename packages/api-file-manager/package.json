@@ -34,6 +34,7 @@
     "@webiny/pubsub": "0.0.0",
     "@webiny/tasks": "0.0.0",
     "@webiny/validation": "0.0.0",
+    "cache-control-parser": "^2.0.6",
     "lodash": "^4.17.21",
     "object-hash": "^3.0.0"
   },

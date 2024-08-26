@@ -1,5 +1,7 @@
-export type ToolbarType = "heading" | "paragraph" | string;
 export type LexicalValue = string;
+
+export type NormalizedInputValue = LexicalValue | null;
+
 export { FontColorPicker } from "~/components/ToolbarActions/FontColorAction";
 
 export type ImageActionType = "image-action";
