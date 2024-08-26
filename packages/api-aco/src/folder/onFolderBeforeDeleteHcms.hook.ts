@@ -1,6 +1,7 @@
 import WebinyError from "@webiny/error";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { AcoContext } from "~/types";
+import { ensureFolderIsEmpty } from "~/folder/ensureFolderIsEmpty";
 
 export const onFolderBeforeDeleteHcmsHook = (context: AcoContext) => {
     context.aco.folder.onFolderBeforeDelete.subscribe(async ({ folder }) => {
@@ -8,15 +9,13 @@ export const onFolderBeforeDeleteHcmsHook = (context: AcoContext) => {
             const { id, type } = folder;
 
             const modelId = type.split(":")[1];
-
             if (!modelId) {
                 return;
             }
 
-            let model: CmsModel | null = null;
+            let model: CmsModel;
             try {
                 model = await context.cms.getModel(modelId);
-
                 if (!model) {
                     return;
                 }
@@ -24,27 +23,22 @@ export const onFolderBeforeDeleteHcmsHook = (context: AcoContext) => {
                 return;
             }
 
-            const [entries] = await context.cms.listEntries(model, {
-                where: {
-                    latest: true,
-                    wbyAco_location: {
-                        folderId: id
-                    }
-                },
-                limit: 1
-            });
-
-            if (entries.length === 0) {
-                return;
-            }
-
-            throw new WebinyError(
-                "Delete all child folders and entries before proceeding.",
-                "DELETE_FOLDER_WITH_CHILDREN",
-                {
-                    folder
+            await ensureFolderIsEmpty({
+                context,
+                folder,
+                hasContentCallback: async () => {
+                    const [content] = await context.cms.listEntries(model!, {
+                        where: {
+                            latest: true,
+                            wbyAco_location: {
+                                folderId: id
+                            }
+                        },
+                        limit: 1
+                    });
+                    return content.length > 0;
                 }
-            );
+            });
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing onFolderBeforeDeleteHcmsHook hook.",

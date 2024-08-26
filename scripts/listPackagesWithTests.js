@@ -99,10 +99,10 @@ const CUSTOM_HANDLERS = {
     "api-headless-cms-ddb-es": () => {
         return ["packages/api-headless-cms-ddb-es --storage=ddb-es,ddb"];
     },
-    "api-headless-cms-tasks": () => {
+    "api-headless-cms-bulk-actions": () => {
         return [
-            "packages/api-headless-cms-tasks --storage=ddb",
-            "packages/api-headless-cms-tasks --storage=ddb-es,ddb"
+            "packages/api-headless-cms-bulk-actions --storage=ddb",
+            "packages/api-headless-cms-bulk-actions --storage=ddb-es,ddb"
         ];
     },
     "api-apw": () => {

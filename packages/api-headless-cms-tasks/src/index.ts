@@ -1,6 +1,3 @@
-import { createTasks } from "~/tasks";
-import { createHandlers } from "~/handlers";
+import { createHcmsBulkActions } from "@webiny/api-headless-cms-bulk-actions";
 
-export * from "./tasks/entries/useCases";
-
-export const createHcmsTasks = () => [createTasks(), createHandlers()];
+export const createHcmsTasks = () => [createHcmsBulkActions()];

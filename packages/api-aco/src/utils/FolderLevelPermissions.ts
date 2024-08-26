@@ -54,12 +54,13 @@ export interface FolderLevelPermissionsParams {
 }
 
 export class FolderLevelPermissions {
+    canUseFolderLevelPermissions: () => boolean;
+
     private readonly getIdentity: Authentication["getIdentity"];
     private readonly getIdentityTeam: () => Promise<Team | null>;
     private readonly listPermissions: () => Promise<SecurityPermission[]>;
     private readonly listAllFoldersCallback: (folderType: string) => Promise<Folder[]>;
     private readonly canUseTeams: () => boolean;
-    private readonly canUseFolderLevelPermissions: () => boolean;
     private readonly isAuthorizationEnabled: () => boolean;
     private allFolders: Record<string, Folder[]> = {};
     private foldersPermissionsLists: Record<string, Promise<FolderPermissionsList> | null> = {};
