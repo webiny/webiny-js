@@ -76,7 +76,7 @@
     "@webiny/migrations": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "ttypescript": "^1.5.12",
-    "typescript": "4.7.4"
+    "typescript": "4.9.5"
   },
   "scripts": {
     "build": "yarn webiny run build",

@@ -9,6 +9,7 @@ import {
     AcoSearchRecordCrud,
     AcoSearchRecordCrudBase,
     AcoSearchRecordStorageOperations,
+    GenericSearchData,
     SearchRecord
 } from "~/record/record.types";
 import { AcoFolderCrud, AcoFolderStorageOperations } from "~/folder/folder.types";
@@ -118,8 +119,12 @@ export interface IAcoApp {
     modifyField: IAcoAppModifyFieldCallable;
 }
 // TODO: determine correct type
-export type IAcoAppOnEntry<T = any> = (entry: SearchRecord<T>) => Promise<SearchRecord<T>>;
-export type IAcoAppOnEntryList<T = any> = (entry: SearchRecord<T>[]) => Promise<SearchRecord<T>[]>;
+export type IAcoAppOnEntry<T extends GenericSearchData = GenericSearchData> = (
+    entry: SearchRecord<T>
+) => Promise<SearchRecord<T>>;
+export type IAcoAppOnEntryList<T extends GenericSearchData = GenericSearchData> = (
+    entry: SearchRecord<T>[]
+) => Promise<SearchRecord<T>[]>;
 export type AcoRequestAction = "create" | "update" | "delete" | "move" | "fetch";
 export type IAcoAppOnAnyRequest = (context: AcoContext, action: AcoRequestAction) => Promise<void>;
 

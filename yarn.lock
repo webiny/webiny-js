@@ -111,15 +111,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ardatan/aggregate-error@npm:0.0.6":
-  version: 0.0.6
-  resolution: "@ardatan/aggregate-error@npm:0.0.6"
-  dependencies:
-    tslib: ~2.0.1
-  checksum: 72334225df487342ca1d9c9dc6b6b7080e9ccba6e85ffbfd04839997067c709c4b058f747ee20bcac0477db6f12c9b098fd030bd7559dbc552a283df87ef4478
-  languageName: node
-  linkType: hard
-
 "@auth0/auth0-react@npm:^2.2.4":
   version: 2.2.4
   resolution: "@auth0/auth0-react@npm:2.2.4"
@@ -8802,29 +8793,52 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/schema@npm:^7.0.0, @graphql-tools/schema@npm:^7.1.2":
-  version: 7.1.5
-  resolution: "@graphql-tools/schema@npm:7.1.5"
+"@graphql-tools/merge@npm:^9.0.6":
+  version: 9.0.6
+  resolution: "@graphql-tools/merge@npm:9.0.6"
   dependencies:
-    "@graphql-tools/utils": ^7.1.2
-    tslib: ~2.2.0
-    value-or-promise: 1.0.6
+    "@graphql-tools/utils": ^10.5.4
+    tslib: ^2.4.0
   peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0
-  checksum: 4baf3a39bd33ef33dbc0cfc04fa671718f48f603b5301ec21d5501145fd270a258dd4ea94d49a8062091d6c2ed35727e31a7992c564cbb14bb4d159f7f2d60f8
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: d9dca559186267a3eedcb6c2fd9b012e91e40a467d3440a8f9a1dbb542d159abde09578716b00b0f9123c8f97c1816bf2df67c9fbf79b0be619d50b5d89240db
   languageName: node
   linkType: hard
 
-"@graphql-tools/utils@npm:^7.1.2":
-  version: 7.10.0
-  resolution: "@graphql-tools/utils@npm:7.10.0"
+"@graphql-tools/schema@npm:^10.0.6":
+  version: 10.0.6
+  resolution: "@graphql-tools/schema@npm:10.0.6"
   dependencies:
-    "@ardatan/aggregate-error": 0.0.6
-    camel-case: 4.1.2
-    tslib: ~2.2.0
+    "@graphql-tools/merge": ^9.0.6
+    "@graphql-tools/utils": ^10.5.4
+    tslib: ^2.4.0
+    value-or-promise: ^1.0.12
   peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0
-  checksum: e40c29608d3380f589f756977f6afd1cc2b96dd08eaa392a412ee320dce98af32e62138ceae752e3db5561776370e3b7766a859eed0b52f8c1e35d0e8fabc6db
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: 3548c7daf7df7a13ae8852379b5589ee2041caabca31e3c14106dfae3e4417b66623a9f33037c93659e84c1129e9ab93ba16138f1fdd43c6c858802d4c9e93a8
+  languageName: node
+  linkType: hard
+
+"@graphql-tools/utils@npm:^10.5.4":
+  version: 10.5.4
+  resolution: "@graphql-tools/utils@npm:10.5.4"
+  dependencies:
+    "@graphql-typed-document-node/core": ^3.1.1
+    cross-inspect: 1.0.1
+    dset: ^3.1.2
+    tslib: ^2.4.0
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: 56b41b276401c9010e47627b0d84336ac840d4e3e7c0124884626f11b92a20a1f1aec97712dd06d8adf5239fc39f4a86d4f4349f6a7028205e577e4c200bf070
+  languageName: node
+  linkType: hard
+
+"@graphql-typed-document-node/core@npm:^3.1.1":
+  version: 3.2.0
+  resolution: "@graphql-typed-document-node/core@npm:3.2.0"
+  peerDependencies:
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: fa44443accd28c8cf4cb96aaaf39d144a22e8b091b13366843f4e97d19c7bfeaf609ce3c7603a4aeffe385081eaf8ea245d078633a7324c11c5ec4b2011bb76d
   languageName: node
   linkType: hard
 
@@ -9745,12 +9759,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/base@npm:^14.0.0":
+"@material/base@npm:14.0.0":
   version: 14.0.0
   resolution: "@material/base@npm:14.0.0"
   dependencies:
     tslib: ^2.1.0
   checksum: ab4c1ea9c8c391e0da130975d97a7eb26d743c6d140d7a3d0f673391850ad2fd37a3948264c05e6354a28d61c9be8d2f489f98dc9378f6617594eab59b591be1
+  languageName: node
+  linkType: hard
+
+"@material/base@patch:@material/base@npm%3A14.0.0#./.yarn/patches/@material-base-npm-14.0.0-36e0a55c42.patch::locator=root-workspace-0b6124%40workspace%3A.":
+  version: 14.0.0
+  resolution: "@material/base@patch:@material/base@npm%3A14.0.0#./.yarn/patches/@material-base-npm-14.0.0-36e0a55c42.patch::version=14.0.0&hash=ed4a27&locator=root-workspace-0b6124%40workspace%3A."
+  dependencies:
+    tslib: ^2.1.0
+  checksum: 85aab81e4e0f13d8bfd6a70c90bef76b0f5a4d3e1e733cbaa344381b26cf1304ede1730263e4ab9dfc3af567c406db69e6bc47dc664266e0597cddd36f9919b5
   languageName: node
   linkType: hard
 
@@ -15110,6 +15133,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/babel__code-frame@npm:^7.0.6":
+  version: 7.0.6
+  resolution: "@types/babel__code-frame@npm:7.0.6"
+  checksum: 5325ab85d95e58fe84279757788ddb0de68bfd6814bc636e868f9ff7b5229915873f28847c4baf48fd3a4a460a73b4ea87bc9e1d78a3a5a60cfc7ca627a722c5
+  languageName: node
+  linkType: hard
+
 "@types/babel__core@npm:^7.1.14":
   version: 7.20.0
   resolution: "@types/babel__core@npm:7.20.0"
@@ -15493,13 +15523,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/inquirer@npm:^7.3.1":
-  version: 7.3.3
-  resolution: "@types/inquirer@npm:7.3.3"
+"@types/inquirer@npm:8.2.10":
+  version: 8.2.10
+  resolution: "@types/inquirer@npm:8.2.10"
   dependencies:
     "@types/through": "*"
-    rxjs: ^6.4.0
-  checksum: 49b21d883ab533dbb84b400fa1aeab2638c37b87978d16f15636316c8d9f70d93a185479cf32081d9013fe2b362db05a83bdc3725771cc93d8bdab9182a96ab9
+    rxjs: ^7.2.0
+  checksum: e576823345146e939e93e06fc5a81baa5231f0113b669191155cd5f5925b3e897d3a3c42c0be8b3e7b0b188b7e05d1cf42011cc2da4d123f7e58940caf9cd17f
   languageName: node
   linkType: hard
 
@@ -16899,7 +16929,7 @@ __metadata:
     tailwindcss: ^3.4.6
     tailwindcss-animate: ^1.0.7
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
     vaul: ^0.9.1
   languageName: unknown
   linkType: soft
@@ -16941,7 +16971,7 @@ __metadata:
     prettier: ^2.8.3
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
-    typescript: ^4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -16970,7 +17000,7 @@ __metadata:
     rimraf: ^5.0.5
     sinon: ^9.0.2
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -16990,7 +17020,7 @@ __metadata:
     jest-dynalite: ^3.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17020,7 +17050,7 @@ __metadata:
     lodash: ^4.17.21
     md5: ^2.3.0
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17049,7 +17079,7 @@ __metadata:
     jest-dynalite: ^3.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17096,7 +17126,7 @@ __metadata:
     rimraf: ^5.0.5
     sinon: ^9.0.2
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17133,7 +17163,7 @@ __metadata:
     "@webiny/utils": 0.0.0
     graphql: ^15.8.0
     ttypescript: ^1.5.13
-    typescript: ^4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17149,7 +17179,7 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17171,7 +17201,7 @@ __metadata:
     jest-dynalite: ^3.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17187,7 +17217,7 @@ __metadata:
     "@webiny/tasks": 0.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17205,7 +17235,7 @@ __metadata:
     "@webiny/tasks": 0.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17223,7 +17253,7 @@ __metadata:
     "@webiny/tasks": 0.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17242,7 +17272,7 @@ __metadata:
     jwk-to-pem: ^2.0.1
     node-fetch: ^2.6.13
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17266,7 +17296,7 @@ __metadata:
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
     p-retry: ^4.6.2
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17301,7 +17331,7 @@ __metadata:
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
     type-fest: ^2.19.0
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17322,7 +17352,7 @@ __metadata:
     elastic-ts: ^0.8.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17349,7 +17379,7 @@ __metadata:
     jsonpack: ^1.1.5
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17382,7 +17412,7 @@ __metadata:
     rimraf: ^5.0.5
     sanitize-filename: ^1.6.3
     sharp: 0.32.6
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17422,7 +17452,7 @@ __metadata:
     object-hash: ^3.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17455,7 +17485,7 @@ __metadata:
     jest-dynalite: ^3.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17482,7 +17512,7 @@ __metadata:
     jest-dynalite: ^3.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17530,7 +17560,7 @@ __metadata:
     rimraf: ^5.0.5
     slugify: ^1.2.9
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17561,7 +17591,7 @@ __metadata:
     "@webiny/wcp": 0.0.0
     graphql: ^15.8.0
     ttypescript: ^1.5.13
-    typescript: ^4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17592,7 +17622,7 @@ __metadata:
     "@webiny/wcp": 0.0.0
     graphql: ^15.8.0
     ttypescript: ^1.5.13
-    typescript: ^4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17636,7 +17666,7 @@ __metadata:
     rimraf: ^5.0.5
     sinon: ^9.0.2
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17665,7 +17695,7 @@ __metadata:
     jsonpack: ^1.1.5
     lodash: ^4.17.21
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17694,7 +17724,7 @@ __metadata:
     "@webiny/tasks": 0.0.0
     "@webiny/utils": 0.0.0
     ttypescript: ^1.5.13
-    typescript: ^4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17708,7 +17738,7 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17717,10 +17747,12 @@ __metadata:
   resolution: "@webiny/api-headless-cms@workspace:packages/api-headless-cms"
   dependencies:
     "@babel/cli": ^7.23.9
+    "@babel/code-frame": ^7.24.7
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
     "@babel/runtime": ^7.24.0
-    "@graphql-tools/schema": ^7.1.2
+    "@graphql-tools/schema": ^10.0.6
+    "@types/babel__code-frame": ^7.0.6
     "@webiny/api": 0.0.0
     "@webiny/api-i18n": 0.0.0
     "@webiny/api-security": 0.0.0
@@ -17740,7 +17772,6 @@ __metadata:
     "@webiny/utils": 0.0.0
     "@webiny/validation": 0.0.0
     apollo-graphql: ^0.9.5
-    code-frame: ^5.0.0
     dot-prop: ^6.0.1
     get-yarn-workspaces: ^1.0.2
     graphql: ^15.7.2
@@ -17757,7 +17788,7 @@ __metadata:
     sinon: ^9.0.2
     slugify: ^1.4.0
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
     write-json-file: ^4.3.0
     zod: ^3.22.4
   languageName: unknown
@@ -17777,7 +17808,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     graphql: ^15.7.2
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17808,7 +17839,7 @@ __metadata:
     jest-dynalite: ^3.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17840,7 +17871,7 @@ __metadata:
     jest: ^29.7.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17878,7 +17909,7 @@ __metadata:
     nodemailer: ^6.9.12
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
     zod: ^3.22.4
   languageName: unknown
   linkType: soft
@@ -17912,7 +17943,7 @@ __metadata:
     graphql: ^15.8.0
     lodash: ^4.17.21
     ttypescript: ^1.5.13
-    typescript: ^4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17939,7 +17970,7 @@ __metadata:
     jest-dynalite: ^3.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -17991,7 +18022,7 @@ __metadata:
     rimraf: ^5.0.5
     stream: ^0.0.2
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
     uniqid: ^5.2.0
     yauzl: ^2.10.0
   languageName: unknown
@@ -18044,7 +18075,7 @@ __metadata:
     lodash: ^4.17.21
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18076,7 +18107,7 @@ __metadata:
     lodash: ^4.17.21
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18125,7 +18156,7 @@ __metadata:
     rimraf: ^5.0.5
     stream: ^0.0.2
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
     uniqid: ^5.2.0
     zod: ^3.22.4
   languageName: unknown
@@ -18152,7 +18183,7 @@ __metadata:
     "@webiny/utils": 0.0.0
     lodash: ^4.17.21
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18178,7 +18209,7 @@ __metadata:
     prettier: ^2.8.3
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18217,7 +18248,7 @@ __metadata:
     shortid: ^2.2.16
     srcset: ^4.0.0
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18251,7 +18282,7 @@ __metadata:
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
     type-fest: ^2.19.0
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18280,7 +18311,7 @@ __metadata:
     node-fetch: ^2.6.13
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18308,7 +18339,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     md5: ^2.3.0
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18333,7 +18364,7 @@ __metadata:
     jwk-to-pem: ^2.0.1
     node-fetch: ^2.6.13
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18353,7 +18384,7 @@ __metadata:
     jest-dynalite: ^3.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18392,7 +18423,7 @@ __metadata:
     minimatch: ^5.1.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18423,7 +18454,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18443,7 +18474,7 @@ __metadata:
     jest-dynalite: ^3.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18468,7 +18499,7 @@ __metadata:
     jest-dynalite: ^3.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18492,7 +18523,7 @@ __metadata:
     jest-dynalite: ^3.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18510,7 +18541,7 @@ __metadata:
     jest: ^29.7.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18535,7 +18566,7 @@ __metadata:
     node-fetch: ^2.6.13
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18571,7 +18602,7 @@ __metadata:
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
     type-fest: ^2.19.0
-    typescript: 4.7.4
+    typescript: 4.9.5
     zod: ^3.22.4
   languageName: unknown
   linkType: soft
@@ -18591,7 +18622,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18642,7 +18673,7 @@ __metadata:
     slugify: ^1.2.9
     store: ^2.0.12
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
     zod: ^3.22.4
   languageName: unknown
   linkType: soft
@@ -18684,7 +18715,7 @@ __metadata:
     react-helmet: ^6.1.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18720,7 +18751,7 @@ __metadata:
     react-dom: 18.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18762,7 +18793,7 @@ __metadata:
     react-dom: 18.2.0
     react-helmet: ^6.1.0
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18805,7 +18836,7 @@ __metadata:
     rimraf: ^5.0.5
     store: ^2.0.12
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18845,7 +18876,7 @@ __metadata:
     react-helmet: ^6.1.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18914,7 +18945,7 @@ __metadata:
     rimraf: ^5.0.5
     store: ^2.0.12
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -18965,7 +18996,7 @@ __metadata:
     react-spinner-material: 1.1.4
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19004,7 +19035,7 @@ __metadata:
     lodash: ^4.17.21
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   peerDependencies:
     react: 18.2.0
   languageName: unknown
@@ -19029,7 +19060,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19045,7 +19076,7 @@ __metadata:
     graphql-tag: ^2.12.6
     p-retry: ^4.6.2
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19110,7 +19141,7 @@ __metadata:
     react-lazy-load: ^3.1.14
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
     zod: ^3.22.4
   languageName: unknown
   linkType: soft
@@ -19177,7 +19208,7 @@ __metadata:
     rimraf: ^5.0.5
     shortid: ^2.2.14
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19213,7 +19244,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19244,7 +19275,7 @@ __metadata:
     react: 18.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19326,7 +19357,7 @@ __metadata:
     react-virtualized: ^9.21.2
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
     use-deep-compare-effect: ^1.6.1
   languageName: unknown
   linkType: soft
@@ -19355,7 +19386,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19397,7 +19428,7 @@ __metadata:
     react-dom: 18.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19435,7 +19466,7 @@ __metadata:
     react-helmet: ^6.1.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19480,7 +19511,7 @@ __metadata:
     recoil: ^0.7.7
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19506,7 +19537,7 @@ __metadata:
     facepaint: ^1.2.1
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   peerDependencies:
     "@editorjs/editorjs": ^2.20.1
     aos: ^2.3.4
@@ -19628,7 +19659,7 @@ __metadata:
     store: ^2.0.12
     swiper: ^9.3.2
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
     uniqid: ^5.0.3
   languageName: unknown
   linkType: soft
@@ -19648,7 +19679,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19686,7 +19717,7 @@ __metadata:
     react-dom: 18.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19724,7 +19755,7 @@ __metadata:
     react-helmet: ^6.1.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19748,7 +19779,7 @@ __metadata:
     react-dom: 18.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19801,7 +19832,7 @@ __metadata:
     react-dom: 18.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19833,7 +19864,7 @@ __metadata:
     rimraf: ^5.0.5
     store: ^2.0.12
     ttypescript: ^1.3.2
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19875,7 +19906,7 @@ __metadata:
     react-dom: 18.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19918,7 +19949,7 @@ __metadata:
     react-dom: 18.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19941,7 +19972,7 @@ __metadata:
     execa: ^5.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   peerDependencies:
     react: 18.2.0
   languageName: unknown
@@ -19978,7 +20009,7 @@ __metadata:
     react-dom: 18.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -19997,7 +20028,7 @@ __metadata:
     "@webiny/utils": 0.0.0
     mobx: ^6.9.0
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20024,7 +20055,7 @@ __metadata:
     react-dom: 18.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20060,7 +20091,7 @@ __metadata:
     reset-css: ^5.0.1
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20084,7 +20115,7 @@ __metadata:
     react-dom: 18.2.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20131,7 +20162,7 @@ __metadata:
     react-dom: 18.2.0
     rimraf: ^5.0.5
     ts-invariant: ^0.10.3
-    typescript: 4.7.4
+    typescript: 4.9.5
     warning: ^4.0.2
   languageName: unknown
   linkType: soft
@@ -20186,7 +20217,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/utils": 0.0.0
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20231,7 +20262,7 @@ __metadata:
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
-    "@types/inquirer": ^7.3.1
+    "@types/inquirer": 8.2.10
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
     "@webiny/cli": 0.0.0
@@ -20247,7 +20278,7 @@ __metadata:
     replace-in-path: ^1.1.0
     rimraf: ^5.0.5
     terminal-link: ^2.1.1
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20258,7 +20289,7 @@ __metadata:
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
-    "@types/inquirer": ^7.3.1
+    "@types/inquirer": 8.2.10
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
     "@types/validate-npm-package-name": ^3.0.3
@@ -20268,13 +20299,13 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/validation": 0.0.0
     chalk: ^4.1.0
-    inquirer: ^7.3.3
+    inquirer: 8.2.6
     js-base64: ^3.6.0
     octokit: ^3.1.2
     open: ^8.0.6
     rimraf: ^5.0.5
     terminal-link: ^2.1.1
-    typescript: 4.7.4
+    typescript: 4.9.5
     validate-npm-package-name: ^3.0.0
   languageName: unknown
   linkType: soft
@@ -20286,7 +20317,7 @@ __metadata:
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
-    "@types/inquirer": ^7.3.1
+    "@types/inquirer": 8.2.10
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
     "@types/validate-npm-package-name": ^3.0.3
@@ -20304,7 +20335,7 @@ __metadata:
     replace-in-path: ^1.1.0
     rimraf: ^5.0.5
     ts-morph: ^11.0.0
-    typescript: 4.7.4
+    typescript: 4.9.5
     validate-npm-package-name: ^3.0.0
     write-json-file: ^4.3.0
   languageName: unknown
@@ -20317,7 +20348,7 @@ __metadata:
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
-    "@types/inquirer": ^7.3.1
+    "@types/inquirer": 8.2.10
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
     "@webiny/cli": 0.0.0
@@ -20331,7 +20362,7 @@ __metadata:
     replace-in-path: ^1.1.0
     rimraf: ^5.0.5
     terminal-link: ^2.1.1
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20342,7 +20373,7 @@ __metadata:
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
-    "@types/inquirer": ^7.3.1
+    "@types/inquirer": 8.2.10
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
     "@webiny/cli": 0.0.0
@@ -20359,7 +20390,7 @@ __metadata:
     replace-in-path: ^1.1.0
     rimraf: ^5.0.5
     terminal-link: ^2.1.1
-    typescript: 4.7.4
+    typescript: 4.9.5
     write-json-file: ^4.3.0
   languageName: unknown
   linkType: soft
@@ -20371,7 +20402,7 @@ __metadata:
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
-    "@types/inquirer": ^7.3.1
+    "@types/inquirer": 8.2.10
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
     "@webiny/cli": 0.0.0
@@ -20389,7 +20420,7 @@ __metadata:
     rimraf: ^5.0.5
     terminal-link: ^2.1.1
     ts-morph: ^11.0.0
-    typescript: 4.7.4
+    typescript: 4.9.5
     write-json-file: ^4.3.0
   languageName: unknown
   linkType: soft
@@ -20401,7 +20432,7 @@ __metadata:
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
-    "@types/inquirer": ^7.3.1
+    "@types/inquirer": 8.2.10
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
     "@webiny/cli": 0.0.0
@@ -20417,7 +20448,7 @@ __metadata:
     replace-in-path: ^1.1.0
     rimraf: ^5.0.5
     terminal-link: ^2.1.1
-    typescript: 4.7.4
+    typescript: 4.9.5
     write-json-file: ^4.3.0
   languageName: unknown
   linkType: soft
@@ -20429,7 +20460,7 @@ __metadata:
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
-    "@types/inquirer": ^7.3.1
+    "@types/inquirer": 8.2.10
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
     "@types/validate-npm-package-name": ^3.0.3
@@ -20446,7 +20477,7 @@ __metadata:
     pluralize: ^8.0.0
     replace-in-path: ^1.1.0
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
     validate-npm-package-name: ^3.0.0
     write-json-file: ^4.3.0
   languageName: unknown
@@ -20459,7 +20490,7 @@ __metadata:
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
-    "@types/inquirer": ^7.3.1
+    "@types/inquirer": 8.2.10
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
     "@types/validate-npm-package-name": ^3.0.3
@@ -20473,7 +20504,7 @@ __metadata:
     ncp: ^2.0.0
     replace-in-path: ^1.1.0
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
     validate-npm-package-name: ^3.0.0
     write-json-file: ^4.3.0
   languageName: unknown
@@ -20487,7 +20518,7 @@ __metadata:
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
     "@babel/runtime": ^7.24.0
-    "@types/inquirer": ^7.3.1
+    "@types/inquirer": 8.2.10
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -20495,13 +20526,13 @@ __metadata:
     execa: ^5.0.0
     fast-glob: ^3.2.7
     find-up: ^5.0.0
-    inquirer: ^7.3.3
+    inquirer: 8.2.6
     load-json-file: ^6.2.0
     ora: 4.1.1
     prettier: ^2.8.3
     rimraf: ^5.0.5
     ts-morph: ^11.0.0
-    typescript: 4.7.4
+    typescript: 4.9.5
     write-json-file: ^4.3.0
   languageName: unknown
   linkType: soft
@@ -20536,14 +20567,14 @@ __metadata:
     find-up: 5.0.0
     fs-extra: ^11.2.0
     graphql-request: ^3.7.0
-    inquirer: ^7.3.3
+    inquirer: 8.2.6
     is-ci: ^3.0.0
     ncp: 2.0.0
     open: ^8.0.6
     pirates: ^4.0.1
     semver: ^7.3.5
     ts-morph: ^11.0.0
-    typescript: 4.7.4
+    typescript: 4.9.5
     uniqid: 5.4.0
     yargs: ^17.4.0
   bin:
@@ -20564,7 +20595,7 @@ __metadata:
     fast-glob: ^3.2.7
     fs-extra: ^11.2.0
     get-yarn-workspaces: 1.0.2
-    inquirer: 7.3.3
+    inquirer: 8.2.6
     load-json-file: 6.2.0
     lodash: ^4.17.21
     open: ^8.4.0
@@ -20602,7 +20633,7 @@ __metadata:
     pino-pretty: ^9.4.0
     rimraf: ^5.0.5
     semver: ^7.3.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20631,7 +20662,7 @@ __metadata:
     lodash: ^4.17.21
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20644,7 +20675,7 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20658,7 +20689,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.15
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20674,7 +20705,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20701,7 +20732,7 @@ __metadata:
     mobx-react-lite: ^3.4.3
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
   peerDependencies:
     react: 18.2.0
   languageName: unknown
@@ -20738,7 +20769,7 @@ __metadata:
     fastify: 4.11.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20758,7 +20789,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     jest: ^29.7.0
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20775,7 +20806,7 @@ __metadata:
     "@webiny/db": 0.0.0
     "@webiny/project-utils": 0.0.0
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20787,7 +20818,7 @@ __metadata:
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
     "@babel/runtime": ^7.24.0
-    "@graphql-tools/schema": ^7.0.0
+    "@graphql-tools/schema": ^10.0.6
     "@webiny/api": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
@@ -20803,7 +20834,7 @@ __metadata:
     jest-mock-console: ^1.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20823,7 +20854,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     node-fetch: ^2.6.13
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20848,7 +20879,7 @@ __metadata:
     fastify: 4.11.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -20867,7 +20898,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     lodash: ^4.17.21
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   peerDependencies:
     react: 18.2.0
   languageName: unknown
@@ -20894,7 +20925,7 @@ __metadata:
     rimraf: ^5.0.5
     short-hash: ^1.0.0
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
     yargs: ^17.6.2
   peerDependencies:
     react: 18.2.0
@@ -20910,7 +20941,7 @@ __metadata:
     inversify: ^6.0.1
     reflect-metadata: ^0.1.13
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
     zod: ^3.22.4
   languageName: unknown
   linkType: soft
@@ -21050,7 +21081,7 @@ __metadata:
     pino: ^8.11.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -21084,7 +21115,7 @@ __metadata:
     pino-pretty: ^9.4.0
     pluralize: ^8.0.0
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
     yargs: ^17.4.0
   languageName: unknown
   linkType: soft
@@ -21101,7 +21132,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
     uniqid: ^5.2.0
   languageName: unknown
   linkType: soft
@@ -21177,7 +21208,7 @@ __metadata:
     style-loader: 3.3.1
     terser-webpack-plugin: 5.2.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
     url: 0.11.0
     url-loader: 4.1.1
     vm-browserify: ^1.1.2
@@ -21202,7 +21233,7 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -21233,7 +21264,7 @@ __metadata:
     node-fetch: ^2.6.13
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -21256,7 +21287,7 @@ __metadata:
     rimraf: ^5.0.5
     semver: ^7.3.5
     tar: ^6.2.1
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -21273,7 +21304,7 @@ __metadata:
     find-up: ^5.0.0
     lodash: ^4.17.21
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -21293,7 +21324,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -21352,7 +21383,7 @@ __metadata:
     react: 18.2.0
     rimraf: ^5.0.5
     sanitize-html: 2.12.1
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -21377,7 +21408,7 @@ __metadata:
     react-router-dom: 6.3.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
   peerDependencies:
     react: 18.2.0
   languageName: unknown
@@ -21447,7 +21478,7 @@ __metadata:
     ora: ^4.1.1
     tailwindcss: ^3.4.6
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
     webpack: ^5.91.0
   languageName: unknown
   linkType: soft
@@ -21484,7 +21515,7 @@ __metadata:
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
     type-fest: ^2.19.0
-    typescript: 4.7.4
+    typescript: 4.9.5
     zod: ^3.22.4
   languageName: unknown
   linkType: soft
@@ -21519,7 +21550,7 @@ __metadata:
     execa: ^5.0.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   peerDependencies:
     react: 18.2.0
   languageName: unknown
@@ -21540,7 +21571,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     rimraf: ^5.0.5
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -21624,7 +21655,7 @@ __metadata:
     shortid: ^2.2.16
     timeago-react: ^3.0.6
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
   peerDependencies:
     minimatch: ^5.1.0
     react: 18.2.0
@@ -21712,7 +21743,7 @@ __metadata:
     shortid: ^2.2.16
     timeago-react: ^3.0.6
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
   peerDependencies:
     minimatch: ^5.1.0
     react: 18.2.0
@@ -21738,7 +21769,7 @@ __metadata:
     p-retry: ^4.6.2
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   peerDependencies:
     zod: ^3.22.4
   languageName: unknown
@@ -21761,7 +21792,7 @@ __metadata:
     lodash: ^4.17.21
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -21781,7 +21812,7 @@ __metadata:
     node-fetch: ^2.6.13
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
-    typescript: 4.7.4
+    typescript: 4.9.5
   languageName: unknown
   linkType: soft
 
@@ -22791,7 +22822,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apollo-link@npm:^1.0.0, apollo-link@npm:^1.2.14":
+"apollo-link@npm:1.2.14":
   version: 1.2.14
   resolution: "apollo-link@npm:1.2.14"
   dependencies:
@@ -22802,6 +22833,20 @@ __metadata:
   peerDependencies:
     graphql: ^0.11.3 || ^0.12.3 || ^0.13.0 || ^14.0.0 || ^15.0.0
   checksum: ad8d051ffceb270cdbbcc71d499bce2fda437a65fac6edc859a9e2dc0dbcb10b6a3f4da41789e786270aa358719c8b71315f383a698a74957df0d7aeea042918
+  languageName: node
+  linkType: hard
+
+"apollo-link@patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch::locator=root-workspace-0b6124%40workspace%3A.":
+  version: 1.2.14
+  resolution: "apollo-link@patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch::version=1.2.14&hash=7a5c8e&locator=root-workspace-0b6124%40workspace%3A."
+  dependencies:
+    apollo-utilities: ^1.3.0
+    ts-invariant: ^0.4.0
+    tslib: ^1.9.3
+    zen-observable-ts: ^0.8.21
+  peerDependencies:
+    graphql: ^0.11.3 || ^0.12.3 || ^0.13.0 || ^14.0.0 || ^15.0.0
+  checksum: dec89eb774c1bf9e220bd4005bba3bd15f39c66983ddb132ad702e811901c94f404878d9f8f68ad9c46e8ac8a1872408b5c2d342a1ecd1a529f8065e35778d8f
   languageName: node
   linkType: hard
 
@@ -24417,7 +24462,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"camel-case@npm:4.1.2, camel-case@npm:^4.1.2":
+"camel-case@npm:^4.1.2":
   version: 4.1.2
   resolution: "camel-case@npm:4.1.2"
   dependencies:
@@ -25084,15 +25129,6 @@ __metadata:
   version: 10.1.1
   resolution: "code-block-writer@npm:10.1.1"
   checksum: e048037acbcbda19fca62a3a63e4a64226ea6b5dc0fad7632d34a88c1165b29a357e5e19f0497811e9911472e824ab85f68176f40e439da87e051908956eb47c
-  languageName: node
-  linkType: hard
-
-"code-frame@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "code-frame@npm:5.0.0"
-  dependencies:
-    left-pad: ^1.1.3
-  checksum: cf47b3f1aa7b052cf0117a6ae8be3da700afb803e96c89c468006e2bf6735f3b752391a50242623f08ebd05ba21e866561164507239f9822f780c60d8a3be11d
   languageName: node
   linkType: hard
 
@@ -25992,6 +26028,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cross-inspect@npm:1.0.1":
+  version: 1.0.1
+  resolution: "cross-inspect@npm:1.0.1"
+  dependencies:
+    tslib: ^2.4.0
+  checksum: 7c1e02e0a9670b62416a3ea1df7ae880fdad3aa0a857de8932c4e5f8acd71298c7e3db9da8e9da603f5692cd1879938f5e72e34a9f5d1345987bef656d117fc1
+  languageName: node
+  linkType: hard
+
 "cross-spawn@npm:^6.0.0, cross-spawn@npm:^6.0.5":
   version: 6.0.5
   resolution: "cross-spawn@npm:6.0.5"
@@ -26447,7 +26492,7 @@ __metadata:
     lodash: ^4.17.21
     nanoid: ^3.3.7
     node-fetch: ^2.6.1
-    typescript: 4.7.4
+    typescript: 4.9.5
     uniqid: ^5.2.0
   languageName: unknown
   linkType: soft
@@ -27554,6 +27599,13 @@ __metadata:
   peerDependencies:
     react: ">=0.14.9"
   checksum: abdca620e8dc3c117e5184fd4f731fe4914e64ecdcabe3f7483dc7b8ee24c38a55cd5551fdaab89ffe03b701be918a8c812df46c7b14b9a004c6f6d369f79520
+  languageName: node
+  linkType: hard
+
+"dset@npm:^3.1.2":
+  version: 3.1.3
+  resolution: "dset@npm:3.1.3"
+  checksum: 5db964a36c60c51aa3f7088bfe1dc5c0eedd9a6ef3b216935bb70ef4a7b8fc40fd2f9bb16b9a4692c9c9772cea60cfefb108d2d09fbd53c85ea8f6cd54502d6a
   languageName: node
   linkType: hard
 
@@ -31737,24 +31789,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"inquirer@npm:7.3.3, inquirer@npm:^7.0.0, inquirer@npm:^7.3.3":
-  version: 7.3.3
-  resolution: "inquirer@npm:7.3.3"
+"inquirer@npm:8.2.6, inquirer@npm:^8.2.4":
+  version: 8.2.6
+  resolution: "inquirer@npm:8.2.6"
   dependencies:
     ansi-escapes: ^4.2.1
-    chalk: ^4.1.0
+    chalk: ^4.1.1
     cli-cursor: ^3.1.0
     cli-width: ^3.0.0
     external-editor: ^3.0.3
     figures: ^3.0.0
-    lodash: ^4.17.19
+    lodash: ^4.17.21
     mute-stream: 0.0.8
+    ora: ^5.4.1
     run-async: ^2.4.0
-    rxjs: ^6.6.0
+    rxjs: ^7.5.5
     string-width: ^4.1.0
     strip-ansi: ^6.0.0
     through: ^2.3.6
-  checksum: 4d387fc1eb6126acbd58cbdb9ad99d2887d181df86ab0c2b9abdf734e751093e2d5882c2b6dc7144d9ab16b7ab30a78a1d7f01fb6a2850a44aeb175d1e3f8778
+    wrap-ansi: ^6.0.1
+  checksum: 387ffb0a513559cc7414eb42c57556a60e302f820d6960e89d376d092e257a919961cd485a1b4de693dbb5c0de8bc58320bfd6247dfd827a873aa82a4215a240
   languageName: node
   linkType: hard
 
@@ -31776,29 +31830,6 @@ __metadata:
     strip-ansi: ^4.0.0
     through: ^2.3.6
   checksum: 75632c562d5f5d64002a275e7824ec235f3a640310967800891fd9580434ec124ab3db0a5fedf33fdfeced198c9ce4ae1a6452d3f817aa7bb4cd6798d31ac21a
-  languageName: node
-  linkType: hard
-
-"inquirer@npm:^8.2.4":
-  version: 8.2.6
-  resolution: "inquirer@npm:8.2.6"
-  dependencies:
-    ansi-escapes: ^4.2.1
-    chalk: ^4.1.1
-    cli-cursor: ^3.1.0
-    cli-width: ^3.0.0
-    external-editor: ^3.0.3
-    figures: ^3.0.0
-    lodash: ^4.17.21
-    mute-stream: 0.0.8
-    ora: ^5.4.1
-    run-async: ^2.4.0
-    rxjs: ^7.5.5
-    string-width: ^4.1.0
-    strip-ansi: ^6.0.0
-    through: ^2.3.6
-    wrap-ansi: ^6.0.1
-  checksum: 387ffb0a513559cc7414eb42c57556a60e302f820d6960e89d376d092e257a919961cd485a1b4de693dbb5c0de8bc58320bfd6247dfd827a873aa82a4215a240
   languageName: node
   linkType: hard
 
@@ -33839,13 +33870,6 @@ __metadata:
   dependencies:
     readable-stream: ^2.0.5
   checksum: 822c54c6b87701a6491c70d4fabc4cafcf0f87d6b656af168ee7bb3c45de9128a801cb612e6eeeefc64d298a7524a698dd49b13b0121ae50c2ae305f0dcc5310
-  languageName: node
-  linkType: hard
-
-"left-pad@npm:^1.1.3":
-  version: 1.3.0
-  resolution: "left-pad@npm:1.3.0"
-  checksum: 13fa96e17b70a54836490de22d4bab706e2ed508338bbabecfac72ecce445a74139c5b009a8112252cab8fc4ab7ac4ebd870e5b35bd236b443b12be96f8745ac
   languageName: node
   linkType: hard
 
@@ -41431,7 +41455,7 @@ __metadata:
     glob: ^7.1.3
     graphql: ^15.7.2
     husky: ^4.2.5
-    inquirer: ^7.0.0
+    inquirer: 8.2.6
     inquirer-autocomplete-prompt: ^1.0.1
     inquirer-checkbox-plus-prompt: ^1.0.1
     inquirer-maxlength-input-prompt: ^1.0.0
@@ -41453,7 +41477,7 @@ __metadata:
     semver: ^7.5.4
     ts-expect: ^1.3.0
     ts-jest: ^29.1.2
-    typescript: 4.7.4
+    typescript: 4.9.5
     typescript-transform-paths: ^3.4.6
     verdaccio: ^5.29.1
     write-json-file: ^4.2.0
@@ -41503,12 +41527,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rxjs@npm:^6.3.3, rxjs@npm:^6.4.0, rxjs@npm:^6.6.0, rxjs@npm:^6.6.2, rxjs@npm:^6.6.7":
+"rxjs@npm:^6.3.3, rxjs@npm:^6.6.2, rxjs@npm:^6.6.7":
   version: 6.6.7
   resolution: "rxjs@npm:6.6.7"
   dependencies:
     tslib: ^1.9.0
   checksum: bc334edef1bb8bbf56590b0b25734ba0deaf8825b703256a93714308ea36dff8a11d25533671adf8e104e5e8f256aa6fdfe39b2e248cdbd7a5f90c260acbbd1b
+  languageName: node
+  linkType: hard
+
+"rxjs@npm:^7.2.0, rxjs@npm:^7.5.5":
+  version: 7.8.1
+  resolution: "rxjs@npm:7.8.1"
+  dependencies:
+    tslib: ^2.1.0
+  checksum: de4b53db1063e618ec2eca0f7965d9137cabe98cf6be9272efe6c86b47c17b987383df8574861bcced18ebd590764125a901d5506082be84a8b8e364bf05f119
   languageName: node
   linkType: hard
 
@@ -41518,15 +41551,6 @@ __metadata:
   dependencies:
     tslib: ^2.1.0
   checksum: 61b4d4fd323c1043d8d6ceb91f24183b28bcf5def4f01ca111511d5c6b66755bc5578587fe714ef5d67cf4c9f2e26f4490d4e1d8cabf9bd5967687835e9866a2
-  languageName: node
-  linkType: hard
-
-"rxjs@npm:^7.5.5":
-  version: 7.8.1
-  resolution: "rxjs@npm:7.8.1"
-  dependencies:
-    tslib: ^2.1.0
-  checksum: de4b53db1063e618ec2eca0f7965d9137cabe98cf6be9272efe6c86b47c17b987383df8574861bcced18ebd590764125a901d5506082be84a8b8e364bf05f119
   languageName: node
   linkType: hard
 
@@ -44173,20 +44197,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:~2.0.1":
-  version: 2.0.3
-  resolution: "tslib@npm:2.0.3"
-  checksum: 00fcdd1f9995c9f8eb6a4a1ad03f55bc95946321b7f55434182dddac259d4e095fedf78a84f73b6e32dd3f881d9281f09cb583123d3159ed4bdac9ad7393ef8b
-  languageName: node
-  linkType: hard
-
-"tslib@npm:~2.2.0":
-  version: 2.2.0
-  resolution: "tslib@npm:2.2.0"
-  checksum: a48c9639f7496fa701ea8ffe0561070fcb44c104a59632f7f845c0af00825c99b6373575ec59b2b5cdbfd7505875086dbe5dc83312304d8979f22ce571218ca3
-  languageName: node
-  linkType: hard
-
 "tslib@npm:~2.3.0":
   version: 2.3.1
   resolution: "tslib@npm:2.3.1"
@@ -44424,23 +44434,63 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:4.7.4":
-  version: 4.7.4
-  resolution: "typescript@npm:4.7.4"
+"typescript@npm:4.9.5":
+  version: 4.9.5
+  resolution: "typescript@npm:4.9.5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 5750181b1cd7e6482c4195825547e70f944114fb47e58e4aa7553e62f11b3f3173766aef9c281783edfd881f7b8299cf35e3ca8caebe73d8464528c907a164df
+  checksum: ee000bc26848147ad423b581bd250075662a354d84f0e06eb76d3b892328d8d4440b7487b5a83e851b12b255f55d71835b008a66cbf8f255a11e4400159237db
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>":
-  version: 4.7.4
-  resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"
+"typescript@npm:>=3 < 6":
+  version: 5.5.4
+  resolution: "typescript@npm:5.5.4"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 9096d8f6c16cb80ef3bf96fcbbd055bf1c4a43bd14f3b7be45a9fbe7ada46ec977f604d5feed3263b4f2aa7d4c7477ce5f9cd87de0d6feedec69a983f3a4f93e
+  checksum: b309040f3a1cd91c68a5a58af6b9fdd4e849b8c42d837b2c2e73f9a4f96a98c4f1ed398a9aab576ee0a4748f5690cf594e6b99dbe61de7839da748c41e6d6ca8
+  languageName: node
+  linkType: hard
+
+"typescript@npm:~3.8.3":
+  version: 3.8.3
+  resolution: "typescript@npm:3.8.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 3ef07f997a9a3af80d663cc611be984d3e22df3dc2b5ecfa6cbe7dbd54f1984fa1c679ba67e6a9d36d73ffdbbab88a0fbb58eb30ffc4f748f3a3c28d562b546a
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@4.9.5#~builtin<compat/typescript>":
+  version: 4.9.5
+  resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=289587"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 1f8f3b6aaea19f0f67cba79057674ba580438a7db55057eb89cc06950483c5d632115c14077f6663ea76fd09fce3c190e6414bb98582ec80aa5a4eaf345d5b68
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@>=3 < 6#~builtin<compat/typescript>":
+  version: 5.5.4
+  resolution: "typescript@patch:typescript@npm%3A5.5.4#~builtin<compat/typescript>::version=5.5.4&hash=29ae49"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: fc52962f31a5bcb716d4213bef516885e4f01f30cea797a831205fc9ef12b405a40561c40eae3127ab85ba1548e7df49df2bcdee6b84a94bfbe3a0d7eff16b14
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@~3.8.3#~builtin<compat/typescript>":
+  version: 3.8.3
+  resolution: "typescript@patch:typescript@npm%3A3.8.3#~builtin<compat/typescript>::version=3.8.3&hash=c44097"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: fba33b9756bbffcbdc87254af0f491852bac475c1302b570b9c656c10fad9dbe7113975a64beb6035979db555b0fc87fa168734f10bf556f173213c13d371e4e
   languageName: node
   linkType: hard
 
@@ -45043,10 +45093,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"value-or-promise@npm:1.0.6":
-  version: 1.0.6
-  resolution: "value-or-promise@npm:1.0.6"
-  checksum: 3f255d288ba25c4021cb88f319c3a8fe147d1cbc9a4a3b70c795c1a6225d126959b1709d3b4d357745ceb4812f644218de02907ad4934023ca0be2db7e194f86
+"value-or-promise@npm:^1.0.12":
+  version: 1.0.12
+  resolution: "value-or-promise@npm:1.0.12"
+  checksum: f53a66c75b7447c90bbaf946a757ca09c094629cb80ba742f59c980ec3a69be0a385a0e75505dedb4e757862f1a994ca4beaf083a831f24d3ffb3d4bb18cd1e1
   languageName: node
   linkType: hard
 

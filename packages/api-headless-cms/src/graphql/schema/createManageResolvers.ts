@@ -38,13 +38,6 @@ export const createManageResolvers: CreateManageResolvers = ({
     model,
     fieldTypePlugins
 }) => {
-    if (model.fields.length === 0) {
-        return {
-            Query: {},
-            Mutation: {}
-        };
-    }
-
     const createFieldResolvers = createFieldResolversFactory({
         endpointType: "manage",
         models,

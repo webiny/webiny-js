@@ -32,10 +32,6 @@ export const createReadSDL: CreateReadSDL = ({
         type,
         fieldTypePlugins
     });
-
-    if (fieldsRender.length === 0) {
-        return "";
-    }
     const listFilterFieldsRender = renderListFilterFields({
         model,
         fields: model.fields,
@@ -70,7 +66,7 @@ export const createReadSDL: CreateReadSDL = ({
             entryId: String!
             ${hasModelIdField ? "" : "modelId: String!"}
             
-            ${onByMetaGqlFields} 
+            ${onByMetaGqlFields}
             
             publishedOn: DateTime @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'firstPublishedOn' or 'lastPublishedOn' field.")
             ownedBy: CmsIdentity @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'createdBy' field.")

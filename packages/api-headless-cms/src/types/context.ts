@@ -79,28 +79,28 @@ export interface CmsEntryContext {
     /**
      * List entries for a model. Internal method used by get, listLatest and listPublished.
      */
-    listEntries: <T = CmsEntryValues>(
+    listEntries: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryListParams
     ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
     /**
      * Lists the latest entries. Used for manage API.
      */
-    listLatestEntries: <T = CmsEntryValues>(
+    listLatestEntries: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params?: CmsEntryListParams
     ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
     /**
      * List published entries. Used for read API.
      */
-    listPublishedEntries: <T = CmsEntryValues>(
+    listPublishedEntries: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params?: CmsEntryListParams
     ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
     /**
      * Lists the deleted entries. Used for manage API.
      */
-    listDeletedEntries: <T = CmsEntryValues>(
+    listDeletedEntries: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params?: CmsEntryListParams
     ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
