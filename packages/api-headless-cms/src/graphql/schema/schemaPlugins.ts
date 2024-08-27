@@ -45,65 +45,61 @@ export const generateSchemaPlugins = async (
         type
     });
 
-    models
-        .filter(model => {
-            return model.fields.length > 0;
-        })
-        .forEach(model => {
-            switch (type) {
-                case "manage":
-                    {
-                        const plugin = createCmsGraphQLSchemaPlugin({
-                            typeDefs: createManageSDL({
-                                models,
-                                model,
-                                fieldTypePlugins,
-                                sorterPlugins
-                            }),
-                            resolvers: createManageResolvers({
-                                models,
-                                model,
-                                fieldTypePlugins,
-                                context
-                            })
-                        });
-                        plugin.name = `headless-cms.graphql.schema.manage.${model.modelId}`;
-                        schemaPlugins.push(plugin);
-                    }
+    models.forEach(model => {
+        switch (type) {
+            case "manage":
+                {
+                    const plugin = createCmsGraphQLSchemaPlugin({
+                        typeDefs: createManageSDL({
+                            models,
+                            model,
+                            fieldTypePlugins,
+                            sorterPlugins
+                        }),
+                        resolvers: createManageResolvers({
+                            models,
+                            model,
+                            fieldTypePlugins,
+                            context
+                        })
+                    });
+                    plugin.name = `headless-cms.graphql.schema.manage.${model.modelId}`;
+                    schemaPlugins.push(plugin);
+                }
 
-                    break;
-                case "preview":
-                case "read":
-                    {
-                        const plugin = createCmsGraphQLSchemaPlugin({
-                            typeDefs: createReadSDL({
-                                models,
-                                model,
-                                fieldTypePlugins,
-                                sorterPlugins
-                            }),
-                            resolvers: cms.READ
-                                ? createReadResolvers({
-                                      models,
-                                      model,
-                                      fieldTypePlugins,
-                                      context
-                                  })
-                                : createPreviewResolvers({
-                                      models,
-                                      model,
-                                      fieldTypePlugins,
-                                      context
-                                  })
-                        });
-                        plugin.name = `headless-cms.graphql.schema.${type}.${model.modelId}`;
-                        schemaPlugins.push(plugin);
-                    }
-                    break;
-                default:
-                    return;
-            }
-        });
+                break;
+            case "preview":
+            case "read":
+                {
+                    const plugin = createCmsGraphQLSchemaPlugin({
+                        typeDefs: createReadSDL({
+                            models,
+                            model,
+                            fieldTypePlugins,
+                            sorterPlugins
+                        }),
+                        resolvers: cms.READ
+                            ? createReadResolvers({
+                                  models,
+                                  model,
+                                  fieldTypePlugins,
+                                  context
+                              })
+                            : createPreviewResolvers({
+                                  models,
+                                  model,
+                                  fieldTypePlugins,
+                                  context
+                              })
+                    });
+                    plugin.name = `headless-cms.graphql.schema.${type}.${model.modelId}`;
+                    schemaPlugins.push(plugin);
+                }
+                break;
+            default:
+                return;
+        }
+    });
 
     return schemaPlugins.filter(pl => !!pl.schema.typeDefs);
 };

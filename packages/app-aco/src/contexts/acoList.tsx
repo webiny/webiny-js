@@ -91,7 +91,7 @@ const getCurrentFolderList = (
     return folders.filter(folder => folder.parentId === currentFolderId);
 };
 
-const getCurrentRecordList = <T = GenericSearchData,>(
+const getCurrentRecordList = <T extends GenericSearchData = GenericSearchData>(
     records: SearchRecordItem<T>[],
     folderIdPath: string,
     currentFolderId?: string

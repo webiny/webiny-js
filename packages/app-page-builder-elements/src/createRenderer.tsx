@@ -1,9 +1,9 @@
 import React from "react";
 import { usePageElements } from "~/hooks/usePageElements";
-import { Renderer, Element } from "~/types";
-import { Theme, StylesObject } from "@webiny/theme/types";
+import { Element, Renderer } from "~/types";
+import { StylesObject, Theme } from "@webiny/theme/types";
 import { RendererProvider } from "~/contexts/Renderer";
-import { CSSObject, ClassNames } from "@emotion/react";
+import { ClassNames, CSSObject } from "@emotion/react";
 
 interface GetStylesParams {
     theme: Theme;
@@ -98,11 +98,12 @@ export function createRenderer<TRenderComponentProps = Record<string, any>>(
                                 <>
                                     {BeforeRenderer ? <BeforeRenderer /> : null}
 
-                                    {/* Would've liked if the `as unknown as T` part wasn't
-                                        needed, but unfortunately, could not figure it out. */}
-                                    <RendererComponent
-                                        {...(componentProps as unknown as TRenderComponentProps)}
-                                    />
+                                    {/*
+                                        Would've liked if the `as unknown as any` part wasn't
+                                        needed, but unfortunately, could not figure it out.
+                                        // TODO remove any!
+                                        */}
+                                    <RendererComponent {...(componentProps as unknown as any)} />
                                     {AfterRenderer ? <AfterRenderer /> : null}
                                 </>
                             )}
