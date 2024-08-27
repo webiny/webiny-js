@@ -68,11 +68,11 @@ export class TaskResponse implements ITaskResponse {
         const wait = getWaitingTime(options);
         if (!wait || wait < 1) {
             return this.response.continue({
-                input
+                input: input as ITaskDataInput
             });
         }
         return this.response.continue({
-            input,
+            input: input as ITaskDataInput,
             wait
         });
     }

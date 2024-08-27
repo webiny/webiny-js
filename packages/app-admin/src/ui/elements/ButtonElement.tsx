@@ -1,6 +1,6 @@
 import React from "react";
 import { ButtonDefault, ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
-import { UIElement, UIElementConfig } from "../UIElement";
+import { UIElement, UIElementConfig, UiElementRenderProps } from "../UIElement";
 import kebabCase from "lodash/kebabCase";
 
 export type ButtonElementType = "default" | "primary" | "secondary";
@@ -25,9 +25,9 @@ const BUTTONS = {
     secondary: ButtonSecondary
 };
 
-export class ButtonElement<TRenderProps = any> extends UIElement<
-    ButtonElementConfig<TRenderProps>
-> {
+export class ButtonElement<
+    TRenderProps extends UiElementRenderProps = UiElementRenderProps
+> extends UIElement<ButtonElementConfig<TRenderProps>> {
     public setLabel<TProps extends TRenderProps = TRenderProps>(
         label: string | GetterWithProps<TProps, string>
     ): void {

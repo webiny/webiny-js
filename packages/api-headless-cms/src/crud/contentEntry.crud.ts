@@ -1314,7 +1314,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          *
          * @internal
          */
-        async listEntries<T = CmsEntryValues>(
+        async listEntries<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,
             params: CmsEntryListParams
         ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
@@ -1322,7 +1322,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 return await listEntriesUseCase.execute<T>(model, params);
             });
         },
-        async listLatestEntries<T = CmsEntryValues>(
+        async listLatestEntries<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,
             params?: CmsEntryListParams
         ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
@@ -1333,7 +1333,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             );
         },
-        async listDeletedEntries<T = CmsEntryValues>(
+        async listDeletedEntries<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,
             params?: CmsEntryListParams
         ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
@@ -1344,7 +1344,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             );
         },
-        async listPublishedEntries<T = CmsEntryValues>(
+        async listPublishedEntries<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,
             params?: CmsEntryListParams
         ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
