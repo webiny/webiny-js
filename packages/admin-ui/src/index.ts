@@ -7,6 +7,7 @@ export * from "./DropdownMenu";
 export * from "./Heading";
 export * from "./Input";
 export * from "./Label";
+export * from "./Progress";
 export * from "./Select";
 export * from "./Separator";
 export * from "./Sheet";
@@ -14,3 +15,4 @@ export * from "./Table";
 export * from "./Textarea";
 export * from "./Text";
 export * from "./Tooltip";
+
