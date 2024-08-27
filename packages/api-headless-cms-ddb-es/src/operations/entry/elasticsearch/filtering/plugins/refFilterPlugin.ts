@@ -3,10 +3,12 @@ import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin";
 import { parseWhereKey } from "@webiny/api-elasticsearch";
 
 export const createRefFilterPlugin = () => {
-    return new CmsEntryFilterPlugin({
+    const plugin = new CmsEntryFilterPlugin({
         fieldType: "ref",
         exec: params => {
-            const { applyFiltering, value: values, query, field } = params;
+            const { applyFiltering, query, field } = params;
+
+            let values = params.value;
             /**
              * We must have an object when querying in the ref field.
              */
@@ -18,6 +20,12 @@ export const createRefFilterPlugin = () => {
                         value: values
                     }
                 );
+            }
+
+            if (values === null || values === undefined) {
+                values = {
+                    entryId: null
+                };
             }
 
             for (const key in values) {
@@ -37,4 +45,8 @@ export const createRefFilterPlugin = () => {
             }
         }
     });
+
+    plugin.name = `${plugin.type}.default.ref`;
+
+    return plugin;
 };
