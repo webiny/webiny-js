@@ -16,10 +16,15 @@ import {
 } from "~/folders/gateways";
 import {
     CreateFolderUseCase,
+    CreateFolderUseCaseWithLoading,
     DeleteFolderUseCase,
+    DeleteFolderUseCaseWithLoading,
     GetFolderUseCase,
+    GetFolderUseCaseWithLoading,
     ListFoldersUseCase,
-    UpdateFolderUseCase
+    ListFoldersUseCaseWithLoading,
+    UpdateFolderUseCase,
+    UpdateFolderUseCaseWithLoading
 } from "~/folders/useCases";
 import {
     CreateFolderController,
@@ -30,16 +35,11 @@ import {
 } from "~/folders/controllers";
 import {
     CreateFolderRepository,
-    CreateFolderRepositoryWithLoading,
     DeleteFolderRepository,
-    DeleteFolderRepositoryWithLoading,
     GetFolderRepository,
-    GetFolderRepositoryWithLoading,
     GetDescendantFoldersRepository,
     ListFoldersRepository,
-    ListFoldersRepositoryWithLoading,
-    UpdateFolderRepository,
-    UpdateFolderRepositoryWithLoading
+    UpdateFolderRepository
 } from "~/folders/repositories";
 import { FoldersPresenter } from "~/folders/presenters";
 
@@ -87,12 +87,12 @@ export const useFolders = () => {
     const listFolders = useCallback(() => {
         const listFoldersGateway = new ListFoldersGraphQLGateway(client);
         const listFoldersRepository = new ListFoldersRepository(foldersCache, listFoldersGateway);
-        const repository = new ListFoldersRepositoryWithLoading(
+        const listFoldersUseCase = new ListFoldersUseCase(listFoldersRepository);
+        const listFoldersUseCaseWithLoading = new ListFoldersUseCaseWithLoading(
             loadingRepository,
-            listFoldersRepository
+            listFoldersUseCase
         );
-        const listFoldersUseCase = new ListFoldersUseCase(repository);
-        const listFoldersController = new ListFoldersController(listFoldersUseCase);
+        const listFoldersController = new ListFoldersController(listFoldersUseCaseWithLoading);
         return listFoldersController.execute(type);
     }, [type, client, foldersCache, loadingRepository]);
 
@@ -101,17 +101,18 @@ export const useFolders = () => {
         (id: string) => {
             const getFolderGateway = new GetFolderGraphQLGateway(client);
             const getFolderRepository = new GetFolderRepository(foldersCache, getFolderGateway);
-            const repository = new GetFolderRepositoryWithLoading(
+            const getFolderUseCase = new GetFolderUseCase(getFolderRepository);
+            const getFolderUseCaseWithLoading = new GetFolderUseCaseWithLoading(
                 loadingRepository,
-                getFolderRepository
+                getFolderUseCase
             );
-            const getFolderUseCase = new GetFolderUseCase(repository);
-            const getFolderController = new GetFolderController(getFolderUseCase);
+            const getFolderController = new GetFolderController(getFolderUseCaseWithLoading);
             return getFolderController.execute(id);
         },
         [client, foldersCache, loadingRepository]
     );
 
+    // Get Descendant Folders
     const getDescendantFolders = useCallback(
         (id: string) => {
             const repository = new GetDescendantFoldersRepository(foldersCache);
@@ -128,12 +129,14 @@ export const useFolders = () => {
                 foldersCache,
                 createFolderGateway
             );
-            const repository = new CreateFolderRepositoryWithLoading(
+            const createFolderUseCase = new CreateFolderUseCase(createFolderRepository);
+            const createFolderUseCaseWithLoading = new CreateFolderUseCaseWithLoading(
                 loadingRepository,
-                createFolderRepository
+                createFolderUseCase
             );
-            const createFolderUseCase = new CreateFolderUseCase(repository);
-            const createFolderController = new CreateFolderController(createFolderUseCase);
+            const createFolderController = new CreateFolderController(
+                createFolderUseCaseWithLoading
+            );
             return createFolderController.execute(folder, type);
         },
         [client, foldersCache, loadingRepository, type]
@@ -147,12 +150,14 @@ export const useFolders = () => {
                 foldersCache,
                 updateFolderGateway
             );
-            const repository = new UpdateFolderRepositoryWithLoading(
+            const updateFolderUseCase = new UpdateFolderUseCase(updateFolderRepository);
+            const updateFolderUseCaseWithLoading = new UpdateFolderUseCaseWithLoading(
                 loadingRepository,
-                updateFolderRepository
+                updateFolderUseCase
             );
-            const updateFolderUseCase = new UpdateFolderUseCase(repository);
-            const updateFolderController = new UpdateFolderController(updateFolderUseCase);
+            const updateFolderController = new UpdateFolderController(
+                updateFolderUseCaseWithLoading
+            );
             return updateFolderController.execute(folder);
         },
         [client, foldersCache, loadingRepository]
@@ -166,13 +171,14 @@ export const useFolders = () => {
                 foldersCache,
                 deleteFolderGateway
             );
-
-            const repository = new DeleteFolderRepositoryWithLoading(
+            const deleteFolderUseCase = new DeleteFolderUseCase(deleteFolderRepository);
+            const deleteFolderUseCaseWithLoading = new DeleteFolderUseCaseWithLoading(
                 loadingRepository,
-                deleteFolderRepository
+                deleteFolderUseCase
             );
-            const deleteFolderUseCase = new DeleteFolderUseCase(repository);
-            const deleteFolderController = new DeleteFolderController(deleteFolderUseCase);
+            const deleteFolderController = new DeleteFolderController(
+                deleteFolderUseCaseWithLoading
+            );
             return deleteFolderController.execute(folder);
         },
         [client, foldersCache, loadingRepository]

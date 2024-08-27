@@ -10,7 +10,6 @@ export class CreateFolderController implements ICreateFolderController {
     }
 
     async execute(folder: FolderItem, type: string) {
-        console.log("type", type);
         await this.useCase.execute({
             type: type,
             title: folder.title,
