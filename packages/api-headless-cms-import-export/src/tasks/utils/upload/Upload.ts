@@ -36,8 +36,7 @@ export class Upload implements IUpload {
                 Body: params.stream,
                 Bucket: params.bucket,
                 ContentType: getContentType(params.filename),
-                Key: params.filename,
-                ChecksumAlgorithm: "SHA256"
+                Key: params.filename
             },
             queueSize: params.queueSize || 1,
             partSize: 1024 * 1024 * 5,

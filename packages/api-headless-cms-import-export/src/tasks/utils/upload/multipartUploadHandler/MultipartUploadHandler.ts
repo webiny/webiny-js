@@ -197,7 +197,7 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
                 code: "S3_ERROR"
             });
         }
-        this.tags.push(result.ETag);
+        this.tags.push(result.ETag.replaceAll('"', ""));
         // Reset the buffer and increase current part number.
         this.buffer = [];
         this.bufferLength = 0;

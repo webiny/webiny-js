@@ -11,7 +11,7 @@ import { mockClient } from "aws-sdk-client-mock";
 import { CmsEntryZipper } from "~/tasks/utils/cmsEntryZipper";
 import { Upload } from "~/tasks/utils/upload";
 import { Zipper } from "~/tasks/utils/zipper";
-import { Archiver } from "~/tasks/utils/archiver";
+import { createArchiver } from "~/tasks/utils/archiver";
 import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
 import { IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
 import { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
@@ -59,7 +59,7 @@ export const createCmsEntryZipper = (params: ICreateCmsEntryZipperParams) => {
         buffers.push(chunk);
     });
 
-    const archiver = new Archiver({
+    const archiver = createArchiver({
         format: "zip",
         options: {
             gzip: true

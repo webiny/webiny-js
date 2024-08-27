@@ -146,10 +146,23 @@ export class ExportContentEntriesController<
              * Possibly the task does not require any assets to be exported.
              */
             if (!input.exportAssets || entriesTask.output.files.length === 0) {
-                return response.done({
-                    files: entriesTask.output.files,
-                    expiresOn: entriesTask.output.expiresOn || undefined
-                } as unknown as O);
+                const files: IExportContentEntriesControllerOutputFile[] = [];
+                for (const file of entriesTask.output.files) {
+                    const { url: head } = await urlSigner.head(file);
+                    const { url: get } = await urlSigner.get(file);
+                    files.push({
+                        head,
+                        get,
+                        checksum: file.checksum,
+                        type: CmsImportExportFileType.ENTRIES
+                    });
+                }
+
+                const output: IExportContentEntriesControllerOutput = {
+                    files,
+                    model: prepareExportModel(model)
+                };
+                return response.done("Export done, without assets.", output as O);
             }
 
             const assetTask = await trigger<IExportContentAssetsInput>({
@@ -254,10 +267,12 @@ export class ExportContentEntriesController<
                 });
             }
 
-            return response.done({
+            const output: IExportContentEntriesControllerOutput = {
                 model: prepareExportModel(model),
                 files
-            } as O);
+            };
+
+            return response.done("Export done, with assets.", output as O);
         }
 
         return response.error({

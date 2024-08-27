@@ -13,3 +13,7 @@ export class Archiver implements IArchiver {
         this.archiver = vending.create(config.format || "zip", config.options);
     }
 }
+
+export const createArchiver = (config: IArchiverConfig): IArchiver => {
+    return new Archiver(config);
+};

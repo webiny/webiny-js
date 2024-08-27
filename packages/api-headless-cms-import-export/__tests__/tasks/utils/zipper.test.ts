@@ -1,7 +1,7 @@
 import { Zipper } from "~/tasks/utils/zipper";
 import { Upload } from "~/tasks/utils/upload";
 import { createPassThrough } from "~tests/mocks/createPassThrough";
-import { Archiver } from "~/tasks/utils/archiver";
+import { createArchiver } from "~/tasks/utils/archiver";
 import { mockClient } from "aws-sdk-client-mock";
 import { Upload as BaseUpload } from "@webiny/aws-sdk/lib-storage";
 import {
@@ -24,7 +24,7 @@ describe("zipper", () => {
             filename: `test.${WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION}`
         });
 
-        const archiver = new Archiver({
+        const archiver = createArchiver({
             format: "zip",
             options: {
                 gzip: true
@@ -68,7 +68,7 @@ describe("zipper", () => {
             filename: `test.${WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION}`
         });
 
-        const archiver = new Archiver({
+        const archiver = createArchiver({
             format: "zip",
             options: {
                 gzip: true
@@ -154,7 +154,7 @@ describe("zipper", () => {
             filename: `test.${WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION}`
         });
 
-        const archiver = new Archiver({
+        const archiver = createArchiver({
             format: "zip",
             options: {
                 gzip: true

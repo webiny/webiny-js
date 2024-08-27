@@ -10,7 +10,7 @@ import {
 import { CmsEntryZipper } from "../utils/cmsEntryZipper";
 import { FileFetcher } from "~/tasks/utils/fileFetcher";
 import { createUploadFactory } from "~/tasks/utils/upload";
-import { Archiver } from "~/tasks/utils/archiver";
+import { createArchiver } from "~/tasks/utils/archiver";
 import { Zipper } from "~/tasks/utils/zipper";
 import { EntryAssets } from "../utils/entryAssets";
 import { UniqueResolver } from "~/tasks/utils/uniqueResolver/UniqueResolver";
@@ -30,7 +30,7 @@ export const createExportContentEntries = () => {
     const createCmsEntryZipper = (config: ICreateCmsEntryZipperConfig) => {
         const upload = createUpload(config.filename);
 
-        const archiver = new Archiver({
+        const archiver = createArchiver({
             format: "zip",
             options: {
                 gzip: true,
@@ -65,10 +65,13 @@ export const createExportContentEntries = () => {
             bucket
         });
 
-        const archiver = new Archiver({
+        const archiver = createArchiver({
             format: "zip",
             options: {
                 gzip: true,
+                /**
+                 * No point in compressing zipped entries, since they are already compressed.
+                 */
                 gzipOptions: {
                     level: 0
                 },

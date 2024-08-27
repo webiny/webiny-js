@@ -24,6 +24,7 @@ export const sanitizeModel = (group: Pick<CmsGroup, "id">, model: CmsModel): San
         layout: model.layout,
         titleFieldId: model.titleFieldId,
         descriptionFieldId: model.descriptionFieldId,
-        imageFieldId: model.imageFieldId
+        imageFieldId: model.imageFieldId,
+        tags: model.tags
     };
 };

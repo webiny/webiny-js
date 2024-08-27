@@ -262,7 +262,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
         if (pointerStore.getEntryCursor() || pointerStore.getFileCursor()) {
             return new CmsAssetsZipperExecuteContinueResult({
                 key: result.Key,
-                checksum: result.ETag,
+                checksum: result.ETag.replaceAll('"', ""),
                 entryCursor: pointerStore.getEntryCursor(),
                 fileCursor: pointerStore.getFileCursor()
             });
@@ -270,7 +270,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
 
         return new CmsAssetsZipperExecuteDoneResult({
             key: result.Key,
-            checksum: result.ETag
+            checksum: result.ETag.replaceAll('"', "")
         });
     }
 }

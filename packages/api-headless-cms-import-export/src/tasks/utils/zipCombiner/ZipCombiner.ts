@@ -135,7 +135,7 @@ export class ZipCombiner implements IZipCombiner {
         return {
             lastFileProcessed,
             key: result.Key,
-            checksum: result.ETag
+            checksum: result.ETag.replaceAll('"', "")
         };
     }
 

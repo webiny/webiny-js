@@ -10,7 +10,7 @@ import {
 } from "@webiny/aws-sdk/client-s3";
 import { mockClient } from "aws-sdk-client-mock";
 import { PassThrough } from "stream";
-import { Archiver } from "~/tasks/utils/archiver";
+import { createArchiver } from "~/tasks/utils/archiver";
 import { WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION } from "~/tasks/constants";
 
 interface ICreateZipperParams {
@@ -42,7 +42,7 @@ export const createZipper = (params: ICreateZipperParams = {}) => {
         filename
     });
 
-    const archiver = new Archiver({
+    const archiver = createArchiver({
         format: "zip",
         options: {
             gzip: true
