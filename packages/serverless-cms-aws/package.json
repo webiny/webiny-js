@@ -93,7 +93,8 @@
       ],
       "dependencies": [
         "@pulumi/pulumi",
-        "@pulumi/aws"
+        "@pulumi/aws",
+        "@webiny/admin-ui"
       ]
     }
   }
