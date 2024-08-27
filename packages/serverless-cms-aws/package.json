@@ -15,6 +15,7 @@
   "dependencies": {
     "@pulumi/aws": "^6.48.0",
     "@pulumi/pulumi": "^3.128.0",
+    "@webiny/admin-ui": "0.0.0",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-apw": "0.0.0",
     "@webiny/api-apw-scheduler-so-ddb": "0.0.0",
@@ -92,7 +93,8 @@
       ],
       "dependencies": [
         "@pulumi/pulumi",
-        "@pulumi/aws"
+        "@pulumi/aws",
+        "@webiny/admin-ui"
       ]
     }
   }

@@ -1,6 +1,5 @@
 import type { StorybookConfig } from "@storybook/react-webpack5";
-import { join, dirname } from "path";
-import TsconfigPathsPlugin from "tsconfig-paths-webpack-plugin";
+import path from "path";
 import tailwindcss from "tailwindcss";
 
 /**
@@ -8,7 +7,7 @@ import tailwindcss from "tailwindcss";
  * It is needed in projects that use Yarn PnP or are set up within a monorepo.
  */
 function getAbsolutePath(value: string): any {
-    return dirname(require.resolve(join(value, "package.json")));
+    return path.dirname(require.resolve(path.join(value, "package.json")));
 }
 
 const config: StorybookConfig = {
@@ -44,7 +43,10 @@ const config: StorybookConfig = {
                                     postcssOptions: {
                                         plugins: [
                                             tailwindcss({
-                                                config: join(__dirname, "../tailwind.config.js")
+                                                config: path.join(
+                                                    __dirname,
+                                                    "../tailwind.config.js"
+                                                )
                                             })
                                         ]
                                     }
@@ -69,11 +71,15 @@ const config: StorybookConfig = {
         disableWhatsNewNotifications: true
     },
     webpackFinal: async config => {
+        // Support custom aliases, such as "~"
         if (!config.resolve) {
             config.resolve = {};
         }
 
-        config.resolve.plugins = [new TsconfigPathsPlugin()];
+        config.resolve.alias = {
+            ...config.resolve.alias,
+            "~": path.resolve(__dirname, "../src")
+        };
 
         // Find the rule that handles SVGs (this depends on the default Storybook config)
         const svgRule = config.module?.rules?.find(rule => {

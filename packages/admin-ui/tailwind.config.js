@@ -10,11 +10,7 @@ const adminAppSourceGlob = `${project.root}/apps/admin`;
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     darkMode: ["class"],
-    content: [
-        webinyPackagesGlob,
-        webinyAdminUiPackageGlob,
-        adminAppSourceGlob
-    ],
+    content: [webinyPackagesGlob, webinyAdminUiPackageGlob, adminAppSourceGlob],
     theme: {
         container: {
             center: true,
