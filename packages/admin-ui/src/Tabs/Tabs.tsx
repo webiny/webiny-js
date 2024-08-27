@@ -1,0 +1,128 @@
+import * as React from "react";
+import * as TabsPrimitive from "@radix-ui/react-tabs";
+
+import { cn } from "~/utils";
+import { cva, type VariantProps } from "class-variance-authority";
+
+const TabsRoot = TabsPrimitive.Root;
+
+/**
+ * Tabs list
+ */
+const TabsList = React.forwardRef<
+    React.ElementRef<typeof TabsPrimitive.List>,
+    React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
+>(({ className, ...props }, ref) => (
+    <TabsPrimitive.List
+        ref={ref}
+        className={cn(
+            "inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground",
+            className
+        )}
+        {...props}
+    />
+));
+TabsList.displayName = TabsPrimitive.List.displayName;
+
+/**
+ * Tabs trigger
+ */
+const tabsTriggerVariants = cva(
+    "inline-flex items-center justify-center whitespace-nowrap rounded-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
+    {
+        variants: {
+            size: {
+                sm: "text-xs px-2 py-1",
+                md: "text-sm px-3 py-1.5",
+                lg: "text-lg px-4 py-2",
+                xl: "text-xl px-6 py-3"
+            }
+        },
+        defaultVariants: {
+            size: "md"
+        }
+    }
+);
+
+export type TabsTriggerProps = TabsPrimitive.TabsTriggerProps &
+    VariantProps<typeof tabsTriggerVariants>;
+
+export const TabsTrigger = React.forwardRef<
+    React.ElementRef<typeof TabsPrimitive.Trigger>,
+    TabsTriggerProps
+>(({ className, size, ...props }, ref) => (
+    <TabsPrimitive.Trigger
+        ref={ref}
+        className={cn(tabsTriggerVariants({ size }), className)}
+        {...props}
+    />
+));
+TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
+
+/**
+ * Tabs content
+ */
+const tabsContentVariants = cva(
+    "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+    {
+        variants: {
+            size: {
+                sm: "p-2",
+                md: "p-4",
+                lg: "p-6",
+                xl: "p-8"
+            }
+        },
+        defaultVariants: {
+            size: "md"
+        }
+    }
+);
+
+export type TabsContentProps = TabsPrimitive.TabsContentProps &
+    VariantProps<typeof tabsContentVariants>;
+
+export const TabsContent = React.forwardRef<
+    React.ElementRef<typeof TabsPrimitive.Content>,
+    TabsContentProps
+>(({ className, size, ...props }, ref) => (
+    <TabsPrimitive.Content
+        ref={ref}
+        className={cn(tabsContentVariants({ size }), className)}
+        {...props}
+    />
+));
+TabsContent.displayName = TabsPrimitive.Content.displayName;
+
+/**
+ * Tabs
+ */
+export interface TabsProps extends TabsPrimitive.TabsProps {
+    triggers: React.ReactElement<TabsTriggerProps>[];
+    contents: React.ReactElement<TabsContentProps>[];
+    size?: "sm" | "md" | "lg" | "xl";
+}
+
+export const Tabs = React.forwardRef<React.ElementRef<typeof TabsPrimitive.Root>, TabsProps>(
+    ({ defaultValue: baseDefaultValue, size = "md", triggers, contents, ...props }, ref) => {
+        const defaultValue = baseDefaultValue || triggers[0].props.value;
+
+        return (
+            <TabsRoot ref={ref} defaultValue={defaultValue} {...props}>
+                <TabsList>
+                    {triggers.map(trigger => (
+                        <React.Fragment key={`tab-trigger-${trigger.key}`}>
+                            {React.cloneElement(trigger, { size })}
+                        </React.Fragment>
+                    ))}
+                </TabsList>
+                {contents.map(content => (
+                    <React.Fragment key={`tab-content-${content.key}`}>
+                        {React.cloneElement(content, { size })}
+                    </React.Fragment>
+                ))}
+            </TabsRoot>
+        );
+    }
+);
+Tabs.displayName = TabsPrimitive.Root.displayName;

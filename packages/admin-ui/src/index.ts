@@ -12,6 +12,7 @@ export * from "./Select";
 export * from "./Separator";
 export * from "./Sheet";
 export * from "./Table";
+export * from "./Tabs";
 export * from "./Textarea";
 export * from "./Text";
 export * from "./Tooltip";
