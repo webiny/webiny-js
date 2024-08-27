@@ -91,8 +91,8 @@
     "ncp": "^2.0.0",
     "raw-loader": "^0.5.1",
     "rimraf": "^5.0.5",
-    "ttypescript": "^1.5.13",
-    "typescript": "4.9.5"
+    "ts-patch": "3.2.1",
+    "typescript": "5.1.6"
   },
   "peerDependencies": {
     "minimatch": "^5.1.0",

@@ -2,7 +2,7 @@ const fs = require("fs");
 const rimraf = require("rimraf");
 const { join, dirname, extname, relative, parse } = require("path");
 const babel = require("@babel/core");
-const ts = require("ttypescript");
+const ts = require("typescript");
 const glob = require("glob");
 const merge = require("lodash/merge");
 

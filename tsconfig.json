@@ -11,6 +11,7 @@
     "files": false,
     "typeCheck": false,
     "transpileOnly": true,
+    "require": ["typescript-transform-paths/register"],
     "compilerOptions": {
       "skipLibCheck": true,
       "target": "es2016",
