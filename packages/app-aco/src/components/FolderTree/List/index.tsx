@@ -65,13 +65,10 @@ export const List = ({
 
             setTreeData(newTree);
 
-            await updateFolder(
-                {
-                    ...item,
-                    parentId: dropTargetId !== ROOT_FOLDER ? (dropTargetId as string) : null
-                },
-                { refetchFoldersList: true }
-            );
+            await updateFolder({
+                ...item,
+                parentId: dropTargetId !== ROOT_FOLDER ? (dropTargetId as string) : null
+            });
         } catch (error) {
             return showSnackbar(error.message);
         }

@@ -5,42 +5,54 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { FoldersContext } from "~/contexts/folders";
 import { AcoAppContext } from "~/contexts/app";
 import { FolderItem } from "~/types";
-import { folderCacheFactory } from "~/Domain/Caches";
+
 import { loadingRepositoryFactory } from "@webiny/app-utils";
+
+import { FolderMapper } from "~/Domain/Models";
+
+import { folderCacheFactory } from "~/folders/cache";
 import {
     CreateFolderGraphQLGateway,
     DeleteFolderGraphQLGateway,
     GetFolderGraphQLGateway,
     ListFoldersGraphQLGateway,
     UpdateFolderGraphQLGateway
-} from "~/Gateways";
+} from "~/folders/gateways";
+import {
+    CreateFolderUseCase,
+    DeleteFolderUseCase,
+    GetFolderUseCase,
+    ListFoldersUseCase,
+    UpdateFolderUseCase
+} from "~/folders/useCases";
+import {
+    CreateFolderController,
+    DeleteFolderController,
+    GetFolderController,
+    ListFoldersController,
+    UpdateFolderController
+} from "~/folders/controllers";
 import {
     CreateFolderRepository,
     CreateFolderRepositoryWithLoading,
     DeleteFolderRepository,
     DeleteFolderRepositoryWithLoading,
-    GetDescendantFoldersRepository,
     GetFolderRepository,
     GetFolderRepositoryWithLoading,
+    GetDescendantFoldersRepository,
     ListFoldersRepository,
     ListFoldersRepositoryWithLoading,
     UpdateFolderRepository,
     UpdateFolderRepositoryWithLoading
-} from "~/Domain/Repositories";
-import { FolderMapper } from "~/Domain/Models";
+} from "~/folders/repositories";
 
 export const useFolders = () => {
     const client = useApolloClient();
     const foldersContext = useContext(FoldersContext);
     const appContext = useContext(AcoAppContext);
 
-    const [vm, setVm] = useState<{
-        folders: FolderItem[] | null;
-        loading: Record<string, boolean>;
-    }>({
-        folders: null,
-        loading: {}
-    });
+    const [folders, setFolders] = useState<FolderItem[] | null>(null);
+    const [loading, setLoading] = useState<Record<string, boolean>>({});
 
     if (!foldersContext) {
         throw new Error("useFolders must be used within a FoldersProvider");
@@ -67,17 +79,14 @@ export const useFolders = () => {
     // List
     const listFolders = useCallback(() => {
         const listFoldersGateway = new ListFoldersGraphQLGateway(client);
-        const listFoldersRepository = new ListFoldersRepository(
-            type,
-            foldersCache,
-            listFoldersGateway
-        );
-
+        const listFoldersRepository = new ListFoldersRepository(foldersCache, listFoldersGateway);
         const repository = new ListFoldersRepositoryWithLoading(
             loadingRepository,
             listFoldersRepository
         );
-        return repository.execute();
+        const listFoldersUseCase = new ListFoldersUseCase(repository);
+        const listFoldersController = new ListFoldersController(listFoldersUseCase);
+        return listFoldersController.execute(type);
     }, [type, client, foldersCache, loadingRepository]);
 
     // Get
@@ -85,12 +94,13 @@ export const useFolders = () => {
         (id: string) => {
             const getFolderGateway = new GetFolderGraphQLGateway(client);
             const getFolderRepository = new GetFolderRepository(foldersCache, getFolderGateway);
-
             const repository = new GetFolderRepositoryWithLoading(
                 loadingRepository,
                 getFolderRepository
             );
-            return repository.execute(id);
+            const getFolderUseCase = new GetFolderUseCase(repository);
+            const getFolderController = new GetFolderController(getFolderUseCase);
+            return getFolderController.execute(id);
         },
         [client, foldersCache, loadingRepository]
     );
@@ -111,14 +121,15 @@ export const useFolders = () => {
                 foldersCache,
                 createFolderGateway
             );
-
             const repository = new CreateFolderRepositoryWithLoading(
                 loadingRepository,
                 createFolderRepository
             );
-            return repository.execute(folder);
+            const createFolderUseCase = new CreateFolderUseCase(repository);
+            const createFolderController = new CreateFolderController(createFolderUseCase);
+            return createFolderController.execute(folder, type);
         },
-        [client, foldersCache, loadingRepository]
+        [client, foldersCache, loadingRepository, type]
     );
 
     // Update
@@ -129,12 +140,13 @@ export const useFolders = () => {
                 foldersCache,
                 updateFolderGateway
             );
-
             const repository = new UpdateFolderRepositoryWithLoading(
                 loadingRepository,
                 updateFolderRepository
             );
-            return repository.execute(folder);
+            const updateFolderUseCase = new UpdateFolderUseCase(repository);
+            const updateFolderController = new UpdateFolderController(updateFolderUseCase);
+            return updateFolderController.execute(folder);
         },
         [client, foldersCache, loadingRepository]
     );
@@ -152,7 +164,9 @@ export const useFolders = () => {
                 loadingRepository,
                 deleteFolderRepository
             );
-            return repository.execute(folder);
+            const deleteFolderUseCase = new DeleteFolderUseCase(repository);
+            const deleteFolderController = new DeleteFolderController(deleteFolderUseCase);
+            return deleteFolderController.execute(folder);
         },
         [client, foldersCache, loadingRepository]
     );
@@ -168,34 +182,33 @@ export const useFolders = () => {
          * fetch the outdated list from Apollo Cache. Since the state is managed locally, we fetch the folders only
          * at the first mount.
          */
-        if (vm.folders) {
-            return;
+        const cachedItems = foldersCache.getItems();
+
+        if (cachedItems) {
+            return; // Skip if we already have folders in the cache.
         }
+
         listFolders();
-    }, []);
+    }, [foldersCache]);
 
     useEffect(() => {
+        const mapper = new FolderMapper();
         return autorun(() => {
-            const mapper = new FolderMapper();
-
-            setVm(vm => ({
-                ...vm,
-                folders: foldersCache.getItems().map(folder => mapper.toDTO(folder))
-            }));
+            const newFolderState = foldersCache.getItems().map(folder => mapper.toDTO(folder));
+            setFolders(newFolderState);
         });
     }, [foldersCache]);
 
     useEffect(() => {
         return autorun(() => {
-            setVm(vm => ({
-                ...vm,
-                loading: loadingRepository.get()
-            }));
+            const newLoadingState = loadingRepository.get();
+            setLoading(newLoadingState);
         });
     }, [loadingRepository]);
 
     return {
-        ...vm,
+        folders,
+        loading,
         listFolders,
         getFolder,
         getDescendantFolders,

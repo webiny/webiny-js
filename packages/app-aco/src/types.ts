@@ -153,7 +153,17 @@ export interface CreateFolderResponse {
 export interface CreateFolderVariables {
     data: Omit<
         FolderItem,
-        "id" | "createdOn" | "createdBy" | "savedOn" | "savedBy" | "modifiedOn" | "modifiedBy"
+        | "id"
+        | "createdOn"
+        | "createdBy"
+        | "savedOn"
+        | "savedBy"
+        | "modifiedOn"
+        | "modifiedBy"
+        | "hasNonInheritedPermissions"
+        | "canManageContent"
+        | "canManagePermissions"
+        | "canManageStructure"
     >;
 }
 
