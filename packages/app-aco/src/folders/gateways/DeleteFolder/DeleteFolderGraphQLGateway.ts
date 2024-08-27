@@ -1,7 +1,20 @@
 import { ApolloClient } from "apollo-client";
 import { IDeleteFolderGateway } from "./IDeleteFolderGateway";
 import { DELETE_FOLDER } from "~/graphql/folders.gql";
-import { DeleteFolderResponse, DeleteFolderVariables } from "~/types";
+import { AcoError } from "~/types";
+
+export interface DeleteFolderVariables {
+    id: string;
+}
+
+export interface DeleteFolderResponse {
+    aco: {
+        deleteFolder: {
+            data: boolean;
+            error: AcoError | null;
+        };
+    };
+}
 
 export class DeleteFolderGraphQLGateway implements IDeleteFolderGateway {
     private client: ApolloClient<any>;

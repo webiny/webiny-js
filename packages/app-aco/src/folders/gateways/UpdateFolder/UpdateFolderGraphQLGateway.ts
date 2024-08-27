@@ -1,9 +1,28 @@
 import { ApolloClient } from "apollo-client";
 import { IUpdateFolderGateway } from "./IUpdateFolderGateway";
 import { UPDATE_FOLDER } from "~/graphql/folders.gql";
-import { UpdateFolderResponse, UpdateFolderVariables } from "~/types";
+import { AcoError, FolderItem } from "~/types";
 import { ROOT_FOLDER } from "~/constants";
 import { UpdateFolderGraphQLDTO } from "./IUpdateFolderGraphQLMapper";
+
+export interface UpdateFolderResponse {
+    aco: {
+        updateFolder: {
+            data: FolderItem;
+            error: AcoError | null;
+        };
+    };
+}
+
+export interface UpdateFolderVariables {
+    id: string;
+    data: Partial<
+        Omit<
+            FolderItem,
+            "id" | "createdOn" | "createdBy" | "savedOn" | "savedBy" | "modifiedOn" | "modifiedBy"
+        >
+    >;
+}
 
 export class UpdateFolderGraphQLGateway implements IUpdateFolderGateway {
     private client: ApolloClient<any>;

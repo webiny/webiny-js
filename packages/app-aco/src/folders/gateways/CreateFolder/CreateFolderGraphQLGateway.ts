@@ -1,8 +1,34 @@
 import { ApolloClient } from "apollo-client";
 import { ICreateFolderGateway } from "./ICreateFolderGateway";
-import { CREATE_FOLDER } from "~/graphql/folders.gql";
-import { CreateFolderResponse, CreateFolderVariables } from "~/types";
 import { CreateFolderGraphQLDTO } from "./ICreateFolderGraphQLMapper";
+import { CREATE_FOLDER } from "~/graphql/folders.gql";
+import { AcoError, FolderItem } from "~/types";
+
+export interface CreateFolderResponse {
+    aco: {
+        createFolder: {
+            data: FolderItem;
+            error: AcoError | null;
+        };
+    };
+}
+
+export interface CreateFolderVariables {
+    data: Omit<
+        FolderItem,
+        | "id"
+        | "createdOn"
+        | "createdBy"
+        | "savedOn"
+        | "savedBy"
+        | "modifiedOn"
+        | "modifiedBy"
+        | "hasNonInheritedPermissions"
+        | "canManageContent"
+        | "canManagePermissions"
+        | "canManageStructure"
+    >;
+}
 
 export class CreateFolderGraphQLGateway implements ICreateFolderGateway {
     private client: ApolloClient<any>;

@@ -2,7 +2,23 @@ import { ApolloClient } from "apollo-client";
 import { IListFoldersGateway } from "./IListFoldersGateway";
 import { LIST_FOLDERS } from "~/graphql/folders.gql";
 import { ROOT_FOLDER } from "~/constants";
-import { FolderItem, ListFoldersQueryVariables, ListFoldersResponse } from "~/types";
+import { AcoError, FolderItem } from "~/types";
+
+export interface ListFoldersResponse {
+    aco: {
+        listFolders: {
+            data: FolderItem[] | null;
+            error: AcoError | null;
+        };
+    };
+}
+
+export interface ListFoldersQueryVariables {
+    type: string;
+    limit: number;
+    sort?: Record<string, any>;
+    after?: string | null;
+}
 
 export class ListFoldersGraphQLGateway implements IListFoldersGateway {
     private client: ApolloClient<any>;

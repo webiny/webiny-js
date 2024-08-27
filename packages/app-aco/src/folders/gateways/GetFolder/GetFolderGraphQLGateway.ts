@@ -1,7 +1,20 @@
 import { ApolloClient } from "apollo-client";
 import { IGetFolderGateway } from "./IGetFolderGateway";
 import { GET_FOLDER } from "~/graphql/folders.gql";
-import { GetFolderResponse, GetFolderQueryVariables } from "~/types";
+import { FolderItem, AcoError } from "~/types";
+
+export interface GetFolderResponse {
+    aco: {
+        getFolder: {
+            data: FolderItem | null;
+            error: AcoError | null;
+        };
+    };
+}
+
+export interface GetFolderQueryVariables {
+    id: string;
+}
 
 export class GetFolderGraphQLGateway implements IGetFolderGateway {
     private client: ApolloClient<any>;
