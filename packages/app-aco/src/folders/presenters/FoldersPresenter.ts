@@ -1,9 +1,25 @@
-import { IFolderMapper } from "./IFolderMapper";
-import { ROOT_FOLDER } from "~/constants";
+import { LoadingRepository } from "@webiny/app-utils";
+import { FoldersCache } from "~/folders/cache";
 import { Folder } from "~/folders/domain";
+import { ROOT_FOLDER } from "~/constants";
 
-export class FolderMapper implements IFolderMapper {
-    toDTO(folder: Folder) {
+export class FoldersPresenter {
+    private foldersCache: FoldersCache;
+    private loadingRepository: LoadingRepository;
+
+    constructor(foldersCache: FoldersCache, loadingRepository: LoadingRepository) {
+        this.foldersCache = foldersCache;
+        this.loadingRepository = loadingRepository;
+    }
+
+    get vm() {
+        return {
+            folders: this.foldersCache.getItems().map(folder => this.folderMapper(folder)),
+            loading: this.loadingRepository.get()
+        };
+    }
+
+    private folderMapper(folder: Folder) {
         return {
             id: folder.id,
             title: folder.title,

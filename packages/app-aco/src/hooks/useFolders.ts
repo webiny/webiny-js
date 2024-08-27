@@ -1,14 +1,10 @@
 import { useContext, useCallback, useEffect, useMemo, useState } from "react";
 import { autorun } from "mobx";
 import { useApolloClient } from "@apollo/react-hooks";
+import { loadingRepositoryFactory } from "@webiny/app-utils";
 
 import { FoldersContext } from "~/contexts/folders";
 import { AcoAppContext } from "~/contexts/app";
-import { FolderItem } from "~/types";
-
-import { loadingRepositoryFactory } from "@webiny/app-utils";
-
-import { FolderMapper } from "~/Domain/Models";
 
 import { folderCacheFactory } from "~/folders/cache";
 import {
@@ -45,14 +41,16 @@ import {
     UpdateFolderRepository,
     UpdateFolderRepositoryWithLoading
 } from "~/folders/repositories";
+import { FoldersPresenter } from "~/folders/presenters";
+
+import { FolderItem } from "~/types";
 
 export const useFolders = () => {
     const client = useApolloClient();
     const foldersContext = useContext(FoldersContext);
     const appContext = useContext(AcoAppContext);
 
-    const [folders, setFolders] = useState<FolderItem[] | null>(null);
-    const [loading, setLoading] = useState<Record<string, boolean>>({});
+    const [vm, setVm] = useState({});
 
     if (!foldersContext) {
         throw new Error("useFolders must be used within a FoldersProvider");
@@ -75,6 +73,15 @@ export const useFolders = () => {
     const loadingRepository = useMemo(() => {
         return loadingRepositoryFactory.getRepository();
     }, []);
+
+    // Presenter vm
+    useEffect(() => {
+        const presenter = new FoldersPresenter(foldersCache, loadingRepository);
+        return autorun(() => {
+            const newState = presenter.vm;
+            setVm(newState);
+        });
+    }, [foldersCache, loadingRepository]);
 
     // List
     const listFolders = useCallback(() => {
@@ -191,24 +198,8 @@ export const useFolders = () => {
         listFolders();
     }, [foldersCache]);
 
-    useEffect(() => {
-        const mapper = new FolderMapper();
-        return autorun(() => {
-            const newFolderState = foldersCache.getItems().map(folder => mapper.toDTO(folder));
-            setFolders(newFolderState);
-        });
-    }, [foldersCache]);
-
-    useEffect(() => {
-        return autorun(() => {
-            const newLoadingState = loadingRepository.get();
-            setLoading(newLoadingState);
-        });
-    }, [loadingRepository]);
-
     return {
-        folders,
-        loading,
+        ...vm,
         listFolders,
         getFolder,
         getDescendantFolders,
