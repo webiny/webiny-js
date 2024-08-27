@@ -16,6 +16,7 @@ import {
 import { ITaskManagerStore } from "./runner/abstractions";
 import { PutEventsCommandOutput } from "@webiny/aws-sdk/client-eventbridge";
 import { SecurityPermission } from "@webiny/api-security/types";
+import { GenericRecord } from "@webiny/api/types";
 
 export { PutEventsCommandOutput };
 
@@ -27,9 +28,7 @@ export interface ITaskConfig {
     readonly eventBusName: string;
 }
 
-export interface ITaskDataInput {
-    [key: string]: any;
-}
+export type ITaskDataInput = GenericRecord;
 
 export enum ITaskLogItemType {
     INFO = "info",

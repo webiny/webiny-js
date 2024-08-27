@@ -5,6 +5,10 @@
 import glob from "fast-glob";
 import { dirname, join } from "path";
 
+export type GenericRecordKey = string | number | symbol;
+
+export type GenericRecord<K extends GenericRecordKey = GenericRecordKey, V = any> = Record<K, V>;
+
 /**
  * A simplified plugins container interface, used specifically within the Webiny CLI.
  * Not in relation with "@webiny/plugins" package.

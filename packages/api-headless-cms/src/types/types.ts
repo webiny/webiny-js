@@ -885,7 +885,9 @@ export interface CmsModelContext {
      *
      * @see CmsModelManager
      */
-    getEntryManager<T = any>(model: CmsModel | string): Promise<CmsModelManager<T>>;
+    getEntryManager<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel | string
+    ): Promise<CmsModelManager<T>>;
     /**
      * A model manager for a model which has a single entry.
      */
