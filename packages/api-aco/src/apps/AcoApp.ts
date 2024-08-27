@@ -4,6 +4,7 @@ import {
     AcoRequestAction,
     AcoSearchRecordCrudBase,
     CreateSearchRecordParams,
+    GenericSearchData,
     IAcoApp,
     IAcoAppModifyFieldCallableCallback,
     IAcoAppOnAnyRequest,
@@ -12,7 +13,8 @@ import {
     IAcoAppParams,
     ListSearchRecordsParams,
     ListSearchRecordTagsParams,
-    SearchRecord
+    SearchRecord,
+    UpdateSearchRecordParams
 } from "~/types";
 import { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
 import lodashUpperFirst from "lodash/upperFirst";
@@ -34,15 +36,20 @@ export class AcoApp implements IAcoApp {
 
     public get search(): AcoSearchRecordCrudBase {
         return {
-            create: async <TData>(data: CreateSearchRecordParams<TData>) => {
+            create: async <TData extends GenericSearchData = GenericSearchData>(
+                data: CreateSearchRecordParams<TData>
+            ) => {
                 await this.execOnAnyRequest("create");
                 const result = await this.context.aco.search.create<TData>(this.getModel(), data);
                 if (!this.onEntry) {
                     return result;
                 }
-                return this.onEntry(result);
+                return (await this.onEntry(result)) as SearchRecord<TData>;
             },
-            update: async <TData>(id: string, data: SearchRecord<TData>) => {
+            update: async <TData extends GenericSearchData = GenericSearchData>(
+                id: string,
+                data: UpdateSearchRecordParams<TData>
+            ) => {
                 await this.execOnAnyRequest("update");
                 const result = await this.context.aco.search.update<TData>(
                     this.getModel(),
@@ -52,21 +59,23 @@ export class AcoApp implements IAcoApp {
                 if (!this.onEntry) {
                     return result;
                 }
-                return this.onEntry(result);
+                return (await this.onEntry(result)) as SearchRecord<TData>;
             },
             move: async (id: string, folderId?: string) => {
                 await this.execOnAnyRequest("move");
                 return this.context.aco.search.move(this.getModel(), id, folderId);
             },
-            get: async <TData>(id: string) => {
+            get: async <TData extends GenericSearchData = GenericSearchData>(id: string) => {
                 await this.execOnAnyRequest("fetch");
                 const result = await this.context.aco.search.get<TData>(this.getModel(), id);
                 if (!result || !this.onEntry) {
                     return result;
                 }
-                return this.onEntry(result);
+                return (await this.onEntry(result)) as SearchRecord<TData>;
             },
-            list: async <TData>(params: ListSearchRecordsParams) => {
+            list: async <TData extends GenericSearchData = GenericSearchData>(
+                params: ListSearchRecordsParams
+            ) => {
                 await this.execOnAnyRequest("fetch");
                 const result = await this.context.aco.search.list<TData>(this.getModel(), params);
                 const onEntryList = this.onEntryList;
@@ -74,7 +83,7 @@ export class AcoApp implements IAcoApp {
                     return result;
                 }
                 const [entries, meta] = result;
-                const items = await onEntryList(entries);
+                const items = (await onEntryList(entries)) as SearchRecord<TData>[];
                 return [items, meta];
             },
             delete: async (id: string): Promise<boolean> => {
