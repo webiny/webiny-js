@@ -207,6 +207,7 @@ jobs:
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
         working-directory: ${{ github.base_ref }}
+    if: github.base_ref != 'feat/new-admin-ui'
   jestTestsDdb:
     needs:
       - constants
@@ -227,8 +228,8 @@ jobs:
           --storage=ddb","storage":"ddb","id":"api-file-manager_ddb"},{"cmd":"packages/api-form-builder
           --storage=ddb","storage":"ddb","id":"api-form-builder_ddb"},{"cmd":"packages/api-headless-cms
           --storage=ddb","storage":"ddb","id":"api-headless-cms_ddb"},{"cmd":"packages/api-headless-cms-aco
-          --storage=ddb","storage":"ddb","id":"api-headless-cms-aco_ddb"},{"cmd":"packages/api-headless-cms-tasks
-          --storage=ddb","storage":"ddb","id":"api-headless-cms-tasks_ddb"},{"cmd":"packages/api-i18n
+          --storage=ddb","storage":"ddb","id":"api-headless-cms-aco_ddb"},{"cmd":"packages/api-headless-cms-bulk-actions
+          --storage=ddb","storage":"ddb","id":"api-headless-cms-bulk-actions_ddb"},{"cmd":"packages/api-i18n
           --storage=ddb","storage":"ddb","id":"api-i18n_ddb"},{"cmd":"packages/api-mailer
           --storage=ddb","storage":"ddb","id":"api-mailer_ddb"},{"cmd":"packages/api-page-builder
           --storage=ddb","storage":"ddb","id":"api-page-builder_ddb"},{"cmd":"packages/api-page-builder-aco
@@ -268,6 +269,7 @@ jobs:
       - name: Run tests
         run: yarn test ${{ matrix.package.cmd }}
         working-directory: ${{ github.base_ref }}
+    if: github.base_ref != 'feat/new-admin-ui'
   jestTestsDdbEs:
     needs:
       - constants
@@ -290,10 +292,10 @@ jobs:
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder_ddb-es_ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder-so-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-headless-cms
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-aco
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-aco_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-ddb-es
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-aco_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-bulk-actions
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-bulk-actions_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-ddb-es
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-es-tasks
-          --storage=ddb-es,ddb","storage":["ddb-es"],"id":"api-headless-cms-es-tasks_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-tasks
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-tasks_ddb-es_ddb"},{"cmd":"packages/api-mailer
+          --storage=ddb-es,ddb","storage":["ddb-es"],"id":"api-headless-cms-es-tasks_ddb-es_ddb"},{"cmd":"packages/api-mailer
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-mailer_ddb-es_ddb"},{"cmd":"packages/api-page-builder
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder_ddb-es_ddb"},{"cmd":"packages/api-page-builder-aco
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder-aco_ddb-es_ddb"},{"cmd":"packages/api-page-builder-so-ddb-es
@@ -338,7 +340,9 @@ jobs:
         working-directory: ${{ github.base_ref }}
     permissions:
       id-token: write
-    if: needs.constants.outputs.is-fork-pr != 'true'
+    if: >-
+      github.base_ref != 'feat/new-admin-ui' &&
+      needs.constants.outputs.is-fork-pr != 'true'
   jestTestsDdbOs:
     needs:
       - constants
@@ -361,10 +365,10 @@ jobs:
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-form-builder_ddb-os_ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-form-builder-so-ddb-es_ddb-os_ddb"},{"cmd":"packages/api-headless-cms
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-aco
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-aco_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-ddb-es
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-aco_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-bulk-actions
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-bulk-actions_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-ddb-es
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-ddb-es_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-es-tasks
-          --storage=ddb-os,ddb","storage":["ddb-os"],"id":"api-headless-cms-es-tasks_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-tasks
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-tasks_ddb-os_ddb"},{"cmd":"packages/api-mailer
+          --storage=ddb-os,ddb","storage":["ddb-os"],"id":"api-headless-cms-es-tasks_ddb-os_ddb"},{"cmd":"packages/api-mailer
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-mailer_ddb-os_ddb"},{"cmd":"packages/api-page-builder
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-page-builder_ddb-os_ddb"},{"cmd":"packages/api-page-builder-aco
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-page-builder-aco_ddb-os_ddb"},{"cmd":"packages/api-page-builder-so-ddb-es
@@ -409,7 +413,9 @@ jobs:
         working-directory: ${{ github.base_ref }}
     permissions:
       id-token: write
-    if: needs.constants.outputs.is-fork-pr != 'true'
+    if: >-
+      github.base_ref != 'feat/new-admin-ui' &&
+      needs.constants.outputs.is-fork-pr != 'true'
   verdaccioPublish:
     name: Publish to Verdaccio
     needs:

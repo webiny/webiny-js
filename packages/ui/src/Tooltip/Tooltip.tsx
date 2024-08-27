@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Tooltip as TooltipAdmin, TooltipProps as TooltipPropsAdmin } from "@webiny/ui-new";
+import { Tooltip as TooltipAdmin, TooltipProps as TooltipPropsAdmin } from "@webiny/admin-ui";
 
 export interface TooltipProps {
     // A component (eg. button) which will trigger the tooltip.

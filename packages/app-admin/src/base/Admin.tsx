@@ -3,7 +3,7 @@ import { App, Provider } from "@webiny/app";
 import { ThemeProvider } from "@webiny/app-theme";
 import { WcpProvider } from "@webiny/app-wcp";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { Providers as UiProviders } from "@webiny/ui-new";
+import { Providers as UiProviders } from "@webiny/admin-ui";
 import { ApolloClientFactory, createApolloProvider } from "./providers/ApolloProvider";
 import { Base } from "./Base";
 import { createTelemetryProvider } from "./providers/TelemetryProvider";

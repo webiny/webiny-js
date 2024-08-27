@@ -13,8 +13,9 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@pulumi/aws": "^6.47.0",
-    "@pulumi/pulumi": "^3.127.0",
+    "@pulumi/aws": "^6.48.0",
+    "@pulumi/pulumi": "^3.128.0",
+    "@webiny/admin-ui": "0.0.0",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-apw": "0.0.0",
     "@webiny/api-apw-scheduler-so-ddb": "0.0.0",
@@ -55,7 +56,6 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/pulumi": "0.0.0",
     "@webiny/pulumi-aws": "0.0.0",
-    "@webiny/ui-new": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "chalk": "^4.1.0",
     "fast-glob": "^3.2.7",

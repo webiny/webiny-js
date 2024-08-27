@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
+    { "path": "../admin-ui" },
     { "path": "../app" },
     { "path": "../app-security" },
     { "path": "../app-theme" },
@@ -13,7 +14,6 @@
     { "path": "../react-router" },
     { "path": "../ui" },
     { "path": "../ui-composer" },
-    { "path": "../ui-new" },
     { "path": "../utils" },
     { "path": "../validation" }
   ],
@@ -24,6 +24,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/admin-ui/*": ["../admin-ui/src/*"],
+      "@webiny/admin-ui": ["../admin-ui/src"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
@@ -46,8 +48,6 @@
       "@webiny/ui": ["../ui/src"],
       "@webiny/ui-composer/*": ["../ui-composer/src/*"],
       "@webiny/ui-composer": ["../ui-composer/src"],
-      "@webiny/ui-new/*": ["../ui-new/src/*"],
-      "@webiny/ui-new": ["../ui-new/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],

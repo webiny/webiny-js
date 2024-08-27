@@ -1,8 +1,8 @@
-interface PluginGeneratorParams {
-    input: {
-        name: string;
-        packageName: string;
-    };
+export interface Input {
+    type: string;
+    name: string;
+    packageName: string;
+    location: string;
+    dependencies?: string;
+    templateArgs?: string;
 }
-
-export type PluginGenerator = (params: PluginGeneratorParams) => Promise<void>;
