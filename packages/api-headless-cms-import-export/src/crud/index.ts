@@ -10,7 +10,9 @@ import {
     ICmsImportExportObjectStartExportParams,
     ICmsImportExportObjectValidateImportFromUrlParams,
     ICmsImportExportObjectValidateImportFromUrlResult,
-    ICmsImportExportRecord
+    ICmsImportExportRecord,
+    IListExportContentEntriesParams,
+    IListExportContentEntriesResult
 } from "~/types";
 import {
     GetExportContentEntriesUseCase,
@@ -22,12 +24,20 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { ImportFromUrlUseCase } from "./useCases/importFromUrl/ImportFromUrlUseCase";
 import { ExportContentEntriesUseCase } from "~/crud/useCases/exportContentEntries";
 import { AbortExportContentEntriesUseCase } from "./useCases/abortExportContentEntries";
+import { UrlSigner } from "~/tasks/utils/urlSigner";
+import { getBucket } from "~/tasks/utils/helpers/getBucket";
+import { createS3Client } from "~/tasks/utils/helpers/s3Client";
+import { ListExportContentEntriesUseCase } from "./useCases/listExportContentEntries";
 
 export const createHeadlessCmsImportExportCrud = async (
     context: Context
 ): Promise<CmsImportExportObject> => {
     const getExportContentEntriesUseCase = new GetExportContentEntriesUseCase({
         getTask: context.tasks.getTask
+    });
+
+    const listExportContentEntriesUseCase = new ListExportContentEntriesUseCase({
+        listTasks: context.tasks.listTasks
     });
 
     const validateImportFromUrlUseCase = new ValidateImportFromUrlUseCase({
@@ -55,6 +65,28 @@ export const createHeadlessCmsImportExportCrud = async (
         abortTask: context.tasks.abort
     });
 
+    const urlSigner = new UrlSigner({
+        bucket: getBucket(),
+        client: createS3Client()
+    });
+
+    const signFiles = (files: ICmsImportExportRecord["files"]) => {
+        if (!files) {
+            return null;
+        }
+        return Promise.all(
+            files.map(async file => {
+                const { url: get } = await urlSigner.get(file);
+                const { url: head } = await urlSigner.head(file);
+                return {
+                    ...file,
+                    get,
+                    head
+                };
+            })
+        );
+    };
+
     const getExportContentEntries = async (
         params: ICmsImportExportObjectGetExportParams
     ): Promise<ICmsImportExportRecord> => {
@@ -64,7 +96,17 @@ export const createHeadlessCmsImportExportCrud = async (
                 `Export content entries task with id "${params.id}" not found.`
             );
         }
-        return result;
+        const files = await signFiles(result.files);
+        return {
+            ...result,
+            files
+        };
+    };
+
+    const listExportContentEntries = async (
+        params?: IListExportContentEntriesParams
+    ): Promise<IListExportContentEntriesResult> => {
+        return listExportContentEntriesUseCase.execute(params);
     };
 
     const exportContentEntries = async (
@@ -120,6 +162,7 @@ export const createHeadlessCmsImportExportCrud = async (
 
     return {
         getExportContentEntries,
+        listExportContentEntries,
         exportContentEntries,
         abortExportContentEntries,
         validateImportFromUrl,

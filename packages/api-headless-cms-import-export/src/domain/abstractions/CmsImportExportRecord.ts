@@ -3,8 +3,8 @@ import { TaskDataStatus } from "@webiny/tasks";
 import { CmsImportExportFileType } from "~/types";
 
 export interface ICmsImportExportRecordFile {
-    get: string;
-    head: string;
+    key: string;
+    checksum: string;
     type: CmsImportExportFileType;
 }
 

@@ -22,6 +22,7 @@ export const createExportFields = () => {
         files {
             get
             head
+            key
             type
         }
         status

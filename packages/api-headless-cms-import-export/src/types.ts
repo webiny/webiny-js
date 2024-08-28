@@ -2,6 +2,7 @@ import { FileManagerContext } from "@webiny/api-file-manager/types";
 import { Context as TasksContext, TaskDataStatus } from "@webiny/tasks/types";
 import { ICmsImportExportRecord } from "./domain/abstractions/CmsImportExportRecord";
 import { GenericRecord, NonEmptyArray } from "@webiny/api/types";
+import { CmsEntryMeta } from "@webiny/api-headless-cms/types";
 
 export * from "./domain/abstractions/CmsImportExportRecord";
 
@@ -102,10 +103,23 @@ export interface ICmsImportExportObjectImportFromUrlResult {
     error?: GenericRecord;
 }
 
+export interface IListExportContentEntriesParams {
+    limit?: number;
+    after?: string;
+}
+
+export interface IListExportContentEntriesResult {
+    items: Omit<ICmsImportExportRecord, "files">[];
+    meta: CmsEntryMeta;
+}
+
 export interface CmsImportExportObject {
     getExportContentEntries(
         params: ICmsImportExportObjectGetExportParams
     ): Promise<ICmsImportExportRecord>;
+    listExportContentEntries(
+        params?: IListExportContentEntriesParams
+    ): Promise<IListExportContentEntriesResult>;
     exportContentEntries(
         params: ICmsImportExportObjectStartExportParams
     ): Promise<ICmsImportExportRecord>;

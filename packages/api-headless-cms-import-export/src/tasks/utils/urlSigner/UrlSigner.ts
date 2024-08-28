@@ -6,6 +6,8 @@ import {
 } from "@webiny/aws-sdk/client-s3";
 import { IUrlSigner, IUrlSignerSignParams, IUrlSignerSignResult } from "./abstractions/UrlSigner";
 
+const DEFAULT_TIMEOUT = 3600; // 1 hour
+
 export interface IUrlSignerParams {
     client: S3Client;
     bucket: string;
@@ -36,7 +38,7 @@ export class UrlSigner implements IUrlSigner {
         params: IUrlSignerSignParams,
         command: IObjectCommandConstructor
     ): Promise<IUrlSignerSignResult> {
-        const expiresIn = params.timeout || 604800; // 1 week default
+        const expiresIn = params.timeout || DEFAULT_TIMEOUT;
         const expiresOn = new Date(new Date().getTime() + expiresIn * 1000);
 
         const url = await getSignedUrl(

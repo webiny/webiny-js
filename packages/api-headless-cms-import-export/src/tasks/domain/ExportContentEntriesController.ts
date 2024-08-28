@@ -24,9 +24,6 @@ import {
     IExportContentAssetsOutput
 } from "~/tasks/domain/abstractions/ExportContentAssets";
 import { getBackOffSeconds } from "~/tasks/utils/helpers/getBackOffSeconds";
-import { UrlSigner } from "~/tasks/utils/urlSigner";
-import { createS3Client } from "~/tasks/utils/helpers/s3Client";
-import { getBucket } from "~/tasks/utils/helpers/getBucket";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 
 const prepareExportModel = (model: Pick<CmsModel, "modelId" | "fields">): IExportedCmsModel => {
@@ -61,11 +58,6 @@ export class ExportContentEntriesController<
         const taskId = store.getTask().id;
 
         let entriesTask: IGetTaskResponse<IExportContentEntriesInput, IExportContentEntriesOutput>;
-
-        const urlSigner = new UrlSigner({
-            client: createS3Client(),
-            bucket: getBucket()
-        });
 
         /**
          * In case of no state yet, we will start the content entries export process.
@@ -148,11 +140,8 @@ export class ExportContentEntriesController<
             if (!input.exportAssets || entriesTask.output.files.length === 0) {
                 const files: IExportContentEntriesControllerOutputFile[] = [];
                 for (const file of entriesTask.output.files) {
-                    const { url: head } = await urlSigner.head(file);
-                    const { url: get } = await urlSigner.get(file);
                     files.push({
-                        head,
-                        get,
+                        key: file.key,
                         checksum: file.checksum,
                         type: CmsImportExportFileType.ENTRIES
                     });
@@ -246,22 +235,16 @@ export class ExportContentEntriesController<
             const files: IExportContentEntriesControllerOutputFile[] = [];
             const entriesFiles = entriesTask?.output?.files || [];
             for (const file of entriesFiles) {
-                const { url: head } = await urlSigner.head(file);
-                const { url: get } = await urlSigner.get(file);
                 files.push({
-                    head,
-                    get,
+                    key: file.key,
                     checksum: file.checksum,
                     type: CmsImportExportFileType.ENTRIES
                 });
             }
             const assetFiles = assetsTask.output?.files || [];
             for (const file of assetFiles) {
-                const { url: head } = await urlSigner.head(file);
-                const { url: get } = await urlSigner.get(file);
                 files.push({
-                    head,
-                    get,
+                    key: file.key,
                     checksum: file.checksum,
                     type: CmsImportExportFileType.ASSETS
                 });

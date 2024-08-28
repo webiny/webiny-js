@@ -1,4 +1,4 @@
-import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
+import { CmsEntryListSort, CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { Context } from "~/types";
 
@@ -13,7 +13,7 @@ export interface IExportContentEntriesInput {
     exportAssets: boolean;
     limit?: number;
     where?: CmsEntryListWhere;
-    sort?: string[];
+    sort?: CmsEntryListSort;
     after?: string;
     combine?: boolean;
     lastFileProcessed?: string;

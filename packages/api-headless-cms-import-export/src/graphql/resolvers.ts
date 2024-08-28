@@ -1,6 +1,6 @@
 import { Context } from "~/types";
 import { createZodError } from "@webiny/utils";
-import { resolve } from "@webiny/handler-graphql";
+import { resolve, resolveList } from "@webiny/handler-graphql";
 import zod from "zod";
 import { NonEmptyArray } from "@webiny/api/types";
 
@@ -10,6 +10,11 @@ const validateAbortExportContentEntries = zod.object({
 
 const validateGetExportContentEntries = zod.object({
     id: zod.string()
+});
+
+const validateListExportContentEntries = zod.object({
+    limit: zod.number().optional().default(50),
+    after: zod.string().optional()
 });
 
 const validateImportFromUrl = zod.object({
@@ -42,6 +47,15 @@ export const createResolvers = (models: NonEmptyArray<string>) => {
                     }
 
                     return await context.cmsImportExport.getExportContentEntries(result.data);
+                });
+            },
+            async listExportContentEntries(_: unknown, input: unknown, context: Context) {
+                return resolveList(async () => {
+                    const result = validateListExportContentEntries.safeParse(input);
+                    if (!result.success) {
+                        throw createZodError(result.error);
+                    }
+                    return await context.cmsImportExport.listExportContentEntries(result.data);
                 });
             },
             async getValidateImportFromUrl(_: unknown, input: unknown, context: Context) {

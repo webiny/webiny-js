@@ -1070,7 +1070,9 @@ export interface CmsEntryListWhere {
  * @category CmsEntry
  * @category GraphQL params
  */
-export type CmsEntryListSort = string[];
+export type CmsEntryListSortAsc = `${string}_ASC`;
+export type CmsEntryListSortDesc = `${string}_DESC`;
+export type CmsEntryListSort = (CmsEntryListSortAsc | CmsEntryListSortDesc)[];
 
 /**
  * Get entry GraphQL resolver params.

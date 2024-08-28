@@ -39,6 +39,8 @@ export const useHandler = <C extends Context = Context>(params?: UseHandlerParam
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const i18nStorage = getStorageOps<any[]>("i18n");
 
+    process.env.S3_BUCKET = "a-mock-s3-bucket";
+
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
 
     const plugins = [

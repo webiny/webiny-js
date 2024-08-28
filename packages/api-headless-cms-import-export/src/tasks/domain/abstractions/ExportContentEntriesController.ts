@@ -1,4 +1,4 @@
-import { CmsEntryListWhere, CmsModelField } from "@webiny/api-headless-cms/types";
+import { CmsEntryListSort, CmsEntryListWhere, CmsModelField } from "@webiny/api-headless-cms/types";
 import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { CmsImportExportFileType, Context } from "~/types";
 
@@ -15,14 +15,13 @@ export interface IExportContentEntriesControllerInput {
     prefix?: string;
     limit?: number;
     where?: CmsEntryListWhere;
-    sort?: string[];
+    sort?: CmsEntryListSort;
     after?: string;
     state?: ExportContentEntriesControllerState;
 }
 
 export interface IExportContentEntriesControllerOutputFile {
-    readonly head: string;
-    readonly get: string;
+    readonly key: string;
     readonly checksum: string;
     readonly type: CmsImportExportFileType;
 }

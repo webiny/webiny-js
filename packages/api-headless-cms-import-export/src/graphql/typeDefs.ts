@@ -13,6 +13,7 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
         type ExportContentEntriesExportRecordFile {
             get: String!
             head: String!
+            key: String!
             type: String!
             checksum: String!
         }
