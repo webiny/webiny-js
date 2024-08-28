@@ -5,11 +5,18 @@ import {
 } from "@webiny/admin-ui/Button";
 
 export interface IconButtonProps extends BaseIconButtonProps {
-    // @deprecated Use `text` prop instead.
-    children?: React.ReactNode;
+    /**
+     * @deprecated Use `text` prop instead.
+     */
+    label?: string;
+
+    /**
+     * @deprecated Use `size` prop instead.
+     */
+    small?: boolean;
 }
 
 export const IconButton = (props: IconButtonProps) => {
-    const { icon, text, children, ...rest } = props;
-    return <BaseIconButton icon={icon} text={text || children} {...rest} />;
+    const { icon, text, label, children, ...rest } = props;
+    return <BaseIconButton icon={icon} text={text || label || children} {...rest} />;
 };
