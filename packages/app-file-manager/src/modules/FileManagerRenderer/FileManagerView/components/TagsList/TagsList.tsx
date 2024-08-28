@@ -3,10 +3,8 @@ import { Loader } from "@webiny/app-aco";
 import { Empty } from "./Empty";
 import { Tag } from "./Tag";
 import { TagItem } from "@webiny/app-aco/types";
-import { Select } from "@webiny/ui/Select";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
-import { Typography } from "@webiny/ui/Typography";
-import { TagListWrapper } from "./styled";
+import { TagListWrapper, TagsFilterSelect, TagsTitle } from "./styled";
 
 interface TagListProps {
     loading: boolean;
@@ -59,15 +57,14 @@ export const TagsList = ({
         return (
             <>
                 <TagListWrapper>
-                    <Typography use="subtitle1">Filter by tag</Typography>
+                    <TagsTitle use="subtitle1">Filter by tag</TagsTitle>
                     {tags.length > 1 ? (
-                        <Select
+                        <TagsFilterSelect
                             disabled={fmView.tags.activeTags.length < 2}
                             size={"small"}
                             value={fmView.tags.filterMode}
                             onChange={mode => fmView.tags.setFilterMode(mode)}
                             options={options}
-                            className="tag-filter"
                         />
                     ) : null}
                 </TagListWrapper>
