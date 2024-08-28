@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useMemo } from "react";
 import { Tooltip as TooltipAdmin, TooltipProps as TooltipPropsAdmin } from "@webiny/admin-ui";
 
 export interface TooltipProps {
@@ -36,7 +36,7 @@ export const Tooltip = ({
     placement,
     className = "webiny-ui-tooltip"
 }: TooltipProps) => {
-    const mapPlacementToSideAndAlign = useCallback((placement?: string) => {
+    const { side, align } = useMemo(() => {
         const placementMapping: Record<
             string,
             { side: TooltipPropsAdmin["side"]; align: TooltipPropsAdmin["align"] }
@@ -52,9 +52,7 @@ export const Tooltip = ({
         };
 
         return placementMapping[placement ?? ""] || { side: undefined, align: undefined };
-    }, []);
-
-    const { side, align } = mapPlacementToSideAndAlign(placement);
+    }, [placement]);
 
     return (
         <TooltipAdmin
