@@ -21722,7 +21722,6 @@ __metadata:
     "@rmwc/slider": ^14.2.2
     "@rmwc/snackbar": ^14.2.2
     "@rmwc/switch": ^14.2.2
-    "@rmwc/tabs": ^14.2.2
     "@rmwc/textfield": ^14.2.2
     "@rmwc/top-app-bar": ^14.2.2
     "@rmwc/touch-target": ^14.2.2
