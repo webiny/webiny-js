@@ -1,11 +1,10 @@
 import React from "react";
-import { Elevation as RmwcElevation } from "@rmwc/elevation";
+import { Card, CardProps } from "@webiny/admin-ui";
 
-export type ElevationProps = {
+export interface ElevationProps extends CardProps {
     // Any element that needs to be highlighted.
     children?: React.ReactNode;
 
-    // Increasing this number (from 0 to 24) will increase the amount of shadow applied.
     z: number;
 
     // Adds smooth transitions when the z value changes.
@@ -19,15 +18,13 @@ export type ElevationProps = {
 };
 
 /**
- * Elevation component visually raises any content by applying shadow.
+ * @deprecated Use `Card` component instead.
  */
-const Elevation = React.forwardRef((props: ElevationProps, ref: React.Ref<any>) => {
+const Elevation = (props: ElevationProps) => {
     return (
-        <RmwcElevation ref={ref} {...props}>
-            {props.children}
-        </RmwcElevation>
+        <Card {...props} content={props.children}/>
     );
-});
+};
 
 Elevation.displayName = "Elevation";
 

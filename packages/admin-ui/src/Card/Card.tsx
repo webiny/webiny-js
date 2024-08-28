@@ -1,17 +1,18 @@
 import * as React from "react";
-
 import { cn } from "~/utils";
 
-const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+type CardWrapperProps = React.HTMLAttributes<HTMLDivElement>;
+
+const CardWrapper = React.forwardRef<HTMLDivElement, CardWrapperProps>(
     ({ className, ...props }, ref) => (
         <div
             ref={ref}
-            className={cn("rounded-lg bg-card text-card-foreground", className)}
+            className={cn(" rounded-lg border bg-card text-card-foreground shadow-sm", className)}
             {...props}
         />
     )
 );
-Card.displayName = "Card";
+CardWrapper.displayName = "CardWrapper";
 
 const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
     ({ className, ...props }, ref) => (
@@ -53,4 +54,25 @@ const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 );
 CardFooter.displayName = "CardFooter";
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };
+interface CardProps extends Omit<CardWrapperProps, "content"> {
+    headerTitle?: React.ReactNode;
+    headerDescription?: React.ReactNode;
+    content?: React.ReactNode;
+    footer?: React.ReactNode;
+}
+
+const Card = (props: CardProps) => {
+    const { headerTitle, headerDescription, content, footer, ...rest } = props;
+    return (
+        <CardWrapper {...rest}>
+            <CardHeader>
+                <CardTitle>{headerTitle}</CardTitle>
+                <CardDescription>{headerDescription}</CardDescription>
+            </CardHeader>
+            <CardContent>{content}</CardContent>
+            <CardFooter>{footer}</CardFooter>
+        </CardWrapper>
+    );
+};
+
+export { Card, CardProps };
