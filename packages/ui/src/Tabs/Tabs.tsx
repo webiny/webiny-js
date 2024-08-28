@@ -72,17 +72,19 @@ export const Tabs = ({ value, onActivate, ...props }: TabsProps) => {
                     data-testid={item["data-testid"]}
                     value={`${VALUE_PREFIX}${index}`}
                     disabled={item.disabled}
-                >
-                    {item.label} {item.icon}
-                </TabsTrigger>
+                    text={item.label}
+                    icon={item.icon}
+                />
             );
         });
 
     const contents = tabs.filter(Boolean).map((tab, index) => {
         return (
-            <TabsContent key={`${VALUE_PREFIX}${index}`} value={`${VALUE_PREFIX}${index}`}>
-                {tab.children}
-            </TabsContent>
+            <TabsContent
+                key={`${VALUE_PREFIX}${index}`}
+                value={`${VALUE_PREFIX}${index}`}
+                text={tab.children}
+            />
         );
     });
 
