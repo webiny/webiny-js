@@ -3,13 +3,14 @@ import * as TabsPrimitive from "@radix-ui/react-tabs";
 
 import { cn } from "~/utils";
 import { cva, type VariantProps } from "class-variance-authority";
+import { makeDecoratable } from "@webiny/react-composition";
 
-export const TabsRoot = TabsPrimitive.Root;
+const TabsRoot = TabsPrimitive.Root;
 
 /**
  * Tabs list
  */
-export const TabsList = React.forwardRef<
+const TabsListBase = React.forwardRef<
     React.ElementRef<typeof TabsPrimitive.List>,
     React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
 >(({ className, ...props }, ref) => (
@@ -22,12 +23,14 @@ export const TabsList = React.forwardRef<
         {...props}
     />
 ));
-TabsList.displayName = TabsPrimitive.List.displayName;
+TabsListBase.displayName = TabsPrimitive.List.displayName;
+
+const TabsList = makeDecoratable("TabsList", TabsListBase);
 
 /**
  * Tabs trigger
  */
-export const tabsTriggerVariants = cva(
+const tabsTriggerVariants = cva(
     "inline-flex items-center justify-center whitespace-nowrap rounded-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:fill-foreground data-[state=active]:shadow-sm",
     {
         variants: {
@@ -44,13 +47,13 @@ export const tabsTriggerVariants = cva(
     }
 );
 
-export type TabsTriggerProps = Omit<TabsPrimitive.TabsTriggerProps, "children"> &
+type TabsTriggerProps = Omit<TabsPrimitive.TabsTriggerProps, "children"> &
     VariantProps<typeof tabsTriggerVariants> & {
         text: React.ReactNode;
         icon?: React.ReactNode;
     };
 
-export const TabsTrigger = React.forwardRef<
+const TabsTriggerBase = React.forwardRef<
     React.ElementRef<typeof TabsPrimitive.Trigger>,
     TabsTriggerProps
 >(({ className, size, icon, text, ...props }, ref) => (
@@ -62,12 +65,14 @@ export const TabsTrigger = React.forwardRef<
         {text} {icon}
     </TabsPrimitive.Trigger>
 ));
-TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
+TabsTriggerBase.displayName = TabsPrimitive.Trigger.displayName;
+
+const TabsTrigger = makeDecoratable("TabsTrigger", TabsTriggerBase);
 
 /**
  * Tabs content
  */
-export const tabsContentVariants = cva(
+const tabsContentVariants = cva(
     "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-muted",
     {
         variants: {
@@ -84,12 +89,12 @@ export const tabsContentVariants = cva(
     }
 );
 
-export type TabsContentProps = Omit<TabsPrimitive.TabsContentProps, "children"> &
+type TabsContentProps = Omit<TabsPrimitive.TabsContentProps, "children"> &
     VariantProps<typeof tabsContentVariants> & {
         text: React.ReactNode;
     };
 
-export const TabsContent = React.forwardRef<
+const TabsContentBase = React.forwardRef<
     React.ElementRef<typeof TabsPrimitive.Content>,
     TabsContentProps
 >(({ className, size, text, ...props }, ref) => (
@@ -101,18 +106,20 @@ export const TabsContent = React.forwardRef<
         {text}
     </TabsPrimitive.Content>
 ));
-TabsContent.displayName = TabsPrimitive.Content.displayName;
+TabsContentBase.displayName = TabsPrimitive.Content.displayName;
+
+const TabsContent = makeDecoratable("TabsContent", TabsContentBase);
 
 /**
  * Tabs
  */
-export interface TabsProps extends TabsPrimitive.TabsProps {
+interface TabsProps extends TabsPrimitive.TabsProps {
     triggers: React.ReactElement<TabsTriggerProps>[];
     contents: React.ReactElement<TabsContentProps>[];
     size?: "sm" | "md" | "lg" | "xl";
 }
 
-export const Tabs = React.forwardRef<React.ElementRef<typeof TabsPrimitive.Root>, TabsProps>(
+const TabsBase = React.forwardRef<React.ElementRef<typeof TabsPrimitive.Root>, TabsProps>(
     ({ defaultValue: baseDefaultValue, size = "md", triggers, contents, ...props }, ref) => {
         const defaultValue = baseDefaultValue || triggers[0].props.value;
 
@@ -134,4 +141,8 @@ export const Tabs = React.forwardRef<React.ElementRef<typeof TabsPrimitive.Root>
         );
     }
 );
-Tabs.displayName = TabsPrimitive.Root.displayName;
+TabsBase.displayName = TabsPrimitive.Root.displayName;
+
+const Tabs = makeDecoratable("Tabs", TabsBase);
+
+export { Tabs, TabsProps, TabsContent, TabsContentProps, TabsTrigger, TabsTriggerProps };
