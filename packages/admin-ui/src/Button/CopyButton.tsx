@@ -1,10 +1,11 @@
 import React from "react";
 import { ReactComponent as CopyToClipboardIcon } from "@material-design-icons/svg/filled/content_copy.svg";
-import { IconButton, IconButtonProps } from "./IconButton";
+import { ButtonProps } from "./Button";
+import { IconButton } from "./IconButton";
 import { useCallback } from "react";
 import { makeDecoratable } from "@webiny/react-composition";
 
-interface CopyButtonProps extends IconButtonProps {
+interface CopyButtonProps extends ButtonProps {
     value: string;
     onCopy?: () => void;
 }
