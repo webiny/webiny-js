@@ -1,9 +1,10 @@
 import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+import { makeDecoratable } from "@webiny/react-composition";
 
 import { cn } from "~/utils";
 
-export const TooltipProvider = TooltipPrimitive.Provider;
+const TooltipProvider = TooltipPrimitive.Provider;
 
 const TooltipRoot = TooltipPrimitive.Root;
 
@@ -32,8 +33,7 @@ const TooltipArrow = (props: TooltipPrimitive.TooltipArrowProps) => (
 
 TooltipArrow.displayName = TooltipPrimitive.Arrow.displayName;
 
-export interface TooltipProps
-    extends Omit<TooltipPrimitive.TooltipContentProps, "content" | "children"> {
+interface TooltipProps extends Omit<TooltipPrimitive.TooltipContentProps, "content" | "children"> {
     align?: TooltipPrimitive.TooltipContentProps["align"];
     content: React.ReactNode;
     onOpenChange?: TooltipPrimitive.TooltipProps["onOpenChange"];
@@ -42,7 +42,7 @@ export interface TooltipProps
     trigger: React.ReactNode;
 }
 
-export const Tooltip = ({
+const TooltipBase = ({
     align,
     content,
     onOpenChange,
@@ -63,3 +63,7 @@ export const Tooltip = ({
         </TooltipRoot>
     );
 };
+
+const Tooltip = makeDecoratable("Tooltip", TooltipBase);
+
+export { Tooltip, TooltipProvider, TooltipProps };

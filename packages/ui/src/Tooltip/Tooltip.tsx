@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Tooltip as TooltipAdmin, TooltipProps as TooltipPropsAdmin } from "@webiny/admin-ui";
+import { Tooltip as TooltipBase, TooltipProps as TooltipPropsBase } from "@webiny/admin-ui";
 
 export interface TooltipProps {
     // A component (eg. button) which will trigger the tooltip.
@@ -39,7 +39,7 @@ export const Tooltip = ({
     const { side, align } = useMemo(() => {
         const placementMapping: Record<
             string,
-            { side: TooltipPropsAdmin["side"]; align: TooltipPropsAdmin["align"] }
+            { side: TooltipPropsBase["side"]; align: TooltipPropsBase["align"] }
         > = {
             left: { side: "left", align: undefined },
             right: { side: "right", align: undefined },
@@ -55,7 +55,7 @@ export const Tooltip = ({
     }, [placement]);
 
     return (
-        <TooltipAdmin
+        <TooltipBase
             trigger={children}
             content={content}
             className={className}
