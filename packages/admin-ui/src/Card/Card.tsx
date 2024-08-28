@@ -1,18 +1,16 @@
 import * as React from "react";
 import { cn } from "~/utils";
 
-type CardWrapperProps = React.HTMLAttributes<HTMLDivElement>;
+type CardRootProps = React.HTMLAttributes<HTMLDivElement>;
 
-const CardWrapper = React.forwardRef<HTMLDivElement, CardWrapperProps>(
-    ({ className, ...props }, ref) => (
-        <div
-            ref={ref}
-            className={cn(" rounded-lg border bg-card text-card-foreground shadow-sm", className)}
-            {...props}
-        />
-    )
-);
-CardWrapper.displayName = "CardWrapper";
+const CardRoot = React.forwardRef<HTMLDivElement, CardRootProps>(({ className, ...props }, ref) => (
+    <div
+        ref={ref}
+        className={cn(" rounded-lg border bg-card text-card-foreground shadow-sm", className)}
+        {...props}
+    />
+));
+CardRoot.displayName = "CardRoot";
 
 const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
     ({ className, ...props }, ref) => (
@@ -54,25 +52,33 @@ const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 );
 CardFooter.displayName = "CardFooter";
 
-interface CardProps extends Omit<CardWrapperProps, "content"> {
-    headerTitle?: React.ReactNode;
-    headerDescription?: React.ReactNode;
-    content?: React.ReactNode;
-    footer?: React.ReactNode;
+interface CardProps extends Omit<CardRootProps, "content"> {
+    headerTitle?: React.ReactElement<typeof CardTitle>;
+    headerDescription?: React.ReactElement<typeof CardDescription>;
+    content?: React.ReactElement<typeof CardContent>;
+    footer?: React.ReactElement<typeof CardFooter>;
 }
 
 const Card = (props: CardProps) => {
     const { headerTitle, headerDescription, content, footer, ...rest } = props;
-    return (
-        <CardWrapper {...rest}>
+
+    let header: React.ReactNode = null;
+    if (headerTitle || headerDescription) {
+        header = (
             <CardHeader>
-                <CardTitle>{headerTitle}</CardTitle>
-                <CardDescription>{headerDescription}</CardDescription>
+                {headerTitle}
+                {headerDescription}
             </CardHeader>
-            <CardContent>{content}</CardContent>
-            <CardFooter>{footer}</CardFooter>
-        </CardWrapper>
+        );
+    }
+
+    return (
+        <CardRoot {...rest}>
+            {header}
+            {content}
+            {footer}
+        </CardRoot>
     );
 };
 
-export { Card, CardProps };
+export { Card, CardHeader, CardContent, CardFooter, CardProps };

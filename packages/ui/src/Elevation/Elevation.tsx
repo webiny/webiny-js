@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardProps } from "@webiny/admin-ui";
+import { Card, CardContent, CardProps } from "@webiny/admin-ui";
 
 export interface ElevationProps extends CardProps {
     // Any element that needs to be highlighted.
@@ -15,15 +15,13 @@ export interface ElevationProps extends CardProps {
 
     // Style object
     style?: React.CSSProperties;
-};
+}
 
 /**
  * @deprecated Use `Card` component instead.
  */
 const Elevation = (props: ElevationProps) => {
-    return (
-        <Card {...props} content={props.children}/>
-    );
+    return <Card {...props} content={<CardContent>{props.children}</CardContent>} />;
 };
 
 Elevation.displayName = "Elevation";
