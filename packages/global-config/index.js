@@ -16,7 +16,7 @@ module.exports.globalConfig = {
                     throw Error("Invalid Webiny config!");
                 }
             }
-        } catch (e) {
+        } catch {
             // A new config file is written if it doesn't exist or is invalid.
             this.__globalConfig = {
                 id: uuidv4(),

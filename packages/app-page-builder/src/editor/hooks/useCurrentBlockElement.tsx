@@ -56,7 +56,7 @@ export function useCurrentBlockElement(): UseCurrentBlock {
     // 1) hook is called from within the editor content component.
     try {
         currentElementContext = useCurrentElement();
-    } catch (e) {
+    } catch {
         // Means we're not in the editor content.
     }
 

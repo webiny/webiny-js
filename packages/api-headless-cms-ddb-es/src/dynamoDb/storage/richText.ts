@@ -69,7 +69,7 @@ export const createRichTextStorageTransformPlugin = () => {
             }
             try {
                 return jsonpack.unpack(value);
-            } catch (ex) {
+            } catch {
                 return null;
             }
         },

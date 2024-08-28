@@ -50,7 +50,12 @@ export const wcpFetch = async ({ url, authorization, body }: WcpFetchParams) => 
     try {
         const json = await response.json();
         return { error: true, status, statusText, message: json.message };
-    } catch (e) {
-        return { error: true, status, statusText, message: "" };
+    } catch {
+        return {
+            error: true,
+            status,
+            statusText,
+            message: ""
+        };
     }
 };

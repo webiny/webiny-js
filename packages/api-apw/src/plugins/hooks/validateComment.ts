@@ -20,7 +20,7 @@ export const validateComment = ({ apw }: Pick<LifeCycleHookCallbackParams, "apw"
                     }
                 );
             }
-        } catch (ex) {
+        } catch {
             throw new WebinyError(
                 `The"changeRequest" property in input is not properly formatted.`,
                 "MALFORMED_CHANGE_REQUEST_ID",

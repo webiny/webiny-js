@@ -31,7 +31,7 @@ export const LongScalar = new GraphQLScalarType({
     serialize: (value: any) => {
         try {
             return parseValue(value);
-        } catch (ex) {
+        } catch {
             console.log({
                 message: "Value sent must be an integer.",
                 code: "INVALID_VALUE",

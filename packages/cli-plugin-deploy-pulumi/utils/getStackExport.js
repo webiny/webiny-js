@@ -17,7 +17,7 @@ const getOutputJson = ({ folder, env, cwd }) => {
         });
 
         return JSON.parse(stdout);
-    } catch (e) {
+    } catch {
         return null;
     }
 };

@@ -43,6 +43,7 @@ export const createSystemCrud = ({
                         "Could not update the system data.",
                         "SYSTEM_UPDATE_ERROR",
                         {
+                            ...ex.data,
                             data
                         }
                     );
@@ -60,6 +61,7 @@ export const createSystemCrud = ({
                 return;
             } catch (ex) {
                 throw new WebinyError("Could not create the system data.", "SYSTEM_CREATE_ERROR", {
+                    ...ex.data,
                     data
                 });
             }

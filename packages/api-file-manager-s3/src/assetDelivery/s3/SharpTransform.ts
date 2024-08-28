@@ -64,7 +64,7 @@ export class SharpTransform implements AssetTransformationStrategy {
                 const buffer = Buffer.from(await Body.transformToByteArray());
 
                 asset.setContentsReader(new CallableContentsReader(() => buffer));
-            } catch (e) {
+            } catch {
                 const optimizedImage = await this.optimizeAsset(asset);
 
                 const widths = new WidthCollection(this.params.imageResizeWidths);
@@ -115,7 +115,7 @@ export class SharpTransform implements AssetTransformationStrategy {
             const buffer = Buffer.from(await Body.transformToByteArray());
 
             asset.setContentsReader(new CallableContentsReader(() => buffer));
-        } catch (e) {
+        } catch {
             // If not found, create an optimized version of the original asset.
             const buffer = await asset.getContents();
 

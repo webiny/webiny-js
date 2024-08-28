@@ -52,7 +52,7 @@ export class SystemStorageOperations implements I18NSystemStorageOperations {
                 entity: this._entity,
                 keys
             });
-        } catch (ex) {
+        } catch {
             throw new WebinyError(
                 "Could not load system data from the database.",
                 "GET_SYSTEM_ERROR",
@@ -75,7 +75,7 @@ export class SystemStorageOperations implements I18NSystemStorageOperations {
                 }
             });
             return system;
-        } catch (ex) {
+        } catch {
             throw new WebinyError(
                 "Could not create system data in the database.",
                 "CREATE_SYSTEM_ERROR",
@@ -98,7 +98,7 @@ export class SystemStorageOperations implements I18NSystemStorageOperations {
                 }
             });
             return system;
-        } catch (ex) {
+        } catch {
             throw new WebinyError(
                 "Could not update system data in the database.",
                 "UPDATE_VERSION_ERROR",

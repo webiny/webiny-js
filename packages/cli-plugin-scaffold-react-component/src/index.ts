@@ -17,10 +17,6 @@ import indentString from "indent-string";
 import WebinyError from "@webiny/error";
 import execa from "execa";
 import validateNpmPackageName from "validate-npm-package-name";
-/**
- * TODO: rewrite cli into typescript
- */
-// @ts-expect-error
 import { getProject } from "@webiny/cli/utils";
 
 const ncp = util.promisify(ncpBase.ncp);

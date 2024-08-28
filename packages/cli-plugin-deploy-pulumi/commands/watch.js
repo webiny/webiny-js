@@ -144,7 +144,7 @@ module.exports = async (inputs, context) => {
                     }
                 }
             });
-        } catch (e) {
+        } catch {
             stackExists = false;
         }
 
@@ -351,7 +351,7 @@ module.exports = async (inputs, context) => {
                                 message
                             });
                         }
-                    } catch (e) {
+                    } catch {
                         output.log({
                             type: "deploy",
                             message: line

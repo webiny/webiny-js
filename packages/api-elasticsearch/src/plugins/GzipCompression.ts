@@ -60,7 +60,7 @@ class GzipCompression extends CompressionPlugin {
             const buf = await ungzip(convertToBuffer(data.value));
             const value = buf.toString(FROM_STORAGE_ENCODING);
             return JSON.parse(value);
-        } catch (ex) {
+        } catch {
             return null;
         }
     }

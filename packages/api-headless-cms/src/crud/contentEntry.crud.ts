@@ -742,6 +742,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 "Could not update existing entry with new data while re-publishing.",
                 "REPUBLISH_UPDATE_ERROR",
                 {
+                    ...ex.data,
                     entry
                 }
             );

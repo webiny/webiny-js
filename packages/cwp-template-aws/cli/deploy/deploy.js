@@ -107,7 +107,7 @@ module.exports = async (inputs, context) => {
                 spinner.succeed(
                     `Successfully opened ${context.info.hl("Admin")} app in your browser.`
                 );
-            } catch (e) {
+            } catch {
                 spinner.fail(`Failed to open ${context.error.hl("Admin")} app in your browser.`);
 
                 await sleep(1000);

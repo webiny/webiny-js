@@ -32,7 +32,7 @@ export const injectWcpTelemetryClientCode = new AfterBuildPlugin(
                 // 2.2 Write downloaded telemetry client code as a new `handler.js`.
                 fs.writeFileSync(builtHandlerPath, telemetryCodeAsString);
             }
-        } catch (e) {
+        } catch {
             context.warning(`WCP client is unavailable; telemetry was disabled.`);
         }
     }

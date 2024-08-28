@@ -88,7 +88,7 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
             const query = new URLSearchParams(props.location.search);
             try {
                 search = JSON.parse(query.get("search") || "").query;
-            } catch (e) {
+            } catch {
                 search = query.get("search");
             }
 

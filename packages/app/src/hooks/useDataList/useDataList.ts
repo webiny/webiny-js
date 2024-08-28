@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery } from "@apollo/react-hooks";
-import { useRouter } from "@webiny/react-router";
+import { useRouter, UseHistory, UseLocation } from "@webiny/react-router";
 import get from "lodash/get";
 import isEqual from "lodash/isEqual";
 import { prepareLoadListParams } from "./utils";
@@ -46,11 +46,8 @@ export interface DataListProps {
 const useDataList = (params: UseDataListParams) => {
     const [multiSelectedItems, multiSelect] = useState<string[]>([]);
 
-    let history = null;
-    /**
-     * TODO: figure out the location type.
-     */
-    let location: any = null;
+    let history: UseHistory | undefined = undefined;
+    let location: UseLocation | undefined = undefined;
     const routerHook = useRouter();
 
     if (params.useRouter !== false) {
@@ -178,12 +175,21 @@ const useDataList = (params: UseDataListParams) => {
             multiSelect(returnItems);
         },
         isSelected(item) {
+            if (!location) {
+                return false;
+            }
             const query = new URLSearchParams(location.search);
             return query.get("id") === item.id;
         },
         select(item) {
+            if (!location) {
+                return;
+            }
             const query = new URLSearchParams(location.search);
             query.set("id", item.id);
+            if (!history) {
+                return;
+            }
             history.push({ search: query.toString() });
         },
         isMultiSelected(item) {

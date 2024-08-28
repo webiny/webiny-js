@@ -19,7 +19,7 @@ export const getDecompressedData = async <T>(data: any): Promise<T | null> => {
         const buf = await ungzip(convertToBuffer(data.value));
         const value = buf.toString(FROM_STORAGE_ENCODING);
         return JSON.parse(value);
-    } catch (ex) {
+    } catch {
         return null;
     }
 };

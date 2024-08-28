@@ -38,7 +38,12 @@ module.exports = {
                 "ts-expect-error": false
             }
         ],
-        "@typescript-eslint/ban-types": "error",
+        "@typescript-eslint/no-empty-object-type": "error",
+        "@typescript-eslint/no-unsafe-function-type": "error",
+        "@typescript-eslint/no-wrapper-object-types": "error",
+        "@typescript-eslint/no-duplicate-enum-values": 0,
+        "@typescript-eslint/no-unused-expressions": 0,
+        "@typescript-eslint/no-require-imports": 0,
         "@typescript-eslint/no-use-before-define": 0,
         "@typescript-eslint/no-unused-vars": getNoUnusedVars(),
         "@typescript-eslint/no-var-requires": 0,

@@ -1,3 +1,5 @@
+import { UseLocation } from "@webiny/react-router";
+
 interface Params {
     after?: string;
     before?: string;
@@ -9,7 +11,7 @@ interface Params {
 
 const keys: (keyof Params)[] = ["sort", "where", "search"];
 
-export default (location?: Location): Params => {
+export default (location?: UseLocation): Params => {
     const params: Params = {};
     if (!location) {
         return params;
@@ -40,7 +42,7 @@ export default (location?: Location): Params => {
         }
         try {
             params[key] = JSON.parse(value);
-        } catch (e) {
+        } catch {
             /**
              * If we can't parse the value, it means it's a string.
              */

@@ -18,7 +18,7 @@ const parseFileData = (input: string) => {
     let data: Record<string, any> = {};
     try {
         data = JSON.parse(input);
-    } catch (ex) {
+    } catch {
         throw new Error(`Could not parse the uploaded file. Make sure it's a valid JSON file.`);
     }
     if (!data.groups?.length && !data.models?.length) {

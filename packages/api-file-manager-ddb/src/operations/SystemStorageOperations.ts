@@ -72,6 +72,7 @@ export class SystemStorageOperations implements FileManagerSystemStorageOperatio
                 "Could not insert new system data into DynamoDB",
                 "CREATE_SYSTEM_ERROR",
                 {
+                    ...ex.data,
                     data
                 }
             );
@@ -98,6 +99,7 @@ export class SystemStorageOperations implements FileManagerSystemStorageOperatio
                 "Could not update system data in the DynamoDB.",
                 "UPDATE_SYSTEM_ERROR",
                 {
+                    ...ex.data,
                     data
                 }
             );
