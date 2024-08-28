@@ -16,7 +16,7 @@ export const TabsList = React.forwardRef<
     <TabsPrimitive.List
         ref={ref}
         className={cn(
-            "inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground",
+            "w-full inline-flex items-center justify-start bg-muted fill-muted-foreground p-1 text-muted-foreground",
             className
         )}
         {...props}
@@ -28,7 +28,7 @@ TabsList.displayName = TabsPrimitive.List.displayName;
  * Tabs trigger
  */
 export const tabsTriggerVariants = cva(
-    "inline-flex items-center justify-center whitespace-nowrap rounded-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
+    "inline-flex items-center justify-center whitespace-nowrap rounded-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:fill-foreground data-[state=active]:shadow-sm",
     {
         variants: {
             size: {
@@ -44,18 +44,23 @@ export const tabsTriggerVariants = cva(
     }
 );
 
-export type TabsTriggerProps = TabsPrimitive.TabsTriggerProps &
-    VariantProps<typeof tabsTriggerVariants>;
+export type TabsTriggerProps = Omit<TabsPrimitive.TabsTriggerProps, "children"> &
+    VariantProps<typeof tabsTriggerVariants> & {
+        text: React.ReactNode;
+        icon?: React.ReactNode;
+    };
 
 export const TabsTrigger = React.forwardRef<
     React.ElementRef<typeof TabsPrimitive.Trigger>,
     TabsTriggerProps
->(({ className, size, ...props }, ref) => (
+>(({ className, size, icon, text, ...props }, ref) => (
     <TabsPrimitive.Trigger
         ref={ref}
         className={cn(tabsTriggerVariants({ size }), className)}
         {...props}
-    />
+    >
+        {text} {icon}
+    </TabsPrimitive.Trigger>
 ));
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
@@ -63,14 +68,14 @@ TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
  * Tabs content
  */
 export const tabsContentVariants = cva(
-    "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+    "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-muted",
     {
         variants: {
             size: {
-                sm: "p-2",
-                md: "p-4",
-                lg: "p-6",
-                xl: "p-8"
+                sm: "text-xs p-2",
+                md: "text-sm p-4",
+                lg: "text-lg p-6",
+                xl: "text-xl p-8"
             }
         },
         defaultVariants: {
@@ -79,18 +84,22 @@ export const tabsContentVariants = cva(
     }
 );
 
-export type TabsContentProps = TabsPrimitive.TabsContentProps &
-    VariantProps<typeof tabsContentVariants>;
+export type TabsContentProps = Omit<TabsPrimitive.TabsContentProps, "children"> &
+    VariantProps<typeof tabsContentVariants> & {
+        text: React.ReactNode;
+    };
 
 export const TabsContent = React.forwardRef<
     React.ElementRef<typeof TabsPrimitive.Content>,
     TabsContentProps
->(({ className, size, ...props }, ref) => (
+>(({ className, size, text, ...props }, ref) => (
     <TabsPrimitive.Content
         ref={ref}
         className={cn(tabsContentVariants({ size }), className)}
         {...props}
-    />
+    >
+        {text}
+    </TabsPrimitive.Content>
 ));
 TabsContent.displayName = TabsPrimitive.Content.displayName;
 
