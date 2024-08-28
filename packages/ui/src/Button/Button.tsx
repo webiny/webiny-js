@@ -5,13 +5,11 @@ import { Button as ButtonBase, ButtonProps as ButtonPropsBase } from "@webiny/ad
 interface ButtonProps extends ButtonPropsBase {
     /**
      * @deprecated Will be removed in the future release.
-     * Make button flat (only applicable to Primary button).
      */
     flat?: boolean;
 
     /**
      * @deprecated Use `size` prop instead.
-     * Make button smaller.
      */
     small?: boolean;
 
@@ -22,7 +20,6 @@ interface ButtonProps extends ButtonPropsBase {
 
     /**
      * @deprecated Will be removed in the future release.
-     * Show ripple effect on button click.
      */
     ripple?: boolean;
 }
@@ -34,7 +31,7 @@ const Button = (props: ButtonProps) => {
 
 Button.displayName = "Button";
 
-export { Button };
+export { Button, ButtonProps };
 
 // Needed for backward compatibility.
 export default Button;
