@@ -35,4 +35,3 @@ export { Button, ButtonProps };
 
 // Needed for backward compatibility.
 export default Button;
-

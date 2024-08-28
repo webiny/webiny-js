@@ -14,6 +14,11 @@ export interface IconButtonProps extends BaseIconButtonProps {
      * @deprecated Use `size` prop instead.
      */
     small?: boolean;
+
+    /**
+     * @deprecated Will be removed in the future release.
+     */
+    ripple?: boolean;
 }
 
 export const IconButton = (props: IconButtonProps) => {

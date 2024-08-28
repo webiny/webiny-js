@@ -16893,6 +16893,7 @@ __metadata:
     "@babel/preset-env": ^7.24.0
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
+    "@material-design-icons/svg": ^0.14.3
     "@radix-ui/react-avatar": ^1.1.0
     "@radix-ui/react-dialog": ^1.1.1
     "@radix-ui/react-dropdown-menu": ^2.1.1
