@@ -21,6 +21,10 @@ export interface IconButtonProps extends BaseIconButtonProps {
     ripple?: boolean;
 }
 
+/**
+ * @deprecated This component is deprecated and will be removed in future releases.
+ * Please use the `Button` component from the `@webiny/admin-ui` package instead.
+ */
 export const IconButton = (props: IconButtonProps) => {
     const { icon, text, label, children, ...rest } = props;
     return <BaseIconButton icon={icon} text={text || label || children} {...rest} />;
