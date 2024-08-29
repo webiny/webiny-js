@@ -6,7 +6,14 @@ import { useCallback } from "react";
 import { makeDecoratable } from "@webiny/react-composition";
 
 interface CopyButtonProps extends ButtonProps {
+    /**
+     * Value to copy to clipboard.
+     */
     value: string;
+
+    /**
+     * Callback function that is executed after the value is copied to the clipboard.
+     */
     onCopy?: () => void;
 }
 
