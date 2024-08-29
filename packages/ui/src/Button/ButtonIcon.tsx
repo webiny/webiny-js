@@ -1,7 +1,10 @@
 import React from "react";
+import { Icon } from "~/Icon";
 
 export interface ButtonIconProps {
-    icon: React.ReactNode;
+    icon: React.ReactElement;
 }
 
-export const ButtonIcon = (props: ButtonIconProps) => <>{props.icon}</>;
+export const ButtonIcon = (props: ButtonIconProps) => {
+    return <Icon {...props}/>;
+};
