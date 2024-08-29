@@ -1,24 +1,13 @@
 import React from "react";
-import {
-    IconButton as BaseIconButton,
-    IconButtonProps as BaseIconButtonProps
-} from "@webiny/admin-ui/Button";
+import { ButtonProps } from "./Button";
+import { useMappedButtonProps } from "~/Button/useMappedButtonProps";
+import { Button as AdminUiButton } from "@webiny/admin-ui";
 
-export interface IconButtonProps extends BaseIconButtonProps {
+export interface IconButtonProps extends ButtonProps {
     /**
-     * @deprecated Use `text` prop instead.
+     * Icon should be provided as an SvgComponent.
      */
-    label?: string;
-
-    /**
-     * @deprecated Use `size` prop instead.
-     */
-    small?: boolean;
-
-    /**
-     * @deprecated Will be removed in the future release.
-     */
-    ripple?: boolean;
+    icon: React.ReactNode;
 }
 
 /**
@@ -26,6 +15,6 @@ export interface IconButtonProps extends BaseIconButtonProps {
  * Please use the `Button` component from the `@webiny/admin-ui` package instead.
  */
 export const IconButton = (props: IconButtonProps) => {
-    const { icon, text, label, children, ...rest } = props;
-    return <BaseIconButton icon={icon} text={text || label || children} {...rest} />;
+    const mappedProps = useMappedButtonProps(props);
+    return <AdminUiButton {...props} {...mappedProps} variant={"primary"} />;
 };
