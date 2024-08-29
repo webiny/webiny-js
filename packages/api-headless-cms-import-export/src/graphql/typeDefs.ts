@@ -33,6 +33,22 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
             data: ExportContentEntriesExportRecord
             error: CmsError
         }
+        
+        type ListExportContentEntriesExportRecord {
+            id: ID!
+            createdOn: DateTime!
+            createdBy: CmsIdentity!
+            finishedOn: DateTime
+            modelId: String!
+            exportAssets: Boolean!
+            status: ExportContentEntriesExportRecordStatusEnum!
+        }
+        
+        type ListExportContentEntriesResponse {
+            data: [ListExportContentEntriesExportRecord!]
+            meta: CmsListMeta
+            error: CmsError
+        }
 
         type AbortExportContentEntriesResponse {
             data: ExportContentEntriesExportRecord
@@ -117,6 +133,7 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
         
         extend type Query {
             getExportContentEntries(id: ID!): ExportContentEntriesResponse!
+            listExportContentEntries(after: String, limit: Int): ListExportContentEntriesResponse!
             getValidateImportFromUrl(id: ID!): GetValidateImportFromUrlResponse!
             getImportFromUrl(id: ID!): ImportFromUrlResponse!
         }

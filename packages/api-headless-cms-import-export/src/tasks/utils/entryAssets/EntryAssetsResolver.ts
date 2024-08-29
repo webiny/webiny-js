@@ -25,7 +25,19 @@ const createResolvedAsset = (file: File): IResolvedAsset => {
         ...file,
         aliases: file.aliases || []
     };
-
+    /**
+     * We need to remove unnecessary fields from the resolved assets.
+     *
+     * We cannot return specific fields, rather than deleting unnecessary ones, because a user can extend the file model
+     * so we would not know which fields to return.
+     */
+    delete result.savedBy;
+    delete result.savedOn;
+    delete result.modifiedBy;
+    delete result.modifiedOn;
+    delete result.accessControl;
+    delete result.createdBy;
+    delete result.createdOn;
     delete result.tenant;
     delete result.locale;
     delete result.webinyVersion;
