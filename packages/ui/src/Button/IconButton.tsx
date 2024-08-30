@@ -1,4 +1,4 @@
-import React from "react";
+import React, {SyntheticEvent} from "react";
 import { ButtonProps } from "./Button";
 import { useMappedButtonProps } from "~/Button/useMappedButtonProps";
 import { Button as AdminUiButton } from "@webiny/admin-ui";
@@ -8,6 +8,12 @@ export interface IconButtonProps extends ButtonProps {
      * Icon should be provided as an SvgComponent.
      */
     icon: React.ReactNode;
+
+    label?: string;
+
+    onMouseDown?: (e: SyntheticEvent) => void;
+
+    onMouseUp?: (e: SyntheticEvent) => void;
 }
 
 /**

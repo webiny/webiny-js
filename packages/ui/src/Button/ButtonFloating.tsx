@@ -6,5 +6,5 @@ import { IconButton, IconButtonProps } from "./IconButton";
  * Please use the `Button` component from the `@webiny/admin-ui` package instead.
  */
 export const ButtonFloating = (props: IconButtonProps) => {
-    return <IconButton {...props} variant={"primary"} />;
+    return <IconButton {...props} />;
 };
