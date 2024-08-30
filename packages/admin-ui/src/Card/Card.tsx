@@ -7,7 +7,7 @@ type CardRootProps = React.HTMLAttributes<HTMLDivElement>;
 const CardRootBase = React.forwardRef<HTMLDivElement, CardRootProps>(({ className, ...props }, ref) => (
     <div
         ref={ref}
-        className={cn(" rounded-lg border bg-card text-card-foreground shadow-sm", className)}
+        className={cn("space-y-6 rounded-lg border bg-card p-6 text-card-foreground shadow-sm", className)}
         {...props}
     />
 ));
@@ -18,7 +18,7 @@ const CardRoot = makeDecoratable("CardRoot", CardRootBase);
 
 const CardHeaderBase = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
     ({ className, ...props }, ref) => (
-        <div ref={ref} className={cn("flex flex-col space-y-1.5 p-6", className)} {...props} />
+        <div ref={ref} className={cn("flex flex-col space-y-1.5", className)} {...props} />
     )
 );
 CardHeaderBase.displayName = "CardHeader";
@@ -50,7 +50,7 @@ const CardDescription = makeDecoratable("CardDescription", CardDescriptionBase);
 
 const CardContentBase = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
     ({ className, ...props }, ref) => (
-        <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+        <div ref={ref} className={cn("", className)} {...props} />
     )
 );
 CardContentBase.displayName = "CardContent";
@@ -59,7 +59,7 @@ const CardContent = makeDecoratable("CardContent", CardContentBase);
 
 const CardFooterBase = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
     ({ className, ...props }, ref) => (
-        <div ref={ref} className={cn("flex items-center p-6 pt-0", className)} {...props} />
+        <div ref={ref} className={cn("flex items-center", className)} {...props} />
     )
 );
 CardFooterBase.displayName = "CardFooter";
