@@ -10,5 +10,5 @@ export interface ButtonIconProps {
  * Please use the `Icon` component from the `@webiny/admin-ui` package instead.
  */
 export const ButtonIcon = (props: ButtonIconProps) => {
-    return <Icon {...props}/>;
+    return <Icon {...props} />;
 };
