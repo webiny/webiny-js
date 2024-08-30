@@ -26,4 +26,4 @@ LabelBase.displayName = LabelPrimitive.Root.displayName;
 
 const Label = makeDecoratable("Label", LabelBase);
 
-export { Label, LabelProps };
+export { Label, type LabelProps };

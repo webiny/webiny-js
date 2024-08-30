@@ -1,9 +1,9 @@
 import * as React from "react";
 import * as SwitchPrimitives from "@radix-ui/react-switch";
+import { makeDecoratable } from "@webiny/react-composition";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn, generateId } from "~/utils";
 import { Label } from "~/Label";
-import { makeDecoratable } from "@webiny/react-composition";
 
 const switchVariants = cva("flex items-center space-x-2", {
     variants: {
@@ -53,4 +53,4 @@ SwitchBase.displayName = SwitchPrimitives.Root.displayName;
 
 const Switch = makeDecoratable("Switch", SwitchBase);
 
-export { Switch, SwitchProps };
+export { Switch, type SwitchProps };
