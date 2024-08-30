@@ -3,11 +3,7 @@ import { ContentEntryEditorConfig, useModel } from "@webiny/app-headless-cms";
 import styled from "@emotion/styled";
 
 const getPreviewDomain = () => {
-    if (window.location.origin.includes("localhost")) {
-        return `http://localhost:3000`;
-    }
-
-    return `https://druexxzabmhs4.cloudfront.net`;
+    return process.env.WEBINY_ADMIN_WEBSITE_URL;
 };
 
 const SplitView = styled.div`
