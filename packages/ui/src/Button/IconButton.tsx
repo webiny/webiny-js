@@ -22,5 +22,5 @@ export interface IconButtonProps extends ButtonProps {
  */
 export const IconButton = (props: IconButtonProps) => {
     const mappedProps = useMappedButtonProps(props);
-    return <AdminUiButton {...props} {...mappedProps} variant={"primary"} />;
+    return <AdminUiButton {...props} {...mappedProps} variant={"ghost"} />;
 };
