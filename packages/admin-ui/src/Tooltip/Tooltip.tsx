@@ -66,4 +66,4 @@ const TooltipBase = ({
 
 const Tooltip = makeDecoratable("Tooltip", TooltipBase);
 
-export { Tooltip, TooltipProvider, TooltipProps };
+export { Tooltip, TooltipProvider, type TooltipProps };
