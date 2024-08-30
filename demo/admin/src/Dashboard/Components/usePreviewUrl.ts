@@ -9,11 +9,7 @@ const getStorageKey = (...keys: string[]) => {
 };
 
 const getPreviewDomain = () => {
-    if (window.location.origin.includes("localhost")) {
-        return `http://localhost:3000`;
-    }
-
-    return `https://druexxzabmhs4.cloudfront.net`;
+    return process.env.WEBINY_ADMIN_WEBSITE_URL;
 };
 
 export function usePreviewUrl() {

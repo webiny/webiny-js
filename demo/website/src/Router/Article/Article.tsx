@@ -53,7 +53,7 @@ export const Article = ({ article }: ArticleProps) => {
                 {article.description || article.seoDescription}
             </p>
 
-            {article.content.map((block, index) => {
+            {article.content?.map((block, index) => {
                 if (isRichTextBlock(block)) {
                     return <RichTextBlockComponent key={index} block={block} />;
                 }
