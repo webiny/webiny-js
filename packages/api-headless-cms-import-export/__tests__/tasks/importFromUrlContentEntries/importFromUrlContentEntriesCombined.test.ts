@@ -1,5 +1,5 @@
 import { PassThrough } from "stream";
-import { createImportFromUrlContentEntriesCombined } from "~/tasks/domain/importFromUrlContentEntries/ImportFromUrlContentEntriesCombined";
+import { createDownloadFileFromUrl } from "~/tasks/domain/downloadFileFromUrl/index";
 import { Upload } from "~/tasks/utils/upload";
 import {
     CompleteMultipartUploadCommand,
@@ -34,7 +34,7 @@ describe("import from url content entries combined", () => {
 
         const { pathname: filename } = new URL(file.get);
 
-        const combined = createImportFromUrlContentEntriesCombined({
+        const combined = createDownloadFileFromUrl({
             fetch: createMockFetch(async () => {
                 return {
                     stream: new ReadableStream()
@@ -72,7 +72,7 @@ describe("import from url content entries combined", () => {
             size: 4642
         };
 
-        const combined = createImportFromUrlContentEntriesCombined({
+        const combined = createDownloadFileFromUrl({
             fetch: createMockFetch(async url => {
                 const file = fs.readFileSync(url);
                 return {

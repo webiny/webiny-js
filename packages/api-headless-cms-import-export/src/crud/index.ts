@@ -128,6 +128,7 @@ export const createHeadlessCmsImportExportCrud = async (
             data: params.data
         });
         const result = await validateImportFromUrlIntegrityUseCase.execute({
+            model,
             files
         });
 

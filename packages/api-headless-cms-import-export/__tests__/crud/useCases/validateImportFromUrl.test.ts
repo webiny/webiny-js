@@ -69,6 +69,8 @@ describe("validateImportFromUrl", () => {
                         {
                             get: "",
                             head: "",
+                            checksum: "",
+                            key: "",
                             type: "assets"
                         }
                     ]
@@ -114,7 +116,9 @@ describe("validateImportFromUrl", () => {
                         {
                             get: "https://some-url.com/file.zip",
                             head: "https://some-url.com/file.zip",
-                            type: "assets"
+                            type: "assets",
+                            checksum: "checksum",
+                            key: "key"
                         }
                     ]
                 })
@@ -141,7 +145,9 @@ describe("validateImportFromUrl", () => {
                         {
                             get: "https://some-url.com/entries.zip",
                             head: "https://some-url.com/entries.zip",
-                            type: "entries"
+                            type: "entries",
+                            checksum: "checksum",
+                            key: "key"
                         }
                     ]
                 })
@@ -168,7 +174,9 @@ describe("validateImportFromUrl", () => {
                         {
                             get: "https://some-url.com/entries.zip",
                             head: "https://some-url.com/entries.zip",
-                            type: "entries"
+                            type: "entries",
+                            checksum: "checksum",
+                            key: "key"
                         }
                     ]
                 })
@@ -198,7 +206,9 @@ describe("validateImportFromUrl", () => {
                         {
                             get: "https://some-url.com/entries.we.zip",
                             head: "https://some-url.com/entries.we.zip",
-                            type: "entries"
+                            type: "entries",
+                            checksum: "checksum",
+                            key: "key"
                         }
                     ]
                 })
@@ -230,7 +240,9 @@ describe("validateImportFromUrl", () => {
                         {
                             get: "https://some-url.com/entries.we.zip",
                             head: "https://some-url.com/entries.we.zip",
-                            type: "entries"
+                            type: "entries",
+                            checksum: "checksum",
+                            key: "key"
                         }
                     ]
                 })
@@ -256,12 +268,16 @@ describe("validateImportFromUrl", () => {
                     {
                         get: "https://some-url.com/entries.zip",
                         head: "https://some-url.com/entries.zip",
-                        type: "entries"
+                        type: "entries",
+                        checksum: "checksum",
+                        key: "key"
                     },
                     {
                         get: "https://some-url.com/assets.zip",
                         head: "https://some-url.com/assets.zip",
-                        type: "assets"
+                        type: "assets",
+                        checksum: "checksum",
+                        key: "key"
                     }
                 ]
             })
@@ -275,6 +291,8 @@ describe("validateImportFromUrl", () => {
                     get: "https://some-url.com/entries.zip",
                     head: "https://some-url.com/entries.zip",
                     type: "entries",
+                    checksum: "checksum",
+                    key: "key",
                     error: {
                         data: {
                             pathname: "/entries.zip",
@@ -288,6 +306,8 @@ describe("validateImportFromUrl", () => {
                     get: "https://some-url.com/assets.zip",
                     head: "https://some-url.com/assets.zip",
                     type: "assets",
+                    checksum: "checksum",
+                    key: "key",
                     error: {
                         data: {
                             pathname: "/assets.zip",

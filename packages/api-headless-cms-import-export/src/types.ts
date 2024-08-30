@@ -33,6 +33,8 @@ export interface ICmsImportExportObjectValidateImportFromUrlParams {
 export interface ICmsImportExportFile {
     get: string;
     head: string;
+    checksum: string;
+    key: string;
     type: CmsImportExportFileType;
     error?: ICmsImportExportValidatedFileError;
 }
@@ -54,26 +56,46 @@ export interface ICmsImportExportValidatedFileError {
     data?: GenericRecord;
 }
 
-export interface ICmsImportExportValidatedFile {
+export interface ICmsImportExportValidatedValidFile {
     get: string;
     head: string;
+    checksum: string;
     type: CmsImportExportFileType | undefined;
-    size?: number;
-    error?: ICmsImportExportValidatedFileError;
+    size: number;
+    error?: never;
 }
 
+export interface ICmsImportExportValidatedInvalidFile
+    extends Partial<Omit<ICmsImportExportValidatedValidFile, "error">> {
+    error: ICmsImportExportValidatedFileError;
+}
+
+export type ICmsImportExportValidatedFile =
+    | ICmsImportExportValidatedValidFile
+    | ICmsImportExportValidatedInvalidFile;
+
+// export interface ICmsImportExportValidatedFile {
+//     get: string;
+//     head: string;
+//     checksum: string;
+//     type: CmsImportExportFileType | undefined;
+//     size?: number;
+//     error?: ICmsImportExportValidatedFileError;
+// }
+
 export interface ICmsImportExportValidatedCombinedContentFile
-    extends ICmsImportExportValidatedFile {
+    extends ICmsImportExportValidatedValidFile {
     size: number;
     type: CmsImportExportFileType.COMBINED_ENTRIES;
 }
 
-export interface ICmsImportExportValidatedContentEntriesFile extends ICmsImportExportValidatedFile {
+export interface ICmsImportExportValidatedContentEntriesFile
+    extends ICmsImportExportValidatedValidFile {
     size: number;
     type: CmsImportExportFileType.ENTRIES;
 }
 
-export interface ICmsImportExportValidatedAssetsFile extends ICmsImportExportValidatedFile {
+export interface ICmsImportExportValidatedAssetsFile extends ICmsImportExportValidatedValidFile {
     size: number;
     type: CmsImportExportFileType.ASSETS;
 }
@@ -89,7 +111,7 @@ export interface ICmsImportExportObjectImportFromUrlParams {
     id: string;
 }
 
-export interface ICmsImportExportProcessedFile extends ICmsImportExportValidatedFile {
+export interface ICmsImportExportProcessedFile extends ICmsImportExportValidatedValidFile {
     status: string;
 }
 

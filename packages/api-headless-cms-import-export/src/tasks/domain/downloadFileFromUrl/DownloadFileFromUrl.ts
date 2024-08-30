@@ -2,14 +2,15 @@ import { IImportFromUrlContentEntriesInputDownloadValues } from "~/tasks/domain/
 import { ICmsImportExportValidatedCombinedContentFile } from "~/types";
 import { ICreateUploadCallable, IUpload } from "~/tasks/utils/upload";
 import {
-    IImportFromUrlContentEntriesCombined,
-    IImportFromUrlContentEntriesCombinedProcessOnIterationCallable,
-    IImportFromUrlContentEntriesCombinedProcessResponseType
-} from "./abstractions/ImportFromUrlContentEntriesCombined";
+    IDownloadFileFromUrl,
+    IDownloadFileFromUrlProcessOnIterationCallable,
+    IDownloadFileFromUrlProcessResponseType
+} from "./abstractions/DownloadFileFromUrl";
 import { createSizeSegments } from "~/tasks/utils/helpers/sizeSegments";
 import { convertFromUrlToPathname } from "~/tasks/domain/utils/convertFromUrlToPathname";
+import { EXPORT_BASE_PATH, IMPORT_BASE_PATH } from "~/tasks/constants";
 
-interface ImportFromUrlContentEntriesCombinedFile {
+interface DownloadFileFromUrlFile {
     url: string;
     key: string;
     size: number;
@@ -20,21 +21,21 @@ interface IRange {
     end: number;
 }
 
-export interface IImportFromUrlContentEntriesCombinedParams {
+export interface IDownloadFileFromUrlParams {
     file: Pick<ICmsImportExportValidatedCombinedContentFile, "get" | "size">;
     fetch: typeof fetch;
     createUpload: ICreateUploadCallable;
     input?: IImportFromUrlContentEntriesInputDownloadValues;
 }
 
-export class ImportFromUrlContentEntriesCombined implements IImportFromUrlContentEntriesCombined {
-    private readonly file: ImportFromUrlContentEntriesCombinedFile;
+export class DownloadFileFromUrl implements IDownloadFileFromUrl {
+    private readonly file: DownloadFileFromUrlFile;
     private readonly upload: IUpload;
     private readonly fetch: typeof fetch;
     private next: number;
     private readonly ranges: IRange[];
 
-    public constructor(params: IImportFromUrlContentEntriesCombinedParams) {
+    public constructor(params: IDownloadFileFromUrlParams) {
         const { input } = params;
         this.file = convertFromUrlToPathname({
             url: params.file.get,
@@ -42,13 +43,15 @@ export class ImportFromUrlContentEntriesCombined implements IImportFromUrlConten
         });
         this.fetch = params.fetch;
         this.next = input?.current === undefined ? 0 : input.current;
-        this.upload = params.createUpload(this.file.key);
+        this.upload = params.createUpload(
+            this.file.key.replace(EXPORT_BASE_PATH, IMPORT_BASE_PATH)
+        );
         this.ranges = createSizeSegments(this.file.size, "1MB");
     }
 
     public async process<T extends string>(
-        onIteration: IImportFromUrlContentEntriesCombinedProcessOnIterationCallable<T>
-    ): Promise<IImportFromUrlContentEntriesCombinedProcessResponseType<T>> {
+        onIteration: IDownloadFileFromUrlProcessOnIterationCallable<T>
+    ): Promise<IDownloadFileFromUrlProcessResponseType<T>> {
         let iteration = 0;
 
         while (true) {
@@ -58,8 +61,7 @@ export class ImportFromUrlContentEntriesCombined implements IImportFromUrlConten
                 await this.upload.done();
                 return "done";
             }
-            let status: IImportFromUrlContentEntriesCombinedProcessResponseType<T> | undefined =
-                undefined;
+            let status: IDownloadFileFromUrlProcessResponseType<T> | undefined = undefined;
             await onIteration({
                 iteration,
                 next: this.next,
@@ -75,7 +77,9 @@ export class ImportFromUrlContentEntriesCombined implements IImportFromUrlConten
 
             const headers = new Headers();
 
-            headers.set("Range", `bytes=${next.start}-${next.end}`);
+            if (this.ranges.length > 1) {
+                headers.set("Range", `bytes=${next.start}-${next.end}`);
+            }
 
             const result = await this.fetch(this.file.url, {
                 method: "GET",
@@ -117,8 +121,8 @@ export class ImportFromUrlContentEntriesCombined implements IImportFromUrlConten
     }
 }
 
-export const createImportFromUrlContentEntriesCombined = (
-    params: IImportFromUrlContentEntriesCombinedParams
-): IImportFromUrlContentEntriesCombined => {
-    return new ImportFromUrlContentEntriesCombined(params);
+export const createDownloadFileFromUrl = (
+    params: IDownloadFileFromUrlParams
+): IDownloadFileFromUrl => {
+    return new DownloadFileFromUrl(params);
 };

@@ -18,6 +18,11 @@ import {
     IImportFromUrlControllerInput,
     IImportFromUrlControllerOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlController";
+import { NonEmptyArray } from "@webiny/api/types";
+import {
+    ICmsImportExportValidatedAssetsFile,
+    ICmsImportExportValidatedCombinedContentFile
+} from "~/types";
 
 export interface IImportFromUrlUseCaseParams {
     updateTask: ITasksContextObject["updateTask"];
@@ -84,7 +89,10 @@ export class ImportFromUrlUseCase implements IImportFromUrlUseCase {
             definition: IMPORT_FROM_URL_CONTROLLER_TASK,
             input: {
                 modelId: integrityTask.output.modelId,
-                files: integrityTask.output.files,
+                files: integrityTask.output.files as NonEmptyArray<
+                    | ICmsImportExportValidatedCombinedContentFile
+                    | ICmsImportExportValidatedAssetsFile
+                >,
                 importing: false
             },
             parent: integrityTask

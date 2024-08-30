@@ -6,14 +6,14 @@ import { ResponseContinueResult, ResponseErrorResult, TaskResponseStatus } from 
 import { categoryModel } from "~tests/helpers/models";
 import path from "path";
 
-jest.mock("~/tasks/domain/importFromUrlContentEntries/ImportFromUrlContentEntriesCombined", () => {
+jest.mock("~/tasks/domain/downloadFileFromUrl/DownloadFileFromUrl", () => {
     return {
-        ImportFromUrlContentEntriesCombined: {
+        DownloadFileFromUrl: {
             process: async () => {
                 return "continue";
             }
         },
-        createImportFromUrlContentEntriesCombined: () => {
+        createDownloadFileFromUrl: () => {
             return {
                 process: async () => {
                     return "continue";
@@ -123,6 +123,7 @@ describe("import from url content entries", () => {
             get: "https://some-url.com/file-1.we.zip",
             head: "https://some-url.com/file-1.we.zip",
             size: 1000,
+            checksum: "checksum",
             error: undefined,
             type: CmsImportExportFileType.COMBINED_ENTRIES
         };
@@ -173,6 +174,7 @@ describe("import from url content entries", () => {
             get: path.resolve(__dirname, `../../mocks/testing.we.zip`),
             size: 4642,
             head: "https://some-url.com/file-1.we.zip",
+            checksum: "checksum",
             error: undefined,
             type: CmsImportExportFileType.COMBINED_ENTRIES
         };
@@ -210,6 +212,7 @@ describe("import from url content entries", () => {
             input: {
                 modelId: categoryModel.modelId,
                 file: {
+                    checksum: file.checksum,
                     get: file.get,
                     head: file.head,
                     type: file.type,

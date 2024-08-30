@@ -4,6 +4,7 @@ import { CmsImportExportFileType, Context, ICmsImportExportFile } from "~/types"
 import { createValidateImportFromUrlTask } from "~/tasks";
 import { ResponseDoneResult, ResponseErrorResult } from "@webiny/tasks";
 import { NonEmptyArray } from "@webiny/api/types";
+import { IValidateImportFromUrlInput } from "~/tasks/domain/abstractions/ValidateImportFromUrl";
 
 jest.mock("~/tasks/utils/externalFileFetcher", () => {
     return {
@@ -149,25 +150,33 @@ describe("validate import from url task", () => {
                 head: "https://example.com/file1.json",
                 get: "https://example.com/file1.json",
                 type: CmsImportExportFileType.COMBINED_ENTRIES,
-                error: undefined
+                error: undefined,
+                checksum: "checksum",
+                key: "key"
             },
             {
                 head: "https://example.com/file2.wea.zip",
                 get: "https://example.com/file2.wea.zip",
                 type: CmsImportExportFileType.ASSETS,
-                error: undefined
+                error: undefined,
+                checksum: "checksum",
+                key: "key"
             },
             {
                 head: "https://example.com/file3-error.wea.zip",
                 get: "https://example.com/file3-error.wea.zip",
                 type: CmsImportExportFileType.ASSETS,
-                error: undefined
+                error: undefined,
+                checksum: "checksum",
+                key: "key"
             },
             {
                 head: "https://example.com/file4-missing.wea.zip",
                 get: "https://example.com/file4-missing.wea.zip",
                 type: CmsImportExportFileType.ASSETS,
-                error: undefined
+                error: undefined,
+                checksum: "checksum",
+                key: "key"
             }
         ];
 
@@ -203,6 +212,7 @@ describe("validate import from url task", () => {
                     files: [
                         {
                             ...files[0],
+                            key: undefined,
                             error: {
                                 data: {
                                     pathname: "/file1.json",
@@ -216,6 +226,7 @@ describe("validate import from url task", () => {
                         },
                         {
                             ...files[2],
+                            key: undefined,
                             error: {
                                 code: "HEAD_FETCH_ERROR",
                                 data: {
@@ -228,6 +239,7 @@ describe("validate import from url task", () => {
                         },
                         {
                             ...files[3],
+                            key: undefined,
                             error: {
                                 code: "FILE_NOT_FOUND",
                                 data: {
@@ -261,21 +273,29 @@ describe("validate import from url task", () => {
                 head: "https://example.com/file1.we.zip",
                 get: "https://example.com/file1.we.zip",
                 type: CmsImportExportFileType.COMBINED_ENTRIES,
-                error: undefined
+                error: undefined,
+                checksum: "checksum",
+                key: "key"
             },
             {
                 head: "https://example.com/file2.wea.zip",
                 get: "https://example.com/file2.wea.zip",
                 type: CmsImportExportFileType.ASSETS,
-                error: undefined
+                error: undefined,
+                checksum: "checksum",
+                key: "key"
             }
         ];
 
-        const task = await context.tasks.createTask({
+        const task = await context.tasks.createTask<IValidateImportFromUrlInput>({
             name: 'Import Content Entries from URL Controller for "modelId"',
             definitionId: definition.id,
             input: {
-                files
+                files,
+                model: {
+                    modelId: "modelId",
+                    fields: []
+                }
             }
         });
 
@@ -291,7 +311,7 @@ describe("validate import from url task", () => {
         });
 
         expect(result).toBeInstanceOf(ResponseDoneResult);
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             locale: "en-US",
             message: undefined,
             output: {

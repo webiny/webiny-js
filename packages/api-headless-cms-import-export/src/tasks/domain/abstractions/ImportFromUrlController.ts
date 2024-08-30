@@ -1,10 +1,18 @@
-import { Context, ICmsImportExportValidatedFile } from "~/types";
+import {
+    Context,
+    ICmsImportExportValidatedAssetsFile,
+    ICmsImportExportValidatedCombinedContentFile,
+    ICmsImportExportValidatedFile,
+    ICmsImportExportValidatedValidFile
+} from "~/types";
 import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { NonEmptyArray } from "@webiny/api/types";
 
 export interface IImportFromUrlControllerInput {
     modelId: string;
-    files: NonEmptyArray<ICmsImportExportValidatedFile>;
+    files: NonEmptyArray<
+        ICmsImportExportValidatedCombinedContentFile | ICmsImportExportValidatedAssetsFile
+    >;
     importing: boolean;
 }
 

@@ -107,7 +107,8 @@ describe("import from url controller", () => {
                 head: "https://some-url.com/file-1.we.zip",
                 size: 1000,
                 error: undefined,
-                type: CmsImportExportFileType.COMBINED_ENTRIES
+                type: CmsImportExportFileType.COMBINED_ENTRIES,
+                checksum: "checksum"
             }
         ];
 
@@ -161,21 +162,24 @@ describe("import from url controller", () => {
                 head: "https://some-url.com/file-1.we.zip",
                 size: 1000,
                 error: undefined,
-                type: CmsImportExportFileType.COMBINED_ENTRIES
+                type: CmsImportExportFileType.COMBINED_ENTRIES,
+                checksum: "checksum"
             },
             {
                 get: "https://some-url.com/file-2.wa.zip",
                 head: "https://some-url.com/file-2.wa.zip",
                 size: 1250,
                 error: undefined,
-                type: CmsImportExportFileType.ASSETS
+                type: CmsImportExportFileType.ASSETS,
+                checksum: "checksum"
             },
             {
                 get: "https://some-url.com/file-3.unknown.zip",
                 head: "https://some-url.com/file-3.unknown.zip",
                 size: 2000,
                 error: undefined,
-                type: "unknown"
+                type: "unknown",
+                checksum: "checksum"
             }
         ];
 

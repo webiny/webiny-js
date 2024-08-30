@@ -10,3 +10,6 @@ export const IMPORT_FROM_URL_ASSETS_TASK = "importFromUrlAssets";
 export const WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION = "we.zip";
 export const WEBINY_EXPORT_ENTRIES_EXTENSION = "wee.zip";
 export const WEBINY_EXPORT_ASSETS_EXTENSION = "wea.zip";
+
+export const EXPORT_BASE_PATH = "cms-export";
+export const IMPORT_BASE_PATH = "cms-import";

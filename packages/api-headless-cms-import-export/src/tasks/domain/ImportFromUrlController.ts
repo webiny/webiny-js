@@ -10,6 +10,8 @@ import {
     IMPORT_FROM_URL_ASSETS_TASK,
     IMPORT_FROM_URL_CONTENT_ENTRIES_TASK
 } from "~/tasks/constants";
+import { IImportFromUrlContentEntriesInput } from "~/tasks/domain/abstractions/ImportFromUrlContentEntries";
+import { IImportFromUrlAssetsInput } from "~/tasks/domain/abstractions/ImportFromUrlAssets";
 
 export class ImportFromUrlController<
     C extends Context = Context,
@@ -46,20 +48,22 @@ export class ImportFromUrlController<
         if (!input.importing) {
             for (const file of input.files) {
                 if (file.type === CmsImportExportFileType.COMBINED_ENTRIES) {
-                    await trigger({
+                    await trigger<IImportFromUrlContentEntriesInput>({
                         name: `Import Content Entries from URL for "${input.modelId}"`,
                         definition: IMPORT_FROM_URL_CONTENT_ENTRIES_TASK,
                         input: {
-                            file
+                            file,
+                            modelId: input.modelId
                         }
                     });
                     continue;
                 } else if (file.type === CmsImportExportFileType.ASSETS) {
-                    await trigger({
+                    await trigger<IImportFromUrlAssetsInput>({
                         name: `Import assets from URL for "${input.modelId}"`,
                         definition: IMPORT_FROM_URL_ASSETS_TASK,
                         input: {
-                            file
+                            file,
+                            modelId: input.modelId
                         }
                     });
                     continue;
@@ -69,6 +73,7 @@ export class ImportFromUrlController<
                  * It is quite hard to get to this part of the code,
                  * because there are multiple checks before the import controller is triggered.
                  */
+                // @ts-expect-error
                 console.warn(`Cannot import a file "${file.get}" of type: ${file.type}`);
             }
 

@@ -33,6 +33,8 @@ const validateData = zod.object({
         zod.object({
             get: zod.string().url(),
             head: zod.string().url(),
+            key: zod.string(),
+            checksum: zod.string(),
             type: zod.enum([CmsImportExportFileType.ENTRIES, CmsImportExportFileType.ASSETS])
         })
     )

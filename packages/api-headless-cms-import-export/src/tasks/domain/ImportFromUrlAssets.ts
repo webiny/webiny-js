@@ -16,7 +16,7 @@ export class ImportFromUrlAssets<
         const { response } = params;
 
         return response.error({
-            message: "Method not implemented."
+            message: "Method to download assets file not implemented."
         });
     }
 }

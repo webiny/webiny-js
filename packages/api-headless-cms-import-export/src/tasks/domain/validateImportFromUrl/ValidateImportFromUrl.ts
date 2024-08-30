@@ -7,6 +7,7 @@ import { IExternalFileFetcher } from "~/tasks/utils/externalFileFetcher";
 import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { Context, ICmsImportExportValidatedFile } from "~/types";
 import { getImportExportFileType } from "~/tasks/utils/helpers/getImportExportFileType";
+import { NonEmptyArray } from "@webiny/api/types";
 
 export interface IValidateImportFromUrlParams {
     fileFetcher: IExternalFileFetcher;
@@ -26,17 +27,18 @@ export class ValidateImportFromUrl<
     public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
         const { response, input } = params;
 
-        const { files = [] } = input;
+        const { files = [], model } = input;
 
         const results: ICmsImportExportValidatedFile[] = [];
 
         for (const target of files) {
-            const { get, head } = target;
+            const { get, head, checksum } = target;
             const { type, pathname, error: fileTypeError } = getImportExportFileType(head);
             if (fileTypeError) {
                 results.push({
                     get,
                     head,
+                    checksum,
                     error: {
                         message: "File type not supported.",
                         code: "FILE_TYPE_NOT_SUPPORTED",
@@ -56,6 +58,7 @@ export class ValidateImportFromUrl<
                     get,
                     head,
                     error,
+                    checksum,
                     size: undefined,
                     type: undefined
                 });
@@ -64,6 +67,7 @@ export class ValidateImportFromUrl<
                 results.push({
                     get,
                     head,
+                    checksum,
                     error: {
                         message: "File not found.",
                         code: "FILE_NOT_FOUND",
@@ -79,6 +83,7 @@ export class ValidateImportFromUrl<
             results.push({
                 get,
                 head,
+                checksum,
                 size: file.size,
                 type,
                 error: undefined
@@ -101,8 +106,11 @@ export class ValidateImportFromUrl<
             });
         }
 
-        return response.done({
-            files: results
-        } as O);
+        const output: IValidateImportFromUrlOutput = {
+            files: results as NonEmptyArray<ICmsImportExportValidatedFile>,
+            modelId: model.modelId
+        };
+
+        return response.done(output as O);
     }
 }

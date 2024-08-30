@@ -14,7 +14,11 @@ import {
     IExportContentEntriesControllerOutputFile,
     IExportedCmsModel
 } from "~/tasks/domain/abstractions/ExportContentEntriesController";
-import { EXPORT_CONTENT_ASSETS_TASK, EXPORT_CONTENT_ENTRIES_TASK } from "~/tasks/constants";
+import {
+    EXPORT_BASE_PATH,
+    EXPORT_CONTENT_ASSETS_TASK,
+    EXPORT_CONTENT_ENTRIES_TASK
+} from "~/tasks/constants";
 import {
     IExportContentEntriesInput,
     IExportContentEntriesOutput
@@ -62,7 +66,7 @@ export class ExportContentEntriesController<
         /**
          * In case of no state yet, we will start the content entries export process.
          */
-        const prefix = input.prefix || uniqueId(`cms-export/${model.modelId}/${taskId}`);
+        const prefix = input.prefix || uniqueId(`${EXPORT_BASE_PATH}/${model.modelId}/${taskId}`);
         if (!state) {
             const task = await trigger<IExportContentEntriesInput>({
                 definition: EXPORT_CONTENT_ENTRIES_TASK,

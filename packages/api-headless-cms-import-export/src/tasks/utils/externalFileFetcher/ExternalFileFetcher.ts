@@ -80,11 +80,15 @@ export class ExternalFileFetcher implements IExternalFileFetcher {
              * And clear timeout as soon as the request is completed.
              */
             clearTimeout(tId);
+            if (result.status !== 200) {
+                throw new Error(`Failed to fetch URL: ${url}. Status: ${result.status}`);
+            }
             const contentType = result.headers.get("content-type");
             if (!contentType) {
                 throw new Error(`Content type not found for URL: ${url}`);
             }
             const contentLength = result.headers.get("content-length");
+
             return {
                 file: {
                     name: url.split("/").pop() as string,

@@ -8,7 +8,7 @@ import { Context } from "~/types";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
 import { createUploadFactory } from "~/tasks/utils/upload";
-import { createImportFromUrlContentEntriesCombined } from "./importFromUrlContentEntries/index";
+import { createDownloadFileFromUrl } from "./downloadFileFromUrl/index";
 
 type ProcessType = "continue" | "aborted";
 
@@ -47,17 +47,17 @@ export class ImportFromUrlContentEntries<
          * If download and decompress is already done, we can now proceed with the import process.
          */
         if (input.download?.done && input.decompress?.done) {
-            return response.error("Not implemented.");
+            return response.error("Not implemented. Decompress done...");
         }
         /**
          * If download is done, we can now proceed with the decompress process.
          */
         //
         else if (input.download?.done) {
-            return response.error("Not implemented.");
+            return response.error("Not implemented. Download done...");
         }
 
-        const combined = createImportFromUrlContentEntriesCombined({
+        const download = createDownloadFileFromUrl({
             fetch,
             file: input.file,
             input: input.download,
@@ -68,7 +68,7 @@ export class ImportFromUrlContentEntries<
         });
         let result: ProcessType | "done";
         try {
-            result = await combined.process<ProcessType>(async ({ stop }) => {
+            result = await download.process<ProcessType>(async ({ stop }) => {
                 const isClose = isCloseToTimeout();
                 if (isClose) {
                     return stop("continue");
@@ -88,8 +88,8 @@ export class ImportFromUrlContentEntries<
                 return response.continue({
                     ...input,
                     download: {
-                        done: combined.isDone(),
-                        next: combined.getNext()
+                        done: download.isDone(),
+                        next: download.getNext()
                     }
                 });
             /**
@@ -97,7 +97,7 @@ export class ImportFromUrlContentEntries<
              */
             default:
                 return response.error({
-                    message: "Method not implemented."
+                    message: `Method not implemented. Result: ${result}`
                 });
         }
     }

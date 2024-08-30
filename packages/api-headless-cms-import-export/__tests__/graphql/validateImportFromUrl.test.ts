@@ -113,7 +113,9 @@ describe("validate import from url - graphql", () => {
                     {
                         get: "invalid-url",
                         head: "invalid-url",
-                        type: "invalid-type"
+                        type: "invalid-type",
+                        checksum: "checksum",
+                        key: "key"
                     }
                 ]
             })
@@ -170,7 +172,9 @@ describe("validate import from url - graphql", () => {
                     {
                         get: "https://get-url.com",
                         head: "https://head-url.com",
-                        type: "entries"
+                        type: "entries",
+                        checksum: "checksum",
+                        key: "key"
                     }
                 ]
             })
@@ -215,7 +219,9 @@ describe("validate import from url - graphql", () => {
                     {
                         get: "https://get-url.com",
                         head: "https://head-url.com",
-                        type: "assets"
+                        type: "assets",
+                        checksum: "checksum",
+                        key: "key"
                     }
                 ]
             })
@@ -252,7 +258,9 @@ describe("validate import from url - graphql", () => {
                     {
                         get,
                         head,
-                        type: "entries"
+                        type: "entries",
+                        checksum: "checksum",
+                        key: "key"
                     }
                 ]
             })
