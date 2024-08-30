@@ -79,10 +79,10 @@ const CardBase = (props: CardProps) => {
     let header: React.ReactNode = null;
     if (headerTitle || headerDescription) {
         header = (
-            <CardHeaderBase>
+            <CardHeader>
                 {headerTitle}
                 {headerDescription}
-            </CardHeaderBase>
+            </CardHeader>
         );
     }
 
