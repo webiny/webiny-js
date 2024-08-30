@@ -6,24 +6,21 @@ export interface ISegment {
 }
 
 export const createSizeSegments = (
-    initialSize: number,
-    segmentSizeInput: `${number}${string}`
+    fileSize: number,
+    segmentSizeInput: `${number}${string}` | number
 ): ISegment[] => {
-    const segmentSize = bytes.parse(segmentSizeInput);
-    let sizeLeft = initialSize;
-    let end = 0;
+    const segmentSize =
+        typeof segmentSizeInput === "number" ? segmentSizeInput : bytes.parse(segmentSizeInput);
 
     const segments: ISegment[] = [];
-
-    while (sizeLeft > 0) {
-        const start = end;
-        end = end + (segmentSize > sizeLeft ? sizeLeft : segmentSize);
-
-        segments.push({
+    let segmentIndex = 0;
+    for (let start = 0; start < fileSize; start += segmentSize + 1) {
+        const end = start + segmentSize > fileSize ? fileSize : start + segmentSize;
+        segments[segmentIndex] = {
             start,
             end
-        });
-        sizeLeft = sizeLeft - segmentSize;
+        };
+        segmentIndex++;
     }
 
     return segments;

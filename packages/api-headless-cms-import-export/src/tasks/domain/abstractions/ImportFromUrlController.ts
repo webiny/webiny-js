@@ -1,9 +1,7 @@
 import {
     Context,
     ICmsImportExportValidatedAssetsFile,
-    ICmsImportExportValidatedCombinedContentFile,
-    ICmsImportExportValidatedFile,
-    ICmsImportExportValidatedValidFile
+    ICmsImportExportValidatedCombinedContentFile
 } from "~/types";
 import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { NonEmptyArray } from "@webiny/api/types";
