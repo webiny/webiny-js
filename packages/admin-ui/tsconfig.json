@@ -4,9 +4,6 @@
   "references": [
     {
       "path": "../react-composition"
-    },
-    {
-      "path": "../utils"
     }
   ],
   "compilerOptions": {
@@ -17,9 +14,7 @@
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
       "@webiny/react-composition/*": ["../react-composition/src/*"],
-      "@webiny/react-composition": ["../react-composition/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/react-composition": ["../react-composition/src"]
     },
     "baseUrl": "."
   }

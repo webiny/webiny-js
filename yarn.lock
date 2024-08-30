@@ -16941,7 +16941,6 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/react-composition": 0.0.0
-    "@webiny/utils": 0.0.0
     class-variance-authority: ^0.7.0
     clsx: ^2.1.1
     css-loader: ^6.10.0

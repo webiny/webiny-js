@@ -24,25 +24,30 @@ interface SwitchProps
 }
 
 const SwitchBase = React.forwardRef<React.ElementRef<typeof SwitchPrimitives.Root>, SwitchProps>(
-    ({ id, className, label, labelPosition, ...props }, ref) => (
-        <div className={cn(switchVariants({ labelPosition, className }))}>
-            {label && <Label text={label} htmlFor={generateId()} />}
-            <SwitchPrimitives.Root
-                className={cn(
-                    "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
-                )}
-                {...props}
-                ref={ref}
-                id={generateId()}
-            >
-                <SwitchPrimitives.Thumb
+    ({ id: initialId, className, label, labelPosition, ...props }, ref) => {
+        const id = generateId(initialId);
+
+        return (
+            <div className={cn(switchVariants({ labelPosition, className }))}>
+                {label && <Label text={label} htmlFor={id} />}
+                <SwitchPrimitives.Root
                     className={cn(
-                        "pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+                        "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input"
                     )}
-                />
-            </SwitchPrimitives.Root>
-        </div>
-    )
+                    {...props}
+                    ref={ref}
+                    id={id}
+                    aria-label={label ? String(label) : "Switch"}
+                >
+                    <SwitchPrimitives.Thumb
+                        className={cn(
+                            "pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+                        )}
+                    />
+                </SwitchPrimitives.Root>
+            </div>
+        );
+    }
 );
 SwitchBase.displayName = SwitchPrimitives.Root.displayName;
 
