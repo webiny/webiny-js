@@ -1,10 +1,11 @@
 import React from "react";
-import { Card, CardContent, CardProps } from "@webiny/admin-ui";
+import { Card, CardContent } from "@webiny/admin-ui";
 
-export interface ElevationProps extends CardProps {
+export type ElevationProps = {
     // Any element that needs to be highlighted.
     children?: React.ReactNode;
 
+    // Increasing this number (from 0 to 24) will increase the amount of shadow applied.
     z: number;
 
     // Adds smooth transitions when the z value changes.
@@ -15,10 +16,11 @@ export interface ElevationProps extends CardProps {
 
     // Style object
     style?: React.CSSProperties;
-}
+};
 
 /**
- * @deprecated Use `Card` component instead.
+ * @deprecated This component is deprecated and will be removed in future releases.
+ * Please use the `Card` component from the `@webiny/admin-ui` package instead.
  */
 const Elevation = (props: ElevationProps) => {
     return <Card {...props} content={<CardContent>{props.children}</CardContent>} />;
