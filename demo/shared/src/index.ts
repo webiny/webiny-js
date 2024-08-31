@@ -162,3 +162,10 @@ export interface HeroBlock extends GenericBlock {
 export interface RichTextBlock extends GenericBlock {
     content: SerializedEditorState;
 }
+
+export interface ImageCompareBlock extends GenericBlock {
+    title: string;
+    text: SerializedEditorState;
+    imageLeft: string;
+    imageRight: string;
+}

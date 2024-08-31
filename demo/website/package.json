@@ -6,6 +6,7 @@
     "@aws-amplify/ui-react": "^4.3.6",
     "aws-amplify": "^5.0.12",
     "react": "17.0.2",
+    "react-compare-slider": "^3.1.0",
     "react-dom": "17.0.2"
   }
 }

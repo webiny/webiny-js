@@ -12,14 +12,14 @@ export const TextWithImageBlockComponent = ({ block }: { block: TextWithImageBlo
             <div className="gap-8 items-center py-8 mx-auto max-w-screen-xl xl:gap-16 md:grid md:grid-cols-2 sm:py-16">
                 {block.image ? (
                     <img
-                        className="w-full dark:hidden h-auto max-w-full rounded-lg"
+                        className="w-full dark:hidden shadow-xl h-auto max-w-full rounded-lg"
                         src={block.image}
                         alt="dashboard image"
                     />
                 ) : null}
                 {block.image ? (
                     <img
-                        className="w-full hidden dark:block h-auto max-w-full rounded-lg"
+                        className="w-full hidden shadow-xl dark:block h-auto max-w-full rounded-lg"
                         src={block.image}
                         alt="dashboard image"
                     />

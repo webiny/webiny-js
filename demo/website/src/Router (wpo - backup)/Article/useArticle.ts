@@ -46,7 +46,6 @@ export const useArticle = (slug: string) => {
         if (!article) {
             return;
         }
-        console.log(article);
 
         setTranslations(article.translations);
     }, [article]);

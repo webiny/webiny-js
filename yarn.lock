@@ -7882,6 +7882,7 @@ __metadata:
     "@aws-amplify/ui-react": ^4.3.6
     aws-amplify: ^5.0.12
     react: 17.0.2
+    react-compare-slider: ^3.1.0
     react-dom: 17.0.2
   languageName: unknown
   linkType: soft
@@ -37359,6 +37360,16 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0"
   checksum: d80e7a0e7588f1914da9f384a66fc2897f3f85352ed775a529037d4475f89cb5bff8d1dcd0b80bd43f6b63d5c7be6ecf844b647deba4613b85ac0540638945da
+  languageName: node
+  linkType: hard
+
+"react-compare-slider@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "react-compare-slider@npm:3.1.0"
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: 117ea919179c2f8c27ced0cb20e9c4d465007a49660331d2c3ffb096096084912c346ddc2285ab67d746e297d509d77441a4c1d3cd3f435a211483271b8dbafd
   languageName: node
   linkType: hard
 
