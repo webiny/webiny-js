@@ -1,6 +1,7 @@
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
-
+import { ReactComponent as PencilIcon } from "@material-design-icons/svg/filled/edit.svg";
 import { Button } from "./Button";
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
@@ -76,5 +77,20 @@ export const ExtraLarge: Story = {
     args: {
         ...Primary.args,
         size: "xl"
+    }
+};
+
+export const WithIcon: Story = {
+    args: {
+        ...Primary.args,
+        icon: <PencilIcon />
+    }
+};
+
+export const WithIconPositionEnd: Story = {
+    args: {
+        ...Primary.args,
+        icon: <PencilIcon />,
+        iconPosition: "end"
     }
 };

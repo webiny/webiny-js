@@ -9,7 +9,8 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                primary: "bg-primary text-primary-foreground hover:bg-primary/90",
+                primary:
+                    "bg-primary text-primary-foreground hover:bg-primary/90 [&>svg]:fill-white",
                 secondary:
                     "bg-gray-200 text-gray-900 fill-gray-900 border border-gray-200 hover:bg-gray-300 hover:border-gray-300 hover:text-gray-800",
                 outline:
