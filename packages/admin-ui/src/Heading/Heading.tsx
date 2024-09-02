@@ -1,4 +1,5 @@
 import React from "react";
+import { makeDecoratable } from "@webiny/react-composition";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "~/utils";
 
@@ -31,14 +32,14 @@ const headingVariants = cva("font-sans font-semibold", {
     }
 });
 
-export interface HeadingProps
+interface HeadingProps
     extends React.HTMLAttributes<HTMLHeadingElement>,
         VariantProps<typeof headingVariants> {
     as?: HeadingTags;
     text: React.ReactNode;
 }
 
-export const Heading = ({ level, text, className, as }: HeadingProps) => {
+const HeadingBase = ({ level, text, className, as }: HeadingProps) => {
     // Ensure `level` is a valid number, or fallback to a default value 1
     const validatedLevel = level && level in TAG_MAP ? level : 1;
 
@@ -47,3 +48,7 @@ export const Heading = ({ level, text, className, as }: HeadingProps) => {
 
     return <Tag className={cn(headingVariants({ level, className }))}>{text}</Tag>;
 };
+
+const Heading = makeDecoratable("heading", HeadingBase);
+
+export { Heading, type HeadingProps };
