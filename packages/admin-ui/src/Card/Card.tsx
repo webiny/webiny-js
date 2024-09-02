@@ -97,4 +97,4 @@ const CardBase = (props: CardProps) => {
 
 const Card = makeDecoratable("Card", CardBase);
 
-export { Card, CardTitle, CardDescription, CardContent, CardFooter, CardProps };
+export { Card, CardTitle, CardDescription, CardContent, CardFooter, type CardProps };
