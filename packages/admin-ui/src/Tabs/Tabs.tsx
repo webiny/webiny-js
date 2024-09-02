@@ -145,4 +145,4 @@ TabsBase.displayName = TabsPrimitive.Root.displayName;
 
 const Tabs = makeDecoratable("Tabs", TabsBase);
 
-export { Tabs, TabsProps, TabsContent, TabsContentProps, TabsTrigger, TabsTriggerProps };
+export { Tabs, TabsProps, TabsContent, TabsContentProps, TabsTrigger, type TabsTriggerProps };
