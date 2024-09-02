@@ -1,16 +1,21 @@
 import * as React from "react";
 import { cn } from "~/utils";
-import {makeDecoratable} from "@webiny/react-composition";
+import { makeDecoratable } from "@webiny/react-composition";
 
 type CardRootProps = React.HTMLAttributes<HTMLDivElement>;
 
-const CardRootBase = React.forwardRef<HTMLDivElement, CardRootProps>(({ className, ...props }, ref) => (
-    <div
-        ref={ref}
-        className={cn("space-y-6 rounded-lg border bg-card p-6 text-card-foreground shadow-sm", className)}
-        {...props}
-    />
-));
+const CardRootBase = React.forwardRef<HTMLDivElement, CardRootProps>(
+    ({ className, ...props }, ref) => (
+        <div
+            ref={ref}
+            className={cn(
+                "space-y-6 rounded-lg border bg-card p-6 text-card-foreground shadow-sm",
+                className
+            )}
+            {...props}
+        />
+    )
+);
 
 CardRootBase.displayName = "CardRoot";
 
@@ -25,15 +30,16 @@ CardHeaderBase.displayName = "CardHeader";
 
 const CardHeader = makeDecoratable("CardHeader", CardHeaderBase);
 
-const CardTitleBase = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
-    ({ className, ...props }, ref) => (
-        <h3
-            ref={ref}
-            className={cn("text-2xl font-semibold leading-none tracking-tight", className)}
-            {...props}
-        />
-    )
-);
+const CardTitleBase = React.forwardRef<
+    HTMLParagraphElement,
+    React.HTMLAttributes<HTMLHeadingElement>
+>(({ className, ...props }, ref) => (
+    <h3
+        ref={ref}
+        className={cn("text-2xl font-semibold leading-none tracking-tight", className)}
+        {...props}
+    />
+));
 CardTitleBase.displayName = "CardTitle";
 
 const CardTitle = makeDecoratable("CardTitle", CardTitleBase);
@@ -49,9 +55,7 @@ CardDescriptionBase.displayName = "CardDescription";
 const CardDescription = makeDecoratable("CardDescription", CardDescriptionBase);
 
 const CardContentBase = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-    ({ className, ...props }, ref) => (
-        <div ref={ref} className={cn("", className)} {...props} />
-    )
+    ({ className, ...props }, ref) => <div ref={ref} className={cn("", className)} {...props} />
 );
 CardContentBase.displayName = "CardContent";
 
