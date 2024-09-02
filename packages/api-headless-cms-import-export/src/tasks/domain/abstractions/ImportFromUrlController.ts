@@ -6,12 +6,42 @@ import {
 import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { NonEmptyArray } from "@webiny/api/types";
 
+export enum IImportFromUrlControllerInputStep {
+    DOWNLOAD = "download",
+    DECOMPRESS = "decompress",
+    IMPORT = "import"
+}
+
+export interface IImportFromUrlControllerInputSteps {
+    [IImportFromUrlControllerInputStep.DOWNLOAD]?: {
+        triggered?: boolean;
+        done?: boolean;
+        failed?: string[];
+        invalid?: string[];
+        aborted?: string[];
+    };
+    [IImportFromUrlControllerInputStep.DECOMPRESS]?: {
+        triggered?: boolean;
+        done?: boolean;
+        failed?: string[];
+        invalid?: string[];
+        aborted?: string[];
+    };
+    [IImportFromUrlControllerInputStep.IMPORT]?: {
+        triggered?: boolean;
+        done?: boolean;
+        failed?: string[];
+        invalid?: string[];
+        aborted?: string[];
+    };
+}
+
 export interface IImportFromUrlControllerInput {
     modelId: string;
     files: NonEmptyArray<
         ICmsImportExportValidatedCombinedContentFile | ICmsImportExportValidatedAssetsFile
     >;
-    importing: boolean;
+    steps?: IImportFromUrlControllerInputSteps;
 }
 
 export interface IImportFromUrlControllerOutput extends ITaskResponseDoneResultOutput {

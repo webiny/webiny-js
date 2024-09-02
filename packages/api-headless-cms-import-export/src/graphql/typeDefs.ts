@@ -65,7 +65,7 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
             head: String!
             type: String!
             checksum: String!
-            size: Int
+            size: Number
             error: ValidateImportFromUrlResponseDataFileError
         }
         
@@ -81,7 +81,7 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
             head: String!
             type: String!
             checksum: String!
-            size: Int
+            size: Number
             error: ValidateImportFromUrlResponseDataFileError
         }
         
@@ -112,7 +112,7 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
             head: String!
             type: String!
             checksum: String!
-            size: Int
+            size: Number
             error: ImportFromUrlResponseDataFileError
         }
         

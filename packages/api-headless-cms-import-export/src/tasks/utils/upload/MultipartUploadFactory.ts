@@ -29,7 +29,12 @@ export class MultipartUploadFactory implements IMultipartUploadFactory {
         this.createHandler = params.createHandler;
     }
 
-    public async start(): Promise<IMultipartUploadHandler> {
+    public async start(
+        params?: IMultipartUploadFactoryContinueParams
+    ): Promise<IMultipartUploadHandler> {
+        if (params?.uploadId) {
+            return this.continue(params);
+        }
         const cmd = new CreateMultipartUploadCommand({
             Bucket: this.bucket,
             Key: this.filename
@@ -55,7 +60,7 @@ export class MultipartUploadFactory implements IMultipartUploadFactory {
         });
     }
 
-    public async continue(
+    private async continue(
         params: IMultipartUploadFactoryContinueParams
     ): Promise<IMultipartUploadHandler> {
         return this.createHandler({
@@ -68,3 +73,9 @@ export class MultipartUploadFactory implements IMultipartUploadFactory {
         });
     }
 }
+
+export const createMultipartUploadFactory = (
+    params: IMultipartUploadFactoryParams
+): IMultipartUploadFactory => {
+    return new MultipartUploadFactory(params);
+};

@@ -1,17 +1,12 @@
-import { ITaskResponseResult, ITaskRunParams, TaskDataStatus } from "@webiny/tasks";
+import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import {
     IImportFromUrlController,
     IImportFromUrlControllerInput,
+    IImportFromUrlControllerInputStep,
     IImportFromUrlControllerOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlController";
-import { CmsImportExportFileType, Context } from "~/types";
-import { getBackOffSeconds } from "~/tasks/utils/helpers/getBackOffSeconds";
-import {
-    IMPORT_FROM_URL_ASSETS_TASK,
-    IMPORT_FROM_URL_CONTENT_ENTRIES_TASK
-} from "~/tasks/constants";
-import { IImportFromUrlContentEntriesInput } from "~/tasks/domain/abstractions/ImportFromUrlContentEntries";
-import { IImportFromUrlAssetsInput } from "~/tasks/domain/abstractions/ImportFromUrlAssets";
+import { Context } from "~/types";
+import { ImportFromUrlControllerDownloadStep } from "~/tasks/domain/importFromUrlControllerSteps/ImportFromUrlControllerDownloadStep";
 
 export class ImportFromUrlController<
     C extends Context = Context,
@@ -20,9 +15,7 @@ export class ImportFromUrlController<
 > implements IImportFromUrlController<C, I, O>
 {
     public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { context, response, input, store, trigger } = params;
-
-        const task = store.getTask();
+        const { context, response, input } = params;
 
         if (!input.modelId) {
             return response.error({
@@ -45,101 +38,19 @@ export class ImportFromUrlController<
             });
         }
 
-        if (!input.importing) {
-            for (const file of input.files) {
-                if (file.type === CmsImportExportFileType.COMBINED_ENTRIES) {
-                    await trigger<IImportFromUrlContentEntriesInput>({
-                        name: `Import Content Entries from URL for "${input.modelId}"`,
-                        definition: IMPORT_FROM_URL_CONTENT_ENTRIES_TASK,
-                        input: {
-                            file,
-                            modelId: input.modelId
-                        }
-                    });
-                    continue;
-                } else if (file.type === CmsImportExportFileType.ASSETS) {
-                    await trigger<IImportFromUrlAssetsInput>({
-                        name: `Import assets from URL for "${input.modelId}"`,
-                        definition: IMPORT_FROM_URL_ASSETS_TASK,
-                        input: {
-                            file,
-                            modelId: input.modelId
-                        }
-                    });
-                    continue;
-                }
-                /**
-                 * We will log a worn message, but we will continue with the import.
-                 * It is quite hard to get to this part of the code,
-                 * because there are multiple checks before the import controller is triggered.
-                 */
-                // @ts-expect-error
-                console.warn(`Cannot import a file "${file.get}" of type: ${file.type}`);
-            }
-
-            return response.continue(
-                {
-                    ...input,
-                    importing: true
-                },
-                {
-                    seconds: getBackOffSeconds(task.iterations)
-                }
-            );
+        if (!input.steps?.[IImportFromUrlControllerInputStep.DOWNLOAD]?.done) {
+            const step = new ImportFromUrlControllerDownloadStep<C, I, O>();
+            return step.execute(params);
         }
 
-        const running: string[] = [];
-        const done: string[] = [];
-        const invalid: string[] = [];
-        const aborted: string[] = [];
-        const failed: string[] = [];
+        // else if (!input.steps?.[IImportFromUrlControllerInputStep.DECOMPRESS]?.done) {
+        //     const step = new ImportFromUrlControllerDecompressStep();
+        //     return step.execute(params);
+        // } else if (!input.steps?.[IImportFromUrlControllerInputStep.IMPORT]?.done) {
+        //     const step = new ImportFromUrlControllerImportStep();
+        //     return step.execute(params);
+        // }
 
-        const { items: tasks } = await context.tasks.listTasks({
-            where: {
-                parentId: task.id
-            }
-        });
-        for (const task of tasks) {
-            if (
-                task.taskStatus === TaskDataStatus.RUNNING ||
-                task.taskStatus === TaskDataStatus.PENDING
-            ) {
-                running.push(task.id);
-                continue;
-            } else if (task.taskStatus === TaskDataStatus.SUCCESS) {
-                done.push(task.id);
-                continue;
-            } else if (task.taskStatus === TaskDataStatus.FAILED) {
-                failed.push(task.id);
-                continue;
-            } else if (task.taskStatus === TaskDataStatus.ABORTED) {
-                aborted.push(task.id);
-                continue;
-            }
-            /**
-             * Impossible to be in a state not listed above, but just in case.
-             */
-            invalid.push(task.id);
-        }
-        /**
-         * If there are any running tasks, we should continue waiting.
-         */
-        if (running.length > 0) {
-            return response.continue(
-                {
-                    ...input,
-                    importing: true
-                },
-                {
-                    seconds: getBackOffSeconds(task.iterations)
-                }
-            );
-        }
-        return response.done({
-            done,
-            invalid,
-            aborted,
-            failed
-        } as O);
+        return response.error("Unknown step.");
     }
 }

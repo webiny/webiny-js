@@ -30,7 +30,7 @@ export const convertFromUrlToPathname = (input: Params): Result => {
     }
     return {
         url: input.url,
-        key: pathname,
+        key: pathname.replace(/^\/+/, ""),
         size: input.size
     };
 };

@@ -1,25 +1,27 @@
 import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks/types";
 import {
-    IImportFromUrlContentEntries,
-    IImportFromUrlContentEntriesInput,
-    IImportFromUrlContentEntriesInputDownloadValues,
-    IImportFromUrlContentEntriesOutput
-} from "~/tasks/domain/abstractions/ImportFromUrlContentEntries";
+    IImportFromUrlDownload,
+    IImportFromUrlDownloadInput,
+    IImportFromUrlDownloadOutput
+} from "~/tasks/domain/abstractions/ImportFromUrlDownload";
 import { Context } from "~/types";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
 import { createMultipartUpload, createMultipartUploadFactory } from "~/tasks/utils/upload";
-import { createDownloadFileFromUrl } from "./downloadFileFromUrl/index";
+import {
+    createDownloadFileFromUrl,
+    IDownloadFileFromUrlProcessResponseType
+} from "./downloadFileFromUrl/index";
 import { convertFromUrlToPathname } from "~/tasks/domain/utils/convertFromUrlToPathname";
 import { EXPORT_BASE_PATH, IMPORT_BASE_PATH } from "~/tasks/constants";
 
-type ProcessType = "continue" | "aborted";
+type ProcessType = IDownloadFileFromUrlProcessResponseType<"continue" | "aborted">;
 
-export class ImportFromUrlContentEntries<
+export class ImportFromUrlDownload<
     C extends Context = Context,
-    I extends IImportFromUrlContentEntriesInput = IImportFromUrlContentEntriesInput,
-    O extends IImportFromUrlContentEntriesOutput = IImportFromUrlContentEntriesOutput
-> implements IImportFromUrlContentEntries<C, I, O>
+    I extends IImportFromUrlDownloadInput = IImportFromUrlDownloadInput,
+    O extends IImportFromUrlDownloadOutput = IImportFromUrlDownloadOutput
+> implements IImportFromUrlDownload<C, I, O>
 {
     public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
         const { context, response, input, isCloseToTimeout, isAborted } = params;
@@ -46,19 +48,6 @@ export class ImportFromUrlContentEntries<
         }
 
         const client = createS3Client();
-        /**
-         * If download and decompress is already done, we can now proceed with the import process.
-         */
-        if (input.download?.done && input.decompress?.done) {
-            return response.error("Not implemented. Decompress done...");
-        }
-        /**
-         * If download is done, we can now proceed with the decompress process.
-         */
-        //
-        else if (input.download?.done) {
-            return response.error("Not implemented. Download done...");
-        }
 
         const file = convertFromUrlToPathname({
             url: input.file.get,
@@ -73,30 +62,35 @@ export class ImportFromUrlContentEntries<
             createHandler: createMultipartUpload
         });
 
+        console.log("starting download and upload", {
+            uploadId: input.uploadId,
+            part: input.uploadPart,
+            tags: input.tags?.length,
+            nextRange: input.nextRange
+        });
+
         const upload = await uploadFactory.start({
-            uploadId: input.download?.uploadId,
-            tags: input.download?.tags,
-            part: input.download?.uploadPart
+            uploadId: input.uploadId,
+            tags: input.tags,
+            part: input.uploadPart
         });
 
         const download = createDownloadFileFromUrl({
             fetch,
             file,
-            nextRange: input.download?.nextRange,
+            nextRange: input.nextRange,
             upload
         });
-        let result: ProcessType | "done";
+        let result: ProcessType;
         try {
-            result = await download.process<ProcessType>(
-                async ({ stop, iteration, next, segment }) => {
-                    const isClose = isCloseToTimeout();
-                    if (isClose) {
-                        return stop("continue");
-                    } else if (isAborted()) {
-                        return stop("aborted");
-                    }
+            result = await download.process<ProcessType>(async ({ stop }) => {
+                const isClose = isCloseToTimeout();
+                if (isClose) {
+                    return stop("continue");
+                } else if (isAborted()) {
+                    return stop("aborted");
                 }
-            );
+            });
         } catch (ex) {
             return response.error(ex);
         }
@@ -106,8 +100,8 @@ export class ImportFromUrlContentEntries<
                 await upload.abort();
                 return response.aborted();
             case "continue":
-            case null:
-                const output: IImportFromUrlContentEntriesInputDownloadValues = {
+                const continueValue: I = {
+                    ...input,
                     uploadPart: upload.getNextPart(),
                     uploadId: upload.getUploadId(),
                     tags: upload.getTags(),
@@ -115,9 +109,13 @@ export class ImportFromUrlContentEntries<
                     nextRange: download.getNextRange()
                 };
                 return response.continue({
-                    ...input,
-                    download: output
+                    ...continueValue
                 });
+            case "done":
+                const output: IImportFromUrlDownloadOutput = {
+                    file: filename
+                };
+                return response.done(output as O);
             /**
              * There should be nothing else other than "continue" or "aborted" or null.
              */

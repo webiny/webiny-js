@@ -8,6 +8,7 @@ export interface IMultipartUploadFactoryContinueParams {
 }
 
 export interface IMultipartUploadFactory {
-    start(): Promise<IMultipartUploadHandler>;
-    continue(params: IMultipartUploadFactoryContinueParams): Promise<IMultipartUploadHandler>;
+    start(
+        params?: Partial<IMultipartUploadFactoryContinueParams>
+    ): Promise<IMultipartUploadHandler>;
 }

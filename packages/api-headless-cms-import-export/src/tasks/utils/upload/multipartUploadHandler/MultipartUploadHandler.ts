@@ -204,6 +204,18 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
         this.partNumber++;
         return true;
     }
+
+    public getUploadId(): string {
+        return this.uploadId;
+    }
+
+    public getNextPart(): number {
+        return this.partNumber;
+    }
+
+    public getTags(): NonEmptyArray<ITag> {
+        return this.tags as NonEmptyArray<ITag>;
+    }
 }
 
 export const createMultipartUpload: ICreateMultipartUploadHandler = params => {

@@ -75,7 +75,7 @@ describe("multipart upload factory", () => {
             }
         });
 
-        const handler = await factory.continue({
+        const handler = await factory.start({
             uploadId: "testingUploadId",
             part: 2,
             tags: ["abc", "def"]
@@ -97,13 +97,13 @@ describe("multipart upload factory", () => {
         });
 
         try {
-            await factory.continue({
+            await factory.start({
                 uploadId: "",
                 part: 2,
                 tags: ["abc", "def"]
             });
         } catch (ex) {
-            expect(ex.message).toBe(`Missing "uploadId" in the multipart upload handler.`);
+            expect(ex.message).toBe(`Could not initiate multipart upload.`);
         }
     });
 
@@ -120,7 +120,7 @@ describe("multipart upload factory", () => {
         });
 
         try {
-            await factory.continue({
+            await factory.start({
                 uploadId: "aTestingUploadId",
                 part: 2,
                 tags: ["abc", "def"]

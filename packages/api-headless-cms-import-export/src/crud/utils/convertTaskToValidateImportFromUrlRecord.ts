@@ -10,11 +10,22 @@ import { ICmsImportExportValidatedFile } from "~/types";
 export const convertTaskToValidateImportFromUrlRecord = (
     task: ITask<IValidateImportFromUrlInput, IValidateImportFromUrlOutput>
 ) => {
+    const files = task.input.files.map(file => {
+        const output = task.output?.files?.find(f => f.checksum === file.checksum);
+        if (output) {
+            return {
+                ...file,
+                error: output.error,
+                type: output.type,
+                size: output.size
+            };
+        }
+        return file;
+    });
+
     return createCmsImportValidateRecord({
         id: task.id,
-        files: (task.output?.files ||
-            task.output?.error?.data?.files ||
-            task.input.files) as NonEmptyArray<ICmsImportExportValidatedFile>,
+        files: files as unknown as NonEmptyArray<ICmsImportExportValidatedFile>,
         status: task.taskStatus,
         error: task.output?.error
     });

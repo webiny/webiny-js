@@ -2,9 +2,11 @@ import { createImportFromUrlContentEntriesTask } from "~/tasks";
 import { createRunner } from "@webiny/project-utils/testing/tasks";
 import { CmsImportExportFileType, Context, ICmsImportExportValidatedFile } from "~/types";
 import { useHandler } from "~tests/helpers/useHandler";
-import { ResponseContinueResult, ResponseErrorResult, TaskResponseStatus } from "@webiny/tasks";
+import { ResponseErrorResult, TaskResponseStatus } from "@webiny/tasks";
 import { categoryModel } from "~tests/helpers/models";
 import path from "path";
+import { CreateMultipartUploadCommand, S3Client } from "@webiny/aws-sdk/client-s3";
+import { mockClient } from "aws-sdk-client-mock";
 
 jest.mock("~/tasks/domain/downloadFileFromUrl/DownloadFileFromUrl", () => {
     return {
@@ -21,7 +23,7 @@ jest.mock("~/tasks/domain/downloadFileFromUrl/DownloadFileFromUrl", () => {
                 isDone: () => {
                     return false;
                 },
-                getNext: () => {
+                getNextRange: () => {
                     return 1;
                 }
             };
@@ -39,6 +41,11 @@ describe("import from url content entries", () => {
     });
 
     it("should run the task and fail because of missing model", async () => {
+        const mockedClient = mockClient(S3Client);
+        mockedClient.on(CreateMultipartUploadCommand).resolves({
+            UploadId: "testingUploadId"
+        });
+
         const definition = createImportFromUrlContentEntriesTask();
 
         const task = await context.tasks.createTask({
@@ -75,6 +82,11 @@ describe("import from url content entries", () => {
     });
 
     it("should run the task and fail because of missing files", async () => {
+        const mockedClient = mockClient(S3Client);
+        mockedClient.on(CreateMultipartUploadCommand).resolves({
+            UploadId: "testingUploadId"
+        });
+
         const definition = createImportFromUrlContentEntriesTask();
 
         const task = await context.tasks.createTask({
@@ -115,6 +127,11 @@ describe("import from url content entries", () => {
     });
 
     it("should run the task and fail because of non-existing model", async () => {
+        const mockedClient = mockClient(S3Client);
+        mockedClient.on(CreateMultipartUploadCommand).resolves({
+            UploadId: "testingUploadId"
+        });
+
         const definition = createImportFromUrlContentEntriesTask();
 
         const modelId = "nonExistingModelId";
@@ -167,7 +184,12 @@ describe("import from url content entries", () => {
         });
     });
 
-    it("should run the task, trigger child tasks and return a continue response", async () => {
+    it("should run the task, download the file, and return a continue response", async () => {
+        const mockedClient = mockClient(S3Client);
+        mockedClient.on(CreateMultipartUploadCommand).resolves({
+            UploadId: "testingUploadId"
+        });
+
         const definition = createImportFromUrlContentEntriesTask();
 
         const file: ICmsImportExportValidatedFile = {
@@ -200,8 +222,6 @@ describe("import from url content entries", () => {
             locale: "en-US"
         });
 
-        expect(result).toBeInstanceOf(ResponseContinueResult);
-
         expect(result).toEqual({
             delay: -1,
             status: TaskResponseStatus.CONTINUE,
@@ -219,8 +239,11 @@ describe("import from url content entries", () => {
                     size: file.size
                 },
                 download: {
-                    next: 1,
-                    done: false
+                    nextRange: 1,
+                    done: false,
+                    tags: [],
+                    uploadId: "testingUploadId",
+                    uploadPart: 1
                 }
             },
             message: undefined,

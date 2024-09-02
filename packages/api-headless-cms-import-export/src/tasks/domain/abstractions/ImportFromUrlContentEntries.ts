@@ -1,9 +1,14 @@
 import { Context, ICmsImportExportValidatedCombinedContentFile } from "~/types";
 import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
+import { NonEmptyArray } from "@webiny/api/types";
+import { ITag } from "~/tasks/utils/upload";
 
 export interface IImportFromUrlContentEntriesInputDownloadValues {
-    current: number;
+    nextRange: number;
     done: boolean;
+    uploadId?: string;
+    tags?: NonEmptyArray<ITag>;
+    uploadPart?: number;
 }
 
 export interface IImportFromUrlContentEntriesDecompressInputValues {

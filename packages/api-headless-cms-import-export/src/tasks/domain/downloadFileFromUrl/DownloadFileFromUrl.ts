@@ -1,16 +1,12 @@
-import { IImportFromUrlContentEntriesInputDownloadValues } from "~/tasks/domain/abstractions/ImportFromUrlContentEntries";
-import { ICmsImportExportValidatedCombinedContentFile } from "~/types";
-import { ICreateUploadCallable, IUpload } from "~/tasks/utils/upload";
+import { IMultipartUploadHandler } from "~/tasks/utils/upload";
 import {
     IDownloadFileFromUrl,
     IDownloadFileFromUrlProcessOnIterationCallable,
     IDownloadFileFromUrlProcessResponseType
 } from "./abstractions/DownloadFileFromUrl";
 import { createSizeSegments } from "~/tasks/utils/helpers/sizeSegments";
-import { convertFromUrlToPathname } from "~/tasks/domain/utils/convertFromUrlToPathname";
-import { EXPORT_BASE_PATH, IMPORT_BASE_PATH } from "~/tasks/constants";
 
-interface DownloadFileFromUrlFile {
+export interface IDownloadFileFromUrlFile {
     url: string;
     key: string;
     size: number;
@@ -22,31 +18,25 @@ interface IRange {
 }
 
 export interface IDownloadFileFromUrlParams {
-    file: Pick<ICmsImportExportValidatedCombinedContentFile, "get" | "size">;
+    file: IDownloadFileFromUrlFile;
     fetch: typeof fetch;
-    createUpload: ICreateUploadCallable;
-    input?: IImportFromUrlContentEntriesInputDownloadValues;
+    upload: IMultipartUploadHandler;
+    nextRange?: number;
 }
 
 export class DownloadFileFromUrl implements IDownloadFileFromUrl {
-    private readonly file: DownloadFileFromUrlFile;
-    private readonly upload: IUpload;
+    private readonly file: IDownloadFileFromUrlFile;
+    private readonly upload: IMultipartUploadHandler;
     private readonly fetch: typeof fetch;
-    private next: number;
+    private nextRange: number;
     private readonly ranges: IRange[];
 
     public constructor(params: IDownloadFileFromUrlParams) {
-        const { input } = params;
-        this.file = convertFromUrlToPathname({
-            url: params.file.get,
-            size: params.file.size
-        });
+        this.file = params.file;
         this.fetch = params.fetch;
-        this.next = input?.current === undefined ? 0 : input.current;
-        this.upload = params.createUpload(
-            this.file.key.replace(EXPORT_BASE_PATH, IMPORT_BASE_PATH)
-        );
-        this.ranges = createSizeSegments(this.file.size, "1MB");
+        this.nextRange = params.nextRange || 0;
+        this.upload = params.upload;
+        this.ranges = createSizeSegments(this.file.size, "10MB");
     }
 
     public async process<T extends string>(
@@ -55,22 +45,23 @@ export class DownloadFileFromUrl implements IDownloadFileFromUrl {
         let iteration = 0;
 
         while (true) {
-            const next = this.ranges[this.next];
+            const next = this.ranges[this.nextRange];
 
             if (this.isDone() || !next) {
-                await this.upload.done();
+                await this.upload.complete();
                 return "done";
             }
             let status: IDownloadFileFromUrlProcessResponseType<T> | undefined = undefined;
             await onIteration({
                 iteration,
-                next: this.next,
+                next: this.nextRange,
+                segment: next,
                 stop: input => {
                     status = input;
                 }
             });
             if (status) {
-                await this.upload.done();
+                await this.upload.complete();
                 return status;
             }
             iteration++;
@@ -80,7 +71,6 @@ export class DownloadFileFromUrl implements IDownloadFileFromUrl {
             if (this.ranges.length > 1) {
                 headers.set("Range", `bytes=${next.start}-${next.end}`);
             }
-
             const result = await this.fetch(this.file.url, {
                 method: "GET",
                 keepalive: true,
@@ -100,11 +90,11 @@ export class DownloadFileFromUrl implements IDownloadFileFromUrl {
                     break;
                 }
 
-                this.upload.stream.push(value);
+                await this.upload.add(Buffer.from(value));
             }
 
             reader.releaseLock();
-            this.next++;
+            this.nextRange++;
         }
     }
 
@@ -112,12 +102,12 @@ export class DownloadFileFromUrl implements IDownloadFileFromUrl {
         await this.upload.abort();
     }
 
-    public getNext(): number {
-        return this.next;
+    public getNextRange(): number {
+        return this.nextRange;
     }
 
     public isDone(): boolean {
-        return !this.ranges[this.next];
+        return !this.ranges[this.nextRange];
     }
 }
 

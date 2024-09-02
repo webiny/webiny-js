@@ -1,6 +1,4 @@
-import { PassThrough } from "stream";
 import { createDownloadFileFromUrl } from "~/tasks/domain/downloadFileFromUrl/index";
-import { Upload } from "~/tasks/utils/upload";
 import {
     CompleteMultipartUploadCommand,
     CreateMultipartUploadCommand,
@@ -9,13 +7,11 @@ import {
     UploadPartCommand
 } from "@webiny/aws-sdk/client-s3";
 import { mockClient } from "aws-sdk-client-mock";
-import { getBucket } from "~/tasks/utils/helpers/getBucket";
-import { createS3Client } from "~/tasks/utils/helpers/s3Client";
 import { ICmsImportExportValidatedCombinedContentFile } from "~/types";
 import { createMockFetch } from "~tests/mocks/fetch";
 import fs from "fs";
 import path from "path";
-import { createUpload } from "~tests/mocks/createUpload";
+import { createMockMultipartUpload } from "~tests/mocks/mockMultipartUpload";
 
 describe("import from url content entries combined", () => {
     beforeEach(async () => {
@@ -23,10 +19,6 @@ describe("import from url content entries combined", () => {
     });
 
     it("should construct class properly", async () => {
-        const stream = new PassThrough({
-            autoDestroy: true
-        });
-
         const file: Pick<ICmsImportExportValidatedCombinedContentFile, "get" | "size"> = {
             get: "https://webiny.com/asdgkdhsbg3iu2bfd/file-1.we.zip",
             size: 12345
@@ -40,19 +32,16 @@ describe("import from url content entries combined", () => {
                     stream: new ReadableStream()
                 };
             }),
-            file,
-            createUpload: () => {
-                return new Upload({
-                    client: createS3Client(),
-                    bucket: getBucket(),
-                    filename,
-                    stream
-                });
-            }
+            file: {
+                url: file.get,
+                size: file.size,
+                key: filename
+            },
+            upload: await createMockMultipartUpload()
         });
 
         expect(combined.isDone()).toBe(false);
-        expect(combined.getNext()).toEqual(0);
+        expect(combined.getNextRange()).toEqual(0);
     });
 
     it("should start processing and finish properly", async () => {
@@ -61,10 +50,6 @@ describe("import from url content entries combined", () => {
         mockedClient.on(CompleteMultipartUploadCommand).resolves({});
         mockedClient.on(GetObjectCommand).resolves({});
         mockedClient.on(UploadPartCommand).resolves({ ETag: "1" });
-
-        const stream = new PassThrough({
-            autoDestroy: true
-        });
 
         const filename = "testing.we.zip";
         const file: Pick<ICmsImportExportValidatedCombinedContentFile, "get" | "size"> = {
@@ -93,13 +78,12 @@ describe("import from url content entries combined", () => {
                     })
                 };
             }),
-            file,
-            createUpload: () => {
-                return createUpload({
-                    filename,
-                    stream
-                });
-            }
+            file: {
+                url: file.get,
+                size: file.size,
+                key: filename
+            },
+            upload: await createMockMultipartUpload()
         });
 
         const result = await combined.process(async () => {
@@ -109,6 +93,6 @@ describe("import from url content entries combined", () => {
         expect(result).toEqual("done");
 
         expect(combined.isDone()).toBe(true);
-        expect(combined.getNext()).toEqual(1);
+        expect(combined.getNextRange()).toEqual(1);
     });
 });

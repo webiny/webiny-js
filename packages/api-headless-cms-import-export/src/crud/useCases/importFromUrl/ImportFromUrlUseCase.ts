@@ -93,7 +93,7 @@ export class ImportFromUrlUseCase implements IImportFromUrlUseCase {
                     | ICmsImportExportValidatedCombinedContentFile
                     | ICmsImportExportValidatedAssetsFile
                 >,
-                importing: false
+                steps: {}
             },
             parent: integrityTask
         });
