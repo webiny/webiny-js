@@ -126,11 +126,9 @@ const TabsBase = React.forwardRef<React.ElementRef<typeof TabsPrimitive.Root>, T
         return (
             <TabsRoot ref={ref} defaultValue={defaultValue} {...props}>
                 <TabsList>
-                    {triggers.map(trigger => (
-                        <React.Fragment key={`tab-trigger-${trigger.key}`}>
-                            {React.cloneElement(trigger, { size })}
-                        </React.Fragment>
-                    ))}
+                    {triggers.map(trigger =>
+                        React.cloneElement(trigger, { size, key: `tab-trigger-${trigger.key}` })
+                    )}
                 </TabsList>
                 {contents.map(content => (
                     <React.Fragment key={`tab-content-${content.key}`}>
