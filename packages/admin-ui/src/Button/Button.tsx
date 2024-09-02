@@ -9,7 +9,8 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                primary: "bg-primary text-primary-foreground hover:bg-primary/90",
+                primary:
+                    "bg-primary text-primary-foreground hover:bg-primary/90 [&>svg]:fill-white",
                 secondary:
                     "bg-gray-200 text-gray-900 fill-gray-900 border border-gray-200 hover:bg-gray-300 hover:border-gray-300 hover:text-gray-800",
                 outline:
@@ -37,18 +38,20 @@ interface ButtonProps
 
     icon?: React.ReactNode;
 
-    trailingIcon?: React.ReactNode;
+    iconPosition?: "start" | "end";
 
     asChild?: boolean;
 }
 
 const ButtonBase = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-    const { className, variant, size, asChild = false, text, icon, trailingIcon, ...rest } = props;
+    const { className, variant, size, asChild = false, text, icon, iconPosition, ...rest } = props;
     const Comp = asChild ? Slot : "button";
 
     return (
         <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...rest}>
-            {icon} {text} {trailingIcon}
+            {iconPosition !== "end" && icon}
+            {text}
+            {iconPosition === "end" && icon}
         </Comp>
     );
 });
@@ -57,4 +60,4 @@ ButtonBase.displayName = "Button";
 
 const Button = makeDecoratable("Button", ButtonBase);
 
-export { Button, ButtonProps };
+export { Button, type ButtonProps };
