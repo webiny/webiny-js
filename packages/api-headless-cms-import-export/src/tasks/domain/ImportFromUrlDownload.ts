@@ -84,7 +84,7 @@ export class ImportFromUrlDownload<
         let result: ProcessType;
         try {
             result = await download.process<ProcessType>(async ({ stop }) => {
-                const isClose = isCloseToTimeout();
+                const isClose = isCloseToTimeout(60);
                 if (isClose) {
                     return stop("continue");
                 } else if (isAborted()) {
