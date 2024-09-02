@@ -12502,6 +12502,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@radix-ui/react-tabs@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@radix-ui/react-tabs@npm:1.1.0"
+  dependencies:
+    "@radix-ui/primitive": 1.1.0
+    "@radix-ui/react-context": 1.1.0
+    "@radix-ui/react-direction": 1.1.0
+    "@radix-ui/react-id": 1.1.0
+    "@radix-ui/react-presence": 1.1.0
+    "@radix-ui/react-primitive": 2.0.0
+    "@radix-ui/react-roving-focus": 1.1.0
+    "@radix-ui/react-use-controllable-state": 1.1.0
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 68200d65f02f1aa9d8c06f9a587dbf169e0a4efa715eb855d98f9dd8e3c0ba32981f431f4e306d2ff85005dfe2b0a905c8d5f9ee50f7a80abc1e4eb59ecd56d7
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-tooltip@npm:^1.1.2":
   version: 1.1.2
   resolution: "@radix-ui/react-tooltip@npm:1.1.2"
@@ -16901,6 +16927,7 @@ __metadata:
     "@radix-ui/react-select": ^2.1.1
     "@radix-ui/react-separator": ^1.1.0
     "@radix-ui/react-slot": ^1.1.0
+    "@radix-ui/react-tabs": ^1.1.0
     "@radix-ui/react-tooltip": ^1.1.2
     "@storybook/addon-a11y": ^8.2.9
     "@storybook/addon-essentials": ^8.2.9
@@ -18906,6 +18933,7 @@ __metadata:
     "@types/mime": ^2.0.3
     "@types/react": 18.2.79
     "@types/store": ^2.0.2
+    "@webiny/admin-ui": 0.0.0
     "@webiny/app": 0.0.0
     "@webiny/app-security": 0.0.0
     "@webiny/app-theme": 0.0.0
@@ -21693,7 +21721,6 @@ __metadata:
     "@rmwc/slider": ^14.2.2
     "@rmwc/snackbar": ^14.2.2
     "@rmwc/switch": ^14.2.2
-    "@rmwc/tabs": ^14.2.2
     "@rmwc/textfield": ^14.2.2
     "@rmwc/top-app-bar": ^14.2.2
     "@rmwc/touch-target": ^14.2.2
@@ -21728,7 +21755,6 @@ __metadata:
     nprogress: ^0.2.0
     nuka-carousel: 4.7.1
     raw-loader: ^0.5.1
-    rc-tooltip: ^5.3.1
     react-ace: ^6.1.4
     react-butterfiles: ^1.3.0
     react-color: ^2.19.3
