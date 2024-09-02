@@ -8,6 +8,7 @@ export * from "./Heading";
 export * from "./Input";
 export * from "./Label";
 export * from "./Progress";
+export * from "./Providers";
 export * from "./Select";
 export * from "./Separator";
 export * from "./Sheet";

@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../admin-ui/tsconfig.build.json" },
     { "path": "../api-aco/tsconfig.build.json" },
     { "path": "../api-apw/tsconfig.build.json" },
     { "path": "../api-apw-scheduler-so-ddb/tsconfig.build.json" },
@@ -41,8 +42,7 @@
     { "path": "../pulumi/tsconfig.build.json" },
     { "path": "../pulumi-aws/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" },
-    { "path": "../migrations/tsconfig.build.json" },
-    { "path": "../admin-ui/tsconfig.build.json" }
+    { "path": "../migrations/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
+    { "path": "../admin-ui" },
     { "path": "../api-aco" },
     { "path": "../api-apw" },
     { "path": "../api-apw-scheduler-so-ddb" },
@@ -41,8 +42,7 @@
     { "path": "../pulumi" },
     { "path": "../pulumi-aws" },
     { "path": "../wcp" },
-    { "path": "../migrations" },
-    { "path": "../admin-ui" }
+    { "path": "../migrations" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -51,6 +51,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/admin-ui/*": ["../admin-ui/src/*"],
+      "@webiny/admin-ui": ["../admin-ui/src"],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
       "@webiny/api-apw/*": ["../api-apw/src/*"],
@@ -134,9 +136,7 @@
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"],
       "@webiny/migrations/*": ["../migrations/src/*"],
-      "@webiny/migrations": ["../migrations/src"],
-      "@webiny/admin-ui/*": ["../admin-ui/src/*"],
-      "@webiny/admin-ui": ["../admin-ui/src"]
+      "@webiny/migrations": ["../migrations/src"]
     },
     "baseUrl": "."
   }
