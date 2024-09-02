@@ -13,7 +13,7 @@ const ToastViewport = React.forwardRef<
     <ToastPrimitives.Viewport
         ref={ref}
         className={cn(
-            "fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
+            "bg-red-500 fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
             className
         )}
         {...props}
@@ -76,10 +76,12 @@ const ToastClose = React.forwardRef<
             "absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600",
             className
         )}
-        toast-close=""
+        aria-label="Close"
         {...props}
     >
-        <span className="h-4 w-4">Close</span>
+        <span className="h-4 w-4" aria-hidden>
+            x
+        </span>
     </ToastPrimitives.Close>
 ));
 ToastClose.displayName = ToastPrimitives.Close.displayName;
@@ -112,24 +114,19 @@ type ToastRootProps = React.ComponentPropsWithoutRef<typeof ToastRoot>;
 
 type ToastActionElement = React.ReactElement<typeof ToastAction>;
 
-interface ToastProps extends Omit<ToastRootProps, "title" | "content"> {
+interface ToastProps extends Omit<ToastRootProps, "title" | "content" | "children"> {
     title?: React.ReactNode;
     content: React.ReactNode;
+    actions?: ToastActionElement[];
 }
 
-export const Toast = ({ title, content, children, ...props }: ToastProps) => {
+export const Toast = ({ title, content, actions, ...props }: ToastProps) => {
     return (
-        <ToastRoot {...props}>
+        <ToastRoot open={true} {...props}>
             {title && <ToastTitle>{title}</ToastTitle>}
             <ToastDescription>{content}</ToastDescription>
-            {children && (
-                <ToastAction asChild altText={"any"}>
-                    {children}
-                </ToastAction>
-            )}
-            <ToastClose aria-label="Close">
-                <span aria-hidden>×</span>
-            </ToastClose>
+            {actions && actions}
+            <ToastClose />
         </ToastRoot>
     );
 };
