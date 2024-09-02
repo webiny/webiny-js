@@ -31,4 +31,4 @@ const CopyButtonBase = (props: CopyButtonProps) => {
 
 const CopyButton = makeDecoratable("CopyButton", CopyButtonBase);
 
-export { CopyButton, CopyButtonProps };
+export { CopyButton, type CopyButtonProps };
