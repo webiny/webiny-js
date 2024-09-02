@@ -1,6 +1,8 @@
 import * as React from "react";
 import { cn } from "~/utils";
 import { makeDecoratable } from "@webiny/react-composition";
+import { Heading } from "~/Heading";
+import { Text } from "~/Text";
 
 type CardRootProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -71,28 +73,31 @@ CardFooterBase.displayName = "CardFooter";
 const CardFooter = makeDecoratable("CardFooter", CardFooterBase);
 
 interface CardProps extends Omit<CardRootProps, "content"> {
-    headerTitle?: React.ReactElement<typeof CardTitleBase>;
-    headerDescription?: React.ReactElement<typeof CardDescriptionBase>;
+    headerTitle?: string;
+    headerDescription?: string;
+    header?: React.ReactNode;
     content?: React.ReactElement<typeof CardContentBase>;
     footer?: React.ReactElement<typeof CardFooterBase>;
 }
 
 const CardBase = (props: CardProps) => {
-    const { headerTitle, headerDescription, content, footer, ...rest } = props;
+    const { headerTitle, headerDescription, header, content, footer, ...rest } = props;
 
-    let header: React.ReactNode = null;
+    let headerContent = header;
     if (headerTitle || headerDescription) {
-        header = (
-            <CardHeader>
-                {headerTitle}
-                {headerDescription}
-            </CardHeader>
-        );
+        if (headerTitle || headerDescription) {
+            headerContent = (
+                <CardHeader>
+                    <Heading text={headerTitle} />
+                    <Text text={headerDescription} />
+                </CardHeader>
+            );
+        }
     }
 
     return (
         <CardRoot {...rest}>
-            {header}
+            {headerContent}
             {content}
             {footer}
         </CardRoot>
