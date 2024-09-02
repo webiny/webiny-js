@@ -16978,6 +16978,7 @@ __metadata:
     clsx: ^2.1.1
     css-loader: ^6.10.0
     file-loader: 6.2.0
+    lucide-react: ^0.436.0
     postcss-loader: ^6.2.1
     react: 18.2.0
     rimraf: ^5.0.5
@@ -34888,6 +34889,15 @@ __metadata:
   version: 2.2.1
   resolution: "ltgt@npm:2.2.1"
   checksum: 7e3874296f7538bc8087b428ac4208008d7b76916354b34a08818ca7c83958c1df10ec427eeeaad895f6b81e41e24745b18d30f89abcc21d228b94f6961d50a2
+  languageName: node
+  linkType: hard
+
+"lucide-react@npm:^0.436.0":
+  version: 0.436.0
+  resolution: "lucide-react@npm:0.436.0"
+  peerDependencies:
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc
+  checksum: 3ec00f7dda9df2888b392f22227545719e9aa90484bd9d9e91cf930932e718137372b4bb9980af2e62c030565747d28725c3a156fea88a19e707008c59aafa7b
   languageName: node
   linkType: hard
 
