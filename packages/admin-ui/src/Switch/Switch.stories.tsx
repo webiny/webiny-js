@@ -24,13 +24,13 @@ export const WithLabel: Story = {
 export const WithLeadingLabel: Story = {
     args: {
         label: "Leading label",
-        labelPosition: "leading"
+        labelPosition: "start"
     }
 };
 
 export const WithTrailingLabel: Story = {
     args: {
         label: "Trailing label",
-        labelPosition: "trailing"
+        labelPosition: "end"
     }
 };

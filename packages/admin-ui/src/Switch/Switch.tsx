@@ -8,12 +8,12 @@ import { Label } from "~/Label";
 const switchVariants = cva("flex items-center space-x-2", {
     variants: {
         labelPosition: {
-            leading: "",
-            trailing: "flex-row-reverse space-x-reverse "
+            start: "",
+            end: "flex-row-reverse space-x-reverse "
         }
     },
     defaultVariants: {
-        labelPosition: "leading"
+        labelPosition: "start"
     }
 });
 
