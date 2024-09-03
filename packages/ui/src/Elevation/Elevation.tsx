@@ -1,5 +1,4 @@
 import React from "react";
-import { Card } from "@webiny/admin-ui";
 
 export type ElevationProps = {
     // Any element that needs to be highlighted.
@@ -23,7 +22,7 @@ export type ElevationProps = {
  * Please use the `Card` component from the `@webiny/admin-ui` package instead.
  */
 const Elevation = (props: ElevationProps) => {
-    return <Card {...props} content={props.children} />;
+    return <div className={'bg-white'}>{props.children}</div>
 };
 
 Elevation.displayName = "Elevation";
