@@ -28,7 +28,7 @@ type Props = {
 
 /**
  * @deprecated This component is deprecated and will be removed in future releases.
- * Please use the `<Switch />` component from the `@webiny/admin-ui` package instead.
+ * Please use the `Switch` component from the `@webiny/admin-ui` package instead.
  */
 class Switch extends React.Component<Props> {
     static rmwcProps = ["id", "disabled", "checked", "label", "rootProps", "className"];
