@@ -15,7 +15,6 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.24.0",
-    "@graphql-tools/merge": "^9.0.6",
     "@webiny/api": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-i18n": "0.0.0",
@@ -33,6 +32,7 @@
     "@webiny/utils": "0.0.0",
     "archiver": "^7.0.1",
     "dataloader": "^2.0.0",
+    "deepmerge": "^4.3.1",
     "extract-zip": "^1.6.7",
     "fs-extra": "^11.2.0",
     "jsonpack": "^1.1.5",

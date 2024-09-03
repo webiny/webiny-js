@@ -10,6 +10,7 @@ interface MarkLockedFieldsParams {
 }
 
 export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<void> => {
+    return;
     const { model, context } = params;
     /**
      * If the model is registered via a plugin, we don't need do process anything.

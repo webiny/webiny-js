@@ -4,12 +4,12 @@ import { createTranslations } from "~/translations/createTranslations";
 import { PluginCollection } from "@webiny/plugins/types";
 
 export const createPageBuilderGraphQL = (): PluginCollection => {
-    return [...graphql(), ...createTranslations()];
+    return [...graphql()];
 };
 
 export type ContextParams = CreateCrudParams;
 export const createPageBuilderContext = (params: ContextParams) => {
-    return [createCrud(params)];
+    return [createCrud(params), ...createTranslations()];
 };
 
 export * from "./crud/pages/PageContent";

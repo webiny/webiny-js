@@ -33,7 +33,7 @@ import {
 } from "~/plugins";
 import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
 import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin";
-import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
+import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny/api-headless-cms";
 import { createElasticsearchIndexesOnLocaleAfterCreate } from "~/operations/system/indexes";
 import { createIndexTaskPluginTest } from "~/tasks/createIndexTaskPlugin";
 
@@ -157,6 +157,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                 CmsEntryElasticsearchSortModifierPlugin.type,
                 CmsElasticsearchModelFieldPlugin.type,
                 StorageOperationsCmsModelPlugin.type,
+                StorageTransformPlugin.type,
                 CmsEntryElasticsearchValuesModifier.type
             ];
             for (const type of types) {

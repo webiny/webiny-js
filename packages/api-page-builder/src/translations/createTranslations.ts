@@ -1,53 +1,55 @@
-import { ErrorResponse, createGraphQLSchemaPlugin, Response } from "@webiny/handler-graphql";
+import lodashMerge from "lodash/merge";
+import { createGraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { PbContext } from "~/graphql/types";
-import { SaveTranslatableCollection } from "~/translations/useCases/SaveTranslatableCollection";
-import { TranslatableItemDTO } from "~/translations/types";
-import { schema } from "~/translations/schema";
-import { ListLanguagesRepository } from "~/translations/Languages/repository/ListLanguagesRepository";
+import { languageSchema } from "~/translations/languages/graphql/schema";
+import { languageResolvers } from "~/translations/languages/graphql/resolvers";
+import { translatableCollectionResolvers } from "~/translations/translatableCollection/graphql/resolvers";
+import { translatableCollectionSchema } from "~/translations/translatableCollection/graphql/schema";
+import { translatedCollectionSchema } from "~/translations/translatedCollection/graphql/schema";
+import { translatedCollectionResolvers } from "~/translations/translatedCollection/graphql/resolvers";
+import { createCmsModelPlugin } from "@webiny/api-headless-cms";
+import { translatableCollectionModel } from "~/translations/translatableCollection/repository/translatableCollection.model";
+import { translatedCollectionModel } from "~/translations/translatedCollection/repository/translatedCollection.model";
 
-interface UpdateTranslatableCollectionParams {
-    collectionId: string;
-    items: TranslatableItemDTO[];
-}
+const baseSchema = /* GraphQL */ `
+    type TranslationsQuery {
+        _empty: String
+    }
+
+    type TranslationsMutation {
+        _empty: String
+    }
+
+    extend type Query {
+        translations: TranslationsQuery
+    }
+
+    extend type Mutation {
+        translations: TranslationsMutation
+    }
+`;
+
+const baseResolvers = {
+    Query: {
+        translations: () => ({})
+    },
+    Mutation: {
+        translations: () => ({})
+    }
+};
 
 export const createTranslations = () => {
     return [
         createGraphQLSchemaPlugin<PbContext>({
-            typeDefs: schema,
-            resolvers: {
-                Query: {
-                    translations: () => ({})
-                },
-                Mutation: {
-                    translations: () => ({})
-                },
-                TranslationsQuery: {
-                    listLanguages: async (_, __, context) => {
-                        try {
-                            const repository = new ListLanguagesRepository(context);
-                            const languages = await repository.execute();
-
-                            return new Response(languages);
-                        } catch (err) {
-                            return new ErrorResponse(err);
-                        }
-                    }
-                },
-                TranslationsMutation: {
-                    updateTranslatableCollection: async (_, args, context) => {
-                        const { collectionId, items } = args as UpdateTranslatableCollectionParams;
-
-                        try {
-                            const useCase = new SaveTranslatableCollection(context);
-                            await useCase.execute(collectionId, items);
-
-                            return new Response(true);
-                        } catch (err) {
-                            return new ErrorResponse(err);
-                        }
-                    }
-                }
-            }
-        })
+            typeDefs: `${baseSchema} ${languageSchema} ${translatableCollectionSchema} ${translatedCollectionSchema}`,
+            resolvers: lodashMerge(
+                baseResolvers,
+                languageResolvers,
+                translatableCollectionResolvers,
+                translatedCollectionResolvers
+            )
+        }),
+        createCmsModelPlugin(translatableCollectionModel, { validateLayout: false }),
+        createCmsModelPlugin(translatedCollectionModel, { validateLayout: false })
     ];
 };
