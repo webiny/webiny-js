@@ -39,7 +39,7 @@ export const TabsContext = createContext<TabsContext | undefined>(undefined);
 
 /**
  * @deprecated This component is deprecated and will be removed in future releases.
- * Please use the `<Tabs />` component from the `@webiny/admin-ui` package instead.
+ * Please use the `Tabs` component from the `@webiny/admin-ui` package instead.
  */
 export const Tabs = ({ value, onActivate, ...props }: TabsProps) => {
     const [activeTabIndex, setActiveIndex] = useState(0);
