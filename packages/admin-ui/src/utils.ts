@@ -6,9 +6,9 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-export const generateId = (initialId?: string): string => {
-    if (initialId !== undefined && initialId !== null) {
-        return String(initialId);
+export const generateId = (initialId?: string) => {
+    if (initialId) {
+        return initialId;
     }
     return "wby-" + baseGenerateId(4);
 };

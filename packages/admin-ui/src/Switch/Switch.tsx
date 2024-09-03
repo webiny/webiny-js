@@ -25,7 +25,7 @@ interface SwitchProps
 
 const SwitchBase = React.forwardRef<React.ElementRef<typeof SwitchPrimitives.Root>, SwitchProps>(
     ({ id: initialId, className, label, labelPosition, ...props }, ref) => {
-        const id = generateId(initialId);
+        const id = React.useMemo(() => generateId(initialId), [initialId]);
 
         return (
             <div className={cn(switchVariants({ labelPosition, className }))}>
@@ -37,7 +37,7 @@ const SwitchBase = React.forwardRef<React.ElementRef<typeof SwitchPrimitives.Roo
                     {...props}
                     ref={ref}
                     id={id}
-                    aria-label={label ? String(label) : "Switch"}
+                    aria-label={React.isValidElement(label) ? "Switch" : String(label)}
                 >
                     <SwitchPrimitives.Thumb
                         className={cn(
