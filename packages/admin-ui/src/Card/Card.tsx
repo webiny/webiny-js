@@ -7,40 +7,44 @@ import { ReactComponent as XIcon } from "@material-design-icons/svg/filled/close
 import { Icon } from "~/Icon";
 import { cva, type VariantProps } from "class-variance-authority";
 
-const cardRootVariants = cva(
-    "space-y-6 rounded-lg border bg-card p-6 text-card-foreground shadow-sm",
-    {
-        variants: {
-            padding: {
-                standard: "p-6",
-                comfortable: "p-8",
-                compact: "p-4"
-            },
-            elevation: {
-                none: "",
-                xs: "shadow-xs",
-                sm: "shadow-sm",
-                md: "shadow-md",
-                lg: "shadow-lg",
-                xl: "shadow-xl"
-            }
+const cardRootVariants = cva("space-y-6 border bg-card text-card-foreground", {
+    variants: {
+        padding: {
+            standard: "p-6",
+            comfortable: "p-8",
+            compact: "p-4"
         },
-        defaultVariants: {
-            padding: "standard",
-            elevation: "none"
+        elevation: {
+            none: "",
+            xs: "shadow-xs",
+            sm: "shadow-sm",
+            md: "shadow-md",
+            lg: "shadow-lg",
+            xl: "shadow-xl"
+        },
+        borderRadius: {
+            none: "rounded-none",
+            sm: "rounded-sm",
+            md: "rounded-md",
+            lg: "rounded-lg"
         }
+    },
+    defaultVariants: {
+        padding: "standard",
+        elevation: "none",
+        borderRadius: "md"
     }
-);
+});
 
 interface CardRootProps
     extends React.HTMLAttributes<HTMLDivElement>,
         VariantProps<typeof cardRootVariants> {}
 
 const CardRootBase = React.forwardRef<HTMLDivElement, CardRootProps>(
-    ({ className, padding, elevation, ...props }, ref) => (
+    ({ className, padding, elevation, borderRadius, ...props }, ref) => (
         <div
             ref={ref}
-            className={cn(cardRootVariants({ padding, elevation, className }))}
+            className={cn(cardRootVariants({ padding, elevation, borderRadius, className }))}
             {...props}
         />
     )
@@ -75,30 +79,6 @@ const CardHeaderBase = React.forwardRef<HTMLDivElement, CardHeaderBaseProps>(
 CardHeaderBase.displayName = "CardHeader";
 
 const CardHeader = makeDecoratable("CardHeader", CardHeaderBase);
-
-const CardTitleBase = React.forwardRef<
-    HTMLParagraphElement,
-    React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
-    <h3
-        ref={ref}
-        className={cn("text-2xl font-semibold leading-none tracking-tight", className)}
-        {...props}
-    />
-));
-CardTitleBase.displayName = "CardTitle";
-
-const CardTitle = makeDecoratable("CardTitle", CardTitleBase);
-
-const CardDescriptionBase = React.forwardRef<
-    HTMLParagraphElement,
-    React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
-    <p ref={ref} className={cn("text-sm text-muted-foreground", className)} {...props} />
-));
-CardDescriptionBase.displayName = "CardDescription";
-
-const CardDescription = makeDecoratable("CardDescription", CardDescriptionBase);
 
 const CardContentBase = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
     ({ className, ...props }, ref) => <div ref={ref} className={cn("", className)} {...props} />

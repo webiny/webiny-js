@@ -1,7 +1,7 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Card, CardContent, CardFooter } from "./Card";
+import { Card } from "./Card";
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta: Meta<typeof Card> = {
@@ -28,7 +28,8 @@ export const Default: Story = {
         ...defaultContentProps,
         showCloseButton: false,
         padding: "standard",
-        elevation: "none"
+        elevation: "none",
+        borderRadius: "md"
     },
     argTypes: {
         padding: {
@@ -38,6 +39,10 @@ export const Default: Story = {
         elevation: {
             control: "select",
             options: ["none", "xs", "sm", "md", "lg", "xl"]
+        },
+        borderRadius: {
+            control: "select",
+            options: ["none", "sm", "md", "lg"]
         }
     }
 };
@@ -55,7 +60,7 @@ export const WithCloseButton: Story = {
     }
 };
 
-export const WithPadding: Story = {
+export const WithMorePadding: Story = {
     args: {
         ...defaultContentProps,
         padding: "comfortable"
@@ -68,6 +73,14 @@ export const WithElevation: Story = {
         elevation: "md"
     }
 };
+
+export const NoBorderRadius: Story = {
+    args: {
+        ...defaultContentProps,
+        borderRadius: "none"
+    }
+};
+
 export const WithCustomHeader: Story = {
     args: {
         ...defaultContentProps,
