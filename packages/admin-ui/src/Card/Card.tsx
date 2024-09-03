@@ -1,19 +1,46 @@
-import * as React from "react";
+import React, { useCallback } from "react";
 import { cn } from "~/utils";
 import { makeDecoratable } from "@webiny/react-composition";
 import { Heading } from "~/Heading";
 import { Text } from "~/Text";
+import { ReactComponent as XIcon } from "@material-design-icons/svg/filled/close.svg";
+import { Icon } from "~/Icon";
+import { cva, type VariantProps } from "class-variance-authority";
 
-type CardRootProps = React.HTMLAttributes<HTMLDivElement>;
+const cardRootVariants = cva(
+    "space-y-6 rounded-lg border bg-card p-6 text-card-foreground shadow-sm",
+    {
+        variants: {
+            padding: {
+                standard: "p-6",
+                comfortable: "p-8",
+                compact: "p-4"
+            },
+            elevation: {
+                none: "",
+                xs: "shadow-xs",
+                sm: "shadow-sm",
+                md: "shadow-md",
+                lg: "shadow-lg",
+                xl: "shadow-xl"
+            }
+        },
+        defaultVariants: {
+            padding: "standard",
+            elevation: "none"
+        }
+    }
+);
+
+interface CardRootProps
+    extends React.HTMLAttributes<HTMLDivElement>,
+        VariantProps<typeof cardRootVariants> {}
 
 const CardRootBase = React.forwardRef<HTMLDivElement, CardRootProps>(
-    ({ className, ...props }, ref) => (
+    ({ className, padding, elevation, ...props }, ref) => (
         <div
             ref={ref}
-            className={cn(
-                "space-y-6 rounded-lg border bg-card p-6 text-card-foreground shadow-sm",
-                className
-            )}
+            className={cn(cardRootVariants({ padding, elevation, className }))}
             {...props}
         />
     )
@@ -23,10 +50,27 @@ CardRootBase.displayName = "CardRoot";
 
 const CardRoot = makeDecoratable("CardRoot", CardRootBase);
 
-const CardHeaderBase = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-    ({ className, ...props }, ref) => (
-        <div ref={ref} className={cn("flex flex-col space-y-1.5", className)} {...props} />
-    )
+interface CardHeaderBaseProps extends React.HTMLAttributes<HTMLDivElement> {
+    showCloseButton?: boolean;
+    onCloseButtonClick?: () => void;
+}
+
+const CardHeaderBase = React.forwardRef<HTMLDivElement, CardHeaderBaseProps>(
+    ({ className, children, onCloseButtonClick, showCloseButton, ...props }, ref) => {
+        return (
+            <div ref={ref} className={cn("flex flex-row justify-between", className)} {...props}>
+                <div className={cn("flex flex-col space-y-1.5")}>{children}</div>
+                {showCloseButton && (
+                    <Icon
+                        label={"Close"}
+                        icon={<XIcon />}
+                        onClick={onCloseButtonClick}
+                        className={"cursor-pointer"}
+                    />
+                )}
+            </div>
+        );
+    }
 );
 CardHeaderBase.displayName = "CardHeader";
 
@@ -72,38 +116,48 @@ CardFooterBase.displayName = "CardFooter";
 
 const CardFooter = makeDecoratable("CardFooter", CardFooterBase);
 
-interface CardProps extends Omit<CardRootProps, "content"> {
-    headerTitle?: string;
-    headerDescription?: string;
-    header?: React.ReactNode;
-    content?: React.ReactElement<typeof CardContentBase>;
-    footer?: React.ReactElement<typeof CardFooterBase>;
+interface CardProps
+    extends Omit<CardRootProps, "children" | "content">,
+        VariantProps<typeof cardRootVariants> {
+    headerTitle?: React.ReactNode;
+    headerDescription?: React.ReactNode;
+    content?: React.ReactNode;
+    footer?: React.ReactNode;
+    showCloseButton?: boolean;
 }
 
 const CardBase = (props: CardProps) => {
-    const { headerTitle, headerDescription, header, content, footer, ...rest } = props;
+    const { headerTitle, headerDescription, content, footer, showCloseButton, ...rest } = props;
 
-    let headerContent = header;
-    if (headerTitle || headerDescription) {
-        if (headerTitle || headerDescription) {
-            headerContent = (
-                <CardHeader>
-                    <Heading text={headerTitle} />
-                    <Text text={headerDescription} />
-                </CardHeader>
-            );
-        }
+    const [visible, setVisible] = React.useState(true);
+    const hideCard = useCallback(() => setVisible(false), []);
+
+    if (showCloseButton && !visible) {
+        return null;
     }
 
     return (
         <CardRoot {...rest}>
-            {headerContent}
-            {content}
-            {footer}
+            {(headerTitle || headerDescription) && (
+                <CardHeader showCloseButton={showCloseButton} onCloseButtonClick={hideCard}>
+                    {typeof headerTitle === "string" ? (
+                        <Heading level={4} as={"h1"} text={headerTitle} />
+                    ) : (
+                        headerTitle
+                    )}
+                    {typeof headerDescription === "string" ? (
+                        <Text text={headerTitle} className={"text-muted-foreground"} />
+                    ) : (
+                        headerDescription
+                    )}
+                </CardHeader>
+            )}
+            {content && <CardContent>{content}</CardContent>}
+            {footer && <CardFooter>{footer}</CardFooter>}
         </CardRoot>
     );
 };
 
 const Card = makeDecoratable("Card", CardBase);
 
-export { Card, CardTitle, CardDescription, CardContent, CardFooter, type CardProps };
+export { Card, type CardProps };
