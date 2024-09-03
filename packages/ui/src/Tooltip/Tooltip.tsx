@@ -28,7 +28,7 @@ export interface TooltipProps {
 
 /**
  * @deprecated This component is deprecated and will be removed in future releases.
- * Please use the `<Tooltip />` component from the `@webiny/admin-ui` package instead.
+ * Please use the `Tooltip` component from the `@webiny/admin-ui` package instead.
  */
 export const Tooltip = ({
     children,

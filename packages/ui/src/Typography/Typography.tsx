@@ -15,7 +15,7 @@ interface TypographyProps extends RmwcTypographyProps {
 
 /**
  * @deprecated This component is deprecated and will be removed in future releases.
- * Please use the `<Heading />` or `<Text />` components from the `@webiny/admin-ui` package instead.
+ * Please use the `Heading` or `Text` components from the `@webiny/admin-ui` package instead.
  */
 const Typography = (props: TypographyProps) => {
     const { children, use, className } = props;

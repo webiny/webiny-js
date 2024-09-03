@@ -1,6 +1,7 @@
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
-
+import { ReactComponent as PencilIcon } from "@material-design-icons/svg/filled/edit.svg";
 import { Button } from "./Button";
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
@@ -12,7 +13,8 @@ const meta: Meta<typeof Button> = {
     // More on argTypes: https://storybook.js.org/docs/api/argtypes
     argTypes: {
         variant: { control: "select", options: ["primary", "secondary", "outline", "ghost"] },
-        size: { control: "select", options: ["sm", "md", "lg", "xl"] }
+        size: { control: "select", options: ["sm", "md", "lg", "xl"] },
+        text: { control: "text" }
     },
     // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
     args: { onClick: fn() }
@@ -25,7 +27,7 @@ type Story = StoryObj<typeof Button>;
 export const Primary: Story = {
     args: {
         variant: "primary",
-        children: "Button"
+        text: "Button"
     }
 };
 
@@ -75,5 +77,20 @@ export const ExtraLarge: Story = {
     args: {
         ...Primary.args,
         size: "xl"
+    }
+};
+
+export const WithIcon: Story = {
+    args: {
+        ...Primary.args,
+        icon: <PencilIcon />
+    }
+};
+
+export const WithIconPositionEnd: Story = {
+    args: {
+        ...Primary.args,
+        icon: <PencilIcon />,
+        iconPosition: "end"
     }
 };
