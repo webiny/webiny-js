@@ -39,7 +39,7 @@ export type TabProps = {
 
 /**
  * @deprecated This component is deprecated and will be removed in future releases.
- * Please find out the new `<Tabs />` component props from the `@webiny/admin-ui` package instead.
+ * Please find out the new `Tabs` component props from the `@webiny/admin-ui` package instead.
  */
 export const Tab = React.memo((props: TabProps) => {
     const tabsContext = useContext(TabsContext);
