@@ -7,10 +7,13 @@ const meta: Meta<typeof Toast> = {
     title: "Components/Toast",
     component: Toast,
     tags: ["autodocs"],
+    parameters: {
+        layout: "fullscreen"
+    },
     decorators: [
         Story => (
             <ToastProvider>
-                <div className="w-full">
+                <div className="w-full h-64">
                     <Story />
                     <ToastViewport />
                 </div>
