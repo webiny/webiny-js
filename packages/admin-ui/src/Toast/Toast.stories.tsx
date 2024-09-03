@@ -1,7 +1,14 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Toast, ToastProvider, ToastViewport, ToastAction } from "./Toast";
+import {
+    Toast,
+    ToastProvider,
+    ToastViewport,
+    ToastAction,
+    ToastTitle,
+    ToastDescription
+} from "./Toast";
 
 const meta: Meta<typeof Toast> = {
     title: "Components/Toast",
@@ -28,8 +35,8 @@ type Story = StoryObj<typeof Toast>;
 
 export const Default: Story = {
     args: {
-        title: "Toast title",
-        content: "Toast content",
+        title: <ToastTitle text={"Tooltip text"} />,
+        description: <ToastDescription text={"Tooltip description"} />,
         actions: [
             <ToastAction key={"action-1"} altText={"Action 1"} onClick={e => console.log("e1", e)}>
                 {"Action 1"}

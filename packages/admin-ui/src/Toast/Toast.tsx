@@ -5,7 +5,8 @@ import * as ToastPrimitives from "@radix-ui/react-toast";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "~/utils";
-import { HTMLAttributes } from "react";
+import { Heading } from "~/Heading";
+import { Text } from "~/Text";
 
 const ToastProvider = ToastPrimitives.Provider;
 
@@ -19,7 +20,7 @@ const ToastViewport = React.forwardRef<
     <ToastPrimitives.Viewport
         ref={ref}
         className={cn(
-            "fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:w-96",
+            "fixed top-0 z-[100] flex max-h-screen flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col",
             className
         )}
         {...props}
@@ -31,7 +32,7 @@ ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
  * Toast Root
  */
 const toastVariants = cva(
-    "group pointer-events-auto relative flex w-full items-start justify-start space-x-3 overflow-hidden rounded-md border p-4 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+    "group pointer-events-auto relative flex w-full items-start justify-start p-4 gap-3 self-stretch overflow-hidden rounded-md border shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
     {
         variants: {
             variant: {
@@ -113,37 +114,41 @@ const ToastIcon = () => (
 /**
  * Toast Content
  */
-type ToastContentProp = HTMLAttributes<HTMLElement>;
+type ToastContentProp = React.HTMLAttributes<HTMLElement>;
 
-const ToastContent = ({ children }: ToastContentProp) => <div className={"mx-3"}>{children}</div>;
+const ToastContent = ({ children }: ToastContentProp) => <div className={"w-64"}>{children}</div>;
 
 /**
  * Toast Title
  */
+type ToastTitleProps = Omit<ToastPrimitives.ToastTitleProps, "children"> & {
+    text: React.ReactNode;
+};
+
 const ToastTitle = React.forwardRef<
     React.ElementRef<typeof ToastPrimitives.Title>,
-    React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>
->(({ className, ...props }, ref) => (
-    <ToastPrimitives.Title
-        ref={ref}
-        className={cn("text-sm font-semibold", className)}
-        {...props}
-    />
+    ToastTitleProps
+>(({ text, ...props }, ref) => (
+    <ToastPrimitives.Title ref={ref} asChild {...props}>
+        <Heading level={6} text={text} />
+    </ToastPrimitives.Title>
 ));
 ToastTitle.displayName = ToastPrimitives.Title.displayName;
 
 /**
  * Toast Description
  */
+type ToastDescriptionProps = Omit<ToastPrimitives.ToastDescriptionProps, "children"> & {
+    text: React.ReactNode;
+};
+
 const ToastDescription = React.forwardRef<
     React.ElementRef<typeof ToastPrimitives.Description>,
-    React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
->(({ className, ...props }, ref) => (
-    <ToastPrimitives.Description
-        ref={ref}
-        className={cn("text-sm opacity-90", className)}
-        {...props}
-    />
+    ToastDescriptionProps
+>(({ text, ...props }, ref) => (
+    <ToastPrimitives.Description ref={ref} asChild {...props}>
+        <Text text={text} as={"div"} />
+    </ToastPrimitives.Description>
 ));
 ToastDescription.displayName = ToastPrimitives.Description.displayName;
 
@@ -155,20 +160,20 @@ type ToastRootProps = React.ComponentPropsWithoutRef<typeof ToastRoot>;
 type ToastActionElement = React.ReactElement<typeof ToastAction>;
 
 interface ToastProps extends Omit<ToastRootProps, "title" | "content" | "children"> {
-    title?: React.ReactNode;
-    content: React.ReactNode;
+    title: React.ReactElement<ToastTitleProps>;
+    description?: React.ReactElement<ToastDescriptionProps>;
     actions?: ToastActionElement[];
 }
 
-export const Toast = ({ title, content, actions, ...props }: ToastProps) => {
+export const Toast = ({ title, description, actions, ...props }: ToastProps) => {
     return (
         <ToastRoot open={true} {...props}>
             <ToastIcon />
-            <div>
-                {title && <ToastTitle>{title}</ToastTitle>}
-                <ToastDescription>{content}</ToastDescription>
+            <ToastContent>
+                {title}
+                {description && description}
                 {actions && actions}
-            </div>
+            </ToastContent>
             <ToastClose />
         </ToastRoot>
     );
