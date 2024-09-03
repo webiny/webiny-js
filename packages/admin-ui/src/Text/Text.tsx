@@ -1,8 +1,9 @@
 import React from "react";
+import { makeDecoratable } from "@webiny/react-composition";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "~/utils";
 
-export type TextTags = "span" | "div";
+type TextTags = "span" | "div";
 
 const textVariants = cva("font-sans font-normal", {
     variants: {
@@ -18,13 +19,15 @@ const textVariants = cva("font-sans font-normal", {
     }
 });
 
-export interface TextProps
-    extends React.HTMLAttributes<HTMLElement>,
-        VariantProps<typeof textVariants> {
+interface TextProps extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof textVariants> {
     as?: TextTags;
     text: React.ReactNode;
 }
 
-export const Text = ({ size, text, className, as: Tag = "span" }: TextProps) => {
+const TextBase = ({ size, text, className, as: Tag = "span" }: TextProps) => {
     return <Tag className={cn(textVariants({ size, className }))}>{text}</Tag>;
 };
+
+const Text = makeDecoratable("Text", TextBase);
+
+export { Text, type TextProps, type TextTags };

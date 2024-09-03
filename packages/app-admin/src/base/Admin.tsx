@@ -3,6 +3,7 @@ import { App, Provider } from "@webiny/app";
 import { ThemeProvider } from "@webiny/app-theme";
 import { WcpProvider } from "@webiny/app-wcp";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { Providers as UiProviders } from "@webiny/admin-ui";
 import { ApolloClientFactory, createApolloProvider } from "./providers/ApolloProvider";
 import { Base } from "./Base";
 import { createTelemetryProvider } from "./providers/TelemetryProvider";
@@ -26,18 +27,20 @@ export const Admin = ({ children, createApolloClient }: AdminProps) => {
     return (
         <ApolloProvider>
             <ThemeProvider>
-                <WcpProvider loader={<CircularProgress label={"Loading..."} />}>
-                    <App>
-                        <Provider hoc={TelemetryProvider} />
-                        <Provider hoc={UiStateProvider} />
-                        <Provider hoc={SearchProvider} />
-                        <Provider hoc={UserMenuProvider} />
-                        <Provider hoc={NavigationProvider} />
-                        <Provider hoc={DialogsProvider} />
-                        <Base />
-                        {children}
-                    </App>
-                </WcpProvider>
+                <UiProviders>
+                    <WcpProvider loader={<CircularProgress label={"Loading..."} />}>
+                        <App>
+                            <Provider hoc={TelemetryProvider} />
+                            <Provider hoc={UiStateProvider} />
+                            <Provider hoc={SearchProvider} />
+                            <Provider hoc={UserMenuProvider} />
+                            <Provider hoc={NavigationProvider} />
+                            <Provider hoc={DialogsProvider} />
+                            <Base />
+                            {children}
+                        </App>
+                    </WcpProvider>
+                </UiProviders>
             </ThemeProvider>
         </ApolloProvider>
     );
