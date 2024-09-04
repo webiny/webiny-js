@@ -22,7 +22,7 @@ export type ElevationProps = {
  * Please use the `Card` component from the `@webiny/admin-ui` package instead.
  */
 const Elevation = (props: ElevationProps) => {
-    return <div className={'bg-white'}>{props.children}</div>
+    return <div className={"bg-white shadow-md p-4"}>{props.children}</div>;
 };
 
 Elevation.displayName = "Elevation";
