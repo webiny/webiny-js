@@ -36,10 +36,10 @@ export class MultipartUploadFactory implements IMultipartUploadFactory {
     }
 
     public async start(
-        params: IMultipartUploadFactoryContinueParams
+        params?: IMultipartUploadFactoryContinueParams
     ): Promise<IMultipartUploadHandler> {
         const resumeUploadId = params?.uploadId;
-        if (resumeUploadId) {
+        if (resumeUploadId !== undefined) {
             return this.continue({
                 uploadId: resumeUploadId
             });

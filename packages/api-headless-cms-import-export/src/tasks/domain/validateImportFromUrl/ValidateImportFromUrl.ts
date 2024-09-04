@@ -8,12 +8,14 @@ import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { Context, ICmsImportExportValidatedFile } from "~/types";
 import { getImportExportFileType } from "~/tasks/utils/helpers/getImportExportFileType";
 import { NonEmptyArray } from "@webiny/api/types";
-import { HeadObjectCommand, S3Client } from "@webiny/aws-sdk/client-s3";
+
+export interface IFileExists {
+    (key: string): Promise<boolean>;
+}
 
 export interface IValidateImportFromUrlParams {
     fileFetcher: IExternalFileFetcher;
-    client: S3Client;
-    bucket: string;
+    fileExists: IFileExists;
 }
 
 export class ValidateImportFromUrl<
@@ -23,19 +25,17 @@ export class ValidateImportFromUrl<
 > implements IValidateImportFromUrl<C, I, O>
 {
     private readonly fileFetcher: IExternalFileFetcher;
-    private readonly client: S3Client;
-    private readonly bucket: string;
+    private readonly fileExists: IFileExists;
 
     public constructor(params: IValidateImportFromUrlParams) {
         this.fileFetcher = params.fileFetcher;
-        this.client = params.client;
-        this.bucket = params.bucket;
+        this.fileExists = params.fileExists;
     }
 
     public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
         const { response, input } = params;
 
-        const { files, model } = input;
+        const { files = [], model } = input;
 
         const results: ICmsImportExportValidatedFile[] = [];
 
@@ -47,6 +47,7 @@ export class ValidateImportFromUrl<
                     checked: true,
                     get,
                     head,
+                    key: target.key,
                     checksum,
                     error: {
                         message: "File type not supported.",
@@ -167,25 +168,5 @@ export class ValidateImportFromUrl<
         };
 
         return response.done(output as O);
-    }
-
-    private async fileExists(key: string): Promise<boolean> {
-        const cmd = new HeadObjectCommand({
-            Key: key,
-            Bucket: this.bucket
-        });
-        try {
-            const result = await this.client.send(cmd);
-            return result.$metadata.httpStatusCode === 200;
-        } catch (ex) {
-            if (ex.name === "NotFound") {
-                return false;
-            }
-            const statusCode = ex.$metadata?.httpStatusCode;
-            if (statusCode === 404) {
-                return false;
-            }
-            throw ex;
-        }
     }
 }

@@ -1,12 +1,37 @@
 import { MultipartUploadHandler, MultipartUploadFactory } from "~/tasks/utils/upload";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
-import { CreateMultipartUploadCommand, S3Client } from "@webiny/aws-sdk/client-s3";
+import {
+    CompleteMultipartUploadCommand,
+    AbortMultipartUploadCommand,
+    CreateMultipartUploadCommand,
+    ListPartsCommand,
+    S3Client
+} from "@webiny/aws-sdk/client-s3";
 import { mockClient } from "aws-sdk-client-mock";
 
 describe("multipart upload factory", () => {
     beforeEach(async () => {
         process.env.S3_BUCKET = "a-mock-s3-bucket";
+        const mockedClient = mockClient(S3Client);
+        mockedClient.on(CreateMultipartUploadCommand).resolves({
+            UploadId: "testingUploadId"
+        });
+        mockedClient.on(ListPartsCommand).resolves({
+            UploadId: "aTestingUploadId",
+            Parts: [
+                {
+                    ETag: `"abc"`,
+                    PartNumber: 1
+                },
+                {
+                    ETag: `"def"`,
+                    PartNumber: 2
+                }
+            ]
+        });
+        mockedClient.on(CompleteMultipartUploadCommand).resolves({});
+        mockedClient.on(AbortMultipartUploadCommand).resolves({});
     });
 
     it("should properly construct multipart upload factory", async () => {
@@ -76,9 +101,7 @@ describe("multipart upload factory", () => {
         });
 
         const handler = await factory.start({
-            uploadId: "testingUploadId",
-            part: 2,
-            tags: ["abc", "def"]
+            uploadId: "testingUploadId"
         });
 
         expect(handler).toBeInstanceOf(MultipartUploadHandler);
@@ -98,12 +121,10 @@ describe("multipart upload factory", () => {
 
         try {
             await factory.start({
-                uploadId: "",
-                part: 2,
-                tags: ["abc", "def"]
+                uploadId: ""
             });
         } catch (ex) {
-            expect(ex.message).toBe(`Could not initiate multipart upload.`);
+            expect(ex.message).toBe(`Missing "uploadId" in the multipart upload handler.`);
         }
     });
 
@@ -121,9 +142,7 @@ describe("multipart upload factory", () => {
 
         try {
             await factory.start({
-                uploadId: "aTestingUploadId",
-                part: 2,
-                tags: ["abc", "def"]
+                uploadId: "aTestingUploadId"
             });
         } catch (ex) {
             expect(ex.message).toBe(`Missing "filename" in the multipart upload handler.`);

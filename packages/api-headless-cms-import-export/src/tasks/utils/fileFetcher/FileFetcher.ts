@@ -1,6 +1,16 @@
-import { GetObjectCommand, ListObjectsCommand, S3Client } from "@webiny/aws-sdk/client-s3";
+import {
+    GetObjectCommand,
+    HeadObjectCommand,
+    ListObjectsCommand,
+    S3Client
+} from "@webiny/aws-sdk/client-s3";
 import { basename } from "path";
-import { IFileFetcher, IFileFetcherFile, IFileFetcherReadable } from "./abstractions/FileFetcher";
+import {
+    IFileFetcher,
+    IFileFetcherFile,
+    IFileFetcherHeadResult,
+    IFileFetcherReadable
+} from "./abstractions/FileFetcher";
 
 export interface IFileFetcherParams {
     client: S3Client;
@@ -14,6 +24,27 @@ export class FileFetcher implements IFileFetcher {
     public constructor(params: IFileFetcherParams) {
         this.client = params.client;
         this.bucket = params.bucket;
+    }
+
+    public async head(key: string): Promise<IFileFetcherHeadResult> {
+        const cmd = new HeadObjectCommand({
+            Key: key,
+            Bucket: this.bucket
+        });
+
+        return await this.client.send(cmd);
+    }
+
+    public async exists(key: string): Promise<boolean> {
+        try {
+            const result = await this.head(key);
+            if (!result.$metadata) {
+                return false;
+            }
+            return result.$metadata?.httpStatusCode === 200;
+        } catch (ex) {
+            return false;
+        }
     }
 
     public async list(key: string): Promise<IFileFetcherFile[]> {

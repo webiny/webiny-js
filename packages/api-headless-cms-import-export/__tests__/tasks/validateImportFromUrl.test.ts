@@ -5,6 +5,8 @@ import { createValidateImportFromUrlTask } from "~/tasks";
 import { ResponseDoneResult, ResponseErrorResult } from "@webiny/tasks";
 import { NonEmptyArray } from "@webiny/api/types";
 import { IValidateImportFromUrlInput } from "~/tasks/domain/abstractions/ValidateImportFromUrl";
+import { HeadObjectCommand, S3Client } from "@webiny/aws-sdk/client-s3";
+import { mockClient } from "aws-sdk-client-mock";
 
 jest.mock("~/tasks/utils/externalFileFetcher", () => {
     return {
@@ -34,7 +36,8 @@ jest.mock("~/tasks/utils/externalFileFetcher", () => {
                             name: url.split("/").pop() as string,
                             size: 1234,
                             url,
-                            contentType: "application/zip"
+                            contentType: "application/zip",
+                            checksum: "checksum"
                         }
                     };
                 },
@@ -60,7 +63,8 @@ jest.mock("~/tasks/utils/externalFileFetcher", () => {
                             name: url.split("/").pop() as string,
                             size: 1234,
                             url,
-                            contentType: "application/zip"
+                            contentType: "application/zip",
+                            checksum: "checksum"
                         }
                     };
                 }
@@ -143,6 +147,10 @@ describe("validate import from url task", () => {
     });
 
     it("should run the task and return a error response - file validation failed", async () => {
+        const mockedClient = mockClient(S3Client);
+        mockedClient.on(HeadObjectCommand).resolves({
+            ETag: `"checksum"`
+        });
         const definition = createValidateImportFromUrlTask();
 
         const files: NonEmptyArray<ICmsImportExportFile> = [
@@ -212,7 +220,7 @@ describe("validate import from url task", () => {
                     files: [
                         {
                             ...files[0],
-                            key: undefined,
+                            checked: true,
                             error: {
                                 data: {
                                     pathname: "/file1.json",
@@ -226,7 +234,7 @@ describe("validate import from url task", () => {
                         },
                         {
                             ...files[2],
-                            key: undefined,
+                            checked: true,
                             error: {
                                 code: "HEAD_FETCH_ERROR",
                                 data: {
@@ -239,7 +247,7 @@ describe("validate import from url task", () => {
                         },
                         {
                             ...files[3],
-                            key: undefined,
+                            checked: true,
                             error: {
                                 code: "FILE_NOT_FOUND",
                                 data: {
@@ -266,6 +274,9 @@ describe("validate import from url task", () => {
     });
 
     it("should properly validate all the files", async () => {
+        const mockedClient = mockClient(S3Client);
+        mockedClient.on(HeadObjectCommand).resolves({});
+
         const definition = createValidateImportFromUrlTask();
 
         const files: NonEmptyArray<ICmsImportExportFile> = [

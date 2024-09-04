@@ -142,7 +142,9 @@ describe("import from url content entries", () => {
             size: 1000,
             checksum: "checksum",
             error: undefined,
-            type: CmsImportExportFileType.COMBINED_ENTRIES
+            type: CmsImportExportFileType.COMBINED_ENTRIES,
+            key: "file-1.we.zip",
+            checked: true
         };
 
         const task = await context.tasks.createTask({
@@ -198,7 +200,9 @@ describe("import from url content entries", () => {
             head: "https://some-url.com/file-1.we.zip",
             checksum: "checksum",
             error: undefined,
-            type: CmsImportExportFileType.COMBINED_ENTRIES
+            type: CmsImportExportFileType.COMBINED_ENTRIES,
+            key: "file-1.we.zip",
+            checked: true
         };
 
         const task = await context.tasks.createTask({
@@ -236,14 +240,14 @@ describe("import from url content entries", () => {
                     get: file.get,
                     head: file.head,
                     type: file.type,
-                    size: file.size
+                    size: file.size,
+                    key: file.key,
+                    checked: file.checked
                 },
                 download: {
                     nextRange: 1,
                     done: false,
-                    tags: [],
-                    uploadId: "testingUploadId",
-                    uploadPart: 1
+                    uploadId: "testingUploadId"
                 }
             },
             message: undefined,

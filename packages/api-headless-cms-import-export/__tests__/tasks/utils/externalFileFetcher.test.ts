@@ -198,7 +198,8 @@ describe("external file fetcher", () => {
                 size: 100,
                 url,
                 contentType: "application/zip",
-                body: expect.any(Object)
+                body: expect.any(Object),
+                checksum: "mocked-checksum"
             }
         });
     });
@@ -238,7 +239,8 @@ describe("external file fetcher", () => {
                 name: "file.zip",
                 size: 0,
                 url,
-                contentType: "application/zip"
+                contentType: "application/zip",
+                checksum: "mocked-checksum"
             }
         });
     });

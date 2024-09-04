@@ -5,5 +5,5 @@ export interface IMultipartUploadFactoryContinueParams {
 }
 
 export interface IMultipartUploadFactory {
-    start(params: IMultipartUploadFactoryContinueParams): Promise<IMultipartUploadHandler>;
+    start(params?: IMultipartUploadFactoryContinueParams): Promise<IMultipartUploadHandler>;
 }

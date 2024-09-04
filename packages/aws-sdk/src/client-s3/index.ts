@@ -27,6 +27,7 @@ export type {
     DeleteObjectOutput,
     GetObjectOutput,
     HeadObjectOutput,
+    HeadObjectCommandOutput,
     ListObjectsOutput,
     ListPartsCommandOutput,
     ListPartsOutput,

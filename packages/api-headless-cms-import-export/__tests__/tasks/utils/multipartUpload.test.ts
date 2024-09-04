@@ -33,7 +33,8 @@ describe("multipart upload", () => {
             client: createS3Client(),
             bucket: getBucket(),
             filename: "test.txt",
-            minBufferSize: "6MB"
+            minBufferSize: "6MB",
+            parts: undefined
         });
 
         expect(upload).toBeInstanceOf(MultipartUploadHandler);
@@ -46,7 +47,8 @@ describe("multipart upload", () => {
             uploadId: "testingUploadId",
             client: createS3Client(),
             bucket: getBucket(),
-            filename: "test.txt"
+            filename: "test.txt",
+            parts: undefined
         });
 
         const json = JSON.stringify({
@@ -55,7 +57,7 @@ describe("multipart upload", () => {
 
         const result = await upload.add(Buffer.from(json));
 
-        expect(result.nextPart).toEqual(1);
+        expect(result.parts.length).toEqual(0);
         expect(result.pause).toBeFunction();
         expect(result.canBePaused).toBeFunction();
 
@@ -79,7 +81,8 @@ describe("multipart upload", () => {
             uploadId: "testingUploadId",
             client: createS3Client(),
             bucket: getBucket(),
-            filename: "test.txt"
+            filename: "test.txt",
+            parts: undefined
         });
 
         mockMinBufferSize(upload, 10);
@@ -105,7 +108,8 @@ describe("multipart upload", () => {
             uploadId: "testingUploadId",
             client: createS3Client(),
             bucket: getBucket(),
-            filename: "test.txt"
+            filename: "test.txt",
+            parts: undefined
         });
         mockMinBufferSize(upload, 10);
 
@@ -115,14 +119,18 @@ describe("multipart upload", () => {
 
         const result = await upload.add(Buffer.from(json));
 
-        expect(result.nextPart).toEqual(2);
+        expect(result.parts.length).toEqual(1);
         expect(result.canBePaused()).toBeTrue();
 
         const paused = await result.pause();
 
         expect(paused).toEqual({
-            nextPart: 2,
-            tags: ["aTestingETag"],
+            parts: [
+                {
+                    partNumber: 1,
+                    tag: "aTestingETag"
+                }
+            ],
             uploadId: "testingUploadId"
         });
     });
@@ -134,7 +142,8 @@ describe("multipart upload", () => {
             uploadId: "testingUploadId",
             client: createS3Client(),
             bucket: getBucket(),
-            filename: "test.txt"
+            filename: "test.txt",
+            parts: undefined
         });
 
         try {
@@ -160,7 +169,8 @@ describe("multipart upload", () => {
             uploadId: "testingUploadId",
             client: createS3Client(),
             bucket: getBucket(),
-            filename: "test.txt"
+            filename: "test.txt",
+            parts: undefined
         });
 
         mockMinBufferSize(upload, 10);
@@ -175,7 +185,12 @@ describe("multipart upload", () => {
                 $metadata: {},
                 ETag: "aTestingETag-complete"
             },
-            tags: ["aTestingETag-part"],
+            parts: [
+                {
+                    partNumber: 1,
+                    tag: "aTestingETag-part"
+                }
+            ],
             uploadId: "testingUploadId"
         });
     });
@@ -187,7 +202,8 @@ describe("multipart upload", () => {
             uploadId: "testingUploadId",
             client: createS3Client(),
             bucket: getBucket(),
-            filename: "test.txt"
+            filename: "test.txt",
+            parts: undefined
         });
 
         try {
@@ -211,7 +227,8 @@ describe("multipart upload", () => {
             client: createS3Client(),
             bucket: getBucket(),
             filename: "test.txt",
-            minBufferSize: 10
+            minBufferSize: 10,
+            parts: undefined
         });
 
         mockMinBufferSize(upload, 10);
@@ -219,7 +236,7 @@ describe("multipart upload", () => {
         try {
             const result = await upload.add(Buffer.from(JSON.stringify({ testing: "testing" })));
             // @ts-expect-error
-            upload.tags = [];
+            upload.parts = [];
             await result.pause();
         } catch (ex) {
             expect(ex.message).toEqual("Failed to pause the upload, no parts were uploaded.");
@@ -238,7 +255,8 @@ describe("multipart upload", () => {
             uploadId: "testingUploadId",
             client: createS3Client(),
             bucket: getBucket(),
-            filename: "test.txt"
+            filename: "test.txt",
+            parts: undefined
         });
         mockMinBufferSize(upload, 10);
 
@@ -252,8 +270,12 @@ describe("multipart upload", () => {
         const result = await uploaded.pause();
 
         expect(result).toEqual({
-            nextPart: 2,
-            tags: ["aTestingETag-pause"],
+            parts: [
+                {
+                    partNumber: 1,
+                    tag: "aTestingETag-pause"
+                }
+            ],
             uploadId: "testingUploadId"
         });
     });
@@ -269,7 +291,8 @@ describe("multipart upload", () => {
             uploadId: "testingUploadId",
             client: createS3Client(),
             bucket: getBucket(),
-            filename: "test.txt"
+            filename: "test.txt",
+            parts: undefined
         });
 
         const result = await upload.abort();
@@ -278,7 +301,7 @@ describe("multipart upload", () => {
             result: {
                 $metadata: {}
             },
-            tags: [],
+            parts: [],
             uploadId: "testingUploadId"
         });
     });

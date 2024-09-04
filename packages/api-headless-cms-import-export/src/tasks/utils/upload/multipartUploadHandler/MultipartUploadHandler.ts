@@ -208,7 +208,14 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
     }
 
     public getNextPartNumber(): number {
-        return (this.parts[this.parts.length - 1]?.partNumber || 0) + 1;
+        if (this.parts.length === 0) {
+            return 1;
+        }
+        const part = this.parts.at(-1);
+        if (!part) {
+            return 1;
+        }
+        return part.partNumber + 1;
     }
 }
 
