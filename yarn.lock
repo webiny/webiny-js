@@ -12140,6 +12140,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@radix-ui/react-label@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@radix-ui/react-label@npm:2.1.0"
+  dependencies:
+    "@radix-ui/react-primitive": 2.0.0
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 462f3b47f43bd69c937e660dee229eb05990441e1b214923cdcf848aea62226e9f1c4673de6664bb4ad66f8a480acdb0f5d2ce4c88c425652b47432876b3f32f
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-popper@npm:1.2.0":
   version: 1.2.0
   resolution: "@radix-ui/react-popper@npm:1.2.0"
@@ -12266,6 +12285,31 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 3c9cd90aabf08f541e20dbecb581744be01c552a0cd16e90d7c218381bcc5307aa8a6013d045864e692ba89d3d8c17bfae08df18ed18be6d223d9330ab0302fa
+  languageName: node
+  linkType: hard
+
+"@radix-ui/react-switch@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@radix-ui/react-switch@npm:1.1.0"
+  dependencies:
+    "@radix-ui/primitive": 1.1.0
+    "@radix-ui/react-compose-refs": 1.1.0
+    "@radix-ui/react-context": 1.1.0
+    "@radix-ui/react-primitive": 2.0.0
+    "@radix-ui/react-use-controllable-state": 1.1.0
+    "@radix-ui/react-use-previous": 1.1.0
+    "@radix-ui/react-use-size": 1.1.0
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: d15ed8714e72cf99ca2650c42e5075181d0a0a4403765e8366c2306452ea304d6f799cbf5d1a472bf8a7967ca8fc080edae8ee99d8cc73c45c88039daefc6dab
   languageName: node
   linkType: hard
 
@@ -12408,6 +12452,19 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 271ea0bf1cd74718895a68414a6e95537737f36e02ad08eeb61a82b229d6abda9cff3135a479e134e1f0ce2c3ff97bb85babbdce751985fb755a39b231d7ccf2
+  languageName: node
+  linkType: hard
+
+"@radix-ui/react-use-previous@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@radix-ui/react-use-previous@npm:1.1.0"
+  peerDependencies:
+    "@types/react": "*"
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 8a2407e3db6248ab52bf425f5f4161355d09f1a228038094959250ae53552e73543532b3bb80e452f6ad624621e2e1c6aebb8c702f2dfaa5e89f07ec629d9304
   languageName: node
   linkType: hard
 
@@ -16704,7 +16761,9 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@material-design-icons/svg": ^0.14.3
+    "@radix-ui/react-label": ^2.1.0
     "@radix-ui/react-slot": ^1.1.0
+    "@radix-ui/react-switch": ^1.1.0
     "@radix-ui/react-tabs": ^1.1.0
     "@radix-ui/react-toast": ^1.2.1
     "@radix-ui/react-tooltip": ^1.1.2
@@ -16722,6 +16781,7 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
     "@webiny/react-composition": 0.0.0
+    "@webiny/utils": 0.0.0
     class-variance-authority: ^0.7.0
     clsx: ^2.1.1
     css-loader: ^6.10.0
@@ -21497,7 +21557,6 @@ __metadata:
     "@rmwc/select": ^14.2.2
     "@rmwc/slider": ^14.2.2
     "@rmwc/snackbar": ^14.2.2
-    "@rmwc/switch": ^14.2.2
     "@rmwc/textfield": ^14.2.2
     "@rmwc/top-app-bar": ^14.2.2
     "@rmwc/touch-target": ^14.2.2
