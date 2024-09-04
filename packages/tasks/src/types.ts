@@ -278,7 +278,13 @@ export interface ITasksContextConfigObject {
 }
 
 export interface ITasksContextDefinitionObject {
-    getDefinition: <T = ITaskDataInput>(id: string) => ITaskDefinition<Context, T> | null;
+    getDefinition: <
+        C extends Context = Context,
+        I = ITaskDataInput,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(
+        id: string
+    ) => ITaskDefinition<C, I, O> | null;
     listDefinitions: () => ITaskDefinition[];
 }
 
@@ -346,9 +352,13 @@ export interface ITaskOnErrorParams<C extends Context, I = ITaskDataInput> {
     task: ITask<I>;
 }
 
-export interface ITaskOnAbortParams<C extends Context> {
+export interface ITaskOnAbortParams<
+    C extends Context,
+    I = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
     context: C;
-    task: ITask;
+    task: ITask<I, O>;
 }
 
 export interface ITaskOnMaxIterationsParams<C extends Context> {
@@ -435,7 +445,7 @@ export interface ITaskDefinition<
      * When task is aborted, this method will be called.
      * This method will be called when user aborts the task.
      */
-    onAbort?(params: ITaskOnAbortParams<C>): Promise<void>;
+    onAbort?(params: ITaskOnAbortParams<C, I, O>): Promise<void>;
     /**
      * When task hits max iterations, this method will be called.
      * This will be called during the run time of the task.

@@ -122,7 +122,7 @@ export const createTriggerTasksCrud = (
                 throw new NotFoundError(`Task "${params.id}" was not found!`);
             }
 
-            const definition = context.tasks.getDefinition(task.definitionId);
+            const definition = context.tasks.getDefinition<Context, T, O>(task.definitionId);
             if (!definition) {
                 throw new WebinyError(`Task definition was not found!`, "TASK_DEFINITION_ERROR", {
                     id: task.id
