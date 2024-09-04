@@ -1,7 +1,6 @@
 import React from "react";
-import { Slider as RmwcSlider } from "@rmwc/slider";
+import { Slider as AdminUiSlider } from "@webiny/admin-ui";
 import { FormComponentProps } from "~/types";
-import styled from "@emotion/styled";
 import { FormElementMessage } from "~/FormElementMessage";
 
 type Props = FormComponentProps & {
@@ -35,24 +34,29 @@ type Props = FormComponentProps & {
     readOnly?: boolean;
 };
 
-// wrapper fixes a bug in slider where the slider handle is rendered outside the bounds of the slider box
-const Wrapper = styled("div")({
-    width: "100%",
-    ".mdc-slider .mdc-slider__thumb-container": {
-        left: 5
-    }
-});
-
 /**
- * Slider component lets users choose a value from given range.
+ * @deprecated This component is deprecated and will be removed in future releases.
+ * Please use the `Slider` component from the `@webiny/admin-ui` package instead.
  */
 class Slider extends React.Component<Props> {
-    onChange = (e: { detail: { value: number } }) => {
-        this.props.onChange && this.props.onChange(e.detail.value);
+    onValueCommit = (values: number[]) => {
+        this.props.onChange && this.props.onChange(values[0]);
     };
 
-    onInput = (e: { detail: { value: number } }) => {
-        this.props.onInput && this.props.onInput(e.detail.value);
+    onValueChange = (values: number[]) => {
+        this.props.onInput && this.props.onInput(values[0]);
+    };
+
+    toFloat = (value: number | string | undefined, defaultValue = 0): number => {
+        if (!value) {
+            return defaultValue;
+        }
+
+        // Convert the value to a string before passing it to parseFloat
+        const result = parseFloat(value.toString());
+
+        // Check if the result is a valid number
+        return isNaN(result) ? defaultValue : result;
     };
 
     public override render() {
@@ -73,16 +77,15 @@ class Slider extends React.Component<Props> {
                     </div>
                 )}
 
-                <Wrapper>
-                    <RmwcSlider
-                        // Had to add readOnly so the warning does not appear in the console.
-                        readOnly={true}
-                        {...this.props}
-                        value={sliderValue}
-                        onChange={this.onChange}
-                        onInput={this.onInput}
-                    />
-                </Wrapper>
+                <AdminUiSlider
+                    {...this.props}
+                    min={this.toFloat(this.props.min)}
+                    max={this.toFloat(this.props.max, 100)}
+                    step={this.toFloat(this.props.step, 1)}
+                    value={sliderValue}
+                    onValueCommit={this.onValueCommit}
+                    onValueChange={this.onValueChange}
+                />
 
                 {validationIsValid === false && (
                     <FormElementMessage error>{validationMessage}</FormElementMessage>
