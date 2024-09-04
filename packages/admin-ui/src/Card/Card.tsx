@@ -122,7 +122,7 @@ const CardBase = (props: CardProps) => {
             {(headerTitle || headerDescription) && (
                 <CardHeader showCloseButton={showCloseButton} onCloseButtonClick={hideCard}>
                     {typeof headerTitle === "string" ? (
-                        <Heading level={4} as={"h1"} text={headerTitle} />
+                        <Heading level={6} as={"h1"} text={headerTitle} />
                     ) : (
                         headerTitle
                     )}
