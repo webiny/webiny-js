@@ -1,7 +1,7 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Card } from "./Card";
+import { Card, CardContent, CardFooter, CardHeader } from "./Card";
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta: Meta<typeof Card> = {
@@ -16,17 +16,15 @@ export default meta;
 type Story = StoryObj<typeof Card>;
 
 const defaultContentProps = {
-    headerTitle: "This is a card title",
-    headerDescription: "This is a card description",
-    content: <>This is card content. Anything can go in here.</>,
-    footer: <>This is a card footer.</>
+    header: <CardHeader title="This is a card title" description="This is a card description" />,
+    content: <CardContent content={"This is card content. Anything can go in here."} />,
+    footer: <CardFooter content={"This is card footer. Anything can go in here."} />
 };
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {
     args: {
         ...defaultContentProps,
-        showCloseButton: false,
         padding: "standard",
         elevation: "none",
         borderRadius: "md"
@@ -56,7 +54,13 @@ export const WithoutHeaderAndFooter: Story = {
 export const WithCloseButton: Story = {
     args: {
         ...defaultContentProps,
-        showCloseButton: true
+        header: (
+            <CardHeader
+                title="This is a card that can be closed."
+                description="This is a description of a card that can be closed."
+                showCloseButton
+            />
+        )
     }
 };
 
@@ -84,15 +88,19 @@ export const NoBorderRadius: Story = {
 export const WithCustomHeader: Story = {
     args: {
         ...defaultContentProps,
-        headerTitle: (
-            <div>
-                Custom header title in a <code>div</code>
-            </div>
-        ),
-        headerDescription: (
-            <span>
-                Custom header description in a <code>span</code>
-            </span>
+        header: (
+            <CardHeader
+                content={
+                    <>
+                        <div>
+                            Custom header title in a <code>div</code>
+                        </div>
+                        <span>
+                            Custom header description in a <code>span</code>
+                        </span>
+                    </>
+                }
+            />
         )
     }
 };
