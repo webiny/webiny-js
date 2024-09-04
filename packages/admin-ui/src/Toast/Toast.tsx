@@ -95,7 +95,7 @@ const ToastCloseBase = React.forwardRef<
     <ToastPrimitives.Close
         ref={ref}
         className={cn(
-            "rounded-md p-1 text-foreground/50 focus:outline-none focus:ring-2 group-hover:opacity-100 group-[.accent]:text-red-300 group-[.accent]:hover:text-red-50 group-[.accent]:focus:ring-red-400 group-[.accent]:focus:ring-offset-red-600",
+            "rounded-md p-1 text-foreground/50 focus:outline-none focus:ring-2 group-hover:opacity-100 group-[.accent]:text-background group-[.accent]:fill-background",
             className
         )}
         aria-label="Close"
@@ -113,10 +113,12 @@ const ToastClose = makeDecoratable("ToastClose", ToastCloseBase);
 /**
  * Toast Icon
  */
-const ToastIconBase = () => (
-    <div className={"fill-primary"}>
-        <NotificationsIcon />
-    </div>
+type ToastIconProps = {
+    icon?: React.ReactNode;
+};
+
+const ToastIconBase = ({ icon = <NotificationsIcon /> }: ToastIconProps) => (
+    <div className={"fill-primary"}>{icon}</div>
 );
 
 const ToastIcon = makeDecoratable("ToastIcon", ToastIconBase);
@@ -167,13 +169,14 @@ type ToastRootProps = React.ComponentPropsWithoutRef<typeof ToastRoot>;
 interface ToastProps extends Omit<ToastRootProps, "title" | "content" | "children"> {
     title: React.ReactElement<ToastTitleProps>;
     description?: React.ReactElement<ToastDescriptionProps>;
+    icon?: React.ReactNode;
     actions?: React.ReactElement<ToastActionProps> | React.ReactElement<ToastActionProps>[];
 }
 
-const ToastBase = ({ title, description, actions, ...props }: ToastProps) => {
+const ToastBase = ({ title, description, icon, actions, ...props }: ToastProps) => {
     return (
         <ToastRoot {...props}>
-            <ToastIcon />
+            <ToastIcon icon={icon} />
             <div className="w-64">
                 {title}
                 {description && description}

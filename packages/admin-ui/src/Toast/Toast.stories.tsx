@@ -1,6 +1,7 @@
 import React from "react";
+import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/outlined/settings.svg";
 import type { Meta, StoryObj } from "@storybook/react";
-
+import { fn } from "@storybook/test";
 import {
     Toast,
     ToastProvider,
@@ -18,8 +19,10 @@ const meta: Meta<typeof Toast> = {
     parameters: {
         layout: "fullscreen"
     },
+    args: { onOpenChange: fn() },
     decorators: [
         (Story, context) => {
+            const { args } = context;
             const [open, setOpen] = React.useState<boolean>(false);
             const timerRef = React.useRef(0);
 
@@ -40,7 +43,18 @@ const meta: Meta<typeof Toast> = {
                                 }, 100);
                             }}
                         />
-                        <Story args={{ ...context.args, open: open, onOpenChange: setOpen }} />
+                        <Story
+                            args={{
+                                ...args,
+                                open: open,
+                                onOpenChange: open => {
+                                    setOpen(open);
+                                    if (typeof args.onOpenChange === "function") {
+                                        args.onOpenChange(open);
+                                    }
+                                }
+                            }}
+                        />
                         <ToastViewport />
                     </div>
                 </ToastProvider>
@@ -55,10 +69,27 @@ type Story = StoryObj<typeof Toast>;
 
 export const Default: Story = {
     args: {
-        title: <ToastTitle text={"New entry created"} />,
-        description: (
-            <ToastDescription text={'Entry "Article One" has been successfully created'} />
-        ),
+        title: <ToastTitle text={"New entry created"} />
+    }
+};
+
+export const Accent: Story = {
+    args: {
+        ...Default.args,
+        variant: "accent"
+    }
+};
+
+export const WithDescription: Story = {
+    args: {
+        ...Default.args,
+        description: <ToastDescription text={'Entry "Article One" has been successfully created'} />
+    }
+};
+
+export const WithActions: Story = {
+    args: {
+        ...Default.args,
         actions: [
             <ToastAction
                 key={"open"}
@@ -70,9 +101,9 @@ export const Default: Story = {
     }
 };
 
-export const Accent: Story = {
+export const WithCustomIcon: Story = {
     args: {
         ...Default.args,
-        variant: "accent"
+        icon: <SettingsIcon />
     }
 };
