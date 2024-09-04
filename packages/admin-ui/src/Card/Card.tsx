@@ -68,6 +68,7 @@ const CardHeaderBase = React.forwardRef<HTMLDivElement, CardHeaderBaseProps>(
                     <Icon
                         label={"Close"}
                         icon={<XIcon />}
+                        color={"dark"}
                         onClick={onCloseButtonClick}
                         className={"cursor-pointer"}
                     />

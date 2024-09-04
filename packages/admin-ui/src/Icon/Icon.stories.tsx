@@ -19,7 +19,19 @@ type Story = StoryObj<typeof Icon>;
 export const Default: Story = {
     args: {
         icon: <XIcon />,
-        label: "Close"
+        label: "Close",
+        size: "md",
+        color: "primary"
+    },
+    argTypes: {
+        size: {
+            control: "select",
+            options: ["sm", "md", "lg"]
+        },
+        color: {
+            control: "select",
+            options: ["primary", "dark", "light", "white"]
+        }
     }
 };
 
@@ -29,5 +41,19 @@ export const ClickableIcon: Story = {
         label: "Close",
         className: "cursor-pointer",
         onClick: fn()
+    }
+};
+
+export const Sizes: Story = {
+    args: {
+        ...Default.args,
+        size: "lg"
+    }
+};
+
+export const Colors: Story = {
+    args: {
+        ...Default.args,
+        color: "light"
     }
 };
