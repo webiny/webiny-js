@@ -14,7 +14,7 @@ export const convertTaskToValidateImportFromUrlRecord = (
         const output = task.output?.files?.find(f => f.checksum === file.checksum);
         if (output) {
             return {
-                ...file,
+                ...output,
                 error: output.error,
                 type: output.type,
                 size: output.size

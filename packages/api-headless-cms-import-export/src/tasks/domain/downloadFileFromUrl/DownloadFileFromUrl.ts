@@ -8,7 +8,6 @@ import { createSizeSegments } from "~/tasks/utils/helpers/sizeSegments";
 
 export interface IDownloadFileFromUrlFile {
     url: string;
-    key: string;
     size: number;
 }
 

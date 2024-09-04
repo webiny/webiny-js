@@ -68,12 +68,22 @@ export class ImportFromUrlUseCase implements IImportFromUrlUseCase {
                 message: "No files found in the provided data.",
                 code: "NO_FILES_FOUND"
             });
-        } else if (integrityTask.output?.importTaskId) {
+        } else if (integrityTask.output.importTaskId) {
             throw new WebinyError({
                 message: "Import was already started. You cannot start it again.",
                 code: "IMPORT_TASK_EXISTS",
                 data: {
                     id: integrityTask.output.importTaskId
+                }
+            });
+        }
+        const errors = integrityTask.output.files.filter(file => !!file.error);
+        if (errors.length) {
+            throw new WebinyError({
+                message: "Some files failed validation.",
+                code: "FILES_FAILED_VALIDATION",
+                data: {
+                    files: errors
                 }
             });
         }

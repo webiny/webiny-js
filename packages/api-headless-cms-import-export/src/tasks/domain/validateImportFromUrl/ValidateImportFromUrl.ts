@@ -8,6 +8,7 @@ import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { Context, ICmsImportExportValidatedFile } from "~/types";
 import { getImportExportFileType } from "~/tasks/utils/helpers/getImportExportFileType";
 import { NonEmptyArray } from "@webiny/api/types";
+import { prependImportPath } from "~/tasks/utils/helpers/importPath";
 
 export interface IFileExists {
     (key: string): Promise<boolean>;
@@ -113,7 +114,8 @@ export class ValidateImportFromUrl<
                 });
                 continue;
             }
-            const exists = await this.fileExists(target.key);
+            const key = prependImportPath(target.key);
+            const exists = await this.fileExists(key);
             if (exists) {
                 results.push({
                     checked: true,
@@ -125,7 +127,7 @@ export class ValidateImportFromUrl<
                         message: "File already exists.",
                         code: "FILE_ALREADY_EXISTS",
                         data: {
-                            key: target.key
+                            key
                         }
                     },
                     size: file.size,
@@ -151,16 +153,16 @@ export class ValidateImportFromUrl<
                 code: "NO_FILES_FOUND"
             });
         }
-        const erroredFiles = results.filter(file => !!file.error);
-        if (erroredFiles.length) {
-            return response.error({
-                message: "Some files failed validation.",
-                code: "FILES_FAILED_VALIDATION",
-                data: {
-                    files: erroredFiles
-                }
-            });
-        }
+        // const erroredFiles = results.filter(file => !!file.error);
+        // if (erroredFiles.length) {
+        //     return response.error({
+        //         message: "Some files failed validation.",
+        //         code: "FILES_FAILED_VALIDATION",
+        //         data: {
+        //             files: erroredFiles
+        //         }
+        //     });
+        // }
 
         const output: IValidateImportFromUrlOutput = {
             files: results as NonEmptyArray<ICmsImportExportValidatedFile>,

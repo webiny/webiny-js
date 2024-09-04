@@ -16,7 +16,6 @@ import {
     createDownloadFileFromUrl,
     IDownloadFileFromUrlProcessResponseType
 } from "./downloadFileFromUrl/index";
-import { convertFromUrlToPathname } from "~/tasks/domain/utils/convertFromUrlToPathname";
 import { prependImportPath } from "~/tasks/utils/helpers/importPath";
 
 type ProcessType = IDownloadFileFromUrlProcessResponseType<"continue" | "aborted">;
@@ -53,12 +52,7 @@ export class ImportFromUrlDownload<
 
         const client = createS3Client();
 
-        const file = convertFromUrlToPathname({
-            url: input.file.get,
-            size: input.file.size
-        });
-
-        const filename = prependImportPath(file.key);
+        const filename = prependImportPath(input.file.key);
         const uploadFactory = createMultipartUploadFactory({
             client,
             bucket: getBucket(),
@@ -73,14 +67,17 @@ export class ImportFromUrlDownload<
 
         const download = createDownloadFileFromUrl({
             fetch,
-            file,
+            file: {
+                url: input.file.get,
+                size: input.file.size
+            },
             nextRange: input.nextRange,
             upload
         });
         let result: ProcessType;
         try {
             result = await download.process<ProcessType>(async ({ stop }) => {
-                const isClose = isCloseToTimeout(14 * 60 + 53);
+                const isClose = isCloseToTimeout();
                 if (isClose) {
                     return stop("continue");
                 } else if (isAborted()) {

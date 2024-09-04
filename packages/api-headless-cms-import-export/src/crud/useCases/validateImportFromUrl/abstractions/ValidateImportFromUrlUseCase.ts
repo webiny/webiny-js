@@ -1,9 +1,9 @@
 import { ICmsImportExportFile } from "~/types";
-import { NonEmptyArray } from "@webiny/api/types";
+import { GenericRecord, NonEmptyArray } from "@webiny/api/types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 
 export interface IValidateImportFromUrlUseCaseExecuteParams {
-    data: string;
+    data: string | GenericRecord;
 }
 
 export interface IValidateImportFromUrlUseCaseExecuteResult {

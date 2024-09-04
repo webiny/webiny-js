@@ -3,6 +3,7 @@ import zod from "zod";
 import { WebinyError } from "@webiny/error";
 import { createZodError } from "@webiny/utils";
 import { IExportedCmsModel } from "~/tasks/domain/abstractions/ExportContentEntriesController";
+import { GenericRecord } from "@webiny/api/types";
 
 const validateData = zod.object({
     /**
@@ -45,12 +46,12 @@ export interface IParseImportUrlDataResult {
     files: ICmsImportExportFile[];
 }
 
-export const parseImportUrlData = (data: string): IParseImportUrlDataResult => {
+export const parseImportUrlData = (input: string | GenericRecord): IParseImportUrlDataResult => {
     let json: unknown;
     try {
-        json = JSON.parse(data);
+        json = typeof input === "string" ? JSON.parse(input) : input;
     } catch (ex) {
-        throw new WebinyError("Invalid JSON data provided.", "INVALID_JSON_DATA");
+        throw new WebinyError("Invalid input data provided.", "INVALID_INPUT_DATA");
     }
 
     const result = validateData.safeParse(json);

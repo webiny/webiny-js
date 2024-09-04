@@ -10,7 +10,6 @@ import { createS3Client } from "~/tasks/utils/helpers/s3Client";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
 import { createMultipartUpload, createMultipartUploadFactory } from "~/tasks/utils/upload";
 import { createDownloadFileFromUrl } from "./downloadFileFromUrl/index";
-import { convertFromUrlToPathname } from "~/tasks/domain/utils/convertFromUrlToPathname";
 import { prependImportPath } from "~/tasks/utils/helpers/importPath";
 
 type ProcessType = "continue" | "aborted";
@@ -60,12 +59,7 @@ export class ImportFromUrlContentEntries<
             return response.error("Not implemented. Download done...");
         }
 
-        const file = convertFromUrlToPathname({
-            url: input.file.get,
-            size: input.file.size
-        });
-
-        const filename = prependImportPath(file.key);
+        const filename = prependImportPath(input.file.key);
         const uploadFactory = createMultipartUploadFactory({
             client,
             bucket: getBucket(),
@@ -79,7 +73,10 @@ export class ImportFromUrlContentEntries<
 
         const download = createDownloadFileFromUrl({
             fetch,
-            file,
+            file: {
+                url: input.file.get,
+                size: input.file.size
+            },
             nextRange: input.download?.nextRange,
             upload
         });

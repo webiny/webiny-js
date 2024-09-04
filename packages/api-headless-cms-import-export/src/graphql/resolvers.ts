@@ -18,7 +18,7 @@ const validateListExportContentEntries = zod.object({
 });
 
 const validateImportFromUrl = zod.object({
-    data: zod.string()
+    data: zod.string().or(zod.object({}).passthrough())
 });
 
 const getValidateImportFromUrl = zod.object({

@@ -27,7 +27,7 @@ export interface ICmsImportExportObjectAbortExportParams {
 }
 
 export interface ICmsImportExportObjectValidateImportFromUrlParams {
-    data: string;
+    data: string | GenericRecord;
 }
 
 export interface ICmsImportExportFile {

@@ -38,7 +38,9 @@ export class ImportFromUrlController<
             });
         }
 
-        if (!input.steps?.[IImportFromUrlControllerInputStep.DOWNLOAD]?.done) {
+        const steps = input.steps || {};
+
+        if (!steps[IImportFromUrlControllerInputStep.DOWNLOAD]?.done) {
             const step = new ImportFromUrlControllerDownloadStep<C, I, O>();
             return step.execute(params);
         }

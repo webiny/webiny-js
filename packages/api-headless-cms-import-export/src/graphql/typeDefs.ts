@@ -65,6 +65,7 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
             head: String
             type: String
             checksum: String
+            key: String
             size: Number
             checked: Boolean
             error: ValidateImportFromUrlResponseDataFileError
@@ -139,7 +140,7 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
                 exportAssets: Boolean
             ): ExportContentEntriesResponse!
             abortExportContentEntries(id: ID!): AbortExportContentEntriesResponse!
-            validateImportFromUrl(data: String!): ValidateImportFromUrlResponse!
+            validateImportFromUrl(data: JSON!): ValidateImportFromUrlResponse!
             # the id is a task id returned from the validateImportFromUrl mutation
             # it will be used to get the file information and start a new task for the actual import
             importFromUrl(id: ID!): ImportFromUrlResponse!
