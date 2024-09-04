@@ -17,9 +17,8 @@ import {
     IMultipartUploadHandlerParams,
     IMultipartUploadHandlerParamsMinBufferSize,
     IMultipartUploadHandlerPauseResult,
-    ITag
+    IPart
 } from "../abstractions/MultipartUploadHandler";
-import { NonEmptyArray } from "@webiny/api/types";
 import { createMultipartUploadHandlerPauseResult } from "./MultipartUploadHandlerPauseResult";
 import { createMultipartUploadHandlerAbortResult } from "./MultipartUploadHandlerAbortResult";
 import { createMultipartUploadHandlerCompleteResult } from "./MultipartUploadHandlerCompleteResult";
@@ -48,11 +47,10 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
     private readonly bucket: string;
     private readonly filename: string;
     private readonly minBufferSize: IMultipartUploadHandlerParamsMinBufferSize;
-    private readonly tags: ITag[] = [];
+    private readonly parts: IPart[];
 
     private buffer: Buffer[] = [];
     private bufferLength = 0;
-    private partNumber: number;
 
     public constructor(params: IMultipartUploadHandlerParams) {
         if (!params.uploadId?.length) {
@@ -70,8 +68,7 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
         this.client = params.client;
         this.bucket = params.bucket;
         this.filename = params.filename;
-        this.tags = params.tags || [];
-        this.partNumber = !params.part || params.part <= 0 ? 1 : params.part;
+        this.parts = params.parts || [];
         this.minBufferSize = getMinBufferSize(params.minBufferSize);
     }
 
@@ -87,7 +84,7 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
         this.bufferLength = this.bufferLength + buffer.length;
         if (this.bufferLength < this.minBufferSize) {
             return createMultipartUploadHandlerAddResult({
-                nextPart: this.partNumber,
+                parts: this.parts,
                 written: false,
                 pause: () => {
                     return this.pause();
@@ -95,13 +92,13 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
             });
         }
         const bufferLength = this.bufferLength;
+
         await this.write({
             body: Buffer.concat(this.buffer, this.bufferLength),
-            bufferLength,
-            part: this.partNumber
+            bufferLength
         });
         return createMultipartUploadHandlerAddResult({
-            nextPart: this.partNumber,
+            parts: this.parts,
             written: true,
             pause: () => {
                 return this.pause();
@@ -112,11 +109,10 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
     public async complete(): Promise<IMultipartUploadHandlerCompleteResult> {
         await this.write({
             body: Buffer.concat(this.buffer, this.bufferLength),
-            bufferLength: this.bufferLength,
-            part: this.partNumber
+            bufferLength: this.bufferLength
         });
 
-        if (this.tags.length === 0) {
+        if (this.parts.length === 0) {
             throw new WebinyError({
                 message: `Failed to complete the upload, no parts were uploaded.`,
                 code: "S3_ERROR"
@@ -128,10 +124,10 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
             Bucket: this.bucket,
             Key: this.filename,
             MultipartUpload: {
-                Parts: this.tags.map((tag, index) => {
+                Parts: this.parts.map(part => {
                     return {
-                        ETag: tag,
-                        PartNumber: index + 1
+                        ETag: part.tag,
+                        PartNumber: part.partNumber
                     };
                 })
             }
@@ -141,7 +137,7 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
         return createMultipartUploadHandlerCompleteResult({
             result,
             uploadId: this.uploadId,
-            tags: this.tags as NonEmptyArray<ITag>
+            parts: this.parts
         });
     }
 
@@ -155,7 +151,7 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
         return createMultipartUploadHandlerAbortResult({
             result,
             uploadId: this.uploadId,
-            tags: this.tags
+            parts: this.parts
         });
     }
 
@@ -165,7 +161,7 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
                 message: `Failed to pause the upload, buffer was not empty.`,
                 code: "S3_ERROR"
             });
-        } else if (this.tags.length === 0) {
+        } else if (this.parts.length === 0) {
             throw new WebinyError({
                 message: `Failed to pause the upload, no parts were uploaded.`,
                 code: "S3_ERROR"
@@ -173,9 +169,8 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
         }
 
         return createMultipartUploadHandlerPauseResult({
-            nextPart: this.partNumber,
             uploadId: this.uploadId,
-            tags: this.tags as NonEmptyArray<ITag>
+            parts: this.parts
         });
     }
 
@@ -183,25 +178,28 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
         if (params.bufferLength <= 0) {
             return false;
         }
+
+        const nextPart = this.getNextPartNumber();
         const cmd = new UploadPartCommand({
             Bucket: this.bucket,
             Key: this.filename,
             UploadId: this.uploadId,
             Body: params.body,
-            PartNumber: params.part
+            PartNumber: nextPart
         });
         const result = await this.client.send(cmd);
         if (!result.ETag) {
             throw new WebinyError({
-                message: `Failed to upload part: ${params.part}`,
+                message: `Failed to upload part: ${nextPart}`,
                 code: "S3_ERROR"
             });
         }
-        this.tags.push(result.ETag.replaceAll('"', ""));
-        // Reset the buffer and increase current part number.
+        this.parts.push({
+            partNumber: nextPart,
+            tag: result.ETag.replaceAll('"', "")
+        });
         this.buffer = [];
         this.bufferLength = 0;
-        this.partNumber++;
         return true;
     }
 
@@ -209,12 +207,8 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
         return this.uploadId;
     }
 
-    public getNextPart(): number {
-        return this.partNumber;
-    }
-
-    public getTags(): NonEmptyArray<ITag> {
-        return this.tags as NonEmptyArray<ITag>;
+    public getNextPartNumber(): number {
+        return (this.parts[this.parts.length - 1]?.partNumber || 0) + 1;
     }
 }
 

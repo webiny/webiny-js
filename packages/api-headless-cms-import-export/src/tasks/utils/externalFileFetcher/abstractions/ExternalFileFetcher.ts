@@ -5,6 +5,7 @@ export interface IExternalFileFetcherHeadFile {
     name: string;
     size: number;
     contentType: string;
+    checksum: string;
 }
 
 export interface IExternalFileFetcherFetchFile extends IExternalFileFetcherHeadFile {

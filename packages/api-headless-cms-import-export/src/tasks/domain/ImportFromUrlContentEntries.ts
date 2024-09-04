@@ -11,7 +11,7 @@ import { getBucket } from "~/tasks/utils/helpers/getBucket";
 import { createMultipartUpload, createMultipartUploadFactory } from "~/tasks/utils/upload";
 import { createDownloadFileFromUrl } from "./downloadFileFromUrl/index";
 import { convertFromUrlToPathname } from "~/tasks/domain/utils/convertFromUrlToPathname";
-import { EXPORT_BASE_PATH, IMPORT_BASE_PATH } from "~/tasks/constants";
+import { prependImportPath } from "~/tasks/utils/helpers/importPath";
 
 type ProcessType = "continue" | "aborted";
 
@@ -65,7 +65,7 @@ export class ImportFromUrlContentEntries<
             size: input.file.size
         });
 
-        const filename = file.key.replace(EXPORT_BASE_PATH, IMPORT_BASE_PATH);
+        const filename = prependImportPath(file.key);
         const uploadFactory = createMultipartUploadFactory({
             client,
             bucket: getBucket(),
@@ -74,9 +74,7 @@ export class ImportFromUrlContentEntries<
         });
 
         const upload = await uploadFactory.start({
-            uploadId: input.download?.uploadId,
-            tags: input.download?.tags,
-            part: input.download?.uploadPart
+            uploadId: input.download?.uploadId
         });
 
         const download = createDownloadFileFromUrl({
@@ -87,16 +85,14 @@ export class ImportFromUrlContentEntries<
         });
         let result: ProcessType | "done";
         try {
-            result = await download.process<ProcessType>(
-                async ({ stop, iteration, next, segment }) => {
-                    const isClose = isCloseToTimeout();
-                    if (isClose) {
-                        return stop("continue");
-                    } else if (isAborted()) {
-                        return stop("aborted");
-                    }
+            result = await download.process<ProcessType>(async ({ stop }) => {
+                const isClose = isCloseToTimeout();
+                if (isClose) {
+                    return stop("continue");
+                } else if (isAborted()) {
+                    return stop("aborted");
                 }
-            );
+            });
         } catch (ex) {
             return response.error(ex);
         }
@@ -108,9 +104,7 @@ export class ImportFromUrlContentEntries<
             case "continue":
             case null:
                 const output: IImportFromUrlContentEntriesInputDownloadValues = {
-                    uploadPart: upload.getNextPart(),
                     uploadId: upload.getUploadId(),
-                    tags: upload.getTags(),
                     done: download.isDone(),
                     nextRange: download.getNextRange()
                 };

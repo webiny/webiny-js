@@ -14,6 +14,7 @@ import { CmsAssetsZipperExecuteDoneWithoutResult } from "./CmsAssetsZipperExecut
 import { PointerStore } from "~/tasks/utils/cmsAssetsZipper/PointerStore";
 import { UniqueResolver } from "../uniqueResolver/UniqueResolver";
 import { CmsEntryMeta } from "@webiny/api-headless-cms/types";
+import { stripExportPath } from "~/tasks/utils/helpers/exportPath";
 
 const manifestFileName = "manifest.json";
 
@@ -261,7 +262,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
 
         if (pointerStore.getEntryCursor() || pointerStore.getFileCursor()) {
             return new CmsAssetsZipperExecuteContinueResult({
-                key: result.Key,
+                key: stripExportPath(result.Key),
                 checksum: result.ETag.replaceAll('"', ""),
                 entryCursor: pointerStore.getEntryCursor(),
                 fileCursor: pointerStore.getFileCursor()
@@ -269,7 +270,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
         }
 
         return new CmsAssetsZipperExecuteDoneResult({
-            key: result.Key,
+            key: stripExportPath(result.Key),
             checksum: result.ETag.replaceAll('"', "")
         });
     }

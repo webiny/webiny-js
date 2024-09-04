@@ -59,14 +59,17 @@ export interface ICmsImportExportValidatedFileError {
 export interface ICmsImportExportValidatedValidFile {
     get: string;
     head: string;
+    key: string;
     checksum: string;
     type: CmsImportExportFileType | undefined;
     size: number;
+    checked: boolean;
     error?: never;
 }
 
 export interface ICmsImportExportValidatedInvalidFile
     extends Partial<Omit<ICmsImportExportValidatedValidFile, "error">> {
+    checked: boolean;
     error: ICmsImportExportValidatedFileError;
 }
 

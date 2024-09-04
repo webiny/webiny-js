@@ -7,6 +7,7 @@ import {
 import { IFileFetcher, IFileFetcherFile } from "~/tasks/utils/fileFetcher";
 import { sanitizeModel } from "@webiny/api-headless-cms/export/crud/sanitize";
 import { CmsImportExportFileType } from "~/types";
+import { stripExportPath } from "../helpers/exportPath";
 
 interface IFetchFilesParams {
     source: string;
@@ -134,7 +135,7 @@ export class ZipCombiner implements IZipCombiner {
 
         return {
             lastFileProcessed,
-            key: result.Key,
+            key: stripExportPath(result.Key),
             checksum: result.ETag.replaceAll('"', "")
         };
     }

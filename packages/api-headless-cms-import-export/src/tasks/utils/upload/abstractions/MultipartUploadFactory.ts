@@ -1,14 +1,9 @@
-import { IMultipartUploadHandler, ITag } from "./MultipartUploadHandler";
-import { NonEmptyArray } from "@webiny/api/types";
+import { IMultipartUploadHandler } from "./MultipartUploadHandler";
 
 export interface IMultipartUploadFactoryContinueParams {
-    uploadId: string;
-    part: number;
-    tags: NonEmptyArray<ITag>;
+    uploadId?: string;
 }
 
 export interface IMultipartUploadFactory {
-    start(
-        params?: Partial<IMultipartUploadFactoryContinueParams>
-    ): Promise<IMultipartUploadHandler>;
+    start(params: IMultipartUploadFactoryContinueParams): Promise<IMultipartUploadHandler>;
 }

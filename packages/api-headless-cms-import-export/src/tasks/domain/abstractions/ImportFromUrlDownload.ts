@@ -1,7 +1,5 @@
 import { Context, ICmsImportExportValidatedValidFile } from "~/types";
 import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
-import { NonEmptyArray } from "@webiny/api/types";
-import { ITag } from "~/tasks/utils/upload";
 
 export interface IImportFromUrlDownloadInput {
     modelId: string;
@@ -9,8 +7,6 @@ export interface IImportFromUrlDownloadInput {
     nextRange?: number;
     done?: boolean;
     uploadId?: string;
-    tags?: NonEmptyArray<ITag>;
-    uploadPart?: number;
 }
 
 export interface IImportFromUrlDownloadOutput extends ITaskResponseDoneResultOutput {

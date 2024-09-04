@@ -32,8 +32,14 @@ import { ListExportContentEntriesUseCase } from "./useCases/listExportContentEnt
 export const createHeadlessCmsImportExportCrud = async (
     context: Context
 ): Promise<CmsImportExportObject> => {
+    const urlSigner = new UrlSigner({
+        bucket: getBucket(),
+        client: createS3Client()
+    });
+
     const getExportContentEntriesUseCase = new GetExportContentEntriesUseCase({
-        getTask: context.tasks.getTask
+        getTask: context.tasks.getTask,
+        urlSigner
     });
 
     const listExportContentEntriesUseCase = new ListExportContentEntriesUseCase({
@@ -65,28 +71,6 @@ export const createHeadlessCmsImportExportCrud = async (
         abortTask: context.tasks.abort
     });
 
-    const urlSigner = new UrlSigner({
-        bucket: getBucket(),
-        client: createS3Client()
-    });
-
-    const signFiles = (files: ICmsImportExportRecord["files"]) => {
-        if (!files) {
-            return null;
-        }
-        return Promise.all(
-            files.map(async file => {
-                const { url: get } = await urlSigner.get(file);
-                const { url: head } = await urlSigner.head(file);
-                return {
-                    ...file,
-                    get,
-                    head
-                };
-            })
-        );
-    };
-
     const getExportContentEntries = async (
         params: ICmsImportExportObjectGetExportParams
     ): Promise<ICmsImportExportRecord> => {
@@ -96,11 +80,7 @@ export const createHeadlessCmsImportExportCrud = async (
                 `Export content entries task with id "${params.id}" not found.`
             );
         }
-        const files = await signFiles(result.files);
-        return {
-            ...result,
-            files
-        };
+        return result;
     };
 
     const listExportContentEntries = async (

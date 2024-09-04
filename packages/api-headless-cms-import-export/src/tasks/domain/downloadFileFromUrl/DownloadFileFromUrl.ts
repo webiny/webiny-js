@@ -60,8 +60,13 @@ export class DownloadFileFromUrl implements IDownloadFileFromUrl {
                     status = input;
                 }
             });
-            if (status) {
+            if (status === "done") {
                 await this.upload.complete();
+                return status;
+            } else if (status === "aborted") {
+                await this.upload.abort();
+                return status;
+            } else if (status === "continue") {
                 return status;
             }
             iteration++;
@@ -82,18 +87,9 @@ export class DownloadFileFromUrl implements IDownloadFileFromUrl {
             } else if (!result.body) {
                 throw new Error(`Body not found for URL: ${this.file.url}`);
             }
+            const buffer = await result.arrayBuffer();
 
-            const reader = result.body.getReader();
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) {
-                    break;
-                }
-
-                await this.upload.add(Buffer.from(value));
-            }
-
-            reader.releaseLock();
+            await this.upload.add(Buffer.from(buffer));
             this.nextRange++;
         }
     }

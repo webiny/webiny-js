@@ -1,8 +1,14 @@
-import { CreateMultipartUploadCommand, S3Client } from "@webiny/aws-sdk/client-s3";
+import {
+    CreateMultipartUploadCommand,
+    ListPartsCommand,
+    ListPartsCommandOutput,
+    S3Client
+} from "@webiny/aws-sdk/client-s3";
 import { WebinyError } from "@webiny/error";
 import {
     ICreateMultipartUploadHandler,
-    IMultipartUploadHandler
+    IMultipartUploadHandler,
+    IPart
 } from "./abstractions/MultipartUploadHandler";
 import {
     IMultipartUploadFactory,
@@ -30,10 +36,13 @@ export class MultipartUploadFactory implements IMultipartUploadFactory {
     }
 
     public async start(
-        params?: IMultipartUploadFactoryContinueParams
+        params: IMultipartUploadFactoryContinueParams
     ): Promise<IMultipartUploadHandler> {
-        if (params?.uploadId) {
-            return this.continue(params);
+        const resumeUploadId = params?.uploadId;
+        if (resumeUploadId) {
+            return this.continue({
+                uploadId: resumeUploadId
+            });
         }
         const cmd = new CreateMultipartUploadCommand({
             Bucket: this.bucket,
@@ -47,7 +56,8 @@ export class MultipartUploadFactory implements IMultipartUploadFactory {
                 uploadId,
                 client: this.client,
                 bucket: this.bucket,
-                filename: this.filename
+                filename: this.filename,
+                parts: undefined
             });
         }
         throw new WebinyError({
@@ -61,16 +71,71 @@ export class MultipartUploadFactory implements IMultipartUploadFactory {
     }
 
     private async continue(
-        params: IMultipartUploadFactoryContinueParams
+        params: Required<IMultipartUploadFactoryContinueParams>
     ): Promise<IMultipartUploadHandler> {
+        const result = await this.listParts({
+            uploadId: params.uploadId
+        });
+
+        const parts = result.Parts.map<IPart | null>(part => {
+            if (!part.ETag || part.PartNumber === undefined) {
+                return null;
+            }
+            return {
+                tag: part.ETag.replaceAll('"', ""),
+                partNumber: part.PartNumber
+            };
+        })
+            .filter((part): part is IPart => !!part)
+            .sort((a, b) => {
+                return a.partNumber - b.partNumber;
+            });
         return this.createHandler({
             client: this.client,
             bucket: this.bucket,
             filename: this.filename,
             uploadId: params.uploadId,
-            part: params.part,
-            tags: params.tags
+            parts
         });
+    }
+
+    private async listParts(
+        params: Required<IMultipartUploadFactoryContinueParams>
+    ): Promise<Required<ListPartsCommandOutput>> {
+        const cmd = new ListPartsCommand({
+            Bucket: this.bucket,
+            Key: this.filename,
+            UploadId: params.uploadId
+        });
+
+        let result: ListPartsCommandOutput;
+        try {
+            result = await this.client.send(cmd);
+        } catch (ex) {
+            throw new WebinyError({
+                message: `Failed to list parts: ${ex.message}`,
+                code: "S3_ERROR",
+                data: {
+                    metadata: ex.$metadata,
+                    bucket: this.bucket,
+                    filename: this.filename,
+                    uploadId: params.uploadId
+                }
+            });
+        }
+
+        if (!result.UploadId || !result.Parts?.length) {
+            throw new WebinyError({
+                message: "Could not find the upload.",
+                code: "S3_ERROR",
+                data: {
+                    bucket: this.bucket,
+                    filename: this.filename,
+                    uploadId: params.uploadId
+                }
+            });
+        }
+        return result as Required<ListPartsCommandOutput>;
     }
 }
 

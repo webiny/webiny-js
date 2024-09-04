@@ -61,11 +61,12 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
         }
         
         type ValidateImportFromUrlResponseDataFile {
-            get: String!
-            head: String!
-            type: String!
-            checksum: String!
+            get: String
+            head: String
+            type: String
+            checksum: String
             size: Number
+            checked: Boolean
             error: ValidateImportFromUrlResponseDataFileError
         }
         
@@ -76,18 +77,9 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
             error: CmsError
         }
         
-        type GetValidateImportFromUrlResponseDataFile {
-            get: String!
-            head: String!
-            type: String!
-            checksum: String!
-            size: Number
-            error: ValidateImportFromUrlResponseDataFileError
-        }
-        
         type GetValidateImportFromUrlResponseData {
             id: ID!
-            files: [GetValidateImportFromUrlResponseDataFile!]
+            files: [ValidateImportFromUrlResponseDataFile!]
             status: String!
             error: CmsError
         }
@@ -112,7 +104,7 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
             head: String!
             type: String!
             checksum: String!
-            size: Number
+            size: Number!
             error: ImportFromUrlResponseDataFileError
         }
         

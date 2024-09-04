@@ -1,15 +1,15 @@
 import { AbortMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3";
-import { IMultipartUploadHandlerAbortResult } from "../abstractions/MultipartUploadHandler";
+import { IMultipartUploadHandlerAbortResult, IPart } from "../abstractions/MultipartUploadHandler";
 
 export class MultipartUploadHandlerAbortResult implements IMultipartUploadHandlerAbortResult {
     public readonly result: AbortMultipartUploadCommandOutput;
     public readonly uploadId: string;
-    public readonly tags: string[];
+    public readonly parts: IPart[];
 
     public constructor(params: IMultipartUploadHandlerAbortResult) {
         this.result = params.result;
         this.uploadId = params.uploadId;
-        this.tags = params.tags;
+        this.parts = params.parts;
     }
 }
 

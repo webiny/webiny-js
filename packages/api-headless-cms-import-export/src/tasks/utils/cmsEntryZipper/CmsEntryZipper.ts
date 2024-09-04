@@ -12,6 +12,7 @@ import { IZipper } from "~/tasks/utils/zipper";
 import { IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
 import { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
 import { sanitizeModel } from "@webiny/api-headless-cms/export/crud/sanitize";
+import { stripExportPath } from "~/tasks/utils/helpers/exportPath";
 
 export interface ICmsEntryZipperConfig {
     zipper: IZipper;
@@ -185,13 +186,13 @@ export class CmsEntryZipper implements ICmsEntryZipper {
 
         if (continueAfter) {
             return new CmsEntryZipperExecuteContinueResult({
-                key: result.Key,
+                key: stripExportPath(result.Key),
                 cursor: continueAfter
             });
         }
 
         return new CmsEntryZipperExecuteDoneResult({
-            key: result.Key
+            key: stripExportPath(result.Key)
         });
     }
 }

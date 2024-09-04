@@ -34,6 +34,9 @@ describe("external file fetcher", () => {
                 results.url = url;
                 results.options = options;
                 throw new Error("Fetch error!");
+            },
+            getChecksumHeader: () => {
+                return "mocked-checksum";
             }
         });
 
@@ -71,6 +74,9 @@ describe("external file fetcher", () => {
                 results.url = url;
                 results.options = options;
                 throw new Error("Fetch error!");
+            },
+            getChecksumHeader: () => {
+                return "mocked-checksum";
             }
         });
 
@@ -101,6 +107,9 @@ describe("external file fetcher", () => {
                     url: url.toString(),
                     headers
                 });
+            },
+            getChecksumHeader: () => {
+                return headers.get("etag") || "mocked-checksum";
             }
         });
 
@@ -141,6 +150,9 @@ describe("external file fetcher", () => {
                     url: url.toString(),
                     headers
                 });
+            },
+            getChecksumHeader: () => {
+                return headers.get("etag") || "mocked-checksum";
             }
         });
         const url = "https://localhost/file.zip";
@@ -171,6 +183,9 @@ describe("external file fetcher", () => {
                     headers,
                     body: new ReadableStream()
                 });
+            },
+            getChecksumHeader: () => {
+                return headers.get("etag") || "mocked-checksum";
             }
         });
         const url = "https://localhost/file.zip";
@@ -196,6 +211,9 @@ describe("external file fetcher", () => {
                     url: url.toString(),
                     headers
                 });
+            },
+            getChecksumHeader: () => {
+                return headers.get("etag") || "mocked-checksum";
             }
         });
 

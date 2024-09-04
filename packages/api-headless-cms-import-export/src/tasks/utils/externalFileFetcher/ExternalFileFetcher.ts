@@ -6,9 +6,14 @@ import {
 import { getObjectProperties } from "@webiny/utils";
 import { WebinyError } from "@webiny/error";
 
+export interface IGetChecksumHeaderCallable {
+    (headers: Headers): string | undefined | null;
+}
+
 export interface IExternalFileFetcherParams {
     fetcher: typeof fetch;
     timeout?: number;
+    getChecksumHeader: IGetChecksumHeaderCallable;
 }
 
 const defaultTimeout = 5;
@@ -16,10 +21,12 @@ const defaultTimeout = 5;
 export class ExternalFileFetcher implements IExternalFileFetcher {
     private readonly fetcher: typeof fetch;
     private readonly timeout: number = defaultTimeout;
+    private readonly _getChecksumHeader: IGetChecksumHeaderCallable;
 
     public constructor(params: IExternalFileFetcherParams) {
         this.fetcher = params.fetcher;
         this.timeout = params.timeout || defaultTimeout;
+        this._getChecksumHeader = params.getChecksumHeader;
     }
 
     public async fetch(url: string): Promise<IExternalFileFetcherFetchResult> {
@@ -36,6 +43,10 @@ export class ExternalFileFetcher implements IExternalFileFetcher {
             if (contentLength === 0) {
                 throw new Error(`Content length not found for URL: ${url}`);
             }
+            const checksum = this.getChecksumHeader(result.headers);
+            if (!checksum) {
+                throw new Error(`ETag not found for URL: ${url}`);
+            }
             if (!result.body) {
                 throw new Error(`Body not found for URL: ${url}`);
             }
@@ -45,7 +56,8 @@ export class ExternalFileFetcher implements IExternalFileFetcher {
                     size: contentLength,
                     url,
                     contentType,
-                    body: result.body
+                    body: result.body,
+                    checksum
                 }
             };
         } catch (ex) {
@@ -87,6 +99,10 @@ export class ExternalFileFetcher implements IExternalFileFetcher {
             if (!contentType) {
                 throw new Error(`Content type not found for URL: ${url}`);
             }
+            const checksum = this.getChecksumHeader(result.headers);
+            if (!checksum) {
+                throw new Error(`ETag not found for URL: ${url}`);
+            }
             const contentLength = result.headers.get("content-length");
 
             return {
@@ -94,7 +110,8 @@ export class ExternalFileFetcher implements IExternalFileFetcher {
                     name: url.split("/").pop() as string,
                     size: parseInt(contentLength || "0"),
                     url,
-                    contentType
+                    contentType,
+                    checksum
                 }
             };
         } catch (ex) {
@@ -111,5 +128,9 @@ export class ExternalFileFetcher implements IExternalFileFetcher {
                 }
             };
         }
+    }
+
+    private getChecksumHeader(headers: Headers): string | undefined | null {
+        return this._getChecksumHeader(headers);
     }
 }

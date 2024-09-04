@@ -3,9 +3,13 @@ import {
     CompleteMultipartUploadCommandOutput,
     S3Client
 } from "@webiny/aws-sdk/client-s3";
-import { NonEmptyArray } from "@webiny/api/types";
 
 export type ITag = string;
+
+export interface IPart {
+    tag: ITag;
+    partNumber: number;
+}
 
 export type IMultipartUploadHandlerParamsMinBufferSize = number | `${number}MB`;
 
@@ -14,25 +18,22 @@ export interface IMultipartUploadHandlerParams {
     client: S3Client;
     bucket: string;
     filename: string;
-    tags?: NonEmptyArray<ITag>;
-    part?: number;
+    parts: IPart[] | undefined;
     minBufferSize?: IMultipartUploadHandlerParamsMinBufferSize;
 }
 
 export interface IMultipartUploadHandlerAddParams {
-    part: number;
     bufferLength: number;
     body: Buffer;
 }
 
 export interface IMultipartUploadHandlerPauseResult {
-    nextPart: number;
     uploadId: string;
-    tags: NonEmptyArray<ITag>;
+    parts: IPart[];
 }
 
 export interface IMultipartUploadHandlerAddResult {
-    nextPart: number;
+    parts: IPart[];
     canBePaused(): boolean;
     pause(): Promise<IMultipartUploadHandlerPauseResult>;
 }
@@ -40,13 +41,13 @@ export interface IMultipartUploadHandlerAddResult {
 export interface IMultipartUploadHandlerCompleteResult {
     result: CompleteMultipartUploadCommandOutput;
     uploadId: string;
-    tags: NonEmptyArray<ITag>;
+    parts: IPart[];
 }
 
 export interface IMultipartUploadHandlerAbortResult {
     result: AbortMultipartUploadCommandOutput;
     uploadId: string;
-    tags: ITag[];
+    parts: IPart[];
 }
 
 export interface IMultipartUploadHandlerGetBufferResult {
@@ -59,9 +60,9 @@ export interface IMultipartUploadHandler {
     complete(): Promise<IMultipartUploadHandlerCompleteResult>;
     abort(): Promise<IMultipartUploadHandlerAbortResult>;
     getBuffer(): IMultipartUploadHandlerGetBufferResult;
-    getNextPart(): number;
     getUploadId(): string;
-    getTags(): NonEmptyArray<ITag>;
+    // getNextPart(): number;
+    // getTags(): NonEmptyArray<ITag>;
 }
 
 export interface ICreateMultipartUploadHandler {

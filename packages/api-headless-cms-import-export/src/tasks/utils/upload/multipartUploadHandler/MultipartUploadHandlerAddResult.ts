@@ -1,22 +1,23 @@
 import {
     IMultipartUploadHandlerAddResult,
-    IMultipartUploadHandlerPauseResult
+    IMultipartUploadHandlerPauseResult,
+    IPart
 } from "../abstractions/MultipartUploadHandler";
 
 export interface IMultipartUploadHandlerAddResultParams {
     written: boolean;
-    nextPart: number;
+    parts: IPart[];
     pause: () => Promise<IMultipartUploadHandlerPauseResult>;
 }
 
 export class MultipartUploadHandlerAddResult implements IMultipartUploadHandlerAddResult {
-    public readonly nextPart: number;
+    public readonly parts: IPart[];
     private readonly written: boolean;
     private readonly _pause: () => Promise<IMultipartUploadHandlerPauseResult>;
 
     public constructor(params: IMultipartUploadHandlerAddResultParams) {
         this.written = params.written;
-        this.nextPart = params.nextPart;
+        this.parts = params.parts;
         this._pause = params.pause;
     }
 

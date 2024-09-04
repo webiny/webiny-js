@@ -7,13 +7,17 @@ import {
 import { Context } from "~/types";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
-import { createMultipartUpload, createMultipartUploadFactory } from "~/tasks/utils/upload";
+import {
+    createMultipartUpload,
+    createMultipartUploadFactory,
+    IMultipartUploadFactoryContinueParams
+} from "~/tasks/utils/upload";
 import {
     createDownloadFileFromUrl,
     IDownloadFileFromUrlProcessResponseType
 } from "./downloadFileFromUrl/index";
 import { convertFromUrlToPathname } from "~/tasks/domain/utils/convertFromUrlToPathname";
-import { EXPORT_BASE_PATH, IMPORT_BASE_PATH } from "~/tasks/constants";
+import { prependImportPath } from "~/tasks/utils/helpers/importPath";
 
 type ProcessType = IDownloadFileFromUrlProcessResponseType<"continue" | "aborted">;
 
@@ -54,7 +58,7 @@ export class ImportFromUrlDownload<
             size: input.file.size
         });
 
-        const filename = file.key.replace(EXPORT_BASE_PATH, IMPORT_BASE_PATH);
+        const filename = prependImportPath(file.key);
         const uploadFactory = createMultipartUploadFactory({
             client,
             bucket: getBucket(),
@@ -62,18 +66,10 @@ export class ImportFromUrlDownload<
             createHandler: createMultipartUpload
         });
 
-        console.log("starting download and upload", {
-            uploadId: input.uploadId,
-            part: input.uploadPart,
-            tags: input.tags?.length,
-            nextRange: input.nextRange
-        });
-
-        const upload = await uploadFactory.start({
-            uploadId: input.uploadId,
-            tags: input.tags,
-            part: input.uploadPart
-        });
+        const uploadParams: IMultipartUploadFactoryContinueParams = {
+            uploadId: input.uploadId
+        };
+        const upload = await uploadFactory.start(uploadParams);
 
         const download = createDownloadFileFromUrl({
             fetch,
@@ -84,7 +80,7 @@ export class ImportFromUrlDownload<
         let result: ProcessType;
         try {
             result = await download.process<ProcessType>(async ({ stop }) => {
-                const isClose = isCloseToTimeout(60);
+                const isClose = isCloseToTimeout(14 * 60 + 53);
                 if (isClose) {
                     return stop("continue");
                 } else if (isAborted()) {
@@ -102,9 +98,9 @@ export class ImportFromUrlDownload<
             case "continue":
                 const continueValue: I = {
                     ...input,
-                    uploadPart: upload.getNextPart(),
+                    // uploadPart: upload.getNextPart(),
                     uploadId: upload.getUploadId(),
-                    tags: upload.getTags(),
+                    // tags: upload.getTags(),
                     done: download.isDone(),
                     nextRange: download.getNextRange()
                 };
