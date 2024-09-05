@@ -4,45 +4,6 @@ import { makeDecoratable } from "@webiny/react-composition";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "~/utils";
 
-interface AvatarRootProps
-    extends React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>,
-        VariantProps<typeof avatarRootVariants> {}
-
-const avatarRootVariants = cva("rounded", {
-    variants: {
-        size: {
-            sm: "w-6 h-6",
-            md: "w-8 h-8",
-            lg: "w-10 h-10",
-            xl: "w-12 h-12 rounded-lg"
-        },
-        variant: {
-            image: ""
-        }
-    },
-    defaultVariants: {
-        size: "md",
-        variant: "image"
-    }
-});
-
-const AvatarRootBase = React.forwardRef<
-    React.ElementRef<typeof AvatarPrimitive.Root>,
-    AvatarRootProps
->(({ className, size, variant, ...props }, ref) => (
-    <AvatarPrimitive.Root
-        ref={ref}
-        className={cn(
-            "relative flex shrink-0 overflow-hidden",
-            avatarRootVariants({ variant, size, className })
-        )}
-        {...props}
-    />
-));
-AvatarRootBase.displayName = AvatarPrimitive.Root.displayName;
-
-const AvatarRoot = makeDecoratable("AvatarRoot", AvatarRootBase);
-
 type AvatarImageProps = React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>;
 
 const AvatarImageBase = React.forwardRef<
@@ -86,21 +47,50 @@ AvatarFallbackBase.displayName = AvatarPrimitive.Fallback.displayName;
 
 const AvatarFallback = makeDecoratable("AvatarFallback", AvatarFallbackBase);
 
-interface AvatarProps extends AvatarRootProps {
+interface AvatarProps
+    extends React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>,
+        VariantProps<typeof avatarVariants> {
     image: React.ReactElement<AvatarImageProps>;
     fallback?: React.ReactElement<AvatarFallbackProps>;
 }
 
-const Avatar = (props: AvatarProps) => {
-    const { image, fallback, ...rest } = props;
+const avatarVariants = cva("rounded", {
+    variants: {
+        size: {
+            sm: "w-6 h-6",
+            md: "w-8 h-8",
+            lg: "w-10 h-10",
+            xl: "w-12 h-12 rounded-lg"
+        },
+        variant: {
+            image: ""
+        }
+    },
+    defaultVariants: {
+        size: "md",
+        variant: "image"
+    }
+});
 
-    return (
-        <AvatarRoot {...rest}>
+const AvatarBase = React.forwardRef<React.ElementRef<typeof AvatarPrimitive.Root>, AvatarProps>(
+    ({ image, fallback, className, size, variant, ...props }, ref) => (
+        <AvatarPrimitive.Root
+            ref={ref}
+            className={cn(
+                "relative flex shrink-0 overflow-hidden",
+                avatarVariants({ variant, size, className })
+            )}
+            {...props}
+        >
             {image}
             {fallback}
-        </AvatarRoot>
-    );
-};
+        </AvatarPrimitive.Root>
+    )
+);
+
+AvatarBase.displayName = AvatarPrimitive.Root.displayName;
+
+const Avatar = makeDecoratable("Avatar", AvatarBase);
 
 export {
     Avatar,
