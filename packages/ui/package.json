@@ -28,7 +28,6 @@
     "@rmwc/list": "^14.2.2",
     "@rmwc/menu": "^14.2.2",
     "@rmwc/radio": "^14.2.2",
-    "@rmwc/ripple": "^14.2.2",
     "@rmwc/select": "^14.2.2",
     "@rmwc/slider": "^14.2.2",
     "@rmwc/snackbar": "^14.2.2",
