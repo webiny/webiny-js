@@ -53,66 +53,15 @@ export interface AvatarProps {
  * Please use the `Avatar` component from the `@webiny/admin-ui` package instead.
  */
 export const Avatar = (props: AvatarProps) => {
-    const { className, style, src, alt, width, height, renderImage, fallbackText } = props;
-
-    let renderedImage: React.ReactElement;
-    if (typeof renderImage === "function") {
-        renderedImage = renderImage({ src, alt });
-    } else {
-        renderedImage = <AdminUiAvatarImage src={src} alt={alt} width={width} height={height} />;
-    }
+    // Note that we're ignoring `renderImage` prop, as it's not supported in the new `Avatar` component.
+    const { className, style, src, alt, width, height, fallbackText } = props;
 
     return (
         <AdminUiAvatar
             className={className}
             style={{ width, height, ...style }}
-            image={renderedImage}
+            image={<AdminUiAvatarImage src={src} alt={alt} width={width} height={height} />}
             fallback={<AdminUiAvatarFallback content={fallbackText} delayMs={0} />}
         />
     );
-    // const {
-    //     className,
-    //     width = 38,
-    //     height = 38,
-    //     src,
-    //     alt,
-    //     fallbackText,
-    //     renderImage,
-    //     ...rest
-    // } = props;
-    //
-    // let renderedImage;
-    // const imageProps = { src, alt };
-    // if (src) {
-    //     if (typeof renderImage === "function") {
-    //         renderedImage = renderImage({
-    //             ...imageProps,
-    //             src
-    //         });
-    //     } else {
-    //         renderedImage = <img {...imageProps} alt={alt} src={src} />;
-    //     }
-    // }
-    //
-    // return (
-    //     <div
-    //         {...rest}
-    //         className={classNames(avatar, className)}
-    //         style={{ ...props.style, width, height }}
-    //     >
-    //         {props.src ? (
-    //             renderedImage
-    //         ) : (
-    //             <div>
-    //                 <span>
-    //                     {fallbackText
-    //                         .split(" ")
-    //                         .map(word => word.charAt(0))
-    //                         .join("")
-    //                         .toUpperCase()}
-    //                 </span>
-    //             </div>
-    //         )}
-    //     </div>
-    // );
 };
