@@ -21537,7 +21537,6 @@ __metadata:
     "@rmwc/data-table": ^14.2.2
     "@rmwc/dialog": ^14.2.2
     "@rmwc/drawer": ^14.2.2
-    "@rmwc/elevation": ^14.2.2
     "@rmwc/grid": ^14.2.2
     "@rmwc/list": ^14.2.2
     "@rmwc/menu": ^14.2.2

@@ -20,7 +20,7 @@ const iconVariants = cva("", {
     },
     defaultVariants: {
         size: "md",
-        color: "primary"
+        color: "dark"
     }
 });
 
