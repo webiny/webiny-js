@@ -1,16 +1,41 @@
 import * as React from "react";
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
-
-import { cn } from "~/utils";
 import { makeDecoratable } from "@webiny/react-composition";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "~/utils";
+
+interface AvatarRootProps
+    extends React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>,
+        VariantProps<typeof avatarRootVariants> {}
+
+const avatarRootVariants = cva("rounded", {
+    variants: {
+        size: {
+            sm: "w-6 h-6",
+            md: "w-8 h-8",
+            lg: "w-10 h-10",
+            xl: "w-12 h-12 rounded-lg"
+        },
+        variant: {
+            image: ""
+        }
+    },
+    defaultVariants: {
+        size: "md",
+        variant: "image"
+    }
+});
 
 const AvatarRootBase = React.forwardRef<
     React.ElementRef<typeof AvatarPrimitive.Root>,
-    React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
->(({ className, ...props }, ref) => (
+    AvatarRootProps
+>(({ className, size, variant, ...props }, ref) => (
     <AvatarPrimitive.Root
         ref={ref}
-        className={cn("relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full", className)}
+        className={cn(
+            "relative flex shrink-0 overflow-hidden",
+            avatarRootVariants({ variant, size, className })
+        )}
         {...props}
     />
 ));
@@ -18,9 +43,11 @@ AvatarRootBase.displayName = AvatarPrimitive.Root.displayName;
 
 const AvatarRoot = makeDecoratable("AvatarRoot", AvatarRootBase);
 
+type AvatarImageProps = React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>;
+
 const AvatarImageBase = React.forwardRef<
     React.ElementRef<typeof AvatarPrimitive.Image>,
-    React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
+    AvatarImageProps
 >(({ className, ...props }, ref) => (
     <AvatarPrimitive.Image
         ref={ref}
@@ -59,20 +86,27 @@ AvatarFallbackBase.displayName = AvatarPrimitive.Fallback.displayName;
 
 const AvatarFallback = makeDecoratable("AvatarFallback", AvatarFallbackBase);
 
-interface AvatarProps {
-    image: React.ReactElement<typeof AvatarImage>;
-    fallback?: string | React.ReactElement<typeof AvatarFallback>;
+interface AvatarProps extends AvatarRootProps {
+    image: React.ReactElement<AvatarImageProps>;
+    fallback?: React.ReactElement<AvatarFallbackProps>;
 }
 
 const Avatar = (props: AvatarProps) => {
-    const { image, fallback } = props;
+    const { image, fallback, ...rest } = props;
 
     return (
-        <AvatarRoot>
+        <AvatarRoot {...rest}>
             {image}
-            {typeof fallback === "string" ? <AvatarFallback content={fallback} /> : fallback}
+            {fallback}
         </AvatarRoot>
     );
 };
 
-export { Avatar, AvatarFallback, AvatarImage, type AvatarProps };
+export {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+    type AvatarProps,
+    type AvatarImageProps,
+    type AvatarFallbackProps
+};
