@@ -12022,6 +12022,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@radix-ui/react-accessible-icon@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@radix-ui/react-accessible-icon@npm:1.1.0"
+  dependencies:
+    "@radix-ui/react-visually-hidden": 1.1.0
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 19354c9357a6ce459c3f4a02a8a96516fbffcb7fc8266fd30a4c39a39813607a48594e807ebe98dc4e9aa0cd76aabd776cfdca882b2e30ce5574865df642209e
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-arrow@npm:1.1.0":
   version: 1.1.0
   resolution: "@radix-ui/react-arrow@npm:1.1.0"
@@ -12038,28 +12057,6 @@ __metadata:
     "@types/react-dom":
       optional: true
   checksum: 8522e0a8095ecc32d3a719f9c3bc0514c677a9c9d5ac26985d5416576dbc487c2a49ba2484397d9de502b54657856cb41ca3ea0b2165563eeeae45a83750885b
-  languageName: node
-  linkType: hard
-
-"@radix-ui/react-avatar@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@radix-ui/react-avatar@npm:1.1.0"
-  dependencies:
-    "@radix-ui/react-context": 1.1.0
-    "@radix-ui/react-primitive": 2.0.0
-    "@radix-ui/react-use-callback-ref": 1.1.0
-    "@radix-ui/react-use-layout-effect": 1.1.0
-  peerDependencies:
-    "@types/react": "*"
-    "@types/react-dom": "*"
-    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-    "@types/react-dom":
-      optional: true
-  checksum: 9f704dee499d34edcc66dca393568518b18d80cb63572291055f5137dc603f4c150bb02ed4799d3c35b8c614cdbb23be533a0f6cfcaefdb626fb4b31edc3fdd1
   languageName: node
   linkType: hard
 
@@ -16753,7 +16750,7 @@ __metadata:
     "@babel/preset-react": ^7.23.3
     "@babel/preset-typescript": ^7.23.3
     "@material-design-icons/svg": ^0.14.3
-    "@radix-ui/react-avatar": ^1.1.0
+    "@radix-ui/react-accessible-icon": ^1.1.0
     "@radix-ui/react-label": ^2.1.0
     "@radix-ui/react-slot": ^1.1.0
     "@radix-ui/react-switch": ^1.1.0
@@ -21540,7 +21537,6 @@ __metadata:
     "@rmwc/data-table": ^14.2.2
     "@rmwc/dialog": ^14.2.2
     "@rmwc/drawer": ^14.2.2
-    "@rmwc/elevation": ^14.2.2
     "@rmwc/grid": ^14.2.2
     "@rmwc/list": ^14.2.2
     "@rmwc/menu": ^14.2.2
