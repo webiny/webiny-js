@@ -26,22 +26,6 @@ export interface IExportContentEntriesControllerOutputFile {
     readonly type: CmsImportExportFileType;
 }
 
-// export interface ICmsDynamicZoneTemplate
-//     extends Pick<CmsDynamicZoneTemplate, "id" | "gqlTypeName"> {
-//     fields: IExportedCmsModelField[];
-// }
-
-// export interface IExportedCmsModelFieldSettings {
-//     fields?: IExportedCmsModelField[];
-//     templates?: ICmsDynamicZoneTemplate[];
-//     models?: Pick<CmsModel, "modelId">[];
-// }
-
-// export interface IExportedCmsModelField
-//     extends Pick<CmsModelField, "id" | "fieldId" | "type" | "multipleValues" | "storageId"> {
-//     settings?: IExportedCmsModelFieldSettings;
-// }
-
 export interface IExportedCmsModel {
     modelId: string;
     fields: CmsModelField[];

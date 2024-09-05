@@ -157,30 +157,30 @@ describe("validate import from url task", () => {
             {
                 head: "https://example.com/file1.json",
                 get: "https://example.com/file1.json",
-                type: CmsImportExportFileType.COMBINED_ENTRIES,
+                type: CmsImportExportFileType.ENTRIES,
                 error: undefined,
                 checksum: "checksum",
                 key: "key"
             },
             {
-                head: "https://example.com/file2.wea.zip",
-                get: "https://example.com/file2.wea.zip",
+                head: "https://example.com/file2..wa.zip",
+                get: "https://example.com/file2..wa.zip",
                 type: CmsImportExportFileType.ASSETS,
                 error: undefined,
                 checksum: "checksum",
                 key: "key"
             },
             {
-                head: "https://example.com/file3-error.wea.zip",
-                get: "https://example.com/file3-error.wea.zip",
+                head: "https://example.com/file3-error..wa.zip",
+                get: "https://example.com/file3-error..wa.zip",
                 type: CmsImportExportFileType.ASSETS,
                 error: undefined,
                 checksum: "checksum",
                 key: "key"
             },
             {
-                head: "https://example.com/file4-missing.wea.zip",
-                get: "https://example.com/file4-missing.wea.zip",
+                head: "https://example.com/file4-missing..wa.zip",
+                get: "https://example.com/file4-missing..wa.zip",
                 type: CmsImportExportFileType.ASSETS,
                 error: undefined,
                 checksum: "checksum",
@@ -278,14 +278,14 @@ describe("validate import from url task", () => {
             {
                 head: "https://example.com/file1.we.zip",
                 get: "https://example.com/file1.we.zip",
-                type: CmsImportExportFileType.COMBINED_ENTRIES,
+                type: CmsImportExportFileType.ENTRIES,
                 error: undefined,
                 checksum: "checksum",
                 key: "key"
             },
             {
-                head: "https://example.com/file2.wea.zip",
-                get: "https://example.com/file2.wea.zip",
+                head: "https://example.com/file2..wa.zip",
+                get: "https://example.com/file2..wa.zip",
                 type: CmsImportExportFileType.ASSETS,
                 error: undefined,
                 checksum: "checksum",
@@ -327,14 +327,14 @@ describe("validate import from url task", () => {
                         get: "https://example.com/file1.we.zip",
                         head: "https://example.com/file1.we.zip",
                         size: 1234,
-                        type: "combinedEntries"
+                        type: CmsImportExportFileType.ENTRIES
                     },
                     {
                         error: undefined,
-                        get: "https://example.com/file2.wea.zip",
-                        head: "https://example.com/file2.wea.zip",
+                        get: "https://example.com/file2..wa.zip",
+                        head: "https://example.com/file2..wa.zip",
                         size: 1234,
-                        type: "assets"
+                        type: CmsImportExportFileType.ASSETS
                     }
                 ]
             },

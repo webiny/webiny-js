@@ -7,7 +7,6 @@ import { CmsEntryMeta } from "@webiny/api-headless-cms/types";
 export * from "./domain/abstractions/CmsImportExportRecord";
 
 export enum CmsImportExportFileType {
-    COMBINED_ENTRIES = "combinedEntries",
     ENTRIES = "entries",
     ASSETS = "assets"
 }
@@ -76,21 +75,6 @@ export interface ICmsImportExportValidatedInvalidFile
 export type ICmsImportExportValidatedFile =
     | ICmsImportExportValidatedValidFile
     | ICmsImportExportValidatedInvalidFile;
-
-// export interface ICmsImportExportValidatedFile {
-//     get: string;
-//     head: string;
-//     checksum: string;
-//     type: CmsImportExportFileType | undefined;
-//     size?: number;
-//     error?: ICmsImportExportValidatedFileError;
-// }
-
-export interface ICmsImportExportValidatedCombinedContentFile
-    extends ICmsImportExportValidatedValidFile {
-    size: number;
-    type: CmsImportExportFileType.COMBINED_ENTRIES;
-}
 
 export interface ICmsImportExportValidatedContentEntriesFile
     extends ICmsImportExportValidatedValidFile {

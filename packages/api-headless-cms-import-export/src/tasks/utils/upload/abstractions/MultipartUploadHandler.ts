@@ -61,8 +61,6 @@ export interface IMultipartUploadHandler {
     abort(): Promise<IMultipartUploadHandlerAbortResult>;
     getBuffer(): IMultipartUploadHandlerGetBufferResult;
     getUploadId(): string;
-    // getNextPart(): number;
-    // getTags(): NonEmptyArray<ITag>;
 }
 
 export interface ICreateMultipartUploadHandler {

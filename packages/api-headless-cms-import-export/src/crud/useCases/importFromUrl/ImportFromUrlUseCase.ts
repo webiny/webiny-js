@@ -21,7 +21,7 @@ import {
 import { NonEmptyArray } from "@webiny/api/types";
 import {
     ICmsImportExportValidatedAssetsFile,
-    ICmsImportExportValidatedCombinedContentFile
+    ICmsImportExportValidatedContentEntriesFile
 } from "~/types";
 
 export interface IImportFromUrlUseCaseParams {
@@ -100,7 +100,7 @@ export class ImportFromUrlUseCase implements IImportFromUrlUseCase {
             input: {
                 modelId: integrityTask.output.modelId,
                 files: integrityTask.output.files as NonEmptyArray<
-                    | ICmsImportExportValidatedCombinedContentFile
+                    | ICmsImportExportValidatedContentEntriesFile
                     | ICmsImportExportValidatedAssetsFile
                 >,
                 steps: {}

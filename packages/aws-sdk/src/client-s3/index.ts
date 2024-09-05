@@ -2,8 +2,6 @@ import { S3, S3Client, S3ClientConfig } from "@aws-sdk/client-s3";
 import { createCacheKey } from "@webiny/utils";
 
 export {
-    CompleteMultipartUploadCommand,
-    AbortMultipartUploadCommand,
     GetObjectCommand,
     HeadObjectCommand,
     ListObjectsCommand,
@@ -14,10 +12,12 @@ export {
     PutObjectCommand,
     PutObjectCommandInput,
     PutObjectRequest,
-    S3,
-    S3Client,
     UploadPartCommand,
-    CreateMultipartUploadCommand
+    AbortMultipartUploadCommand,
+    CompleteMultipartUploadCommand,
+    CreateMultipartUploadCommand,
+    S3,
+    S3Client
 } from "@aws-sdk/client-s3";
 
 export type {

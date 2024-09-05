@@ -83,9 +83,7 @@ export class ImportFromUrlControllerDownloadStep<
                 }
             };
 
-            return response.continue(output, {
-                seconds: getBackOffSeconds(task.iterations)
-            });
+            return response.continue(output);
         }
         return response.error({
             message: "Impossible to get to this point. Fatal error."

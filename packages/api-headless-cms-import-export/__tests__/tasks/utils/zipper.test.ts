@@ -11,7 +11,7 @@ import {
     UploadPartCommand
 } from "@webiny/aws-sdk/client-s3";
 import AdmZip from "adm-zip";
-import { WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION } from "~/tasks/constants";
+import { WEBINY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants";
 
 describe("zipper", () => {
     it("should properly create a Zipper instance", async () => {
@@ -21,7 +21,7 @@ describe("zipper", () => {
             client: createS3Client(),
             bucket: "my-test-bucket",
             stream: createPassThrough(),
-            filename: `test.${WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION}`
+            filename: `test.${WEBINY_EXPORT_ENTRIES_EXTENSION}`
         });
 
         const archiver = createArchiver({
@@ -65,7 +65,7 @@ describe("zipper", () => {
             factory(params) {
                 return new BaseUpload(params);
             },
-            filename: `test.${WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION}`
+            filename: `test.${WEBINY_EXPORT_ENTRIES_EXTENSION}`
         });
 
         const archiver = createArchiver({
@@ -151,7 +151,7 @@ describe("zipper", () => {
             factory(params) {
                 return new BaseUpload(params);
             },
-            filename: `test.${WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION}`
+            filename: `test.${WEBINY_EXPORT_ENTRIES_EXTENSION}`
         });
 
         const archiver = createArchiver({

@@ -7,7 +7,7 @@ import {
     UploadPartCommand
 } from "@webiny/aws-sdk/client-s3";
 import { mockClient } from "aws-sdk-client-mock";
-import { ICmsImportExportValidatedCombinedContentFile } from "~/types";
+import { ICmsImportExportValidatedContentEntriesFile } from "~/types";
 import { createMockFetch } from "~tests/mocks/fetch";
 import fs from "fs";
 import path from "path";
@@ -19,7 +19,7 @@ describe("import from url content entries combined", () => {
     });
 
     it("should construct class properly", async () => {
-        const file: Pick<ICmsImportExportValidatedCombinedContentFile, "get" | "size"> = {
+        const file: Pick<ICmsImportExportValidatedContentEntriesFile, "get" | "size"> = {
             get: "https://webiny.com/asdgkdhsbg3iu2bfd/file-1.we.zip",
             size: 12345
         };
@@ -52,7 +52,7 @@ describe("import from url content entries combined", () => {
         mockedClient.on(UploadPartCommand).resolves({ ETag: "1" });
 
         const filename = "testing.we.zip";
-        const file: Pick<ICmsImportExportValidatedCombinedContentFile, "get" | "size"> = {
+        const file: Pick<ICmsImportExportValidatedContentEntriesFile, "get" | "size"> = {
             get: path.resolve(__dirname, `../../mocks/${filename}`),
             size: 4642
         };

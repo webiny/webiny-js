@@ -10,7 +10,7 @@ export const createExportContentEntriesTask = () => {
     return createTaskDefinition<Context, IExportContentEntriesInput, IExportContentEntriesOutput>({
         id: EXPORT_CONTENT_ENTRIES_TASK,
         title: "Export Content Entries",
-        maxIterations: 20,
+        maxIterations: 50,
         isPrivate: true,
         description: "Export content entries from a specific model.",
         async run(params) {

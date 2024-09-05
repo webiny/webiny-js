@@ -99,9 +99,9 @@ describe("parseImportUrlData", () => {
                         type: "entries"
                     },
                     {
-                        get: "https://wby-fm-bucket-99ce7db.s3.eu-central-1.amazonaws.com/cms-export/authors/66d853af79ff7500086231748m0nub0sj/assets.wea.zip?&x-id=GetObject",
-                        head: "https://wby-fm-bucket-99ce7db.s3.eu-central-1.amazonaws.com/cms-export/authors/66d853af79ff7500086231748m0nub0sj/assets.wea.zip?",
-                        key: "authors/66d853af79ff7500086231748m0nub0sj/assets.wea.zip",
+                        get: "https://wby-fm-bucket-99ce7db.s3.eu-central-1.amazonaws.com/cms-export/authors/66d853af79ff7500086231748m0nub0sj/assets..wa.zip?&x-id=GetObject",
+                        head: "https://wby-fm-bucket-99ce7db.s3.eu-central-1.amazonaws.com/cms-export/authors/66d853af79ff7500086231748m0nub0sj/assets..wa.zip?",
+                        key: "authors/66d853af79ff7500086231748m0nub0sj/assets..wa.zip",
                         checksum: "b7ef1426390086e7050d98bf9d4a6937-48",
                         type: "assets"
                     }
@@ -212,9 +212,9 @@ describe("parseImportUrlData", () => {
                     type: "entries"
                 },
                 {
-                    get: "https://wby-fm-bucket-99ce7db.s3.eu-central-1.amazonaws.com/cms-export/authors/66d853af79ff7500086231748m0nub0sj/assets.wea.zip?&x-id=GetObject",
-                    head: "https://wby-fm-bucket-99ce7db.s3.eu-central-1.amazonaws.com/cms-export/authors/66d853af79ff7500086231748m0nub0sj/assets.wea.zip?",
-                    key: "authors/66d853af79ff7500086231748m0nub0sj/assets.wea.zip",
+                    get: "https://wby-fm-bucket-99ce7db.s3.eu-central-1.amazonaws.com/cms-export/authors/66d853af79ff7500086231748m0nub0sj/assets..wa.zip?&x-id=GetObject",
+                    head: "https://wby-fm-bucket-99ce7db.s3.eu-central-1.amazonaws.com/cms-export/authors/66d853af79ff7500086231748m0nub0sj/assets..wa.zip?",
+                    key: "authors/66d853af79ff7500086231748m0nub0sj/assets..wa.zip",
                     checksum: "b7ef1426390086e7050d98bf9d4a6937-48",
                     type: "assets"
                 }

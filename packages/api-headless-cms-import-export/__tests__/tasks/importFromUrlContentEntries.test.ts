@@ -142,7 +142,7 @@ describe("import from url content entries", () => {
             size: 1000,
             checksum: "checksum",
             error: undefined,
-            type: CmsImportExportFileType.COMBINED_ENTRIES,
+            type: CmsImportExportFileType.ENTRIES,
             key: "file-1.we.zip",
             checked: true
         };
@@ -200,7 +200,7 @@ describe("import from url content entries", () => {
             head: "https://some-url.com/file-1.we.zip",
             checksum: "checksum",
             error: undefined,
-            type: CmsImportExportFileType.COMBINED_ENTRIES,
+            type: CmsImportExportFileType.ENTRIES,
             key: "file-1.we.zip",
             checked: true
         };

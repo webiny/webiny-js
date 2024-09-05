@@ -1,6 +1,6 @@
 import { ImportFromUrlControllerStep } from "./abstractions/ImportFromUrlControllerStep";
 import { IImportFromUrlDecompressInput } from "~/tasks/domain/abstractions/ImportFromUrlDecompress";
-import { IMPORT_FROM_URL_DOWNLOAD_TASK } from "~/tasks/constants";
+import { IMPORT_FROM_URL_DECOMPRESS_TASK } from "~/tasks/constants";
 import { getBackOffSeconds } from "~/tasks/utils/helpers/getBackOffSeconds";
 import { Context } from "~/types";
 import {
@@ -22,12 +22,12 @@ export class ImportFromUrlControllerDecompressStep<
 
         const task = store.getTask() as ITask<I, O>;
 
-        const step = input.steps?.[IImportFromUrlControllerInputStep.DOWNLOAD] || {};
+        const step = input.steps?.[IImportFromUrlControllerInputStep.DECOMPRESS] || {};
         if (!step.triggered) {
             for (const file of input.files) {
                 await trigger<IImportFromUrlDecompressInput>({
                     name: `Import From Url - Decompress`,
-                    definition: IMPORT_FROM_URL_DOWNLOAD_TASK,
+                    definition: IMPORT_FROM_URL_DECOMPRESS_TASK,
                     input: {
                         file,
                         modelId: input.modelId
@@ -39,7 +39,7 @@ export class ImportFromUrlControllerDecompressStep<
                 ...input,
                 steps: {
                     ...input.steps,
-                    [IImportFromUrlControllerInputStep.DOWNLOAD]: {
+                    [IImportFromUrlControllerInputStep.DECOMPRESS]: {
                         triggered: true
                     }
                 }
@@ -52,7 +52,7 @@ export class ImportFromUrlControllerDecompressStep<
             const { failed, running, invalid, aborted, collection } = await getChildTasks({
                 context,
                 task,
-                definition: IMPORT_FROM_URL_DOWNLOAD_TASK
+                definition: IMPORT_FROM_URL_DECOMPRESS_TASK
             });
 
             /**
@@ -73,7 +73,7 @@ export class ImportFromUrlControllerDecompressStep<
                 ...input,
                 steps: {
                     ...input.steps,
-                    [IImportFromUrlControllerInputStep.DOWNLOAD]: {
+                    [IImportFromUrlControllerInputStep.DECOMPRESS]: {
                         ...step,
                         failed,
                         invalid,
@@ -82,10 +82,7 @@ export class ImportFromUrlControllerDecompressStep<
                     }
                 }
             };
-
-            return response.continue(output, {
-                seconds: getBackOffSeconds(task.iterations)
-            });
+            return response.continue(output);
         }
         return response.error({
             message: "Impossible to get to this point. Fatal error."

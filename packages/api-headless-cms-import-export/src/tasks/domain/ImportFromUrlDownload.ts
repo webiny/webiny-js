@@ -69,7 +69,8 @@ export class ImportFromUrlDownload<
             fetch,
             file: {
                 url: input.file.get,
-                size: input.file.size
+                size: input.file.size,
+                key: input.file.key
             },
             nextRange: input.nextRange,
             upload
@@ -95,9 +96,7 @@ export class ImportFromUrlDownload<
             case "continue":
                 const continueValue: I = {
                     ...input,
-                    // uploadPart: upload.getNextPart(),
                     uploadId: upload.getUploadId(),
-                    // tags: upload.getTags(),
                     done: download.isDone(),
                     nextRange: download.getNextRange()
                 };

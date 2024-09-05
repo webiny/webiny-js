@@ -75,7 +75,8 @@ export class ImportFromUrlContentEntries<
             fetch,
             file: {
                 url: input.file.get,
-                size: input.file.size
+                size: input.file.size,
+                key: input.file.key
             },
             nextRange: input.download?.nextRange,
             upload

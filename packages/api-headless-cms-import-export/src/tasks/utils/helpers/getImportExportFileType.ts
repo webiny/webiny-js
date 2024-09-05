@@ -1,8 +1,4 @@
-import {
-    WEBINY_EXPORT_ASSETS_EXTENSION,
-    WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION,
-    WEBINY_EXPORT_ENTRIES_EXTENSION
-} from "~/tasks/constants";
+import { WEBINY_EXPORT_ASSETS_EXTENSION, WEBINY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants";
 import { CmsImportExportFileType } from "~/types";
 
 interface SuccessResponse {
@@ -22,12 +18,7 @@ export type Response = SuccessResponse | ErrorResponse;
 export const getImportExportFileType = (input: string): Response => {
     const result = new URL(input);
     const pathname = result.pathname;
-    if (pathname.endsWith(WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION)) {
-        return {
-            type: CmsImportExportFileType.COMBINED_ENTRIES,
-            pathname
-        };
-    } else if (pathname.endsWith(WEBINY_EXPORT_ENTRIES_EXTENSION)) {
+    if (pathname.endsWith(WEBINY_EXPORT_ENTRIES_EXTENSION)) {
         return {
             type: CmsImportExportFileType.ENTRIES,
             pathname

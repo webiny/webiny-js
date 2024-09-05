@@ -17,7 +17,7 @@ export interface IExportContentEntriesInput {
     after?: string;
     combine?: boolean;
     lastFileProcessed?: string;
-    combined?: IExportContentEntriesInputFile[];
+    files?: IExportContentEntriesInputFile[];
 }
 
 export interface IExportContentEntriesOutputFile {

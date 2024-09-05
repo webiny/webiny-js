@@ -2,7 +2,6 @@ import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { Context } from "~/types";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { getErrorProperties } from "@webiny/tasks/utils";
-import { ZipCombiner } from "~/tasks/utils/zipCombiner";
 import {
     CmsEntryZipperExecuteContinueResult,
     ICmsEntryZipper,
@@ -11,23 +10,14 @@ import {
 import {
     IExportContentEntries,
     IExportContentEntriesInput,
-    IExportContentEntriesOutput,
-    IExportContentEntriesOutputFile
+    IExportContentEntriesOutput
 } from "~/tasks/domain/abstractions/ExportContentEntries";
 import { createCmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/createCmsEntryFetcher";
 import { IContentEntryTraverser } from "@webiny/api-headless-cms";
-import {
-    WEBINY_EXPORT_ENTRIES_EXTENSION,
-    WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION
-} from "~/tasks/constants";
-
-export interface ICreateZipCombinerParams {
-    target: string;
-}
+import { WEBINY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants";
 
 export interface IExportContentEntriesConfig {
     createCmsEntryZipper(config: Pick<ICmsEntryZipperConfig, "fetcher">): ICmsEntryZipper;
-    createZipCombiner(config: ICreateZipCombinerParams): ZipCombiner;
 }
 
 export interface ICreateCmsEntryZipperConfig extends Pick<ICmsEntryZipperConfig, "fetcher"> {
@@ -43,11 +33,9 @@ export class ExportContentEntries<
 > implements IExportContentEntries<C, I, O>
 {
     private readonly createCmsEntryZipper: (config: ICreateCmsEntryZipperConfig) => ICmsEntryZipper;
-    private readonly createZipCombiner: (config: ICreateZipCombinerParams) => ZipCombiner;
 
     public constructor(config: IExportContentEntriesConfig) {
         this.createCmsEntryZipper = config.createCmsEntryZipper;
-        this.createZipCombiner = config.createZipCombiner;
     }
 
     public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
@@ -67,52 +55,12 @@ export class ExportContentEntries<
                 }
             });
         }
-        /**
-         * If we are combining files, we need to fetch the all the files and combine them.
-         * TODO: determine if its possible to combine all the files which were created.
-         */
-        const prefix = `${basePrefix}/entries-batch-`;
-        if (input.combine) {
-            const lastFileProcessed = input.lastFileProcessed ? `-${input.lastFileProcessed}` : "";
-            const combined = Array.from<IExportContentEntriesOutputFile>(
-                Array.isArray(input.combined) ? input.combined : []
-            );
-            const zipCombiner = this.createZipCombiner({
-                target: `${basePrefix}/entries${lastFileProcessed}.${WEBINY_EXPORT_COMBINED_ENTRIES_EXTENSION}`
-            });
 
-            const result = await zipCombiner.resolve({
-                source: prefix,
-                model,
-                lastFileProcessed: input.lastFileProcessed,
-                isAborted,
-                isCloseToTimeout
-            });
-
-            combined.push({
-                key: result.key,
-                checksum: result.checksum
-            });
-
-            if (result.lastFileProcessed) {
-                return response.continue({
-                    ...input,
-                    lastFileProcessed: result.lastFileProcessed,
-                    combined
-                });
-            }
-
-            return response.done("Successfully combined entry files.", {
-                files: combined
-            } as O);
-        }
-        /**
-         * If we are not combining files, we need to fetch the next batch of entries and zip them.
-         */
+        const prefix = `${basePrefix}/entries`;
         const fetcher = createCmsEntryFetcher(async after => {
             const input = {
                 where: params.input.where,
-                limit: params.input.limit || 10000,
+                limit: params.input.limit || 100000,
                 sort: params.input.sort,
                 after
             };
@@ -124,7 +72,9 @@ export class ExportContentEntries<
             };
         });
 
-        const filename = `${prefix}${input.after || "0"}.${WEBINY_EXPORT_ENTRIES_EXTENSION}`;
+        const filenamePrefix = [prefix, input.after].filter(Boolean).join("-");
+
+        const filename = `${filenamePrefix}.${WEBINY_EXPORT_ENTRIES_EXTENSION}`;
 
         const traverser = await context.cms.getEntryTraverser(model.modelId);
 
@@ -142,16 +92,24 @@ export class ExportContentEntries<
             after: input.after,
             exportAssets: input.exportAssets
         });
+
+        const files = (input.files || []).concat([
+            {
+                key: result.key,
+                checksum: result.checksum
+            }
+        ]);
+
         if (result instanceof CmsEntryZipperExecuteContinueResult) {
             return response.continue({
                 ...input,
+                files,
                 after: result.cursor
             });
         }
-        return response.continue({
-            ...input,
-            after: undefined,
-            combine: true
-        });
+        const output: IExportContentEntriesOutput = {
+            files
+        };
+        return response.done(output as O);
     }
 }

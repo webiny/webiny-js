@@ -13,6 +13,7 @@ import { IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
 import { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
 import { sanitizeModel } from "@webiny/api-headless-cms/export/crud/sanitize";
 import { stripExportPath } from "~/tasks/utils/helpers/exportPath";
+import { cleanChecksum } from "~/tasks/utils/helpers/cleanChecksum";
 
 export interface ICmsEntryZipperConfig {
     zipper: IZipper;
@@ -184,15 +185,20 @@ export class CmsEntryZipper implements ICmsEntryZipper {
             throw new Error("Failed to upload the file.");
         }
 
+        const checksum = cleanChecksum(result.ETag || "");
+
+        const key = stripExportPath(result.Key);
         if (continueAfter) {
             return new CmsEntryZipperExecuteContinueResult({
-                key: stripExportPath(result.Key),
+                key,
+                checksum,
                 cursor: continueAfter
             });
         }
 
         return new CmsEntryZipperExecuteDoneResult({
-            key: stripExportPath(result.Key)
+            key,
+            checksum
         });
     }
 }

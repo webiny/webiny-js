@@ -1,4 +1,4 @@
-import { Context, ICmsImportExportValidatedCombinedContentFile } from "~/types";
+import { Context, ICmsImportExportValidatedContentEntriesFile } from "~/types";
 import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { NonEmptyArray } from "@webiny/api/types";
 import { ITag } from "~/tasks/utils/upload";
@@ -17,7 +17,7 @@ export interface IImportFromUrlContentEntriesDecompressInputValues {
 
 export interface IImportFromUrlContentEntriesInput {
     modelId: string;
-    file: ICmsImportExportValidatedCombinedContentFile;
+    file: ICmsImportExportValidatedContentEntriesFile;
     /**
      * Combined content entries file information / processing.
      */

@@ -153,16 +153,6 @@ export class ValidateImportFromUrl<
                 code: "NO_FILES_FOUND"
             });
         }
-        // const erroredFiles = results.filter(file => !!file.error);
-        // if (erroredFiles.length) {
-        //     return response.error({
-        //         message: "Some files failed validation.",
-        //         code: "FILES_FAILED_VALIDATION",
-        //         data: {
-        //             files: erroredFiles
-        //         }
-        //     });
-        // }
 
         const output: IValidateImportFromUrlOutput = {
             files: results as NonEmptyArray<ICmsImportExportValidatedFile>,

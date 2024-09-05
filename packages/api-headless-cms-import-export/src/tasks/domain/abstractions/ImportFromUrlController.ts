@@ -1,7 +1,7 @@
 import {
     Context,
     ICmsImportExportValidatedAssetsFile,
-    ICmsImportExportValidatedCombinedContentFile
+    ICmsImportExportValidatedContentEntriesFile
 } from "~/types";
 import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { NonEmptyArray } from "@webiny/api/types";
@@ -39,7 +39,7 @@ export interface IImportFromUrlControllerInputSteps {
 export interface IImportFromUrlControllerInput {
     modelId: string;
     files: NonEmptyArray<
-        ICmsImportExportValidatedCombinedContentFile | ICmsImportExportValidatedAssetsFile
+        ICmsImportExportValidatedContentEntriesFile | ICmsImportExportValidatedAssetsFile
     >;
     steps?: IImportFromUrlControllerInputSteps;
 }

@@ -9,6 +9,7 @@ import { createSizeSegments } from "~/tasks/utils/helpers/sizeSegments";
 export interface IDownloadFileFromUrlFile {
     url: string;
     size: number;
+    key: string;
 }
 
 interface IRange {
