@@ -2,7 +2,7 @@ import { createErrorFields, createValidateImportFromUrlFields } from "./fields";
 import { IInvokeCb } from "~tests/helpers/types";
 
 const mutation = /* GraphQL */ `
-    mutation ValidateImportFromUrl($data: String!) {
+    mutation ValidateImportFromUrl($data: JSON!) {
         validateImportFromUrl(data: $data) {
             data {
                 ${createValidateImportFromUrlFields()}

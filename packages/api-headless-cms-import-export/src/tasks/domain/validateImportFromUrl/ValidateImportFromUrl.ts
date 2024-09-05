@@ -166,7 +166,7 @@ export class ValidateImportFromUrl<
 
         const output: IValidateImportFromUrlOutput = {
             files: results as NonEmptyArray<ICmsImportExportValidatedFile>,
-            modelId: model.modelId
+            modelId: model?.modelId
         };
 
         return response.done(output as O);

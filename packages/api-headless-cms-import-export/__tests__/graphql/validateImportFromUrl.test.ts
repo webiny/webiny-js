@@ -15,8 +15,8 @@ describe("validate import from url - graphql", () => {
                 validateImportFromUrl: {
                     data: null,
                     error: {
-                        message: "Invalid JSON data provided.",
-                        code: "INVALID_JSON_DATA",
+                        message: "Invalid input data provided.",
+                        code: "INVALID_INPUT_DATA",
                         data: null
                     }
                 }
@@ -32,8 +32,8 @@ describe("validate import from url - graphql", () => {
                 validateImportFromUrl: {
                     data: null,
                     error: {
-                        message: "Invalid JSON data provided.",
-                        code: "INVALID_JSON_DATA",
+                        message: "Invalid input data provided.",
+                        code: "INVALID_INPUT_DATA",
                         data: null
                     }
                 }
@@ -49,8 +49,8 @@ describe("validate import from url - graphql", () => {
                 validateImportFromUrl: {
                     data: null,
                     error: {
-                        message: "Invalid JSON data provided.",
-                        code: "INVALID_JSON_DATA",
+                        message: "Invalid input data provided.",
+                        code: "INVALID_INPUT_DATA",
                         data: null
                     }
                 }
@@ -66,8 +66,8 @@ describe("validate import from url - graphql", () => {
                 validateImportFromUrl: {
                     data: null,
                     error: {
-                        message: "Invalid JSON data provided.",
-                        code: "INVALID_JSON_DATA",
+                        message: "Invalid input data provided.",
+                        code: "INVALID_INPUT_DATA",
                         data: null
                     }
                 }

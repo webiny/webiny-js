@@ -207,68 +207,63 @@ describe("validate import from url task", () => {
             locale: "en-US"
         });
 
-        expect(result).toBeInstanceOf(ResponseErrorResult);
+        expect(result).toBeInstanceOf(ResponseDoneResult);
         expect(result).toEqual({
-            status: "error",
+            status: "done",
             locale: "en-US",
             tenant: "root",
             webinyTaskDefinitionId: definition.id,
             webinyTaskId: task.id,
-            error: {
-                code: "FILES_FAILED_VALIDATION",
-                data: {
-                    files: [
-                        {
-                            ...files[0],
-                            checked: true,
-                            error: {
-                                data: {
-                                    pathname: "/file1.json",
-                                    type: "json"
-                                },
-                                code: "FILE_TYPE_NOT_SUPPORTED",
-                                message: "File type not supported."
+            message: undefined,
+            output: {
+                modelId: undefined,
+                files: [
+                    {
+                        ...files[0],
+                        checked: true,
+                        error: {
+                            data: {
+                                pathname: "/file1.json",
+                                type: "json"
                             },
-                            size: undefined,
-                            type: undefined
+                            code: "FILE_TYPE_NOT_SUPPORTED",
+                            message: "File type not supported."
                         },
-                        {
-                            ...files[2],
-                            checked: true,
-                            error: {
-                                code: "HEAD_FETCH_ERROR",
-                                data: {
-                                    url: files[2].head
-                                },
-                                message: "Fetch error."
+                        size: undefined,
+                        type: undefined
+                    },
+                    {
+                        ...files[1],
+                        checked: true,
+                        size: 1234
+                    },
+                    {
+                        ...files[2],
+                        checked: true,
+                        error: {
+                            code: "HEAD_FETCH_ERROR",
+                            data: {
+                                url: files[2].head
                             },
-                            type: undefined,
-                            size: undefined
+                            message: "Fetch error."
                         },
-                        {
-                            ...files[3],
-                            checked: true,
-                            error: {
-                                code: "FILE_NOT_FOUND",
-                                data: {
-                                    url: files[3].head
-                                },
-                                message: "File not found."
+                        type: undefined,
+                        size: undefined
+                    },
+                    {
+                        ...files[3],
+                        checked: true,
+                        error: {
+                            code: "FILE_NOT_FOUND",
+                            data: {
+                                url: files[3].head
                             },
-                            type: undefined,
-                            size: undefined
-                        }
-                    ],
-                    input: {
-                        files: files.map(file => {
-                            delete file.error;
-                            return {
-                                ...file
-                            };
-                        })
+                            message: "File not found."
+                        },
+                        type: undefined,
+                        size: undefined
                     }
-                },
-                message: "Some files failed validation."
+                ]
             }
         });
     });

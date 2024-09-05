@@ -32,7 +32,7 @@ describe("validateImportFromUrl", () => {
         try {
             await useCase.execute(params);
         } catch (ex) {
-            expect(ex.message).toBe("Invalid JSON data provided.");
+            expect(ex.message).toBe("Invalid input data provided.");
         }
     });
 
