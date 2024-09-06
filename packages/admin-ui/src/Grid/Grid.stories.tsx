@@ -1,7 +1,7 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Grid, Column } from "./Grid";
+import { Grid } from "./Grid";
 
 const meta: Meta<typeof Grid> = {
     title: "Components/Grid",
@@ -15,20 +15,38 @@ type Story = StoryObj<typeof Grid>;
 
 export const Default: Story = {
     args: {
-        gap: 4,
-        content: [
-            <Column key="1" content={<>Column 1</>} />,
-            <Column key="2" content={<>Column 2</>} />,
-            <Column key="3" content={<>Column 3</>} />,
-            <Column key="4" content={<>Column 4</>} />,
-            <Column key="5" content={<>Column 5</>} />,
-            <Column key="6" content={<>Column 6</>} />,
-            <Column key="7" content={<>Column 7</>} />,
-            <Column key="8" content={<>Column 8</>} />,
-            <Column key="9" content={<>Column 9</>} />,
-            <Column key="10" content={<>Column 10</>} />,
-            <Column key="11" content={<>Column 11</>} />,
-            <Column key="12" content={<>Column 12</>} />
-        ]
+        gap: 2,
+        children: (
+            <>
+                <Grid.Column className={"bg-muted rounded p-2"}>Column 1</Grid.Column>
+                <Grid.Column className={"bg-muted rounded p-2"} span={3}>
+                    Column 2 with <code>span</code> set to <code>3</code>
+                </Grid.Column>
+                <Grid.Column className={"bg-muted rounded p-2"}>Column 3</Grid.Column>
+                <Grid.Column className={"bg-muted rounded p-2"}>Column 4</Grid.Column>
+                <Grid.Column className={"bg-muted rounded p-2"}>Column 5</Grid.Column>
+                <Grid.Column className={"bg-muted rounded p-2"}>Column 6</Grid.Column>
+                <Grid.Column className={"bg-muted rounded p-2"} span={2}>
+                    Column 7 with <code>span</code> set to <code>2</code>
+                </Grid.Column>
+                <Grid.Column className={"bg-muted rounded p-2"}>Column 8</Grid.Column>
+                <Grid.Column className={"bg-muted rounded p-2"}>Column 9</Grid.Column>
+            </>
+        )
+    }
+};
+
+export const DifferentNumberOfColumns: Story = {
+    args: {
+        columns: 4,
+        gap: 2,
+        children: (
+            <>
+                <Grid.Column className={"bg-muted rounded p-2"}>Column 1</Grid.Column>
+                <Grid.Column className={"bg-muted rounded p-2"}>Column 2</Grid.Column>
+                <Grid.Column className={"bg-muted rounded p-2"}>Column 3</Grid.Column>
+                <Grid.Column className={"bg-muted rounded p-2"}>Column 4</Grid.Column>
+            </>
+        )
     }
 };

@@ -3,11 +3,7 @@ import cn from "classnames";
 import { GridCellProps as RmwcGridCellProps, GridProps as RmwcGridProps } from "@rmwc/grid";
 import { CSSProperties } from "react";
 
-import {
-    Grid as AdminUiGrid,
-    Column as AdminUiColumn,
-    ColumnProps as AdminUiColumnProps
-} from "@webiny/admin-ui";
+import { Grid as AdminUiGrid, ColumnProps as AdminUiColumnProps } from "@webiny/admin-ui";
 
 export type CellProps = RmwcGridCellProps & {
     // One or more Cell components.
@@ -25,13 +21,14 @@ export type CellProps = RmwcGridCellProps & {
 export const Cell = (props: CellProps) => {
     const { children, style, className, align } = props;
     return (
-        <AdminUiColumn
-            content={children}
+        <AdminUiGrid.Column
             className={className}
             style={style}
             span={props.span as AdminUiColumnProps["span"]}
             align={align}
-        />
+        >
+            {children}
+        </AdminUiGrid.Column>
     );
 };
 
@@ -70,10 +67,8 @@ export const Grid = (props: GridProps) => {
     const { children, style, className } = props;
 
     return (
-        <AdminUiGrid
-            content={children as React.ReactElement<AdminUiColumnProps, typeof AdminUiColumn>}
-            className={className}
-            style={style}
-        />
+        <AdminUiGrid className={className} style={style}>
+            {children as React.ReactElement<AdminUiColumnProps, typeof AdminUiGrid.Column>}
+        </AdminUiGrid>
     );
 };

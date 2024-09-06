@@ -32,16 +32,16 @@ const columnVariants = cva("", {
 });
 
 interface ColumnProps
-    extends Omit<React.HTMLAttributes<HTMLDivElement>, "content">,
+    extends React.HTMLAttributes<HTMLDivElement>,
         VariantProps<typeof columnVariants> {
-    content: React.ReactNode;
+    children: React.ReactNode;
 }
 
 const ColumnBase = React.forwardRef<HTMLDivElement, ColumnProps>(
-    ({ span, align, content, className, ...props }, ref) => {
+    ({ span, align, children, className, ...props }, ref) => {
         return (
             <div {...props} className={cn(columnVariants({ span, align, className }))} ref={ref}>
-                {content}
+                {children}
             </div>
         );
     }
@@ -89,18 +89,18 @@ const gridVariants = cva("grid", {
 });
 
 interface GridProps
-    extends Omit<React.HTMLAttributes<HTMLDivElement>, "content">,
+    extends React.HTMLAttributes<HTMLDivElement>,
         VariantProps<typeof gridVariants> {
-    content:
+    children:
         | React.ReactElement<ColumnProps, typeof Column>
         | Array<React.ReactElement<ColumnProps, typeof Column>>;
 }
 
 const GridBase = React.forwardRef<HTMLDivElement, GridProps>(
-    ({ columns, gap, content, className, ...props }, ref) => {
+    ({ columns, gap, children, className, ...props }, ref) => {
         return (
             <div {...props} className={cn(gridVariants({ columns, gap, className }))} ref={ref}>
-                {content}
+                {children}
             </div>
         );
     }
@@ -108,6 +108,10 @@ const GridBase = React.forwardRef<HTMLDivElement, GridProps>(
 
 GridBase.displayName = "Grid";
 
-const Grid = makeDecoratable("Grid", GridBase);
+const DecoratableGrid = makeDecoratable("Grid", GridBase);
 
-export { Grid, Column, type GridProps, type ColumnProps };
+const Grid: typeof DecoratableGrid & { Column: typeof Column } = Object.assign(DecoratableGrid, {
+    Column
+});
+
+export { Grid, type GridProps, type ColumnProps };
