@@ -2,6 +2,7 @@ import WebinyError from "@webiny/error";
 import {
     CmsEntry,
     CmsModel,
+    CmsStorageEntry,
     CONTENT_ENTRY_STATUS,
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types";
@@ -64,6 +65,19 @@ export interface CreateEntriesStorageOperationsParams {
     elasticsearch: Client;
     plugins: PluginsContainer;
 }
+
+const convertToStorageEntry = (params: ConvertStorageEntryParams): CmsStorageEntry => {
+    const { model, storageEntry } = params;
+
+    const values = model.convertValueKeyToStorage({
+        fields: model.fields,
+        values: storageEntry.values
+    });
+    return {
+        ...storageEntry,
+        values
+    };
+};
 
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
@@ -812,7 +826,7 @@ export const createEntriesStorageOperations = (
         initialModel,
         params
     ) => {
-        const { entry, latestEntry, latestStorageEntry } = params;
+        const { entry, latestEntry, latestStorageEntry: initialLatestStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 
         const partitionKey = createPartitionKey({
@@ -864,7 +878,12 @@ export const createEntriesStorageOperations = (
             );
         }
 
-        if (latestEntry && latestStorageEntry) {
+        if (latestEntry && initialLatestStorageEntry) {
+            const latestStorageEntry = convertToStorageEntry({
+                storageEntry: initialLatestStorageEntry,
+                model
+            });
+
             /**
              * In the end we need to set the new latest entry.
              */
@@ -885,11 +904,11 @@ export const createEntriesStorageOperations = (
                 entity.putBatch({
                     ...latestStorageEntry,
                     PK: createPartitionKey({
-                        id: latestStorageEntry.id,
+                        id: initialLatestStorageEntry.id,
                         locale: model.locale,
                         tenant: model.tenant
                     }),
-                    SK: createRevisionSortKey(latestStorageEntry),
+                    SK: createRevisionSortKey(initialLatestStorageEntry),
                     TYPE: createRecordType()
                 })
             );
@@ -898,7 +917,7 @@ export const createEntriesStorageOperations = (
                 plugins,
                 model,
                 entry: latestEntry,
-                storageEntry: latestStorageEntry
+                storageEntry: initialLatestStorageEntry
             });
 
             const esLatestData = await latestTransformer.getElasticsearchLatestEntryData();
@@ -929,7 +948,7 @@ export const createEntriesStorageOperations = (
                     error: ex,
                     entry,
                     latestEntry,
-                    latestStorageEntry
+                    initialLatestStorageEntry
                 }
             );
         }
@@ -952,7 +971,7 @@ export const createEntriesStorageOperations = (
                     error: ex,
                     entry,
                     latestEntry,
-                    latestStorageEntry
+                    initialLatestStorageEntry
                 }
             );
         }

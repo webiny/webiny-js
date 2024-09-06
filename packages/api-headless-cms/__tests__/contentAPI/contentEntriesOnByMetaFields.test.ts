@@ -215,6 +215,9 @@ describe("Content entries - Entry Meta Fields", () => {
         expect(revision2.savedOn).toBe(entriesList[0].savedOn);
         expect(revision2.savedBy).toEqual(entriesList[0].savedBy);
 
+        // TODO: ensure that the regular fields are still here.
+        expect(revision2.title).toBeTruthy();
+
         // Delete revision 2 and ensure that revision 1's entry-level meta fields are propagated.
         await manageApiIdentityB.deleteTestEntry({
             revision: revision2.id
