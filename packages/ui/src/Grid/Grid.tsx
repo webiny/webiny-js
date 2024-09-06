@@ -1,12 +1,16 @@
 import React from "react";
 import {
-    Grid as RmwcGrid,
-    GridCell as RmwcGridCell,
     GridRow as RmwcGridInner,
     GridCellProps as RmwcGridCellProps,
     GridProps as RmwcGridProps
 } from "@rmwc/grid";
 import { CSSProperties } from "react";
+
+import {
+    Grid as AdminUiGrid,
+    Column as AdminUiColumn,
+    ColumnProps as AdminUiColumnProps
+} from "@webiny/admin-ui";
 
 export type CellProps = RmwcGridCellProps & {
     // One or more Cell components.
@@ -18,16 +22,19 @@ export type CellProps = RmwcGridCellProps & {
     style?: { [key: string]: any };
 };
 
-export type GridProps = RmwcGridProps & {
-    className?: string;
-    style?: CSSProperties;
-};
-
 /**
  * Cell must be direct children of Grid component.
  */
 export const Cell = (props: CellProps) => {
-    return <RmwcGridCell {...props}>{props.children}</RmwcGridCell>;
+    const { children, style, className } = props;
+    return (
+        <AdminUiColumn
+            content={children}
+            className={className}
+            style={style}
+            span={props.span as AdminUiColumnProps["span"]}
+        />
+    );
 };
 
 export type GridInnerProps = {
@@ -46,9 +53,26 @@ export const GridInner = (props: GridInnerProps) => {
 
 GridInner.displayName = "GridInner";
 
+export type GridProps = RmwcGridProps & {
+    className?: string;
+    style?: CSSProperties;
+};
+
 /**
  * Use Grid component to display a list of choices, once the handler is triggered.
  */
 export const Grid = (props: GridProps) => {
-    return <RmwcGrid {...props}>{props.children}</RmwcGrid>;
+    const { children, style, className } = props;
+
+    return (
+        <AdminUiGrid
+            content={children as React.ReactElement<AdminUiColumnProps, typeof AdminUiColumn>}
+            className={className}
+            style={style}
+        />
+    );
+    // return <RmwcGrid {...props}>{props.children}</RmwcGrid>;
 };
+
+// TODO: responsive
+// TODO: grid inner
