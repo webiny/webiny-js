@@ -1,9 +1,6 @@
 import React from "react";
-import {
-    GridRow as RmwcGridInner,
-    GridCellProps as RmwcGridCellProps,
-    GridProps as RmwcGridProps
-} from "@rmwc/grid";
+import cn from "classnames";
+import { GridCellProps as RmwcGridCellProps, GridProps as RmwcGridProps } from "@rmwc/grid";
 import { CSSProperties } from "react";
 
 import {
@@ -26,13 +23,14 @@ export type CellProps = RmwcGridCellProps & {
  * Cell must be direct children of Grid component.
  */
 export const Cell = (props: CellProps) => {
-    const { children, style, className } = props;
+    const { children, style, className, align } = props;
     return (
         <AdminUiColumn
             content={children}
             className={className}
             style={style}
             span={props.span as AdminUiColumnProps["span"]}
+            align={align}
         />
     );
 };
@@ -47,8 +45,15 @@ export type GridInnerProps = {
     className?: string;
 };
 
-export const GridInner = (props: GridInnerProps) => {
-    return <RmwcGridInner {...props}>{props.children}</RmwcGridInner>;
+export const GridInner = ({ className, ...props }: GridInnerProps) => {
+    return (
+        <div
+            {...props}
+            className={cn("grid grid-cols-12 gap-6 m-0 flex flex-wrap items-stretch", className)}
+        >
+            {props.children}
+        </div>
+    );
 };
 
 GridInner.displayName = "GridInner";
@@ -71,8 +76,4 @@ export const Grid = (props: GridProps) => {
             style={style}
         />
     );
-    // return <RmwcGrid {...props}>{props.children}</RmwcGrid>;
 };
-
-// TODO: responsive
-// TODO: grid inner

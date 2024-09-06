@@ -19,6 +19,11 @@ const columnVariants = cva("", {
             10: "col-span-10",
             11: "col-span-11",
             12: "col-span-12"
+        },
+        align: {
+            top: "self-start",
+            middle: "self-center",
+            bottom: "self-end"
         }
     },
     defaultVariants: {
@@ -33,9 +38,9 @@ interface ColumnProps
 }
 
 const ColumnBase = React.forwardRef<HTMLDivElement, ColumnProps>(
-    ({ span, content, className, ...props }, ref) => {
+    ({ span, align, content, className, ...props }, ref) => {
         return (
-            <div {...props} className={cn(columnVariants({ span, className }))} ref={ref}>
+            <div {...props} className={cn(columnVariants({ span, align, className }))} ref={ref}>
                 {content}
             </div>
         );
