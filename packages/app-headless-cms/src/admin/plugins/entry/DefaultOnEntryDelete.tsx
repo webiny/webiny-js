@@ -4,7 +4,8 @@ import { CmsErrorResponse, CmsModel } from "~/types";
 import {
     CmsEntryDeleteMutationResponse,
     CmsEntryDeleteMutationVariables,
-    createDeleteMutation
+    createDeleteMutation,
+    createRevisionsQuery
 } from "@webiny/app-headless-cms-common";
 import { DocumentNode } from "graphql";
 import { OnEntryDeleteRequest } from "~/admin/contexts/Cms";
@@ -48,7 +49,15 @@ const OnEntryDelete = () => {
             mutation,
             variables: {
                 revision: id
-            }
+            },
+            refetchQueries: [
+                {
+                    query: createRevisionsQuery(model),
+                    variables: {
+                        id: entry.id
+                    }
+                }
+            ]
         });
 
         if (!response.data) {
