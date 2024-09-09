@@ -1,7 +1,7 @@
 import React from "react";
 import { makeDecoratable } from "@webiny/react-composition";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "~/utils";
+import { cn, withStaticProps } from "~/utils";
 
 const columnVariants = cva("", {
     variants: {
@@ -110,8 +110,6 @@ GridBase.displayName = "Grid";
 
 const DecoratableGrid = makeDecoratable("Grid", GridBase);
 
-const Grid: typeof DecoratableGrid & { Column: typeof Column } = Object.assign(DecoratableGrid, {
-    Column
-});
+const Grid = withStaticProps(DecoratableGrid, { Column });
 
 export { Grid, type GridProps, type ColumnProps };
