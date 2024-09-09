@@ -6,7 +6,8 @@ import { CmsContentEntry } from "~/types";
 import {
     CmsEntryCreateFromMutationResponse,
     CmsEntryCreateFromMutationVariables,
-    createCreateFromMutation
+    createCreateFromMutation,
+    createRevisionsQuery
 } from "@webiny/app-headless-cms-common";
 import { useApolloClient, useCms } from "~/admin/hooks";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
@@ -24,12 +25,15 @@ interface EditRevisionHandler {
 interface DeleteRevisionHandler {
     (id?: string): Promise<void>;
 }
+
 interface PublishRevisionHandler {
     (id?: string): Promise<void>;
 }
+
 interface UnpublishRevisionHandler {
     (id?: string): Promise<void>;
 }
+
 interface UseRevisionHandlers {
     createRevision: CreateRevisionHandler;
     editRevision: EditRevisionHandler;
@@ -77,7 +81,15 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                             variables: {
                                 revision: id || revision.id
                             },
-                            fetchPolicy: getFetchPolicy(contentModel)
+                            fetchPolicy: getFetchPolicy(contentModel),
+                            refetchQueries: [
+                                {
+                                    query: createRevisionsQuery(contentModel),
+                                    variables: {
+                                        id: entry.id
+                                    }
+                                }
+                            ]
                         });
 
                         setLoading(false);
