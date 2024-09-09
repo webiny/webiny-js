@@ -1,9 +1,11 @@
 import { NodeHttpHandler } from "@smithy/node-http-handler";
-import { createS3Client as baseCreateS3Client } from "@webiny/aws-sdk/client-s3";
+import { createS3Client as baseCreateS3Client, S3Client } from "@webiny/aws-sdk/client-s3";
 import { Agent as HttpAgent } from "http";
 import { Agent as HttpsAgent } from "https";
 
-export const createS3Client = () => {
+export type { S3Client };
+
+export const createS3Client = (): S3Client => {
     return baseCreateS3Client({
         requestHandler: new NodeHttpHandler({
             connectionTimeout: 0,

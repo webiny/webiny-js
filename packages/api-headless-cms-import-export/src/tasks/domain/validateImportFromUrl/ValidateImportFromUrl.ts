@@ -143,8 +143,7 @@ export class ValidateImportFromUrl<
                 key: target.key,
                 checksum,
                 size: file.size,
-                type,
-                error: undefined
+                type
             });
         }
         if (results.length === 0) {
@@ -158,6 +157,18 @@ export class ValidateImportFromUrl<
             files: results as NonEmptyArray<ICmsImportExportValidatedFile>,
             modelId: model?.modelId
         };
+        const filesWithErrors = results.filter(file => !!file.error);
+        if (filesWithErrors.length > 0) {
+            output.error = {
+                message: "One or more files are invalid.",
+                code: "INVALID_FILES",
+                data: {
+                    files: filesWithErrors.map(file => {
+                        return file.key;
+                    })
+                }
+            };
+        }
 
         return response.done(output as O);
     }

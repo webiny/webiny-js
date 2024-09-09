@@ -7,7 +7,7 @@ import {
 } from "~/tasks/domain/abstractions/ImportFromUrlController";
 import { Context } from "~/types";
 import { ImportFromUrlControllerDownloadStep } from "~/tasks/domain/importFromUrlControllerSteps/ImportFromUrlControllerDownloadStep";
-import { ImportFromUrlControllerDecompressStep } from "./importFromUrlControllerSteps/ImportFromUrlControllerDecompressStep";
+import { ImportFromUrlControllerProcessEntriesStep } from "./importFromUrlControllerSteps/ImportFromUrlControllerProcessEntriesStep";
 
 export class ImportFromUrlController<
     C extends Context = Context,
@@ -44,8 +44,8 @@ export class ImportFromUrlController<
         if (!steps[IImportFromUrlControllerInputStep.DOWNLOAD]?.done) {
             const step = new ImportFromUrlControllerDownloadStep<C, I, O>();
             return step.execute(params);
-        } else if (!input.steps?.[IImportFromUrlControllerInputStep.DECOMPRESS]?.done) {
-            const step = new ImportFromUrlControllerDecompressStep<C, I, O>();
+        } else if (!input.steps?.[IImportFromUrlControllerInputStep.PROCESS_ENTRIES]?.done) {
+            const step = new ImportFromUrlControllerProcessEntriesStep<C, I, O>();
             return step.execute(params);
         }
         // } else if (!input.steps?.[IImportFromUrlControllerInputStep.IMPORT]?.done) {

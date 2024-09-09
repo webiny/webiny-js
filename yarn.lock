@@ -14072,6 +14072,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/unzipper@npm:^0.10.10":
+  version: 0.10.10
+  resolution: "@types/unzipper@npm:0.10.10"
+  dependencies:
+    "@types/node": "*"
+  checksum: 4ba5f6c4c5a892f5f5ce7724a4c3f2ea772a29043e296a28b725162ffff8fb25d2d0995c5536705e13bfbde7765d085f0da5408b25946457d050ac4b75aaefee
+  languageName: node
+  linkType: hard
+
 "@types/validate-npm-package-name@npm:^3.0.3":
   version: 3.0.3
   resolution: "@types/validate-npm-package-name@npm:3.0.3"
@@ -15470,6 +15479,7 @@ __metadata:
     "@babel/runtime": ^7.24.0
     "@smithy/node-http-handler": ^2.1.6
     "@types/adm-zip": ^0.5.5
+    "@types/unzipper": ^0.10.10
     "@webiny/api": 0.0.0
     "@webiny/api-admin-users": 0.0.0
     "@webiny/api-file-manager": 0.0.0
@@ -15497,6 +15507,7 @@ __metadata:
     ttypescript: ^1.5.13
     typescript: ^4.7.4
     uniqid: ^5.4.0
+    unzipper: ^0.12.3
     zod: ^3.23.8
   languageName: unknown
   linkType: soft
@@ -21448,7 +21459,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bluebird@npm:^3.5.1, bluebird@npm:^3.7.2":
+"bluebird@npm:^3.5.1, bluebird@npm:^3.7.2, bluebird@npm:~3.7.2":
   version: 3.7.2
   resolution: "bluebird@npm:3.7.2"
   checksum: 869417503c722e7dc54ca46715f70e15f4d9c602a423a02c825570862d12935be59ed9c7ba34a9b31f186c017c23cac6b54e35446f8353059c101da73eac22ef
@@ -25027,6 +25038,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"duplexer2@npm:~0.1.4":
+  version: 0.1.4
+  resolution: "duplexer2@npm:0.1.4"
+  dependencies:
+    readable-stream: ^2.0.2
+  checksum: 744961f03c7f54313f90555ac20284a3fb7bf22fdff6538f041a86c22499560eb6eac9d30ab5768054137cb40e6b18b40f621094e0261d7d8c35a37b7a5ad241
+  languageName: node
+  linkType: hard
+
 "duplexer@npm:^0.1.1, duplexer@npm:^0.1.2":
   version: 0.1.2
   resolution: "duplexer@npm:0.1.2"
@@ -27833,7 +27853,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graceful-fs@npm:4.2.11, graceful-fs@npm:^4.2.11":
+"graceful-fs@npm:4.2.11, graceful-fs@npm:^4.2.11, graceful-fs@npm:^4.2.2":
   version: 4.2.11
   resolution: "graceful-fs@npm:4.2.11"
   checksum: ac85f94da92d8eb6b7f5a8b20ce65e43d66761c55ce85ac96df6865308390da45a8d3f0296dd3a663de65d30ba497bd46c696cc1e248c72b13d6d567138a4fc7
@@ -37303,7 +37323,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"readable-stream@npm:^2.3.8":
+"readable-stream@npm:^2.0.2, readable-stream@npm:^2.3.8":
   version: 2.3.8
   resolution: "readable-stream@npm:2.3.8"
   dependencies:
@@ -41110,6 +41130,19 @@ __metadata:
   version: 4.0.0
   resolution: "untildify@npm:4.0.0"
   checksum: 39ced9c418a74f73f0a56e1ba4634b4d959422dff61f4c72a8e39f60b99380c1b45ed776fbaa0a4101b157e4310d873ad7d114e8534ca02609b4916bb4187fb9
+  languageName: node
+  linkType: hard
+
+"unzipper@npm:^0.12.3":
+  version: 0.12.3
+  resolution: "unzipper@npm:0.12.3"
+  dependencies:
+    bluebird: ~3.7.2
+    duplexer2: ~0.1.4
+    fs-extra: ^11.2.0
+    graceful-fs: ^4.2.2
+    node-int64: ^0.4.0
+  checksum: 2e3296d1fad307b02b3d0f3e9c4ac1bdd56047e66fe5108a9e580b417f4ac9b07c31e9ded3e006e01edaaba3e20b13c638bd3c893600f75c589b6e0f778d9ffd
   languageName: node
   linkType: hard
 

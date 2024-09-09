@@ -1,5 +1,5 @@
 import { CmsEntry, CmsEntryMeta } from "@webiny/api-headless-cms/types";
-import { IFileMeta } from "../types";
+import { ICmsEntryManifestJson, IFileMeta } from "../types";
 import { CmsEntryZipperExecuteContinueResult } from "./CmsEntryZipperExecuteContinueResult";
 import { CmsEntryZipperExecuteDoneResult } from "./CmsEntryZipperExecuteDoneResult";
 import {
@@ -14,6 +14,7 @@ import { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/Uniqu
 import { sanitizeModel } from "@webiny/api-headless-cms/export/crud/sanitize";
 import { stripExportPath } from "~/tasks/utils/helpers/exportPath";
 import { cleanChecksum } from "~/tasks/utils/helpers/cleanChecksum";
+import { MANIFEST_JSON } from "~/tasks/constants";
 
 export interface ICmsEntryZipperConfig {
     zipper: IZipper;
@@ -104,23 +105,19 @@ export class CmsEntryZipper implements ICmsEntryZipper {
                 if (closeToTimeout && hasMoreItems) {
                     continueAfter = after;
                 }
-                await this.zipper.add(
-                    Buffer.from(
-                        JSON.stringify({
-                            files,
-                            assets,
-                            model: sanitizeModel(
-                                {
-                                    id: model.group.id
-                                },
-                                model
-                            )
-                        })
-                    ),
-                    {
-                        name: "manifest.json"
-                    }
-                );
+                const output: ICmsEntryManifestJson = {
+                    files,
+                    assets,
+                    model: sanitizeModel(
+                        {
+                            id: model.group.id
+                        },
+                        model
+                    )
+                };
+                await this.zipper.add(Buffer.from(JSON.stringify(output)), {
+                    name: MANIFEST_JSON
+                });
                 storedFiles = true;
                 return;
             }

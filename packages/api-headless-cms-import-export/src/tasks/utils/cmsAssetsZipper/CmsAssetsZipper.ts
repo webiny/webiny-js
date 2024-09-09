@@ -15,8 +15,7 @@ import { PointerStore } from "~/tasks/utils/cmsAssetsZipper/PointerStore";
 import { UniqueResolver } from "../uniqueResolver/UniqueResolver";
 import { CmsEntryMeta } from "@webiny/api-headless-cms/types";
 import { stripExportPath } from "~/tasks/utils/helpers/exportPath";
-
-const manifestFileName = "manifest.json";
+import { MANIFEST_JSON } from "~/tasks/constants";
 
 export interface ICmsAssetsZipperConfig {
     zipper: IZipper;
@@ -97,7 +96,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
                         })
                     ),
                     {
-                        name: manifestFileName
+                        name: MANIFEST_JSON
                     }
                 );
 

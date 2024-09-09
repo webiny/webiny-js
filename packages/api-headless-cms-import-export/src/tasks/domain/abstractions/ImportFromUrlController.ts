@@ -8,8 +8,8 @@ import { NonEmptyArray } from "@webiny/api/types";
 
 export enum IImportFromUrlControllerInputStep {
     DOWNLOAD = "download",
-    DECOMPRESS = "decompress",
-    IMPORT = "import"
+    PROCESS_ENTRIES = "processEntries",
+    PROCESS_ASSETS = "processAssets"
 }
 
 export interface IImportFromUrlControllerInputSteps {
@@ -20,14 +20,14 @@ export interface IImportFromUrlControllerInputSteps {
         invalid?: string[];
         aborted?: string[];
     };
-    [IImportFromUrlControllerInputStep.DECOMPRESS]?: {
+    [IImportFromUrlControllerInputStep.PROCESS_ENTRIES]?: {
         triggered?: boolean;
         done?: boolean;
         failed?: string[];
         invalid?: string[];
         aborted?: string[];
     };
-    [IImportFromUrlControllerInputStep.IMPORT]?: {
+    [IImportFromUrlControllerInputStep.PROCESS_ASSETS]?: {
         triggered?: boolean;
         done?: boolean;
         failed?: string[];

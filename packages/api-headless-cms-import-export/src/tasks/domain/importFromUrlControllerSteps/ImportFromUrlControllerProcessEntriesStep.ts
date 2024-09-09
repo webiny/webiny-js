@@ -1,8 +1,7 @@
 import { ImportFromUrlControllerStep } from "./abstractions/ImportFromUrlControllerStep";
-import { IImportFromUrlDecompressInput } from "~/tasks/domain/abstractions/ImportFromUrlDecompress";
-import { IMPORT_FROM_URL_DECOMPRESS_TASK } from "~/tasks/constants";
+import { IMPORT_FROM_URL_PROCESS_ENTRIES_TASK } from "~/tasks/constants";
 import { getBackOffSeconds } from "~/tasks/utils/helpers/getBackOffSeconds";
-import { Context } from "~/types";
+import { CmsImportExportFileType, Context } from "~/types";
 import {
     IImportFromUrlControllerInput,
     IImportFromUrlControllerInputStep,
@@ -10,8 +9,10 @@ import {
 } from "~/tasks/domain/abstractions/ImportFromUrlController";
 import { ITask, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { getChildTasks } from "./getChildTasks";
+import { IImportFromUrlProcessEntriesInput } from "../importFromUrlProcessEntries/abstractions/ImportFromUrlProcessEntries";
+import { prependImportPath } from "~/tasks/utils/helpers/importPath";
 
-export class ImportFromUrlControllerDecompressStep<
+export class ImportFromUrlControllerProcessEntriesStep<
     C extends Context = Context,
     I extends IImportFromUrlControllerInput = IImportFromUrlControllerInput,
     O extends IImportFromUrlControllerOutput = IImportFromUrlControllerOutput
@@ -22,14 +23,33 @@ export class ImportFromUrlControllerDecompressStep<
 
         const task = store.getTask() as ITask<I, O>;
 
-        const step = input.steps?.[IImportFromUrlControllerInputStep.DECOMPRESS] || {};
+        const step = input.steps?.[IImportFromUrlControllerInputStep.PROCESS_ENTRIES] || {};
         if (!step.triggered) {
-            for (const file of input.files) {
-                await trigger<IImportFromUrlDecompressInput>({
-                    name: `Import From Url - Decompress`,
-                    definition: IMPORT_FROM_URL_DECOMPRESS_TASK,
+            const files = input.files.filter(file => {
+                return file.type === CmsImportExportFileType.ENTRIES;
+            });
+            if (files.length === 0) {
+                const output: IImportFromUrlControllerOutput = {
+                    error: {
+                        message: "No entries files found.",
+                        code: "NO_ENTRIES_FILES"
+                    },
+                    aborted: [],
+                    done: [],
+                    failed: [],
+                    invalid: []
+                };
+                return response.done(output as O);
+            }
+            for (const file of files) {
+                await trigger<IImportFromUrlProcessEntriesInput>({
+                    name: `Import From Url - Process entries`,
+                    definition: IMPORT_FROM_URL_PROCESS_ENTRIES_TASK,
                     input: {
-                        file,
+                        file: {
+                            key: prependImportPath(file.key),
+                            type: file.type
+                        },
                         modelId: input.modelId
                     }
                 });
@@ -39,7 +59,7 @@ export class ImportFromUrlControllerDecompressStep<
                 ...input,
                 steps: {
                     ...input.steps,
-                    [IImportFromUrlControllerInputStep.DECOMPRESS]: {
+                    [IImportFromUrlControllerInputStep.PROCESS_ENTRIES]: {
                         triggered: true
                     }
                 }
@@ -52,7 +72,7 @@ export class ImportFromUrlControllerDecompressStep<
             const { failed, running, invalid, aborted, collection } = await getChildTasks({
                 context,
                 task,
-                definition: IMPORT_FROM_URL_DECOMPRESS_TASK
+                definition: IMPORT_FROM_URL_PROCESS_ENTRIES_TASK
             });
 
             /**
@@ -64,8 +84,8 @@ export class ImportFromUrlControllerDecompressStep<
                 });
             } else if (collection.length === 0) {
                 return response.error({
-                    message: "No decompress tasks found. We are not continuing.",
-                    code: "NO_DECOMPRESS_TASKS"
+                    message: "No process entries tasks found. We are not continuing.",
+                    code: "NO_PROCESS_ENTRIES_TASKS"
                 });
             }
 
@@ -73,7 +93,7 @@ export class ImportFromUrlControllerDecompressStep<
                 ...input,
                 steps: {
                     ...input.steps,
-                    [IImportFromUrlControllerInputStep.DECOMPRESS]: {
+                    [IImportFromUrlControllerInputStep.PROCESS_ENTRIES]: {
                         ...step,
                         failed,
                         invalid,

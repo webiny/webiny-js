@@ -6,3 +6,4 @@ export * from "./importFromUrlController";
 export * from "./importFromUrlDownload";
 export * from "./importFromUrlContentEntries";
 export * from "./importFromUrlAssets";
+export * from "./importFromUrlProcessEntries";

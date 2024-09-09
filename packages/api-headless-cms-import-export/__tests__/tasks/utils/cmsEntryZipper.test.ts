@@ -6,6 +6,7 @@ import { CmsModel } from "@webiny/api-headless-cms/types";
 import { createCmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
 import { createUniqueResolver } from "~tests/mocks/createUniqueResolver";
 import { createEntryAssets } from "~tests/mocks/createEntryAssets";
+import { MANIFEST_JSON } from "~/tasks/constants";
 
 describe("cms entry zipper", () => {
     const model = createModelPlugin().contentModel as CmsModel;
@@ -88,7 +89,7 @@ describe("cms entry zipper", () => {
         expect(zipEntries[1].entryName).toEqual("entries-2.json");
         expect(zipEntries[2].entryName).toEqual("entries-3.json");
         expect(zipEntries[3].entryName).toEqual("entries-4.json");
-        expect(zipEntries[4].entryName).toEqual("manifest.json");
+        expect(zipEntries[4].entryName).toEqual(MANIFEST_JSON);
 
         const entries1Json = zip.readAsText(zipEntries[0]);
 
