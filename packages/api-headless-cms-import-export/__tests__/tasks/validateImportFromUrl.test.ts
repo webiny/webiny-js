@@ -160,31 +160,31 @@ describe("validate import from url task", () => {
                 type: CmsImportExportFileType.ENTRIES,
                 error: undefined,
                 checksum: "checksum",
-                key: "key"
+                key: "key-file1.json"
             },
             {
-                head: "https://example.com/file2..wa.zip",
-                get: "https://example.com/file2..wa.zip",
+                head: "https://example.com/file2.wa.zip",
+                get: "https://example.com/file2.wa.zip",
                 type: CmsImportExportFileType.ASSETS,
                 error: undefined,
                 checksum: "checksum",
-                key: "key"
+                key: "key-file2.wa.zip"
             },
             {
-                head: "https://example.com/file3-error..wa.zip",
-                get: "https://example.com/file3-error..wa.zip",
+                head: "https://example.com/file3-error.wa.zip",
+                get: "https://example.com/file3-error.wa.zip",
                 type: CmsImportExportFileType.ASSETS,
                 error: undefined,
                 checksum: "checksum",
-                key: "key"
+                key: "key-file3-error.wa.zip"
             },
             {
-                head: "https://example.com/file4-missing..wa.zip",
-                get: "https://example.com/file4-missing..wa.zip",
+                head: "https://example.com/file4-missing.wa.zip",
+                get: "https://example.com/file4-missing.wa.zip",
                 type: CmsImportExportFileType.ASSETS,
                 error: undefined,
                 checksum: "checksum",
-                key: "key"
+                key: "key-file4-missing.wa.zip"
             }
         ];
 
@@ -217,6 +217,17 @@ describe("validate import from url task", () => {
             message: undefined,
             output: {
                 modelId: undefined,
+                error: {
+                    code: "INVALID_FILES",
+                    data: {
+                        files: [
+                            "key-file1.json",
+                            "key-file3-error.wa.zip",
+                            "key-file4-missing.wa.zip"
+                        ]
+                    },
+                    message: "One or more files are invalid."
+                },
                 files: [
                     {
                         ...files[0],
@@ -281,15 +292,15 @@ describe("validate import from url task", () => {
                 type: CmsImportExportFileType.ENTRIES,
                 error: undefined,
                 checksum: "checksum",
-                key: "key"
+                key: "key-file1.we.zip"
             },
             {
-                head: "https://example.com/file2..wa.zip",
-                get: "https://example.com/file2..wa.zip",
+                head: "https://example.com/file2.wa.zip",
+                get: "https://example.com/file2.wa.zip",
                 type: CmsImportExportFileType.ASSETS,
                 error: undefined,
                 checksum: "checksum",
-                key: "key"
+                key: "key-file2.wa.zip"
             }
         ];
 
@@ -323,16 +334,14 @@ describe("validate import from url task", () => {
             output: {
                 files: [
                     {
-                        error: undefined,
                         get: "https://example.com/file1.we.zip",
                         head: "https://example.com/file1.we.zip",
                         size: 1234,
                         type: CmsImportExportFileType.ENTRIES
                     },
                     {
-                        error: undefined,
-                        get: "https://example.com/file2..wa.zip",
-                        head: "https://example.com/file2..wa.zip",
+                        get: "https://example.com/file2.wa.zip",
+                        head: "https://example.com/file2.wa.zip",
                         size: 1234,
                         type: CmsImportExportFileType.ASSETS
                     }

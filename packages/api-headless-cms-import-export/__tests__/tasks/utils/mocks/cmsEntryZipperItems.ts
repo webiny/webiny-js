@@ -82,7 +82,8 @@ export const findImage = (params: IFindImageParams) => {
 export const createEntries = () => {
     return Object.values(images).map<CmsEntry>(image => {
         return {
-            id: image.id,
+            id: `${image.id}#0001`,
+            entryId: image.id,
             values: {
                 image: image.url
             }

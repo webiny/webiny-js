@@ -107,7 +107,7 @@ describe("cms entry zipper", () => {
                 ],
                 meta: {
                     totalCount: 8,
-                    cursor: "2",
+                    cursor: "2#0001",
                     hasMoreItems: true
                 }
             })
@@ -129,10 +129,10 @@ describe("cms entry zipper", () => {
                 ],
                 meta: {
                     totalCount: 8,
-                    cursor: "4",
+                    cursor: "4#0001",
                     hasMoreItems: true
                 },
-                after: "2"
+                after: "2#0001"
             })
         );
 
@@ -152,10 +152,10 @@ describe("cms entry zipper", () => {
                 ],
                 meta: {
                     totalCount: 8,
-                    cursor: "6",
+                    cursor: "6#0001",
                     hasMoreItems: true
                 },
-                after: "4"
+                after: "4#0001"
             })
         );
 
@@ -175,10 +175,10 @@ describe("cms entry zipper", () => {
                 ],
                 meta: {
                     totalCount: 8,
-                    cursor: "8",
+                    cursor: "8#0001",
                     hasMoreItems: false
                 },
-                after: "6"
+                after: "6#0001"
             })
         );
 
@@ -192,17 +192,17 @@ describe("cms entry zipper", () => {
                 {
                     id: 2,
                     name: "entries-2.json",
-                    after: "2"
+                    after: "2#0001"
                 },
                 {
                     id: 3,
                     name: "entries-3.json",
-                    after: "4"
+                    after: "4#0001"
                 },
                 {
                     id: 4,
                     name: "entries-4.json",
-                    after: "6"
+                    after: "6#0001"
                 }
             ],
             assets: [],
