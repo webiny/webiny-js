@@ -66,6 +66,11 @@ export interface CreateEntriesStorageOperationsParams {
     plugins: PluginsContainer;
 }
 
+interface ConvertStorageEntryParams {
+    storageEntry: CmsStorageEntry;
+    model: StorageOperationsCmsModel;
+}
+
 const convertToStorageEntry = (params: ConvertStorageEntryParams): CmsStorageEntry => {
     const { model, storageEntry } = params;
 
