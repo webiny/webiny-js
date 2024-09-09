@@ -2,7 +2,7 @@ import * as React from "react";
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import { makeDecoratable } from "@webiny/react-composition";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "~/utils";
+import { withStaticProps, cn } from "~/utils";
 
 type AvatarImageProps = React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>;
 
@@ -20,18 +20,12 @@ AvatarImageBase.displayName = AvatarPrimitive.Image.displayName;
 
 const AvatarImage = makeDecoratable("AvatarImage", AvatarImageBase);
 
-interface AvatarFallbackProps
-    extends Omit<
-        React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>,
-        "content" | "children"
-    > {
-    content: React.ReactNode;
-}
+type AvatarFallbackProps = React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>;
 
 const AvatarFallbackBase = React.forwardRef<
     React.ElementRef<typeof AvatarPrimitive.Fallback>,
     AvatarFallbackProps
->(({ className, content, ...props }, ref) => (
+>(({ className, ...props }, ref) => (
     <AvatarPrimitive.Fallback
         ref={ref}
         className={cn(
@@ -39,10 +33,9 @@ const AvatarFallbackBase = React.forwardRef<
             className
         )}
         {...props}
-    >
-        {content}
-    </AvatarPrimitive.Fallback>
+    />
 ));
+
 AvatarFallbackBase.displayName = AvatarPrimitive.Fallback.displayName;
 
 const AvatarFallback = makeDecoratable("AvatarFallback", AvatarFallbackBase);
@@ -90,13 +83,11 @@ const AvatarBase = React.forwardRef<React.ElementRef<typeof AvatarPrimitive.Root
 
 AvatarBase.displayName = AvatarPrimitive.Root.displayName;
 
-const Avatar = makeDecoratable("Avatar", AvatarBase);
+const DecoratableAvatar = makeDecoratable("Avatar", AvatarBase);
 
-export {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-    type AvatarProps,
-    type AvatarImageProps,
-    type AvatarFallbackProps
-};
+const Avatar = withStaticProps(DecoratableAvatar, {
+    Fallback: AvatarFallback,
+    Image: AvatarImage
+});
+
+export { Avatar, type AvatarProps, type AvatarImageProps, type AvatarFallbackProps };

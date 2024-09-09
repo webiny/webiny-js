@@ -1,9 +1,5 @@
 import React from "react";
-import {
-    Avatar as AdminUiAvatar,
-    AvatarFallback as AdminUiAvatarFallback,
-    AvatarImage as AdminUiAvatarImage
-} from "@webiny/admin-ui";
+import { Avatar as AdminUiAvatar } from "@webiny/admin-ui";
 
 export interface AvatarProps {
     /**
@@ -60,8 +56,8 @@ export const Avatar = (props: AvatarProps) => {
         <AdminUiAvatar
             className={className}
             style={{ width, height, ...style }}
-            image={<AdminUiAvatarImage src={src} alt={alt} width={width} height={height} />}
-            fallback={<AdminUiAvatarFallback content={fallbackText} delayMs={0} />}
+            image={<AdminUiAvatar.Image src={src} alt={alt} width={width} height={height} />}
+            fallback={<AdminUiAvatar.Fallback content={fallbackText} delayMs={0} />}
         />
     );
 };

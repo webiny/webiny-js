@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Avatar, AvatarImage, AvatarFallback } from "./Avatar";
+import { Avatar } from "./Avatar";
 import * as React from "react";
 
 const meta: Meta<typeof Avatar> = {
@@ -16,8 +16,8 @@ type Story = StoryObj<typeof Avatar>;
 
 export const Default: Story = {
     args: {
-        image: <AvatarImage src="https://github.com/webiny-bot.png" alt="@webiny" />,
-        fallback: <AvatarFallback content={"W"}/>
+        image: <Avatar.Image src="https://github.com/webiny-bot.png" alt="@webiny" />,
+        fallback: <Avatar.Fallback>W</Avatar.Fallback>
     },
     argTypes: {
         size: {
@@ -30,7 +30,6 @@ export const Default: Story = {
         }
     }
 };
-
 
 export const Sizes: Story = {
     args: {
