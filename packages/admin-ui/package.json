@@ -12,6 +12,7 @@
     "@material-design-icons/svg": "^0.14.3",
     "@radix-ui/react-accessible-icon": "^1.1.0",
     "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-switch": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
