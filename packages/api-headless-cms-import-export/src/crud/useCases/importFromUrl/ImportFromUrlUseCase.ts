@@ -103,6 +103,7 @@ export class ImportFromUrlUseCase implements IImportFromUrlUseCase {
                     | ICmsImportExportValidatedContentEntriesFile
                     | ICmsImportExportValidatedAssetsFile
                 >,
+                maxInsertErrors: params.maxInsertErrors,
                 steps: {}
             },
             parent: integrityTask

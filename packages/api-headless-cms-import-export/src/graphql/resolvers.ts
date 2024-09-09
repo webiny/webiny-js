@@ -26,7 +26,8 @@ const getValidateImportFromUrl = zod.object({
 });
 
 const importFromUrlValidation = zod.object({
-    id: zod.string()
+    id: zod.string(),
+    maxInsertErrors: zod.number().optional()
 });
 
 export const createResolvers = (models: NonEmptyArray<string>) => {

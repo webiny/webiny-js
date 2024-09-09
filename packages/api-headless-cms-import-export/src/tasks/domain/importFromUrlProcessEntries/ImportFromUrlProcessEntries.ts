@@ -9,6 +9,7 @@ import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { ICmsEntryManager } from "@webiny/api-headless-cms/types";
 import { ImportFromUrlProcessEntriesInsert } from "~/tasks/domain/importFromUrlProcessEntries/ImportFromUrlProcessEntriesInsert";
 import { ImportFromUrlProcessEntriesDecompress } from "~/tasks/domain/importFromUrlProcessEntries/ImportFromUrlProcessEntriesDecompress";
+import { FileFetcher } from "~/tasks/utils/fileFetcher";
 
 export interface IImportFromUrlProcessEntriesParams {
     client: S3Client;
@@ -30,7 +31,7 @@ export class ImportFromUrlProcessEntries<
     }
 
     public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { context, response, input, isCloseToTimeout, isAborted } = params;
+        const { context, response, input } = params;
 
         if (!input.modelId) {
             return response.error({
@@ -59,6 +60,11 @@ export class ImportFromUrlProcessEntries<
             });
         }
 
+        const fileFetcher = new FileFetcher({
+            client: this.client,
+            bucket: this.bucket
+        });
+
         if (!input.decompress?.done) {
             try {
                 const decompress = new ImportFromUrlProcessEntriesDecompress<C, I, O>({
@@ -75,25 +81,21 @@ export class ImportFromUrlProcessEntries<
                     stack: ex.stack
                 });
             }
-        } else if (!input.insert?.done) {
-            let result: I = structuredClone(input);
-
-            try {
-                const insert = new ImportFromUrlProcessEntriesInsert<C, I, O>({
-                    entryManager,
-                    client: this.client
-                });
-                return await insert.run(params);
-            } catch (ex) {
-                return response.error({
-                    message: ex.message,
-                    code: ex.code || "DECOMPRESS_ERROR",
-                    data: ex.data,
-                    stack: ex.stack
-                });
-            }
         }
-
-        return response.error("Unknown step.");
+        try {
+            const insert = new ImportFromUrlProcessEntriesInsert<C, I, O>({
+                entryManager,
+                client: this.client,
+                fileFetcher
+            });
+            return await insert.run(params);
+        } catch (ex) {
+            return response.error({
+                message: ex.message,
+                code: ex.code || "DECOMPRESS_ERROR",
+                data: ex.data,
+                stack: ex.stack
+            });
+        }
     }
 }

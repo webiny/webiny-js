@@ -3,6 +3,7 @@ import { TaskDataStatus } from "@webiny/tasks";
 
 export interface IImportFromUrlUseCaseExecuteParams {
     id: string;
+    maxInsertErrors?: number;
 }
 
 export interface IImportFromUrlUseCaseExecuteResponse {

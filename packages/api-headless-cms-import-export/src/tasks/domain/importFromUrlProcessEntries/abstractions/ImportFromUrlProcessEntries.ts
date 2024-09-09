@@ -6,22 +6,46 @@ export type IImportFromUrlProcessEntriesInputFile = Pick<
     "key" | "type"
 >;
 
+export interface IImportFromUrlProcessEntriesInsertFailedFileInput {
+    key: string;
+    message: string;
+}
+
+export interface IImportFromUrlProcessEntriesInsertProcessedFileErrorsInput {
+    message: string;
+    id: string;
+}
+
+export interface IImportFromUrlProcessEntriesInsertProcessedFileInput {
+    key: string;
+    success: number;
+    total: number;
+    errors: IImportFromUrlProcessEntriesInsertProcessedFileErrorsInput[];
+}
+export interface IImportFromUrlProcessEntriesInsertInput {
+    processed?: IImportFromUrlProcessEntriesInsertProcessedFileInput[];
+    failed?: IImportFromUrlProcessEntriesInsertFailedFileInput[];
+    file?: string;
+    done?: boolean;
+}
+
 export interface IImportFromUrlProcessEntriesInput {
     modelId: string;
     file: IImportFromUrlProcessEntriesInputFile;
+    maxInsertErrors: number | undefined;
     decompress?: {
         done?: boolean;
         files?: string[];
         next?: number;
     };
-    insert?: {
-        done?: boolean;
-    };
+    insert?: IImportFromUrlProcessEntriesInsertInput;
 }
 
 export interface IImportFromUrlProcessEntriesOutputFile {
     key: string;
-    entries: number;
+    success: number;
+    total: number;
+    errors: IImportFromUrlProcessEntriesInsertProcessedFileErrorsInput[];
 }
 
 export interface IImportFromUrlProcessEntriesOutput extends ITaskResponseDoneResultOutput {

@@ -7,9 +7,10 @@ import {
 import { basename } from "path";
 import {
     IFileFetcher,
+    IFileFetcherFetchResult,
     IFileFetcherFile,
     IFileFetcherHeadResult,
-    IFileFetcherReadable
+    IFileFetcherStream
 } from "./abstractions/FileFetcher";
 
 export interface IFileFetcherParams {
@@ -80,21 +81,48 @@ export class FileFetcher implements IFileFetcher {
         }
     }
 
-    public async fetch(key: string): Promise<IFileFetcherReadable | null> {
+    public async fetch(key: string): Promise<IFileFetcherFetchResult | null> {
         try {
-            const response = await this.client.send(
+            return await this.client.send(
                 new GetObjectCommand({
                     Bucket: this.bucket,
                     Key: key
                 })
             );
+        } catch (ex) {
+            console.log(`Could not fetch file "${key}" from bucket "${this.bucket}".`);
+            console.error(ex);
+            return null;
+        }
+    }
+
+    public async stream(key: string): Promise<IFileFetcherStream | null> {
+        try {
+            const response = await this.fetch(key);
+            if (!response) {
+                return null;
+            }
             /**
              * We can safely cast because we are sure that the response will be readable.
              * The method which is using the fetch() should handle the case when the response is null.
              */
-            return (response.Body || null) as IFileFetcherReadable | null;
+            return (response.Body || null) as IFileFetcherStream | null;
         } catch (ex) {
             console.log(`Could not fetch file "${key}" from bucket "${this.bucket}".`);
+            console.error(ex);
+            return null;
+        }
+    }
+
+    public async read(key: string): Promise<string | null> {
+        const response = await this.fetch(key);
+        if (!response?.Body) {
+            return null;
+        }
+        try {
+            return response.Body.transformToString();
+        } catch (ex) {
+            console.log(`Could not read file "${key}" from bucket "${this.bucket}".`);
             console.error(ex);
             return null;
         }

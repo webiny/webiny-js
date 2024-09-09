@@ -1,12 +1,12 @@
 import {
     IFileFetcher,
-    IFileFetcherFetchCallable,
+    IFileFetcherStreamCallable,
     IFileFetcherListCallable
 } from "~/tasks/utils/fileFetcher";
 
 export interface ICreateFileFetcherParams {
     list?: IFileFetcherListCallable;
-    fetch?: IFileFetcherFetchCallable;
+    fetch?: IFileFetcherStreamCallable;
 }
 
 export const createFileFetcher = (params?: ICreateFileFetcherParams): IFileFetcher => {
@@ -14,7 +14,7 @@ export const createFileFetcher = (params?: ICreateFileFetcherParams): IFileFetch
         list: async () => {
             return [];
         },
-        fetch: async () => {
+        stream: async () => {
             return null;
         },
         ...params

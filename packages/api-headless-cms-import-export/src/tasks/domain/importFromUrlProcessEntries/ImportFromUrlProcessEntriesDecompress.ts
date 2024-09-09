@@ -67,10 +67,6 @@ export class ImportFromUrlProcessEntriesDecompress<
         while (true) {
             const next = result.decompress?.next || 0;
             const source = files.at(next);
-            console.log("taking next file,", {
-                next,
-                path: source?.path || "none"
-            });
             if (!source) {
                 return response.continue({
                     ...result,

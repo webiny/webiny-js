@@ -1,4 +1,4 @@
-import { HeadObjectCommandOutput } from "@webiny/aws-sdk/client-s3";
+import { HeadObjectCommandOutput, GetObjectCommandOutput } from "@webiny/aws-sdk/client-s3";
 import { Readable } from "stream";
 
 export interface IFileFetcherFile {
@@ -7,7 +7,8 @@ export interface IFileFetcherFile {
     size: number;
 }
 
-export type IFileFetcherReadable = Readable;
+export type IFileFetcherStream = Readable;
+export type IFileFetcherFetchResult = GetObjectCommandOutput;
 
 export interface IFileFetcherExistsCallable {
     (key: string): Promise<boolean>;
@@ -24,7 +25,15 @@ export interface IFileFetcherListCallable {
 }
 
 export interface IFileFetcherFetchCallable {
-    (key: string): Promise<IFileFetcherReadable | null>;
+    (key: string): Promise<IFileFetcherFetchResult | null>;
+}
+
+export interface IFileFetcherStreamCallable {
+    (key: string): Promise<IFileFetcherStream | null>;
+}
+
+export interface IFileFetcherReadCallable {
+    (key: string): Promise<string | null>;
 }
 
 export interface IFileFetcher {
@@ -32,4 +41,6 @@ export interface IFileFetcher {
     head: IFileFetcherHeadCallable;
     list: IFileFetcherListCallable;
     fetch: IFileFetcherFetchCallable;
+    stream: IFileFetcherStreamCallable;
+    read: IFileFetcherReadCallable;
 }

@@ -41,6 +41,7 @@ export interface IImportFromUrlControllerInput {
     files: NonEmptyArray<
         ICmsImportExportValidatedContentEntriesFile | ICmsImportExportValidatedAssetsFile
     >;
+    maxInsertErrors: number | undefined;
     steps?: IImportFromUrlControllerInputSteps;
 }
 

@@ -26,6 +26,7 @@ export type {
     CompleteMultipartUploadOutput,
     DeleteObjectOutput,
     GetObjectOutput,
+    GetObjectCommandOutput,
     HeadObjectOutput,
     HeadObjectCommandOutput,
     ListObjectsOutput,

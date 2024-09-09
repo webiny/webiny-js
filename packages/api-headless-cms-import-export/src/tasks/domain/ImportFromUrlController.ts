@@ -48,11 +48,11 @@ export class ImportFromUrlController<
             const step = new ImportFromUrlControllerProcessEntriesStep<C, I, O>();
             return step.execute(params);
         }
-        // } else if (!input.steps?.[IImportFromUrlControllerInputStep.IMPORT]?.done) {
-        //     const step = new ImportFromUrlControllerImportStep();
+        // else if (!input.steps?.[IImportFromUrlControllerInputStep.PROCESS_ASSETS]?.done) {
+        //     const step = new ImportFromUrlControllerProcessAssetsStep<C, I, O>();
         //     return step.execute(params);
         // }
 
-        return response.error("Unknown step.");
+        return response.error("Should not reach this point.");
     }
 }

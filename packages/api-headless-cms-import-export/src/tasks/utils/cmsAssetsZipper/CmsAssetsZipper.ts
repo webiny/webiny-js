@@ -187,7 +187,7 @@ export class CmsAssetsZipper implements ICmsAssetsZipper {
             /**
              * If there is an asset, load it from the storage and add it to the zipper.
              */
-            const file = await this.fileFetcher.fetch(asset.key);
+            const file = await this.fileFetcher.stream(asset.key);
             /**
              * Possibly asset was not found on the storage?
              * Then just continue with the next one.

@@ -1,5 +1,5 @@
-import { CmsEntry, CmsEntryMeta } from "@webiny/api-headless-cms/types";
-import { ICmsEntryManifestJson, IFileMeta } from "../types";
+import { CmsEntry } from "@webiny/api-headless-cms/types";
+import { ICmsEntryEntriesJson, ICmsEntryManifestJson, IFileMeta } from "../types";
 import { CmsEntryZipperExecuteContinueResult } from "./CmsEntryZipperExecuteContinueResult";
 import { CmsEntryZipperExecuteDoneResult } from "./CmsEntryZipperExecuteDoneResult";
 import {
@@ -23,17 +23,18 @@ export interface ICmsEntryZipperConfig {
     uniqueAssetsResolver: IUniqueResolver<IAsset>;
 }
 
-interface ICreateBufferDataParams {
-    items: CmsEntry[];
-    meta: CmsEntryMeta;
-    after?: string;
-}
-
-const createBufferData = (params: ICreateBufferDataParams) => {
+const createBufferData = (params: ICmsEntryEntriesJson) => {
     const { items, meta, after } = params;
     return Buffer.from(
         JSON.stringify({
             items: items.map((item: Partial<CmsEntry>) => {
+                /**
+                 * We will use the entryId as the ID of the entry.
+                 */
+                const id = item.entryId;
+                /**
+                 * We need to remove some fields that are not needed in the export.
+                 */
                 delete item.tenant;
                 delete item.locale;
                 delete item.locked;
@@ -48,7 +49,8 @@ const createBufferData = (params: ICreateBufferDataParams) => {
 
                 return {
                     ...item,
-                    ...values
+                    ...values,
+                    id
                 };
             }),
             meta,

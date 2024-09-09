@@ -96,6 +96,7 @@ export interface ICmsImportExportObjectGetValidateImportFromUrlResult {
 
 export interface ICmsImportExportObjectImportFromUrlParams {
     id: string;
+    maxInsertErrors?: number;
 }
 
 export interface ICmsImportExportProcessedFile extends ICmsImportExportValidatedValidFile {

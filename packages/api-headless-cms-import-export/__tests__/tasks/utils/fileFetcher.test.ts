@@ -39,7 +39,7 @@ describe("file fetcher", () => {
 
         expect(result).toEqual([]);
 
-        const file = await fileFetcher.fetch("prefix-key/file.txt");
+        const file = await fileFetcher.stream("prefix-key/file.txt");
         expect(file).toBeNull();
     });
 
@@ -71,7 +71,7 @@ describe("file fetcher", () => {
                 })
         );
 
-        const file = await fileFetcher.fetch("prefix-key/file.txt");
+        const file = await fileFetcher.stream("prefix-key/file.txt");
         expect(file).not.toBeNull();
         expect(file).toEqual("mock");
     });
@@ -89,7 +89,7 @@ describe("file fetcher", () => {
         const result = await fileFetcher.list("prefix-key/");
         expect(result).toEqual([]);
 
-        const file = await fileFetcher.fetch("prefix-key/file.txt");
+        const file = await fileFetcher.stream("prefix-key/file.txt");
         expect(file).toBeNull();
     });
 });

@@ -50,6 +50,7 @@ export class ImportFromUrlControllerProcessEntriesStep<
                             key: prependImportPath(file.key),
                             type: file.type
                         },
+                        maxInsertErrors: input.maxInsertErrors,
                         modelId: input.modelId
                     }
                 });
