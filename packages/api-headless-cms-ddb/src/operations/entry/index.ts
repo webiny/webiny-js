@@ -604,7 +604,7 @@ export const createEntriesStorageOperations = (
             // entry-level meta fields to match the previous revision's entry-level meta fields.
             items.push(
                 entity.putBatch({
-                    ...initialLatestStorageEntry,
+                    ...latestStorageEntry,
                     PK: partitionKey,
                     SK: createRevisionSortKey(initialLatestStorageEntry),
                     TYPE: createType(),
