@@ -245,8 +245,10 @@ export const createEntriesStorageOperations = (
         /**
          * We need to:
          *  - create the main entry item
-         *  - update the last entry item to a current one
-         *  - update the published entry item to a current one (if the entry is published)
+         *  - update the latest entry item to the current one
+         *  - if the entry's status was set to "published":
+         *      - update the published entry item to the current one
+         *      - unpublish previously published revision (if any)
          */
         const items = [
             entity.putBatch({
@@ -279,6 +281,22 @@ export const createEntriesStorageOperations = (
                     GSI1_SK: createGSISortKey(storageEntry)
                 })
             );
+
+            // Unpublish previously published revision (if any).
+            const publishedRevisionStorageEntry = await getPublishedRevisionByEntryId(model, entry);
+            if (publishedRevisionStorageEntry) {
+                items.push(
+                    entity.putBatch({
+                        ...publishedRevisionStorageEntry,
+                        PK: partitionKey,
+                        SK: createRevisionSortKey(publishedRevisionStorageEntry),
+                        TYPE: createType(),
+                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
+                        GSI1_PK: createGSIPartitionKey(model, "A"),
+                        GSI1_SK: createGSISortKey(publishedRevisionStorageEntry)
+                    })
+                );
+            }
         }
 
         try {

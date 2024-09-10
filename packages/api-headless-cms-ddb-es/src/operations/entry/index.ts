@@ -314,6 +314,30 @@ export const createEntriesStorageOperations = (
                     ...publishedKeys
                 })
             );
+
+            // Unpublish previously published revision (if any).
+            const [publishedRevisionStorageEntry] = await dataLoaders.getPublishedRevisionByEntryId(
+                {
+                    model,
+                    ids: [entry.id]
+                }
+            );
+
+            if (publishedRevisionStorageEntry) {
+                items.push(
+                    entity.putBatch({
+                        ...publishedRevisionStorageEntry,
+                        PK: createPartitionKey({
+                            id: publishedRevisionStorageEntry.id,
+                            locale: model.locale,
+                            tenant: model.tenant
+                        }),
+                        SK: createRevisionSortKey(publishedRevisionStorageEntry),
+                        TYPE: createRecordType(),
+                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                    })
+                );
+            }
         }
 
         try {
