@@ -1,6 +1,5 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
 import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 
 import { Select } from "./Select";
@@ -10,7 +9,11 @@ const meta: Meta<typeof Select> = {
     title: "Components/Select",
     component: Select,
     tags: ["autodocs"],
-    args: { onOpenChange: fn(), onValueChange: fn() }
+    argTypes: {
+        // Note: after upgrading to Storybook 8.X, use `fn`from `@storybook/test` to spy on the onOpenChange and onValueChange argument.
+        onOpenChange: { action: "onOpenChange" },
+        onValueChange: { action: "onValueChange" }
+    }
 };
 
 export default meta;
