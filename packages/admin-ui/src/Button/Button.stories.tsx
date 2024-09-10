@@ -1,6 +1,5 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
 import { ReactComponent as PencilIcon } from "@material-design-icons/svg/filled/edit.svg";
 import { Button } from "./Button";
 
@@ -14,10 +13,10 @@ const meta: Meta<typeof Button> = {
     argTypes: {
         variant: { control: "select", options: ["primary", "secondary", "outline", "ghost"] },
         size: { control: "select", options: ["sm", "md", "lg", "xl"] },
-        text: { control: "text" }
-    },
-    // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
-    args: { onClick: fn() }
+        text: { control: "text" },
+        // Note: after upgrading to Storybook 8.X, use `fn`from `@storybook/test` to spy on the onClick argument.
+        onClick: { action: "onClick" }
+    }
 };
 
 export default meta;
