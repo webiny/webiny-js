@@ -57,7 +57,7 @@ export const Avatar = (props: AvatarProps) => {
             className={className}
             style={{ width, height, ...style }}
             image={<AdminUiAvatar.Image src={src} alt={alt} width={width} height={height} />}
-            fallback={<AdminUiAvatar.Fallback content={fallbackText} delayMs={0} />}
+            fallback={<AdminUiAvatar.Fallback delayMs={0}>{fallbackText}</AdminUiAvatar.Fallback>}
         />
     );
 };
