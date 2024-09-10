@@ -1,5 +1,4 @@
 import React from "react";
-import { Ripple as RmwcRipple } from "@rmwc/ripple";
 
 interface Props {
     // Choose the type of ripple.
@@ -12,17 +11,11 @@ interface Props {
 }
 
 /**
- * Use Ripple component to display a list of choices, once the handler is triggered.
+ * @deprecated This component is deprecated and will be removed in future releases.
  */
 const Ripple = (props: Props) => {
-    // Let's pass "unbounded" / "primary" / "accent" flags as "type" prop instead.
-    const type = props.type || "surface";
-
-    return (
-        <RmwcRipple {...{ [type]: true }} {...props}>
-            {props.children}
-        </RmwcRipple>
-    );
+    // Return only the children
+    return <>{props.children}</>;
 };
 
 export { Ripple };

@@ -1,7 +1,6 @@
 import React from "react";
 import { ReactComponent as SettingsIcon } from "@material-design-icons/svg/outlined/settings.svg";
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
 import {
     Toast,
     ToastProvider,
@@ -19,7 +18,10 @@ const meta: Meta<typeof Toast> = {
     parameters: {
         layout: "fullscreen"
     },
-    args: { onOpenChange: fn() },
+    argTypes: {
+        // Note: after upgrading to Storybook 8.X, use `fn`from `@storybook/test` to spy on the onOpenChange argument.
+        onOpenChange: { action: "onOpenChange" }
+    },
     decorators: [
         (Story, context) => {
             const { args } = context;

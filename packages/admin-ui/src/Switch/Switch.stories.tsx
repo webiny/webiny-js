@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
 
 import { Switch } from "./Switch";
 
@@ -7,7 +6,10 @@ const meta: Meta<typeof Switch> = {
     title: "Components/Switch",
     component: Switch,
     tags: ["autodocs"],
-    args: { onCheckedChange: fn() }
+    argTypes: {
+        // Note: after upgrading to Storybook 8.X, use `fn`from `@storybook/test` to spy on the onCheckedChange argument.
+        onCheckedChange: { action: "onCheckedChange" }
+    }
 };
 
 export default meta;
