@@ -465,6 +465,7 @@ jobs:
         with:
           name: verdaccio-files-ddb
           retention-days: 1
+          include-hidden-files: true
           path: |-
             next/.verdaccio/
             next/.verdaccio.yaml
@@ -487,6 +488,7 @@ jobs:
         with:
           name: project-files-ddb
           retention-days: 1
+          include-hidden-files: true
           path: |-
             new-webiny-project/
             !new-webiny-project/node_modules/**/*
@@ -670,6 +672,7 @@ jobs:
         with:
           name: verdaccio-files-ddb-es
           retention-days: 1
+          include-hidden-files: true
           path: |-
             next/.verdaccio/
             next/.verdaccio.yaml
@@ -692,6 +695,7 @@ jobs:
         with:
           name: project-files-ddb-es
           retention-days: 1
+          include-hidden-files: true
           path: |-
             new-webiny-project/
             !new-webiny-project/node_modules/**/*
@@ -880,6 +884,7 @@ jobs:
         with:
           name: verdaccio-files-ddb-os
           retention-days: 1
+          include-hidden-files: true
           path: |-
             next/.verdaccio/
             next/.verdaccio.yaml
@@ -902,6 +907,7 @@ jobs:
         with:
           name: project-files-ddb-os
           retention-days: 1
+          include-hidden-files: true
           path: |-
             new-webiny-project/
             !new-webiny-project/node_modules/**/*
