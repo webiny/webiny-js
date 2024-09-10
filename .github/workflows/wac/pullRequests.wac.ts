@@ -239,6 +239,7 @@ export const pullRequests = createWorkflow({
                     with: {
                         name: "verdaccio-files",
                         "retention-days": 1,
+                        "include-hidden-files": true,
                         path: [
                             DIR_WEBINY_JS + "/.verdaccio/",
                             DIR_WEBINY_JS + "/.verdaccio.yaml"

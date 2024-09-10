@@ -112,6 +112,7 @@ const createCypressJobs = (dbSetup: string) => {
                 with: {
                     name: `verdaccio-files-${dbSetup}`,
                     "retention-days": 1,
+                    "include-hidden-files": true,
                     path: [DIR_WEBINY_JS + "/.verdaccio/", DIR_WEBINY_JS + "/.verdaccio.yaml"].join(
                         "\n"
                     )
@@ -137,6 +138,7 @@ const createCypressJobs = (dbSetup: string) => {
                 with: {
                     name: `project-files-${dbSetup}`,
                     "retention-days": 1,
+                    "include-hidden-files": true,
                     path: [
                         `${DIR_TEST_PROJECT}/`,
                         `!${DIR_TEST_PROJECT}/node_modules/**/*`,

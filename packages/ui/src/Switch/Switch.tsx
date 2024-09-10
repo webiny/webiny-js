@@ -13,9 +13,6 @@ type Props = {
     /** Sets the control to checked (on) or unchecked (off). */
     checked?: boolean;
 
-    /** The value of the control. Can be a string, number, or an array of strings. */
-    value?: string | number | string[];
-
     /** A label displayed alongside the control. Can be any React node. */
     label?: React.ReactNode;
 

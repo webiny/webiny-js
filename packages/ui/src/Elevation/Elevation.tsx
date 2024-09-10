@@ -1,5 +1,4 @@
 import React from "react";
-import { Elevation as RmwcElevation } from "@rmwc/elevation";
 
 export type ElevationProps = {
     // Any element that needs to be highlighted.
@@ -19,15 +18,12 @@ export type ElevationProps = {
 };
 
 /**
- * Elevation component visually raises any content by applying shadow.
+ * @deprecated This component is deprecated and will be removed in future releases.
+ * Please use the `Card` component from the `@webiny/admin-ui` package instead.
  */
-const Elevation = React.forwardRef((props: ElevationProps, ref: React.Ref<any>) => {
-    return (
-        <RmwcElevation ref={ref} {...props}>
-            {props.children}
-        </RmwcElevation>
-    );
-});
+const Elevation = (props: ElevationProps) => {
+    return <div className={"bg-white shadow-md p-4"}>{props.children}</div>;
+};
 
 Elevation.displayName = "Elevation";
 

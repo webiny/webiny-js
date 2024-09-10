@@ -1,6 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
-
 import { Slider } from "./Slider";
 import React from "react";
 
@@ -8,9 +6,9 @@ const meta: Meta<typeof Slider> = {
     title: "Components/Slider",
     component: Slider,
     tags: ["autodocs"],
-    args: {
-        onValueChange: fn(),
-        onValueCommit: fn()
+    argTypes: {
+        onValueChange: { action: "onValueChange" },
+        onValueCommit: { action: "onValueCommit" }
     },
     parameters: {
         layout: "fullscreen"
