@@ -36,7 +36,6 @@
     "@storybook/addon-essentials": "7.6.20",
     "@storybook/react": "7.6.20",
     "@storybook/react-webpack5": "7.6.20",
-    "@storybook/test": "7.6.20",
     "@storybook/theming": "7.6.20",
     "@svgr/webpack": "^6.1.1",
     "@types/react": "18.2.79",

@@ -1,7 +1,6 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { ReactComponent as XIcon } from "@material-design-icons/svg/filled/close.svg";
-import { fn } from "@storybook/test";
 import { Icon } from "./Icon";
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
@@ -39,8 +38,11 @@ export const ClickableIcon: Story = {
     args: {
         icon: <XIcon />,
         label: "Close",
-        className: "cursor-pointer",
-        onClick: fn()
+        className: "cursor-pointer"
+    },
+    argTypes: {
+        // Note: after upgrading to Storybook 8.X, use `fn`from `@storybook/test` to spy on the onClick argument.
+        onClick: { action: "onClick" }
     }
 };
 
