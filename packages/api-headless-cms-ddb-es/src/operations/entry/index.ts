@@ -1289,11 +1289,7 @@ export const createEntriesStorageOperations = (
             items.push(
                 entity.putBatch({
                     ...latestStorageEntry,
-                    PK: createPartitionKey({
-                        id: initialLatestStorageEntry.id,
-                        locale: model.locale,
-                        tenant: model.tenant
-                    }),
+                    PK: partitionKey,
                     SK: createRevisionSortKey(initialLatestStorageEntry),
                     TYPE: createRecordType()
                 })
