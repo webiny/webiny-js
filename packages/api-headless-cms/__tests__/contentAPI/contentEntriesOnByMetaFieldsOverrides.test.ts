@@ -170,7 +170,7 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
         });
 
         const { data: secondPublishedRevision } = await manageIdentityA.getTestEntry({
-            revision: `${rev.entryId}#0001`
+            revision: `${rev.entryId}#0002`
         });
 
         expect(firstPublishedRevision.meta.status).toBe("unpublished");
