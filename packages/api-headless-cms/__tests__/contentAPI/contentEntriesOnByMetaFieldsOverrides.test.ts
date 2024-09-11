@@ -95,7 +95,7 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
         expect(publishedRevWithCustomLastPublishedValues.savedOn > rev.savedOn).toBeTrue();
         expect(
             publishedRevWithCustomLastPublishedValues.revisionFirstPublishedOn >
-            rev.revisionFirstPublishedOn
+                rev.revisionFirstPublishedOn
         ).toBeTrue();
 
         const { data: publishedRevWithAllCustomValues } = await manageIdentityA.createTestEntryFrom(
