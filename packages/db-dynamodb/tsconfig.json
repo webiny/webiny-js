@@ -7,7 +7,8 @@
     { "path": "../db" },
     { "path": "../error" },
     { "path": "../handler-db" },
-    { "path": "../plugins" }
+    { "path": "../plugins" },
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -27,7 +28,9 @@
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     },
     "baseUrl": "."
   }
