@@ -38,7 +38,10 @@ export const UpdateStatePlugin = ({ value }: UpdateStatePluginProps) => {
             // We must set the state outside the `editor.update()` callback to prevent freezing.
             // https://lexical.dev/docs/api/classes/lexical.LexicalEditor#seteditorstate
             if (newState) {
-                editor.setEditorState(newState);
+                const state = newState;
+                queueMicrotask(() => {
+                    editor.setEditorState(state);
+                });
             }
         }
     }, [value, editor]);

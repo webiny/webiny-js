@@ -1,10 +1,22 @@
 const path = require("path");
 const { Worker } = require("worker_threads");
+const { compress, decompress } = require("@webiny/utils/compression/gzip");
 
 const WEBINY_WATCH_FN_INVOCATION_EVENT = "webiny.watch.functionInvocation";
 const WEBINY_WATCH_FN_INVOCATION_RESULT_EVENT = "webiny.watch.functionInvocationResult";
 
 const WATCH_WORKER_PATH = path.join(__dirname, "localInvocationWorker.js");
+
+const jsonStringifyAndCompress = input => {
+    const jsonStringInput = JSON.stringify(input);
+    return compress(jsonStringInput);
+};
+
+const decompressAndJsonParse = async input => {
+    const inputBuffer = Buffer.from(input);
+    const jsonStringResult = await decompress(inputBuffer);
+    return JSON.parse(jsonStringResult);
+};
 
 const initInvocationForwarding = async ({
     iotEndpoint,
@@ -43,7 +55,7 @@ const initInvocationForwarding = async ({
                     workerData: {
                         handler: {
                             path: invokedLambdaFunction.path,
-                            args: payload.data.args
+                            args: await decompressAndJsonParse(payload.data.compressedArgs)
                         }
                     }
                 });
@@ -71,8 +83,8 @@ const initInvocationForwarding = async ({
                     eventId: new Date().getTime(),
                     data: {
                         originalEventId: payload.eventId,
-                        result,
-                        error: null
+                        compressedResult: await jsonStringifyAndCompress(result),
+                        compressedError: null
                     }
                 })
             );
@@ -85,11 +97,11 @@ const initInvocationForwarding = async ({
                     eventId: new Date().getTime(),
                     data: {
                         originalEventId: payload.eventId,
-                        data: null,
-                        error: {
+                        compressedResult: null,
+                        compressedError: await jsonStringifyAndCompress({
                             message: error.message,
                             stack: error.stack
-                        }
+                        })
                     }
                 })
             );

@@ -102,7 +102,10 @@ export const Select = (props: SelectProps) => {
 
     // Memoize the label and placeholder values based on the component size.
     const { label, placeholder } = useMemo(() => {
-        const { size, label, placeholder } = props;
+        const { size, label, placeholder: placeholderText } = props;
+
+        // If `placeholderText` is null, undefined, or an empty string after trimming, `placeholder` will be set to `undefined`.
+        const placeholder = placeholderText?.trim() || undefined;
 
         // For small or medium size, we set only the placeholder, using label as fallback.
         if (size === "small" || size === "medium") {

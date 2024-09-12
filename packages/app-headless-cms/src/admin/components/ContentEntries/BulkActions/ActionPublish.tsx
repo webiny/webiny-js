@@ -1,25 +1,25 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { ReactComponent as PublishIcon } from "@material-design-icons/svg/outlined/publish.svg";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { usePermission, useCms, useModel } from "~/admin/hooks";
 import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
 import { useRecords } from "@webiny/app-aco";
+import { useSnackbar } from "@webiny/app-admin";
 
 export const ActionPublish = observer(() => {
     const { model } = useModel();
     const { canPublish } = usePermission();
     const { publishEntryRevision } = useCms();
     const { updateRecordInCache } = useRecords();
+    const { showSnackbar } = useSnackbar();
 
     const { useWorker, useButtons, useDialog } = ContentEntryListConfig.Browser.BulkAction;
     const { IconButton } = useButtons();
     const worker = useWorker();
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
-    const entriesLabel = useMemo(() => {
-        return getEntriesLabel(worker.items.length);
-    }, [worker.items.length]);
+    const entriesLabel = getEntriesLabel();
 
     const openPublishEntriesDialog = () =>
         showConfirmationDialog({
@@ -27,6 +27,19 @@ export const ActionPublish = observer(() => {
             message: `You are about to publish ${entriesLabel}. Are you sure you want to continue?`,
             loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
+                if (worker.isSelectedAll) {
+                    await worker.processInBulk("Publish");
+                    worker.resetItems();
+                    showSnackbar(
+                        "All entries will be published. This process will be carried out in the background and may take some time. You can safely navigate away from this page while the process is running.",
+                        {
+                            dismissIcon: true,
+                            timeout: -1
+                        }
+                    );
+                    return;
+                }
+
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
                         const response = await publishEntryRevision({ model, id: item.id });

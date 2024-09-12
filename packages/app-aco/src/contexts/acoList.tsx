@@ -34,6 +34,12 @@ export interface AcoListContextData<T> {
     setSelected: (selected: T[]) => void;
     showFilters: () => void;
     showingFilters: boolean;
+    showingSelectAll: boolean;
+    searchQuery: string;
+    isSelectedAll: boolean;
+    selectAll: () => void;
+    unselectAll: () => void;
+    getWhere: () => Record<string, any>;
 }
 
 export const AcoListContext = React.createContext<
@@ -50,6 +56,8 @@ export interface State<T> {
     searchQuery: string;
     selected: T[];
     showingFilters: boolean;
+    showingSelectAll: boolean;
+    isSelectedAll: boolean;
 }
 
 const initializeAcoListState = (): State<GenericSearchData> => {
@@ -62,7 +70,9 @@ const initializeAcoListState = (): State<GenericSearchData> => {
         listSort: [],
         searchQuery: "",
         selected: [],
-        showingFilters: false
+        showingFilters: false,
+        showingSelectAll: false,
+        isSelectedAll: false
     };
 };
 
@@ -81,7 +91,7 @@ const getCurrentFolderList = (
     return folders.filter(folder => folder.parentId === currentFolderId);
 };
 
-const getCurrentRecordList = <T = GenericSearchData,>(
+const getCurrentRecordList = <T extends GenericSearchData = GenericSearchData>(
     records: SearchRecordItem<T>[],
     folderIdPath: string,
     currentFolderId?: string
@@ -158,7 +168,9 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
                 isSearch: false,
                 searchQuery: "",
                 selected: [],
-                showingFilters: false
+                showingFilters: false,
+                showingSelectAll: false,
+                isSelectedAll: false
             };
         });
     }, [currentFolderId]);
@@ -230,6 +242,36 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
     }, [meta]);
 
     /**
+     * Constructs a "where" condition object based on the current state and properties.
+     *
+     * This function creates a "where" object used to filter data based on the current folder ID,
+     * ownership status, and other existing filters in the state.
+     *
+     * @returns {Object} A "where" condition object containing filters for querying data.
+     */
+    const getWhere = useCallback(() => {
+        // Initialize an empty object
+        let where = {};
+
+        // Check if the current folder ID is not the ROOT_FOLDER folder
+        if (state.folderId !== ROOT_FOLDER) {
+            // Get descendant folder IDs of the current folder
+            const descendantFolderIds = getDescendantFolders(state.folderId).map(
+                folder => folder.id
+            );
+
+            // Set the locationWhere object with descendant folder IDs
+            where = dotPropImmutable.set({}, folderIdInPath, descendantFolderIds);
+        }
+
+        return {
+            createdBy: props.own ? identity?.id : undefined, // Set 'createdBy' based on the ownership status
+            ...state.filters, // Merge existing filters into the 'where' condition
+            ...where // Include where condition if applicable
+        };
+    }, [folders, state.folderId, state.filters, props.own, identity]);
+
+    /**
      * Any time we receive new useful `state` params:
      * - we fetch records according to the new params
      */
@@ -244,16 +286,13 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
                     (state.filters && Object.values(state.filters).filter(Boolean).length)
             );
 
-            let locationWhere = dotPropImmutable.set({}, folderIdPath, state.folderId);
+            let where = dotPropImmutable.set({}, folderIdPath, state.folderId);
 
             if (isSearch) {
                 if (state.folderId === ROOT_FOLDER) {
-                    locationWhere = undefined;
+                    where = undefined;
                 } else {
-                    const descendantFolderIds = getDescendantFolders(state.folderId).map(
-                        folder => folder.id
-                    );
-                    locationWhere = dotPropImmutable.set({}, folderIdInPath, descendantFolderIds);
+                    where = getWhere();
                 }
             }
 
@@ -262,11 +301,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
                 sort: validateOrGetDefaultDbSort(state.listSort),
                 search: state.searchQuery,
                 after: state.after,
-                where: {
-                    createdBy: props.own ? identity!.id : undefined,
-                    ...locationWhere,
-                    ...state.filters
-                }
+                where
             };
 
             await listRecords(params);
@@ -275,10 +310,90 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         };
 
         listItems();
-    }, [state.folderId, state.filters, state.searchQuery, state.after, state.listSort]);
+    }, [
+        state.folderId,
+        state.filters,
+        state.searchQuery,
+        state.after,
+        state.listSort,
+        state.limit,
+        props.own,
+        identity
+    ]);
+
+    /**
+     * useEffect hook to determine if the "Select All" option should be displayed based on the current state and meta properties:
+     *  - if in the root folder with no folders, checks if all records are selected.
+     *  - if in a non-root folder with multiple descendant folders, checks if all records are selected.
+     *  - if there are more items to load, checks if all records are selected.
+     */
+    useEffect(() => {
+        // Destructure relevant properties from state and meta
+        const { selected, folderId } = state;
+        const { hasMoreItems } = meta;
+
+        // Retrieve all descendant folders of the current folderId
+        const folderWithChildren = getDescendantFolders(folderId);
+
+        // Compute the lengths of various arrays for later comparisons
+        const foldersLength = folders.length;
+        const recordsLength = records.length;
+        const selectedLength = selected.length;
+        const folderWithChildrenLength = folderWithChildren.length;
+
+        // Function to determine if all records are selected
+        const getAllRecordsAreSelected = () => !!recordsLength && recordsLength === selectedLength;
+
+        // Initialize a flag to determine if the "Select All" option should be shown
+        let showingSelectAll = false;
+
+        // If in the root folder and there are some folders, check if all records are selected
+        if (folderId === ROOT_FOLDER && foldersLength > 0) {
+            showingSelectAll = getAllRecordsAreSelected();
+        }
+
+        // If not in the root folder and there are multiple descendant folders, check if all records are selected
+        if (folderId !== ROOT_FOLDER && folderWithChildrenLength > 1) {
+            showingSelectAll = getAllRecordsAreSelected();
+        }
+
+        // If there are more items to load, check if all records are selected
+        if (hasMoreItems) {
+            showingSelectAll = getAllRecordsAreSelected();
+        }
+
+        // Update the component's state based on the computed showingSelectAll flag
+        setState(prevState => {
+            // Only update if there is a change in showingSelectAll or if isSelectedAll was true previously
+            if (!prevState.isSelectedAll && prevState.showingSelectAll === showingSelectAll) {
+                return prevState;
+            }
+
+            // Return the new state with updated showingSelectAll and reset isSelectedAll to false
+            return {
+                ...prevState,
+                isSelectedAll: false,
+                showingSelectAll
+            };
+        });
+    }, [
+        records.length,
+        folders.length,
+        state.isSearch,
+        meta.hasMoreItems,
+        state.selected.length,
+        state.folderId
+    ]);
 
     const context: AcoListContextData<GenericSearchData> = {
-        ...pick(state, ["isSearch", "selected", "showingFilters"]),
+        ...pick(state, [
+            "isSearch",
+            "searchQuery",
+            "selected",
+            "showingFilters",
+            "showingSelectAll",
+            "isSelectedAll"
+        ]),
         folders,
         records,
         listTitle,
@@ -320,6 +435,17 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         showFilters() {
             setState(state => ({ ...state, showingFilters: true }));
         },
+        selectAll() {
+            setState(state => ({ ...state, isSelectedAll: true }));
+        },
+        unselectAll() {
+            setState(state => ({
+                ...state,
+                selected: [],
+                isSelectedAll: false
+            }));
+        },
+        getWhere,
         listMoreRecords
     };
 

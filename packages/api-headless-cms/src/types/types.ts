@@ -876,7 +876,9 @@ export interface CmsModelContext {
      *
      * @see CmsModelManager
      */
-    getEntryManager<T = any>(model: CmsModel | string): Promise<CmsModelManager<T>>;
+    getEntryManager<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel | string
+    ): Promise<CmsModelManager<T>>;
     /**
      * Get all content model managers mapped by modelId.
      * @see CmsModelManager

@@ -293,7 +293,7 @@ describe("content model test", () => {
             updateContentModelMutation,
             deleteContentModelMutation
         } = useGraphQLHandler(manageHandlerOpts);
-        const { createCategory } = useCategoryManageHandler(manageHandlerOpts);
+        const { createCategory, deleteCategory } = useCategoryManageHandler(manageHandlerOpts);
         const category = models.find(m => m.modelId === "category");
         if (!category) {
             throw new Error("Could not find model `category`.");
@@ -359,19 +359,67 @@ describe("content model test", () => {
             }
         });
 
-        const [response] = await deleteContentModelMutation({
+        // Let's try to delete the content model: it should fail because we still have entries for the selected content model.
+        const [deleteWithEntriesResponse] = await deleteContentModelMutation({
             modelId: model.modelId
         });
-
-        expect(response).toEqual({
+        expect(deleteWithEntriesResponse).toEqual({
             data: {
                 deleteContentModel: {
                     data: null,
                     error: {
                         message: `Cannot delete content model "${model.modelId}" because there are existing entries.`,
                         code: "CONTENT_MODEL_BEFORE_DELETE_HOOK_FAILED",
-                        data: null
+                        data: {
+                            model: expect.any(Object)
+                        }
                     }
+                }
+            }
+        });
+
+        // Let's move the entry to the trash bin and try to delete the content model: it should fail.
+        await deleteCategory({
+            revision: createCategoryResponse.data.createCategory.data.entryId,
+            options: {
+                permanently: false
+            }
+        });
+        const [deleteWithEntriesInTrashResponse] = await deleteContentModelMutation({
+            modelId: model.modelId
+        });
+        expect(deleteWithEntriesInTrashResponse).toEqual({
+            data: {
+                deleteContentModel: {
+                    data: null,
+                    error: {
+                        message: `Cannot delete content model "${model.modelId}" because there are existing entries in the trash.`,
+                        code: "CONTENT_MODEL_BEFORE_DELETE_HOOK_FAILED",
+                        data: {
+                            model: expect.any(Object)
+                        }
+                    }
+                }
+            }
+        });
+
+        // Let's permanently delete the entry: it should be able to delete the content model.
+        await deleteCategory({
+            revision: createCategoryResponse.data.createCategory.data.entryId,
+            options: {
+                permanently: true
+            }
+        });
+
+        const [deleteWithoutEntriesResponse] = await deleteContentModelMutation({
+            modelId: model.modelId
+        });
+
+        expect(deleteWithoutEntriesResponse).toEqual({
+            data: {
+                deleteContentModel: {
+                    data: true,
+                    error: null
                 }
             }
         });

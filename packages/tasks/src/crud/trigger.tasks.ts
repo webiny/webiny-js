@@ -20,12 +20,12 @@ import { EventBridgeEventTransportPlugin } from "~/crud/transport/EventBridgeEve
 const MAX_DELAY_DAYS = 355;
 const MAX_DELAY_SECONDS = MAX_DELAY_DAYS * 24 * 60 * 60;
 
-interface ValidateDelayParams {
-    input: ITaskCreateData;
+interface ValidateDelayParams<T> {
+    input: ITaskCreateData<T>;
     delay?: number;
 }
 
-const validateDelay = ({ input, delay }: ValidateDelayParams): void => {
+const validateDelay = <T = ITaskDataInput>({ input, delay }: ValidateDelayParams<T>): void => {
     if (!delay || delay < 0 || typeof delay !== "number" || Number.isInteger(delay) === false) {
         return;
     } else if (delay < MAX_DELAY_SECONDS) {
@@ -73,7 +73,7 @@ export const createTriggerTasksCrud = (
                     data: input
                 });
             }
-            validateDelay({
+            validateDelay<T>({
                 input,
                 delay
             });

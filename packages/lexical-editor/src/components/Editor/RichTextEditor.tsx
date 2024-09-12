@@ -4,6 +4,7 @@ import { CSSObject } from "@emotion/react";
 import { Klass, LexicalEditor, LexicalNode } from "lexical";
 import { EditorState } from "lexical/LexicalEditorState";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import { $isRootTextContentEmpty } from "@lexical/text";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
@@ -12,13 +13,6 @@ import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { makeDecoratable } from "@webiny/react-composition";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
-import { isValidLexicalData } from "~/utils/isValidLexicalData";
-import { UpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
-import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
-import { LexicalValue, ToolbarActionPlugin } from "~/types";
-import { Placeholder } from "~/ui/Placeholder";
-import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 import {
     createTheme,
     WebinyTheme,
@@ -26,11 +20,19 @@ import {
     toTypographyEmotionMap
 } from "@webiny/lexical-theme";
 import { allNodes } from "@webiny/lexical-nodes";
+import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
+import { isValidLexicalData } from "~/utils/isValidLexicalData";
+import { UpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
+import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
+import { LexicalValue, ToolbarActionPlugin } from "~/types";
+import { Placeholder } from "~/ui/Placeholder";
+import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext";
 import {
     LexicalEditorWithConfig,
     useLexicalEditorConfig
 } from "~/components/LexicalEditorConfig/LexicalEditorConfig";
+import { normalizeInputValue } from "./normalizeInputValue";
 
 export interface RichTextEditorProps {
     children?: React.ReactNode | React.ReactNode[];
@@ -51,7 +53,7 @@ export interface RichTextEditorProps {
     toolbarActionPlugins?: ToolbarActionPlugin[];
     themeStylesTransformer?: (cssObject: Record<string, any>) => CSSObject;
     toolbar?: React.ReactNode;
-    value: LexicalValue | null;
+    value: LexicalValue | null | undefined;
     width?: number | string;
 }
 
@@ -59,7 +61,6 @@ const BaseRichTextEditor = ({
     toolbar,
     staticToolbar,
     onChange,
-    value,
     nodes,
     placeholder,
     children,
@@ -102,10 +103,10 @@ const BaseRichTextEditor = ({
         <Fragment key={plugin.name}>{plugin.element}</Fragment>
     ));
 
+    const value = normalizeInputValue(props.value);
     const editorValue = isValidLexicalData(value) ? value : generateInitialLexicalValue();
 
     const initialConfig = {
-        // We update the state via the `<LexicalUpdateStatePlugin/>`.
         editorState: null,
         namespace: "webiny",
         onError: () => {
@@ -120,10 +121,18 @@ const BaseRichTextEditor = ({
         editorState.read(() => {
             if (typeof onChange === "function") {
                 const editorState = editor.getEditorState();
-                // The timeout is necessary to prevent the `flushSync` warning by React.
-                setTimeout(() => {
-                    onChange(JSON.stringify(editorState.toJSON()));
-                }, 0);
+                const isEditorEmpty = $isRootTextContentEmpty(editor.isComposing(), true);
+
+                const newValue = JSON.stringify(editorState.toJSON());
+
+                // We don't want to call "onChange" if editor text is empty, and original `value` is empty.
+                if (!value && isEditorEmpty) {
+                    return;
+                }
+
+                if (value !== newValue) {
+                    onChange(newValue);
+                }
             }
         });
     }
@@ -143,7 +152,7 @@ const BaseRichTextEditor = ({
                     themeEmotionMap={themeEmotionMap}
                     toolbarActionPlugins={props.toolbarActionPlugins}
                 >
-                    {staticToolbar && staticToolbar}
+                    {staticToolbar ? staticToolbar : null}
                     <div
                         /* This className is necessary for targeting of editor container from CSS files. */
                         className={"editor-shell"}

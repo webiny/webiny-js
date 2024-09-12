@@ -1,7 +1,7 @@
 import { Plugin } from "@webiny/plugins/Plugin";
 import { InvokeArgs } from "~/types";
 
-interface HandlerClientPluginCallable<Payload = Record<string, any>, Response = any> {
+interface HandlerClientPluginCallable<Payload = any, Response = any> {
     (params: InvokeArgs<Payload>): Promise<Response>;
 }
 
