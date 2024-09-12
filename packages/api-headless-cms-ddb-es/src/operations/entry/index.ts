@@ -900,7 +900,7 @@ export const createEntriesStorageOperations = (
                 })
             );
             esItems.push(
-                entity.deleteBatch({
+                esEntity.deleteBatch({
                     PK: partitionKey,
                     SK: createPublishedSortKey()
                 })
