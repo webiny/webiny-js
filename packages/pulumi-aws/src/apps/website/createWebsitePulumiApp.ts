@@ -78,7 +78,7 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                 app.params.create.productionEnvironments || DEFAULT_PROD_ENV_NAMES;
             const isProduction = productionEnvironments.includes(app.params.run.env);
 
-            // Register core and aou output as a module available for all other modules
+            // Register core and api output as a module, to be available to all other modules.
             const core = app.addModule(CoreOutput);
             app.addModule(ApiOutput);
 
