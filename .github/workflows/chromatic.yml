@@ -1,5 +1,5 @@
 # Name of our action
-name: 'Chromatic'
+name: 'Chromatic - Storybook Preview'
 # The event that will trigger the action
 on:
   # Allow the workflow to be run manually
@@ -28,3 +28,4 @@ jobs:
           #👇 Chromatic projectToken, see https://storybook.js.org/tutorials/design-systems-for-developers/react/en/review/ to obtain it
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          workingDir: packages/admin-ui
