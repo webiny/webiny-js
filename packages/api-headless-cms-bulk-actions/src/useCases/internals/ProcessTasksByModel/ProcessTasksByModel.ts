@@ -1,5 +1,5 @@
 import { TaskDataStatus } from "@webiny/tasks";
-import { IBulkActionOperationByModelTaskParams } from "~/types";
+import { BulkActionOperationByModelAction, IBulkActionOperationByModelTaskParams } from "~/types";
 
 const WAITING_TIME = 10;
 
@@ -23,7 +23,8 @@ export class ProcessTasksByModel {
                 return response.aborted();
             } else if (isCloseToTimeout()) {
                 return response.continue({
-                    ...input
+                    ...input,
+                    action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                 });
             }
 
@@ -45,7 +46,8 @@ export class ProcessTasksByModel {
                 );
                 return response.continue(
                     {
-                        ...input
+                        ...input,
+                        action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                     },
                     {
                         seconds: WAITING_TIME
@@ -54,7 +56,10 @@ export class ProcessTasksByModel {
             }
 
             console.log("ProcessTasksByModel", "end of the code");
-            return response.continue({ ...input, processing: false, creating: true });
+            return response.continue({
+                ...input,
+                action: BulkActionOperationByModelAction.CHECK_MORE_SUBTASKS
+            });
         } catch (ex) {
             return response.error(
                 ex.message ?? `Error while processing task "${this.taskDefinition}"`

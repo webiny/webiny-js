@@ -37,6 +37,13 @@ export type IBulkActionOperationTaskParams = ITaskRunParams<
  * Bulk Action Operation By Model
  */
 
+export enum BulkActionOperationByModelAction {
+    CREATE_SUBTASKS = "CREATE_SUBTASKS",
+    CHECK_MORE_SUBTASKS = "CHECK_MORE_SUBTASKS",
+    PROCESS_SUBTASKS = "PROCESS_SUBTASKS",
+    END_TASK = "END_TASK"
+}
+
 export interface IBulkActionOperationByModelInput {
     modelId: string;
     identity?: SecurityIdentity;
@@ -45,9 +52,8 @@ export interface IBulkActionOperationByModelInput {
     data?: Record<string, any>;
     after?: string | null;
     currentBatch?: number;
-    processing?: boolean;
-    creating?: boolean;
     totalCount?: number;
+    action?: BulkActionOperationByModelAction;
 }
 
 export interface IBulkActionOperationByModelOutput extends ITaskResponseDoneResultOutput {

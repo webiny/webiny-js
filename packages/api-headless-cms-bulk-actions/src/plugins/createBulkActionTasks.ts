@@ -7,6 +7,7 @@ import {
     ProcessTasksByModel
 } from "~/useCases/internals";
 import {
+    BulkActionOperationByModelAction,
     HcmsBulkActionsContext,
     IBulkActionOperationByModelInput,
     IBulkActionOperationByModelOutput,
@@ -53,34 +54,36 @@ class BulkActionTasks {
                         return response.error(`Missing "modelId" in the input.`);
                     }
 
-                    const isProcessing = this.getIsProcessing(input);
-                    const isCreating = this.getIsCreating(input);
-
+                    const action = this.getCurrentAction(input);
                     console.log("input", input);
-                    console.log("isProcessing", isProcessing);
-                    console.log("isCreating", isCreating);
+                    console.log("action", action);
 
-                    if (isProcessing) {
-                        const processTasks = new ProcessTasksByModel(
-                            this.createProcessTaskDefinitionName()
-                        );
-                        return await processTasks.execute(params);
+                    switch (action) {
+                        case BulkActionOperationByModelAction.PROCESS_SUBTASKS: {
+                            const processTasks = new ProcessTasksByModel(
+                                this.createProcessTaskDefinitionName()
+                            );
+                            return await processTasks.execute(params);
+                        }
+                        case BulkActionOperationByModelAction.CREATE_SUBTASKS:
+                        case BulkActionOperationByModelAction.CHECK_MORE_SUBTASKS: {
+                            const createTasks = new CreateTasksByModel(
+                                this.createProcessTaskDefinitionName(),
+                                this.dataLoader(context),
+                                this.batchSize
+                            );
+                            return await createTasks.execute(params);
+                        }
+                        case BulkActionOperationByModelAction.END_TASK: {
+                            return response.done(
+                                `Task done: task "${this.createProcessTaskDefinitionName()}" has been successfully processed for entries from "${
+                                    input.modelId
+                                }" model.`
+                            );
+                        }
+                        default:
+                            throw new Error(`Unknown action: ${action}`);
                     }
-
-                    if (isCreating) {
-                        const createTasks = new CreateTasksByModel(
-                            this.createProcessTaskDefinitionName(),
-                            this.dataLoader(context),
-                            this.batchSize
-                        );
-                        return await createTasks.execute(params);
-                    }
-
-                    return response.done(
-                        `Task done: task "${this.createProcessTaskDefinitionName()}" has been successfully processed for entries from "${
-                            input.modelId
-                        }" model.`
-                    );
                 } catch (ex) {
                     return response.error(ex.message ?? "Error while executing list task");
                 }
@@ -146,12 +149,10 @@ class BulkActionTasks {
         return `hcmsBulkProcess${this.name}Entries`;
     }
 
-    private getIsCreating(input: IBulkActionOperationByModelInput) {
-        return input.creating ?? true;
-    }
+    private getCurrentAction(input: IBulkActionOperationByModelInput) {
+        console.log("Current action", input.action);
 
-    private getIsProcessing(input: IBulkActionOperationByModelInput) {
-        return input.processing ?? false;
+        return input.action ?? BulkActionOperationByModelAction.CREATE_SUBTASKS;
     }
 }
 

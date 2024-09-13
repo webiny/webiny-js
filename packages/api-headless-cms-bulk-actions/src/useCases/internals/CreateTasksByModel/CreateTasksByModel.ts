@@ -2,7 +2,7 @@ import { ITaskResponseResult } from "@webiny/tasks";
 import { TaskCache } from "./TaskCache";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 import { IListEntries } from "~/abstractions";
-import { IBulkActionOperationByModelTaskParams } from "~/types";
+import { BulkActionOperationByModelAction, IBulkActionOperationByModelTaskParams } from "~/types";
 
 const WAITING_TIME = 30; // Time to wait in seconds before retrying
 
@@ -44,9 +44,8 @@ export class CreateTasksByModel {
                             ...input,
                             ...listEntriesParams,
                             currentBatch,
-                            creating: false,
-                            processing: true,
-                            after: null
+                            after: null,
+                            action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                         },
                         { seconds: WAITING_TIME }
                     );
@@ -63,7 +62,7 @@ export class CreateTasksByModel {
                     console.log("CreateTasksByModel", "meta.totalCount === 0", input);
                     return response.continue({
                         ...input,
-                        creating: false
+                        action: BulkActionOperationByModelAction.END_TASK
                     });
                 }
 
@@ -77,8 +76,7 @@ export class CreateTasksByModel {
                             ...listEntriesParams,
                             currentBatch,
                             totalCount: meta.totalCount,
-                            processing: true,
-                            creating: false
+                            action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                         },
                         { seconds: WAITING_TIME }
                     );
@@ -113,8 +111,7 @@ export class CreateTasksByModel {
                             ...listEntriesParams,
                             currentBatch,
                             totalCount: meta.totalCount,
-                            processing: true,
-                            creating: false
+                            action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                         },
                         { seconds: WAITING_TIME }
                     );
