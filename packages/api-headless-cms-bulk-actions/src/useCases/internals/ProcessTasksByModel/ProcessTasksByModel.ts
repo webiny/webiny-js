@@ -38,6 +38,11 @@ export class ProcessTasksByModel {
 
             // If there are running or pending tasks, continue with a wait.
             if (result.items.length > 0) {
+                console.log(
+                    "ProcessTasksByModel",
+                    "response.continue -> result.items.length > 0",
+                    result.meta.totalCount
+                );
                 return response.continue(
                     {
                         ...input
@@ -48,9 +53,8 @@ export class ProcessTasksByModel {
                 );
             }
 
-            return response.done(
-                `Task done: task "${this.taskDefinition}" has been successfully processed for entries from "${input.modelId}" model.`
-            );
+            console.log("ProcessTasksByModel", "end of the code");
+            return response.continue({ ...input, processing: false, creating: true });
         } catch (ex) {
             return response.error(
                 ex.message ?? `Error while processing task "${this.taskDefinition}"`

@@ -46,6 +46,7 @@ export interface IBulkActionOperationByModelInput {
     after?: string | null;
     currentBatch?: number;
     processing?: boolean;
+    creating?: boolean;
     totalCount?: number;
 }
 

@@ -18,17 +18,22 @@ export interface CreateBackgroundTasksConfig {
     name: string;
     dataLoader: (context: HcmsBulkActionsContext) => IListEntries;
     dataProcessor: (context: HcmsBulkActionsContext) => IProcessEntry;
+    batchSize?: number;
 }
+
+const BATCH_SIZE = 100; // Number of entries to fetch in each batch
 
 class BulkActionTasks {
     private readonly name: string;
     private readonly dataLoader: (context: HcmsBulkActionsContext) => IListEntries;
     private readonly dataProcessor: (context: HcmsBulkActionsContext) => IProcessEntry;
+    private readonly batchSize: number;
 
     constructor(config: CreateBackgroundTasksConfig) {
         this.name = config.name;
         this.dataLoader = config.dataLoader;
         this.dataProcessor = config.dataProcessor;
+        this.batchSize = config.batchSize || BATCH_SIZE;
     }
 
     public createListTaskDefinition() {
@@ -48,18 +53,34 @@ class BulkActionTasks {
                         return response.error(`Missing "modelId" in the input.`);
                     }
 
-                    if (input.processing) {
+                    const isProcessing = this.getIsProcessing(input);
+                    const isCreating = this.getIsCreating(input);
+
+                    console.log("input", input);
+                    console.log("isProcessing", isProcessing);
+                    console.log("isCreating", isCreating);
+
+                    if (isProcessing) {
                         const processTasks = new ProcessTasksByModel(
                             this.createProcessTaskDefinitionName()
                         );
                         return await processTasks.execute(params);
                     }
 
-                    const createTasks = new CreateTasksByModel(
-                        this.createProcessTaskDefinitionName(),
-                        this.dataLoader(context)
+                    if (isCreating) {
+                        const createTasks = new CreateTasksByModel(
+                            this.createProcessTaskDefinitionName(),
+                            this.dataLoader(context),
+                            this.batchSize
+                        );
+                        return await createTasks.execute(params);
+                    }
+
+                    return response.done(
+                        `Task done: task "${this.createProcessTaskDefinitionName()}" has been successfully processed for entries from "${
+                            input.modelId
+                        }" model.`
                     );
-                    return await createTasks.execute(params);
                 } catch (ex) {
                     return response.error(ex.message ?? "Error while executing list task");
                 }
@@ -123,6 +144,14 @@ class BulkActionTasks {
 
     private createProcessTaskDefinitionName() {
         return `hcmsBulkProcess${this.name}Entries`;
+    }
+
+    private getIsCreating(input: IBulkActionOperationByModelInput) {
+        return input.creating ?? true;
+    }
+
+    private getIsProcessing(input: IBulkActionOperationByModelInput) {
+        return input.processing ?? false;
     }
 }
 
