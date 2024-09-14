@@ -35,7 +35,6 @@ import { useNavigatePage } from "~/admin/hooks/useNavigatePage";
 import { usePageBlocks } from "~/admin/contexts/AdminPageBuilder/PageBlocks/usePageBlocks";
 import { DefaultEditorConfig } from "~/editor";
 import { DefaultPageEditorConfig } from "~/pageEditor/config/DefaultPageEditorConfig";
-import { TranslationsPageEditorConfig } from "~/translations/PageEditorConfig";
 
 interface PageDataAndRevisionsState {
     page: PageWithContent | null;
@@ -173,7 +172,6 @@ export const PageEditor = () => {
             <PageProvider page={page as Page}>
                 <DefaultEditorConfig />
                 <DefaultPageEditorConfig />
-                <TranslationsPageEditorConfig />
                 <LoadData>
                     <PbEditor stateInitializerFactory={createStateInitializer(page!, revisions)} />
                 </LoadData>

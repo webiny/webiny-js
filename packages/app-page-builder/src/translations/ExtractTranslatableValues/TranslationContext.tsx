@@ -1,10 +1,11 @@
 import React, { useMemo, useRef } from "react";
+import { GenericRecord } from "@webiny/app/types";
 
 export interface TranslatableItem {
     collectionId: string;
     itemId: string;
     value: any;
-    context?: Record<string, any>;
+    context?: GenericRecord<string>;
 }
 
 export interface TranslationContext {
