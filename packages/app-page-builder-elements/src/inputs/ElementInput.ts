@@ -1,34 +1,60 @@
 import { Element } from "~/types";
 
-export interface GetElementInputValue<TValue = unknown> {
-    (element: Element<any>): TValue | undefined;
+export interface GetElementInputValueParams<TElementData> {
+    element: Element<TElementData>;
+}
+
+export interface GetElementInputValue<TValue = unknown, TElementData = any> {
+    (element: GetElementInputValueParams<TElementData>): TValue | undefined;
 }
 
 export type ElementInputs = Record<string, ElementInput>;
 
-export interface ElementInputParams<TValue> {
+export type ElementInputType =
+    | "text"
+    | "number"
+    | "boolean"
+    | "date"
+    | "richText"
+    | "link"
+    | "svgIcon"
+    | "color"
+    // We want to allow custom strings as well.
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    | (string & {});
+
+export interface ElementInputParams<TValue, TElementData> {
     name: string;
-    getDefaultValue: GetElementInputValue<TValue>;
+    type: ElementInputType;
+    getDefaultValue: GetElementInputValue<TValue, TElementData>;
     translatable?: boolean;
 }
 
-export class ElementInput<TValue = unknown> {
-    private params: ElementInputParams<TValue>;
+export class ElementInput<TValue = unknown, TElementData = any> {
+    private params: ElementInputParams<TValue, TElementData>;
 
-    constructor(params: ElementInputParams<TValue>) {
+    private constructor(params: ElementInputParams<TValue, TElementData>) {
         this.params = params;
+    }
+
+    static create<TValue, TElementData = any>(params: ElementInputParams<TValue, TElementData>) {
+        return new ElementInput<TValue, TElementData>(params);
+    }
+
+    getType() {
+        return this.params.type;
     }
 
     isTranslatable() {
         return this.params.translatable ?? false;
     }
 
-    getDefaultValue(element: Element): TValue | undefined {
+    getDefaultValue(element: Element<TElementData>): TValue | undefined {
         if (!this.params.getDefaultValue) {
             return this.getValueFromDefaultLocation(element);
         }
 
-        const value = this.params.getDefaultValue(element);
+        const value = this.params.getDefaultValue({ element });
         if (!value) {
             return undefined;
         }

@@ -1,10 +1,9 @@
 import React, { useMemo } from "react";
 import styled, { CSSObject } from "@emotion/styled";
 import { ClassNames } from "@emotion/react";
-import { makeDecoratable } from "@webiny/react-composition";
 import isEqual from "lodash/isEqual";
 import { usePageElements } from "~/hooks/usePageElements";
-import { LinkComponent, Element } from "~/types";
+import { LinkComponent } from "~/types";
 import { DefaultLinkComponent } from "~/renderers/components";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
@@ -98,59 +97,67 @@ export interface Props {
 }
 
 export const elementInputs = {
-    buttonText: new ElementInput<string>({
+    buttonText: ElementInput.create<string, ButtonElementData>({
         name: "buttonText",
         translatable: true,
-        getDefaultValue: (element: Element<ButtonElementData>) => {
+        type: "text",
+        getDefaultValue: ({ element }) => {
             return element.data.buttonText;
         }
     }),
-    iconPosition: new ElementInput<string>({
+    iconPosition: ElementInput.create<string, ButtonElementData>({
         name: "iconPosition",
-        getDefaultValue: (element: Element<ButtonElementData>) => {
+        type: "text",
+        getDefaultValue: ({ element }) => {
             return element.data.icon?.position;
         }
     }),
-    iconColor: new ElementInput<string>({
+    iconColor: ElementInput.create<string, ButtonElementData>({
         name: "iconColor",
-        getDefaultValue: (element: Element<ButtonElementData>) => {
+        type: "color",
+        getDefaultValue: ({ element }) => {
             return element.data.icon?.color;
         }
     }),
-    iconSvg: new ElementInput<string>({
+    iconSvg: ElementInput.create<string, ButtonElementData>({
         name: "iconSvg",
-        getDefaultValue: (element: Element<ButtonElementData>) => {
+        type: "svgIcon",
+        getDefaultValue: ({ element }) => {
             return element.data.icon?.svg;
         }
     }),
-    iconWidth: new ElementInput<string>({
+    iconWidth: ElementInput.create<string, ButtonElementData>({
         name: "iconWidth",
-        getDefaultValue: (element: Element<ButtonElementData>) => {
+        type: "number",
+        getDefaultValue: ({ element }) => {
             return element.data.icon?.width;
         }
     }),
-    actionType: new ElementInput<ButtonElementData["action"]["actionType"]>({
+    actionType: ElementInput.create<ButtonElementData["action"]["actionType"]>({
         name: "actionType",
-        getDefaultValue: (element: Element<ButtonElementData>) => {
+        type: "text",
+        getDefaultValue: ({ element }) => {
             return element.data.action?.actionType;
         }
     }),
-    actionNewTab: new ElementInput<ButtonElementData["action"]["newTab"]>({
+    actionNewTab: ElementInput.create<ButtonElementData["action"]["newTab"]>({
         name: "actionNewTab",
-        getDefaultValue: (element: Element<ButtonElementData>) => {
+        type: "boolean",
+        getDefaultValue: ({ element }) => {
             return element.data.action?.newTab;
         }
     }),
-    actionHref: new ElementInput<ButtonElementData["action"]["href"]>({
+    actionHref: ElementInput.create<ButtonElementData["action"]["href"]>({
         name: "actionHref",
+        type: "link",
         translatable: true,
-        getDefaultValue: (element: Element<ButtonElementData>) => {
+        getDefaultValue: ({ element }) => {
             return element.data.action?.href;
         }
     })
 };
 
-const Renderer = createRenderer<Props, typeof elementInputs>(
+export const ButtonRenderer = createRenderer<Props, typeof elementInputs>(
     props => {
         const LinkComponent = props.linkComponent || DefaultLinkComponent;
         const { getStyles } = usePageElements();
@@ -259,5 +266,3 @@ const Renderer = createRenderer<Props, typeof elementInputs>(
         inputs: elementInputs
     }
 );
-
-export const ButtonRenderer = makeDecoratable("ButtonRenderer", Renderer);

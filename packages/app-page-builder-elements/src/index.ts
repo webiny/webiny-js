@@ -16,3 +16,6 @@ export * from "./components/Page";
 export * from "./components/Element";
 export * from "./components/Elements";
 export * from "./components/ErrorBoundary";
+
+export * from "./inputs/ElementInput";
+export type { DecoratableRenderer } from "./types";

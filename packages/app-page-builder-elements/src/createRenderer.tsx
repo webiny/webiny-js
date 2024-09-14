@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Theme, StylesObject } from "@webiny/theme/types";
 import { CSSObject, ClassNames } from "@emotion/react";
-import { Decoratable, GenericComponent, makeDecoratable } from "@webiny/react-composition";
+import { GenericComponent, makeDecoratable } from "@webiny/react-composition";
 import { usePageElements } from "~/hooks/usePageElements";
 import { Renderer, Element } from "~/types";
 import { RendererProvider } from "~/contexts/Renderer";
@@ -49,6 +49,7 @@ export function createRenderer<
     options: CreateRendererOptions<TRenderComponentProps, TInputs> = {}
 ): DecoratableComponent<Renderer<TRenderComponentProps & Inputs<TInputs>>> & {
     Component: DecoratableComponent<typeof RendererComponent>;
+    inputs?: TInputs;
 } {
     // We need to make the renderer component decoratable, to allow developers to conditionally render different
     // output depending on the renderer inputs.
@@ -115,7 +116,8 @@ export function createRenderer<
             const inputValues = (inputs || EMPTY_OBJECT) as ElementInputValues<TInputs>;
 
             return Object.entries(elementInputs).reduce((values, [key, input]) => {
-                const inputValue = key in inputValues ? inputValues[key] : input.getDefaultValue(element);
+                const inputValue =
+                    key in inputValues ? inputValues[key] : input.getDefaultValue(element);
 
                 return { ...values, [key]: inputValue };
             }, {});
@@ -174,7 +176,8 @@ export function createRenderer<
     }
 
     return Object.assign(makeDecoratable("ElementRenderer", Renderer), {
-        Component: DecoratableRendererComponent
+        Component: DecoratableRendererComponent,
+        inputs: options.inputs
     });
 }
 

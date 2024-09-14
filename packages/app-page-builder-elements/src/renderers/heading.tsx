@@ -1,23 +1,24 @@
 import React from "react";
-import { makeDecoratable } from "@webiny/react-composition";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
 import { ElementInput } from "~/inputs/ElementInput";
 
 export const elementInputs = {
-    text: new ElementInput<string>({
+    text: ElementInput.create<string>({
         name: "text",
+        type: "richText",
         translatable: true,
-        getDefaultValue: element => {
+        getDefaultValue: ({ element }) => {
             return element.data.text.data.text;
         }
     }),
     /**
      * `tag` is an element input which exists for backwards compatibility with older rich-text implementations.
      */
-    tag: new ElementInput<string>({
+    tag: ElementInput.create<string>({
         name: "tag",
-        getDefaultValue: element => {
+        type: "htmlTag",
+        getDefaultValue: ({ element }) => {
             return element.data.text.desktop.tag;
         }
     })

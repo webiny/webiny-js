@@ -4,10 +4,11 @@ import { useRenderer } from "~/hooks/useRenderer";
 import { ElementInput } from "~/inputs/ElementInput";
 
 export const elementInputs = {
-    text: new ElementInput<string>({
+    text: ElementInput.create<string>({
         name: "text",
+        type: "richText",
         translatable: true,
-        getDefaultValue: element => {
+        getDefaultValue: ({ element }) => {
             return element.data.text.data.text;
         }
     })
