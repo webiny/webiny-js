@@ -5,14 +5,14 @@ import { useRenderer } from "@webiny/app-page-builder-elements";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange";
 import { LexicalEditor } from "~/LexicalEditor";
 
-interface LexicalTextEditor {
+interface LexicalTextEditorProps {
     text: string;
     type: "heading" | "paragraph";
 }
 
 const DATA_NAMESPACE = "data.text";
 
-export const LexicalTextEditor = ({ text, type }: LexicalTextEditor) => {
+export const LexicalTextEditor = ({ text, type }: LexicalTextEditorProps) => {
     const { getElement } = useRenderer();
     const element = getElement();
 
@@ -34,7 +34,9 @@ export const LexicalTextEditor = ({ text, type }: LexicalTextEditor) => {
 
     return (
         <DelayedOnChange value={text} onChange={onChange}>
-            {({ value, onChange }) => <LexicalEditor type={type} value={value} onChange={onChange} />}
+            {({ value, onChange }) => (
+                <LexicalEditor type={type} value={value} onChange={onChange} />
+            )}
         </DelayedOnChange>
     );
 };

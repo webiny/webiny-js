@@ -7993,18 +7993,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/merge@npm:^9.0.6":
-  version: 9.0.6
-  resolution: "@graphql-tools/merge@npm:9.0.6"
-  dependencies:
-    "@graphql-tools/utils": ^10.5.4
-    tslib: ^2.4.0
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: d9dca559186267a3eedcb6c2fd9b012e91e40a467d3440a8f9a1dbb542d159abde09578716b00b0f9123c8f97c1816bf2df67c9fbf79b0be619d50b5d89240db
-  languageName: node
-  linkType: hard
-
 "@graphql-tools/schema@npm:^7.0.0, @graphql-tools/schema@npm:^7.1.2":
   version: 7.1.5
   resolution: "@graphql-tools/schema@npm:7.1.5"
@@ -8018,20 +8006,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/utils@npm:^10.5.4":
-  version: 10.5.4
-  resolution: "@graphql-tools/utils@npm:10.5.4"
-  dependencies:
-    "@graphql-typed-document-node/core": ^3.1.1
-    cross-inspect: 1.0.1
-    dset: ^3.1.2
-    tslib: ^2.4.0
-  peerDependencies:
-    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 56b41b276401c9010e47627b0d84336ac840d4e3e7c0124884626f11b92a20a1f1aec97712dd06d8adf5239fc39f4a86d4f4349f6a7028205e577e4c200bf070
-  languageName: node
-  linkType: hard
-
 "@graphql-tools/utils@npm:^7.1.2":
   version: 7.10.0
   resolution: "@graphql-tools/utils@npm:7.10.0"
@@ -8042,15 +8016,6 @@ __metadata:
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0
   checksum: e40c29608d3380f589f756977f6afd1cc2b96dd08eaa392a412ee320dce98af32e62138ceae752e3db5561776370e3b7766a859eed0b52f8c1e35d0e8fabc6db
-  languageName: node
-  linkType: hard
-
-"@graphql-typed-document-node/core@npm:^3.1.1":
-  version: 3.2.0
-  resolution: "@graphql-typed-document-node/core@npm:3.2.0"
-  peerDependencies:
-    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: fa44443accd28c8cf4cb96aaaf39d144a22e8b091b13366843f4e97d19c7bfeaf609ce3c7603a4aeffe385081eaf8ea245d078633a7324c11c5ec4b2011bb76d
   languageName: node
   linkType: hard
 
@@ -15761,7 +15726,6 @@ __metadata:
     "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.24.0
-    "@graphql-tools/merge": ^9.0.6
     "@types/extract-zip": ^1.6.2
     "@types/node-fetch": ^2.6.1
     "@types/rimraf": ^3.0.2
@@ -17175,6 +17139,7 @@ __metadata:
     "@webiny/theme": 0.0.0
     execa: ^5.0.0
     facepaint: ^1.2.1
+    lodash: ^4.17.21
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
     typescript: 4.7.4
@@ -17240,7 +17205,6 @@ __metadata:
     "@webiny/app": 0.0.0
     "@webiny/app-aco": 0.0.0
     "@webiny/app-admin": 0.0.0
-    "@webiny/app-headless-cms": 0.0.0
     "@webiny/app-i18n": 0.0.0
     "@webiny/app-page-builder-elements": 0.0.0
     "@webiny/app-plugin-admin-welcome-screen": 0.0.0
@@ -17248,6 +17212,7 @@ __metadata:
     "@webiny/app-tenancy": 0.0.0
     "@webiny/app-theme": 0.0.0
     "@webiny/cli": 0.0.0
+    "@webiny/error": 0.0.0
     "@webiny/form": 0.0.0
     "@webiny/lexical-editor": 0.0.0
     "@webiny/plugins": 0.0.0
@@ -18639,8 +18604,6 @@ __metadata:
     "@webiny/react-composition": 0.0.0
     "@webiny/theme": 0.0.0
     "@webiny/ui": 0.0.0
-    lodash: ^4.17.21
-    medium-editor: ^5.23.3
     react: 18.2.0
     react-dom: 18.2.0
   languageName: unknown
@@ -19032,7 +18995,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/react-router@workspace:packages/react-router"
   dependencies:
-    "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
@@ -23360,15 +23322,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-inspect@npm:1.0.1":
-  version: 1.0.1
-  resolution: "cross-inspect@npm:1.0.1"
-  dependencies:
-    tslib: ^2.4.0
-  checksum: 7c1e02e0a9670b62416a3ea1df7ae880fdad3aa0a857de8932c4e5f8acd71298c7e3db9da8e9da603f5692cd1879938f5e72e34a9f5d1345987bef656d117fc1
-  languageName: node
-  linkType: hard
-
 "cross-spawn@npm:^6.0.0, cross-spawn@npm:^6.0.5":
   version: 6.0.5
   resolution: "cross-spawn@npm:6.0.5"
@@ -24854,13 +24807,6 @@ __metadata:
   peerDependencies:
     react: ">=0.14.9"
   checksum: abdca620e8dc3c117e5184fd4f731fe4914e64ecdcabe3f7483dc7b8ee24c38a55cd5551fdaab89ffe03b701be918a8c812df46c7b14b9a004c6f6d369f79520
-  languageName: node
-  linkType: hard
-
-"dset@npm:^3.1.2":
-  version: 3.1.3
-  resolution: "dset@npm:3.1.3"
-  checksum: 5db964a36c60c51aa3f7088bfe1dc5c0eedd9a6ef3b216935bb70ef4a7b8fc40fd2f9bb16b9a4692c9c9772cea60cfefb108d2d09fbd53c85ea8f6cd54502d6a
   languageName: node
   linkType: hard
 
@@ -41608,7 +41554,6 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
-    "@webiny/react-router": 0.0.0
     "@webiny/serverless-cms-aws": 0.0.0
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
@@ -41616,7 +41561,6 @@ __metadata:
     cross-env: ^5.0.2
     cross-fetch: ^3.0.4
     graphql: ^15.7.2
-    graphql-tag: ^2.12.6
     react: 18.2.0
     react-dom: 18.2.0
     regenerator-runtime: ^0.13.5

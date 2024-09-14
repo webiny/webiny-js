@@ -104,7 +104,7 @@ const ElementComponent = ({ id: elementId, className = "", isActive }: ElementPr
                 <div className="background" onClick={onClick} />
                 <div className={"element-holder"} onClick={onClick}>
                     {renderPlugins("pb-editor-page-element-action", { element, plugin })}
-                    <span>{pluginElementType} | ${element.id}</span>
+                    <span>{pluginElementType}</span>
                 </div>
             </div>
         );

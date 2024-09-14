@@ -23,7 +23,9 @@ function makeDecoratableComponent<T extends GenericComponent>(
 ) {
     const Decoratable = (props: React.ComponentProps<T>): JSX.Element | null => {
         const parents = useComposableParents();
-        const ComposedComponent = useComponent(Component) as GenericComponent<React.ComponentProps<T>>;
+        const ComposedComponent = useComponent(Component) as GenericComponent<
+            React.ComponentProps<T>
+        >;
 
         const context = useMemo(() => [...parents, name], [parents, name]);
 
@@ -38,7 +40,9 @@ function makeDecoratableComponent<T extends GenericComponent>(
     Decoratable.originalName = name;
     Decoratable.displayName = `Decoratable<${name}>`;
 
-    return withDecoratorFactory()(Decoratable as DecoratableComponent<typeof Component & typeof Decoratable>);
+    return withDecoratorFactory()(
+        Decoratable as DecoratableComponent<typeof Component & typeof Decoratable>
+    );
 }
 
 export function makeDecoratableHook<T extends GenericHook>(hook: T) {

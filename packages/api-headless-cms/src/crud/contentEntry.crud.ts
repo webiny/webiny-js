@@ -1365,9 +1365,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             );
         },
-        async createEntry<T = CmsEntryValues>(
+        async createEntry<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,
-            input: CreateCmsEntryInput,
+            input: CreateCmsEntryInput<T>,
             options?: CreateCmsEntryOptionsInput
         ): Promise<CmsEntry<T>> {
             return context.benchmark.measure("headlessCms.crud.entries.createEntry", async () => {

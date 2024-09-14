@@ -32,7 +32,6 @@
     "@webiny/utils": "0.0.0",
     "archiver": "^7.0.1",
     "dataloader": "^2.0.0",
-    "deepmerge": "^4.3.1",
     "extract-zip": "^1.6.7",
     "fs-extra": "^11.2.0",
     "jsonpack": "^1.1.5",

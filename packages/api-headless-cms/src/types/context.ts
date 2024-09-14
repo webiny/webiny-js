@@ -52,7 +52,6 @@ import {
     UpdateCmsEntryOptionsInput
 } from "./types";
 import { CmsModel } from "./model";
-import {GenericRecord} from "@webiny/api/types";
 
 /**
  * Cms Entry CRUD methods in the context.
@@ -119,7 +118,7 @@ export interface CmsEntryContext {
     /**
      * Create a new content entry.
      */
-    createEntry: <T = CmsEntryValues>(
+    createEntry: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         input: CreateCmsEntryInput<T>,
         options?: CreateCmsEntryOptionsInput
