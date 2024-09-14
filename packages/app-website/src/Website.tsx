@@ -8,6 +8,7 @@ import { ThemeProvider } from "@webiny/app-theme";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { PageBuilder } from "@webiny/app-page-builder/render";
 import { RouteProps } from "@webiny/react-router";
+import { LinkPreload } from "~/LinkPreload";
 
 export interface WebsiteProps extends AppProps {
     apolloClient?: ReturnType<typeof createApolloClient>;
@@ -48,6 +49,7 @@ export const Website = ({ children, routes = [], providers = [], ...props }: Web
                         routes={appRoutes}
                         providers={[PageBuilderProviderHOC, ...providers]}
                     >
+                        <LinkPreload />
                         <PageBuilder />
                         {children}
                     </App>

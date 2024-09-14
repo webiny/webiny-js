@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { useQuery } from "@apollo/react-hooks";
+import { useSearchParams, useLocation } from "@webiny/react-router";
 import { PageRenderer } from "./PageRenderer";
 import {
     GET_SETTINGS,
@@ -9,7 +10,6 @@ import {
     SettingsQueryResponse,
     SettingsQueryResponseData
 } from "./graphql";
-import { useSearchParams, useLocation } from "@webiny/react-router";
 
 declare global {
     interface Window {
