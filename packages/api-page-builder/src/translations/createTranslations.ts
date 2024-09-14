@@ -1,8 +1,6 @@
 import lodashMerge from "lodash/merge";
 import { createGraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { PbContext } from "~/graphql/types";
-import { languageSchema } from "~/translations/languages/graphql/schema";
-import { languageResolvers } from "~/translations/languages/graphql/resolvers";
 import { translatableCollectionResolvers } from "~/translations/translatableCollection/graphql/resolvers";
 import { translatableCollectionSchema } from "~/translations/translatableCollection/graphql/schema";
 import { translatedCollectionSchema } from "~/translations/translatedCollection/graphql/schema";
@@ -40,16 +38,20 @@ const baseResolvers = {
 
 export const createTranslations = () => {
     return [
+        createCmsModelPlugin(translatableCollectionModel, { validateLayout: false }),
+        createCmsModelPlugin(translatedCollectionModel, { validateLayout: false })
+    ];
+};
+
+export const createTranslationsGraphQl = () => {
+    return [
         createGraphQLSchemaPlugin<PbContext>({
-            typeDefs: `${baseSchema} ${languageSchema} ${translatableCollectionSchema} ${translatedCollectionSchema}`,
+            typeDefs: `${baseSchema} ${translatableCollectionSchema} ${translatedCollectionSchema}`,
             resolvers: lodashMerge(
                 baseResolvers,
-                languageResolvers,
                 translatableCollectionResolvers,
                 translatedCollectionResolvers
             )
-        }),
-        createCmsModelPlugin(translatableCollectionModel, { validateLayout: false }),
-        createCmsModelPlugin(translatedCollectionModel, { validateLayout: false })
+        })
     ];
 };

@@ -9,8 +9,12 @@ export class GetTranslatableCollectionUseCase {
         this.context = context;
     }
 
-    async execute(collectionId: string): Promise<TranslatableCollection> {
-        const getById = new GetTranslatableCollectionByIdRepository(this.context);
-        return await getById.execute(collectionId);
+    async execute(collectionId: string): Promise<TranslatableCollection | undefined> {
+        try {
+            const getById = new GetTranslatableCollectionByIdRepository(this.context);
+            return await getById.execute(collectionId);
+        } catch {
+            return undefined;
+        }
     }
 }

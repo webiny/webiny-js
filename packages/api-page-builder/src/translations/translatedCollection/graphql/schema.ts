@@ -2,7 +2,9 @@ export const translatedCollectionSchema = /* GraphQL*/ `
     type TranslatedItem {
         itemId: String!
         baseValue: String!
+        baseValueModifiedOn: String!
         value: String
+        context: JSON
         translatedOn: DateTime
         translatedBy: CmsIdentity
     }
@@ -15,7 +17,7 @@ export const translatedCollectionSchema = /* GraphQL*/ `
 
     input TranslatedItemInput {
         itemId: String!
-        value: String!
+        value: String
     }
 
     type TranslatedCollectionResponse {
@@ -23,7 +25,7 @@ export const translatedCollectionSchema = /* GraphQL*/ `
         error: CmsError
     }
 
-    type UpdateTranslatedCollectionResponse {
+    type SaveTranslatedCollectionResponse {
         data: TranslatedCollection
         error: CmsError
     }
@@ -38,6 +40,6 @@ export const translatedCollectionSchema = /* GraphQL*/ `
             collectionId: ID!
             languageCode: String!
             items: [TranslatedItemInput!]!
-        ): UpdateTranslatedCollectionResponse
+        ): SaveTranslatedCollectionResponse
     }
 `;

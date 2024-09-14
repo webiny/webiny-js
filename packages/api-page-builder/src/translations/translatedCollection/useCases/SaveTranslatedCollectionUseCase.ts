@@ -11,6 +11,7 @@ interface SaveTranslatedCollectionParams {
     languageCode: string;
     items: Array<{
         itemId: string;
+        translatedOn?: string;
         value?: string;
     }>;
 }
@@ -32,11 +33,16 @@ export class SaveTranslatedCollectionUseCase {
         const identity = this.getIdentity();
 
         const newItems = params.items.map(item => {
+            // If a value was unset, we want to unset the translatedOn and translatedBy.
+            const value = item.value ? item.value : undefined;
+
+            const translatedOn = item.translatedOn ? new Date(item.translatedOn) : undefined;
+
             return TranslatedItem.create({
                 itemId: item.itemId,
-                value: item.value,
-                translatedOn: new Date(),
-                translatedBy: identity
+                value,
+                translatedOn: translatedOn ?? value ? new Date() : undefined,
+                translatedBy: value ? identity : undefined
             });
         });
 

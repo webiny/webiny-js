@@ -16,6 +16,14 @@ export class GqlTranslatedCollectionMapper {
                     baseValue: () => {
                         return baseCollection.getBaseValue(item.itemId) ?? "";
                     },
+                    baseValueModifiedOn: () => {
+                        const modifiedOn = baseCollection.getItemModifiedOn(item.itemId);
+
+                        return modifiedOn ? modifiedOn.toISOString() : "";
+                    },
+                    context: () => {
+                        return baseCollection.getItemContext(item.itemId);
+                    },
                     value: item.value,
                     translatedOn: item.translatedOn?.toISOString(),
                     translatedBy: item.translatedBy

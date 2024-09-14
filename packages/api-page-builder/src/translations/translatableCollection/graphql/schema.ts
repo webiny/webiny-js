@@ -2,6 +2,7 @@ export const translatableCollectionSchema = /* GraphQL*/ `
     type TranslatableItem {
         itemId: String!
         value: String!
+        context: JSON!
         modifiedOn: DateTime!
         modifiedBy: CmsIdentity!
     }
@@ -15,6 +16,7 @@ export const translatableCollectionSchema = /* GraphQL*/ `
     input TranslatableItemInput {
         itemId: String!
         value: String!
+        context: JSON
     }
 
     type TranslatableCollectionResponse {
@@ -22,11 +24,11 @@ export const translatableCollectionSchema = /* GraphQL*/ `
         error: CmsError
     }
 
-    type UpdateTranslatableCollectionResponse {
+    type SaveTranslatableCollectionResponse {
         data: TranslatableCollection
         error: CmsError
     }
-    
+
     extend type TranslationsQuery {
         """Get the source collection with all the items that need to be translated."""
         getTranslatableCollection(collectionId: ID!): TranslatableCollectionResponse
@@ -36,6 +38,6 @@ export const translatableCollectionSchema = /* GraphQL*/ `
         saveTranslatableCollection(
             collectionId: ID!
             items: [TranslatableItemInput!]!
-        ): UpdateTranslatableCollectionResponse
+        ): SaveTranslatableCollectionResponse
     }
 `;

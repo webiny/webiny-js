@@ -1,4 +1,4 @@
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql";
 import type { Resolvers } from "@webiny/handler-graphql/types";
 import type { PbContext } from "~/graphql/types";
 import { GqlTranslatedCollectionMapper } from "~/translations/translatedCollection/graphql/mappers/GqlTranslatedCollectionMapper";
@@ -25,6 +25,12 @@ export const translatedCollectionResolvers: Resolvers<PbContext> = {
 
                 const getBaseCollection = new GetTranslatableCollectionUseCase(context);
                 const baseCollection = await getBaseCollection.execute(collectionId);
+
+                if (!baseCollection) {
+                    return new NotFoundResponse(
+                        `TranslatableCollection ${collectionId} was not found!`
+                    );
+                }
 
                 const getTranslatedCollection = new GetOrCreateTranslatedCollectionUseCase(context);
                 const translatedCollection = await getTranslatedCollection.execute({
@@ -57,6 +63,12 @@ export const translatedCollectionResolvers: Resolvers<PbContext> = {
 
                 const getBaseCollection = new GetTranslatableCollectionUseCase(context);
                 const baseCollection = await getBaseCollection.execute(collectionId);
+
+                if (!baseCollection) {
+                    return new NotFoundResponse(
+                        `TranslatableCollection ${collectionId} was not found!`
+                    );
+                }
 
                 return new Response(
                     GqlTranslatedCollectionMapper.toDTO(baseCollection, collection)

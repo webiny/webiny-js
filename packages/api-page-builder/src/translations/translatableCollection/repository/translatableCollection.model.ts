@@ -12,12 +12,6 @@ export const translatableCollectionModel = createPrivateModel({
             type: "text",
             label: "Collection ID",
             tags: [],
-            placeholderText: null,
-            helpText: null,
-            predefinedValues: {
-                enabled: false,
-                values: []
-            },
             multipleValues: false,
             validation: [
                 {
@@ -25,9 +19,7 @@ export const translatableCollectionModel = createPrivateModel({
                     settings: {},
                     message: "Value is required."
                 }
-            ],
-            listValidation: [],
-            settings: {}
+            ]
         },
         {
             id: "items",
@@ -36,12 +28,6 @@ export const translatableCollectionModel = createPrivateModel({
             type: "object",
             label: "Items",
             tags: [],
-            placeholderText: null,
-            helpText: null,
-            predefinedValues: {
-                enabled: false,
-                values: []
-            },
             multipleValues: true,
             validation: [],
             listValidation: [],
@@ -67,6 +53,14 @@ export const translatableCollectionModel = createPrivateModel({
                         validation: [],
                         fieldId: "value",
                         storageId: "long-text@value"
+                    },
+                    {
+                        id: "context",
+                        label: "Context",
+                        type: "json",
+                        validation: [],
+                        fieldId: "context",
+                        storageId: "json@context"
                     },
                     {
                         id: "modifiedBy",

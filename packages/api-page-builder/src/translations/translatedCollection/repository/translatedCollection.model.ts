@@ -12,12 +12,6 @@ export const translatedCollectionModel = createPrivateModel({
             type: "text",
             label: "Collection ID",
             tags: [],
-            placeholderText: null,
-            helpText: null,
-            predefinedValues: {
-                enabled: false,
-                values: []
-            },
             multipleValues: false,
             validation: [
                 {
@@ -25,9 +19,7 @@ export const translatedCollectionModel = createPrivateModel({
                     settings: {},
                     message: "Value is required."
                 }
-            ],
-            listValidation: [],
-            settings: {}
+            ]
         },
         {
             id: "items",
@@ -36,15 +28,8 @@ export const translatedCollectionModel = createPrivateModel({
             type: "object",
             label: "Items",
             tags: [],
-            placeholderText: null,
-            helpText: null,
-            predefinedValues: {
-                enabled: false,
-                values: []
-            },
             multipleValues: true,
             validation: [],
-            listValidation: [],
             settings: {
                 fields: [
                     {
@@ -97,12 +82,6 @@ export const translatedCollectionModel = createPrivateModel({
             type: "text",
             label: "Language Code",
             tags: [],
-            placeholderText: null,
-            helpText: null,
-            predefinedValues: {
-                enabled: false,
-                values: []
-            },
             multipleValues: false,
             validation: [
                 {
@@ -110,9 +89,7 @@ export const translatedCollectionModel = createPrivateModel({
                     settings: {},
                     message: "Value is required."
                 }
-            ],
-            listValidation: [],
-            settings: {}
+            ]
         }
     ]
 });

@@ -11,6 +11,8 @@ export interface SaveTranslatableCollectionParams {
     items: Array<{
         itemId: string;
         value: string;
+        modifiedOn?: string;
+        context?: Record<string, any>;
     }>;
 }
 
@@ -31,7 +33,8 @@ export class SaveTranslatableCollectionUseCase {
             return TranslatableItem.create({
                 itemId: item.itemId,
                 value: item.value,
-                modifiedOn: new Date(),
+                context: item.context,
+                modifiedOn: item.modifiedOn ? new Date(item.modifiedOn) : new Date(),
                 modifiedBy: identity
             });
         });

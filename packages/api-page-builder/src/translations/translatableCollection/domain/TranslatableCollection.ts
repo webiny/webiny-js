@@ -45,7 +45,13 @@ export class TranslatableCollection {
                 continue;
             }
 
-            newItems.push(existingItem.update({ value: item.value, modifiedBy: item.modifiedBy }));
+            newItems.push(
+                existingItem.update({
+                    value: item.value,
+                    modifiedBy: item.modifiedBy,
+                    context: item.context ?? existingItem.context
+                })
+            );
         }
 
         this.props.items = newItems;
@@ -61,5 +67,15 @@ export class TranslatableCollection {
     getBaseValue(itemId: string) {
         const item = this.getItems().find(item => item.itemId === itemId);
         return item ? item.value : undefined;
+    }
+
+    getItemContext(itemId: string) {
+        const item = this.getItems().find(item => item.itemId === itemId);
+        return item ? item.context : undefined;
+    }
+
+    getItemModifiedOn(itemId: string) {
+        const item = this.getItems().find(item => item.itemId === itemId);
+        return item ? item.modifiedOn : undefined;
     }
 }

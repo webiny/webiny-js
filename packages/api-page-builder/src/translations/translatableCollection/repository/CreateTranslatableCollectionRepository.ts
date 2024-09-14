@@ -1,8 +1,8 @@
 import { PbContext } from "~/types";
 import { TranslatableCollection } from "~/translations/translatableCollection/domain/TranslatableCollection";
 import { GetModel } from "~/translations/GetModel";
-import { TranslatableCollectionDTO } from "~/translations/types";
 import { TranslatableCollectionMapper } from "~/translations/translatableCollection/repository/mappers/TranslatableCollectionMapper";
+import { TranslatableCollectionDTO } from "~/translations/translatableCollection/repository/mappers/TranslatableCollectionDTO";
 
 export class CreateTranslatableCollectionRepository {
     private readonly context: PbContext;

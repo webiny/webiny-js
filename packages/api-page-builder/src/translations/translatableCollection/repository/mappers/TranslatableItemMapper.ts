@@ -6,6 +6,7 @@ export class TranslatableItemMapper {
         return TranslatableItem.create({
             itemId: dto.itemId,
             value: dto.value,
+            context: dto.context,
             modifiedOn: dto.modifiedOn ? new Date(dto.modifiedOn) : new Date(),
             modifiedBy: dto.modifiedBy
         });
@@ -15,6 +16,7 @@ export class TranslatableItemMapper {
         return {
             itemId: item.itemId,
             value: item.value,
+            context: item.context,
             modifiedOn: item.modifiedOn.toISOString(),
             modifiedBy: item.modifiedBy
         };

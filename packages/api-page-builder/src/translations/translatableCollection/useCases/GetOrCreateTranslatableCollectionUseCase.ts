@@ -10,15 +10,13 @@ export class GetOrCreateTranslatableCollectionUseCase {
     }
 
     async execute(collectionId: string): Promise<TranslatableCollection> {
-        try {
-            const getById = new GetTranslatableCollectionUseCase(this.context);
-            return await getById.execute(collectionId);
-        } catch (err) {
-            if (err.code === "NOT_FOUND") {
-                return new TranslatableCollection({ collectionId });
-            }
+        const getById = new GetTranslatableCollectionUseCase(this.context);
+        const collection = await getById.execute(collectionId);
 
-            throw err;
+        if (!collection) {
+            return new TranslatableCollection({ collectionId });
         }
+
+        return collection;
     }
 }

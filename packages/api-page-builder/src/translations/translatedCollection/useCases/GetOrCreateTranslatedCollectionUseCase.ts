@@ -44,7 +44,7 @@ export class GetOrCreateTranslatedCollectionUseCase {
         const syncItems = baseCollection.getItems().map(bi => {
             const matchingItem = translatedItems.find(ti => ti.itemId === bi.itemId);
 
-            if (matchingItem && matchingItem.translatedAfter(bi.modifiedOn)) {
+            if (matchingItem) {
                 return matchingItem;
             }
 

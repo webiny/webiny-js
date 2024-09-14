@@ -6,6 +6,7 @@ export interface GqlTranslatedCollectionDTO {
     items: Array<{
         itemId: string;
         baseValue: () => string;
+        baseValueModifiedOn: () => string;
         value?: string;
         translatedOn?: string;
         translatedBy?: Identity;

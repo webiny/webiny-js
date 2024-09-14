@@ -3,13 +3,16 @@ import { Identity } from "~/translations/Identity";
 interface TranslatableItemProps {
     itemId: string;
     value: string;
+    context?: Record<string, any>;
     modifiedOn: Date;
     modifiedBy: Identity;
 }
 
 interface UpdateProps {
     value: string;
+    context?: Record<string, any>;
     modifiedBy: Identity;
+    modifiedOn?: Date;
 }
 
 export class TranslatableItem {
@@ -25,6 +28,10 @@ export class TranslatableItem {
 
     get value() {
         return this.props.value;
+    }
+
+    get context() {
+        return this.props.context;
     }
 
     get modifiedOn() {
@@ -44,6 +51,10 @@ export class TranslatableItem {
             return this;
         }
 
-        return new TranslatableItem({ ...this.props, ...props });
+        return new TranslatableItem({
+            ...this.props,
+            ...props,
+            modifiedOn: props.modifiedOn ?? new Date()
+        });
     }
 }
