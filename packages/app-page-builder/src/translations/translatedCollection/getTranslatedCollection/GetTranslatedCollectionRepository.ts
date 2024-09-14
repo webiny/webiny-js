@@ -4,6 +4,7 @@ import { TranslatedCollection } from "~/translations/translatedCollection/Transl
 import { Loading } from "~/translations/Loading";
 import { ListCache } from "~/translations/ListCache";
 import { IGetTranslatedCollectionGateway } from "~/translations/translatedCollection/getTranslatedCollection/IGetTranslatedCollectionGateway";
+import { GenericRecord } from "@webiny/app/types";
 
 export class GetTranslatedCollectionRepository implements IGetTranslatedCollectionRepository {
     private readonly loading: Loading;
@@ -68,7 +69,7 @@ export class GetTranslatedCollectionRepository implements IGetTranslatedCollecti
         return this.loading;
     }
 
-    getTranslatedCollection<TContext>(
+    getTranslatedCollection<TContext extends GenericRecord<string> = GenericRecord<string>>(
         collectionId: string,
         languageCode: string
     ): TranslatedCollection<TContext> | undefined {

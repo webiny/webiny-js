@@ -36,12 +36,16 @@ function makeDecoratableComponent<T extends GenericComponent>(
         );
     };
 
-    Decoratable.original = Component;
-    Decoratable.originalName = name;
-    Decoratable.displayName = `Decoratable<${name}>`;
+    const staticProps = {
+        original: Component,
+        originalName: name,
+        displayName: `Decoratable<${name}>`
+    };
 
     return withDecoratorFactory()(
-        Decoratable as DecoratableComponent<typeof Component & typeof Decoratable>
+        Object.assign(Decoratable, staticProps) as DecoratableComponent<
+            typeof Component & typeof staticProps
+        >
     );
 }
 

@@ -9,7 +9,9 @@ import { GetTranslatedCollectionRepository } from "~/translations/translatedColl
 import { translatedCollectionCache } from "~/translations/translatedCollection/translatedCollectionCache";
 import { GenericRecord } from "@webiny/app/types";
 
-export const useTranslatedCollection = <TContext = GenericRecord<string>>(
+export const useTranslatedCollection = <
+    TContext extends GenericRecord<string> = GenericRecord<string>
+>(
     collectionId: string,
     languageCode: string
 ) => {

@@ -148,10 +148,8 @@ export function createRenderer<
                                     { ...attributes, class: o },
                                     <>
                                         {BeforeRenderer ? <BeforeRenderer /> : null}
-
-                                        {/* Would've liked if the `as unknown as T` part wasn't
-                                        needed, but unfortunately, could not figure it out. */}
                                         <DecoratableRendererComponent
+                                            key={"decoratable-component"}
                                             {...(componentProps as unknown as TRenderComponentProps)}
                                         />
                                         {AfterRenderer ? <AfterRenderer /> : null}

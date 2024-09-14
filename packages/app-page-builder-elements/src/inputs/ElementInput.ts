@@ -50,20 +50,12 @@ export class ElementInput<TValue = unknown, TElementData = any> {
     }
 
     getDefaultValue(element: Element<TElementData>): TValue | undefined {
-        if (!this.params.getDefaultValue) {
-            return this.getValueFromDefaultLocation(element);
-        }
-
         const value = this.params.getDefaultValue({ element });
         if (!value) {
             return undefined;
         }
 
         return value as TValue;
-    }
-
-    private getValueFromDefaultLocation(element: Element) {
-        return element.data.inputs[this.params.name];
     }
 }
 
