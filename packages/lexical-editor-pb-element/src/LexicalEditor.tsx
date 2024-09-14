@@ -8,11 +8,13 @@ import { StylesObject } from "@webiny/theme/types";
 interface LexicalEditorProps {
     type: "heading" | "paragraph";
     value: LexicalValue | undefined;
+    placeholder?: string;
     focus?: boolean;
     onChange?: (value: LexicalValue) => void;
     onBlur?: (editorState: LexicalValue) => void;
     height?: number | string;
     width?: number | string;
+    children?: React.ReactNode | React.ReactNode[];
 }
 
 export const LexicalEditor = ({ type, value, onChange, ...rest }: LexicalEditorProps) => {

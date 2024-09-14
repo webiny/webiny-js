@@ -9,6 +9,8 @@ import { TypographyDropDown } from "~/components/TypographyDropDown";
 import { ParagraphEditorPreset } from "~/components/LexicalPresets/ParagraphEditorPreset";
 import { HeadingEditorPreset } from "~/components/LexicalPresets/HeadingEditorPreset";
 
+export * from "./LexicalEditor";
+
 export const LexicalEditorPlugin = () => {
     return (
         <>
