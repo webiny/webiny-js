@@ -35,7 +35,8 @@ export interface GraphQLSchemaPluginTypeArgs {
 export type Resolvers<TContext> =
     | GraphQLScalarType
     | GraphQLFieldResolver<any, Record<string, any>, TContext>
-    | { [property: string]: Resolvers<TContext> };
+    | { [property: string]: Resolvers<TContext> }
+    | undefined;
 
 export interface GraphQLSchemaDefinition<TContext> {
     typeDefs: Types;

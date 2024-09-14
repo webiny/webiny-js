@@ -55,6 +55,7 @@ export interface RichTextEditorProps {
     toolbar?: React.ReactNode;
     value: LexicalValue | null | undefined;
     width?: number | string;
+    generateInitialValue?: () => LexicalValue;
 }
 
 const BaseRichTextEditor = ({
@@ -71,6 +72,7 @@ const BaseRichTextEditor = ({
     height,
     contentEditableStyles,
     placeholderStyles,
+    generateInitialValue = generateInitialLexicalValue,
     ...props
 }: RichTextEditorProps) => {
     const themeEmotionMap =
@@ -104,7 +106,7 @@ const BaseRichTextEditor = ({
     ));
 
     const value = normalizeInputValue(props.value);
-    const editorValue = isValidLexicalData(value) ? value : generateInitialLexicalValue();
+    const editorValue = isValidLexicalData(value) ? value : generateInitialValue();
 
     const initialConfig = {
         editorState: null,

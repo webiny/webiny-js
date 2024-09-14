@@ -1,13 +1,12 @@
 import React, { useCallback, useMemo } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
 import get from "lodash/get";
 import { CoreOptions } from "medium-editor";
 import { makeDecoratable } from "@webiny/react-composition";
 import { PbEditorElement } from "~/types";
-import { elementWithChildrenByIdSelector, activeElementAtom, uiAtom } from "../../recoil/modules";
 import useUpdateHandlers from "../../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../../components/MediumEditor";
 import { applyFallbackDisplayMode } from "../../plugins/elementSettings/elementSettingsUtils";
+import { useActiveElementId, useDisplayMode, useElementById } from "~/editor";
 
 const DATA_NAMESPACE = "data.text";
 
@@ -17,12 +16,12 @@ interface TextElementProps {
     tag?: string | [string, Record<string, any>];
 }
 
-const PeText = makeDecoratable(
+export const PeText = makeDecoratable(
     "PeText",
     ({ elementId, mediumEditorOptions, tag: customTag }: TextElementProps) => {
-        const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
-        const [{ displayMode }] = useRecoilState(uiAtom);
-        const [activeElementId, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
+        const [element] = useElementById(elementId);
+        const { displayMode } = useDisplayMode();
+        const [activeElementId, setActiveElementId] = useActiveElementId();
         const { getUpdateValue } = useUpdateHandlers({
             element: element as PbEditorElement,
             dataNamespace: DATA_NAMESPACE
@@ -48,7 +47,7 @@ const PeText = makeDecoratable(
         const onSelect = useCallback(() => {
             // Mark element active on editor element selection
             if (elementId && activeElementId !== elementId) {
-                setActiveElementAtomValue(elementId);
+                setActiveElementId(elementId);
             }
         }, [activeElementId, elementId]);
 
@@ -72,5 +71,3 @@ const PeText = makeDecoratable(
         );
     }
 );
-
-export default PeText;

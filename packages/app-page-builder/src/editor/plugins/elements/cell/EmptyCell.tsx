@@ -33,7 +33,7 @@ interface EmptyCellProps {
     onClick?: (element: PbEditorElement) => void;
 }
 
-const EmptyCell = ({ element }: EmptyCellProps) => {
+export const EmptyCell = ({ element }: EmptyCellProps) => {
     const [activeElementId] = useActiveElementId();
     const isActive = activeElementId === element.id;
 
@@ -51,4 +51,7 @@ const EmptyCell = ({ element }: EmptyCellProps) => {
     );
 };
 
+/**
+ * @deprecated Use the named `EmptyCell` export instead.
+ */
 export default EmptyCell;
