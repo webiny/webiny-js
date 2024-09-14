@@ -34,7 +34,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     uniquePageId: ID
                     editor: String
                     createdFrom: ID
-                    createdBy: PbCreatedBy
+                    createdBy: PbIdentity
                     createdOn: DateTime
                     savedOn: DateTime
                     publishedOn: DateTime
@@ -83,7 +83,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     savedOn: DateTime
                     createdFrom: ID
                     createdOn: DateTime
-                    createdBy: PbCreatedBy
+                    createdBy: PbIdentity
                     settings: JSON
                 }
 

@@ -4,7 +4,7 @@ export const translatableCollectionSchema = /* GraphQL*/ `
         value: String!
         context: JSON!
         modifiedOn: DateTime!
-        modifiedBy: CmsIdentity!
+        modifiedBy: PbIdentity!
     }
 
     type TranslatableCollection {
@@ -21,12 +21,12 @@ export const translatableCollectionSchema = /* GraphQL*/ `
 
     type TranslatableCollectionResponse {
         data: TranslatableCollection
-        error: CmsError
+        error: PbError
     }
 
     type SaveTranslatableCollectionResponse {
         data: TranslatableCollection
-        error: CmsError
+        error: PbError
     }
 
     extend type TranslationsQuery {

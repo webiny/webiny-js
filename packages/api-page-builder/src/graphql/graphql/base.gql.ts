@@ -17,7 +17,7 @@ export const createBaseGraphQL = (): GraphQLSchemaPlugin => {
                     src: String!
                 }
 
-                type PbCreatedBy {
+                type PbIdentity {
                     id: ID
                     displayName: String
                     type: String

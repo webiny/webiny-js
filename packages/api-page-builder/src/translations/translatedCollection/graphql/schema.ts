@@ -6,7 +6,7 @@ export const translatedCollectionSchema = /* GraphQL*/ `
         value: String
         context: JSON
         translatedOn: DateTime
-        translatedBy: CmsIdentity
+        translatedBy: PbIdentity
     }
 
     type TranslatedCollection {
@@ -22,12 +22,12 @@ export const translatedCollectionSchema = /* GraphQL*/ `
 
     type TranslatedCollectionResponse {
         data: TranslatedCollection
-        error: CmsError
+        error: PbError
     }
 
     type SaveTranslatedCollectionResponse {
         data: TranslatedCollection
-        error: CmsError
+        error: PbError
     }
     
     extend type TranslationsQuery {
