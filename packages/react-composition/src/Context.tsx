@@ -20,7 +20,7 @@ import {
 
 export function compose<T>(...fns: Decorator<T>[]) {
     return (decoratee: T): T => {
-        return fns.reduceRight((decoratee, decorator) => decorator(decoratee), decoratee);
+        return fns.reduceRight((decoratee, decorator) => decorator(decoratee), decoratee) as T;
     };
 }
 
