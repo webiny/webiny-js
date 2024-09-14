@@ -1377,7 +1377,7 @@ export interface EntryBeforeListTopicParams {
  * @category Context
  * @category CmsEntry
  */
-export interface CreateCmsEntryInput {
+export type CreateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
     id?: string;
     status?: CmsEntryStatus;
 
@@ -1419,9 +1419,7 @@ export interface CreateCmsEntryInput {
     wbyAco_location?: {
         folderId?: string | null;
     };
-
-    [key: string]: any;
-}
+};
 
 export interface CreateCmsEntryOptionsInput {
     skipValidators?: string[];
@@ -1471,7 +1469,7 @@ export interface CreateRevisionCmsEntryOptionsInput {
  * @category Context
  * @category CmsEntry
  */
-export interface UpdateCmsEntryInput {
+export type UpdateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
     /**
      * Revision-level meta fields. 👇
      */
@@ -1511,9 +1509,7 @@ export interface UpdateCmsEntryInput {
     wbyAco_location?: {
         folderId?: string | null;
     };
-
-    [key: string]: any;
-}
+};
 
 export interface UpdateCmsEntryOptionsInput {
     skipValidators?: string[];
