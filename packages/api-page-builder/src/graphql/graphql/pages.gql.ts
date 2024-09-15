@@ -244,8 +244,6 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     # Duplicate page by given ID.
                     duplicatePage(id: ID!, meta: JSON): PbPageResponse
 
-                    unlinkPageFromTemplate(id: ID!): PbPageResponse
-
                     # Publish page
                     publishPage(id: ID!): PbPageResponse
 
@@ -497,12 +495,6 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         } catch (e) {
                             return new ErrorResponse(e);
                         }
-                    },
-
-                    unlinkPageFromTemplate: async (_, args: any, context) => {
-                        return resolve(() => {
-                            return context.pageBuilder.unlinkPageFromTemplate(args.id);
-                        });
                     },
 
                     publishPage: async (_, args: any, context) => {
