@@ -7,11 +7,14 @@ export const getDownloadedExtensionType = async (downloadedExtensionRootPath: st
     const pkgJson = await loadJson<PackageJson>(pkgJsonPath);
 
     const keywords = pkgJson.keywords;
-    if (Array.isArray(keywords)) {
-        for (const keyword of keywords) {
-            if (keyword.startsWith("webiny-extension-type:")) {
-                return keyword.replace("webiny-extension-type:", "");
-            }
+    // If there is no keywords, we consider the folder to be a workspace.
+    if (!Array.isArray(keywords)) {
+        return "workspace";
+    }
+
+    for (const keyword of keywords) {
+        if (keyword.startsWith("webiny-extension-type:")) {
+            return keyword.replace("webiny-extension-type:", "");
         }
     }
 
