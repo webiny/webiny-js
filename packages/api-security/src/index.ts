@@ -70,12 +70,7 @@ export const createSecurityContext = ({ storageOperations }: SecurityConfig) => 
 
 export const createSecurityGraphQL = (config: MultiTenancyGraphQLConfig = {}) => {
     return new ContextPlugin<Context>(context => {
-        const license = context.wcp.getProjectLicense();
-        context.plugins.register(
-            graphqlPlugins({
-                teams: license?.package?.features?.advancedAccessControlLayer?.options?.teams
-            })
-        );
+        context.plugins.register(graphqlPlugins({ teams: context.wcp.canUseTeams() }));
 
         if (context.tenancy.isMultiTenant()) {
             applyMultiTenancyGraphQLPlugins(config, context);

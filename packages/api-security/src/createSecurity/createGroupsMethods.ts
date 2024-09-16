@@ -202,8 +202,8 @@ export const createGroupsMethods = ({
                 });
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not list API keys.",
-                    ex.code || "LIST_API_KEY_ERROR"
+                    ex.message || "Could not list groups.",
+                    ex.code || "LIST_GROUPS_ERROR"
                 );
             }
         },
