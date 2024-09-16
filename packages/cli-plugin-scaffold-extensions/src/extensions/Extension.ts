@@ -1,6 +1,7 @@
 import { AbstractExtension, ExtensionTypeConstructorParams } from "./AbstractExtension";
 import { AdminExtension } from "./AdminExtension";
 import { ApiExtension } from "./ApiExtension";
+import { WorkspaceExtension } from "./WorkspaceExtension";
 
 export class Extension extends AbstractExtension {
     extension: AbstractExtension;
@@ -15,6 +16,10 @@ export class Extension extends AbstractExtension {
             }
             case "api": {
                 this.extension = new ApiExtension(params);
+                break;
+            }
+            case "workspace": {
+                this.extension = new WorkspaceExtension(params);
                 break;
             }
             default: {
