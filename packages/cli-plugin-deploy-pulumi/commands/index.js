@@ -1,5 +1,3 @@
-const { featureFlags } = require("@webiny/feature-flags");
-
 module.exports = [
     {
         type: "cli-command",
@@ -140,6 +138,7 @@ module.exports = [
                 }
             );
 
+            const { featureFlags } = require("@webiny/feature-flags");
             if (featureFlags.newWatchCommand) {
                 yargs.command(
                     "watch [folder]",
