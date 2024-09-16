@@ -120,7 +120,7 @@ export class FileFetcher implements IFileFetcher {
             return null;
         }
         try {
-            return response.Body.transformToString();
+            return await response.Body.transformToString();
         } catch (ex) {
             console.log(`Could not read file "${key}" from bucket "${this.bucket}".`);
             console.error(ex);

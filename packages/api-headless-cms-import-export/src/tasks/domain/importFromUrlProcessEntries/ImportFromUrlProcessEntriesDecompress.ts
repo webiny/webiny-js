@@ -12,7 +12,7 @@ import {
 import { CompressedFileReader } from "~/tasks/utils/decompressor/CompressedFileReader";
 import { getFilePath } from "~/tasks/utils/helpers/getFilePath";
 import { Context } from "~/types";
-import { createUploadFactory } from "~/tasks/utils/upload";
+import { createMultipartUpload, createMultipartUploadFactory } from "~/tasks/utils/upload";
 import { WebinyError } from "@webiny/error";
 
 export interface IImportFromUrlProcessEntriesDecompressParams {
@@ -45,21 +45,24 @@ export class ImportFromUrlProcessEntriesDecompress<
             bucket: this.bucket
         });
 
-        const files = await reader.read(result.file.key);
+        const files = (await reader.read(result.file.key)).sort((a, b) => {
+            return a.uncompressedSize - b.uncompressedSize;
+        });
         if (files.length === 0) {
             return response.error({
                 message: `No files found in the compressed archive.`,
                 code: "NO_FILES_FOUND"
             });
         }
-
-        const createUpload = createUploadFactory({
-            client: this.client,
-            bucket: this.bucket
-        });
-
         const decompressor = createDecompressor({
-            createUpload
+            createUploadFactory: filename => {
+                return createMultipartUploadFactory({
+                    filename,
+                    client: this.client,
+                    bucket: this.bucket,
+                    createHandler: createMultipartUpload
+                });
+            }
         });
 
         const extractPath = getFilePath(result.file.key);
@@ -82,8 +85,9 @@ export class ImportFromUrlProcessEntriesDecompress<
                     ...result
                 });
             }
+
             try {
-                const target = `${extractPath.path}/extracted/${source.path}`;
+                const target = `extracted/${extractPath.path}/${source.path.replaceAll("-", "")}`;
                 const file = await decompressor.extract({
                     source,
                     target
@@ -101,7 +105,7 @@ export class ImportFromUrlProcessEntriesDecompress<
                 result.decompress = {
                     ...result.decompress,
                     next: next + 1,
-                    files: [...(result.decompress?.files || []), target]
+                    files: [...(result.decompress?.files || []), file.Key]
                 };
             } catch (ex) {
                 return response.error(ex);

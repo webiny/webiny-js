@@ -1,6 +1,10 @@
 import { Options as BaseUploadOptions, Upload as BaseUpload } from "@webiny/aws-sdk/lib-storage";
-import { PassThrough } from "stream";
-import type { CompleteMultipartUploadCommandOutput, S3Client } from "@webiny/aws-sdk/client-s3";
+import { PassThrough, Transform } from "stream";
+import type {
+    CompleteMultipartUploadCommandOutput,
+    PutObjectCommandInput,
+    S3Client
+} from "@webiny/aws-sdk/client-s3";
 import { IAwsUpload, IUpload, IUploadOnListener } from "./abstractions/Upload";
 import { getContentType } from "./getContentType";
 
@@ -13,47 +17,48 @@ export interface IUploadConfig {
     queueSize?: number;
 }
 
-const defaultFactory = (options: BaseUploadOptions): BaseUpload => {
-    return new BaseUpload({
-        ...options
-    });
+const defaultFactory = (options: BaseUploadOptions): IAwsUpload => {
+    return new BaseUpload(options);
 };
 
 export class Upload implements IUpload {
     public readonly stream: PassThrough;
     public readonly upload: IAwsUpload;
-    private readonly client: S3Client;
+    public readonly client: S3Client;
 
-    public constructor(params: IUploadConfig) {
-        this.client = params.client;
+    public constructor(input: IUploadConfig) {
+        this.client = input.client;
+        const factory = input?.factory || defaultFactory;
 
-        const factory = params?.factory || defaultFactory;
+        const params: PutObjectCommandInput = {
+            ACL: "private",
+            Body: input.stream,
+            Bucket: input.bucket,
+            ContentType: getContentType(input.filename),
+            Key: input.filename
+        };
 
         this.upload = factory({
-            client: params.client,
-            params: {
-                ACL: "private",
-                Body: params.stream,
-                Bucket: params.bucket,
-                ContentType: getContentType(params.filename),
-                Key: params.filename
-            },
-            queueSize: params.queueSize || 1,
+            client: input.client,
+            params,
+            queueSize: input.queueSize || 1,
             partSize: 1024 * 1024 * 5,
             leavePartsOnError: false
         });
-        this.stream = params.stream;
+        this.stream = input.stream;
     }
 
     public async abort(): Promise<void> {
         await this.upload.abort();
-        this.client.destroy();
     }
 
     public async done(): Promise<CompleteMultipartUploadCommandOutput> {
-        const result = await this.upload.done();
-        this.client.destroy();
-        return result;
+        try {
+            return await this.upload.done();
+        } catch (ex) {
+            await this.abort();
+            throw ex;
+        }
     }
 
     public onProgress(listener: IUploadOnListener): void {
@@ -67,18 +72,26 @@ export interface ICreateUploadFactoryParams {
 }
 
 export interface ICreateUploadCallable {
-    (filename: string): IUpload;
+    (filename: string, options?: ICreateUploadFactoryOptions): IUpload;
+}
+
+export interface ICreateUploadFactoryOptions {
+    stream?: Transform;
+    client?: S3Client;
+    bucket?: string;
 }
 
 export const createUploadFactory = (params: ICreateUploadFactoryParams): ICreateUploadCallable => {
-    return filename => {
-        const stream = new PassThrough({
-            autoDestroy: true
-        });
+    return (filename, options) => {
+        const stream =
+            options?.stream ||
+            new PassThrough({
+                autoDestroy: true
+            });
 
         return new Upload({
-            client: params.client,
-            bucket: params.bucket,
+            client: options?.client || params.client,
+            bucket: options?.bucket || params.bucket,
             stream,
             filename
         });

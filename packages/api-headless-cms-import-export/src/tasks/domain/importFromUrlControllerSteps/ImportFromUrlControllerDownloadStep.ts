@@ -83,6 +83,18 @@ export class ImportFromUrlControllerDownloadStep<
                 }
             };
 
+            if (failed.length > 0 || aborted.length > 0 || invalid.length > 0) {
+                return response.error({
+                    message: "Some download tasks failed.",
+                    code: "DOWNLOAD_FAILED",
+                    data: {
+                        failed,
+                        aborted,
+                        invalid
+                    }
+                });
+            }
+
             return response.continue(output);
         }
         return response.error({

@@ -7,9 +7,9 @@ import {
 } from "./abstractions/ImportFromUrlProcessEntries";
 import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { ICmsEntryManager } from "@webiny/api-headless-cms/types";
-import { ImportFromUrlProcessEntriesInsert } from "~/tasks/domain/importFromUrlProcessEntries/ImportFromUrlProcessEntriesInsert";
 import { ImportFromUrlProcessEntriesDecompress } from "~/tasks/domain/importFromUrlProcessEntries/ImportFromUrlProcessEntriesDecompress";
 import { FileFetcher } from "~/tasks/utils/fileFetcher";
+import { ImportFromUrlProcessEntriesInsert } from "./ImportFromUrlProcessEntriesInsert";
 
 export interface IImportFromUrlProcessEntriesParams {
     client: S3Client;
@@ -74,6 +74,7 @@ export class ImportFromUrlProcessEntries<
 
                 return await decompress.run(params);
             } catch (ex) {
+                console.error(ex);
                 return response.error({
                     message: ex.message,
                     code: ex.code || "DECOMPRESS_ERROR",
@@ -82,6 +83,7 @@ export class ImportFromUrlProcessEntries<
                 });
             }
         }
+
         try {
             const insert = new ImportFromUrlProcessEntriesInsert<C, I, O>({
                 entryManager,

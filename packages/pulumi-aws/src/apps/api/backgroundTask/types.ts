@@ -24,6 +24,7 @@ export interface StepFunctionDefinitionStatesChoiceBase {
     StringEquals?: string;
     StringMatches?: string;
     IsPresent?: boolean;
+    IsNull?: boolean;
 }
 
 export interface StepFunctionDefinitionStatesChoiceAndItem {

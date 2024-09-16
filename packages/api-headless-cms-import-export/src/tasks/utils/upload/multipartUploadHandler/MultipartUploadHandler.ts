@@ -93,10 +93,14 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
         }
         const bufferLength = this.bufferLength;
 
+        const body = Buffer.concat(this.buffer, bufferLength);
+        this.buffer = [];
+        this.bufferLength = 0;
         await this.write({
-            body: Buffer.concat(this.buffer, this.bufferLength),
+            body,
             bufferLength
         });
+
         return createMultipartUploadHandlerAddResult({
             parts: this.parts,
             written: true,
@@ -107,9 +111,14 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
     }
 
     public async complete(): Promise<IMultipartUploadHandlerCompleteResult> {
+        const bufferLength = this.bufferLength;
+        const body = Buffer.concat(this.buffer, bufferLength);
+        this.buffer = [];
+        this.bufferLength = 0;
+
         await this.write({
-            body: Buffer.concat(this.buffer, this.bufferLength),
-            bufferLength: this.bufferLength
+            body,
+            bufferLength
         });
 
         if (this.parts.length === 0) {
@@ -198,8 +207,6 @@ export class MultipartUploadHandler implements IMultipartUploadHandler {
             partNumber: nextPart,
             tag: result.ETag.replaceAll('"', "")
         });
-        this.buffer = [];
-        this.bufferLength = 0;
         return true;
     }
 

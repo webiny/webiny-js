@@ -139,8 +139,10 @@ export class MultipartUploadFactory implements IMultipartUploadFactory {
     }
 }
 
-export const createMultipartUploadFactory = (
-    params: IMultipartUploadFactoryParams
-): IMultipartUploadFactory => {
+export interface ICreateMultipartUploadFactoryCallable {
+    (params: IMultipartUploadFactoryParams): IMultipartUploadFactory;
+}
+
+export const createMultipartUploadFactory: ICreateMultipartUploadFactoryCallable = params => {
     return new MultipartUploadFactory(params);
 };
