@@ -9,6 +9,7 @@ interface UsePersistEntryOptions {
 
 interface PersistEntryOptions {
     skipValidators?: string[];
+    createNewRevision?: boolean;
 }
 
 export function usePersistEntry({ addItemToListCache }: UsePersistEntryOptions) {
@@ -16,8 +17,6 @@ export function usePersistEntry({ addItemToListCache }: UsePersistEntryOptions) 
 
     const persistEntry = useCallback(
         (entry: Partial<CmsContentEntry>, persistOptions?: PersistEntryOptions) => {
-            const isLocked = entry.meta?.locked === true;
-
             if (!entry.id) {
                 return contentEntry.createEntry({
                     entry,
@@ -28,7 +27,7 @@ export function usePersistEntry({ addItemToListCache }: UsePersistEntryOptions) 
                 });
             }
 
-            if (!isLocked) {
+            if (!persistOptions?.createNewRevision) {
                 return contentEntry.updateEntryRevision({
                     entry: entry as PartialCmsContentEntryWithId,
                     options: { skipValidators: persistOptions?.skipValidators }
