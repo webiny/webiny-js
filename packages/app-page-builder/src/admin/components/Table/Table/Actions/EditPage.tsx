@@ -10,9 +10,9 @@ export const EditPage = makeDecoratable("EditPage", () => {
     const { page } = usePage();
     const { OptionsMenuItem, OptionsMenuLink } = PageListConfig.Browser.PageAction;
     const { getPageEditorUrl, navigateToPageEditor } = useNavigatePage();
-    const { createPageForm, loading } = useCreatePageFrom({
-        page,
-        onSuccess: () => navigateToPageEditor(page.data.pid)
+    const { createPageFromMutation, loading } = useCreatePageFrom({
+        page: page.data,
+        onSuccess: data => navigateToPageEditor(data.id)
     });
 
     if (page.data.locked) {
@@ -20,7 +20,7 @@ export const EditPage = makeDecoratable("EditPage", () => {
             <OptionsMenuItem
                 icon={<Edit />}
                 label={"Edit"}
-                onAction={createPageForm}
+                onAction={createPageFromMutation}
                 disabled={loading}
                 data-testid={"aco.actions.pb.page.edit"}
             />
@@ -31,7 +31,7 @@ export const EditPage = makeDecoratable("EditPage", () => {
         <OptionsMenuLink
             icon={<Edit />}
             label={"Edit"}
-            to={getPageEditorUrl(page.id)}
+            to={getPageEditorUrl(page.data.id)}
             data-testid={"aco.actions.pb.page.edit"}
         />
     );
