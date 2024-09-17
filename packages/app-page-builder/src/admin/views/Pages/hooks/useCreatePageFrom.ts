@@ -4,11 +4,11 @@ import { useSnackbar } from "@webiny/app-admin";
 import { CREATE_PAGE } from "~/admin/graphql/pages";
 import * as GQLCache from "~/admin/views/Pages/cache";
 
-import { PbPageTableItem } from "~/types";
+import { PbPageDataItem, PbPageRevision } from "~/types";
 
 interface UseEditPageParams {
-    page: PbPageTableItem;
-    onSuccess?: () => void;
+    page: PbPageDataItem;
+    onSuccess?: (data: PbPageRevision) => void;
 }
 
 export const useCreatePageFrom = ({ page, onSuccess }: UseEditPageParams) => {
@@ -16,8 +16,9 @@ export const useCreatePageFrom = ({ page, onSuccess }: UseEditPageParams) => {
     const [createPageFrom] = useMutation(CREATE_PAGE);
     const { showSnackbar } = useSnackbar();
 
-    const createPageForm = useCallback(async () => {
+    const createPageFromMutation = useCallback(async () => {
         setLoading(true);
+
         const response = await createPageFrom({
             variables: { from: page.id },
             update(cache, { data }) {
@@ -30,18 +31,18 @@ export const useCreatePageFrom = ({ page, onSuccess }: UseEditPageParams) => {
         });
         setLoading(false);
 
-        const { error } = response.data.pageBuilder.createPage;
+        const { data, error } = response.data.pageBuilder.createPage;
         if (error) {
             return showSnackbar(error.message);
         }
 
         if (typeof onSuccess === "function") {
-            onSuccess();
+            onSuccess(data);
         }
     }, [page, onSuccess]);
 
     return {
-        createPageForm,
+        createPageFromMutation,
         loading
     };
 };
