@@ -1,5 +1,6 @@
 import * as aws from "@pulumi/aws";
 import { PulumiApp } from "@webiny/pulumi";
+import { ApiOutput } from "~/apps/api";
 
 export function createPublicAppBucket(app: PulumiApp, name: string) {
     const bucket = app.addResource(aws.s3.Bucket, {
@@ -32,7 +33,10 @@ export function createPublicAppBucket(app: PulumiApp, name: string) {
 }
 
 // Forces S3 buckets to be available only through a cloudfront distribution.
+// Requires `ApiOutput` module to be loaded.
 export function createPrivateAppBucket(app: PulumiApp, name: string) {
+    const api = app.getModule(ApiOutput);
+
     const bucket = app.addResource(aws.s3.Bucket, {
         name: name,
         config: {
@@ -87,6 +91,19 @@ export function createPrivateAppBucket(app: PulumiApp, name: string) {
                             // we need GetObject to retrieve objects from S3
                             // and ListBucket allows to properly handle non-existing files (404)
                             Action: ["s3:ListBucket", "s3:GetObject"],
+                            Resource: [`${arn}`, `${arn}/*`]
+                        },
+                        {
+                            Effect: "Allow",
+                            Principal: { AWS: api.graphqlLambdaRole },
+                            Action: [
+                                "s3:GetObjectAcl",
+                                "s3:DeleteObject",
+                                "s3:PutObjectAcl",
+                                "s3:PutObject",
+                                "s3:GetObject",
+                                "s3:ListBucket"
+                            ],
                             Resource: [`${arn}`, `${arn}/*`]
                         }
                     ];

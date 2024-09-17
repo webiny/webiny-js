@@ -77,18 +77,36 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                     ({ entry }): DeleteRevisionHandler =>
                     async (id): Promise<void> => {
                         const revisionId = id || entry.id;
-                        const response = await contentEntry.deleteEntry({
+                        const response = await contentEntry.deleteEntryRevision({
                             id: revisionId
                         });
 
                         if (typeof response === "boolean") {
+                            if (!response) {
+                                showSnackbar(
+                                    <span>
+                                        Error while deleting revision entry{" "}
+                                        <strong>#{entry.meta.version}</strong>!
+                                    </span>
+                                );
+                                return;
+                            }
+
                             // Redirect to the first revision in the list of all entry revisions.
                             const targetRevision = contentEntry.revisions.filter(
                                 rev => rev.id !== revisionId
                             )[0];
+
                             history.push(
                                 `/cms/content-entries/${modelId}?id=` +
                                     encodeURIComponent(targetRevision!.id)
+                            );
+
+                            showSnackbar(
+                                <span>
+                                    Successfully deleted revision{" "}
+                                    <strong>#{entry.meta.version}</strong>!
+                                </span>
                             );
                             return;
                         }
