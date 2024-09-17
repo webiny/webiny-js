@@ -33,6 +33,7 @@ export function createPublicAppBucket(app: PulumiApp, name: string) {
 }
 
 // Forces S3 buckets to be available only through a cloudfront distribution.
+// Requires `ApiOutput` module to be loaded.
 export function createPrivateAppBucket(app: PulumiApp, name: string) {
     const api = app.getModule(ApiOutput);
 
