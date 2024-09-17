@@ -107,14 +107,6 @@ export const generateExtension = async ({
             }
 
             await writeJson(packageJsonPath, packageJson);
-
-            // Add package to workspaces
-            const rootPackageJsonPath = path.join(project.root, "package.json");
-            const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
-            if (!rootPackageJson.workspaces.packages.includes(location)) {
-                rootPackageJson.workspaces.packages.push(location);
-                await writeJson(rootPackageJsonPath, rootPackageJson);
-            }
         }
 
         const extension = new Extension({
@@ -125,6 +117,14 @@ export const generateExtension = async ({
         });
 
         await extension.generate();
+
+        // Add package to workspaces
+        const rootPackageJsonPath = path.join(project.root, "package.json");
+        const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
+        if (!rootPackageJson.workspaces.packages.includes(location)) {
+            rootPackageJson.workspaces.packages.push(location);
+            await writeJson(rootPackageJsonPath, rootPackageJson);
+        }
 
         // Sleep for 1 second before proceeding with yarn installation.
         await setTimeout(1000);
