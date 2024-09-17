@@ -133,7 +133,9 @@ export const downloadAndLinkExtension = async ({
         if (downloadedExtensions.length === 1) {
             const [downloadedExtension] = downloadedExtensions;
             ora.succeed(
-                `Extension downloaded in ${context.success.hl(downloadedExtension.getLocation())}.`
+                `Extension downloaded successfully in ${context.success.hl(
+                    downloadedExtension.getLocation()
+                )}.`
             );
 
             const nextSteps = downloadedExtension.getNextSteps();
@@ -145,7 +147,15 @@ export const downloadAndLinkExtension = async ({
             });
         } else {
             const paths = downloadedExtensions.map(ext => ext.getLocation());
-            ora.succeed(`Extensions downloaded in ${context.success.hl(paths.join(", "))}.`);
+            ora.succeed("Multiple extensions downloaded successfully.");
+
+            console.log();
+            console.log(chalk.bold("Next Steps"));
+
+            console.log(`‣ extensions were created in the following locations:`);
+            paths.forEach(p => {
+                console.log(`  · ${context.success.hl(p)}`);
+            });
         }
     } catch (e) {
         switch (e.code) {
