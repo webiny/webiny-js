@@ -147,14 +147,9 @@ export const downloadAndLinkExtension = async ({
             });
         } else {
             const paths = downloadedExtensions.map(ext => ext.getLocation());
-            ora.succeed("Multiple extensions downloaded successfully.");
-
-            console.log();
-            console.log(chalk.bold("Next Steps"));
-
-            console.log(`‣ extensions were created in the following locations:`);
+            ora.succeed("Multiple extensions downloaded successfully in:");
             paths.forEach(p => {
-                console.log(`  · ${context.success.hl(p)}`);
+                console.log(`  ‣ ${context.success.hl(p)}`);
             });
         }
     } catch (e) {
