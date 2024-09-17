@@ -1,23 +1,20 @@
-import { createDecompressor } from "~/tasks/utils/decompressor";
+import { ICompressedFileReader, IDecompressor } from "~/tasks/utils/decompressor";
 import {
     IImportFromUrlProcessEntriesDecompress,
     IImportFromUrlProcessEntriesDecompressRunParams,
     IImportFromUrlProcessEntriesDecompressRunResult
 } from "./abstractions/ImportFromUrlProcessEntriesDecompress";
-import { S3Client } from "@webiny/aws-sdk/client-s3";
 import {
     IImportFromUrlProcessEntriesInput,
     IImportFromUrlProcessEntriesOutput
 } from "./abstractions/ImportFromUrlProcessEntries";
-import { CompressedFileReader } from "~/tasks/utils/decompressor/CompressedFileReader";
 import { getFilePath } from "~/tasks/utils/helpers/getFilePath";
 import { Context } from "~/types";
-import { createMultipartUpload, createMultipartUploadFactory } from "~/tasks/utils/upload";
 import { WebinyError } from "@webiny/error";
 
 export interface IImportFromUrlProcessEntriesDecompressParams {
-    client: S3Client;
-    bucket: string;
+    reader: ICompressedFileReader;
+    decompressor: IDecompressor;
 }
 
 export class ImportFromUrlProcessEntriesDecompress<
@@ -26,12 +23,12 @@ export class ImportFromUrlProcessEntriesDecompress<
     O extends IImportFromUrlProcessEntriesOutput = IImportFromUrlProcessEntriesOutput
 > implements IImportFromUrlProcessEntriesDecompress<C, I, O>
 {
-    private readonly client: S3Client;
-    private readonly bucket: string;
+    private readonly reader: ICompressedFileReader;
+    private readonly decompressor: IDecompressor;
 
     public constructor(params: IImportFromUrlProcessEntriesDecompressParams) {
-        this.client = params.client;
-        this.bucket = params.bucket;
+        this.reader = params.reader;
+        this.decompressor = params.decompressor;
     }
 
     public async run(
@@ -40,12 +37,7 @@ export class ImportFromUrlProcessEntriesDecompress<
         const { response, input, isCloseToTimeout, isAborted } = params;
         const result = structuredClone<I>(input);
 
-        const reader = new CompressedFileReader({
-            client: this.client,
-            bucket: this.bucket
-        });
-
-        const files = (await reader.read(result.file.key)).sort((a, b) => {
+        const files = (await this.reader.read(result.file.key)).sort((a, b) => {
             return a.uncompressedSize - b.uncompressedSize;
         });
         if (files.length === 0) {
@@ -54,16 +46,6 @@ export class ImportFromUrlProcessEntriesDecompress<
                 code: "NO_FILES_FOUND"
             });
         }
-        const decompressor = createDecompressor({
-            createUploadFactory: filename => {
-                return createMultipartUploadFactory({
-                    filename,
-                    client: this.client,
-                    bucket: this.bucket,
-                    createHandler: createMultipartUpload
-                });
-            }
-        });
 
         const extractPath = getFilePath(result.file.key);
 
@@ -87,8 +69,8 @@ export class ImportFromUrlProcessEntriesDecompress<
             }
 
             try {
-                const target = `extracted/${extractPath.path}/${source.path.replaceAll("-", "")}`;
-                const file = await decompressor.extract({
+                const target = `extracted/${extractPath.path}/${source.path}`;
+                const file = await this.decompressor.extract({
                     source,
                     target
                 });

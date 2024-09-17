@@ -3,7 +3,6 @@ import {
     IImportFromUrlProcessEntriesInsertRunParams,
     IImportFromUrlProcessEntriesInsertRunResult
 } from "./abstractions/ImportFromUrlProcessEntriesInsert";
-import { S3Client } from "@webiny/aws-sdk/client-s3";
 import {
     IImportFromUrlProcessEntriesInput,
     IImportFromUrlProcessEntriesInsertProcessedFileErrorsInput,
@@ -18,7 +17,6 @@ import { ICmsEntryEntriesJson } from "~/tasks/utils/types";
 
 export interface IImportFromUrlProcessEntriesInsertParams {
     entryManager: ICmsEntryManager;
-    client: S3Client;
     fileFetcher: IFileFetcher;
 }
 
@@ -29,12 +27,10 @@ export class ImportFromUrlProcessEntriesInsert<
 > implements IImportFromUrlProcessEntriesInsert<C, I, O>
 {
     private readonly entryManager: ICmsEntryManager;
-    private readonly client: S3Client;
     private readonly fileFetcher: IFileFetcher;
 
     public constructor(params: IImportFromUrlProcessEntriesInsertParams) {
         this.entryManager = params.entryManager;
-        this.client = params.client;
         this.fileFetcher = params.fileFetcher;
     }
 

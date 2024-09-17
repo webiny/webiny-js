@@ -8,6 +8,7 @@ import {
 import { Context } from "~/types";
 import { ImportFromUrlControllerDownloadStep } from "~/tasks/domain/importFromUrlControllerSteps/ImportFromUrlControllerDownloadStep";
 import { ImportFromUrlControllerProcessEntriesStep } from "./importFromUrlControllerSteps/ImportFromUrlControllerProcessEntriesStep";
+import { ImportFromUrlControllerProcessAssetsStep } from "./importFromUrlControllerSteps/ImportFromUrlControllerProcessAssetsStep";
 
 export class ImportFromUrlController<
     C extends Context = Context,
@@ -41,17 +42,23 @@ export class ImportFromUrlController<
 
         const steps = input.steps || {};
 
-        if (!steps[IImportFromUrlControllerInputStep.DOWNLOAD]?.done) {
+        const downloadStep = steps[IImportFromUrlControllerInputStep.DOWNLOAD];
+        if (!downloadStep?.done) {
             const step = new ImportFromUrlControllerDownloadStep<C, I, O>();
             return step.execute(params);
-        } else if (!input.steps?.[IImportFromUrlControllerInputStep.PROCESS_ENTRIES]?.done) {
+        }
+
+        const processEntriesStep = steps[IImportFromUrlControllerInputStep.PROCESS_ENTRIES];
+        if (!processEntriesStep?.done) {
             const step = new ImportFromUrlControllerProcessEntriesStep<C, I, O>();
             return step.execute(params);
         }
-        // else if (!input.steps?.[IImportFromUrlControllerInputStep.PROCESS_ASSETS]?.done) {
-        //     const step = new ImportFromUrlControllerProcessAssetsStep<C, I, O>();
-        //     return step.execute(params);
-        // }
+
+        const processAssetsStep = steps[IImportFromUrlControllerInputStep.PROCESS_ASSETS];
+        if (!processAssetsStep?.done) {
+            const step = new ImportFromUrlControllerProcessAssetsStep<C, I, O>();
+            return step.execute(params);
+        }
 
         return response.error("Should not reach this point.");
     }

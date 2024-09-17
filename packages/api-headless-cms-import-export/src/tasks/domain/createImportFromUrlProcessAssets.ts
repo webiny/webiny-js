@@ -1,24 +1,23 @@
 import { Context } from "~/types";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client";
-import { ImportFromUrlProcessEntries } from "./importFromUrlProcessEntries/ImportFromUrlProcessEntries";
+import { ImportFromUrlProcessAssets } from "./importFromUrlProcessAssets/ImportFromUrlProcessAssets";
 import {
-    IImportFromUrlProcessEntries,
-    IImportFromUrlProcessEntriesInput,
-    IImportFromUrlProcessEntriesOutput
-} from "./importFromUrlProcessEntries/abstractions/ImportFromUrlProcessEntries";
+    IImportFromUrlProcessAssets,
+    IImportFromUrlProcessAssetsInput,
+    IImportFromUrlProcessAssetsOutput
+} from "./importFromUrlProcessAssets/abstractions/ImportFromUrlProcessAssets";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
 import { createCompressedFileReader, createDecompressor } from "~/tasks/utils/decompressor";
 import { createMultipartUpload, createMultipartUploadFactory } from "~/tasks/utils/upload";
 import { FileFetcher } from "~/tasks/utils/fileFetcher";
 
-export const createImportFromUrlProcessEntries = <
+export const createImportFromUrlProcessAssets = <
     C extends Context = Context,
-    I extends IImportFromUrlProcessEntriesInput = IImportFromUrlProcessEntriesInput,
-    O extends IImportFromUrlProcessEntriesOutput = IImportFromUrlProcessEntriesOutput
->(): IImportFromUrlProcessEntries<C, I, O> => {
+    I extends IImportFromUrlProcessAssetsInput = IImportFromUrlProcessAssetsInput,
+    O extends IImportFromUrlProcessAssetsOutput = IImportFromUrlProcessAssetsOutput
+>(): IImportFromUrlProcessAssets<C, I, O> => {
     const client = createS3Client();
     const bucket = getBucket();
-
     const reader = createCompressedFileReader({
         client,
         bucket
@@ -39,7 +38,7 @@ export const createImportFromUrlProcessEntries = <
         bucket
     });
 
-    return new ImportFromUrlProcessEntries<C, I, O>({
+    return new ImportFromUrlProcessAssets<C, I, O>({
         fileFetcher,
         reader,
         decompressor

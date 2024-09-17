@@ -6,9 +6,7 @@ export const VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK = "validateImportFromUrlInt
 export const IMPORT_FROM_URL_CONTROLLER_TASK = "importFromUrlController";
 export const IMPORT_FROM_URL_DOWNLOAD_TASK = "importFromUrlDownload";
 export const IMPORT_FROM_URL_PROCESS_ENTRIES_TASK = "importFromUrlProcessEntries";
-
-export const IMPORT_FROM_URL_CONTENT_ENTRIES_TASK = "importFromUrlContentEntries";
-export const IMPORT_FROM_URL_ASSETS_TASK = "importFromUrlAssets";
+export const IMPORT_FROM_URL_PROCESS_ASSETS_TASK = "importFromUrlProcessAssets";
 
 export const WEBINY_EXPORT_ENTRIES_EXTENSION = "we.zip";
 export const WEBINY_EXPORT_ASSETS_EXTENSION = "wa.zip";

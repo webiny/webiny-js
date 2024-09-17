@@ -27,3 +27,9 @@ export class CompressedFileReader implements ICompressedFileReader {
         });
     }
 }
+
+export const createCompressedFileReader = (
+    params: ICompressedFileReaderParams
+): ICompressedFileReader => {
+    return new CompressedFileReader(params);
+};

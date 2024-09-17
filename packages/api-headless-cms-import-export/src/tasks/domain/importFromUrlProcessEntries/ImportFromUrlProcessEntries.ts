@@ -1,4 +1,3 @@
-import { S3Client } from "@webiny/aws-sdk/client-s3";
 import { CmsImportExportFileType, Context } from "~/types";
 import {
     IImportFromUrlProcessEntries,
@@ -8,12 +7,14 @@ import {
 import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { ICmsEntryManager } from "@webiny/api-headless-cms/types";
 import { ImportFromUrlProcessEntriesDecompress } from "~/tasks/domain/importFromUrlProcessEntries/ImportFromUrlProcessEntriesDecompress";
-import { FileFetcher } from "~/tasks/utils/fileFetcher";
+import { IFileFetcher } from "~/tasks/utils/fileFetcher";
 import { ImportFromUrlProcessEntriesInsert } from "./ImportFromUrlProcessEntriesInsert";
+import { ICompressedFileReader, IDecompressor } from "~/tasks/utils/decompressor";
 
 export interface IImportFromUrlProcessEntriesParams {
-    client: S3Client;
-    bucket: string;
+    fileFetcher: IFileFetcher;
+    reader: ICompressedFileReader;
+    decompressor: IDecompressor;
 }
 
 export class ImportFromUrlProcessEntries<
@@ -22,12 +23,14 @@ export class ImportFromUrlProcessEntries<
     O extends IImportFromUrlProcessEntriesOutput = IImportFromUrlProcessEntriesOutput
 > implements IImportFromUrlProcessEntries<C, I, O>
 {
-    private readonly client: S3Client;
-    private readonly bucket: string;
+    private readonly fileFetcher: IFileFetcher;
+    private readonly reader: ICompressedFileReader;
+    private readonly decompressor: IDecompressor;
 
     public constructor(params: IImportFromUrlProcessEntriesParams) {
-        this.client = params.client;
-        this.bucket = params.bucket;
+        this.fileFetcher = params.fileFetcher;
+        this.reader = params.reader;
+        this.decompressor = params.decompressor;
     }
 
     public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
@@ -60,16 +63,11 @@ export class ImportFromUrlProcessEntries<
             });
         }
 
-        const fileFetcher = new FileFetcher({
-            client: this.client,
-            bucket: this.bucket
-        });
-
         if (!input.decompress?.done) {
             try {
                 const decompress = new ImportFromUrlProcessEntriesDecompress<C, I, O>({
-                    client: this.client,
-                    bucket: this.bucket
+                    reader: this.reader,
+                    decompressor: this.decompressor
                 });
 
                 return await decompress.run(params);
@@ -87,8 +85,7 @@ export class ImportFromUrlProcessEntries<
         try {
             const insert = new ImportFromUrlProcessEntriesInsert<C, I, O>({
                 entryManager,
-                client: this.client,
-                fileFetcher
+                fileFetcher: this.fileFetcher
             });
             return await insert.run(params);
         } catch (ex) {

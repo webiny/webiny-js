@@ -64,7 +64,7 @@ export class Decompressor implements IDecompressor {
         try {
             stream = source.stream();
         } catch (ex) {
-            console.error("Failed to create stream", ex);
+            console.error(`Failed to create stream for "${source.path}".`, ex);
             throw ex;
         }
         return new Promise<IUploadDoneResult>((resolve, reject) => {
@@ -116,6 +116,6 @@ export class Decompressor implements IDecompressor {
     }
 }
 
-export const createDecompressor = (params: IDecompressorParams) => {
+export const createDecompressor = (params: IDecompressorParams): IDecompressor => {
     return new Decompressor(params);
 };

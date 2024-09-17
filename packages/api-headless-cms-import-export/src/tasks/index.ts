@@ -4,6 +4,5 @@ export * from "./exportContentAssets";
 export * from "./validateImportFromUrl";
 export * from "./importFromUrlController";
 export * from "./importFromUrlDownload";
-export * from "./importFromUrlContentEntries";
-export * from "./importFromUrlAssets";
 export * from "./importFromUrlProcessEntries";
+export * from "./importFromUrlProcessAssets";
