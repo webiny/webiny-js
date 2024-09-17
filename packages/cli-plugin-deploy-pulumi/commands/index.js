@@ -138,8 +138,19 @@ module.exports = [
                 }
             );
 
-            const { featureFlags } = require("@webiny/feature-flags");
-            if (featureFlags.newWatchCommand) {
+            let useNewWatchCommand = false;
+
+            // We needed to add try / catch here because, in `webiny-js` repository,
+            // `@webiny/feature-flags` package is not available on first project build (`yarn build`).
+            // This logic will go away anyway, once the new watch command is fully released.
+            try {
+                const { featureFlags } = require("@webiny/feature-flags");
+                useNewWatchCommand = Boolean(featureFlags.newWatchCommand);
+            } catch {
+                // Ignore.
+            }
+
+            if (useNewWatchCommand) {
                 yargs.command(
                     "watch [folder]",
                     `Start a new development session`,
