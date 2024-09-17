@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
-import { useSnackbar, useIsMounted } from "@webiny/app-admin";
+import { useIsMounted, useSnackbar } from "@webiny/app-admin";
 import { useCms, useQuery } from "~/admin/hooks";
 import { ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntriesContext";
 import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContentEntries";
@@ -51,6 +51,7 @@ export interface ContentEntryCrud {
         params: UnpublishEntryRevisionParams
     ) => Promise<Cms.UnpublishEntryRevisionResponse>;
     deleteEntry: (params: DeleteEntryParams) => Promise<Cms.DeleteEntryResponse>;
+    deleteEntryRevision: (params: DeleteEntryParams) => Promise<Cms.DeleteEntryResponse>;
 }
 
 export interface ContentEntryContext extends ContentEntriesContext, ContentEntryCrud {
@@ -262,6 +263,10 @@ export const ContentEntryProvider = ({
         return response;
     };
 
+    const deleteEntryRevision: ContentEntryCrud["deleteEntry"] = async params => {
+        return await cms.deleteEntry({ model, ...params });
+    };
+
     const publishEntryRevision: ContentEntryCrud["publishEntryRevision"] = async params => {
         const response = await cms.publishEntryRevision({ model, ...params });
         if (response.entry) {
@@ -288,6 +293,7 @@ export const ContentEntryProvider = ({
         createEntry,
         createEntryRevisionFrom,
         deleteEntry,
+        deleteEntryRevision,
         entry: (entry || {}) as CmsContentEntry,
         loading,
         publishEntryRevision,
