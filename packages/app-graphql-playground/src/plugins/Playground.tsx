@@ -53,6 +53,7 @@ const initScripts = () => {
 interface CreateApolloClientParams {
     uri: string;
 }
+
 interface PlaygroundProps {
     createApolloClient: (params: CreateApolloClientParams) => ApolloClient<any>;
 }
@@ -61,9 +62,11 @@ interface CreateApolloLinkCallableParams {
     endpoint: string;
     headers: Record<string, string>;
 }
+
 interface CreateApolloLinkCallableResult {
     link: ApolloLink;
 }
+
 interface CreateApolloLinkCallable {
     (params: CreateApolloLinkCallableParams): CreateApolloLinkCallableResult;
 }
