@@ -10,7 +10,6 @@ import { Input } from "./types";
 import { downloadFolderFromS3 } from "./downloadAndLinkExtension/downloadFolderFromS3";
 import { setWebinyPackageVersions } from "~/utils/setWebinyPackageVersions";
 import { runYarnInstall } from "@webiny/cli-plugin-scaffold/utils";
-import { getDownloadedExtensionType } from "~/downloadAndLinkExtension/getDownloadedExtensionType";
 import chalk from "chalk";
 import { Extension } from "./extensions/Extension";
 import glob from "fast-glob";
@@ -99,29 +98,24 @@ export const downloadAndLinkExtension = async ({
 
         // Retrieve extensions folders in the root of the downloaded extension. We use this
         // later to run additional setup tasks on each extension.
-        const extensionsFoldersPkgJsonsGlob = path.join(extensionsFolderToCopyPath, "**/", "package.json");
-        const maybeExtensionsFolderPaths = await glob(extensionsFoldersPkgJsonsGlob).then(paths => {
-            return paths.map(p => path.dirname(p))
-        })
+        const extensionsFolderNames = await fsAsync.readdir(extensionsFolderToCopyPath);
+
+        const extensionsPkgJsonsGlob = [
+            EXTENSIONS_ROOT_FOLDER,
+            "/{",
+            extensionsFolderNames.join(","),
+            `}/**/package.json`
+        ].join("");
+
+        const extensionsPkgJsonPaths = await glob(extensionsPkgJsonsGlob);
 
         const downloadedExtensions: Extension[] = [];
 
-        for (const maybeExtensionPath of maybeExtensionsFolderPaths) {
-            const extensionType = await getDownloadedExtensionType(maybeExtensionPath);
-            if (!extensionType) {
-                continue;
+        for (const maybeExtensionPath of extensionsPkgJsonPaths) {
+            const maybeExtension = await Extension.fromPackageJsonPath(maybeExtensionPath);
+            if (maybeExtension) {
+                downloadedExtensions.push(maybeExtension);
             }
-
-            downloadedExtensions.push(
-                new Extension({
-                    name: maybeExtensionPath,
-                    type: extensionType,
-                    location: maybeExtensionPath,
-
-                    // We don't care about the package name here.
-                    packageName: maybeExtensionPath
-                })
-            );
         }
 
         for (const downloadedExtension of downloadedExtensions) {

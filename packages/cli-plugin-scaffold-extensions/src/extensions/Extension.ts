@@ -2,6 +2,11 @@ import { AbstractExtension, ExtensionTypeConstructorParams } from "./AbstractExt
 import { AdminExtension } from "./AdminExtension";
 import { ApiExtension } from "./ApiExtension";
 import { WorkspaceExtension } from "./WorkspaceExtension";
+import loadJson from "load-json-file";
+import { PackageJson } from "@webiny/cli-plugin-scaffold/types";
+import path from "path";
+
+type PackageJsonPath = string;
 
 export class Extension extends AbstractExtension {
     extension: AbstractExtension;
@@ -34,5 +39,40 @@ export class Extension extends AbstractExtension {
 
     getNextSteps(): string[] {
         return this.extension.getNextSteps();
+    }
+
+    static async fromPackageJsonPath(pkgJsonPath: PackageJsonPath) {
+        const loadedPkgJson = await loadJson<PackageJson>(pkgJsonPath);
+
+        const extensionType = await Extension.getDownloadedExtensionType(loadedPkgJson);
+        if (!extensionType) {
+            return null;
+        }
+
+        return new Extension({
+            name: loadedPkgJson.name,
+            type: extensionType,
+            location: path.dirname(pkgJsonPath),
+            packageName: loadedPkgJson.name
+        });
+    }
+
+    static async getDownloadedExtensionType(pkgJson: PackageJsonPath | PackageJson) {
+        const loadedPkgJson =
+            typeof pkgJson === "string" ? await loadJson<PackageJson>(pkgJson) : pkgJson;
+
+        const keywords = loadedPkgJson.keywords;
+        // If there is no keywords, we consider the folder to be a workspace.
+        if (!Array.isArray(keywords)) {
+            return "workspace";
+        }
+
+        for (const keyword of keywords) {
+            if (keyword.startsWith("webiny-extension-type:")) {
+                return keyword.replace("webiny-extension-type:", "");
+            }
+        }
+
+        throw new Error(`Could not determine the extension type from the downloaded extension.`);
     }
 }
