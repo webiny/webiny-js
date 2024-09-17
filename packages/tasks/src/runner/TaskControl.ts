@@ -85,8 +85,27 @@ export class TaskControl implements ITaskControl {
                 }
             });
         }
+
+        const definition = this.context.tasks.getDefinition(task.definitionId);
+        if (!definition) {
+            return this.response.error({
+                error: {
+                    message: `Task "${task.id}" cannot be executed because there is no "${task.definitionId}" definition plugin.`,
+                    code: "TASK_DEFINITION_ERROR",
+                    data: {
+                        definitionId: task.definitionId
+                    }
+                }
+            });
+        }
+
         const taskResponse = new TaskResponse(this.response);
-        const store = new TaskManagerStore(this.context, task, taskLog);
+        const store = new TaskManagerStore({
+            context: this.context,
+            task,
+            log: taskLog,
+            disableDatabaseLogs: !!definition.disableDatabaseLogs
+        });
 
         const manager = new TaskManager(
             this.runner,
@@ -97,19 +116,6 @@ export class TaskControl implements ITaskControl {
         );
 
         const databaseResponse = new DatabaseResponse(this.response, store);
-
-        const definition = this.context.tasks.getDefinition(task.definitionId);
-        if (!definition) {
-            return await databaseResponse.error({
-                error: {
-                    message: `Task "${task.id}" cannot be executed because there is no "${task.definitionId}" definition plugin.`,
-                    code: "TASK_DEFINITION_ERROR",
-                    data: {
-                        definitionId: task.definitionId
-                    }
-                }
-            });
-        }
 
         try {
             const result = await manager.run(definition);
