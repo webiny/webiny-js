@@ -46,6 +46,7 @@ class BulkActionTasks {
             id: this.createListTaskDefinitionName(),
             title: `Headless CMS: list "${this.name}" entries by model`,
             maxIterations: 500,
+            disableLogs: true,
             run: async params => {
                 const { response, input, context } = params;
 
@@ -55,7 +56,6 @@ class BulkActionTasks {
                     }
 
                     const action = this.getCurrentAction(input);
-                    console.log("input", input);
                     console.log("action", action);
 
                     switch (action) {
@@ -82,26 +82,63 @@ class BulkActionTasks {
                             );
                         }
                         default:
-                            throw new Error(`Unknown action: ${action}`);
+                            return response.error(`Unknown action: ${action}`);
                     }
                 } catch (ex) {
                     return response.error(ex.message ?? "Error while executing list task");
                 }
-            },
-            onDone: async ({ context, task }) => {
-                /**
-                 * We want to clean all child tasks and logs, which have no errors.
-                 */
-                const childTasksCleanup = new ChildTasksCleanup();
-                try {
-                    await childTasksCleanup.execute({
-                        context,
-                        task
-                    });
-                } catch (ex) {
-                    console.error("Error while cleaning list child tasks.", ex);
-                }
             }
+            // onDone: async ({ context, task }) => {
+            //     console.log("ON_DONE", task.definitionId, task.id);
+            //     /**
+            //      * We want to clean all child tasks and logs, which have no errors.
+            //      */
+            //     const childTasksCleanup = new ChildTasksCleanup();
+            //     try {
+            //         await childTasksCleanup.execute({
+            //             context,
+            //             task
+            //         });
+            //     } catch (ex) {
+            //         console.error("Error while cleaning list child tasks.", ex);
+            //     }
+            // }
+            // onError: async ({ context, task }) => {
+            //     console.log("ON_ERROR", task.definitionId, task.id);
+            //     /**
+            //      * We want to clean all child tasks and logs, which have no errors.
+            //      */
+            //     const childTasksCleanup = new ChildTasksCleanup();
+            //     try {
+            //         await childTasksCleanup.execute({
+            //             context,
+            //             task
+            //         });
+            //     } catch (ex) {
+            //         console.error(
+            //             "Error while cleaning process child tasks after errored task result.",
+            //             ex
+            //         );
+            //     }
+            // },
+            // onAbort: async ({ context, task }) => {
+            //     console.log("ON_ABORT", task.definitionId, task.id);
+            //     /**
+            //      * We want to clean all child tasks and logs, which have no errors.
+            //      */
+            //     const childTasksCleanup = new ChildTasksCleanup();
+            //     try {
+            //         await childTasksCleanup.execute({
+            //             context,
+            //             task
+            //         });
+            //     } catch (ex) {
+            //         console.error(
+            //             "Error while cleaning process child tasks after abortion task result.",
+            //             ex
+            //         );
+            //     }
+            // }
         });
     }
 
@@ -114,6 +151,7 @@ class BulkActionTasks {
             id: this.createProcessTaskDefinitionName(),
             title: `Headless CMS: process "${this.name}" entries`,
             maxIterations: 2,
+            disableLogs: true,
             run: async params => {
                 const { response, context } = params;
 
@@ -123,21 +161,58 @@ class BulkActionTasks {
                 } catch (ex) {
                     return response.error(ex.message ?? "Error while executing process task");
                 }
-            },
-            onDone: async ({ context, task }) => {
-                /**
-                 * We want to clean all child tasks and logs, which have no errors.
-                 */
-                const childTasksCleanup = new ChildTasksCleanup();
-                try {
-                    await childTasksCleanup.execute({
-                        context,
-                        task
-                    });
-                } catch (ex) {
-                    console.error("Error while cleaning process child tasks.", ex);
-                }
             }
+            // onDone: async ({ context, task }) => {
+            //     console.log("ON_DONE", task.definitionId, task.id);
+            //     /**
+            //      * We want to clean all child tasks and logs, which have no errors.
+            //      */
+            //     const childTasksCleanup = new ChildTasksCleanup();
+            //     try {
+            //         await childTasksCleanup.execute({
+            //             context,
+            //             task
+            //         });
+            //     } catch (ex) {
+            //         console.error("Error while cleaning process child tasks.", ex);
+            //     }
+            // },
+            // onError: async ({ context, task }) => {
+            //     console.log("ON_ERROR", task.definitionId, task.id);
+            //     /**
+            //      * We want to clean all child tasks and logs, which have no errors.
+            //      */
+            //     const childTasksCleanup = new ChildTasksCleanup();
+            //     try {
+            //         await childTasksCleanup.execute({
+            //             context,
+            //             task
+            //         });
+            //     } catch (ex) {
+            //         console.error(
+            //             "Error while cleaning process child tasks after errored task result.",
+            //             ex
+            //         );
+            //     }
+            // },
+            // onAbort: async ({ context, task }) => {
+            //     console.log("ON_ABORT", task.definitionId, task.id);
+            //     /**
+            //      * We want to clean all child tasks and logs, which have no errors.
+            //      */
+            //     const childTasksCleanup = new ChildTasksCleanup();
+            //     try {
+            //         await childTasksCleanup.execute({
+            //             context,
+            //             task
+            //         });
+            //     } catch (ex) {
+            //         console.error(
+            //             "Error while cleaning process child tasks after abortion task result.",
+            //             ex
+            //         );
+            //     }
+            // }
         });
     }
 

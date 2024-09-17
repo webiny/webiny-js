@@ -31,19 +31,16 @@ export class CreateTasksByModel {
                 limit: this.batchSize
             };
 
-            let currentBatch = input.currentBatch || 1;
-
             while (true) {
                 if (isAborted()) {
                     return response.aborted();
-                } else if (isCloseToTimeout()) {
+                } else if (isCloseToTimeout(720)) {
                     await this.taskCache.triggerTask(context, store.getTask());
                     console.log("CreateTasksByModel", "response.continue -> isCloseToTimeout");
                     return response.continue(
                         {
                             ...input,
                             ...listEntriesParams,
-                            currentBatch,
                             after: null,
                             action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                         },
@@ -74,7 +71,6 @@ export class CreateTasksByModel {
                         {
                             ...input,
                             ...listEntriesParams,
-                            currentBatch,
                             totalCount: meta.totalCount,
                             action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                         },
@@ -108,8 +104,7 @@ export class CreateTasksByModel {
                     return response.continue(
                         {
                             ...input,
-                            ...listEntriesParams,
-                            currentBatch,
+                            after: null,
                             totalCount: meta.totalCount,
                             action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                         },
@@ -118,10 +113,9 @@ export class CreateTasksByModel {
                 }
 
                 listEntriesParams.after = meta.cursor;
-                currentBatch++;
             }
         } catch (ex) {
-            throw new Error(ex.message ?? `Error while creating task.`);
+            return response.error(ex.message ?? `Error while creating task.`);
         }
     }
 }
