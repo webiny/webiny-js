@@ -13,5 +13,9 @@ export const createTaskManagerStoreMock = (params?: Params) => {
     const context = params?.context || createContextMock();
     const task = params?.task || createTaskMock();
     const log = params?.log || createTaskLogMock(task);
-    return new TaskManagerStore(context, task, log);
+    return new TaskManagerStore({
+        context,
+        task,
+        log
+    });
 };
