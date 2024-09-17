@@ -103,6 +103,11 @@ const createInitialStatus = (): MigrationStatus => {
     };
 };
 
+let BATCH_WRITE_MAX_CHUNK = 20;
+if (process.env.WEBINY_MIGRATION_5_39_6_001_BATCH_WRITE_MAX_CHUNK) {
+    BATCH_WRITE_MAX_CHUNK = parseInt(process.env.WEBINY_MIGRATION_5_39_6_001_BATCH_WRITE_MAX_CHUNK);
+}
+
 (async () => {
     const logger = createPinoLogger(
         {
@@ -140,308 +145,452 @@ const createInitialStatus = (): MigrationStatus => {
         waitingTimeStep: argv.esHealthWaitingTimeStep
     });
 
-    await ddbScanWithCallback<CmsEntry>(
-        {
-            entity: ddbEntryEntity,
-            options: {
-                segment: argv.segmentIndex,
-                segments: argv.totalSegments,
-                filters: [
-                    {
-                        attr: "_et",
-                        eq: "CmsEntries"
-                    }
-                ],
-                startKey: status.lastEvaluatedKey || undefined,
-                limit: 100
-            }
-        },
-        async result => {
-            status.stats.iterationsCount++;
-            status.stats.recordsScanned += result.items.length;
-
-            if (status.stats.iterationsCount % 5 === 0) {
-                // We log every 5th iteration.
-                logger.trace(
-                    `[iteration #${status.stats.iterationsCount}] Reading ${result.items.length} record(s)...`
-                );
-            }
-
-            const ddbItemsToBatchWrite: BatchWriteItem[] = [];
-            const ddbEsItemsToBatchWrite: BatchWriteItem[] = [];
-            const ddbEsItemsToBatchRead: Record<string, BatchReadItem> = {};
-
-            const fallbackDateTime = new Date().toISOString();
-
-            // Update records in primary DynamoDB table. Also do preparations for
-            // subsequent updates on DDB-ES DynamoDB table, and in Elasticsearch.
-            for (const item of result.items) {
-                const isFullyMigrated =
-                    isMigratedEntry(item) &&
-                    hasValidTypeFieldValue(item) &&
-                    hasAllNonNullableValues(item);
-
-                if (isFullyMigrated) {
-                    status.stats.recordsSkipped++;
-                    continue;
+    try {
+        await ddbScanWithCallback<CmsEntry>(
+            {
+                entity: ddbEntryEntity,
+                options: {
+                    segment: argv.segmentIndex,
+                    segments: argv.totalSegments,
+                    filters: [
+                        {
+                            attr: "_et",
+                            eq: "CmsEntries"
+                        }
+                    ],
+                    startKey: status.lastEvaluatedKey || undefined,
+                    limit: 100
                 }
+            },
+            async result => {
+                status.stats.iterationsCount++;
+                status.stats.recordsScanned += result.items.length;
 
-                // 1. Check if the data migration was ever performed. If not, let's perform it.
-                if (!isMigratedEntry(item)) {
-                    // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
-                    const createdOn = await getOldestRevisionCreatedOn({
-                        entry: item,
-                        entryEntity: ddbEntryEntity
-                    });
-
-                    const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
-                        entry: item,
-                        entryEntity: ddbEntryEntity
-                    });
-
-                    assignNewMetaFields(item, {
-                        createdOn,
-                        ...firstLastPublishedOnByFields
-                    });
-                }
-
-                // 2. We've noticed some of the records had an invalid `TYPE` field value
-                //    in the database. This step addresses this issue.
-                if (!hasValidTypeFieldValue(item)) {
-                    // Fixes the value of the `TYPE` field, if it's not valid.
-                    fixTypeFieldValue(item);
-                }
-
-                // 3. Finally, once both of the steps were performed, ensure that all
-                //    new non-nullable meta fields have a value and nothing is missing.
-                if (!hasAllNonNullableValues(item)) {
+                if (status.stats.iterationsCount % 5 === 0) {
+                    // We log every 5th iteration.
                     logger.trace(
-                        getNonNullableFieldsWithMissingValues(item),
-                        `Detected an entry with missing values for non-nullable meta fields (${item.modelId}/${item.id}).`
+                        `[iteration #${status.stats.iterationsCount}] Reading ${result.items.length} record(s)...`
                     );
-
-                    try {
-                        const fallbackIdentity = await getFallbackIdentity({
-                            entity: ddbEntryEntity,
-                            tenant: item.tenant
-                        });
-
-                        ensureAllNonNullableValues(item, {
-                            dateTime: fallbackDateTime,
-                            identity: fallbackIdentity
-                        });
-
-                        logger.trace(
-                            `Successfully ensured all non-nullable meta fields have values (${item.modelId}/${item.id}). Will be saving into the database soon.`
-                        );
-                    } catch (e) {
-                        logger.debug(
-                            `Failed to ensure all non-nullable meta fields have values (${item.modelId}/${item.id}): ${e.message}`
-                        );
-                    }
                 }
 
-                ddbItemsToBatchWrite.push(ddbEntryEntity.putBatch(item));
+                const ddbItemsToBatchWrite: BatchWriteItem[] = [];
+                const ddbEsItemsToBatchWrite: BatchWriteItem[] = [];
+                const ddbEsItemsToBatchRead: Record<string, BatchReadItem> = {};
 
-                /**
-                 * Prepare the loading of DynamoDB Elasticsearch part of the records.
-                 */
+                const fallbackDateTime = new Date().toISOString();
 
-                const ddbEsLatestRecordKey = `${item.entryId}:L`;
-                if (ddbEsItemsToBatchRead[ddbEsLatestRecordKey]) {
-                    continue;
-                }
+                // Update records in primary DynamoDB table. Also do preparations for
+                // subsequent updates on DDB-ES DynamoDB table, and in Elasticsearch.
+                for (const item of result.items) {
+                    const isFullyMigrated =
+                        isMigratedEntry(item) &&
+                        hasValidTypeFieldValue(item) &&
+                        hasAllNonNullableValues(item);
 
-                ddbEsItemsToBatchRead[ddbEsLatestRecordKey] = ddbEsEntryEntity.getBatch({
-                    PK: item.PK,
-                    SK: "L"
-                });
-
-                const ddbEsPublishedRecordKey = `${item.entryId}:P`;
-                if (item.status === "published" || !!item.locked) {
-                    ddbEsItemsToBatchRead[ddbEsPublishedRecordKey] = ddbEsEntryEntity.getBatch({
-                        PK: item.PK,
-                        SK: "P"
-                    });
-                }
-            }
-
-            if (Object.keys(ddbEsItemsToBatchRead).length > 0) {
-                /**
-                 * Get all the records from DynamoDB Elasticsearch.
-                 */
-                const ddbEsRecords = await batchReadAll<DynamoDbElasticsearchRecord>({
-                    table: ddbEsEntryEntity.table,
-                    items: Object.values(ddbEsItemsToBatchRead)
-                });
-
-                for (const ddbEsRecord of ddbEsRecords) {
-                    const decompressedData = await getDecompressedData<CmsEntry>(ddbEsRecord.data);
-                    if (!decompressedData) {
-                        logger.trace(
-                            `[DDB-ES Table] Skipping record "${ddbEsRecord.PK}" as it is not a valid CMS entry...`
-                        );
+                    if (isFullyMigrated) {
+                        status.stats.recordsSkipped++;
                         continue;
                     }
 
                     // 1. Check if the data migration was ever performed. If not, let's perform it.
-                    if (!isMigratedEntry(decompressedData)) {
+                    if (!isMigratedEntry(item)) {
                         // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
                         const createdOn = await getOldestRevisionCreatedOn({
-                            entry: { ...decompressedData, PK: ddbEsRecord.PK },
-                            entryEntity: ddbEntryEntity
+                            entry: item,
+                            entryEntity: ddbEntryEntity,
+                            retryOptions: {
+                                onFailedAttempt: error => {
+                                    logger.warn(
+                                        { error, item },
+                                        `getOldestRevisionCreatedOn attempt #${error.attemptNumber} failed: ${error.message}`
+                                    );
+                                }
+                            }
                         });
 
                         const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
-                            entry: { ...decompressedData, PK: ddbEsRecord.PK },
-                            entryEntity: ddbEntryEntity
+                            entry: item,
+                            entryEntity: ddbEntryEntity,
+                            retryOptions: {
+                                onFailedAttempt: error => {
+                                    logger.warn(
+                                        { error, item },
+                                        `getFirstLastPublishedOnBy attempt #${error.attemptNumber} failed: ${error.message}`
+                                    );
+                                }
+                            }
                         });
 
-                        assignNewMetaFields(decompressedData, {
+                        assignNewMetaFields(item, {
                             createdOn,
                             ...firstLastPublishedOnByFields
                         });
                     }
 
-                    // 2. Ensure new non-nullable meta fields have a value and nothing is missing.
-                    if (!hasAllNonNullableValues(decompressedData)) {
+                    // 2. We've noticed some of the records had an invalid `TYPE` field value
+                    //    in the database. This step addresses this issue.
+                    if (!hasValidTypeFieldValue(item)) {
+                        // Fixes the value of the `TYPE` field, if it's not valid.
+                        fixTypeFieldValue(item);
+                    }
+
+                    // 3. Finally, once both of the steps were performed, ensure that all
+                    //    new non-nullable meta fields have a value and nothing is missing.
+                    if (!hasAllNonNullableValues(item)) {
                         logger.trace(
-                            getNonNullableFieldsWithMissingValues(decompressedData),
-                            [
-                                `[DDB-ES Table] Detected an entry with missing values for non-nullable meta fields`,
-                                `(${decompressedData.modelId}/${decompressedData.id}).`
-                            ].join(" ")
+                            getNonNullableFieldsWithMissingValues(item),
+                            `Detected an entry with missing values for non-nullable meta fields (${item.modelId}/${item.id}).`
                         );
 
                         try {
                             const fallbackIdentity = await getFallbackIdentity({
                                 entity: ddbEntryEntity,
-                                tenant: decompressedData.tenant
+                                tenant: item.tenant,
+                                retryOptions: {
+                                    onFailedAttempt: error => {
+                                        logger.warn(
+                                            { error, item },
+                                            `getFallbackIdentity attempt #${error.attemptNumber} failed: ${error.message}`
+                                        );
+                                    }
+                                }
                             });
 
-                            ensureAllNonNullableValues(decompressedData, {
+                            ensureAllNonNullableValues(item, {
                                 dateTime: fallbackDateTime,
                                 identity: fallbackIdentity
                             });
 
                             logger.trace(
-                                [
-                                    `[DDB-ES Table] Successfully ensured all non-nullable meta fields`,
-                                    `have values (${decompressedData.modelId}/${decompressedData.id}).`,
-                                    "Will be saving the changes soon."
-                                ].join(" ")
+                                `Successfully ensured all non-nullable meta fields have values (${item.modelId}/${item.id}). Will be saving into the database soon.`
                             );
                         } catch (e) {
-                            logger.error(
-                                [
-                                    "[DDB-ES Table] Failed to ensure all non-nullable meta fields have values",
-                                    `(${decompressedData.modelId}/${decompressedData.id}): ${e.message}`
-                                ].join(" ")
+                            logger.debug(
+                                `Failed to ensure all non-nullable meta fields have values (${item.modelId}/${item.id}): ${e.message}`
                             );
                         }
                     }
 
-                    const compressedData = await getCompressedData(decompressedData);
+                    ddbItemsToBatchWrite.push(ddbEntryEntity.putBatch(item));
 
-                    ddbEsItemsToBatchWrite.push(
-                        ddbEsEntryEntity.putBatch({
-                            ...ddbEsRecord,
-                            data: compressedData
-                        })
-                    );
+                    /**
+                     * Prepare the loading of DynamoDB Elasticsearch part of the records.
+                     */
+
+                    const ddbEsLatestRecordKey = `${item.entryId}:L`;
+                    if (ddbEsItemsToBatchRead[ddbEsLatestRecordKey]) {
+                        continue;
+                    }
+
+                    ddbEsItemsToBatchRead[ddbEsLatestRecordKey] = ddbEsEntryEntity.getBatch({
+                        PK: item.PK,
+                        SK: "L"
+                    });
+
+                    const ddbEsPublishedRecordKey = `${item.entryId}:P`;
+                    if (item.status === "published" || !!item.locked) {
+                        ddbEsItemsToBatchRead[ddbEsPublishedRecordKey] = ddbEsEntryEntity.getBatch({
+                            PK: item.PK,
+                            SK: "P"
+                        });
+                    }
                 }
-            }
 
-            if (ddbItemsToBatchWrite.length) {
-                // Store data in primary DynamoDB table.
-                const execute = () => {
-                    return batchWriteAll({
-                        table: ddbEntryEntity.table,
-                        items: ddbItemsToBatchWrite
-                    });
-                };
-
-                logger.trace(
-                    `Storing ${ddbItemsToBatchWrite.length} record(s) in primary DynamoDB table...`
-                );
-                await executeWithRetry(execute, {
-                    onFailedAttempt: error => {
-                        logger.warn(
-                            `Batch write attempt #${error.attemptNumber} failed: ${error.message}`
-                        );
-                    }
-                });
-
-                if (ddbEsItemsToBatchWrite.length) {
-                    logger.trace(
-                        `Storing ${ddbEsItemsToBatchWrite.length} record(s) in DDB-ES DynamoDB table...`
-                    );
-                    const results = await waitUntilHealthy.wait({
-                        async onUnhealthy(params) {
-                            const shouldWaitReason = params.waitingReason.name;
-
-                            logger.warn(
-                                `Cluster is unhealthy (${shouldWaitReason}). Waiting for the cluster to become healthy...`,
-                                params
-                            );
-
-                            if (status.stats.esHealthChecks.unhealthyReasons[shouldWaitReason]) {
-                                status.stats.esHealthChecks.unhealthyReasons[shouldWaitReason]++;
-                            } else {
-                                status.stats.esHealthChecks.unhealthyReasons[shouldWaitReason] = 1;
-                            }
-                        }
-                    });
-
-                    status.stats.esHealthChecks.checksCount++;
-                    status.stats.esHealthChecks.timeSpentWaiting += results.runningTime;
-
-                    // Store data in DDB-ES DynamoDB table.
-                    const executeDdbEs = () => {
-                        return batchWriteAll({
+                if (Object.keys(ddbEsItemsToBatchRead).length > 0) {
+                    /**
+                     * Get all the records from DynamoDB Elasticsearch.
+                     */
+                    const executeBatchReadAll = () => {
+                        return batchReadAll<DynamoDbElasticsearchRecord>({
                             table: ddbEsEntryEntity.table,
-                            items: ddbEsItemsToBatchWrite
+                            items: Object.values(ddbEsItemsToBatchRead)
                         });
                     };
 
-                    await executeWithRetry(executeDdbEs, {
+                    const ddbEsRecords = await executeWithRetry(executeBatchReadAll, {
                         onFailedAttempt: error => {
                             logger.warn(
-                                `[DDB-ES Table] Batch write attempt #${error.attemptNumber} failed: ${error.message}`
+                                { error, items: Object.values(ddbEsItemsToBatchRead) },
+                                `[DDB-ES Table] Batch (ddbEsItemsToBatchRead) read attempt #${error.attemptNumber} failed: ${error.message}`
                             );
                         }
                     });
+
+                    for (const ddbEsRecord of ddbEsRecords) {
+                        const decompressedData = await getDecompressedData<CmsEntry>(
+                            ddbEsRecord.data
+                        );
+                        if (!decompressedData) {
+                            logger.trace(
+                                `[DDB-ES Table] Skipping record "${ddbEsRecord.PK}" as it is not a valid CMS entry...`
+                            );
+                            continue;
+                        }
+
+                        // 1. Check if the data migration was ever performed. If not, let's perform it.
+                        if (!isMigratedEntry(decompressedData)) {
+                            // Get the oldest revision's `createdOn` value. We use that to set the entry-level `createdOn` value.
+                            const createdOn = await getOldestRevisionCreatedOn({
+                                entry: { ...decompressedData, PK: ddbEsRecord.PK },
+                                entryEntity: ddbEntryEntity,
+                                retryOptions: {
+                                    onFailedAttempt: error => {
+                                        logger.warn(
+                                            {
+                                                error,
+                                                item: { ...decompressedData, PK: ddbEsRecord.PK }
+                                            },
+                                            `[DDB-ES Table] getOldestRevisionCreatedOn attempt #${error.attemptNumber} failed: ${error.message}`
+                                        );
+                                    }
+                                }
+                            });
+
+                            const firstLastPublishedOnByFields = await getFirstLastPublishedOnBy({
+                                entry: { ...decompressedData, PK: ddbEsRecord.PK },
+                                entryEntity: ddbEntryEntity,
+                                retryOptions: {
+                                    onFailedAttempt: error => {
+                                        logger.warn(
+                                            {
+                                                error,
+                                                item: { ...decompressedData, PK: ddbEsRecord.PK }
+                                            },
+                                            `[DDB-ES Table] getFirstLastPublishedOnBy attempt #${error.attemptNumber} failed: ${error.message}`
+                                        );
+                                    }
+                                }
+                            });
+
+                            assignNewMetaFields(decompressedData, {
+                                createdOn,
+                                ...firstLastPublishedOnByFields
+                            });
+                        }
+
+                        // 2. Ensure new non-nullable meta fields have a value and nothing is missing.
+                        if (!hasAllNonNullableValues(decompressedData)) {
+                            logger.trace(
+                                getNonNullableFieldsWithMissingValues(decompressedData),
+                                [
+                                    `[DDB-ES Table] Detected an entry with missing values for non-nullable meta fields`,
+                                    `(${decompressedData.modelId}/${decompressedData.id}).`
+                                ].join(" ")
+                            );
+
+                            try {
+                                const fallbackIdentity = await getFallbackIdentity({
+                                    entity: ddbEntryEntity,
+                                    tenant: decompressedData.tenant,
+                                    retryOptions: {
+                                        onFailedAttempt: error => {
+                                            logger.warn(
+                                                { error, item: ddbEntryEntity },
+                                                `[DDB-ES Table] getFallbackIdentity attempt #${error.attemptNumber} failed: ${error.message}`
+                                            );
+                                        }
+                                    }
+                                });
+
+                                ensureAllNonNullableValues(decompressedData, {
+                                    dateTime: fallbackDateTime,
+                                    identity: fallbackIdentity
+                                });
+
+                                logger.trace(
+                                    [
+                                        `[DDB-ES Table] Successfully ensured all non-nullable meta fields`,
+                                        `have values (${decompressedData.modelId}/${decompressedData.id}).`,
+                                        "Will be saving the changes soon."
+                                    ].join(" ")
+                                );
+                            } catch (e) {
+                                logger.error(
+                                    [
+                                        "[DDB-ES Table] Failed to ensure all non-nullable meta fields have values",
+                                        `(${decompressedData.modelId}/${decompressedData.id}): ${e.message}`
+                                    ].join(" ")
+                                );
+                            }
+                        }
+
+                        const compressedData = await getCompressedData(decompressedData);
+
+                        ddbEsItemsToBatchWrite.push(
+                            ddbEsEntryEntity.putBatch({
+                                ...ddbEsRecord,
+                                data: compressedData
+                            })
+                        );
+                    }
                 }
 
-                status.stats.recordsUpdated += ddbItemsToBatchWrite.length;
+                if (ddbItemsToBatchWrite.length) {
+                    let ddbWriteError = false;
+                    let ddbEsWriteError = false;
+
+                    // Store data in primary DynamoDB table.
+                    const execute = () => {
+                        return batchWriteAll(
+                            {
+                                table: ddbEntryEntity.table,
+                                items: ddbItemsToBatchWrite
+                            },
+                            BATCH_WRITE_MAX_CHUNK
+                        );
+                    };
+
+                    logger.trace(
+                        `Storing ${ddbItemsToBatchWrite.length} record(s) in primary DynamoDB table...`
+                    );
+
+                    try {
+                        await executeWithRetry(execute, {
+                            onFailedAttempt: error => {
+                                logger.warn(
+                                    `Batch write attempt #${error.attemptNumber} failed: ${error.message}`
+                                );
+                            }
+                        });
+                    } catch (e) {
+                        ddbWriteError = true;
+                        logger.error(
+                            {
+                                error: e,
+                                ddbItemsToBatchWrite
+                            },
+                            "After multiple retries, failed to batch-store records in primary DynamoDB table."
+                        );
+                    }
+
+                    if (ddbEsItemsToBatchWrite.length) {
+                        logger.trace(
+                            `Storing ${ddbEsItemsToBatchWrite.length} record(s) in DDB-ES DynamoDB table...`
+                        );
+
+                        try {
+                            const results = await waitUntilHealthy.wait({
+                                async onUnhealthy(params) {
+                                    const shouldWaitReason = params.waitingReason.name;
+
+                                    logger.warn(
+                                        `Cluster is unhealthy (${shouldWaitReason}). Waiting for the cluster to become healthy...`,
+                                        params
+                                    );
+
+                                    if (
+                                        status.stats.esHealthChecks.unhealthyReasons[
+                                            shouldWaitReason
+                                        ]
+                                    ) {
+                                        status.stats.esHealthChecks.unhealthyReasons[
+                                            shouldWaitReason
+                                        ]++;
+                                    } else {
+                                        status.stats.esHealthChecks.unhealthyReasons[
+                                            shouldWaitReason
+                                        ] = 1;
+                                    }
+                                }
+                            });
+
+                            status.stats.esHealthChecks.checksCount++;
+                            status.stats.esHealthChecks.timeSpentWaiting += results.runningTime;
+
+                            // Store data in DDB-ES DynamoDB table.
+                            const executeDdbEs = () => {
+                                return batchWriteAll(
+                                    {
+                                        table: ddbEsEntryEntity.table,
+                                        items: ddbEsItemsToBatchWrite
+                                    },
+                                    BATCH_WRITE_MAX_CHUNK
+                                );
+                            };
+
+                            await executeWithRetry(executeDdbEs, {
+                                onFailedAttempt: error => {
+                                    logger.warn(
+                                        `[DDB-ES Table] Batch write attempt #${error.attemptNumber} failed: ${error.message}`
+                                    );
+                                }
+                            });
+                        } catch (e) {
+                            ddbEsWriteError = true;
+                            logger.error(
+                                {
+                                    error: e,
+                                    ddbEsItemsToBatchWrite
+                                },
+                                "After multiple retries, failed to batch-store records in DDB-ES DynamoDB table."
+                            );
+                        }
+                    }
+
+                    if (ddbEsWriteError || ddbWriteError) {
+                        logger.warn(
+                            'Not increasing the "recordsUpdated" count due to write errors.'
+                        );
+                    } else {
+                        status.stats.recordsUpdated += ddbItemsToBatchWrite.length;
+                    }
+                }
+
+                // Update checkpoint after every batch.
+                let lastEvaluatedKey: LastEvaluatedKey = true;
+                if (result.lastEvaluatedKey) {
+                    lastEvaluatedKey = result.lastEvaluatedKey as unknown as LastEvaluatedKeyObject;
+                }
+
+                status.lastEvaluatedKey = lastEvaluatedKey;
+
+                if (lastEvaluatedKey === true) {
+                    return false;
+                }
+
+                // Continue further scanning.
+                return true;
+            },
+            {
+                retry: {
+                    onFailedAttempt: error => {
+                        logger.warn(
+                            {
+                                lastEvaluatedKey: status.lastEvaluatedKey,
+                                error
+                            },
+                            `ddbScanWithCallback attempt #${error.attemptNumber} failed: ${error.message}`
+                        );
+                    }
+                }
             }
+        );
 
-            // Update checkpoint after every batch.
-            let lastEvaluatedKey: LastEvaluatedKey = true;
-            if (result.lastEvaluatedKey) {
-                lastEvaluatedKey = result.lastEvaluatedKey as unknown as LastEvaluatedKeyObject;
-            }
+        // Store status in tmp file.
+        logger.trace({ status }, "Segment processing completed. Saving status to tmp file...");
+        const logFilePath = path.join(
+            os.tmpdir(),
+            `webiny-5-39-6-meta-fields-data-migration-log-${argv.runId}-${argv.segmentIndex}.log`
+        );
 
-            status.lastEvaluatedKey = lastEvaluatedKey;
+        // Save segment processing stats to a file.
+        fs.writeFileSync(logFilePath, JSON.stringify(status.stats, null, 2));
 
-            if (lastEvaluatedKey === true) {
-                return false;
-            }
+        logger.trace(`Segment processing stats saved in ${logFilePath}.`);
+    } catch (error) {
+        // Store status in tmp file.
+        logger.error(
+            { status, error },
+            "Segment processing failed to complete. Saving status to tmp file..."
+        );
+        const logFilePath = path.join(
+            os.tmpdir(),
+            `webiny-5-39-6-meta-fields-data-migration-log-${argv.runId}-${argv.segmentIndex}.log`
+        );
 
-            // Continue further scanning.
-            return true;
-        }
-    );
+        // Save segment processing stats to a file.
+        fs.writeFileSync(logFilePath, JSON.stringify(status.stats, null, 2));
 
-    // Store status in tmp file.
-    logger.trace({ status }, "Segment processing completed. Saving status to tmp file...");
-    const logFilePath = path.join(
-        os.tmpdir(),
-        `webiny-5-39-6-meta-fields-data-migration-log-${argv.runId}-${argv.segmentIndex}.log`
-    );
-
-    // Save segment processing stats to a file.
-    fs.writeFileSync(logFilePath, JSON.stringify(status.stats, null, 2));
-
-    logger.trace(`Segment processing stats saved in ${logFilePath}.`);
+        logger.trace(`Segment processing stats saved in ${logFilePath}.`);
+    }
 })();

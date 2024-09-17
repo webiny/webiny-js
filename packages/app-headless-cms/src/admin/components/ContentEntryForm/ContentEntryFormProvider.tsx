@@ -12,6 +12,7 @@ const promptMessage =
 
 interface SaveEntryOptions {
     skipValidators?: string[];
+    createNewRevision?: boolean;
 }
 
 export interface ContentEntryFormContext {
@@ -88,7 +89,8 @@ export const ContentEntryFormProvider = ({
         const { entry, error } = await persistEntry(
             { id: data.id, ...gqlData },
             {
-                skipValidators: saveOptionsRef.current.skipValidators
+                skipValidators: saveOptionsRef.current.skipValidators,
+                createNewRevision: data.meta?.locked
             }
         );
 
@@ -98,6 +100,7 @@ export const ContentEntryFormProvider = ({
             return;
         }
 
+        showSnackbar("Entry saved successfully!");
         setInvalidFields({});
 
         const isNewRevision = !isNewEntry && data.id !== entry.id;

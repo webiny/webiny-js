@@ -1,8 +1,10 @@
 import pRetry from "p-retry";
 
+export type ExecuteWithRetryOptions = Parameters<typeof pRetry>[1];
+
 export const executeWithRetry = <T>(
     execute: () => Promise<T>,
-    options?: Parameters<typeof pRetry>[1]
+    options?: ExecuteWithRetryOptions
 ) => {
     const retries = 20;
     return pRetry(execute, {

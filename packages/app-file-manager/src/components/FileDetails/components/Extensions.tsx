@@ -4,7 +4,7 @@ import { CompositionScope } from "@webiny/app-admin";
 import { CmsModel } from "@webiny/app-headless-cms/types";
 import { ModelProvider } from "@webiny/app-headless-cms/admin/components/ModelProvider";
 import { Fields } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/Fields";
-import { Bind, Form, useBind } from "@webiny/form";
+import { Bind, BindPrefix } from "@webiny/form";
 
 const HideEmptyCells = styled.div`
     .mdc-layout-grid__cell:empty {
@@ -32,26 +32,20 @@ export const Extensions = ({ model }: ExtensionsProps) => {
         layout.push(...fields.map(field => [field.fieldId]));
     }
 
-    const { value, onChange } = useBind({
-        name: "extensions"
-    });
-
     return (
         <CompositionScope name={"fm.fileDetails.extensionFields"}>
             <ModelProvider model={model}>
-                <Form data={value} onChange={onChange}>
-                    {() => (
-                        <HideEmptyCells>
-                            <Fields
-                                contentModel={model}
-                                // @ts-expect-error
-                                Bind={Bind}
-                                fields={fields}
-                                layout={layout}
-                            />
-                        </HideEmptyCells>
-                    )}
-                </Form>
+                <BindPrefix name={"extensions"}>
+                    <HideEmptyCells>
+                        <Fields
+                            contentModel={model}
+                            // @ts-expect-error
+                            Bind={Bind}
+                            fields={fields}
+                            layout={layout}
+                        />
+                    </HideEmptyCells>
+                </BindPrefix>
             </ModelProvider>
         </CompositionScope>
     );
