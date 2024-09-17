@@ -72,16 +72,19 @@ export async function createTenancy({
                 tenancy.setCurrentTenant(initialTenant);
             }
         },
-        async withEachTenant(tenants, cb) {
+        async withTenant(tenant, cb) {
             const initialTenant = this.getCurrentTenant();
+            this.setCurrentTenant(tenant);
+            try {
+                return cb(tenant);
+            } finally {
+                this.setCurrentTenant(initialTenant);
+            }
+        },
+        async withEachTenant(tenants, cb) {
             const results = [];
             for (const tenant of tenants) {
-                this.setCurrentTenant(tenant);
-                try {
-                    results.push(await cb(tenant));
-                } finally {
-                    this.setCurrentTenant(initialTenant);
-                }
+                results.push(await this.withTenant(tenant, cb));
             }
             return results;
         },

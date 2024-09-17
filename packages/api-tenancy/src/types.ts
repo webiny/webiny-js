@@ -49,6 +49,10 @@ export interface Tenancy {
     ): Promise<TTenant>;
     deleteTenant(id: string): Promise<boolean>;
     withRootTenant<T>(cb: () => T): Promise<T>;
+    withTenant<TTenant extends Tenant, TReturn>(
+        tenant: TTenant,
+        cb: (tenant: TTenant) => TReturn
+    ): Promise<TReturn>;
     withEachTenant<TTenant extends Tenant, TReturn>(
         tenants: TTenant[],
         cb: (tenant: TTenant) => Promise<TReturn>
