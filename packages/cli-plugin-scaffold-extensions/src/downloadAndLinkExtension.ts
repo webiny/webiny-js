@@ -43,6 +43,17 @@ const getVersionFromVersionFolders = async (
     return versionToUse.replace(".0", ".x");
 };
 
+const getExtensionPkgJsonGlobs = (extensionsFolderNames: string[]) => {
+    const base = [
+        EXTENSIONS_ROOT_FOLDER,
+        extensionsFolderNames.length > 1
+            ? `{${extensionsFolderNames.join()}}`
+            : extensionsFolderNames[0]
+    ].join("/");
+
+    return [base + "/**/package.json", base + "/package.json"];
+};
+
 export const downloadAndLinkExtension = async ({
     input,
     ora,
@@ -100,14 +111,8 @@ export const downloadAndLinkExtension = async ({
         // later to run additional setup tasks on each extension.
         const extensionsFolderNames = await fsAsync.readdir(extensionsFolderToCopyPath);
 
-        const extensionsPkgJsonsGlob = [
-            EXTENSIONS_ROOT_FOLDER,
-            "/{",
-            extensionsFolderNames.join(","),
-            `}/**/package.json`
-        ].join("");
-
-        const extensionsPkgJsonPaths = await glob(extensionsPkgJsonsGlob);
+        const extensionsPkgJsonGlobs = await getExtensionPkgJsonGlobs(extensionsFolderNames);
+        const extensionsPkgJsonPaths = await glob(extensionsPkgJsonGlobs);
 
         const downloadedExtensions: Extension[] = [];
 
