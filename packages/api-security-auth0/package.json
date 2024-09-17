@@ -10,7 +10,6 @@
   "author": "Webiny Ltd.",
   "license": "Webiny Enterprise",
   "dependencies": {
-    "@webiny/api": "0.0.0",
     "@webiny/api-admin-users": "0.0.0",
     "@webiny/api-i18n": "0.0.0",
     "@webiny/api-security": "0.0.0",

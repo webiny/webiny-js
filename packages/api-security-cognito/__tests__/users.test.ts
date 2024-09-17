@@ -25,7 +25,7 @@ describe("Security User CRUD Test", () => {
         await adminUsers.create({
             data: {
                 ...adminData,
-                group: fullAccessGroup.id
+                groups: [fullAccessGroup.id]
             }
         });
     });
@@ -42,7 +42,7 @@ describe("Security User CRUD Test", () => {
             data: {
                 ...mocks.userA,
                 password: "12345678",
-                group: fullAccessGroup.id
+                groups: [fullAccessGroup.id]
             }
         });
 
@@ -56,11 +56,13 @@ describe("Security User CRUD Test", () => {
                             ...mocks.userA,
                             id: expect.any(String),
                             gravatar: createGravatar(mocks.userA.email),
-                            group: {
-                                id: fullAccessGroup.id,
-                                slug: fullAccessGroup.slug,
-                                name: fullAccessGroup.name
-                            }
+                            groups: [
+                                {
+                                    id: fullAccessGroup.id,
+                                    slug: fullAccessGroup.slug,
+                                    name: fullAccessGroup.name
+                                }
+                            ]
                         },
                         error: null
                     }
@@ -72,7 +74,7 @@ describe("Security User CRUD Test", () => {
             data: {
                 ...mocks.userB,
                 password: "12345678",
-                group: fullAccessGroup.id
+                groups: [fullAccessGroup.id]
             }
         });
 
@@ -84,11 +86,13 @@ describe("Security User CRUD Test", () => {
                             ...mocks.userB,
                             id: expect.any(String),
                             gravatar: createGravatar(mocks.userB.email),
-                            group: {
-                                id: fullAccessGroup.id,
-                                name: fullAccessGroup.name,
-                                slug: fullAccessGroup.slug
-                            }
+                            groups: [
+                                {
+                                    id: fullAccessGroup.id,
+                                    name: fullAccessGroup.name,
+                                    slug: fullAccessGroup.slug
+                                }
+                            ]
                         },
                         error: null
                     }
@@ -110,9 +114,11 @@ describe("Security User CRUD Test", () => {
                                 firstName: "John",
                                 lastName: "Doe",
                                 email: "admin@webiny.com",
-                                group: {
-                                    slug: "full-access"
-                                }
+                                groups: [
+                                    {
+                                        slug: "full-access"
+                                    }
+                                ]
                             },
                             userA,
                             userB
@@ -195,7 +201,7 @@ describe("Security User CRUD Test", () => {
         // Update user's group
         const [updateUserAResponse] = await adminUsers.update({
             id: userA.id,
-            data: { group: anonymousGroup.id }
+            data: { groups: [anonymousGroup.id] }
         });
 
         expect(updateUserAResponse).toEqual({
@@ -204,11 +210,13 @@ describe("Security User CRUD Test", () => {
                     updateUser: {
                         data: {
                             ...userA,
-                            group: {
-                                id: anonymousGroup.id,
-                                name: anonymousGroup.name,
-                                slug: anonymousGroup.slug
-                            }
+                            groups: [
+                                {
+                                    id: anonymousGroup.id,
+                                    name: anonymousGroup.name,
+                                    slug: anonymousGroup.slug
+                                }
+                            ]
                         },
                         error: null
                     }
@@ -226,7 +234,7 @@ describe("Security User CRUD Test", () => {
             data: {
                 ...mocks.userA,
                 email: "admin@webiny.com",
-                group: fullAccessGroup.id,
+                groups: [fullAccessGroup.id],
                 password: "12345678"
             }
         });
@@ -265,11 +273,13 @@ describe("Security User CRUD Test", () => {
                             id: expect.any(String),
                             gravatar: createGravatar(adminData.email),
                             avatar: null,
-                            group: {
-                                id: fullAccessGroup.id,
-                                name: fullAccessGroup.name,
-                                slug: fullAccessGroup.slug
-                            }
+                            groups: [
+                                {
+                                    id: fullAccessGroup.id,
+                                    name: fullAccessGroup.name,
+                                    slug: fullAccessGroup.slug
+                                }
+                            ]
                         },
                         error: null
                     }

@@ -22,7 +22,7 @@ import { CREATE_TEAM, LIST_TEAMS, READ_TEAM, UPDATE_TEAM } from "./graphql";
 import isEmpty from "lodash/isEmpty";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
-import { GroupsMultiAutoComplete } from "~/components/GroupsMultiAutocomplete";
+import { GroupsMultiAutocomplete } from "~/components/GroupsMultiAutocomplete";
 import { Team } from "~/types";
 
 const t = i18n.ns("app-security/admin/teams/form");
@@ -175,7 +175,7 @@ export const TeamsForm = () => {
                             <Grid>
                                 <Cell span={12}>
                                     <Bind name="groups" validators={validation.create("required")}>
-                                        <GroupsMultiAutoComplete
+                                        <GroupsMultiAutocomplete
                                             label={t`Roles`}
                                             data-testid="admin.am.team.new.groups"
                                         />
