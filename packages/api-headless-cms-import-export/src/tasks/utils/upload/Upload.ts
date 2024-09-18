@@ -89,6 +89,13 @@ export const createUploadFactory = (params: ICreateUploadFactoryParams): ICreate
                 autoDestroy: true
             });
 
+        if (stream.listenerCount("error") === 0) {
+            stream.on("error", ex => {
+                console.log("Upload Stream Error", ex);
+                throw ex;
+            });
+        }
+
         return new Upload({
             client: options?.client || params.client,
             bucket: options?.bucket || params.bucket,
