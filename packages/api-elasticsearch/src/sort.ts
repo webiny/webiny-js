@@ -65,7 +65,7 @@ export const createSort = (params: CreateSortParams): SortType => {
      * If we do not have id in the sort, we add it as we need a tie_breaker for the Elasticsearch to be able to sort consistently.
      */
     if (!result["id.keyword"] && !result["id"]) {
-        result["_shard_doc"] = {
+        result["id.keyword"] = {
             order: "asc"
         };
     }
