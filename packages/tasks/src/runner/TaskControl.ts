@@ -45,12 +45,28 @@ export class TaskControl implements ITaskControl {
             });
         }
         /**
+         * Let's get the task definition.
+         */
+        const definition = this.context.tasks.getDefinition(task.definitionId);
+        if (!definition) {
+            return this.response.error({
+                error: {
+                    message: `Task "${task.id}" cannot be executed because there is no "${task.definitionId}" definition plugin.`,
+                    code: "TASK_DEFINITION_ERROR",
+                    data: {
+                        definitionId: task.definitionId
+                    }
+                }
+            });
+        }
+        const disableDatabaseLogs = !!definition.disableDatabaseLogs;
+
+        /**
          * As this as a run of the task, we need to create a new log entry.
          */
-
         let taskLog: ITaskLog;
         try {
-            taskLog = await this.getTaskLog(task);
+            taskLog = await this.getTaskLog(task, disableDatabaseLogs);
         } catch (error) {
             return this.response.error({
                 error
@@ -86,25 +102,12 @@ export class TaskControl implements ITaskControl {
             });
         }
 
-        const definition = this.context.tasks.getDefinition(task.definitionId);
-        if (!definition) {
-            return this.response.error({
-                error: {
-                    message: `Task "${task.id}" cannot be executed because there is no "${task.definitionId}" definition plugin.`,
-                    code: "TASK_DEFINITION_ERROR",
-                    data: {
-                        definitionId: task.definitionId
-                    }
-                }
-            });
-        }
-
         const taskResponse = new TaskResponse(this.response);
         const store = new TaskManagerStore({
             context: this.context,
             task,
             log: taskLog,
-            disableDatabaseLogs: !!definition.disableDatabaseLogs
+            disableDatabaseLogs
         });
 
         const manager = new TaskManager(
@@ -195,7 +198,21 @@ export class TaskControl implements ITaskControl {
         });
     }
 
-    private async getTaskLog(task: ITask): Promise<ITaskLog> {
+    private async getTaskLog(task: ITask, disableDatabaseLogs: boolean): Promise<ITaskLog> {
+        /**
+         * If logs are disabled, let's return a mocked one.
+         */
+        if (disableDatabaseLogs) {
+            return {
+                id: `${task.id}-log`,
+                createdOn: task.createdOn,
+                createdBy: task.createdBy,
+                executionName: task.executionName,
+                task: task.id,
+                iteration: task.iterations,
+                items: []
+            };
+        }
         let taskLog: ITaskLog | null = null;
         /**
          * First we are trying to get existing latest log.
