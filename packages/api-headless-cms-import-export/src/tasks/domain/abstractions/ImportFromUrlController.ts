@@ -15,21 +15,24 @@ export enum IImportFromUrlControllerInputStep {
 export interface IImportFromUrlControllerInputSteps {
     [IImportFromUrlControllerInputStep.DOWNLOAD]?: {
         triggered?: boolean;
-        done?: boolean;
+        finished?: boolean;
+        done?: string[];
         failed?: string[];
         invalid?: string[];
         aborted?: string[];
     };
     [IImportFromUrlControllerInputStep.PROCESS_ENTRIES]?: {
         triggered?: boolean;
-        done?: boolean;
+        finished?: boolean;
+        done?: string[];
         failed?: string[];
         invalid?: string[];
         aborted?: string[];
     };
     [IImportFromUrlControllerInputStep.PROCESS_ASSETS]?: {
         triggered?: boolean;
-        done?: boolean;
+        finished?: boolean;
+        done?: string[];
         failed?: string[];
         invalid?: string[];
         aborted?: string[];

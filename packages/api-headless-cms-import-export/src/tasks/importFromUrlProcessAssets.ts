@@ -14,7 +14,7 @@ export const createImportFromUrlProcessAssetsTask = () => {
     >({
         id: IMPORT_FROM_URL_PROCESS_ASSETS_TASK,
         title: "Import from URL List - Process entries",
-        maxIterations: 500,
+        maxIterations: 10,
         isPrivate: true,
         description: "Process entries import.",
         async run(params) {

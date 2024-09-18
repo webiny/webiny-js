@@ -48,8 +48,8 @@ export class ImportFromUrlControllerDownloadStep<
             return response.continue(output, {
                 seconds: getBackOffSeconds(task.iterations)
             });
-        } else if (!step.done) {
-            const { failed, running, invalid, aborted, collection } = await getChildTasks({
+        } else if (step.finished !== true) {
+            const { failed, running, invalid, aborted, done, collection } = await getChildTasks({
                 context,
                 task,
                 definition: IMPORT_FROM_URL_DOWNLOAD_TASK
@@ -78,7 +78,8 @@ export class ImportFromUrlControllerDownloadStep<
                         failed,
                         invalid,
                         aborted,
-                        done: true
+                        done,
+                        finished: true
                     }
                 }
             };

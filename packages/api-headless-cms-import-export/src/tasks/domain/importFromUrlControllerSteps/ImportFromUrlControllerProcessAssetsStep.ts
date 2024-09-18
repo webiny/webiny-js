@@ -69,8 +69,8 @@ export class ImportFromUrlControllerProcessAssetsStep<
             return response.continue(output, {
                 seconds: getBackOffSeconds(task.iterations)
             });
-        } else if (!step.done) {
-            const { failed, running, invalid, aborted, collection } = await getChildTasks({
+        } else if (step.finished !== true) {
+            const { failed, running, invalid, aborted, collection, done } = await getChildTasks({
                 context,
                 task,
                 definition: IMPORT_FROM_URL_PROCESS_ASSETS_TASK
@@ -99,7 +99,8 @@ export class ImportFromUrlControllerProcessAssetsStep<
                         failed,
                         invalid,
                         aborted,
-                        done: true
+                        done,
+                        finished: true
                     }
                 }
             };

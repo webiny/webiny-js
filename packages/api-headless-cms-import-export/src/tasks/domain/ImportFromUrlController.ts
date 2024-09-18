@@ -42,24 +42,49 @@ export class ImportFromUrlController<
 
         const steps = input.steps || {};
 
-        const downloadStep = steps[IImportFromUrlControllerInputStep.DOWNLOAD];
-        if (!downloadStep?.done) {
+        const downloadStep = steps[IImportFromUrlControllerInputStep.DOWNLOAD] || {};
+        if (!downloadStep.done) {
             const step = new ImportFromUrlControllerDownloadStep<C, I, O>();
-            return step.execute(params);
+            return await step.execute(params);
+        } else if (downloadStep.failed?.length) {
+            return response.error({
+                message: `Failed to download files.`,
+                code: "FAILED_DOWNLOADING_FILES",
+                data: steps
+            });
         }
 
-        const processEntriesStep = steps[IImportFromUrlControllerInputStep.PROCESS_ENTRIES];
-        if (!processEntriesStep?.done) {
+        const processEntriesStep = steps[IImportFromUrlControllerInputStep.PROCESS_ENTRIES] || {};
+        if (!processEntriesStep.done) {
             const step = new ImportFromUrlControllerProcessEntriesStep<C, I, O>();
-            return step.execute(params);
+            return await step.execute(params);
+        } else if (processEntriesStep.failed?.length) {
+            return response.error({
+                message: `Failed to process entries.`,
+                code: "FAILED_PROCESSING_ENTRIES",
+                data: steps
+            });
         }
 
-        const processAssetsStep = steps[IImportFromUrlControllerInputStep.PROCESS_ASSETS];
-        if (!processAssetsStep?.done) {
+        const processAssetsStep = steps[IImportFromUrlControllerInputStep.PROCESS_ASSETS] || {};
+        if (!processAssetsStep.done) {
             const step = new ImportFromUrlControllerProcessAssetsStep<C, I, O>();
-            return step.execute(params);
+            return await step.execute(params);
+        } else if (processAssetsStep.failed?.length) {
+            return response.error({
+                message: `Failed to process assets.`,
+                code: "FAILED_PROCESSING_ASSETS",
+                data: steps
+            });
         }
 
-        return response.error("Should not reach this point.");
+        const output: IImportFromUrlControllerOutput = {
+            done: [],
+            invalid: [],
+            failed: [],
+            aborted: []
+        };
+
+        return response.done(output as O);
     }
 }

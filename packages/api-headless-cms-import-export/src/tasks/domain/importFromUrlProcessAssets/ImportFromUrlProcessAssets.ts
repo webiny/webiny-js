@@ -50,12 +50,21 @@ export class ImportFromUrlProcessAssets<
                 message: `No file found in the provided data.`,
                 code: "NO_FILE_FOUND"
             });
-        } else if (input.file.type !== CmsImportExportFileType.ENTRIES) {
+        } else if (input.file.type !== CmsImportExportFileType.ASSETS) {
             return response.error({
-                message: `Invalid file type. Expected "${CmsImportExportFileType.ENTRIES}" but got "${input.file.type}".`,
+                message: `Invalid file type. Expected "${CmsImportExportFileType.ASSETS}" but got "${input.file.type}".`,
                 code: "INVALID_FILE_TYPE"
             });
         }
+
+        const recordExists = async (id: string): Promise<boolean> => {
+            try {
+                const result = await context.fileManager.getFile(id);
+                return !!result;
+            } catch (ex) {
+                return false;
+            }
+        };
 
         const result = structuredClone({
             ...input,
@@ -124,7 +133,7 @@ export class ImportFromUrlProcessAssets<
             /**
              * Check if the file record already exists.
              */
-            const exists = await context.fileManager.getFile(record.id);
+            const exists = await recordExists(record.id);
             if (exists && !input.override) {
                 console.log(
                     `Asset "${record.id}" / ${source.path} record already exists. Skipping...`
