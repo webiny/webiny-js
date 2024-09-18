@@ -1052,7 +1052,7 @@ export const createEntriesStorageOperations = (
         /**
          * We need the latest and published entries to see if something needs to be updated alongside the publishing one.
          */
-        const initialLatestStorageEntry = await getLatestRevisionByEntryId(model, entry)!;
+        const initialLatestStorageEntry = await getLatestRevisionByEntryId(model, entry);
         const initialPublishedStorageEntry = await getPublishedRevisionByEntryId(model, entry);
 
         const storageEntry = convertToStorageEntry({
@@ -1083,7 +1083,7 @@ export const createEntriesStorageOperations = (
         // 2. When it comes to the latest record, we need to do a couple of additional updates:
         //   - if we're publishing latest revision, just update the L record
         //   - otherwise, we still want to update L and REV# records
-        const publishingLatestRevision = entry.id === initialLatestStorageEntry.id;
+        const publishingLatestRevision = entry.id === initialLatestStorageEntry!.id;
 
         if (publishingLatestRevision) {
             items.push(
@@ -1125,7 +1125,7 @@ export const createEntriesStorageOperations = (
             );
 
             const latestStorageEntry = convertToStorageEntry({
-                storageEntry: initialLatestStorageEntry,
+                storageEntry: initialLatestStorageEntry!,
                 model
             });
 
