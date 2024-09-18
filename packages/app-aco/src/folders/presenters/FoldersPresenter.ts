@@ -2,6 +2,7 @@ import { LoadingRepository } from "@webiny/app-utils";
 import { FoldersCache } from "~/folders/cache";
 import { Folder } from "~/folders/domain";
 import { ROOT_FOLDER } from "~/constants";
+import { FolderItem } from "~/types";
 
 export class FoldersPresenter {
     private foldersCache: FoldersCache;
@@ -19,7 +20,7 @@ export class FoldersPresenter {
         };
     }
 
-    private folderMapper(folder: Folder) {
+    private folderMapper(folder: Folder): FolderItem {
         return {
             id: folder.id,
             title: folder.title,

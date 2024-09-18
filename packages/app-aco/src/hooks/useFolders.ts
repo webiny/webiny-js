@@ -50,7 +50,13 @@ export const useFolders = () => {
     const foldersContext = useContext(FoldersContext);
     const appContext = useContext(AcoAppContext);
 
-    const [vm, setVm] = useState({});
+    const [vm, setVm] = useState<{
+        folders: FolderItem[] | undefined;
+        loading: Record<string, boolean> | undefined;
+    }>({
+        folders: undefined,
+        loading: undefined
+    });
 
     if (!foldersContext) {
         throw new Error("useFolders must be used within a FoldersProvider");
@@ -202,7 +208,7 @@ export const useFolders = () => {
         }
 
         listFolders();
-    }, [foldersCache]);
+    }, []);
 
     return {
         ...vm,
