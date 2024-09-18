@@ -5,6 +5,8 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CmsContentEntry } from "~/types";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { PublishEntryRevisionResponse } from "~/admin/contexts/Cms";
+import { RevisionDeletedSnackbarMessage } from "./RevisionDeletedSnackbarMessage";
+import { useRecords } from "@webiny/app-aco";
 
 export interface CreateRevisionHandler {
     (id?: string): Promise<void>;
@@ -17,12 +19,15 @@ export interface EditRevisionHandler {
 export interface DeleteRevisionHandler {
     (id?: string): Promise<void>;
 }
+
 export interface PublishRevisionHandler {
     (id?: string): Promise<PublishEntryRevisionResponse>;
 }
+
 export interface UnpublishRevisionHandler {
     (id?: string): Promise<void>;
 }
+
 interface UseRevisionHandlers {
     createRevision: CreateRevisionHandler;
     editRevision: EditRevisionHandler;
@@ -41,6 +46,8 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
     const contentEntry = useContentEntry();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
+    const { updateRecordInCache, removeRecordFromCache } = useRecords();
+
     const { contentModel } = contentEntry;
     const { modelId } = contentModel;
 
@@ -81,37 +88,56 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                             id: revisionId
                         });
 
-                        if (typeof response === "boolean") {
-                            if (!response) {
-                                showSnackbar(
-                                    <span>
-                                        Error while deleting revision entry{" "}
-                                        <strong>#{entry.meta.version}</strong>!
-                                    </span>
-                                );
-                                return;
-                            }
+                        if (typeof response === "object") {
+                            return showSnackbar(response.error.message);
+                        }
 
-                            // Redirect to the first revision in the list of all entry revisions.
-                            const targetRevision = contentEntry.revisions.filter(
-                                rev => rev.id !== revisionId
-                            )[0];
-
-                            history.push(
-                                `/cms/content-entries/${modelId}?id=` +
-                                    encodeURIComponent(targetRevision!.id)
-                            );
-
+                        // In this case, `response` is a boolean value, indicating whether the revision
+                        // was successfully deleted or not. If `response` is `false`, it means that the
+                        // revision was not deleted, and we need to show a snackbar message to the user.
+                        if (!response) {
                             showSnackbar(
                                 <span>
-                                    Successfully deleted revision{" "}
+                                    An error occurred while deleting revision entry&nbsp;
                                     <strong>#{entry.meta.version}</strong>!
                                 </span>
                             );
                             return;
                         }
 
-                        showSnackbar(response.error.message);
+                        // The `revisions` array contains all revisions of the entry, ordered from the
+                        // latest to the oldest. The first element in the array is the latest revision.
+                        const newLatestRevision = contentEntry.revisions.find(
+                            revision => revision.meta.version !== entry.meta.version
+                        );
+
+                        // 1. Update ACO cache.
+                        if (newLatestRevision) {
+                            // Make sure the new latest revision is in the cache. This is important because
+                            // this way we get to see the change in the ACO entry list.
+                            updateRecordInCache(newLatestRevision);
+                        } else {
+                            // Like in the above case, we need to remove the entry from the cache. And again,
+                            // this is important because this way we get to see the change in the ACO entry list.
+                            removeRecordFromCache(entry.id);
+                        }
+
+                        // 2. Show a snackbar message.
+                        showSnackbar(
+                            <RevisionDeletedSnackbarMessage
+                                deletedRevision={entry}
+                                newLatestRevision={newLatestRevision}
+                            />
+                        );
+
+                        // 3. Redirect to the new latest revision or the list of all revisions.
+                        let redirectTarget = `/cms/content-entries/${modelId}`;
+                        if (newLatestRevision) {
+                            // Redirect to the first revision in the list of all entry revisions.
+                            redirectTarget += `?id=${encodeURIComponent(newLatestRevision.id)}`;
+                        }
+
+                        history.push(redirectTarget);
                     },
                 publishRevision:
                     ({ entry }): PublishRevisionHandler =>
