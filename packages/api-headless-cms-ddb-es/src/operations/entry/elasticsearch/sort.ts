@@ -19,7 +19,7 @@ export const createElasticsearchSort = (params: Params): esSort => {
     if (!sort || sort.length === 0) {
         return [
             {
-                ["_shard_doc"]: {
+                ["id.keyword"]: {
                     order: "asc"
                 }
             }
