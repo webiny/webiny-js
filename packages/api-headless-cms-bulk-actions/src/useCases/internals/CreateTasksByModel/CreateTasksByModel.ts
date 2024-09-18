@@ -4,8 +4,6 @@ import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 import { IListEntries } from "~/abstractions";
 import { BulkActionOperationByModelAction, IBulkActionOperationByModelTaskParams } from "~/types";
 
-const WAITING_TIME = 30; // Time to wait in seconds before retrying
-
 /**
  * The `CreateTasksByModel` class handles the execution of a task to process entries in batches.
  */
@@ -34,18 +32,14 @@ export class CreateTasksByModel {
             while (true) {
                 if (isAborted()) {
                     return response.aborted();
-                } else if (isCloseToTimeout(720)) {
+                } else if (isCloseToTimeout()) {
                     await this.taskCache.triggerTask(context, store.getTask());
-                    console.log("CreateTasksByModel", "response.continue -> isCloseToTimeout");
-                    return response.continue(
-                        {
-                            ...input,
-                            ...listEntriesParams,
-                            after: null,
-                            action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
-                        },
-                        { seconds: WAITING_TIME }
-                    );
+                    return response.continue({
+                        ...input,
+                        ...listEntriesParams,
+                        after: null,
+                        action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
+                    });
                 }
 
                 // List entries from the HCMS based on the provided query
@@ -56,7 +50,6 @@ export class CreateTasksByModel {
 
                 // End the task if no entries match the query
                 if (meta.totalCount === 0) {
-                    console.log("CreateTasksByModel", "meta.totalCount === 0", input);
                     return response.continue({
                         ...input,
                         action: BulkActionOperationByModelAction.END_TASK
@@ -66,16 +59,13 @@ export class CreateTasksByModel {
                 // Continue processing if no entries are returned in the current batch
                 if (entries.length === 0) {
                     await this.taskCache.triggerTask(context, store.getTask());
-                    console.log("CreateTasksByModel", "response.continue -> entries.length === 0");
-                    return response.continue(
-                        {
-                            ...input,
-                            ...listEntriesParams,
-                            totalCount: meta.totalCount,
-                            action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
-                        },
-                        { seconds: WAITING_TIME }
-                    );
+                    return response.continue({
+                        ...input,
+                        ...listEntriesParams,
+                        totalCount: meta.totalCount,
+                        after: null,
+                        action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
+                    });
                 }
 
                 // Extract entry IDs
@@ -97,19 +87,13 @@ export class CreateTasksByModel {
                 // Continue processing if there are no more entries or pagination is complete
                 if (!meta.hasMoreItems || !meta.cursor) {
                     await this.taskCache.triggerTask(context, store.getTask());
-                    console.log(
-                        "CreateTasksByModel",
-                        "response.continue -> !meta.hasMoreItems || !meta.cursor"
-                    );
-                    return response.continue(
-                        {
-                            ...input,
-                            after: null,
-                            totalCount: meta.totalCount,
-                            action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
-                        },
-                        { seconds: WAITING_TIME }
-                    );
+
+                    return response.continue({
+                        ...input,
+                        totalCount: meta.totalCount,
+                        after: null,
+                        action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
+                    });
                 }
 
                 listEntriesParams.after = meta.cursor;

@@ -1,8 +1,6 @@
 import { TaskDataStatus } from "@webiny/tasks";
 import { BulkActionOperationByModelAction, IBulkActionOperationByModelTaskParams } from "~/types";
 
-const WAITING_TIME = 10;
-
 /**
  * The `ProcessTasksByModel` class is responsible for processing tasks for a specific model.
  * It checks for any running or pending tasks from the parent task and continues or completes
@@ -28,7 +26,7 @@ export class ProcessTasksByModel {
                 });
             }
 
-            const result = await context.tasks.listTasks({
+            const { items } = await context.tasks.listTasks({
                 where: {
                     parentId: store.getTask().id,
                     definitionId: this.taskDefinition,
@@ -38,28 +36,31 @@ export class ProcessTasksByModel {
             });
 
             // If there are running or pending tasks, continue with a wait.
-            if (result.items.length > 0) {
-                console.log(
-                    "ProcessTasksByModel",
-                    "response.continue -> result.items.length > 0",
-                    result.meta.totalCount
-                );
+            if (items.length > 0) {
                 return response.continue(
                     {
                         ...input,
                         action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                     },
                     {
-                        seconds: WAITING_TIME
+                        seconds: 120
                     }
                 );
             }
 
-            console.log("ProcessTasksByModel", "end of the code");
-            return response.continue({
-                ...input,
-                action: BulkActionOperationByModelAction.CHECK_MORE_SUBTASKS
-            });
+            return response.continue(
+                {
+                    ...input,
+                    action: BulkActionOperationByModelAction.CHECK_MORE_SUBTASKS
+                },
+                {
+                    /**
+                     * Check if there are additional entries to list and process.
+                     * Allow time for things to settle, particularly when working with DynamoDB and Elasticsearch instances.
+                     */
+                    seconds: 60
+                }
+            );
         } catch (ex) {
             return response.error(
                 ex.message ?? `Error while processing task "${this.taskDefinition}"`

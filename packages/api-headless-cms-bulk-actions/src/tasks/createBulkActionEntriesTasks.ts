@@ -26,7 +26,8 @@ export const createBulkActionEntriesTasks = () => {
         createBulkAction({
             name: "moveToTrash",
             dataLoader: createListLatestEntries,
-            dataProcessor: createMoveEntryToTrash
+            dataProcessor: createMoveEntryToTrash,
+            batchSize: 35
         }),
         createBulkAction({
             name: "publish",
