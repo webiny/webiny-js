@@ -17,7 +17,13 @@ export const createElasticsearchSort = (params: Params): esSort => {
     const { sort, modelFields, plugins } = params;
 
     if (!sort || sort.length === 0) {
-        return [];
+        return [
+            {
+                ["_shard_doc"]: {
+                    order: "asc"
+                }
+            }
+        ];
     }
 
     const searchPlugins = createSearchPluginList({
