@@ -1052,20 +1052,15 @@ export const createEntriesStorageOperations = (
         /**
          * We need the latest and published entries to see if something needs to be updated alongside the publishing one.
          */
-        const initialLatestStorageEntry = await getLatestRevisionByEntryId(model, entry);
+        const initialLatestStorageEntry = await getLatestRevisionByEntryId(model, entry)!;
         const initialPublishedStorageEntry = await getPublishedRevisionByEntryId(model, entry);
 
         const storageEntry = convertToStorageEntry({
             model,
             storageEntry: initialStorageEntry
         });
-        /**
-         * We need to update:
-         *  - current entry revision sort key
-         *  - published sort key
-         *  - the latest sort key - if entry updated is actually latest
-         *  - previous published entry to unpublished status - if any previously published entry
-         */
+
+        // 1. Update REV# and P records with new data.
         const items = [
             entity.putBatch({
                 ...storageEntry,
@@ -1085,76 +1080,84 @@ export const createEntriesStorageOperations = (
             })
         ];
 
-        if (initialLatestStorageEntry) {
-            const publishingLatestRevision = entry.id === initialLatestStorageEntry.id;
+        // 2. When it comes to the latest record, we need to do a couple of additional updates:
+        //   - if we're publishing latest revision, just update the L record
+        //   - otherwise, we still want to update L and REV# records
+        const publishingLatestRevision = entry.id === initialLatestStorageEntry.id;
 
-            if (publishingLatestRevision) {
-                // We want to update current latest record because of the status (`status: 'published'`) update.
-                items.push(
-                    entity.putBatch({
-                        ...storageEntry,
-                        PK: partitionKey,
-                        SK: createLatestSortKey(),
-                        TYPE: createLatestType(),
-                        GSI1_PK: createGSIPartitionKey(model, "L"),
-                        GSI1_SK: createGSISortKey(entry)
-                    })
-                );
-            } else {
-                const latestStorageEntry = convertToStorageEntry({
-                    storageEntry: initialLatestStorageEntry,
+        if (publishingLatestRevision) {
+            items.push(
+                entity.putBatch({
+                    ...storageEntry,
+                    PK: partitionKey,
+                    SK: createLatestSortKey(),
+                    TYPE: createLatestType(),
+                    GSI1_PK: createGSIPartitionKey(model, "L"),
+                    GSI1_SK: createGSISortKey(entry)
+                })
+            );
+
+            // If we have a previously published entry, we need to mark it as unpublished.
+            if (initialPublishedStorageEntry) {
+                const publishedStorageEntry = convertToStorageEntry({
+                    storageEntry: initialPublishedStorageEntry,
                     model
                 });
-
-                // If the published revision is not the latest one, we still need to
-                // update the latest record with the new values of entry-level meta fields.
-                const updatedEntryLevelMetaFields = pickEntryMetaFields(
-                    entry,
-                    isEntryLevelEntryMetaField
-                );
-
-                // 1. Update actual revision record.
                 items.push(
                     entity.putBatch({
-                        ...latestStorageEntry,
-                        ...updatedEntryLevelMetaFields,
+                        ...publishedStorageEntry,
                         PK: partitionKey,
-                        SK: createRevisionSortKey(latestStorageEntry),
+                        SK: createRevisionSortKey(publishedStorageEntry),
                         TYPE: createType(),
+                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
                         GSI1_PK: createGSIPartitionKey(model, "A"),
-                        GSI1_SK: createGSISortKey(latestStorageEntry)
-                    })
-                );
-
-                // 2. Update latest record.
-                items.push(
-                    entity.putBatch({
-                        ...latestStorageEntry,
-                        ...updatedEntryLevelMetaFields,
-                        PK: partitionKey,
-                        SK: createLatestSortKey(),
-                        TYPE: createLatestType(),
-                        GSI1_PK: createGSIPartitionKey(model, "L"),
-                        GSI1_SK: createGSISortKey(latestStorageEntry)
+                        GSI1_SK: createGSISortKey(publishedStorageEntry)
                     })
                 );
             }
-        }
+        } else {
+            // If the published revision is not the latest one, we still need to
+            // update the L and REV# records with the new values of entry-level meta fields.
+            // Plus, we also want to mark these as unpublished (if they were published).
+            const updatedEntryLevelMetaFields = pickEntryMetaFields(
+                entry,
+                isEntryLevelEntryMetaField
+            );
 
-        if (initialPublishedStorageEntry && initialPublishedStorageEntry.id !== entry.id) {
-            const publishedStorageEntry = convertToStorageEntry({
-                storageEntry: initialPublishedStorageEntry,
+            const latestStorageEntry = convertToStorageEntry({
+                storageEntry: initialLatestStorageEntry,
                 model
             });
+
+            let status = latestStorageEntry.status;
+            if (status === CONTENT_ENTRY_STATUS.PUBLISHED) {
+                status = CONTENT_ENTRY_STATUS.UNPUBLISHED;
+            }
+
+            // 2. Update latest record.
             items.push(
                 entity.putBatch({
-                    ...publishedStorageEntry,
+                    ...latestStorageEntry,
+                    ...updatedEntryLevelMetaFields,
+                    status,
                     PK: partitionKey,
-                    SK: createRevisionSortKey(publishedStorageEntry),
+                    SK: createLatestSortKey(),
+                    TYPE: createLatestType(),
+                    GSI1_PK: createGSIPartitionKey(model, "L"),
+                    GSI1_SK: createGSISortKey(latestStorageEntry)
+                })
+            );
+
+            items.push(
+                entity.putBatch({
+                    ...latestStorageEntry,
+                    ...updatedEntryLevelMetaFields,
+                    status,
+                    PK: partitionKey,
+                    SK: createRevisionSortKey(latestStorageEntry),
                     TYPE: createType(),
-                    status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
                     GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(publishedStorageEntry)
+                    GSI1_SK: createGSISortKey(latestStorageEntry)
                 })
             );
         }
