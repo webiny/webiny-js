@@ -27,7 +27,7 @@ export const DeleteEntry = () => {
     return (
         <OptionsMenuItem
             icon={<DeleteIcon />}
-            label={"Delete"}
+            label={"Delete entry"}
             onAction={() =>
                 showConfirmationDialog({
                     onAccept: navigateBacktoList
