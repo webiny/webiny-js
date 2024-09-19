@@ -283,10 +283,12 @@ export const createEntriesStorageOperations = (
             );
 
             // Unpublish previously published revision (if any).
-            const [publishedRevisionStorageEntry] = await dataLoaders.getPublishedRevisionByEntryId({
-                model,
-                ids: [entry.id]
-            });
+            const [publishedRevisionStorageEntry] = await dataLoaders.getPublishedRevisionByEntryId(
+                {
+                    model,
+                    ids: [entry.id]
+                }
+            );
 
             if (publishedRevisionStorageEntry) {
                 items.push(
@@ -1091,7 +1093,6 @@ export const createEntriesStorageOperations = (
                 GSI1_SK: createGSISortKey(entry)
             })
         ];
-
 
         // 2. When it comes to the latest record, we need to perform a couple of different
         // updates, based on whether the entry being published is the latest revision or not.
