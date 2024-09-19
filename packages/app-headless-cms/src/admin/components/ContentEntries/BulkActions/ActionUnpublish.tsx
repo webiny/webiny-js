@@ -29,10 +29,7 @@ export const ActionUnpublish = observer(() => {
             execute: async () => {
                 if (worker.isSelectedAll) {
                     await worker.processInBulk({
-                        action: "Unpublish",
-                        where: {
-                            status: "published"
-                        }
+                        action: "Unpublish"
                     });
                     worker.resetItems();
                     showSnackbar(

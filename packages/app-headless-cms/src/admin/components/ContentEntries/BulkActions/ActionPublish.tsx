@@ -29,10 +29,7 @@ export const ActionPublish = observer(() => {
             execute: async () => {
                 if (worker.isSelectedAll) {
                     await worker.processInBulk({
-                        action: "Publish",
-                        where: {
-                            status_not: "published"
-                        }
+                        action: "Publish"
                     });
                     worker.resetItems();
                     showSnackbar(

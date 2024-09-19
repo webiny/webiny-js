@@ -3,6 +3,7 @@ import {
     createDeleteEntry,
     createListDeletedEntries,
     createListLatestEntries,
+    createListNotPublishedEntries,
     createListPublishedEntries,
     createMoveEntryToFolder,
     createMoveEntryToTrash,
@@ -31,7 +32,7 @@ export const createBulkActionEntriesTasks = () => {
         }),
         createBulkAction({
             name: "publish",
-            dataLoader: createListLatestEntries,
+            dataLoader: createListNotPublishedEntries,
             dataProcessor: createPublishEntry
         }),
         createBulkAction({

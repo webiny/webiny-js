@@ -31,6 +31,6 @@ class ListNotPublishedEntries implements IListEntries {
     }
 }
 
-export const createListDraftUnpublishedEntries = (context: HcmsBulkActionsContext) => {
+export const createListNotPublishedEntries = (context: HcmsBulkActionsContext) => {
     return new ListNotPublishedEntries(context);
 };
