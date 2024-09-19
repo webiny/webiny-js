@@ -1026,7 +1026,7 @@ export const createEntriesStorageOperations = (
          * Although we do not need a cursor here, we will use it as such to keep it standardized.
          * Number is simply encoded.
          */
-        const cursor = totalCount > start + limit ? encodeCursor(`${start + limit}`) : null;
+        const cursor = encodeCursor(`${start + limit}`);
         return {
             hasMoreItems,
             totalCount,

@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { FieldSortOptions, SortType, SortOrder } from "~/types";
+import { FieldSortOptions, SortOrder, SortType } from "~/types";
 import { ElasticsearchFieldPlugin } from "~/plugins";
 
 const sortRegExp = new RegExp(/^([a-zA-Z-0-9_@]+)_(ASC|DESC)$/);
@@ -31,7 +31,7 @@ export const createSort = (params: CreateSortParams): SortType => {
     /**
      * Cast as string because nothing else should be allowed yet.
      */
-    return sort.reduce((acc, value) => {
+    const result = sort.reduce((acc, value) => {
         if (typeof value !== "string") {
             throw new WebinyError(`Sort as object is not supported..`);
         }
@@ -61,4 +61,13 @@ export const createSort = (params: CreateSortParams): SortType => {
 
         return acc;
     }, {} as Record<string, FieldSortOptions>);
+    /**
+     * If we do not have id in the sort, we add it as we need a tie_breaker for the Elasticsearch to be able to sort consistently.
+     */
+    if (!result["id.keyword"] && !result["id"]) {
+        result["id.keyword"] = {
+            order: "asc"
+        };
+    }
+    return result;
 };
