@@ -3,6 +3,7 @@ import {
     Context,
     ICmsImportExportObjectAbortExportParams,
     ICmsImportExportObjectGetExportParams,
+    ICmsImportExportObjectGetImportFromUrlParams,
     ICmsImportExportObjectGetValidateImportFromUrlParams,
     ICmsImportExportObjectGetValidateImportFromUrlResult,
     ICmsImportExportObjectImportFromUrlParams,
@@ -15,19 +16,20 @@ import {
     IListExportContentEntriesResult
 } from "~/types";
 import {
+    AbortExportContentEntriesUseCase,
     GetExportContentEntriesUseCase,
+    GetImportFromUrlUseCase,
     GetValidateImportFromUrlUseCase,
+    ImportFromUrlUseCase,
+    ListExportContentEntriesUseCase,
     ValidateImportFromUrlIntegrityUseCase,
     ValidateImportFromUrlUseCase
 } from "./useCases";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { ImportFromUrlUseCase } from "./useCases/importFromUrl/ImportFromUrlUseCase";
 import { ExportContentEntriesUseCase } from "~/crud/useCases/exportContentEntries";
-import { AbortExportContentEntriesUseCase } from "./useCases/abortExportContentEntries";
 import { UrlSigner } from "~/tasks/utils/urlSigner";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client";
-import { ListExportContentEntriesUseCase } from "./useCases/listExportContentEntries";
 
 export const createHeadlessCmsImportExportCrud = async (
     context: Context
@@ -61,6 +63,10 @@ export const createHeadlessCmsImportExportCrud = async (
         updateTask: context.tasks.updateTask,
         getTask: context.tasks.getTask,
         triggerTask: context.tasks.trigger
+    });
+
+    const getImportFromUrlUseCase = new GetImportFromUrlUseCase({
+        getTask: context.tasks.getTask
     });
 
     const exportContentEntriesUseCase = new ExportContentEntriesUseCase({
@@ -141,6 +147,16 @@ export const createHeadlessCmsImportExportCrud = async (
         return result;
     };
 
+    const getImportFromUrl = async (
+        params: ICmsImportExportObjectGetImportFromUrlParams
+    ): Promise<ICmsImportExportObjectImportFromUrlResult> => {
+        const result = await getImportFromUrlUseCase.execute(params);
+        if (!result) {
+            throw new NotFoundError(`Import from URL task with id "${params.id}" not found.`);
+        }
+        return result;
+    };
+
     return {
         getExportContentEntries,
         listExportContentEntries,
@@ -148,6 +164,7 @@ export const createHeadlessCmsImportExportCrud = async (
         abortExportContentEntries,
         validateImportFromUrl,
         getValidateImportFromUrl,
-        importFromUrl
+        importFromUrl,
+        getImportFromUrl
     };
 };

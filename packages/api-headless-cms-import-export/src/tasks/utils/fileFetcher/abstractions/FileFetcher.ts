@@ -1,4 +1,8 @@
-import { HeadObjectCommandOutput, GetObjectCommandOutput } from "@webiny/aws-sdk/client-s3";
+import type {
+    DeleteObjectCommandOutput,
+    GetObjectCommandOutput,
+    HeadObjectCommandOutput
+} from "@webiny/aws-sdk/client-s3";
 import { Readable } from "stream";
 
 export interface IFileFetcherFile {
@@ -36,6 +40,10 @@ export interface IFileFetcherReadCallable {
     (key: string): Promise<string | null>;
 }
 
+export interface IFileFetcherDeleteCallable {
+    (key: string): Promise<DeleteObjectCommandOutput>;
+}
+
 export interface IFileFetcher {
     exists: IFileFetcherExistsCallable;
     head: IFileFetcherHeadCallable;
@@ -43,4 +51,5 @@ export interface IFileFetcher {
     fetch: IFileFetcherFetchCallable;
     stream: IFileFetcherStreamCallable;
     read: IFileFetcherReadCallable;
+    delete: IFileFetcherDeleteCallable;
 }

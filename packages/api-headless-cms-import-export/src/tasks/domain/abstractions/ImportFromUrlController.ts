@@ -14,28 +14,31 @@ export enum IImportFromUrlControllerInputStep {
 
 export interface IImportFromUrlControllerInputSteps {
     [IImportFromUrlControllerInputStep.DOWNLOAD]?: {
-        triggered?: boolean;
-        finished?: boolean;
-        done?: string[];
-        failed?: string[];
-        invalid?: string[];
-        aborted?: string[];
+        files: string[];
+        triggered: boolean;
+        finished: boolean;
+        done: string[];
+        failed: string[];
+        invalid: string[];
+        aborted: string[];
     };
     [IImportFromUrlControllerInputStep.PROCESS_ENTRIES]?: {
-        triggered?: boolean;
-        finished?: boolean;
-        done?: string[];
-        failed?: string[];
-        invalid?: string[];
-        aborted?: string[];
+        files: string[];
+        triggered: boolean;
+        finished: boolean;
+        done: string[];
+        failed: string[];
+        invalid: string[];
+        aborted: string[];
     };
     [IImportFromUrlControllerInputStep.PROCESS_ASSETS]?: {
-        triggered?: boolean;
-        finished?: boolean;
-        done?: string[];
-        failed?: string[];
-        invalid?: string[];
-        aborted?: string[];
+        files: string[];
+        triggered: boolean;
+        finished: boolean;
+        done: string[];
+        failed: string[];
+        invalid: string[];
+        aborted: string[];
     };
 }
 
@@ -45,10 +48,14 @@ export interface IImportFromUrlControllerInput {
         ICmsImportExportValidatedContentEntriesFile | ICmsImportExportValidatedAssetsFile
     >;
     maxInsertErrors: number | undefined;
-    steps?: IImportFromUrlControllerInputSteps;
+    steps: IImportFromUrlControllerInputSteps;
 }
 
 export interface IImportFromUrlControllerOutput extends ITaskResponseDoneResultOutput {
+    /**
+     * Should contain all local files created by the import process.
+     */
+    files: string[];
     done: string[];
     invalid: string[];
     aborted: string[];

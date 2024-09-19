@@ -25,6 +25,10 @@ const getValidateImportFromUrl = zod.object({
     id: zod.string()
 });
 
+const getImportFromUrl = zod.object({
+    id: zod.string()
+});
+
 const importFromUrlValidation = zod.object({
     id: zod.string(),
     maxInsertErrors: zod.number().optional()
@@ -68,6 +72,17 @@ export const createResolvers = (models: NonEmptyArray<string>) => {
                     }
 
                     return await context.cmsImportExport.getValidateImportFromUrl(result.data);
+                });
+            },
+            async getImportFromUrl(_: unknown, input: unknown, context: Context) {
+                return resolve(async () => {
+                    const result = getImportFromUrl.safeParse(input);
+
+                    if (!result.success) {
+                        throw createZodError(result.error);
+                    }
+
+                    return await context.cmsImportExport.getImportFromUrl(result.data);
                 });
             }
         },

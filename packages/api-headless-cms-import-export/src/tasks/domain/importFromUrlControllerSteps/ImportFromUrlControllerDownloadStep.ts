@@ -1,5 +1,8 @@
 import { ImportFromUrlControllerStep } from "./abstractions/ImportFromUrlControllerStep";
-import { IImportFromUrlDownloadInput } from "~/tasks/domain/abstractions/ImportFromUrlDownload";
+import {
+    IImportFromUrlDownloadInput,
+    IImportFromUrlDownloadOutput
+} from "~/tasks/domain/abstractions/ImportFromUrlDownload";
 import { IMPORT_FROM_URL_DOWNLOAD_TASK } from "~/tasks/constants";
 import { getBackOffSeconds } from "~/tasks/utils/helpers/getBackOffSeconds";
 import { Context } from "~/types";
@@ -22,8 +25,8 @@ export class ImportFromUrlControllerDownloadStep<
 
         const task = store.getTask() as ITask<I, O>;
 
-        const step = input.steps?.[IImportFromUrlControllerInputStep.DOWNLOAD] || {};
-        if (!step.triggered) {
+        const step = input.steps[IImportFromUrlControllerInputStep.DOWNLOAD];
+        if (!step?.triggered) {
             for (const file of input.files) {
                 await trigger<IImportFromUrlDownloadInput>({
                     name: `Import From Url - Download`,
@@ -40,6 +43,7 @@ export class ImportFromUrlControllerDownloadStep<
                 steps: {
                     ...input.steps,
                     [IImportFromUrlControllerInputStep.DOWNLOAD]: {
+                        ...step,
                         triggered: true
                     }
                 }
@@ -49,7 +53,10 @@ export class ImportFromUrlControllerDownloadStep<
                 seconds: getBackOffSeconds(task.iterations)
             });
         } else if (step.finished !== true) {
-            const { failed, running, invalid, aborted, done, collection } = await getChildTasks({
+            const { failed, running, invalid, aborted, done, collection } = await getChildTasks<
+                IImportFromUrlDownloadInput,
+                IImportFromUrlDownloadOutput
+            >({
                 context,
                 task,
                 definition: IMPORT_FROM_URL_DOWNLOAD_TASK
@@ -69,12 +76,21 @@ export class ImportFromUrlControllerDownloadStep<
                 });
             }
 
+            const files = collection
+                .map(item => {
+                    return item.output?.file;
+                })
+                .filter((file): file is string => {
+                    return !!file;
+                });
+
             const output: I = {
                 ...input,
                 steps: {
                     ...input.steps,
                     [IImportFromUrlControllerInputStep.DOWNLOAD]: {
                         ...step,
+                        files,
                         failed,
                         invalid,
                         aborted,

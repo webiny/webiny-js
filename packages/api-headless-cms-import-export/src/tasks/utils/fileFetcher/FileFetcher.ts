@@ -1,4 +1,6 @@
 import {
+    DeleteObjectCommand,
+    DeleteObjectCommandOutput,
     GetObjectCommand,
     HeadObjectCommand,
     ListObjectsCommand,
@@ -126,5 +128,13 @@ export class FileFetcher implements IFileFetcher {
             console.error(ex);
             return null;
         }
+    }
+
+    public async delete(key: string): Promise<DeleteObjectCommandOutput> {
+        const cmd = new DeleteObjectCommand({
+            Key: key,
+            Bucket: this.bucket
+        });
+        return await this.client.send(cmd);
     }
 }

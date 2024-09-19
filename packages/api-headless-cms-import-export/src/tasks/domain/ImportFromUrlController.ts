@@ -10,6 +10,18 @@ import { ImportFromUrlControllerDownloadStep } from "~/tasks/domain/importFromUr
 import { ImportFromUrlControllerProcessEntriesStep } from "./importFromUrlControllerSteps/ImportFromUrlControllerProcessEntriesStep";
 import { ImportFromUrlControllerProcessAssetsStep } from "./importFromUrlControllerSteps/ImportFromUrlControllerProcessAssetsStep";
 
+const getDefaultStepValues = () => {
+    return {
+        files: [],
+        triggered: false,
+        finished: false,
+        done: [],
+        failed: [],
+        invalid: [],
+        aborted: []
+    };
+};
+
 export class ImportFromUrlController<
     C extends Context = Context,
     I extends IImportFromUrlControllerInput = IImportFromUrlControllerInput,
@@ -42,11 +54,12 @@ export class ImportFromUrlController<
 
         const steps = input.steps || {};
 
-        const downloadStep = steps[IImportFromUrlControllerInputStep.DOWNLOAD] || {};
+        const downloadStep =
+            steps[IImportFromUrlControllerInputStep.DOWNLOAD] || getDefaultStepValues();
         if (!downloadStep.done) {
             const step = new ImportFromUrlControllerDownloadStep<C, I, O>();
             return await step.execute(params);
-        } else if (downloadStep.failed?.length) {
+        } else if (downloadStep.failed.length) {
             return response.error({
                 message: `Failed to download files.`,
                 code: "FAILED_DOWNLOADING_FILES",
@@ -54,11 +67,12 @@ export class ImportFromUrlController<
             });
         }
 
-        const processEntriesStep = steps[IImportFromUrlControllerInputStep.PROCESS_ENTRIES] || {};
+        const processEntriesStep =
+            steps[IImportFromUrlControllerInputStep.PROCESS_ENTRIES] || getDefaultStepValues();
         if (!processEntriesStep.done) {
             const step = new ImportFromUrlControllerProcessEntriesStep<C, I, O>();
             return await step.execute(params);
-        } else if (processEntriesStep.failed?.length) {
+        } else if (processEntriesStep.failed.length) {
             return response.error({
                 message: `Failed to process entries.`,
                 code: "FAILED_PROCESSING_ENTRIES",
@@ -66,11 +80,12 @@ export class ImportFromUrlController<
             });
         }
 
-        const processAssetsStep = steps[IImportFromUrlControllerInputStep.PROCESS_ASSETS] || {};
+        const processAssetsStep =
+            steps[IImportFromUrlControllerInputStep.PROCESS_ASSETS] || getDefaultStepValues();
         if (!processAssetsStep.done) {
             const step = new ImportFromUrlControllerProcessAssetsStep<C, I, O>();
             return await step.execute(params);
-        } else if (processAssetsStep.failed?.length) {
+        } else if (processAssetsStep.failed.length) {
             return response.error({
                 message: `Failed to process assets.`,
                 code: "FAILED_PROCESSING_ASSETS",
@@ -78,7 +93,12 @@ export class ImportFromUrlController<
             });
         }
 
+        const files = downloadStep.files
+            .concat(processEntriesStep.files)
+            .concat(processAssetsStep.files);
+
         const output: IImportFromUrlControllerOutput = {
+            files,
             done: [],
             invalid: [],
             failed: [],

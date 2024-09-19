@@ -1,4 +1,4 @@
-import { ITask, TaskDataStatus } from "@webiny/tasks";
+import { ITask, ITaskResponseDoneResultOutput, TaskDataStatus } from "@webiny/tasks";
 import { Context } from "~/types";
 
 export interface IGetChildTasksParams {
@@ -7,22 +7,26 @@ export interface IGetChildTasksParams {
     definition: string;
 }
 
-export const getChildTasks = async ({ context, task, definition }: IGetChildTasksParams) => {
+export const getChildTasks = async <I, O extends ITaskResponseDoneResultOutput>({
+    context,
+    task,
+    definition
+}: IGetChildTasksParams) => {
     const running: string[] = [];
     const done: string[] = [];
     const invalid: string[] = [];
     const aborted: string[] = [];
     const failed: string[] = [];
-    const collection: string[] = [];
+    const collection: ITask<I, O>[] = [];
 
-    const { items: tasks } = await context.tasks.listTasks({
+    const { items } = await context.tasks.listTasks<I, O>({
         where: {
             parentId: task.id,
             definitionId: definition
         }
     });
-    for (const task of tasks) {
-        collection.push(task.id);
+    for (const task of items) {
+        collection.push(task);
         if (
             task.taskStatus === TaskDataStatus.RUNNING ||
             task.taskStatus === TaskDataStatus.PENDING

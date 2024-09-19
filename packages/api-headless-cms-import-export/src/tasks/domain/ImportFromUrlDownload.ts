@@ -12,11 +12,11 @@ import {
     createMultipartUploadFactory,
     IMultipartUploadFactoryContinueParams
 } from "~/tasks/utils/upload";
+import { prependImportPath } from "~/tasks/utils/helpers/importPath";
 import {
     createDownloadFileFromUrl,
     IDownloadFileFromUrlProcessResponseType
-} from "./downloadFileFromUrl/index";
-import { prependImportPath } from "~/tasks/utils/helpers/importPath";
+} from "./downloadFileFromUrl";
 
 type ProcessType = IDownloadFileFromUrlProcessResponseType<"continue" | "aborted">;
 

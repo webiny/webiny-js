@@ -23,8 +23,8 @@ export class ImportFromUrlControllerProcessAssetsStep<
 
         const task = store.getTask() as ITask<I, O>;
 
-        const step = input.steps?.[IImportFromUrlControllerInputStep.PROCESS_ASSETS] || {};
-        if (!step.triggered) {
+        const step = input.steps[IImportFromUrlControllerInputStep.PROCESS_ASSETS];
+        if (!step?.triggered) {
             const files = input.files.filter(file => {
                 return file.type === CmsImportExportFileType.ASSETS;
             });
@@ -34,6 +34,7 @@ export class ImportFromUrlControllerProcessAssetsStep<
                         message: "No assets files found.",
                         code: "NO_ASSETS_FILES"
                     },
+                    files: [],
                     aborted: [],
                     done: [],
                     failed: [],
@@ -41,19 +42,22 @@ export class ImportFromUrlControllerProcessAssetsStep<
                 };
                 return response.done(output as O);
             }
+            const inputFiles: string[] = [];
             for (const file of files) {
+                const key = prependImportPath(file.key);
                 await trigger<IImportFromUrlProcessAssetsInput>({
                     name: `Import From Url - Process assets`,
                     definition: IMPORT_FROM_URL_PROCESS_ASSETS_TASK,
                     input: {
                         file: {
-                            key: prependImportPath(file.key),
+                            key,
                             type: file.type
                         },
                         maxInsertErrors: input.maxInsertErrors,
                         modelId: input.modelId
                     }
                 });
+                inputFiles.push(key);
             }
 
             const output: I = {
@@ -61,7 +65,9 @@ export class ImportFromUrlControllerProcessAssetsStep<
                 steps: {
                     ...input.steps,
                     [IImportFromUrlControllerInputStep.PROCESS_ASSETS]: {
-                        triggered: true
+                        ...step,
+                        triggered: true,
+                        files: inputFiles
                     }
                 }
             };

@@ -99,8 +99,8 @@ export interface ICmsImportExportObjectImportFromUrlParams {
     maxInsertErrors?: number;
 }
 
-export interface ICmsImportExportProcessedFile extends ICmsImportExportValidatedValidFile {
-    status: string;
+export interface ICmsImportExportObjectGetImportFromUrlParams {
+    id: string;
 }
 
 export interface ICmsImportExportObjectImportFromUrlResult {
@@ -144,6 +144,9 @@ export interface CmsImportExportObject {
     ): Promise<ICmsImportExportObjectGetValidateImportFromUrlResult>;
     importFromUrl(
         params: ICmsImportExportObjectImportFromUrlParams
+    ): Promise<ICmsImportExportObjectImportFromUrlResult>;
+    getImportFromUrl(
+        params: ICmsImportExportObjectGetImportFromUrlParams
     ): Promise<ICmsImportExportObjectImportFromUrlResult>;
 }
 

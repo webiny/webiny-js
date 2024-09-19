@@ -28,6 +28,15 @@ export const createImportFromUrlControllerTask = () => {
             } catch (ex) {
                 return params.response.error(ex);
             }
+        },
+        async onDone({ task }) {
+            const { createDeleteFiles } = await import(
+                /* webpackChunkName: "DeleteFiles" */ "./utils/deleteFiles/DeleteFiles"
+            );
+
+            const deleteFiles = createDeleteFiles();
+
+            await deleteFiles.execute(task.output?.files);
         }
     });
 };

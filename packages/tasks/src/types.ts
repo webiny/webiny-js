@@ -342,14 +342,22 @@ export interface ITaskRunParams<
     ): Promise<ITask<SI>>;
 }
 
-export interface ITaskOnSuccessParams<C extends Context, I = ITaskDataInput> {
+export interface ITaskOnSuccessParams<
+    C extends Context,
+    I = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
     context: C;
-    task: ITask<I>;
+    task: ITask<I, O>;
 }
 
-export interface ITaskOnErrorParams<C extends Context, I = ITaskDataInput> {
+export interface ITaskOnErrorParams<
+    C extends Context,
+    I = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
     context: C;
-    task: ITask<I>;
+    task: ITask<I, O>;
 }
 
 export interface ITaskOnAbortParams<
@@ -435,7 +443,7 @@ export interface ITaskDefinition<
      * When task successfully finishes, this method will be called.
      * This will be called during the run time of the task.
      */
-    onDone?(params: ITaskOnSuccessParams<C, I>): Promise<void>;
+    onDone?(params: ITaskOnSuccessParams<C, I, O>): Promise<void>;
     /**
      * When task fails, this method will be called.
      * This will be called during the run time of the task.
