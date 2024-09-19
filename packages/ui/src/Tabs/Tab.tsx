@@ -1,11 +1,27 @@
 import React, { useContext, useEffect, useRef } from "react";
-import { TabProps as RmwcTabProps } from "@rmwc/tabs";
 import shortid from "shortid";
 import { TabsContext } from "./Tabs";
 
-export type TabProps = RmwcTabProps & {
+export type TabProps = {
+    /**
+     * A label for the tab.
+     */
+    label?: any;
+    /**
+     * The label for the tab, passed as children.
+     */
+    children?: React.ReactNode;
+    /**
+     * The icon to use for the tab.
+     */
+    icon?: React.ReactNode;
+    /**
+     * Is tab visible?
+     */
     visible?: boolean;
-
+    /**
+     * @deprecated
+     */
     tag?: string;
     /**
      * Is tab disabled?
@@ -21,6 +37,10 @@ export type TabProps = RmwcTabProps & {
     "data-testid"?: string;
 };
 
+/**
+ * @deprecated This component is deprecated and will be removed in future releases.
+ * Please find out the new `Tabs` component props from the `@webiny/admin-ui` package instead.
+ */
 export const Tab = React.memo((props: TabProps) => {
     const tabsContext = useContext(TabsContext);
     const idRef = useRef(shortid.generate());

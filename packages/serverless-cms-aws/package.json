@@ -15,6 +15,7 @@
   "dependencies": {
     "@pulumi/aws": "^6.48.0",
     "@pulumi/pulumi": "^3.128.0",
+    "@webiny/admin-ui": "0.0.0",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-apw": "0.0.0",
     "@webiny/api-apw-scheduler-so-ddb": "0.0.0",
@@ -62,6 +63,7 @@
     "invariant": "^2.2.4",
     "node-fetch": "^2.6.13",
     "ora": "^4.1.1",
+    "tailwindcss": "^3.4.6",
     "webpack": "^5.91.0"
   },
   "devDependencies": {
@@ -91,7 +93,8 @@
       ],
       "dependencies": [
         "@pulumi/pulumi",
-        "@pulumi/aws"
+        "@pulumi/aws",
+        "@webiny/admin-ui"
       ]
     }
   }

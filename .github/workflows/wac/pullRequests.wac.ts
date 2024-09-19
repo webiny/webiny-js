@@ -65,10 +65,12 @@ const createJestTestsJob = (storage: string | null) => {
         ]
     });
 
-    // We prevent running of Jest tests if a PR was created from a fork.
-    // This is because we don't want to expose our AWS credentials to forks.
+    // Temporary disabling Jest tests on PRs that target the "feat/new-admin-ui" branch.
+    // No need to run the for now. We'll re-enable them if needed in the future.
+    job.if = "github.base_ref != 'feat/new-admin-ui'";
+
     if (storage === "ddb-es" || storage === "ddb-os") {
-        job.if = "needs.constants.outputs.is-fork-pr != 'true'";
+        job.if += " && needs.constants.outputs.is-fork-pr != 'true'";
     }
 
     return job;

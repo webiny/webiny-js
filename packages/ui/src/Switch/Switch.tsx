@@ -1,36 +1,60 @@
 import React from "react";
-import { Switch as RmwcSwitch, SwitchProps } from "@rmwc/switch";
+import { Switch as SwitchBase } from "@webiny/admin-ui";
 import { FormComponentProps } from "~/types";
-import pick from "lodash/pick";
 import { FormElementMessage } from "~/FormElementMessage";
-import { getClasses } from "~/Helpers";
 
-type Props = Omit<SwitchProps, "value"> &
-    FormComponentProps<boolean> & {
-        // Description beneath the switch.
-        description?: string;
+type Props = {
+    /** Unique identifier for the control. */
+    id?: string;
 
-        // Optional class name.
-        className?: string;
-    };
+    /** Disables the control when set to true. */
+    disabled?: boolean;
+
+    /** Sets the control to checked (on) or unchecked (off). */
+    checked?: boolean;
+
+    /** A label displayed alongside the control. Can be any React node. */
+    label?: React.ReactNode;
+
+    /** Additional description displayed beneath the control. */
+    description?: string;
+
+    /** Additional CSS classes to apply to the control. */
+    className?: string;
+} & FormComponentProps<boolean>;
 
 /**
- * Switch component can be used to store simple boolean values.
+ * @deprecated This component is deprecated and will be removed in future releases.
+ * Please use the `Switch` component from the `@webiny/admin-ui` package instead.
  */
 class Switch extends React.Component<Props> {
     static rmwcProps = ["id", "disabled", "checked", "label", "rootProps", "className"];
 
     public override render() {
-        const { value, description, validation } = this.props;
+        const {
+            checked,
+            className,
+            description,
+            disabled,
+            id,
+            label,
+            onChange,
+            validation,
+            value
+        } = this.props;
 
         const { isValid: validationIsValid, message: validationMessage } = validation || {};
 
         return (
             <React.Fragment>
-                <RmwcSwitch
-                    {...getClasses({ ...pick(this.props, Switch.rmwcProps) }, "webiny-ui-switch")}
+                <SwitchBase
                     checked={Boolean(value)}
-                    onClick={() => this.props.onChange && this.props.onChange(!value)}
+                    className={className}
+                    defaultChecked={Boolean(checked)}
+                    disabled={disabled}
+                    id={id}
+                    label={label}
+                    onCheckedChange={(checked: boolean) => onChange && onChange(checked)}
                 />
 
                 {validationIsValid === false && (

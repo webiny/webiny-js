@@ -1,7 +1,8 @@
-import React, { createContext, PropsWithChildren, useMemo, useState } from "react";
-import classNames from "classnames";
-import { TabBar, Tab as RmwcTab } from "@rmwc/tabs";
+import React, { createContext, PropsWithChildren, useCallback, useMemo, useState } from "react";
+import { Tabs as TabsBase, TabsTrigger, TabsContent } from "@webiny/admin-ui";
 import { TabProps } from "./Tab";
+
+const VALUE_PREFIX = "tab-";
 
 export type TabsProps = PropsWithChildren<{
     /**
@@ -25,11 +26,6 @@ export type TabsProps = PropsWithChildren<{
     "data-testid"?: string;
 }>;
 
-const disabledStyles: Record<string, string | number> = {
-    opacity: 0.5,
-    pointerEvents: "none"
-};
-
 interface TabItem extends TabProps {
     id: string;
 }
@@ -42,60 +38,54 @@ interface TabsContext {
 export const TabsContext = createContext<TabsContext | undefined>(undefined);
 
 /**
- * Use Tabs component to display a list of choices, once the handler is triggered.
+ * @deprecated This component is deprecated and will be removed in future releases.
+ * Please use the `Tabs` component from the `@webiny/admin-ui` package instead.
  */
-export const Tabs = (props: TabsProps) => {
+export const Tabs = ({ value, onActivate, ...props }: TabsProps) => {
     const [activeTabIndex, setActiveIndex] = useState(0);
     const [tabs, setTabs] = useState<TabItem[]>([]);
 
-    const activeIndex = props.value !== undefined ? props.value : activeTabIndex;
+    const activeIndex = value !== undefined ? value : activeTabIndex;
 
-    /* We need to generate a key like this to trigger a proper component re-render when child tabs change. */
-    const tabBar = (
-        <TabBar
-            key={tabs.map(tab => tab.id).join(";")}
-            className="webiny-ui-tabs__tab-bar"
-            activeTabIndex={activeIndex}
-            onActivate={evt => {
-                setActiveIndex(evt.detail.index);
-                props.onActivate && props.onActivate(evt.detail.index);
-            }}
-        >
-            {tabs.map(item => {
-                if (!item.visible) {
-                    return <RmwcTab tag={"div"} style={{ display: "none" }} key={item.id} />;
-                }
+    const onValueChange = useCallback(
+        (value: string) => {
+            const parts = value.split(VALUE_PREFIX);
+            const index = parseInt(parts[1]);
 
-                const style = item.style || {};
-                if (item.disabled) {
-                    Object.assign(style, disabledStyles);
-                }
+            if (isNaN(index)) {
+                return;
+            }
 
-                return (
-                    <RmwcTab
-                        tag={"div"}
-                        style={style}
-                        key={item.id}
-                        data-testid={item["data-testid"]}
-                        {...(item.icon ? { icon: item.icon } : {})}
-                    >
-                        {item.label}
-                    </RmwcTab>
-                );
-            })}
-        </TabBar>
+            setActiveIndex(index);
+            onActivate && onActivate(index);
+        },
+        [onActivate]
     );
 
-    const content = tabs.filter(Boolean).map((tab, index) => {
-        if (activeIndex === index) {
-            return <div key={index}>{tab.children}</div>;
-        } else {
+    /* We need to generate a key like this to trigger a proper component re-render when child tabs change. */
+    const triggers = tabs
+        .filter(item => item.visible)
+        .map((item, index) => {
             return (
-                <div key={index} style={{ display: "none" }}>
-                    {tab.children}
-                </div>
+                <TabsTrigger
+                    key={`${VALUE_PREFIX}${index}`}
+                    data-testid={item["data-testid"]}
+                    value={`${VALUE_PREFIX}${index}`}
+                    disabled={item.disabled}
+                    text={item.label}
+                    icon={item.icon}
+                />
             );
-        }
+        });
+
+    const contents = tabs.filter(Boolean).map((tab, index) => {
+        return (
+            <TabsContent
+                key={`${VALUE_PREFIX}${index}`}
+                value={`${VALUE_PREFIX}${index}`}
+                text={tab.children}
+            />
+        );
     });
 
     const context: TabsContext = useMemo(
@@ -121,11 +111,16 @@ export const Tabs = (props: TabsProps) => {
     );
 
     return (
-        <div className={classNames("webiny-ui-tabs", props.className)}>
-            {tabBar}
-            <div className={"webiny-ui-tabs__content mdc-tab-content"}>{content}</div>
+        <>
+            <TabsBase
+                {...props}
+                defaultValue={`${VALUE_PREFIX}${activeIndex}`}
+                onValueChange={onValueChange}
+                triggers={triggers}
+                contents={contents}
+            />
             <TabsContext.Provider value={context}>{props.children}</TabsContext.Provider>
-        </div>
+        </>
     );
 };
 

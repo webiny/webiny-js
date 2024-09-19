@@ -1,16 +1,88 @@
-// Webiny theme variables
-// $webiny-theme-light-primary: #fa5723;
-// $webiny-theme-light-secondary: #00ccb0;
-// $webiny-theme-light-background: #f2f2f2;
-// $webiny-theme-light-surface: #fff;
-// $webiny-theme-light-on-primary: #ffffff;
-// $webiny-theme-light-on-secondary: #ffffff;
-// $webiny-theme-light-on-surface: #000000;
-// $webiny-theme-light-on-background: rgba(212, 212, 212, 0.5);
-// $webiny-theme-light-text-primary-on-background: rgba(0, 0, 0, 0.87);
-// $webiny-theme-light-text-secondary-on-background: rgba(0, 0, 0, 0.54);
-// $webiny-theme-light-text-hint-on-dark: rgba(255, 255, 255, 0.5);
-// $webiny-theme-typography-font-family: "Source Sans Pro";
-
-// Import main styles
+// OLD
 @import "~@webiny/app-serverless-cms/styles.scss";
+
+// NEW
+@import "~@webiny/admin-ui/styles.scss";
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+
+    --primary: 14.5 95.6% 55.9%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 215 20.2% 65.1%;
+
+    --radius: 8px;
+
+    --font-sans: "Inter", "Source Sans Pro", "Open Sans", sans-serif;
+  }
+
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 1.2%;
+
+    --secondary: 222.2 47.4% 11.2%;
+    --secondary-foreground: 210 40% 98%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 216 34% 17%;
+
+    --radius: 8px;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
