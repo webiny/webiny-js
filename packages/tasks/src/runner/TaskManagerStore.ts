@@ -43,6 +43,13 @@ export interface TaskManagerStoreContext {
     tasks: Pick<ITasksContextObject, "updateTask" | "updateLog">;
 }
 
+export interface ITaskManagerStoreParams {
+    context: TaskManagerStoreContext;
+    task: ITask;
+    log: ITaskLog;
+    disableDatabaseLogs?: boolean;
+}
+
 export class TaskManagerStore<
     T extends ITaskDataInput = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
@@ -51,14 +58,16 @@ export class TaskManagerStore<
     private readonly context: TaskManagerStoreContext;
     private task: ITask<T, O>;
     private taskLog: ITaskLog;
+    private readonly disableDatabaseLogs: boolean;
 
     private readonly taskUpdater = new ObjectUpdater<ITask<T, O>>();
     private readonly taskLogUpdater = new ObjectUpdater<ITaskLog>();
 
-    public constructor(context: TaskManagerStoreContext, task: ITask, log: ITaskLog) {
-        this.context = context;
-        this.task = task as ITask<T, O>;
-        this.taskLog = log;
+    public constructor(params: ITaskManagerStoreParams) {
+        this.context = params.context;
+        this.task = params.task as ITask<T, O>;
+        this.taskLog = params.log;
+        this.disableDatabaseLogs = !!params.disableDatabaseLogs;
     }
 
     public getStatus(): TaskDataStatus {
@@ -139,6 +148,9 @@ export class TaskManagerStore<
         log: ITaskManagerStoreInfoLog,
         options?: ITaskManagerStoreAddLogOptions
     ): Promise<void> {
+        if (this.disableDatabaseLogs) {
+            return;
+        }
         this.taskLogUpdater.update({
             items: [
                 {
@@ -163,6 +175,9 @@ export class TaskManagerStore<
         log: ITaskManagerStoreErrorLog,
         options?: ITaskManagerStoreAddLogOptions
     ): Promise<void> {
+        if (this.disableDatabaseLogs) {
+            return;
+        }
         /**
          * Let's log the error to the console as well.
          */
@@ -195,6 +210,9 @@ export class TaskManagerStore<
                 this.task.id,
                 this.taskUpdater.fetch()
             );
+        }
+        if (this.disableDatabaseLogs) {
+            return;
         }
         if (this.taskLogUpdater.isDirty()) {
             this.taskLog = await this.context.tasks.updateLog(

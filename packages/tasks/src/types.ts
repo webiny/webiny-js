@@ -394,6 +394,10 @@ export interface ITaskDefinition<
      */
     maxIterations: number;
     /**
+     * Disable storing logs in database for this task.
+     */
+    disableDatabaseLogs?: boolean;
+    /**
      * Task run method.
      */
     run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult>;
