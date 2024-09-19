@@ -33,7 +33,7 @@ const t = i18n.ns("app-headless-cms/admin/plugins/content-details/content-revisi
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
 
 const revisionsMenu = css({
-    width: 250,
+    width: 300,
     right: -105,
     left: "auto !important"
 });
@@ -110,7 +110,7 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                             <ListItemGraphic>
                                 <Icon icon={<AddIcon />} />
                             </ListItemGraphic>
-                            {t`New from current`}
+                            {t`New revision from current`}
                         </MenuItem>
                     )}
 
@@ -124,7 +124,7 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                             <ListItemGraphic>
                                 <Icon icon={<EditIcon />} />
                             </ListItemGraphic>
-                            {t`Edit`}
+                            {t`Edit revision`}
                         </MenuItem>
                     )}
 
@@ -142,7 +142,7 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                             <ListItemGraphic>
                                 <Icon icon={<UnpublishIcon />} />
                             </ListItemGraphic>
-                            {t`Unpublish`}
+                            {t`Unpublish revision`}
                         </MenuItem>
                     )}
 
@@ -153,7 +153,7 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                                 <ListItemGraphic>
                                     <Icon icon={<DeleteIcon />} />
                                 </ListItemGraphic>
-                                {t` Delete`}
+                                {t` Delete revision`}
                             </MenuItem>
                         </div>
                     )}

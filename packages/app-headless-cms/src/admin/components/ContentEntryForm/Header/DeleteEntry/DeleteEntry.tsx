@@ -27,7 +27,7 @@ export const DeleteEntry = () => {
     return (
         <OptionsMenuItem
             icon={<DeleteIcon />}
-            label={"Trash"}
+            label={"Trash entry"}
             onAction={deleteEntry}
             disabled={!entry.id || loading}
             data-testid={"cms.content-form.header.delete"}
