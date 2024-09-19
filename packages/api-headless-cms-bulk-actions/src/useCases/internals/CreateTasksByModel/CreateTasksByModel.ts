@@ -36,8 +36,6 @@ export class CreateTasksByModel {
                     await this.taskCache.triggerTask(context, store.getTask());
                     return response.continue({
                         ...input,
-                        ...listEntriesParams,
-                        after: null,
                         action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                     });
                 }
@@ -61,9 +59,6 @@ export class CreateTasksByModel {
                     await this.taskCache.triggerTask(context, store.getTask());
                     return response.continue({
                         ...input,
-                        ...listEntriesParams,
-                        totalCount: meta.totalCount,
-                        after: null,
                         action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                     });
                 }
@@ -90,8 +85,6 @@ export class CreateTasksByModel {
 
                     return response.continue({
                         ...input,
-                        totalCount: meta.totalCount,
-                        after: null,
                         action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                     });
                 }
