@@ -87,7 +87,9 @@ export class SharpTransform implements AssetTransformationStrategy {
                  */
                 console.log(`Resize the asset (width: ${width})`);
                 const buffer = await optimizedImage.getContents();
-                const transformedBuffer = await sharp(buffer, { animated: this.isAssetAnimated(asset) })
+                const transformedBuffer = await sharp(buffer, {
+                    animated: this.isAssetAnimated(asset)
+                })
                     .withMetadata()
                     .resize({ width, withoutEnlargement: true })
                     .toBuffer();
