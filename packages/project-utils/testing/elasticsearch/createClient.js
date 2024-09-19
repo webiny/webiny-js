@@ -149,7 +149,7 @@ const attachCustomEvents = client => {
         for (const index of indexes) {
             try {
                 await deleteIndexCallable(index);
-            } catch (ex) {
+            } catch {
                 logger.warn(`Could not delete index "${index}".`);
             }
         }

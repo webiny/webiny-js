@@ -1,6 +1,5 @@
 import { useState } from "react";
-import * as History from "history";
-import { useRouter } from "@webiny/react-router";
+import { useRouter, UseHistory, UseLocation } from "@webiny/react-router";
 
 export type UseMultiSelectParams = {
     useRouter?: boolean;
@@ -20,8 +19,8 @@ export type MultiListProps = {
 
 const useMultiSelect = (params: UseMultiSelectParams) => {
     const [multiSelectedItems, multiSelect] = useState<string[]>([]);
-    let history = null;
-    let location: History.Location | null = null;
+    let history: UseHistory | undefined = undefined;
+    let location: UseLocation | undefined = undefined;
     const routerHook = useRouter();
     const {
         getValue = (): string => {
@@ -67,6 +66,9 @@ const useMultiSelect = (params: UseMultiSelectParams) => {
         select(item) {
             const query = new URLSearchParams(location ? location.search : "");
             query.set("id", item.id);
+            if (!history) {
+                return;
+            }
             history.push({ search: query.toString() });
         },
         isMultiSelected(item) {

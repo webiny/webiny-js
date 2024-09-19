@@ -81,7 +81,7 @@ export class MockDataCreator<
                             });
                         }
                     });
-                } catch (ex) {
+                } catch {
                     return response.continue(
                         {
                             ...input,

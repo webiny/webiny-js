@@ -9,7 +9,7 @@ module.exports = packages.reduce((aliases, dir) => {
         if (fs.existsSync(path.join(dir, "dist"))) {
             aliases[`${json.name}`] = `${json.name}/dist`;
         }
-    } catch (err) {
+    } catch {
         // No package.json, continue.
     }
     return aliases;

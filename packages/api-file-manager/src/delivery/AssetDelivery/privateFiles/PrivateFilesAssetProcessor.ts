@@ -47,7 +47,7 @@ export class PrivateFilesAssetProcessor implements AssetProcessor {
 
         try {
             await this.assetAuthorizer.authorize(file);
-        } catch (error) {
+        } catch {
             asset.setOutputStrategy(new NotAuthorizedOutputStrategy());
 
             return asset;

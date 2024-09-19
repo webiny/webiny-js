@@ -18,5 +18,8 @@ export const createSubscriptionHooks = (context: AuditLogsContext) => {
     createI18NHooks(context);
     createMailerHooks(context);
     createAcoHooks(context);
-    context.wcp.canUseFeature("advancedPublishingWorkflow") && createApwHooks(context);
+    if (!context.wcp.canUseFeature("advancedPublishingWorkflow")) {
+        return;
+    }
+    createApwHooks(context);
 };

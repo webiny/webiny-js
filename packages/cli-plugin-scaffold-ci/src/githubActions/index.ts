@@ -77,7 +77,7 @@ const plugin: CliPluginsScaffoldCi<GithubActionsInput> = {
 
                     try {
                         user = await octokit.rest.users.getAuthenticated().then(({ data }) => data);
-                    } catch (e) {
+                    } catch {
                         return "Invalid GitHub personal access token provided.";
                     }
 

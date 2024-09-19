@@ -64,6 +64,8 @@ export type { RoutesProps } from "./Routes";
 export { useHistory } from "./useHistory";
 export type { UseHistory } from "./useHistory";
 
+export type UseLocation = ReturnType<typeof useLocation>;
+
 export { usePrompt } from "./usePrompt";
 
 export type UseRouter = RouteProps &

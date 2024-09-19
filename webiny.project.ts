@@ -39,7 +39,7 @@ export default {
                         }
                     })
                     .filter(Boolean);
-            } catch (e) {
+            } catch {
                 // If the whole promise fails, act as if there are no plugins.
                 return [];
             }

@@ -44,7 +44,7 @@ const verifyConfig = require("./utils/verifyConfig");
             );
             process.exit(1);
         }
-    } catch (err) {
+    } catch {
         console.error(chalk.red(`Webiny depends on "npm".`));
 
         console.log(
@@ -72,7 +72,7 @@ const verifyConfig = require("./utils/verifyConfig");
             );
             process.exit(1);
         }
-    } catch (err) {
+    } catch {
         console.error(
             chalk.red(`Webiny depends on "yarn" and its built-in support for workspaces.`)
         );

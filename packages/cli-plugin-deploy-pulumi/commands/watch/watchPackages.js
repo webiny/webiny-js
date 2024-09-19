@@ -8,7 +8,7 @@ const { WebinyConfigFile } = require("./WebinyConfigFile");
 const parseMessage = message => {
     try {
         return JSON.parse(message);
-    } catch (e) {
+    } catch {
         return {
             type: "error",
             message: `Could not parse received watch result (JSON): ${message}`

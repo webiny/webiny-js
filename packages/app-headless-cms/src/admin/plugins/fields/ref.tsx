@@ -42,7 +42,7 @@ const RefFieldSettings = () => {
     const atLeastOneItem = useCallback(async (value: Pick<CmsModel, "modelId">) => {
         try {
             await validation.validate(value, "required,minLength:1");
-        } catch (err) {
+        } catch {
             throw new ValidationError(`Please select at least 1 item`);
         }
     }, []);

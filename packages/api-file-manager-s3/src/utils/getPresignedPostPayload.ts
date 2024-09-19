@@ -10,7 +10,7 @@ const sanitizeFileSizeValue = (value: number, defaultValue: number): number => {
     try {
         validation.validateSync(value, "required,numeric,gte:0");
         return value;
-    } catch (e) {
+    } catch {
         // TODO @ts-refactor No need to log the error?
         return defaultValue;
     }

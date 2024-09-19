@@ -5,7 +5,7 @@ declare const global: typeof globalThis & {
     /**
      * We will leave the Function for now.
      */
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line
     handler: Function;
 };
 

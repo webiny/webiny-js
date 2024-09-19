@@ -24,7 +24,7 @@ module.exports = createPulumiCommand({
                     }
                 }
             });
-        } catch (e) {
+        } catch {
             stackExists = false;
         }
 

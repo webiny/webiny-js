@@ -14,7 +14,7 @@ export default () => [
     {
         type: "cli-command",
         name: "cli-command-link-extensions",
-        // @ts-ignore This plugin doesn't have a type
+        // @ts-expect-error This plugin doesn't have a type
         create({ yargs }) {
             yargs.command(["link-extensions"], `Link all project extensions.`, async () => {
                 await import(__dirname + "/utils/linkAllExtensions.js").then(m =>

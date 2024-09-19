@@ -22,7 +22,7 @@ const getOutputJson = ({ folder, env, cwd, variant }) => {
         // Let's get the output after the first line break. Everything before is just yarn stuff.
         const extractedJSON = stdout.substring(stdout.indexOf("{"));
         return (cache[folder + env] = JSON.parse(extractedJSON));
-    } catch (e) {
+    } catch {
         return null;
     }
 };

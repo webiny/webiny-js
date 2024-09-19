@@ -28,8 +28,6 @@ const createTermsOfServiceComponent = ({
     formData,
     setTermsOfServiceAccepted
 }: CreateTermsOfServiceComponentArgs): TermsOfServiceComponent =>
-    // TODO @ts-refactor figure out how to type this
-    // @ts-expect-error
     function TermsOfService(props: TermsOfServiceProps) {
         if (!termsOfServiceEnabled(formData)) {
             return null;

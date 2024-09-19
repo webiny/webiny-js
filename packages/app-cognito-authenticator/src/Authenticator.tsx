@@ -109,7 +109,7 @@ export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
                 await onChangeState("signedIn");
                 setState({ checkingUser: false });
             }
-        } catch (e) {
+        } catch {
             setState({ checkingUser: false });
         }
     };

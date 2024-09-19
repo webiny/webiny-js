@@ -29,7 +29,7 @@ export const decompress = async (pageBlock: PageBlock) => {
             ...pageBlock,
             content: JSON.parse(value)
         };
-    } catch (ex) {
+    } catch {
         return { ...pageBlock, content: null };
     }
 };

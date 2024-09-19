@@ -26,7 +26,7 @@ const currentNodeVersion = process.versions.node;
             console.error(chalk.red(`"@webiny/cli" requires yarn 3 or 4!`));
             process.exit(1);
         }
-    } catch (err) {
+    } catch {
         console.error(chalk.red(`"@webiny/cli" requires yarn 3 or 4!`));
         console.log(
             `Run ${chalk.blue("yarn set version berry")} to install a compatible version of yarn.`

@@ -12,7 +12,7 @@ module.exports = async () => {
         if (!config.id) {
             throw Error("Invalid Webiny config!");
         }
-    } catch (e) {
+    } catch {
         const { v4: uuidv4 } = require("uuid");
         // A new config file is written if it doesn't exist or is invalid.
         writeJson.sync(configPath, { id: uuidv4(), telemetry: true });

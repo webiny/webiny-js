@@ -138,7 +138,7 @@ const FormRender = (props: FbFormRenderComponentProps) => {
                         try {
                             const result = await validatorPlugin.validator.validate(value, item);
                             isInvalid = result === false;
-                        } catch (e) {
+                        } catch {
                             isInvalid = true;
                         }
 

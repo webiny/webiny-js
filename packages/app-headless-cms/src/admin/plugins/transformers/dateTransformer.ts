@@ -72,7 +72,7 @@ const dateTimeWithTimezone: TransformerCallable<string> = value => {
     try {
         const dateObj = new Date(initialDate);
         date = dateObj.toISOString().slice(0, 10);
-    } catch (ex) {
+    } catch {
         throw new WebinyError(
             "Could not transform received date into Date object.",
             "DATE_TRANSFORM_ERROR",

@@ -35,7 +35,7 @@ module.exports.getPulumiVersions = async () => {
                 pulumiAws = match[1];
             }
         }
-    } catch (err) {
+    } catch {
         return "";
     }
 

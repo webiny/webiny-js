@@ -16,7 +16,7 @@ module.exports = function (filename = "cli.json") {
     if (fs.existsSync(dataFilePath)) {
         try {
             data = JSON.parse(fs.readFileSync(dataFilePath));
-        } catch (e) {
+        } catch {
             throw new Error(
                 `Could not parse Webiny CLI's locale storage data file located at ${dataFilePath}.`
             );
