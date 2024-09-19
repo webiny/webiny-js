@@ -3,6 +3,7 @@ import {
     CmsEntry,
     CmsModel,
     CmsStorageEntry,
+    CmsStorageEntry,
     CONTENT_ENTRY_STATUS,
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types";
@@ -942,7 +943,7 @@ export const createEntriesStorageOperations = (
         } catch (ex) {
             throw new WebinyError(
                 ex.message ||
-                    "Could not mark as deleted entry records from DynamoDB Elasticsearch table.",
+                "Could not mark as deleted entry records from DynamoDB Elasticsearch table.",
                 ex.code || "MOVE_ENTRY_TO_BIN_ERROR",
                 {
                     error: ex,
@@ -1289,7 +1290,11 @@ export const createEntriesStorageOperations = (
             items.push(
                 entity.putBatch({
                     ...latestStorageEntry,
-                    PK: partitionKey,
+                    PK: createPartitionKey({
+                        id: initialLatestStorageEntry.id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
                     SK: createRevisionSortKey(initialLatestStorageEntry),
                     TYPE: createRecordType()
                 })
@@ -1330,7 +1335,7 @@ export const createEntriesStorageOperations = (
                     error: ex,
                     entry,
                     latestEntry,
-                    latestStorageEntry: initialLatestStorageEntry
+                    initialLatestStorageEntry
                 }
             );
         }
@@ -1347,13 +1352,13 @@ export const createEntriesStorageOperations = (
         } catch (ex) {
             throw new WebinyError(
                 ex.message ||
-                    "Could not batch write entry records to DynamoDB Elasticsearch table.",
+                "Could not batch write entry records to DynamoDB Elasticsearch table.",
                 ex.code || "DELETE_REVISION_ERROR",
                 {
                     error: ex,
                     entry,
                     latestEntry,
-                    latestStorageEntry: initialLatestStorageEntry
+                    initialLatestStorageEntry
                 }
             );
         }
@@ -1827,7 +1832,7 @@ export const createEntriesStorageOperations = (
         } catch (ex) {
             throw new WebinyError(
                 ex.message ||
-                    "Could not store publish entry records in DynamoDB Elasticsearch table.",
+                "Could not store publish entry records in DynamoDB Elasticsearch table.",
                 ex.code || "PUBLISH_ES_ERROR",
                 {
                     error: ex,
@@ -1945,7 +1950,7 @@ export const createEntriesStorageOperations = (
         } catch (ex) {
             throw new WebinyError(
                 ex.message ||
-                    "Could not store unpublished entry records in DynamoDB Elasticsearch table.",
+                "Could not store unpublished entry records in DynamoDB Elasticsearch table.",
                 ex.code || "UNPUBLISH_ERROR",
                 {
                     entry,
