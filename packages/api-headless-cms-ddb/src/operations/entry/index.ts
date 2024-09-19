@@ -283,8 +283,13 @@ export const createEntriesStorageOperations = (
             );
 
             // Unpublish previously published revision (if any).
-            const publishedRevisionStorageEntry = await getPublishedRevisionByEntryId(model, entry);
-            if (publishedRevisionStorageEntry) {
+            const publishedRevisionEntry = await getPublishedRevisionByEntryId(model, entry);
+            if (publishedRevisionEntry) {
+                const publishedRevisionStorageEntry = convertToStorageEntry({
+                    storageEntry: publishedRevisionEntry,
+                    model
+                });
+
                 items.push(
                     entity.putBatch({
                         ...publishedRevisionStorageEntry,
