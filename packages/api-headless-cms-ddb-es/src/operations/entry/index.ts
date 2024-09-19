@@ -1317,19 +1317,25 @@ export const createEntriesStorageOperations = (
             );
 
             // 2.2 Additionally, if we have a previously published entry, we need to mark it as unpublished.
+            //     Note that we need to take re-publishing into account (same published revision being
+            //     published again), in which case the below code does not apply. This is because the
+            //     required updates were already applied above.
             if (publishedStorageEntry) {
-                items.push(
-                    /**
-                     * Update currently published entry (unpublish it)
-                     */
-                    entity.putBatch({
-                        ...publishedStorageEntry,
-                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
-                        TYPE: createRecordType(),
-                        PK: createPartitionKey(publishedStorageEntry),
-                        SK: createRevisionSortKey(publishedStorageEntry)
-                    })
-                );
+                const isRepublishing = publishedStorageEntry.id === entry.id;
+                if (!isRepublishing) {
+                    items.push(
+                        /**
+                         * Update currently published entry (unpublish it)
+                         */
+                        entity.putBatch({
+                            ...publishedStorageEntry,
+                            status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
+                            TYPE: createRecordType(),
+                            PK: createPartitionKey(publishedStorageEntry),
+                            SK: createRevisionSortKey(publishedStorageEntry)
+                        })
+                    );
+                }
             }
         } else {
             // 2.3 If the published revision is not the latest one, the situation is a bit
@@ -1372,20 +1378,26 @@ export const createEntriesStorageOperations = (
                 })
             );
 
-            // 2.6 Finally, if we got a published entry, but it wasn't the latest one, we need to take
-            //    an extra step and mark it as unpublished.
-            const publishedRevisionDifferentFromLatest =
-                publishedRevisionId && publishedRevisionId !== latestStorageEntry.id;
-            if (publishedRevisionDifferentFromLatest) {
-                items.push(
-                    entity.putBatch({
-                        ...publishedStorageEntry,
-                        PK: createPartitionKey(publishedStorageEntry),
-                        SK: createRevisionSortKey(publishedStorageEntry),
-                        TYPE: createRecordType(),
-                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED
-                    })
-                );
+            // 2.6 Additionally, if we have a previously published entry, we need to mark it as unpublished.
+            //     Note that we need to take re-publishing into account (same published revision being
+            //     published again), in which case the below code does not apply. This is because the
+            //     required updates were already applied above.
+            if (publishedStorageEntry) {
+                const isRepublishing = publishedStorageEntry.id === entry.id;
+                const publishedRevisionDifferentFromLatest =
+                    publishedRevisionId !== latestStorageEntry.id;
+
+                if (!isRepublishing && publishedRevisionDifferentFromLatest) {
+                    items.push(
+                        entity.putBatch({
+                            ...publishedStorageEntry,
+                            PK: createPartitionKey(publishedStorageEntry),
+                            SK: createRevisionSortKey(publishedStorageEntry),
+                            TYPE: createRecordType(),
+                            status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                        })
+                    );
+                }
             }
         }
 
