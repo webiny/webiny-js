@@ -187,7 +187,35 @@ describe("Content entries - Entry Publishing", () => {
 
             expect(manageEntriesList).toHaveLength(1);
             expect(manageEntriesList).toMatchObject([
-                { id: revision4.id, title: "Revision 4", meta: { status: "draft" } }
+                {
+                    id: revision4.id,
+                    title: "Revision 4",
+                    meta: {
+                        status: "draft",
+                        revisions: [
+                            {
+                                title: "Revision 4",
+                                slug: revision1.slug,
+                                meta: { status: "draft", version: 4 }
+                            },
+                            {
+                                title: "Revision 3",
+                                slug: revision1.slug,
+                                meta: { status: "published", version: 3 }
+                            },
+                            {
+                                title: "Revision 2",
+                                slug: revision1.slug,
+                                meta: { status: "unpublished", version: 2 }
+                            },
+                            {
+                                title: "Revision 1",
+                                slug: revision1.slug,
+                                meta: { status: "draft", version: 1 }
+                            }
+                        ]
+                    }
+                }
             ]);
 
             expect(readEntriesList).toHaveLength(1);
@@ -205,7 +233,35 @@ describe("Content entries - Entry Publishing", () => {
 
             expect(manageEntriesList).toHaveLength(1);
             expect(manageEntriesList).toMatchObject([
-                { id: revision4.id, title: "Revision 4", meta: { status: "draft" } }
+                {
+                    id: revision4.id,
+                    title: "Revision 4",
+                    meta: {
+                        status: "draft",
+                        revisions: [
+                            {
+                                title: "Revision 4",
+                                slug: revision1.slug,
+                                meta: { status: "draft", version: 4 }
+                            },
+                            {
+                                title: "Revision 3",
+                                slug: revision1.slug,
+                                meta: { status: "unpublished", version: 3 }
+                            },
+                            {
+                                title: "Revision 2",
+                                slug: revision1.slug,
+                                meta: { status: "published", version: 2 }
+                            },
+                            {
+                                title: "Revision 1",
+                                slug: revision1.slug,
+                                meta: { status: "draft", version: 1 }
+                            }
+                        ]
+                    }
+                }
             ]);
 
             expect(readEntriesList).toHaveLength(1);
