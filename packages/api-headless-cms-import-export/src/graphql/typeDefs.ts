@@ -1,4 +1,4 @@
-import { NonEmptyArray } from "@webiny/api/types";
+import type { NonEmptyArray } from "@webiny/api/types";
 
 export const createTypeDefs = (models: NonEmptyArray<string>): string => {
     return /* GraphQL */ `

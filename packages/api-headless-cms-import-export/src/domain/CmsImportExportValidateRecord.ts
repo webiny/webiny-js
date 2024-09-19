@@ -1,7 +1,7 @@
-import { ICmsImportExportValidateRecord } from "~/domain/abstractions/CmsImportExportValidateRecord";
-import { ICmsImportExportValidatedFile } from "~/types";
-import { GenericRecord, NonEmptyArray } from "@webiny/api/types";
-import { TaskDataStatus } from "@webiny/tasks";
+import type { ICmsImportExportValidateRecord } from "~/domain/abstractions/CmsImportExportValidateRecord";
+import type { ICmsImportExportValidatedFile } from "~/types";
+import type { GenericRecord, NonEmptyArray } from "@webiny/api/types";
+import type { TaskDataStatus } from "@webiny/tasks";
 
 export class CmsImportExportValidateRecord implements ICmsImportExportValidateRecord {
     public readonly id: string;

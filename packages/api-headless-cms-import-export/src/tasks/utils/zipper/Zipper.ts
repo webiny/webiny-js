@@ -1,8 +1,8 @@
-import { IAddOptions, IZipper, IZipperDoneResult } from "./abstractions/Zipper";
-import stream, { Readable } from "stream";
-import { ArchiverError, EntryData, ProgressData } from "archiver";
-import { IUpload } from "~/tasks/utils/upload";
-import { IArchiver } from "~/tasks/utils/archiver";
+import type { IAddOptions, IZipper, IZipperDoneResult } from "./abstractions/Zipper";
+import type { Readable } from "stream";
+import type { ArchiverError, EntryData, ProgressData } from "archiver";
+import type { IUpload } from "~/tasks/utils/upload";
+import type { IArchiver } from "~/tasks/utils/archiver";
 
 export interface IZipperConfig {
     upload: IUpload;
@@ -47,7 +47,7 @@ export class Zipper implements IZipper {
     public on(event: "data", listener: (data: Buffer) => void): void;
     public on(event: "progress", listener: (progress: ProgressData) => void): void;
     public on(event: "close" | "drain" | "finish", listener: () => void): void;
-    public on(event: "pipe" | "unpipe", listener: (src: stream.Readable) => void): void;
+    public on(event: "pipe" | "unpipe", listener: (src: Readable) => void): void;
     public on(event: "entry", listener: (entry: EntryData) => void): void;
 
     public on(event: any, callback: any): void {

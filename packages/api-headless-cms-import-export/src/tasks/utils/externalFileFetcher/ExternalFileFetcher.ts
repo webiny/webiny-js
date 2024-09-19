@@ -1,4 +1,4 @@
-import {
+import type {
     IExternalFileFetcher,
     IExternalFileFetcherFetchResult,
     IExternalFileFetcherHeadResult

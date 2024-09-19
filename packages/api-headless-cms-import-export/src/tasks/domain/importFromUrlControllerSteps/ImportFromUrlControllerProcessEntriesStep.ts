@@ -1,15 +1,16 @@
-import { ImportFromUrlControllerStep } from "./abstractions/ImportFromUrlControllerStep";
+import type { ImportFromUrlControllerStep } from "./abstractions/ImportFromUrlControllerStep";
 import { IMPORT_FROM_URL_PROCESS_ENTRIES_TASK } from "~/tasks/constants";
 import { getBackOffSeconds } from "~/tasks/utils/helpers/getBackOffSeconds";
-import { CmsImportExportFileType, Context } from "~/types";
-import {
+import type { Context } from "~/types";
+import { CmsImportExportFileType } from "~/types";
+import type {
     IImportFromUrlControllerInput,
-    IImportFromUrlControllerInputStep,
     IImportFromUrlControllerOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlController";
-import { ITask, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
+import { IImportFromUrlControllerInputStep } from "~/tasks/domain/abstractions/ImportFromUrlController";
+import type { ITask, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { getChildTasks } from "./getChildTasks";
-import { IImportFromUrlProcessEntriesInput } from "../importFromUrlProcessEntries/abstractions/ImportFromUrlProcessEntries";
+import type { IImportFromUrlProcessEntriesInput } from "../importFromUrlProcessEntries/abstractions/ImportFromUrlProcessEntries";
 import { prependImportPath } from "~/tasks/utils/helpers/importPath";
 
 export class ImportFromUrlControllerProcessEntriesStep<

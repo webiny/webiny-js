@@ -1,15 +1,15 @@
-import { ICmsImportExportRecord } from "~/domain";
-import {
+import type { ICmsImportExportRecord } from "~/domain";
+import type {
     IExportContentEntriesUseCase,
     IExportContentEntriesUseCaseExecuteParams
 } from "./abstractions/ExportContentEntriesUseCase";
-import {
+import type {
     IExportContentEntriesControllerInput,
     IExportContentEntriesControllerOutput
 } from "~/tasks/domain/abstractions/ExportContentEntriesController";
 import { EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK } from "~/tasks/constants";
 import { convertTaskToCmsExportRecord } from "~/crud/utils/convertTaskToExportRecord";
-import { ITasksContextObject } from "@webiny/tasks";
+import type { ITasksContextObject } from "@webiny/tasks";
 
 export interface IExportContentEntriesUseCaseParams {
     triggerTask: ITasksContextObject["trigger"];

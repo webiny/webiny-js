@@ -1,5 +1,5 @@
-import { IUniqueResolver } from "./abstractions/UniqueResolver";
-import { GenericRecord } from "@webiny/api/types";
+import type { IUniqueResolver } from "./abstractions/UniqueResolver";
+import type { GenericRecord } from "@webiny/api/types";
 
 export class UniqueResolver<T extends GenericRecord> implements IUniqueResolver<T> {
     private readonly resolved = new Set<keyof T>();

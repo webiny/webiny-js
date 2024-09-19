@@ -1,4 +1,4 @@
-import { IInvokeCb } from "../types";
+import type { IInvokeCb } from "../types";
 import { createErrorFields, createExportFields } from "~tests/helpers/graphql/fields";
 
 export interface IAbortExportContentEntriesVariables {

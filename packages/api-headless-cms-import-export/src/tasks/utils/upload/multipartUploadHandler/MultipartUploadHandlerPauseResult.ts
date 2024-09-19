@@ -1,4 +1,7 @@
-import { IMultipartUploadHandlerPauseResult, IPart } from "../abstractions/MultipartUploadHandler";
+import type {
+    IMultipartUploadHandlerPauseResult,
+    IPart
+} from "../abstractions/MultipartUploadHandler";
 
 export class MultipartUploadHandlerPauseResult implements IMultipartUploadHandlerPauseResult {
     uploadId: string;

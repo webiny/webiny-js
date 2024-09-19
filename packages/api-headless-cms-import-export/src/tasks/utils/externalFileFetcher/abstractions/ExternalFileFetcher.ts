@@ -1,4 +1,4 @@
-import { GenericRecord } from "@webiny/api/types";
+import type { GenericRecord } from "@webiny/api/types";
 
 export interface IExternalFileFetcherHeadFile {
     url: string;

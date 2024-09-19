@@ -6,15 +6,15 @@ import {
     UploadPartCommand
 } from "@webiny/aws-sdk/client-s3";
 import { createPassThrough } from "~tests/mocks/createPassThrough";
-import { PassThrough } from "stream";
+import type { PassThrough } from "stream";
 import { mockClient } from "aws-sdk-client-mock";
 import { CmsAssetsZipper } from "~/tasks/utils/cmsAssetsZipper";
 import { Upload } from "~/tasks/utils/upload";
 import { Zipper } from "~/tasks/utils/zipper";
 import { createArchiver } from "~/tasks/utils/archiver";
-import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
-import { IEntryAssets, IEntryAssetsResolver } from "~/tasks/utils/entryAssets";
-import { IFileFetcher } from "~/tasks/utils/fileFetcher";
+import type { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
+import type { IEntryAssets, IEntryAssetsResolver } from "~/tasks/utils/entryAssets";
+import type { IFileFetcher } from "~/tasks/utils/fileFetcher";
 import { createFileFetcher } from "~tests/mocks/createFileFetcher";
 import { createEntryAssetsResolver } from "~tests/mocks/createEntryAssetsResolver";
 import { WEBINY_EXPORT_ASSETS_EXTENSION } from "~/tasks/constants";

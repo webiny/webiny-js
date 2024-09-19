@@ -1,5 +1,5 @@
-import { GenericRecord } from "@webiny/api/types";
-import { TaskDataStatus } from "@webiny/tasks";
+import type { GenericRecord } from "@webiny/api/types";
+import type { TaskDataStatus } from "@webiny/tasks";
 
 export interface IImportFromUrlUseCaseExecuteParams {
     id: string;

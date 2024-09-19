@@ -1,15 +1,15 @@
-import { ICompressedFileReader, IDecompressor } from "~/tasks/utils/decompressor";
-import {
+import type { ICompressedFileReader, IDecompressor } from "~/tasks/utils/decompressor";
+import type {
     IImportFromUrlProcessEntriesDecompress,
     IImportFromUrlProcessEntriesDecompressRunParams,
     IImportFromUrlProcessEntriesDecompressRunResult
 } from "./abstractions/ImportFromUrlProcessEntriesDecompress";
-import {
+import type {
     IImportFromUrlProcessEntriesInput,
     IImportFromUrlProcessEntriesOutput
 } from "./abstractions/ImportFromUrlProcessEntries";
 import { getFilePath } from "~/tasks/utils/helpers/getFilePath";
-import { Context } from "~/types";
+import type { Context } from "~/types";
 import { WebinyError } from "@webiny/error";
 
 export interface IImportFromUrlProcessEntriesDecompressParams {

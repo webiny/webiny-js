@@ -1,19 +1,16 @@
-import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
-import { Context } from "~/types";
-import { CmsModel } from "@webiny/api-headless-cms/types";
+import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
+import type { Context } from "~/types";
+import type { CmsModel } from "@webiny/api-headless-cms/types";
 import { getErrorProperties } from "@webiny/tasks/utils";
-import {
-    CmsEntryZipperExecuteContinueResult,
-    ICmsEntryZipper,
-    ICmsEntryZipperConfig
-} from "~/tasks/utils/cmsEntryZipper";
-import {
+import type { ICmsEntryZipper, ICmsEntryZipperConfig } from "~/tasks/utils/cmsEntryZipper";
+import { CmsEntryZipperExecuteContinueResult } from "~/tasks/utils/cmsEntryZipper";
+import type {
     IExportContentEntries,
     IExportContentEntriesInput,
     IExportContentEntriesOutput
 } from "~/tasks/domain/abstractions/ExportContentEntries";
 import { createCmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/createCmsEntryFetcher";
-import { IContentEntryTraverser } from "@webiny/api-headless-cms";
+import type { IContentEntryTraverser } from "@webiny/api-headless-cms";
 import { WEBINY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants";
 
 export interface IExportContentEntriesConfig {

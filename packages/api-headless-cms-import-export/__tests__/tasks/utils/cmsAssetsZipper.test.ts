@@ -2,17 +2,17 @@ import { createCmsAssetsZipper } from "~tests/mocks/createCmsAssetsZipper";
 import { createEntryAssets } from "~tests/mocks/createEntryAssets";
 import { useHandler } from "~tests/helpers/useHandler";
 import { AUTHOR_MODEL_ID } from "~tests/mocks/model";
-import { Context } from "~/types";
+import type { Context } from "~/types";
+import type { ICmsAssetsZipperExecuteParams } from "~/tasks/utils/cmsAssetsZipper";
 import {
     CmsAssetsZipperExecuteContinueWithoutResult,
-    CmsAssetsZipperExecuteDoneWithoutResult,
-    ICmsAssetsZipperExecuteParams
+    CmsAssetsZipperExecuteDoneWithoutResult
 } from "~/tasks/utils/cmsAssetsZipper";
-import { CmsEntryMeta } from "@webiny/api-headless-cms/types";
-import { ICmsEntryFetcherResult } from "~/tasks/utils/cmsEntryFetcher";
-import { IContentEntryTraverser } from "@webiny/api-headless-cms";
-import { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
-import { IAsset } from "~/tasks/utils/entryAssets";
+import type { CmsEntryMeta } from "@webiny/api-headless-cms/types";
+import type { ICmsEntryFetcherResult } from "~/tasks/utils/cmsEntryFetcher";
+import type { IContentEntryTraverser } from "@webiny/api-headless-cms";
+import type { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
+import type { IAsset } from "~/tasks/utils/entryAssets";
 import { createUniqueResolver } from "~tests/mocks/createUniqueResolver";
 
 const defaultZipperExecuteParams: ICmsAssetsZipperExecuteParams = {

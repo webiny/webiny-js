@@ -1,4 +1,4 @@
-import { Context } from "~/types";
+import type { Context } from "~/types";
 
 export const listModels = async (context: Context): Promise<string[]> => {
     return await context.security.withoutAuthorization(async () => {

@@ -1,9 +1,10 @@
-import {
+import type {
     IDeleteFiles,
     IDeleteFilesExecuteInput
 } from "~/tasks/utils/deleteFiles/abstractions/DeleteFiles";
 import { createS3Client } from "../helpers/s3Client";
-import { FileFetcher, IFileFetcher } from "~/tasks/utils/fileFetcher";
+import { FileFetcher } from "~/tasks/utils/fileFetcher";
+import type { IFileFetcher } from "~/tasks/utils/fileFetcher";
 import { getBucket } from "../helpers/getBucket";
 
 export interface IDeleteFilesParams {

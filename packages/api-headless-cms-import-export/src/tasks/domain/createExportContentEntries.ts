@@ -1,9 +1,7 @@
 import { createS3Client } from "@webiny/aws-sdk/client-s3";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
-import {
-    ExportContentEntries,
-    ICreateCmsEntryZipperConfig
-} from "~/tasks/domain/exportContentEntries/ExportContentEntries";
+import { ExportContentEntries } from "~/tasks/domain/exportContentEntries/ExportContentEntries";
+import type { ICreateCmsEntryZipperConfig } from "~/tasks/domain/exportContentEntries/ExportContentEntries";
 import { CmsEntryZipper } from "../utils/cmsEntryZipper";
 import { createUploadFactory } from "~/tasks/utils/upload";
 import { createArchiver } from "~/tasks/utils/archiver";

@@ -1,9 +1,9 @@
-import { Context } from "~/types";
-import {
+import type { Context } from "~/types";
+import type {
     IImportFromUrlControllerInput,
     IImportFromUrlControllerOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlController";
-import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
+import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 
 export interface ImportFromUrlControllerStep<
     C extends Context = Context,

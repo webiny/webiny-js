@@ -1,14 +1,15 @@
-import {
+import type {
     IValidateImportFromUrlUseCase,
     IValidateImportFromUrlUseCaseExecuteParams,
     IValidateImportFromUrlUseCaseExecuteResult
 } from "./abstractions/ValidateImportFromUrlUseCase";
-import { CmsImportExportFileType, ICmsImportExportFile } from "~/types";
-import { NonEmptyArray } from "@webiny/api/types";
+import { CmsImportExportFileType } from "~/types";
+import type { ICmsImportExportFile } from "~/types";
+import type { NonEmptyArray } from "@webiny/api/types";
 import { WebinyError } from "@webiny/error";
 import { getImportExportFileType } from "~/tasks/utils/helpers/getImportExportFileType";
 import { parseImportUrlData } from "~/crud/utils/parseImportUrlData";
-import { CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types";
+import type { CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types";
 import { makeSureModelsAreIdentical } from "~/crud/utils/makeSureModelsAreIdentical";
 
 export interface IValidateImportFromUrlUseCaseParams {

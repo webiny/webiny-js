@@ -12,9 +12,9 @@ import { CmsEntryZipper } from "~/tasks/utils/cmsEntryZipper";
 import { Upload } from "~/tasks/utils/upload";
 import { Zipper } from "~/tasks/utils/zipper";
 import { createArchiver } from "~/tasks/utils/archiver";
-import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
-import { IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
-import { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
+import type { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
+import type { IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
+import type { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
 import { WEBINY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants";
 
 interface ICreateCmsEntryZipperParams {

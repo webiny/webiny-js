@@ -1,7 +1,7 @@
 import { createTaskDefinition } from "@webiny/tasks";
 import { VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK } from "./constants";
-import { Context } from "~/types";
-import {
+import type { Context } from "~/types";
+import type {
     IValidateImportFromUrlInput,
     IValidateImportFromUrlOutput
 } from "~/tasks/domain/abstractions/ValidateImportFromUrl";

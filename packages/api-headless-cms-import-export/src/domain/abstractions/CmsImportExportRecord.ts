@@ -1,6 +1,6 @@
-import { CmsIdentity } from "@webiny/api-headless-cms/types";
-import { TaskDataStatus } from "@webiny/tasks";
-import { CmsImportExportFileType } from "~/types";
+import type { CmsIdentity } from "@webiny/api-headless-cms/types";
+import type { TaskDataStatus } from "@webiny/tasks";
+import type { CmsImportExportFileType } from "~/types";
 
 export interface ICmsImportExportRecordFile {
     key: string;

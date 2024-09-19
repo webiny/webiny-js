@@ -1,8 +1,8 @@
-import {
+import type {
     ICmsImportExportRecord,
     ICmsImportExportRecordFile
 } from "~/domain/abstractions/CmsImportExportRecord";
-import { TaskDataStatus } from "@webiny/tasks";
+import type { TaskDataStatus } from "@webiny/tasks";
 
 export class CmsImportExportRecord implements ICmsImportExportRecord {
     public id: string;

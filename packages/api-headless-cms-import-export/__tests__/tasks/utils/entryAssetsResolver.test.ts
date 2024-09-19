@@ -1,7 +1,8 @@
 import { useHandler } from "~tests/helpers/useHandler";
-import { Context } from "~/types";
+import type { Context } from "~/types";
 import { createImages } from "~tests/mocks/images";
-import { EntryAssetsResolver, IAssets, IEntryAssetsResolver } from "~/tasks/utils/entryAssets";
+import type { IAssets, IEntryAssetsResolver } from "~/tasks/utils/entryAssets";
+import { EntryAssetsResolver } from "~/tasks/utils/entryAssets";
 
 describe("entry assets resolver", () => {
     let context: Context;

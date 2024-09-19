@@ -1,9 +1,10 @@
-import { IContentEntryTraverser } from "@webiny/api-headless-cms";
-import { EntryAssets, IEntryAssets, IEntryAssetsParams } from "~/tasks/utils/entryAssets";
+import type { IContentEntryTraverser } from "@webiny/api-headless-cms";
+import type { IEntryAssets, IEntryAssetsParams } from "~/tasks/utils/entryAssets";
+import { EntryAssets } from "~/tasks/utils/entryAssets";
 import { createUniqueResolver } from "~tests/mocks/createUniqueResolver";
 
 const defaultTraverser: IContentEntryTraverser = {
-    traverse() {
+    async traverse() {
         return;
     }
 };

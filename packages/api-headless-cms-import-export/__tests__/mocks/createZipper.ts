@@ -9,7 +9,7 @@ import {
     UploadPartCommand
 } from "@webiny/aws-sdk/client-s3";
 import { mockClient } from "aws-sdk-client-mock";
-import { PassThrough } from "stream";
+import type { PassThrough } from "stream";
 import { createArchiver } from "~/tasks/utils/archiver";
 import { WEBINY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants";
 

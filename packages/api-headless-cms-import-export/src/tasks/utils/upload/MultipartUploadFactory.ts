@@ -1,9 +1,5 @@
-import {
-    CreateMultipartUploadCommand,
-    ListPartsCommand,
-    ListPartsCommandOutput,
-    S3Client
-} from "@webiny/aws-sdk/client-s3";
+import type { ListPartsCommandOutput, S3Client } from "@webiny/aws-sdk/client-s3";
+import { CreateMultipartUploadCommand, ListPartsCommand } from "@webiny/aws-sdk/client-s3";
 import { WebinyError } from "@webiny/error";
 import {
     ICreateMultipartUploadHandler,

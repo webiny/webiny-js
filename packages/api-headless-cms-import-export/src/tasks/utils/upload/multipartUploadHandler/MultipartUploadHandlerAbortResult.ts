@@ -1,5 +1,8 @@
-import { AbortMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3";
-import { IMultipartUploadHandlerAbortResult, IPart } from "../abstractions/MultipartUploadHandler";
+import type { AbortMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3";
+import type {
+    IMultipartUploadHandlerAbortResult,
+    IPart
+} from "../abstractions/MultipartUploadHandler";
 
 export class MultipartUploadHandlerAbortResult implements IMultipartUploadHandlerAbortResult {
     public readonly result: AbortMultipartUploadCommandOutput;

@@ -1,8 +1,8 @@
-import { Context } from "~/types";
+import type { Context } from "~/types";
 import { createZodError } from "@webiny/utils";
 import { resolve, resolveList } from "@webiny/handler-graphql";
 import zod from "zod";
-import { NonEmptyArray } from "@webiny/api/types";
+import type { NonEmptyArray } from "@webiny/api/types";
 
 const validateAbortExportContentEntries = zod.object({
     id: zod.string()

@@ -1,6 +1,6 @@
-import { ITask } from "@webiny/tasks";
+import type { ITask } from "@webiny/tasks";
 import { createCmsImportExportRecord } from "~/domain/CmsImportExportRecord";
-import {
+import type {
     IExportContentEntriesControllerInput,
     IExportContentEntriesControllerOutput
 } from "~/tasks/domain/abstractions/ExportContentEntriesController";

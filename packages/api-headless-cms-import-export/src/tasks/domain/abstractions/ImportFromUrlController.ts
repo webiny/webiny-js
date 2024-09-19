@@ -1,10 +1,14 @@
-import {
+import type {
     Context,
     ICmsImportExportValidatedAssetsFile,
     ICmsImportExportValidatedContentEntriesFile
 } from "~/types";
-import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
-import { NonEmptyArray } from "@webiny/api/types";
+import type {
+    ITaskResponseDoneResultOutput,
+    ITaskResponseResult,
+    ITaskRunParams
+} from "@webiny/tasks";
+import type { NonEmptyArray } from "@webiny/api/types";
 
 export enum IImportFromUrlControllerInputStep {
     DOWNLOAD = "download",

@@ -1,14 +1,14 @@
-import { IUploadDoneResult } from "~/tasks/utils/upload";
-import { File as UnzipperFile } from "unzipper";
+import type { IUploadDoneResult } from "~/tasks/utils/upload";
+import type { File as IUnzipperFile } from "unzipper";
 
-export type { UnzipperFile };
+export type { IUnzipperFile };
 
 export interface IDecompressorDecompressParams {
-    source: UnzipperFile;
+    source: IUnzipperFile;
     target: string;
 }
 
 export interface IDecompressor {
-    read(files: UnzipperFile[], target: string): Promise<string>;
+    read(files: IUnzipperFile[], target: string): Promise<string>;
     extract(params: IDecompressorDecompressParams): Promise<IUploadDoneResult>;
 }

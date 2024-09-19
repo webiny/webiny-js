@@ -1,4 +1,4 @@
-import { IListExportContentEntriesResult, IListExportContentEntriesParams } from "~/types";
+import type { IListExportContentEntriesResult, IListExportContentEntriesParams } from "~/types";
 
 export type IListExportContentEntriesUseCaseExecuteParams = IListExportContentEntriesParams;
 

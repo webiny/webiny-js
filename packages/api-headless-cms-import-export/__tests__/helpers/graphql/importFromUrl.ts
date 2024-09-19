@@ -1,5 +1,5 @@
 import { createErrorFields, createValidateImportFromUrlFields } from "./fields";
-import { IInvokeCb } from "~tests/helpers/types";
+import type { IInvokeCb } from "~tests/helpers/types";
 
 const mutation = /* GraphQL */ `
     mutation ImportFromUrl($id: ID!) {

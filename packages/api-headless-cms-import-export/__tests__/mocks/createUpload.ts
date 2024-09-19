@@ -1,6 +1,6 @@
-import { IAwsUpload, IUpload, IUploadDoneResult } from "~/tasks/utils/upload";
-import { Options as BaseUploadOptions } from "@webiny/aws-sdk/lib-storage";
-import { PassThrough } from "stream";
+import type { IAwsUpload, IUpload, IUploadDoneResult } from "~/tasks/utils/upload";
+import type { Options as BaseUploadOptions } from "@webiny/aws-sdk/lib-storage";
+import type { PassThrough } from "stream";
 
 export interface ICreateUploadParams {
     stream: PassThrough;
@@ -16,6 +16,7 @@ export interface IExtendedUpload extends IUpload {
 export const createUpload = (params: ICreateUploadParams): IExtendedUpload => {
     return {
         ...params,
+        client: {} as any,
         upload: {} as any,
         async done() {
             return {} as IUploadDoneResult;

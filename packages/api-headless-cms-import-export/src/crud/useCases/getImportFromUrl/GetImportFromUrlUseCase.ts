@@ -1,12 +1,12 @@
-import { IGetImportFromUrlUseCase } from "~/crud/useCases/getImportFromUrl/abstractions/GetImportFromUrlUseCase";
-import {
+import type { IGetImportFromUrlUseCase } from "~/crud/useCases/getImportFromUrl/abstractions/GetImportFromUrlUseCase";
+import type {
     IImportFromUrlUseCaseExecuteParams,
     IImportFromUrlUseCaseExecuteResponse
 } from "../importFromUrl/abstractions/ImportFromUrlUseCase";
-import { ITasksContextObject } from "@webiny/tasks";
+import type { ITasksContextObject } from "@webiny/tasks";
 import { IMPORT_FROM_URL_CONTROLLER_TASK } from "~/tasks/constants";
 import { convertTaskToImportRecord } from "~/crud/utils/convertTaskToImportRecord";
-import {
+import type {
     IImportFromUrlControllerInput,
     IImportFromUrlControllerOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlController";

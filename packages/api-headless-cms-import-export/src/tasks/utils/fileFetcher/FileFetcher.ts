@@ -1,13 +1,12 @@
+import type { DeleteObjectCommandOutput, S3Client } from "@webiny/aws-sdk/client-s3";
 import {
     DeleteObjectCommand,
-    DeleteObjectCommandOutput,
     GetObjectCommand,
     HeadObjectCommand,
-    ListObjectsCommand,
-    S3Client
+    ListObjectsCommand
 } from "@webiny/aws-sdk/client-s3";
 import { basename } from "path";
-import {
+import type {
     IFileFetcher,
     IFileFetcherFetchResult,
     IFileFetcherFile,
@@ -30,17 +29,24 @@ export class FileFetcher implements IFileFetcher {
     }
 
     public async head(key: string): Promise<IFileFetcherHeadResult> {
-        const cmd = new HeadObjectCommand({
-            Key: key,
-            Bucket: this.bucket
-        });
+        try {
+            const cmd = new HeadObjectCommand({
+                Key: key,
+                Bucket: this.bucket
+            });
 
-        return await this.client.send(cmd);
+            return await this.client.send(cmd);
+        } catch (ex) {
+            return null;
+        }
     }
 
     public async exists(key: string): Promise<boolean> {
         try {
             const result = await this.head(key);
+            if (!result) {
+                return false;
+            }
             if (!result.$metadata) {
                 return false;
             }
@@ -83,7 +89,7 @@ export class FileFetcher implements IFileFetcher {
         }
     }
 
-    public async fetch(key: string): Promise<IFileFetcherFetchResult | null> {
+    public async fetch(key: string): Promise<IFileFetcherFetchResult> {
         try {
             return await this.client.send(
                 new GetObjectCommand({
@@ -98,7 +104,7 @@ export class FileFetcher implements IFileFetcher {
         }
     }
 
-    public async stream(key: string): Promise<IFileFetcherStream | null> {
+    public async stream(key: string): Promise<IFileFetcherStream> {
         try {
             const response = await this.fetch(key);
             if (!response) {
@@ -108,7 +114,7 @@ export class FileFetcher implements IFileFetcher {
              * We can safely cast because we are sure that the response will be readable.
              * The method which is using the fetch() should handle the case when the response is null.
              */
-            return (response.Body || null) as IFileFetcherStream | null;
+            return (response.Body || null) as IFileFetcherStream;
         } catch (ex) {
             console.log(`Could not fetch file "${key}" from bucket "${this.bucket}".`);
             console.error(ex);

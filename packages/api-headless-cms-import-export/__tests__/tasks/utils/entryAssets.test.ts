@@ -1,7 +1,8 @@
 import { useHandler } from "~tests/helpers/useHandler";
-import { CmsEntry } from "@webiny/api-headless-cms/types";
-import { IContentEntryTraverser } from "@webiny/api-headless-cms";
-import { EntryAssets, IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
+import type { CmsEntry } from "@webiny/api-headless-cms/types";
+import type { IContentEntryTraverser } from "@webiny/api-headless-cms";
+import type { IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
+import { EntryAssets } from "~/tasks/utils/entryAssets";
 import { createUniqueResolver } from "~tests/mocks/createUniqueResolver";
 
 const cloudfrontUrl = "https://aCloundfrontDistributionId.cloudfront.net";

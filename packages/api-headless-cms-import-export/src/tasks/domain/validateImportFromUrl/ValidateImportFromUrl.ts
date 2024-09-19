@@ -1,13 +1,13 @@
-import {
+import type {
     IValidateImportFromUrl,
     IValidateImportFromUrlInput,
     IValidateImportFromUrlOutput
 } from "~/tasks/domain/abstractions/ValidateImportFromUrl";
-import { IExternalFileFetcher } from "~/tasks/utils/externalFileFetcher";
-import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
-import { Context, ICmsImportExportValidatedFile } from "~/types";
+import type { IExternalFileFetcher } from "~/tasks/utils/externalFileFetcher";
+import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
+import type { Context, ICmsImportExportValidatedFile } from "~/types";
 import { getImportExportFileType } from "~/tasks/utils/helpers/getImportExportFileType";
-import { NonEmptyArray } from "@webiny/api/types";
+import type { NonEmptyArray } from "@webiny/api/types";
 import { prependImportPath } from "~/tasks/utils/helpers/importPath";
 
 export interface IFileExists {

@@ -1,4 +1,4 @@
-import { ICmsImportExportRecord } from "~/domain";
+import type { ICmsImportExportRecord } from "~/domain";
 
 export interface IAbortExportContentEntriesUseCaseExecuteParams {
     id: string;

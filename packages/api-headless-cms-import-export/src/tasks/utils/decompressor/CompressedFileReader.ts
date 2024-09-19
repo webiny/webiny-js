@@ -1,7 +1,7 @@
 import { Open } from "unzipper";
-import { S3Client } from "../helpers/s3Client";
-import { UnzipperFile } from "./abstractions/Decompressor";
-import { ICompressedFileReader } from "./abstractions/CompressedFileReader";
+import type { S3Client } from "../helpers/s3Client";
+import type { IUnzipperFile } from "./abstractions/Decompressor";
+import type { ICompressedFileReader } from "./abstractions/CompressedFileReader";
 
 export interface ICompressedFileReaderParams {
     client: S3Client;
@@ -17,7 +17,7 @@ export class CompressedFileReader implements ICompressedFileReader {
         this.bucket = params.bucket;
     }
 
-    public async read(target: string): Promise<UnzipperFile[]> {
+    public async read(target: string): Promise<IUnzipperFile[]> {
         const result = await Open.s3_v3(this.client, {
             Bucket: this.bucket,
             Key: target

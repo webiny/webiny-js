@@ -1,16 +1,17 @@
-import { CmsImportExportFileType, Context } from "~/types";
-import {
+import type { Context } from "~/types";
+import { CmsImportExportFileType } from "~/types";
+import type {
     IImportFromUrlControllerInput,
-    IImportFromUrlControllerInputStep,
     IImportFromUrlControllerOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlController";
-import { ImportFromUrlControllerStep } from "~/tasks/domain/importFromUrlControllerSteps/abstractions/ImportFromUrlControllerStep";
-import { ITask, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
+import { IImportFromUrlControllerInputStep } from "~/tasks/domain/abstractions/ImportFromUrlController";
+import type { ImportFromUrlControllerStep } from "~/tasks/domain/importFromUrlControllerSteps/abstractions/ImportFromUrlControllerStep";
+import type { ITask, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { prependImportPath } from "~/tasks/utils/helpers/importPath";
 import { getBackOffSeconds } from "~/tasks/utils/helpers/getBackOffSeconds";
 import { IMPORT_FROM_URL_PROCESS_ASSETS_TASK } from "~/tasks/constants";
 import { getChildTasks } from "~/tasks/domain/importFromUrlControllerSteps/getChildTasks";
-import { IImportFromUrlProcessAssetsInput } from "../importFromUrlProcessAssets/abstractions/ImportFromUrlProcessAssets";
+import type { IImportFromUrlProcessAssetsInput } from "../importFromUrlProcessAssets/abstractions/ImportFromUrlProcessAssets";
 
 export class ImportFromUrlControllerProcessAssetsStep<
     C extends Context = Context,

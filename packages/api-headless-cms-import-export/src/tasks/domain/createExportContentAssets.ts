@@ -1,7 +1,5 @@
-import {
-    ExportContentAssets,
-    ICreateCmsAssetsZipperCallable
-} from "./exportContentAssets/ExportContentAssets";
+import type { ICreateCmsAssetsZipperCallable } from "./exportContentAssets/ExportContentAssets";
+import { ExportContentAssets } from "./exportContentAssets/ExportContentAssets";
 import { createS3Client } from "@webiny/aws-sdk/client-s3";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
 import { CmsAssetsZipper } from "../utils/cmsAssetsZipper";

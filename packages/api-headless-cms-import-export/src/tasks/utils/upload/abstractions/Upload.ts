@@ -1,6 +1,6 @@
-import { PassThrough } from "stream";
-import { CompleteMultipartUploadCommandOutput, S3Client } from "@webiny/aws-sdk/client-s3";
-import { Progress as BaseProgress, Upload as BaseUpload } from "@webiny/aws-sdk/lib-storage";
+import type { PassThrough } from "stream";
+import type { CompleteMultipartUploadCommandOutput, S3Client } from "@webiny/aws-sdk/client-s3";
+import type { Progress as BaseProgress, Upload as BaseUpload } from "@webiny/aws-sdk/lib-storage";
 
 export type IAwsUpload = Pick<BaseUpload, "done" | "abort" | "on">;
 

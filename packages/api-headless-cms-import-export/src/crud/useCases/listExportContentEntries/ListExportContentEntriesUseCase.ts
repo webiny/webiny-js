@@ -1,12 +1,12 @@
-import {
+import type {
     IListExportContentEntriesUseCase,
     IListExportContentEntriesUseCaseExecuteParams,
     IListExportContentEntriesUseCaseExecuteResult
 } from "./abstractions/ListExportContentEntriesUseCase";
-import { ITasksContextObject } from "@webiny/tasks";
+import type { ITasksContextObject } from "@webiny/tasks";
 import { convertTaskToCmsExportRecord } from "~/crud/utils/convertTaskToExportRecord";
 import { EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK } from "~/tasks/constants";
-import {
+import type {
     IExportContentEntriesControllerInput,
     IExportContentEntriesControllerOutput
 } from "~/tasks/domain/abstractions/ExportContentEntriesController";

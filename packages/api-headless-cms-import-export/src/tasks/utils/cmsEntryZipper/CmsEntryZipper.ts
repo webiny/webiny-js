@@ -1,16 +1,16 @@
-import { CmsEntry } from "@webiny/api-headless-cms/types";
-import { ICmsEntryEntriesJson, ICmsEntryManifestJson, IFileMeta } from "../types";
+import type { CmsEntry } from "@webiny/api-headless-cms/types";
+import type { ICmsEntryEntriesJson, ICmsEntryManifestJson, IFileMeta } from "../types";
 import { CmsEntryZipperExecuteContinueResult } from "./CmsEntryZipperExecuteContinueResult";
 import { CmsEntryZipperExecuteDoneResult } from "./CmsEntryZipperExecuteDoneResult";
-import {
+import type {
     ICmsEntryZipper,
     ICmsEntryZipperExecuteParams,
     ICmsEntryZipperExecuteResult
 } from "./abstractions/CmsEntryZipper";
-import { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/abstractions/CmsEntryFetcher";
-import { IZipper } from "~/tasks/utils/zipper";
-import { IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
-import { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
+import type { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/abstractions/CmsEntryFetcher";
+import type { IZipper } from "~/tasks/utils/zipper";
+import type { IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
+import type { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
 import { sanitizeModel } from "@webiny/api-headless-cms/export/crud/sanitize";
 import { stripExportPath } from "~/tasks/utils/helpers/exportPath";
 import { cleanChecksum } from "~/tasks/utils/helpers/cleanChecksum";

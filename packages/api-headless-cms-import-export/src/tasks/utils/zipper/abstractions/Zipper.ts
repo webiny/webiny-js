@@ -1,6 +1,6 @@
-import { ArchiverError, EntryData, ProgressData } from "archiver";
-import { CompleteMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3";
-import stream, { Readable } from "stream";
+import type { ArchiverError, EntryData, ProgressData } from "archiver";
+import type { CompleteMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3";
+import type { Readable } from "stream";
 
 export interface IAddOptions extends Omit<EntryData, "name">, Required<Pick<EntryData, "name">> {}
 
@@ -17,7 +17,7 @@ export interface IZipper {
     on(event: "data", listener: (data: Buffer) => void): void;
     on(event: "progress", listener: (progress: ProgressData) => void): void;
     on(event: "close" | "drain" | "finish", listener: () => void): void;
-    on(event: "pipe" | "unpipe", listener: (src: stream.Readable) => void): void;
+    on(event: "pipe" | "unpipe", listener: (src: Readable) => void): void;
     on(event: "entry", listener: (entry: EntryData) => void): void;
     finalize(): Promise<void>;
     abort(): Promise<void>;

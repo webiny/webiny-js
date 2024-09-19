@@ -1,15 +1,16 @@
-import { CmsImportExportFileType, Context } from "~/types";
-import {
+import type { Context } from "~/types";
+import { CmsImportExportFileType } from "~/types";
+import type {
     IImportFromUrlProcessEntries,
     IImportFromUrlProcessEntriesInput,
     IImportFromUrlProcessEntriesOutput
 } from "./abstractions/ImportFromUrlProcessEntries";
-import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
-import { ICmsEntryManager } from "@webiny/api-headless-cms/types";
+import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
+import type { ICmsEntryManager } from "@webiny/api-headless-cms/types";
 import { ImportFromUrlProcessEntriesDecompress } from "~/tasks/domain/importFromUrlProcessEntries/ImportFromUrlProcessEntriesDecompress";
-import { IFileFetcher } from "~/tasks/utils/fileFetcher";
+import type { IFileFetcher } from "~/tasks/utils/fileFetcher";
 import { ImportFromUrlProcessEntriesInsert } from "./ImportFromUrlProcessEntriesInsert";
-import { ICompressedFileReader, IDecompressor } from "~/tasks/utils/decompressor";
+import type { ICompressedFileReader, IDecompressor } from "~/tasks/utils/decompressor";
 
 export interface IImportFromUrlProcessEntriesParams {
     fileFetcher: IFileFetcher;

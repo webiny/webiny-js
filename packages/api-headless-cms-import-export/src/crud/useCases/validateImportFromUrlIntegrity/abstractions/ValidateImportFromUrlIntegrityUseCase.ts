@@ -1,7 +1,7 @@
-import { NonEmptyArray } from "@webiny/api/types";
-import { ICmsImportExportFile } from "~/types";
-import { TaskDataStatus } from "@webiny/tasks";
-import { CmsModel } from "@webiny/api-headless-cms/types";
+import type { NonEmptyArray } from "@webiny/api/types";
+import type { ICmsImportExportFile } from "~/types";
+import type { TaskDataStatus } from "@webiny/tasks";
+import type { CmsModel } from "@webiny/api-headless-cms/types";
 
 export interface IValidateImportFromUrlIntegrityUseCaseExecuteParams {
     files: NonEmptyArray<ICmsImportExportFile>;

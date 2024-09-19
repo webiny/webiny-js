@@ -1,5 +1,5 @@
-import { CmsEntry } from "@webiny/api-headless-cms/types";
-import { GenericRecord } from "@webiny/api/types";
+import type { CmsEntry } from "@webiny/api-headless-cms/types";
+import type { GenericRecord } from "@webiny/api/types";
 
 export interface IKeyAsset {
     key: string;

@@ -1,5 +1,9 @@
-import { Context, ICmsImportExportValidatedValidFile } from "~/types";
-import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
+import type { Context, ICmsImportExportValidatedValidFile } from "~/types";
+import type {
+    ITaskResponseDoneResultOutput,
+    ITaskResponseResult,
+    ITaskRunParams
+} from "@webiny/tasks";
 
 export interface IImportFromUrlDownloadInput {
     modelId: string;

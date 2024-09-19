@@ -1,4 +1,4 @@
-import { ICmsAssetsZipperExecuteDoneResult } from "./abstractions/CmsAssetsZipperExecuteDoneResult";
+import type { ICmsAssetsZipperExecuteDoneResult } from "./abstractions/CmsAssetsZipperExecuteDoneResult";
 
 export class CmsAssetsZipperExecuteDoneResult implements ICmsAssetsZipperExecuteDoneResult {
     public readonly key: string;

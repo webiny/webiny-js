@@ -1,7 +1,7 @@
 import { IMPORT_FROM_URL_PROCESS_ENTRIES_TASK } from "~/tasks/constants";
 import { createTaskDefinition } from "@webiny/tasks";
-import { Context } from "~/types";
-import {
+import type { Context } from "~/types";
+import type {
     IImportFromUrlProcessEntriesInput,
     IImportFromUrlProcessEntriesOutput
 } from "./domain/importFromUrlProcessEntries/abstractions/ImportFromUrlProcessEntries";

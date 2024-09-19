@@ -1,5 +1,10 @@
-import { CmsModel, CmsModelAst, CmsModelField, HeadlessCms } from "@webiny/api-headless-cms/types";
-import { IExportedCmsModel } from "~/tasks/domain/abstractions/ExportContentEntriesController";
+import type {
+    CmsModel,
+    CmsModelAst,
+    CmsModelField,
+    HeadlessCms
+} from "@webiny/api-headless-cms/types";
+import type { IExportedCmsModel } from "~/tasks/domain/abstractions/ExportContentEntriesController";
 import { ModelFieldTraverser } from "@webiny/api-headless-cms/utils";
 import { WebinyError } from "@webiny/error";
 

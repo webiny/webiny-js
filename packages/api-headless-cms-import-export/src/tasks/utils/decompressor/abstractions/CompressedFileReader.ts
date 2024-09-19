@@ -1,5 +1,5 @@
-import { UnzipperFile } from "~/tasks/utils/decompressor";
+import type { IUnzipperFile } from "~/tasks/utils/decompressor";
 
 export interface ICompressedFileReader {
-    read(target: string): Promise<UnzipperFile[]>;
+    read(target: string): Promise<IUnzipperFile[]>;
 }

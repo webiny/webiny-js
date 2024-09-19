@@ -4,7 +4,11 @@ import {
     HeadObjectCommand,
     S3Client
 } from "@webiny/aws-sdk/client-s3";
-import { IUrlSigner, IUrlSignerSignParams, IUrlSignerSignResult } from "./abstractions/UrlSigner";
+import type {
+    IUrlSigner,
+    IUrlSignerSignParams,
+    IUrlSignerSignResult
+} from "./abstractions/UrlSigner";
 
 const DEFAULT_TIMEOUT = 3600; // 1 hour
 

@@ -1,4 +1,4 @@
-import { IMultipartUploadHandler } from "./MultipartUploadHandler";
+import type { IMultipartUploadHandler } from "./MultipartUploadHandler";
 
 export interface IMultipartUploadFactoryContinueParams {
     uploadId?: string;

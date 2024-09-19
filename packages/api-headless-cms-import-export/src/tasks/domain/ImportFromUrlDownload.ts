@@ -1,22 +1,17 @@
-import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks/types";
-import {
+import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks/types";
+import type {
     IImportFromUrlDownload,
     IImportFromUrlDownloadInput,
     IImportFromUrlDownloadOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlDownload";
-import { Context } from "~/types";
+import type { Context } from "~/types";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
-import {
-    createMultipartUpload,
-    createMultipartUploadFactory,
-    IMultipartUploadFactoryContinueParams
-} from "~/tasks/utils/upload";
+import type { IMultipartUploadFactoryContinueParams } from "~/tasks/utils/upload";
+import { createMultipartUpload, createMultipartUploadFactory } from "~/tasks/utils/upload";
 import { prependImportPath } from "~/tasks/utils/helpers/importPath";
-import {
-    createDownloadFileFromUrl,
-    IDownloadFileFromUrlProcessResponseType
-} from "./downloadFileFromUrl";
+import type { IDownloadFileFromUrlProcessResponseType } from "./downloadFileFromUrl";
+import { createDownloadFileFromUrl } from "./downloadFileFromUrl";
 
 type ProcessType = IDownloadFileFromUrlProcessResponseType<"continue" | "aborted">;
 

@@ -1,7 +1,7 @@
-import { CmsModel } from "@webiny/api-headless-cms/types";
-import { ICmsEntryZipperExecuteContinueResult } from "./CmsEntryZipperExecuteContinueResult";
-import { ICmsEntryZipperExecuteDoneResult } from "./CmsEntryZipperExecuteDoneResult";
-import { IIsCloseToTimeoutCallable } from "@webiny/tasks";
+import type { CmsModel } from "@webiny/api-headless-cms/types";
+import type { ICmsEntryZipperExecuteContinueResult } from "./CmsEntryZipperExecuteContinueResult";
+import type { ICmsEntryZipperExecuteDoneResult } from "./CmsEntryZipperExecuteDoneResult";
+import type { IIsCloseToTimeoutCallable } from "@webiny/tasks";
 
 export interface ICmsEntryZipperExecuteParams {
     isCloseToTimeout: IIsCloseToTimeoutCallable;

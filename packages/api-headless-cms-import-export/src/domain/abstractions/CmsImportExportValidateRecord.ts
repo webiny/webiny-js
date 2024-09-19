@@ -1,6 +1,6 @@
-import { ICmsImportExportValidatedFile } from "~/types";
-import { GenericRecord, NonEmptyArray } from "@webiny/api/types";
-import { TaskDataStatus } from "@webiny/tasks";
+import type { ICmsImportExportValidatedFile } from "~/types";
+import type { GenericRecord, NonEmptyArray } from "@webiny/api/types";
+import type { TaskDataStatus } from "@webiny/tasks";
 
 export interface ICmsImportExportValidateRecord {
     id: string;

@@ -1,7 +1,7 @@
 import { createTaskDefinition } from "@webiny/tasks";
 import { IMPORT_FROM_URL_CONTROLLER_TASK } from "./constants";
-import { Context } from "~/types";
-import {
+import type { Context } from "~/types";
+import type {
     IImportFromUrlControllerInput,
     IImportFromUrlControllerOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlController";

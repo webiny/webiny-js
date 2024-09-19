@@ -1,5 +1,5 @@
-import { CompleteMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3";
-import {
+import type { CompleteMultipartUploadCommandOutput } from "@webiny/aws-sdk/client-s3";
+import type {
     IMultipartUploadHandlerCompleteResult,
     IPart
 } from "../abstractions/MultipartUploadHandler";

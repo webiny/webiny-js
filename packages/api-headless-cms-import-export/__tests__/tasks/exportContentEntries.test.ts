@@ -1,7 +1,7 @@
 import { createRunner } from "@webiny/project-utils/testing/tasks";
 import { useHandler } from "~tests/helpers/useHandler";
 import { createExportContentEntriesTask } from "~/tasks";
-import { ITaskRunParams } from "@webiny/tasks";
+import type { ITaskRunParams } from "@webiny/tasks";
 
 jest.mock("~/tasks/domain/createExportContentEntries", () => {
     return {

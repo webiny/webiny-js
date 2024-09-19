@@ -1,9 +1,6 @@
 import { NodeHttpHandler } from "@smithy/node-http-handler";
-import {
-    createS3Client as baseCreateS3Client,
-    S3Client,
-    S3ClientConfig
-} from "@webiny/aws-sdk/client-s3";
+import type { S3Client, S3ClientConfig } from "@webiny/aws-sdk/client-s3";
+import { createS3Client as baseCreateS3Client } from "@webiny/aws-sdk/client-s3";
 import { Agent as HttpAgent } from "http";
 import { Agent as HttpsAgent } from "https";
 

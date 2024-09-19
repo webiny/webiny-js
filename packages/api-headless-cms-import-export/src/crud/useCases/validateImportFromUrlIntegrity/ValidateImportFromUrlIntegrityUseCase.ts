@@ -1,11 +1,11 @@
-import {
+import type {
     IValidateImportFromUrlIntegrityUseCase,
     IValidateImportFromUrlIntegrityUseCaseExecuteParams,
     IValidateImportFromUrlIntegrityUseCaseExecuteResult
 } from "./abstractions/ValidateImportFromUrlIntegrityUseCase";
-import { ITasksContextObject } from "@webiny/tasks";
+import type { ITasksContextObject } from "@webiny/tasks";
 import { VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK } from "~/tasks/constants";
-import { IValidateImportFromUrlInput } from "~/tasks/domain/abstractions/ValidateImportFromUrl";
+import type { IValidateImportFromUrlInput } from "~/tasks/domain/abstractions/ValidateImportFromUrl";
 
 export interface IValidateImportFromUrlIntegrityUseCaseParams {
     triggerTask: ITasksContextObject["trigger"];

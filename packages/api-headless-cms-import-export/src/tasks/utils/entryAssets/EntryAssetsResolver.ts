@@ -1,11 +1,11 @@
-import {
+import type {
     File,
     FileListMeta,
     FileListWhereParams,
     FilesListOpts
 } from "@webiny/api-file-manager/types";
-import { IEntryAssetsResolver, IResolvedAsset } from "./abstractions/EntryAssetsResolver";
-import { IAsset } from "./abstractions/EntryAssets";
+import type { IEntryAssetsResolver, IResolvedAsset } from "./abstractions/EntryAssetsResolver";
+import type { IAsset } from "./abstractions/EntryAssets";
 
 export interface IFetchFilesCbResult {
     items: File[];

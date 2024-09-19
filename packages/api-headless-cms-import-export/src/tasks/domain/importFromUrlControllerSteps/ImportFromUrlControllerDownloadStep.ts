@@ -1,17 +1,17 @@
-import { ImportFromUrlControllerStep } from "./abstractions/ImportFromUrlControllerStep";
-import {
+import type { ImportFromUrlControllerStep } from "./abstractions/ImportFromUrlControllerStep";
+import type {
     IImportFromUrlDownloadInput,
     IImportFromUrlDownloadOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlDownload";
 import { IMPORT_FROM_URL_DOWNLOAD_TASK } from "~/tasks/constants";
 import { getBackOffSeconds } from "~/tasks/utils/helpers/getBackOffSeconds";
-import { Context } from "~/types";
-import {
+import type { Context } from "~/types";
+import type {
     IImportFromUrlControllerInput,
-    IImportFromUrlControllerInputStep,
     IImportFromUrlControllerOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlController";
-import { ITask, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
+import { IImportFromUrlControllerInputStep } from "~/tasks/domain/abstractions/ImportFromUrlController";
+import type { ITask, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import { getChildTasks } from "./getChildTasks";
 
 export class ImportFromUrlControllerDownloadStep<

@@ -1,9 +1,10 @@
-import { CmsImportExportFileType, ICmsImportExportFile } from "~/types";
+import { CmsImportExportFileType } from "~/types";
+import type { ICmsImportExportFile } from "~/types";
 import zod from "zod";
 import { WebinyError } from "@webiny/error";
 import { createZodError } from "@webiny/utils";
-import { IExportedCmsModel } from "~/tasks/domain/abstractions/ExportContentEntriesController";
-import { GenericRecord } from "@webiny/api/types";
+import type { IExportedCmsModel } from "~/tasks/domain/abstractions/ExportContentEntriesController";
+import type { GenericRecord } from "@webiny/api/types";
 
 const validateData = zod.object({
     /**

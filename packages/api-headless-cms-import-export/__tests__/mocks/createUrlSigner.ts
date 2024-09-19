@@ -1,4 +1,4 @@
-import { IUrlSigner } from "~/tasks/utils/urlSigner";
+import type { IUrlSigner } from "~/tasks/utils/urlSigner";
 
 export const createUrlSigner = (): IUrlSigner => {
     return {

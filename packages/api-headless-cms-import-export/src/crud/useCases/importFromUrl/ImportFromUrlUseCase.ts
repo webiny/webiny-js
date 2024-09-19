@@ -1,25 +1,26 @@
-import {
+import type {
     IImportFromUrlUseCase,
     IImportFromUrlUseCaseExecuteParams,
     IImportFromUrlUseCaseExecuteResponse
 } from "./abstractions/ImportFromUrlUseCase";
-import { ITasksContextObject, TaskDataStatus } from "@webiny/tasks";
+import type { ITasksContextObject } from "@webiny/tasks";
+import { TaskDataStatus } from "@webiny/tasks";
 import {
     IMPORT_FROM_URL_CONTROLLER_TASK,
     VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK
 } from "~/tasks/constants";
 import { WebinyError } from "@webiny/error";
-import {
+import type {
     IValidateImportFromUrlInput,
     IValidateImportFromUrlOutput
 } from "~/tasks/domain/abstractions/ValidateImportFromUrl";
 import { convertTaskToImportRecord } from "~/crud/utils/convertTaskToImportRecord";
-import {
+import type {
     IImportFromUrlControllerInput,
     IImportFromUrlControllerOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlController";
-import { NonEmptyArray } from "@webiny/api/types";
-import {
+import type { NonEmptyArray } from "@webiny/api/types";
+import type {
     ICmsImportExportValidatedAssetsFile,
     ICmsImportExportValidatedContentEntriesFile
 } from "~/types";

@@ -2,7 +2,7 @@ import AdmZip from "adm-zip";
 import { createCmsEntryZipper } from "~tests/mocks/createCmsEntryZipper";
 import { fetchItems, images } from "./mocks/cmsEntryZipperItems";
 import { createModelPlugin } from "~tests/mocks/model";
-import { CmsModel } from "@webiny/api-headless-cms/types";
+import type { CmsModel } from "@webiny/api-headless-cms/types";
 import { createCmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher";
 import { createUniqueResolver } from "~tests/mocks/createUniqueResolver";
 import { createEntryAssets } from "~tests/mocks/createEntryAssets";

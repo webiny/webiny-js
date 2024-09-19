@@ -1,14 +1,14 @@
-import {
+import type {
     IDecompressor,
     IDecompressorDecompressParams,
-    UnzipperFile
+    IUnzipperFile
 } from "./abstractions/Decompressor";
-import {
+import type {
     IMultipartUploadFactory,
     IMultipartUploadHandlerAddResult,
     IUploadDoneResult
 } from "~/tasks/utils/upload";
-import { Entry } from "unzipper";
+import type { Entry } from "unzipper";
 import { PassThrough } from "stream";
 
 export interface IDecompressorParamsUploadCreateFactory {
@@ -28,7 +28,7 @@ export class Decompressor implements IDecompressor {
     /**
      * Should not be used with large files (> 10/20MB)
      */
-    public async read(files: UnzipperFile[], target: string): Promise<string> {
+    public async read(files: IUnzipperFile[], target: string): Promise<string> {
         const file = files.find(f => f.path === target);
         if (!file) {
             throw new Error(`File "${target}" not found in the compressed file.`);

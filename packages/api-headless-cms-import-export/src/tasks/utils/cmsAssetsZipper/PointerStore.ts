@@ -1,4 +1,4 @@
-import { CmsEntryMeta } from "@webiny/api-headless-cms/types";
+import type { CmsEntryMeta } from "@webiny/api-headless-cms/types";
 
 export interface IPointerStoreParams {
     entryMeta: {

@@ -1,5 +1,9 @@
-import { ITaskResponseDoneResultOutput, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
-import { Context, ICmsImportExportValidatedValidFile } from "~/types";
+import type {
+    ITaskResponseDoneResultOutput,
+    ITaskResponseResult,
+    ITaskRunParams
+} from "@webiny/tasks";
+import type { Context, ICmsImportExportValidatedValidFile } from "~/types";
 
 export type IImportFromUrlProcessAssetsInputFile = Pick<
     ICmsImportExportValidatedValidFile,

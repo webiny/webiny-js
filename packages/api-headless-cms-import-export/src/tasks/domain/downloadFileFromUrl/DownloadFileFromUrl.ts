@@ -1,5 +1,5 @@
-import { IMultipartUploadHandler } from "~/tasks/utils/upload";
-import {
+import type { IMultipartUploadHandler } from "~/tasks/utils/upload";
+import type {
     IDownloadFileFromUrl,
     IDownloadFileFromUrlProcessOnIterationCallable,
     IDownloadFileFromUrlProcessResponseType

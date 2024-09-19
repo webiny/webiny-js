@@ -1,5 +1,5 @@
 import { ExternalFileFetcher } from "~/tasks/utils/externalFileFetcher";
-import { GenericRecord } from "@webiny/api/types";
+import type { GenericRecord } from "@webiny/api/types";
 
 const createFetcherResponse = (params: Partial<Response>): Response => {
     return {

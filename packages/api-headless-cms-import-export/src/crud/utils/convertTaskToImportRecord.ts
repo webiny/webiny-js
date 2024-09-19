@@ -1,6 +1,6 @@
-import { ITask } from "@webiny/tasks";
-import { ICmsImportExportObjectImportFromUrlResult } from "~/types";
-import {
+import type { ITask } from "@webiny/tasks";
+import type { ICmsImportExportObjectImportFromUrlResult } from "~/types";
+import type {
     IImportFromUrlControllerInput,
     IImportFromUrlControllerOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlController";

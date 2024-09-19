@@ -1,7 +1,7 @@
 import { ContextPlugin } from "@webiny/api";
-import { Plugin } from "@webiny/plugins/types";
+import type { Plugin } from "@webiny/plugins/types";
 import { attachHeadlessCmsImportExportGraphQL } from "~/graphql";
-import { Context } from "./types";
+import type { Context } from "./types";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { createHeadlessCmsImportExportCrud } from "~/crud";
 import {

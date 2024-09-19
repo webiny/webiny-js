@@ -1,9 +1,9 @@
-import {
+import type {
     IImportFromUrlProcessEntriesInput,
     IImportFromUrlProcessEntriesOutput
 } from "./ImportFromUrlProcessEntries";
-import { Context } from "~/types";
-import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
+import type { Context } from "~/types";
+import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 
 export type IImportFromUrlProcessEntriesDecompressRunParams<
     C extends Context = Context,

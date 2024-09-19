@@ -1,6 +1,6 @@
 import { createTaskDefinition } from "@webiny/tasks";
-import { Context } from "~/types";
-import {
+import type { Context } from "~/types";
+import type {
     IExportContentAssetsInput,
     IExportContentAssetsOutput
 } from "~/tasks/domain/abstractions/ExportContentAssets";

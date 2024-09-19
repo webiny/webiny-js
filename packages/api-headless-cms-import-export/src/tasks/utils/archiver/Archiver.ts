@@ -1,5 +1,6 @@
-import { IArchiver } from "./abstractions/Archiver";
-import vending, { Archiver as BaseArchiver, ArchiverOptions } from "archiver";
+import type { IArchiver } from "./abstractions/Archiver";
+import type { Archiver as BaseArchiver, ArchiverOptions } from "archiver";
+import { create as baseCreateArchiver } from "archiver";
 
 export interface IArchiverConfig {
     format?: "zip";
@@ -10,7 +11,7 @@ export class Archiver implements IArchiver {
     public readonly archiver: BaseArchiver;
 
     public constructor(config: IArchiverConfig) {
-        this.archiver = vending.create(config.format || "zip", config.options);
+        this.archiver = baseCreateArchiver(config.format || "zip", config.options);
     }
 }
 

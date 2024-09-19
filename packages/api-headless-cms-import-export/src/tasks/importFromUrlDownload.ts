@@ -1,7 +1,7 @@
 import { IMPORT_FROM_URL_DOWNLOAD_TASK } from "~/tasks/constants";
 import { createTaskDefinition } from "@webiny/tasks";
-import { Context } from "~/types";
-import {
+import type { Context } from "~/types";
+import type {
     IImportFromUrlDownloadInput,
     IImportFromUrlDownloadOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlDownload";

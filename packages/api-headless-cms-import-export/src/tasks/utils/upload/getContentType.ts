@@ -1,4 +1,4 @@
-import { GenericRecord, NonEmptyArray } from "@webiny/api/types";
+import type { GenericRecord, NonEmptyArray } from "@webiny/api/types";
 import { WEBINY_EXPORT_ASSETS_EXTENSION, WEBINY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants";
 
 const allowedContentTypes: GenericRecord<string, NonEmptyArray<string>> = {

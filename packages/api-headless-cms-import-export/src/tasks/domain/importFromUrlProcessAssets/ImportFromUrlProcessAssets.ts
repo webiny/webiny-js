@@ -1,17 +1,21 @@
-import { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks/types";
-import {
+import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks/types";
+import type {
     IImportFromUrlProcessAssets,
     IImportFromUrlProcessAssetsInput,
     IImportFromUrlProcessAssetsOutput
 } from "~/tasks/domain/importFromUrlProcessAssets/abstractions/ImportFromUrlProcessAssets";
 import { CmsImportExportFileType, Context } from "~/types";
-import { IFileFetcher } from "~/tasks/utils/fileFetcher";
-import { ICompressedFileReader, IDecompressor, UnzipperFile } from "~/tasks/utils/decompressor";
+import type { IFileFetcher } from "~/tasks/utils/fileFetcher";
+import type {
+    ICompressedFileReader,
+    IDecompressor,
+    IUnzipperFile
+} from "~/tasks/utils/decompressor";
 import { MANIFEST_JSON } from "~/tasks/constants";
 import { getFilePath } from "~/tasks/utils/helpers/getFilePath";
 import { WebinyError } from "@webiny/error";
-import { ICmsAssetsManifestJson } from "~/tasks/utils/types";
-import { IResolvedAsset } from "~/tasks/utils/entryAssets";
+import type { ICmsAssetsManifestJson } from "~/tasks/utils/types";
+import type { IResolvedAsset } from "~/tasks/utils/entryAssets";
 
 export interface IImportFromUrlProcessAssetsParams {
     fileFetcher: IFileFetcher;
@@ -206,7 +210,10 @@ export class ImportFromUrlProcessAssets<
         }
     }
 
-    private async readManifest(sources: UnzipperFile[], input: I): Promise<ICmsAssetsManifestJson> {
+    private async readManifest(
+        sources: IUnzipperFile[],
+        input: I
+    ): Promise<ICmsAssetsManifestJson> {
         let manifest: string | undefined = input?.manifest;
 
         if (!manifest) {

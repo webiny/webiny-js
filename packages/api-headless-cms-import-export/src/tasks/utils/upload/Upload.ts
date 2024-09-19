@@ -1,5 +1,7 @@
-import { Options as BaseUploadOptions, Upload as BaseUpload } from "@webiny/aws-sdk/lib-storage";
-import { PassThrough, Transform } from "stream";
+import type { Options as BaseUploadOptions } from "@webiny/aws-sdk/lib-storage";
+import { Upload as BaseUpload } from "@webiny/aws-sdk/lib-storage";
+import type { Transform } from "stream";
+import { PassThrough } from "stream";
 import type {
     CompleteMultipartUploadCommandOutput,
     PutObjectCommandInput,

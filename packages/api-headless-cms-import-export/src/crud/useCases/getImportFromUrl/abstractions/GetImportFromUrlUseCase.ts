@@ -1,4 +1,4 @@
-import {
+import type {
     IImportFromUrlUseCaseExecuteParams,
     IImportFromUrlUseCaseExecuteResponse
 } from "~/crud/useCases/importFromUrl/abstractions/ImportFromUrlUseCase";

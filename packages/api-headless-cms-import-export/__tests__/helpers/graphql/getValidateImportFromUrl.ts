@@ -1,5 +1,5 @@
 import { createErrorFields, createValidateImportFromUrlFields } from "./fields";
-import { IInvokeCb } from "~tests/helpers/types";
+import type { IInvokeCb } from "~tests/helpers/types";
 
 const query = /* GraphQL */ `
     query GetValidateImportFromUrl($id: ID!) {

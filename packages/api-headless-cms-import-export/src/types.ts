@@ -1,8 +1,8 @@
-import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { Context as TasksContext, TaskDataStatus } from "@webiny/tasks/types";
-import { ICmsImportExportRecord } from "./domain/abstractions/CmsImportExportRecord";
-import { GenericRecord, NonEmptyArray } from "@webiny/api/types";
-import { CmsEntryMeta } from "@webiny/api-headless-cms/types";
+import type { FileManagerContext } from "@webiny/api-file-manager/types";
+import type { Context as TasksContext, TaskDataStatus } from "@webiny/tasks/types";
+import type { ICmsImportExportRecord } from "./domain/abstractions/CmsImportExportRecord";
+import type { GenericRecord, NonEmptyArray } from "@webiny/api/types";
+import type { CmsEntryMeta } from "@webiny/api-headless-cms/types";
 
 export * from "./domain/abstractions/CmsImportExportRecord";
 
