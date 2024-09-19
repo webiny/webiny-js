@@ -119,6 +119,7 @@ export interface Auth0Props {
     auth0: Auth0Options;
     rootAppClientId: string;
     onLogout?: OnLogout;
+    onRedirect?: OnLogout;
     children?: React.ReactNode;
 }
 

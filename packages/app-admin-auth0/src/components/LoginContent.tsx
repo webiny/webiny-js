@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { makeDecoratable } from "@webiny/app-serverless-cms";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { alignCenter, Title } from "~/components/StyledComponents";
@@ -7,12 +7,12 @@ import { ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 import { ReactComponent as Auth0Icon } from "~/assets/icons/auth0-icon.svg";
 import { useAuth0 } from "@auth0/auth0-react";
 
-export const LoginContent = makeDecoratable("LoginContent", () => {
-    const { isAuthenticated, loginWithRedirect } = useAuth0();
+export interface LoginContentProps {
+    onLogin: () => void;
+}
 
-    const login = useCallback(() => {
-        loginWithRedirect();
-    }, []);
+export const LoginContent = makeDecoratable("LoginContent", ({ onLogin }: LoginContentProps) => {
+    const { isAuthenticated } = useAuth0();
 
     return (
         <>
@@ -33,7 +33,7 @@ export const LoginContent = makeDecoratable("LoginContent", () => {
                         </Typography>
                     </div>
                     <div className={alignCenter} style={{ marginTop: 20 }}>
-                        <ButtonPrimary onClick={login}>
+                        <ButtonPrimary onClick={onLogin}>
                             <ButtonIcon icon={<Auth0Icon />} />
                             Sign in via Auth0
                         </ButtonPrimary>

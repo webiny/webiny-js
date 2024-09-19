@@ -3,12 +3,21 @@ import { setContext } from "apollo-link-context";
 import ApolloClient from "apollo-client";
 import { DocumentNode } from "graphql";
 import { useApolloClient } from "@apollo/react-hooks";
-import { useAuth0, Auth0Provider, Auth0ProviderOptions, LogoutOptions } from "@auth0/auth0-react";
+import {
+    useAuth0,
+    Auth0Provider,
+    Auth0ProviderOptions,
+    LogoutOptions,
+    Auth0ContextInterface,
+    AppState,
+    User
+} from "@auth0/auth0-react";
 import { plugins } from "@webiny/plugins";
 import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin";
 import { useSecurity } from "@webiny/app-serverless-cms";
 import { useTenancy, withTenant } from "@webiny/app-tenancy";
 import { SecurityPermission } from "@webiny/app-security/types";
+import { useRouter, UseHistory } from "@webiny/react-router";
 import {
     createGetIdentityData,
     GetIdentityDataCallable,
@@ -21,10 +30,21 @@ export type Auth0Options = Auth0ProviderOptions;
 
 export type OnLogout = (logout: (options?: LogoutOptions) => Promise<void>) => void;
 
+interface OnRedirectParams {
+    history: UseHistory;
+    appState?: AppState;
+    user?: User;
+}
+
+export type OnRedirect = (params: OnRedirectParams) => void;
+export type OnLogin = (auth0: Auth0ContextInterface) => void;
+
 export interface CreateAuthenticationConfig {
     getIdentityData?: GetIdentityDataCallable;
     loginMutation?: DocumentNode;
+    onLogin?: OnLogin;
     onLogout?: OnLogout;
+    onRedirect?: OnRedirect;
     onError?(error: Error): void;
     auth0: Auth0Options;
 }
@@ -52,10 +72,24 @@ const validatePermissions = (permissions: SecurityPermission[]) => {
 
 const defaultLogout: OnLogout = logout => logout();
 
+const defaultRedirect: OnRedirect = ({ appState, history }) => {
+    if (appState?.returnTo) {
+        history.push(appState.returnTo);
+    }
+};
+
+const defaultLogin: OnLogin = auth0 => {
+    auth0.loginWithRedirect({
+        appState: { returnTo: window.location.pathname + window.location.search }
+    });
+};
+
 export const createAuthentication = ({
     auth0,
     onError,
+    onLogin = defaultLogin,
     onLogout = defaultLogout,
+    onRedirect = defaultRedirect,
     ...config
 }: CreateAuthenticationConfig) => {
     const withGetIdentityData = (
@@ -71,8 +105,9 @@ export const createAuthentication = ({
     };
 
     const Authentication = ({ getIdentityData, children }: AuthenticationProps) => {
+        const auth0Context = useAuth0();
         const { isAuthenticated, isLoading, getIdTokenClaims, getAccessTokenSilently, logout } =
-            useAuth0();
+            auth0Context;
 
         const apolloClient = useApolloClient();
         const { setIdentity, identity, setIdTokenProvider } = useSecurity();
@@ -168,6 +203,10 @@ export const createAuthentication = ({
             }
         };
 
+        const login = () => {
+            onLogin(auth0Context);
+        };
+
         useEffect(() => {
             // Call Webiny to fetch the identity information.
             if (isAuthenticated) {
@@ -188,7 +227,7 @@ export const createAuthentication = ({
 
         return (
             <LoginLayout>
-                <LoginContent />
+                <LoginContent onLogin={login} />
             </LoginLayout>
         );
     };
@@ -197,10 +236,15 @@ export const createAuthentication = ({
     const LoginWidget = withGetIdentityData(withTenant(Authentication));
 
     return function Authentication({ children }: PropsWithChildren) {
+        const { history } = useRouter();
+
         return (
             <Auth0Provider
                 useRefreshTokens={true}
                 cacheLocation="memory"
+                onRedirectCallback={(appState, user) => {
+                    onRedirect({ appState, user, history });
+                }}
                 {...auth0}
                 authorizationParams={{
                     redirect_uri: window.location.origin,
