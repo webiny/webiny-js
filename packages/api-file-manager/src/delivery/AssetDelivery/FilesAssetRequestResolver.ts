@@ -1,6 +1,6 @@
 import { Request } from "@webiny/handler/types";
 import { AssetRequestResolver } from "./abstractions/AssetRequestResolver";
-import { AssetRequest } from "./AssetRequest";
+import { AssetRequest, AssetRequestOptions } from "./AssetRequest";
 
 export class FilesAssetRequestResolver implements AssetRequestResolver {
     async resolve(request: Request): Promise<AssetRequest | undefined> {
@@ -15,15 +15,21 @@ export class FilesAssetRequestResolver implements AssetRequestResolver {
         // Example: { '*': '/files/65722cb5c7824a0008d05963/image-48.jpg' },
         const path = params["*"];
 
+        const options: AssetRequestOptions = {
+            ...query,
+            original: "original" in query
+        };
+
+        if (query.width) {
+            options.width = parseInt(query.width);
+        }
+
         return new AssetRequest({
             key: decodeURI(path).replace("/files/", ""),
             context: {
                 url: request.url
             },
-            options: {
-                ...query,
-                width: query.width ? parseInt(query.width) : undefined
-            }
+            options
         });
     }
 }

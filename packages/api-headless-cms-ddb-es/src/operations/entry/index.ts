@@ -1289,7 +1289,11 @@ export const createEntriesStorageOperations = (
             items.push(
                 entity.putBatch({
                     ...latestStorageEntry,
-                    PK: partitionKey,
+                    PK: createPartitionKey({
+                        id: initialLatestStorageEntry.id,
+                        locale: model.locale,
+                        tenant: model.tenant
+                    }),
                     SK: createRevisionSortKey(initialLatestStorageEntry),
                     TYPE: createRecordType()
                 })
@@ -1330,7 +1334,7 @@ export const createEntriesStorageOperations = (
                     error: ex,
                     entry,
                     latestEntry,
-                    latestStorageEntry: initialLatestStorageEntry
+                    initialLatestStorageEntry
                 }
             );
         }
@@ -1353,7 +1357,7 @@ export const createEntriesStorageOperations = (
                     error: ex,
                     entry,
                     latestEntry,
-                    latestStorageEntry: initialLatestStorageEntry
+                    initialLatestStorageEntry
                 }
             );
         }

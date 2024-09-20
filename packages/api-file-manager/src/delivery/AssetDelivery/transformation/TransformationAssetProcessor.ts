@@ -12,6 +12,7 @@ export class TransformationAssetProcessor implements AssetProcessor {
 
         // If the `original` image was requested, we skip all transformations.
         if (original) {
+            console.log("Skip transformations; original asset was requested.");
             return asset;
         }
 
