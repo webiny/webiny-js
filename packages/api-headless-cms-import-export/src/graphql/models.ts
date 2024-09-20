@@ -1,15 +1,16 @@
 import type { Context } from "~/types";
+import { CmsModel } from "@webiny/api-headless-cms/types";
 
-export const listModels = async (context: Context): Promise<string[]> => {
+export const listModels = async (context: Context): Promise<CmsModel[]> => {
     return await context.security.withoutAuthorization(async () => {
-        const models = await context.cms.listModels();
+        try {
+            const models = await context.cms.listModels();
 
-        return models.reduce<string[]>((collection, model) => {
-            if (model.isPrivate) {
-                return collection;
-            }
-            collection.push(model.modelId);
-            return collection;
-        }, []);
+            return models.filter(model => {
+                return !model.isPrivate;
+            });
+        } catch (ex) {
+            return [];
+        }
     });
 };

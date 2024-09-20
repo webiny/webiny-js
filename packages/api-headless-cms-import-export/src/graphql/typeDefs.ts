@@ -1,6 +1,27 @@
 import type { NonEmptyArray } from "@webiny/api/types";
+import { CmsModel } from "@webiny/api-headless-cms/types";
 
-export const createTypeDefs = (models: NonEmptyArray<string>): string => {
+const createExportContentEntriesByModel = (models: NonEmptyArray<CmsModel>): string => {
+    return models
+        .map(model => {
+            return /* GraphQL */ `
+            export${model.pluralApiName}ContentEntries(
+                # limit on how much entries will be fetched in a single batch - mostly used for testing
+                limit: Int
+                # do we export assets as well? default is false
+                exportAssets: Boolean
+                # filter the entries by providing a where input
+                where: ${model.singularApiName}ListWhereInput
+                # if after is provided, export will start after the provided cursor
+                after: String
+            ): ExportContentEntriesResponse!
+            
+        `;
+        })
+        .join("\n");
+};
+
+export const createTypeDefs = (models: NonEmptyArray<CmsModel>): string => {
     return /* GraphQL */ `
         enum ExportContentEntriesExportRecordStatusEnum {
             pending
@@ -121,7 +142,7 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
         }
         
         enum ExportContentEntriesModelsListEnum {
-            ${models.join("\n")}
+            ${models.map(model => model.modelId).join("\n")}
         }
         
         extend type Query {
@@ -132,13 +153,8 @@ export const createTypeDefs = (models: NonEmptyArray<string>): string => {
         }
 
         extend type Mutation {
-            exportContentEntries(
-                modelId: ExportContentEntriesModelsListEnum!
-                # limit on how much entries will be fetched in a single batch - mostly used for testing
-                limit: Int
-                # do we export assets as well? default is false
-                exportAssets: Boolean
-            ): ExportContentEntriesResponse!
+            ${createExportContentEntriesByModel(models)}
+        
             abortExportContentEntries(id: ID!): AbortExportContentEntriesResponse!
             validateImportFromUrl(data: JSON!): ValidateImportFromUrlResponse!
             # the id is a task id returned from the validateImportFromUrl mutation

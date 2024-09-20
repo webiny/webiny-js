@@ -2,8 +2,8 @@ import type { Context } from "~/types";
 import { createZodError } from "@webiny/utils";
 import { resolve, resolveList } from "@webiny/handler-graphql";
 import zod from "zod";
-import type { NonEmptyArray } from "@webiny/api/types";
-import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
+import type { GenericRecord, NonEmptyArray } from "@webiny/api/types";
+import { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types";
 
 const validateAbortExportContentEntries = zod.object({
     id: zod.string()
@@ -40,15 +40,41 @@ const abortImportFromUrl = zod.object({
     id: zod.string()
 });
 
-export const createResolvers = (models: NonEmptyArray<string>) => {
-    const validateExportContentEntriesInput = zod.object({
-        modelId: zod.enum(models),
-        exportAssets: zod.boolean().optional().default(false),
-        limit: zod.number().optional(),
-        after: zod.string().optional(),
-        where: zod.object({}).passthrough().optional().default({})
-    });
+const validateExportContentEntriesInput = zod.object({
+    exportAssets: zod.boolean().optional().default(false),
+    limit: zod.number().optional(),
+    after: zod.string().optional(),
+    where: zod.object({}).passthrough().optional().default({})
+});
+/**
+ * Create export resolver for each of the models given.
+ */
+const createExportContentEntries = (models: NonEmptyArray<CmsModel>) => {
+    return models.reduce<GenericRecord<string>>((resolvers, model) => {
+        resolvers[`export${model.pluralApiName}ContentEntries`] = async (
+            _: unknown,
+            input: unknown,
+            context: Context
+        ) => {
+            return resolve(async () => {
+                const result = validateExportContentEntriesInput.safeParse(input);
 
+                if (!result.success) {
+                    throw createZodError(result.error);
+                }
+
+                return await context.cmsImportExport.exportContentEntries({
+                    ...result.data,
+                    modelId: model.modelId,
+                    where: result.data.where ? (result.data.where as CmsEntryListWhere) : undefined
+                });
+            });
+        };
+        return resolvers;
+    }, {});
+};
+
+export const createResolvers = (models: NonEmptyArray<CmsModel>) => {
     return {
         Query: {
             async getExportContentEntries(_: unknown, input: unknown, context: Context) {
@@ -95,22 +121,7 @@ export const createResolvers = (models: NonEmptyArray<string>) => {
             }
         },
         Mutation: {
-            async exportContentEntries(_: unknown, input: unknown, context: Context) {
-                return resolve(async () => {
-                    const result = validateExportContentEntriesInput.safeParse(input);
-
-                    if (!result.success) {
-                        throw createZodError(result.error);
-                    }
-
-                    return await context.cmsImportExport.exportContentEntries({
-                        ...result.data,
-                        where: result.data.where
-                            ? (result.data.where as CmsEntryListWhere)
-                            : undefined
-                    });
-                });
-            },
+            ...createExportContentEntries(models),
             async abortExportContentEntries(_: unknown, input: unknown, context: Context) {
                 return resolve(async () => {
                     const result = validateAbortExportContentEntries.safeParse(input);
