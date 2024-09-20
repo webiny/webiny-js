@@ -4,6 +4,8 @@ import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 import { IListEntries } from "~/abstractions";
 import { BulkActionOperationByModelAction, IBulkActionOperationByModelTaskParams } from "~/types";
 
+const MAX_TASK_LIST_LENGTH = 10;
+
 /**
  * The `CreateTasksByModel` class handles the execution of a task to process entries in batches.
  */
@@ -51,6 +53,15 @@ export class CreateTasksByModel {
                     return response.continue({
                         ...input,
                         action: BulkActionOperationByModelAction.END_TASK
+                    });
+                }
+
+                // Continue processing if we are reached the task list length limit
+                if (this.taskCache.getTasksLength() === MAX_TASK_LIST_LENGTH) {
+                    await this.taskCache.triggerTask(context, store.getTask());
+                    return response.continue({
+                        ...input,
+                        action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                     });
                 }
 
