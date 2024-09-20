@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { setContext } from "apollo-link-context";
 import ApolloClient from "apollo-client";
 import { DocumentNode } from "graphql";
@@ -40,13 +40,14 @@ export type OnRedirect = (params: OnRedirectParams) => void;
 export type OnLogin = (auth0: Auth0ContextInterface) => void;
 
 export interface CreateAuthenticationConfig {
+    auth0: Auth0Options;
     getIdentityData?: GetIdentityDataCallable;
     loginMutation?: DocumentNode;
     onLogin?: OnLogin;
     onLogout?: OnLogout;
     onRedirect?: OnRedirect;
     onError?(error: Error): void;
-    auth0: Auth0Options;
+    autoLogin?: boolean | (() => boolean);
 }
 
 export interface AuthenticationProps {
@@ -87,6 +88,7 @@ const defaultLogin: OnLogin = auth0 => {
 export const createAuthentication = ({
     auth0,
     onError,
+    autoLogin = false,
     onLogin = defaultLogin,
     onLogout = defaultLogout,
     onRedirect = defaultRedirect,
@@ -106,8 +108,16 @@ export const createAuthentication = ({
 
     const Authentication = ({ getIdentityData, children }: AuthenticationProps) => {
         const auth0Context = useAuth0();
-        const { isAuthenticated, isLoading, getIdTokenClaims, getAccessTokenSilently, logout } =
-            auth0Context;
+        const [loggingIn, setLoggingIn] = useState(false);
+        const {
+            isAuthenticated,
+            isLoading: auth0Loading,
+            getIdTokenClaims,
+            getAccessTokenSilently,
+            logout
+        } = auth0Context;
+
+        const isLoading = auth0Loading || loggingIn;
 
         const apolloClient = useApolloClient();
         const { setIdentity, identity, setIdTokenProvider } = useSecurity();
@@ -158,9 +168,10 @@ export const createAuthentication = ({
 
         const loginSilently = async () => {
             try {
+                setLoggingIn(true);
                 await getAccessTokenSilently();
-            } catch {
-                // Ignore error; it simply means the user is not logged in.
+            } finally {
+                setLoggingIn(false);
             }
         };
 
@@ -204,7 +215,20 @@ export const createAuthentication = ({
         };
 
         const login = () => {
+            setLoggingIn(true);
             onLogin(auth0Context);
+        };
+
+        const restoreSessionOrLogin = async () => {
+            await loginSilently();
+        };
+
+        const shouldLogin = () => {
+            if (typeof autoLogin === "function") {
+                return autoLogin();
+            }
+
+            return autoLogin;
         };
 
         useEffect(() => {
@@ -215,9 +239,12 @@ export const createAuthentication = ({
                 return;
             }
 
-            // Try to restore user's session.
             if (!isAuthenticated && !isLoading) {
-                loginSilently();
+                if (auth0.cacheLocation === "localstorage") {
+                    restoreSessionOrLogin();
+                } else if (shouldLogin()) {
+                    login();
+                }
             }
         }, [isAuthenticated, isLoading]);
 
@@ -227,7 +254,7 @@ export const createAuthentication = ({
 
         return (
             <LoginLayout>
-                <LoginContent onLogin={login} />
+                <LoginContent onLogin={login} isLoading={isLoading} />
             </LoginLayout>
         );
     };
