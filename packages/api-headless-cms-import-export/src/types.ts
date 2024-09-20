@@ -2,7 +2,7 @@ import type { FileManagerContext } from "@webiny/api-file-manager/types";
 import type { Context as TasksContext, TaskDataStatus } from "@webiny/tasks/types";
 import type { ICmsImportExportRecord } from "./domain/abstractions/CmsImportExportRecord";
 import type { GenericRecord, NonEmptyArray } from "@webiny/api/types";
-import type { CmsEntryMeta } from "@webiny/api-headless-cms/types";
+import type { CmsEntryListWhere, CmsEntryMeta } from "@webiny/api-headless-cms/types";
 
 export * from "./domain/abstractions/CmsImportExportRecord";
 
@@ -19,6 +19,8 @@ export interface ICmsImportExportObjectStartExportParams {
     modelId: string;
     exportAssets: boolean;
     limit?: number;
+    where?: CmsEntryListWhere;
+    after?: string;
 }
 
 export interface ICmsImportExportObjectAbortExportParams {
@@ -97,6 +99,11 @@ export interface ICmsImportExportObjectGetValidateImportFromUrlResult {
 export interface ICmsImportExportObjectImportFromUrlParams {
     id: string;
     maxInsertErrors?: number;
+    overwrite?: boolean;
+}
+
+export interface ICmsImportExportObjectAbortImportFromUrlParams {
+    id: string;
 }
 
 export interface ICmsImportExportObjectGetImportFromUrlParams {
@@ -144,6 +151,9 @@ export interface CmsImportExportObject {
     ): Promise<ICmsImportExportObjectGetValidateImportFromUrlResult>;
     importFromUrl(
         params: ICmsImportExportObjectImportFromUrlParams
+    ): Promise<ICmsImportExportObjectImportFromUrlResult>;
+    abortImportFromUrl(
+        params: ICmsImportExportObjectAbortImportFromUrlParams
     ): Promise<ICmsImportExportObjectImportFromUrlResult>;
     getImportFromUrl(
         params: ICmsImportExportObjectGetImportFromUrlParams

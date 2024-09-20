@@ -2,6 +2,7 @@ import type {
     CmsImportExportObject,
     Context,
     ICmsImportExportObjectAbortExportParams,
+    ICmsImportExportObjectAbortImportFromUrlParams,
     ICmsImportExportObjectGetExportParams,
     ICmsImportExportObjectGetImportFromUrlParams,
     ICmsImportExportObjectGetValidateImportFromUrlParams,
@@ -30,6 +31,7 @@ import { ExportContentEntriesUseCase } from "~/crud/useCases/exportContentEntrie
 import { UrlSigner } from "~/tasks/utils/urlSigner";
 import { getBucket } from "~/tasks/utils/helpers/getBucket";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client";
+import { AbortImportFromUrlUseCase } from "./useCases/abortImportFromUrl";
 
 export const createHeadlessCmsImportExportCrud = async (
     context: Context
@@ -74,6 +76,11 @@ export const createHeadlessCmsImportExportCrud = async (
     });
 
     const abortExportContentEntriesUseCase = new AbortExportContentEntriesUseCase({
+        abortTask: context.tasks.abort
+    });
+
+    const abortImportFromUrlUseCase = new AbortImportFromUrlUseCase({
+        getTaskUseCase: getImportFromUrlUseCase,
         abortTask: context.tasks.abort
     });
 
@@ -157,6 +164,12 @@ export const createHeadlessCmsImportExportCrud = async (
         return result;
     };
 
+    const abortImportFromUrl = async (
+        params: ICmsImportExportObjectAbortImportFromUrlParams
+    ): Promise<ICmsImportExportObjectImportFromUrlResult> => {
+        return await abortImportFromUrlUseCase.execute(params);
+    };
+
     return {
         getExportContentEntries,
         listExportContentEntries,
@@ -165,6 +178,7 @@ export const createHeadlessCmsImportExportCrud = async (
         validateImportFromUrl,
         getValidateImportFromUrl,
         importFromUrl,
-        getImportFromUrl
+        getImportFromUrl,
+        abortImportFromUrl
     };
 };

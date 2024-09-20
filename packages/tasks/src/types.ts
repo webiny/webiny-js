@@ -289,7 +289,7 @@ export interface ITasksContextDefinitionObject {
 }
 
 export interface ITaskTriggerParams<I = ITaskDataInput> {
-    parent?: ITask;
+    parent?: Pick<ITask, "id">;
     definition: string;
     name?: string;
     input?: I;

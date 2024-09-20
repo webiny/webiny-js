@@ -3,6 +3,7 @@ import { createZodError } from "@webiny/utils";
 import { resolve, resolveList } from "@webiny/handler-graphql";
 import zod from "zod";
 import type { NonEmptyArray } from "@webiny/api/types";
+import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 
 const validateAbortExportContentEntries = zod.object({
     id: zod.string()
@@ -31,14 +32,21 @@ const getImportFromUrl = zod.object({
 
 const importFromUrlValidation = zod.object({
     id: zod.string(),
-    maxInsertErrors: zod.number().optional()
+    maxInsertErrors: zod.number().optional().default(100),
+    overwrite: zod.boolean().optional().default(false)
+});
+
+const abortImportFromUrl = zod.object({
+    id: zod.string()
 });
 
 export const createResolvers = (models: NonEmptyArray<string>) => {
     const validateExportContentEntriesInput = zod.object({
         modelId: zod.enum(models),
         exportAssets: zod.boolean().optional().default(false),
-        limit: zod.number().optional()
+        limit: zod.number().optional(),
+        after: zod.string().optional(),
+        where: zod.object({}).passthrough().optional().default({})
     });
 
     return {
@@ -95,7 +103,12 @@ export const createResolvers = (models: NonEmptyArray<string>) => {
                         throw createZodError(result.error);
                     }
 
-                    return await context.cmsImportExport.exportContentEntries(result.data);
+                    return await context.cmsImportExport.exportContentEntries({
+                        ...result.data,
+                        where: result.data.where
+                            ? (result.data.where as CmsEntryListWhere)
+                            : undefined
+                    });
                 });
             },
             async abortExportContentEntries(_: unknown, input: unknown, context: Context) {
@@ -127,6 +140,16 @@ export const createResolvers = (models: NonEmptyArray<string>) => {
                     }
 
                     return await context.cmsImportExport.importFromUrl(result.data);
+                });
+            },
+            async abortImportFromUrl(_: unknown, input: unknown, context: Context) {
+                return resolve(async () => {
+                    const result = abortImportFromUrl.safeParse(input);
+                    if (!result.success) {
+                        throw createZodError(result.error);
+                    }
+
+                    return await context.cmsImportExport.abortImportFromUrl(result.data);
                 });
             }
         }

@@ -2,7 +2,12 @@ import { createImportFromUrlControllerTask } from "~/tasks";
 import { createRunner } from "@webiny/project-utils/testing/tasks";
 import { CmsImportExportFileType, Context, ICmsImportExportValidatedFile } from "~/types";
 import { useHandler } from "~tests/helpers/useHandler";
-import { ResponseErrorResult, TaskDataStatus, TaskResponseStatus } from "@webiny/tasks";
+import {
+    ResponseDoneResult,
+    ResponseErrorResult,
+    TaskDataStatus,
+    TaskResponseStatus
+} from "@webiny/tasks";
 import { categoryModel } from "~tests/helpers/models";
 import { NonEmptyArray } from "@webiny/api/types";
 
@@ -148,10 +153,9 @@ describe("import from url controller", () => {
     });
 
     it("should run the task, trigger child tasks and return a continue response", async () => {
-        // expect.assertions(5);
+        expect.assertions(3);
         const definition = createImportFromUrlControllerTask();
 
-        // @ts-expect-error
         const files: NonEmptyArray<ICmsImportExportValidatedFile> = [
             {
                 get: "https://some-url.com/file-1.we.zip",
@@ -178,9 +182,10 @@ describe("import from url controller", () => {
                 head: "https://some-url.com/file-3.unknown.zip",
                 size: 2000,
                 error: undefined,
-                type: "unknown",
+                type: "unknown" as CmsImportExportFileType.ENTRIES,
                 checksum: "checksum",
-                checked: true
+                checked: true,
+                key: "something-unknown.zip"
             }
         ];
 
@@ -251,93 +256,40 @@ describe("import from url controller", () => {
             locale: "en-US"
         });
 
-        // TODO true while no import assets step
-        expect(result).toBeInstanceOf(ResponseErrorResult);
         expect(result).toEqual({
-            error: {
-                data: {
-                    input: {
-                        files: [
-                            {
-                                checked: true,
-                                checksum: "checksum",
-                                get: "https://some-url.com/file-1.we.zip",
-                                head: "https://some-url.com/file-1.we.zip",
-                                key: "file-1.we.zip",
-                                size: 1000,
-                                type: "entries"
-                            },
-                            {
-                                checked: true,
-                                checksum: "checksum",
-                                get: "https://some-url.com/file-2.wa.zip",
-                                head: "https://some-url.com/file-2.wa.zip",
-                                key: "file-2.wa.zip",
-                                size: 1250,
-                                type: "assets"
-                            },
-                            {
-                                checked: true,
-                                checksum: "checksum",
-                                get: "https://some-url.com/file-3.unknown.zip",
-                                head: "https://some-url.com/file-3.unknown.zip",
-                                size: 2000,
-                                type: "unknown"
-                            }
-                        ],
-                        modelId: "category",
-                        steps: {
-                            download: {
-                                aborted: [],
-                                done: true,
-                                failed: [],
-                                invalid: [],
-                                triggered: true
-                            },
-                            processEntries: {
-                                aborted: [],
-                                done: true,
-                                failed: [],
-                                invalid: [],
-                                triggered: true
-                            }
-                        }
-                    }
-                },
-                message: "Should not reach this point."
+            message: undefined,
+            output: {
+                aborted: [],
+                done: [],
+                failed: [],
+                files: [],
+                invalid: []
             },
             locale: "en-US",
-            status: "error",
+            status: "done",
             tenant: "root",
             webinyTaskDefinitionId: "importFromUrlController",
             webinyTaskId: expect.any(String)
         });
-        // assertion #2
-        // expect(result).toBeInstanceOf(ResponseDoneResult);
-        // assertion #3
-        // expect(result).toEqual({
-        //     status: TaskResponseStatus.DONE,
-        //     locale: "en-US",
-        //     tenant: "root",
-        //     webinyTaskDefinitionId: definition.id,
-        //     webinyTaskId: task.id,
-        //     output: {
-        //         aborted: [],
-        //         done: expect.toBeArrayOfSize(2),
-        //         failed: [],
-        //         invalid: []
-        //     },
-        //     message: undefined
-        // });
 
-        // const { items: tasks } = await context.tasks.listTasks({
-        //     where: {
-        //         parentId: task.id
-        //     },
-        //     limit: 1000000
-        // });
-        // TODO - fix
-        // assertion #4
-        // expect(tasks).toHaveLength(2);
+        // assertion #2
+        expect(result).toEqual({
+            status: TaskResponseStatus.DONE,
+            locale: "en-US",
+            tenant: "root",
+            webinyTaskDefinitionId: definition.id,
+            webinyTaskId: task.id,
+            output: {
+                aborted: [],
+                done: [],
+                failed: [],
+                invalid: [],
+                files: []
+            },
+            message: undefined
+        });
+
+        // assertion #3
+        expect(result).toBeInstanceOf(ResponseDoneResult);
     });
 });
