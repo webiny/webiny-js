@@ -3,7 +3,7 @@ import { createZodError } from "@webiny/utils";
 import { resolve, resolveList } from "@webiny/handler-graphql";
 import zod from "zod";
 import type { GenericRecord, NonEmptyArray } from "@webiny/api/types";
-import { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsEntryListSort, CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types";
 
 const validateAbortExportContentEntries = zod.object({
     id: zod.string()
@@ -43,8 +43,8 @@ const abortImportFromUrl = zod.object({
 const validateExportContentEntriesInput = zod.object({
     exportAssets: zod.boolean().optional().default(false),
     limit: zod.number().optional(),
-    after: zod.string().optional(),
-    where: zod.object({}).passthrough().optional().default({})
+    where: zod.object({}).passthrough().optional().default({}),
+    sort: zod.array(zod.string()).optional()
 });
 /**
  * Create export resolver for each of the models given.
@@ -66,6 +66,7 @@ const createExportContentEntries = (models: NonEmptyArray<CmsModel>) => {
                 return await context.cmsImportExport.exportContentEntries({
                     ...result.data,
                     modelId: model.modelId,
+                    sort: result.data.sort ? (result.data.sort as CmsEntryListSort) : undefined,
                     where: result.data.where ? (result.data.where as CmsEntryListWhere) : undefined
                 });
             });

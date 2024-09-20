@@ -24,7 +24,6 @@ export interface IExportContentEntriesControllerInput {
     limit?: number;
     where?: CmsEntryListWhere;
     sort?: CmsEntryListSort;
-    after?: string;
     state?: ExportContentEntriesControllerState;
 }
 

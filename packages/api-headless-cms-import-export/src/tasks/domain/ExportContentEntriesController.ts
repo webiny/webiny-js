@@ -73,8 +73,7 @@ export class ExportContentEntriesController<
                     modelId: model.modelId,
                     limit: input.limit,
                     where: input.where,
-                    sort: input.sort,
-                    after: undefined
+                    sort: input.sort
                 },
                 name: `Export Content Entries ${taskId}`
             });

@@ -2,7 +2,11 @@ import type { FileManagerContext } from "@webiny/api-file-manager/types";
 import type { Context as TasksContext, TaskDataStatus } from "@webiny/tasks/types";
 import type { ICmsImportExportRecord } from "./domain/abstractions/CmsImportExportRecord";
 import type { GenericRecord, NonEmptyArray } from "@webiny/api/types";
-import type { CmsEntryListWhere, CmsEntryMeta } from "@webiny/api-headless-cms/types";
+import type {
+    CmsEntryListSort,
+    CmsEntryListWhere,
+    CmsEntryMeta
+} from "@webiny/api-headless-cms/types";
 
 export * from "./domain/abstractions/CmsImportExportRecord";
 
@@ -20,7 +24,7 @@ export interface ICmsImportExportObjectStartExportParams {
     exportAssets: boolean;
     limit?: number;
     where?: CmsEntryListWhere;
-    after?: string;
+    sort?: CmsEntryListSort;
 }
 
 export interface ICmsImportExportObjectAbortExportParams {

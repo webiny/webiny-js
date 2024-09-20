@@ -33,7 +33,9 @@ export class ExportContentEntriesUseCase implements IExportContentEntriesUseCase
             input: {
                 modelId: params.modelId,
                 exportAssets: params.exportAssets,
-                limit: params.limit
+                limit: params.limit,
+                where: params.where,
+                sort: params.sort
             },
             definition: EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK
         });
