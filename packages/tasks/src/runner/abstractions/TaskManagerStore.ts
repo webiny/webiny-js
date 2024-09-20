@@ -7,6 +7,7 @@ import {
     ITaskUpdateData,
     TaskDataStatus
 } from "~/types";
+import { GenericRecord } from "@webiny/api/types";
 
 export type ITaskManagerStoreUpdateTaskValues<T = ITaskDataInput> = T;
 
@@ -87,6 +88,16 @@ export interface ITaskManagerStorePrivate<
         params: ITaskManagerStoreUpdateTaskParams<T, O>,
         options?: ITaskManagerStoreUpdateTaskOptions
     ): Promise<void>;
+    /**
+     * List all child tasks of the current task.
+     * If definitionId is provided, filter by that parameter.
+     */
+    listChildTasks<
+        T = GenericRecord,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(
+        definitionId?: string
+    ): Promise<ITask<T, O>[]>;
     /**
      * Update the task input, which are used to store custom user data.
      * You can send partial input, and it will be merged with the existing input.

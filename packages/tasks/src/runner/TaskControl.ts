@@ -40,8 +40,12 @@ export class TaskControl implements ITaskControl {
             task = await this.getTask(taskId);
             this.context.security.setIdentity(task.createdBy);
         } catch (error) {
+            /**
+             * TODO Refactor error handling.
+             */
+            // @ts-expect-error
             return this.response.error({
-                error
+                ...getErrorProperties(error)
             });
         }
         /**

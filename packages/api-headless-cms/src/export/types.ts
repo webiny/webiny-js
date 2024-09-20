@@ -37,6 +37,7 @@ export interface SanitizedCmsModel
         | "pluralApiName"
         | "name"
         | "description"
+        | "tags"
     > {
     group: string;
 }

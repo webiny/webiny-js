@@ -1,3 +1,5 @@
+import sizeOfObject from "object-sizeof";
+
 import { ITaskEvent } from "~/handler/types";
 import { TaskResponseStatus } from "~/types";
 import {
@@ -18,6 +20,54 @@ import { ResponseDoneResult } from "~/response/ResponseDoneResult";
 import { ResponseErrorResult } from "~/response/ResponseErrorResult";
 import { ResponseAbortedResult } from "./ResponseAbortedResult";
 import { getErrorProperties } from "~/utils/getErrorProperties";
+
+/**
+ * Step Functions has a limit of 256KB for the output size.
+ * We will set the max output to be 232KB to leave some room for the rest of the data.
+ */
+const MAX_SIZE_BYTES: number = 232 * 1024;
+
+interface ICreateMaxSizeOutputParams {
+    size: number;
+}
+
+const createMaxSizeOutput = <O extends ITaskResponseDoneResultOutput>({
+    size
+}: ICreateMaxSizeOutputParams): O => {
+    return {
+        message: `Output size exceeds the maximum allowed size.`,
+        size,
+        max: MAX_SIZE_BYTES
+    } as unknown as O;
+};
+/**
+ * Figure out the size of the output object and remove the stack trace if the size exceeds the maximum allowed size.
+ * If the size is still greater than the maximum allowed size, just return the message that the output size exceeds the maximum allowed size.
+ */
+const getOutput = <O extends ITaskResponseDoneResultOutput>(output?: O): O | undefined => {
+    if (!output || Object.keys(output).length === 0) {
+        return undefined;
+    }
+    let size = sizeOfObject(output);
+    if (size > MAX_SIZE_BYTES) {
+        if (output.stack) {
+            delete output.stack;
+            size = sizeOfObject(output);
+            if (size <= MAX_SIZE_BYTES) {
+                return output;
+            }
+        }
+        if (output.error?.stack) {
+            delete output.error.stack;
+            size = sizeOfObject(output);
+            if (size <= MAX_SIZE_BYTES) {
+                return output;
+            }
+        }
+        return createMaxSizeOutput<O>({ size });
+    }
+    return output;
+};
 
 export class Response implements IResponse {
     private _event: ITaskEvent;
@@ -47,6 +97,7 @@ export class Response implements IResponse {
 
     public continue(params: IResponseContinueParams): IResponseContinueResult {
         return new ResponseContinueResult({
+            message: params.message,
             input: params.input,
             webinyTaskId: params?.webinyTaskId || this.event.webinyTaskId,
             webinyTaskDefinitionId: this.event.webinyTaskDefinitionId,
@@ -65,7 +116,7 @@ export class Response implements IResponse {
             tenant: params?.tenant || this.event.tenant,
             locale: params?.locale || this.event.locale,
             message: params?.message,
-            output: params?.output
+            output: getOutput<O>(params?.output)
         });
     }
 

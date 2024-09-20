@@ -13,7 +13,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@webiny/api-headless-cms-bulk-actions": "0.0.0"
+    "@webiny/api-headless-cms-bulk-actions": "0.0.0",
+    "@webiny/api-headless-cms-import-export": "0.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",

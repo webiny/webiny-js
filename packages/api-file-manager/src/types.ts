@@ -6,7 +6,7 @@ import { Context } from "@webiny/api/types";
 import { FileLifecycleEvents } from "./types/file.lifecycle";
 import { CreatedBy, File } from "./types/file";
 import { Topic } from "@webiny/pubsub/types";
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsEntryListSort } from "@webiny/api-headless-cms/types";
 import { Context as TasksContext } from "@webiny/tasks/types";
 
 export * from "./types/file.lifecycle";
@@ -68,7 +68,7 @@ export interface FilesListOpts {
     limit?: number;
     after?: string;
     where?: FileListWhereParams;
-    sort?: string[];
+    sort?: CmsEntryListSort;
 }
 
 export interface FileListMeta {
@@ -325,7 +325,7 @@ export interface FileManagerFilesStorageOperationsListParamsWhere {
  */
 export interface FileManagerFilesStorageOperationsListParams {
     where: FileManagerFilesStorageOperationsListParamsWhere;
-    sort: string[];
+    sort: CmsEntryListSort;
     limit: number;
     after: string | null;
     search?: string;
