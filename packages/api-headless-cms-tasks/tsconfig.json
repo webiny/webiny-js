@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [{ "path": "../api-headless-cms-bulk-actions" }],
+  "references": [
+    { "path": "../api-headless-cms-bulk-actions" },
+    { "path": "../api-headless-cms-import-export" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -10,7 +13,9 @@
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-headless-cms-bulk-actions/*": ["../api-headless-cms-bulk-actions/src/*"],
-      "@webiny/api-headless-cms-bulk-actions": ["../api-headless-cms-bulk-actions/src"]
+      "@webiny/api-headless-cms-bulk-actions": ["../api-headless-cms-bulk-actions/src"],
+      "@webiny/api-headless-cms-import-export/*": ["../api-headless-cms-import-export/src/*"],
+      "@webiny/api-headless-cms-import-export": ["../api-headless-cms-import-export/src"]
     },
     "baseUrl": "."
   }

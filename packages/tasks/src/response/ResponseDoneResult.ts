@@ -19,6 +19,6 @@ export class ResponseDoneResult<
         this.webinyTaskDefinitionId = params.webinyTaskDefinitionId;
         this.tenant = params.tenant;
         this.locale = params.locale;
-        this.output = params.output;
+        this.output = Object.keys(params.output || {}).length > 0 ? params.output : undefined;
     }
 }

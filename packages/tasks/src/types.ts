@@ -13,7 +13,7 @@ import {
     ITaskResponseDoneResultOutput,
     ITaskResponseResult
 } from "~/response/abstractions";
-import { ITaskManagerStore } from "./runner/abstractions";
+import { IIsCloseToTimeoutCallable, ITaskManagerStore } from "./runner/abstractions";
 import { PutEventsCommandOutput } from "@webiny/aws-sdk/client-eventbridge";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { GenericRecord } from "@webiny/api/types";
@@ -85,7 +85,7 @@ export interface ITaskIdentity {
 }
 
 export interface ITask<
-    T = any,
+    T = GenericRecord,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 > {
     /**
@@ -136,34 +136,39 @@ export type IUpdateTaskResponse<
 > = ITask<T, O>;
 export type IDeleteTaskResponse = boolean;
 
-export interface IListTaskParams extends Omit<CmsEntryListParams, "fields" | "search"> {
-    where?: CmsEntryListWhere & {
-        parentId?: string;
-        parentId_not?: string;
-        parentId_in?: string[];
-        parentId_not_in?: string[];
-        definitionId?: string;
-        definitionId_not?: string;
-        definitionId_in?: string[];
-        definitionId_not_in?: string[];
-        taskStatus?: string;
-        taskStatus_not?: string;
-        taskStatus_in?: string[];
-        taskStatus_not_in?: string[];
-    };
+export interface IListTaskParamsWhere extends CmsEntryListWhere {
+    parentId?: string;
+    parentId_not?: string;
+    parentId_in?: string[];
+    parentId_not_in?: string[];
+    definitionId?: string;
+    definitionId_not?: string;
+    definitionId_in?: string[];
+    definitionId_not_in?: string[];
+    taskStatus?: string;
+    taskStatus_not?: string;
+    taskStatus_in?: string[];
+    taskStatus_not_in?: string[];
 }
+
+export interface IListTaskParams extends Omit<CmsEntryListParams, "fields" | "search"> {
+    where?: IListTaskParamsWhere;
+}
+
+export interface IListTaskLogParamsWhere extends CmsEntryListWhere {
+    task?: string;
+    task_in?: string[];
+    task_not?: string;
+    iteration?: number;
+    iteration_not?: number;
+    iteration_gte?: number;
+    iteration_gt?: number;
+    iteration_lte?: number;
+    iteration_lt?: number;
+}
+
 export interface IListTaskLogParams extends Omit<CmsEntryListParams, "fields" | "search"> {
-    where?: CmsEntryListWhere & {
-        task?: string;
-        task_in?: string[];
-        task_not?: string;
-        iteration?: number;
-        iteration_not?: number;
-        iteration_gte?: number;
-        iteration_gt?: number;
-        iteration_lte?: number;
-        iteration_lt?: number;
-    };
+    where?: IListTaskLogParamsWhere;
 }
 
 export interface ITaskCreateData<T = ITaskDataInput> {
@@ -273,12 +278,18 @@ export interface ITasksContextConfigObject {
 }
 
 export interface ITasksContextDefinitionObject {
-    getDefinition: <T = ITaskDataInput>(id: string) => ITaskDefinition<Context, T> | null;
+    getDefinition: <
+        C extends Context = Context,
+        I = ITaskDataInput,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(
+        id: string
+    ) => ITaskDefinition<C, I, O> | null;
     listDefinitions: () => ITaskDefinition[];
 }
 
 export interface ITaskTriggerParams<I = ITaskDataInput> {
-    parent?: ITask;
+    parent?: Pick<ITask, "id">;
     definition: string;
     name?: string;
     input?: I;
@@ -291,8 +302,18 @@ export interface ITaskAbortParams {
 }
 
 export interface ITasksContextTriggerObject {
-    trigger: <T = ITaskDataInput>(params: ITaskTriggerParams<T>) => Promise<ITask<T>>;
-    abort: <T = ITaskDataInput>(params: ITaskAbortParams) => Promise<ITask<T>>;
+    trigger: <
+        T = ITaskDataInput,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(
+        params: ITaskTriggerParams<T>
+    ) => Promise<ITask<T, O>>;
+    abort: <
+        T = ITaskDataInput,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(
+        params: ITaskAbortParams
+    ) => Promise<ITask<T, O>>;
 }
 
 export interface ITasksContextObject
@@ -312,7 +333,7 @@ export interface ITaskRunParams<
 > {
     context: C;
     response: ITaskResponse<I, O>;
-    isCloseToTimeout(seconds?: number): boolean;
+    isCloseToTimeout: IIsCloseToTimeoutCallable;
     isAborted(): boolean;
     input: I;
     store: ITaskManagerStore<I>;
@@ -321,19 +342,31 @@ export interface ITaskRunParams<
     ): Promise<ITask<SI>>;
 }
 
-export interface ITaskOnSuccessParams<C extends Context, I = ITaskDataInput> {
+export interface ITaskOnSuccessParams<
+    C extends Context,
+    I = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
     context: C;
-    task: ITask<I>;
+    task: ITask<I, O>;
 }
 
-export interface ITaskOnErrorParams<C extends Context, I = ITaskDataInput> {
+export interface ITaskOnErrorParams<
+    C extends Context,
+    I = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
     context: C;
-    task: ITask<I>;
+    task: ITask<I, O>;
 }
 
-export interface ITaskOnAbortParams<C extends Context> {
+export interface ITaskOnAbortParams<
+    C extends Context,
+    I = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
     context: C;
-    task: ITask;
+    task: ITask<I, O>;
 }
 
 export interface ITaskOnMaxIterationsParams<C extends Context> {
@@ -410,7 +443,7 @@ export interface ITaskDefinition<
      * When task successfully finishes, this method will be called.
      * This will be called during the run time of the task.
      */
-    onDone?(params: ITaskOnSuccessParams<C, I>): Promise<void>;
+    onDone?(params: ITaskOnSuccessParams<C, I, O>): Promise<void>;
     /**
      * When task fails, this method will be called.
      * This will be called during the run time of the task.
@@ -420,7 +453,7 @@ export interface ITaskDefinition<
      * When task is aborted, this method will be called.
      * This method will be called when user aborts the task.
      */
-    onAbort?(params: ITaskOnAbortParams<C>): Promise<void>;
+    onAbort?(params: ITaskOnAbortParams<C, I, O>): Promise<void>;
     /**
      * When task hits max iterations, this method will be called.
      * This will be called during the run time of the task.

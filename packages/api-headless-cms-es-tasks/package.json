@@ -22,9 +22,9 @@
     "@webiny/utils": "0.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.22.6",
-    "@babel/core": "^7.22.8",
-    "@babel/preset-env": "^7.22.7",
+    "@babel/cli": "^7.23.9",
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
     "@faker-js/faker": "^8.4.1",
     "@webiny/api": "0.0.0",
     "@webiny/api-i18n": "0.0.0",

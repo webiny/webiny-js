@@ -736,6 +736,8 @@ export interface CmsModelManager<T = CmsEntryValues> {
     delete(id: string): Promise<void>;
 }
 
+export type ICmsEntryManager<T = GenericRecord> = CmsModelManager<T>;
+
 /**
  * Create
  */
@@ -843,7 +845,7 @@ export interface CmsModelContext {
      *
      * @throws NotFoundError
      */
-    getModel: (modelId: string) => Promise<CmsModel>;
+    getModel(modelId: string): Promise<CmsModel>;
     /**
      * Get model to AST converter.
      */
@@ -887,7 +889,7 @@ export interface CmsModelContext {
      */
     getEntryManager<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel | string
-    ): Promise<CmsModelManager<T>>;
+    ): Promise<ICmsEntryManager<T>>;
     /**
      * A model manager for a model which has a single entry.
      */
@@ -896,7 +898,7 @@ export interface CmsModelContext {
      * Get all content model managers mapped by modelId.
      * @see CmsModelManager
      */
-    getEntryManagers(): Map<string, CmsModelManager>;
+    getEntryManagers(): Map<string, ICmsEntryManager>;
     /**
      * Clear all the model caches.
      */
@@ -1081,7 +1083,9 @@ export interface CmsEntryListWhere {
  * @category CmsEntry
  * @category GraphQL params
  */
-export type CmsEntryListSort = string[];
+export type CmsEntryListSortAsc = `${string}_ASC`;
+export type CmsEntryListSortDesc = `${string}_DESC`;
+export type CmsEntryListSort = (CmsEntryListSortAsc | CmsEntryListSortDesc)[];
 
 /**
  * Get entry GraphQL resolver params.
