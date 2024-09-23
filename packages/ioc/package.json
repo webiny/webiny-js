@@ -18,7 +18,7 @@
     "@webiny/project-utils": "0.0.0",
     "ttypescript": "^1.5.13",
     "typescript": "4.9.5",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
   },
   "publishConfig": {
     "access": "public",

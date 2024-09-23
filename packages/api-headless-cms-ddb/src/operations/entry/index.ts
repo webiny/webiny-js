@@ -84,7 +84,7 @@ const convertFromStorageEntry = (params: ConvertStorageEntryParams): CmsStorageE
     };
 };
 
-const MAX_LIST_LIMIT = 10000;
+const MAX_LIST_LIMIT = 1000000;
 
 export interface CreateEntriesStorageOperationsParams {
     entity: Entity<any>;

@@ -1,4 +1,5 @@
 import {
+    IListTaskParamsWhere,
     ITask,
     ITaskDataInput,
     ITaskLog,
@@ -25,6 +26,7 @@ import {
 import deepEqual from "deep-equal";
 import { getObjectProperties } from "~/utils/getObjectProperties";
 import { ObjectUpdater } from "~/utils/ObjectUpdater";
+import { GenericRecord } from "@webiny/api/types";
 
 const getInput = <T extends ITaskDataInput = ITaskDataInput>(
     originalInput: T,
@@ -40,7 +42,7 @@ const getInput = <T extends ITaskDataInput = ITaskDataInput>(
 };
 
 export interface TaskManagerStoreContext {
-    tasks: Pick<ITasksContextObject, "updateTask" | "updateLog">;
+    tasks: Pick<ITasksContextObject, "updateTask" | "updateLog" | "listTasks">;
 }
 
 export interface ITaskManagerStoreParams {
@@ -76,6 +78,24 @@ export class TaskManagerStore<
 
     public getTask(): ITask<T, O> {
         return this.task as ITask<T, O>;
+    }
+
+    public async listChildTasks<
+        I = GenericRecord,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(definitionId?: string): Promise<ITask<I, O>[]> {
+        const where: IListTaskParamsWhere = {
+            parentId: this.task.id
+        };
+        if (definitionId) {
+            where.definitionId = definitionId;
+        }
+        const result = await this.context.tasks.listTasks<I, O>({
+            where,
+            sort: ["createdOn_ASC"],
+            limit: 1000000
+        });
+        return result.items;
     }
 
     public async updateTask(

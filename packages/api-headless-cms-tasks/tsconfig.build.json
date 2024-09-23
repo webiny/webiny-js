@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "references": [{ "path": "../api-headless-cms-bulk-actions/tsconfig.build.json" }],
+  "references": [
+    { "path": "../api-headless-cms-bulk-actions/tsconfig.build.json" },
+    { "path": "../api-headless-cms-import-export/tsconfig.build.json" }
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",

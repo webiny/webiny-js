@@ -3,18 +3,18 @@
   "include": ["src"],
   "references": [
     { "path": "../api-headless-cms/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-aws/tsconfig.build.json" },
+    { "path": "../tasks/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" },
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-admin-users/tsconfig.build.json" },
     { "path": "../api-i18n/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../api-wcp/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
-    { "path": "../tasks/tsconfig.build.json" },
-    { "path": "../utils/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {

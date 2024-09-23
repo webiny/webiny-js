@@ -20,7 +20,7 @@
     "nanoid": "^3.3.7",
     "node-fetch": "^2.6.1",
     "typescript": "4.9.5",
-    "uniqid": "^5.2.0"
+    "uniqid": "^5.4.0"
   },
   "scripts": {
     "cypress:open": "yarn cypress open",
