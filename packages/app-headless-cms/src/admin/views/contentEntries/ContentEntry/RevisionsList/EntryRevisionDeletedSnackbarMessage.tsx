@@ -6,7 +6,7 @@ interface RevisionDeletedSnackbarMessageProps {
     newLatestRevision?: CmsContentEntryRevision;
 }
 
-export const RevisionDeletedSnackbarMessage = ({
+export const EntryRevisionDeletedSnackbarMessage = ({
     deletedRevision,
     newLatestRevision
 }: RevisionDeletedSnackbarMessageProps) => {

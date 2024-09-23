@@ -263,7 +263,7 @@ export const ContentEntryProvider = ({
         return response;
     };
 
-    const deleteEntryRevision: ContentEntryCrud["deleteEntry"] = async params => {
+    const deleteEntryRevision: ContentEntryCrud["deleteEntryRevision"] = async params => {
         return await cms.deleteEntry({ model, ...params });
     };
 

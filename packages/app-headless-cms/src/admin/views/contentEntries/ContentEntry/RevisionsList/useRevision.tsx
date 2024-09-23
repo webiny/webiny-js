@@ -5,6 +5,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CmsContentEntry } from "~/types";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { PublishEntryRevisionResponse } from "~/admin/contexts/Cms";
+import { EntryRevisionDeletedSnackbarMessage } from "~/admin/views/contentEntries/ContentEntry/RevisionsList/EntryRevisionDeletedSnackbarMessage";
 
 export interface CreateRevisionHandler {
     (id?: string): Promise<void>;
@@ -17,12 +18,15 @@ export interface EditRevisionHandler {
 export interface DeleteRevisionHandler {
     (id?: string): Promise<void>;
 }
+
 export interface PublishRevisionHandler {
     (id?: string): Promise<PublishEntryRevisionResponse>;
 }
+
 export interface UnpublishRevisionHandler {
     (id?: string): Promise<void>;
 }
+
 interface UseRevisionHandlers {
     createRevision: CreateRevisionHandler;
     editRevision: EditRevisionHandler;
@@ -81,37 +85,35 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                             id: revisionId
                         });
 
-                        if (typeof response === "boolean") {
-                            if (!response) {
-                                showSnackbar(
-                                    <span>
-                                        Error while deleting revision entry{" "}
-                                        <strong>#{entry.meta.version}</strong>!
-                                    </span>
-                                );
-                                return;
+                        if (typeof response === "object" && response.error) {
+                            const { error } = response;
+                            if (response.error.code !== "ACTION_ABORTED") {
+                                showSnackbar(error.message);
                             }
-
-                            // Redirect to the first revision in the list of all entry revisions.
-                            const targetRevision = contentEntry.revisions.filter(
-                                rev => rev.id !== revisionId
-                            )[0];
-
-                            history.push(
-                                `/cms/content-entries/${modelId}?id=` +
-                                    encodeURIComponent(targetRevision!.id)
-                            );
-
-                            showSnackbar(
-                                <span>
-                                    Successfully deleted revision{" "}
-                                    <strong>#{entry.meta.version}</strong>!
-                                </span>
-                            );
                             return;
                         }
 
-                        showSnackbar(response.error.message);
+                        // The `revisions.data` array contains all revisions of the entry, ordered from
+                        // the latest to the oldest. The first element in the array is the latest revision.
+                        // What we're doing here is finding the latest revision that is not the current one.
+                        const newLatestRevision = contentEntry.revisions.find(
+                            revision => revision.meta.version !== entry.meta.version
+                        );
+
+                        let redirectTarget = `/cms/content-entries/${modelId}`;
+                        if (newLatestRevision) {
+                            // Redirect to the first revision in the list of all entry revisions.
+                            redirectTarget += `?id=${encodeURIComponent(newLatestRevision.id)}`;
+                        }
+
+                        showSnackbar(
+                            <EntryRevisionDeletedSnackbarMessage
+                                deletedRevision={entry}
+                                newLatestRevision={newLatestRevision}
+                            />
+                        );
+
+                        history.push(redirectTarget);
                     },
                 publishRevision:
                     ({ entry }): PublishRevisionHandler =>
