@@ -34,14 +34,10 @@ class StepFunctionTriggerTransport implements ITaskTriggerTransport<GenericRecor
         }
         const { bgTaskSfn } = manifest.api || {};
         if (!bgTaskSfn) {
-            console.log(manifest);
             console.error("Background task state machine not found.");
             return null;
         }
-        /**
-         * The ITaskEvent is what our handler expect to get.
-         * Endpoint and stateMachineId are added by the step function.
-         */
+
         const input: ITaskEventInput = {
             webinyTaskId: task.id,
             webinyTaskDefinitionId: task.definitionId,

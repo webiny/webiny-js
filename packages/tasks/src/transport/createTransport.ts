@@ -7,9 +7,10 @@ export interface ICreateTransport {
 }
 
 export const createTransport = (params: ICreateTransport): ITaskTriggerTransport => {
-    const [plugin] = params.context.plugins.byType<TaskTriggerTransportPlugin>(
-        TaskTriggerTransportPlugin.type
-    );
+    const plugins = params.context.plugins
+        .byType<TaskTriggerTransportPlugin>(TaskTriggerTransportPlugin.type)
+        .reverse();
+    const [plugin] = plugins;
     if (!plugin) {
         throw new WebinyError("Missing TaskTriggerTransportPlugin.", "PLUGIN_ERROR", {
             type: TaskTriggerTransportPlugin.type
