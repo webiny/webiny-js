@@ -1,24 +1,23 @@
 import { Plugin } from "@webiny/plugins";
-import { Context, ITask, ITaskConfig } from "~/types";
-import { PutEventsCommandOutput } from "@webiny/aws-sdk/client-eventbridge";
-
-export { PutEventsCommandOutput };
+import { Context, ITask } from "~/types";
+import { GenericRecord } from "@webiny/api/types";
 
 export interface ITaskTriggerTransportPluginParams {
     context: Context;
-    config: ITaskConfig;
     getTenant(): string;
     getLocale(): string;
 }
 
-export interface ITaskTriggerTransport {
-    send(task: Pick<ITask, "id" | "definitionId">, delay: number): Promise<PutEventsCommandOutput>;
+export type ITaskTriggerTransportTask = Pick<ITask, "id" | "definitionId">;
+
+export interface ITaskTriggerTransport<T = GenericRecord> {
+    send(task: ITaskTriggerTransportTask, delay: number): Promise<T>;
 }
 
-export abstract class TaskTriggerTransportPlugin extends Plugin {
+export abstract class TaskTriggerTransportPlugin<T = GenericRecord> extends Plugin {
     public static override readonly type: string = "tasks.taskTriggerTransport";
 
     public abstract createTransport(
         params: ITaskTriggerTransportPluginParams
-    ): ITaskTriggerTransport;
+    ): ITaskTriggerTransport<T>;
 }

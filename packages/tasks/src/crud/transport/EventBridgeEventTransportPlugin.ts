@@ -1,16 +1,16 @@
 import {
     ITaskTriggerTransport,
     ITaskTriggerTransportPluginParams,
-    PutEventsCommandOutput,
+    ITaskTriggerTransportTask,
     TaskTriggerTransportPlugin
 } from "~/plugins";
-import { Context, ITask, ITaskConfig, ITaskEventInput } from "~/types";
+import { Context, ITaskEventInput } from "~/types";
+import type { PutEventsCommandOutput } from "@webiny/aws-sdk/client-eventbridge";
 import { EventBridgeClient, PutEventsCommand } from "@webiny/aws-sdk/client-eventbridge";
 import { WebinyError } from "@webiny/error";
 
-class EventBridgeEventTransport implements ITaskTriggerTransport {
+class EventBridgeEventTransport implements ITaskTriggerTransport<PutEventsCommandOutput> {
     protected readonly context: Context;
-    protected readonly config: ITaskConfig;
     protected readonly getTenant: () => string;
     protected readonly getLocale: () => string;
     private readonly client: EventBridgeClient;
@@ -20,13 +20,12 @@ class EventBridgeEventTransport implements ITaskTriggerTransport {
             region: process.env.AWS_REGION
         });
         this.context = params.context;
-        this.config = params.config;
         this.getTenant = params.getTenant;
         this.getLocale = params.getLocale;
     }
 
     public async send(
-        task: Pick<ITask, "id" | "definitionId">,
+        task: ITaskTriggerTransportTask,
         delay: number
     ): Promise<PutEventsCommandOutput> {
         /**
@@ -45,7 +44,7 @@ class EventBridgeEventTransport implements ITaskTriggerTransport {
             Entries: [
                 {
                     Source: "webiny-api-tasks",
-                    EventBusName: this.config.eventBusName,
+                    EventBusName: String(process.env.EVENT_BUS),
                     DetailType: "WebinyBackgroundTask",
                     Detail: JSON.stringify(event)
                 }
@@ -68,7 +67,7 @@ class EventBridgeEventTransport implements ITaskTriggerTransport {
 
 export class EventBridgeEventTransportPlugin extends TaskTriggerTransportPlugin {
     public override name = "task.eventBridgeEventTransport";
-    public createTransport(params: ITaskTriggerTransportPluginParams): ITaskTriggerTransport {
+    public createTransport(params: ITaskTriggerTransportPluginParams) {
         return new EventBridgeEventTransport(params);
     }
 }

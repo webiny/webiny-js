@@ -3,7 +3,7 @@ import {
     ITask,
     ITaskDataInput,
     ITaskLog,
-    ITaskLogItemType,
+    TaskLogItemType,
     ITaskManagerStoreInfoLog,
     ITaskManagerStorePrivate,
     ITaskManagerStoreSetOutputOptions,
@@ -176,7 +176,7 @@ export class TaskManagerStore<
                 {
                     message: log.message,
                     data: log.data,
-                    type: ITaskLogItemType.INFO,
+                    type: TaskLogItemType.INFO,
                     createdOn: new Date().toISOString()
                 }
             ]
@@ -210,7 +210,7 @@ export class TaskManagerStore<
                 {
                     message: log.message,
                     error: log.error instanceof Error ? getObjectProperties(log.error) : log.error,
-                    type: ITaskLogItemType.ERROR,
+                    type: TaskLogItemType.ERROR,
                     createdOn: new Date().toISOString()
                 }
             ]

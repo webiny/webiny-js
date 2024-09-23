@@ -15,6 +15,7 @@ import {
     StartExecutionCommand
 } from "@aws-sdk/client-sfn";
 import { createCacheKey } from "@webiny/utils";
+import { GenericRecord } from "@webiny/cli/types";
 
 export {
     SFNClient,
@@ -37,21 +38,14 @@ export interface SFNClientConfig extends BaseSFNClientConfig {
     cache?: boolean;
 }
 
-export type GenericData = string | number | boolean | null | undefined;
-
-export interface GenericStepFunctionData {
-    [key: string]: GenericData | GenericData[];
-}
-
-export interface TriggerStepFunctionParams<
-    T extends GenericStepFunctionData = GenericStepFunctionData
-> extends Partial<Omit<StartExecutionCommandInput, "input">> {
+export interface TriggerStepFunctionParams<T extends GenericRecord = GenericRecord>
+    extends Partial<Omit<StartExecutionCommandInput, "input">> {
     input: T;
 }
 
 const stepFunctionClientsCache = new Map<string, SFNClient>();
 
-const getClient = (initial?: SFNClientConfig): SFNClient => {
+export const createStepFunctionClient = (initial?: SFNClientConfig): SFNClient => {
     const config: SFNClientConfig = {
         region: process.env.AWS_REGION,
         ...initial
@@ -75,8 +69,8 @@ const getClient = (initial?: SFNClientConfig): SFNClient => {
 };
 
 export const triggerStepFunctionFactory = (config?: SFNClientConfig) => {
-    const client = getClient(config);
-    return async <T extends GenericStepFunctionData = GenericStepFunctionData>(
+    const client = createStepFunctionClient(config);
+    return async <T extends GenericRecord = GenericRecord>(
         params: TriggerStepFunctionParams<T>
     ): Promise<StartExecutionCommandOutput> => {
         const cmd = new StartExecutionCommand({
@@ -90,7 +84,7 @@ export const triggerStepFunctionFactory = (config?: SFNClientConfig) => {
 };
 
 export const listExecutionsFactory = (config?: SFNClientConfig) => {
-    const client = getClient(config);
+    const client = createStepFunctionClient(config);
     return async (params: ListExecutionsCommandInput): Promise<ListExecutionsCommandOutput> => {
         const cmd = new ListExecutionsCommand({
             ...params,
@@ -101,7 +95,7 @@ export const listExecutionsFactory = (config?: SFNClientConfig) => {
 };
 
 export const describeExecutionFactory = (config?: SFNClientConfig) => {
-    const client = getClient(config);
+    const client = createStepFunctionClient(config);
     return async (
         params: DescribeExecutionCommandInput
     ): Promise<DescribeExecutionCommandOutput> => {

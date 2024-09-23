@@ -1,22 +1,18 @@
 import WebinyError from "@webiny/error";
-import {
+import type {
     Context,
     ITask,
     ITaskAbortParams,
-    ITaskConfig,
     ITaskCreateData,
     ITaskDataInput,
     ITaskLog,
-    ITaskLogItemType,
     ITaskResponseDoneResultOutput,
     ITasksContextTriggerObject,
-    ITaskTriggerParams,
-    PutEventsCommandOutput,
-    TaskDataStatus
+    ITaskTriggerParams
 } from "~/types";
+import { TaskDataStatus, TaskLogItemType } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTransport } from "~/transport/createTransport";
-import { EventBridgeEventTransportPlugin } from "~/crud/transport/EventBridgeEventTransportPlugin";
 
 const MAX_DELAY_DAYS = 355;
 const MAX_DELAY_SECONDS = MAX_DELAY_DAYS * 24 * 60 * 60;
@@ -42,15 +38,9 @@ const validateDelay = <T = ITaskDataInput>({ input, delay }: ValidateDelayParams
     );
 };
 
-export const createTriggerTasksCrud = (
-    context: Context,
-    config: ITaskConfig
-): ITasksContextTriggerObject => {
-    context.plugins.register(new EventBridgeEventTransportPlugin());
-
+export const createTriggerTasksCrud = (context: Context): ITasksContextTriggerObject => {
     const transport = createTransport({
-        context,
-        config
+        context
     });
 
     return {
@@ -86,14 +76,14 @@ export const createTriggerTasksCrud = (
 
             const task = await context.tasks.createTask<T>(input);
 
-            let event: PutEventsCommandOutput | null = null;
+            let result: Awaited<ReturnType<typeof transport.send>> | null = null;
             try {
-                event = await transport.send(task, delay);
+                result = await transport.send(task, delay);
 
-                if (!event) {
+                if (!result) {
                     throw new WebinyError(
-                        `Could not create the Event Bridge Event!`,
-                        "CREATE_EVENT_BRIDGE_EVENT_ERROR",
+                        `Could not trigger the step function!`,
+                        "TRIGGER_STEP_FUNCTION_ERROR",
                         {
                             task
                         }
@@ -108,7 +98,7 @@ export const createTriggerTasksCrud = (
                 throw ex;
             }
             return await context.tasks.updateTask(task.id, {
-                eventResponse: event
+                eventResponse: result
             });
         },
         abort: async <
@@ -161,7 +151,7 @@ export const createTriggerTasksCrud = (
                     items: taskLog.items.concat([
                         {
                             message: params.message || "Task aborted.",
-                            type: ITaskLogItemType.INFO,
+                            type: TaskLogItemType.INFO,
                             createdOn: new Date().toISOString()
                         }
                     ])
