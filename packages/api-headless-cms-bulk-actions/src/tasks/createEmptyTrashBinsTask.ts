@@ -21,6 +21,7 @@ const calculateDateTimeString = () => {
 
 export const createEmptyTrashBinsTask = () => {
     return createTaskDefinition<HcmsBulkActionsContext>({
+        isPrivate: true,
         id: "hcmsEntriesEmptyTrashBins",
         title: "Headless CMS - Empty all trash bins",
         description:
