@@ -48,19 +48,10 @@ export class ProcessTasksByModel {
                 );
             }
 
-            return response.continue(
-                {
-                    ...input,
-                    action: BulkActionOperationByModelAction.CHECK_MORE_SUBTASKS
-                },
-                {
-                    /**
-                     * Check if there are additional entries to list and process.
-                     * Allow time for things to settle, particularly when working with DynamoDB and Elasticsearch instances.
-                     */
-                    seconds: 60
-                }
-            );
+            return response.continue({
+                ...input,
+                action: BulkActionOperationByModelAction.CHECK_MORE_SUBTASKS
+            });
         } catch (ex) {
             return response.error(
                 ex.message ?? `Error while processing task "${this.taskDefinition}"`
