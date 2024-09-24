@@ -59,7 +59,9 @@ export interface ContentEntryContext extends ContentEntriesContext, ContentEntry
     loading: boolean;
     revisions: CmsContentEntryRevision[];
     refetchContent: () => void;
+
     setActiveTab(index: number): void;
+
     activeTab: number;
     showEmptyView: boolean;
 }
@@ -117,6 +119,7 @@ export const ContentEntryProvider = ({
         ? useMockRecords()
         : useRecords();
     const [isLoading, setLoading] = useState<boolean>(false);
+    const [revisions, setRevisions] = useState<CmsContentEntryRevision[]>([]);
     const contentEntryProviderProps = useContentEntryProviderProps();
 
     const newEntry =
@@ -192,7 +195,19 @@ export const ContentEntryProvider = ({
         variables: {
             id: entryId as string
         },
-        skip: !entryId
+        skip: !entryId,
+        onCompleted: response => {
+            if (!response || !isMounted()) {
+                return;
+            }
+
+            const { data, error } = response.revisions;
+            if (!error) {
+                setRevisions(data);
+                return;
+            }
+            showSnackbar("Could not load content entry revisions: " + error.message);
+        }
     });
 
     const loading = isLoading || loadEntry.loading || getRevisions.loading;
@@ -264,7 +279,9 @@ export const ContentEntryProvider = ({
     };
 
     const deleteEntryRevision: ContentEntryCrud["deleteEntryRevision"] = async params => {
-        return await cms.deleteEntry({ model, ...params });
+        const response = cms.deleteEntry({ model, ...params });
+        setRevisions(revisions.filter(rev => rev.id !== params.id));
+        return response;
     };
 
     const publishEntryRevision: ContentEntryCrud["publishEntryRevision"] = async params => {
@@ -298,7 +315,7 @@ export const ContentEntryProvider = ({
         loading,
         publishEntryRevision,
         refetchContent: loadEntry.refetch,
-        revisions: get(getRevisions, "data.revisions.data") || [],
+        revisions,
         setActiveTab,
         showEmptyView: !newEntry && !loading && !revisionId,
         unpublishEntryRevision,

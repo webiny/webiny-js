@@ -5,7 +5,6 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CmsContentEntry } from "~/types";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry";
 import { PublishEntryRevisionResponse } from "~/admin/contexts/Cms";
-import { EntryRevisionDeletedSnackbarMessage } from "~/admin/views/contentEntries/ContentEntry/RevisionsList/EntryRevisionDeletedSnackbarMessage";
 
 export interface CreateRevisionHandler {
     (id?: string): Promise<void>;
@@ -78,18 +77,13 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                         );
                     },
                 deleteRevision:
-                    ({ entry }): DeleteRevisionHandler =>
+                    (): DeleteRevisionHandler =>
                     async (id): Promise<void> => {
-                        const revisionId = id || entry.id;
-                        const response = await contentEntry.deleteEntryRevision({
-                            id: revisionId
-                        });
+                        const revisionToDelete = contentEntry.revisions.find(rev => rev.id === id)!;
+
+                        const response = await contentEntry.deleteEntryRevision(revisionToDelete);
 
                         if (typeof response === "object" && response.error) {
-                            const { error } = response;
-                            if (response.error.code !== "ACTION_ABORTED") {
-                                showSnackbar(error.message);
-                            }
                             return;
                         }
 
@@ -97,7 +91,7 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                         // the latest to the oldest. The first element in the array is the latest revision.
                         // What we're doing here is finding the latest revision that is not the current one.
                         const newLatestRevision = contentEntry.revisions.find(
-                            revision => revision.meta.version !== entry.meta.version
+                            revision => revision.id !== revisionToDelete.id
                         );
 
                         let redirectTarget = `/cms/content-entries/${modelId}`;
@@ -105,13 +99,6 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                             // Redirect to the first revision in the list of all entry revisions.
                             redirectTarget += `?id=${encodeURIComponent(newLatestRevision.id)}`;
                         }
-
-                        showSnackbar(
-                            <EntryRevisionDeletedSnackbarMessage
-                                deletedRevision={entry}
-                                newLatestRevision={newLatestRevision}
-                            />
-                        );
 
                         history.push(redirectTarget);
                     },

@@ -32,7 +32,7 @@ import { Ref } from "~/admin/components/ContentEntries/Filters/RefFieldRenderer"
 import { ShowConfirmationOnDelete } from "~/admin/components/Decorators/ShowConfirmationOnDelete";
 import { ShowConfirmationOnPublish } from "~/admin/components/Decorators/ShowConfirmationOnPublish";
 import { ShowConfirmationOnUnpublish } from "~/admin/components/Decorators/ShowConfirmationOnUnpublish";
-import {ShowConfirmationOnDeleteRevision} from "~/admin/components/Decorators/ShowConfirmationOnDeleteRevision";
+import { ShowConfirmationOnDeleteRevision } from "~/admin/components/Decorators/ShowConfirmationOnDeleteRevision";
 
 const { Browser } = ContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
