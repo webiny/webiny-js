@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { useIsMounted, useSnackbar } from "@webiny/app-admin";
 import { useCms, useQuery } from "~/admin/hooks";
