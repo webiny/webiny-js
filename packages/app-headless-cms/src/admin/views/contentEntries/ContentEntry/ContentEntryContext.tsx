@@ -273,6 +273,11 @@ export const ContentEntryProvider = ({
         }
 
         const updatedRevisionsList = revisions.filter(rev => rev.id !== params.id);
+        if (updatedRevisionsList.length === 0) {
+            removeRecordFromCache(params.id);
+        } else {
+            updateRecordInCache(updatedRevisionsList[0]);
+        }
         setRevisions(updatedRevisionsList);
 
         return { newLatestRevision: updatedRevisionsList[0] || null };
