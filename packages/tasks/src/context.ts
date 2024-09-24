@@ -3,7 +3,7 @@ import { ContextPlugin } from "@webiny/api";
 import { Context } from "~/types";
 import { createTaskModel } from "./crud/model";
 import { createDefinitionCrud } from "./crud/definition.tasks";
-import { createTriggerTasksCrud } from "~/crud/trigger.tasks";
+import { createServiceCrud } from "~/crud/service.tasks";
 import { createTaskCrud } from "./crud/crud.tasks";
 import { createTestingRunTask } from "~/tasks/testingRunTask";
 import { createTransportPlugins } from "~/crud/transport";
@@ -13,7 +13,7 @@ const createTasksCrud = () => {
         context.tasks = {
             ...createDefinitionCrud(context),
             ...createTaskCrud(context),
-            ...createTriggerTasksCrud(context)
+            ...createServiceCrud(context)
         };
     });
 

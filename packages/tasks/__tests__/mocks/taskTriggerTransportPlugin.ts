@@ -1,8 +1,8 @@
-import { TaskTriggerTransportPlugin } from "~/plugins";
+import { TaskServicePlugin } from "~/plugins";
 
-class MockTaskTriggerTransportPlugin extends TaskTriggerTransportPlugin {
+class MockTaskTriggerTransportPlugin extends TaskServicePlugin {
     public override name = "mock-task-trigger-transport-plugin";
-    public createTransport() {
+    public createService() {
         return {
             send: async () => {
                 return {
@@ -13,6 +13,6 @@ class MockTaskTriggerTransportPlugin extends TaskTriggerTransportPlugin {
     }
 }
 
-export const createMockTaskTriggerTransportPlugin = (): TaskTriggerTransportPlugin => {
+export const createMockTaskTriggerTransportPlugin = (): TaskServicePlugin => {
     return new MockTaskTriggerTransportPlugin();
 };

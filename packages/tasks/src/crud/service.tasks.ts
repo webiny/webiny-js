@@ -7,12 +7,12 @@ import type {
     ITaskDataInput,
     ITaskLog,
     ITaskResponseDoneResultOutput,
-    ITasksContextTriggerObject,
+    ITasksContextServiceObject,
     ITaskTriggerParams
 } from "~/types";
 import { TaskDataStatus, TaskLogItemType } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { createTransport } from "~/transport/createTransport";
+import { createService } from "~/service/createService";
 
 const MAX_DELAY_DAYS = 355;
 const MAX_DELAY_SECONDS = MAX_DELAY_DAYS * 24 * 60 * 60;
@@ -38,8 +38,8 @@ const validateDelay = <T = ITaskDataInput>({ input, delay }: ValidateDelayParams
     );
 };
 
-export const createTriggerTasksCrud = (context: Context): ITasksContextTriggerObject => {
-    const transport = createTransport({
+export const createServiceCrud = (context: Context): ITasksContextServiceObject => {
+    const service = createService({
         context
     });
 
@@ -76,9 +76,9 @@ export const createTriggerTasksCrud = (context: Context): ITasksContextTriggerOb
 
             const task = await context.tasks.createTask<T>(input);
 
-            let result: Awaited<ReturnType<typeof transport.send>> | null = null;
+            let result: Awaited<ReturnType<typeof service.send>> | null = null;
             try {
-                result = await transport.send(task, delay);
+                result = await service.send(task, delay);
 
                 if (!result) {
                     throw new WebinyError(
@@ -97,9 +97,27 @@ export const createTriggerTasksCrud = (context: Context): ITasksContextTriggerOb
                 await context.tasks.deleteTask(task.id);
                 throw ex;
             }
-            return await context.tasks.updateTask(task.id, {
+            return await context.tasks.updateTask<T, O>(task.id, {
                 eventResponse: result
             });
+        },
+        fetchServiceInfo: async (input: ITask | string) => {
+            const task = typeof input === "object" ? input : await context.tasks.getTask(input);
+            if (!task && typeof input === "string") {
+                throw new NotFoundError(`Task "${input}" was not found!`);
+            } else if (!task) {
+                throw new WebinyError(`Task was not found!`, "TASK_FETCH_ERROR", {
+                    input
+                });
+            }
+
+            try {
+                return await service.fetch(task);
+            } catch (ex) {
+                console.log("Service fetch error.");
+                console.error(ex);
+                return null;
+            }
         },
         abort: async <
             T = ITaskDataInput,

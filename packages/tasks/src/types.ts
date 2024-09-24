@@ -290,7 +290,7 @@ export interface ITaskAbortParams {
     message?: string;
 }
 
-export interface ITasksContextTriggerObject {
+export interface ITasksContextServiceObject {
     trigger: <
         T = ITaskDataInput,
         O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
@@ -303,12 +303,13 @@ export interface ITasksContextTriggerObject {
     >(
         params: ITaskAbortParams
     ) => Promise<ITask<T, O>>;
+    fetchServiceInfo: (input: ITask<any, any> | string) => Promise<GenericRecord | null>;
 }
 
 export interface ITasksContextObject
     extends ITasksContextCrudObject,
         ITasksContextDefinitionObject,
-        ITasksContextTriggerObject {}
+        ITasksContextServiceObject {}
 
 export interface Context extends BaseContext {
     tasks: ITasksContextObject;

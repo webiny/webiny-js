@@ -1,19 +1,20 @@
 import { Context } from "~/types";
-import { ITaskTriggerTransport, TaskTriggerTransportPlugin } from "~/plugins";
+import { ITaskService, TaskServicePlugin } from "~/plugins";
 import { WebinyError } from "@webiny/error";
 
 export interface ICreateTransport {
     context: Context;
 }
 
-export const createTransport = (params: ICreateTransport): ITaskTriggerTransport => {
+export const createService = (params: ICreateTransport): ITaskService => {
     const plugins = params.context.plugins
-        .byType<TaskTriggerTransportPlugin>(TaskTriggerTransportPlugin.type)
+        .byType<TaskServicePlugin>(TaskServicePlugin.type)
         .reverse();
-    const [plugin] = plugins;
+
+    const plugin = plugins.find(plugin => plugin.default) || plugins[0];
     if (!plugin) {
         throw new WebinyError("Missing TaskTriggerTransportPlugin.", "PLUGIN_ERROR", {
-            type: TaskTriggerTransportPlugin.type
+            type: TaskServicePlugin.type
         });
     }
 
@@ -24,7 +25,7 @@ export const createTransport = (params: ICreateTransport): ITaskTriggerTransport
         return params.context.cms.getLocale().code;
     };
 
-    return plugin.createTransport({
+    return plugin.createService({
         context: params.context,
         getTenant,
         getLocale

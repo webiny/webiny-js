@@ -68,8 +68,8 @@ export const createStepFunctionClient = (initial?: SFNClientConfig): SFNClient =
     });
 };
 
-export const triggerStepFunctionFactory = (config?: SFNClientConfig) => {
-    const client = createStepFunctionClient(config);
+export const triggerStepFunctionFactory = (input?: SFNClient | SFNClientConfig) => {
+    const client = input instanceof SFNClient ? input : createStepFunctionClient(input);
     return async <T extends GenericRecord = GenericRecord>(
         params: TriggerStepFunctionParams<T>
     ): Promise<StartExecutionCommandOutput> => {
@@ -83,8 +83,8 @@ export const triggerStepFunctionFactory = (config?: SFNClientConfig) => {
     };
 };
 
-export const listExecutionsFactory = (config?: SFNClientConfig) => {
-    const client = createStepFunctionClient(config);
+export const listExecutionsFactory = (input?: SFNClient | SFNClientConfig) => {
+    const client = input instanceof SFNClient ? input : createStepFunctionClient(input);
     return async (params: ListExecutionsCommandInput): Promise<ListExecutionsCommandOutput> => {
         const cmd = new ListExecutionsCommand({
             ...params,
@@ -94,12 +94,14 @@ export const listExecutionsFactory = (config?: SFNClientConfig) => {
     };
 };
 
-export const describeExecutionFactory = (config?: SFNClientConfig) => {
-    const client = createStepFunctionClient(config);
+export const describeExecutionFactory = (input?: SFNClient | SFNClientConfig) => {
+    const client = input instanceof SFNClient ? input : createStepFunctionClient(input);
     return async (
         params: DescribeExecutionCommandInput
     ): Promise<DescribeExecutionCommandOutput> => {
-        const cmd = new DescribeExecutionCommand(params);
+        const cmd = new DescribeExecutionCommand({
+            ...params
+        });
         return await client.send(cmd);
     };
 };
