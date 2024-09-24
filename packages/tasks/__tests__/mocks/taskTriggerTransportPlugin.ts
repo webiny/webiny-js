@@ -8,11 +8,19 @@ class MockTaskTriggerTransportPlugin extends TaskServicePlugin {
                 return {
                     mockedSend: true
                 };
+            },
+            fetch: async (input: any) => {
+                return {
+                    fetched: true,
+                    input
+                } as any;
             }
         };
     }
 }
 
 export const createMockTaskTriggerTransportPlugin = (): TaskServicePlugin => {
-    return new MockTaskTriggerTransportPlugin();
+    return new MockTaskTriggerTransportPlugin({
+        default: true
+    });
 };
