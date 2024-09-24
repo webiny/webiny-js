@@ -24,7 +24,7 @@
     "@babel/preset-react": "^7.23.3",
     "@babel/preset-typescript": "^7.23.3",
     "@emotion/babel-plugin": "^11.11.0",
-    "@types/react": "18.2.79",
+    "@types/react": "18.3.5",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "execa": "^5.0.0",
