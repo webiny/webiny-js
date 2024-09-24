@@ -8,18 +8,16 @@ import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContent
 import { CmsContentEntry, CmsContentEntryRevision } from "~/types";
 import { parseIdentifier } from "@webiny/utils";
 import {
-    CmsEntriesListRevisionsQueryResponse,
-    CmsEntriesListRevisionsQueryVariables,
     CmsEntryGetQueryResponse,
     CmsEntryGetQueryVariables,
-    createReadQuery,
-    createRevisionsQuery
+    createReadQuery
 } from "@webiny/app-headless-cms-common";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
 import { useRecords } from "@webiny/app-aco";
 import * as Cms from "~/admin/contexts/Cms";
 import { useMockRecords } from "./useMockRecords";
 import { ROOT_FOLDER } from "~/admin/constants";
+import { OperationError } from "~/admin/contexts/Cms";
 
 interface UpdateListCacheOptions {
     options?: {
@@ -34,6 +32,14 @@ export type UpdateEntryRevisionParams = Omit<Cms.UpdateEntryRevisionParams, "mod
 export type PublishEntryRevisionParams = Omit<Cms.PublishEntryRevisionParams, "model">;
 export type UnpublishEntryRevisionParams = Omit<Cms.UnpublishEntryRevisionParams, "model">;
 export type DeleteEntryParams = Omit<Cms.DeleteEntryParams, "model">;
+export type DeleteEntryRevisionParams = DeleteEntryParams;
+
+export interface DeleteEntryRevisionOperationSuccess {
+    newLatestRevision: CmsContentEntryRevision;
+    error?: never;
+}
+
+export type DeleteEntryRevisionResponse = OperationError | DeleteEntryRevisionOperationSuccess;
 
 export interface ContentEntryCrud {
     getEntry: (params: GetEntryParams) => Promise<Cms.GetEntryResponse>;
@@ -51,7 +57,9 @@ export interface ContentEntryCrud {
         params: UnpublishEntryRevisionParams
     ) => Promise<Cms.UnpublishEntryRevisionResponse>;
     deleteEntry: (params: DeleteEntryParams) => Promise<Cms.DeleteEntryResponse>;
-    deleteEntryRevision: (params: DeleteEntryParams) => Promise<Cms.DeleteEntryResponse>;
+    deleteEntryRevision: (
+        params: DeleteEntryRevisionParams
+    ) => Promise<DeleteEntryRevisionResponse>;
 }
 
 export interface ContentEntryContext extends ContentEntriesContext, ContentEntryCrud {
@@ -111,6 +119,7 @@ export const ContentEntryProvider = ({
     const { isMounted } = useIsMounted();
     const [activeTab, setActiveTab] = useState(0);
     const [entry, setEntry] = useState<CmsContentEntry>();
+    const [revisions, setRevisions] = useState<CmsContentEntryRevision[]>([]);
     const { contentModel: model, canCreate } = useContentEntries();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -119,7 +128,6 @@ export const ContentEntryProvider = ({
         ? useMockRecords()
         : useRecords();
     const [isLoading, setLoading] = useState<boolean>(false);
-    const [revisions, setRevisions] = useState<CmsContentEntryRevision[]>([]);
     const contentEntryProviderProps = useContentEntryProviderProps();
 
     const newEntry =
@@ -148,12 +156,6 @@ export const ContentEntryProvider = ({
     const { READ_CONTENT } = useMemo(() => {
         return {
             READ_CONTENT: createReadQuery(model)
-        };
-    }, [model.modelId]);
-
-    const { GET_REVISIONS } = useMemo(() => {
-        return {
-            GET_REVISIONS: createRevisionsQuery(model)
         };
     }, [model.modelId]);
 
@@ -188,38 +190,23 @@ export const ContentEntryProvider = ({
         }
     });
 
-    const getRevisions = useQuery<
-        CmsEntriesListRevisionsQueryResponse,
-        CmsEntriesListRevisionsQueryVariables
-    >(GET_REVISIONS, {
-        variables: {
-            id: entryId as string
-        },
-        skip: !entryId,
-        onCompleted: response => {
-            if (!response || !isMounted()) {
-                return;
-            }
-
-            const { data, error } = response.revisions;
-            if (!error) {
-                setRevisions(data);
-                return;
-            }
-            showSnackbar("Could not load content entry revisions: " + error.message);
-        }
-    });
-
-    const loading = isLoading || loadEntry.loading || getRevisions.loading;
+    const loading = isLoading || loadEntry.loading;
 
     useEffect(() => {
-        if (getRevisions.loading || !entryId) {
+        if (!entryId) {
             return;
         }
-        getRevisions.refetch({
+
+        cms.listEntryRevisions({
+            model,
             id: entryId
+        }).then(response => {
+            if (response.error) {
+                return;
+            }
+            setRevisions(response.revisions);
         });
-    }, [revisionId, getRevisions]);
+    }, [entryId]);
 
     // CRUD methods
     const getEntry: ContentEntryCrud["getEntry"] = async ({ id }) => {
@@ -256,6 +243,7 @@ export const ContentEntryProvider = ({
         setLoading(false);
         if (response.entry) {
             setEntry(response.entry);
+            setRevisions([response.entry, ...revisions]);
             updateRecordInCache(response.entry);
         }
         return response;
@@ -279,9 +267,15 @@ export const ContentEntryProvider = ({
     };
 
     const deleteEntryRevision: ContentEntryCrud["deleteEntryRevision"] = async params => {
-        const response = cms.deleteEntry({ model, ...params });
-        setRevisions(revisions.filter(rev => rev.id !== params.id));
-        return response;
+        const response = await cms.deleteEntry({ model, ...params });
+        if (typeof response === "object" && response.error) {
+            return response;
+        }
+
+        const updatedRevisionsList = revisions.filter(rev => rev.id !== params.id);
+        setRevisions(updatedRevisionsList);
+
+        return { newLatestRevision: updatedRevisionsList[0] || null };
     };
 
     const publishEntryRevision: ContentEntryCrud["publishEntryRevision"] = async params => {

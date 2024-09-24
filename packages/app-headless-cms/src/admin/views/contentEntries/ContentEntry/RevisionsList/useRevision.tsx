@@ -49,12 +49,12 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
 
     const { createRevision, editRevision, deleteRevision, publishRevision, unpublishRevision } =
         useHandlers<UseRevisionHandlers>(
-            { entry: revision },
+            { entry: revision, contentEntryHook: contentEntry },
             {
                 createRevision:
-                    (): CreateRevisionHandler =>
+                    ({ contentEntryHook }): CreateRevisionHandler =>
                     async (id): Promise<void> => {
-                        const { entry, error } = await contentEntry.createEntryRevisionFrom({
+                        const { entry, error } = await contentEntryHook.createEntryRevisionFrom({
                             id: id || revision.id
                         });
 
@@ -77,22 +77,19 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                         );
                     },
                 deleteRevision:
-                    (): DeleteRevisionHandler =>
+                    ({ entry, contentEntryHook }): DeleteRevisionHandler =>
                     async (id): Promise<void> => {
-                        const revisionToDelete = contentEntry.revisions.find(rev => rev.id === id)!;
+                        const revisionId = id || entry.id;
 
-                        const response = await contentEntry.deleteEntryRevision(revisionToDelete);
+                        const response = await contentEntryHook.deleteEntryRevision({
+                            id: revisionId
+                        });
 
                         if (typeof response === "object" && response.error) {
                             return;
                         }
 
-                        // The `revisions.data` array contains all revisions of the entry, ordered from
-                        // the latest to the oldest. The first element in the array is the latest revision.
-                        // What we're doing here is finding the latest revision that is not the current one.
-                        const newLatestRevision = contentEntry.revisions.find(
-                            revision => revision.id !== revisionToDelete.id
-                        );
+                        const { newLatestRevision } = response;
 
                         let redirectTarget = `/cms/content-entries/${modelId}`;
                         if (newLatestRevision) {
@@ -103,9 +100,9 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                         history.push(redirectTarget);
                     },
                 publishRevision:
-                    ({ entry }): PublishRevisionHandler =>
+                    ({ entry, contentEntryHook }): PublishRevisionHandler =>
                     async id => {
-                        const response = await contentEntry.publishEntryRevision({
+                        const response = await contentEntryHook.publishEntryRevision({
                             id: id || entry.id
                         });
 
@@ -124,9 +121,9 @@ export const useRevision = ({ revision }: UseRevisionProps) => {
                         return response;
                     },
                 unpublishRevision:
-                    ({ entry }): UnpublishRevisionHandler =>
+                    ({ entry, contentEntryHook }): UnpublishRevisionHandler =>
                     async id => {
-                        const { error } = await contentEntry.unpublishEntryRevision({
+                        const { error } = await contentEntryHook.unpublishEntryRevision({
                             id: id || entry.id
                         });
 

@@ -4,12 +4,13 @@ import { useBind } from "@webiny/form";
 import { useDialogs, useSnackbar } from "@webiny/app-admin";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { EntryRevisionDeletedSnackbarMessage } from "./EntryRevisionDeletedSnackbarMessage";
+import { EntryRevisionDeletedSnackbarMessage } from "./ShowConfirmationOnDeleteRevision/EntryRevisionDeletedSnackbarMessage";
+import {
+    DeleteEntryRevisionParams,
+    DeleteEntryRevisionResponse
+} from "~/admin/views/contentEntries/ContentEntry/ContentEntryContext";
 
 type GetEntry = ReturnType<typeof useContentEntry>["getEntry"];
-type DeleteEntry = ReturnType<typeof useContentEntry>["deleteEntry"];
-type DeleteEntryParams = Parameters<DeleteEntry>[0];
-type DeleteEntryResponse = Awaited<ReturnType<DeleteEntry>>;
 
 const Title = styled.span`
     font-weight: bold;
@@ -45,7 +46,7 @@ export const ShowConfirmationOnDeleteRevision = useContentEntry.createDecorator(
         const dialogs = useDialogs();
         const { showSnackbar } = useSnackbar();
 
-        const onAccept = async (params: DeleteEntryParams) => {
+        const onAccept = async (params: DeleteEntryRevisionParams) => {
             const revisionToDelete = hook.revisions.find(rev => rev.id === params.id)!;
 
             const response = await hook.deleteEntryRevision(revisionToDelete);
@@ -55,24 +56,17 @@ export const ShowConfirmationOnDeleteRevision = useContentEntry.createDecorator(
                 return response;
             }
 
-            // The `revisions.data` array contains all revisions of the entry, ordered from
-            // the latest to the oldest. The first element in the array is the latest revision.
-            // What we're doing here is finding the latest revision that is not the current one.
-            const newLatestRevision = hook.revisions.find(
-                revision => revision.id !== revisionToDelete.id
-            );
-
             showSnackbar(
                 <EntryRevisionDeletedSnackbarMessage
                     deletedRevision={revisionToDelete}
-                    newLatestRevision={newLatestRevision}
+                    newLatestRevision={response.newLatestRevision}
                 />
             );
 
             return response;
         };
-        const showConfirmation = (params: DeleteEntryParams) => {
-            return new Promise<DeleteEntryResponse>(resolve => {
+        const showConfirmation = (params: DeleteEntryRevisionParams) => {
+            return new Promise<DeleteEntryRevisionResponse>(resolve => {
                 dialogs.showDialog({
                     title: "Delete revision",
                     content: <EntryMessage id={params.id} getEntryRevision={hook.getEntry} />,
