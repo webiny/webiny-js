@@ -129,13 +129,6 @@ export const ContentEntryProvider = ({
     const [isLoading, setLoading] = useState<boolean>(false);
     const contentEntryProviderProps = useContentEntryProviderProps();
 
-    const newEntry =
-        typeof isNewEntry === "function" ? isNewEntry() : contentEntryProviderProps.isNewEntry();
-    const contentId =
-        typeof getContentId === "function"
-            ? getContentId()
-            : contentEntryProviderProps.getContentId();
-
     const updateRevisionInRevisionsCache = useCallback(
         (updatedRevisions: CmsContentEntryRevision | CmsContentEntryRevision[]) => {
             const updatedRevisionsArray = Array.isArray(updatedRevisions)
@@ -154,6 +147,13 @@ export const ContentEntryProvider = ({
         },
         []
     );
+
+    const newEntry =
+        typeof isNewEntry === "function" ? isNewEntry() : contentEntryProviderProps.isNewEntry();
+    const contentId =
+        typeof getContentId === "function"
+            ? getContentId()
+            : contentEntryProviderProps.getContentId();
 
     const revisionId = contentId ? decodeURIComponent(contentId) : null;
     let entryId: string | null = null;
