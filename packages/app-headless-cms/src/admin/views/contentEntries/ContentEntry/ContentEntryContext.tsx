@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "@webiny/react-router";
 import { useIsMounted, useSnackbar } from "@webiny/app-admin";
 import { useCms, useQuery } from "~/admin/hooks";
@@ -129,6 +129,25 @@ export const ContentEntryProvider = ({
     const [isLoading, setLoading] = useState<boolean>(false);
     const contentEntryProviderProps = useContentEntryProviderProps();
 
+    const updateRevisionInRevisionsCache = useCallback(
+        (updatedRevisions: CmsContentEntryRevision | CmsContentEntryRevision[]) => {
+            const updatedRevisionsArray = Array.isArray(updatedRevisions)
+                ? updatedRevisions
+                : [updatedRevisions];
+
+            setRevisions(revisions => {
+                return revisions.map(revision => {
+                    const updatedRevision = updatedRevisionsArray.find(
+                        updatedRevision => updatedRevision.id === revision.id
+                    );
+
+                    return updatedRevision || revision;
+                });
+            });
+        },
+        []
+    );
+
     const newEntry =
         typeof isNewEntry === "function" ? isNewEntry() : contentEntryProviderProps.isNewEntry();
     const contentId =
@@ -255,15 +274,7 @@ export const ContentEntryProvider = ({
         if (response.entry) {
             setEntry(response.entry);
             updateRecordInCache(response.entry);
-
-            const updatedRevisionsList = revisions.map(rev => {
-                if (rev.id === response.entry.id) {
-                    return response.entry;
-                }
-                return rev;
-            });
-
-            setRevisions(updatedRevisionsList);
+            updateRevisionInRevisionsCache(response.entry);
         }
         return response;
     };
@@ -299,6 +310,24 @@ export const ContentEntryProvider = ({
         if (response.entry) {
             setEntry(response.entry);
             updateRecordInCache(response.entry);
+
+            const revisionsToUpdateInRevisionsCache: CmsContentEntryRevision[] = [response.entry];
+
+            const previousPublishedRevision = revisions.find(
+                rev => rev.meta.status === "published"
+            );
+
+            if (previousPublishedRevision) {
+                revisionsToUpdateInRevisionsCache.push({
+                    ...previousPublishedRevision,
+                    meta: {
+                        ...previousPublishedRevision.meta,
+                        status: "unpublished"
+                    }
+                });
+            }
+
+            updateRevisionInRevisionsCache(revisionsToUpdateInRevisionsCache);
         }
         return response;
     };
@@ -308,6 +337,7 @@ export const ContentEntryProvider = ({
         if (response.entry) {
             setEntry(response.entry);
             updateRecordInCache(response.entry);
+            updateRevisionInRevisionsCache(response.entry);
         }
         return response;
     };
