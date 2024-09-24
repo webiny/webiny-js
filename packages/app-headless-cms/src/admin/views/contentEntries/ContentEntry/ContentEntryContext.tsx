@@ -255,6 +255,15 @@ export const ContentEntryProvider = ({
         if (response.entry) {
             setEntry(response.entry);
             updateRecordInCache(response.entry);
+
+            const updatedRevisionsList = revisions.map(rev => {
+                if (rev.id === response.entry.id) {
+                    return response.entry;
+                }
+                return rev;
+            });
+
+            setRevisions(updatedRevisionsList);
         }
         return response;
     };
@@ -272,14 +281,17 @@ export const ContentEntryProvider = ({
         }
 
         const updatedRevisionsList = revisions.filter(rev => rev.id !== params.id);
-        if (updatedRevisionsList.length === 0) {
-            removeRecordFromCache(params.id);
-        } else {
-            updateRecordInCache(updatedRevisionsList[0]);
-        }
         setRevisions(updatedRevisionsList);
 
-        return { newLatestRevision: updatedRevisionsList[0] || null };
+        const [newLatestRevision] = updatedRevisionsList;
+
+        if (newLatestRevision) {
+            updateRecordInCache(newLatestRevision);
+        } else {
+            removeRecordFromCache(params.id);
+        }
+
+        return { newLatestRevision };
     };
 
     const publishEntryRevision: ContentEntryCrud["publishEntryRevision"] = async params => {
