@@ -1,4 +1,5 @@
 import React from "react";
+import { ToastProvider, ToastViewport } from "~/Toast";
 import { TooltipProvider } from "~/Tooltip";
 
 export interface ProvidersProps {
@@ -6,5 +7,10 @@ export interface ProvidersProps {
 }
 
 export const Providers = ({ children }: ProvidersProps) => {
-    return <TooltipProvider>{children}</TooltipProvider>;
+    return (
+        <ToastProvider>
+            <TooltipProvider>{children}</TooltipProvider>
+            <ToastViewport />
+        </ToastProvider>
+    );
 };
