@@ -4,6 +4,7 @@ import { resolve, resolveList } from "@webiny/handler-graphql";
 import zod from "zod";
 import type { GenericRecord, NonEmptyArray } from "@webiny/api/types";
 import { CmsEntryListSort, CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types";
+import { checkPermissions } from "./security";
 
 const validateAbortExportContentEntries = zod.object({
     id: zod.string()
@@ -57,6 +58,8 @@ const createExportContentEntries = (models: NonEmptyArray<CmsModel>) => {
             context: Context
         ) => {
             return resolve(async () => {
+                await checkPermissions(context);
+
                 const result = validateExportContentEntriesInput.safeParse(input);
 
                 if (!result.success) {
@@ -80,6 +83,8 @@ export const createResolvers = (models: NonEmptyArray<CmsModel>) => {
         Query: {
             async getExportContentEntries(_: unknown, input: unknown, context: Context) {
                 return resolve(async () => {
+                    await checkPermissions(context);
+
                     const result = validateGetExportContentEntries.safeParse(input);
 
                     if (!result.success) {
@@ -91,6 +96,8 @@ export const createResolvers = (models: NonEmptyArray<CmsModel>) => {
             },
             async listExportContentEntries(_: unknown, input: unknown, context: Context) {
                 return resolveList(async () => {
+                    await checkPermissions(context);
+
                     const result = validateListExportContentEntries.safeParse(input);
                     if (!result.success) {
                         throw createZodError(result.error);
@@ -100,6 +107,8 @@ export const createResolvers = (models: NonEmptyArray<CmsModel>) => {
             },
             async getValidateImportFromUrl(_: unknown, input: unknown, context: Context) {
                 return resolve(async () => {
+                    await checkPermissions(context);
+
                     const result = getValidateImportFromUrl.safeParse(input);
 
                     if (!result.success) {
@@ -111,6 +120,8 @@ export const createResolvers = (models: NonEmptyArray<CmsModel>) => {
             },
             async getImportFromUrl(_: unknown, input: unknown, context: Context) {
                 return resolve(async () => {
+                    await checkPermissions(context);
+
                     const result = getImportFromUrl.safeParse(input);
 
                     if (!result.success) {
@@ -125,6 +136,8 @@ export const createResolvers = (models: NonEmptyArray<CmsModel>) => {
             ...createExportContentEntries(models),
             async abortExportContentEntries(_: unknown, input: unknown, context: Context) {
                 return resolve(async () => {
+                    await checkPermissions(context);
+
                     const result = validateAbortExportContentEntries.safeParse(input);
 
                     if (!result.success) {
@@ -136,6 +149,8 @@ export const createResolvers = (models: NonEmptyArray<CmsModel>) => {
             },
             async validateImportFromUrl(_: unknown, input: unknown, context: Context) {
                 return resolve(async () => {
+                    await checkPermissions(context);
+
                     const result = validateImportFromUrl.safeParse(input);
                     if (!result.success) {
                         throw createZodError(result.error);
@@ -146,6 +161,8 @@ export const createResolvers = (models: NonEmptyArray<CmsModel>) => {
             },
             async importFromUrl(_: unknown, input: unknown, context: Context) {
                 return resolve(async () => {
+                    await checkPermissions(context);
+
                     const result = importFromUrlValidation.safeParse(input);
                     if (!result.success) {
                         throw createZodError(result.error);
@@ -156,6 +173,8 @@ export const createResolvers = (models: NonEmptyArray<CmsModel>) => {
             },
             async abortImportFromUrl(_: unknown, input: unknown, context: Context) {
                 return resolve(async () => {
+                    await checkPermissions(context);
+
                     const result = abortImportFromUrl.safeParse(input);
                     if (!result.success) {
                         throw createZodError(result.error);

@@ -1,22 +1,18 @@
 import WebinyError from "@webiny/error";
-import {
+import type {
     Context,
     ITask,
     ITaskAbortParams,
-    ITaskConfig,
     ITaskCreateData,
     ITaskDataInput,
     ITaskLog,
-    ITaskLogItemType,
     ITaskResponseDoneResultOutput,
-    ITasksContextTriggerObject,
-    ITaskTriggerParams,
-    PutEventsCommandOutput,
-    TaskDataStatus
+    ITasksContextServiceObject,
+    ITaskTriggerParams
 } from "~/types";
+import { TaskDataStatus, TaskLogItemType } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { createTransport } from "~/transport/createTransport";
-import { EventBridgeEventTransportPlugin } from "~/crud/transport/EventBridgeEventTransportPlugin";
+import { createService } from "~/service/createService";
 
 const MAX_DELAY_DAYS = 355;
 const MAX_DELAY_SECONDS = MAX_DELAY_DAYS * 24 * 60 * 60;
@@ -42,15 +38,9 @@ const validateDelay = <T = ITaskDataInput>({ input, delay }: ValidateDelayParams
     );
 };
 
-export const createTriggerTasksCrud = (
-    context: Context,
-    config: ITaskConfig
-): ITasksContextTriggerObject => {
-    context.plugins.register(new EventBridgeEventTransportPlugin());
-
-    const transport = createTransport({
-        context,
-        config
+export const createServiceCrud = (context: Context): ITasksContextServiceObject => {
+    const service = createService({
+        context
     });
 
     return {
@@ -86,14 +76,14 @@ export const createTriggerTasksCrud = (
 
             const task = await context.tasks.createTask<T>(input);
 
-            let event: PutEventsCommandOutput | null = null;
+            let result: Awaited<ReturnType<typeof service.send>> | null = null;
             try {
-                event = await transport.send(task, delay);
+                result = await service.send(task, delay);
 
-                if (!event) {
+                if (!result) {
                     throw new WebinyError(
-                        `Could not create the Event Bridge Event!`,
-                        "CREATE_EVENT_BRIDGE_EVENT_ERROR",
+                        `Could not trigger the step function!`,
+                        "TRIGGER_STEP_FUNCTION_ERROR",
                         {
                             task
                         }
@@ -107,9 +97,27 @@ export const createTriggerTasksCrud = (
                 await context.tasks.deleteTask(task.id);
                 throw ex;
             }
-            return await context.tasks.updateTask(task.id, {
-                eventResponse: event
+            return await context.tasks.updateTask<T, O>(task.id, {
+                eventResponse: result
             });
+        },
+        fetchServiceInfo: async (input: ITask | string) => {
+            const task = typeof input === "object" ? input : await context.tasks.getTask(input);
+            if (!task && typeof input === "string") {
+                throw new NotFoundError(`Task "${input}" was not found!`);
+            } else if (!task) {
+                throw new WebinyError(`Task was not found!`, "TASK_FETCH_ERROR", {
+                    input
+                });
+            }
+
+            try {
+                return await service.fetch(task);
+            } catch (ex) {
+                console.log("Service fetch error.");
+                console.error(ex);
+                return null;
+            }
         },
         abort: async <
             T = ITaskDataInput,
@@ -161,7 +169,7 @@ export const createTriggerTasksCrud = (
                     items: taskLog.items.concat([
                         {
                             message: params.message || "Task aborted.",
-                            type: ITaskLogItemType.INFO,
+                            type: TaskLogItemType.INFO,
                             createdOn: new Date().toISOString()
                         }
                     ])

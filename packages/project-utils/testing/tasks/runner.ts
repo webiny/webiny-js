@@ -11,7 +11,7 @@ import { TaskRunner } from "@webiny/tasks/runner";
 import { timerFactory } from "@webiny/handler-aws/utils";
 import { TaskEventValidation } from "@webiny/tasks/runner/TaskEventValidation";
 import { ResponseContinueResult } from "@webiny/tasks/response/ResponseContinueResult";
-import { createMockTaskTriggerTransportPlugin } from "./mockTaskTriggerTransportPlugin";
+import { createMockTaskServicePlugin } from "./mockTaskTriggerTransportPlugin";
 
 export interface ICreateRunnerParamsOnContinueCallableParams {
     taskId: string;
@@ -48,7 +48,7 @@ export const createRunner = <
 >(
     params: ICreateRunnerParams<C, I, O>
 ) => {
-    params.context.plugins.register(createMockTaskTriggerTransportPlugin());
+    params.context.plugins.register(createMockTaskServicePlugin());
     const runner = new TaskRunner(
         params.context,
         timerFactory({

@@ -1,4 +1,4 @@
-import { ITask, Context, ITaskLogItemType } from "@webiny/tasks";
+import { ITask, Context, TaskLogItemType } from "@webiny/tasks";
 import { IUseCase } from "~/abstractions";
 
 export interface IChildTasksCleanupExecuteParams {
@@ -40,7 +40,7 @@ export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecutePara
          * First, we need to remove all the logs which have no errors.
          */
         for (const log of childLogs) {
-            if (log.items.some(item => item.type === ITaskLogItemType.ERROR)) {
+            if (log.items.some(item => item.type === TaskLogItemType.ERROR)) {
                 continue;
             }
             await context.tasks.deleteLog(log.id);
