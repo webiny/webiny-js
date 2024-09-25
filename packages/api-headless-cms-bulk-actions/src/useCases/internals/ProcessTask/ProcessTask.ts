@@ -48,11 +48,12 @@ export class ProcessTask {
                 );
             }
 
+            // Set the security identity in the context.
+            context.security.setIdentity(input.identity);
+
             // Process each ID in the input.
             for (const id of input.ids) {
                 try {
-                    // Set the security identity in the context.
-                    context.security.setIdentity(input.identity);
                     // Execute the gateway operation for the current ID.
                     await this.gateway.execute(model, id, input.data);
                     // Add the ID to the list of successfully processed entries.
