@@ -406,16 +406,16 @@ export interface CmsContentEntryRevision {
     deletedBy: CmsIdentity | null;
     revisionCreatedOn: string;
     revisionSavedOn: string;
-    revisionModifiedOn: string;
+    revisionModifiedOn: string | null;
     revisionDeletedOn: string | null;
-    revisionFirstPublishedOn: string;
-    revisionLastPublishedOn: string;
+    revisionFirstPublishedOn: string | null;
+    revisionLastPublishedOn: string | null;
     revisionCreatedBy: CmsIdentity;
     revisionSavedBy: CmsIdentity;
-    revisionModifiedBy: CmsIdentity;
+    revisionModifiedBy: CmsIdentity | null;
     revisionDeletedBy: CmsIdentity | null;
-    revisionFirstPublishedBy: CmsIdentity;
-    revisionLastPublishedBy: CmsIdentity;
+    revisionFirstPublishedBy: CmsIdentity | null;
+    revisionLastPublishedBy: CmsIdentity | null;
     wbyAco_location: Location;
     meta: {
         title: string;
