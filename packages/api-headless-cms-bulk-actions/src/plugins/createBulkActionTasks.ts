@@ -1,6 +1,11 @@
-import { createPrivateTaskDefinition } from "@webiny/tasks";
+import { createPrivateTaskDefinition, ITask } from "@webiny/tasks";
 import { IListEntries, IProcessEntry } from "~/abstractions";
-import { CreateTasksByModel, ProcessTask, ProcessTasksByModel } from "~/useCases/internals";
+import {
+    ChildTasksCleanup,
+    CreateTasksByModel,
+    ProcessTask,
+    ProcessTasksByModel
+} from "~/useCases/internals";
 import {
     BulkActionOperationByModelAction,
     HcmsBulkActionsContext,
@@ -81,6 +86,18 @@ class BulkActionTasks {
                 } catch (ex) {
                     return response.error(ex.message ?? "Error while executing list task");
                 }
+            },
+            onDone: async ({ context, task }) => {
+                await this.onCreateListTaskDefinitionFinish(context, task, "done");
+            },
+            onError: async ({ context, task }) => {
+                await this.onCreateListTaskDefinitionFinish(context, task, "error");
+            },
+            onAbort: async ({ context, task }) => {
+                await this.onCreateListTaskDefinitionFinish(context, task, "abort");
+            },
+            onMaxIterations: async ({ context, task }) => {
+                await this.onCreateListTaskDefinitionFinish(context, task, "maxIterations");
             }
         });
     }
@@ -118,6 +135,28 @@ class BulkActionTasks {
 
     private getCurrentAction(input: IBulkActionOperationByModelInput) {
         return input.action ?? BulkActionOperationByModelAction.CREATE_SUBTASKS;
+    }
+
+    private async onCreateListTaskDefinitionFinish(
+        context: HcmsBulkActionsContext,
+        task: ITask,
+        cause: string
+    ) {
+        /**
+         * We want to clean all child tasks and logs, which have no errors.
+         */
+        const childTasksCleanup = new ChildTasksCleanup();
+        try {
+            await childTasksCleanup.execute({
+                context,
+                task
+            });
+        } catch (ex) {
+            console.error(
+                `Error while cleaning "${this.createListTaskDefinitionName()} child tasks - ${cause}."`,
+                ex
+            );
+        }
     }
 }
 
