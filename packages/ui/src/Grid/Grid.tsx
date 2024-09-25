@@ -1,12 +1,9 @@
 import React from "react";
-import {
-    Grid as RmwcGrid,
-    GridCell as RmwcGridCell,
-    GridRow as RmwcGridInner,
-    GridCellProps as RmwcGridCellProps,
-    GridProps as RmwcGridProps
-} from "@rmwc/grid";
+import cn from "classnames";
+import { GridCellProps as RmwcGridCellProps, GridProps as RmwcGridProps } from "@rmwc/grid";
 import { CSSProperties } from "react";
+
+import { Grid as AdminUiGrid, ColumnProps as AdminUiColumnProps } from "@webiny/admin-ui";
 
 export type CellProps = RmwcGridCellProps & {
     // One or more Cell components.
@@ -18,16 +15,21 @@ export type CellProps = RmwcGridCellProps & {
     style?: { [key: string]: any };
 };
 
-export type GridProps = RmwcGridProps & {
-    className?: string;
-    style?: CSSProperties;
-};
-
 /**
  * Cell must be direct children of Grid component.
  */
 export const Cell = (props: CellProps) => {
-    return <RmwcGridCell {...props}>{props.children}</RmwcGridCell>;
+    const { children, style, className, align } = props;
+    return (
+        <AdminUiGrid.Column
+            className={className}
+            style={style}
+            span={props.span as AdminUiColumnProps["span"]}
+            align={align}
+        >
+            {children}
+        </AdminUiGrid.Column>
+    );
 };
 
 export type GridInnerProps = {
@@ -40,15 +42,33 @@ export type GridInnerProps = {
     className?: string;
 };
 
-export const GridInner = (props: GridInnerProps) => {
-    return <RmwcGridInner {...props}>{props.children}</RmwcGridInner>;
+export const GridInner = ({ className, ...props }: GridInnerProps) => {
+    return (
+        <div
+            {...props}
+            className={cn("grid grid-cols-12 gap-6 m-0 flex flex-wrap items-stretch", className)}
+        >
+            {props.children}
+        </div>
+    );
 };
 
 GridInner.displayName = "GridInner";
+
+export type GridProps = RmwcGridProps & {
+    className?: string;
+    style?: CSSProperties;
+};
 
 /**
  * Use Grid component to display a list of choices, once the handler is triggered.
  */
 export const Grid = (props: GridProps) => {
-    return <RmwcGrid {...props}>{props.children}</RmwcGrid>;
+    const { children, style, className } = props;
+
+    return (
+        <AdminUiGrid className={className} style={style}>
+            {children as React.ReactElement<AdminUiColumnProps, typeof AdminUiGrid.Column>}
+        </AdminUiGrid>
+    );
 };
