@@ -39,7 +39,7 @@
     "@babel/preset-typescript": "^7.23.3",
     "@material-design-icons/svg": "^0.14.3",
     "@material-symbols/svg-400": "^0.4.1",
-    "@types/react": "18.2.79",
+    "@types/react": "18.3.5",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "execa": "^5.0.0",

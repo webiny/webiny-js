@@ -23,8 +23,8 @@
     "lodash": "4.17.21",
     "mobx": "^6.9.0",
     "mobx-react-lite": "^3.4.3",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
@@ -33,7 +33,7 @@
     "@babel/preset-react": "^7.23.3",
     "@babel/preset-typescript": "^7.23.3",
     "@babel/runtime": "^7.24.0",
-    "@types/react": "18.2.79",
+    "@types/react": "18.3.5",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "apollo-client": "^2.6.10",
