@@ -13,7 +13,7 @@ export const createService = (params: ICreateTransport): ITaskService => {
 
     const plugin = plugins.find(plugin => plugin.default) || plugins[0];
     if (!plugin) {
-        throw new WebinyError("Missing TaskTriggerTransportPlugin.", "PLUGIN_ERROR", {
+        throw new WebinyError("Missing TaskServicePlugin.", "PLUGIN_ERROR", {
             type: TaskServicePlugin.type
         });
     }

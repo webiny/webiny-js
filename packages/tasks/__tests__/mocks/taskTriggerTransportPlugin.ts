@@ -1,6 +1,6 @@
 import { TaskServicePlugin } from "~/plugins";
 
-class MockTaskTriggerTransportPlugin extends TaskServicePlugin {
+class MockTaskServicePlugin extends TaskServicePlugin {
     public override name = "mock-task-trigger-transport-plugin";
     public createService() {
         return {
@@ -19,8 +19,8 @@ class MockTaskTriggerTransportPlugin extends TaskServicePlugin {
     }
 }
 
-export const createMockTaskTriggerTransportPlugin = (): TaskServicePlugin => {
-    return new MockTaskTriggerTransportPlugin({
+export const createMockTaskServicePlugin = (): TaskServicePlugin => {
+    return new MockTaskServicePlugin({
         default: true
     });
 };
