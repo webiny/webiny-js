@@ -1,9 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import {
     getCurrentDate,
     getCurrentLocalTime,
     getDefaultFieldValue,
+    getHHmm,
+    getHHmmss,
     RemoveFieldButton
 } from "./utils";
 import { Input } from "./Input";
@@ -55,21 +57,14 @@ export const DateTimeWithoutTimezone = ({
     trailingIcon
 }: DateTimeWithoutTimezoneProps) => {
     // "2020-05-18 09:00:00"
-    const initialValue = getDefaultFieldValue(field, bind, () => {
-        const date = new Date();
-        return `${getCurrentDate(date)} ${getCurrentLocalTime(date)}`;
-    });
+    const value =
+        bind.value ||
+        getDefaultFieldValue(field, bind, () => {
+            const date = new Date();
+            return `${getCurrentDate(date)} ${getCurrentLocalTime(date)}`;
+        });
 
-    const { date, time } = parseDateTime(initialValue);
-
-    const bindValue = bind.value || "";
-
-    useEffect(() => {
-        if (!date || !time || bindValue === initialValue) {
-            return;
-        }
-        bind.onChange(initialValue);
-    }, [bindValue]);
+    const { date, time } = parseDateTime(value);
 
     const cellSize = trailingIcon ? 5 : 6;
 
@@ -87,7 +82,7 @@ export const DateTimeWithoutTimezone = ({
                                 }
                                 return bind.onChange("");
                             }
-                            return bind.onChange(`${value} ${time || getCurrentLocalTime()}`);
+                            return bind.onChange(`${value} ${getHHmmss(time)}`);
                         }
                     }}
                     field={{
@@ -101,7 +96,7 @@ export const DateTimeWithoutTimezone = ({
                 <Input
                     bind={{
                         ...bind,
-                        value: time,
+                        value: getHHmm(time),
                         onChange: async value => {
                             if (!value) {
                                 if (!bind.value) {
@@ -109,7 +104,7 @@ export const DateTimeWithoutTimezone = ({
                                 }
                                 return bind.onChange("");
                             }
-                            return bind.onChange(`${date || getCurrentDate()} ${value}`);
+                            return bind.onChange(`${date || getCurrentDate()} ${getHHmmss(value)}`);
                         }
                     }}
                     field={{
