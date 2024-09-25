@@ -1,1 +1,1 @@
-export * from "./TaskTriggerTransportPlugin";
+export * from "./TaskServicePlugin";
