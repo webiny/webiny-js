@@ -4,9 +4,9 @@ import {
     ITaskServiceTask,
     TaskServicePlugin
 } from "~/plugins";
-import { GenericRecord } from "@webiny/api/types";
 import {
     createStepFunctionClient,
+    DescribeExecutionCommandOutput,
     describeExecutionFactory,
     triggerStepFunctionFactory
 } from "@webiny/aws-sdk/client-sfn";
@@ -15,11 +15,13 @@ import { generateAlphaNumericId } from "@webiny/utils";
 import { ServiceDiscovery } from "@webiny/api";
 import { ITask } from "~/types";
 
+export type IStepFunctionServiceFetchResult = DescribeExecutionCommandOutput;
+
 export interface IDetailWrapper<T> {
     detail: T;
 }
 
-class StepFunctionService implements ITaskService<GenericRecord | null> {
+class StepFunctionService implements ITaskService {
     private readonly getTenant: () => string;
     private readonly getLocale: () => string;
     private readonly trigger: ReturnType<typeof triggerStepFunctionFactory>;
@@ -71,7 +73,7 @@ class StepFunctionService implements ITaskService<GenericRecord | null> {
         }
     }
 
-    public async fetch<R>(task: ITask): Promise<R | null> {
+    public async fetch(task: ITask): Promise<IStepFunctionServiceFetchResult | null> {
         const executionArn = task.eventResponse?.executionArn;
         if (!executionArn) {
             console.error(`Execution ARN not found in task "${task.id}".`);
@@ -81,7 +83,7 @@ class StepFunctionService implements ITaskService<GenericRecord | null> {
             const result = await this.get({
                 executionArn
             });
-            return (result || null) as R;
+            return result || null;
         } catch (ex) {
             console.log("Could not get the execution details.");
             console.error(ex);
@@ -90,7 +92,7 @@ class StepFunctionService implements ITaskService<GenericRecord | null> {
     }
 }
 
-export class StepFunctionServicePlugin extends TaskServicePlugin<GenericRecord | null> {
+export class StepFunctionServicePlugin extends TaskServicePlugin {
     public override name = "task.stepFunctionTriggerTransport";
 
     public createService(params: ITaskServiceCreatePluginParams) {

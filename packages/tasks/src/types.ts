@@ -303,7 +303,7 @@ export interface ITasksContextServiceObject {
     >(
         params: ITaskAbortParams
     ) => Promise<ITask<T, O>>;
-    fetchServiceInfo: (input: ITask<any, any> | string) => Promise<GenericRecord | null>;
+    fetchServiceInfo: <T = GenericRecord>(input: ITask<any, any> | string) => Promise<T | null>;
 }
 
 export interface ITasksContextObject

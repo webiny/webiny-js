@@ -10,7 +10,7 @@ import { EventBridgeClient, PutEventsCommand } from "@webiny/aws-sdk/client-even
 import { WebinyError } from "@webiny/error";
 import { GenericRecord } from "@webiny/api/types";
 
-class EventBridgeService implements ITaskService<PutEventsCommandOutput> {
+class EventBridgeService implements ITaskService {
     protected readonly context: Context;
     protected readonly getTenant: () => string;
     protected readonly getLocale: () => string;
