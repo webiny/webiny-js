@@ -42,7 +42,7 @@ export function usePersistEntry({ addItemToListCache }: UsePersistEntryOptions) 
                 options: { skipValidators: persistOptions?.skipValidators }
             });
         },
-        [addItemToListCache]
+        [addItemToListCache, contentEntry]
     );
 
     return { persistEntry };
