@@ -468,6 +468,7 @@ jobs:
         with:
           name: verdaccio-files
           retention-days: 1
+          include-hidden-files: true
           path: |-
             ${{ github.base_ref }}/.verdaccio/
             ${{ github.base_ref }}/.verdaccio.yaml
