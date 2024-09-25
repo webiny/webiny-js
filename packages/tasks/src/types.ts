@@ -14,23 +14,16 @@ import {
     ITaskResponseResult
 } from "~/response/abstractions";
 import { IIsCloseToTimeoutCallable, ITaskManagerStore } from "./runner/abstractions";
-import { PutEventsCommandOutput } from "@webiny/aws-sdk/client-eventbridge";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { GenericRecord } from "@webiny/api/types";
-
-export { PutEventsCommandOutput };
 
 export * from "./handler/types";
 export * from "./response/abstractions";
 export * from "./runner/abstractions";
 
-export interface ITaskConfig {
-    readonly eventBusName: string;
-}
-
 export type ITaskDataInput = GenericRecord;
 
-export enum ITaskLogItemType {
+export enum TaskLogItemType {
     INFO = "info",
     ERROR = "error"
 }
@@ -42,16 +35,16 @@ export interface ITaskLogItemData {
 export interface ITaskLogItemBase {
     message: string;
     createdOn: string;
-    type: ITaskLogItemType;
+    type: TaskLogItemType;
     data?: ITaskLogItemData;
 }
 
 export interface ITaskLogItemInfo extends ITaskLogItemBase {
-    type: ITaskLogItemType.INFO;
+    type: TaskLogItemType.INFO;
 }
 
 export interface ITaskLogItemError extends ITaskLogItemBase {
-    type: ITaskLogItemType.ERROR;
+    type: TaskLogItemType.ERROR;
     error?: IResponseError;
 }
 
@@ -103,7 +96,7 @@ export interface ITask<
     createdBy: ITaskIdentity;
     startedOn?: string;
     finishedOn?: string;
-    eventResponse: PutEventsCommandOutput | undefined;
+    eventResponse: GenericRecord | undefined;
     iterations: number;
     parentId?: string;
 }
@@ -189,7 +182,7 @@ export interface ITaskUpdateData<
     executionName?: string;
     startedOn?: string;
     finishedOn?: string;
-    eventResponse?: PutEventsCommandOutput;
+    eventResponse?: GenericRecord;
     iterations?: number;
 }
 
@@ -273,10 +266,6 @@ export interface ITasksContextCrudObject {
     onTaskAfterDelete: Topic<OnTaskAfterDeleteTopicParams>;
 }
 
-export interface ITasksContextConfigObject {
-    config: ITaskConfig;
-}
-
 export interface ITasksContextDefinitionObject {
     getDefinition: <
         C extends Context = Context,
@@ -301,7 +290,7 @@ export interface ITaskAbortParams {
     message?: string;
 }
 
-export interface ITasksContextTriggerObject {
+export interface ITasksContextServiceObject {
     trigger: <
         T = ITaskDataInput,
         O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
@@ -314,13 +303,13 @@ export interface ITasksContextTriggerObject {
     >(
         params: ITaskAbortParams
     ) => Promise<ITask<T, O>>;
+    fetchServiceInfo: (input: ITask<any, any> | string) => Promise<GenericRecord | null>;
 }
 
 export interface ITasksContextObject
     extends ITasksContextCrudObject,
         ITasksContextDefinitionObject,
-        ITasksContextTriggerObject,
-        ITasksContextConfigObject {}
+        ITasksContextServiceObject {}
 
 export interface Context extends BaseContext {
     tasks: ITasksContextObject;

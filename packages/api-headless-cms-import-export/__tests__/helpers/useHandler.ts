@@ -24,7 +24,7 @@ import { createHeadlessCmsImportExport } from "~/index";
 import { createGetExportContentEntries } from "./graphql/getExportContentEntries";
 import { createExportContentEntries } from "./graphql/exportContentEntries";
 import { createAbortExportContentEntries } from "./graphql/abortExportContentEntries";
-import { createMockTaskTriggerTransportPlugin } from "@webiny/project-utils/testing/tasks";
+import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks";
 import { createValidateImportFromUrl } from "./graphql/validateImportFromUrl";
 import { createGetValidateImportFromUrl } from "./graphql/getValidateImportFromUrl";
 import { createCmsPlugins } from "~tests/helpers/models";
@@ -70,7 +70,7 @@ export const useHandler = <C extends Context = Context>(params?: UseHandlerParam
         createRawEventHandler(async ({ context }) => {
             return context;
         }),
-        createMockTaskTriggerTransportPlugin(),
+        createMockTaskServicePlugin(),
         ...createCmsPlugins(),
         ...inputPlugins
     ];
