@@ -33,7 +33,7 @@ const createEsBulkActionEntriesTasks = () => {
             name: "moveToTrash",
             dataLoader: createListLatestEntries,
             dataProcessor: createMoveEntryToTrash,
-            batchSize: 500
+            batchSize: 1000
         }),
         createBulkAction({
             name: "publish",
