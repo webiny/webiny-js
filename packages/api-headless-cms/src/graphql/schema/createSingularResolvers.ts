@@ -31,7 +31,7 @@ export const createSingularResolvers: CreateSingularResolvers = ({
     }
 
     const createFieldResolvers = createFieldResolversFactory({
-        endpointType: "manage",
+        endpointType: type,
         models,
         model,
         fieldTypePlugins

@@ -34,7 +34,7 @@ export const createSingularSDL: CreateSingularSDL = ({
         models,
         model,
         fields: model.fields,
-        type: "manage",
+        type,
         fieldTypePlugins
     });
 
