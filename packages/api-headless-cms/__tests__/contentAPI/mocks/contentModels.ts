@@ -253,6 +253,109 @@ const models: CmsModel[] = [
         tenant: "root",
         webinyVersion
     },
+    // category
+    {
+        createdOn: new Date().toISOString(),
+        savedOn: new Date().toISOString(),
+        locale: "en-US",
+        titleFieldId: "title",
+        lockedFields: [],
+        name: "Category Singleton",
+        description: "Product category Singleton",
+        modelId: "categorySingleton",
+        singularApiName: "CategoryApiNameWhichIsABitDifferentThanModelIdSingleton",
+        pluralApiName: "CategoriesApiModelSingleton",
+        group: {
+            id: contentModelGroup.id,
+            name: contentModelGroup.name
+        },
+        layout: [[ids.field11], [ids.field12]],
+        fields: [
+            {
+                id: ids.field11,
+                multipleValues: false,
+                helpText: "",
+                label: "Title",
+                type: "text",
+                storageId: "text@titleStorageId",
+                fieldId: "title",
+                validation: [
+                    {
+                        name: "required",
+                        message: "This field is required"
+                    },
+                    {
+                        name: "minLength",
+                        message: "Enter at least 3 characters",
+                        settings: {
+                            min: 3.0
+                        }
+                    }
+                ],
+                listValidation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field12,
+                multipleValues: false,
+                helpText: "",
+                label: "Slug",
+                type: "text",
+                storageId: "text@slugStorageId",
+                fieldId: "slug",
+                validation: [
+                    {
+                        name: "required",
+                        message: "This field is required"
+                    }
+                ],
+                listValidation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field34,
+                multipleValues: false,
+                helpText: "",
+                label: "Category",
+                type: "ref",
+                storageId: "ref@categoryRef",
+                fieldId: "categoryRef",
+                validation: [],
+                listValidation: [],
+                placeholderText: "placeholder text",
+                settings: {
+                    models: [
+                        {
+                            modelId: "categorySingleton"
+                        }
+                    ]
+                },
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            }
+        ],
+        tenant: "root",
+        webinyVersion
+    },
     // product
     {
         createdOn: new Date().toISOString(),
