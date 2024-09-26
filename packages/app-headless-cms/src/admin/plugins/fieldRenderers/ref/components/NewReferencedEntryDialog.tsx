@@ -17,12 +17,19 @@ import {
 import { useCms } from "~/admin/hooks";
 import { FullWidthDialog } from "./dialog/Dialog";
 import { NavigateFolderProvider as AbstractNavigateFolderProvider } from "@webiny/app-aco/contexts/navigateFolder";
+import { SearchRecordsProvider } from "@webiny/app-aco/contexts/records";
 import { FolderTree, useNavigateFolder } from "@webiny/app-aco";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { usePersistEntry } from "~/admin/hooks/usePersistEntry";
+import {
+    AcoAppContext,
+    AcoAppProviderContext,
+    createAppFromModel
+} from "@webiny/app-aco/contexts/app";
+import { DialogsProvider } from "@webiny/app-admin";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -159,22 +166,46 @@ export const NewReferencedEntryDialog = ({
         },
         [onChange, model]
     );
+
     if (!model) {
         return null;
     }
 
+    const acoAppContext: AcoAppProviderContext = {
+        app: createAppFromModel({
+            model,
+            id: `cms:${model.modelId}`
+        }),
+        mode: "cms",
+        client: apolloClient,
+        model,
+        folderIdPath: "wbyAco_location.folderId",
+        folderIdInPath: "wbyAco_location.folderId_in",
+        loading: false
+    };
+
     return (
-        <ContentEntriesProvider contentModel={model} key={model.modelId} insideDialog={true}>
-            <FoldersProvider type={`cms:${model.modelId}`}>
-                <NavigateFolderProvider modelId={model.modelId}>
-                    <ContentEntryProviderWithCurrentFolderId
-                        model={model}
-                        onClose={onClose}
-                        onCreate={onCreate}
-                    />
-                </NavigateFolderProvider>
+        <AcoAppContext.Provider value={acoAppContext}>
+            <FoldersProvider>
+                <SearchRecordsProvider>
+                    <NavigateFolderProvider modelId={model.modelId}>
+                        <DialogsProvider>
+                            <ContentEntriesProvider
+                                contentModel={model}
+                                key={model.modelId}
+                                insideDialog={true}
+                            >
+                                <ContentEntryProviderWithCurrentFolderId
+                                    model={model}
+                                    onClose={onClose}
+                                    onCreate={onCreate}
+                                />
+                            </ContentEntriesProvider>
+                        </DialogsProvider>
+                    </NavigateFolderProvider>
+                </SearchRecordsProvider>
             </FoldersProvider>
-        </ContentEntriesProvider>
+        </AcoAppContext.Provider>
     );
 };
 
