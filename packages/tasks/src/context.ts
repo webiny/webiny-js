@@ -6,7 +6,7 @@ import { createDefinitionCrud } from "./crud/definition.tasks";
 import { createServiceCrud } from "~/crud/service.tasks";
 import { createTaskCrud } from "./crud/crud.tasks";
 import { createTestingRunTask } from "~/tasks/testingRunTask";
-import { createTransportPlugins } from "~/crud/transport";
+import { createServicePlugins } from "~/service";
 
 const createTasksCrud = () => {
     const plugin = new ContextPlugin<Context>(async context => {
@@ -23,7 +23,7 @@ const createTasksCrud = () => {
 };
 
 const createTasksContext = (): Plugin[] => {
-    return [...createTransportPlugins(), ...createTaskModel(), createTasksCrud()];
+    return [...createServicePlugins(), ...createTaskModel(), createTasksCrud()];
 };
 
 export const createBackgroundTaskContext = (): Plugin[] => {

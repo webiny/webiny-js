@@ -1,6 +1,5 @@
 import { Plugin } from "@webiny/plugins";
 import { Context, ITask } from "~/types";
-import { GenericRecord } from "@webiny/api/types";
 
 export interface ITaskServiceCreatePluginParams {
     context: Context;
@@ -10,16 +9,16 @@ export interface ITaskServiceCreatePluginParams {
 
 export type ITaskServiceTask = Pick<ITask, "id" | "definitionId">;
 
-export interface ITaskService<T = GenericRecord> {
-    send(task: ITaskServiceTask, delay: number): Promise<T>;
-    fetch<R>(task: ITask): Promise<R | null>;
+export interface ITaskService {
+    send(task: ITaskServiceTask, delay: number): Promise<unknown | null>;
+    fetch(task: ITask): Promise<unknown | null>;
 }
 
 export interface ITaskServicePluginParams {
     default?: boolean;
 }
 
-export abstract class TaskServicePlugin<T = GenericRecord> extends Plugin {
+export abstract class TaskServicePlugin extends Plugin {
     public static override readonly type: string = "tasks.taskService";
     public readonly default: boolean;
 
@@ -28,5 +27,5 @@ export abstract class TaskServicePlugin<T = GenericRecord> extends Plugin {
         this.default = !!params?.default;
     }
 
-    public abstract createService(params: ITaskServiceCreatePluginParams): ITaskService<T>;
+    public abstract createService(params: ITaskServiceCreatePluginParams): ITaskService;
 }

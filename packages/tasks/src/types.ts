@@ -16,6 +16,7 @@ import {
 import { IIsCloseToTimeoutCallable, ITaskManagerStore } from "./runner/abstractions";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { GenericRecord } from "@webiny/api/types";
+import { IStepFunctionServiceFetchResult } from "~/service/StepFunctionServicePlugin";
 
 export * from "./handler/types";
 export * from "./response/abstractions";
@@ -303,7 +304,9 @@ export interface ITasksContextServiceObject {
     >(
         params: ITaskAbortParams
     ) => Promise<ITask<T, O>>;
-    fetchServiceInfo: (input: ITask<any, any> | string) => Promise<GenericRecord | null>;
+    fetchServiceInfo: (
+        input: ITask<any, any> | string
+    ) => Promise<IStepFunctionServiceFetchResult | null>;
 }
 
 export interface ITasksContextObject
