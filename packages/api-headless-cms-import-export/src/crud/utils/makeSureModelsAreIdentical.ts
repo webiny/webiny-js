@@ -66,7 +66,9 @@ export const makeSureModelsAreIdentical = (params: IMakeSureModelsAreIdenticalPa
             message: `Field "${value.field.fieldId}" not found in the model provided via the JSON data.`,
             code: "MODEL_FIELD_NOT_FOUND",
             data: {
-                ...value
+                field: value,
+                targetValues,
+                modelValues
             }
         });
     }
