@@ -288,12 +288,7 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                                     </Grid>
                                 </UID.DialogContent>
                                 <UID.DialogActions>
-                                    <ButtonPrimary
-                                        onClick={ev => {
-                                            console.log("submitting click", data);
-                                            submit(ev);
-                                        }}
-                                    >
+                                    <ButtonPrimary onClick={submit}>
                                         + {t`Create Model`}
                                     </ButtonPrimary>
                                 </UID.DialogActions>
