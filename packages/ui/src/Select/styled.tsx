@@ -8,7 +8,7 @@ export const webinySelect = css`
     background-color: transparent;
     border-color: transparent;
     color: var(--webiny-theme-color-primary);
-    min-width: 200px;
+    width: 100%;
 
     .rmwc-select__native-control {
         opacity: 0;
