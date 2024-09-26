@@ -531,7 +531,11 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
             // Delete template-related data.
             const allTemplateVariableIds = processedPage
                 .content!.data.template.variables.map((variablesForBlock: Record<string, any>) => {
-                    return variablesForBlock.variables.map((v: Record<string, any>) => v.id);
+                    if (Array.isArray(variablesForBlock.variables)) {
+                        return variablesForBlock.variables.map((v: Record<string, any>) => v.id);
+                    }
+
+                    return [];
                 })
                 .flat();
 
