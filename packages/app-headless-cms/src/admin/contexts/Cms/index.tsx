@@ -111,6 +111,7 @@ export interface BulkActionParams {
     model: CmsModel;
     action: string;
     where?: Record<string, any>;
+    search?: string;
     data?: Record<string, any>;
 }
 
@@ -410,7 +411,7 @@ export const CmsProvider = (props: CmsProviderProps) => {
 
             return true;
         },
-        bulkAction: async ({ model, action, where, data }) => {
+        bulkAction: async ({ model, action, where, search, data }) => {
             const mutation = createBulkActionMutation(model);
             const response = await value.apolloClient.mutate<
                 CmsEntryBulkActionMutationResponse,
@@ -420,6 +421,7 @@ export const CmsProvider = (props: CmsProviderProps) => {
                 variables: {
                     action,
                     where,
+                    search,
                     data
                 }
             });
