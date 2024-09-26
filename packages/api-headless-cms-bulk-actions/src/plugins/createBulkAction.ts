@@ -8,6 +8,7 @@ export interface CreateBulkActionConfig {
     dataLoader: (context: HcmsBulkActionsContext) => IListEntries;
     dataProcessor: (context: HcmsBulkActionsContext) => IProcessEntry;
     modelIds?: string[];
+    batchSize?: number;
 }
 
 function toPascalCase(str: string) {
@@ -31,7 +32,8 @@ export const createBulkAction = (config: CreateBulkActionConfig) => {
         createBulkActionTasks({
             name,
             dataLoader: config.dataLoader,
-            dataProcessor: config.dataProcessor
+            dataProcessor: config.dataProcessor,
+            batchSize: config.batchSize
         }),
         createBulkActionGraphQL({
             name,

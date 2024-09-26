@@ -1,6 +1,8 @@
-import { createBulkAction } from "~/plugins";
 import {
+    createBulkAction,
     createDeleteEntry,
+    createEmptyTrashBinsTask,
+    createHcmsBulkActions,
     createListDeletedEntries,
     createListLatestEntries,
     createListNotPublishedEntries,
@@ -10,39 +12,53 @@ import {
     createPublishEntry,
     createRestoreEntryFromTrash,
     createUnpublishEntry
-} from "~/useCases";
+} from "@webiny/api-headless-cms-bulk-actions";
+import { createHeadlessCmsImportExport } from "@webiny/api-headless-cms-import-export";
 
-export const createBulkActionEntriesTasks = () => {
+const createEsBulkActionEntriesTasks = () => {
     return [
         createBulkAction({
             name: "delete",
             dataLoader: createListDeletedEntries,
-            dataProcessor: createDeleteEntry
+            dataProcessor: createDeleteEntry,
+            batchSize: 1000
         }),
         createBulkAction({
             name: "moveToFolder",
             dataLoader: createListLatestEntries,
-            dataProcessor: createMoveEntryToFolder
+            dataProcessor: createMoveEntryToFolder,
+            batchSize: 1000
         }),
         createBulkAction({
             name: "moveToTrash",
             dataLoader: createListLatestEntries,
-            dataProcessor: createMoveEntryToTrash
+            dataProcessor: createMoveEntryToTrash,
+            batchSize: 1000
         }),
         createBulkAction({
             name: "publish",
             dataLoader: createListNotPublishedEntries,
-            dataProcessor: createPublishEntry
+            dataProcessor: createPublishEntry,
+            batchSize: 1000
         }),
         createBulkAction({
             name: "unpublish",
             dataLoader: createListPublishedEntries,
-            dataProcessor: createUnpublishEntry
+            dataProcessor: createUnpublishEntry,
+            batchSize: 1000
         }),
         createBulkAction({
             name: "restore",
             dataLoader: createListDeletedEntries,
-            dataProcessor: createRestoreEntryFromTrash
+            dataProcessor: createRestoreEntryFromTrash,
+            batchSize: 1000
         })
     ];
 };
+
+export const createHcmsTasks = () => [
+    createHcmsBulkActions(),
+    createEsBulkActionEntriesTasks(),
+    createEmptyTrashBinsTask(),
+    createHeadlessCmsImportExport()
+];

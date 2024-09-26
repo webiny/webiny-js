@@ -9,6 +9,7 @@ import {
 import { Property, useIdGenerator } from "@webiny/react-properties";
 import { useCms, useContentEntriesList, useModel } from "~/admin/hooks";
 import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
+import merge from "lodash/merge";
 
 export interface BulkActionConfig {
     name: string;
@@ -22,6 +23,12 @@ export interface BulkActionProps {
     after?: string;
     modelIds?: string[];
     element?: React.ReactElement;
+}
+
+export interface ProcessInBulkParams {
+    action: string;
+    where?: Record<string, any>;
+    data?: Record<string, any>;
 }
 
 export const BaseBulkAction = makeDecoratable(
@@ -91,8 +98,9 @@ const useWorker = () => {
             }: CallbackParams<CmsContentEntry>) => Promise<void>,
             chunkSize?: number
         ) => worker.processInSeries(callback, chunkSize),
-        processInBulk: async (action: string, data?: Record<string, any>) => {
-            await bulkAction({ model, action, where: getWhere(), data });
+        processInBulk: async ({ action, where: initialWhere, data }: ProcessInBulkParams) => {
+            const where = merge(getWhere(), initialWhere);
+            await bulkAction({ model, action, where, data });
         },
         resetItems: resetItems,
         results: worker.results,

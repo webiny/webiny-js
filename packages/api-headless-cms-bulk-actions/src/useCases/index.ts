@@ -1,5 +1,6 @@
 export * from "./DeleteEntry";
 export * from "./ListDeletedEntries";
+export * from "./ListNotPublishedEntries";
 export * from "./ListLatestEntries";
 export * from "./ListPublishedEntries";
 export * from "./MoveEntryToFolder";
