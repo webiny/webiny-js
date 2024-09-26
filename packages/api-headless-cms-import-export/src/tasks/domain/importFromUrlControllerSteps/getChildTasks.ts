@@ -60,6 +60,10 @@ export const getChildTasks = async <I, O extends ITaskResponseDoneResultOutput>(
             task.taskStatus === TaskDataStatus.RUNNING ||
             task.taskStatus === TaskDataStatus.PENDING
         ) {
+            /**
+             * We also need to check the actual status of the service.
+             * It can happen that the task is marked as running, but the service is not running.
+             */
             const serviceInfo = await context.tasks.fetchServiceInfo(task);
             const status = mapServiceStatusToTaskStatus(task, serviceInfo);
 
