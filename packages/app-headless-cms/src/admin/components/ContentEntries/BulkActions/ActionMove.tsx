@@ -29,8 +29,16 @@ export const ActionMove = observer(() => {
                 loadingLabel: `Processing ${entriesLabel}`,
                 execute: async () => {
                     if (worker.isSelectedAll) {
-                        await worker.processInBulk("MoveToFolder", {
-                            folderId: folder.id
+                        await worker.processInBulk({
+                            action: "MoveToFolder",
+                            where: {
+                                wbyAco_location: {
+                                    folderId_not: folder.id
+                                }
+                            },
+                            data: {
+                                folderId: folder.id
+                            }
                         });
                         worker.resetItems();
                         showSnackbar(

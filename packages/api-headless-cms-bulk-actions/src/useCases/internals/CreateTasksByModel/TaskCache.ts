@@ -50,6 +50,14 @@ export class TaskCache<TTask = ITaskDataInput> {
     }
 
     /**
+     * Retrieves the cached tasks length.
+     * @returns number
+     */
+    getTasksLength() {
+        return this.getTasks().length;
+    }
+
+    /**
      * Retrieves the cached tasks.
      * @returns {TTask[]} The list of cached tasks.
      */

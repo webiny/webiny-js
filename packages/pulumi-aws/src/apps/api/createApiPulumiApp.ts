@@ -314,6 +314,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
         app.addServiceManifest({
             name: "api",
             manifest: {
+                bgTaskSfn: baseApp.resources.backgroundTask.stepFunction.output.arn,
                 cloudfront: {
                     distributionId: baseApp.resources.cloudfront.output.id
                 }

@@ -1,34 +1,31 @@
 import {
-    ITaskTriggerTransport,
-    ITaskTriggerTransportPluginParams,
-    PutEventsCommandOutput,
-    TaskTriggerTransportPlugin
+    ITaskService,
+    ITaskServiceCreatePluginParams,
+    ITaskServiceTask,
+    TaskServicePlugin
 } from "~/plugins";
-import { Context, ITask, ITaskConfig, ITaskEventInput } from "~/types";
+import { Context, ITaskEventInput } from "~/types";
+import type { PutEventsCommandOutput } from "@webiny/aws-sdk/client-eventbridge";
 import { EventBridgeClient, PutEventsCommand } from "@webiny/aws-sdk/client-eventbridge";
 import { WebinyError } from "@webiny/error";
+import { GenericRecord } from "@webiny/api/types";
 
-class EventBridgeEventTransport implements ITaskTriggerTransport {
+class EventBridgeService implements ITaskService {
     protected readonly context: Context;
-    protected readonly config: ITaskConfig;
     protected readonly getTenant: () => string;
     protected readonly getLocale: () => string;
     private readonly client: EventBridgeClient;
 
-    public constructor(params: ITaskTriggerTransportPluginParams) {
+    public constructor(params: ITaskServiceCreatePluginParams) {
         this.client = new EventBridgeClient({
             region: process.env.AWS_REGION
         });
         this.context = params.context;
-        this.config = params.config;
         this.getTenant = params.getTenant;
         this.getLocale = params.getLocale;
     }
 
-    public async send(
-        task: Pick<ITask, "id" | "definitionId">,
-        delay: number
-    ): Promise<PutEventsCommandOutput> {
+    public async send(task: ITaskServiceTask, delay: number): Promise<PutEventsCommandOutput> {
         /**
          * The ITaskEvent is what our handler expect to get.
          * Endpoint and stateMachineId are added by the step function.
@@ -45,7 +42,7 @@ class EventBridgeEventTransport implements ITaskTriggerTransport {
             Entries: [
                 {
                     Source: "webiny-api-tasks",
-                    EventBusName: this.config.eventBusName,
+                    EventBusName: String(process.env.EVENT_BUS),
                     DetailType: "WebinyBackgroundTask",
                     Detail: JSON.stringify(event)
                 }
@@ -64,11 +61,15 @@ class EventBridgeEventTransport implements ITaskTriggerTransport {
             );
         }
     }
+
+    public async fetch(): Promise<GenericRecord> {
+        throw new WebinyError("Not implemented!", "NOT_IMPLEMENTED");
+    }
 }
 
-export class EventBridgeEventTransportPlugin extends TaskTriggerTransportPlugin {
+export class EventBridgeEventTransportPlugin extends TaskServicePlugin {
     public override name = "task.eventBridgeEventTransport";
-    public createTransport(params: ITaskTriggerTransportPluginParams): ITaskTriggerTransport {
-        return new EventBridgeEventTransport(params);
+    public createService(params: ITaskServiceCreatePluginParams) {
+        return new EventBridgeService(params);
     }
 }

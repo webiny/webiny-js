@@ -2,10 +2,9 @@ import { ITaskResponseResult } from "@webiny/tasks";
 import { TaskCache } from "./TaskCache";
 import { CmsEntryListParams } from "@webiny/api-headless-cms/types";
 import { IListEntries } from "~/abstractions";
-import { IBulkActionOperationByModelTaskParams } from "~/types";
+import { BulkActionOperationByModelAction, IBulkActionOperationByModelTaskParams } from "~/types";
 
-const BATCH_SIZE = 50; // Number of entries to fetch in each batch
-const WAITING_TIME = 5; // Time to wait in seconds before retrying
+const MAX_TASK_LIST_LENGTH = 10;
 
 /**
  * The `CreateTasksByModel` class handles the execution of a task to process entries in batches.
@@ -13,10 +12,12 @@ const WAITING_TIME = 5; // Time to wait in seconds before retrying
 export class CreateTasksByModel {
     private readonly taskCache: TaskCache;
     private listEntriesGateway: IListEntries;
+    private readonly batchSize: number;
 
-    constructor(taskDefinition: string, listEntriesGateway: IListEntries) {
+    constructor(taskDefinition: string, listEntriesGateway: IListEntries, batchSize: number) {
         this.taskCache = new TaskCache(taskDefinition);
         this.listEntriesGateway = listEntriesGateway;
+        this.batchSize = batchSize;
     }
 
     async execute(params: IBulkActionOperationByModelTaskParams): Promise<ITaskResponseResult> {
@@ -27,10 +28,8 @@ export class CreateTasksByModel {
                 where: input.where,
                 search: input.search,
                 after: input.after,
-                limit: BATCH_SIZE
+                limit: this.batchSize
             };
-
-            let currentBatch = input.currentBatch || 1;
 
             while (true) {
                 if (isAborted()) {
@@ -39,8 +38,7 @@ export class CreateTasksByModel {
                     await this.taskCache.triggerTask(context, store.getTask());
                     return response.continue({
                         ...input,
-                        ...listEntriesParams,
-                        currentBatch
+                        action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                     });
                 }
 
@@ -52,27 +50,35 @@ export class CreateTasksByModel {
 
                 // End the task if no entries match the query
                 if (meta.totalCount === 0) {
-                    return response.done(
-                        `Task done: no entries found for model "${input.modelId}", skipping task creation.`
-                    );
+                    return response.continue({
+                        ...input,
+                        action: BulkActionOperationByModelAction.END_TASK
+                    });
+                }
+
+                // Continue processing if we are reached the task list length limit
+                if (this.taskCache.getTasksLength() === MAX_TASK_LIST_LENGTH) {
+                    await this.taskCache.triggerTask(context, store.getTask());
+                    return response.continue({
+                        ...input,
+                        action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
+                    });
                 }
 
                 // Continue processing if no entries are returned in the current batch
                 if (entries.length === 0) {
                     await this.taskCache.triggerTask(context, store.getTask());
-                    return response.continue(
-                        {
-                            ...input,
-                            ...listEntriesParams,
-                            currentBatch,
-                            totalCount: meta.totalCount,
-                            processing: true
-                        },
-                        { seconds: WAITING_TIME }
-                    );
+                    return response.continue({
+                        ...input,
+                        action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
+                    });
                 }
 
-                const ids = entries.map(entry => entry.id); // Extract entry IDs
+                // Extract entry IDs
+                const ids: string[] = [];
+                for (let i = 0; i < entries.length; i++) {
+                    ids.push(entries[i].id);
+                }
 
                 if (ids.length > 0) {
                     // Cache the task with the entry IDs
@@ -87,23 +93,17 @@ export class CreateTasksByModel {
                 // Continue processing if there are no more entries or pagination is complete
                 if (!meta.hasMoreItems || !meta.cursor) {
                     await this.taskCache.triggerTask(context, store.getTask());
-                    return response.continue(
-                        {
-                            ...input,
-                            ...listEntriesParams,
-                            currentBatch,
-                            totalCount: meta.totalCount,
-                            processing: true
-                        },
-                        { seconds: WAITING_TIME }
-                    );
+
+                    return response.continue({
+                        ...input,
+                        action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
+                    });
                 }
 
                 listEntriesParams.after = meta.cursor;
-                currentBatch++;
             }
         } catch (ex) {
-            throw new Error(ex.message ?? `Error while creating task.`);
+            return response.error(ex.message ?? `Error while creating task.`);
         }
     }
 }

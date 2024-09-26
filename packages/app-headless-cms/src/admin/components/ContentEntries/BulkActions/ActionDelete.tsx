@@ -28,7 +28,7 @@ export const ActionDelete = observer(() => {
             loadingLabel: `Processing ${entriesLabel}`,
             execute: async () => {
                 if (worker.isSelectedAll) {
-                    await worker.processInBulk("MoveToTrash");
+                    await worker.processInBulk({ action: "MoveToTrash" });
                     worker.resetItems();
                     showSnackbar(
                         "All entries will be moved to trash. This process will be carried out in the background and may take some time. You can safely navigate away from this page while the process is running.",
