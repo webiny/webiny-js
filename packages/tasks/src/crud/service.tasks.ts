@@ -13,7 +13,7 @@ import type {
 import { TaskDataStatus, TaskLogItemType } from "~/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createService } from "~/service";
-import { GenericRecord } from "@webiny/api/types";
+import { IStepFunctionServiceFetchResult } from "~/service/StepFunctionServicePlugin";
 
 const MAX_DELAY_DAYS = 355;
 const MAX_DELAY_SECONDS = MAX_DELAY_DAYS * 24 * 60 * 60;
@@ -102,7 +102,9 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
                 eventResponse: result
             });
         },
-        fetchServiceInfo: async <T = GenericRecord>(input: ITask | string): Promise<T | null> => {
+        fetchServiceInfo: async (
+            input: ITask | string
+        ): Promise<IStepFunctionServiceFetchResult | null> => {
             const task = typeof input === "object" ? input : await context.tasks.getTask(input);
             if (!task && typeof input === "string") {
                 throw new NotFoundError(`Task "${input}" was not found!`);
@@ -113,7 +115,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
             }
 
             try {
-                return (await service.fetch(task)) as T;
+                return (await service.fetch(task)) as IStepFunctionServiceFetchResult | null;
             } catch (ex) {
                 console.log("Service fetch error.");
                 console.error(ex);

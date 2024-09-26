@@ -60,8 +60,7 @@ export const getChildTasks = async <I, O extends ITaskResponseDoneResultOutput>(
             task.taskStatus === TaskDataStatus.RUNNING ||
             task.taskStatus === TaskDataStatus.PENDING
         ) {
-            const serviceInfo =
-                await context.tasks.fetchServiceInfo<IStepFunctionServiceFetchResult>(task);
+            const serviceInfo = await context.tasks.fetchServiceInfo(task);
             const status = mapServiceStatusToTaskStatus(task, serviceInfo);
 
             if (status === null || !serviceInfo) {
