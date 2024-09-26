@@ -66,7 +66,7 @@ const updateCategoryMutation = (model: CmsModel) => {
 };
 
 export const useSingletonCategoryHandler = (params: GraphQLHandlerParams) => {
-    const model = getCmsModel("category");
+    const model = getCmsModel("categorySingleton");
     const contentHandler = useGraphQLHandler(params);
 
     return {
