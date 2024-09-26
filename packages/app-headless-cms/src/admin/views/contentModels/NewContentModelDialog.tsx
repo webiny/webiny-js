@@ -164,13 +164,7 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
     return (
         <Dialog open={open} onClose={onClose} data-testid="cms-new-content-model-modal">
             {open && (
-                <Form<CmsModelData>
-                    data={{ group, singleton: false }}
-                    onSubmit={data => {
-                        console.log("submitting", data);
-                        onSubmit(data);
-                    }}
-                >
+                <Form<CmsModelData> data={{ group, singleton: false }} onSubmit={onSubmit}>
                     {({ Bind, submit, data }) => {
                         return (
                             <>
