@@ -2,6 +2,7 @@ import { IntrospectionField, IntrospectionInterfaceType } from "graphql";
 import { useGraphQlHandler } from "~tests/context/useGraphQLHandler";
 import { createBulkAction } from "~/plugins";
 import { createMockModels, createPrivateMockModels } from "~tests/mocks";
+import { createBulkActionEntriesTasks } from "~/tasks";
 
 interface GraphQlType {
     kind: Uppercase<string>;
@@ -36,7 +37,7 @@ const defaultBulkActionsEnumNames = [
 describe("createBulkAction", () => {
     it("should create GraphQL schema with default bulk actions ENUMS", async () => {
         const { introspect } = useGraphQlHandler({
-            plugins: [...createMockModels()]
+            plugins: [...createMockModels(), createBulkActionEntriesTasks()]
         });
 
         const [result] = await introspect();
@@ -59,7 +60,7 @@ describe("createBulkAction", () => {
 
     it("should NOT create bulk actions ENUMS in case of a private model", async () => {
         const { introspect } = useGraphQlHandler({
-            plugins: [...createPrivateMockModels()]
+            plugins: [...createPrivateMockModels(), createBulkActionEntriesTasks()]
         });
 
         const [result] = await introspect();
@@ -79,6 +80,7 @@ describe("createBulkAction", () => {
         const { introspect } = useGraphQlHandler({
             plugins: [
                 ...createMockModels(),
+                createBulkActionEntriesTasks(),
                 createBulkAction({
                     name: "print",
                     dataLoader,

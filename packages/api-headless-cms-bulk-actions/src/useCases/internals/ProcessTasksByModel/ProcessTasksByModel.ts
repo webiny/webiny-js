@@ -1,7 +1,5 @@
 import { TaskDataStatus } from "@webiny/tasks";
-import { IBulkActionOperationByModelTaskParams } from "~/types";
-
-const WAITING_TIME = 10;
+import { BulkActionOperationByModelAction, IBulkActionOperationByModelTaskParams } from "~/types";
 
 /**
  * The `ProcessTasksByModel` class is responsible for processing tasks for a specific model.
@@ -23,11 +21,12 @@ export class ProcessTasksByModel {
                 return response.aborted();
             } else if (isCloseToTimeout()) {
                 return response.continue({
-                    ...input
+                    ...input,
+                    action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                 });
             }
 
-            const result = await context.tasks.listTasks({
+            const { items } = await context.tasks.listTasks({
                 where: {
                     parentId: store.getTask().id,
                     definitionId: this.taskDefinition,
@@ -37,20 +36,22 @@ export class ProcessTasksByModel {
             });
 
             // If there are running or pending tasks, continue with a wait.
-            if (result.items.length > 0) {
+            if (items.length > 0) {
                 return response.continue(
                     {
-                        ...input
+                        ...input,
+                        action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                     },
                     {
-                        seconds: WAITING_TIME
+                        seconds: 120
                     }
                 );
             }
 
-            return response.done(
-                `Task done: task "${this.taskDefinition}" has been successfully processed for entries from "${input.modelId}" model.`
-            );
+            return response.continue({
+                ...input,
+                action: BulkActionOperationByModelAction.CHECK_MORE_SUBTASKS
+            });
         } catch (ex) {
             return response.error(
                 ex.message ?? `Error while processing task "${this.taskDefinition}"`

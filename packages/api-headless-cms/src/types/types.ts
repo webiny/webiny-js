@@ -960,6 +960,13 @@ export interface CmsEntryListWhere {
     entryId_not?: string;
     entryId_in?: string[];
     entryId_not_in?: string[];
+    /**
+     * Status of the entry.
+     */
+    status?: CmsEntryStatus;
+    status_not?: CmsEntryStatus;
+    status_in?: CmsEntryStatus[];
+    status_not_in?: CmsEntryStatus[];
 
     /**
      * Revision-level meta fields. 👇
