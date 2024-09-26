@@ -56,26 +56,24 @@ export const getChildTasks = async <I, O extends ITaskResponseDoneResultOutput>(
     for (const task of items) {
         collection.push(task);
 
-        const serviceInfo = await context.tasks.fetchServiceInfo<IStepFunctionServiceFetchResult>(
-            task
-        );
-        const status = mapServiceStatusToTaskStatus(task, serviceInfo);
-
-        if (status === null || !serviceInfo) {
-            invalid.push(task.id);
-            continue;
-        } else if (status !== task.taskStatus) {
-            console.error(
-                `Status of the task is not same as the status of the service (task: ${task.taskStatus}, service: ${status} / ${serviceInfo.status}).`
-            );
-            invalid.push(task.id);
-            continue;
-        }
-
         if (
             task.taskStatus === TaskDataStatus.RUNNING ||
             task.taskStatus === TaskDataStatus.PENDING
         ) {
+            const serviceInfo =
+                await context.tasks.fetchServiceInfo<IStepFunctionServiceFetchResult>(task);
+            const status = mapServiceStatusToTaskStatus(task, serviceInfo);
+
+            if (status === null || !serviceInfo) {
+                invalid.push(task.id);
+                continue;
+            } else if (status !== task.taskStatus) {
+                console.error(
+                    `Status of the task is not same as the status of the service (task: ${task.taskStatus}, service: ${status} / ${serviceInfo.status}).`
+                );
+                invalid.push(task.id);
+                continue;
+            }
             running.push(task.id);
             continue;
         } else if (task.taskStatus === TaskDataStatus.SUCCESS) {

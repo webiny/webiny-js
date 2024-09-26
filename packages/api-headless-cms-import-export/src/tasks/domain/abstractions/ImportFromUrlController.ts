@@ -16,34 +16,20 @@ export enum IImportFromUrlControllerInputStep {
     PROCESS_ASSETS = "processAssets"
 }
 
+export interface IImportFromUrlControllerInputStepsStep {
+    files: string[];
+    triggered: boolean;
+    finished: boolean;
+    done: string[];
+    failed: string[];
+    invalid: string[];
+    aborted: string[];
+}
+
 export interface IImportFromUrlControllerInputSteps {
-    [IImportFromUrlControllerInputStep.DOWNLOAD]?: {
-        files: string[];
-        triggered: boolean;
-        finished: boolean;
-        done: string[];
-        failed: string[];
-        invalid: string[];
-        aborted: string[];
-    };
-    [IImportFromUrlControllerInputStep.PROCESS_ENTRIES]?: {
-        files: string[];
-        triggered: boolean;
-        finished: boolean;
-        done: string[];
-        failed: string[];
-        invalid: string[];
-        aborted: string[];
-    };
-    [IImportFromUrlControllerInputStep.PROCESS_ASSETS]?: {
-        files: string[];
-        triggered: boolean;
-        finished: boolean;
-        done: string[];
-        failed: string[];
-        invalid: string[];
-        aborted: string[];
-    };
+    [IImportFromUrlControllerInputStep.DOWNLOAD]?: IImportFromUrlControllerInputStepsStep;
+    [IImportFromUrlControllerInputStep.PROCESS_ENTRIES]?: IImportFromUrlControllerInputStepsStep;
+    [IImportFromUrlControllerInputStep.PROCESS_ASSETS]?: IImportFromUrlControllerInputStepsStep;
 }
 
 export interface IImportFromUrlControllerInput {
