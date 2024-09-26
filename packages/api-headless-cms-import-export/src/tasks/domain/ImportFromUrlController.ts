@@ -1,7 +1,8 @@
 import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
-import type {
+import {
     IImportFromUrlController,
     IImportFromUrlControllerInput,
+    IImportFromUrlControllerInputStepsStep,
     IImportFromUrlControllerOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlController";
 import { IImportFromUrlControllerInputStep } from "~/tasks/domain/abstractions/ImportFromUrlController";
@@ -10,7 +11,7 @@ import { ImportFromUrlControllerDownloadStep } from "~/tasks/domain/importFromUr
 import { ImportFromUrlControllerProcessEntriesStep } from "./importFromUrlControllerSteps/ImportFromUrlControllerProcessEntriesStep";
 import { ImportFromUrlControllerProcessAssetsStep } from "./importFromUrlControllerSteps/ImportFromUrlControllerProcessAssetsStep";
 
-const getDefaultStepValues = () => {
+const getDefaultStepValues = (): IImportFromUrlControllerInputStepsStep => {
     return {
         files: [],
         triggered: false,
@@ -56,7 +57,7 @@ export class ImportFromUrlController<
 
         const downloadStep =
             steps[IImportFromUrlControllerInputStep.DOWNLOAD] || getDefaultStepValues();
-        if (!downloadStep.done) {
+        if (!downloadStep.finished) {
             const step = new ImportFromUrlControllerDownloadStep<C, I, O>();
             return await step.execute(params);
         } else if (downloadStep.failed.length) {
@@ -69,7 +70,7 @@ export class ImportFromUrlController<
 
         const processEntriesStep =
             steps[IImportFromUrlControllerInputStep.PROCESS_ENTRIES] || getDefaultStepValues();
-        if (!processEntriesStep.done) {
+        if (!processEntriesStep.finished) {
             const step = new ImportFromUrlControllerProcessEntriesStep<C, I, O>();
             return await step.execute(params);
         } else if (processEntriesStep.failed.length) {
@@ -82,7 +83,7 @@ export class ImportFromUrlController<
 
         const processAssetsStep =
             steps[IImportFromUrlControllerInputStep.PROCESS_ASSETS] || getDefaultStepValues();
-        if (!processAssetsStep.done) {
+        if (!processAssetsStep.finished) {
             const step = new ImportFromUrlControllerProcessAssetsStep<C, I, O>();
             return await step.execute(params);
         } else if (processAssetsStep.failed.length) {
