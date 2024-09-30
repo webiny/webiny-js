@@ -893,7 +893,9 @@ export interface CmsModelContext {
     /**
      * A model manager for a model which has a single entry.
      */
-    getSingletonEntryManager<T>(model: CmsModel | string): Promise<ISingletonModelManager<T>>;
+    getSingletonEntryManager<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel | string
+    ): Promise<ISingletonModelManager<T>>;
     /**
      * Get all content model managers mapped by modelId.
      * @see CmsModelManager
