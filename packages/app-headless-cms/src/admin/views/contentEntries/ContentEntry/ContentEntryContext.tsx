@@ -1,25 +1,22 @@
-import React, { useEffect, useMemo, useState } from "react";
-import get from "lodash/get";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "@webiny/react-router";
-import { useSnackbar, useIsMounted } from "@webiny/app-admin";
+import { useIsMounted, useSnackbar } from "@webiny/app-admin";
 import { useCms, useQuery } from "~/admin/hooks";
 import { ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntriesContext";
 import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContentEntries";
 import { CmsContentEntry, CmsContentEntryRevision } from "~/types";
 import { parseIdentifier } from "@webiny/utils";
 import {
-    CmsEntriesListRevisionsQueryResponse,
-    CmsEntriesListRevisionsQueryVariables,
     CmsEntryGetQueryResponse,
     CmsEntryGetQueryVariables,
-    createReadQuery,
-    createRevisionsQuery
+    createReadQuery
 } from "@webiny/app-headless-cms-common";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
 import { useRecords } from "@webiny/app-aco";
 import * as Cms from "~/admin/contexts/Cms";
 import { useMockRecords } from "./useMockRecords";
 import { ROOT_FOLDER } from "~/admin/constants";
+import { OperationError } from "~/admin/contexts/Cms";
 
 interface UpdateListCacheOptions {
     options?: {
@@ -34,6 +31,14 @@ export type UpdateEntryRevisionParams = Omit<Cms.UpdateEntryRevisionParams, "mod
 export type PublishEntryRevisionParams = Omit<Cms.PublishEntryRevisionParams, "model">;
 export type UnpublishEntryRevisionParams = Omit<Cms.UnpublishEntryRevisionParams, "model">;
 export type DeleteEntryParams = Omit<Cms.DeleteEntryParams, "model">;
+export type DeleteEntryRevisionParams = DeleteEntryParams;
+
+export interface DeleteEntryRevisionOperationSuccess {
+    newLatestRevision: CmsContentEntryRevision;
+    error?: never;
+}
+
+export type DeleteEntryRevisionResponse = OperationError | DeleteEntryRevisionOperationSuccess;
 
 export interface ContentEntryCrud {
     getEntry: (params: GetEntryParams) => Promise<Cms.GetEntryResponse>;
@@ -51,6 +56,9 @@ export interface ContentEntryCrud {
         params: UnpublishEntryRevisionParams
     ) => Promise<Cms.UnpublishEntryRevisionResponse>;
     deleteEntry: (params: DeleteEntryParams) => Promise<Cms.DeleteEntryResponse>;
+    deleteEntryRevision: (
+        params: DeleteEntryRevisionParams
+    ) => Promise<DeleteEntryRevisionResponse>;
 }
 
 export interface ContentEntryContext extends ContentEntriesContext, ContentEntryCrud {
@@ -58,7 +66,9 @@ export interface ContentEntryContext extends ContentEntriesContext, ContentEntry
     loading: boolean;
     revisions: CmsContentEntryRevision[];
     refetchContent: () => void;
+
     setActiveTab(index: number): void;
+
     activeTab: number;
     showEmptyView: boolean;
 }
@@ -108,6 +118,7 @@ export const ContentEntryProvider = ({
     const { isMounted } = useIsMounted();
     const [activeTab, setActiveTab] = useState(0);
     const [entry, setEntry] = useState<CmsContentEntry>();
+    const [revisions, setRevisions] = useState<CmsContentEntryRevision[]>([]);
     const { contentModel: model, canCreate } = useContentEntries();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -117,6 +128,25 @@ export const ContentEntryProvider = ({
         : useRecords();
     const [isLoading, setLoading] = useState<boolean>(false);
     const contentEntryProviderProps = useContentEntryProviderProps();
+
+    const updateRevisionInRevisionsCache = useCallback(
+        (updatedRevisions: CmsContentEntryRevision | CmsContentEntryRevision[]) => {
+            const updatedRevisionsArray = Array.isArray(updatedRevisions)
+                ? updatedRevisions
+                : [updatedRevisions];
+
+            setRevisions(revisions => {
+                return revisions.map(revision => {
+                    const updatedRevision = updatedRevisionsArray.find(
+                        updatedRevision => updatedRevision.id === revision.id
+                    );
+
+                    return updatedRevision || revision;
+                });
+            });
+        },
+        []
+    );
 
     const newEntry =
         typeof isNewEntry === "function" ? isNewEntry() : contentEntryProviderProps.isNewEntry();
@@ -144,12 +174,6 @@ export const ContentEntryProvider = ({
     const { READ_CONTENT } = useMemo(() => {
         return {
             READ_CONTENT: createReadQuery(model)
-        };
-    }, [model.modelId]);
-
-    const { GET_REVISIONS } = useMemo(() => {
-        return {
-            GET_REVISIONS: createRevisionsQuery(model)
         };
     }, [model.modelId]);
 
@@ -184,26 +208,23 @@ export const ContentEntryProvider = ({
         }
     });
 
-    const getRevisions = useQuery<
-        CmsEntriesListRevisionsQueryResponse,
-        CmsEntriesListRevisionsQueryVariables
-    >(GET_REVISIONS, {
-        variables: {
-            id: entryId as string
-        },
-        skip: !entryId
-    });
-
-    const loading = isLoading || loadEntry.loading || getRevisions.loading;
+    const loading = isLoading || loadEntry.loading;
 
     useEffect(() => {
-        if (getRevisions.loading || !entryId) {
+        if (!entryId) {
             return;
         }
-        getRevisions.refetch({
+
+        cms.listEntryRevisions({
+            model,
             id: entryId
+        }).then(response => {
+            if (response.error) {
+                return;
+            }
+            setRevisions(response.revisions);
         });
-    }, [revisionId, getRevisions]);
+    }, [entryId]);
 
     // CRUD methods
     const getEntry: ContentEntryCrud["getEntry"] = async ({ id }) => {
@@ -240,6 +261,7 @@ export const ContentEntryProvider = ({
         setLoading(false);
         if (response.entry) {
             setEntry(response.entry);
+            setRevisions([response.entry, ...revisions]);
             updateRecordInCache(response.entry);
         }
         return response;
@@ -252,6 +274,7 @@ export const ContentEntryProvider = ({
         if (response.entry) {
             setEntry(response.entry);
             updateRecordInCache(response.entry);
+            updateRevisionInRevisionsCache(response.entry);
         }
         return response;
     };
@@ -262,11 +285,49 @@ export const ContentEntryProvider = ({
         return response;
     };
 
+    const deleteEntryRevision: ContentEntryCrud["deleteEntryRevision"] = async params => {
+        const response = await cms.deleteEntry({ model, ...params });
+        if (typeof response === "object" && response.error) {
+            return response;
+        }
+
+        const updatedRevisionsList = revisions.filter(rev => rev.id !== params.id);
+        setRevisions(updatedRevisionsList);
+
+        const [newLatestRevision] = updatedRevisionsList;
+
+        if (newLatestRevision) {
+            updateRecordInCache(newLatestRevision);
+        } else {
+            removeRecordFromCache(params.id);
+        }
+
+        return { newLatestRevision };
+    };
+
     const publishEntryRevision: ContentEntryCrud["publishEntryRevision"] = async params => {
         const response = await cms.publishEntryRevision({ model, ...params });
         if (response.entry) {
             setEntry(response.entry);
             updateRecordInCache(response.entry);
+
+            const revisionsToUpdateInRevisionsCache: CmsContentEntryRevision[] = [response.entry];
+
+            const previousPublishedRevision = revisions.find(
+                rev => rev.meta.status === "published"
+            );
+
+            if (previousPublishedRevision) {
+                revisionsToUpdateInRevisionsCache.push({
+                    ...previousPublishedRevision,
+                    meta: {
+                        ...previousPublishedRevision.meta,
+                        status: "unpublished"
+                    }
+                });
+            }
+
+            updateRevisionInRevisionsCache(revisionsToUpdateInRevisionsCache);
         }
         return response;
     };
@@ -276,6 +337,7 @@ export const ContentEntryProvider = ({
         if (response.entry) {
             setEntry(response.entry);
             updateRecordInCache(response.entry);
+            updateRevisionInRevisionsCache(response.entry);
         }
         return response;
     };
@@ -288,11 +350,12 @@ export const ContentEntryProvider = ({
         createEntry,
         createEntryRevisionFrom,
         deleteEntry,
+        deleteEntryRevision,
         entry: (entry || {}) as CmsContentEntry,
         loading,
         publishEntryRevision,
         refetchContent: loadEntry.refetch,
-        revisions: get(getRevisions, "data.revisions.data") || [],
+        revisions,
         setActiveTab,
         showEmptyView: !newEntry && !loading && !revisionId,
         unpublishEntryRevision,

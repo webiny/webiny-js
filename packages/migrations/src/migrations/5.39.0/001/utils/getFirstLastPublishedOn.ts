@@ -1,5 +1,6 @@
 import { createDdbEntryEntity } from "./../entities/createEntryEntity";
 import { CmsEntry } from "../types";
+import { executeWithRetry, ExecuteWithRetryOptions } from "@webiny/utils";
 
 const cachedEntryFirstLastPublishedOnBy: Record<
     string,
@@ -13,6 +14,7 @@ interface CmsEntryWithPK extends CmsEntry {
 export interface getFirstLastPublishedOnParams {
     entry: CmsEntryWithPK;
     entryEntity: ReturnType<typeof createDdbEntryEntity>;
+    retryOptions?: ExecuteWithRetryOptions;
 }
 
 export const getFirstLastPublishedOnBy = async (params: getFirstLastPublishedOnParams) => {
@@ -29,11 +31,15 @@ export const getFirstLastPublishedOnBy = async (params: getFirstLastPublishedOnP
         lastPublishedBy: null
     };
 
-    const result = await entryEntity.query(entry.PK, {
-        limit: 1,
-        eq: "P",
-        attributes: ["modifiedBy", "createdBy", "publishedOn"]
-    });
+    const executeQuery = () => {
+        return entryEntity.query(entry.PK, {
+            limit: 1,
+            eq: "P",
+            attributes: ["modifiedBy", "createdBy", "publishedOn"]
+        });
+    };
+
+    const result = await executeWithRetry(executeQuery, params.retryOptions);
 
     const publishedRecord = result.Items?.[0];
     if (publishedRecord) {

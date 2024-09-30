@@ -14340,6 +14340,7 @@ __metadata:
     "@babel/preset-env": ^7.24.0
     "@babel/runtime": ^7.24.0
     "@types/jsonpack": ^1.1.0
+    "@webiny/api": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
     "@webiny/aws-sdk": 0.0.0
     "@webiny/cli": 0.0.0
@@ -15423,6 +15424,7 @@ __metadata:
     "@webiny/form": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/react-router": 0.0.0
     "@webiny/ui": 0.0.0
     "@webiny/validation": 0.0.0
     apollo-client: ^2.6.10
@@ -17049,6 +17051,7 @@ __metadata:
     case: ^1.6.3
     chalk: ^4.1.0
     execa: ^5.0.0
+    fast-glob: ^3.2.7
     glob: ^7.1.2
     load-json-file: ^6.2.0
     lodash: ^4.17.21
@@ -17372,11 +17375,11 @@ __metadata:
     "@webiny/handler-db": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/utils": 0.0.0
     date-fns: ^2.22.1
     dot-prop: ^6.0.1
     dynamodb-toolbox: ^0.9.2
     fuse.js: 7.0.0
-    is-number: ^7.0.0
     jest: ^29.7.0
     jest-dynalite: ^3.2.0
     lodash: ^4.17.21

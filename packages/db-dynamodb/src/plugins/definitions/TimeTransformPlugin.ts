@@ -4,19 +4,24 @@ import {
     ValueTransformPluginParamsTransformParams
 } from "./ValueTransformPlugin";
 import WebinyError from "@webiny/error";
-import isNumber from "is-number";
 
 const transformTime = (params: ValueTransformPluginParamsTransformParams): number => {
     const { value } = params;
     if (value === undefined || value === null) {
-        throw new WebinyError(`Time value is null or undefined`, "TIME_PARSE_ERROR", {
+        throw new WebinyError(`Time value is null or undefined.`, "TIME_PARSE_ERROR", {
             value
         });
+    } else if (typeof value === "boolean" || value === "" || Array.isArray(value)) {
+        throw new WebinyError(
+            "Field value must be a string because field is defined as time.",
+            "TIME_PARSE_ERROR",
+            {
+                value
+            }
+        );
     }
-    /**
-     * Due to some internal JS stuff, we must check for a number like this.
-     */
-    if (typeof value === "number" || isNumber(value) === true) {
+    const converted = Number(`${value}`);
+    if (typeof value === "number" || isNaN(converted) === false) {
         return Number(value);
     } else if (typeof value !== "string") {
         throw new WebinyError(

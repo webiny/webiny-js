@@ -32,6 +32,7 @@ export const createReadSDL: CreateReadSDL = ({
         type,
         fieldTypePlugins
     });
+
     const listFilterFieldsRender = renderListFilterFields({
         model,
         fields: model.fields,

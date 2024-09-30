@@ -1,4 +1,6 @@
 import styled from "@emotion/styled";
+import { Select } from "@webiny/ui/Select";
+import { Typography } from "@webiny/ui/Typography";
 
 export const TagContainer = styled("div")`
     display: flex;
@@ -36,13 +38,21 @@ export const EmptyContainer = styled("div")`
     color: var(--webiny-theme-color-text-secondary);
     fill: currentColor;
 `;
+export const TagListWrapper = styled("div")`
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin: 8px;
+`;
 
-export const TagListWrapper = styled("div")({
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: 10,
-    padding: "0 10px",
-    ".tag-filter": {
-        width: 110
-    }
-});
+export const TagsFilterSelect = styled(Select)`
+    max-width: 150px;
+    min-width: auto;
+    flex-shrink: 0;
+`;
+
+export const TagsTitle = styled(Typography)`
+    margin: 0 0 5px;
+    flex: 1 1 auto;
+`;

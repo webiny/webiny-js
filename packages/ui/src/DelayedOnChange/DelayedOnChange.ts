@@ -8,6 +8,7 @@ const emptyFunction = (): undefined => {
 export interface ApplyValueCb<TValue> {
     (value: TValue): void;
 }
+
 /**
  * This component is used to wrap Input and Textarea components to optimize form re-render.
  * These 2 are the only components that trigger form model change on each character input.
@@ -145,7 +146,7 @@ export const DelayedOnChange = <TValue = any>({
         if (ev.key === "Tab") {
             applyValue((ev.target as HTMLInputElement).value as any as TValue);
             realOnKeyDown(ev);
-        } else if (ev.key === "Enter" && props["data-on-enter"]) {
+        } else if (ev.key === "Enter") {
             applyValue((ev.target as HTMLInputElement).value as any as TValue);
             realOnKeyDown(ev);
         } else {
