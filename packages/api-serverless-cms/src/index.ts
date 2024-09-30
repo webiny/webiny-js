@@ -1,6 +1,7 @@
 import { ClientContext } from "@webiny/handler-client/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { SecurityContext } from "@webiny/api-security/types";
+import { createSecurityRolePlugin, createSecurityTeamPlugin } from "@webiny/api-security";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { PbContext } from "@webiny/api-page-builder/graphql/types";
@@ -43,3 +44,5 @@ export const createGraphQLSchemaPlugin = <T extends Context = Context>(
 };
 
 export * from "./tenancy/InstallTenant";
+
+export { createSecurityRolePlugin, createSecurityTeamPlugin };
