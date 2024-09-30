@@ -14,7 +14,14 @@ import { createTopic } from "@webiny/pubsub";
 import { validation } from "@webiny/validation";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { GetTeamParams, Team, TeamInput, PermissionsTenantLink, Security } from "~/types";
+import {
+    GetTeamParams,
+    Team,
+    TeamInput,
+    PermissionsTenantLink,
+    Security,
+    ListTeamsParams
+} from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
 
@@ -106,7 +113,8 @@ async function updateTenantLinks(
 
 export const createTeamsMethods = ({
     getTenant: initialGetTenant,
-    storageOperations
+    storageOperations,
+    listPluginTeams
 }: SecurityConfig) => {
     const getTenant = () => {
         const tenant = initialGetTenant();
@@ -115,6 +123,40 @@ export const createTeamsMethods = ({
         }
         return tenant;
     };
+
+    const listTeamsFromPlugins = (params?: ListTeamsParams) => {
+        if (!listPluginTeams) {
+            return [];
+        }
+        const teams = listPluginTeams().map(plugin => {
+            return plugin.securityTeam;
+        });
+
+        const where = params?.where;
+        if (!where) {
+            return teams;
+        }
+
+        return teams.filter(team => {
+            if (where.id_in) {
+                return where.id_in.includes(team.id);
+            }
+            return team;
+        });
+    };
+
+    const getTeamFromPlugins = (params: GetTeamParams) => {
+        const { where } = params;
+        const allTeamsFromPlugins = listTeamsFromPlugins();
+        return allTeamsFromPlugins.find(team => {
+            if (where.id) {
+                return team.id === where.id;
+            }
+
+            return team.slug === where.slug;
+        });
+    };
+
     return {
         onTeamBeforeCreate: createTopic("security.onTeamBeforeCreate"),
         onTeamAfterCreate: createTopic("security.onTeamAfterCreate"),
@@ -130,9 +172,15 @@ export const createTeamsMethods = ({
 
             let team: Team | null = null;
             try {
-                team = await storageOperations.getTeam({
-                    where: { ...where, tenant: where.tenant || getTenant() }
-                });
+                const teamFromPlugins = getTeamFromPlugins({ where });
+
+                if (teamFromPlugins) {
+                    team = teamFromPlugins;
+                } else {
+                    team = await storageOperations.getTeam({
+                        where: { ...where, tenant: where.tenant || getTenant() }
+                    });
+                }
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not get team.",
@@ -146,19 +194,23 @@ export const createTeamsMethods = ({
             return team;
         },
 
-        async listTeams(this: Security) {
+        async listTeams(this: Security, { where }: ListTeamsParams = {}) {
             await checkPermission(this);
             try {
-                return await storageOperations.listTeams({
+                const databaseGroups = await storageOperations.listTeams({
                     where: {
+                        ...where,
                         tenant: getTenant()
                     },
                     sort: ["createdOn_ASC"]
                 });
+
+                const teamsFromPlugins = listTeamsFromPlugins({ where });
+                return [...teamsFromPlugins, ...databaseGroups];
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not list API keys.",
-                    ex.code || "LIST_API_KEY_ERROR"
+                    ex.message || "Could not list teams.",
+                    ex.code || "LIST_TEAM_ERROR"
                 );
             }
         },

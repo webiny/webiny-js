@@ -5,6 +5,8 @@ import { Topic } from "@webiny/pubsub/types";
 import { GetTenant } from "~/createSecurity";
 import { ProjectPackageFeatures } from "@webiny/wcp/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
+import { SecurityRolePlugin } from "~/plugins/SecurityRolePlugin";
+import { SecurityTeamPlugin } from "~/plugins/SecurityTeamPlugin";
 
 // Backwards compatibility - START
 export type SecurityIdentity = Identity;
@@ -34,6 +36,8 @@ export interface SecurityConfig {
     advancedAccessControlLayer?: ProjectPackageFeatures["advancedAccessControlLayer"];
     getTenant: GetTenant;
     storageOperations: SecurityStorageOperations;
+    listPluginRoles?: () => Array<Plugin<SecurityRolePlugin>>;
+    listPluginTeams?: () => Array<Plugin<SecurityTeamPlugin>>;
 }
 
 export interface ErrorEvent extends InstallEvent {
@@ -96,6 +100,7 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     isAuthorizationEnabled(): boolean;
 
     withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T>;
+
     withIdentity<T = any>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T>;
 
     addAuthorizer(authorizer: Authorizer): void;
@@ -279,8 +284,8 @@ export interface CreatedBy {
 }
 
 export interface Group {
-    tenant: string;
-    createdOn: string;
+    tenant: string | null;
+    createdOn: string | null;
     createdBy: CreatedBy | null;
     id: string;
     name: string;
@@ -288,8 +293,12 @@ export interface Group {
     description: string;
     system: boolean;
     permissions: SecurityPermission[];
-    webinyVersion: string;
+    webinyVersion: string | null;
+    plugin?: boolean
 }
+
+export type SecurityRole = Group;
+export type SecurityTeam = Team;
 
 export type GroupInput = Pick<Group, "name" | "slug" | "description" | "permissions"> & {
     system?: boolean;
@@ -324,16 +333,17 @@ export interface DeleteGroupParams {
 }
 
 export interface Team {
-    tenant: string;
-    createdOn: string;
+    tenant: string | null;
+    createdOn: string | null;
     createdBy: CreatedBy | null;
     id: string;
     name: string;
     slug: string;
     description: string;
     system: boolean;
+    plugin?: boolean
     groups: string[];
-    webinyVersion: string;
+    webinyVersion: string | null;
 }
 
 export type TeamInput = Pick<Team, "name" | "slug" | "description" | "groups"> & {

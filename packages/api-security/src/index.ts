@@ -42,7 +42,9 @@ export const createSecurityContext = ({ storageOperations }: SecurityConfig) => 
                 const tenant = context.tenancy.getCurrentTenant();
                 return tenant ? tenant.id : undefined;
             },
-            storageOperations
+            storageOperations,
+            listPluginRoles: () => context.plugins.byType("security-role"),
+            listPluginTeams: () => context.plugins.byType("security-team")
         });
 
         attachGroupInstaller(context.security);
@@ -82,3 +84,6 @@ export const createSecurityGraphQL = (config: MultiTenancyGraphQLConfig = {}) =>
         }
     });
 };
+
+export { createSecurityRolePlugin } from "./plugins/SecurityRolePlugin";
+export { createSecurityTeamPlugin } from "./plugins/SecurityTeamPlugin";

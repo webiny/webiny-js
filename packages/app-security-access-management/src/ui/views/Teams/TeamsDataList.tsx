@@ -178,7 +178,7 @@ export const TeamsDataList = () => {
 
                             <ListItemMeta>
                                 <ListActions>
-                                    {!item.system ? (
+                                    {!item.system && !item.plugin ? (
                                         <DeleteIcon
                                             onClick={() => deleteItem(item)}
                                             data-testid={"default-data-list.delete"}
@@ -186,7 +186,7 @@ export const TeamsDataList = () => {
                                     ) : (
                                         <Tooltip
                                             placement={"bottom"}
-                                            content={<span>{t`You can't delete this team.`}</span>}
+                                            content={<span>{t`Team registered via an extension.`}</span>}
                                         >
                                             <DeleteIcon disabled />
                                         </Tooltip>

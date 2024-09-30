@@ -126,7 +126,9 @@ export const GroupsForm = () => {
 
     const data: Group = loading ? {} : get(getQuery, "data.security.group.data", {});
 
-    const systemGroup = data.slug === "full-access";
+    const systemGroup = data.slug === "full-access" || data.system;
+    const pluginGroup = data.plugin;
+    const canModifyGroup = !systemGroup && !pluginGroup;
 
     const showEmptyView = !newGroup && !loading && isEmpty(data);
     // Render "No content" selected view.
@@ -155,6 +157,26 @@ export const GroupsForm = () => {
                         {loading && <CircularProgress />}
                         <SimpleFormHeader title={data.name ? data.name : "Untitled"} />
                         <SimpleFormContent>
+                            {systemGroup && (
+                                <Grid>
+                                    <Cell span={12}>
+                                        <Alert type={"info"} title={"Permissions are locked"}>
+                                            This is a protected system role and you can&apos;t
+                                            modify its permissions.
+                                        </Alert>
+                                    </Cell>
+                                </Grid>
+                            )}
+                            {pluginGroup && (
+                                <Grid>
+                                    <Cell span={12}>
+                                        <Alert type={"info"} title={"Permissions are locked"}>
+                                            This role is registered via an extension. It cannot be
+                                            modified via the Admin Area.
+                                        </Alert>
+                                    </Cell>
+                                </Grid>
+                            )}
                             <Grid>
                                 <Cell span={6}>
                                     <Bind
@@ -163,7 +185,7 @@ export const GroupsForm = () => {
                                     >
                                         <Input
                                             label={t`Name`}
-                                            disabled={systemGroup}
+                                            disabled={!canModifyGroup}
                                             data-testid="admin.am.group.new.name"
                                         />
                                     </Bind>
@@ -174,7 +196,7 @@ export const GroupsForm = () => {
                                         validators={validation.create("required,minLength:3")}
                                     >
                                         <Input
-                                            disabled={Boolean(data.id)}
+                                            disabled={!canModifyGroup || !newGroup}
                                             label={t`Slug`}
                                             data-testid="admin.am.group.new.slug"
                                         />
@@ -190,23 +212,13 @@ export const GroupsForm = () => {
                                         <Input
                                             label={t`Description`}
                                             rows={3}
-                                            disabled={systemGroup}
+                                            disabled={!canModifyGroup}
                                             data-testid="admin.am.group.new.description"
                                         />
                                     </Bind>
                                 </Cell>
                             </Grid>
-                            {systemGroup && (
-                                <Grid>
-                                    <Cell span={12}>
-                                        <Alert type={"info"} title={"Permissions are locked"}>
-                                            This is a protected system role and you can&apos;t
-                                            modify its permissions.
-                                        </Alert>
-                                    </Cell>
-                                </Grid>
-                            )}
-                            {!systemGroup && (
+                            {canModifyGroup && (
                                 <Grid>
                                     <PermissionsTitleCell span={12}>
                                         <Typography use={"subtitle1"}>{t`Permissions`}</Typography>
@@ -240,7 +252,7 @@ export const GroupsForm = () => {
                                 </Grid>
                             )}
                         </SimpleFormContent>
-                        {systemGroup ? null : (
+                        {canModifyGroup && (
                             <SimpleFormFooter>
                                 <ButtonWrapper>
                                     <ButtonDefault

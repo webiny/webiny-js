@@ -6,6 +6,7 @@ export interface Group {
     description: string;
     slug: string;
     system?: boolean;
+    plugin: boolean;
     permissions: SecurityPermission[];
     createdOn: string;
 }
@@ -16,6 +17,7 @@ export interface Team {
     description: string;
     slug: string;
     system?: boolean;
+    plugin?: boolean;
     createdOn: string;
 }
 
