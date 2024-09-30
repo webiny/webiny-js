@@ -736,6 +736,8 @@ export interface CmsModelManager<T = CmsEntryValues> {
     delete(id: string): Promise<void>;
 }
 
+export type ICmsEntryManager<T = GenericRecord> = CmsModelManager<T>;
+
 /**
  * Create
  */
@@ -843,7 +845,7 @@ export interface CmsModelContext {
      *
      * @throws NotFoundError
      */
-    getModel: (modelId: string) => Promise<CmsModel>;
+    getModel(modelId: string): Promise<CmsModel>;
     /**
      * Get model to AST converter.
      */
@@ -885,7 +887,9 @@ export interface CmsModelContext {
      *
      * @see CmsModelManager
      */
-    getEntryManager<T = any>(model: CmsModel | string): Promise<CmsModelManager<T>>;
+    getEntryManager<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel | string
+    ): Promise<ICmsEntryManager<T>>;
     /**
      * A model manager for a model which has a single entry.
      */
@@ -894,7 +898,7 @@ export interface CmsModelContext {
      * Get all content model managers mapped by modelId.
      * @see CmsModelManager
      */
-    getEntryManagers(): Map<string, CmsModelManager>;
+    getEntryManagers(): Map<string, ICmsEntryManager>;
     /**
      * Clear all the model caches.
      */
@@ -956,6 +960,13 @@ export interface CmsEntryListWhere {
     entryId_not?: string;
     entryId_in?: string[];
     entryId_not_in?: string[];
+    /**
+     * Status of the entry.
+     */
+    status?: CmsEntryStatus;
+    status_not?: CmsEntryStatus;
+    status_in?: CmsEntryStatus[];
+    status_not_in?: CmsEntryStatus[];
 
     /**
      * Revision-level meta fields. 👇
@@ -1079,7 +1090,9 @@ export interface CmsEntryListWhere {
  * @category CmsEntry
  * @category GraphQL params
  */
-export type CmsEntryListSort = string[];
+export type CmsEntryListSortAsc = `${string}_ASC`;
+export type CmsEntryListSortDesc = `${string}_DESC`;
+export type CmsEntryListSort = (CmsEntryListSortAsc | CmsEntryListSortDesc)[];
 
 /**
  * Get entry GraphQL resolver params.

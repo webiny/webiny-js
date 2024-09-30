@@ -72,7 +72,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
     };
 
     const managers = new Map<string, CmsModelManager>();
-    const updateManager = async <T>(
+    const updateManager = async <T extends CmsEntryValues = CmsEntryValues>(
         context: CmsContext,
         model: CmsModel
     ): Promise<CmsModelManager<T>> => {
@@ -208,7 +208,9 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         });
     };
 
-    const getEntryManager: CmsModelContext["getEntryManager"] = async <T>(
+    const getEntryManager: CmsModelContext["getEntryManager"] = async <
+        T extends CmsEntryValues = CmsEntryValues
+    >(
         target: string | Pick<CmsModel, "modelId">
     ): Promise<CmsModelManager<T>> => {
         const modelId = typeof target === "string" ? target : target.modelId;

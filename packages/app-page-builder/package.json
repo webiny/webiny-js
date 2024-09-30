@@ -82,7 +82,7 @@
     "slugify": "^1.2.9",
     "store": "^2.0.12",
     "swiper": "^9.3.2",
-    "uniqid": "^5.0.3"
+    "uniqid": "^5.4.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
@@ -105,7 +105,7 @@
     "execa": "^5.0.0",
     "rimraf": "^5.0.5",
     "ttypescript": "^1.5.12",
-    "typescript": "4.7.4"
+    "typescript": "4.9.5"
   },
   "publishConfig": {
     "access": "public",

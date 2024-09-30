@@ -311,6 +311,7 @@ export interface GetGroupParams {
 export interface ListGroupsParams {
     where?: {
         id_in?: string[];
+        slug_in?: string[];
     };
     sort?: string[];
 }
@@ -357,6 +358,7 @@ export interface GetTeamParams {
 export interface ListTeamsParams {
     where?: {
         id_in?: string[];
+        slug_in?: string[];
     };
     sort?: string[];
 }
@@ -443,9 +445,19 @@ export interface TenantLink<TData = any> {
     webinyVersion: string;
 }
 
-export type PermissionsTenantLink = TenantLink<{
+export interface PermissionsTenantLinkGroup {
+    id: string;
+    permissions: SecurityPermission[];
+}
+
+export interface PermissionsTenantLinkTeam {
+    id: string;
     groups: Array<{ id: string; permissions: SecurityPermission[] }>;
-    teams: Array<{ id: string; groups: Array<{ id: string; permissions: SecurityPermission[] }> }>;
+}
+
+export type PermissionsTenantLink = TenantLink<{
+    groups: PermissionsTenantLinkGroup[];
+    teams: PermissionsTenantLinkTeam[];
 }>;
 
 export interface ApiKey {

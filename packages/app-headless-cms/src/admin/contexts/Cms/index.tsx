@@ -3,7 +3,7 @@ import ApolloClient from "apollo-client";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { config as appConfig } from "@webiny/app/config";
-import { CmsContentEntry, CmsContentEntryRevision, CmsErrorResponse, CmsModel } from "~/types";
+import { CmsContentEntry, CmsErrorResponse, CmsModel } from "~/types";
 import {
     CmsEntryPublishMutationResponse,
     CmsEntryPublishMutationVariables,
@@ -26,51 +26,46 @@ import {
     CmsEntryCreateFromMutationVariables,
     CmsEntryGetQueryResponse,
     CmsEntryGetQueryVariables,
-    createReadSingletonQuery,
-    CmsEntryGetSingletonQueryResponse,
-    createUpdateSingletonMutation,
-    CmsEntryUpdateSingletonMutationResponse,
-    CmsEntryUpdateSingletonMutationVariables,
-    createRevisionsQuery,
-    CmsEntriesListRevisionsQueryResponse,
-    CmsEntriesListRevisionsQueryVariables
+    createBulkActionMutation,
+    CmsEntryBulkActionMutationResponse,
+    CmsEntryBulkActionMutationVariables
 } from "@webiny/app-headless-cms-common";
 import { getFetchPolicy } from "~/utils/getFetchPolicy";
 
-export interface EntryError {
+interface EntryError {
     message: string;
     code?: string;
     data?: Record<string, any>;
 }
 
-export interface OperationSuccess {
+interface OperationSuccess {
     entry: CmsContentEntry;
     error?: never;
 }
 
-export interface OperationError {
+interface BulkActionOperationSuccess {
+    id: string;
+    error?: never;
+}
+
+interface OperationError {
     entry?: never;
     error: EntryError;
 }
 
-interface ListEntryRevisionsOperationSuccess {
-    revisions: CmsContentEntryRevision[];
-    error?: never;
-}
-
 export type PartialCmsContentEntryWithId = Partial<CmsContentEntry> & { id: string };
 export type GetEntryResponse = OperationSuccess | OperationError;
-export type ListEntryRevisionsResponse = ListEntryRevisionsOperationSuccess | OperationError;
 export type CreateEntryResponse = OperationSuccess | OperationError;
 export type CreateEntryRevisionFromResponse = OperationSuccess | OperationError;
 export type UpdateEntryRevisionResponse = OperationSuccess | OperationError;
 export type DeleteEntryResponse = boolean | OperationError;
 export type PublishEntryRevisionResponse = OperationSuccess | OperationError;
 export type UnpublishEntryRevisionResponse = OperationSuccess | OperationError;
+export type BulkActionResponse = BulkActionOperationSuccess | OperationError;
 
 export interface CreateEntryParams {
     model: CmsModel;
-    entry: Partial<CmsContentEntry>;
+    entry: PartialCmsContentEntryWithId;
     options?: {
         skipValidators?: string[];
     };
@@ -93,19 +88,10 @@ export interface UpdateEntryRevisionParams {
     };
 }
 
-export interface UpdateSingletonEntryParams {
-    model: CmsModel;
-    entry: PartialCmsContentEntryWithId;
-    options?: {
-        skipValidators?: string[];
-    };
-}
-
 export interface PublishEntryRevisionParams {
     model: CmsModel;
     id: string;
 }
-
 export interface DeleteEntryParams {
     model: CmsModel;
     id: string;
@@ -121,30 +107,22 @@ export interface GetEntryParams {
     id: string;
 }
 
-export interface ListEntryRevisionParams {
+export interface BulkActionParams {
     model: CmsModel;
-    id: string;
-}
-
-export interface GetSingletonEntryParams {
-    model: CmsModel;
+    action: string;
+    where?: Record<string, any>;
+    data?: Record<string, any>;
 }
 
 export interface CmsContext {
     getApolloClient(locale: string): ApolloClient<any>;
-
     createApolloClient: CmsProviderProps["createApolloClient"];
     apolloClient: ApolloClient<any>;
     getEntry: (params: GetEntryParams) => Promise<GetEntryResponse>;
-    listEntryRevisions: (params: ListEntryRevisionParams) => Promise<ListEntryRevisionsResponse>;
-    getSingletonEntry: (params: GetSingletonEntryParams) => Promise<GetEntryResponse>;
     createEntry: (params: CreateEntryParams) => Promise<CreateEntryResponse>;
     createEntryRevisionFrom: (
         params: CreateEntryRevisionFromParams
     ) => Promise<CreateEntryRevisionFromResponse>;
-    updateSingletonEntry: (
-        params: UpdateSingletonEntryParams
-    ) => Promise<UpdateEntryRevisionResponse>;
     updateEntryRevision: (
         params: UpdateEntryRevisionParams
     ) => Promise<UpdateEntryRevisionResponse>;
@@ -155,6 +133,7 @@ export interface CmsContext {
         params: UnpublishEntryRevisionParams
     ) => Promise<UnpublishEntryRevisionResponse>;
     deleteEntry: (params: DeleteEntryParams) => Promise<DeleteEntryResponse>;
+    bulkAction: (params: BulkActionParams) => Promise<BulkActionResponse>;
 }
 
 export const CmsContext = React.createContext<CmsContext | undefined>(undefined);
@@ -215,67 +194,7 @@ export const CmsProvider = (props: CmsProviderProps) => {
             if (!response.data) {
                 return {
                     error: {
-                        message: "Missing response data on getEntry query.",
-                        code: "MISSING_RESPONSE_DATA",
-                        data: {}
-                    }
-                };
-            }
-
-            const { data, error } = response.data.content;
-
-            if (error) {
-                return { error };
-            }
-
-            return {
-                entry: data as CmsContentEntry
-            };
-        },
-        listEntryRevisions: async ({ model, id }) => {
-            const query = createRevisionsQuery(model);
-
-            const response = await value.apolloClient.query<
-                CmsEntriesListRevisionsQueryResponse,
-                CmsEntriesListRevisionsQueryVariables
-            >({
-                query,
-                variables: { id },
-                fetchPolicy: "network-only"
-            });
-
-            if (!response.data) {
-                return {
-                    error: {
-                        message: "Missing response data on getRevisions query.",
-                        code: "MISSING_RESPONSE_DATA",
-                        data: {}
-                    }
-                };
-            }
-
-            const { data, error } = response.data.revisions;
-
-            if (error) {
-                return { error };
-            }
-
-            return {
-                revisions: data as CmsContentEntryRevision[]
-            };
-        },
-        getSingletonEntry: async ({ model }) => {
-            const query = createReadSingletonQuery(model);
-
-            const response = await value.apolloClient.query<CmsEntryGetSingletonQueryResponse>({
-                query,
-                fetchPolicy: getFetchPolicy(model)
-            });
-
-            if (!response.data) {
-                return {
-                    error: {
-                        message: "Missing response data on getSingletonEntry query.",
+                        message: "Missing response data on Get Entry query.",
                         code: "MISSING_RESPONSE_DATA",
                         data: {}
                     }
@@ -397,42 +316,6 @@ export const CmsProvider = (props: CmsProviderProps) => {
                 entry: data as CmsContentEntry
             };
         },
-        updateSingletonEntry: async ({ model, entry, options }) => {
-            const mutation = createUpdateSingletonMutation(model);
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { id, ...input } = entry;
-            const response = await value.apolloClient.mutate<
-                CmsEntryUpdateSingletonMutationResponse,
-                CmsEntryUpdateSingletonMutationVariables
-            >({
-                mutation,
-                variables: {
-                    data: input,
-                    options
-                },
-                fetchPolicy: getFetchPolicy(model)
-            });
-
-            if (!response.data) {
-                return {
-                    error: {
-                        message: "Missing response data on updateSingletonEntry mutation.",
-                        code: "MISSING_RESPONSE_DATA",
-                        data: {}
-                    }
-                };
-            }
-
-            const { data, error } = response.data.content;
-
-            if (error) {
-                return { error };
-            }
-
-            return {
-                entry: data as CmsContentEntry
-            };
-        },
         publishEntryRevision: async ({ model, id }) => {
             const mutation = createPublishMutation(model);
             const response = await value.apolloClient.mutate<
@@ -526,6 +409,49 @@ export const CmsProvider = (props: CmsProviderProps) => {
             }
 
             return true;
+        },
+        bulkAction: async ({ model, action, where, data }) => {
+            const mutation = createBulkActionMutation(model);
+            const response = await value.apolloClient.mutate<
+                CmsEntryBulkActionMutationResponse,
+                CmsEntryBulkActionMutationVariables
+            >({
+                mutation,
+                variables: {
+                    action,
+                    where,
+                    data
+                }
+            });
+
+            if (!response.data) {
+                return {
+                    error: {
+                        message: "Missing response data on Bulk Action mutation.",
+                        code: "MISSING_RESPONSE_DATA",
+                        data: {}
+                    }
+                };
+            }
+            const { data: responseData, error } = response.data.content;
+
+            if (error) {
+                return {
+                    error
+                };
+            }
+
+            if (!responseData) {
+                return {
+                    error: {
+                        message: "Missing response data on Bulk Action mutation.",
+                        code: "MISSING_RESPONSE_DATA",
+                        data: {}
+                    }
+                };
+            }
+
+            return responseData;
         }
     };
 

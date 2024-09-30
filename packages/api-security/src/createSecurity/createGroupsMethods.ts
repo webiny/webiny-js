@@ -24,8 +24,7 @@ import {
     GroupInput,
     PermissionsTenantLink,
     ListGroupsParams,
-    Security,
-    SecurityRole
+    Security
 } from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
@@ -151,8 +150,7 @@ async function updateTenantLinks(
 
 export const createGroupsMethods = ({
     getTenant: initialGetTenant,
-    storageOperations,
-    listPluginRoles
+    storageOperations
 }: SecurityConfig) => {
     const getTenant = () => {
         const tenant = initialGetTenant();
@@ -161,41 +159,6 @@ export const createGroupsMethods = ({
         }
         return tenant;
     };
-
-    const listRolesFromPlugins = (params?: ListGroupsParams): SecurityRole[] => {
-        if (!listPluginRoles) {
-            return [];
-        }
-
-        const groups = listPluginRoles().map(plugin => {
-            return plugin.securityRole;
-        });
-
-        const where = params?.where;
-        if (!where) {
-            return groups;
-        }
-
-        return groups.filter(group => {
-            if (where.id_in) {
-                return where.id_in.includes(group.id);
-            }
-            return group;
-        });
-    };
-
-    const getRoleFromPlugins = (params: GetGroupParams) => {
-        const { where } = params;
-        const allGroupsFromPlugins = listRolesFromPlugins();
-        return allGroupsFromPlugins.find(role => {
-            if (where.id) {
-                return role.id === where.id;
-            }
-
-            return role.slug === where.slug;
-        });
-    };
-
     return {
         onGroupBeforeCreate: createTopic("security.onGroupBeforeCreate"),
         onGroupAfterCreate: createTopic("security.onGroupAfterCreate"),
@@ -211,14 +174,9 @@ export const createGroupsMethods = ({
 
             let group: Group | null = null;
             try {
-                const groupFromPlugins = getRoleFromPlugins({ where });
-                if (groupFromPlugins) {
-                    group = groupFromPlugins;
-                } else {
-                    group = await storageOperations.getGroup({
-                        where: { ...where, tenant: where.tenant || getTenant() }
-                    });
-                }
+                group = await storageOperations.getGroup({
+                    where: { ...where, tenant: where.tenant || getTenant() }
+                });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not get group.",
@@ -235,20 +193,17 @@ export const createGroupsMethods = ({
         async listGroups(this: Security, { where }: ListGroupsParams = {}) {
             await checkPermission(this);
             try {
-                const databaseGroups = await storageOperations.listGroups({
+                return await storageOperations.listGroups({
                     where: {
                         ...where,
                         tenant: getTenant()
                     },
                     sort: ["createdOn_ASC"]
                 });
-
-                const pluginGroups = listRolesFromPlugins({ where });
-                return [...pluginGroups, ...databaseGroups];
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not list security groups.",
-                    ex.code || "LIST_SECURITY_GROUP_ERROR"
+                    ex.message || "Could not list groups.",
+                    ex.code || "LIST_GROUPS_ERROR"
                 );
             }
         },

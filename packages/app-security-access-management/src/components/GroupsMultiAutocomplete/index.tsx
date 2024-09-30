@@ -5,7 +5,7 @@ import { useQuery } from "@apollo/react-hooks";
 
 type GroupsMultiAutocompleteProps = Partial<MultiAutoCompleteProps>;
 
-export const GroupsMultiAutoComplete = (props: GroupsMultiAutocompleteProps) => {
+export const GroupsMultiAutocomplete = (props: GroupsMultiAutocompleteProps) => {
     const { data, loading } = useQuery(LIST_GROUPS);
 
     const options = loading || !data ? [] : data.security.groups.data;

@@ -1,9 +1,11 @@
+import { GenericRecord } from "@webiny/api/types";
+
 export interface AssetRequestOptions {
     original?: boolean;
     width?: number;
 }
 
-export type AssetRequestContext<T extends Record<string, any> = Record<string, any>> = T & {
+export type AssetRequestContext<T extends GenericRecord = GenericRecord> = T & {
     /**
      * Asset request URL.
      */
@@ -35,7 +37,7 @@ export class AssetRequest<TOptions extends AssetRequestOptions = AssetRequestOpt
         this.data.options = options;
     }
 
-    getContext<T>() {
+    getContext<T extends GenericRecord = GenericRecord>() {
         return this.data.context as AssetRequestContext<T>;
     }
 

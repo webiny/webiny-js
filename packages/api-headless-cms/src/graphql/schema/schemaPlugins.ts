@@ -10,10 +10,7 @@ import {
     createCmsGraphQLSchemaPlugin,
     ICmsGraphQLSchemaPlugin
 } from "~/plugins";
-import { createFieldTypePluginRecords } from "./createFieldTypePluginRecords";
-import { CMS_MODEL_SINGLETON_TAG } from "~/constants";
-import { createSingularSDL } from "./createSingularSDL";
-import { createSingularResolvers } from "./createSingularResolvers";
+import { createFieldTypePluginRecords } from "~/graphql/schema/createFieldTypePluginRecords";
 
 interface GenerateSchemaPluginsParams {
     context: CmsContext;
@@ -49,26 +46,6 @@ export const generateSchemaPlugins = async (
     });
 
     models.forEach(model => {
-        if (model.tags?.includes(CMS_MODEL_SINGLETON_TAG)) {
-            const plugin = createCmsGraphQLSchemaPlugin({
-                typeDefs: createSingularSDL({
-                    models,
-                    model,
-                    fieldTypePlugins,
-                    type
-                }),
-                resolvers: createSingularResolvers({
-                    context,
-                    models,
-                    model,
-                    fieldTypePlugins,
-                    type
-                })
-            });
-            plugin.name = `headless-cms.graphql.schema.singular.${model.modelId}`;
-            schemaPlugins.push(plugin);
-            return;
-        }
         switch (type) {
             case "manage":
                 {

@@ -7,8 +7,9 @@ import {
     Worker
 } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
-import { useContentEntriesList, useModel } from "~/admin/hooks";
+import { useCms, useContentEntriesList, useModel } from "~/admin/hooks";
 import { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
+import merge from "lodash/merge";
 
 export interface BulkActionConfig {
     name: string;
@@ -22,6 +23,12 @@ export interface BulkActionProps {
     after?: string;
     modelIds?: string[];
     element?: React.ReactElement;
+}
+
+export interface ProcessInBulkParams {
+    action: string;
+    where?: Record<string, any>;
+    data?: Record<string, any>;
 }
 
 export const BaseBulkAction = makeDecoratable(
@@ -65,7 +72,9 @@ export const BaseBulkAction = makeDecoratable(
 );
 
 const useWorker = () => {
-    const { selected, setSelected } = useContentEntriesList();
+    const { model } = useModel();
+    const { selected, setSelected, getWhere, isSelectedAll } = useContentEntriesList();
+    const { bulkAction } = useCms();
     const { current: worker } = useRef(new Worker<CmsContentEntry>());
 
     useEffect(() => {
@@ -89,8 +98,13 @@ const useWorker = () => {
             }: CallbackParams<CmsContentEntry>) => Promise<void>,
             chunkSize?: number
         ) => worker.processInSeries(callback, chunkSize),
+        processInBulk: async ({ action, where: initialWhere, data }: ProcessInBulkParams) => {
+            const where = merge(getWhere(), initialWhere);
+            await bulkAction({ model, action, where, data });
+        },
         resetItems: resetItems,
-        results: worker.results
+        results: worker.results,
+        isSelectedAll
     };
 };
 

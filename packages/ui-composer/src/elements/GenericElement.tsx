@@ -1,11 +1,13 @@
 import React from "react";
-import { UIElement } from "~/UIElement";
+import { UIElement, UiElementRenderProps } from "~/UIElement";
 
 interface Renderer<TRenderProps> {
     (props: TRenderProps): React.ReactNode;
 }
 
-export class GenericElement<TRenderProps = any> extends UIElement {
+export class GenericElement<
+    TRenderProps extends UiElementRenderProps = UiElementRenderProps
+> extends UIElement {
     private readonly _render?: Renderer<TRenderProps>;
 
     constructor(id: string, render?: Renderer<TRenderProps>) {

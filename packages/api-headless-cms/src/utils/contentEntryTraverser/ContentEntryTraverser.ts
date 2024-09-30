@@ -28,7 +28,11 @@ const childrenAreCollections = (node: CmsModelFieldAstNode): node is NodeWithCol
 
 const emptyValues = [null, undefined];
 
-export class ContentEntryTraverser {
+export interface IContentEntryTraverser {
+    traverse(values: CmsEntryValues, visitor: ContentEntryValueVisitor): Promise<void>;
+}
+
+export class ContentEntryTraverser implements IContentEntryTraverser {
     private readonly modelAst: CmsModelAst;
 
     constructor(modelAst: CmsModelAst) {

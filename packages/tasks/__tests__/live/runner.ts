@@ -2,6 +2,8 @@ import { createLiveContext, CreateLiveContextParams } from "./context";
 import { TaskRunner } from "~/runner";
 import { Context as LambdaContext } from "aws-lambda/handler";
 import { Context } from "~tests/types";
+import { TaskEventValidation } from "~/runner/TaskEventValidation";
+import { timerFactory } from "@webiny/handler-aws";
 
 const defaultLambdaContext: Pick<LambdaContext, "getRemainingTimeInMillis"> = {
     getRemainingTimeInMillis: () => {
@@ -20,7 +22,11 @@ export const createLiveRunner = async <C extends Context = Context>(
 ) => {
     const context = params?.context || (await createLiveContext<C>(params));
 
-    const runner = new TaskRunner(params?.lambdaContext || defaultLambdaContext, context);
+    const runner = new TaskRunner(
+        context,
+        timerFactory(params?.lambdaContext || defaultLambdaContext),
+        new TaskEventValidation()
+    );
 
     return { runner, context };
 };

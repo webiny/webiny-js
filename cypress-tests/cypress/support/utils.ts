@@ -87,7 +87,9 @@ type GqlQueryFunction<TReturn, TVariables> = (
     options?: GqlQueryOptions
 ) => Promise<TReturn>;
 
-export const createGqlQuery = <TReturn, TVariables = Record<string, never>>(
+export type GqlVariables = Record<string, any>;
+
+export const createGqlQuery = <TReturn, TVariables extends GqlVariables = GqlVariables>(
     query: string
 ): GqlQueryFunction<TReturn, TVariables> => {
     return async (variables: TVariables, options?: GqlQueryOptions) => {

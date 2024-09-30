@@ -20,7 +20,7 @@ import {
     TeamInput,
     PermissionsTenantLink,
     Security,
-    ListTeamsParams
+    ListGroupsParams
 } from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
@@ -113,8 +113,7 @@ async function updateTenantLinks(
 
 export const createTeamsMethods = ({
     getTenant: initialGetTenant,
-    storageOperations,
-    listPluginTeams
+    storageOperations
 }: SecurityConfig) => {
     const getTenant = () => {
         const tenant = initialGetTenant();
@@ -123,40 +122,6 @@ export const createTeamsMethods = ({
         }
         return tenant;
     };
-
-    const listTeamsFromPlugins = (params?: ListTeamsParams) => {
-        if (!listPluginTeams) {
-            return [];
-        }
-        const teams = listPluginTeams().map(plugin => {
-            return plugin.securityTeam;
-        });
-
-        const where = params?.where;
-        if (!where) {
-            return teams;
-        }
-
-        return teams.filter(team => {
-            if (where.id_in) {
-                return where.id_in.includes(team.id);
-            }
-            return team;
-        });
-    };
-
-    const getTeamFromPlugins = (params: GetTeamParams) => {
-        const { where } = params;
-        const allTeamsFromPlugins = listTeamsFromPlugins();
-        return allTeamsFromPlugins.find(team => {
-            if (where.id) {
-                return team.id === where.id;
-            }
-
-            return team.slug === where.slug;
-        });
-    };
-
     return {
         onTeamBeforeCreate: createTopic("security.onTeamBeforeCreate"),
         onTeamAfterCreate: createTopic("security.onTeamAfterCreate"),
@@ -172,15 +137,9 @@ export const createTeamsMethods = ({
 
             let team: Team | null = null;
             try {
-                const teamFromPlugins = getTeamFromPlugins({ where });
-
-                if (teamFromPlugins) {
-                    team = teamFromPlugins;
-                } else {
-                    team = await storageOperations.getTeam({
-                        where: { ...where, tenant: where.tenant || getTenant() }
-                    });
-                }
+                team = await storageOperations.getTeam({
+                    where: { ...where, tenant: where.tenant || getTenant() }
+                });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not get team.",
@@ -194,23 +153,20 @@ export const createTeamsMethods = ({
             return team;
         },
 
-        async listTeams(this: Security, { where }: ListTeamsParams = {}) {
+        async listTeams(this: Security, { where }: ListGroupsParams = {}) {
             await checkPermission(this);
             try {
-                const databaseGroups = await storageOperations.listTeams({
+                return await storageOperations.listTeams({
                     where: {
                         ...where,
                         tenant: getTenant()
                     },
                     sort: ["createdOn_ASC"]
                 });
-
-                const teamsFromPlugins = listTeamsFromPlugins({ where });
-                return [...teamsFromPlugins, ...databaseGroups];
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not list teams.",
-                    ex.code || "LIST_TEAM_ERROR"
+                    ex.message || "Could not list API keys.",
+                    ex.code || "LIST_API_KEY_ERROR"
                 );
             }
         },
