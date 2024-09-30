@@ -5,7 +5,7 @@ import { CMS_MODEL_SINGLETON_TAG } from "~/constants";
 
 describe("singleton model content entries", () => {
     const plugins = createPluginFromCmsModel({
-        ...getCmsModel("category"),
+        ...getCmsModel("categorySingleton"),
         tags: [CMS_MODEL_SINGLETON_TAG]
     });
 
