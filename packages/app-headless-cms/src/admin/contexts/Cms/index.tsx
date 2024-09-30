@@ -61,7 +61,6 @@ export interface BulkActionOperationSuccess {
     error?: never;
 }
 
-
 interface ListEntryRevisionsOperationSuccess {
     revisions: CmsContentEntryRevision[];
     error?: never;
