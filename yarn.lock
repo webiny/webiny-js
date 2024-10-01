@@ -16252,11 +16252,12 @@ __metadata:
     "@types/facepaint": ^1.2.2
     "@types/react": 18.2.79
     "@webiny/cli": 0.0.0
-    "@webiny/lexical-editor": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/react-composition": 0.0.0
     "@webiny/theme": 0.0.0
     execa: ^5.0.0
     facepaint: ^1.2.1
+    lodash: ^4.17.21
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
     typescript: 4.9.5
@@ -16329,6 +16330,7 @@ __metadata:
     "@webiny/app-tenancy": 0.0.0
     "@webiny/app-theme": 0.0.0
     "@webiny/cli": 0.0.0
+    "@webiny/error": 0.0.0
     "@webiny/form": 0.0.0
     "@webiny/lexical-editor": 0.0.0
     "@webiny/plugins": 0.0.0
@@ -17721,8 +17723,6 @@ __metadata:
     "@webiny/react-composition": 0.0.0
     "@webiny/theme": 0.0.0
     "@webiny/ui": 0.0.0
-    lodash: ^4.17.21
-    medium-editor: ^5.23.3
     react: 18.2.0
     react-dom: 18.2.0
   languageName: unknown
@@ -18114,7 +18114,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/react-router@workspace:packages/react-router"
   dependencies:
-    "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
@@ -40798,7 +40797,6 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
-    "@webiny/react-router": 0.0.0
     "@webiny/serverless-cms-aws": 0.0.0
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
@@ -40806,7 +40804,6 @@ __metadata:
     cross-env: ^5.0.2
     cross-fetch: ^3.0.4
     graphql: ^15.7.2
-    graphql-tag: ^2.12.6
     react: 18.2.0
     react-dom: 18.2.0
     regenerator-runtime: ^0.13.5

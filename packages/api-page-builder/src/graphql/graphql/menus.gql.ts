@@ -10,7 +10,7 @@ export const createMenuGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                 type PbMenu {
                     id: ID
                     createdOn: DateTime
-                    createdBy: PbCreatedBy
+                    createdBy: PbIdentity
                     title: String
                     slug: String
                     description: String
