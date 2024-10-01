@@ -22,7 +22,7 @@ import { CREATE_TEAM, LIST_TEAMS, READ_TEAM, UPDATE_TEAM } from "./graphql";
 import isEmpty from "lodash/isEmpty";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
-import { GroupsMultiAutoComplete } from "~/components/GroupsMultiAutocomplete";
+import { GroupsMultiAutocomplete } from "~/components/GroupsMultiAutocomplete";
 import { Team } from "~/types";
 import { Alert } from "@webiny/ui/Alert";
 
@@ -112,7 +112,6 @@ export const TeamsForm = () => {
     const canModifyTeam = !systemTeam && !pluginTeam;
 
     const showEmptyView = !newTeam && !loading && isEmpty(data);
-
     // Render "No content" selected view.
     if (showEmptyView) {
         return (
@@ -200,11 +199,10 @@ export const TeamsForm = () => {
                                     </Bind>
                                 </Cell>
                             </Grid>
-
                             <Grid>
                                 <Cell span={12}>
                                     <Bind name="groups" validators={validation.create("required")}>
-                                        <GroupsMultiAutoComplete
+                                        <GroupsMultiAutocomplete
                                             disabled={!canModifyTeam}
                                             label={t`Roles`}
                                             data-testid="admin.am.team.new.groups"
