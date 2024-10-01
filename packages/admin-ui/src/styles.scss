@@ -4,6 +4,91 @@
 
 @layer base {
   :root {
+    // New variables from design.
+
+    // Background colors.
+    --bg-neutral-dark: #191c20;
+    --bg-neutral-xstrong: #59626d;
+    --bg-neutral-strong: #bec3cc;
+    --bg-neutral-muted: #e3e5eb;
+    --bg-neutral-disabled: #f0f1f3;
+    --bg-neutral-dimmed: #f0f1f3;
+    --bg-neutral-light: #f7f8f9;
+    --bg-neutral-subtle: #fafbfb;
+    --bg-neutral: #191c20;
+
+    --bg-primary: 15 96% 56%;
+    --bg-primary-strong: 15 90% 50%;
+    --bg-primary-xstrong: 15 85% 45%;
+    --bg-primary-muted: 15 80% 60%;
+    --bg-primary-subtle: 15 75% 70%;
+    --bg-primary-disabled: 15 70% 80%;
+
+    --bg-secondary: 210 40% 96.1%;
+    --bg-secondary-strong: 210 35% 85%;
+    --bg-secondary-xstrong: 210 30% 70%;
+    --bg-secondary-muted: 210 25% 60%;
+    --bg-secondary-subtle: 210 20% 50%;
+    --bg-secondary-disabled: 210 15% 40%;
+
+    --bg-success: 120 60% 40%;
+    --bg-success-strong: 120 55% 45%;
+    --bg-success-xstrong: 120 50% 50%;
+    --bg-success-muted: 120 45% 55%;
+    --bg-success-subtle: 120 40% 60%;
+    --bg-success-disabled: 120 35% 70%;
+
+    --bg-destructive: 0 100% 50%;
+    --bg-destructive-strong: 0 90% 40%;
+    --bg-destructive-xstrong: 0 80% 30%;
+    --bg-destructive-muted: 0 70% 60%;
+    --bg-destructive-subtle: 0 60% 70%;
+    --bg-destructive-disabled: 0 50% 80%;
+
+    --bg-warning: 45 100% 50%;
+    --bg-warning-strong: 45 90% 45%;
+    --bg-warning-xstrong: 45 85% 40%;
+    --bg-warning-muted: 45 80% 60%;
+    --bg-warning-subtle: 45 75% 70%;
+    --bg-warning-disabled: 45 70% 80%;
+
+    // Text colors.
+    --text-primary: 210 96% 56%;
+    --text-subtle: 210 85% 70%;
+    --text-muted: 210 80% 60%;
+    --text-dimmed: 210 75% 50%;
+    --text-disabled: 210 70% 40%;
+    --text-white: 0 0% 100%;
+
+    // Border color.
+    --border-color-neutral-dark: 210 96% 56%;
+    --border-color-neutral-strong: 210 96% 56%;
+    --border-color-neutral-muted: 210 96% 56%;
+    --border-color-neutral-dimmed: 210 96% 56%;
+    --border-color-neutral-subtle: 210 96% 56%;
+    --border-color-accent-default: 210 96% 56%;
+    --border-color-accent-subtle: 210 96% 56%;
+    --border-color-destructive-default: 210 96% 56%;
+    --border-color-success-default: 210 96% 56%;
+
+    // Border radius.
+    --radius-xs: 2px;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --radius-xxl: 36px;
+
+    // Padding.
+    --padding-xs: 4px;
+    --padding-sm: 8px;
+    --padding-md: 16px;
+    --padding-lg: 24px;
+    --padding-xl: 32px;
+    --padding-xxl: 48px;
+
+    // Old vars (we'll delete these once we're done).
+
     --background: 0 0% 100%;
     --foreground: 222.2 47.4% 11.2%;
 
@@ -19,11 +104,18 @@
     --card: 0 0% 100%;
     --card-foreground: 222.2 47.4% 11.2%;
 
-    --primary: 14.5 95.6% 55.9%;
+    --primary: 15 96% 56%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --neutral: 210 40% 96.1%;
+    --neutral-strong: 210 40% 96.1%;
+    --neutral-muted: 210 40% 96.1%;
+    --neutral-dimmed: 210 40% 96.1%;
+    --neutral-disabled: 210 40% 96.1%;
+    --neutral-light: 0 0% 100%;
 
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
@@ -32,8 +124,6 @@
     --destructive-foreground: 210 40% 98%;
 
     --ring: 215 20.2% 65.1%;
-
-    --radius: 8px;
 
     --font-sans: "Inter", "Source Sans Pro", "Open Sans", sans-serif;
   }

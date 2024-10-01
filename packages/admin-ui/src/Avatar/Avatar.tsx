@@ -29,7 +29,7 @@ const AvatarFallbackBase = React.forwardRef<
     <AvatarPrimitive.Fallback
         ref={ref}
         className={cn(
-            "flex h-full w-full items-center justify-center rounded-full bg-muted",
+            "flex h-full w-full items-center justify-center rounded bg-primary text-neutral-light",
             className
         )}
         {...props}
@@ -50,28 +50,24 @@ interface AvatarProps
 const avatarVariants = cva("rounded", {
     variants: {
         size: {
-            sm: "w-6 h-6",
-            md: "w-8 h-8",
-            lg: "w-10 h-10",
-            xl: "w-12 h-12 rounded-lg"
-        },
-        variant: {
-            image: ""
+            sm: "w-6 h-6 rounded-sm",
+            md: "w-8 h-8 rounded-sm",
+            lg: "w-10 h-10 rounded-sm",
+            xl: "w-12 h-12 rounded-md"
         }
     },
     defaultVariants: {
         size: "md",
-        variant: "image"
     }
 });
 
 const AvatarBase = React.forwardRef<React.ElementRef<typeof AvatarPrimitive.Root>, AvatarProps>(
-    ({ image, fallback, className, size, variant, ...props }, ref) => (
+    ({ image, fallback, className, size, ...props }, ref) => (
         <AvatarPrimitive.Root
             ref={ref}
             className={cn(
                 "relative flex shrink-0 overflow-hidden",
-                avatarVariants({ variant, size, className })
+                avatarVariants({ size, className })
             )}
             {...props}
         >

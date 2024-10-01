@@ -16,7 +16,7 @@ type Story = StoryObj<typeof Avatar>;
 
 export const Default: Story = {
     args: {
-        image: <Avatar.Image src="https://github.com/webiny-bot.png" alt="@webiny" />,
+        image: <Avatar.Image className={"bg-ne"} src="https://github.com/webiny-bot.png" alt="@webiny" />,
         fallback: <Avatar.Fallback>W</Avatar.Fallback>
     },
     argTypes: {
@@ -24,10 +24,6 @@ export const Default: Story = {
             control: "select",
             options: ["sm", "md", "lg", "xl"]
         },
-        variant: {
-            control: "select",
-            options: ["image"]
-        }
     }
 };
 
@@ -35,5 +31,12 @@ export const Sizes: Story = {
     args: {
         ...Default.args,
         size: "lg"
+    }
+};
+
+export const Fallback: Story = {
+    args: {
+        image: <Avatar.Image src="https://no-image/here.png" alt="@webiny" />,
+        fallback: <Avatar.Fallback>W</Avatar.Fallback>,
     }
 };
