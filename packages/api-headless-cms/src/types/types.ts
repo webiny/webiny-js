@@ -16,6 +16,7 @@ import { CmsModelField, CmsModelFieldValidation, CmsModelUpdateInput } from "./m
 import { CmsModel, CmsModelCreateFromInput, CmsModelCreateInput } from "./model";
 import { CmsGroup } from "./modelGroup";
 import { CmsIdentity } from "./identity";
+import { ISingletonModelManager } from "~/modelManager";
 
 export interface CmsError {
     message: string;
@@ -693,6 +694,7 @@ export interface CmsEntryUniqueValue {
  * @category CmsModel
  */
 export interface CmsModelManager<T = CmsEntryValues> {
+    model: CmsModel;
     /**
      * List only published entries in the content model.
      */
@@ -716,11 +718,18 @@ export interface CmsModelManager<T = CmsEntryValues> {
     /**
      * Create an entry.
      */
-    create<I>(data: CreateCmsEntryInput & I): Promise<CmsEntry<T>>;
+    create<I>(
+        data: CreateCmsEntryInput & I,
+        options?: CreateCmsEntryOptionsInput
+    ): Promise<CmsEntry<T>>;
     /**
      * Update an entry.
      */
-    update(id: string, data: UpdateCmsEntryInput): Promise<CmsEntry<T>>;
+    update(
+        id: string,
+        data: UpdateCmsEntryInput,
+        options?: UpdateCmsEntryOptionsInput
+    ): Promise<CmsEntry<T>>;
     /**
      * Delete an entry.
      */
@@ -881,6 +890,12 @@ export interface CmsModelContext {
     getEntryManager<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel | string
     ): Promise<ICmsEntryManager<T>>;
+    /**
+     * A model manager for a model which has a single entry.
+     */
+    getSingletonEntryManager<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel | string
+    ): Promise<ISingletonModelManager<T>>;
     /**
      * Get all content model managers mapped by modelId.
      * @see CmsModelManager

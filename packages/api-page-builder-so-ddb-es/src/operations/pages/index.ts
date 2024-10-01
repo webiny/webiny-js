@@ -48,6 +48,8 @@ import {
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 import { PageDynamoDbElasticsearchFieldPlugin } from "~/plugins/definitions/PageDynamoDbElasticsearchFieldPlugin";
 import { getClean, put } from "@webiny/db-dynamodb";
+import { shouldIgnoreEsResponseError } from "~/operations/pages/shouldIgnoreEsResponseError";
+import { logIgnoredEsResponseError } from "~/operations/pages/logIgnoredEsResponseError";
 
 /**
  * This function removes attributes that were once present in the Page record, which we no longer need.
@@ -793,7 +795,11 @@ export const createPageStorageOperations = (
              * Do not throw the error if Elasticsearch index does not exist.
              * In some CRUDs we try to get list of pages but index was not created yet.
              */
-            if (ex.message === "index_not_found_exception") {
+            if (shouldIgnoreEsResponseError(ex)) {
+                logIgnoredEsResponseError({
+                    error: ex,
+                    indexName: esConfig.index
+                });
                 return {
                     items: [],
                     meta: {
@@ -884,6 +890,13 @@ export const createPageStorageOperations = (
             }
             return tags.buckets.map(item => item.key);
         } catch (ex) {
+            if (shouldIgnoreEsResponseError(ex)) {
+                logIgnoredEsResponseError({
+                    error: ex,
+                    indexName: esConfig.index
+                });
+                return [];
+            }
             throw new WebinyError(
                 ex.message || "Could not list tags by given parameters.",
                 ex.code || "LIST_TAGS_ERROR",

@@ -163,5 +163,17 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
 
         const { data: listEntriesRead } = await readIdentityA.listTestEntries();
         expect(listEntriesRead[0].id).toEndWith("#0003");
+
+        // Extra check - ensure the previous revision is no longer published.
+        const { data: firstPublishedRevision } = await manageIdentityA.getTestEntry({
+            revision: `${rev.entryId}#0001`
+        });
+
+        const { data: secondPublishedRevision } = await manageIdentityA.getTestEntry({
+            revision: `${rev.entryId}#0002`
+        });
+
+        expect(firstPublishedRevision.meta.status).toBe("unpublished");
+        expect(secondPublishedRevision.meta.status).toBe("unpublished");
     });
 });

@@ -146,6 +146,7 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
                         );
 
                         // Get reply object (runs the output strategy under the hood).
+                        console.log(`Output asset (size: ${processedAsset.getSize()} bytes).`);
                         return outputAsset(reply, processedAsset);
                     },
                     { override: true }

@@ -5,133 +5,146 @@ import {
     CmsEditorContentModel,
     CmsErrorResponse,
     CmsMetaResponse,
-    CmsModelField
+    CmsModelField,
+    CmsModel
 } from "~/types";
 import { createFieldsList } from "./createFieldsList";
 import { getModelTitleFieldId } from "./getModelTitleFieldId";
 import { FormValidationOptions } from "@webiny/form";
+import { CMS_MODEL_SINGLETON_TAG } from "./constants";
 
 const CONTENT_META_FIELDS = /* GraphQL */ `
-    meta {
-        title
-        description
-        image
-        version
-        locked
-        status
-    }
+    title
+    description
+    image
+    version
+    locked
+    status
 `;
 
-const CONTENT_ENTRY_SYSTEM_FIELDS = /* GraphQL */ `
-    id
-    entryId
-    createdOn
-    savedOn
-    modifiedOn,
-    deletedOn
-    firstPublishedOn
-    lastPublishedOn
-    createdBy {
+const createEntrySystemFields = (model: CmsModel) => {
+    const isSingletonModel = model.tags.includes(CMS_MODEL_SINGLETON_TAG);
+
+    let optionalFields = "";
+    if (!isSingletonModel) {
+        optionalFields = `
+            wbyAco_location {
+                folderId
+            }
+            meta  {
+                ${CONTENT_META_FIELDS}
+            }
+        `;
+    }
+
+    return /* GraphQL */ `
         id
-        type
-        displayName
-    }
-    savedBy {
-        id
-        type
-        displayName
-    }
-    modifiedBy {
-        id
-        type
-        displayName
-    }
-    deletedBy {
-        id
-        type
-        displayName
-    }
-    firstPublishedBy {
-        id
-        type
-        displayName
-    }
-    lastPublishedBy {
-        id
-        type
-        displayName
-    }
-    revisionCreatedOn
-    revisionSavedOn
-    revisionModifiedOn
-    revisionDeletedOn
-    revisionFirstPublishedOn
-    revisionLastPublishedOn
-    revisionCreatedBy {
-        id
-        type
-        displayName
-    }
-    revisionSavedBy {
-        id
-        type
-        displayName
-    }
-    revisionModifiedBy {
-        id
-        type
-        displayName
-    }
-    revisionDeletedBy {
-        id
-        type
-        displayName
-    }
-    revisionFirstPublishedBy {
-        id
-        type
-        displayName
-    }
-    revisionLastPublishedBy {
-        id
-        type
-        displayName
-    }
-    revisionCreatedOn
-    revisionSavedOn
-    revisionModifiedOn
-    revisionFirstPublishedOn
-    revisionLastPublishedOn
-    revisionCreatedBy {
-        id
-        type
-        displayName
-    }
-    revisionSavedBy {
-        id
-        type
-        displayName
-    }
-    revisionModifiedBy {
-        id
-        type
-        displayName
-    }
-    revisionFirstPublishedBy {
-        id
-        type
-        displayName
-    }
-    revisionLastPublishedBy {
-        id
-        type
-        displayName
-    }
-    wbyAco_location {
-        folderId
-    }
-    ${CONTENT_META_FIELDS}
-`;
+        entryId
+        createdOn
+        savedOn
+        modifiedOn,
+        deletedOn
+        firstPublishedOn
+        lastPublishedOn
+        createdBy {
+            id
+            type
+            displayName
+        }
+        savedBy {
+            id
+            type
+            displayName
+        }
+        modifiedBy {
+            id
+            type
+            displayName
+        }
+        deletedBy {
+            id
+            type
+            displayName
+        }
+        firstPublishedBy {
+            id
+            type
+            displayName
+        }
+        lastPublishedBy {
+            id
+            type
+            displayName
+        }
+        revisionCreatedOn
+        revisionSavedOn
+        revisionModifiedOn
+        revisionDeletedOn
+        revisionFirstPublishedOn
+        revisionLastPublishedOn
+        revisionCreatedBy {
+            id
+            type
+            displayName
+        }
+        revisionSavedBy {
+            id
+            type
+            displayName
+        }
+        revisionModifiedBy {
+            id
+            type
+            displayName
+        }
+        revisionDeletedBy {
+            id
+            type
+            displayName
+        }
+        revisionFirstPublishedBy {
+            id
+            type
+            displayName
+        }
+        revisionLastPublishedBy {
+            id
+            type
+            displayName
+        }
+        revisionCreatedOn
+        revisionSavedOn
+        revisionModifiedOn
+        revisionFirstPublishedOn
+        revisionLastPublishedOn
+        revisionCreatedBy {
+            id
+            type
+            displayName
+        }
+        revisionSavedBy {
+            id
+            type
+            displayName
+        }
+        revisionModifiedBy {
+            id
+            type
+            displayName
+        }
+        revisionFirstPublishedBy {
+            id
+            type
+            displayName
+        }
+        revisionLastPublishedBy {
+            id
+            type
+            displayName
+        }
+        ${optionalFields}
+    `;
+};
 
 const ERROR_FIELD = /* GraphQL */ `
     {
@@ -165,7 +178,32 @@ export const createReadQuery = (model: CmsEditorContentModel) => {
         query CmsEntriesGet${model.singularApiName}($revision: ID, $entryId: ID) {
             content: get${model.singularApiName}(revision: $revision, entryId: $entryId) {
                 data {
-                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createEntrySystemFields(model)}
+                    ${createFieldsList({ model, fields: model.fields })}
+                }
+                error ${ERROR_FIELD}
+            }
+        }
+    `;
+};
+
+/**
+ * ############################################
+ * Get CMS Singleton Entry Query
+ */
+export interface CmsEntryGetSingletonQueryResponse {
+    content: {
+        data: CmsContentEntry;
+        error: CmsErrorResponse | null;
+    };
+}
+
+export const createReadSingletonQuery = (model: CmsEditorContentModel) => {
+    return gql`
+        query CmsEntryGetSingleton${model.singularApiName} {
+            content: get${model.singularApiName} {
+                data {
+                    ${createEntrySystemFields(model)}
                     ${createFieldsList({ model, fields: model.fields })}
                 }
                 error ${ERROR_FIELD}
@@ -195,7 +233,7 @@ export const createRevisionsQuery = (model: CmsEditorContentModel) => {
         query CmsEntriesGet${model.singularApiName}Revisions($id: ID!) {
             revisions: get${model.singularApiName}Revisions(id: $id) {
                 data {
-                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createEntrySystemFields(model)}
                 }
                 error ${ERROR_FIELD}
             }
@@ -230,7 +268,7 @@ export const createListQueryDataSelection = (
     fields?: CmsModelField[]
 ) => {
     return `
-        ${CONTENT_ENTRY_SYSTEM_FIELDS}
+        ${createEntrySystemFields(model)}
         ${fields ? createFieldsList({ model, fields }) : ""}
         ${!fields ? getModelTitleFieldId(model) : ""}
     `;
@@ -315,7 +353,7 @@ export const createRestoreFromBinMutation = (model: CmsEditorContentModel) => {
         mutation CmsEntriesRestore${model.singularApiName}FromBin($revision: ID!) {
             content: restore${model.singularApiName}FromBin(revision: $revision) {
                 data {
-                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createEntrySystemFields(model)}
                     ${createFieldsList({ model, fields: model.fields })}
                 }
                 error ${ERROR_FIELD}
@@ -347,10 +385,12 @@ export const createCreateMutation = (model: CmsEditorContentModel) => {
     const createFields = createFieldsList({ model, fields: model.fields });
 
     return gql`
-        mutation CmsEntriesCreate${model.singularApiName}($data: ${model.singularApiName}Input!, $options: CreateCmsEntryOptionsInput) {
+        mutation CmsEntriesCreate${model.singularApiName}($data: ${
+        model.singularApiName
+    }Input!, $options: CreateCmsEntryOptionsInput) {
             content: create${model.singularApiName}(data: $data, options: $options) {
                 data {
-                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createEntrySystemFields(model)}
                     ${createFields}
                 }
                 error ${ERROR_FIELD}
@@ -388,7 +428,7 @@ export const createCreateFromMutation = (model: CmsEditorContentModel) => {
             model.singularApiName
         }From(revision: $revision, data: $data, options: $options) {
                 data {
-                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createEntrySystemFields(model)}
                     ${createFieldsList({ model, fields: model.fields })}
                 }
                 error ${ERROR_FIELD}
@@ -425,11 +465,46 @@ export const createUpdateMutation = (model: CmsEditorContentModel) => {
                 model.singularApiName
             }(revision: $revision, data: $data, options: $options) {
                 data {
-                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createEntrySystemFields(model)}
                     ${createFieldsList({ model, fields: model.fields })}
                 }
                 error ${ERROR_FIELD}
             }
+        }
+    `;
+};
+
+/**
+ * ############################################
+ * Update Singleton Mutation
+ */
+export interface CmsEntryUpdateSingletonMutationResponse {
+    content: {
+        data?: CmsContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+
+export interface CmsEntryUpdateSingletonMutationVariables {
+    /**
+     * We have any here because we do not know which fields does entry have
+     */
+    data: Record<string, any>;
+    options?: FormValidationOptions;
+}
+
+export const createUpdateSingletonMutation = (model: CmsEditorContentModel) => {
+    return gql`
+        mutation CmsUpdate${model.singularApiName}($data: ${
+        model.singularApiName
+    }Input!, $options: UpdateCmsEntryOptionsInput) {
+            content: update${model.singularApiName}(data: $data, options: $options) {
+            data {
+                ${createEntrySystemFields(model)}
+                ${createFieldsList({ model, fields: model.fields })}
+            }
+            error ${ERROR_FIELD}
+        }
         }
     `;
 };
@@ -454,7 +529,7 @@ export const createPublishMutation = (model: CmsEditorContentModel) => {
         mutation CmsPublish${model.singularApiName}($revision: ID!) {
             content: publish${model.singularApiName}(revision: $revision) {
                 data {
-                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createEntrySystemFields(model)}
                     ${createFieldsList({ model, fields: model.fields })}
                 }
                 error ${ERROR_FIELD}
@@ -482,7 +557,7 @@ export const createUnpublishMutation = (model: CmsEditorContentModel) => {
         mutation CmsUnpublish${model.singularApiName}($revision: ID!) {
             content: unpublish${model.singularApiName}(revision: $revision) {
                  data {
-                    ${CONTENT_ENTRY_SYSTEM_FIELDS}
+                    ${createEntrySystemFields(model)}
                     ${createFieldsList({ model, fields: model.fields })}
                 }
                 error ${ERROR_FIELD}

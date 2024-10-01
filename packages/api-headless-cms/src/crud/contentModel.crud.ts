@@ -46,9 +46,10 @@ import { listModelsFromDatabase } from "~/crud/contentModel/listModelsFromDataba
 import { filterAsync } from "~/utils/filterAsync";
 import { AccessControl } from "./AccessControl/AccessControl";
 import {
-    CmsModelToAstConverter,
-    CmsModelFieldToAstConverterFromPlugins
+    CmsModelFieldToAstConverterFromPlugins,
+    CmsModelToAstConverter
 } from "~/utils/contentModelAst";
+import { SingletonModelManager } from "~/modelManager";
 
 export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
@@ -218,6 +219,16 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         }
         const model = await getModelFromCache(modelId);
         return await updateManager<T>(context, model);
+    };
+
+    const getSingletonEntryManager = async <T extends CmsEntryValues = CmsEntryValues>(
+        input: CmsModel | string
+    ) => {
+        const model = typeof input === "string" ? await getModel(input) : input;
+
+        const manager = await getEntryManager<T>(model);
+
+        return SingletonModelManager.create<T>(manager);
     };
 
     /**
@@ -694,6 +705,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             );
         },
         getEntryManager,
-        getEntryManagers: () => managers
+        getEntryManagers: () => managers,
+        getSingletonEntryManager
     };
 };

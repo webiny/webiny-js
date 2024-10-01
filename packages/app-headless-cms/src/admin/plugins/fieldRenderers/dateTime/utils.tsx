@@ -58,6 +58,22 @@ export const getCurrentDate = (date?: Date): string => {
     return `${year}-${month}-${day}`;
 };
 
+export const getHHmm = (time?: string) => {
+    if (!time) {
+        return "";
+    }
+    const parsableTime = time || getCurrentLocalTime();
+    return parsableTime.split(":").slice(0, 2).join(":");
+};
+
+// Ensure a valid HH:mm:ss string, ending with :00 for seconds.
+export const getHHmmss = (time?: string) => {
+    const parsableTime = time || getCurrentLocalTime();
+    const parts = [...parsableTime.split(":").slice(0, 2), "00"];
+
+    return parts.join(":");
+};
+
 const deleteIconStyles = css({
     width: "100% !important",
     height: "100% !important",

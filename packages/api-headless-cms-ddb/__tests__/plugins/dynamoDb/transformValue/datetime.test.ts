@@ -39,6 +39,7 @@ describe("dynamodb transform datetime", () => {
     const incorrectTimeValues: [any][] = [
         [{}],
         [[]],
+        [""],
         [
             function () {
                 return 1;
@@ -50,14 +51,20 @@ describe("dynamodb transform datetime", () => {
     test.each(incorrectTimeValues)(
         "should throw an error when trying to transform time field but value is not a string or a number",
         value => {
+            expect.assertions(1);
             const plugin = createDatetimeTransformValuePlugin();
 
-            expect(() => {
-                plugin.transform({
+            try {
+                const result = plugin.transform({
                     field: createField("time"),
                     value
                 });
-            }).toThrow("Field value must be a string because field is defined as time.");
+                expect(result).toEqual("SHOULD NOT HAPPEN");
+            } catch (ex) {
+                expect(ex.message).toEqual(
+                    "Field value must be a string because field is defined as time."
+                );
+            }
         }
     );
 });

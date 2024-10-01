@@ -2,6 +2,7 @@ import WebinyError from "@webiny/error";
 import {
     CmsEntry,
     CmsModel,
+    CmsStorageEntry,
     CONTENT_ENTRY_STATUS,
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types";
@@ -66,6 +67,24 @@ export interface CreateEntriesStorageOperationsParams {
     elasticsearch: Client;
     plugins: PluginsContainer;
 }
+
+interface ConvertStorageEntryParams {
+    storageEntry: CmsStorageEntry;
+    model: StorageOperationsCmsModel;
+}
+
+const convertToStorageEntry = (params: ConvertStorageEntryParams): CmsStorageEntry => {
+    const { model, storageEntry } = params;
+
+    const values = model.convertValueKeyToStorage({
+        fields: model.fields,
+        values: storageEntry.values
+    });
+    return {
+        ...storageEntry,
+        values
+    };
+};
 
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
@@ -297,6 +316,30 @@ export const createEntriesStorageOperations = (
                     ...publishedKeys
                 })
             );
+
+            // Unpublish previously published revision (if any).
+            const [publishedRevisionStorageEntry] = await dataLoaders.getPublishedRevisionByEntryId(
+                {
+                    model,
+                    ids: [entry.id]
+                }
+            );
+
+            if (publishedRevisionStorageEntry) {
+                items.push(
+                    entity.putBatch({
+                        ...publishedRevisionStorageEntry,
+                        PK: createPartitionKey({
+                            id: publishedRevisionStorageEntry.id,
+                            locale: model.locale,
+                            tenant: model.tenant
+                        }),
+                        SK: createRevisionSortKey(publishedRevisionStorageEntry),
+                        TYPE: createRecordType(),
+                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                    })
+                );
+            }
         }
 
         try {
@@ -1169,7 +1212,7 @@ export const createEntriesStorageOperations = (
         initialModel,
         params
     ) => {
-        const { entry, latestEntry, latestStorageEntry } = params;
+        const { entry, latestEntry, latestStorageEntry: initialLatestStorageEntry } = params;
         const model = getStorageOperationsModel(initialModel);
 
         const partitionKey = createPartitionKey({
@@ -1214,14 +1257,19 @@ export const createEntriesStorageOperations = (
                 })
             );
             esItems.push(
-                entity.deleteBatch({
+                esEntity.deleteBatch({
                     PK: partitionKey,
                     SK: createPublishedSortKey()
                 })
             );
         }
 
-        if (latestEntry && latestStorageEntry) {
+        if (latestEntry && initialLatestStorageEntry) {
+            const latestStorageEntry = convertToStorageEntry({
+                storageEntry: initialLatestStorageEntry,
+                model
+            });
+
             /**
              * In the end we need to set the new latest entry.
              */
@@ -1242,11 +1290,11 @@ export const createEntriesStorageOperations = (
                 entity.putBatch({
                     ...latestStorageEntry,
                     PK: createPartitionKey({
-                        id: latestStorageEntry.id,
+                        id: initialLatestStorageEntry.id,
                         locale: model.locale,
                         tenant: model.tenant
                     }),
-                    SK: createRevisionSortKey(latestStorageEntry),
+                    SK: createRevisionSortKey(initialLatestStorageEntry),
                     TYPE: createRecordType()
                 })
             );
@@ -1255,7 +1303,7 @@ export const createEntriesStorageOperations = (
                 plugins,
                 model,
                 entry: latestEntry,
-                storageEntry: latestStorageEntry
+                storageEntry: initialLatestStorageEntry
             });
 
             const esLatestData = await latestTransformer.getElasticsearchLatestEntryData();
@@ -1286,7 +1334,7 @@ export const createEntriesStorageOperations = (
                     error: ex,
                     entry,
                     latestEntry,
-                    latestStorageEntry
+                    initialLatestStorageEntry
                 }
             );
         }
@@ -1309,7 +1357,7 @@ export const createEntriesStorageOperations = (
                     error: ex,
                     entry,
                     latestEntry,
-                    latestStorageEntry
+                    initialLatestStorageEntry
                 }
             );
         }
@@ -1517,14 +1565,6 @@ export const createEntriesStorageOperations = (
 
         const { entry, storageEntry } = transformer.transformEntryKeys();
 
-        /**
-         * We need currently published entry to check if need to remove it.
-         */
-        const [publishedStorageEntry] = await dataLoaders.getPublishedRevisionByEntryId({
-            model,
-            ids: [entry.id]
-        });
-
         const revisionKeys = {
             PK: createPartitionKey({
                 id: entry.id,
@@ -1568,54 +1608,13 @@ export const createEntriesStorageOperations = (
             );
         }
 
-        const items = [
-            entity.putBatch({
-                ...storageEntry,
-                ...revisionKeys,
-                TYPE: createRecordType()
-            })
-        ];
-        const esItems: BatchWriteItem[] = [];
-
-        const { index: esIndex } = configurations.es({
-            model
-        });
-
-        if (publishedStorageEntry && publishedStorageEntry.id !== entry.id) {
-            /**
-             * If there is a `published` entry already, we need to set it to `unpublished`. We need to
-             * execute two updates: update the previously published entry's status and the published entry record.
-             * DynamoDB does not support `batchUpdate` - so here we load the previously published
-             * entry's data to update its status within a batch operation. If, hopefully,
-             * they introduce a true update batch operation, remove this `read` call.
-             */
-            const [previouslyPublishedEntry] = await dataLoaders.getRevisionById({
-                model,
-                ids: [publishedStorageEntry.id]
-            });
-            items.push(
-                /**
-                 * Update currently published entry (unpublish it)
-                 */
-                entity.putBatch({
-                    ...previouslyPublishedEntry,
-                    status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
-                    TYPE: createRecordType(),
-                    PK: createPartitionKey(publishedStorageEntry),
-                    SK: createRevisionSortKey(publishedStorageEntry)
-                })
+        if (!latestEsEntry) {
+            throw new WebinyError(
+                `Could not publish entry. Could not load latest ("L") record (ES table).`,
+                "PUBLISH_ERROR",
+                { entry }
             );
         }
-        /**
-         * Update the helper item in DB with the new published entry
-         */
-        items.push(
-            entity.putBatch({
-                ...storageEntry,
-                ...publishedKeys,
-                TYPE: createPublishedRecordType()
-            })
-        );
 
         /**
          * We need the latest entry to check if it needs to be updated as well in the Elasticsearch.
@@ -1625,117 +1624,141 @@ export const createEntriesStorageOperations = (
             ids: [entry.id]
         });
 
-        if (latestStorageEntry?.id === entry.id) {
+        if (!latestStorageEntry) {
+            throw new WebinyError(
+                `Could not publish entry. Could not load latest ("L") record.`,
+                "PUBLISH_ERROR",
+                { entry }
+            );
+        }
+
+        /**
+         * We need currently published entry to check if need to remove it.
+         */
+        const [publishedStorageEntry] = await dataLoaders.getPublishedRevisionByEntryId({
+            model,
+            ids: [entry.id]
+        });
+
+        // 1. Update REV# and P records with new data.
+        const items = [
+            entity.putBatch({
+                ...storageEntry,
+                ...revisionKeys,
+                TYPE: createRecordType()
+            }),
+            entity.putBatch({
+                ...storageEntry,
+                ...publishedKeys,
+                TYPE: createPublishedRecordType()
+            })
+        ];
+        const esItems: BatchWriteItem[] = [];
+
+        const { index: esIndex } = configurations.es({
+            model
+        });
+
+        // 2. When it comes to the latest record, we need to perform a couple of different
+        // updates, based on whether the entry being published is the latest revision or not.
+        const publishedRevisionId = publishedStorageEntry?.id;
+        const publishingLatestRevision = latestStorageEntry?.id === entry.id;
+
+        if (publishingLatestRevision) {
+            // 2.1 If we're publishing the latest revision, we first need to update the L record.
             items.push(
                 entity.putBatch({
                     ...storageEntry,
                     ...latestKeys
                 })
             );
-        }
 
-        if (latestEsEntry) {
-            const publishingLatestRevision = latestStorageEntry?.id === entry.id;
+            // 2.2 Additionally, if we have a previously published entry, we need to mark it as unpublished.
+            //     Note that we need to take re-publishing into account (same published revision being
+            //     published again), in which case the below code does not apply. This is because the
+            //     required updates were already applied above.
+            if (publishedStorageEntry) {
+                const isRepublishing = publishedStorageEntry.id === entry.id;
+                if (!isRepublishing) {
+                    items.push(
+                        /**
+                         * Update currently published entry (unpublish it)
+                         */
+                        entity.putBatch({
+                            ...publishedStorageEntry,
+                            status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
+                            TYPE: createRecordType(),
+                            PK: createPartitionKey(publishedStorageEntry),
+                            SK: createRevisionSortKey(publishedStorageEntry)
+                        })
+                    );
+                }
+            }
+        } else {
+            // 2.3 If the published revision is not the latest one, the situation is a bit
+            // more complex. We first need to update the L and REV# records with the new
+            // values of *only entry-level* meta fields.
+            const updatedEntryLevelMetaFields = pickEntryMetaFields(
+                entry,
+                isEntryLevelEntryMetaField
+            );
 
-            /**
-             * Need to decompress the data from Elasticsearch DynamoDB table.
-             *
-             * No need to transform it for the storage because it was fetched
-             * directly from the Elasticsearch table, where it sits transformed.
-             */
-            const latestEsEntryDataDecompressed = (await decompress(
-                plugins,
-                latestEsEntry.data
-            )) as CmsIndexEntry;
+            // 2.4 Update L record. Apart from updating the entry-level meta fields, we also need
+            //    to change the status from "published" to "unpublished" (if the status is set to "published").
+            let latestRevisionStatus = latestStorageEntry.status;
+            if (latestRevisionStatus === CONTENT_ENTRY_STATUS.PUBLISHED) {
+                latestRevisionStatus = CONTENT_ENTRY_STATUS.UNPUBLISHED;
+            }
 
-            if (publishingLatestRevision) {
-                const updatedMetaFields = pickEntryMetaFields(entry);
+            const latestStorageEntryFields = {
+                ...latestStorageEntry,
+                ...updatedEntryLevelMetaFields,
+                status: latestRevisionStatus
+            };
 
-                const latestTransformer = createTransformer({
-                    plugins,
-                    model,
-                    transformedToIndex: {
-                        ...latestEsEntryDataDecompressed,
-                        status: CONTENT_ENTRY_STATUS.PUBLISHED,
-                        locked: true,
-                        ...updatedMetaFields
-                    }
-                });
+            items.push(
+                entity.putBatch({
+                    ...latestStorageEntryFields,
+                    PK: createPartitionKey(latestStorageEntry),
+                    SK: createLatestSortKey(),
+                    TYPE: createLatestRecordType()
+                })
+            );
 
-                esItems.push(
-                    esEntity.putBatch({
-                        index: esIndex,
-                        PK: createPartitionKey(latestEsEntryDataDecompressed),
-                        SK: createLatestSortKey(),
-                        data: await latestTransformer.getElasticsearchLatestEntryData()
-                    })
-                );
-            } else {
-                const updatedEntryLevelMetaFields = pickEntryMetaFields(
-                    entry,
-                    isEntryLevelEntryMetaField
-                );
+            // 2.5 Update REV# record.
+            items.push(
+                entity.putBatch({
+                    ...latestStorageEntryFields,
+                    PK: createPartitionKey(latestStorageEntry),
+                    SK: createRevisionSortKey(latestStorageEntry),
+                    TYPE: createRecordType()
+                })
+            );
 
-                const updatedLatestStorageEntry = {
-                    ...latestStorageEntry,
-                    ...latestKeys,
-                    ...updatedEntryLevelMetaFields
-                };
+            // 2.6 Additionally, if we have a previously published entry, we need to mark it as unpublished.
+            //     Note that we need to take re-publishing into account (same published revision being
+            //     published again), in which case the below code does not apply. This is because the
+            //     required updates were already applied above.
+            if (publishedStorageEntry) {
+                const isRepublishing = publishedStorageEntry.id === entry.id;
+                const publishedRevisionDifferentFromLatest =
+                    publishedRevisionId !== latestStorageEntry.id;
 
-                /**
-                 * First we update the regular DynamoDB table. Two updates are needed:
-                 * - one for the actual revision record
-                 * - one for the latest record
-                 */
-                items.push(
-                    entity.putBatch({
-                        ...updatedLatestStorageEntry,
-                        PK: createPartitionKey({
-                            id: latestStorageEntry.id,
-                            locale: model.locale,
-                            tenant: model.tenant
-                        }),
-                        SK: createRevisionSortKey(latestStorageEntry),
-                        TYPE: createRecordType()
-                    })
-                );
-
-                items.push(
-                    entity.putBatch({
-                        ...updatedLatestStorageEntry,
-                        TYPE: createLatestRecordType()
-                    })
-                );
-
-                /**
-                 * Update the Elasticsearch table to propagate changes to the Elasticsearch.
-                 */
-                const latestEsEntry = await getClean<ElasticsearchDbRecord>({
-                    entity: esEntity,
-                    keys: latestKeys
-                });
-
-                if (latestEsEntry) {
-                    const latestEsEntryDataDecompressed = (await decompress(
-                        plugins,
-                        latestEsEntry.data
-                    )) as CmsIndexEntry;
-
-                    const updatedLatestEntry = await compress(plugins, {
-                        ...latestEsEntryDataDecompressed,
-                        ...updatedEntryLevelMetaFields
-                    });
-
-                    esItems.push(
-                        esEntity.putBatch({
-                            ...latestKeys,
-                            index: esIndex,
-                            data: updatedLatestEntry
+                if (!isRepublishing && publishedRevisionDifferentFromLatest) {
+                    items.push(
+                        entity.putBatch({
+                            ...publishedStorageEntry,
+                            PK: createPartitionKey(publishedStorageEntry),
+                            SK: createRevisionSortKey(publishedStorageEntry),
+                            TYPE: createRecordType(),
+                            status: CONTENT_ENTRY_STATUS.UNPUBLISHED
                         })
                     );
                 }
             }
         }
+
+        // 3. Update records in ES -> DDB table.
 
         /**
          * Update the published revision entry in ES.
@@ -1748,6 +1771,80 @@ export const createEntriesStorageOperations = (
                 data: esPublishedData
             })
         );
+
+        /**
+         * Need to decompress the data from Elasticsearch DynamoDB table.
+         *
+         * No need to transform it for the storage because it was fetched
+         * directly from the Elasticsearch table, where it sits transformed.
+         */
+        const latestEsEntryDataDecompressed = (await decompress(
+            plugins,
+            latestEsEntry.data
+        )) as CmsIndexEntry;
+
+        if (publishingLatestRevision) {
+            const updatedMetaFields = pickEntryMetaFields(entry);
+
+            const latestTransformer = createTransformer({
+                plugins,
+                model,
+                transformedToIndex: {
+                    ...latestEsEntryDataDecompressed,
+                    status: CONTENT_ENTRY_STATUS.PUBLISHED,
+                    locked: true,
+                    ...updatedMetaFields
+                }
+            });
+
+            esItems.push(
+                esEntity.putBatch({
+                    index: esIndex,
+                    PK: createPartitionKey(latestEsEntryDataDecompressed),
+                    SK: createLatestSortKey(),
+                    data: await latestTransformer.getElasticsearchLatestEntryData()
+                })
+            );
+        } else {
+            const updatedEntryLevelMetaFields = pickEntryMetaFields(
+                entry,
+                isEntryLevelEntryMetaField
+            );
+
+            /**
+             * Update the Elasticsearch table to propagate changes to the Elasticsearch.
+             */
+            const latestEsEntry = await getClean<ElasticsearchDbRecord>({
+                entity: esEntity,
+                keys: latestKeys
+            });
+
+            if (latestEsEntry) {
+                const latestEsEntryDataDecompressed = (await decompress(
+                    plugins,
+                    latestEsEntry.data
+                )) as CmsIndexEntry;
+
+                let latestRevisionStatus = latestEsEntryDataDecompressed.status;
+                if (latestRevisionStatus === CONTENT_ENTRY_STATUS.PUBLISHED) {
+                    latestRevisionStatus = CONTENT_ENTRY_STATUS.UNPUBLISHED;
+                }
+
+                const updatedLatestEntry = await compress(plugins, {
+                    ...latestEsEntryDataDecompressed,
+                    ...updatedEntryLevelMetaFields,
+                    status: latestRevisionStatus
+                });
+
+                esItems.push(
+                    esEntity.putBatch({
+                        ...latestKeys,
+                        index: esIndex,
+                        data: updatedLatestEntry
+                    })
+                );
+            }
+        }
 
         /**
          * Finally, execute regular table batch.
