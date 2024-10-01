@@ -30,7 +30,7 @@ export type PagesListRenderer = ReturnType<typeof createPagesList>;
 export const createPagesList = (params: CreatePagesListParams) => {
     const { dataLoader, pagesListComponents } = params;
 
-    const RendererComponent = createRenderer(() => {
+    return createRenderer(() => {
         const { getElement } = useRenderer();
         const pageContext = useOptionalPage();
         const exclude = pageContext ? [pageContext.page.path] : [];
@@ -146,8 +146,4 @@ export const createPagesList = (params: CreatePagesListParams) => {
             />
         );
     });
-
-    Object.assign(RendererComponent, { params });
-
-    return RendererComponent;
 };

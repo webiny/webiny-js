@@ -67,7 +67,10 @@ export interface CmsEntryContext {
     /**
      * Get a single content entry for a model.
      */
-    getEntry: (model: CmsModel, params: CmsEntryGetParams) => Promise<CmsEntry>;
+    getEntry: <T = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryGetParams
+    ) => Promise<CmsEntry<T>>;
     /**
      * Get a list of entries for a model by a given ID (revision).
      */
@@ -115,11 +118,11 @@ export interface CmsEntryContext {
     /**
      * Create a new content entry.
      */
-    createEntry: (
+    createEntry: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        input: CreateCmsEntryInput,
+        input: CreateCmsEntryInput<T>,
         options?: CreateCmsEntryOptionsInput
-    ) => Promise<CmsEntry>;
+    ) => Promise<CmsEntry<T>>;
     /**
      * Create a new entry from already existing entry.
      */
@@ -132,10 +135,10 @@ export interface CmsEntryContext {
     /**
      * Update existing entry.
      */
-    updateEntry: (
+    updateEntry: <TInput = CmsEntryValues>(
         model: CmsModel,
         id: string,
-        input: UpdateCmsEntryInput,
+        input: UpdateCmsEntryInput<TInput>,
         meta?: Record<string, any>,
         options?: UpdateCmsEntryOptionsInput
     ) => Promise<CmsEntry>;

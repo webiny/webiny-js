@@ -177,10 +177,11 @@ export const removeRevisionFromEntryCache = (
 ): PbPageRevision[] => {
     const gqlParams = {
         query: GQL.GET_PAGE,
-        variables: { id: revision.pid }
+        variables: { id: revision.id }
     };
 
     const data = cache.readQuery(gqlParams);
+
     const revisions = get(
         data,
         "pageBuilder.getPage.data.revisions"

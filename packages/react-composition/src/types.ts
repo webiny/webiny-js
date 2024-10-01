@@ -9,6 +9,13 @@ export type ComposedFunction = GenericHook;
 export type Decorator<T> = (decoratee: T) => T;
 
 /**
+ * Some decoratable components will always return `null`, by design.
+ * To allow you to decorate these components, we must tell TS that the decorator is allowed to return not just `null`
+ * (which is inferred from the component type), but also a JSX.Element.
+ */
+export type ComponentDecorator<T> = (decoratee: T) => CanReturnNullOrElement<T>;
+
+/**
  * @deprecated
  */
 export type ComposableFC<T> = T & {
@@ -41,6 +48,6 @@ export type Decoratable = DecoratableComponent | DecoratableHook;
 /**
  * @internal Add `null` to the ReturnType of the given function.
  */
-export type CanReturnNull<T> = T extends (...args: any) => any
-    ? (...args: Parameters<T>) => ReturnType<T> | null
+export type CanReturnNullOrElement<T> = T extends (...args: any) => any
+    ? (...args: Parameters<T>) => JSX.Element | null
     : never;

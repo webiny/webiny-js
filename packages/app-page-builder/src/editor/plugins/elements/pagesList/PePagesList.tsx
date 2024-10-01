@@ -9,7 +9,7 @@ import { useApolloClient } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import { LIST_PUBLISHED_PAGES } from "@webiny/app-page-builder-elements/renderers/pagesList/dataLoaders/defaultDataLoader";
 
-const PePagesList: PagesListRenderer = props => {
+export const PePagesList = (props: React.ComponentProps<PagesListRenderer>) => {
     // We wrap the original renderer in order to be able to provide the Apollo client.
     const apolloClient = useApolloClient();
 
@@ -38,5 +38,3 @@ const PePagesList: PagesListRenderer = props => {
 
     return <Renderer {...props} />;
 };
-
-export default PePagesList;
