@@ -162,7 +162,7 @@ export const createGroupsMethods = ({
         return tenant;
     };
 
-    const listRolesFromPlugins = (params?: ListGroupsParams): SecurityRole[] => {
+    const listGroupsFromPlugins = (params?: ListGroupsParams): SecurityRole[] => {
         if (!listPluginRoles) {
             return [];
         }
@@ -184,9 +184,9 @@ export const createGroupsMethods = ({
         });
     };
 
-    const getRoleFromPlugins = (params: GetGroupParams) => {
+    const getGroupFromPlugins = (params: GetGroupParams) => {
         const { where } = params;
-        const allGroupsFromPlugins = listRolesFromPlugins();
+        const allGroupsFromPlugins = listGroupsFromPlugins();
         return allGroupsFromPlugins.find(role => {
             if (where.id) {
                 return role.id === where.id;
@@ -211,13 +211,12 @@ export const createGroupsMethods = ({
 
             let group: Group | null = null;
             try {
-                const groupFromPlugins = getRoleFromPlugins({ where });
+                const finalWhere = { ...where, tenant: where.tenant || getTenant() };
+                const groupFromPlugins = getGroupFromPlugins({ where: finalWhere });
                 if (groupFromPlugins) {
                     group = groupFromPlugins;
                 } else {
-                    group = await storageOperations.getGroup({
-                        where: { ...where, tenant: where.tenant || getTenant() }
-                    });
+                    group = await storageOperations.getGroup({ where: finalWhere });
                 }
             } catch (ex) {
                 throw new WebinyError(
@@ -235,16 +234,19 @@ export const createGroupsMethods = ({
         async listGroups(this: Security, { where }: ListGroupsParams = {}) {
             await checkPermission(this);
             try {
-                const databaseGroups = await storageOperations.listGroups({
-                    where: {
-                        ...where,
-                        tenant: getTenant()
-                    },
+                const finalWhere = { ...where, tenant: getTenant() };
+
+                const groupsFromDatabase = await storageOperations.listGroups({
+                    where: finalWhere,
                     sort: ["createdOn_ASC"]
                 });
 
-                const pluginGroups = listRolesFromPlugins({ where });
-                return [...pluginGroups, ...databaseGroups];
+                const groupsFromPlugins = listGroupsFromPlugins({ where });
+
+                // We don't have to do any extra sorting because, as we can see above, `createdOn_ASC` is
+                // hardcoded, and groups coming from plugins don't have `createdOn`, meaning they should
+                // always be at the top of the list.
+                return [...groupsFromPlugins, ...groupsFromDatabase];
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list security groups.",
