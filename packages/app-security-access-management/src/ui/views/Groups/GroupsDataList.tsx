@@ -178,7 +178,7 @@ export const GroupsDataList = () => {
 
                             <ListItemMeta>
                                 <ListActions>
-                                    {!item.system ? (
+                                    {!item.system && !item.plugin ? (
                                         <DeleteIcon
                                             onClick={() => deleteItem(item)}
                                             data-testid={"default-data-list.delete"}
@@ -186,7 +186,7 @@ export const GroupsDataList = () => {
                                     ) : (
                                         <Tooltip
                                             placement={"bottom"}
-                                            content={<span>{t`You can't delete this group.`}</span>}
+                                            content={<span>{t`Role is registered via a plugin.`}</span>}
                                         >
                                             <DeleteIcon disabled />
                                         </Tooltip>

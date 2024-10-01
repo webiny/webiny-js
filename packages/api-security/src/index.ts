@@ -42,7 +42,9 @@ export const createSecurityContext = ({ storageOperations }: SecurityConfig) => 
                 const tenant = context.tenancy.getCurrentTenant();
                 return tenant ? tenant.id : undefined;
             },
-            storageOperations
+            storageOperations,
+            listPluginRoles: () => context.plugins.byType("security-role"),
+            listPluginTeams: () => context.plugins.byType("security-team")
         });
 
         attachGroupInstaller(context.security);
@@ -70,10 +72,18 @@ export const createSecurityContext = ({ storageOperations }: SecurityConfig) => 
 
 export const createSecurityGraphQL = (config: MultiTenancyGraphQLConfig = {}) => {
     return new ContextPlugin<Context>(context => {
-        context.plugins.register(graphqlPlugins({ teams: context.wcp.canUseTeams() }));
+        const license = context.wcp.getProjectLicense();
+        context.plugins.register(
+            graphqlPlugins({
+                teams: license?.package?.features?.advancedAccessControlLayer?.options?.teams
+            })
+        );
 
         if (context.tenancy.isMultiTenant()) {
             applyMultiTenancyGraphQLPlugins(config, context);
         }
     });
 };
+
+export { createSecurityRolePlugin } from "./plugins/SecurityRolePlugin";
+export { createSecurityTeamPlugin } from "./plugins/SecurityTeamPlugin";
