@@ -177,23 +177,25 @@ export const TeamsDataList = () => {
                             </ListItemText>
 
                             <ListItemMeta>
-                                <ListActions>
-                                    {!item.system && !item.plugin ? (
-                                        <DeleteIcon
-                                            onClick={() => deleteItem(item)}
-                                            data-testid={"default-data-list.delete"}
-                                        />
-                                    ) : (
-                                        <Tooltip
-                                            placement={"bottom"}
-                                            content={
-                                                <span>{t`Team registered via an extension.`}</span>
-                                            }
-                                        >
-                                            <DeleteIcon disabled />
-                                        </Tooltip>
-                                    )}
-                                </ListActions>
+                                {item.system || item.plugin ? (
+                                    <Tooltip
+                                        placement={"bottom"}
+                                        content={
+                                            <span>
+                                                    {item.system
+                                                        ? t`Cannot delete system teams.`
+                                                        : t`Cannot delete teams created via extensions.`}
+                                                </span>
+                                        }
+                                    >
+                                        <DeleteIcon disabled />
+                                    </Tooltip>
+                                ) : (
+                                    <DeleteIcon
+                                        onClick={() => deleteItem(item)}
+                                        data-testid={"default-data-list.delete"}
+                                    />
+                                )}
                             </ListItemMeta>
                         </ListItem>
                     ))}
