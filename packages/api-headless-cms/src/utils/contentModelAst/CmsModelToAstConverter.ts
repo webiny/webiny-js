@@ -9,11 +9,11 @@ import { CmsModel, CmsModelAst, CmsModelFieldAstNode, ICmsModelFieldToAst } from
 export class CmsModelToAstConverter {
     private readonly fieldToAstConverter: ICmsModelFieldToAst;
 
-    constructor(fieldToAstConverter: ICmsModelFieldToAst) {
+    public constructor(fieldToAstConverter: ICmsModelFieldToAst) {
         this.fieldToAstConverter = fieldToAstConverter;
     }
 
-    toAst(model: CmsModel): CmsModelAst {
+    public toAst(model: Pick<CmsModel, "fields">): CmsModelAst {
         return {
             type: "root",
             children: model.fields.reduce<CmsModelFieldAstNode[]>((ast, field) => {

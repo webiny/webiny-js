@@ -16,6 +16,7 @@ import { CmsModelField, CmsModelFieldValidation, CmsModelUpdateInput } from "./m
 import { CmsModel, CmsModelCreateFromInput, CmsModelCreateInput } from "./model";
 import { CmsGroup } from "./modelGroup";
 import { CmsIdentity } from "./identity";
+import { ISingletonModelManager } from "~/modelManager";
 
 export interface CmsError {
     message: string;
@@ -693,6 +694,7 @@ export interface CmsEntryUniqueValue {
  * @category CmsModel
  */
 export interface CmsModelManager<T = CmsEntryValues> {
+    model: CmsModel;
     /**
      * List only published entries in the content model.
      */
@@ -716,16 +718,25 @@ export interface CmsModelManager<T = CmsEntryValues> {
     /**
      * Create an entry.
      */
-    create<I>(data: CreateCmsEntryInput & I): Promise<CmsEntry<T>>;
+    create<I>(
+        data: CreateCmsEntryInput & I,
+        options?: CreateCmsEntryOptionsInput
+    ): Promise<CmsEntry<T>>;
     /**
      * Update an entry.
      */
-    update(id: string, data: UpdateCmsEntryInput): Promise<CmsEntry<T>>;
+    update(
+        id: string,
+        data: UpdateCmsEntryInput,
+        options?: UpdateCmsEntryOptionsInput
+    ): Promise<CmsEntry<T>>;
     /**
      * Delete an entry.
      */
     delete(id: string): Promise<void>;
 }
+
+export type ICmsEntryManager<T = GenericRecord> = CmsModelManager<T>;
 
 /**
  * Create
@@ -834,7 +845,7 @@ export interface CmsModelContext {
      *
      * @throws NotFoundError
      */
-    getModel: (modelId: string) => Promise<CmsModel>;
+    getModel(modelId: string): Promise<CmsModel>;
     /**
      * Get model to AST converter.
      */
@@ -878,12 +889,18 @@ export interface CmsModelContext {
      */
     getEntryManager<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel | string
-    ): Promise<CmsModelManager<T>>;
+    ): Promise<ICmsEntryManager<T>>;
+    /**
+     * A model manager for a model which has a single entry.
+     */
+    getSingletonEntryManager<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel | string
+    ): Promise<ISingletonModelManager<T>>;
     /**
      * Get all content model managers mapped by modelId.
      * @see CmsModelManager
      */
-    getEntryManagers(): Map<string, CmsModelManager>;
+    getEntryManagers(): Map<string, ICmsEntryManager>;
     /**
      * Clear all the model caches.
      */
@@ -945,6 +962,13 @@ export interface CmsEntryListWhere {
     entryId_not?: string;
     entryId_in?: string[];
     entryId_not_in?: string[];
+    /**
+     * Status of the entry.
+     */
+    status?: CmsEntryStatus;
+    status_not?: CmsEntryStatus;
+    status_in?: CmsEntryStatus[];
+    status_not_in?: CmsEntryStatus[];
 
     /**
      * Revision-level meta fields. 👇
@@ -1068,7 +1092,9 @@ export interface CmsEntryListWhere {
  * @category CmsEntry
  * @category GraphQL params
  */
-export type CmsEntryListSort = string[];
+export type CmsEntryListSortAsc = `${string}_ASC`;
+export type CmsEntryListSortDesc = `${string}_DESC`;
+export type CmsEntryListSort = (CmsEntryListSortAsc | CmsEntryListSortDesc)[];
 
 /**
  * Get entry GraphQL resolver params.

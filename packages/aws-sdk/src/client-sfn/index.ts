@@ -1,44 +1,106 @@
-import {
-    SFNClient,
-    SFNClientConfig,
-    StartExecutionCommand,
-    StartExecutionCommandInput
+import type {
+    DescribeExecutionCommandInput,
+    DescribeExecutionCommandOutput,
+    ListExecutionsCommandInput,
+    ListExecutionsCommandOutput,
+    SFNClientConfig as BaseSFNClientConfig,
+    StartExecutionCommandInput,
+    StartExecutionCommandOutput
 } from "@aws-sdk/client-sfn";
+import {
+    DescribeExecutionCommand,
+    ListExecutionsCommand,
+    SFNClient,
+    SFNServiceException,
+    StartExecutionCommand
+} from "@aws-sdk/client-sfn";
+import { createCacheKey } from "@webiny/utils";
+import { GenericRecord } from "@webiny/cli/types";
 
-export { SFNClient, StartExecutionCommand, SFNServiceException } from "@aws-sdk/client-sfn";
+export {
+    SFNClient,
+    DescribeExecutionCommand,
+    SFNServiceException,
+    StartExecutionCommand,
+    ListExecutionsCommand
+};
 
-export type GenericData = string | number | boolean | null | undefined;
+export type {
+    DescribeExecutionCommandInput,
+    DescribeExecutionCommandOutput,
+    StartExecutionCommandInput,
+    StartExecutionCommandOutput,
+    ListExecutionsCommandInput,
+    ListExecutionsCommandOutput
+};
 
-export interface GenericStepFunctionData {
-    [key: string]: GenericData | GenericData[];
+export interface SFNClientConfig extends BaseSFNClientConfig {
+    cache?: boolean;
 }
 
-export interface TriggerStepFunctionParams<
-    T extends GenericStepFunctionData = GenericStepFunctionData
-> extends Partial<Omit<StartExecutionCommandInput, "input">> {
+export interface TriggerStepFunctionParams<T extends GenericRecord = GenericRecord>
+    extends Partial<Omit<StartExecutionCommandInput, "input">> {
     input: T;
 }
 
-const getClient = (config: SFNClient | SFNClientConfig): SFNClient => {
-    if (config instanceof SFNClient) {
-        return config;
+const stepFunctionClientsCache = new Map<string, SFNClient>();
+
+export const createStepFunctionClient = (initial?: SFNClientConfig): SFNClient => {
+    const config: SFNClientConfig = {
+        region: process.env.AWS_REGION,
+        ...initial
+    };
+    const skipCache = config.cache === false;
+    delete config.cache;
+    if (skipCache) {
+        return new SFNClient({
+            ...config
+        });
     }
+
+    const key = createCacheKey(config);
+    if (stepFunctionClientsCache.has(key)) {
+        return stepFunctionClientsCache.get(key) as SFNClient;
+    }
+
     return new SFNClient({
-        ...config,
-        region: config.region || process.env.AWS_REGION
+        ...config
     });
 };
 
-export const triggerStepFunctionFactory = (config: SFNClient | SFNClientConfig) => {
-    const client = getClient(config);
-    return async <T extends GenericStepFunctionData = GenericStepFunctionData>(
+export const triggerStepFunctionFactory = (input?: SFNClient | SFNClientConfig) => {
+    const client = input instanceof SFNClient ? input : createStepFunctionClient(input);
+    return async <T extends GenericRecord = GenericRecord>(
         params: TriggerStepFunctionParams<T>
-    ) => {
+    ): Promise<StartExecutionCommandOutput> => {
         const cmd = new StartExecutionCommand({
             ...params,
             stateMachineArn: params.stateMachineArn || process.env.BG_TASK_SFN_ARN,
             name: params.name,
             input: JSON.stringify(params.input)
+        });
+        return await client.send(cmd);
+    };
+};
+
+export const listExecutionsFactory = (input?: SFNClient | SFNClientConfig) => {
+    const client = input instanceof SFNClient ? input : createStepFunctionClient(input);
+    return async (params: ListExecutionsCommandInput): Promise<ListExecutionsCommandOutput> => {
+        const cmd = new ListExecutionsCommand({
+            ...params,
+            stateMachineArn: params.stateMachineArn || process.env.BG_TASK_SFN_ARN
+        });
+        return await client.send(cmd);
+    };
+};
+
+export const describeExecutionFactory = (input?: SFNClient | SFNClientConfig) => {
+    const client = input instanceof SFNClient ? input : createStepFunctionClient(input);
+    return async (
+        params: DescribeExecutionCommandInput
+    ): Promise<DescribeExecutionCommandOutput> => {
+        const cmd = new DescribeExecutionCommand({
+            ...params
         });
         return await client.send(cmd);
     };

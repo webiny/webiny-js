@@ -13,7 +13,7 @@ const PublishEntryRevisionListItemComponent = () => {
             <ListItemGraphic>
                 <Icon icon={<PublishIcon />} />
             </ListItemGraphic>
-            {t`Publish`}
+            {t`Publish revision`}
         </>
     );
 };

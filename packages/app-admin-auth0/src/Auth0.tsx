@@ -3,22 +3,13 @@ import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 import get from "lodash/get";
 import { LoginScreenRenderer, useTenancy, useTags } from "@webiny/app-serverless-cms";
-import {
-    createAuthentication,
-    Auth0Options,
-    CreateAuthenticationConfig,
-    OnLogout
-} from "./createAuthentication";
+import { createAuthentication, CreateAuthenticationConfig } from "./createAuthentication";
 import { UserMenuModule } from "~/modules/userMenu";
 import { AppClientModule } from "~/modules/appClient";
 import { NotAuthorizedError } from "./components";
 
-interface AppClientIdLoaderProps {
-    auth0: Auth0Options;
-    rootAppClientId: string;
+interface AppClientIdLoaderProps extends Auth0Props {
     children: React.ReactNode;
-    onLogout?: OnLogout;
-    onError?: CreateAuthenticationConfig["onError"];
 }
 
 const GET_CLIENT_ID = gql`
@@ -32,14 +23,24 @@ const GET_CLIENT_ID = gql`
 const AppClientIdLoader = ({
     auth0,
     rootAppClientId,
-    onLogout,
-    onError,
-    children
+    children,
+    ...rest
 }: AppClientIdLoaderProps) => {
     const [loaded, setState] = useState<boolean>(false);
     const authRef = useRef<React.ComponentType | null>(null);
     const client = useApolloClient();
     const { tenant, setTenant } = useTenancy();
+
+    const setupAuthForClientId = (clientId: string) => {
+        console.info(`Configuring Auth0 with App Client Id "${rootAppClientId}"`);
+        return createAuthentication({
+            ...rest,
+            auth0: {
+                ...auth0,
+                clientId
+            }
+        });
+    };
 
     useEffect(() => {
         // Check if `tenantId` query parameter is set.
@@ -51,15 +52,7 @@ const AppClientIdLoader = ({
         }
 
         if (tenantId === "root") {
-            console.info(`Configuring Auth0 with App Client Id "${rootAppClientId}"`);
-            authRef.current = createAuthentication({
-                onLogout,
-                onError,
-                auth0: {
-                    ...auth0,
-                    clientId: rootAppClientId
-                }
-            });
+            authRef.current = setupAuthForClientId(rootAppClientId);
             setState(true);
             return;
         }
@@ -67,14 +60,7 @@ const AppClientIdLoader = ({
         client.query({ query: GET_CLIENT_ID }).then(({ data }) => {
             const clientId = get(data, "tenancy.appClientId");
             if (clientId) {
-                console.info(`Configuring Auth0 with App Client Id "${clientId}"`);
-                authRef.current = createAuthentication({
-                    onError,
-                    auth0: {
-                        ...auth0,
-                        clientId
-                    }
-                });
+                authRef.current = setupAuthForClientId(clientId);
                 setState(true);
             } else {
                 console.warn(`Couldn't load appClientId for tenant "${tenantId}"`);
@@ -96,6 +82,7 @@ const createLoginScreenPlugin = (params: Auth0Props) => {
 
             const onError = useCallback((error: Error) => {
                 setError(error.message);
+                params.onError && params.onError(error);
             }, []);
 
             if (error && !installer) {
@@ -103,11 +90,7 @@ const createLoginScreenPlugin = (params: Auth0Props) => {
             }
 
             return (
-                <AppClientIdLoader
-                    auth0={params.auth0}
-                    rootAppClientId={params.rootAppClientId}
-                    onError={onError}
-                >
+                <AppClientIdLoader {...params} onError={onError}>
                     {children}
                 </AppClientIdLoader>
             );
@@ -115,12 +98,13 @@ const createLoginScreenPlugin = (params: Auth0Props) => {
     });
 };
 
-export interface Auth0Props {
-    auth0: Auth0Options;
+export type Auth0Props = Pick<
+    CreateAuthenticationConfig,
+    "auth0" | "autoLogin" | "onLogin" | "onLogout" | "onRedirect" | "onError"
+> & {
     rootAppClientId: string;
-    onLogout?: OnLogout;
     children?: React.ReactNode;
-}
+};
 
 export const Auth0 = (props: Auth0Props) => {
     const LoginScreenPlugin = createLoginScreenPlugin(props);

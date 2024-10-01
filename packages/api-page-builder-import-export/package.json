@@ -39,7 +39,7 @@
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.13",
     "stream": "^0.0.2",
-    "uniqid": "^5.2.0",
+    "uniqid": "^5.4.0",
     "yauzl": "^2.10.0"
   },
   "devDependencies": {

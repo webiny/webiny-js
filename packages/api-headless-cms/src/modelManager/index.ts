@@ -1,5 +1,6 @@
 import { CmsModelManager, ModelManagerPlugin } from "~/types";
 import { DefaultCmsModelManager } from "./DefaultCmsModelManager";
+export * from "./SingletonModelManager";
 
 const plugin: ModelManagerPlugin = {
     type: "cms-content-model-manager",

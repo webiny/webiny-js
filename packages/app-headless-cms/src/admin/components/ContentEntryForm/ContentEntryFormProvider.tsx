@@ -5,14 +5,14 @@ import { Form, FormAPI, FormOnSubmit, FormValidation } from "@webiny/form";
 import { CmsContentEntry, CmsModel } from "@webiny/app-headless-cms-common/types";
 import { CompositionScope, useSnackbar } from "@webiny/app-admin";
 import { prepareFormData } from "@webiny/app-headless-cms-common";
-import { useContentEntry } from "~/index";
-import { PartialCmsContentEntryWithId } from "~/admin/contexts/Cms";
+import { CreateEntryResponse, UpdateEntryRevisionResponse } from "~/admin/contexts/Cms";
 
 const promptMessage =
     "There are some unsaved changes! Are you sure you want to navigate away and discard all changes?";
 
 interface SaveEntryOptions {
     skipValidators?: string[];
+    createNewRevision?: boolean;
 }
 
 export interface ContentEntryFormContext {
@@ -30,22 +30,23 @@ interface InvalidFieldError {
     error: string;
 }
 
-interface PersistEntryParams {
-    entry: PartialCmsContentEntryWithId;
-    isLocked: boolean;
-}
-
 export interface SetSaveEntry {
     (cb: ContentEntryFormContext["saveEntry"]): void;
+}
+
+export interface PersistEntry {
+    (entry: Partial<CmsContentEntry>, options?: SaveEntryOptions): Promise<
+        CreateEntryResponse | UpdateEntryRevisionResponse
+    >;
 }
 
 interface ContentEntryFormProviderProps {
     entry: Partial<CmsContentEntry>;
     model: CmsModel;
+    persistEntry: PersistEntry;
     confirmNavigationIfDirty: boolean;
     onAfterCreate?: (entry: CmsContentEntry) => void;
     setSaveEntry?: SetSaveEntry;
-    addItemToListCache?: boolean;
     children: React.ReactNode;
 }
 
@@ -60,15 +61,14 @@ export const ContentEntryFormProvider = ({
     model,
     entry,
     children,
+    persistEntry,
     onAfterCreate,
     setSaveEntry,
-    addItemToListCache,
     confirmNavigationIfDirty
 }: ContentEntryFormProviderProps) => {
     const ref = useRef<FormAPI<CmsContentEntry> | null>(null);
     const [invalidFields, setInvalidFields] = useState({});
     const { showSnackbar } = useSnackbar();
-    const contentEntry = useContentEntry();
     const saveOptionsRef = useRef<SaveEntryOptions>({ skipValidators: undefined });
 
     const saveEntry = useCallback(async (options: SaveEntryOptions = {}) => {
@@ -79,32 +79,6 @@ export const ContentEntryFormProvider = ({
         }) as unknown as Promise<CmsContentEntry | null>;
     }, []);
 
-    const persistEntry = ({ entry, isLocked }: PersistEntryParams) => {
-        const options = {
-            skipValidators: saveOptionsRef.current.skipValidators,
-            addItemToListCache
-        };
-
-        if (!entry.id) {
-            return contentEntry.createEntry({ entry, options });
-        }
-
-        if (!isLocked) {
-            return contentEntry.updateEntryRevision({
-                entry,
-                options: { skipValidators: options?.skipValidators }
-            });
-        }
-
-        const { id, ...input } = entry;
-
-        return contentEntry.createEntryRevisionFrom({
-            id,
-            input,
-            options: { skipValidators: options?.skipValidators }
-        });
-    };
-
     const onFormSubmit: FormOnSubmit<CmsContentEntry> = async data => {
         const fieldsIds = model.fields.map(item => item.fieldId);
         const formData = pick(data, [...fieldsIds]);
@@ -112,10 +86,13 @@ export const ContentEntryFormProvider = ({
         const gqlData = prepareFormData(formData, model.fields) as Partial<CmsContentEntry>;
         const isNewEntry = data.id === undefined;
 
-        const { entry, error } = await persistEntry({
-            entry: { id: data.id, ...gqlData },
-            isLocked: data.meta?.locked === true
-        });
+        const { entry, error } = await persistEntry(
+            { id: data.id, ...gqlData },
+            {
+                skipValidators: saveOptionsRef.current.skipValidators,
+                createNewRevision: data.meta?.locked
+            }
+        );
 
         if (error) {
             showSnackbar(error.message);
@@ -123,6 +100,7 @@ export const ContentEntryFormProvider = ({
             return;
         }
 
+        showSnackbar("Entry saved successfully!");
         setInvalidFields({});
 
         const isNewRevision = !isNewEntry && data.id !== entry.id;

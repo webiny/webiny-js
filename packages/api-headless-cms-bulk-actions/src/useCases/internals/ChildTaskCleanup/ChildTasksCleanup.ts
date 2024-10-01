@@ -1,5 +1,6 @@
-import { ITask, Context, ITaskLogItemType } from "@webiny/tasks";
+import { ITask, Context, TaskLogItemType } from "@webiny/tasks";
 import { IUseCase } from "~/abstractions";
+import { HcmsBulkActionsContext } from "~/types";
 
 export interface IChildTasksCleanupExecuteParams {
     context: Context;
@@ -35,12 +36,19 @@ export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecutePara
             limit: 10000
         });
 
+        /**
+         * No logs found. Proceed with deleting the child tasks.
+         */
+        if (childLogs.length === 0) {
+            await this.deleteTasks(context, childTaskIdList);
+        }
+
         const deletedChildTaskLogIdList: string[] = [];
         /**
          * First, we need to remove all the logs which have no errors.
          */
         for (const log of childLogs) {
-            if (log.items.some(item => item.type === ITaskLogItemType.ERROR)) {
+            if (log.items.some(item => item.type === TaskLogItemType.ERROR)) {
                 continue;
             }
             await context.tasks.deleteLog(log.id);
@@ -52,8 +60,15 @@ export class ChildTasksCleanup implements IUseCase<IChildTasksCleanupExecutePara
         /**
          * Now we can remove the tasks.
          */
-        for (const childTaskId of deletedChildTaskLogIdList) {
-            await context.tasks.deleteTask(childTaskId);
+        await this.deleteTasks(context, deletedChildTaskLogIdList);
+    }
+
+    /**
+     * Helper method to delete tasks by ID.
+     */
+    private async deleteTasks(context: HcmsBulkActionsContext, taskIds: string[]): Promise<void> {
+        for (const taskId of taskIds) {
+            await context.tasks.deleteTask(taskId);
         }
     }
 }

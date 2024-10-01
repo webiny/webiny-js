@@ -1,5 +1,6 @@
 import { ScanInput, ScanOutput } from "@webiny/aws-sdk/client-dynamodb";
 import { Entity, ScanOptions, Table } from "~/toolbox";
+import { executeWithRetry, ExecuteWithRetryOptions } from "@webiny/utils";
 
 export type { ScanOptions };
 
@@ -93,11 +94,29 @@ export const scan = async <T>(params: ScanParams): Promise<ScanResponse<T>> => {
     return convertResult(result) as ScanResponse<T>;
 };
 
+interface ScanWithCallbackOptions {
+    retry?: true | ExecuteWithRetryOptions;
+}
+
 export const scanWithCallback = async <T>(
     params: ScanParams,
-    callback: (result: ScanResponse<ScanDbItem<T>>) => Promise<void | boolean>
+    callback: (result: ScanResponse<ScanDbItem<T>>) => Promise<void | boolean>,
+    options?: ScanWithCallbackOptions
 ): Promise<void> => {
-    let result = await scan<ScanDbItem<T>>(params);
+    // For backwards compatibility, we still allow for executing the scan without retries.
+    const usingRetry = Boolean(options?.retry);
+    const retryOptions = options?.retry === true ? {} : options?.retry;
+
+    const executeScan = () => scan<ScanDbItem<T>>(params);
+    const getInitialResult = () => {
+        if (usingRetry) {
+            return executeWithRetry(executeScan, retryOptions);
+        }
+        return executeScan();
+    };
+
+    let result = await getInitialResult();
+
     if (!result.items?.length && !result.lastEvaluatedKey) {
         return;
     }
@@ -111,7 +130,15 @@ export const scanWithCallback = async <T>(
     }
 
     while (result.next) {
-        result = await result.next();
+        const executeNext = () => result.next!();
+        const getNextResult = () => {
+            if (usingRetry) {
+                return executeWithRetry(executeNext, retryOptions);
+            }
+            return executeNext();
+        };
+
+        result = await getNextResult();
 
         // If the result of the callback was `false`, that means the
         // user's intention was to stop further table scanning.

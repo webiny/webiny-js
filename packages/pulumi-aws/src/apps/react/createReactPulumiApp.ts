@@ -1,12 +1,11 @@
 import * as aws from "@pulumi/aws";
-
+import * as pulumi from "@pulumi/pulumi";
 import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
 import { addDomainsUrlsOutputs, tagResources } from "~/utils";
 import { createPrivateAppBucket } from "../createAppBucket";
 import { applyCustomDomain, CustomDomainParams } from "../customDomain";
-import * as pulumi from "@pulumi/pulumi";
-import { CoreOutput } from "../common/CoreOutput";
 import { withServiceManifest } from "~/utils/withServiceManifest";
+import { ApiOutput, CoreOutput } from "~/apps";
 
 export type ReactPulumiApp = ReturnType<typeof createReactPulumiApp>;
 
@@ -64,6 +63,7 @@ export const createReactPulumiApp = (projectAppParams: CreateReactPulumiAppParam
 
             // Register core output as a module available for all other modules
             const core = app.addModule(CoreOutput);
+            app.addModule(ApiOutput);
 
             // Overrides must be applied via a handler, registered at the very start of the program.
             // By doing this, we're ensuring user's adjustments are not applied to late.

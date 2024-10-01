@@ -83,7 +83,7 @@
     "slugify": "^1.2.9",
     "store": "^2.0.12",
     "swiper": "^9.3.2",
-    "uniqid": "^5.0.3"
+    "uniqid": "^5.4.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",

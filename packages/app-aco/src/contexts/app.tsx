@@ -60,7 +60,7 @@ interface CreateAppParams {
     getFields?: () => AcoModelField[];
 }
 
-const createApp = (data: CreateAppParams): AcoApp => {
+export const createAppFromModel = (data: CreateAppParams): AcoApp => {
     return {
         ...data,
         getFields:
@@ -138,7 +138,7 @@ export const AcoAppProvider = ({
                     ...prev,
                     loading: false,
                     model: inputModel,
-                    app: createApp({
+                    app: createAppFromModel({
                         id,
                         model: inputModel,
                         getFields

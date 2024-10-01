@@ -26,6 +26,9 @@ export class SharpTransform implements AssetTransformationStrategy {
 
     async transform(assetRequest: AssetRequest, asset: Asset): Promise<Asset> {
         if (!utils.SUPPORTED_TRANSFORMABLE_IMAGES.includes(asset.getExtension())) {
+            console.log(
+                `Transformations/optimizations of ${asset.getContentType()} assets are not supported. Skipping.`
+            );
             return asset;
         }
 
@@ -45,6 +48,7 @@ export class SharpTransform implements AssetTransformationStrategy {
     }
 
     private async transformAsset(asset: Asset, options: Omit<AssetRequestOptions, "original">) {
+        console.log("Transform asset", options);
         if (options.width) {
             const { s3, bucket } = this.params;
 
@@ -63,7 +67,15 @@ export class SharpTransform implements AssetTransformationStrategy {
 
                 const buffer = Buffer.from(await Body.transformToByteArray());
 
-                asset.setContentsReader(new CallableContentsReader(() => buffer));
+                const newAsset = asset.withProps({ size: buffer.length });
+                newAsset.setContentsReader(new CallableContentsReader(() => buffer));
+
+                console.log(`Return a previously transformed asset`, {
+                    key: transformedAssetKey,
+                    size: newAsset.getSize()
+                });
+
+                return newAsset;
             } catch (e) {
                 const optimizedImage = await this.optimizeAsset(asset);
 
@@ -73,8 +85,11 @@ export class SharpTransform implements AssetTransformationStrategy {
                 /**
                  * `width` is the only transformation we currently support.
                  */
+                console.log(`Resize the asset (width: ${width})`);
                 const buffer = await optimizedImage.getContents();
-                const transformedBuffer = sharp(buffer, { animated: this.isAssetAnimated(asset) })
+                const transformedBuffer = await sharp(buffer, {
+                    animated: this.isAssetAnimated(asset)
+                })
                     .withMetadata()
                     .resize({ width, withoutEnlargement: true })
                     .toBuffer();
@@ -82,14 +97,22 @@ export class SharpTransform implements AssetTransformationStrategy {
                 /**
                  * Transformations are applied to the optimized image.
                  */
-                asset.setContentsReader(new CallableContentsReader(() => transformedBuffer));
+                const newAsset = asset.withProps({ size: transformedBuffer.length });
+                newAsset.setContentsReader(new CallableContentsReader(() => transformedBuffer));
 
                 await s3.putObject({
                     Bucket: bucket,
                     Key: transformedAssetKey,
-                    ContentType: asset.getContentType(),
-                    Body: await asset.getContents()
+                    ContentType: newAsset.getContentType(),
+                    Body: await newAsset.getContents()
                 });
+
+                console.log(`Return the resized asset`, {
+                    key: transformedAssetKey,
+                    size: newAsset.getSize()
+                });
+
+                return newAsset;
             }
         }
 
@@ -98,6 +121,13 @@ export class SharpTransform implements AssetTransformationStrategy {
 
     private async optimizeAsset(asset: Asset) {
         const { s3, bucket } = this.params;
+
+        console.log("Optimize asset", {
+            id: asset.getId(),
+            key: asset.getKey(),
+            size: asset.getSize(),
+            type: asset.getContentType()
+        });
 
         const assetKey = new AssetKeyGenerator(asset);
         const optimizedAssetKey = assetKey.getOptimizedImageKey();
@@ -112,10 +142,16 @@ export class SharpTransform implements AssetTransformationStrategy {
                 throw new Error(`Missing image body!`);
             }
 
+            console.log("Return a previously optimized asset", optimizedAssetKey);
+
             const buffer = Buffer.from(await Body.transformToByteArray());
 
-            asset.setContentsReader(new CallableContentsReader(() => buffer));
+            const newAsset = asset.withProps({ size: buffer.length });
+            newAsset.setContentsReader(new CallableContentsReader(() => buffer));
+
+            return newAsset;
         } catch (e) {
+            console.log("Create an optimized version of the original asset", asset.getKey());
             // If not found, create an optimized version of the original asset.
             const buffer = await asset.getContents();
 
@@ -128,23 +164,26 @@ export class SharpTransform implements AssetTransformationStrategy {
             const optimization = optimizationMap[asset.getContentType()];
 
             if (!optimization) {
-                console.log(`no optimizations defined for ${asset.getContentType()}`);
+                console.log(`No optimizations defined for ${asset.getContentType()}`);
                 return asset;
             }
 
-            const optimizedBuffer = optimization(buffer).toBuffer();
+            const optimizedBuffer = await optimization(buffer).toBuffer();
 
-            asset.setContentsReader(new CallableContentsReader(() => optimizedBuffer));
+            console.log("Optimized asset size", optimizedBuffer.length);
+
+            const newAsset = asset.withProps({ size: optimizedBuffer.length });
+            newAsset.setContentsReader(new CallableContentsReader(() => optimizedBuffer));
 
             await s3.putObject({
                 Bucket: bucket,
                 Key: optimizedAssetKey,
-                ContentType: asset.getContentType(),
-                Body: await asset.getContents()
+                ContentType: newAsset.getContentType(),
+                Body: await newAsset.getContents()
             });
-        }
 
-        return asset;
+            return newAsset;
+        }
     }
 
     private isAssetAnimated(asset: Asset) {

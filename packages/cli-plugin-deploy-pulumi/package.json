@@ -50,12 +50,7 @@
       "commands/newWatch/handler"
     ],
     "ignore": {
-      "src": [
-        "vm",
-        "inspector"
-      ],
       "dependencies": [
-        "execa",
         "exit-hook"
       ]
     }

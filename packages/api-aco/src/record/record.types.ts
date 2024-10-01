@@ -1,6 +1,6 @@
 import { AcoBaseFields, ListMeta } from "~/types";
 import { Topic } from "@webiny/pubsub/types";
-import { CmsModel } from "@webiny/api-headless-cms/types";
+import { CmsEntryListSort, CmsModel } from "@webiny/api-headless-cms/types";
 
 export type GenericSearchData = {
     [key: string]: any;
@@ -39,7 +39,7 @@ export interface ListSearchRecordsWhere<TData extends GenericSearchData = Generi
 export interface ListSearchRecordsParams {
     where?: ListSearchRecordsWhere;
     search?: string;
-    sort?: string[];
+    sort?: CmsEntryListSort;
     limit?: number;
     after?: string | null;
 }

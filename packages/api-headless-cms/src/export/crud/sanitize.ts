@@ -11,10 +11,7 @@ export const sanitizeGroup = (group: CmsGroup): SanitizedCmsGroup => {
     };
 };
 
-export const sanitizeModel = (
-    group: Pick<CmsGroup, "id" | "name">,
-    model: CmsModel
-): SanitizedCmsModel => {
+export const sanitizeModel = (group: Pick<CmsGroup, "id">, model: CmsModel): SanitizedCmsModel => {
     return {
         modelId: model.modelId,
         name: model.name,
@@ -27,6 +24,7 @@ export const sanitizeModel = (
         layout: model.layout,
         titleFieldId: model.titleFieldId,
         descriptionFieldId: model.descriptionFieldId,
-        imageFieldId: model.imageFieldId
+        imageFieldId: model.imageFieldId,
+        tags: model.tags || []
     };
 };

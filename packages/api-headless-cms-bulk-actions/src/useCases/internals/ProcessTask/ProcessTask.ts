@@ -18,7 +18,7 @@ export class ProcessTask {
     }
 
     async execute(params: IBulkActionOperationTaskParams) {
-        const { input, response, isAborted, isCloseToTimeout, context, store } = params;
+        const { input, response, isAborted, isCloseToTimeout, context } = params;
 
         try {
             if (isAborted()) {
@@ -48,30 +48,20 @@ export class ProcessTask {
                 );
             }
 
+            // Set the security identity in the context.
+            context.security.setIdentity(input.identity);
+
             // Process each ID in the input.
             for (const id of input.ids) {
                 try {
-                    // Set the security identity in the context.
-                    context.security.setIdentity(input.identity);
                     // Execute the gateway operation for the current ID.
                     await this.gateway.execute(model, id, input.data);
                     // Add the ID to the list of successfully processed entries.
                     this.result.addDone(id);
                 } catch (ex) {
-                    // Handle any errors that occur during processing of the current ID.
-                    const message = ex.message || `Failed to process entry with id "${id}".`;
-                    try {
-                        console.error(message);
-                        await store.addErrorLog({
-                            message,
-                            error: ex
-                        });
-                    } catch {
-                        console.error(`Failed to add error log: "${message}"`);
-                    } finally {
-                        // Add the ID to the list of failed entries.
-                        this.result.addFailed(id);
-                    }
+                    console.error(ex.message || `Failed to process entry with id "${id}".`);
+                    // Add the ID to the list of failed entries.
+                    this.result.addFailed(id);
                 }
             }
 
