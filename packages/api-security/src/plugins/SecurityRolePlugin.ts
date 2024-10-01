@@ -1,12 +1,12 @@
 import { Plugin } from "@webiny/plugins";
-import {SecurityPermission, SecurityRole} from "~/types";
+import { SecurityPermission, SecurityRole } from "~/types";
 
 export interface SecurityRolePluginParams {
     id: string;
     name: string;
     slug?: string;
     description?: string;
-    permissions?: SecurityPermission[]
+    permissions?: SecurityPermission[];
     tenant?: string;
 }
 

@@ -150,10 +150,10 @@ async function updateTenantLinks(
 }
 
 export const createGroupsMethods = ({
-                                        getTenant: initialGetTenant,
-                                        storageOperations,
-                                        listPluginRoles
-                                    }: SecurityConfig) => {
+    getTenant: initialGetTenant,
+    storageOperations,
+    listPluginRoles
+}: SecurityConfig) => {
     const getTenant = () => {
         const tenant = initialGetTenant();
         if (!tenant) {
@@ -284,10 +284,10 @@ export const createGroupsMethods = ({
                 createdOn: new Date().toISOString(),
                 createdBy: identity
                     ? {
-                        id: identity.id,
-                        displayName: identity.displayName,
-                        type: identity.type
-                    }
+                          id: identity.id,
+                          displayName: identity.displayName,
+                          type: identity.type
+                      }
                     : null
             };
 

@@ -112,10 +112,10 @@ async function updateTenantLinks(
 }
 
 export const createTeamsMethods = ({
-                                       getTenant: initialGetTenant,
-                                       storageOperations,
-                                       listPluginTeams
-                                   }: SecurityConfig) => {
+    getTenant: initialGetTenant,
+    storageOperations,
+    listPluginTeams
+}: SecurityConfig) => {
     const getTenant = () => {
         const tenant = initialGetTenant();
         if (!tenant) {
@@ -246,10 +246,10 @@ export const createTeamsMethods = ({
                 createdOn: new Date().toISOString(),
                 createdBy: identity
                     ? {
-                        id: identity.id,
-                        displayName: identity.displayName,
-                        type: identity.type
-                    }
+                          id: identity.id,
+                          displayName: identity.displayName,
+                          type: identity.type
+                      }
                     : null
             };
 

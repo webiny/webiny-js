@@ -94,22 +94,22 @@ export const GroupsForm = () => {
             const isUpdate = formData.createdOn;
             const [operation, args] = isUpdate
                 ? [
-                    update,
-                    {
-                        variables: {
-                            id: formData.id,
-                            data: pick(formData, ["name", "description", "permissions"])
-                        }
-                    }
-                ]
+                      update,
+                      {
+                          variables: {
+                              id: formData.id,
+                              data: pick(formData, ["name", "description", "permissions"])
+                          }
+                      }
+                  ]
                 : [
-                    create,
-                    {
-                        variables: {
-                            data: pick(formData, ["name", "slug", "description", "permissions"])
-                        }
-                    }
-                ];
+                      create,
+                      {
+                          variables: {
+                              data: pick(formData, ["name", "slug", "description", "permissions"])
+                          }
+                      }
+                  ];
 
             const response = await operation(args);
 

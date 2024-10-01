@@ -294,7 +294,7 @@ export interface Group {
     system: boolean;
     permissions: SecurityPermission[];
     webinyVersion: string | null;
-    plugin?: boolean
+    plugin?: boolean;
 }
 
 export type SecurityRole = Group;
@@ -342,7 +342,7 @@ export interface Team {
     slug: string;
     description: string;
     system: boolean;
-    plugin?: boolean
+    plugin?: boolean;
     groups: string[];
     webinyVersion: string | null;
 }

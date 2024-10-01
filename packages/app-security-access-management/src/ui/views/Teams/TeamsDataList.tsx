@@ -186,7 +186,9 @@ export const TeamsDataList = () => {
                                     ) : (
                                         <Tooltip
                                             placement={"bottom"}
-                                            content={<span>{t`Team registered via an extension.`}</span>}
+                                            content={
+                                                <span>{t`Team registered via an extension.`}</span>
+                                            }
                                         >
                                             <DeleteIcon disabled />
                                         </Tooltip>

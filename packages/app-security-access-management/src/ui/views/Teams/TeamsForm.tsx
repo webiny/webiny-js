@@ -75,22 +75,22 @@ export const TeamsForm = () => {
             const isUpdate = formData.createdOn;
             const [operation, args] = isUpdate
                 ? [
-                    update,
-                    {
-                        variables: {
-                            id: formData.id,
-                            data: pick(formData, ["name", "description", "groups"])
-                        }
-                    }
-                ]
+                      update,
+                      {
+                          variables: {
+                              id: formData.id,
+                              data: pick(formData, ["name", "description", "groups"])
+                          }
+                      }
+                  ]
                 : [
-                    create,
-                    {
-                        variables: {
-                            data: pick(formData, ["name", "slug", "description", "groups"])
-                        }
-                    }
-                ];
+                      create,
+                      {
+                          variables: {
+                              data: pick(formData, ["name", "slug", "description", "groups"])
+                          }
+                      }
+                  ];
 
             const response = await operation(args);
 

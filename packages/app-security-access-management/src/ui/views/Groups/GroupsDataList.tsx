@@ -186,7 +186,9 @@ export const GroupsDataList = () => {
                                     ) : (
                                         <Tooltip
                                             placement={"bottom"}
-                                            content={<span>{t`Role is registered via a plugin.`}</span>}
+                                            content={
+                                                <span>{t`Role is registered via a plugin.`}</span>
+                                            }
                                         >
                                             <DeleteIcon disabled />
                                         </Tooltip>
