@@ -1,4 +1,5 @@
 import WebinyError from "@webiny/error";
+import { isSharedElasticsearchIndex } from "@webiny/api-elasticsearch";
 
 export interface EsGetIndexNameParams {
     tenant: string;
@@ -24,7 +25,7 @@ export const esGetIndexName = (params: EsGetIndexNameParams) => {
         );
     }
 
-    const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+    const sharedIndex = isSharedElasticsearchIndex();
 
     const tenantId = sharedIndex ? "root" : tenant;
     let localeCode: string | null = null;

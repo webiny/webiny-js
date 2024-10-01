@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { getLastAddedIndexPlugin } from "@webiny/api-elasticsearch";
+import { getLastAddedIndexPlugin, isSharedElasticsearchIndex } from "@webiny/api-elasticsearch";
 import { PageElasticsearchIndexPlugin } from "~/plugins";
 import { PbContext } from "~/types";
 import { ElasticsearchIndexRequestBody } from "@webiny/api-elasticsearch/types";
@@ -34,7 +34,7 @@ export const configurations: Configurations = {
                 "TENANT_ERROR"
             );
         }
-        const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+        const sharedIndex = isSharedElasticsearchIndex();
 
         const tenantId = sharedIndex ? "root" : tenant;
         let localeCode: string | null = null;
