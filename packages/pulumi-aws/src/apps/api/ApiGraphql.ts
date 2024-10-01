@@ -40,6 +40,7 @@ export const ApiGraphql = createAppModule({
             name: "api-lambda-role",
             policy: policy.output
         });
+        policy.config.policy;
 
         const graphql = app.addResource(aws.lambda.Function, {
             name: "graphql",
@@ -48,7 +49,7 @@ export const ApiGraphql = createAppModule({
                 handler: "handler.handler",
                 role: role.output.arn,
                 timeout: 30,
-                memorySize: 512,
+                memorySize: 1024,
                 code: new pulumi.asset.AssetArchive({
                     ".": new pulumi.asset.FileArchive(
                         path.join(app.paths.workspace, "graphql/build")

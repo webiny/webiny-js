@@ -6,7 +6,7 @@ const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" }
 const identityApiToken: SecurityIdentity = { id: "3", type: "api-token", displayName: "API Token" };
 
 describe("Folder Level Permissions - API Tokens", () => {
-    it("as a user with 'viewer' access to a folder, I should not be able to create, update, or delete content in it", async () => {
+    it("FLPs should not interfere with API tokens", async () => {
         const gqlIdentityA = useGraphQlHandler({ identity: identityA });
 
         const gqlIdentityApiToken = useGraphQlHandler({
@@ -44,6 +44,7 @@ describe("Folder Level Permissions - API Tokens", () => {
 
         // Set identity B as viewer of the folder. We need this just so FLP kicks in.
         // Otherwise, anybody can access content in the folder, no FLPs are applied.
+        // In any case, this should not affect the API key.
         await gqlIdentityA.aco.updateFolder({
             id: folder.id,
             data: {
@@ -68,7 +69,7 @@ describe("Folder Level Permissions - API Tokens", () => {
             error: null
         });
 
-        // Listing content in the folder should be now allowed for identity C.
+        // Listing content in the folder should be allowed for API key.
         await expect(
             gqlIdentityApiToken.cms
                 .listEntries(model, {
@@ -91,7 +92,7 @@ describe("Folder Level Permissions - API Tokens", () => {
             }
         });
 
-        // Creating content in the folder should be forbidden for identity C.
+        // Creating content in the folder should be allowed with an API key.
         await expect(
             gqlIdentityApiToken.cms
                 .createEntry(model, {
@@ -109,7 +110,7 @@ describe("Folder Level Permissions - API Tokens", () => {
             data: { id: expect.any(String) }
         });
 
-        // Updating content in the folder should be forbidden for identity C.
+        // Updating content in the folder should be allowed with an API key.
         await expect(
             gqlIdentityApiToken.cms
                 .updateEntry(model, {
@@ -123,7 +124,7 @@ describe("Folder Level Permissions - API Tokens", () => {
             data: { title: createdEntry.title + "-update" }
         });
 
-        // Deleting a file in the folder should be now allowed for identity C.
+        // Deleting content in the folder should be allowed with an API key.
         await expect(
             gqlIdentityApiToken.cms
                 .deleteEntry(model, { revision: createdEntry.entryId })

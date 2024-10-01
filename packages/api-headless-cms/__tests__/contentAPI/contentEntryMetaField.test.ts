@@ -2,6 +2,7 @@ import models from "./mocks/contentModels";
 import { CmsEntry, CmsGroup, CmsModel } from "~/types";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
+import { createMockCmsEntry } from "~tests/helpers/createMockCmsEntry";
 
 const manageOpts = {
     path: "manage/en-US"
@@ -90,7 +91,7 @@ describe("Content Entry Meta Field", () => {
     it("storage operations - should have meta field data in the retrieved record", async () => {
         const { model } = await setup();
         const entryId = generateAlphaNumericLowerCaseId(8);
-        const entry: CmsEntry = {
+        const entry = createMockCmsEntry({
             id: `${entryId}#0001`,
             entryId,
             version: 1,
@@ -117,7 +118,7 @@ describe("Content Entry Meta Field", () => {
             status: "draft",
             webinyVersion: "5.27.0",
             meta: createMetaData()
-        };
+        });
 
         const createdRecord = await storageOperations.entries.create(model, {
             entry,
@@ -177,7 +178,7 @@ describe("Content Entry Meta Field", () => {
                     meta: createMetaData()
                 }
             ],
-            cursor: null,
+            cursor: expect.any(String),
             totalCount: 1
         });
 

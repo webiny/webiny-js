@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Check for Command
         id: command
         uses: xt0rted/slash-command-action@v2
@@ -42,7 +42,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: yarn --immutable
@@ -61,7 +61,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
@@ -85,7 +85,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Create global cache key
         id: global-cache-key
         run: >-
@@ -110,7 +110,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -154,7 +154,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -199,7 +199,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -251,6 +251,7 @@ jobs:
         with:
           name: verdaccio-files-ddb
           retention-days: 1
+          include-hidden-files: true
           path: |-
             ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio/
             ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio.yaml
@@ -273,6 +274,7 @@ jobs:
         with:
           name: project-files-ddb
           retention-days: 1
+          include-hidden-files: true
           path: |-
             new-webiny-project/
             !new-webiny-project/node_modules/**/*
@@ -337,7 +339,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -384,7 +386,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -432,7 +434,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -484,6 +486,7 @@ jobs:
         with:
           name: verdaccio-files-ddb-es
           retention-days: 1
+          include-hidden-files: true
           path: |-
             ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio/
             ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio.yaml
@@ -506,6 +509,7 @@ jobs:
         with:
           name: project-files-ddb-es
           retention-days: 1
+          include-hidden-files: true
           path: |-
             new-webiny-project/
             !new-webiny-project/node_modules/**/*
@@ -574,7 +578,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -622,7 +626,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -670,7 +674,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -722,6 +726,7 @@ jobs:
         with:
           name: verdaccio-files-ddb-os
           retention-days: 1
+          include-hidden-files: true
           path: |-
             ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio/
             ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio.yaml
@@ -744,6 +749,7 @@ jobs:
         with:
           name: project-files-ddb-os
           retention-days: 1
+          include-hidden-files: true
           path: |-
             new-webiny-project/
             !new-webiny-project/node_modules/**/*
@@ -812,7 +818,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}

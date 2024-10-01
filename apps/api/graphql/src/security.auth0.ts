@@ -78,7 +78,7 @@ export default ({ documentClient }: { documentClient: DynamoDBDocument }) => [
                 id: token["sub"],
                 type: "admin",
                 displayName: token["name"],
-                group: token["webiny_group"]
+                group: "full-access"
             };
         }
     }),

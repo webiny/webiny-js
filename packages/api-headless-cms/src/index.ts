@@ -2,7 +2,6 @@ import { createGraphQL as baseCreateGraphQL, CreateGraphQLParams } from "~/graph
 import { createDefaultModelManager } from "~/modelManager";
 import { createGraphQLFields } from "~/graphqlFields";
 import { createValidators } from "~/validators";
-import { createDynamicZoneStorageTransform } from "~/graphqlFields/dynamicZone/dynamicZoneStorage";
 import {
     createContextParameterPlugin,
     createHeaderParameterPlugin,
@@ -22,6 +21,7 @@ import { createRevisionIdScalarPlugin } from "~/graphql/scalars/RevisionIdScalar
 
 export * from "./utils/isHeadlessCmsReady";
 export * from "./utils/createModelField";
+export * from "./graphql/schema/resolvers/manage/normalizeGraphQlInput";
 
 export type CreateHeadlessCmsGraphQLParams = CreateGraphQLParams;
 export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams = {}) => {
@@ -53,8 +53,7 @@ export const createHeadlessCmsContext = (params: ContentContextParams) => {
         createGraphQLFields(),
         createFieldConverters(),
         createValidators(),
-        ...createStorageTransform(),
-        createDynamicZoneStorageTransform()
+        ...createStorageTransform()
     ];
 };
 export * from "~/graphqlFields";
@@ -62,4 +61,6 @@ export * from "~/plugins";
 export * from "~/utils/incrementEntryIdVersion";
 export * from "~/utils/RichTextRenderer";
 export * from "./graphql/handleRequest";
+export * from "./utils/contentEntryTraverser/ContentEntryTraverser";
+export * from "./utils/contentModelAst";
 export { entryToStorageTransform, entryFieldFromStorageTransform, entryFromStorageTransform };

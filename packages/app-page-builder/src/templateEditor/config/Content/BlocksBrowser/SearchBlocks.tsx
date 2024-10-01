@@ -237,7 +237,7 @@ export const SearchBlocks = ({ onClose }: SearchBarProps) => {
         return (
             <Styled.Input>
                 <Icon className={Styled.searchIcon} icon={<SearchIcon />} />
-                <DelayedOnChange value={search} onChange={(value: string) => setSearch(value)}>
+                <DelayedOnChange value={search} onChange={setSearch}>
                     {({ value, onChange }) => (
                         <input
                             autoFocus

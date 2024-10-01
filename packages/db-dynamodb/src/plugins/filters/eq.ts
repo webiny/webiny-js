@@ -12,10 +12,10 @@ const plugin = new ValueFilterPlugin({
             });
         } else if (Array.isArray(compareValue) === true) {
             return compareValue.every((v: string) => {
-                return value === v;
+                return value == v;
             });
         }
-        return value === compareValue;
+        return value == compareValue;
     }
 });
 

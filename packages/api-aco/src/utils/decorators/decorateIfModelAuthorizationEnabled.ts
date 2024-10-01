@@ -17,7 +17,7 @@ type FilterModelMethods<T> = {
  * E.g., `getEntryManager` has `model` typed as `CmsModel | string`.
  * Ideally, we would filter those out in the previous utility type, but I'm not sure how to achieve that.
  */
-type ModelMethods<T> = Omit<FilterModelMethods<T>, "getEntryManager">;
+type ModelMethods<T> = Omit<FilterModelMethods<T>, "getEntryManager" | "getSingletonEntryManager">;
 
 /**
  * Decorator takes the decoratee as the _first_ parameter, and then forwards the rest of the parameters.

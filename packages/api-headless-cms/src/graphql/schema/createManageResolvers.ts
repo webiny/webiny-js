@@ -15,6 +15,7 @@ import { resolvePublish } from "./resolvers/manage/resolvePublish";
 import { resolveRepublish } from "./resolvers/manage/resolveRepublish";
 import { resolveUnpublish } from "./resolvers/manage/resolveUnpublish";
 import { resolveCreateFrom } from "./resolvers/manage/resolveCreateFrom";
+import { normalizeGraphQlInput } from "./resolvers/manage/normalizeGraphQlInput";
 import { createFieldResolversFactory } from "./createFieldResolvers";
 import { getEntryTitle } from "~/utils/getEntryTitle";
 import { getEntryImage } from "~/utils/getEntryImage";
@@ -37,13 +38,6 @@ export const createManageResolvers: CreateManageResolvers = ({
     model,
     fieldTypePlugins
 }) => {
-    if (model.fields.length === 0) {
-        return {
-            Query: {},
-            Mutation: {}
-        };
-    }
-
     const createFieldResolvers = createFieldResolversFactory({
         endpointType: "manage",
         models,
@@ -69,26 +63,32 @@ export const createManageResolvers: CreateManageResolvers = ({
         }
     });
 
+    const resolverFactoryParams = { model, fieldTypePlugins };
+
     return {
         Query: {
-            [`get${model.singularApiName}`]: resolveGet({ model }),
-            [`get${model.singularApiName}Revisions`]: resolveGetRevisions({ model }),
-            [`get${model.pluralApiName}ByIds`]: resolveGetByIds({ model }),
-            [`list${model.pluralApiName}`]: resolveList({ model }),
-            [`listDeleted${model.pluralApiName}`]: resolveListDeleted({ model })
+            [`get${model.singularApiName}`]: resolveGet(resolverFactoryParams),
+            [`get${model.singularApiName}Revisions`]: resolveGetRevisions(resolverFactoryParams),
+            [`get${model.pluralApiName}ByIds`]: resolveGetByIds(resolverFactoryParams),
+            [`list${model.pluralApiName}`]: resolveList(resolverFactoryParams),
+            [`listDeleted${model.pluralApiName}`]: resolveListDeleted(resolverFactoryParams)
         },
         Mutation: {
-            [`create${model.singularApiName}`]: resolveCreate({ model }),
-            [`update${model.singularApiName}`]: resolveUpdate({ model }),
-            [`validate${model.singularApiName}`]: resolveValidate({ model }),
-            [`move${model.singularApiName}`]: resolveMove({ model }),
-            [`delete${model.singularApiName}`]: resolveDelete({ model }),
-            [`restore${model.singularApiName}FromBin`]: resolveRestoreFromBin({ model }),
-            [`deleteMultiple${model.pluralApiName}`]: resolveDeleteMultiple({ model }),
-            [`publish${model.singularApiName}`]: resolvePublish({ model }),
-            [`republish${model.singularApiName}`]: resolveRepublish({ model }),
-            [`unpublish${model.singularApiName}`]: resolveUnpublish({ model }),
-            [`create${model.singularApiName}From`]: resolveCreateFrom({ model })
+            [`create${model.singularApiName}`]:
+                normalizeGraphQlInput(resolveCreate)(resolverFactoryParams),
+            [`update${model.singularApiName}`]:
+                normalizeGraphQlInput(resolveUpdate)(resolverFactoryParams),
+            [`validate${model.singularApiName}`]: resolveValidate(resolverFactoryParams),
+            [`move${model.singularApiName}`]: resolveMove(resolverFactoryParams),
+            [`delete${model.singularApiName}`]: resolveDelete(resolverFactoryParams),
+            [`restore${model.singularApiName}FromBin`]:
+                resolveRestoreFromBin(resolverFactoryParams),
+            [`deleteMultiple${model.pluralApiName}`]: resolveDeleteMultiple(resolverFactoryParams),
+            [`publish${model.singularApiName}`]: resolvePublish(resolverFactoryParams),
+            [`republish${model.singularApiName}`]: resolveRepublish(resolverFactoryParams),
+            [`unpublish${model.singularApiName}`]: resolveUnpublish(resolverFactoryParams),
+            [`create${model.singularApiName}From`]:
+                normalizeGraphQlInput(resolveCreateFrom)(resolverFactoryParams)
         },
         ...fieldResolvers,
         [`${model.singularApiName}Meta`]: {

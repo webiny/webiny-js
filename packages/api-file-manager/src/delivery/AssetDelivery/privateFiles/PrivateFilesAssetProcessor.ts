@@ -45,8 +45,6 @@ export class PrivateFilesAssetProcessor implements AssetProcessor {
             return asset;
         }
 
-        console.log("file", file);
-
         try {
             await this.assetAuthorizer.authorize(file);
         } catch (error) {
@@ -58,7 +56,10 @@ export class PrivateFilesAssetProcessor implements AssetProcessor {
         const processedAsset = await this.assetProcessor.process(assetRequest, asset);
 
         processedAsset.setOutputStrategy(strategy => {
-            return isPrivateFile ? new PrivateCache(30, strategy) : new PublicCache(365, strategy);
+            if (!strategy) {
+                throw Error(`No asset output strategy is configured!`);
+            }
+            return isPrivateFile ? new PrivateCache(strategy) : new PublicCache(strategy);
         });
 
         return processedAsset;

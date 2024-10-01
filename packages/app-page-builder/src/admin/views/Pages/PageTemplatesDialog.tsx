@@ -1,5 +1,4 @@
 import React, { useCallback, useState, useEffect, useMemo } from "react";
-import { css } from "emotion";
 import styled from "@emotion/styled";
 import classNames from "classnames";
 import { useQuery } from "@apollo/react-hooks";
@@ -27,8 +26,10 @@ import {
 import * as Styled from "~/templateEditor/config/Content/BlocksBrowser/StyledComponents";
 import { PbPageTemplate } from "~/types";
 
-const leftPanelStyle = css`
+const ListContainer = styled.div`
+    width: 100%;
     height: calc(100vh - 64px);
+    overflow: clip;
     display: flex;
     flex-direction: column;
 `;
@@ -91,7 +92,7 @@ const ModalTitleStyled = styled.div`
 `;
 
 const SearchInputWrapper = styled.div`
-    padding: 15px;
+    padding: 16px;
 `;
 
 const BlankTemplateButtonWrapper = styled.div`
@@ -152,57 +153,58 @@ const PageTemplatesDialog = ({ onClose, onSelect, isLoading }: PageTemplatesDial
     return (
         <OverlayLayout barLeft={<ModalTitle />} onExited={onClose}>
             <SplitView>
-                <LeftPanel span={3} className={leftPanelStyle}>
-                    <SearchInputWrapper>
-                        <Styled.Input>
-                            <Icon className={Styled.searchIcon} icon={<SearchIcon />} />
-                            <DelayedOnChange
-                                value={search}
-                                onChange={(value: string) => setSearch(value)}
-                            >
-                                {({ value, onChange }) => (
-                                    <input
-                                        autoFocus
-                                        type={"text"}
-                                        placeholder="Search templates..."
-                                        value={value}
-                                        onChange={ev => onChange(ev.target.value)}
-                                    />
-                                )}
-                            </DelayedOnChange>
-                        </Styled.Input>
-                    </SearchInputWrapper>
-                    <ScrollList
-                        className={listStyle}
-                        data-testid={"pb-new-page-dialog-templates-list"}
-                    >
-                        {filteredPageTemplates.map(template => (
-                            <ListItem
-                                key={template.id}
-                                className={classNames(
-                                    listItem,
-                                    activeTemplate?.id === template.id && activeListItem
-                                )}
-                                onClick={() => {
-                                    setActiveTemplate(template);
-                                }}
-                            >
-                                <TitleContent>
-                                    <ListItemTitle>{template.title}</ListItemTitle>
-                                    <Typography use={"body2"}>{template.description}</Typography>
-                                </TitleContent>
-                            </ListItem>
-                        ))}
-                    </ScrollList>
-                    <BlankTemplateButtonWrapper>
-                        <ButtonSecondary
-                            disabled={isLoading}
-                            onClick={() => onSelect()}
-                            data-testid={"pb-new-page-dialog-use-blank-template-btn"}
+                <LeftPanel span={3}>
+                    <ListContainer>
+                        <SearchInputWrapper>
+                            <Styled.Input>
+                                <Icon className={Styled.searchIcon} icon={<SearchIcon />} />
+                                <DelayedOnChange value={search} onChange={setSearch}>
+                                    {({ value, onChange }) => (
+                                        <input
+                                            autoFocus
+                                            type={"text"}
+                                            placeholder="Search templates..."
+                                            value={value}
+                                            onChange={ev => onChange(ev.target.value)}
+                                        />
+                                    )}
+                                </DelayedOnChange>
+                            </Styled.Input>
+                        </SearchInputWrapper>
+                        <ScrollList
+                            className={listStyle}
+                            data-testid={"pb-new-page-dialog-templates-list"}
                         >
-                            Use a blank page template
-                        </ButtonSecondary>
-                    </BlankTemplateButtonWrapper>
+                            {filteredPageTemplates.map(template => (
+                                <ListItem
+                                    key={template.id}
+                                    className={classNames(
+                                        listItem,
+                                        activeTemplate?.id === template.id && activeListItem
+                                    )}
+                                    onClick={() => {
+                                        setActiveTemplate(template);
+                                    }}
+                                >
+                                    <TitleContent>
+                                        <ListItemTitle>{template.title}</ListItemTitle>
+                                        <Typography use={"body2"}>
+                                            {template.description}
+                                        </Typography>
+                                    </TitleContent>
+                                </ListItem>
+                            ))}
+                        </ScrollList>
+                        <BlankTemplateButtonWrapper>
+                            <ButtonSecondary
+                                disabled={isLoading}
+                                onClick={() => onSelect()}
+                                data-testid={"pb-new-page-dialog-use-blank-template-btn"}
+                            >
+                                Use a blank page template
+                            </ButtonSecondary>
+                        </BlankTemplateButtonWrapper>
+                    </ListContainer>
                 </LeftPanel>
                 <RightPanel span={9} data-testid={"pb-new-page-dialog-template-preview"}>
                     {activeTemplate && (

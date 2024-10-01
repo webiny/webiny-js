@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Input } from "./Input";
 import { Select } from "./Select";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -8,7 +8,9 @@ import {
     DEFAULT_TIMEZONE,
     getCurrentDate,
     getCurrentLocalTime,
-    getCurrentTimeZone
+    getCurrentTimeZone,
+    getHHmmss,
+    getHHmm
 } from "./utils";
 import { CmsModelField } from "~/types";
 import { BindComponentRenderProp } from "@webiny/form";
@@ -37,11 +39,11 @@ const parseDateTime = (value?: string): Pick<State, "date"> & { rest: string } =
     };
 };
 
-const parseTime = (value?: string): Pick<State, "time" | "timezone"> => {
+const parseTime = (value?: string, defaultTimeZone?: string): Pick<State, "time" | "timezone"> => {
     if (!value) {
         return {
             time: "",
-            timezone: ""
+            timezone: defaultTimeZone || ""
         };
     }
     const sign = value.includes("+") ? "+" : "-";
@@ -62,20 +64,15 @@ export const DateTimeWithTimezone = ({ bind, trailingIcon, field }: DateTimeWith
     const defaultTimeZone = getCurrentTimeZone() || DEFAULT_TIMEZONE;
 
     // "2020-05-18T09:00+10:00"
-    const initialValue = getDefaultFieldValue(field, bind, () => {
-        const date = new Date();
-        return `${getCurrentDate(date)}T${getCurrentLocalTime(date)}${defaultTimeZone}`;
-    });
-    const { date, rest } = parseDateTime(initialValue);
-    const { time, timezone = defaultTimeZone } = parseTime(rest);
+    const value =
+        bind.value ||
+        getDefaultFieldValue(field, bind, () => {
+            const date = new Date();
+            return `${getCurrentDate(date)}T${getCurrentLocalTime(date)}${defaultTimeZone}`;
+        });
 
-    const bindValue = bind.value || "";
-    useEffect(() => {
-        if (!date || !time || !timezone || bindValue === initialValue) {
-            return;
-        }
-        bind.onChange(initialValue);
-    }, [bindValue]);
+    const { date, rest } = parseDateTime(value);
+    const { time, timezone } = parseTime(rest, defaultTimeZone);
 
     const cellSize = trailingIcon ? 3 : 4;
 
@@ -93,11 +90,8 @@ export const DateTimeWithTimezone = ({ bind, trailingIcon, field }: DateTimeWith
                                 }
                                 return bind.onChange("");
                             }
-                            return bind.onChange(
-                                `${value}T${time || getCurrentLocalTime()}${
-                                    timezone || defaultTimeZone
-                                }`
-                            );
+
+                            return bind.onChange(`${value}T${getHHmmss(time)}${timezone}`);
                         }
                     }}
                     field={{
@@ -111,7 +105,7 @@ export const DateTimeWithTimezone = ({ bind, trailingIcon, field }: DateTimeWith
                 <Input
                     bind={{
                         ...bind,
-                        value: time,
+                        value: getHHmm(time),
                         onChange: async value => {
                             if (!value) {
                                 if (!bind.value) {
@@ -120,7 +114,7 @@ export const DateTimeWithTimezone = ({ bind, trailingIcon, field }: DateTimeWith
                                 return bind.onChange("");
                             }
                             return bind.onChange(
-                                `${date || getCurrentDate()}T${value}${timezone || defaultTimeZone}`
+                                `${date || getCurrentDate()}T${getHHmmss(value)}${timezone}`
                             );
                         }
                     }}
@@ -135,7 +129,7 @@ export const DateTimeWithTimezone = ({ bind, trailingIcon, field }: DateTimeWith
             <Cell span={cellSize}>
                 <Select
                     label="Timezone"
-                    value={timezone || defaultTimeZone}
+                    value={timezone}
                     onChange={value => {
                         if (!value) {
                             if (!bind.value) {

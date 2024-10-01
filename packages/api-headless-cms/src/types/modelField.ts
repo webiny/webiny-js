@@ -1,4 +1,5 @@
 import { CmsModel } from "./model";
+import { GenericRecord } from "@webiny/api/types";
 
 export type CmsModelFieldType =
     | "boolean"
@@ -14,6 +15,7 @@ export type CmsModelFieldType =
     | "dynamicZone"
     | string;
 
+export type ICmsModelFieldStorageId = `${string}@${string}` | string;
 /**
  * A definition for content model field. This type exists on the app side as well.
  *
@@ -43,7 +45,7 @@ export interface CmsModelField {
      *
      * This is used as path for the entry value.
      */
-    storageId: `${string}@${string}` | string;
+    storageId: ICmsModelFieldStorageId;
     /**
      * Field identifier for the model field that will be available to the outside world.
      * `storageId` is used as path (or column) to store the data.
@@ -258,7 +260,7 @@ interface CmsModelFieldRenderer {
     /**
      * Renderer settings allow you to configure field renderer on a field level.
      */
-    settings?: Record<string, any>;
+    settings?: GenericRecord<string> | null;
 }
 
 /**
@@ -272,7 +274,7 @@ export interface CmsModelFieldSettings {
      * Predefined values (text, number)
      * The default value for the field in case it is not predefined values field.
      */
-    defaultValue?: string | number | null | undefined;
+    defaultValue?: string | boolean | number | null | undefined;
     /**
      * Object field has child fields.
      */

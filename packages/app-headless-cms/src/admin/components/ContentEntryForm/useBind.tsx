@@ -13,6 +13,7 @@ interface UseBindParams {
     name?: string;
     validators?: Validator | Validator[];
     children?: any;
+    defaultValue?: any;
 }
 
 const createFieldCacheKey = (field: CmsModelField) => {
@@ -53,18 +54,22 @@ export function useBind({ Bind, field }: UseBindProps) {
 
             const validators = createValidators(field, field.validation || emptyValidators);
             const listValidators = createValidators(field, field.listValidation || emptyValidators);
-            const defaultValue: string[] | undefined = undefined;
             const isMultipleValues = index === -1 && field.multipleValues;
             const inputValidators = isMultipleValues ? listValidators : validators;
 
             memoizedBindComponents.current[componentId] = function UseBind(params: UseBindParams) {
-                const { name: childName, validators: childValidators, children } = params;
+                const {
+                    name: childName,
+                    validators: childValidators,
+                    children,
+                    defaultValue
+                } = params;
 
                 return (
                     <Bind
                         name={childName || name}
                         validators={childValidators || inputValidators}
-                        defaultValue={index === -1 ? defaultValue : null}
+                        defaultValue={!isMultipleValues ? defaultValue : null}
                     >
                         {bind => {
                             // Multiple-values functions below.

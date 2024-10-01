@@ -58,7 +58,7 @@ function createExportResources(app: PulumiApp, params: PageBuilderParams) {
             runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 60,
-            memorySize: 512,
+            memorySize: 1024,
             description: "Handle export's combine workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
@@ -82,7 +82,7 @@ function createExportResources(app: PulumiApp, params: PageBuilderParams) {
             runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 60,
-            memorySize: 512,
+            memorySize: 1024,
             description: "Handle export's process workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
@@ -199,7 +199,7 @@ function createImportResources(app: PulumiApp, params: PageBuilderParams) {
             runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 60,
-            memorySize: 512,
+            memorySize: 1024,
             description: "Handle import queue process workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
@@ -223,7 +223,7 @@ function createImportResources(app: PulumiApp, params: PageBuilderParams) {
             runtime: LAMBDA_RUNTIME,
             handler: "handler.handler",
             timeout: 60,
-            memorySize: 512,
+            memorySize: 1024,
             description: "Handle import queue create workflow",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(

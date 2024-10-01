@@ -16,12 +16,6 @@ export interface CreateReadResolvers {
 }
 
 export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldTypePlugins }) => {
-    if (model.fields.length === 0) {
-        return {
-            Query: {}
-        };
-    }
-
     const createFieldResolvers = createFieldResolversFactory({
         endpointType: "read",
         models,
@@ -37,8 +31,8 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
 
     return {
         Query: {
-            [`get${model.singularApiName}`]: resolveGet({ model }),
-            [`list${model.pluralApiName}`]: resolveList({ model })
+            [`get${model.singularApiName}`]: resolveGet({ model, fieldTypePlugins }),
+            [`list${model.pluralApiName}`]: resolveList({ model, fieldTypePlugins })
         },
         [model.singularApiName]: {
             modelId: () => {

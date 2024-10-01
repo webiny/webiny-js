@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { makeDecoratable } from "@webiny/app-admin";
-import { CmsEditorContentModel } from "~/types";
+import { CmsContentEntry, CmsEditorContentModel } from "~/types";
 import { ModelProvider } from "~/admin/components/ModelProvider";
 import { useFormRenderer } from "~/admin/components/ContentEntryForm/useFormRenderer";
 import { CustomLayout } from "~/admin/components/ContentEntryForm/CustomLayout";
@@ -28,6 +28,7 @@ export const ContentEntryFormPreview = makeDecoratable(
             <ContentEntryFormProvider
                 entry={{}}
                 model={contentModel}
+                persistEntry={entry => Promise.resolve({ entry } as { entry: CmsContentEntry })}
                 confirmNavigationIfDirty={false}
             >
                 <ModelProvider model={contentModel}>

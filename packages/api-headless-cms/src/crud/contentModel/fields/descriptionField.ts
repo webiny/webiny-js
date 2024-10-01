@@ -1,50 +1,29 @@
 import { CmsModelField } from "~/types";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
-import WebinyError from "@webiny/error";
+import { getApplicableFieldById } from "./getApplicableFieldById";
 
+const isFieldApplicable = (field: CmsModelField) => {
+    return getBaseFieldType(field) === "long-text" && !field.multipleValues;
+};
+
+/**
+ * Try finding the requested field, and return its `fieldId`.
+ * If not defined, or not applicable, fall back to the first applicable field.
+ */
 export const getContentModelDescriptionFieldId = (
     fields: CmsModelField[],
     descriptionFieldId?: string | null
-): string | null | undefined => {
-    /**
-     * If there are no fields defined, we will just set as null.
-     */
+) => {
     if (fields.length === 0) {
         return null;
     }
-    /**
-     * If description field is not defined, let us find possible one.
-     */
-    if (!descriptionFieldId) {
-        const descriptionField = fields.find(field => {
-            return getBaseFieldType(field) === "long-text" && !field.multipleValues;
-        });
-        return descriptionField?.fieldId || null;
-    }
-    const target = fields.find(
-        field => field.fieldId === descriptionFieldId && getBaseFieldType(field) === "long-text"
-    );
-    if (!target) {
-        throw new WebinyError(
-            `Field selected for the description field does not exist in the model.`,
-            "VALIDATION_ERROR",
-            {
-                fieldId: descriptionFieldId,
-                fields
-            }
-        );
-    }
-    if (target.multipleValues) {
-        throw new WebinyError(
-            `Fields that accept multiple values cannot be used as the entry description.`,
-            "ENTRY_TITLE_FIELD_TYPE",
-            {
-                storageId: target.storageId,
-                fieldId: target.fieldId,
-                type: target.type
-            }
-        );
+
+    const target = getApplicableFieldById(fields, descriptionFieldId, isFieldApplicable);
+
+    if (target) {
+        return target.fieldId;
     }
 
-    return target.fieldId;
+    const descriptionField = fields.find(isFieldApplicable);
+    return descriptionField ? descriptionField.fieldId : null;
 };

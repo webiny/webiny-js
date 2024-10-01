@@ -107,7 +107,7 @@ describe("Entries storage operations", () => {
 
         expect(result.items).toHaveLength(amount);
         expect(result).toMatchObject({
-            cursor: null,
+            cursor: expect.any(String),
             hasMoreItems: false,
             totalCount: amount
         });

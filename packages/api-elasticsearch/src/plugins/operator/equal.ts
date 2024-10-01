@@ -14,7 +14,7 @@ export class ElasticsearchQueryBuilderOperatorEqualPlugin extends ElasticsearchQ
     ): void {
         const { value, path, basePath } = params;
 
-        if (value === null) {
+        if (value === null || value === undefined) {
             query.must_not.push({
                 exists: {
                     field: path

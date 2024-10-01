@@ -23,7 +23,7 @@ const getInfo = async env => {
         return [
             "It seems none of the stacks were deployed, so no info could be provided.",
             `Please check if the provided environment ${env} is correct.`
-        ];
+        ].join(" ");
     }
 
     const [api, admin, website] = outputs;

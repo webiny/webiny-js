@@ -1,6 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import vpc from "./vpc";
+import { LAMBDA_RUNTIME } from "@webiny/pulumi-aws";
 
 interface GraphqlParams {
     env: Record<string, any>;
@@ -69,12 +70,12 @@ class Graphql {
 
         this.functions = {
             api: new aws.lambda.Function("project-application-name", {
-                runtime: "nodejs18.x",
+                runtime: LAMBDA_RUNTIME,
                 handler: "handler.handler",
                 description: "Project application name - GraphQL API Lambda function.",
                 role: this.role.arn,
                 timeout: 30,
-                memorySize: 512,
+                memorySize: 1024,
                 code: new pulumi.asset.AssetArchive({
                     ".": new pulumi.asset.FileArchive("../code/graphql/build")
                 }),

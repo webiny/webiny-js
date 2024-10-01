@@ -21,10 +21,14 @@ export class Asset {
     }
 
     clone() {
-        const clonedAsset = new Asset(structuredClone(this.props));
-        clonedAsset.outputStrategy = this.outputStrategy;
-        clonedAsset.contentsReader = this.contentsReader;
-        return clonedAsset;
+        return this.withProps(structuredClone(this.props));
+    }
+
+    withProps(props: Partial<AssetData>) {
+        const newAsset = new Asset({ ...this.props, ...props });
+        newAsset.contentsReader = this.contentsReader;
+        newAsset.outputStrategy = this.outputStrategy;
+        return newAsset;
     }
 
     getId() {
@@ -39,9 +43,8 @@ export class Asset {
     getKey() {
         return this.props.key;
     }
-    async getSize() {
-        const buffer = await this.getContents();
-        return buffer.length;
+    getSize() {
+        return this.props.size;
     }
     getContentType() {
         return this.props.contentType;

@@ -20,12 +20,6 @@ export const createPreviewResolvers: CreateReadResolvers = ({
     model,
     fieldTypePlugins
 }) => {
-    if (model.fields.length === 0) {
-        return {
-            Query: {}
-        };
-    }
-
     const createFieldResolvers = createFieldResolversFactory({
         endpointType: "read",
         models,
@@ -41,8 +35,8 @@ export const createPreviewResolvers: CreateReadResolvers = ({
 
     return {
         Query: {
-            [`get${model.singularApiName}`]: resolveGet({ model }),
-            [`list${model.pluralApiName}`]: resolveList({ model })
+            [`get${model.singularApiName}`]: resolveGet({ model, fieldTypePlugins }),
+            [`list${model.pluralApiName}`]: resolveList({ model, fieldTypePlugins })
         },
         ...fieldResolvers
     };

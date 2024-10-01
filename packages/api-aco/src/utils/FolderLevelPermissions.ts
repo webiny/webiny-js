@@ -45,7 +45,7 @@ interface ListFolderPermissionsParams {
 
 export interface FolderLevelPermissionsParams {
     getIdentity: Authentication["getIdentity"];
-    getIdentityTeam: () => Promise<Team | null>;
+    listIdentityTeams: () => Promise<Team[]>;
     listPermissions: () => Promise<SecurityPermission[]>;
     listAllFolders: (folderType: string) => Promise<Folder[]>;
     canUseTeams: () => boolean;
@@ -54,19 +54,20 @@ export interface FolderLevelPermissionsParams {
 }
 
 export class FolderLevelPermissions {
+    canUseFolderLevelPermissions: () => boolean;
+
     private readonly getIdentity: Authentication["getIdentity"];
-    private readonly getIdentityTeam: () => Promise<Team | null>;
+    private readonly listIdentityTeams: () => Promise<Team[]>;
     private readonly listPermissions: () => Promise<SecurityPermission[]>;
     private readonly listAllFoldersCallback: (folderType: string) => Promise<Folder[]>;
     private readonly canUseTeams: () => boolean;
-    private readonly canUseFolderLevelPermissions: () => boolean;
     private readonly isAuthorizationEnabled: () => boolean;
     private allFolders: Record<string, Folder[]> = {};
     private foldersPermissionsLists: Record<string, Promise<FolderPermissionsList> | null> = {};
 
     constructor(params: FolderLevelPermissionsParams) {
         this.getIdentity = params.getIdentity;
-        this.getIdentityTeam = params.getIdentityTeam;
+        this.listIdentityTeams = params.listIdentityTeams;
         this.listPermissions = params.listPermissions;
         this.listAllFoldersCallback = params.listAllFolders;
         this.canUseTeams = params.canUseTeams;
@@ -151,7 +152,6 @@ export class FolderLevelPermissions {
             if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabled()) {
                 resolve([]);
                 return;
-                // return [];
             }
 
             const { folderType, foldersList } = params;
@@ -160,9 +160,9 @@ export class FolderLevelPermissions {
             const identity = this.getIdentity();
             const permissions = await this.listPermissions();
 
-            let identityTeam: Team | null;
+            let identityTeams: Team[];
             if (this.canUseTeams()) {
-                identityTeam = await this.getIdentityTeam();
+                identityTeams = await this.listIdentityTeams();
             }
 
             const processedFolderPermissions: FolderPermissionsListItem[] = [];
@@ -284,18 +284,20 @@ export class FolderLevelPermissions {
                             level: "owner",
                             inheritedFrom: "role:full-access"
                         };
-                    } else if (identityTeam) {
-                        // 2. Check the team user belongs to grants access to the folder.
-                        const teamPermission = currentFolderPermissions.permissions.find(
-                            p => p.target === `team:${identityTeam!.id}`
-                        );
+                    } else if (identityTeams.length) {
+                        // 2. Check the teams user belongs to and that grant access to the folder.
+                        for (const identityTeam of identityTeams) {
+                            const teamPermission = currentFolderPermissions.permissions.find(
+                                p => p.target === `team:${identityTeam!.id}`
+                            );
 
-                        if (teamPermission) {
-                            currentIdentityPermission = {
-                                target: `admin:${identity.id}`,
-                                level: teamPermission.level,
-                                inheritedFrom: "team:" + identityTeam!.id
-                            };
+                            if (teamPermission) {
+                                currentIdentityPermission = {
+                                    target: `admin:${identity.id}`,
+                                    level: teamPermission.level,
+                                    inheritedFrom: "team:" + identityTeam!.id
+                                };
+                            }
                         }
                     }
 

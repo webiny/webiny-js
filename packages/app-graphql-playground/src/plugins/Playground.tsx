@@ -17,6 +17,7 @@ import { config as appConfig } from "@webiny/app/config";
 import ApolloClient from "apollo-client";
 import { GraphQLPlaygroundTabPlugin } from "~/types";
 import { SecurityIdentity } from "@webiny/app-security/types";
+import { ORIGINAL_GQL_PLAYGROUND_URL, PATCHED_GQL_PLAYGROUND_URL } from "./constants";
 
 const withHeaders = (link: ApolloLink, headers: Record<string, string>): ApolloLink => {
     return ApolloLink.from([
@@ -39,16 +40,20 @@ const initScripts = () => {
             return resolve();
         }
 
-        return loadScript(
-            "https://cdn.jsdelivr.net/npm/@apollographql/graphql-playground-react@1.7.32/build/static/js/middleware.js",
-            resolve
-        );
+        loadScript(PATCHED_GQL_PLAYGROUND_URL, (err: Error) => {
+            if (err) {
+                return loadScript(ORIGINAL_GQL_PLAYGROUND_URL, resolve);
+            }
+
+            resolve();
+        });
     });
 };
 
 interface CreateApolloClientParams {
     uri: string;
 }
+
 interface PlaygroundProps {
     createApolloClient: (params: CreateApolloClientParams) => ApolloClient<any>;
 }
@@ -57,9 +62,11 @@ interface CreateApolloLinkCallableParams {
     endpoint: string;
     headers: Record<string, string>;
 }
+
 interface CreateApolloLinkCallableResult {
     link: ApolloLink;
 }
+
 interface CreateApolloLinkCallable {
     (params: CreateApolloLinkCallableParams): CreateApolloLinkCallableResult;
 }

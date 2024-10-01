@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "dependencies": {
     "@emotion/styled": "^11.10.6",
-    "@lexical/selection": "^0.16.0",
+    "@lexical/selection": "^0.16.1",
     "@webiny/app-page-builder-elements": "0.0.0",
     "@webiny/lexical-editor": "0.0.0",
     "@webiny/ui": "0.0.0",

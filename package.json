@@ -33,10 +33,11 @@
     "@babel/eslint-parser": "^7.23.9",
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
+    "@grpc/grpc-js": "^1.11.1",
     "@octokit/rest": "^20.0.2",
-    "@types/fs-extra": "^8.0.1",
+    "@types/fs-extra": "^11.0.4",
     "@types/jest": "^29.5.11",
-    "@types/node": "^18.0.0",
+    "@types/node": "^20.0.0",
     "@types/prettier": "^2.7.3",
     "@types/react": "18.2.79",
     "@types/react-dom": "18.2.25",
@@ -63,7 +64,7 @@
     "eslint-plugin-standard": "^5.0.0",
     "execa": "^5.1.1",
     "folder-hash": "^4.0.0",
-    "fs-extra": "^7.0.0",
+    "fs-extra": "^11.2.0",
     "get-stream": "^3.0.0",
     "get-yarn-workspaces": "^1.0.2",
     "git-cz": "^1.7.1",
@@ -71,7 +72,7 @@
     "glob": "^7.1.3",
     "graphql": "^15.7.2",
     "husky": "^4.2.5",
-    "inquirer": "^7.0.0",
+    "inquirer": "8.2.6",
     "inquirer-autocomplete-prompt": "^1.0.1",
     "inquirer-checkbox-plus-prompt": "^1.0.1",
     "inquirer-maxlength-input-prompt": "^1.0.0",
@@ -93,7 +94,7 @@
     "semver": "^7.5.4",
     "ts-expect": "^1.3.0",
     "ts-jest": "^29.1.2",
-    "typescript": "4.7.4",
+    "typescript": "4.9.5",
     "typescript-transform-paths": "^3.4.6",
     "verdaccio": "^5.29.1",
     "write-json-file": "^4.2.0",
@@ -203,6 +204,7 @@
   "resolutions": {
     "@emotion/react": "11.10.8",
     "@octokit/rest": "^20.0.2",
+    "braces": "^3.0.3",
     "@types/jsdom": "link:./typings/void",
     "@types/webpack": "^5.28.0",
     "browserify-sign": "^4.2.2",
@@ -218,18 +220,24 @@
     "tar": "^6.2.1",
     "express": "^4.19.2",
     "ejs": "^3.1.10",
+    "@grpc/grpc-js": "^1.11.1",
     "postcss": "^8.4.35",
     "semver": "7.5.4",
-    "typescript": "4.7.4",
     "@types/eslint": "8.2.1",
     "xml2js": "0.6.2",
     "yargs": "^17.3.1",
     "lerna@8.1.2": "patch:lerna@npm%3A8.1.2#./.yarn/patches/lerna-npm-8.1.2-be48ad2329.patch",
     "react-dnd": "^16.0.0",
-    "react-dnd-html5-backend": "^16.0.0"
+    "react-dnd-html5-backend": "^16.0.0",
+    "apollo-link@^1.2.14": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch",
+    "apollo-link@^1.0.0": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch",
+    "@material/base@^14.0.0": "patch:@material/base@npm%3A14.0.0#./.yarn/patches/@material-base-npm-14.0.0-36e0a55c42.patch"
   },
   "packageManager": "yarn@3.6.4",
   "dependencies": {
     "@types/hoist-non-react-statics": "^3.3.5"
+  },
+  "engines": {
+    "node": "~20.0.0"
   }
 }

@@ -2,14 +2,16 @@ import React, { useEffect, useImperativeHandle, useMemo, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import lodashNoop from "lodash/noop";
 import isEqual from "lodash/isEqual";
-
 import { Bind } from "./Bind";
 import { FormProps, GenericFormData } from "~/types";
 import { FormContext } from "./FormContext";
 import { FormPresenter } from "./FormPresenter";
 import { FormAPI } from "./FormApi";
 
-type Callbacks<T> = Pick<FormProps<T>, "onChange" | "onInvalid">;
+type Callbacks<T extends GenericFormData = GenericFormData> = Pick<
+    FormProps<T>,
+    "onChange" | "onInvalid"
+>;
 
 function FormInner<T extends GenericFormData = GenericFormData>(
     props: FormProps<T>,
@@ -108,6 +110,7 @@ function FormInner<T extends GenericFormData = GenericFormData>(
     const formContext = useMemo(() => {
         return {
             ...formApi,
+            isPristine: vm.isPristine,
             data: vm.data
         };
     }, [vm.data, vm.invalidFields]);
@@ -116,7 +119,11 @@ function FormInner<T extends GenericFormData = GenericFormData>(
         <FormContext.Provider value={formContext}>
             {React.createElement(
                 "webiny-form-container",
-                { onKeyDown: __onKeyDown, "data-testid": props["data-testid"] },
+                {
+                    onKeyDown: __onKeyDown,
+                    "data-testid": props["data-testid"],
+                    "data-pristine": formApi.isPristine
+                },
                 children({
                     data: formApi.data,
                     setValue: formApi.setValue,

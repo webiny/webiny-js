@@ -1,6 +1,12 @@
 import { ContextPlugin } from "@webiny/api";
 import { AdminUsersContext } from "@webiny/api-admin-users/types";
-import { PermissionsTenantLink } from "@webiny/api-security/types";
+import { PermissionsTenantLink, PermissionsTenantLinkTeam } from "@webiny/api-security/types";
+
+/**
+ * Package deep-equal does not have types.
+ */
+// @ts-expect-error
+import deepEqual from "deep-equal";
 
 export const createAdminUsersHooks = () => {
     return new ContextPlugin<AdminUsersContext>(async context => {
@@ -21,23 +27,28 @@ export const createAdminUsersHooks = () => {
 
             const data: PermissionsTenantLink["data"] = { groups: [], teams: [] };
 
-            if (user.team) {
-                const team = await security.getTeam({ where: { id: user.team } });
-                const teamGroups = await security.listGroups({ where: { id_in: team.groups } });
-                data.teams = [
-                    {
+            const userTeams = user.teams || [];
+            if (userTeams.length > 0) {
+                const teams = await security.listTeams({ where: { id_in: userTeams } });
+                for (const team of teams) {
+                    const teamGroups = await security.listGroups({ where: { id_in: team.groups } });
+                    data.teams.push({
                         id: team.id,
                         groups: teamGroups.map(group => ({
                             id: group.id,
                             permissions: group.permissions
                         }))
-                    }
-                ];
+                    });
+                }
             }
 
-            if (user.group) {
-                const group = await security.getGroup({ where: { id: user.group } });
-                data.groups = [{ id: group.id, permissions: group.permissions }];
+            const userGroups = user.groups || [];
+
+            if (userGroups.length > 0) {
+                const groups = await security.listGroups({ where: { id_in: userGroups } });
+                for (const group of groups) {
+                    data.groups.push({ id: group.id, permissions: group.permissions });
+                }
             }
 
             await security.createTenantLinks([
@@ -66,45 +77,52 @@ export const createAdminUsersHooks = () => {
             }
 
             // If group/team hasn't changed, we don't need to do anything.
-            const groupChanged = updatedUser.group !== originalUser.group;
-            const teamChanged = updatedUser.team !== originalUser.team;
-            if (!groupChanged && !teamChanged) {
+            const groupsChanged = !deepEqual(updatedUser.groups, originalUser.groups);
+            const teamsChanged = !deepEqual(updatedUser.teams, originalUser.teams);
+            if (!groupsChanged && !teamsChanged) {
                 return;
             }
 
             const data: PermissionsTenantLink["data"] = { groups: [], teams: [] };
 
-            if (updatedUser.team) {
+            const updatedUserTeams = updatedUser.teams || [];
+            if (updatedUserTeams.length > 0) {
                 data.teams = await security
-                    .getTeam({ where: { id: updatedUser.team } })
-                    .then(async team => {
-                        if (!team) {
+                    .listTeams({ where: { id_in: updatedUserTeams } })
+                    .then(async teams => {
+                        if (!teams.length) {
                             return [];
                         }
 
-                        const teamGroups = await security.listGroups({
-                            where: { id_in: team.groups }
-                        });
-
-                        return [
-                            {
+                        const tenantLinkTeams: PermissionsTenantLinkTeam[] = [];
+                        for (const team of teams) {
+                            const teamGroups = await security.listGroups({
+                                where: { id_in: team.groups }
+                            });
+                            tenantLinkTeams.push({
                                 id: team.id,
                                 groups: teamGroups.map(group => {
                                     return { id: group.id, permissions: group.permissions };
                                 })
-                            }
-                        ];
+                            });
+                        }
+
+                        return tenantLinkTeams;
                     });
             }
 
-            if (updatedUser.group) {
+            const updatedUserGroups = updatedUser.groups || [];
+            if (updatedUserGroups.length > 0) {
                 data.groups = await security
-                    .getGroup({ where: { id: updatedUser.group } })
-                    .then(group => {
-                        if (!group) {
+                    .listGroups({ where: { id_in: updatedUserGroups } })
+                    .then(groups => {
+                        if (!groups.length) {
                             return [];
                         }
-                        return [{ id: group.id, permissions: group.permissions }];
+
+                        return groups.map(group => {
+                            return { id: group.id, permissions: group.permissions };
+                        });
                     });
             }
 
@@ -141,7 +159,7 @@ export const createAdminUsersHooks = () => {
         // Before install, load `full-access` group and assign it to the new user.
         adminUsers.onSystemBeforeInstall.subscribe(async ({ user }) => {
             const group = await security.getGroup({ where: { slug: "full-access" } });
-            user.group = group.id;
+            user.groups = [group.id];
         });
 
         adminUsers.onInstall.subscribe(async ({ user }) => {

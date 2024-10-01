@@ -30,9 +30,7 @@ export const createManageSDL: CreateManageSDL = ({
         fields: model.fields,
         fieldTypePlugins
     });
-    if (inputFields.length === 0) {
-        return "";
-    }
+
     const listFilterFieldsRender = renderListFilterFields({
         model,
         fields: model.fields,

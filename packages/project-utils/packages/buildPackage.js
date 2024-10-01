@@ -12,7 +12,7 @@ module.exports = async options => {
     const { cwd } = options;
     options.logs !== false && console.log("Deleting existing build files...");
     rimraf.sync(join(cwd, "./dist"));
-    rimraf.sync(join(cwd, "*.tsbuildinfo"));
+    rimraf.sync(join(cwd, "*.tsbuildinfo"), { glob: true });
 
     options.logs !== false && console.log("Building...");
 
