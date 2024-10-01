@@ -212,25 +212,17 @@ export const ApiKeyForm = () => {
                                 <Cell span={12}>
                                     <PermissionsTitleCell span={12}>
                                         <Typography use={"subtitle1"}>{t`Permissions`}</Typography>
-                                        {featureFlags.copyPermissionsButton && (
-                                            <Tooltip content="Copy as JSON" placement={"top"}>
-                                                <IconButton
-                                                    icon={<CopyIcon />}
-                                                    onClick={() => {
-                                                        navigator.clipboard.writeText(
-                                                            JSON.stringify(
-                                                                data.permissions,
-                                                                null,
-                                                                2
-                                                            )
-                                                        );
-                                                        showSnackbar(
-                                                            "JSON data copied to clipboard."
-                                                        );
-                                                    }}
-                                                />
-                                            </Tooltip>
-                                        )}
+                                        <Tooltip content="Copy as JSON" placement={"top"}>
+                                            <IconButton
+                                                icon={<CopyIcon />}
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(
+                                                        JSON.stringify(data.permissions, null, 2)
+                                                    );
+                                                    showSnackbar("JSON data copied to clipboard.");
+                                                }}
+                                            />
+                                        </Tooltip>
                                     </PermissionsTitleCell>
                                 </Cell>
                                 <Cell span={12}>

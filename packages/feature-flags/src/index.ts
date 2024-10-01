@@ -1,5 +1,4 @@
 export type FeatureFlags<TFeatureFlags = Record<string, any>> = {
-    copyPermissionsButton?: boolean;
     experimentalAdminOmniSearch?: boolean;
     allowCmsLegacyRichTextInput?: boolean;
     newWatchCommand?: boolean;
