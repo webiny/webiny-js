@@ -24,11 +24,18 @@ import {
     GroupInput,
     PermissionsTenantLink,
     ListGroupsParams,
-    Security,
-    SecurityRole
+    Security
 } from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
+import {
+    listGroupsFromPlugins as baseListGroupsFromPlugins,
+    type ListGroupsFromPluginsParams
+} from "./groupsTeamsPlugins/listGroupsFromPlugins";
+import {
+    getGroupFromPlugins as baseGetGroupFromPlugins,
+    type GetGroupFromPluginsParams
+} from "./groupsTeamsPlugins/getGroupFromPlugins";
 
 const CreateDataModel = withFields({
     tenant: string({ validation: validation.create("required") }),
@@ -152,7 +159,7 @@ async function updateTenantLinks(
 export const createGroupsMethods = ({
     getTenant: initialGetTenant,
     storageOperations,
-    listPluginRoles
+    listGroupsFromPluginsCallback
 }: SecurityConfig) => {
     const getTenant = () => {
         const tenant = initialGetTenant();
@@ -162,37 +169,16 @@ export const createGroupsMethods = ({
         return tenant;
     };
 
-    const listGroupsFromPlugins = (params?: ListGroupsParams): SecurityRole[] => {
-        if (!listPluginRoles) {
-            return [];
-        }
-
-        const groups = listPluginRoles().map(plugin => {
-            return plugin.securityRole;
-        });
-
-        const where = params?.where;
-        if (!where) {
-            return groups;
-        }
-
-        return groups.filter(group => {
-            if (where.id_in) {
-                return where.id_in.includes(group.id);
-            }
-            return group;
+    const listGroupsFromPlugins = (params: Pick<ListGroupsFromPluginsParams, "where">): Group[] => {
+        return baseListGroupsFromPlugins({
+            ...params,
+            listGroupsFromPluginsCallback
         });
     };
-
-    const getGroupFromPlugins = (params: GetGroupParams) => {
-        const { where } = params;
-        const allGroupsFromPlugins = listGroupsFromPlugins();
-        return allGroupsFromPlugins.find(role => {
-            if (where.id) {
-                return role.id === where.id;
-            }
-
-            return role.slug === where.slug;
+    const getGroupFromPlugins = (params: Pick<GetGroupFromPluginsParams, "where">): Group => {
+        return baseGetGroupFromPlugins({
+            ...params,
+            listGroupsFromPluginsCallback
         });
     };
 
@@ -211,12 +197,13 @@ export const createGroupsMethods = ({
 
             let group: Group | null = null;
             try {
-                const finalWhere = { ...where, tenant: where.tenant || getTenant() };
-                const groupFromPlugins = getGroupFromPlugins({ where: finalWhere });
+                const whereWithTenant = { ...where, tenant: where.tenant || getTenant() };
+                const groupFromPlugins = getGroupFromPlugins({ where: whereWithTenant });
+
                 if (groupFromPlugins) {
                     group = groupFromPlugins;
                 } else {
-                    group = await storageOperations.getGroup({ where: finalWhere });
+                    group = await storageOperations.getGroup({ where: whereWithTenant });
                 }
             } catch (ex) {
                 throw new WebinyError(
@@ -234,14 +221,14 @@ export const createGroupsMethods = ({
         async listGroups(this: Security, { where }: ListGroupsParams = {}) {
             await checkPermission(this);
             try {
-                const finalWhere = { ...where, tenant: getTenant() };
+                const whereWithTenant = { ...where, tenant: getTenant() };
 
                 const groupsFromDatabase = await storageOperations.listGroups({
-                    where: finalWhere,
+                    where: whereWithTenant,
                     sort: ["createdOn_ASC"]
                 });
 
-                const groupsFromPlugins = listGroupsFromPlugins({ where });
+                const groupsFromPlugins = listGroupsFromPlugins({ where: whereWithTenant });
 
                 // We don't have to do any extra sorting because, as we can see above, `createdOn_ASC` is
                 // hardcoded, and groups coming from plugins don't have `createdOn`, meaning they should

@@ -36,8 +36,8 @@ export interface SecurityConfig {
     advancedAccessControlLayer?: ProjectPackageFeatures["advancedAccessControlLayer"];
     getTenant: GetTenant;
     storageOperations: SecurityStorageOperations;
-    listPluginRoles?: () => Array<Plugin<SecurityRolePlugin>>;
-    listPluginTeams?: () => Array<Plugin<SecurityTeamPlugin>>;
+    listGroupsFromPluginsCallback?: () => Array<Plugin<SecurityRolePlugin>>;
+    listTeamsFromPluginsCallback?: () => Array<Plugin<SecurityTeamPlugin>>;
 }
 
 export interface ErrorEvent extends InstallEvent {

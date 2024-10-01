@@ -43,8 +43,8 @@ export const createSecurityContext = ({ storageOperations }: SecurityConfig) => 
                 return tenant ? tenant.id : undefined;
             },
             storageOperations,
-            listPluginRoles: () => context.plugins.byType("security-role"),
-            listPluginTeams: () => context.plugins.byType("security-team")
+            listGroupsFromPluginsCallback: () => context.plugins.byType("security-role"),
+            listTeamsFromPluginsCallback: () => context.plugins.byType("security-team")
         });
 
         attachGroupInstaller(context.security);

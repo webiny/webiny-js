@@ -24,6 +24,14 @@ import {
 } from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
+import {
+    listTeamsFromPlugins as baseListTeamsFromPlugins,
+    type ListTeamsFromPluginsParams
+} from "./groupsTeamsPlugins/listTeamsFromPlugins";
+import {
+    getTeamFromPlugins as baseGetTeamFromPlugins,
+    type GetTeamFromPluginsParams
+} from "./groupsTeamsPlugins/getTeamFromPlugins";
 
 const CreateDataModel = withFields({
     tenant: string({ validation: validation.create("required") }),
@@ -114,7 +122,7 @@ async function updateTenantLinks(
 export const createTeamsMethods = ({
     getTenant: initialGetTenant,
     storageOperations,
-    listPluginTeams
+    listTeamsFromPluginsCallback
 }: SecurityConfig) => {
     const getTenant = () => {
         const tenant = initialGetTenant();
@@ -124,36 +132,16 @@ export const createTeamsMethods = ({
         return tenant;
     };
 
-    const listTeamsFromPlugins = (params?: ListTeamsParams) => {
-        if (!listPluginTeams) {
-            return [];
-        }
-        const teams = listPluginTeams().map(plugin => {
-            return plugin.securityTeam;
-        });
-
-        const where = params?.where;
-        if (!where) {
-            return teams;
-        }
-
-        return teams.filter(team => {
-            if (where.id_in) {
-                return where.id_in.includes(team.id);
-            }
-            return team;
+    const listTeamsFromPlugins = (params: Pick<ListTeamsFromPluginsParams, "where">): Team[] => {
+        return baseListTeamsFromPlugins({
+            ...params,
+            listTeamsFromPluginsCallback
         });
     };
-
-    const getTeamFromPlugins = (params: GetTeamParams) => {
-        const { where } = params;
-        const allTeamsFromPlugins = listTeamsFromPlugins();
-        return allTeamsFromPlugins.find(team => {
-            if (where.id) {
-                return team.id === where.id;
-            }
-
-            return team.slug === where.slug;
+    const getTeamFromPlugins = (params: Pick<GetTeamFromPluginsParams, "where">): Team => {
+        return baseGetTeamFromPlugins({
+            ...params,
+            listTeamsFromPluginsCallback
         });
     };
 
@@ -172,14 +160,13 @@ export const createTeamsMethods = ({
 
             let team: Team | null = null;
             try {
-                const teamFromPlugins = getTeamFromPlugins({ where });
+                const whereWithTenant = { ...where, tenant: where.tenant || getTenant() };
+                const teamFromPlugins = getTeamFromPlugins({ where: whereWithTenant });
 
                 if (teamFromPlugins) {
                     team = teamFromPlugins;
                 } else {
-                    team = await storageOperations.getTeam({
-                        where: { ...where, tenant: where.tenant || getTenant() }
-                    });
+                    team = await storageOperations.getTeam({ where: whereWithTenant });
                 }
             } catch (ex) {
                 throw new WebinyError(
@@ -197,16 +184,19 @@ export const createTeamsMethods = ({
         async listTeams(this: Security, { where }: ListTeamsParams = {}) {
             await checkPermission(this);
             try {
-                const databaseGroups = await storageOperations.listTeams({
-                    where: {
-                        ...where,
-                        tenant: getTenant()
-                    },
+                const whereWithTenant = { ...where, tenant: getTenant() };
+
+                const teamsFromDatabase = await storageOperations.listTeams({
+                    where: whereWithTenant,
                     sort: ["createdOn_ASC"]
                 });
 
-                const teamsFromPlugins = listTeamsFromPlugins({ where });
-                return [...teamsFromPlugins, ...databaseGroups];
+                const teamsFromPlugins = listTeamsFromPlugins({ where: whereWithTenant });
+
+                // We don't have to do any extra sorting because, as we can see above, `createdOn_ASC` is
+                // hardcoded, and teams coming from plugins don't have `createdOn`, meaning they should
+                // always be at the top of the list.
+                return [...teamsFromPlugins, ...teamsFromDatabase];
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list teams.",
