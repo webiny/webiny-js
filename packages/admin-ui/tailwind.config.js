@@ -19,46 +19,105 @@ module.exports = {
                 "2xl": "1400px"
             }
         },
-        extend: {
-            colors: {
-                border: "hsl(var(--border))",
-                input: "hsl(var(--input))",
-                ring: "hsl(var(--ring))",
-                background: "hsl(var(--background))",
-                foreground: "hsl(var(--foreground))",
-                primary: {
-                    DEFAULT: "hsl(var(--primary))",
-                    foreground: "hsl(var(--primary-foreground))"
-                },
-                secondary: {
-                    DEFAULT: "hsl(var(--secondary))",
-                    foreground: "hsl(var(--secondary-foreground))"
-                },
-                destructive: {
-                    DEFAULT: "hsl(var(--destructive))",
-                    foreground: "hsl(var(--destructive-foreground))"
-                },
-                muted: {
-                    DEFAULT: "hsl(var(--muted))",
-                    foreground: "hsl(var(--muted-foreground))"
-                },
-                accent: {
-                    DEFAULT: "hsl(var(--accent))",
-                    foreground: "hsl(var(--accent-foreground))"
-                },
-                popover: {
-                    DEFAULT: "hsl(var(--popover))",
-                    foreground: "hsl(var(--popover-foreground))"
-                },
-                card: {
-                    DEFAULT: "hsl(var(--card))",
-                    foreground: "hsl(var(--card-foreground))"
-                }
+        backgroundColor: {
+            neutral: {
+                DEFAULT: "hsl(var(--bg-neutral))",
+                dark: "hsl(var(--bg-neutral-dark))",
+                strong: "hsl(var(--bg-neutral-strong))",
+                xstrong: "hsl(var(--bg-neutral-xstrong))",
+                muted: "hsl(var(--bg-neutral-muted))",
+                dimmed: "hsl(var(--bg-neutral-dimmed))",
+                subtle: "hsl(var(--bg-neutral-subtle))",
+                light: "hsl(var(--bg-neutral-light))",
+                disabled: "hsl(var(--bg-neutral-disabled))",
+                base: "hsl(var(--bg-neutral-base))"
             },
-            borderRadius: {
-                lg: `var(--radius)`,
-                md: `calc(var(--radius) - 2px)`,
-                sm: "calc(var(--radius) - 4px)"
+            primary: {
+                DEFAULT: "hsl(var(--bg-primary))",
+                strong: "hsl(var(--bg-primary-strong))",
+                xstrong: "hsl(var(--bg-primary-xstrong))",
+                muted: "hsl(var(--bg-primary-muted))",
+                subtle: "hsl(var(--bg-primary-subtle))",
+                disabled: "hsl(var(--bg-primary-disabled))"
+            },
+            secondary: {
+                DEFAULT: "hsl(var(--bg-secondary))",
+                strong: "hsl(var(--bg-secondary-strong))",
+                xstrong: "hsl(var(--bg-secondary-xstrong))",
+                muted: "hsl(var(--bg-secondary-muted))",
+                subtle: "hsl(var(--bg-secondary-subtle))",
+                disabled: "hsl(var(--bg-secondary-disabled))"
+            },
+            success: {
+                DEFAULT: "hsl(var(--bg-success))",
+                strong: "hsl(var(--bg-success-strong))",
+                xstrong: "hsl(var(--bg-success-xstrong))",
+                muted: "hsl(var(--bg-success-muted))",
+                subtle: "hsl(var(--bg-success-subtle))",
+                disabled: "hsl(var(--bg-success-disabled))"
+            },
+            destructive: {
+                DEFAULT: "hsl(var(--bg-destructive))",
+                strong: "hsl(var(--bg-destructive-strong))",
+                xstrong: "hsl(var(--bg-destructive-xstrong))",
+                muted: "hsl(var(--bg-destructive-muted))",
+                subtle: "hsl(var(--bg-destructive-subtle))",
+                disabled: "hsl(var(--bg-destructive-disabled))"
+            },
+            warning: {
+                DEFAULT: "hsl(var(--bg-warning))",
+                strong: "hsl(var(--bg-warning-strong))",
+                xstrong: "hsl(var(--bg-warning-xstrong))",
+                muted: "hsl(var(--bg-warning-muted))",
+                subtle: "hsl(var(--bg-warning-subtle))",
+                disabled: "hsl(var(--bg-warning-disabled))"
+            }
+        },
+        colors: {
+            primary: "hsl(var(--text-primary))",
+            subtle: "hsl(var(--text-subtle))",
+            muted: "hsl(var(--text-muted))",
+            dimmed: "hsl(var(--text-dimmed))",
+            disabled: "hsl(var(--text-disabled))",
+            white: "hsl(var(--text-white))"
+        },
+        borderColor: {
+            neutral: {
+                dark: "hsl(var(--border-neutral-dark))",
+                strong: "hsl(var(--border-neutral-strong))",
+                muted: "hsl(var(--border-neutral-muted))",
+                dimmed: "hsl(var(--border-neutral-dimmed))",
+                subtle: "hsl(var(--border-neutral-subtle))"
+            },
+
+            accent: {
+                DEFAULT: "hsl(var(--border-accent-default))",
+                "accent-subtle": "hsl(var(--border-accent-subtle))"
+            },
+            destructive: "hsl(var(--border-destructive-default))",
+            success: "hsl(var(--border-success-default))"
+        },
+        borderRadius: {
+            DEFAULT: "var(--radius-sm)",
+            xs: "var(--radius-xs)",
+            sm: "var(--radius-sm)",
+            md: "var(--radius-md)",
+            lg: "var(--radius-lg)",
+            xl: "var(--radius-xl)",
+            xxl: "var(--radius-xxl)"
+        },
+        borderWidth: {
+            sm: "var(--border-width-sm)",
+            md: "var(--border-width-md)"
+        },
+        extend: {
+            padding: {
+                xs: "var(--padding-xs)",
+                sm: "var(--padding-sm)",
+                md: "var(--padding-md)",
+                lg: "var(--padding-lg)",
+                xl: "var(--padding-xl)",
+                xxl: "var(--padding-xxl)"
             },
             fontFamily: {
                 sans: ["var(--font-sans)", ...fontFamily.sans]
