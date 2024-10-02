@@ -53,6 +53,7 @@ export interface TeamsDataListProps {
     // TODO @ts-refactor delete and go up the tree and sort it out
     [key: string]: any;
 }
+
 export const TeamsDataList = () => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState(SORTERS[0].sorter);
@@ -182,10 +183,10 @@ export const TeamsDataList = () => {
                                         placement={"bottom"}
                                         content={
                                             <span>
-                                                    {item.system
-                                                        ? t`Cannot delete system teams.`
-                                                        : t`Cannot delete teams created via extensions.`}
-                                                </span>
+                                                {item.system
+                                                    ? t`Cannot delete system teams.`
+                                                    : t`Cannot delete teams created via extensions.`}
+                                            </span>
                                         }
                                     >
                                         <DeleteIcon disabled />
