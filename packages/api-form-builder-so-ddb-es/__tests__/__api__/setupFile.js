@@ -6,8 +6,9 @@ const { configurations } = require("../../dist/configurations");
 const { base: baseConfigurationPlugin } = require("../../dist/elasticsearch/indices/base");
 const { setStorageOps } = require("@webiny/project-utils/testing/environment");
 const { getElasticsearchClient } = require("@webiny/project-utils/testing/elasticsearch");
+const { getElasticsearchIndexPrefix } = require("@webiny/api-elasticsearch");
 
-const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+const prefix = getElasticsearchIndexPrefix();
 if (!prefix.includes("api-")) {
     process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-form-builder-env-`;
 }

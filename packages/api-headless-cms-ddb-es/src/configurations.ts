@@ -1,7 +1,11 @@
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import { CmsContext } from "~/types";
-import { getLastAddedIndexPlugin } from "@webiny/api-elasticsearch";
+import {
+    getElasticsearchIndexPrefix,
+    getLastAddedIndexPlugin,
+    isSharedElasticsearchIndex
+} from "@webiny/api-elasticsearch";
 import { ElasticsearchIndexRequestBody } from "@webiny/api-elasticsearch/types";
 import { CmsEntryElasticsearchIndexPlugin } from "~/plugins";
 
@@ -41,12 +45,13 @@ export const configurations: Configurations = {
             );
         }
 
-        const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+        const sharedIndex = isSharedElasticsearchIndex();
         const index = [sharedIndex ? "root" : tenant, "headless-cms", locale, model.modelId]
             .join("-")
             .toLowerCase();
 
-        const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+        const prefix = getElasticsearchIndexPrefix();
+
         if (!prefix) {
             return {
                 index

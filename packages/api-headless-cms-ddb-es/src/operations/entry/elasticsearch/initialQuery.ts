@@ -2,6 +2,7 @@ import WebinyError from "@webiny/error";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
 import { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types";
 import { createLatestRecordType, createPublishedRecordType } from "../recordType";
+import { isSharedElasticsearchIndex } from "@webiny/api-elasticsearch";
 
 export const createBaseQuery = (): ElasticsearchBoolQueryConfig => {
     return {
@@ -34,7 +35,7 @@ export const createInitialQuery = (params: Params): ElasticsearchBoolQueryConfig
      *
      * TODO determine if we want to search across tenants in shared index?
      */
-    const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+    const sharedIndex = isSharedElasticsearchIndex();
     if (sharedIndex) {
         /**
          * Tenant for the filtering is taken from the model.
