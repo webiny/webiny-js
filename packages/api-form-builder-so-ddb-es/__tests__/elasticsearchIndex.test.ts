@@ -1,4 +1,5 @@
 import { configurations } from "~/configurations";
+import { getElasticsearchIndexPrefix } from "@webiny/api-elasticsearch";
 
 describe("Elasticsearch index", () => {
     const withLocaleItems = [
