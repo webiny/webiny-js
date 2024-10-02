@@ -8,7 +8,6 @@ import {
     ListItemText,
     ListItemTextSecondary,
     ListItemMeta,
-    ListActions,
     DataListModalOverlayAction,
     DataListModalOverlay
 } from "@webiny/ui/List";

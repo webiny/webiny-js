@@ -28,7 +28,6 @@ import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as CopyIcon } from "@material-design-icons/svg/outlined/content_copy.svg";
-import { featureFlags } from "@webiny/feature-flags";
 import { Group } from "~/types";
 
 const t = i18n.ns("app-security/admin/roles/form");

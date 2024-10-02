@@ -35,7 +35,6 @@ import { ReactComponent as CopyIcon } from "@material-design-icons/svg/outlined/
 import styled from "@emotion/styled";
 import { ApiKey } from "~/types";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { featureFlags } from "@webiny/feature-flags";
 
 const t = i18n.ns("app-security-admin-users/admin/api-keys/form");
 
