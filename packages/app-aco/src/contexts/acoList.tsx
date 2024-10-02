@@ -288,12 +288,10 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
 
             let where = dotPropImmutable.set({}, folderIdPath, state.folderId);
 
+            // In case of a search or filters applied, let's get the where condition based on the current folder ID,
+            // ownership status, and other existing filters in the state.
             if (isSearch) {
-                if (state.folderId === ROOT_FOLDER) {
-                    where = undefined;
-                } else {
-                    where = getWhere();
-                }
+                where = getWhere();
             }
 
             const params: ListSearchRecordsQueryVariables = {
