@@ -2,9 +2,6 @@
  * Rename file to types.ts when switching the package to Typescript.
  */
 
-import glob from "fast-glob";
-import { dirname, join } from "path";
-
 export type GenericRecordKey = string | number | symbol;
 
 export type GenericRecord<K extends GenericRecordKey = GenericRecordKey, V = any> = Record<K, V>;
@@ -166,7 +163,7 @@ export interface CliContext {
     resolve: (dir: string) => string;
 
     /**
-     * Provides a way to store some meta data in the project's local ".webiny/cli.json" file.
+     * Provides a way to store some metadata in the project's local ".webiny/cli.json" file.
      * Only trivial data should be passed here, specific to the current project.
      */
     localStorage: {

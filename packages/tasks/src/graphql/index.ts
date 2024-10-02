@@ -276,7 +276,6 @@ const createGraphQL = () => {
                     /**
                      * We need to think of a way to pass the args type to the resolver without assigning it directly.
                      */
-                    // @ts-expect-error
                     getTask: async (_, args: IGetTaskQueryParams, context) => {
                         return resolve(async () => {
                             await checkPermissions(context, {
@@ -320,7 +319,6 @@ const createGraphQL = () => {
                     /**
                      * We need to think of a way to pass the args type to the resolver without assigning it directly.
                      */
-                    // @ts-expect-error
                     abortTask: async (_, args: IAbortTaskMutationParams, context) => {
                         await checkPermissions(context, {
                             rwd: "w"
@@ -332,7 +330,6 @@ const createGraphQL = () => {
                     /**
                      * We need to think of a way to pass the args type to the resolver without assigning it directly.
                      */
-                    // @ts-expect-error
                     triggerTask: async (_, args: ITriggerTaskMutationParams, context) => {
                         await checkPermissions(context, {
                             rwd: "w"
@@ -344,7 +341,6 @@ const createGraphQL = () => {
                     /**
                      * We need to think of a way to pass the args type to the resolver without assigning it directly.
                      */
-                    // @ts-expect-error
                     deleteTask: async (_, args: IDeleteTaskMutationParams, context) => {
                         await checkPermissions(context, {
                             rwd: "d"

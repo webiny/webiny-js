@@ -15,7 +15,7 @@ import { ButtonSecondary } from "@webiny/ui/Button";
 import { ReactComponent as SearchIcon } from "~/editor/assets/icons/search.svg";
 import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
 import { LIST_PAGE_TEMPLATES } from "~/admin/views/PageTemplates/graphql";
-import PagePreview from "~/admin/plugins/pageDetails/previewContent/PagePreview";
+import { PagePreview } from "~/admin/plugins/pageDetails/previewContent/PagePreview";
 import {
     listItem,
     activeListItem,

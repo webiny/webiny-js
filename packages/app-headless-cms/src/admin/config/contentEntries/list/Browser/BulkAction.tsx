@@ -73,7 +73,7 @@ export const BaseBulkAction = makeDecoratable(
 
 const useWorker = () => {
     const { model } = useModel();
-    const { selected, setSelected, getWhere, isSelectedAll } = useContentEntriesList();
+    const { selected, setSelected, getWhere, isSelectedAll, search } = useContentEntriesList();
     const { bulkAction } = useCms();
     const { current: worker } = useRef(new Worker<CmsContentEntry>());
 
@@ -100,7 +100,7 @@ const useWorker = () => {
         ) => worker.processInSeries(callback, chunkSize),
         processInBulk: async ({ action, where: initialWhere, data }: ProcessInBulkParams) => {
             const where = merge(getWhere(), initialWhere);
-            await bulkAction({ model, action, where, data });
+            await bulkAction({ model, action, where, search, data });
         },
         resetItems: resetItems,
         results: worker.results,
