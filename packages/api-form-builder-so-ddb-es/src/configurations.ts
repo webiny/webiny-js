@@ -1,5 +1,9 @@
 import WebinyError from "@webiny/error";
-import { getLastAddedIndexPlugin, isSharedElasticsearchIndex } from "@webiny/api-elasticsearch";
+import {
+    getElasticsearchIndexPrefix,
+    getLastAddedIndexPlugin,
+    isSharedElasticsearchIndex
+} from "@webiny/api-elasticsearch";
 import { FormElasticsearchIndexPlugin } from "~/plugins";
 import { ElasticsearchIndexRequestBody } from "@webiny/api-elasticsearch/types";
 import { FormBuilderContext } from "@webiny/api-form-builder/types";
@@ -54,10 +58,7 @@ export const configurations: Configurations = {
             .join("-")
             .toLowerCase();
 
-        const prefix =
-            process.env.ELASTIC_SEARCH_INDEX_PREFIX ||
-            process.env.WEBINY_ELASTIC_SEARCH_INDEX_PREFIX ||
-            "";
+        const prefix = getElasticsearchIndexPrefix();
         if (!prefix) {
             return {
                 index

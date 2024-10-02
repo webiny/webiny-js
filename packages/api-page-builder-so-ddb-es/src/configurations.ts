@@ -1,5 +1,9 @@
 import WebinyError from "@webiny/error";
-import { getLastAddedIndexPlugin, isSharedElasticsearchIndex } from "@webiny/api-elasticsearch";
+import {
+    getElasticsearchIndexPrefix,
+    getLastAddedIndexPlugin,
+    isSharedElasticsearchIndex
+} from "@webiny/api-elasticsearch";
 import { PageElasticsearchIndexPlugin } from "~/plugins";
 import { PbContext } from "~/types";
 import { ElasticsearchIndexRequestBody } from "@webiny/api-elasticsearch/types";
@@ -53,7 +57,7 @@ export const configurations: Configurations = {
             .join("-")
             .toLowerCase();
 
-        const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX;
+        const prefix = getElasticsearchIndexPrefix();
         if (!prefix) {
             return {
                 index
