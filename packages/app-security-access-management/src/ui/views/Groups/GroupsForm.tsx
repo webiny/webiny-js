@@ -221,7 +221,10 @@ export const GroupsForm = () => {
                                 <Grid>
                                     <PermissionsTitleCell span={12}>
                                         <Typography use={"subtitle1"}>{t`Permissions`}</Typography>
-                                        <Tooltip content="Copy as JSON" placement={"top"}>
+                                        <Tooltip
+                                            content="Copy permissions as JSON"
+                                            placement={"top"}
+                                        >
                                             <IconButton
                                                 icon={<CopyIcon />}
                                                 onClick={() => {
