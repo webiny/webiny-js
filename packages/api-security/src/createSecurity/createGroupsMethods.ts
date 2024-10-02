@@ -303,11 +303,28 @@ export const createGroupsMethods = ({
             const model = await new UpdateDataModel().populate(input);
             await model.validate();
 
-            const original = await storageOperations.getGroup({
+            const original = await this.getGroup({
                 where: { tenant: getTenant(), id }
             });
             if (!original) {
                 throw new NotFoundError(`Group "${id}" was not found!`);
+            }
+
+            // We can't proceed with the update if one of the following is true:
+            // 1. The group is system group.
+            // 2. The group is created via a plugin.
+            if (original.system) {
+                throw new WebinyError(
+                    `Cannot update system groups.`,
+                    "CANNOT_UPDATE_SYSTEM_GROUPS"
+                );
+            }
+
+            if (original.plugin) {
+                throw new WebinyError(
+                    `Cannot update groups created via plugins.`,
+                    "CANNOT_UPDATE_PLUGIN_GROUPS"
+                );
             }
 
             const data = await model.toJSON({ onlyDirty: true });
@@ -341,21 +358,27 @@ export const createGroupsMethods = ({
         async deleteGroup(this: Security, id: string): Promise<void> {
             await checkPermission(this);
 
-            const group = await storageOperations.getGroup({ where: { tenant: getTenant(), id } });
+            const group = await this.getGroup({ where: { tenant: getTenant(), id } });
             if (!group) {
                 throw new NotFoundError(`Group "${id}" was not found!`);
             }
 
             // We can't proceed with the deletion if one of the following is true:
             // 1. The group is system group.
-            // 2. The group is being used by one or more tenant links.
-            // 3. The group is being used by one or more teams.
-
-            // 1. Is system group?
+            // 2. The group is created via a plugin.
+            // 3. The group is being used by one or more tenant links.
+            // 4. The group is being used by one or more teams.
             if (group.system) {
                 throw new WebinyError(
                     `Cannot delete system groups.`,
                     "CANNOT_DELETE_SYSTEM_GROUPS"
+                );
+            }
+
+            if (group.plugin) {
+                throw new WebinyError(
+                    `Cannot delete groups created via plugins.`,
+                    "CANNOT_DELETE_PLUGIN_GROUPS"
                 );
             }
 

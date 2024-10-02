@@ -16,7 +16,7 @@ export const listTeamsFromPlugins = (params: ListTeamsFromPluginsParams) => {
     }
 
     const teams = listTeamsFromPluginsCallback().map(plugin => {
-        return plugin.securityRole;
+        return plugin.securityTeam;
     });
 
     return teams.filter(team => {

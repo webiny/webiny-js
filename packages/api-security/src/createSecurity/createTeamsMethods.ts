@@ -266,11 +266,26 @@ export const createTeamsMethods = ({
             const model = await new UpdateDataModel().populate(input);
             await model.validate();
 
-            const original = await storageOperations.getTeam({
+            const original = await this.getTeam({
                 where: { tenant: getTenant(), id }
             });
+
             if (!original) {
                 throw new NotFoundError(`Team "${id}" was not found!`);
+            }
+
+            // We can't proceed with the update if one of the following is true:
+            // 1. The group is system group.
+            // 2. The group is created via a plugin.
+            if (original.system) {
+                throw new WebinyError(`Cannot update system teams.`, "CANNOT_UPDATE_SYSTEM_TEAMS");
+            }
+
+            if (original.plugin) {
+                throw new WebinyError(
+                    `Cannot update teams created via plugins.`,
+                    "CANNOT_UPDATE_PLUGIN_TEAMS"
+                );
             }
 
             const data = await model.toJSON({ onlyDirty: true });
@@ -304,9 +319,25 @@ export const createTeamsMethods = ({
         async deleteTeam(this: Security, id: string): Promise<void> {
             await checkPermission(this);
 
-            const team = await storageOperations.getTeam({ where: { tenant: getTenant(), id } });
+            const team = await this.getTeam({ where: { tenant: getTenant(), id } });
             if (!team) {
                 throw new NotFoundError(`Team "${id}" was not found!`);
+            }
+
+            // We can't proceed with the deletion if one of the following is true:
+            // 1. The group is system group.
+            // 2. The group is created via a plugin.
+            // 3. The group is being used by one or more tenant links.
+            // 4. The group is being used by one or more teams.
+            if (team.system) {
+                throw new WebinyError(`Cannot delete system teams.`, "CANNOT_DELETE_SYSTEM_TEAMS");
+            }
+
+            if (team.plugin) {
+                throw new WebinyError(
+                    `Cannot delete teams created via plugins.`,
+                    "CANNOT_DELETE_PLUGIN_TEAMS"
+                );
             }
 
             const usagesInTenantLinks = await storageOperations
