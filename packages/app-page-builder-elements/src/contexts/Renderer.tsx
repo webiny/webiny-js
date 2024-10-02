@@ -1,10 +1,10 @@
 import React, { createContext } from "react";
 import { usePageElements } from "~/hooks/usePageElements";
-import { RendererContextValue, RendererProviderProps } from "~/types";
+import { GetElement, RendererContextValue, RendererProviderProps } from "~/types";
+import { ElementInputs, ElementInputValues } from "~/inputs/ElementInput";
+import { useElementInputs } from "~/contexts/ElementRendererInputs";
 
-export const RendererContext = createContext<RendererContextValue>(
-    null as unknown as RendererContextValue
-);
+export const RendererContext = createContext<RendererContextValue | undefined>(undefined);
 
 export const RendererProvider = ({
     children,
@@ -12,13 +12,24 @@ export const RendererProvider = ({
     attributes,
     meta
 }: RendererProviderProps) => {
-    const getElement = () => element;
+    const inputValues = useElementInputs();
+    const getElement = (() => element) as GetElement;
     const getAttributes = () => attributes;
+    const getInputValues = <TInputs extends ElementInputs>() => {
+        return inputValues as ElementInputValues<TInputs>;
+    };
 
     const pageElements = usePageElements();
 
-    // @ts-expect-error Resolve the `getElement` issue.
-    const value: RendererContextValue = { ...pageElements, getElement, getAttributes, meta };
+    const value: RendererContextValue = {
+        ...pageElements,
+        beforeRenderer: pageElements.beforeRenderer ?? null,
+        afterRenderer: pageElements.beforeRenderer ?? null,
+        getElement,
+        getAttributes,
+        getInputValues,
+        meta
+    };
 
     return <RendererContext.Provider value={value}>{children}</RendererContext.Provider>;
 };

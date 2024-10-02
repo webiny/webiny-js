@@ -10,13 +10,17 @@ export default {
     getVariableValue(element) {
         const variables = useElementVariables(element);
 
+        if (!variables.length) {
+            return null;
+        }
+
         return {
             label:
-                variables?.find((variable: PbBlockVariable<string>) =>
+                variables.find((variable: PbBlockVariable<string>) =>
                     variable.id.endsWith(".label")
                 )?.value || null,
             url:
-                variables?.find((variable: PbBlockVariable<string>) => variable.id.endsWith(".url"))
+                variables.find((variable: PbBlockVariable<string>) => variable.id.endsWith(".url"))
                     ?.value || null
         };
     },

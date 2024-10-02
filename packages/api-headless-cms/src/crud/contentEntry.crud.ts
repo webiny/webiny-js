@@ -5,12 +5,15 @@ import {
     CmsContext,
     CmsEntry,
     CmsEntryContext,
+    CmsEntryGetParams,
     CmsEntryListParams,
     CmsEntryListWhere,
     CmsEntryMeta,
     CmsEntryValues,
     CmsModel,
     CmsStorageEntry,
+    CreateCmsEntryInput,
+    CreateCmsEntryOptionsInput,
     EntryBeforeListTopicParams,
     HeadlessCmsStorageOperations,
     OnEntryAfterCreateTopicParams,
@@ -378,7 +381,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
         return entry;
     };
-    const createEntry: CmsEntryContext["createEntry"] = async (model, rawInput, options) => {
+    const createEntry: CmsEntryContext["createEntry"] = async <T = CmsEntryValues>(
+        model: CmsModel,
+        rawInput: CreateCmsEntryInput,
+        options?: CreateCmsEntryOptionsInput
+    ): Promise<CmsEntry<T>> => {
         await accessControl.ensureCanAccessEntry({ model, rwd: "w" });
 
         const { entry, input } = await createEntryData({
@@ -416,7 +423,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 input
             });
 
-            return entry;
+            return entry as CmsEntry<T>;
         } catch (ex) {
             await onEntryCreateError.publish({
                 error: ex,
@@ -1304,9 +1311,12 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * @internal
          */
-        async getEntry(model, params) {
+        async getEntry<T = CmsEntryValues>(
+            model: CmsModel,
+            params: CmsEntryGetParams
+        ): Promise<CmsEntry<T>> {
             return context.benchmark.measure("headlessCms.crud.entries.getEntry", async () => {
-                return await getEntryUseCase.execute(model, params);
+                return (await getEntryUseCase.execute(model, params)) as CmsEntry<T>;
             });
         },
         /**
@@ -1355,7 +1365,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 }
             );
         },
-        async createEntry(model, input, options) {
+        async createEntry<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            input: CreateCmsEntryInput<T>,
+            options?: CreateCmsEntryOptionsInput
+        ): Promise<CmsEntry<T>> {
             return context.benchmark.measure("headlessCms.crud.entries.createEntry", async () => {
                 return createEntry(model, input, options);
             });
