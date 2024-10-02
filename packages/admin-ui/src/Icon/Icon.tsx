@@ -2,6 +2,7 @@ import React from "react";
 import * as AccessibleIcon from "@radix-ui/react-accessible-icon";
 import { makeDecoratable } from "@webiny/react-composition";
 import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "~/utils";
 
 const iconVariants = cva("", {
     variants: {
@@ -36,7 +37,7 @@ const IconBase = React.forwardRef<HTMLOrSVGElement, IconProps>((props, ref) => {
         <AccessibleIcon.Root label={label}>
             {React.cloneElement(icon, {
                 ...rest,
-                className: iconVariants({ color, size, className }),
+                className: cn(iconVariants({ color, size, className })),
                 ref
             })}
         </AccessibleIcon.Root>
