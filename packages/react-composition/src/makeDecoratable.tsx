@@ -17,22 +17,15 @@ function useComposableParents() {
 
 const nullRenderer = () => null;
 
-// Maybe there's a better way to mark props as non-existent, but for now I left it as `any`.
-type NoProps = any;
-
-type GetProps<T extends (...args: any) => any> = Parameters<T> extends [infer First]
-    ? undefined extends First
-        ? NoProps
-        : First
-    : NoProps;
-
 function makeDecoratableComponent<T extends GenericComponent>(
     name: string,
     Component: T = nullRenderer as unknown as T
 ) {
-    const Decoratable = (props: GetProps<T>): JSX.Element | null => {
+    const Decoratable = (props: React.ComponentProps<T>): JSX.Element | null => {
         const parents = useComposableParents();
-        const ComposedComponent = useComponent(Component);
+        const ComposedComponent = useComponent(Component) as GenericComponent<
+            React.ComponentProps<T>
+        >;
 
         const context = useMemo(() => [...parents, name], [parents, name]);
 
@@ -43,11 +36,17 @@ function makeDecoratableComponent<T extends GenericComponent>(
         );
     };
 
-    Decoratable.original = Component;
-    Decoratable.originalName = name;
-    Decoratable.displayName = `Decoratable<${name}>`;
+    const staticProps = {
+        original: Component,
+        originalName: name,
+        displayName: `Decoratable<${name}>`
+    };
 
-    return withDecoratorFactory()(Decoratable as DecoratableComponent<typeof Decoratable>);
+    return withDecoratorFactory()(
+        Object.assign(Decoratable, staticProps) as DecoratableComponent<
+            typeof Component & typeof staticProps
+        >
+    );
 }
 
 export function makeDecoratableHook<T extends GenericHook>(hook: T) {

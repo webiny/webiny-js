@@ -7,7 +7,7 @@ import { createCmsGraphQLSchemaPlugin, ICmsGraphQLSchemaPlugin } from "~/plugins
 import { getEntryDescription } from "~/utils/getEntryDescription";
 import { getEntryImage } from "~/utils/getEntryImage";
 import { entryFieldFromStorageTransform } from "~/utils/entryStorage";
-import { Resolvers } from "@webiny/handler-graphql/types";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants";
 
 interface EntriesByModel {
@@ -278,7 +278,7 @@ const getContentEntry = async (
 /**
  * As we support description field, we need to transform the value from storage.
  */
-const createResolveDescription = (): Resolvers<CmsContext> => {
+const createResolveDescription = (): GraphQLFieldResolver<any, any, CmsContext> => {
     return async (parent, _, context) => {
         const models = await context.cms.listModels();
         const model = models.find(({ modelId }) => {

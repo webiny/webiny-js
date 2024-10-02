@@ -87,8 +87,11 @@
   border-bottom: 1px solid rgba(88, 144, 255, 0.3);
 }
 .WebinyLexical__link {
-  color: rgb(33, 111, 219);
+  color: #fa5723;
   text-decoration: none;
+  > * {
+    color: inherit !important;
+  }
 }
 .WebinyLexical__link:hover {
   text-decoration: underline;
@@ -319,7 +322,7 @@
 }
 .WebinyLexical__listItemUnchecked:before,
 .WebinyLexical__listItemChecked:before {
-  content: '';
+  content: "";
   width: 16px;
   height: 16px;
   top: 2px;
@@ -329,8 +332,8 @@
   background-size: cover;
   position: absolute;
 }
-.WebinyLexical__listItemUnchecked[dir='rtl']:before,
-.WebinyLexical__listItemChecked[dir='rtl']:before {
+.WebinyLexical__listItemUnchecked[dir="rtl"]:before,
+.WebinyLexical__listItemChecked[dir="rtl"]:before {
   left: auto;
   right: 0;
 }
@@ -350,7 +353,7 @@
   background-repeat: no-repeat;
 }
 .WebinyLexical__listItemChecked:after {
-  content: '';
+  content: "";
   cursor: pointer;
   border-color: #fff;
   border-style: solid;

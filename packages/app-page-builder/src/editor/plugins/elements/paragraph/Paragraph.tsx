@@ -1,8 +1,10 @@
 import React from "react";
-import { Element } from "@webiny/app-page-builder-elements/types";
-import { makeDecoratable } from "@webiny/app-admin";
+import { CompositionScope } from "@webiny/app-admin";
+import { ParagraphRenderer } from "@webiny/app-page-builder-elements/renderers/paragraph";
+import type { Element } from "@webiny/app-page-builder-elements/types";
 import { MediumEditorOptions, PbEditorElement } from "~/types";
-import PeParagraph from "./PeParagraph";
+import { useActiveElementId } from "~/editor";
+import { ActiveParagraphRenderer } from "./ActiveParagraphRenderer";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 
@@ -11,9 +13,18 @@ interface ParagraphProps {
     mediumEditorOptions?: MediumEditorOptions;
 }
 
-const Paragraph = makeDecoratable("Paragraph", (props: ParagraphProps) => {
+export const Paragraph = (props: ParagraphProps) => {
     const { element, ...rest } = props;
-    return <PeParagraph element={element as Element} {...rest} />;
-});
+    const [activeElementId] = useActiveElementId();
+    const isActive = activeElementId === element.id;
 
-export default Paragraph;
+    if (isActive) {
+        return (
+            <CompositionScope name={"pb.paragraph"}>
+                <ActiveParagraphRenderer element={element as Element} {...rest} />
+            </CompositionScope>
+        );
+    }
+
+    return <ParagraphRenderer element={element as Element} {...rest} />;
+};
