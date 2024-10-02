@@ -182,8 +182,8 @@ const UsersDataList = () => {
                                     renderImage={props => (
                                         <Image {...props} transform={{ width: 100 }} />
                                     )}
-                                    src={''}
-                                    fallbackText={item.firstName[0]}
+                                    src={item.avatar ? item.avatar.src : item.gravatar}
+                                    fallbackText={item.firstName}
                                     alt={t`User's avatar.`}
                                 />
                             </ListItemGraphic>
