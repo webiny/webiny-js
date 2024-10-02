@@ -1,5 +1,38 @@
 import React from "react";
-import { Avatar as AdminUiAvatar } from "@webiny/admin-ui";
+import { css } from "emotion";
+import classNames from "classnames";
+const avatar = css({
+    borderRadius: "50%",
+    display: "block",
+    //alignItems: "center",
+    //justifyContent: "center",
+    width: 38,
+    height: 38,
+    position: "relative",
+    top: -7,
+    right: 7,
+    overflow: "hidden",
+    background: "var(--mdc-theme-background)",
+    color: "var(--mdc-theme-text-secondary-on-background)",
+    div: {
+        textAlign: "center",
+        display: "flex",
+        alignContent: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+        width: 38,
+        height: 38,
+        fontSize: "1rem",
+        span: {
+            paddingBottom: 2
+        }
+    },
+    img: {
+        width: "100% !important",
+        height: "100% !important",
+        objectFit: "cover"
+    }
+});
 
 export interface AvatarProps {
     /**
@@ -15,7 +48,7 @@ export interface AvatarProps {
     /**
      * Avatar image source.
      */
-    src?: string;
+    src?: string | null;
 
     /**
      * "alt" text.
@@ -45,19 +78,52 @@ export interface AvatarProps {
 }
 
 /**
- * @deprecated This component is deprecated and will be removed in future releases.
- * Please use the `Avatar` component from the `@webiny/admin-ui` package instead.
+ * Use Avatar component to display user's avatar.
  */
 export const Avatar = (props: AvatarProps) => {
-    // Note that we're ignoring `renderImage` prop, as it's not supported in the new `Avatar` component.
-    const { className, style, src, alt, width, height, fallbackText } = props;
+    const {
+        className,
+        width = 38,
+        height = 38,
+        src,
+        alt,
+        fallbackText,
+        renderImage,
+        ...rest
+    } = props;
+
+    let renderedImage;
+    const imageProps = { src, alt };
+    if (src) {
+        if (typeof renderImage === "function") {
+            renderedImage = renderImage({
+                ...imageProps,
+                src
+            });
+        } else {
+            renderedImage = <img {...imageProps} alt={alt} src={src} />;
+        }
+    }
 
     return (
-        <AdminUiAvatar
-            className={className}
-            style={{ width, height, ...style }}
-            image={<AdminUiAvatar.Image src={src} alt={alt} width={width} height={height} />}
-            fallback={<AdminUiAvatar.Fallback delayMs={0}>{fallbackText}</AdminUiAvatar.Fallback>}
-        />
+        <div
+            {...rest}
+            className={classNames(avatar, className)}
+            style={{ ...props.style, width, height }}
+        >
+            {props.src ? (
+                renderedImage
+            ) : (
+                <div>
+                    <span>
+                        {fallbackText
+                            .split(" ")
+                            .map(word => word.charAt(0))
+                            .join("")
+                            .toUpperCase()}
+                    </span>
+                </div>
+            )}
+        </div>
     );
 };
