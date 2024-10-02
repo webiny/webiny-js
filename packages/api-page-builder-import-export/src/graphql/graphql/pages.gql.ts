@@ -34,7 +34,7 @@ const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
             type PbExportPagesTask {
                 id: ID!
                 createdOn: DateTime!
-                createdBy: PbCreatedBy!
+                createdBy: PbIdentity!
                 status: PbImportExportPagesTaskStatus!
                 data: PbExportPagesTaskData!
                 stats: PbImportExportPagesTaskStats!
@@ -54,7 +54,7 @@ const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
             type PbImportPagesTask {
                 id: ID!
                 createdOn: DateTime!
-                createdBy: PbCreatedBy!
+                createdBy: PbIdentity!
                 status: PbImportExportPagesTaskStatus!
                 stats: PbImportExportPagesTaskStats!
                 data: PbImportExportPagesTaskData!

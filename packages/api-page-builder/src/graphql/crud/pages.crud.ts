@@ -8,7 +8,6 @@ import {
     Page,
     PageBuilderContextObject,
     PageBuilderStorageOperations,
-    PageContentWithTemplate,
     PageElementProcessor,
     PagesCrud,
     PageStorageOperationsGetWhereParams,
@@ -504,63 +503,6 @@ export const createPageCrud = (params: CreatePageCrudParams): PagesCrud => {
                     }
                 );
             }
-        },
-
-        async unlinkPageFromTemplate(this: PageBuilderContextObject, id): Promise<any> {
-            const page = await this.getPage(id);
-            if (!page) {
-                throw new NotFoundError(`Page not found.`);
-            }
-
-            if (!page.content?.data.template) {
-                throw new WebinyError(
-                    "Cannot continue because the page is not linked to a template."
-                );
-            }
-
-            const resolvedPageElements = await context.pageBuilder.resolvePageTemplate(
-                page.content as PageContentWithTemplate
-            );
-
-            // Run element processors on the full page content for potential transformations.
-            const processedPage = await context.pageBuilder.processPageContent({
-                ...page,
-                content: { ...page.content, elements: resolvedPageElements }
-            });
-
-            // Delete template-related data.
-            const allTemplateVariableIds = processedPage
-                .content!.data.template.variables.map((variablesForBlock: Record<string, any>) => {
-                    return variablesForBlock.variables.map((v: Record<string, any>) => v.id);
-                })
-                .flat();
-
-            for (let i = 0; i < processedPage.content!.elements.length; i++) {
-                const blockElement = processedPage.content!.elements[i];
-
-                if ("templateBlockId" in blockElement.data) {
-                    delete blockElement.data.templateBlockId;
-
-                    // In the presence of a block ID, we know that this block is not a template block.
-                    // Variable values need to stay intact.
-                    if (blockElement.data.blockId) {
-                        continue;
-                    }
-
-                    // Let's delete all template-related variables on block.
-                    if (Array.isArray(blockElement.data.variables)) {
-                        blockElement.data.variables = blockElement.data.variables.filter(
-                            (variable: Record<string, any>) =>
-                                !allTemplateVariableIds.includes(variable.id)
-                        );
-                    }
-                }
-            }
-
-            // Delete base template-related data.
-            delete processedPage.content!.data.template;
-
-            return this.updatePage(id, processedPage);
         },
 
         async updatePage(id, input): Promise<any> {

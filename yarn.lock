@@ -6903,6 +6903,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@graphql-tools/merge@npm:^9.0.4":
+  version: 9.0.7
+  resolution: "@graphql-tools/merge@npm:9.0.7"
+  dependencies:
+    "@graphql-tools/utils": ^10.5.4
+    tslib: ^2.4.0
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: d61a0cead730fd50dcc0055e94d7c53a1a6e982d0fb35d8a5c0721191eec6ab1102fcea2aabbdab0a224bdfd779458e4292b066572b562419b2958b255e41fa7
+  languageName: node
+  linkType: hard
+
 "@graphql-tools/merge@npm:^9.0.6":
   version: 9.0.6
   resolution: "@graphql-tools/merge@npm:9.0.6"
@@ -6912,6 +6924,20 @@ __metadata:
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
   checksum: d9dca559186267a3eedcb6c2fd9b012e91e40a467d3440a8f9a1dbb542d159abde09578716b00b0f9123c8f97c1816bf2df67c9fbf79b0be619d50b5d89240db
+  languageName: node
+  linkType: hard
+
+"@graphql-tools/resolvers-composition@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "@graphql-tools/resolvers-composition@npm:7.0.1"
+  dependencies:
+    "@graphql-tools/utils": ^10.0.13
+    lodash: 4.17.21
+    micromatch: ^4.0.4
+    tslib: ^2.4.0
+  peerDependencies:
+    graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: a1ba75b6128880ff9571945c408c88f26587fd2bd83c6149f5fb98270b0a209f7d6f4aa10d04a394d1037badfd42234fdf1fc9c756b5cb94e2099ee1c5e1e8e5
   languageName: node
   linkType: hard
 
@@ -6929,7 +6955,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/utils@npm:^10.5.4":
+"@graphql-tools/utils@npm:^10.0.13, @graphql-tools/utils@npm:^10.3.1, @graphql-tools/utils@npm:^10.5.4":
   version: 10.5.4
   resolution: "@graphql-tools/utils@npm:10.5.4"
   dependencies:
@@ -14473,6 +14499,7 @@ __metadata:
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
     "@babel/runtime": ^7.24.0
+    "@graphql-tools/merge": ^9.0.4
     "@graphql-tools/schema": ^10.0.6
     "@types/babel__code-frame": ^7.0.6
     "@webiny/api": 0.0.0
@@ -16252,11 +16279,12 @@ __metadata:
     "@types/facepaint": ^1.2.2
     "@types/react": 18.2.79
     "@webiny/cli": 0.0.0
-    "@webiny/lexical-editor": 0.0.0
     "@webiny/project-utils": 0.0.0
+    "@webiny/react-composition": 0.0.0
     "@webiny/theme": 0.0.0
     execa: ^5.0.0
     facepaint: ^1.2.1
+    lodash: ^4.17.21
     rimraf: ^5.0.5
     ttypescript: ^1.5.12
     typescript: 4.9.5
@@ -16329,6 +16357,7 @@ __metadata:
     "@webiny/app-tenancy": 0.0.0
     "@webiny/app-theme": 0.0.0
     "@webiny/cli": 0.0.0
+    "@webiny/error": 0.0.0
     "@webiny/form": 0.0.0
     "@webiny/lexical-editor": 0.0.0
     "@webiny/plugins": 0.0.0
@@ -17540,7 +17569,10 @@ __metadata:
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
     "@babel/runtime": ^7.24.0
+    "@graphql-tools/merge": ^9.0.4
+    "@graphql-tools/resolvers-composition": ^7.0.1
     "@graphql-tools/schema": ^10.0.6
+    "@graphql-tools/utils": ^10.3.1
     "@webiny/api": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
@@ -17720,8 +17752,6 @@ __metadata:
     "@webiny/react-composition": 0.0.0
     "@webiny/theme": 0.0.0
     "@webiny/ui": 0.0.0
-    lodash: ^4.17.21
-    medium-editor: ^5.23.3
     react: 18.2.0
     react-dom: 18.2.0
   languageName: unknown
@@ -18113,7 +18143,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/react-router@workspace:packages/react-router"
   dependencies:
-    "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
     "@babel/preset-env": ^7.24.0
@@ -40797,7 +40826,6 @@ __metadata:
     "@webiny/cli": 0.0.0
     "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
-    "@webiny/react-router": 0.0.0
     "@webiny/serverless-cms-aws": 0.0.0
     apollo-client: ^2.6.10
     apollo-link: ^1.2.14
@@ -40805,7 +40833,6 @@ __metadata:
     cross-env: ^5.0.2
     cross-fetch: ^3.0.4
     graphql: ^15.7.2
-    graphql-tag: ^2.12.6
     react: 18.2.0
     react-dom: 18.2.0
     regenerator-runtime: ^0.13.5
