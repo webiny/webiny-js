@@ -2,18 +2,42 @@ import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthenticat
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
+import graphqlPlugins from "@webiny/handler-graphql";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "~/index";
-import { createWcpContext } from "@webiny/api-wcp";
+import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "~tests/testHelpers/tenancySecurity";
 import { createDummyLocales, createPermissions, PermissionsArg } from "~tests/testHelpers/helpers";
-import { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
-import { ContextPlugin } from "@webiny/api";
-import { TestContext } from "~tests/testHelpers/types";
+import { SecurityIdentity } from "@webiny/api-security/types";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { enableBenchmarkOnEnvironmentVariable } from "./enableBenchmarkOnEnvironmentVariable";
 import { HeadlessCmsStorageOperations } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import i18nPlugins from "@webiny/api-i18n/graphql";
+import { createApwGraphQL } from "@webiny/api-apw";
+import { createAco } from "@webiny/api-aco";
+import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
+import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
+import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
+import { createAuditLogs } from "@webiny/api-audit-logs";
+import { FormBuilderStorageOperations } from "@webiny/api-form-builder/types";
+import { createFormBuilder } from "@webiny/api-form-builder";
+import { createGzipCompression } from "@webiny/api-elasticsearch";
+import pageBuilderPrerenderingPlugins from "@webiny/api-page-builder/prerendering";
+import {
+    createPageBuilderContext,
+    createPageBuilderGraphQL
+} from "@webiny/api-page-builder/graphql";
+import prerenderingServicePlugins from "@webiny/api-prerendering-service-aws/client";
+import fileManagerS3 from "@webiny/api-file-manager-s3";
+import { createBackgroundTasks } from "@webiny/api-background-tasks-os";
+import { PageBuilderStorageOperations } from "@webiny/api-page-builder/types";
+import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
+import { createRecordLocking } from "@webiny/api-record-locking";
+import { createWebsockets } from "@webiny/api-websockets";
+import tenantManager from "@webiny/api-tenant-manager";
+import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -25,6 +49,7 @@ export interface CreateHandlerCoreParams {
     path?: `manage/${string}-${string}}` | `read/${string}-${string}}` | string;
 }
 export const createHandlerCore = (params: CreateHandlerCoreParams) => {
+    process.env.S3_BUCKET = "some-wrong-s3-bucket-name";
     const tenant = {
         id: "root",
         name: "Root",
@@ -40,6 +65,9 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
     } = params;
 
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const pageBuilder = getStorageOps<PageBuilderStorageOperations>("pageBuilder");
+    const formBuilder = getStorageOps<FormBuilderStorageOperations>("formBuilder");
+    const fileManager = getStorageOps<FileManagerStorageOperations>("fileManager");
     const i18nStorage = getStorageOps<any[]>("i18n");
 
     return {
@@ -49,53 +77,69 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
             enableBenchmarkOnEnvironmentVariable(),
             topPlugins,
             createWcpContext(),
+            createWcpGraphQL(),
             ...cmsStorage.plugins,
+            ...formBuilder.plugins,
+            ...fileManager.plugins,
+            ...pageBuilder.plugins,
+            ...i18nStorage.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: setupTenancyAndSecurityGraphQL,
                 permissions: createPermissions(permissions),
-                identity
+                identity,
+                tenant
             }),
-            {
-                type: "context",
-                name: "context-security-tenant",
-                async apply(context) {
-                    context.security.getApiKeyByToken = async (
-                        token: string
-                    ): Promise<ApiKey | null> => {
-                        if (!token || token !== "aToken") {
-                            return null;
-                        }
-                        const apiKey = "a1234567890";
-                        return {
-                            id: apiKey,
-                            name: apiKey,
-                            tenant: tenant.id,
-                            permissions: identity?.permissions || [],
-                            token,
-                            createdBy: {
-                                id: "test",
-                                displayName: "test",
-                                type: "admin"
-                            },
-                            description: "test",
-                            createdOn: new Date().toISOString(),
-                            webinyVersion: context.WEBINY_VERSION
-                        };
-                    };
-                }
-            } as ContextPlugin<TestContext>,
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
-            i18nContext(),
-            i18nStorage.storageOperations,
+            ...i18nContext(),
+            ...i18nStorage.storageOperations,
             createDummyLocales(),
             mockLocalesPlugins(),
-            createHeadlessCmsContext({
+            ...createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations
             }),
-            createHeadlessCmsGraphQL(),
+            ...createHeadlessCmsGraphQL(),
+            ...graphQLHandlerPlugins(),
+
+            ///////
+            ///////
+            ///////
+            // logsPlugins(),
+            ...graphqlPlugins({ debug: true }),
+            ...tenantManager(),
+            ...i18nPlugins(),
+            ...i18nDynamoDbStorageOperations(),
+            ...createWebsockets(),
+            ...createRecordLocking(),
+            ...createBackgroundTasks(),
+            createFileManagerContext({
+                storageOperations: fileManager.storageOperations
+            }),
+            ...createFileManagerGraphQL(),
+            // createAssetDelivery({ documentClient }),
+            ...fileManagerS3(),
+            prerenderingServicePlugins({
+                eventBus: String("SOME_WRONG_EVENT_BUS")
+            }),
+            ...createPageBuilderContext({
+                storageOperations: pageBuilder.storageOperations
+            }),
+            ...createPageBuilderGraphQL(),
+            ...pageBuilderPrerenderingPlugins(),
+            ...createFormBuilder({
+                storageOperations: formBuilder.storageOperations
+            }),
+            createGzipCompression(),
+            ...createApwGraphQL(),
+            ...createAco(),
+            createAcoPageBuilderContext(),
+            createAcoHcmsContext(),
+            ...createHcmsTasks(),
+            ...createAuditLogs(),
+            ///////
+            ///////
+            ///////
             plugins,
-            graphQLHandlerPlugins(),
             bottomPlugins
         ]
     };

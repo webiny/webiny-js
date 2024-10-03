@@ -137,6 +137,7 @@ export const createPersonEntries = async (
             id: entryId,
             version: 1
         });
+        // @ts-expect-error
         const entry: CmsEntry = {
             id,
             entryId,
@@ -173,6 +174,7 @@ export const createPersonEntries = async (
                 id: entry.entryId,
                 version: nextVersion
             });
+            // @ts-expect-error
             const revision: CmsEntry = {
                 id,
                 entryId,
