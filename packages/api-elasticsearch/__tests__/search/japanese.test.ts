@@ -5,11 +5,12 @@ import { ElasticsearchBoolQueryConfig } from "~/types";
 import { entries, searchTargets } from "./japanese.entries";
 import * as RequestParams from "@elastic/elasticsearch/api/requestParams";
 import WebinyError from "@webiny/error";
+import { getElasticsearchIndexPrefix } from "~/indexPrefix";
 
 describe("Japanese search", () => {
     const client = createElasticsearchClient();
 
-    const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+    const prefix = getElasticsearchIndexPrefix();
 
     const indexName = `${prefix}search-japanese-index-test`;
 
