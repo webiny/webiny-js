@@ -2,7 +2,7 @@ import { SecurityConfig } from "~/types";
 import { listGroupsFromPlugins } from "./listGroupsFromPlugins";
 
 export interface GetGroupFromPluginsParams {
-    listGroupsFromPluginsCallback?: SecurityConfig["listGroupsFromPluginsCallback"];
+    groupsProvider?: SecurityConfig["groupsProvider"];
     where: {
         tenant: string;
         id?: string;
@@ -10,10 +10,10 @@ export interface GetGroupFromPluginsParams {
     };
 }
 
-export const getGroupFromPlugins = (params: GetGroupFromPluginsParams) => {
-    const { listGroupsFromPluginsCallback, where } = params;
-    const [group] = listGroupsFromPlugins({
-        listGroupsFromPluginsCallback,
+export const getGroupFromPlugins = async (params: GetGroupFromPluginsParams) => {
+    const { groupsProvider, where } = params;
+    const [group] = await listGroupsFromPlugins({
+        groupsProvider,
         where: {
             tenant: where.tenant,
             id_in: where.id ? [where.id] : undefined,

@@ -159,7 +159,7 @@ async function updateTenantLinks(
 export const createGroupsMethods = ({
     getTenant: initialGetTenant,
     storageOperations,
-    listGroupsFromPluginsCallback
+    groupsProvider
 }: SecurityConfig) => {
     const getTenant = () => {
         const tenant = initialGetTenant();
@@ -169,16 +169,21 @@ export const createGroupsMethods = ({
         return tenant;
     };
 
-    const listGroupsFromPlugins = (params: Pick<ListGroupsFromPluginsParams, "where">): Group[] => {
+    const listGroupsFromPlugins = (
+        params: Pick<ListGroupsFromPluginsParams, "where">
+    ): Promise<Group[]> => {
         return baseListGroupsFromPlugins({
             ...params,
-            listGroupsFromPluginsCallback
+            groupsProvider
         });
     };
-    const getGroupFromPlugins = (params: Pick<GetGroupFromPluginsParams, "where">): Group => {
+
+    const getGroupFromPlugins = (
+        params: Pick<GetGroupFromPluginsParams, "where">
+    ): Promise<Group> => {
         return baseGetGroupFromPlugins({
             ...params,
-            listGroupsFromPluginsCallback
+            groupsProvider
         });
     };
 
@@ -198,7 +203,7 @@ export const createGroupsMethods = ({
             let group: Group | null = null;
             try {
                 const whereWithTenant = { ...where, tenant: where.tenant || getTenant() };
-                const groupFromPlugins = getGroupFromPlugins({ where: whereWithTenant });
+                const groupFromPlugins = await getGroupFromPlugins({ where: whereWithTenant });
 
                 if (groupFromPlugins) {
                     group = groupFromPlugins;
@@ -228,7 +233,7 @@ export const createGroupsMethods = ({
                     sort: ["createdOn_ASC"]
                 });
 
-                const groupsFromPlugins = listGroupsFromPlugins({ where: whereWithTenant });
+                const groupsFromPlugins = await listGroupsFromPlugins({ where: whereWithTenant });
 
                 // We don't have to do any extra sorting because, as we can see above, `createdOn_ASC` is
                 // hardcoded, and groups coming from plugins don't have `createdOn`, meaning they should

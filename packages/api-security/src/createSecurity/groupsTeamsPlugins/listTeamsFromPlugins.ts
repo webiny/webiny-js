@@ -1,7 +1,7 @@
 import { SecurityConfig } from "~/types";
 
 export interface ListTeamsFromPluginsParams {
-    listTeamsFromPluginsCallback?: SecurityConfig["listTeamsFromPluginsCallback"];
+    teamsProvider?: SecurityConfig["teamsProvider"];
     where: {
         tenant: string;
         id_in?: string[];
@@ -9,15 +9,13 @@ export interface ListTeamsFromPluginsParams {
     };
 }
 
-export const listTeamsFromPlugins = (params: ListTeamsFromPluginsParams) => {
-    const { listTeamsFromPluginsCallback, where } = params;
-    if (!listTeamsFromPluginsCallback) {
+export const listTeamsFromPlugins = async (params: ListTeamsFromPluginsParams) => {
+    const { teamsProvider, where } = params;
+    if (!teamsProvider) {
         return [];
     }
 
-    const teams = listTeamsFromPluginsCallback().map(plugin => {
-        return plugin.securityTeam;
-    });
+    const teams = await teamsProvider();
 
     return teams.filter(team => {
         // First we ensure the team belongs to the correct tenant.

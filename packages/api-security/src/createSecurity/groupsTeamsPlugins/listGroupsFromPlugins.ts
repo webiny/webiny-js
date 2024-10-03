@@ -1,7 +1,7 @@
 import { SecurityConfig } from "~/types";
 
 export interface ListGroupsFromPluginsParams {
-    listGroupsFromPluginsCallback?: SecurityConfig["listGroupsFromPluginsCallback"];
+    groupsProvider?: SecurityConfig["groupsProvider"];
     where: {
         tenant: string;
         id_in?: string[];
@@ -9,15 +9,13 @@ export interface ListGroupsFromPluginsParams {
     };
 }
 
-export const listGroupsFromPlugins = (params: ListGroupsFromPluginsParams) => {
-    const { listGroupsFromPluginsCallback, where } = params;
-    if (!listGroupsFromPluginsCallback) {
+export const listGroupsFromPlugins = async (params: ListGroupsFromPluginsParams) => {
+    const { groupsProvider, where } = params;
+    if (!groupsProvider) {
         return [];
     }
 
-    const groups = listGroupsFromPluginsCallback().map(plugin => {
-        return plugin.securityRole;
-    });
+    const groups = await groupsProvider();
 
     return groups.filter(group => {
         // First we ensure the group belongs to the correct tenant.

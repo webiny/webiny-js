@@ -5,8 +5,6 @@ import { Topic } from "@webiny/pubsub/types";
 import { GetTenant } from "~/createSecurity";
 import { ProjectPackageFeatures } from "@webiny/wcp/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
-import { SecurityRolePlugin } from "~/plugins/SecurityRolePlugin";
-import { SecurityTeamPlugin } from "~/plugins/SecurityTeamPlugin";
 
 // Backwards compatibility - START
 export type SecurityIdentity = Identity;
@@ -36,8 +34,8 @@ export interface SecurityConfig {
     advancedAccessControlLayer?: ProjectPackageFeatures["advancedAccessControlLayer"];
     getTenant: GetTenant;
     storageOperations: SecurityStorageOperations;
-    listGroupsFromPluginsCallback?: () => Array<Plugin<SecurityRolePlugin>>;
-    listTeamsFromPluginsCallback?: () => Array<Plugin<SecurityTeamPlugin>>;
+    groupsProvider?: () => Promise<SecurityRole[]>;
+    teamsProvider?: () => Promise<SecurityTeam[]>;
 }
 
 export interface ErrorEvent extends InstallEvent {

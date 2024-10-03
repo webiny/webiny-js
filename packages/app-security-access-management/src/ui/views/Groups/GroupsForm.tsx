@@ -170,8 +170,8 @@ export const GroupsForm = () => {
                                 <Grid>
                                     <Cell span={12}>
                                         <Alert type={"info"} title={"Permissions are locked"}>
-                                            This role is registered via an extension. It cannot be
-                                            modified via the Admin Area.
+                                            This role is registered via an extension, and cannot be
+                                            modified.
                                         </Alert>
                                     </Cell>
                                 </Grid>

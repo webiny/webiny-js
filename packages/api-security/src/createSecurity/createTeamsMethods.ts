@@ -122,7 +122,7 @@ async function updateTenantLinks(
 export const createTeamsMethods = ({
     getTenant: initialGetTenant,
     storageOperations,
-    listTeamsFromPluginsCallback
+    teamsProvider
 }: SecurityConfig) => {
     const getTenant = () => {
         const tenant = initialGetTenant();
@@ -132,16 +132,18 @@ export const createTeamsMethods = ({
         return tenant;
     };
 
-    const listTeamsFromPlugins = (params: Pick<ListTeamsFromPluginsParams, "where">): Team[] => {
+    const listTeamsFromPlugins = (
+        params: Pick<ListTeamsFromPluginsParams, "where">
+    ): Promise<Team[]> => {
         return baseListTeamsFromPlugins({
             ...params,
-            listTeamsFromPluginsCallback
+            teamsProvider
         });
     };
-    const getTeamFromPlugins = (params: Pick<GetTeamFromPluginsParams, "where">): Team => {
+    const getTeamFromPlugins = (params: Pick<GetTeamFromPluginsParams, "where">): Promise<Team> => {
         return baseGetTeamFromPlugins({
             ...params,
-            listTeamsFromPluginsCallback
+            teamsProvider
         });
     };
 
@@ -161,7 +163,7 @@ export const createTeamsMethods = ({
             let team: Team | null = null;
             try {
                 const whereWithTenant = { ...where, tenant: where.tenant || getTenant() };
-                const teamFromPlugins = getTeamFromPlugins({ where: whereWithTenant });
+                const teamFromPlugins = await getTeamFromPlugins({ where: whereWithTenant });
 
                 if (teamFromPlugins) {
                     team = teamFromPlugins;
@@ -191,7 +193,7 @@ export const createTeamsMethods = ({
                     sort: ["createdOn_ASC"]
                 });
 
-                const teamsFromPlugins = listTeamsFromPlugins({ where: whereWithTenant });
+                const teamsFromPlugins = await listTeamsFromPlugins({ where: whereWithTenant });
 
                 // We don't have to do any extra sorting because, as we can see above, `createdOn_ASC` is
                 // hardcoded, and teams coming from plugins don't have `createdOn`, meaning they should
