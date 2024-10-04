@@ -1,4 +1,4 @@
-import { Authentication } from "@webiny/api-authentication/types";
+import {  Identity } from "@webiny/api-authentication/types";
 import { SecurityPermission, Team } from "@webiny/api-security/types";
 import { Folder } from "~/folder/folder.types";
 import { NotAuthorizedError } from "@webiny/api-security";
@@ -43,11 +43,13 @@ interface ListFolderPermissionsParams {
     foldersList?: Folder[];
 }
 
+export type FlpFolder = Pick<Folder, "id" | "type" | "title" | "parentId" | "permissions">
+
 export interface FolderLevelPermissionsParams {
-    getIdentity: Authentication["getIdentity"];
+    getIdentity: () => Identity;
     listIdentityTeams: () => Promise<Team[]>;
     listPermissions: () => Promise<SecurityPermission[]>;
-    listAllFolders: (folderType: string) => Promise<Folder[]>;
+    listAllFolders: (folderType: string) => Promise<FlpFolder[]>;
     canUseTeams: () => boolean;
     canUseFolderLevelPermissions: () => boolean;
     isAuthorizationEnabled: () => boolean;
@@ -56,13 +58,13 @@ export interface FolderLevelPermissionsParams {
 export class FolderLevelPermissions {
     canUseFolderLevelPermissions: () => boolean;
 
-    private readonly getIdentity: Authentication["getIdentity"];
+    private readonly getIdentity: () => Identity;
     private readonly listIdentityTeams: () => Promise<Team[]>;
     private readonly listPermissions: () => Promise<SecurityPermission[]>;
-    private readonly listAllFoldersCallback: (folderType: string) => Promise<Folder[]>;
+    private readonly listAllFoldersCallback: (folderType: string) => Promise<FlpFolder[]>;
     private readonly canUseTeams: () => boolean;
     private readonly isAuthorizationEnabled: () => boolean;
-    private allFolders: Record<string, Folder[]> = {};
+    private allFolders: Record<string, FlpFolder[]> = {};
     private foldersPermissionsLists: Record<string, Promise<FolderPermissionsList> | null> = {};
 
     constructor(params: FolderLevelPermissionsParams) {
@@ -92,7 +94,7 @@ export class FolderLevelPermissions {
         this.isAuthorizationEnabled = params.isAuthorizationEnabled;
     }
 
-    async listAllFolders(folderType: string): Promise<Folder[]> {
+    async listAllFolders(folderType: string): Promise<FlpFolder[]> {
         if (folderType in this.allFolders) {
             return structuredClone(this.allFolders[folderType]);
         }
