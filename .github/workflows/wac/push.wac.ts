@@ -1,13 +1,13 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
-import { listPackagesWithJestTests, NODE_VERSION, BUILD_PACKAGES_RUNNER } from "./utils";
+import { BUILD_PACKAGES_RUNNER, listPackagesWithJestTests, NODE_VERSION } from "./utils";
 import { createJob } from "./jobs";
 import {
     createDeployWebinySteps,
-    createSetupVerdaccioSteps,
-    createInstallBuildSteps,
-    createYarnCacheSteps,
     createGlobalBuildCacheSteps,
-    createRunBuildCacheSteps
+    createInstallBuildSteps,
+    createRunBuildCacheSteps,
+    createSetupVerdaccioSteps,
+    createYarnCacheSteps
 } from "./steps";
 
 const withCommonParams = (
@@ -214,7 +214,9 @@ const createPushWorkflow = (branchName: string) => {
     };
 
     const createJestTestsJob = (storage: string | null) => {
-        const env: Record<string, string> = {};
+        const env: Record<string, string> = {
+            region: "${{ secrets.AWS_REGION }}"
+        };
 
         if (storage) {
             if (storage === "ddb-es") {
