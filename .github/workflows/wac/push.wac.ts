@@ -215,7 +215,7 @@ const createPushWorkflow = (branchName: string) => {
 
     const createJestTestsJob = (storage: string | null) => {
         const env: Record<string, string> = {
-            region: "${{ secrets.AWS_REGION }}"
+            AWS_REGION: "${{ secrets.AWS_REGION }}"
         };
 
         if (storage) {
