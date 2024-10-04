@@ -7,7 +7,7 @@ import {
     createGlobalBuildCacheSteps,
     createRunBuildCacheSteps
 } from "./steps";
-import { NODE_OPTIONS, NODE_VERSION, BUILD_PACKAGES_RUNNER } from "./utils";
+import { NODE_OPTIONS, NODE_VERSION, BUILD_PACKAGES_RUNNER, AWS_REGION } from "./utils";
 import { createJob, createValidateWorkflowsJob } from "./jobs";
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
@@ -212,7 +212,7 @@ export const pullRequestsCommandCypress = createWorkflow({
     on: "issue_comment",
     env: {
         NODE_OPTIONS,
-        AWS_REGION: "eu-central-1"
+        AWS_REGION
     },
     jobs: {
         checkComment: createJob({

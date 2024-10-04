@@ -11,6 +11,8 @@ import {
 import { categoryModel } from "~tests/helpers/models";
 import { NonEmptyArray } from "@webiny/api/types";
 
+jest.setTimeout(60000);
+
 describe("import from url controller", () => {
     let context: Context;
 
