@@ -2,7 +2,6 @@ import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
 import { setupContentModelGroup, setupContentModels } from "~tests/testHelpers/setup";
 import { Fruit } from "~tests/contentAPI/mocks/contentModels";
 import { useFruitManageHandler } from "~tests/testHelpers/useFruitManageHandler";
-import { GenericRecord } from "@webiny/api/types";
 import { WebinyError } from "@webiny/error";
 import { iterate } from "./iterate";
 
@@ -58,14 +57,14 @@ describe("memory leak - entries", () => {
     sizes.push(300);
     sizes.push(500);
     sizes.push(1000);
-    // sizes.push(1250);
-    // sizes.push(1500);
-    // sizes.push(2000);
-    // sizes.push(3000);
-    // sizes.push(4000);
-    // sizes.push(5000);
-    // sizes.push(10000);
-    // sizes.push(20000);
+    sizes.push(1250);
+    sizes.push(1500);
+    sizes.push(2000);
+    sizes.push(3000);
+    sizes.push(4000);
+    sizes.push(5000);
+    sizes.push(10000);
+    sizes.push(20000);
 
     runTest.each(sizes)(message, async size => {
         // const startMemory = getCurrentMemory();
