@@ -5,7 +5,7 @@ import type {
 } from "~/tasks/domain/abstractions/ImportFromUrlDownload";
 import { IMPORT_FROM_URL_DOWNLOAD_TASK } from "~/tasks/constants";
 import { getBackOffSeconds } from "~/tasks/utils/helpers/getBackOffSeconds";
-import type { Context } from "~/types";
+import { CmsImportExportFileType, Context } from "~/types";
 import type {
     IImportFromUrlControllerInput,
     IImportFromUrlControllerOutput
@@ -27,7 +27,19 @@ export class ImportFromUrlControllerDownloadStep<
 
         const step = input.steps[IImportFromUrlControllerInputStep.DOWNLOAD];
         if (!step?.triggered) {
-            for (const file of input.files) {
+            const files = input.files.filter(file => {
+                return (
+                    file.type === CmsImportExportFileType.ENTRIES ||
+                    file.type === CmsImportExportFileType.ASSETS
+                );
+            });
+            if (files.length === 0) {
+                return response.error({
+                    message: `No files found in the provided data.`,
+                    code: "NO_FILES_FOUND"
+                });
+            }
+            for (const file of files) {
                 await trigger<IImportFromUrlDownloadInput>({
                     name: `Import From Url - Download`,
                     definition: IMPORT_FROM_URL_DOWNLOAD_TASK,

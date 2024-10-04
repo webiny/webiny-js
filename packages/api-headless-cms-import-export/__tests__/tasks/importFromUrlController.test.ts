@@ -153,7 +153,7 @@ describe("import from url controller", () => {
     });
 
     it("should run the task, trigger child tasks and return a continue response", async () => {
-        expect.assertions(3);
+        expect.assertions(5);
         const definition = createImportFromUrlControllerTask();
 
         const files: NonEmptyArray<ICmsImportExportValidatedFile> = [
@@ -176,16 +176,6 @@ describe("import from url controller", () => {
                 checksum: "checksum",
                 checked: true,
                 key: "file-2.wa.zip"
-            },
-            {
-                get: "https://some-url.com/file-3.unknown.zip",
-                head: "https://some-url.com/file-3.unknown.zip",
-                size: 2000,
-                error: undefined,
-                type: "unknown" as CmsImportExportFileType.ENTRIES,
-                checksum: "checksum",
-                checked: true,
-                key: "something-unknown.zip"
             }
         ];
 
@@ -203,16 +193,19 @@ describe("import from url controller", () => {
         const runner = createRunner({
             context,
             task: definition,
-            onContinue: async ({ taskId, iteration, result }) => {
-                if (iteration === 1) {
-                    return;
-                }
+            onContinue: async ({ taskId, result }) => {
                 const children = await context.tasks.listTasks({
                     where: {
                         parentId: taskId
                     },
                     limit: 1000000
                 });
+                /**
+                 * Don't update again if not required.
+                 */
+                if (children.items.every(child => child.taskStatus === TaskDataStatus.SUCCESS)) {
+                    return;
+                }
                 for (const child of children.items) {
                     await context.tasks.updateTask(child.id, {
                         taskStatus: TaskDataStatus.SUCCESS
@@ -256,22 +249,6 @@ describe("import from url controller", () => {
             locale: "en-US"
         });
 
-        expect(result).toEqual({
-            message: undefined,
-            output: {
-                aborted: [],
-                done: [],
-                failed: [],
-                files: [],
-                invalid: []
-            },
-            locale: "en-US",
-            status: "done",
-            tenant: "root",
-            webinyTaskDefinitionId: "importFromUrlController",
-            webinyTaskId: expect.any(String)
-        });
-
         // assertion #2
         expect(result).toEqual({
             status: TaskResponseStatus.DONE,
@@ -284,7 +261,7 @@ describe("import from url controller", () => {
                 done: [],
                 failed: [],
                 invalid: [],
-                files: []
+                files: ["cms-import/file-1.we.zip", "cms-import/file-2.wa.zip"]
             },
             message: undefined
         });

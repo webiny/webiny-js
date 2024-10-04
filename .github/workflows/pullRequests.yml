@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
       - uses: webiny/action-conventional-commits@v1.3.0
     runs-on: ubuntu-latest
@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
       - uses: webiny/action-conventional-commits@v1.3.0
         with:
@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Create global cache key
         id: global-cache-key
         run: >-
@@ -73,7 +73,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ github.base_ref }}
@@ -106,7 +106,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ github.base_ref }}
@@ -143,7 +143,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ github.base_ref }}
@@ -174,7 +174,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         package: >-
           ${{
           fromJson('[{"cmd":"packages/api","id":"api"},{"cmd":"packages/api-admin-settings","id":"api-admin-settings"},{"cmd":"packages/api-authentication","id":"api-authentication"},{"cmd":"packages/api-authentication-cognito","id":"api-authentication-cognito"},{"cmd":"packages/api-headless-cms-ddb","id":"api-headless-cms-ddb"},{"cmd":"packages/api-headless-cms-import-export","id":"api-headless-cms-import-export"},{"cmd":"packages/api-record-locking","id":"api-record-locking"},{"cmd":"packages/api-wcp","id":"api-wcp"},{"cmd":"packages/api-websockets","id":"api-websockets"},{"cmd":"packages/app-aco","id":"app-aco"},{"cmd":"packages/app-admin","id":"app-admin"},{"cmd":"packages/cwp-template-aws","id":"cwp-template-aws"},{"cmd":"packages/data-migration","id":"data-migration"},{"cmd":"packages/db-dynamodb","id":"db-dynamodb"},{"cmd":"packages/form","id":"form"},{"cmd":"packages/handler","id":"handler"},{"cmd":"packages/handler-aws","id":"handler-aws"},{"cmd":"packages/handler-graphql","id":"handler-graphql"},{"cmd":"packages/handler-logs","id":"handler-logs"},{"cmd":"packages/ioc","id":"ioc"},{"cmd":"packages/lexical-converter","id":"lexical-converter"},{"cmd":"packages/plugins","id":"plugins"},{"cmd":"packages/pubsub","id":"pubsub"},{"cmd":"packages/react-composition","id":"react-composition"},{"cmd":"packages/react-properties","id":"react-properties"},{"cmd":"packages/react-rich-text-lexical-renderer","id":"react-rich-text-lexical-renderer"},{"cmd":"packages/utils","id":"utils"},{"cmd":"packages/validation","id":"validation"}]')
@@ -186,7 +186,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ github.base_ref }}
@@ -218,7 +218,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
           --storage=ddb","storage":"ddb","id":"api-aco_ddb"},{"cmd":"packages/api-apw
@@ -247,7 +247,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ github.base_ref }}
@@ -279,7 +279,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-aco_ddb-es_ddb"},{"cmd":"packages/api-audit-logs
@@ -310,7 +310,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -350,7 +350,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-aco_ddb-os_ddb"},{"cmd":"packages/api-audit-logs
@@ -381,7 +381,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -419,7 +419,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -479,7 +479,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/setup-node@v4

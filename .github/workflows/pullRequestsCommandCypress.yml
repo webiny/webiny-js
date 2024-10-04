@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Check for Command
         id: command
         uses: xt0rted/slash-command-action@v2
@@ -42,7 +42,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: yarn --immutable
@@ -61,7 +61,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
       - name: Install Hub Utility
         run: sudo apt-get install -y hub
@@ -85,7 +85,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Create global cache key
         id: global-cache-key
         run: >-
@@ -110,7 +110,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -154,7 +154,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -199,7 +199,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -324,7 +324,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         cypress-folder: >-
           ${{ fromJson(needs.e2e-wby-cms-ddb-constants.outputs.cypress-folders)
           }}
@@ -339,7 +339,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -386,7 +386,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -434,7 +434,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -559,7 +559,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         cypress-folder: >-
           ${{
           fromJson(needs.e2e-wby-cms-ddb-es-constants.outputs.cypress-folders)
@@ -578,7 +578,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -626,7 +626,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -674,7 +674,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -799,7 +799,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         cypress-folder: >-
           ${{
           fromJson(needs.e2e-wby-cms-ddb-os-constants.outputs.cypress-folders)
@@ -818,7 +818,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
