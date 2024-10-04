@@ -2,10 +2,10 @@ import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import {
     IImportFromUrlController,
     IImportFromUrlControllerInput,
+    IImportFromUrlControllerInputStep,
     IImportFromUrlControllerInputStepsStep,
     IImportFromUrlControllerOutput
 } from "~/tasks/domain/abstractions/ImportFromUrlController";
-import { IImportFromUrlControllerInputStep } from "~/tasks/domain/abstractions/ImportFromUrlController";
 import type { Context } from "~/types";
 import { ImportFromUrlControllerDownloadStep } from "~/tasks/domain/importFromUrlControllerSteps/ImportFromUrlControllerDownloadStep";
 import { ImportFromUrlControllerProcessEntriesStep } from "./importFromUrlControllerSteps/ImportFromUrlControllerProcessEntriesStep";
@@ -53,10 +53,13 @@ export class ImportFromUrlController<
             });
         }
 
-        const steps = input.steps || {};
+        if (!input.steps) {
+            input.steps = {};
+        }
 
         const downloadStep =
-            steps[IImportFromUrlControllerInputStep.DOWNLOAD] || getDefaultStepValues();
+            input.steps[IImportFromUrlControllerInputStep.DOWNLOAD] || getDefaultStepValues();
+
         if (!downloadStep.finished) {
             const step = new ImportFromUrlControllerDownloadStep<C, I, O>();
             return await step.execute(params);
@@ -64,12 +67,13 @@ export class ImportFromUrlController<
             return response.error({
                 message: `Failed to download files.`,
                 code: "FAILED_DOWNLOADING_FILES",
-                data: steps
+                data: input.steps
             });
         }
 
         const processEntriesStep =
-            steps[IImportFromUrlControllerInputStep.PROCESS_ENTRIES] || getDefaultStepValues();
+            input.steps[IImportFromUrlControllerInputStep.PROCESS_ENTRIES] ||
+            getDefaultStepValues();
         if (!processEntriesStep.finished) {
             const step = new ImportFromUrlControllerProcessEntriesStep<C, I, O>();
             return await step.execute(params);
@@ -77,12 +81,12 @@ export class ImportFromUrlController<
             return response.error({
                 message: `Failed to process entries.`,
                 code: "FAILED_PROCESSING_ENTRIES",
-                data: steps
+                data: input.steps
             });
         }
 
         const processAssetsStep =
-            steps[IImportFromUrlControllerInputStep.PROCESS_ASSETS] || getDefaultStepValues();
+            input.steps[IImportFromUrlControllerInputStep.PROCESS_ASSETS] || getDefaultStepValues();
         if (!processAssetsStep.finished) {
             const step = new ImportFromUrlControllerProcessAssetsStep<C, I, O>();
             return await step.execute(params);
@@ -90,7 +94,7 @@ export class ImportFromUrlController<
             return response.error({
                 message: `Failed to process assets.`,
                 code: "FAILED_PROCESSING_ASSETS",
-                data: steps
+                data: input.steps
             });
         }
 

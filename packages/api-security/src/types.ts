@@ -34,6 +34,8 @@ export interface SecurityConfig {
     advancedAccessControlLayer?: ProjectPackageFeatures["advancedAccessControlLayer"];
     getTenant: GetTenant;
     storageOperations: SecurityStorageOperations;
+    groupsProvider?: () => Promise<SecurityRole[]>;
+    teamsProvider?: () => Promise<SecurityTeam[]>;
 }
 
 export interface ErrorEvent extends InstallEvent {
@@ -280,17 +282,29 @@ export interface CreatedBy {
 }
 
 export interface Group {
-    tenant: string;
-    createdOn: string;
+    // Groups defined via plugins might not have `tenant` specified (meaning they are global).
+    tenant: string | null;
+
+    // Groups defined via plugins don't have `createdOn` and `createdBy` specified.
+    createdOn: string | null;
     createdBy: CreatedBy | null;
+
     id: string;
     name: string;
     slug: string;
     description: string;
     system: boolean;
     permissions: SecurityPermission[];
-    webinyVersion: string;
+
+    // Groups defined via plugins don't have `webinyVersion` specified.
+    webinyVersion: string | null;
+
+    // Set to `true` when a group is defined via a plugin.
+    plugin?: boolean;
 }
+
+export type SecurityRole = Group;
+export type SecurityTeam = Team;
 
 export type GroupInput = Pick<Group, "name" | "slug" | "description" | "permissions"> & {
     system?: boolean;
@@ -326,16 +340,25 @@ export interface DeleteGroupParams {
 }
 
 export interface Team {
-    tenant: string;
-    createdOn: string;
+    // Teams defined via plugins might not have `tenant` specified (meaning they are global).
+    tenant: string | null;
+
+    // Teams defined via plugins don't have `createdOn` and `createdBy` specified.
+    createdOn: string | null;
     createdBy: CreatedBy | null;
+
     id: string;
     name: string;
     slug: string;
     description: string;
     system: boolean;
     groups: string[];
-    webinyVersion: string;
+
+    // Teams defined via plugins don't have `webinyVersion` specified.
+    webinyVersion: string | null;
+
+    // Set to `true` when a group is defined via a plugin.
+    plugin?: boolean;
 }
 
 export type TeamInput = Pick<Team, "name" | "slug" | "description" | "groups"> & {

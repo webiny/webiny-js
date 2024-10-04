@@ -2,7 +2,7 @@ import {
     DecryptedWcpProjectLicense,
     MT_OPTIONS_MAX_COUNT_TYPE,
     PROJECT_PACKAGE_FEATURE_NAME
-} from "@webiny/wcp/types";
+} from "~/types";
 
 export const createTestWcpLicense = (): DecryptedWcpProjectLicense => {
     return {
@@ -30,6 +30,9 @@ export const createTestWcpLicense = (): DecryptedWcpProjectLicense => {
                     enabled: false
                 },
                 [PROJECT_PACKAGE_FEATURE_NAME.AUDIT_LOGS]: {
+                    enabled: false
+                },
+                [PROJECT_PACKAGE_FEATURE_NAME.RECORD_LOCKING]: {
                     enabled: false
                 },
                 [PROJECT_PACKAGE_FEATURE_NAME.SEATS]: {

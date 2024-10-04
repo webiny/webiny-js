@@ -16,6 +16,8 @@ import {
     MultiTenancyAppConfig,
     MultiTenancyGraphQLConfig
 } from "~/enterprise/multiTenancy";
+import { SecurityRolePlugin } from "~/plugins/SecurityRolePlugin";
+import { SecurityTeamPlugin } from "~/plugins/SecurityTeamPlugin";
 
 export { default as NotAuthorizedResponse } from "./NotAuthorizedResponse";
 export { default as NotAuthorizedError } from "./NotAuthorizedError";
@@ -42,7 +44,15 @@ export const createSecurityContext = ({ storageOperations }: SecurityConfig) => 
                 const tenant = context.tenancy.getCurrentTenant();
                 return tenant ? tenant.id : undefined;
             },
-            storageOperations
+            storageOperations,
+            groupsProvider: async () =>
+                context.plugins
+                    .byType<SecurityRolePlugin>(SecurityRolePlugin.type)
+                    .map(plugin => plugin.securityRole),
+            teamsProvider: async () =>
+                context.plugins
+                    .byType<SecurityTeamPlugin>(SecurityTeamPlugin.type)
+                    .map(plugin => plugin.securityTeam)
         });
 
         attachGroupInstaller(context.security);
@@ -77,3 +87,6 @@ export const createSecurityGraphQL = (config: MultiTenancyGraphQLConfig = {}) =>
         }
     });
 };
+
+export { createSecurityRolePlugin } from "./plugins/SecurityRolePlugin";
+export { createSecurityTeamPlugin } from "./plugins/SecurityTeamPlugin";
