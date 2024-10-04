@@ -4,6 +4,10 @@ import { GenericRecord } from "@webiny/api/types";
 const cloudfrontUrl = "https://d1zqvydzhnfn89.cloudfront.net";
 
 describe("match key or alias", () => {
+    beforeEach(() => {
+        process.env.DEBUG = "true";
+    });
+
     it("should log an error when given an invalid URL", () => {
         const errors: any[] = [];
         console.error = (...args: any[]) => {
