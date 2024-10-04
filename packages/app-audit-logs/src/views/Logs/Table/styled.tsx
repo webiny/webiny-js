@@ -55,7 +55,7 @@ export const previewColumn = css`
 `;
 
 export const TextGray = styled(Text)`
-    color: "#616161"
+    color: "#616161";
 `;
 
 export const TimezoneText = styled(TextGray)`
