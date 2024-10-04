@@ -23,7 +23,7 @@ const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DI
 const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 
 const createJestTestsJob = (storage: string | null) => {
-    const env: Record<string, string> = {};
+    const env: Record<string, string> = { AWS_REGION };
 
     if (storage) {
         if (storage === "ddb-es") {
