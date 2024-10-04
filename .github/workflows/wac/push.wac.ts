@@ -61,7 +61,8 @@ const createPushWorkflow = (branchName: string) => {
             PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
             PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
             WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
-            YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
+            YARN_ENABLE_IMMUTABLE_INSTALLS: "false",
+            AWS_REGION: "${{ secrets.AWS_REGION }}"
         };
 
         if (dbSetup === "ddb-es") {

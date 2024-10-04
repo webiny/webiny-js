@@ -149,6 +149,7 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      AWS_REGION: ${{ secrets.AWS_REGION }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -211,6 +212,7 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      AWS_REGION: ${{ secrets.AWS_REGION }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -272,6 +274,7 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
@@ -343,6 +346,7 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
@@ -419,6 +423,7 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-constants.outputs.pulumi-backend-url }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -550,6 +555,7 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-constants.outputs.pulumi-backend-url }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -623,6 +629,7 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-es-constants.outputs.pulumi-backend-url }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
@@ -759,6 +766,7 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-es-constants.outputs.pulumi-backend-url }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
@@ -835,6 +843,7 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-os-constants.outputs.pulumi-backend-url }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
@@ -971,6 +980,7 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-os-constants.outputs.pulumi-backend-url }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
