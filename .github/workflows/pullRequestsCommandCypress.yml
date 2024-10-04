@@ -324,7 +324,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         cypress-folder: >-
           ${{ fromJson(needs.e2e-wby-cms-ddb-constants.outputs.cypress-folders)
           }}
@@ -559,7 +559,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         cypress-folder: >-
           ${{
           fromJson(needs.e2e-wby-cms-ddb-es-constants.outputs.cypress-folders)
@@ -799,7 +799,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         cypress-folder: >-
           ${{
           fromJson(needs.e2e-wby-cms-ddb-os-constants.outputs.cypress-folders)
