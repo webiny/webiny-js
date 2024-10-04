@@ -9,7 +9,7 @@ export interface ListTeamsFromPluginsParams {
     };
 }
 
-export const listTeamsFromPlugins = async (params: ListTeamsFromPluginsParams) => {
+export const listTeamsFromProvider = async (params: ListTeamsFromPluginsParams) => {
     const { teamsProvider, where } = params;
     if (!teamsProvider) {
         return [];

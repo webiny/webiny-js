@@ -1,5 +1,5 @@
 import { SecurityConfig } from "~/types";
-import { listTeamsFromPlugins } from "./listTeamsFromPlugins";
+import { listTeamsFromProvider } from "./listTeamsFromProvider";
 
 export interface GetTeamFromPluginsParams {
     teamsProvider?: SecurityConfig["teamsProvider"];
@@ -10,9 +10,9 @@ export interface GetTeamFromPluginsParams {
     };
 }
 
-export const getTeamFromPlugins = async (params: GetTeamFromPluginsParams) => {
+export const getTeamFromProvider = async (params: GetTeamFromPluginsParams) => {
     const { teamsProvider, where } = params;
-    const [team] = await listTeamsFromPlugins({
+    const [team] = await listTeamsFromProvider({
         teamsProvider,
         where: {
             tenant: where.tenant,

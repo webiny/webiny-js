@@ -1,5 +1,5 @@
 import { SecurityConfig } from "~/types";
-import { listGroupsFromPlugins } from "./listGroupsFromPlugins";
+import { listGroupsFromProvider } from "./listGroupsFromProvider";
 
 export interface GetGroupFromPluginsParams {
     groupsProvider?: SecurityConfig["groupsProvider"];
@@ -10,9 +10,9 @@ export interface GetGroupFromPluginsParams {
     };
 }
 
-export const getGroupFromPlugins = async (params: GetGroupFromPluginsParams) => {
+export const getGroupFromProvider = async (params: GetGroupFromPluginsParams) => {
     const { groupsProvider, where } = params;
-    const [group] = await listGroupsFromPlugins({
+    const [group] = await listGroupsFromProvider({
         groupsProvider,
         where: {
             tenant: where.tenant,

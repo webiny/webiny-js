@@ -9,7 +9,7 @@ export interface ListGroupsFromPluginsParams {
     };
 }
 
-export const listGroupsFromPlugins = async (params: ListGroupsFromPluginsParams) => {
+export const listGroupsFromProvider = async (params: ListGroupsFromPluginsParams) => {
     const { groupsProvider, where } = params;
     if (!groupsProvider) {
         return [];

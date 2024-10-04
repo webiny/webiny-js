@@ -25,13 +25,13 @@ import {
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
 import {
-    listTeamsFromPlugins as baseListTeamsFromPlugins,
+    listTeamsFromProvider as baseListTeamsFromPlugins,
     type ListTeamsFromPluginsParams
-} from "./groupsTeamsPlugins/listTeamsFromPlugins";
+} from "./groupsTeamsPlugins/listTeamsFromProvider";
 import {
-    getTeamFromPlugins as baseGetTeamFromPlugins,
+    getTeamFromProvider as baseGetTeamFromPlugins,
     type GetTeamFromPluginsParams
-} from "./groupsTeamsPlugins/getTeamFromPlugins";
+} from "./groupsTeamsPlugins/getTeamFromProvider";
 
 const CreateDataModel = withFields({
     tenant: string({ validation: validation.create("required") }),
