@@ -149,7 +149,7 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_REGION: eu-central-1
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -212,7 +212,7 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_REGION: eu-central-1
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -274,7 +274,7 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_REGION: eu-central-1
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
@@ -346,7 +346,7 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_REGION: eu-central-1
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
@@ -423,7 +423,6 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-constants.outputs.pulumi-backend-url }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -486,8 +485,8 @@ jobs:
           npx create-webiny-project@local-npm new-webiny-project --tag local-npm
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"${{ env.AWS_REGION
-          }}","storageOperations":"ddb"}'
+          --template-options
+          '{"region":"eu-central-1","storageOperations":"ddb"}'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -555,7 +554,6 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-constants.outputs.pulumi-backend-url }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -629,7 +627,6 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-es-constants.outputs.pulumi-backend-url }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
@@ -695,8 +692,8 @@ jobs:
           npx create-webiny-project@local-npm new-webiny-project --tag local-npm
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"${{ env.AWS_REGION
-          }}","storageOperations":"ddb-es"}'
+          --template-options
+          '{"region":"eu-central-1","storageOperations":"ddb-es"}'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -766,7 +763,6 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-es-constants.outputs.pulumi-backend-url }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
@@ -843,7 +839,6 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-os-constants.outputs.pulumi-backend-url }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_
@@ -909,8 +904,8 @@ jobs:
           npx create-webiny-project@local-npm new-webiny-project --tag local-npm
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"${{ env.AWS_REGION
-          }}","storageOperations":"ddb-os"}'
+          --template-options
+          '{"region":"eu-central-1","storageOperations":"ddb-os"}'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -980,7 +975,6 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2eTestsDdb-os-constants.outputs.pulumi-backend-url }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.run_id }}_

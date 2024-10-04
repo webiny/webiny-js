@@ -1,5 +1,10 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
-import { BUILD_PACKAGES_RUNNER, listPackagesWithJestTests, NODE_VERSION } from "./utils";
+import {
+    AWS_REGION,
+    BUILD_PACKAGES_RUNNER,
+    listPackagesWithJestTests,
+    NODE_VERSION
+} from "./utils";
 import { createJob } from "./jobs";
 import {
     createDeployWebinySteps,
@@ -61,8 +66,7 @@ const createPushWorkflow = (branchName: string) => {
             PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
             PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
             WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
-            YARN_ENABLE_IMMUTABLE_INSTALLS: "false",
-            AWS_REGION: "${{ secrets.AWS_REGION }}"
+            YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
         };
 
         if (dbSetup === "ddb-es") {
@@ -127,7 +131,7 @@ const createPushWorkflow = (branchName: string) => {
                 },
                 {
                     name: "Create a new Webiny project",
-                    run: `npx create-webiny-project@local-npm ${DIR_TEST_PROJECT} --tag local-npm --no-interactive --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"region":"$\{{ env.AWS_REGION }}","storageOperations":"${dbSetup}"}'
+                    run: `npx create-webiny-project@local-npm ${DIR_TEST_PROJECT} --tag local-npm --no-interactive --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"region":"${AWS_REGION}","storageOperations":"${dbSetup}"}'
 `
                 },
                 {
@@ -215,9 +219,7 @@ const createPushWorkflow = (branchName: string) => {
     };
 
     const createJestTestsJob = (storage: string | null) => {
-        const env: Record<string, string> = {
-            AWS_REGION: "${{ secrets.AWS_REGION }}"
-        };
+        const env: Record<string, string> = { AWS_REGION };
 
         if (storage) {
             if (storage === "ddb-es") {
