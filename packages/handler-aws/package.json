@@ -13,14 +13,14 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.24.0",
-    "@fastify/aws-lambda": "3.1.3",
-    "@types/aws-lambda": "^8.10.134",
+    "@fastify/aws-lambda": "^5.0.0",
+    "@types/aws-lambda": "^8.10.145",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-client": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "fastify": "4.11.0"
+    "fastify": "4.15.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",

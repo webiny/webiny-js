@@ -113,6 +113,9 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         identity: identity || defaultIdentity,
         plugins,
         storageOperations: core.storageOperations,
+        async options() {
+            return invoke({ httpMethod: "OPTIONS" });
+        },
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });
         },

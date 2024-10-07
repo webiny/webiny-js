@@ -53,7 +53,7 @@ export interface ExecuteParams {
     payload: any;
 }
 
-export const execute = (params: ExecuteParams): Promise<any> => {
+export const execute = async (params: ExecuteParams): Promise<any> => {
     const { app, url, payload } = params;
 
     const query = getPayloadProperty(payload, "query", {});
@@ -61,6 +61,8 @@ export const execute = (params: ExecuteParams): Promise<any> => {
         ["content-type"]: "application/json"
     });
     const cookies = getPayloadProperty(payload, "cookies", {});
+
+    await app.ready();
 
     return new Promise(resolve => {
         app.inject(

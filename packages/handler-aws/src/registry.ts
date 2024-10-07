@@ -4,10 +4,6 @@
 import { HandlerEvent, SourceHandler } from "~/types";
 import { Context as LambdaContext } from "aws-lambda/handler";
 
-interface RegisterOptions {
-    silent?: boolean;
-}
-
 class HandlerRegistry {
     private readonly handlers = new Map<string, SourceHandler>();
 
@@ -21,15 +17,17 @@ class HandlerRegistry {
         return new HandlerRegistry();
     }
 
-    public register(handler: SourceHandler<any>, options?: RegisterOptions) {
+    public register(handler: SourceHandler<any>) {
         if (this.handlers.has(handler.name)) {
-            if (options?.silent) {
-                return;
-            }
             /**
              * This should only happen during the development phase.
              */
-            throw new Error(`Handler "${handler.name}" is already registered.`);
+            try {
+                throw new Error(`Handler "${handler.name}" is already registered.`);
+            } catch (ex) {
+                console.error(ex);
+                throw ex;
+            }
         }
         this.handlers.set(handler.name, handler);
     }

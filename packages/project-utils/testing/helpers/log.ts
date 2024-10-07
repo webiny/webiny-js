@@ -1,5 +1,6 @@
-import { GenericRecord } from "@webiny/api/types";
-
+export interface GenericRecord {
+    [key: string]: any;
+}
 export const log = (message: string | GenericRecord | string[], debug = "true") => {
     if (process.env.DEBUG !== debug) {
         return;

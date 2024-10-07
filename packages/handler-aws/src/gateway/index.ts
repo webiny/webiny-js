@@ -71,6 +71,8 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
         }
         attachRequiredProperties(event);
 
+        await app.ready();
+
         const appLambda = awsLambdaFastify(app, {
             decorateRequest: true,
             serializeLambdaArguments: true,
