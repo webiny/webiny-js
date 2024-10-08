@@ -41,6 +41,11 @@ Resources:
                     "aws:ResourceTag/WbyProjectName": "false"
 
               - Effect: Allow
+                Resource: arn:*:cloudfront::*:distribution/*
+                Action:
+                  - cloudfront:GetDistribution
+
+              - Effect: Allow
                 Resource: arn:*:cloudfront::*:function/*
                 Action:
                   - cloudfront:CreateFunction
