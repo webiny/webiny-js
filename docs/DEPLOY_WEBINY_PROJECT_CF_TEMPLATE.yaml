@@ -263,7 +263,12 @@ Resources:
                 - states:UntagResource
                 - states:ListStateMachines
                 - states:UpdateStateMachine
+                - states:ListStateMachineVersions
                 Resource: arn:aws:states:*:*:stateMachine:wby-*
+              
+              - Effect: Allow
+                Action: ValidateStateMachineDefinition
+                Resource: "*"
 
               # AWS Lambda
               - Effect: Allow
@@ -293,6 +298,10 @@ Resources:
                   - lambda:EnableReplication
                 Resource:
                   - arn:aws:lambda:*:*:function:wby-*
+
+              - Effect: Allow
+                Action: ListTags
+                Resource: arn:aws:lambda:*:*:event-source-mapping:*
 
               - Effect: Allow
                 Action:
