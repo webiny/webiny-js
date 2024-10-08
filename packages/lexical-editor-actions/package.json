@@ -8,9 +8,9 @@
     "@webiny/lexical-editor": "0.0.0",
     "@webiny/ui": "0.0.0",
     "emotion": "^10.0.27",
-    "react": "18.3.1",
+    "react": "18.2.0",
     "react-color": "^2.19.3",
-    "react-dom": "18.3.1"
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
     "@types/react-color": "^2.17.11",
