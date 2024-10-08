@@ -19,7 +19,7 @@
   "devDependencies": {
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "react": "18.2.0"
+    "react": "18.3.1"
   },
   "publishConfig": {
     "access": "public",

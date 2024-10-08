@@ -14,8 +14,8 @@
     "@webiny/react-composition": "0.0.0",
     "@webiny/theme": "0.0.0",
     "@webiny/ui": "0.0.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "devDependencies": {
     "@webiny/cli": "0.0.0",
