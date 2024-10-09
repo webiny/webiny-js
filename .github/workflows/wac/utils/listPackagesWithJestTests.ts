@@ -124,11 +124,26 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     },
 
     "api-headless-cms": () => {
-        return [
-            { cmd: "packages/api-headless-cms --storage=ddb", storage: "ddb" },
-            { cmd: "packages/api-headless-cms --storage=ddb-es,ddb", storage: "ddb-es" },
-            { cmd: "packages/api-headless-cms --storage=ddb-os,ddb", storage: "ddb-os" }
-        ];
+        const shardCount = 10;
+        const commands = [];
+        for (let currentShard = 1; currentShard <= shardCount; currentShard++) {
+            commands.push(
+                {
+                    cmd: `packages/api-headless-cms --storage=ddb-es,ddb --shard=${currentShard}/${shardCount}`,
+                    storage: "ddb-es"
+                },
+                {
+                    cmd: `packages/api-headless-cms --storage=ddb-os,ddb --shard=${currentShard}/${shardCount}`,
+                    storage: "ddb-os"
+                },
+                {
+                    cmd: `packages/api-headless-cms --storage=ddb --shard=${currentShard}/${shardCount}`,
+                    storage: "ddb"
+                }
+            );
+        }
+
+        return commands;
     },
     "api-headless-cms-ddb-es": () => {
         return [

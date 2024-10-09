@@ -192,7 +192,26 @@ jobs:
           --storage=ddb","storage":"ddb","id":"api-audit-logs_ddb"},{"cmd":"packages/api-file-manager
           --storage=ddb","storage":"ddb","id":"api-file-manager_ddb"},{"cmd":"packages/api-form-builder
           --storage=ddb","storage":"ddb","id":"api-form-builder_ddb"},{"cmd":"packages/api-headless-cms
-          --storage=ddb","storage":"ddb","id":"api-headless-cms_ddb"},{"cmd":"packages/api-headless-cms-aco
+          --storage=ddb
+          --shard=1/10","storage":"ddb","id":"api-headless-cms_ddb_--shard=1/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb
+          --shard=2/10","storage":"ddb","id":"api-headless-cms_ddb_--shard=2/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb
+          --shard=3/10","storage":"ddb","id":"api-headless-cms_ddb_--shard=3/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb
+          --shard=4/10","storage":"ddb","id":"api-headless-cms_ddb_--shard=4/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb
+          --shard=5/10","storage":"ddb","id":"api-headless-cms_ddb_--shard=5/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb
+          --shard=6/10","storage":"ddb","id":"api-headless-cms_ddb_--shard=6/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb
+          --shard=7/10","storage":"ddb","id":"api-headless-cms_ddb_--shard=7/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb
+          --shard=8/10","storage":"ddb","id":"api-headless-cms_ddb_--shard=8/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb
+          --shard=9/10","storage":"ddb","id":"api-headless-cms_ddb_--shard=9/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb
+          --shard=10/10","storage":"ddb","id":"api-headless-cms_ddb_--shard=10/10"},{"cmd":"packages/api-headless-cms-aco
           --storage=ddb","storage":"ddb","id":"api-headless-cms-aco_ddb"},{"cmd":"packages/api-headless-cms-tasks
           --storage=ddb","storage":"ddb","id":"api-headless-cms-tasks_ddb"},{"cmd":"packages/api-i18n
           --storage=ddb","storage":"ddb","id":"api-i18n_ddb"},{"cmd":"packages/api-mailer
@@ -255,7 +274,26 @@ jobs:
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-file-manager_ddb-es_ddb"},{"cmd":"packages/api-form-builder
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder_ddb-es_ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder-so-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-headless-cms
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-aco
+          --storage=ddb-es,ddb
+          --shard=1/10","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb_--shard=1/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb
+          --shard=2/10","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb_--shard=2/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb
+          --shard=3/10","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb_--shard=3/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb
+          --shard=4/10","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb_--shard=4/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb
+          --shard=5/10","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb_--shard=5/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb
+          --shard=6/10","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb_--shard=6/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb
+          --shard=7/10","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb_--shard=7/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb
+          --shard=8/10","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb_--shard=8/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb
+          --shard=9/10","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb_--shard=9/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb
+          --shard=10/10","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb_--shard=10/10"},{"cmd":"packages/api-headless-cms-aco
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-aco_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-ddb-es
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-es-tasks
           --storage=ddb-es,ddb","storage":["ddb-es"],"id":"api-headless-cms-es-tasks_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-tasks
@@ -325,7 +363,26 @@ jobs:
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-file-manager_ddb-os_ddb"},{"cmd":"packages/api-form-builder
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-form-builder_ddb-os_ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-form-builder-so-ddb-es_ddb-os_ddb"},{"cmd":"packages/api-headless-cms
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-aco
+          --storage=ddb-os,ddb
+          --shard=1/10","storage":"ddb-os","id":"api-headless-cms_ddb-os_ddb_--shard=1/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-os,ddb
+          --shard=2/10","storage":"ddb-os","id":"api-headless-cms_ddb-os_ddb_--shard=2/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-os,ddb
+          --shard=3/10","storage":"ddb-os","id":"api-headless-cms_ddb-os_ddb_--shard=3/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-os,ddb
+          --shard=4/10","storage":"ddb-os","id":"api-headless-cms_ddb-os_ddb_--shard=4/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-os,ddb
+          --shard=5/10","storage":"ddb-os","id":"api-headless-cms_ddb-os_ddb_--shard=5/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-os,ddb
+          --shard=6/10","storage":"ddb-os","id":"api-headless-cms_ddb-os_ddb_--shard=6/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-os,ddb
+          --shard=7/10","storage":"ddb-os","id":"api-headless-cms_ddb-os_ddb_--shard=7/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-os,ddb
+          --shard=8/10","storage":"ddb-os","id":"api-headless-cms_ddb-os_ddb_--shard=8/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-os,ddb
+          --shard=9/10","storage":"ddb-os","id":"api-headless-cms_ddb-os_ddb_--shard=9/10"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-os,ddb
+          --shard=10/10","storage":"ddb-os","id":"api-headless-cms_ddb-os_ddb_--shard=10/10"},{"cmd":"packages/api-headless-cms-aco
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-aco_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-ddb-es
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-ddb-es_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-es-tasks
           --storage=ddb-os,ddb","storage":["ddb-os"],"id":"api-headless-cms-es-tasks_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-tasks

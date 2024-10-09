@@ -38,7 +38,7 @@ export const createJob = (params: CreateJobParams): NormalJob => {
             uses: "aws-actions/configure-aws-credentials@v4",
             with: {
                 "role-to-assume": "arn:aws:iam::726952677045:role/GitHubActionsWebinyJs",
-                "aws-region": AWS_REGION
+                "aws-region": AWS_REGION,
             }
         });
     }
