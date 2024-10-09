@@ -9,11 +9,6 @@ const {
 
 type SaveEntry = ReturnType<typeof ContentEntryForm.useContentEntryForm>["saveEntry"];
 
-/**
- * IMPORTANT!
- * This decorator only works for a regular content entry, because regular models and singleton models
- * have different context providers, so the try/catch blocks protects us from using this in a singleton entry form.
- */
 export const UseSaveEntryDecorator = ContentEntryForm.useContentEntryForm.createDecorator(
     originalHook => {
         return function useRecordLockingUseSave() {
