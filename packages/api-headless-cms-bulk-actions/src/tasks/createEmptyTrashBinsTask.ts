@@ -37,13 +37,9 @@ export const createEmptyTrashBinsTask = () => {
         description: "Delete all entries in the trash bin for each model in the system.",
         maxIterations: 500,
         disableDatabaseLogs: true,
-        run: async ({
-            response,
-            isAborted,
-            context,
-            input,
-            isCloseToTimeout
-        }: IEmptyTrashBinsTaskParams) => {
+        run: async (params: IEmptyTrashBinsTaskParams) => {
+            const { response, isAborted, context, input, isCloseToTimeout } = params;
+
             // Abort the task if needed.
             if (isAborted()) {
                 return response.aborted();
@@ -57,7 +53,6 @@ export const createEmptyTrashBinsTask = () => {
 
             // Iterate over each tenant.
             await context.tenancy.withEachTenant(tenants, async tenant => {
-                console.log("-- START TENANT: ", tenant.name, "--");
                 if (isCloseToTimeout()) {
                     shouldContinue = true;
                     return;
@@ -65,9 +60,7 @@ export const createEmptyTrashBinsTask = () => {
 
                 // Fetch all locales for the tenant.
                 const locales = context.i18n.getLocales();
-                await context.i18n.withEachLocale(locales, async locale => {
-                    console.log("-- START LOCALE: ", locale.code, "--");
-
+                await context.i18n.withEachLocale(locales, async () => {
                     if (isCloseToTimeout()) {
                         shouldContinue = true;
                         return;
@@ -80,8 +73,6 @@ export const createEmptyTrashBinsTask = () => {
 
                     // Process each model to delete trashed entries.
                     for (const model of models) {
-                        console.log("-- START MODEL: ", model.modelId, "--");
-
                         const list = createListDeletedEntries(context); // List trashed entries.
                         const mutation = createDeleteEntry(context); // Mutation to delete entries.
 
@@ -110,20 +101,14 @@ export const createEmptyTrashBinsTask = () => {
                                 await mutation.execute(model, entry.id);
                             }
                         }
-                        console.log("-- END MODEL: ", model.modelId, "--");
                     }
-                    console.log("-- END LOCALE: ", locale.code, "--");
                 });
 
                 // If the task isn't continuing, add the tenant to the executed list.
                 if (!shouldContinue) {
                     executedTenantIds.push(tenant.id);
                 }
-                console.log("-- END TENANT: ", tenant.name, "--");
             });
-
-            console.log("SHOULD CONTINUE: ", shouldContinue);
-            console.log("EXECUTED TENANTS: ", executedTenantIds);
 
             // Continue the task or mark it as done based on the `shouldContinue` flag.
             return shouldContinue
