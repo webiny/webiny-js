@@ -6,6 +6,7 @@
 
 import fs from "fs";
 import path from "path";
+import kebabCase from "lodash/kebabCase";
 
 /**
  * Some packages require custom handling.
@@ -285,12 +286,8 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
 const testFilePattern = /test\.j?t?sx?$/;
 
 const cmdToId = (cmd: string) => {
-    return cmd
-        .replace("packages/", "")
-        .replace("--storage=", "")
-        .replace(/[,\s]/g, "_")
-        .replace(/[\(\)\[\]]/g, "")
-        .toLowerCase();
+    // Just convert the command to kebab-case.
+    return kebabCase(cmd);
 };
 
 /**
