@@ -10,7 +10,10 @@ export interface CreateBulkActionGraphQL {
 
 export const createBulkActionGraphQL = (config: CreateBulkActionGraphQL) => {
     return new ContextPlugin<HcmsBulkActionsContext>(async context => {
-        if (!(await isHeadlessCmsReady(context))) {
+        const tenant = context.tenancy.getCurrentTenant();
+        const locale = context.i18n.getContentLocale();
+
+        if (!tenant || !locale || !(await isHeadlessCmsReady(context))) {
             return;
         }
 
@@ -53,7 +56,10 @@ export const createBulkActionGraphQL = (config: CreateBulkActionGraphQL) => {
                             });
                         }
                     }
-                }
+                },
+                isApplicable: context =>
+                    context.tenancy.getCurrentTenant().id === tenant.id &&
+                    context.i18n.getContentLocale()?.code === locale.code
             });
 
             plugin.name = `headless-cms.graphql.schema.bulkAction.${model.modelId}.${config.name}`;

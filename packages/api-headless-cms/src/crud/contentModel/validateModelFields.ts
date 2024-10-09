@@ -232,6 +232,7 @@ const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<a
 
     const plugins = context.plugins
         .byType<ICmsGraphQLSchemaPlugin>(CmsGraphQLSchemaPlugin.type)
+        .filter(plugin => plugin.isApplicable(context))
         .reduce<Record<string, ICmsGraphQLSchemaPlugin>>((collection, plugin) => {
             const name =
                 plugin.name || `${CmsGraphQLSchemaPlugin.type}-${generateAlphaNumericId(16)}`;

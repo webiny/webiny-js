@@ -25,8 +25,7 @@ export const createEventBridgeHandler = () => {
                  * Since the event is at the infrastructure level, it has no knowledge about tenancy.
                  * We loop through all tenants in the system and trigger the "EmptyTrashBins" task.
                  */
-                const tenants = await context.tenancy.listTenants();
-                await context.tenancy.withEachTenant(tenants, async () => {
+                await context.tenancy.withRootTenant(async () => {
                     await context.tasks.trigger({
                         definition: "hcmsEntriesEmptyTrashBins"
                     });

@@ -64,3 +64,19 @@ export type IBulkActionOperationByModelTaskParams = ITaskRunParams<
     IBulkActionOperationByModelInput,
     IBulkActionOperationByModelOutput
 >;
+
+/**
+ * Empty Trash Bin
+ */
+
+export interface IEmptyTrashBinsInput {
+    executedTenantIds?: string[] | null;
+}
+
+export type IEmptyTrashBinsOutput = ITaskResponseDoneResultOutput;
+
+export type IEmptyTrashBinsTaskParams = ITaskRunParams<
+    HcmsBulkActionsContext,
+    IEmptyTrashBinsInput,
+    IEmptyTrashBinsOutput
+>;
