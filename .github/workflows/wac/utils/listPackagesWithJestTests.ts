@@ -6,7 +6,7 @@
 
 import fs from "fs";
 import path from "path";
-import kebabCase from "lodash/kebabCase";
+import crypto from "crypto";
 
 /**
  * Some packages require custom handling.
@@ -287,7 +287,7 @@ const testFilePattern = /test\.j?t?sx?$/;
 
 const cmdToId = (cmd: string) => {
     // Just convert the command to kebab-case.
-    return kebabCase(cmd);
+    return crypto.createHash("md5").update(cmd).digest("hex");
 };
 
 /**

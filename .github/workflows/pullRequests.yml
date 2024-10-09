@@ -177,7 +177,7 @@ jobs:
           - 18
         package: >-
           ${{
-          fromJson('[{"cmd":"packages/api","id":"packages-api"},{"cmd":"packages/api-admin-settings","id":"packages-api-admin-settings"},{"cmd":"packages/api-authentication","id":"packages-api-authentication"},{"cmd":"packages/api-authentication-cognito","id":"packages-api-authentication-cognito"},{"cmd":"packages/api-headless-cms-ddb","id":"packages-api-headless-cms-ddb"},{"cmd":"packages/api-record-locking","id":"packages-api-record-locking"},{"cmd":"packages/api-wcp","id":"packages-api-wcp"},{"cmd":"packages/api-websockets","id":"packages-api-websockets"},{"cmd":"packages/app-aco","id":"packages-app-aco"},{"cmd":"packages/app-admin","id":"packages-app-admin"},{"cmd":"packages/cwp-template-aws","id":"packages-cwp-template-aws"},{"cmd":"packages/data-migration","id":"packages-data-migration"},{"cmd":"packages/db-dynamodb","id":"packages-db-dynamodb"},{"cmd":"packages/form","id":"packages-form"},{"cmd":"packages/handler","id":"packages-handler"},{"cmd":"packages/handler-aws","id":"packages-handler-aws"},{"cmd":"packages/handler-graphql","id":"packages-handler-graphql"},{"cmd":"packages/handler-logs","id":"packages-handler-logs"},{"cmd":"packages/ioc","id":"packages-ioc"},{"cmd":"packages/lexical-converter","id":"packages-lexical-converter"},{"cmd":"packages/plugins","id":"packages-plugins"},{"cmd":"packages/pubsub","id":"packages-pubsub"},{"cmd":"packages/react-composition","id":"packages-react-composition"},{"cmd":"packages/react-properties","id":"packages-react-properties"},{"cmd":"packages/react-rich-text-lexical-renderer","id":"packages-react-rich-text-lexical-renderer"},{"cmd":"packages/utils","id":"packages-utils"},{"cmd":"packages/validation","id":"packages-validation"}]')
+          fromJson('[{"cmd":"packages/api","id":"806497aaa729e8d39f59792bcfb12b26"},{"cmd":"packages/api-admin-settings","id":"31140e7ea9283c9db32ec5f905ce2a1e"},{"cmd":"packages/api-authentication","id":"0eaf9f853f122e4ab215bf49d39f3edc"},{"cmd":"packages/api-authentication-cognito","id":"dfb5e1fcea213538a9730314cb5e7d06"},{"cmd":"packages/api-headless-cms-ddb","id":"5333e1fe6c2b8f5bbcb101a446419c3e"},{"cmd":"packages/api-record-locking","id":"9340c019a5369ea1aa55f7ed28b09f48"},{"cmd":"packages/api-wcp","id":"77ff8a0a075e8d9f7e25001ea64c6c9e"},{"cmd":"packages/api-websockets","id":"fd704b97c31f78a886b342babd344d33"},{"cmd":"packages/app-aco","id":"dddb66beffe2e54804d5bdedd2b423cb"},{"cmd":"packages/app-admin","id":"53bbef747a26e831904585bcfdd845f7"},{"cmd":"packages/cwp-template-aws","id":"846572f41c9427974a577bb95257d019"},{"cmd":"packages/data-migration","id":"294257fffed0174f169b2c812e16258e"},{"cmd":"packages/db-dynamodb","id":"5cb733de265d7bbda981fce60f2a8962"},{"cmd":"packages/form","id":"5707e699d8a4d3b8ee1954c070a50617"},{"cmd":"packages/handler","id":"1dad17bbf61657b4308250e8293cb5dd"},{"cmd":"packages/handler-aws","id":"2a5bd44c5f2a4290c43f9021bbc705a5"},{"cmd":"packages/handler-graphql","id":"74884166fb2bf383da482fb78b18b704"},{"cmd":"packages/handler-logs","id":"ca9a7e2ed32de50aff66c839f0003352"},{"cmd":"packages/ioc","id":"af22b6d7d245321d64d4b714d03ef3e1"},{"cmd":"packages/lexical-converter","id":"52e3bb3ea633bd27d5bab8be976cd16f"},{"cmd":"packages/plugins","id":"c91537eaa40845d816d0d9f39e66018b"},{"cmd":"packages/pubsub","id":"fc14c28c51c537a7d9edd33d73ae29e2"},{"cmd":"packages/react-composition","id":"428b8a3187fe275cb76da6bad0ba3918"},{"cmd":"packages/react-properties","id":"7578e63dcaa1ac66fed4a8dd936a9285"},{"cmd":"packages/react-rich-text-lexical-renderer","id":"452451b34eb7e0134e99b0706e5eb076"},{"cmd":"packages/utils","id":"696ceb17e38e4a274d4a149d24513b78"},{"cmd":"packages/validation","id":"9c68da33792a1214ae45e040a2830cd7"}]')
           }}
     runs-on: ${{ matrix.os }}
     env:
@@ -221,44 +221,44 @@ jobs:
           - 18
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
-          --storage=ddb","storage":"ddb","id":"packages-api-aco-storage-ddb"},{"cmd":"packages/api-apw
-          --storage=ddb","storage":"ddb","id":"packages-api-apw-storage-ddb"},{"cmd":"packages/api-audit-logs
-          --storage=ddb","storage":"ddb","id":"packages-api-audit-logs-storage-ddb"},{"cmd":"packages/api-file-manager
-          --storage=ddb","storage":"ddb","id":"packages-api-file-manager-storage-ddb"},{"cmd":"packages/api-form-builder
-          --storage=ddb","storage":"ddb","id":"packages-api-form-builder-storage-ddb"},{"cmd":"packages/api-headless-cms
+          --storage=ddb","storage":"ddb","id":"5595b4f3460fb2a019066177bd6489f3"},{"cmd":"packages/api-apw
+          --storage=ddb","storage":"ddb","id":"04462239e1f3509b08f511de460971ec"},{"cmd":"packages/api-audit-logs
+          --storage=ddb","storage":"ddb","id":"47680aa68a1a3951f1117c736e150e45"},{"cmd":"packages/api-file-manager
+          --storage=ddb","storage":"ddb","id":"9b6eee1ff7cbf9a3d367818705cc4189"},{"cmd":"packages/api-form-builder
+          --storage=ddb","storage":"ddb","id":"980a9aebb5ec0cab057422364a60493b"},{"cmd":"packages/api-headless-cms
           --storage=ddb
-          --shard=1/10","storage":"ddb","id":"packages-api-headless-cms-storage-ddb-shard-1-10"},{"cmd":"packages/api-headless-cms
+          --shard=1/10","storage":"ddb","id":"9efec206fae3cf8e70b1812d1f2fc5fd"},{"cmd":"packages/api-headless-cms
           --storage=ddb
-          --shard=2/10","storage":"ddb","id":"packages-api-headless-cms-storage-ddb-shard-2-10"},{"cmd":"packages/api-headless-cms
+          --shard=2/10","storage":"ddb","id":"eb10ef3535ef5b09fb10cf8003b1cb92"},{"cmd":"packages/api-headless-cms
           --storage=ddb
-          --shard=3/10","storage":"ddb","id":"packages-api-headless-cms-storage-ddb-shard-3-10"},{"cmd":"packages/api-headless-cms
+          --shard=3/10","storage":"ddb","id":"9d90381e54abdfabba3ed39327b11e91"},{"cmd":"packages/api-headless-cms
           --storage=ddb
-          --shard=4/10","storage":"ddb","id":"packages-api-headless-cms-storage-ddb-shard-4-10"},{"cmd":"packages/api-headless-cms
+          --shard=4/10","storage":"ddb","id":"93b7449f86cf72fb874329524c43c19c"},{"cmd":"packages/api-headless-cms
           --storage=ddb
-          --shard=5/10","storage":"ddb","id":"packages-api-headless-cms-storage-ddb-shard-5-10"},{"cmd":"packages/api-headless-cms
+          --shard=5/10","storage":"ddb","id":"9172f790d53790a00920062c77c8cf73"},{"cmd":"packages/api-headless-cms
           --storage=ddb
-          --shard=6/10","storage":"ddb","id":"packages-api-headless-cms-storage-ddb-shard-6-10"},{"cmd":"packages/api-headless-cms
+          --shard=6/10","storage":"ddb","id":"d5b2c7729dc62eed44d94483ed626941"},{"cmd":"packages/api-headless-cms
           --storage=ddb
-          --shard=7/10","storage":"ddb","id":"packages-api-headless-cms-storage-ddb-shard-7-10"},{"cmd":"packages/api-headless-cms
+          --shard=7/10","storage":"ddb","id":"16833e55f7747218af85904921b857d2"},{"cmd":"packages/api-headless-cms
           --storage=ddb
-          --shard=8/10","storage":"ddb","id":"packages-api-headless-cms-storage-ddb-shard-8-10"},{"cmd":"packages/api-headless-cms
+          --shard=8/10","storage":"ddb","id":"5379ab8c5ed802f577d7a8b1f044e020"},{"cmd":"packages/api-headless-cms
           --storage=ddb
-          --shard=9/10","storage":"ddb","id":"packages-api-headless-cms-storage-ddb-shard-9-10"},{"cmd":"packages/api-headless-cms
+          --shard=9/10","storage":"ddb","id":"34f87bcb3053d9675fe1e80c801895db"},{"cmd":"packages/api-headless-cms
           --storage=ddb
-          --shard=10/10","storage":"ddb","id":"packages-api-headless-cms-storage-ddb-shard-10-10"},{"cmd":"packages/api-headless-cms-aco
-          --storage=ddb","storage":"ddb","id":"packages-api-headless-cms-aco-storage-ddb"},{"cmd":"packages/api-headless-cms-tasks
-          --storage=ddb","storage":"ddb","id":"packages-api-headless-cms-tasks-storage-ddb"},{"cmd":"packages/api-i18n
-          --storage=ddb","storage":"ddb","id":"packages-api-i-18-n-storage-ddb"},{"cmd":"packages/api-mailer
-          --storage=ddb","storage":"ddb","id":"packages-api-mailer-storage-ddb"},{"cmd":"packages/api-page-builder
-          --storage=ddb","storage":"ddb","id":"packages-api-page-builder-storage-ddb"},{"cmd":"packages/api-page-builder-aco
-          --storage=ddb","storage":"ddb","id":"packages-api-page-builder-aco-storage-ddb"},{"cmd":"packages/api-page-builder-import-export
-          --storage=ddb","storage":"ddb","id":"packages-api-page-builder-import-export-storage-ddb"},{"cmd":"packages/api-prerendering-service
-          --storage=ddb","storage":"ddb","id":"packages-api-prerendering-service-storage-ddb"},{"cmd":"packages/api-security
-          --storage=ddb","storage":"ddb","id":"packages-api-security-storage-ddb"},{"cmd":"packages/api-security-cognito
-          --storage=ddb","storage":"ddb","id":"packages-api-security-cognito-storage-ddb"},{"cmd":"packages/api-tenancy
-          --storage=ddb","storage":"ddb","id":"packages-api-tenancy-storage-ddb"},{"cmd":"packages/api-tenant-manager
-          --storage=ddb","storage":"ddb","id":"packages-api-tenant-manager-storage-ddb"},{"cmd":"packages/tasks
-          --storage=ddb","storage":"ddb","id":"packages-tasks-storage-ddb"}]')
+          --shard=10/10","storage":"ddb","id":"56a97453b55d770ac3f713f37cde05c8"},{"cmd":"packages/api-headless-cms-aco
+          --storage=ddb","storage":"ddb","id":"718c110b004c59ed7d13cbcc875a6b64"},{"cmd":"packages/api-headless-cms-tasks
+          --storage=ddb","storage":"ddb","id":"d2c31fa2375669d0c176d70c946a6108"},{"cmd":"packages/api-i18n
+          --storage=ddb","storage":"ddb","id":"943e15fe21c847b164f9413f8baf97b7"},{"cmd":"packages/api-mailer
+          --storage=ddb","storage":"ddb","id":"2cc1dc707a39e72f4e5d9a140677ca39"},{"cmd":"packages/api-page-builder
+          --storage=ddb","storage":"ddb","id":"75450f953b0268335bc5179bd653fd64"},{"cmd":"packages/api-page-builder-aco
+          --storage=ddb","storage":"ddb","id":"48281621c024ae9bbd0f79da5f6f4867"},{"cmd":"packages/api-page-builder-import-export
+          --storage=ddb","storage":"ddb","id":"8540085b59af85d1fd82b37b9e890704"},{"cmd":"packages/api-prerendering-service
+          --storage=ddb","storage":"ddb","id":"a2831c88465244dc03f188f4a40e4d63"},{"cmd":"packages/api-security
+          --storage=ddb","storage":"ddb","id":"0a065366763b713fb016c43ce21e77b9"},{"cmd":"packages/api-security-cognito
+          --storage=ddb","storage":"ddb","id":"0787967fe56689618106e6c64e784bff"},{"cmd":"packages/api-tenancy
+          --storage=ddb","storage":"ddb","id":"0c81e56d64e97e6b563965250f04ed34"},{"cmd":"packages/api-tenant-manager
+          --storage=ddb","storage":"ddb","id":"4b93a028b8055553c3443a45b38079e9"},{"cmd":"packages/tasks
+          --storage=ddb","storage":"ddb","id":"925ba761b5995e8a8b980c0789034b3c"}]')
           }}
     runs-on: ${{ matrix.os }}
     env:
@@ -302,42 +302,42 @@ jobs:
           - 18
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"packages-api-aco-storage-ddb-es-ddb"},{"cmd":"packages/api-audit-logs
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"packages-api-audit-logs-storage-ddb-es-ddb"},{"cmd":"packages/api-dynamodb-to-elasticsearch
-          --storage=ddb-es,ddb","storage":["ddb-es"],"id":"packages-api-dynamodb-to-elasticsearch-storage-ddb-es-ddb"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"packages-api-elasticsearch"},{"cmd":"packages/api-elasticsearch-tasks
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"packages-api-elasticsearch-tasks-storage-ddb-es-ddb"},{"cmd":"packages/api-file-manager
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"packages-api-file-manager-storage-ddb-es-ddb"},{"cmd":"packages/api-form-builder
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"packages-api-form-builder-storage-ddb-es-ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"packages-api-form-builder-so-ddb-es-storage-ddb-es-ddb"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"8f23ec33f547aa62236f5c71115688d6"},{"cmd":"packages/api-audit-logs
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"a292444cd9100f78d8fc196274393ea8"},{"cmd":"packages/api-dynamodb-to-elasticsearch
+          --storage=ddb-es,ddb","storage":["ddb-es"],"id":"e2c325f0940ba5fb5a891a8cf74fca61"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"430874606aeb8e8041b325955f9330e3"},{"cmd":"packages/api-elasticsearch-tasks
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"d81ad1d024a8746cc440e2e548770f8f"},{"cmd":"packages/api-file-manager
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"d6f293add4a252b96cbd770ab6e80557"},{"cmd":"packages/api-form-builder
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"3753bde0144d808eb15c755b7176386c"},{"cmd":"packages/api-form-builder-so-ddb-es
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"be1748722ce53a7383696bdc9aecb36e"},{"cmd":"packages/api-headless-cms
           --storage=ddb-es,ddb
-          --shard=1/10","storage":"ddb-es","id":"packages-api-headless-cms-storage-ddb-es-ddb-shard-1-10"},{"cmd":"packages/api-headless-cms
+          --shard=1/10","storage":"ddb-es","id":"2f615d972415f9b88da165797fb38c46"},{"cmd":"packages/api-headless-cms
           --storage=ddb-es,ddb
-          --shard=2/10","storage":"ddb-es","id":"packages-api-headless-cms-storage-ddb-es-ddb-shard-2-10"},{"cmd":"packages/api-headless-cms
+          --shard=2/10","storage":"ddb-es","id":"7ac00c6494a22cb37e0b2cc8563d383c"},{"cmd":"packages/api-headless-cms
           --storage=ddb-es,ddb
-          --shard=3/10","storage":"ddb-es","id":"packages-api-headless-cms-storage-ddb-es-ddb-shard-3-10"},{"cmd":"packages/api-headless-cms
+          --shard=3/10","storage":"ddb-es","id":"110ea0f3085d685aec7c0748df185551"},{"cmd":"packages/api-headless-cms
           --storage=ddb-es,ddb
-          --shard=4/10","storage":"ddb-es","id":"packages-api-headless-cms-storage-ddb-es-ddb-shard-4-10"},{"cmd":"packages/api-headless-cms
+          --shard=4/10","storage":"ddb-es","id":"b61ec2272eb9affb701aac2ce2592558"},{"cmd":"packages/api-headless-cms
           --storage=ddb-es,ddb
-          --shard=5/10","storage":"ddb-es","id":"packages-api-headless-cms-storage-ddb-es-ddb-shard-5-10"},{"cmd":"packages/api-headless-cms
+          --shard=5/10","storage":"ddb-es","id":"c76f440b5b49a14eecb133b2952ed64c"},{"cmd":"packages/api-headless-cms
           --storage=ddb-es,ddb
-          --shard=6/10","storage":"ddb-es","id":"packages-api-headless-cms-storage-ddb-es-ddb-shard-6-10"},{"cmd":"packages/api-headless-cms
+          --shard=6/10","storage":"ddb-es","id":"92c0cb0c1e3e89482ef9da51ac2e24b7"},{"cmd":"packages/api-headless-cms
           --storage=ddb-es,ddb
-          --shard=7/10","storage":"ddb-es","id":"packages-api-headless-cms-storage-ddb-es-ddb-shard-7-10"},{"cmd":"packages/api-headless-cms
+          --shard=7/10","storage":"ddb-es","id":"9458c116f687080f68305ecdd78ff20a"},{"cmd":"packages/api-headless-cms
           --storage=ddb-es,ddb
-          --shard=8/10","storage":"ddb-es","id":"packages-api-headless-cms-storage-ddb-es-ddb-shard-8-10"},{"cmd":"packages/api-headless-cms
+          --shard=8/10","storage":"ddb-es","id":"4ce097ec7631113bef48b3f0bf4d99a5"},{"cmd":"packages/api-headless-cms
           --storage=ddb-es,ddb
-          --shard=9/10","storage":"ddb-es","id":"packages-api-headless-cms-storage-ddb-es-ddb-shard-9-10"},{"cmd":"packages/api-headless-cms
+          --shard=9/10","storage":"ddb-es","id":"b702439e98afcec5cf9a7393fe8c13f2"},{"cmd":"packages/api-headless-cms
           --storage=ddb-es,ddb
-          --shard=10/10","storage":"ddb-es","id":"packages-api-headless-cms-storage-ddb-es-ddb-shard-10-10"},{"cmd":"packages/api-headless-cms-aco
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"packages-api-headless-cms-aco-storage-ddb-es-ddb"},{"cmd":"packages/api-headless-cms-ddb-es
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"packages-api-headless-cms-ddb-es-storage-ddb-es-ddb"},{"cmd":"packages/api-headless-cms-es-tasks
-          --storage=ddb-es,ddb","storage":["ddb-es"],"id":"packages-api-headless-cms-es-tasks-storage-ddb-es-ddb"},{"cmd":"packages/api-headless-cms-tasks
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"packages-api-headless-cms-tasks-storage-ddb-es-ddb"},{"cmd":"packages/api-mailer
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"packages-api-mailer-storage-ddb-es-ddb"},{"cmd":"packages/api-page-builder
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"packages-api-page-builder-storage-ddb-es-ddb"},{"cmd":"packages/api-page-builder-aco
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"packages-api-page-builder-aco-storage-ddb-es-ddb"},{"cmd":"packages/api-page-builder-so-ddb-es
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"packages-api-page-builder-so-ddb-es-storage-ddb-es-ddb"},{"cmd":"packages/migrations","storage":["ddb-es","ddb-os"],"id":"packages-migrations"},{"cmd":"packages/tasks
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"packages-tasks-storage-ddb-es-ddb"}]')
+          --shard=10/10","storage":"ddb-es","id":"9c1e0d8933b25cecd45c85b64b7e5c4b"},{"cmd":"packages/api-headless-cms-aco
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"873cd623b92712713e58e7dc6ddbe5d9"},{"cmd":"packages/api-headless-cms-ddb-es
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"f64e01fd77d4d1c22803e1523560b07c"},{"cmd":"packages/api-headless-cms-es-tasks
+          --storage=ddb-es,ddb","storage":["ddb-es"],"id":"f857b5e4a7381a7f10eadef6ec83d9e0"},{"cmd":"packages/api-headless-cms-tasks
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"6a7091c172aaf229fbfae3c7d1756e8c"},{"cmd":"packages/api-mailer
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"ccc077215f734fbec817d90fdb04d423"},{"cmd":"packages/api-page-builder
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"bde852e6692324ab87f553c8cdda4da4"},{"cmd":"packages/api-page-builder-aco
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"d12985ec4dcdb80af419125d236a73d8"},{"cmd":"packages/api-page-builder-so-ddb-es
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"911289d4016adf351238298ce5b41ac8"},{"cmd":"packages/migrations","storage":["ddb-es","ddb-os"],"id":"bd6345274042973682dcf9af2706627d"},{"cmd":"packages/tasks
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"0c5cd8395d241e54e3488ffcc1c81c26"}]')
           }}
     runs-on: ${{ matrix.os }}
     env:
@@ -392,42 +392,42 @@ jobs:
           - 18
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"packages-api-aco-storage-ddb-os-ddb"},{"cmd":"packages/api-audit-logs
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"packages-api-audit-logs-storage-ddb-os-ddb"},{"cmd":"packages/api-dynamodb-to-elasticsearch
-          --storage=ddb-os,ddb","storage":["ddb-os"],"id":"packages-api-dynamodb-to-elasticsearch-storage-ddb-os-ddb"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"packages-api-elasticsearch"},{"cmd":"packages/api-elasticsearch-tasks
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"packages-api-elasticsearch-tasks-storage-ddb-os-ddb"},{"cmd":"packages/api-file-manager
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"packages-api-file-manager-storage-ddb-os-ddb"},{"cmd":"packages/api-form-builder
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"packages-api-form-builder-storage-ddb-os-ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"packages-api-form-builder-so-ddb-es-storage-ddb-os-ddb"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"e4b1b5ebc172f2657485e41c35ad1cd7"},{"cmd":"packages/api-audit-logs
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"b36aac5f0e34dc4583e5422ae589f1ed"},{"cmd":"packages/api-dynamodb-to-elasticsearch
+          --storage=ddb-os,ddb","storage":["ddb-os"],"id":"6e0b282c3d135703e52b2c55822d4fb0"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"430874606aeb8e8041b325955f9330e3"},{"cmd":"packages/api-elasticsearch-tasks
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"580a9577fdbd4a241034a42e1a47dee5"},{"cmd":"packages/api-file-manager
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"346430a79981d3e214c87254a08e31b2"},{"cmd":"packages/api-form-builder
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"d386cddfd3c366ad9955193dcfe74363"},{"cmd":"packages/api-form-builder-so-ddb-es
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"6086ced9d7b4412cc438b9e1aefbb976"},{"cmd":"packages/api-headless-cms
           --storage=ddb-os,ddb
-          --shard=1/10","storage":"ddb-os","id":"packages-api-headless-cms-storage-ddb-os-ddb-shard-1-10"},{"cmd":"packages/api-headless-cms
+          --shard=1/10","storage":"ddb-os","id":"4d0fabd2f49acd02e40b213405099d7d"},{"cmd":"packages/api-headless-cms
           --storage=ddb-os,ddb
-          --shard=2/10","storage":"ddb-os","id":"packages-api-headless-cms-storage-ddb-os-ddb-shard-2-10"},{"cmd":"packages/api-headless-cms
+          --shard=2/10","storage":"ddb-os","id":"8ed59cba000dc1d740d1b739eeae76e5"},{"cmd":"packages/api-headless-cms
           --storage=ddb-os,ddb
-          --shard=3/10","storage":"ddb-os","id":"packages-api-headless-cms-storage-ddb-os-ddb-shard-3-10"},{"cmd":"packages/api-headless-cms
+          --shard=3/10","storage":"ddb-os","id":"8b278a40816a34ede5b1aaef2a0a6be5"},{"cmd":"packages/api-headless-cms
           --storage=ddb-os,ddb
-          --shard=4/10","storage":"ddb-os","id":"packages-api-headless-cms-storage-ddb-os-ddb-shard-4-10"},{"cmd":"packages/api-headless-cms
+          --shard=4/10","storage":"ddb-os","id":"d82c0ca8a324f6bedbcf01d00ff7e979"},{"cmd":"packages/api-headless-cms
           --storage=ddb-os,ddb
-          --shard=5/10","storage":"ddb-os","id":"packages-api-headless-cms-storage-ddb-os-ddb-shard-5-10"},{"cmd":"packages/api-headless-cms
+          --shard=5/10","storage":"ddb-os","id":"ac070889596c8cfbde0c88f82780a5f9"},{"cmd":"packages/api-headless-cms
           --storage=ddb-os,ddb
-          --shard=6/10","storage":"ddb-os","id":"packages-api-headless-cms-storage-ddb-os-ddb-shard-6-10"},{"cmd":"packages/api-headless-cms
+          --shard=6/10","storage":"ddb-os","id":"8b86587d95faad7f7e0fab06286e4bf9"},{"cmd":"packages/api-headless-cms
           --storage=ddb-os,ddb
-          --shard=7/10","storage":"ddb-os","id":"packages-api-headless-cms-storage-ddb-os-ddb-shard-7-10"},{"cmd":"packages/api-headless-cms
+          --shard=7/10","storage":"ddb-os","id":"2036f6012231f2ee13d7e805540e3eb6"},{"cmd":"packages/api-headless-cms
           --storage=ddb-os,ddb
-          --shard=8/10","storage":"ddb-os","id":"packages-api-headless-cms-storage-ddb-os-ddb-shard-8-10"},{"cmd":"packages/api-headless-cms
+          --shard=8/10","storage":"ddb-os","id":"ba2d0c95b7426b30c41dfe75f485744e"},{"cmd":"packages/api-headless-cms
           --storage=ddb-os,ddb
-          --shard=9/10","storage":"ddb-os","id":"packages-api-headless-cms-storage-ddb-os-ddb-shard-9-10"},{"cmd":"packages/api-headless-cms
+          --shard=9/10","storage":"ddb-os","id":"fbdffdd6c90e16b2ce1677bb091769d6"},{"cmd":"packages/api-headless-cms
           --storage=ddb-os,ddb
-          --shard=10/10","storage":"ddb-os","id":"packages-api-headless-cms-storage-ddb-os-ddb-shard-10-10"},{"cmd":"packages/api-headless-cms-aco
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"packages-api-headless-cms-aco-storage-ddb-os-ddb"},{"cmd":"packages/api-headless-cms-ddb-es
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"packages-api-headless-cms-ddb-es-storage-ddb-os-ddb"},{"cmd":"packages/api-headless-cms-es-tasks
-          --storage=ddb-os,ddb","storage":["ddb-os"],"id":"packages-api-headless-cms-es-tasks-storage-ddb-os-ddb"},{"cmd":"packages/api-headless-cms-tasks
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"packages-api-headless-cms-tasks-storage-ddb-os-ddb"},{"cmd":"packages/api-mailer
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"packages-api-mailer-storage-ddb-os-ddb"},{"cmd":"packages/api-page-builder
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"packages-api-page-builder-storage-ddb-os-ddb"},{"cmd":"packages/api-page-builder-aco
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"packages-api-page-builder-aco-storage-ddb-os-ddb"},{"cmd":"packages/api-page-builder-so-ddb-es
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"packages-api-page-builder-so-ddb-es-storage-ddb-os-ddb"},{"cmd":"packages/migrations","storage":["ddb-es","ddb-os"],"id":"packages-migrations"},{"cmd":"packages/tasks
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"packages-tasks-storage-ddb-os-ddb"}]')
+          --shard=10/10","storage":"ddb-os","id":"ddabae60cb35edcebc3e0d91cd0eb7c3"},{"cmd":"packages/api-headless-cms-aco
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"aa2c8429c2564549a680db23fe963347"},{"cmd":"packages/api-headless-cms-ddb-es
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"23bea783bb40390ae069dfa4985f97d2"},{"cmd":"packages/api-headless-cms-es-tasks
+          --storage=ddb-os,ddb","storage":["ddb-os"],"id":"ee446fd78ad6294bbfb3c0689ff2602e"},{"cmd":"packages/api-headless-cms-tasks
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"5326eafa76e67756c7f6e4e980cbf1da"},{"cmd":"packages/api-mailer
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"0ede859b604febdfa78018cdd1067a77"},{"cmd":"packages/api-page-builder
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"43a3f010297862d078b400953f0f5f9e"},{"cmd":"packages/api-page-builder-aco
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"a1a7c90d43da1678f254bd4331cf4d55"},{"cmd":"packages/api-page-builder-so-ddb-es
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"e0236755edb31fc1a6005eb161941bf8"},{"cmd":"packages/migrations","storage":["ddb-es","ddb-os"],"id":"bd6345274042973682dcf9af2706627d"},{"cmd":"packages/tasks
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"5eadfa5cc14ec4e8ba87ac3dfb112580"}]')
           }}
     runs-on: ${{ matrix.os }}
     env:
