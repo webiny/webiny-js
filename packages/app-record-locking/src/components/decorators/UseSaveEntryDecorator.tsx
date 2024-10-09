@@ -1,21 +1,28 @@
 import { useCallback } from "react";
 import { useRecordLocking } from "~/hooks";
-import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
+import { ContentEntryEditorConfig, useModel } from "@webiny/app-headless-cms";
 import { useSnackbar } from "@webiny/app-admin";
 
 const {
-    ContentEntry: { ContentEntryForm, useContentEntry }
+    ContentEntry: { ContentEntryForm }
 } = ContentEntryEditorConfig;
 
 type SaveEntry = ReturnType<typeof ContentEntryForm.useContentEntryForm>["saveEntry"];
 
+/**
+ * IMPORTANT!
+ * This decorator only works for a regular content entry, because regular models and singleton models
+ * have different context providers, so the try/catch blocks protects us from using this in a singleton entry form.
+ */
 export const UseSaveEntryDecorator = ContentEntryForm.useContentEntryForm.createDecorator(
     originalHook => {
         return function useRecordLockingUseSave() {
             const hook = originalHook();
-            const { entry, contentModel: model } = useContentEntry();
             const { fetchLockedEntryLockRecord, updateEntryLock } = useRecordLocking();
             const { showSnackbar } = useSnackbar();
+            const { model } = useModel();
+
+            const { entry } = hook;
 
             const saveEntry: SaveEntry = useCallback(
                 async (...params) => {
