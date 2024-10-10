@@ -15,7 +15,7 @@ export interface ValueFilterPluginParams {
     canUse?: (params: ValueFilterPluginParamsMatchesParams) => boolean;
     matches: ValueFilterPluginParamsMatches;
 }
-export class ValueFilterPlugin extends Plugin {
+export class ValueFilterPlugin<V = any, C = any> extends Plugin {
     public static override readonly type: string = "dynamodb.value.filter";
     private readonly _params: ValueFilterPluginParams;
 
@@ -28,7 +28,7 @@ export class ValueFilterPlugin extends Plugin {
         this._params = params;
     }
 
-    public canUse(params: ValueFilterPluginParamsMatchesParams): boolean {
+    public canUse(params: ValueFilterPluginParamsMatchesParams<V, C>): boolean {
         if (!this._params.canUse) {
             return true;
         }

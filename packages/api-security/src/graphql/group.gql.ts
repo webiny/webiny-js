@@ -17,6 +17,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
             description: String
             permissions: [JSON]
             system: Boolean!
+            plugin: Boolean
         }
 
         input SecurityGroupCreateInput {

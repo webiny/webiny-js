@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
       - name: Create global cache key
         id: global-cache-key
@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: dev
@@ -72,7 +72,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: dev
@@ -109,7 +109,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: dev
@@ -140,7 +140,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         package: >-
           ${{
           fromJson('[{"cmd":"packages/api","id":"api"},{"cmd":"packages/api-admin-settings","id":"api-admin-settings"},{"cmd":"packages/api-authentication","id":"api-authentication"},{"cmd":"packages/api-authentication-cognito","id":"api-authentication-cognito"},{"cmd":"packages/api-headless-cms-ddb","id":"api-headless-cms-ddb"},{"cmd":"packages/api-record-locking","id":"api-record-locking"},{"cmd":"packages/api-wcp","id":"api-wcp"},{"cmd":"packages/api-websockets","id":"api-websockets"},{"cmd":"packages/app-aco","id":"app-aco"},{"cmd":"packages/app-admin","id":"app-admin"},{"cmd":"packages/cwp-template-aws","id":"cwp-template-aws"},{"cmd":"packages/data-migration","id":"data-migration"},{"cmd":"packages/db-dynamodb","id":"db-dynamodb"},{"cmd":"packages/form","id":"form"},{"cmd":"packages/handler","id":"handler"},{"cmd":"packages/handler-aws","id":"handler-aws"},{"cmd":"packages/handler-graphql","id":"handler-graphql"},{"cmd":"packages/handler-logs","id":"handler-logs"},{"cmd":"packages/ioc","id":"ioc"},{"cmd":"packages/lexical-converter","id":"lexical-converter"},{"cmd":"packages/plugins","id":"plugins"},{"cmd":"packages/pubsub","id":"pubsub"},{"cmd":"packages/react-composition","id":"react-composition"},{"cmd":"packages/react-properties","id":"react-properties"},{"cmd":"packages/react-rich-text-lexical-renderer","id":"react-rich-text-lexical-renderer"},{"cmd":"packages/utils","id":"utils"},{"cmd":"packages/validation","id":"validation"}]')
@@ -149,10 +149,11 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      AWS_REGION: eu-central-1
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: dev
@@ -184,7 +185,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
           --storage=ddb","storage":"ddb","id":"api-aco_ddb"},{"cmd":"packages/api-apw
@@ -193,8 +194,9 @@ jobs:
           --storage=ddb","storage":"ddb","id":"api-file-manager_ddb"},{"cmd":"packages/api-form-builder
           --storage=ddb","storage":"ddb","id":"api-form-builder_ddb"},{"cmd":"packages/api-headless-cms
           --storage=ddb","storage":"ddb","id":"api-headless-cms_ddb"},{"cmd":"packages/api-headless-cms-aco
-          --storage=ddb","storage":"ddb","id":"api-headless-cms-aco_ddb"},{"cmd":"packages/api-headless-cms-tasks
-          --storage=ddb","storage":"ddb","id":"api-headless-cms-tasks_ddb"},{"cmd":"packages/api-i18n
+          --storage=ddb","storage":"ddb","id":"api-headless-cms-aco_ddb"},{"cmd":"packages/api-headless-cms-bulk-actions
+          --storage=ddb","storage":"ddb","id":"api-headless-cms-bulk-actions_ddb"},{"cmd":"packages/api-headless-cms-import-export
+          --storage=ddb","storage":"ddb","id":"api-headless-cms-import-export_ddb"},{"cmd":"packages/api-i18n
           --storage=ddb","storage":"ddb","id":"api-i18n_ddb"},{"cmd":"packages/api-mailer
           --storage=ddb","storage":"ddb","id":"api-mailer_ddb"},{"cmd":"packages/api-page-builder
           --storage=ddb","storage":"ddb","id":"api-page-builder_ddb"},{"cmd":"packages/api-page-builder-aco
@@ -210,10 +212,11 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      AWS_REGION: eu-central-1
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: dev
@@ -245,7 +248,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-aco_ddb-es_ddb"},{"cmd":"packages/api-audit-logs
@@ -256,10 +259,11 @@ jobs:
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder_ddb-es_ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder-so-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-headless-cms
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-aco
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-aco_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-ddb-es
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-aco_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-bulk-actions
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-bulk-actions_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-ddb-es
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-es-tasks
-          --storage=ddb-es,ddb","storage":["ddb-es"],"id":"api-headless-cms-es-tasks_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-tasks
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-tasks_ddb-es_ddb"},{"cmd":"packages/api-mailer
+          --storage=ddb-es,ddb","storage":["ddb-es"],"id":"api-headless-cms-es-tasks_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-import-export
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-import-export_ddb-es_ddb"},{"cmd":"packages/api-mailer
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-mailer_ddb-es_ddb"},{"cmd":"packages/api-page-builder
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder_ddb-es_ddb"},{"cmd":"packages/api-page-builder-aco
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder-aco_ddb-es_ddb"},{"cmd":"packages/api-page-builder-so-ddb-es
@@ -270,13 +274,14 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      AWS_REGION: eu-central-1
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -315,7 +320,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-aco_ddb-os_ddb"},{"cmd":"packages/api-audit-logs
@@ -326,10 +331,11 @@ jobs:
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-form-builder_ddb-os_ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-form-builder-so-ddb-es_ddb-os_ddb"},{"cmd":"packages/api-headless-cms
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-aco
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-aco_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-ddb-es
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-aco_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-bulk-actions
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-bulk-actions_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-ddb-es
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-ddb-es_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-es-tasks
-          --storage=ddb-os,ddb","storage":["ddb-os"],"id":"api-headless-cms-es-tasks_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-tasks
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-tasks_ddb-os_ddb"},{"cmd":"packages/api-mailer
+          --storage=ddb-os,ddb","storage":["ddb-os"],"id":"api-headless-cms-es-tasks_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-import-export
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-import-export_ddb-os_ddb"},{"cmd":"packages/api-mailer
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-mailer_ddb-os_ddb"},{"cmd":"packages/api-page-builder
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-page-builder_ddb-os_ddb"},{"cmd":"packages/api-page-builder-aco
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-page-builder-aco_ddb-os_ddb"},{"cmd":"packages/api-page-builder-so-ddb-es
@@ -340,13 +346,14 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      AWS_REGION: eu-central-1
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -384,7 +391,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
       - name: List Cypress tests folders
         id: list-cypress-folders
@@ -419,7 +426,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -478,8 +485,8 @@ jobs:
           npx create-webiny-project@local-npm new-webiny-project --tag local-npm
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"${{ env.AWS_REGION
-          }}","storageOperations":"ddb"}'
+          --template-options
+          '{"region":"eu-central-1","storageOperations":"ddb"}'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -537,7 +544,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         cypress-folder: ${{ fromJson(needs.e2eTestsDdb-constants.outputs.cypress-folders) }}
     environment: next
     env:
@@ -550,7 +557,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: dev
@@ -588,7 +595,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
       - name: List Cypress tests folders
         id: list-cypress-folders
@@ -626,7 +633,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -685,8 +692,8 @@ jobs:
           npx create-webiny-project@local-npm new-webiny-project --tag local-npm
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"${{ env.AWS_REGION
-          }}","storageOperations":"ddb-es"}'
+          --template-options
+          '{"region":"eu-central-1","storageOperations":"ddb-es"}'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -744,7 +751,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         cypress-folder: >-
           ${{ fromJson(needs.e2eTestsDdb-es-constants.outputs.cypress-folders)
           }}
@@ -762,7 +769,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: dev
@@ -800,7 +807,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
       - name: List Cypress tests folders
         id: list-cypress-folders
@@ -838,7 +845,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -897,8 +904,8 @@ jobs:
           npx create-webiny-project@local-npm new-webiny-project --tag local-npm
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"${{ env.AWS_REGION
-          }}","storageOperations":"ddb-os"}'
+          --template-options
+          '{"region":"eu-central-1","storageOperations":"ddb-os"}'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -956,7 +963,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 18
+          - 20
         cypress-folder: >-
           ${{ fromJson(needs.e2eTestsDdb-os-constants.outputs.cypress-folders)
           }}
@@ -974,7 +981,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           path: dev

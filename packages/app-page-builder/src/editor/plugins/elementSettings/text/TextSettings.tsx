@@ -154,10 +154,6 @@ const TextSettings = ({ defaultAccordionValue, options }: TextSettingsProps) => 
 
     const text = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
 
-    if (!text) {
-        return null;
-    }
-
     // For the new editor, we only want to show text alignment options. We check if the editor is new by
     // examining the text data. If it's JSON, then it's the new editor. Otherwise, it's the old editor.
     const textData = element.data?.text?.data?.text;
@@ -174,7 +170,7 @@ const TextSettings = ({ defaultAccordionValue, options }: TextSettingsProps) => 
         }
     }, [textData]);
 
-    if (usingLexicalEditor) {
+    if (!text || usingLexicalEditor) {
         return null;
     }
 

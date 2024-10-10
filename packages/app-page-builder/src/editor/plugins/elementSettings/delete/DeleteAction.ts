@@ -1,12 +1,10 @@
 import React, { useCallback } from "react";
-import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { DeleteElementActionEvent } from "../../../recoil/actions";
-import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
 import { plugins } from "@webiny/plugins";
+import { useActiveElement, useEventActionHandler } from "~/editor";
 import { PbEditorPageElementPlugin, PbBlockVariable, PbEditorElement } from "~/types";
-import { useRecoilValue } from "recoil";
 import { useUpdateElement } from "~/editor/hooks/useUpdateElement";
 import { useParentBlock } from "~/editor/hooks/useParentBlock";
+import { DeleteElementActionEvent } from "~/editor/recoil/actions";
 
 const removeVariableFromBlock = (block: PbEditorElement, variableId: string) => {
     const variables = block.data.variables ?? [];
@@ -29,9 +27,8 @@ interface DeleteActionPropsType {
 }
 const DeleteAction = ({ children }: DeleteActionPropsType) => {
     const eventActionHandler = useEventActionHandler();
-    const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementByIdSelector(activeElementId as string));
-    const block = useParentBlock(activeElementId as string);
+    const [element] = useActiveElement();
+    const block = useParentBlock();
     const updateElement = useUpdateElement();
 
     if (!element) {
@@ -50,7 +47,7 @@ const DeleteAction = ({ children }: DeleteActionPropsType) => {
                 element
             })
         );
-    }, [activeElementId]);
+    }, [element.id]);
 
     const plugin = plugins
         .byType<PbEditorPageElementPlugin>("pb-editor-page-element")

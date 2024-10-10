@@ -6,6 +6,8 @@ export interface TrashBinPresenterViewModel {
     items: TrashBinItemDTO[];
     restoredItems: TrashBinItemDTO[];
     selectedItems: TrashBinItemDTO[];
+    allowSelectAll: boolean;
+    isSelectedAll: boolean;
     sorting: ColumnSorting[];
     loading: Record<string, boolean>;
     isEmptyView: boolean;

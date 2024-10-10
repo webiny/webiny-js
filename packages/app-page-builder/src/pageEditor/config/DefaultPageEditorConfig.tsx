@@ -19,6 +19,7 @@ import { UnlinkTemplate } from "./Toolbar/UnlinkTemplate";
 import { PreviewPageOption } from "./TopBar/PreviewPageOption/PreviewPageOption";
 import { SetAsHomepageOption } from "./TopBar/SetAsHomepageOption/SetAsHomepageOption";
 import { EditorConfig } from "~/editor/config";
+import { InjectElementVariables } from "~/render/variables/InjectElementVariables";
 
 const { ElementAction, Ui } = EditorConfig;
 
@@ -75,6 +76,7 @@ export const DefaultPageEditorConfig = React.memo(() => {
                 <HideSaveAction />
                 <TemplateMode />
                 <UnlinkTemplate />
+                <InjectElementVariables />
             </EditorConfig>
         </>
     );

@@ -1,4 +1,4 @@
-import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
+import { SecurityContext } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
@@ -6,16 +6,20 @@ import { getPermissionsFromSecurityGroupsForLocale } from "@webiny/api-security"
 
 type Context = TenancyContext & SecurityContext & I18NContext;
 
-export interface GroupAuthorizerConfig {
+export type GroupSlug = string | undefined;
+
+export interface GroupAuthorizerConfig<TContext extends Context = Context> {
     // Specify an `identityType` if you want to only run this authorizer for specific identities.
     identityType?: string;
 
     // Get a group slug to load permissions from.
-    getGroupSlug(context: Context): SecurityIdentity["group"];
+    getGroupSlug?: (context: TContext) => Promise<GroupSlug> | GroupSlug;
 }
 
-export const createGroupAuthorizer = (config: GroupAuthorizerConfig) => {
-    return new ContextPlugin<Context>(context => {
+export const createGroupAuthorizer = <TContext extends Context = Context>(
+    config: GroupAuthorizerConfig<TContext>
+) => {
+    return new ContextPlugin<TContext>(context => {
         const { security } = context;
         security.addAuthorizer(async () => {
             const identity = security.getIdentity();
@@ -35,7 +39,10 @@ export const createGroupAuthorizer = (config: GroupAuthorizerConfig) => {
                 return null;
             }
 
-            const groupSlug = config.getGroupSlug(context);
+            const groupSlug = config.getGroupSlug
+                ? await config.getGroupSlug(context)
+                : identity.group;
+
             if (!groupSlug) {
                 return null;
             }

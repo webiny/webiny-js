@@ -15,6 +15,7 @@ import {
     createGraphQLSchemaPlugin as baseCreateGraphQLSchemaPlugin,
     GraphQLSchemaPluginConfig
 } from "@webiny/handler-graphql";
+import { createSecurityRolePlugin, createSecurityTeamPlugin } from "@webiny/api-security";
 
 export interface Context
     extends ClientContext,
@@ -41,5 +42,7 @@ export const createGraphQLSchemaPlugin = <T extends Context = Context>(
 ) => {
     return baseCreateGraphQLSchemaPlugin<T>(config);
 };
+
+export { createSecurityRolePlugin, createSecurityTeamPlugin };
 
 export * from "./tenancy/InstallTenant";

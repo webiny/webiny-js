@@ -8,4 +8,3 @@ export * from "./useStateWithCallback";
 export * from "./useModKey";
 export * from "./useIsMounted";
 export * from "./useStateIfMounted";
-export * from "./createGenericContext";

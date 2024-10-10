@@ -13,6 +13,7 @@ import { ROOT_FOLDER } from "~/contants";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { getDate } from "@webiny/api-headless-cms/utils/date";
 import { getIdentity as utilsGetIdentity } from "@webiny/api-headless-cms/utils/identity";
+import { CmsEntryListSort } from "@webiny/api-headless-cms/types";
 
 export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
     const {
@@ -301,7 +302,7 @@ export const createFilesCrud = (config: FileManagerConfig): FilesCRUD => {
                 where.createdBy = identity.id;
             }
 
-            const sort =
+            const sort: CmsEntryListSort =
                 Array.isArray(initialSort) && initialSort.length > 0 ? initialSort : ["id_DESC"];
             try {
                 return await storageOperations.files.list({

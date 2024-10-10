@@ -1,6 +1,7 @@
 import React from "react";
 import { RichTextEditor, RichTextEditorProps } from "~/components/Editor/RichTextEditor";
 import { Toolbar } from "~/components/Toolbar/Toolbar";
+import { EnsureHeadingTagPlugin } from "~/components/Editor/EnsureHeadingTagPlugin";
 
 interface HeadingEditorProps extends RichTextEditorProps {
     tag?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
@@ -17,6 +18,7 @@ export const HeadingEditor = ({ tag, placeholder, ...rest }: HeadingEditorProps)
             {...rest}
             styles={styles}
         >
+            <EnsureHeadingTagPlugin />
             {rest?.children}
         </RichTextEditor>
     );

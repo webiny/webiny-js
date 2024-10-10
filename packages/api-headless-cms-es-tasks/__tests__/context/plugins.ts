@@ -15,7 +15,7 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { createBackgroundTaskContext } from "@webiny/tasks";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { createHeadlessCmsEsTasks } from "~/index";
-import { createMockTaskTriggerTransportPlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin";
+import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -100,7 +100,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
             plugins,
             graphQLHandlerPlugins(),
             createHeadlessCmsEsTasks(),
-            createMockTaskTriggerTransportPlugin(),
+            createMockTaskServicePlugin(),
             bottomPlugins
         ]
     };

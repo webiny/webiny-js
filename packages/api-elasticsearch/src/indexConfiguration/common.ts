@@ -3,6 +3,18 @@ import { ElasticsearchIndexRequestBodyMappingsDynamicTemplate } from "~/types";
 const getDefaultMappings = (): ElasticsearchIndexRequestBodyMappingsDynamicTemplate[] => {
     return [
         {
+            ids: {
+                match: "^id|entryId$",
+                mapping: {
+                    type: "string",
+                    keyword: true
+                }
+            }
+        },
+        {
+            /**
+             * Update with the correct date fields.
+             */
             dates: {
                 match: "^createdOn|savedOn|publishedOn$",
                 mapping: {
