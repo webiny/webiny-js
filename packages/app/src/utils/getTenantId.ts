@@ -29,7 +29,7 @@ export const getTenantId = (): string | null => {
             if (value) {
                 return value;
             }
-        } finally {
+        } catch {
             return tenant.replace(/"/g, "");
         }
     }
