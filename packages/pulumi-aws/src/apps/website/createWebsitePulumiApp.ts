@@ -187,6 +187,8 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                             defaultTtl: 2592000, // 30 days
                             maxTtl: 2592000
                         },
+                        // This forward is necessary for non-WCP projects. For WCP projects, the
+                        // forwarding is performed by the `website-router` Lambda@Edge function.
                         {
                             compress: true,
                             allowedMethods: ["GET", "HEAD", "OPTIONS"],
