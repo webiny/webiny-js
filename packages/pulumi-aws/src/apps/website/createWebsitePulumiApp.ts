@@ -186,6 +186,25 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                             minTtl: 0,
                             defaultTtl: 2592000, // 30 days
                             maxTtl: 2592000
+                        },
+                        {
+                            compress: true,
+                            allowedMethods: ["GET", "HEAD", "OPTIONS"],
+                            cachedMethods: ["GET", "HEAD", "OPTIONS"],
+                            forwardedValues: {
+                                cookies: {
+                                    forward: "none"
+                                },
+                                headers: [],
+                                queryString: false
+                            },
+                            pathPattern: "/robots.txt",
+                            viewerProtocolPolicy: "allow-all",
+                            targetOriginId: appBucket.origin.originId,
+                            // MinTTL <= DefaultTTL <= MaxTTL
+                            minTtl: 0,
+                            defaultTtl: 2592000, // 30 days
+                            maxTtl: 2592000
                         }
                     ],
                     customErrorResponses: [
