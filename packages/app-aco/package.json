@@ -41,7 +41,7 @@
     "react-hotkeyz": "^1.0.4",
     "slugify": "^1.2.9",
     "store": "^2.0.12",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
@@ -57,7 +57,7 @@
     "apollo-link": "^1.2.14",
     "rimraf": "^5.0.5",
     "ttypescript": "^1.5.12",
-    "typescript": "4.7.4"
+    "typescript": "4.9.5"
   },
   "publishConfig": {
     "access": "public",

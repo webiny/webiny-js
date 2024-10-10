@@ -154,10 +154,15 @@ export const LIST_PAGES = gql`
  */
 export interface GetPageQueryResponse<T extends PageResponseData = PageResponseData> {
     pageBuilder: {
-        getPage: {
-            data: T | null;
-            error: PbErrorResponse | null;
-        };
+        getPage:
+            | {
+                  data: T;
+                  error: null;
+              }
+            | {
+                  data: null;
+                  error: PbErrorResponse;
+              };
     };
 }
 

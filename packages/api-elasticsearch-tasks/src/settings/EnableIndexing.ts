@@ -11,10 +11,11 @@ export class EnableIndexing {
 
     public async exec(index: string, settings: IIndexSettingsValues): Promise<void> {
         try {
+            const refreshInterval = parseInt(settings.refreshInterval || "", 10) || 0;
             await this.settings.setSettings(index, {
                 ...settings,
                 numberOfReplicas: settings.numberOfReplicas < 1 ? 1 : settings.numberOfReplicas,
-                refreshInterval: settings.refreshInterval === "-1" ? "1s" : settings.refreshInterval
+                refreshInterval: refreshInterval <= 0 ? "1s" : settings.refreshInterval
             });
         } catch (ex) {
             throw new IndexingEnableError(ex);

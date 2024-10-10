@@ -8,11 +8,9 @@ import {
     useSearchParams
 } from "react-router-dom";
 import { StaticRouter as RStaticRouter, StaticRouterProps } from "react-router-dom/server";
-import { ReactRouterContext, RouterContext } from "./context/RouterContext";
 /**
  * Webiny enhancements and backwards compatibility with react-router v5.
  */
-import enhancer from "./routerEnhancer";
 import { useHistory, UseHistory } from "~/useHistory";
 import { RouteProps } from "./Route";
 
@@ -66,13 +64,12 @@ export type { UseHistory } from "./useHistory";
 
 export { usePrompt } from "./usePrompt";
 
-export type UseRouter = RouteProps &
-    ReactRouterContext & {
-        history: UseHistory;
-        location: ReturnType<typeof useLocation>;
-        params: Record<string, any>;
-        search: ReturnType<typeof useSearchParams>;
-    };
+export type UseRouter = RouteProps & {
+    history: UseHistory;
+    location: ReturnType<typeof useLocation>;
+    params: Record<string, any>;
+    search: ReturnType<typeof useSearchParams>;
+};
 
 export function useRouter(): UseRouter {
     const history = useHistory();
@@ -80,7 +77,6 @@ export function useRouter(): UseRouter {
     const params = useParams();
     const search = useSearchParams();
     return {
-        ...useContext(RouterContext),
         ...useContext(__RouterContext),
         history,
         search,
@@ -93,7 +89,7 @@ export function useRouter(): UseRouter {
  * For Webiny, we only need a BrowserRouter, and we also export a StaticRouter, if we ever
  * need to do SSR. Right now, StaticRouter is not being used at all.
  */
-export const BrowserRouter: React.ComponentType<BrowserRouterProps> = enhancer(RBrowserRouter);
+export const BrowserRouter: React.ComponentType<BrowserRouterProps> = RBrowserRouter;
 export type { BrowserRouterProps };
 
-export const StaticRouter: React.ComponentType<StaticRouterProps> = enhancer(RStaticRouter);
+export const StaticRouter: React.ComponentType<StaticRouterProps> = RStaticRouter;

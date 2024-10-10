@@ -6,6 +6,7 @@ import { createBackgroundTaskDefinition } from "./backgroundTask/definition";
 import { createBackgroundTaskStepFunctionPolicy } from "~/apps/api/backgroundTask/policy";
 import { createBackgroundTaskStepFunctionRole } from "./backgroundTask/role";
 import { getLayerArn } from "@webiny/aws-layers";
+import { getAwsAccountId, getAwsRegion } from "~/apps/awsUtils";
 
 export type ApiBackgroundTask = PulumiAppModule<typeof ApiBackgroundTask>;
 
@@ -14,6 +15,8 @@ export const ApiBackgroundTaskLambdaName = "background-task";
 export const ApiBackgroundTask = createAppModule({
     name: "ApiBackgroundTask",
     config(app: PulumiApp) {
+        const awsAccountId = getAwsAccountId(app);
+        const awsRegion = getAwsRegion(app);
         const core = app.getModule(CoreOutput);
         const graphql = app.getModule(ApiGraphql);
         const baseConfig = graphql.functions.graphql.config.clone();
@@ -44,14 +47,6 @@ export const ApiBackgroundTask = createAppModule({
         const stepFunction = app.addResource(aws.sfn.StateMachine, {
             name: "background-task-sfn",
             config: {
-                // TODO logging to cloudwatch
-                /*
-                loggingConfiguration: {
-                    level: "ALL",
-                    includeExecutionData: true,
-                    // insert real ARN
-                    logDestination: ARN
-                */
                 roleArn: stepFunctionRole.output.arn,
                 definition: pulumi.jsonStringify(
                     createBackgroundTaskDefinition({
@@ -59,6 +54,42 @@ export const ApiBackgroundTask = createAppModule({
                         lambdaArn: backgroundTask.output.arn
                     })
                 )
+            }
+        });
+
+        const policyToAccessStepFunction = app.addResource(aws.iam.Policy, {
+            name: "background-task-step-function-policy",
+            config: {
+                policy: {
+                    Version: "2012-10-17",
+                    Statement: [
+                        {
+                            Action: ["states:StartExecution", "states:StopExecution"],
+                            Effect: "Allow",
+                            Resource: [
+                                stepFunction.output.arn.apply(arn => `${arn}`),
+                                stepFunction.output.arn.apply(arn => `${arn}*`)
+                            ]
+                        },
+                        {
+                            Action: ["states:DescribeExecution", "states:ListExecutions"],
+                            Effect: "Allow",
+                            Resource: [
+                                stepFunction.output.name.apply(name => {
+                                    return pulumi.interpolate`arn:aws:states:${awsRegion}:${awsAccountId}:execution:${name}:*`;
+                                })
+                            ]
+                        }
+                    ]
+                }
+            }
+        });
+
+        app.addResource(aws.iam.RolePolicyAttachment, {
+            name: "background-task-step-function-policy-attachment-graphql",
+            config: {
+                policyArn: policyToAccessStepFunction.output.arn,
+                role: graphql.role.output.name
             }
         });
 
@@ -132,10 +163,10 @@ export const ApiBackgroundTask = createAppModule({
         return {
             backgroundTask,
             stepFunction,
-            eventRole,
+            stepFunctionRole,
+            stepFunctionPolicy,
             eventPolicy,
             eventRolePolicyAttachment,
-            eventRule,
             eventTarget
         };
     }

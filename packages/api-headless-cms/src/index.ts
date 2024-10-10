@@ -61,4 +61,6 @@ export * from "~/plugins";
 export * from "~/utils/incrementEntryIdVersion";
 export * from "~/utils/RichTextRenderer";
 export * from "./graphql/handleRequest";
+export * from "./utils/contentEntryTraverser/ContentEntryTraverser";
+export * from "./utils/contentModelAst";
 export { entryToStorageTransform, entryFieldFromStorageTransform, entryFromStorageTransform };
