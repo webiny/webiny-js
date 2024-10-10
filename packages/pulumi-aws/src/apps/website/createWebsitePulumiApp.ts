@@ -202,11 +202,7 @@ export const createWebsitePulumiApp = (projectAppParams: CreateWebsitePulumiAppP
                             },
                             pathPattern: "/robots.txt",
                             viewerProtocolPolicy: "allow-all",
-                            targetOriginId: appBucket.origin.originId,
-                            // MinTTL <= DefaultTTL <= MaxTTL
-                            minTtl: 0,
-                            defaultTtl: 2592000, // 30 days
-                            maxTtl: 2592000
+                            targetOriginId: appBucket.origin.originId
                         }
                     ],
                     customErrorResponses: [
