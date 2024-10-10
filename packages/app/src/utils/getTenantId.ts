@@ -22,6 +22,14 @@ export const getTenantId = (): string | null => {
     // 3. Get tenant via `window.localStorage.webiny_tenant`. Used within the Admin app.
     tenant = window.localStorage.webiny_tenant;
     if (tenant) {
+        try {
+            const value = JSON.parse(tenant);
+            if (value) {
+                return value;
+            }
+        } catch {
+            // do nothing
+        }
         return tenant;
     }
 
