@@ -21,6 +21,18 @@ interface PackageWithTestsWithId extends PackageWithTests {
     id: string;
 }
 
+// Takes a PackageWithTests object and returns an array of commands, where each
+// command is just running a subset of tests. This is achieved by using the
+// Jest's `--shard` option.
+const shardPackageTestExecution = (pkg: PackageWithTests, shardsCount: number = 10) => {
+    const commands: PackageWithTests[] = [];
+    for (let currentShard = 1; currentShard <= shardsCount; currentShard++) {
+        commands.push({ ...pkg, cmd: pkg.cmd + ` --shard=${currentShard}/${shardsCount}` });
+    }
+
+    return commands;
+};
+
 const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     // Ignore "i18n" package.
     i18n: () => [],
@@ -85,9 +97,18 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
 
     "api-page-builder": () => {
         return [
-            { cmd: "packages/api-page-builder --storage=ddb-es,ddb", storage: "ddb-es" },
-            { cmd: "packages/api-page-builder --storage=ddb-os,ddb", storage: "ddb-os" },
-            { cmd: "packages/api-page-builder --storage=ddb", storage: "ddb" }
+            ...shardPackageTestExecution({
+                cmd: "packages/api-page-builder --storage=ddb-es,ddb",
+                storage: "ddb-es"
+            }),
+            ...shardPackageTestExecution({
+                cmd: "packages/api-page-builder --storage=ddb-os,ddb",
+                storage: "ddb-os"
+            }),
+            ...shardPackageTestExecution({
+                cmd: "packages/api-page-builder --storage=ddb",
+                storage: "ddb"
+            })
         ];
     },
     "api-page-builder-so-ddb-es": () => {
@@ -125,26 +146,20 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     },
 
     "api-headless-cms": () => {
-        const shardCount = 10;
-        const commands = [];
-        for (let currentShard = 1; currentShard <= shardCount; currentShard++) {
-            commands.push(
-                {
-                    cmd: `packages/api-headless-cms --storage=ddb-es,ddb --shard=${currentShard}/${shardCount}`,
-                    storage: "ddb-es"
-                },
-                {
-                    cmd: `packages/api-headless-cms --storage=ddb-os,ddb --shard=${currentShard}/${shardCount}`,
-                    storage: "ddb-os"
-                },
-                {
-                    cmd: `packages/api-headless-cms --storage=ddb --shard=${currentShard}/${shardCount}`,
-                    storage: "ddb"
-                }
-            );
-        }
-
-        return commands;
+        return [
+            ...shardPackageTestExecution({
+                cmd: "packages/api-headless-cms --storage=ddb",
+                storage: "ddb"
+            }),
+            ...shardPackageTestExecution({
+                cmd: "packages/api-headless-cms --storage=ddb-es,ddb",
+                storage: "ddb-es"
+            }),
+            ...shardPackageTestExecution({
+                cmd: "packages/api-headless-cms --storage=ddb-os,ddb",
+                storage: "ddb-os"
+            })
+        ];
     },
     "api-headless-cms-ddb-es": () => {
         return [
