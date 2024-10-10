@@ -130,6 +130,19 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             { cmd: "packages/api-headless-cms --storage=ddb-os,ddb", storage: "ddb-os" }
         ];
     },
+    "api-headless-cms-import-export": () => {
+        return [
+            { cmd: "packages/api-headless-cms-import-export --storage=ddb", storage: "ddb" },
+            {
+                cmd: "packages/api-headless-cms-import-export --storage=ddb-es,ddb",
+                storage: "ddb-es"
+            },
+            {
+                cmd: "packages/api-headless-cms-import-export --storage=ddb-os,ddb",
+                storage: "ddb-os"
+            }
+        ];
+    },
     "api-headless-cms-ddb-es": () => {
         return [
             {

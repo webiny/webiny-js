@@ -38,7 +38,7 @@ describe("entry assets resolver", () => {
             try {
                 await context.fileManager.createFile(image.data);
             } catch (ex) {
-                console.log(ex);
+                console.error(ex);
                 expect(ex.message).toEqual("Must not happen!");
             }
         }
