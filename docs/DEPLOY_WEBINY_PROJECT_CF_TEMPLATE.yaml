@@ -40,6 +40,15 @@ Resources:
                   "Null":
                     "aws:ResourceTag/WbyProjectName": "false"
 
+              # We had to add this because without it, upon destroying Admin/Website apps, we'd get an error:
+              # > waiting for CloudFront Distribution ({CF-DISTRIBUTION-ID}) delete: operation error CloudFront: GetDistribution
+              # > AccessDenied: User: arn:aws:iam::{X}:user/{Y} is not authorized to perform: cloudfront:GetDistribution on resource
+              # Was trying to resolve it for some time, but ultimately, did not succeed. Might be a Pulumi/Terraform issue.
+              - Effect: Allow
+                Resource: arn:*:cloudfront::*:distribution/*
+                Action:
+                  - cloudfront:GetDistribution
+
               - Effect: Allow
                 Resource: arn:*:cloudfront::*:function/*
                 Action:
@@ -251,19 +260,28 @@ Resources:
                   - arn:aws:iam::*:role/aws-service-role/es.amazonaws.com/AWSServiceRoleForAmazonOpenSearchService
                   - arn:aws:iam::*:role/aws-service-role/es.amazonaws.com/AWSServiceRoleForAmazonElasticsearchService
 
-
               # AWS Step Functions
               - Effect: Allow
                 Action:
-                - states:CreateStateMachine
-                - states:DeleteStateMachine
-                - states:DescribeStateMachine
-                - states:ListTagsForResource
-                - states:TagResource
-                - states:UntagResource
-                - states:ListStateMachines
-                - states:UpdateStateMachine
+                  - states:CreateStateMachine
+                  - states:DeleteStateMachine
+                  - states:DescribeStateMachine
+                  - states:ListTagsForResource
+                  - states:TagResource
+                  - states:UntagResource
+                  - states:ListStateMachines
+                  - states:UpdateStateMachine
+                  - states:ListStateMachineVersions
                 Resource: arn:aws:states:*:*:stateMachine:wby-*
+
+              # AWS Step Functions - ValidateStateMachineDefinition
+              # We needed to set "arn:aws:states:*:*:stateMachine:*" because the action
+              # "states:ValidateStateMachineDefinition" does not support resource-level permissions.
+              # https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsstepfunctions.html#awsstepfunctions-ValidateStateMachineDefinition
+              - Effect: Allow
+                Action:
+                  - states:ValidateStateMachineDefinition
+                Resource: arn:aws:states:*:*:stateMachine:*
 
               # AWS Lambda
               - Effect: Allow
@@ -296,19 +314,37 @@ Resources:
 
               - Effect: Allow
                 Action:
-                  # Only wildcard can be used here.
-                  # https://docs.aws.amazon.com/service-authorization/latest/reference/list_awslambda.html
-                  # https://docs.aws.amazon.com/lambda/latest/dg/lambda-api-permissions-ref.html#permissions-resources-eventsource
                   - lambda:CreateEventSourceMapping
-                  - lambda:ListEventSourceMappings
+                  - lambda:TagResource
+                Condition:
+                  "Null":
+                    aws:RequestTag/WbyProjectName: "false"
 
+                # Only wildcard can be used here.
+                # https://docs.aws.amazon.com/service-authorization/latest/reference/list_awslambda.html
+                # https://docs.aws.amazon.com/lambda/latest/dg/lambda-api-permissions-ref.html#permissions-resources-eventsource
+                Resource: "*"
+
+              - Effect: Allow
+                Action:
+                  - lambda:ListEventSourceMappings
+                # Only wildcard can be used here.
+                # https://docs.aws.amazon.com/service-authorization/latest/reference/list_awslambda.html
+                # https://docs.aws.amazon.com/lambda/latest/dg/lambda-api-permissions-ref.html#permissions-resources-eventsource
+                Resource: "*"
+
+              - Effect: Allow
+                Action:
                   # Initially, we grouped these with `Resource: arn:aws:lambda:*:*:event-source-mapping:*`, but that
                   # caused several `xyz is not authorized to perform: lambda:GetEventSourceMapping on resource: *`
                   # errors. But still, note that, even if we managed to use the initial resource string, we'd still
                   # be relying on wildcards, which, if we think about it, is essentially the same as `Resource: *`.
+                  # Also, there weren't any Condition keys that could've been used here (there is `lambda:FunctionArn`,
+                  # but it doesn't help us in this case). We might want to revisit this in the future.
                   - lambda:GetEventSourceMapping
                   - lambda:UpdateEventSourceMapping
                   - lambda:DeleteEventSourceMapping
+                  - lambda:ListTags
                 Resource: "*"
 
               # We want to provide the ability to get different layers.
