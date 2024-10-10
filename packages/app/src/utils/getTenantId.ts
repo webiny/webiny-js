@@ -28,8 +28,9 @@ export const getTenantId = (): string | null => {
                 return value;
             }
         } catch {
-            return tenant.replace(/"/g, "");
+            // do nothing
         }
+        return tenant;
     }
 
     // 4. Finally, for development purposes, we take the `WEBINY_WEBSITE_TENANT_ID`
