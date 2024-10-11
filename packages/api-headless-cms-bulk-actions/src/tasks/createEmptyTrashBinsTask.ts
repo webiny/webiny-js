@@ -46,7 +46,6 @@ export const createEmptyTrashBinsTask = () => {
                         await context.tasks.trigger<IBulkActionOperationByModelInput>({
                             name: `Headless CMS - Empty trash bin for "${model.name}" model.`,
                             definition: "hcmsBulkListDeleteEntries",
-                            parent: params.store.getTask(),
                             input: {
                                 modelId: model.modelId,
                                 where: {
