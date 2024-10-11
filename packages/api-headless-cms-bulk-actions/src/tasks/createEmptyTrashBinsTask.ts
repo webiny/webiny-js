@@ -27,6 +27,7 @@ export const createEmptyTrashBinsTask = () => {
         description:
             "Delete all entries found in the trash bin, for each model found in the system.",
         maxIterations: 1,
+        disableDatabaseLogs: true,
         run: async params => {
             const { response, isAborted, context } = params;
 
