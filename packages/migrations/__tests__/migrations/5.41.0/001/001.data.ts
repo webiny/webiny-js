@@ -2,17 +2,20 @@ export const testData = [
     {
         PK: "T#root",
         SK: "A",
-        createdOn: "2023-01-25T09:37:58.183Z",
-        description: "The top-level Webiny tenant.",
+        data: {
+            createdOn: "2023-01-25T09:37:58.183Z",
+            description: "The top-level Webiny tenant.",
+            id: "root",
+            name: "Root",
+            savedOn: "2023-01-25T09:37:58.183Z",
+            settings: {
+                domains: []
+            },
+            status: "active"
+        },
+
         GSI1_PK: "TENANTS",
         GSI1_SK: "T#null#2023-01-25T09:37:58.183Z",
-        id: "root",
-        name: "Root",
-        savedOn: "2023-01-25T09:37:58.183Z",
-        settings: {
-            domains: []
-        },
-        status: "active",
         TYPE: "tenancy.tenant",
         webinyVersion: "0.0.0",
         _ct: "2023-01-25T09:37:58.220Z",
