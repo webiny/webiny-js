@@ -24,7 +24,7 @@ import { Dialog } from "~/admin/components/Dialog";
 import { createApiNameValidator } from "~/admin/views/contentModels/helpers/apiNameValidator";
 import { createNameValidator } from "~/admin/views/contentModels/helpers/nameValidator";
 import { Checkbox } from "@webiny/ui/Checkbox";
-import { IconPicker } from "~/admin/components/IconPicker";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
 

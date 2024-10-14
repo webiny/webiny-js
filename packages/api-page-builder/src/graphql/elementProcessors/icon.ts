@@ -13,8 +13,7 @@ export default new ContextPlugin<PbContext>(context => {
         const value = variables?.length > 0 ? variables[0].value : null;
 
         if (value !== null) {
-            set(element, "data.icon.id", value.id);
-            set(element, "data.icon.svg", value.svg);
+            set(element, "data.icon.value", value);
         }
     });
 });

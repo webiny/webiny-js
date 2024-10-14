@@ -1,6 +1,5 @@
 import React from "react";
 import get from "lodash/get";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     LIST_MENU_CONTENT_GROUPS_MODELS,
     ListMenuCmsGroupsQueryResponse
@@ -8,9 +7,9 @@ import {
 import useQuery from "~/admin/hooks/useQuery";
 import usePermission from "~/admin/hooks/usePermission";
 import { AddMenu as Menu } from "@webiny/app-admin";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
 import { NothingToShow } from "./NothingToShowElement";
 import { CmsGroup, CmsModel } from "~/types";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 interface HasContentEntryPermissionsProps {
     group: CmsGroup;
@@ -45,18 +44,6 @@ const HasContentEntryPermissions = ({
     return children;
 };
 
-interface IconProps {
-    group: CmsGroup;
-}
-const Icon = ({ group }: IconProps) => {
-    return (
-        <FontAwesomeIcon
-            style={{ color: "var(--mdc-theme-text-secondary-on-background)" }}
-            icon={(group.icon || "").split("/") as IconProp}
-        />
-    );
-};
-
 export const ContentGroupsMenuItems = () => {
     const response = useQuery<ListMenuCmsGroupsQueryResponse>(LIST_MENU_CONTENT_GROUPS_MODELS);
     const groups: CmsGroup[] = get(response, "data.listContentModelGroups.data") || [];
@@ -74,7 +61,7 @@ export const ContentGroupsMenuItems = () => {
                             name={group.id}
                             label={group.name}
                             tags={["headlessCMS"]}
-                            icon={<Icon group={group} />}
+                            icon={<IconPicker.Icon icon={group.icon} size={20} />}
                         >
                             {group.contentModels.length === 0 && (
                                 <Menu name={`${group.id}-empty`} element={<NothingToShow />} />

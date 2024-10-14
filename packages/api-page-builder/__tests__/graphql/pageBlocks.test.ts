@@ -24,7 +24,11 @@ describe("Page Blocks Test", () => {
             data: {
                 slug: "block-category",
                 name: "block-category-name",
-                icon: "block-category-icon",
+                icon: {
+                    type: "emoji",
+                    name: "block-category-icon",
+                    value: "👍"
+                },
                 description: "block-category-description"
             }
         });
@@ -237,7 +241,11 @@ describe("Page Blocks Test", () => {
             data: {
                 slug: "block-category",
                 name: "block-category-name",
-                icon: "block-category-icon",
+                icon: {
+                    type: "emoji",
+                    name: "block-category-icon",
+                    value: "👍"
+                },
                 description: "block-category-description"
             }
         });
@@ -325,7 +333,11 @@ describe("Page Blocks Test", () => {
             data: {
                 slug: "block-category-one",
                 name: "block-category-one-name",
-                icon: "block-category-one-icon",
+                icon: {
+                    type: "emoji",
+                    name: "block-category-one-icon",
+                    value: "👍"
+                },
                 description: "block-category-one-description"
             }
         });
@@ -334,7 +346,11 @@ describe("Page Blocks Test", () => {
             data: {
                 slug: "block-category-two",
                 name: "block-category-two-name",
-                icon: "block-category-two-icon",
+                icon: {
+                    type: "emoji",
+                    name: "block-category-two-icon",
+                    value: "👍"
+                },
                 description: "block-category-two-description"
             }
         });

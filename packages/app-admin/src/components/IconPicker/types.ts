@@ -44,3 +44,7 @@ type CategoryNameRow = {
 };
 
 export type IconPickerGridRow = IconsRow | CategoryNameRow;
+
+export enum ICON_PICKER_SIZE {
+    SMALL = "small"
+}

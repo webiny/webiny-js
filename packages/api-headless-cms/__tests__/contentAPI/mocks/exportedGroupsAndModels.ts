@@ -7,14 +7,22 @@ export const exportedGroupsAndModels = {
             name: "Blog",
             slug: "blog",
             description: null,
-            icon: "fab/blogger-b"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         },
         {
             id: "64d4c105110b570008736516",
             name: "Machines",
             slug: "machines",
             description: null,
-            icon: "fas/location-dot"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         }
     ],
     models: [
@@ -22,7 +30,11 @@ export const exportedGroupsAndModels = {
             modelId: "article",
             name: "Article",
             group: "64d4c105110b570008736515",
-            icon: "far/newspaper",
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            },
             singularApiName: "Article",
             pluralApiName: "Articles",
             fields: [
@@ -115,7 +127,11 @@ export const exportedGroupsAndModels = {
             modelId: "author",
             name: "Author",
             group: "64d4c105110b570008736515",
-            icon: "fas/person",
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            },
             singularApiName: "Author",
             pluralApiName: "Authors",
             fields: [
@@ -208,7 +224,11 @@ export const exportedGroupsAndModels = {
             modelId: "category",
             name: "Category",
             group: "64d4c105110b570008736515",
-            icon: "fas/location-dot",
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            },
             singularApiName: "Category",
             pluralApiName: "Categories",
             fields: [
@@ -238,7 +258,11 @@ export const exportedGroupsAndModels = {
             modelId: "machines",
             name: "Machines",
             group: "64d4c105110b570008736516",
-            icon: "fas/location-dot",
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            },
             singularApiName: "Machine",
             pluralApiName: "Machine",
             fields: [
@@ -274,7 +298,11 @@ export const createModels = () => {
             name: "Machines",
             slug: "machines",
             description: null,
-            icon: "fas/location-dot"
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            }
         }),
         createCmsModel({
             modelId: "machines",
@@ -283,7 +311,11 @@ export const createModels = () => {
                 id: "64d4c105110b570008736516",
                 name: "Machines"
             },
-            icon: "fas/location-dot",
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            },
             singularApiName: "Machine",
             pluralApiName: "Machines",
             description: "",

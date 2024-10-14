@@ -17,9 +17,8 @@ export default {
     setElementValue(element, variables) {
         const newIcon = variables?.length > 0 ? variables[0].value : null;
 
-        if (newIcon && element?.data?.icon?.id && element?.data?.icon?.svg) {
-            element.data.icon.id = newIcon.id;
-            element.data.icon.svg = newIcon.svg;
+        if (newIcon && element?.data?.icon?.value) {
+            element.data.icon.value = newIcon;
         }
 
         return element;

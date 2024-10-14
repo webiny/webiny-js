@@ -5,7 +5,11 @@ export const createGroupPlugin = () => {
         name: "Group",
         slug: "group",
         description: "Group description",
-        icon: "fas/star",
+        icon: {
+            type: "emoji",
+            name: "thumbs_up",
+            value: "👍"
+        },
         id: "group"
     });
 };

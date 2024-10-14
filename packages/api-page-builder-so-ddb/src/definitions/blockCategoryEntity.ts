@@ -29,7 +29,7 @@ export const createBlockCategoryEntity = (params: Params): Entity<any> => {
                 type: "string"
             },
             icon: {
-                type: "string"
+                type: "map"
             },
             description: {
                 type: "string"

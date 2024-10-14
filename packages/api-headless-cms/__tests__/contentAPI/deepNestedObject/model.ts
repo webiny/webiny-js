@@ -6,7 +6,11 @@ export const createCarsModel = () => {
             id: "buyersguide",
             name: "BuyersGuide",
             slug: "buyers-guide",
-            icon: "fas/car",
+            icon: {
+                type: "emoji",
+                name: "thumbs_up",
+                value: "👍"
+            },
             description: "Cars BuyersGuide Model"
         }),
 

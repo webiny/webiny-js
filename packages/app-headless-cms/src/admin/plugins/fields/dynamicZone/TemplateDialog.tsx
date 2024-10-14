@@ -6,7 +6,8 @@ import { Form, FormAPI, FormOnSubmit } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { CmsDynamicZoneTemplate } from "~/types";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
-import { IconPicker } from "~/admin/components/IconPicker";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
+import { ICON_PICKER_SIZE } from "@webiny/app-admin/components/IconPicker/types";
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "~/admin/components/Dialog";
 import { Alert } from "@webiny/ui/Alert";
 
@@ -142,7 +143,7 @@ export const TemplateDialog = (props: TemplateDialogProps) => {
                                         name={"icon"}
                                         validators={[validation.create("required")]}
                                     >
-                                        <IconPicker label={"Icon"} />
+                                        <IconPicker label={"Icon"} size={ICON_PICKER_SIZE.SMALL} />
                                     </Bind>
                                 </Cell>
                                 <Cell span={12}>

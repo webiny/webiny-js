@@ -28,7 +28,7 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { PbBlockCategory } from "~/types";
-import { Icon } from "~/admin/utils/createBlockCategoryPlugin";
+import { IconPicker } from "@webiny/app-admin/components/IconPicker";
 import { useBlockCategoriesPermissions } from "~/hooks/permissions";
 
 const t = i18n.ns("app-page-builder/admin/block-categories/data-list");
@@ -191,7 +191,7 @@ const PageBuilderBlockCategoriesDataList = ({
                             }
                         >
                             <ListItemGraphic>
-                                <Icon category={item} />
+                                <IconPicker.Icon icon={item.icon} />
                             </ListItemGraphic>
                             <ListItemText>
                                 {item.name}

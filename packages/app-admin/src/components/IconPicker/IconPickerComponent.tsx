@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import isEqual from "lodash/isEqual";
 import { ReactComponent as CloseIcon } from "@material-design-icons/svg/outlined/close.svg";
-import { ReactComponent as SearchIcon } from "@material-design-icons/svg/outlined/search.svg";
 
 import { Menu } from "@webiny/ui/Menu";
 import { Tabs } from "@webiny/ui/Tabs";
@@ -15,19 +14,23 @@ import { IconPickerPresenter } from "./IconPickerPresenter";
 import { IconProvider, IconRenderer } from "./IconRenderer";
 import {
     IconPickerWrapper,
-    iconPickerLabel,
+    IconPickerLabel,
     IconPickerInput,
     MenuContent,
     MenuHeader,
-    placeholderIcon
+    PlaceholderIcon,
+    RemoveButton
 } from "./IconPicker.styles";
 import { IconPickerTabRenderer } from "./IconPickerTab";
 import { IconPickerPresenterProvider } from "./IconPickerPresenterProvider";
 import { IconTypeProvider } from "./config/IconType";
+import { ICON_PICKER_SIZE } from "./types";
 
 export interface IconPickerProps extends FormComponentProps {
     label?: string;
     description?: string;
+    size?: ICON_PICKER_SIZE;
+    removable?: boolean;
 }
 
 export interface IconPickerComponentProps extends IconPickerProps {
@@ -35,29 +38,36 @@ export interface IconPickerComponentProps extends IconPickerProps {
 }
 
 export const IconPickerComponent = observer(
-    ({ presenter, label, description, ...props }: IconPickerComponentProps) => {
+    ({ presenter, label, description, removable, ...props }: IconPickerComponentProps) => {
         const { value, onChange } = props;
         const { isValid: validationIsValid, message: validationMessage } = props.validation || {};
-        const { activeTab, isMenuOpened, isLoading, iconTypes, selectedIcon } = presenter.vm;
+        const { activeTab, isMenuOpened, isLoading, iconTypes, selectedIcon, size } = presenter.vm;
 
         useEffect(() => {
             if (onChange && selectedIcon && !isEqual(selectedIcon, value)) {
                 onChange(selectedIcon);
             }
-        }, [selectedIcon]);
+        }, [JSON.stringify(selectedIcon)]);
 
         const setActiveTab = (index: number) => presenter.setActiveTab(index);
 
         const openMenu = () => presenter.openMenu();
         const closeMenu = () => presenter.closeMenu();
 
+        const removeIcon = useCallback(() => {
+            if (onChange) {
+                presenter.setIcon(null);
+                onChange(null);
+            }
+        }, [onChange]);
+
         return (
             <IconPickerPresenterProvider presenter={presenter}>
                 <IconPickerWrapper>
                     {label && (
-                        <div className={iconPickerLabel}>
+                        <IconPickerLabel>
                             <Typography use={"body1"}>{label}</Typography>
-                        </div>
+                        </IconPickerLabel>
                     )}
 
                     <Menu
@@ -69,11 +79,7 @@ export const IconPickerComponent = observer(
                                         <IconRenderer />
                                     </IconProvider>
                                 ) : (
-                                    <SearchIcon
-                                        width={32}
-                                        height={32}
-                                        className={placeholderIcon}
-                                    />
+                                    <PlaceholderIcon width={32} height={32} />
                                 )}
                             </IconPickerInput>
                         }
@@ -84,9 +90,12 @@ export const IconPickerComponent = observer(
                             <>
                                 <MenuHeader>
                                     <Typography use={"body1"}>Select an icon</Typography>
+                                    {value && removable && (
+                                        <RemoveButton onClick={removeIcon}>Remove</RemoveButton>
+                                    )}
                                     <CloseIcon onClick={closeMenu} />
                                 </MenuHeader>
-                                <MenuContent>
+                                <MenuContent size={size}>
                                     {isLoading && <CircularProgress />}
                                     <Tabs
                                         value={activeTab}

@@ -48,7 +48,11 @@ describe("Content Entry Meta Field", () => {
             data: {
                 name: "Default group",
                 slug: "default-group",
-                icon: "ico/ico",
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                },
                 description: "description"
             }
         });

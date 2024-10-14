@@ -9,7 +9,11 @@ const createTestGroup = () => {
         name: "Homepage",
         description: "Homepage content model group",
         slug: "homepage",
-        icon: "fas/house"
+        icon: {
+            type: "emoji",
+            name: "thumbs_up",
+            value: "👍"
+        }
     });
 };
 const createTestModel = () => {
@@ -49,7 +53,11 @@ const createTestModel = () => {
                     templates: [
                         {
                             description: "List of customer reviews",
-                            icon: "far/face-smile",
+                            icon: {
+                                type: "emoji",
+                                name: "thumbs_up",
+                                value: "👍"
+                            },
                             id: "homepage_customer_reviews",
                             name: "CustomerReviews",
                             fields: [
@@ -148,7 +156,11 @@ const createTestModel = () => {
                         },
                         {
                             description: "Hero component",
-                            icon: "fas/bolt-lightning",
+                            icon: {
+                                type: "emoji",
+                                name: "thumbs_up",
+                                value: "👍"
+                            },
                             id: "homepage_hero",
                             name: "Hero",
                             fields: [
@@ -200,7 +212,11 @@ const createTestModel = () => {
                         },
                         {
                             description: "Compare the good and bad",
-                            icon: "fas/table",
+                            icon: {
+                                type: "emoji",
+                                name: "thumbs_up",
+                                value: "👍"
+                            },
                             id: "homepage_compare_table",
                             name: "CompareTable",
                             fields: [
@@ -309,7 +325,11 @@ const createTestModel = () => {
                         },
                         {
                             description: "List of teachers on the homepage",
-                            icon: "fas/chalkboard-teacher",
+                            icon: {
+                                type: "emoji",
+                                name: "thumbs_up",
+                                value: "👍"
+                            },
                             id: "homepage_teachers",
                             name: "Teachers",
                             fields: [

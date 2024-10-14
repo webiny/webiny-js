@@ -20,7 +20,11 @@ const baseGroup = new CmsGroupPlugin({
     id: "group",
     slug: "group",
     description: "",
-    icon: ""
+    icon: {
+        type: "emoji",
+        name: "thumbs_up",
+        value: "👍"
+    }
 });
 
 const biography = crypto.randomBytes(65536).toString("hex");

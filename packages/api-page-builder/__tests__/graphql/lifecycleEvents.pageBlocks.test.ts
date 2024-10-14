@@ -40,7 +40,11 @@ describe("Page Block Lifecycle Events", () => {
             data: {
                 slug: blockCategory,
                 name: `name`,
-                icon: `icon`,
+                icon: {
+                    type: `emoji`,
+                    name: `icon`,
+                    value: `👍`
+                },
                 description: `description`
             }
         });

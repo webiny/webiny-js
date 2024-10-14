@@ -267,7 +267,7 @@ export interface CmsDynamicZoneTemplate {
     name: string;
     gqlTypeName: string;
     description: string;
-    icon: string;
+    icon: Icon;
     fields: CmsModelField[];
     layout: string[][];
     validation: CmsModelFieldValidation[];
@@ -495,7 +495,7 @@ export interface CmsModel {
     /**
      * Icon for the content model.
      */
-    icon?: string | null;
+    icon?: Icon | null;
     /**
      * Description for the content model.
      */
@@ -982,7 +982,7 @@ export interface CmsGroupCreateInput {
     name: string;
     slug?: string;
     description?: string | null;
-    icon: string;
+    icon: Icon;
 }
 
 /**
@@ -995,7 +995,7 @@ export interface CmsGroupUpdateInput {
     name?: string;
     slug?: string;
     description?: string;
-    icon?: string;
+    icon?: Icon;
 }
 
 /**
@@ -1030,9 +1030,9 @@ export interface CmsGroup {
      */
     description: string | null;
     /**
-     * Icon for the group. In a form of "ico/ico".
+     * Icon for the group.
      */
-    icon: string;
+    icon: Icon;
     /**
      * CreatedBy reference object.
      */
@@ -3272,3 +3272,10 @@ export interface HeadlessCmsStorageOperations<C = CmsContext> {
     beforeInit: (context: C) => Promise<void>;
     init?: (context: C) => Promise<void>;
 }
+
+export type Icon = {
+    type: "icon" | "emoji" | "custom" | string;
+    name: string;
+    value: string;
+    [key: string]: any;
+};

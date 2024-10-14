@@ -70,7 +70,7 @@ describe("Settings crud test", () => {
                             createdOn: expect.stringMatching(/^20/),
                             savedOn: expect.stringMatching(/^20/),
                             description: "A generic content model group",
-                            icon: "fas/star",
+                            icon: expect.any(Object),
                             name: "Ungrouped",
                             slug: "ungrouped"
                         }
@@ -138,7 +138,7 @@ describe("Settings crud test", () => {
                             data: {
                                 group: {
                                     description: "A generic content model group",
-                                    icon: "fas/star",
+                                    icon: expect.any(Object),
                                     name: "Ungrouped",
                                     slug: "ungrouped"
                                 }

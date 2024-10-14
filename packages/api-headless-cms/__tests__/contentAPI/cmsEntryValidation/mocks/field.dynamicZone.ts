@@ -53,7 +53,11 @@ export const createDynamicZoneField = (params: Partial<CreateFieldInput> = {}) =
                     layout: createLayout(fields),
                     name: "Hero #1",
                     gqlTypeName: "Hero",
-                    icon: "fas/flag",
+                    icon: {
+                        type: "emoji",
+                        name: "thumbs_up",
+                        value: "👍"
+                    },
                     description: "",
                     id: "abcdefgh",
                     fields,

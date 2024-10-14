@@ -74,7 +74,11 @@ export const pageModel: CmsModel = {
                         layout: [["dwodev6q"]],
                         name: "Hero #1",
                         gqlTypeName: "Hero",
-                        icon: "fas/flag",
+                        icon: {
+                            type: "emoji",
+                            name: "thumbs_up",
+                            value: "👍"
+                        },
                         description: "The top piece of content on every page.",
                         id: "cv2zf965v324ivdc7e1vt",
                         fields: [
@@ -115,7 +119,11 @@ export const pageModel: CmsModel = {
                         layout: [["zsmj94iu"]],
                         name: "Simple Text #1",
                         gqlTypeName: "SimpleText",
-                        icon: "fas/file-text",
+                        icon: {
+                            type: "emoji",
+                            name: "thumbs_up",
+                            value: "👍"
+                        },
                         description: "Simple paragraph of text.",
                         id: "81qiz2v453wx9uque0gox",
                         fields: [
@@ -144,7 +152,11 @@ export const pageModel: CmsModel = {
                         layout: [["ttyh493ugfd"], ["nli9u1rm"], ["lsd78slxc8"]],
                         name: "Objecting",
                         gqlTypeName: "Objecting",
-                        icon: "fas/file-text",
+                        icon: {
+                            type: "emoji",
+                            name: "thumbs_up",
+                            value: "👍"
+                        },
                         description: "Objecting test.",
                         id: "9ht43gurhegkbdfsaafyads",
                         fields: [
@@ -203,7 +215,11 @@ export const pageModel: CmsModel = {
                                         {
                                             name: "SuperNestedObject",
                                             gqlTypeName: "SuperNestedObject",
-                                            icon: "fab/buysellads",
+                                            icon: {
+                                                type: "emoji",
+                                                name: "thumbs_up",
+                                                value: "👍"
+                                            },
                                             description: "SuperNestedObject",
                                             id: "0emukbsvmzpozx2lzk883",
                                             fields: [
@@ -261,7 +277,11 @@ export const pageModel: CmsModel = {
                         layout: [["jms49ui"], ["xcv50da"]],
                         name: "Author",
                         gqlTypeName: "Author",
-                        icon: "fas/file-text",
+                        icon: {
+                            type: "emoji",
+                            name: "thumbs_up",
+                            value: "👍"
+                        },
                         description: "Reference to an Author.",
                         id: "qi81z2v453wx9uque0gox",
                         validation: [
@@ -360,7 +380,11 @@ export const pageModel: CmsModel = {
                     {
                         name: "Text Header #1",
                         gqlTypeName: "TextHeader",
-                        icon: "fas/file-text",
+                        icon: {
+                            type: "emoji",
+                            name: "thumbs_up",
+                            value: "👍"
+                        },
                         layout: [["6te8u0pe"]],
                         description: "Simple text based header.",
                         id: "g59qfds146gi4xq3tsu4n",
@@ -380,7 +404,11 @@ export const pageModel: CmsModel = {
                     {
                         name: "Image Header #1",
                         gqlTypeName: "ImageHeader",
-                        icon: "far/image",
+                        icon: {
+                            type: "emoji",
+                            name: "thumbs_up",
+                            value: "👍"
+                        },
                         layout: [["lqp0175z"], ["1qc22e85"]],
                         description: "Text with background image.",
                         id: "k7yembax2xpbt7f2sobi2",
@@ -424,7 +452,11 @@ export const pageModel: CmsModel = {
                         layout: [["ngutrblkf"]],
                         name: "Objecting",
                         gqlTypeName: "Objecting",
-                        icon: "fas/file-text",
+                        icon: {
+                            type: "emoji",
+                            name: "thumbs_up",
+                            value: "👍"
+                        },
                         description: "Objecting test.",
                         id: "t804h3gufashguasffds",
                         fields: [
@@ -493,7 +525,11 @@ export const pageModel: CmsModel = {
                         layout: [["gt409u8qhgoudsahfds"]],
                         name: "AuthorReference Field",
                         gqlTypeName: "Author",
-                        icon: "fas/file-text",
+                        icon: {
+                            type: "emoji",
+                            name: "thumbs_up",
+                            value: "👍"
+                        },
                         description: "Reference field test.",
                         id: "tg9u4h3qgfsauighafs",
                         fields: [
@@ -528,7 +564,11 @@ export const pageModel: CmsModel = {
                         layout: [["gt409u8qhgoudsahfds"]],
                         name: "AuthorReference Field",
                         gqlTypeName: "Authors",
-                        icon: "fas/file-text",
+                        icon: {
+                            type: "emoji",
+                            name: "thumbs_up",
+                            value: "👍"
+                        },
                         description: "Reference field test.",
                         id: "tg9u4h3qgfsauighafs",
                         fields: [
@@ -564,7 +604,11 @@ export const pageModel: CmsModel = {
                         layout: [["gt409u8qhgoudsahfds"]],
                         name: "AuthorReference Field",
                         gqlTypeName: "Author",
-                        icon: "fas/file-text",
+                        icon: {
+                            type: "emoji",
+                            name: "thumbs_up",
+                            value: "👍"
+                        },
                         description: "Reference field test.",
                         id: "tg9u4h3qgfsauighafs",
                         fields: [

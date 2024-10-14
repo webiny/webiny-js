@@ -12,7 +12,14 @@ context("Headless CMS - Search and Sort Content Models", () => {
     before(() => {
         // Create content model group
         cy.cmsCreateContentModelGroup({
-            data: { name: uniqid("Testing-"), icon: "fas/star" }
+            data: {
+                name: uniqid("Testing-"),
+                icon: {
+                    type: "emoji",
+                    name: "thumbs_up",
+                    value: "👍"
+                }
+            }
         }).then(data => {
             contentModelGroup = data;
             // Create first content model

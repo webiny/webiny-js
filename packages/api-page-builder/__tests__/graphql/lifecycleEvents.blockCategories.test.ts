@@ -4,7 +4,11 @@ import { assignBlockCategoryLifecycleEvents, tracker } from "./mocks/lifecycleEv
 
 const name = "Block Category Lifecycle Events";
 const slug = "block-category-lifecycle-events";
-const icon = "/block-category-icon";
+const icon = {
+    type: "emoji",
+    name: "block-category-icon",
+    value: "👍"
+};
 const description = "Block Category Description";
 
 describe("Block Category Lifecycle Events", () => {
@@ -68,7 +72,11 @@ describe("Block Category Lifecycle Events", () => {
             data: {
                 slug,
                 name: `${name} updated`,
-                icon: `${icon}-updated`,
+                icon: {
+                    type: `emoji`,
+                    name: `${icon}-updated`,
+                    value: `👍`
+                },
                 description: `${name} Updated`
             }
         });
@@ -80,7 +88,11 @@ describe("Block Category Lifecycle Events", () => {
                         data: {
                             name: `${name} updated`,
                             slug,
-                            icon: `${icon}-updated`,
+                            icon: {
+                                type: `emoji`,
+                                name: `${icon}-updated`,
+                                value: `👍`
+                            },
                             description: `${name} Updated`
                         },
                         error: null
