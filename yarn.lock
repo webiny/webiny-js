@@ -15045,6 +15045,7 @@ __metadata:
     "@babel/preset-typescript": ^7.23.3
     "@webiny/api": 0.0.0
     "@webiny/api-aco": 0.0.0
+    "@webiny/api-admin-users": 0.0.0
     "@webiny/api-file-manager": 0.0.0
     "@webiny/api-form-builder": 0.0.0
     "@webiny/api-headless-cms": 0.0.0
@@ -15055,11 +15056,16 @@ __metadata:
     "@webiny/api-prerendering-service": 0.0.0
     "@webiny/api-security": 0.0.0
     "@webiny/api-tenancy": 0.0.0
+    "@webiny/api-wcp": 0.0.0
     "@webiny/cli": 0.0.0
     "@webiny/error": 0.0.0
+    "@webiny/handler": 0.0.0
+    "@webiny/handler-aws": 0.0.0
     "@webiny/handler-client": 0.0.0
     "@webiny/handler-graphql": 0.0.0
+    "@webiny/plugins": 0.0.0
     "@webiny/project-utils": 0.0.0
+    graphql: ^15.8.0
     rimraf: ^5.0.5
     ttypescript: ^1.5.13
     typescript: 4.9.5

@@ -16,7 +16,12 @@
     { "path": "../api-tenancy" },
     { "path": "../error" },
     { "path": "../handler-client" },
-    { "path": "../handler-graphql" }
+    { "path": "../handler-graphql" },
+    { "path": "../api-admin-users" },
+    { "path": "../api-wcp" },
+    { "path": "../handler" },
+    { "path": "../handler-aws" },
+    { "path": "../plugins" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -54,7 +59,17 @@
       "@webiny/handler-client/*": ["../handler-client/src/*"],
       "@webiny/handler-client": ["../handler-client/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"]
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/api-admin-users/*": ["../api-admin-users/src/*"],
+      "@webiny/api-admin-users": ["../api-admin-users/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
   }

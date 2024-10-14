@@ -238,7 +238,8 @@ jobs:
           --storage=ddb","storage":"ddb","id":"api-page-builder-import-export_ddb"},{"cmd":"packages/api-prerendering-service
           --storage=ddb","storage":"ddb","id":"api-prerendering-service_ddb"},{"cmd":"packages/api-security
           --storage=ddb","storage":"ddb","id":"api-security_ddb"},{"cmd":"packages/api-security-cognito
-          --storage=ddb","storage":"ddb","id":"api-security-cognito_ddb"},{"cmd":"packages/api-tenancy
+          --storage=ddb","storage":"ddb","id":"api-security-cognito_ddb"},{"cmd":"packages/api-serverless-cms
+          --storage=ddb","storage":"ddb","id":"api-serverless-cms_ddb"},{"cmd":"packages/api-tenancy
           --storage=ddb","storage":"ddb","id":"api-tenancy_ddb"},{"cmd":"packages/api-tenant-manager
           --storage=ddb","storage":"ddb","id":"api-tenant-manager_ddb"},{"cmd":"packages/tasks
           --storage=ddb","storage":"ddb","id":"tasks_ddb"}]') }}
@@ -301,7 +302,8 @@ jobs:
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-mailer_ddb-es_ddb"},{"cmd":"packages/api-page-builder
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder_ddb-es_ddb"},{"cmd":"packages/api-page-builder-aco
           --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder-aco_ddb-es_ddb"},{"cmd":"packages/api-page-builder-so-ddb-es
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder-so-ddb-es_ddb-es_ddb"},{"cmd":"packages/migrations","storage":["ddb-es","ddb-os"],"id":"migrations"},{"cmd":"packages/tasks
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder-so-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-serverless-cms
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-serverless-cms_ddb-es_ddb"},{"cmd":"packages/migrations","storage":["ddb-es","ddb-os"],"id":"migrations"},{"cmd":"packages/tasks
           --storage=ddb-es,ddb","storage":"ddb-es","id":"tasks_ddb-es_ddb"}]')
           }}
     runs-on: ${{ matrix.os }}
@@ -374,7 +376,8 @@ jobs:
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-mailer_ddb-os_ddb"},{"cmd":"packages/api-page-builder
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-page-builder_ddb-os_ddb"},{"cmd":"packages/api-page-builder-aco
           --storage=ddb-os,ddb","storage":"ddb-os","id":"api-page-builder-aco_ddb-os_ddb"},{"cmd":"packages/api-page-builder-so-ddb-es
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-page-builder-so-ddb-es_ddb-os_ddb"},{"cmd":"packages/migrations","storage":["ddb-es","ddb-os"],"id":"migrations"},{"cmd":"packages/tasks
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-page-builder-so-ddb-es_ddb-os_ddb"},{"cmd":"packages/api-serverless-cms
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-serverless-cms_ddb-os_ddb"},{"cmd":"packages/migrations","storage":["ddb-es","ddb-os"],"id":"migrations"},{"cmd":"packages/tasks
           --storage=ddb-os,ddb","storage":"ddb-os","id":"tasks_ddb-os_ddb"}]')
           }}
     runs-on: ${{ matrix.os }}
