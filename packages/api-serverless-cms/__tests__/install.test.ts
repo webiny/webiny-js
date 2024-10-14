@@ -5,7 +5,9 @@ describe("install", () => {
         process.env.S3_BUCKET = "a-mock-s3-bucket-which-does-not-exist";
     });
 
-    it("should validate that no app is installed", async () => {
+    const wcpOptions = ["on", "off"];
+
+    it.each(wcpOptions)("should validate that no app is installed - wcp %s", async wcp => {
         const {
             isAdminUsersInstalled,
             isTenancyInstalled,
@@ -15,7 +17,8 @@ describe("install", () => {
             isFormBuilderInstalled,
             isLocaleInstalled
         } = useGraphQlHandler({
-            path: "/graphql"
+            path: "/graphql",
+            features: wcp === "on" ? true : false
         });
 
         const [isAdminUsersInstalledResult] = await isAdminUsersInstalled();
@@ -84,7 +87,7 @@ describe("install", () => {
         });
     });
 
-    it("should install system", async () => {
+    it.each(wcpOptions)("should install system - wcp %s", async wcp => {
         const {
             installSecurity,
             installTenancy,
@@ -102,7 +105,8 @@ describe("install", () => {
             isFormBuilderInstalled,
             isLocaleInstalled
         } = useGraphQlHandler({
-            path: "/graphql"
+            path: "/graphql",
+            features: wcp === "on" ? true : false
         });
         const [installTenancyResult] = await installTenancy();
         expect(installTenancyResult).toEqual({

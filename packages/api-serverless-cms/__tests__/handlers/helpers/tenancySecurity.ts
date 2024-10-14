@@ -72,6 +72,7 @@ export const createTenancyAndSecurity = ({ permissions, tenant }: IConfig) => {
             if (!identity) {
                 return;
             }
+            context.tenancy.setCurrentTenant(getDefaultTenant(tenant));
             context.security.setIdentity(identity);
         }),
         new ContextPlugin<Context>(context => {

@@ -35,6 +35,8 @@
     "@webiny/api-audit-logs": "0.0.0",
     "@webiny/api-headless-cms-aco": "0.0.0",
     "@webiny/api-headless-cms-tasks": "0.0.0",
+    "@webiny/api-page-builder-import-export": "0.0.0",
+    "@webiny/api-page-builder-import-export-so-ddb": "0.0.0",
     "@webiny/api-record-locking": "0.0.0",
     "@webiny/api-wcp": "0.0.0",
     "@webiny/api-websockets": "0.0.0",

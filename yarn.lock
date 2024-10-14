@@ -15057,6 +15057,8 @@ __metadata:
     "@webiny/api-i18n-content": 0.0.0
     "@webiny/api-page-builder": 0.0.0
     "@webiny/api-page-builder-aco": 0.0.0
+    "@webiny/api-page-builder-import-export": 0.0.0
+    "@webiny/api-page-builder-import-export-so-ddb": 0.0.0
     "@webiny/api-prerendering-service": 0.0.0
     "@webiny/api-record-locking": 0.0.0
     "@webiny/api-security": 0.0.0

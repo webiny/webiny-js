@@ -22,6 +22,8 @@
     { "path": "../api-audit-logs" },
     { "path": "../api-headless-cms-aco" },
     { "path": "../api-headless-cms-tasks" },
+    { "path": "../api-page-builder-import-export" },
+    { "path": "../api-page-builder-import-export-so-ddb" },
     { "path": "../api-record-locking" },
     { "path": "../api-wcp" },
     { "path": "../api-websockets" },
@@ -77,6 +79,14 @@
       "@webiny/api-headless-cms-aco": ["../api-headless-cms-aco/src"],
       "@webiny/api-headless-cms-tasks/*": ["../api-headless-cms-tasks/src/*"],
       "@webiny/api-headless-cms-tasks": ["../api-headless-cms-tasks/src"],
+      "@webiny/api-page-builder-import-export/*": ["../api-page-builder-import-export/src/*"],
+      "@webiny/api-page-builder-import-export": ["../api-page-builder-import-export/src"],
+      "@webiny/api-page-builder-import-export-so-ddb/*": [
+        "../api-page-builder-import-export-so-ddb/src/*"
+      ],
+      "@webiny/api-page-builder-import-export-so-ddb": [
+        "../api-page-builder-import-export-so-ddb/src"
+      ],
       "@webiny/api-record-locking/*": ["../api-record-locking/src/*"],
       "@webiny/api-record-locking": ["../api-record-locking/src"],
       "@webiny/api-wcp/*": ["../api-wcp/src/*"],

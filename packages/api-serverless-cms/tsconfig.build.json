@@ -22,6 +22,8 @@
     { "path": "../api-audit-logs/tsconfig.build.json" },
     { "path": "../api-headless-cms-aco/tsconfig.build.json" },
     { "path": "../api-headless-cms-tasks/tsconfig.build.json" },
+    { "path": "../api-page-builder-import-export/tsconfig.build.json" },
+    { "path": "../api-page-builder-import-export-so-ddb/tsconfig.build.json" },
     { "path": "../api-record-locking/tsconfig.build.json" },
     { "path": "../api-wcp/tsconfig.build.json" },
     { "path": "../api-websockets/tsconfig.build.json" },

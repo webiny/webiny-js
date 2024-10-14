@@ -29,7 +29,7 @@ import { createRecordLocking } from "@webiny/api-record-locking";
 
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { FormBuilderStorageOperations } from "@webiny/api-form-builder/types";
-import { createFileManagerContext } from "@webiny/api-file-manager";
+import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createAco } from "@webiny/api-aco";
 import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 import { createAuditLogs } from "@webiny/api-audit-logs";
@@ -38,12 +38,18 @@ import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
 import { createApwGraphQL, createApwPageBuilderContext } from "@webiny/api-apw";
 import { ApwScheduleActionStorageOperations } from "@webiny/api-apw/scheduler/types";
 import { createBackgroundTaskContext, createBackgroundTaskGraphQL } from "@webiny/tasks";
+import { ContextPlugin } from "@webiny/api";
+import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
+import { createStorageOperations as createPageBuilderImportExportStorageOperations } from "@webiny/api-page-builder-import-export-so-ddb";
+import { Context } from "~/index";
+import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
 
 export interface ICreateCoreParams {
     plugins?: Plugin[];
     path: PathType;
     permissions?: Permission[];
     tenant?: Pick<Tenant, "id" | "name" | "parent">;
+    features?: boolean | string[];
 }
 
 export interface ICreateCoreResult {
@@ -61,7 +67,9 @@ export interface ICreateCoreResult {
 }
 
 export const createCore = (params: ICreateCoreParams): ICreateCoreResult => {
-    const { permissions, tenant, plugins = [] } = params;
+    const { permissions, tenant, plugins = [], features } = params;
+
+    const documentClient = getDocumentClient();
 
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const i18nStorage = getStorageOps<I18NLocalesStorageOperations>("i18n");
@@ -93,6 +101,47 @@ export const createCore = (params: ICreateCoreParams): ICreateCoreResult => {
             enableBenchmarkOnEnvironmentVariable(),
             createWcpContext(),
             createWcpGraphQL(),
+            new ContextPlugin<Context>(async context => {
+                if (!features) {
+                    return;
+                }
+
+                const canUse = (name: string): boolean => {
+                    if (features === true) {
+                        return true;
+                    } else if (!Array.isArray(features) || !features.includes(name)) {
+                        return false;
+                    }
+                    return true;
+                };
+
+                context.wcp = {
+                    ensureCanUseFeature: () => void 0,
+                    canUseFolderLevelPermissions: () => {
+                        if (!canUse("advancedAccessControlLayer")) {
+                            return false;
+                        }
+                        // @ts-expect-error
+                        return !!context.project?.package?.features?.advancedAccessControlLayer
+                            ?.options?.folderLevelPermissions;
+                    },
+                    canUseAacl: () => {
+                        return canUse("advancedAccessControlLayer");
+                    },
+                    canUsePrivateFiles: () => true,
+                    canUseTeams: () => true,
+                    decrementSeats: async () => void 0,
+                    incrementSeats: async () => void 0,
+                    decrementTenants: async () => void 0,
+                    incrementTenants: async () => void 0,
+                    getProjectEnvironment: () => null,
+                    getProjectLicense: () => null,
+                    canUseFeature: canUse,
+                    canUseRecordLocking: () => {
+                        return canUse("recordLocking");
+                    }
+                };
+            }),
             ...cmsStorage.plugins,
             ...pageBuilderStorage.plugins,
             ...fileManagerStorage.plugins,
@@ -121,27 +170,32 @@ export const createCore = (params: ICreateCoreParams): ICreateCoreResult => {
             createPageBuilderContext({
                 storageOperations: pageBuilderStorage.storageOperations
             }),
+            createPageBuilderGraphQL(),
+            createFileManagerContext({
+                storageOperations: fileManagerStorage.storageOperations
+            }),
+            createFileManagerGraphQL(),
+            createFormBuilder({
+                storageOperations: formBuilderStorage.storageOperations
+            }),
+            pageBuilderImportExportPlugins({
+                storageOperations: createPageBuilderImportExportStorageOperations({
+                    documentClient
+                })
+            }),
+            createApwPageBuilderContext({
+                storageOperations: apwScheduleStorage.storageOperations
+            }),
             createAco(),
             createAuditLogs(),
-            createAcoPageBuilderContext(),
-            createPageBuilderGraphQL(),
             createRecordLocking(),
             createWebsockets(),
             ...createBackgroundTaskContext(),
             ...createBackgroundTaskGraphQL(),
-            createFileManagerContext({
-                storageOperations: fileManagerStorage.storageOperations
-            }),
-            createFormBuilder({
-                storageOperations: formBuilderStorage.storageOperations
-            }),
             createAcoPageBuilderContext(),
             createAcoHcmsContext(),
             createHcmsTasks(),
             createApwGraphQL(),
-            createApwPageBuilderContext({
-                storageOperations: apwScheduleStorage.storageOperations
-            }),
             plugins,
             graphQLHandlerPlugins()
         ]
