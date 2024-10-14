@@ -2,6 +2,7 @@
  * Dictates how package tests will be executed. With this script, we achieve
  * parallelization of execution of Jest tests. Note: do not use any 3rd party
  * libraries because we need this script to be executed in our CI/CD, as fast as possible.
+ * Using 3rd party libraries would require `yarn install` to be run before this script is executed.
  */
 
 import fs from "fs";
